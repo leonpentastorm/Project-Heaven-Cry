@@ -4,7 +4,7 @@
 import { describe, expect, it, beforeEach } from 'vitest';
 import { CONDITION_ROWS, condId } from '@engine';
 import { isFolded, setFolded, clearFold, foldSetByHand, _resetFoldCache } from './tabPrefs';
-import { foldVals, MeterMemory, meterFolds, foldMeter, meterFoldId, listMinPx, LIST_MIN_ROWS, LIST_ROW_PX } from './fold';
+import { foldVals, MeterMemory, meterFolds, foldMeter, meterFoldId, listMinPx, listMinShortPx, LIST_MIN_ROWS, LIST_ROW_PX } from './fold';
 import { sideOf, statusGroups, shortWord, GROUP_CAP, SIDE_INK } from './statusStrip';
 import { hpShieldBar } from './shieldLook';
 
@@ -91,5 +91,6 @@ describe('the shield on the HP bar (U3)', () => {
 });
 
 describe('the action list keeps its room (U5)', () => {
-  it('at least four rows', () => { expect(LIST_MIN_ROWS).toBeGreaterThanOrEqual(4); expect(listMinPx()).toBeGreaterThanOrEqual(4 * LIST_ROW_PX); });
+  it('at least four rows', () => { expect(LIST_MIN_ROWS).toBeGreaterThanOrEqual(4); expect(listMinPx()).toBeGreaterThanOrEqual(4 * LIST_ROW_PX + 32); }); // four rows under a head line (a weapon's name)
+  it('at least four 32 px rows under a head on short windows', () => { expect(listMinShortPx()).toBeGreaterThanOrEqual(4 * (32 + 6) + 32); expect(listMinShortPx()).toBeLessThan(listMinPx()); });
 });

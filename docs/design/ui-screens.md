@@ -135,15 +135,21 @@ token's strip is gone):
 2. **Pinned, never scrolled away:** HP with the shield as a pale hatched segment at the end of the fill (no track of its
    own; past max HP the bar rescales; "410 / 410 +30"; the layers on hover, the engine's `shieldsView`), and directly
    under it the **status strip**: HELPING (#6FEA77, ▲), HURTING (#F65157, ▼), states (white, ◆), glyph and short word,
-   the card on hover, "+N" past six. The group is `conditions.json` `side`. On short windows the urgent meters follow,
-   one line of minis.
+   the card on hover, "+N" past six. The group is `conditions.json` `side`. On short windows (820 px tall or less) the
+   meters follow as minis: the three most urgent open ones and one "+N" chip for the rest (the zero ones folded and the
+   other open ones; a click opens them all, "‹" goes back to three), at most two lines, scrolling inside past that.
 3. **The You card** (folds): portrait, class, Echo, AP / Movement / Stims and the reaction pip, the folded "Shields N"
    row with its "?" (the rule), then the **meters**: one row of minis, the zero ones folded into "+N"; then Bonds (one
    line at 0 Bonds). The squad list folds too.
 4. **The turn box:** YOUR TURN with the AP pips in the same strip; the vow as one line; the tab row with a cog at its
-   end (the Fight tabs settings); the action list (at least four rows, `listMinPx`); one box for the chosen action and
-   its target (the action and its AP, the target's face and name, the roll line and the damage line, the breakdown on
-   hover, the action's text); Confirm and End turn. No Say box where the mode has no Narrator.
+   end (the Fight tabs settings); the action list (at least four rows under a head line: `listMinPx`, 200 px, and on
+   short windows `listMinShortPx`, 188 px for 32 px rows); one box for the chosen action and its target (the action and
+   its AP, the target's face and name, the roll line and the damage line, the breakdown on hover, the action's text);
+   Confirm and End turn. No Say box where the mode has no Narrator. When the column is short, the open vow gives up its
+   room first (down to its head line, scrolling inside; on short windows it is one line: its head, the vows in a row
+   that scrolls sideways, Fight unsworn) and the foot (the chosen action, Confirm, End turn) sticks to the bottom edge,
+   so neither the four rows nor Confirm is ever scrolled away. Checked at 1280x720 with the Say box (a Narrator room)
+   and without (`e2e/fight-panel.mjs`).
 5. **The map:** a hovered tile is outlined under the tile effects and is never raised over its neighbours; a token's
    card opens on pointer hover only and closes when the pointer leaves; it carries the same status strip, small.
 

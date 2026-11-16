@@ -51,7 +51,11 @@ export const foldMeter = (key: string, folded: boolean) => setFolded(meterFoldId
 // ---------- the action list's room (U5) ----------
 /** The action list always shows at least this many rows: the blocks above it scroll or fold first. */
 export const LIST_MIN_ROWS = 4;
-/** One row of the list (a 34 px button and its 6 px gap) and the room a group's head line takes. */
-export const LIST_ROW_PX = 40, LIST_HEAD_PX = 16;
+/** One row of the list (a 34 px button and its 6 px gap) and the room a head line takes (a weapon's name with its
+ *  icon, or a group's name, about 36 px), so four rows still show under the head. */
+export const LIST_ROW_PX = 40, LIST_HEAD_PX = 40;
 /** The list's least height in px (the CSS min-height of the tab panel beside the map). */
-export const listMinPx = (rows = LIST_MIN_ROWS): number => rows * LIST_ROW_PX + LIST_HEAD_PX;
+export const listMinPx = (rows = LIST_MIN_ROWS, rowPx = LIST_ROW_PX, headPx = LIST_HEAD_PX): number => rows * rowPx + headPx;
+/** Short windows (820 px tall or less): a row is 32 px and its 6 px gap, a head line 36 px. */
+export const LIST_ROW_SHORT_PX = 38, LIST_HEAD_SHORT_PX = 36;
+export const listMinShortPx = (rows = LIST_MIN_ROWS): number => listMinPx(rows, LIST_ROW_SHORT_PX, LIST_HEAD_SHORT_PX);

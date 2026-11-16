@@ -74,7 +74,7 @@ import { forkChipsLine } from '../game/forkLine';
 import { noteTabs, noteLive, tabKey, shownTabs, firstUsable, NO_PREFS, EV_TABS_CHANGED } from '../game/tabPrefs';
 import { openSettings } from '../game/settings';
 import { sideOf, shortWord, statusGroups, SIDE_INK, SIDE_GLYPH } from '../game/statusStrip';
-import { foldVals, MeterMemory, meterFolds, foldMeter, listMinPx } from '../game/fold';
+import { foldVals, MeterMemory, meterFolds, foldMeter, listMinPx, listMinShortPx } from '../game/fold';
 import { EV_FOLDS_CHANGED } from '../game/tabPrefs';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
@@ -199,7 +199,7 @@ const COMBAT_CSS = [
   // A tall footer (a target behind cover under two rows of tabs) used to push Confirm off the column's end and squeeze
   // the action list to nothing. Beside the map (1000 px and wider) the list keeps a usable height, the dock scrolls
   // inside itself when it must, and Confirm and End turn stay at its foot.
-  '@media (min-width:1000px){.phc-cb-aside .phc-cb-dock{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}.phc-cb-aside .phc-cb-tabpanel{min-height:' + listMinPx() + 'px}.phc-cb-aside .phc-cb-confirm{position:sticky;bottom:0;z-index:4;background:#0A0D13;padding-top:6px;margin-top:-6px}}',
+  '@media (min-width:1000px){.phc-cb-aside .phc-cb-dock{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}.phc-cb-aside .phc-cb-tabpanel{min-height:' + listMinPx() + 'px!important}.phc-cb-aside .phc-cb-confirm{position:sticky;bottom:0;z-index:4;background:#0A0D13;padding-top:6px;margin-top:-6px}}',
   '.phc-cb-hide,.phc-cb-link,.phc-cb-show{transition:background-color .12s,color .12s,border-color .12s}.phc-cb-hide:hover,.phc-cb-link:hover,.phc-cb-show:hover{background:#1C2536!important;color:#FFFFFF!important;border-color:#A3AEC2!important}',
   '.phc-cb-hide:focus-visible,.phc-cb-link:focus-visible,.phc-cb-show:focus-visible,.phc-cb-mini button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}',
   // Short windows (1280×720): You shrinks to one line in the bar, and on your turn the squad list steps aside (the
@@ -207,7 +207,7 @@ const COMBAT_CSS = [
   '@media (max-height:820px) and (min-width:1000px){.phc-me-full{display:none!important}.phc-me-mini{display:flex!important}.phc-me-urgent{display:grid!important}.phc-cb-aside.phc-mine>.phc-cb-top{display:none!important}}',
   // Very short windows (1093×526): the squad list goes (the initiative strip and the grid still show it), one line of
   // action text, slimmer tabs, pips and buttons, no portrait on the target card. The tab panel keeps at least 44 px.
-  '@media (max-height:620px) and (min-width:1000px){.phc-cb-aside{gap:6px!important;padding-top:6px!important}.phc-cb-aside.phc-mine>.phc-cb-top{display:none!important}.phc-cb-turn,.phc-cb-dock{gap:6px!important}.phc-cb-aplabel{display:none!important}.phc-cb-turn .phc-pips>span{height:8px!important}.phc-cb-tabs>[role=tab]{min-height:30px!important}.phc-cb-tabpanel{min-height:44px!important}.phc-cb-seltext{-webkit-line-clamp:1!important}.phc-cb-selextra{display:none!important}.phc-cb-tgtimg{display:none!important}.phc-cb-foot>div{padding-top:6px!important;padding-bottom:6px!important}.phc-cb-confirm>button{min-height:38px!important}.phc-cb-say input,.phc-cb-say button{min-height:34px!important}}',
+  '@media (max-height:620px) and (min-width:1000px){.phc-cb-aside{gap:6px!important;padding-top:6px!important}.phc-cb-aside.phc-mine>.phc-cb-top{display:none!important}.phc-cb-turn,.phc-cb-dock{gap:6px!important}.phc-cb-aplabel{display:none!important}.phc-cb-turn .phc-pips>span{height:8px!important}.phc-cb-tabs>[role=tab]{min-height:30px!important}.phc-cb-aside .phc-cb-tabpanel{min-height:44px!important}.phc-cb-seltext{-webkit-line-clamp:1!important}.phc-cb-selextra{display:none!important}.phc-cb-tgtimg{display:none!important}.phc-cb-foot>div{padding-top:6px!important;padding-bottom:6px!important}.phc-cb-confirm>button{min-height:38px!important}.phc-cb-say input,.phc-cb-say button{min-height:34px!important}}',
   // Narrow windows: the column stacks under the grid; the tabs, the tab panel and Confirm dock at the bottom of the screen.
   '@media (max-width:999px){.phc-cb-head{flex-wrap:wrap!important}.phc-cb-root{height:auto!important;overflow:visible!important}.phc-cb-row{flex-wrap:wrap!important;min-height:auto!important}.phc-cb-left{flex:1 1 100%!important;overflow:visible!important;padding-right:0!important}.phc-cb-aside{flex:1 1 100%!important;overflow:visible!important;margin:0!important;padding:12px 0 0!important}.phc-cb-top{overflow:visible!important}',
   // The turn box lifts the docked actions over the grid, but stays under the dialogs (the fight's end is z 15, votes 14).
@@ -232,7 +232,11 @@ const COMBAT_CSS = [
   // 0.31.0 (U5): the action list keeps at least four rows (game/fold.ts listMinPx: LIST_MIN_ROWS rows); the blocks above
   // it give up their room first: on short windows the urgent meters are one line of minis and the tab panel's own title
   // line (the weapon block under it says the same) is dropped.
-  '@media (max-height:820px) and (min-width:1000px){.phc-me-urgent{display:flex!important;flex-wrap:wrap;align-items:center;gap:2px 12px}.phc-me-urgent>.phc-res-row.phc-res-mini{display:flex;flex:none;margin:0;padding:0 2px}.phc-me-urgent .phc-res-line{display:flex!important;gap:5px!important}.phc-me-urgent .phc-res-line>span:first-child{font-size:11px!important}.phc-me-urgent .phc-res-line>span:nth-child(2){flex:0 0 40px!important;min-width:40px!important}.phc-me-urgent .phc-res-line>span:nth-child(3){font-size:12px!important}.phc-me-urgent .phc-res-chip{font-size:10px!important;line-height:14px!important;padding:0 5px!important}.phc-cb-tpname{display:none!important}.phc-cb-tabpanel .phc-cb-act[data-act]{min-height:32px!important}}',
+  '@media (max-height:820px) and (min-width:1000px){.phc-me-urgent{display:flex!important;flex-wrap:wrap;align-items:center;gap:2px 12px;max-height:36px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}.phc-me-urgent>.phc-res-row.phc-res-mini{display:flex;flex:none;margin:0;padding:0 2px}.phc-me-urgent .phc-res-line{display:flex!important;gap:5px!important}.phc-me-urgent .phc-res-line>span:first-child{font-size:11px!important}.phc-me-urgent .phc-res-line>span:nth-child(2){flex:0 0 auto!important;min-width:40px!important;max-width:84px!important;overflow:hidden!important}.phc-me-urgent .phc-res-line>span:nth-child(3){font-size:12px!important}.phc-me-urgent .phc-res-chip{font-size:10px!important;line-height:14px!important;padding:0 5px!important}.phc-cb-tpname{display:none!important}.phc-cb-tabpanel .phc-cb-act[data-act]{min-height:32px!important}.phc-vow-sub,.phc-vow-words{display:none!important}.phc-cb-seltext{-webkit-line-clamp:1!important}.phc-cb-aside .phc-cb-tabpanel{min-height:' + listMinShortPx() + 'px!important}.phc-cb-aside .phc-cb-dock{gap:5px!important}.phc-cb-selbox{padding:5px 12px!important}.phc-cb-aside [data-phc-vow-prompt]{padding:3px 10px!important;gap:4px 8px!important}.phc-vow-grid{display:flex!important;overflow-x:auto;scrollbar-width:none}.phc-vow-grid>[data-vow]{flex:none;min-height:22px!important;padding:0 8px!important;row-gap:0!important}.phc-vow-grid img{width:18px!important;height:18px!important;grid-row:auto!important}.phc-cb-aside [data-phc-vow-prompt][data-open=true]{flex-direction:row!important;flex-wrap:wrap;align-items:center}.phc-cb-aside [data-phc-vow-prompt][data-open=true]>.phc-fold-h{flex:none;max-width:42%}.phc-cb-aside [data-phc-vow-prompt][data-open=true]>.phc-vow-grid{flex:1 1 140px;min-width:0}.phc-cb-aside [data-phc-vow-prompt][data-open=true]>[role=group]{flex:1 0 100%}}',
+  // An open vow prompt gives up its room before the list does: beside the map it shrinks as far as its head line and
+  // scrolls inside itself (its explainer is the head's hover card on short windows). The foot (the chosen action, Confirm
+  // and End turn) sticks to the dock's bottom edge, so it is never scrolled away; the mini meters take at most two lines.
+  '@media (min-width:1000px){.phc-cb-aside .phc-cb-dock>.phc-cb-foot{position:sticky;bottom:0;z-index:4;background:#0A0D13}.phc-cb-aside [data-phc-vow-prompt][data-open=true]{flex:0 1 auto;min-height:30px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}}',
   '@media (prefers-reduced-motion: reduce){.phc-yt,.phc-plan,.phc-pips>span.phc-pip-drain,.phc-cur-ring,.phc-tgt-ring,.phc-wait-dots>span{animation:none}.phc-yt::after{display:none}.phc-hp-chip,.phc-hp-fill,.phc-cb-act{transition:none}}',
 ].join('');
 ensureMotionCss();
@@ -1690,8 +1694,9 @@ export class CombatLogic extends DCLogic {
       mePanel.bonds = bondStripVals(cb, myU, mc, (id) => { const v = cb.units.find((x) => x.id === id); return v ? faceOf(v) || '' : ''; }, ledgerRow);
       // a chip hovered lights its line on the map (tieLayer); the layer itself never takes the pointer
       for (const b of [...(mePanel.bonds.allies || []), ...(mePanel.bonds.enemies || [])]) Object.assign(b, { hot: () => { if (this.state.tieHot !== b.id) this.setState({ tieHot: b.id }); }, cold: () => { if (this.state.tieHot) this.setState({ tieHot: null }); } });
-      mePanel.res = resView(rows0.filter((r) => !(mePanel.bonds.show && mePanel.bonds.hasLedger && r.key === 'res-ledger')).filter((r) => !(S.tab === 'outbursts' && myU.mg && myU.mg.held && (r.key === 'strain' || r.key === 'held')))
-        .map((r) => (r.warn === 'JAMMED' && jamHead.has(r.key === 'off' ? 'off' : 'main') ? { ...r, warn: undefined, level: undefined } : r)));
+      const resSrc = rows0.filter((r) => !(mePanel.bonds.show && mePanel.bonds.hasLedger && r.key === 'res-ledger')).filter((r) => !(S.tab === 'outbursts' && myU.mg && myU.mg.held && (r.key === 'strain' || r.key === 'held')))
+        .map((r) => (r.warn === 'JAMMED' && jamHead.has(r.key === 'off' ? 'off' : 'main') ? { ...r, warn: undefined, level: undefined } : r));
+      mePanel.res = resView(resSrc);
       // 0.31.0 (U2): one row of mini meters (name, pips or a thin bar, the number; the explainer is the hover card), and
       // a meter at 0 that has had nothing this fight folded into the "+N" chip at the row's end (game/fold.ts).
       { const redraw = () => this.setState({ foldTick: Date.now() }), mem = this._meters || (this._meters = new MeterMemory());
@@ -1703,6 +1708,16 @@ export class CombatLogic extends DCLogic {
         mePanel.res.hasFolded = folded.length > 0; mePanel.res.foldedN = '+' + folded.length;
         mePanel.res.foldedTip = 'At zero, nothing this fight (click to show): ' + folded.map((r) => r.label.charAt(0) + r.label.slice(1).toLowerCase()).join(', ');
         mePanel.res.openFolded = () => { for (const r of folded) foldMeter(r.key, false); redraw(); };
+        // short windows (the card steps aside on your turn): the one line of minis under HP is every open meter, most urgent
+        // first, with the same "+N" chip at its end (a zero meter folded there is reachable at 1280x720 too)
+        { const openKeys = new Set(open.map((r) => r.key)), byKey = new Map(mePanel.res.rows.map((r) => [r.key, r]));
+          const all = resView(resSrc.filter((r) => openKeys.has(r.key)), open.length).urgent.map((r) => ({ ...r, zero: byKey.get(r.key)?.zero || false, fold: byKey.get(r.key)?.fold || (() => {}) }));
+          const shown = S.minisAll ? all : all.slice(0, 3), rest = all.length - shown.length + folded.length;
+          mePanel.res.minis = shown;
+          mePanel.res.minisMore = rest > 0; mePanel.res.minisN = '+' + rest;
+          mePanel.res.minisTip = 'Show every meter: ' + [...all.slice(shown.length), ...folded].map((r) => r.label.charAt(0) + r.label.slice(1).toLowerCase()).join(', ');
+          mePanel.res.minisOpen = () => { for (const r of folded) foldMeter(r.key, false); this.setState({ minisAll: true }); };
+          mePanel.res.minisLess = !!S.minisAll && all.length > 3; mePanel.res.minisFold = () => this.setState({ minisAll: false }); }
         // the Bonds box follows the same rule: one line at 0 Bonds
         if (mePanel.bonds.show) { const zero = !(mePanel.bonds.hasAllies || mePanel.bonds.hasEnemies);
           mePanel.bonds.fold = foldVals('fight:bonds', { byRule: zero, redraw }); }

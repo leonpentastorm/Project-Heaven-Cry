@@ -166,7 +166,14 @@ A screen change; no rule moved, no closed-list addition. One data field: `condit
 - **Room for the actions:** the action list keeps at least four rows (`listMinPx`); the AP pips ride in the YOUR TURN
   strip; no Say box where the mode has no Narrator (a run, the Proving Ground); the vow is one line ("Swear a vow ▸",
   then "Vow: Stand · …"); the preview and the target are one box (the roll line and the damage line, the breakdown on
-  hover); on short windows the urgent meters are one line of minis and the tab panel's title line goes.
+  hover); on short windows the urgent meters are one line of minis and the tab panel's title line goes. The list's least
+  height now really holds: it was set in the stylesheet below the tab panel's own inline 56 px and never applied, so the
+  open vow (and the Say box in a Narrator room) squeezed the list to one row at 1280x720. Now it is 200 px (188 px on
+  short windows: four 32 px rows under a weapon's head line), the open vow shrinks first (one line on short windows) and
+  the foot with Confirm sticks to the dock's bottom edge.
+- **The meters at 1280x720:** the short-window line of minis carries the "+N" chip too (it was only in the card, hidden
+  on short windows, so the zero meters could not be opened there): three urgent meters and "+N" for the rest, at most
+  two lines; the minis' pips no longer run over the next meter's name (the Ammo row did).
 - **Small:** the plain melee blow is **Hit** with every weapon (`techniques.json` `cut`'s name; the id is kept; gloves'
   "Strike" is gone); the YOUR TURN shine no longer parks at the strip's end; a cog at the tab row's end opens the
   Fight tabs settings; a hovered tile is no longer raised over its neighbours (its card opens on pointer hover only);

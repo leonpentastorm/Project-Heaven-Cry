@@ -10,7 +10,7 @@
 //   - the row's AP equals the preview's AP, and the plain melee attack is "Hit" (never "Cut")
 //   - the hovered tile does not cover its neighbour's effects (no lift of the whole tile)
 // Screenshots: .check/e2e/shots/fight-panel/ (before any fold change, and with everything opened), at both sizes.
-import { chromium, click, BASE, OUT, settle } from './lib.mjs';
+import { chromium, click, BASE, OUT, settle, player, hostAs, lockIn } from './lib.mjs';
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 
@@ -58,7 +58,16 @@ async function everyDoor(p) {
 
 const shotsDir = OUT;
 const LIST_ROW = '[role="tabpanel"] button.phc-cb-act[data-act]';
-for (const [vw, vh] of [[1280, 720], [1600, 900]]) {
+/** The action list's room: rows wholly inside the list and the window, and the list's own height in rows (the room it
+ *  has whatever the open tab holds: a tab with three actions still has room for four). */
+const listRoom = (p) => p.evaluate((sel) => { const H = window.innerHeight; const pnl = document.querySelector('[role="tabpanel"]'); const bs = Array.from(document.querySelectorAll(sel));
+  const foot = document.querySelector('.phc-cb-foot'), fb = foot ? foot.getBoundingClientRect().top : H; // (the foot sticks to the dock's bottom: what it covers is not shown)
+  const pr0 = pnl && pnl.getBoundingClientRect(), pr = pr0 && { top: pr0.top, bottom: Math.min(pr0.bottom, fb), height: Math.min(pr0.bottom, fb) - pr0.top }, rh = bs.length ? Math.max(...bs.map((b) => b.getBoundingClientRect().height)) : 0;
+  return { n: bs.length, shown: bs.filter((b) => { const r = b.getBoundingClientRect(); return pr && r.top >= pr.top - 1 && r.bottom <= pr.bottom + 1 && r.bottom <= H; }).length,
+    pageScroll: document.documentElement.scrollHeight - H, panelH: pr ? Math.round(Math.min(pr.bottom, H) - pr.top) : 0, rowH: Math.round(rh) }; }, LIST_ROW);
+const fmtRoom = (r) => r.shown + ' of ' + r.n + ' shown, list ' + r.panelH + ' px for rows of ' + r.rowH + ' px, page scroll ' + r.pageScroll;
+const roomOk = (r) => r.n > 0 && r.shown >= Math.min(4, r.n) && r.rowH > 0 && r.panelH >= 4 * r.rowH - 2 && r.pageScroll <= 1;
+for (const [vw, vh] of (process.env.FP_NARR ? [] : [[1280, 720], [1600, 900]])) {
   const tag = vw + 'x' + vh, p = await open(vw, vh);
   const cid = await everyDoor(p);
   if ((await G(p)).phase !== 'combat') await act(p, { type: 'sandbox/fight' });
@@ -71,19 +80,20 @@ for (const [vw, vh] of [[1280, 720], [1600, 900]]) {
   await p.screenshot({ path: shotsDir + tag + '-01-start.png' });
 
   // ---- U5: room for the actions ----
-  const rows = await p.evaluate((sel) => { const H = window.innerHeight; const pnl = document.querySelector('[role="tabpanel"]'); const bs = Array.from(document.querySelectorAll(sel));
-    const pr = pnl && pnl.getBoundingClientRect(); return { n: bs.length, shown: bs.filter((b) => { const r = b.getBoundingClientRect(); return pr && r.top >= pr.top - 1 && r.bottom <= pr.bottom + 1 && r.bottom <= H; }).length, pageScroll: document.documentElement.scrollHeight - H, panelH: pr ? Math.round(pr.height) : 0 }; }, LIST_ROW);
-  ok(tag + ' the action list shows at least four rows without scrolling the page (' + rows.shown + ' of ' + rows.n + ' shown, list ' + rows.panelH + ' px, page scroll ' + rows.pageScroll + ')', (rows.shown >= 4 || rows.shown === rows.n) && rows.pageScroll <= 1);
+  const rows = await listRoom(p);
+  ok(tag + ' the action list shows at least four rows without scrolling the page (' + fmtRoom(rows) + ')', roomOk(rows));
   ok(tag + ' no Say box in the Proving Ground (no Narrator)', (await p.locator('input[placeholder^="Say something"]').count()) === 0);
   ok(tag + ' the AP pips ride in the YOUR TURN strip', (await p.locator('.phc-yt .phc-yt-pips > span').count()) >= 6);
 
   // ---- U3: no shield track at 0 ----
   ok(tag + ' no shield segment or "+N" at shield 0', (await p.locator('[data-hp-shield-seg]').count()) === 0 && (await p.locator('[data-hp-shield]').count()) === 0 && (await p.locator('[data-shield-seg]').count()) === 0);
   // ---- U2: a zero meter folds into "+N", opens on click ----
-  const more = p.locator('[data-meter-more]');
-  const moreN = await more.count(), moreVis = moreN ? await more.isVisible() : false;
+  // (the chip rides the card's meter row on tall windows and the one line of minis under HP on short ones: the visible one)
+  const more = p.locator('[data-meter-more]:visible');
+  const moreN = await more.count(), moreVis = moreN > 0;
   ok(tag + ' zero meters folded into the "+N" chip (' + (moreN ? await more.textContent() : 'none') + ')', moreN === 1);
-  const metersBefore = await p.locator('.phc-meter').count();
+  const METERS = '[data-meter-row] .phc-meter:visible, .phc-me-urgent .phc-res-mini:visible';
+  const metersBefore = await p.locator(METERS).count();
   // ---- U6a: the plain melee attack is "Hit" ----
   const attackTab = p.locator('#phc-tab-attack');
   if (await attackTab.count()) { await attackTab.click(); await settle(p, 300); }
@@ -98,11 +108,17 @@ for (const [vw, vh] of [[1280, 720], [1600, 900]]) {
     ok(tag + ' the row\'s AP equals the preview\'s (' + (rowAp && rowAp[1]) + ' / ' + (selAp && selAp[1]) + ')', !!rowAp && !!selAp && rowAp[1] === selAp[1]);
   } else ok(tag + ' a Hit row in the attack list', false);
   await p.screenshot({ path: shotsDir + tag + '-02-hit.png' });
+  ok(tag + ' the "+N" chip is on screen', moreVis);
   if (moreN && moreVis) {
     await more.click(); await settle(p, 300);
-    ok(tag + ' the "+N" chip opens the zero meters (' + metersBefore + ' -> ' + (await p.locator('.phc-meter').count()) + ')', (await p.locator('.phc-meter').count()) > metersBefore && (await p.locator('[data-meter-more]').count()) === 0);
-    const z = p.locator('.phc-meter[data-zero="true"]').first();
-    if (await z.count()) { await z.click(); await settle(p, 250); ok(tag + ' a click on an open zero meter folds it back', (await p.locator('[data-meter-more]').count()) === 1); await p.locator('[data-meter-more]').click(); await settle(p, 250); }
+    ok(tag + ' the "+N" chip opens the zero meters (' + metersBefore + ' -> ' + (await p.locator(METERS).count()) + ')', (await p.locator(METERS).count()) > metersBefore && (await p.locator('[data-meter-more]:visible').count()) === 0);
+    await p.screenshot({ path: shotsDir + tag + '-02c-meters-open.png' });
+    const z = p.locator('[data-zero="true"]:visible').first();
+    if (await z.count()) { await z.click(); await settle(p, 250); ok(tag + ' a click on an open zero meter folds it back', (await p.locator('[data-meter-more]:visible').count()) === 1); await p.locator('[data-meter-more]:visible').click(); await settle(p, 250); }
+    else ok(tag + ' an open zero meter to fold back', false);
+    // and folded again for the rest (the list's room is measured with the rule's folds)
+    for (const zz of await p.locator('[data-zero="true"]:visible').all()) { await zz.click().catch(() => {}); await settle(p, 120); }
+    { const less = p.locator('[data-meter-less]:visible'); if (await less.count()) { await less.click(); await settle(p, 200); } }
   }
 
   // ---- U1: a fold survives a reload (the vow line: round 1, at both sizes) ----
@@ -158,7 +174,7 @@ for (const [vw, vh] of [[1280, 720], [1600, 900]]) {
     ok(tag + ' the token card has the strip too (Hidden in its helping group)', (await card.count()) === 1); }
 
   // everything opened
-  for (const m of await p.locator('[data-meter-more]').all()) if (await m.isVisible()) await m.click().catch(() => {});
+  for (const m of await p.locator('[data-meter-more]:visible').all()) await m.click().catch(() => {});
   for (const f of await p.locator('button[data-fold][aria-expanded="false"]').all()) if (await f.isVisible()) await f.click({ timeout: 3000 }).catch(() => {});
   await settle(p, 300);
   await p.screenshot({ path: shotsDir + tag + '-04-all-open.png' });
@@ -180,4 +196,57 @@ for (const [vw, vh] of [[1280, 720], [1600, 900]]) {
   ok(tag + ' no page errors' + (p.errors.length ? ': ' + p.errors.slice(0, 2).join(' | ') : ''), !p.errors.length);
   await p.context().close();
 }
+
+// ---- U5 with a Narrator: the Say box is back (about 40 px), and the list still has room for four rows at 1280x720 ----
+// A narrated room (M813, the scripted Narrator), a Confessor (Faith: the vow line too), every glove handed over by the
+// Narrator's turn, then the Narrator's fight.
+{ const p = await player(browser, 'host', { campaigns: ['m813'] });
+  await p.setViewportSize({ width: 1280, height: 720 });
+  await hostAs(p, 'Leon');
+  await click(p, 'Create a character');
+  await p.getByPlaceholder('What the squad calls you').fill('Vess');
+  await p.locator('main button[aria-pressed]').first().click();
+  await click(p, 'Next ›');
+  await p.locator('button', { hasText: 'Confessor' }).first().click();
+  await p.locator('button', { hasText: /^Use .* ›$/ }).first().click();
+  await click(p, 'Next ›'); await click(p, 'Next ›');
+  await p.locator('[data-belief="faithful"]').click(); await p.locator('[data-patron="mother_ember"] [data-swear]').click();
+  await click(p, 'Next ›'); await click(p, 'Next ›'); await lockIn(p, { timeout: 30000 });
+  await p.waitForFunction(() => Object.keys(window.__phc.getState().game?.characters || {}).length > 0, null, { timeout: 30000 });
+  await p.evaluate(() => window.__phc.setNarrator({ scripted: true }));
+  await click(p, 'Start session');
+  await p.waitForSelector('.phc-story', { timeout: 30000 });
+  await p.waitForFunction(() => window.__phc.getState().game.story.entries.some((e) => e.kind === 'narration'), null, { timeout: 30000 });
+  const actN = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
+  const me = await p.evaluate(() => Object.keys(window.__phc.getState().game.characters)[0]);
+  const lootErr = await actN({ type: 'narrator/turn', turn: { narration: 'A crate of gloves by the ramp.', loot: ['evoker', 'emanator', 'visualizer', 'attuner'].map((item) => ({ charId: me, item })).concat([{ charId: me, item: 'standard_core', qty: 4 }]) } });
+  await p.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 30000 }).catch(() => {});
+  const fightErr = await actN({ type: 'narrator/turn', turn: { narration: 'Two raiders come over the crates.', combat: { name: 'Crates', enemies: [{ name: 'Raider', tier: 'minion', weapon: 'fists' }, { name: 'Raider Two', tier: 'minion', weapon: 'fists' }] } } });
+  await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
+  await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 30000 });
+  await settle(p, 1500); await dismissCut(p, 1280, 720);
+  await p.waitForSelector('[role="tablist"][aria-label="Actions"] [role="tab"]', { timeout: 30000 }).catch(() => {});
+  const say = p.locator('input[placeholder^="Say something"]:visible');
+  ok('narrated 1280x720: the Say box is there (a Narrator room)' + (lootErr || fightErr ? ' [' + (lootErr || fightErr) + ']' : ''), (await say.count()) === 1);
+  ok('narrated 1280x720: the tabs carry the gloves (' + (await p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]').allTextContents()).join(', ') + ')', (await p.locator('[role="tablist"][aria-label="Actions"] [role="tab"]').count()) >= 5);
+  const attackTab = p.locator('#phc-tab-attack');
+  if (await attackTab.count()) { await attackTab.click(); await settle(p, 300); }
+  const r0 = await listRoom(p);
+  ok('narrated 1280x720, the Attack tab: four rows shown (' + fmtRoom(r0) + ')', roomOk(r0));
+  await p.screenshot({ path: shotsDir + 'narrated-1280x720-01-start.png' });
+  const vf = p.locator('[data-fold="fight:vow"]').first();
+  if ((await vf.getAttribute('aria-expanded').catch(() => null)) === 'false') { await vf.click(); await settle(p, 300); }
+  const r1 = await listRoom(p);
+  ok('narrated 1280x720, the vow opened: the list still shows four rows (' + fmtRoom(r1) + ')', roomOk(r1));
+  ok('narrated 1280x720, the vow opened: its head and the first vows show', await p.evaluate(() => { const box = document.querySelector('[data-phc-vow-prompt]'), v = box && box.querySelector('[data-vow]'); if (!v) return false; const b = box.getBoundingClientRect(), r = v.getBoundingClientRect(); return r.top >= b.top - 1 && r.bottom <= b.bottom + 1 && r.height > 20; }));
+  await p.screenshot({ path: shotsDir + 'narrated-1280x720-01b-vow-open.png' });
+  for (const m of await p.locator('[data-meter-more]:visible').all()) await m.click().catch(() => {});
+  for (const f of await p.locator('button[data-fold][aria-expanded="false"]').all()) if (await f.isVisible()) await f.click({ timeout: 3000 }).catch(() => {});
+  await settle(p, 300);
+  const r2 = await listRoom(p);
+  ok('narrated 1280x720, everything opened: still four rows (' + fmtRoom(r2) + ')', roomOk(r2));
+  await p.screenshot({ path: shotsDir + 'narrated-1280x720-02-all-open.png' });
+  if (process.env.DEBUG_FP) console.log('debug chain', JSON.stringify(await p.evaluate(() => ['.phc-cb-aside', '.phc-cb-turnbox', '.phc-cb-turn', '.phc-cb-dock', '.phc-cb-tabpanel', '.phc-cb-foot', '.phc-cb-confirm', '.phc-me-urgent', '[data-me-pin]', 'form.phc-cb-say', '.phc-cb-tabs', '[data-phc-vow-prompt]'].map((q) => { const e = Array.from(document.querySelectorAll(q)).find((x) => x.offsetParent !== null); if (!e) return q + ' none'; const r = e.getBoundingClientRect(), cs = getComputedStyle(e); return q + ' top ' + Math.round(r.top) + ' h ' + Math.round(r.height) + ' sh ' + e.scrollHeight + ' st ' + e.scrollTop + ' flex ' + cs.flex + ' minh ' + cs.minHeight + ' ov ' + cs.overflowY; }))));
+  ok('narrated: no page errors' + (p.errors.length ? ': ' + p.errors.slice(0, 2).join(' | ') : ''), !p.errors.length);
+  await p.context().close(); }
 await browser.close();
