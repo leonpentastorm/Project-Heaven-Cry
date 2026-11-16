@@ -1,0 +1,63 @@
+{
+  "number": 1,
+  "family": "perks",
+  "id": "bulwark",
+  "path": "art/icons/perks/bulwark.png",
+  "name": "Weight of the Wall",
+  "mode": "Wick icon",
+  "state": "in game now (shows the OLD perk's icon) \u00b7 placeholder",
+  "use": "Durability perk (was Stonewall: the old icon shows Wick bracing a riot shield)",
+  "paint": "Wick braced low behind a raised round shield, swinging a short hammer over its rim at a foe out of frame; the shield takes the blow, the hammer answers it.",
+  "avoid": "a plain shield pose with no strike (that is the old Stonewall) \u00b7 a full second figure",
+  "section": "Durability: Guard, and the Bulwark",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick braced low behind a raised round shield, swinging a short hammer over its rim at a foe out of frame; the shield takes the blow, the hammer answers it.\nAvoid: a plain shield pose with no strike (that is the old Stonewall) \u00b7 a full second figure\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.",
+  "refs": [
+    "/workspace/phc-nine-doors-2026-11-16/references/mind-without-fog.png",
+    "/workspace/phc-nine-doors-2026-11-16/references/angel-of-the-trenches.png",
+    "/workspace/phc-nine-doors-2026-11-16/references/bedside-manner.png",
+    "/workspace/phc-nine-doors-2026-11-16/references/solid-image.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f2a9160c1c4519067d7eae150de4675671311b6708b3d6e4ea934c871802c5ba",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/001-bulwark.png",
+  "source_sha256": "15cebf29f3be3a0aa3e50bb8937d68672adf4415772189067041caf8a9539b04",
+  "export_crop": [
+    0,
+    23,
+    1239,
+    1254
+  ],
+  "exports": {
+    "256": "art/icons/perks/exports/256/bulwark.png",
+    "128": "art/icons/perks/exports/128/bulwark.png",
+    "64": "art/icons/perks/exports/64/bulwark.png",
+    "56": "art/icons/perks/exports/56/bulwark.png",
+    "48": "art/icons/perks/exports/48/bulwark.png",
+    "44": "art/icons/perks/exports/44/bulwark.png",
+    "40": "art/icons/perks/exports/40/bulwark.png",
+    "32": "art/icons/perks/exports/32/bulwark.png"
+  },
+  "framing": {
+    "scale": 0.5441491183699015,
+    "offset": [
+      175,
+      177
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

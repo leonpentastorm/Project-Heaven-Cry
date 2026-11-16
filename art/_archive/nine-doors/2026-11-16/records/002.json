@@ -1,0 +1,64 @@
+{
+  "number": 2,
+  "family": "perks",
+  "id": "shrug-it-off",
+  "path": "art/icons/perks/shrug-it-off.png",
+  "name": "Answer in Kind",
+  "mode": "Wick icon",
+  "state": "in game now (shows the OLD perk's icon) \u00b7 placeholder",
+  "use": "Durability perk (the old icon shows Wick shrugging off a condition)",
+  "paint": "Wick rocked back on one heel by a blow (three short impact lines at his shoulder), his other fist already thrown forward in answer.",
+  "avoid": "shrugging shoulders (the old icon) \u00b7 any blood",
+  "section": "Durability: Guard, and the Bulwark",
+  "kind": "wick",
+  "prompt": "EDIT THE FIRST ATTACHED ICON. Remove the floating CUP/BOWL above the ceramic head, leaving clean transparency in its place. Remove any generic floating up-arrows copied from the original Still Water trait; retain only motion/impact marks needed by this particular action. The cup was a perk-specific prop, never part of Wick. Preserve the exact little ceramic robot, pixel-screen face and expression, asymmetrical capelet, lantern-heart, body pose, limb anatomy, clothing plates and bold flat white linework. Preserve the action and props described below. Do not redesign the head, do not add a flame head, hat, halo, replacement prop or text. Wick rocked back on one heel by a blow (three short impact lines at his shoulder), his other fist already thrown forward in answer. Avoid: shrugging shoulders (the old icon) \u00b7 any blood Pure WHITE #FFFFFF filled ink only, transparent internal cuts and fully TRANSPARENT background, square 1024 PNG. No gray, shading, gradient or glow. Keep the whole figure and requested props with clear margins. Other attached icons show the same mascot without the cup.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/superseded/002-cup-v1/native.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "797dd4b5d51197a17d5653a769c6bbce0b952578025b03f44f33a1dae7da9dff",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/002-shrug-it-off.png",
+  "source_sha256": "5b5444dbaff5e6a6727b99c1122f618fc9067efd3c509a28355b690707eea905",
+  "export_crop": [
+    49,
+    21,
+    1096,
+    1254
+  ],
+  "exports": {
+    "256": "art/icons/perks/exports/256/shrug-it-off.png",
+    "128": "art/icons/perks/exports/128/shrug-it-off.png",
+    "64": "art/icons/perks/exports/64/shrug-it-off.png",
+    "56": "art/icons/perks/exports/56/shrug-it-off.png",
+    "48": "art/icons/perks/exports/48/shrug-it-off.png",
+    "44": "art/icons/perks/exports/44/shrug-it-off.png",
+    "40": "art/icons/perks/exports/40/shrug-it-off.png",
+    "32": "art/icons/perks/exports/32/shrug-it-off.png"
+  },
+  "framing": {
+    "scale": 0.5445039993540234,
+    "offset": [
+      227,
+      176
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "priority": 1
+}

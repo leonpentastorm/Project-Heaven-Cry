@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<!-- PLACEHOLDER figment-glimmer: Glimmer (art wanted; art/briefs/placeholders-2026-11-16.json) -->
-<rect x="5" y="5" width="54" height="54" rx="8" stroke-dasharray="6 3"/>
-<text x="32" y="38.1" text-anchor="middle" font-family="Chakra Petch, Arial, Helvetica, sans-serif" font-weight="700" font-size="17" fill="currentColor" stroke="none">GLI</text>
-<text x="57" y="58" text-anchor="end" font-family="Chakra Petch, Arial, Helvetica, sans-serif" font-weight="700" font-size="7" fill="currentColor" stroke="none">PH</text>
+  <circle cx="32" cy="12" r="5.5" stroke-dasharray="1.5 3.5"/>
+  <path d="M27 22 L23 24 L16 37 L20 39 L27 30 L26 43 L22 56 L27 58 L32 47 L37 58 L42 56 L38 43 L37 30 L44 39 L48 37 L41 24 L37 22 Z" stroke-dasharray="1.5 3.5"/>
+  <path d="M48 18 h.01 M51 13 h.01 M53 8 h.01"/>
 </svg>

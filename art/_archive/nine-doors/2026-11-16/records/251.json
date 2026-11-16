@@ -1,0 +1,60 @@
+{
+  "number": 251,
+  "family": "gear",
+  "id": "mod-open_hand",
+  "path": "art/icons/gear/mod-open_hand.png",
+  "name": "Open Hand",
+  "mode": "painted gear icon",
+  "state": "in game now \u00b7 placeholder",
+  "use": "The Open Hand: the glove family's forms, a mod row in the pack and the ARMS tab (no art at all)",
+  "paint": "Painted gear icon: a single bare hand-wrap tied in an open palm shape, the trailing end loose, a small round knuckle plate stitched on the back. Neutral cloth and charcoal, Strength orange #F68A38 only in the stitching.",
+  "avoid": "a fist (the knuckledusters are fists) \u00b7 any real martial-arts school emblem",
+  "section": "The monk's gloves (the Open Hand)",
+  "kind": "gear",
+  "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush\nstrokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows,\nwarm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D\nrender. One single object, three-quarter view, lit from the upper left, a short soft painted shading on its own underside\nonly: no ground, no cast shadow, no scene. Fully transparent background, 1024 x 1024 PNG with alpha; the object fills about\n80% of the canvas. No text, letters, numbers, logos, maker marks, borders, hands or figures. Invented, never a real make.\nBold silhouette first: it is shown at 64 px in a shop grid and 32 px in a backpack row. The object:\n\nPaint: Painted gear icon: a single bare hand-wrap tied in an open palm shape, the trailing end loose, a small round knuckle plate stitched on the back. Neutral cloth and charcoal, Strength orange #F68A38 only in the stitching.\nAvoid: a fist (the knuckledusters are fists) \u00b7 any real martial-arts school emblem\nITEM CONSTRUCTION: empty cloth hand-wrap arranged as an OPEN PALM with distinct finger channels, no skin or living hand inside. Knuckle plate stitched on its back, one loose trailing end; do not turn it into a closed fist. Opaque gouache material planes as the reference gear, restrained orange STITCHING only, neutral charcoal and parchment cloth. Do not copy the portrait's person or scene.",
+  "refs": [
+    "art/icons/gear/weapon-knuckledusters.png",
+    "art/icons/gear/weapon-hellraiser_servo_fist.png",
+    "art/sprites/objects/tool-rack.png",
+    "art/portraits/world/new-faces/orren-vask.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 2,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "0324a0d5766ddce2dc950ff1379de2084ba430af3b9771c6d73ede7c551ef6d1",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/251-mod-open_hand.png",
+  "source_sha256": "bb8a7a32a94c8eeec4f0c9744b8dc98772d321eb441f6f14fa4acc7ae9b50a23",
+  "export_crop": [
+    0,
+    0,
+    1232,
+    1254
+  ],
+  "exports": {
+    "256": "art/icons/gear/exports/256/mod-open_hand.png",
+    "128": "art/icons/gear/exports/128/mod-open_hand.png",
+    "64": "art/icons/gear/exports/64/mod-open_hand.png",
+    "32": "art/icons/gear/exports/32/mod-open_hand.png"
+  },
+  "framing": {
+    "scale": 0.6539074960127592,
+    "offset": [
+      109,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

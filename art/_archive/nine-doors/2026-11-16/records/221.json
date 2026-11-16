@@ -1,0 +1,62 @@
+{
+  "number": 221,
+  "family": "perks",
+  "id": "holy-ordnance",
+  "path": "art/icons/perks/holy-ordnance.png",
+  "name": "Sinner's Due",
+  "mode": "Wick icon",
+  "state": "in game now (shows the OLD perk's icon) \u00b7 placeholder",
+  "use": "Faith perk (old icon: a blessed shell)",
+  "paint": "A beam from above striking a kneeling, broken partial figure.",
+  "avoid": "an artillery shell (the old icon) \u00b7 a real religion's cross",
+  "section": "Faith: prayer, and the Chaplain",
+  "kind": "wick",
+  "prompt": "Create one simple fantasy-game pictogram, white flat ink on transparency. A tapered VERTICAL LIGHT BEAM falls onto a small CRACKED STONE STATUETTE FRAGMENT. The fragment is an inanimate carved shape: an angular bent upper block and a bent knee-like lower block, with a clean zigzag crack between them; the rest is intentionally absent. It suggests a kneeling effigy but has no person, skin, face, robot, screen, eyes, hands or complete body. A tiny pair of straight rays marks where light meets stone. Only the beam and the carved fragment; no mascot, cup, bowl, hat, halo, religious emblem or additional scene. Match the attached house object icons for bold white shapes and two or three transparent interior cuts. Pure WHITE #FFFFFF on a fully TRANSPARENT 1024x1024 square canvas, subject centered in the central 80 percent with clear margins. Readable at 32px. No gray, shading, gradients, glow, texture, text, letters, numbers, logos, border or frame.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 1,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "db123100e206a9e069fe5c05a5f0bbae86e947de53fbc65636a566dbb824918c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/221-holy-ordnance.png",
+  "source_sha256": "0d56889821d427d10bf1a4f904ca869f37d4e97a1aac80e5cfe47516d7812566",
+  "export_crop": [
+    39,
+    53,
+    1240,
+    1214
+  ],
+  "exports": {
+    "256": "art/icons/perks/exports/256/holy-ordnance.png",
+    "128": "art/icons/perks/exports/128/holy-ordnance.png",
+    "64": "art/icons/perks/exports/64/holy-ordnance.png",
+    "56": "art/icons/perks/exports/56/holy-ordnance.png",
+    "48": "art/icons/perks/exports/48/holy-ordnance.png",
+    "44": "art/icons/perks/exports/44/holy-ordnance.png",
+    "40": "art/icons/perks/exports/40/holy-ordnance.png",
+    "32": "art/icons/perks/exports/32/holy-ordnance.png"
+  },
+  "framing": {
+    "scale": 0.6285342307074746,
+    "offset": [
+      134,
+      147
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

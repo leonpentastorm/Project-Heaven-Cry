@@ -1,0 +1,1 @@
+FAIL: Missing file: art/icons/skills/durability.png
