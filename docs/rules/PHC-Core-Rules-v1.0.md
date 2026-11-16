@@ -11597,3 +11597,9 @@ only when both of its options are built**: a step with one option is not offered
 4751. **Overhaul's extra slot in a run is a free fit:** `survival.json forge.fit.free_fits` (`extra_mod`, `extra_slot`) lists the item actions that fit a mod for free. In a run each is refused with the Forge's words, the same check as `gear/mod` (item 4743, which read only `extra_action`). A run's Rest is a long rest (`applyRest('long')` emits the `rest` hook), so Overhaul's bench was set there: the slot was a free fit. Overhaul now gets no extra slot in a run: the armourer's extra fit runs `extra_action` only. Leon to rule.
 4752. **The plates are off the shelf until the lesson pick is ruled:** a Sigil plate or a Heart plate bought at a shop had no lesson note, so `magic/learn` could never use it. `stock: false` on both; a plate given with its note still teaches.
 4753. **Items 4747 to 4753 are the addendum's round 2.**
+
+### Rules 1.61 addendum, round 3 (0.30.1): the toolbox and the cigarettes (the lead's rulings)
+
+4754. **The toolbox stands in for a field kit only for Field Surgery** (supersedes item 4750's use and its "used up like one"): `serves_as` is read only by `servesIndex`, Field Surgery's check, which keeps the toolbox. A use is the item's own (`gear/use` reads the pack line of the item itself), so the toolbox has no Treat and is never used up. Its text no longer says it counts as spare parts: nothing reads it so (the spare-parts readers name `spare_parts`).
+4755. **Cigarettes are a carried good with no use** (supersedes item 4745's keeping them): nothing in the engine reads them (Chain Smoker's Light Up takes none), so the text says so and they are `stock: false`, off Survival's shelves like the ration pack. Still carried, given and sold.
+4756. **Items 4754 to 4756 are the addendum's round 3.**

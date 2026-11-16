@@ -136,10 +136,10 @@ describe('the shop\'s stock (Leon, 14 Nov): a trait\'s gear is not sold, food is
     const g = at('shop', { prep: (x) => { x.characters.c1.pack = [...packOf(x.characters.c1), line(neverSold[0], 1, { kind: 'tool' })]; } });
     const idx = packOf(g.characters.c1).findIndex((x) => (x.item || x.id) === neverSold[0]);
     expect(refused(g, { type: 'run/sell', charId: 'c1', idx })).toMatch(/can't be sold\.$/);
-    // food a trait counts keeps its price (the smoker's cigarettes, Lunarshine's bottle); the ration pack, which nothing
-    // reads, is off Survival's shelves (rules 1.61 addendum item 4745, Leon's playtest of 0.30.0)
-    for (const id of ['cigarettes', 'bottle_of_spirits']) expect((ITEM as any)[id].stock).not.toBe(false);
-    expect((ITEM as any).ration_pack.stock).toBe(false);
+    // food a trait reads keeps its price (Lunarshine's bottle); the ration pack and the cigarettes, which nothing reads,
+    // are off Survival's shelves (rules 1.61 addendum items 4745 and 4755, Leon's playtest of 0.30.0)
+    expect((ITEM as any).bottle_of_spirits.stock).not.toBe(false);
+    for (const id of ['ration_pack', 'cigarettes']) expect((ITEM as any)[id].stock).toBe(false);
   });
 });
 

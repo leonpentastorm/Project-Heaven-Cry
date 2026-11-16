@@ -1049,7 +1049,7 @@
       "price_credits": 150,
       "effects": [],
       "adjudication": "engine",
-      "text": "Spanners, a crimper, wire. It counts as spare parts and as a field kit for any job that needs a toolbox.",
+      "text": "Spanners, a crimper, wire. Field Surgery counts it as a field kit, and it is never used up. It has no use of its own.",
       "serves_as": ["field_kit"],
       "provisional": true
     },
@@ -1071,8 +1071,9 @@
       "weight_kg": 0.05,
       "price_credits": 5,
       "effects": [],
+      "stock": false,
       "adjudication": "narrator",
-      "text": "Twenty. The Chain Smoker trait counts them.",
+      "text": "Twenty. A carried good: nothing uses them, in a run or out of one.",
       "provisional": true
     },
     {

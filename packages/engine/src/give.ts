@@ -11,7 +11,7 @@
 import './datatext';
 import svJ from '../../../data/survival.json';
 import { WEAPON, ITEM } from './data';
-import { type Character, type PackItem, type HoldSpec, packOf, packKindOf, holds, servesIndex } from './character';
+import { type Character, type PackItem, type HoldSpec, packOf, packKindOf, holds } from './character';
 import { packAdd, itemLabel, COUNTED, intoCounts } from './containers';
 import { creditsOf, payCredits, earnCredits } from './credits';
 import { relicRow, worthOf, runWorth, BOON_CAP } from './run/power';
@@ -111,17 +111,17 @@ export function giveNow(g: GameState, by: string, a: GiveAction): { ok: string; 
 export interface UseAction { type: 'gear/use'; charId: string; item: string; targetId?: string }
 /** An item row's `use` (items.json), or null when it has none. */
 export const useOf = (id: string): { label: string; via: 'stim' | 'effects'; spend?: number } | null => ((ITEM[id] as any)?.use || null);
-/** Rules 1.61 addendum item 4748: the item a pack line is used as: its own id when its row has a `use`, else the first
- * id of its `serves_as` that has one (the toolbox is used as a field kit); null when neither. */
-export const usedAs = (id: string): string | null => (useOf(id) ? id : (((ITEM[id] as any)?.serves_as || []) as string[]).find((x) => useOf(x)) || null);
-/** How many of `id` the character has to use: a counted item's count (containers COUNTED), else whether a pack line
- * stands for it (character.ts servesIndex: 1 or 0). */
-const haveOf = (c: Character, id: string): number => { const f = COUNTED[id]; return f ? c[f] || 0 : servesIndex(c, id) >= 0 ? 1 : 0; };
-/** Spend one use of `id`: one off a counted item's count, else `use.spend` (PROVISIONAL, 1) off the pack line that
- * stands for it (servesIndex), the line gone at 0. */
+/** The pack line of item `id` itself (a use is the item's own: `serves_as` stands in for an item's presence, never for
+ * its use; rules 1.61 addendum item 4754), with some left; -1 when none. */
+const ownIndex = (c: Character, id: string): number => packOf(c).findIndex((x) => x.qty > 0 && !x.mags && (x.item || x.id) === id);
+/** How many of `id` the character has to use: a counted item's count (containers COUNTED), else whether a pack line of
+ * it is carried (1 or 0). */
+const haveOf = (c: Character, id: string): number => { const f = COUNTED[id]; return f ? c[f] || 0 : ownIndex(c, id) >= 0 ? 1 : 0; };
+/** Spend one use of `id`: one off a counted item's count, else `use.spend` (PROVISIONAL, 1) off its pack line, the line
+ * gone at 0. */
 function spendOne(c: Character, id: string) {
   const f = COUNTED[id]; if (f) { c[f] = (c[f] || 0) - 1; return; }
-  const i = servesIndex(c, id), pack = packOf(c).map((x) => ({ ...x })); if (i < 0) return;
+  const i = ownIndex(c, id), pack = packOf(c).map((x) => ({ ...x })); if (i < 0) return;
   pack[i].qty -= Math.max(1, Math.round(Number(useOf(id)?.spend) || 1)); c.pack = pack.filter((x) => x.qty > 0 || x.mags);
 }
 /** One entry of `requires_to_use` (items.json; data/CONVENTIONS.md): a hold, a skill minimum, or any of several. */
@@ -205,8 +205,8 @@ export function giveView(g: GameState, me: string, charId?: string | null): Give
   const cr = { type: 'gear/give' as const, charId: c.id, credits: 1 };
   rows.push({ key: 'credits', kind: 'credits', label: 'Credits', id: 'credits', rarity: 'standard', qty: creditsOf(c), why: whys(cr), action: cr });
   packOf(c).forEach((it, idx) => { const a = { type: 'gear/give' as const, charId: c.id, idx };
-    // rules 1.61 addendum item 4748: a pack line with a use (the field kit; the toolbox used as one) has its "Use on..." too
-    const as = !it.mags && !it.weapon ? usedAs(it.item || it.id) : null, use = as && USE_DOOR ? USE_DOOR(g, me, c.id, as) : null;
+    // rules 1.61 addendum item 4748: a pack line with a use of its own (the field kit) has its "Use on..." too
+    const as = !it.mags && !it.weapon && useOf(it.item || it.id) ? it.item || it.id : null, use = as && USE_DOOR ? USE_DOOR(g, me, c.id, as) : null;
     rows.push({ key: 'pack:' + idx, kind: 'pack', label: itemLabel(it) + (it.prop ? ' · ' + (relicRow(it.prop)?.name || it.prop) : ''), id: it.weapon || it.item || it.id, rarity: it.rarity || 'standard', qty: it.mags ? it.mags.length : it.qty, idx, why: whys(a), action: a, ...(use ? { use } : {}) }); });
   // rules 1.55 item 31: the counted items (a stim, an Essence) as lines of their own, with their use on a friend (item 32)
   for (const [id, f] of Object.entries(COUNTED)) { const n = c[f] || 0; if (n < 1) continue; const a = { type: 'gear/give' as const, charId: c.id, count: id }, use = USE_DOOR ? USE_DOOR(g, me, c.id, id) : null;

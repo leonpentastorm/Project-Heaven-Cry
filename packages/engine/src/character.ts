@@ -652,7 +652,7 @@ export const packOf = (c: Character): PackItem[] => (c.pack ?? (KITS[c.kit || ''
 });
 /** Rules 1.61 addendum item 4748: the pack line that stands for item `id`: a line of `id` itself, else of an item whose
  * row lists `id` in `serves_as` (the toolbox serves as a field kit), with some left; -1 when none. The one answer to
- * "does this character carry a field kit" (Field Surgery, the kit's own use). */
+ * "does this character carry a field kit" for Field Surgery (item 4754: a use reads the item's own line, not this). */
 export function servesIndex(c: Character, id: string): number {
   const pack = packOf(c), is = (x: PackItem) => x.qty > 0 && !x.mags && ((x.item || x.id) === id || ((ITEM[x.item || x.id] as any)?.serves_as || []).includes(id));
   const own = pack.findIndex((x) => x.qty > 0 && !x.mags && (x.item || x.id) === id); return own >= 0 ? own : pack.findIndex(is);

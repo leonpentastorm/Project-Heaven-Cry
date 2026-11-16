@@ -103,7 +103,7 @@ Every rule-bearing item carries both:
   "never bought"; a sale reads `priceOf`'s sale mode, which ignores it.
 - `sell: false` (items.json; rules 1.55 item 55): no shop buys the item (a sale is refused in words). An item a
   trait grants carries it too (the validator checks it). A row with no price is never sold either.
-- `use` on an ITEM row (items.json, a counted item (`counts_into`; rules 1.55 item 58) or, rules 1.61 addendum item 4748, a pack item (the field kit), of which a use takes `spend` (default 1) off the pack line; `serves_as` on a row lists the items it stands in for (the toolbox for a field kit; character.ts servesIndex); not the data verb's `use`
+- `use` on an ITEM row (items.json, a counted item (`counts_into`; rules 1.55 item 58) or, rules 1.61 addendum item 4748, a pack item (the field kit), of which a use takes `spend` (default 1) off the pack line; `serves_as` on a row lists the items whose presence it stands in for, never their use (the toolbox for Field Surgery's field kit; character.ts servesIndex); not the data verb's `use`
   below, which names an actions.json row): how `gear/use` uses one: `label` (the button's
   words, "Crack for", "Stim") and `via`: `stim` (the stim's own rule, combat.ts `useStim`, as the `world/act` stim) or
   `effects` (the row's `effects` run by the use ops: `xp_grant` {value, source, limit {per, n}}, the limit counted on

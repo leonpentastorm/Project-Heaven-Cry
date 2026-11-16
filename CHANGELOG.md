@@ -18,7 +18,7 @@ From Leon's playtest of live 0.30.0 (rules 1.61 addendum, Core Rules items 4740 
 - **Injuries in a run:** Field Surgery (Empathy 3, an Attuner, a field kit), the one treatment for an arm or leg injury, works in a run off the field.
 - **Shelves:** the ration pack, chalk and wax and the prayer beads (Narrator-only, nothing reads them) are `stock: false`; the ration pack is off the counter.
 - **The field kit treats a limb (round 2, items 4747 to 4753):** out of a fight, not on the field, anyone with a field kit uses it ("Treat", the Give view's Use on...) on themself or a squadmate to treat one arm or leg injury; the kit is used up. A new use op `treat` (pack items may have a `use` now) and one treatment, `treatLimb`, that Field Surgery and the Rest share. Field Surgery keeps its requirements and the kit.
-- **The toolbox serves as a field kit** (`serves_as`, read by `servesIndex`: Field Surgery and the kit's use).
+- **The toolbox counts as a field kit for Field Surgery only** (`serves_as`, read by `servesIndex`); it has no Treat and is never used up. Cigarettes (nothing reads them) are off the shelves too.
 - **A run's Rest treats every limb injury** (`survival.json rest.treat_injuries`).
 - **Overhaul's extra slot is refused in a run** like the other free fits (`forge.fit.free_fits`).
 - **The Sigil and Heart plates are off the shelf** (`stock: false`): one bought at a shop held no lesson.

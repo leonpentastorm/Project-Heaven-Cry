@@ -99,13 +99,13 @@ describe('the field kit treats a limb in a run (rules 1.61 addendum)', () => {
     const f: GameState = JSON.parse(JSON.stringify(apply(g, { type: 'run/skip' } as any, 'host'))); expect(f.run!.state).toBe('field');
     hurt(f); expect(refused(f, USE('c1', 'c1'))).toBe('Not on the field: treat it once the squad leaves.');
   });
-  it('the toolbox serves as a field kit: for its use and for Field Surgery', () => {
+  it('the toolbox stands in for a field kit only for Field Surgery: no Treat of its own, never used up', () => {
     const g0 = walkTo(duo(), 'shop'); hurt(g0, 'c1', 1, 'toolbox');
-    expect(giveView(g0, 'host', 'c1').rows.find((r) => r.id === 'toolbox')?.use?.action).toMatchObject({ item: 'field_kit' });
-    const g = apply(g0, USE('c1', 'c1') as any, 'host'); expect(g.characters.c1.injuries).toEqual([]);
+    expect(giveView(g0, 'host', 'c1').rows.find((r) => r.id === 'toolbox')?.use).toBeUndefined();
+    expect(refused(g0, USE('c1', 'c1'))).toMatch(/has no Field kit/i);
     const s: GameState = JSON.parse(JSON.stringify(g0)), c = s.characters.c1; c.skills.empathy = 3; c.weapon = 'attuner'; c.offHand = null as any; c.mp = 999;
     const t = apply(s, { type: 'story/perk', charId: 'c1', id: 'verb:tend.field_surgery', actionId: 'injury' } as any, 'host');
-    expect(t.characters.c1.injuries).toEqual([]); expect(kitCount(t, 'c1', 'toolbox')).toBe(1); // Field Surgery keeps the kit
+    expect(t.characters.c1.injuries).toEqual([]); expect(kitCount(t, 'c1', 'toolbox')).toBe(1);
   });
   it('a Rest treats every limb injury of who rests', () => {
     const g0 = duo(); g0.characters.c1.injuries = [{ loc: 'leg' }, { loc: 'arm', side: 'left' }]; g0.characters.c2.injuries = [{ loc: 'arm' }];
