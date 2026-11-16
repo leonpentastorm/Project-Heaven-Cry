@@ -113,6 +113,26 @@
       "faint_alpha_to_solid_area_ratio": 0.03004
     },
     {
+      "number": 32,
+      "name": "Lunge",
+      "faint_alpha_to_solid_area_ratio": 0.0764
+    },
+    {
+      "number": 34,
+      "name": "Riposte",
+      "faint_alpha_to_solid_area_ratio": 0.07718
+    },
+    {
+      "number": 36,
+      "name": "Finisher",
+      "faint_alpha_to_solid_area_ratio": 0.07664
+    },
+    {
+      "number": 37,
+      "name": "Unstoppable",
+      "faint_alpha_to_solid_area_ratio": 0.07353
+    },
+    {
       "number": 51,
       "name": "Pressure Point",
       "faint_alpha_to_solid_area_ratio": 0.05419

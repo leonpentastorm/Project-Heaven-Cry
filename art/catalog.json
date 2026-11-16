@@ -30362,18 +30362,39 @@
       "previous_path": "art/icons/moves/breach.svg"
     },
     "move-lunge": {
-      "label": "PLACEHOLDER: Lunge",
-      "path": "art/icons/moves/lunge.svg",
-      "sha256": "f45d7d52dd532db70388f38b4ee5154abd1255891b73fc2f334dc19ae792624e",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Wick \u2014 Lunge",
+      "path": "art/icons/moves/lunge.png",
+      "sha256": "9b73cfa5a1d70915408d16321ed2a8f85ec3b631b79d62b635e82cef88f5cabd",
+      "format": "png",
       "mode": "wick",
       "tint": "strength",
-      "wanted": "art/icons/moves/lunge.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #32",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-lunge/lunge.svg",
+      "previous_sha256": "f45d7d52dd532db70388f38b4ee5154abd1255891b73fc2f334dc19ae792624e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/032-lunge.png",
+      "upscaled": false,
+      "brief_number": 32,
+      "exports": {
+        "128": "art/icons/moves/exports/128/lunge.png",
+        "64": "art/icons/moves/exports/64/lunge.png",
+        "48": "art/icons/moves/exports/48/lunge.png",
+        "44": "art/icons/moves/exports/44/lunge.png",
+        "32": "art/icons/moves/exports/32/lunge.png",
+        "24": "art/icons/moves/exports/24/lunge.png"
+      },
+      "ink": "#FFFFFF"
     },
     "move-shove": {
       "label": "PLACEHOLDER: Shove",
@@ -30390,18 +30411,39 @@
       "production_approved": false
     },
     "move-riposte": {
-      "label": "PLACEHOLDER: Riposte",
-      "path": "art/icons/moves/riposte.svg",
-      "sha256": "f22cb8c9ecab7389599614dbf01fe133fe1572558526ed2495a6e89cab0d5a89",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Wick \u2014 Riposte",
+      "path": "art/icons/moves/riposte.png",
+      "sha256": "27693c643d27a90ea8a8c5018b715400cadccf5d2b79ac180e46df38cad84e46",
+      "format": "png",
       "mode": "wick",
       "tint": "strength",
-      "wanted": "art/icons/moves/riposte.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #34",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-riposte/riposte.svg",
+      "previous_sha256": "f22cb8c9ecab7389599614dbf01fe133fe1572558526ed2495a6e89cab0d5a89",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/034-riposte.png",
+      "upscaled": false,
+      "brief_number": 34,
+      "exports": {
+        "128": "art/icons/moves/exports/128/riposte.png",
+        "64": "art/icons/moves/exports/64/riposte.png",
+        "48": "art/icons/moves/exports/48/riposte.png",
+        "44": "art/icons/moves/exports/44/riposte.png",
+        "32": "art/icons/moves/exports/32/riposte.png",
+        "24": "art/icons/moves/exports/24/riposte.png"
+      },
+      "ink": "#FFFFFF"
     },
     "move-lingering-dread": {
       "label": "PLACEHOLDER: Lingering Dread",
@@ -30418,32 +30460,74 @@
       "production_approved": false
     },
     "move-finisher": {
-      "label": "PLACEHOLDER: Finisher",
-      "path": "art/icons/moves/finisher.svg",
-      "sha256": "5dff4d8b23c1696dc8fc5e5beb4391b02fa299115039b27f3934d4dafa8f8adf",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Wick \u2014 Finisher",
+      "path": "art/icons/moves/finisher.png",
+      "sha256": "c79817cf79d9c35d0221b94e86091ad23253129c74496b514181b51178fbdd76",
+      "format": "png",
       "mode": "wick",
       "tint": "strength",
-      "wanted": "art/icons/moves/finisher.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #36",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-finisher/finisher.svg",
+      "previous_sha256": "5dff4d8b23c1696dc8fc5e5beb4391b02fa299115039b27f3934d4dafa8f8adf",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/036-finisher.png",
+      "upscaled": false,
+      "brief_number": 36,
+      "exports": {
+        "128": "art/icons/moves/exports/128/finisher.png",
+        "64": "art/icons/moves/exports/64/finisher.png",
+        "48": "art/icons/moves/exports/48/finisher.png",
+        "44": "art/icons/moves/exports/44/finisher.png",
+        "32": "art/icons/moves/exports/32/finisher.png",
+        "24": "art/icons/moves/exports/24/finisher.png"
+      },
+      "ink": "#FFFFFF"
     },
     "move-unstoppable": {
-      "label": "PLACEHOLDER: Unstoppable",
-      "path": "art/icons/moves/unstoppable.svg",
-      "sha256": "05c96e4316c61f442d4fe1b78ec99ab830b3894f5cfb9cb28bb8942c7b56c963",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Wick \u2014 Unstoppable",
+      "path": "art/icons/moves/unstoppable.png",
+      "sha256": "fd76ab2df8166bbd719667fb4d57f51c62d9f95187266eefc8c0fcf40d308939",
+      "format": "png",
       "mode": "wick",
       "tint": "strength",
-      "wanted": "art/icons/moves/unstoppable.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #37",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-unstoppable/unstoppable.svg",
+      "previous_sha256": "05c96e4316c61f442d4fe1b78ec99ab830b3894f5cfb9cb28bb8942c7b56c963",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/037-unstoppable.png",
+      "upscaled": false,
+      "brief_number": 37,
+      "exports": {
+        "128": "art/icons/moves/exports/128/unstoppable.png",
+        "64": "art/icons/moves/exports/64/unstoppable.png",
+        "48": "art/icons/moves/exports/48/unstoppable.png",
+        "44": "art/icons/moves/exports/44/unstoppable.png",
+        "32": "art/icons/moves/exports/32/unstoppable.png",
+        "24": "art/icons/moves/exports/24/unstoppable.png"
+      },
+      "ink": "#FFFFFF"
     },
     "move-quick-draw": {
       "label": "Wick \u2014 Quick Draw",
