@@ -108,7 +108,8 @@ describe('the balance contract (data/rules.json balance; rules 1.26, 1.27)', () 
     const T = C.tending_turn, O = C.mender_offence, bad: string[] = [], rows: string[] = [];
     const heal = LEVELS.map((lv) => healTurn(lv, true, true)), door = LEVELS.map((lv) => healTurn(lv, true, false));
     // Rules 1.57 (spec item 4555): with `at_pin` the offence is held with the Mender's gun read at the yardstick's pin, as
-    // the gun row is (item 4542); as played it is held only under the band times the gun profile's rise (never a floor).
+    // the gun row is (item 4542); as played it is held under the band times the gun profile's rise and, since item 4566,
+    // over its measured floor (`played_floor`).
     const offAt = () => LEVELS.map((lv) => { const y = yardOf(lv, N); return (shotTurn(lv, true, true, 'solo') / y * 100 + shotTurn(lv, true, true, 'squad') / y * 100) / 2; });
     const off = O.at_pin ? atYardPin(offAt) : offAt(), played = O.at_pin ? offAt() : null;
     const chk = (what: string, xs: number[], line: number, dial: string) => {
@@ -119,7 +120,9 @@ describe('the balance contract (data/rules.json balance; rules 1.26, 1.27)', () 
     chk('Mender healing turn (% of R)', heal, T.allin, T.dial); chk('door Tending all in', door, T.door_allin, T.dial); chk('Mender offence' + (played ? ' (at the pin)' : ''), off, O.allin, O.dial);
     if (played) { const rise = (lv: number) => statTerm(YARD.profile, [attrCapAt(lv)], []) / statTerm(YARD.profile, [YARD.pin], []);
       rows.push('Mender offence as played ' + played.map((x) => Math.round(x)).join(' / '));
-      played.forEach((x, i) => { if (x > O.allin * (1 + TOL.level) * rise(LEVELS[i])) bad.push('Mender offence as played at level ' + LEVELS[i] + ': ' + Math.round(x) + ' is over the band times the gun profile rise'); }); }
+      played.forEach((x, i) => { if (x > O.allin * (1 + TOL.level) * rise(LEVELS[i])) bad.push('Mender offence as played at level ' + LEVELS[i] + ': ' + Math.round(x) + ' is over the band times the gun profile rise'); });
+      // rules 1.57 (item 4566): the floor of the row as played, from a measured run (rules.json `played_floor`, its reason in `played_floor_note`)
+      if (O.played_floor != null) played.forEach((x, i) => { if (x < O.played_floor) bad.push('Mender offence as played at level ' + LEVELS[i] + ': ' + Math.round(x) + ' is under its floor ' + O.played_floor); }); }
     expect(bad, rows.join('\n')).toEqual([]);
   }, 600000);
 

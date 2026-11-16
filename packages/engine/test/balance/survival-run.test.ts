@@ -22,7 +22,11 @@ describe('Survival, simulated runs (rules 1.49): the guard', () => {
   // Rules 1.55 (the lead's ruling, 15 Nov 2026): three seeds could not tell a shift in the dice stream from a real change
   // in difficulty (stopping the foes' loot roll moved GUARD-2 from a clear to a loss), so the seed set is widened to
   // eight; the bar is the same share, two thirds, rounded down (5 of 8), and at most one in four clears stage 4.
-  const SEEDS = Array.from({ length: 8 }, (_, i) => 'GUARD-' + (i + 1));
+  // Rules 1.57 (cover beside you, the shot that shows, focus memory; the lead's task, 16 Nov 2026): eight seeds could not
+  // tell the bar's 37% from noise (one standard error of 8 seeds is 17 points); widened to forty, GUARD-1 to GUARD-40,
+  // the seeds R3's share was measured on. The bar is unchanged (the measured share less one standard error, 37%; of 40
+  // seeds rounded down, 14), and at most one in four clears stage 4.
+  const SEEDS = Array.from({ length: 40 }, (_, i) => 'GUARD-' + (i + 1));
   // Rules 1.57 R3 (the lead's ruling, 16 Nov 2026; spec item 4543, PROVISIONAL): the solo gunner is plain_gun at a normal
   // share (survival-run.ts MEMBER.gunner), Agility 4 at level 1: since G1 a low-Agility character's gun deals less on
   // purpose (R2: x0.90 at Agility 4 of what it dealt before). OLD bar: two thirds of the seeds (5 of 8; measured 60%
@@ -46,7 +50,7 @@ describe('Survival, simulated runs (rules 1.49): the guard', () => {
     // the ammo maker, buys rounds and magazines and sells what it cannot use; measured 15 Nov on the eight seeds: no fight
     // entered with an empty gun)
     for (const r of runs) expect(r.fights.every((f) => f.ammo.every((a) => a == null || a > 0)), r.seed + JSON.stringify(r.fights.map((f) => f.stage + "." + f.depth + ":" + f.ammo.join("/")))).toBe(true);
-  }, 900_000);
+  }, 3_600_000);
 });
 
 describe.runIf(env.SURVIVAL_SIM)('Survival, simulated runs: the measure', () => {

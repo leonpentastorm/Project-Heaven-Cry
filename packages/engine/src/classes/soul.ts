@@ -3,7 +3,7 @@
 // Twin Discipline), and Resonance kept between two hearts that are one (the twin). The engine's own maths are in
 // magic.ts (outburstDamage, toneRiders, applyToneRiders, resonanceFor); nothing here invents a number of its own.
 import type { Combat, Unit } from '../combat';
-import { coverTileFor, emitFx, noteCrit } from '../combat';
+import { coverTileFor, coverBonus, showAttacker, emitFx, noteCrit } from '../combat';
 import type { OutburstDesign } from '../character';
 import { MODULE, TONE } from '../data';
 import { itemAmount } from '../effects/amounts';
@@ -30,8 +30,9 @@ export function soulStrike(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: 
   let crit = false, head = '';
   if (roll) {
     const homing = (d.modules || []).includes('homing'), ign = homing || toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover');
-    const cover = !ign && coverTileFor(cb, u.pos, t.pos) ? 5 : 0;
+    const cover = ign ? 0 : coverBonus(cb, u.pos, t.pos);
     const sr = rollVs(cb, rng, { by: u, mod: m.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (homing ? 2 : 0) + condHit(u, t, cb) - cover + spellGapToHit(cb, u, t) + toHitAdd(cb, u, t, 'soul', { preview: false }), tn: t.def, why: 'soul' }); // rules 1.17: a spell's roll reads the level gap
+    showAttacker(cb, u, t); // rules 1.57 item 4563
     if (!sr.ok) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); return 'misses ' + t.name + ' (' + sr.text + ')'; }
     crit = sr.nat === 20; head = 'hits ' + t.name + ' (' + sr.text + (crit ? ', CRITICAL' : '') + ')';
   }

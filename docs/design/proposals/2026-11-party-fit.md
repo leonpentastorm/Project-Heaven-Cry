@@ -1274,3 +1274,110 @@ Burst (`rules118-guns`, `rules123-defence`), the doctrine's shape (`rules125-doc
 (`defence-measure`: bound 3.2 → 4.2, measured 3.5), the healer and shielder under four Soldiers (`heal-measure`), the
 balance contract's three rows at the pin (item 4556), and the Survival replay guard's seed (PHC-0007 → PHC-0011: its
 gate fight now runs past the helper's 40 rounds).
+
+## 14. Cover beside you, the shot that shows, focus memory (16 Nov 2026, lane 0.30-fit; Core Rules items 4560 to 4569)
+
+The lead's three approved fixes for the deaths Leon's testers called out ("did you see what that just did to me": shot
+while behind cover, shot by something unseen, one character taking every shot), and three small items. Before is head
+29fd2c59, after is this pass, on the same seeds (PF-1 to PF-20 for party-fit and the opening-volley runs), all through
+the reducer (`simRun`, `combat/end-turn`). 20 seeds a cell: one standard error is up to 11 points of a clear rate.
+
+### 14.1 What changed
+
+| Where | Field | Old → new | Why |
+|---|---|---|---|
+| engine (approved P1) | `combat.ts coverFor` (one function; `coverTileFor`, `coverBonus`, the preview, `sigil.ts`, `magic.ts`, `classes/soul.ts`, `classes/j.ts` read it) | half cover on any of the 8 tiles nearer the shooter, full cover beside counted nothing → any cover on the 8 tiles within the facing arc and nearer the shooter; orthogonal its own kind, diagonal half at most | the pillar beside you (12.2 case 1) |
+| data (P1) | `rules.json combat.attack.cover.full.to_hit` | none → **−10** | full cover beside the target |
+| data (P1) | `cover.facing.arc_deg`, `cover.facing.diagonal` | (none) → **45**, **"half"** | the side facing the shooter |
+| engine (P1) | `combat.ts tileCover`; `apps/web/src/screens/combat.js` tile card | "Full cover" on the pillar's own tile only → each empty tile and a character's tile say "Full / Half / No cover from (foe) (−N to its shots)" or "Out of the line of fire", against the chosen target or the nearest seen foe | the label and the roll cannot disagree |
+| engine + data (approved P2) | `combat.ts showAttacker`, `Unit.shownTo`; `rules.json combat.attack.attack_reveal.until` **"attacker_turn_start"** | an attacker beyond sight stayed in the fog → seen by the target's side until its own next turn; the log names it | shot by something unseen |
+| engine + data (approved P3) | `rules.json combat.focus_memory.per_attacker` **1**, `finish_share` **0.25**; `enemies.json focus_memory` per tier (none set) | (none) | focus fire, in `enemyRank` and `aiTechnique` (the one doctrine) |
+| data (small a) | `rules.json balance.ceilings.mender_offence.played_floor` | none → **52.5** | the review's missing floor: the band's low edge at one level, 70 x (1 − 0.25); measured as played 67 / 57 / 53 / 59 |
+| test (small b) | the Survival replay guard's seed | PHC-0011 (never cleared) → **PHC-0007** (clears: 8 fights, the boon), and it now requires the boon | |
+| test (small c) | the solo gunner's guard | 8 seeds → **40** (GUARD-1 to 40), bar 37% unchanged | |
+
+Instruments: `opening-volley.ts` records whether the screen draws the shooter (`sideSeesUnit`, a new column) and counts
+full cover as its own class; `party-fit.ts` takes levers `set:mem=`, `set:fin=`, `set:cf=` (memory, finish share, full
+cover's term; in memory, one run).
+
+### 14.2 The numbers the task named
+
+| Cell | Most-shot member, before → after | Gun rolls from a shooter the screen did not draw, before → after (non-Hidden after) | Gun hit %: open / half counted / full counted / pillar beside not counted, before → after | Clear, before → after |
+|---|---|---|---|---|
+| duo_skirmisher | 88% → **86%** | 0% → 3% (**0%**) | 56 / 30 / - / 53 → 56 / 26 / **20** / 25 | 100% → 100% |
+| duo_breaker | 83% → **81%** | 1% → 2% (**0%**) | 57 / 29 / - / 29 → 58 / 14 / - / 67 | 60% → 65% |
+| mix_trio | 66% → **64%** | 2% → 1% (**0%**) | 60 / 32 / - / 56 → 53 / 36 / **19** / 48 | 100% → 95% |
+| mix_four_b | 61% → **61%** | 9% → 1% (**0%**) | 49 / 32 / - / 59 → 50 / 30 / **21** / 41 | 90% → 95% |
+| solo_mender | - | 0% → 0% | 54 / 43 / - / 100 → 54 / 39 / - / 71 | 15% → 15% |
+
+"Before" for the screen column is the old "from a tile no character sees" (before P2 the fog showed exactly that). After,
+every roll from an undrawn shooter is an ambusher's first shot from Hidden (36 of 2,615 gun rolls probed on duo_skirmisher
+and mix_trio, all 36 Hidden): Shadow's own rule, which the brief keeps. The "pillar beside, not counted" rolls left are a
+pillar beside the target outside the 45-degree arc of the shot (8 to 83 rolls a cell), by the rule. From-full Downs
+between a victim's own turns: 0 in every cell before and after.
+
+### 14.3 The party-fit tables (stage 1, 20 seeds; clear · Downs a fight · most-shot member)
+
+| Cell | Before | After |
+|---|---|---|
+| solo_bulwark | 10% · 0.22 | 10% · 0.21 |
+| solo_breaker | 55% · 0.06 | 55% · 0.06 |
+| solo_skirmisher | 90% · 0.01 | 90% · 0.01 |
+| solo_operative | 0% · 0.40 | 0% · 0.42 |
+| solo_sigilist | 0% · 0.43 | 0% · 0.43 |
+| solo_rigger | 25% · 0.13 | 20% · 0.12 (40 seeds: 22 to 25%) |
+| solo_mender | 15% · 0.03 | 15% · 0.03 |
+| solo_channeler | 75% · 0.03 | 75% · 0.03 |
+| solo_chaplain | 65% · 0.05 | 45% · 0.09 (40 seeds: 50%) |
+| solo_monk | 45% · 0.08 | 45% · 0.08 |
+| duo_bulwark | 5% · 0.75 · 74% | 15% · 0.57 · 72% |
+| duo_breaker | 60% · 0.32 · 83% | 65% · 0.29 · 83% |
+| duo_skirmisher | 100% · 0.03 · 88% | 100% · 0.07 · 87% |
+| duo_operative | 0% · 1.31 · 66% | 0% · 1.30 · 64% |
+| duo_sigilist | 0% · 1.06 · 71% | 5% · 1.05 · 71% |
+| duo_rigger | 70% · 0.22 · 88% | 45% · 0.29 · 85% (40 seeds: 50%) |
+| duo_mender | 60% · 0.03 · 72% | 65% · 0.05 · 69% |
+| duo_channeler | 85% · 0.16 · 87% | 90% · 0.18 · 87% |
+| duo_chaplain | 70% · 0.18 · 82% | 75% · 0.18 · 82% |
+| duo_monk | 65% · 0.35 · 84% | 65% · 0.29 · 81% |
+| trio_skirmisher | 95% · 0.09 · 76% | 95% · 0.09 · 75% |
+| trio_channeler | 90% · 0.26 · 73% | 85% · 0.29 · 71% |
+| trio_breaker | 40% · 0.68 · 64% | 35% · 0.67 · 62% |
+| mix_trio | 100% · 0.09 · 68% | 95% · 0.09 · 67% |
+| mix_four_b | 90% · 0.36 · 63% | 95% · 0.53 · 63% |
+| quad_skirmisher | 100% · 0.12 · 67% | 100% · 0.16 · 65% |
+| quad_channeler | 95% · 0.50 · 63% | 95% · 0.51 · 63% |
+
+Clear rates move within noise except the solo Chaplain (65 → 45%; 50% at 40 seeds, against 65% in section 13 at 40) and
+the duo Rigger (70 → 45%; 50% at 40 seeds, against 60% in section 13). Full cover's term is not the cause (`set:cf=` 10 /
+7 / 5 / 0 at 40 seeds: Chaplain 50 / 50 / 50 / 50%, duo Rigger 50 / 50 / 50 / 50%, solo Rigger 25 / 22 / 22 / 25%). Not
+isolated in this pass (no time): the likeliest cause is P2 working both ways (a character who shoots from beyond the foes'
+sight is now seen and shot back; both are long-gun builds) or the arc taking crates on steep angles off the characters.
+For the lead: measure `attack_reveal.until` "off" on those two cells before the release.
+
+### 14.4 Focus memory: the sweep, and why 60% is not reached
+
+`set:mem=` 0 / 1 / 2 / 4 (20 seeds): duo Skirmisher 88 / 86 / 86 / 86%, duo Breaker 83 / 82 / 82 / 82%, duo Channeler
+88 / 86 / 86 / 86%, duo Monk 83 / 80 / 79 / 79%, mix trio 68 / 66 / 65 / 65%; clears equal or up a seed. It saturates at 1:
+past it, every roll that had a second target in reach after a side member had attacked the first already switches. What
+is left is not the doctrine's choice: a third of a duo's rolls have one target in reach (line, range), and the first foe
+of a round has no memory to read. **Best honest value: 1; the most-shot member 63 to 87% in duos, 61 to 75% in trios, 62
+to 65% in fours.** No foe ignores a nearly dead character (finish share 0.25; `rules157-cover.test.ts`).
+
+### 14.5 Needs a new primitive (not built)
+
+* **Focus memory past the round:** the share of its side's rolls the target took last round, read by the first foe of
+  each round. Cost: one term in `enemyRank` and the want; a `carry` field on `combat.focus_memory`.
+* **A foe that moves for an angle:** when the only character it reaches is already under its side's fire, walk (within
+  the turn's AP, keeping the shot) to a tile with a line to another. Cost: one step in `enemyTurn` like the hunt
+  (`enemyHuntTile`).
+
+### 14.6 Re-recorded on purpose
+
+24 of the 29 replays (`test/golden/replays.json`, REPLAY_RECORD): cover-4v6-guns-blades, cover-4v6-level3,
+cover-4v7-blades-walk-away, cover-4v7-casters, cover-4v7-level20-allin, cover-4v7-line, cover-4v7-magic-boss,
+open-4v3-level3, open-4v6-blades-walk-away, open-4v6-guns-blades, open-4v7-casters, open-4v7-level20-allin,
+open-4v7-magic-boss, proving-4v10-boss, proving-4v12-guns, proving-4v12-magic, proving-doors-hiding-watches,
+proving-doors-hiding-watches-wave6, proving-waves, proving-waves-long, proving-waves-low, story-fight-story,
+story-fight-story-high, story-fight-story-magic (the arc, full cover's term, the reveal and the memory change the AI's
+turn in every fight with cover or a gun). The golden damage tables did not move.

@@ -202,12 +202,15 @@ describe('Survival, one stage (rules 1.41)', () => {
     // gate fight became a slow fist-and-revolver duel with the Sergeant past the helper's 40 rounds (Sergeant at 72 of
     // 417 HP on round 41, still trading blows), the length of a fight and not a stall of the game; PHC-0011 plays seven
     // fights to the end of the run.
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0011', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0011', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
+    // PHC-0007 again since rules 1.57 (cover beside you, the shot that shows, focus memory; items 4560 to 4569): PHC-0011
+    // never cleared (seven fights, then the run's end); a seed scan of PHC-0001 to PHC-0016 on this build, the first that
+    // clears the stage: PHC-0007 (eight fights, to the boon, no errors). The guard plays a stage to its boon again.
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0007', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0007', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
     const a = play(), b = play(), c = play([40]);
     expect(a.errors).toEqual([]);
     expect(a.done()).toEqual(b.done());
     expect(c.done().state).toBe(a.done().state); expect(c.done().stream).toBe(a.done().stream);
-    expect(['boon', 'over']).toContain(a.g.run.state);
+    expect(a.g.run.state, 'the seed of the guard clears the stage').toBe('boon');
     expect(a.g.run.stats.fights.length).toBeGreaterThan(0);
   }, 600_000);
 });

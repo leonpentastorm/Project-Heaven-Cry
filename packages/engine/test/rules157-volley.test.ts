@@ -59,8 +59,9 @@ describe('rules 1.57: a technique spreads as a plain attack does', () => {
     expect(aim(f, s1).who).toBe('Ada'); expect(aim(f, s2).who, 'before anyone fires, both want the near one').toBe('Ada');
     G(f, () => noteEnemyAim(f.cb, s1, pc(f, 'Ada')));
     expect(aim(f, s2).who).toBe('Bo');
-    const was = (ENEMY.soldier as any).technique_spread; (ENEMY.soldier as any).technique_spread = 0;
-    try { expect(aim(f, s2).who, 'with technique_spread 0 the technique doubles up').toBe('Ada'); } finally { (ENEMY.soldier as any).technique_spread = was; }
+    // (rules 1.57 focus memory, item 4564: the default focus_memory spreads it too, so both are set to 0 for the old guard)
+    const was = (ENEMY.soldier as any).technique_spread, wasM = (ENEMY.soldier as any).focus_memory; (ENEMY.soldier as any).technique_spread = 0; (ENEMY.soldier as any).focus_memory = 0;
+    try { expect(aim(f, s2).who, 'with technique_spread 0 and focus_memory 0 the technique doubles up').toBe('Ada'); } finally { (ENEMY.soldier as any).technique_spread = was; if (wasM === undefined) delete (ENEMY.soldier as any).focus_memory; else (ENEMY.soldier as any).focus_memory = wasM; }
   });
   it('never against a Taunt: a Soldier taunted by the one already under fire stays on it', () => {
     const f = rig([{ tier: 'soldier' }, { tier: 'soldier' }]), [s1, s2] = f.foes; near(f);

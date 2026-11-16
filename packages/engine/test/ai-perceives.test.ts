@@ -2,7 +2,7 @@
 // character that was not Hidden stood, seen or not (BUGLIST-0.22, the limit written into 0.25.0's notes).
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
-import { ARCHETYPES, MAPS, newCharacter, startCombat, refOf, enemyTurn, enemyIntent, dist, moveUnit, noteSeenAt, sideSees, resolveAttack, knownTile, spotHidden, hide, type Sheet, type MapDef } from '../src';
+import { ARCHETYPES, MAPS, newCharacter, startCombat, refOf, enemyTurn, enemyIntent, dist, moveUnit, noteSeenAt, sideSees, sideSeesUnit, resolveAttack, knownTile, spotHidden, hide, type Sheet, type MapDef } from '../src';
 
 const a0 = ARCHETYPES[0];
 const sheet: Sheet = { name: 'P', portrait: '', origin: 'Central City', kit: 'medic', traits: [], skills: { ...a0.preset }, attrs: { ...a0.attributes }, cores: { ...a0.cores }, identity: {} } as any;
@@ -51,7 +51,9 @@ describe('rules 1.37: an enemy acts on what its side perceives', () => {
     p.vision = 30; cb.turn = cb.order.indexOf(p.id); p.ap = 6;
     let hit = false; for (let i = 0; i < 20 && !hit; i++) { const r = resolveAttack(cb, { state: 40 + i }, p, e, 'shot', null) as any; hit = !!r?.hit || cb.log.some((l) => /hits Foe/i.test(l)); p.ap = 6; e.hp = e.maxHp; }
     expect(hit).toBe(true);
-    expect(cb.seenAt?.foe?.[p.id]).toBe('9,10');
+    // rules 1.57 item 4563 (the shot that shows): the attacker is now seen by its target's side until its next turn,
+    // so the side knows where it is (OLD expectation: it only learnt the tile, seenAt '9,10')
+    expect(sideSees(cb, 'foe', p), 'the shot shows the shooter').toBe(true); expect(sideSeesUnit(cb, 'foe', p)).toBe(true);
     cb.turn = cb.order.indexOf(e.id); e.ap = 6; const was = e.pos; enemyTurn(cb, { state: 3 });
     expect(dist(e.pos, '9,10')).toBeLessThan(dist(was, '9,10'));
   });

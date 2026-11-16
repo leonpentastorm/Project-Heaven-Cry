@@ -17,7 +17,7 @@
 //    shoot without cover, per Agility 1, 3, 5); the targets the foes chose and why. Lever `cover`: a policy wrapper that
 //    walks to such a tile first every turn when a visible gun foe has a clean shot (what a human does), then plays.
 import { onHook } from '../../src/effects/hooks';
-import { apply, bindGame, ENEMY, OBJ, litAt, fightSight, WEAPON, MAPS, isMelee, dist, coverTileFor, nextToCover, lineOfSight, paths, apForTiles, objectsOf, coverKind, unitSees, sightBlockers, standable, CASTER, HEART_CASTER, previewAttack } from '../../src';
+import { apply, bindGame, ENEMY, OBJ, litAt, fightSight, WEAPON, MAPS, isMelee, dist, coverTileFor, nextToCover, lineOfSight, paths, apForTiles, objectsOf, coverKind, unitSees, sideSeesUnit, coverFor, sightBlockers, standable, CASTER, HEART_CASTER, previewAttack } from '../../src';
 import svJ from '../../../../data/survival.json';
 import techJ from '../../../../data/techniques.json';
 import { Rec } from '../helpers/replay';
@@ -38,7 +38,7 @@ const adj = (a: string, b: string) => { const [ax, ay] = xy(a), [bx, by] = xy(b)
  * (a pillar beside it, nearer the shooter than the target, that the line misses: nothing counts), 'wrong_side' (cover
  * beside it, none facing the shot), 'open'. */
 export function coverClass(cb: any, from: string, to: string): string {
-  if (coverTileFor(cb, from, to)) return 'half';
+  const cf = coverFor(cb, from, to); if (cf) return cf.grade; // rules 1.57 item 4560: the one cover rule (half or full counted)
   const far = dist(from, to), near = objectsOf(cb).filter((o: any) => coverKind(o) && adj(o.pos, to));
   if (near.some((o: any) => coverKind(o) === 'full' && dist(from, o.pos) < far)) return 'full_beside';
   return near.length ? 'wrong_side' : 'open';
@@ -131,7 +131,7 @@ onHook('attack_roll', (ctx: any) => {
   if (!ON || !pcOf(ctx.tgt) || !ctx.att || ctx.att.side === 'pc') return;
   const cb = ctx.cb, a = ctx.att, t = ctx.tgt, melee = isMelee(WEAPON[a.weapon]) || ctx.mode === 'melee';
   const rec: any = { tgt: t.id, kind: foeKind(a), tier: a.tier, weapon: a.weapon, mode: ctx.mode, volley: ctx.volley || null, die: ctx.die, toHit: ctx.toHit, need: ctx.need, crit: ctx.die >= ctx.critMin, melee,
-    cover: melee ? 'melee' : coverClass(cb, a.pos, t.pos), d: dist(a.pos, t.pos), backBlocked: !melee && !lineOfSight(cb, t.pos, a.pos), from: a.pos, to: t.pos, dark: !!cb.map.dark, litFrom: litAt(cb, a.pos), pcSees: cb.units.some((q: any) => pcOf(q) && unitSees(cb, q, a.pos)), hit: false, dmg: 0, stopped: true };
+    cover: melee ? 'melee' : coverClass(cb, a.pos, t.pos), d: dist(a.pos, t.pos), backBlocked: !melee && !lineOfSight(cb, t.pos, a.pos), from: a.pos, to: t.pos, dark: !!cb.map.dark, litFrom: litAt(cb, a.pos), pcSees: cb.units.some((q: any) => pcOf(q) && unitSees(cb, q, a.pos)), pcShown: sideSeesUnit(cb, 'pc', a), hid: !!a.hidden, shownTo: a.shownTo || null, hit: false, dmg: 0, stopped: true };
   // the choice of target (rules 1.25, enemyRank): was it the nearest standing character, the most hurt, the likeliest hit?
   const alive = cb.units.filter((q: any) => pcOf(q) && !q.dead && !q.downed), sh = (q: any) => q.hp / Math.max(1, q.maxHp);
   if (alive.length > 1) { const dm = Math.min(...alive.map((q: any) => dist(a.pos, q.pos))), hm = Math.min(...alive.map(sh)); rec.alive = alive.length; rec.nearest = dist(a.pos, t.pos) === dm; rec.mostHurt = sh(t) <= hm + 1e-9; rec.fresh = alive.every((q: any) => sh(q) >= 1);
@@ -222,12 +222,12 @@ export function runReport(runs: any[]): string {
       + ' | ' + f2(pre.length / Math.max(1, pcs.length)) + ' | ' + pc0(pre.filter((s: any) => s.hit).length / Math.max(1, pre.length)) + ' | ' + pc0(preDmg) + ' | ' + [1, 2, 3].map((i) => pc0(dr(i))).join(' / ') + ' |');
   }
   // the rolls by what the target stood next to
-  out.push('', '| Cell | Lever | Gun rolls on a character: open / half cover counted / pillar beside, facing, off the line / cover on the wrong side | Hit % in each | Nat 20s among hits behind half cover | Gun rolls from a tile no character sees | Gun rolls whose line back is blocked |', '|' + ' --- |'.repeat(7));
+  out.push('', '| Cell | Lever | Gun rolls on a character: open / half cover counted / full cover counted / pillar beside, facing, not counted / cover on the wrong side | Hit % in each | Nat 20s among hits behind half cover | Gun rolls from a tile no character sees | Gun rolls whose line back is blocked | Gun rolls from a shooter the screen does not draw (rules 1.57 item 4563) |', '|' + ' --- |'.repeat(8));
   for (const [, rs] of by) {
-    const sh = rs.flatMap((r) => r.fights).flatMap((f: any) => f.shots).filter((s: any) => s.kind === 'gun'), C = ['open', 'half', 'full_beside', 'wrong_side'];
+    const sh = rs.flatMap((r) => r.fights).flatMap((f: any) => f.shots).filter((s: any) => s.kind === 'gun'), C = ['open', 'half', 'full', 'full_beside', 'wrong_side'];
     const n = (c: string) => sh.filter((s: any) => s.cover === c), hp = (c: string) => { const a = n(c); return pc0(a.filter((s: any) => s.hit).length / Math.max(1, a.length)); };
     const halfHits = n('half').filter((s: any) => s.hit);
-    out.push('| ' + rs[0].cell + ' | ' + rs[0].lever + ' | ' + C.map((c) => n(c).length).join(' / ') + ' | ' + C.map(hp).join(' / ') + ' | ' + halfHits.filter((s: any) => s.crit).length + ' of ' + halfHits.length + ' | ' + pc0(sh.filter((s: any) => !s.pcSees).length / Math.max(1, sh.length)) + ' | ' + pc0(sh.filter((s: any) => s.backBlocked).length / Math.max(1, sh.length)) + ' |');
+    out.push('| ' + rs[0].cell + ' | ' + rs[0].lever + ' | ' + C.map((c) => n(c).length).join(' / ') + ' | ' + C.map(hp).join(' / ') + ' | ' + halfHits.filter((s: any) => s.crit).length + ' of ' + halfHits.length + ' | ' + pc0(sh.filter((s: any) => !s.pcSees).length / Math.max(1, sh.length)) + ' | ' + pc0(sh.filter((s: any) => s.backBlocked).length / Math.max(1, sh.length)) + ' | ' + pc0(sh.filter((s: any) => s.pcShown === false).length / Math.max(1, sh.length)) + ' |');
   }
   // Downs from full HP between two of the victim's own turns
   out.push('', '| Cell | Lever | Downs a fight | Of them from full HP between the victim\'s own turns | Before the victim\'s first turn | Who did the from-full Downs (damage share) | Foes in on a from-full Down |', '|' + ' --- |'.repeat(7));

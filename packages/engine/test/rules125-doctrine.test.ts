@@ -13,7 +13,7 @@
 // The fit (pairs under fire, whole fights) is measured in balance/defence-measure.test.ts.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
-import { ENEMY, AIM_WHY, HEALER_WHY, enemyIntent, enemyTurn, enemyPreference, noteEnemyAim, doctrineOf, healerMark, healUnit, applyCond, phys, type Unit } from '../src';
+import { ENEMY, RULES, AIM_WHY, HEALER_WHY, enemyIntent, enemyTurn, enemyPreference, noteEnemyAim, doctrineOf, healerMark, healUnit, applyCond, phys, type Unit } from '../src';
 import { fightWith, withGame, type FoeSpec } from './helpers/perkfight';
 
 const RIFLE = 'hellraiser_service_rifle';
@@ -47,9 +47,11 @@ describe('rules 1.25: each tier has a fire doctrine, in the data', () => {
   });
   it('a unit with no tier (a companion, a character) has no doctrine numbers: the most hurt, as before', () => {
     const f = rig([{ tier: 'soldier' }]);
-    expect(doctrineOf(f.foe)).toEqual({ id: 'spread', spread: 1, near: 0.2, techSpread: 0.5 }); // techSpread: rules 1.57
-    expect(doctrineOf(f.pcs[0])).toEqual({ id: 'focus', spread: 0, near: 0, techSpread: 0 });
-    expect(doctrineOf({ ...f.foe, tier: undefined } as any)).toEqual({ id: 'focus', spread: 0, near: 0, techSpread: 0 });
+    // techSpread: rules 1.57; memory: rules 1.57 focus memory (item 4564), the default for every enemy, none for a character
+    const m = RULES.combat.focus_memory.per_attacker;
+    expect(doctrineOf(f.foe)).toEqual({ id: 'spread', spread: 1, near: 0.2, techSpread: 0.5, memory: m });
+    expect(doctrineOf(f.pcs[0])).toEqual({ id: 'focus', spread: 0, near: 0, techSpread: 0, memory: 0 });
+    expect(doctrineOf({ ...f.foe, tier: undefined } as any)).toEqual({ id: 'focus', spread: 0, near: 0, techSpread: 0, memory: m });
   });
 });
 
@@ -84,7 +86,11 @@ describe('rules 1.25: Soldiers spread their fire', () => {
     const far = rig([{ tier: 'soldier' }, { tier: 'soldier' }]); pc(far, 'Bo').pos = '0,5'; pc(far, 'Ada').pos = '6,5'; // from 11,4: Ada 5 tiles, Bo 11
     far.foes[0].pos = '11,5'; far.foes[1].pos = '11,5'; far.foes[0].pos = '11,4';
     const a = aim(far, far.foes[1]); expect(a.who).toBe('Ada'); expect(a.why).toBe('nearest'); expect(a.text).toBe('shoot Ada: it takes the nearest');
-    shot(far, far.foes[0], 'Ada'); expect(aim(far, far.foes[1]).who, 'both on the near one: 1 for the ally on her against 6 × 0.2').toBe('Ada');
+    // rules 1.57 focus memory (item 4564): 1 (fire_spread) + 1 (the memory) for the ally on her against 6 × 0.2: it leaves
+    // the line now. OLD expectation (fire_spread alone, 1 against 1.2): both on the near one.
+    shot(far, far.foes[0], 'Ada'); expect(aim(far, far.foes[1]).who, 'with focus memory, the ally on her outweighs 6 tiles').toBe('Bo');
+    const was = (ENEMY.soldier as any).focus_memory; (ENEMY.soldier as any).focus_memory = 0;
+    try { expect(aim(far, far.foes[1]).who, 'OLD: both on the near one: 1 for the ally on her against 6 × 0.2').toBe('Ada'); } finally { if (was === undefined) delete (ENEMY.soldier as any).focus_memory; else (ENEMY.soldier as any).focus_memory = was; }
     pc(far, 'Bo').pos = '3,5'; // 3 tiles behind Ada: 0.6 against 1
     const b = aim(far, far.foes[1]); expect(b.who).toBe('Bo'); expect(b.why).toBe('spread');
   });
@@ -115,7 +121,10 @@ describe('rules 1.25: Elites and Bosses focus', () => {
   for (const tier of ['elite', 'boss']) it(tier + ': the most hurt, with an ally already on it or not', () => {
     const f = rig([{ tier }, { tier: 'elite' }]), [e, ally] = f.foes; pc(f, 'Bo').hp = 100;
     const a = aim(f, e); expect(a.who).toBe('Bo'); expect(a.why).toBe('wounded');
-    shot(f, ally, 'Bo'); const b = aim(f, e); expect(b.who).toBe('Bo'); expect(b.why).toBe('wounded');
+    // rules 1.57 focus memory (item 4564): an ally already on Bo (half dead) turns it to Ada; OLD expectation: Bo again.
+    shot(f, ally, 'Bo'); const b = aim(f, e); expect(b.who).toBe('Ada'); expect(b.why).toBe('spread');
+    // nearly finished (a quarter of max HP or less): finished off, ally or not
+    pc(f, 'Bo').hp = Math.floor(RULES.combat.focus_memory.finish_share * pc(f, 'Bo').maxHp); const c = aim(f, e); expect(c.who).toBe('Bo'); expect(c.why).toBe('wounded');
   });
   it('the most hurt it can get at: each tile further off than the nearest counts as a tenth of max HP', () => {
     const f = rig([{ tier: 'elite' }]); f.foe.pos = '11,5'; pc(f, 'Ada').pos = '6,5'; pc(f, 'Bo').pos = '3,5'; // Ada 5 tiles, Bo 8: 0.3

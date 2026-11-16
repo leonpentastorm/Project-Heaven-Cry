@@ -134,6 +134,9 @@ export interface Unit {
   /** Combat Hidden (spec: Helpful states): hidden now; how many times it has hidden this fight (each entry gives one
    * ambush); the entry whose ambush was used. */
   hidden?: boolean; hideEntry?: number; ambushUsed?: number;
+  /** Rules 1.57 item 4563 (the shot that shows): the side this unit's last attack showed it to; seen by that side
+   * wherever it stands until the start of its own next turn (unless Hidden: Shadow decides that). */
+  shownTo?: 'pc' | 'foe';
   /** Sigil 1.4: MASK's rounds left (and set on the bearer's own turn), the round it was last Quickened, when each
    * condition landed (CLEANSE ends the newest). */
   maskLeft?: number; maskFresh?: boolean; condAt?: Record<string, number>;
@@ -977,12 +980,29 @@ function walkClear(solid: Set<string>, a: string, b: string): boolean {
   }
   return true;
 }
-/** The half-cover tile protecting a target: next to it and between it and the attacker (spec: Cover). */
-export function coverTileFor(cb: Combat, from: string, to: string): string | null {
-  // The same answer as walking coverOf(cb) in its order (tiles in the order their first cover object was placed; a
-  // tile's cover is its LAST cover object's), looking only at the eight tiles round the target: this is asked by every
-  // attack preview, and the enemy asks for a preview of every target.
-  const [tx, ty] = xy(to); let near: { k: string; kind: 'half' | 'full' }[] | null = null;
+/** Cover's numbers (rules.json combat.attack.cover; rules 1.57, cover beside you, items 4560 to 4562): the to-hit
+ * term of each kind (half 5, full 10, as positive numbers taken off the roll), the facing arc either side of the line
+ * from the target to the shooter, and the kind a diagonal tile counts as at most. */
+const COVER_R: any = RULES.combat.attack.cover;
+export const COVER = {
+  half: Math.abs(Number(COVER_R.half.to_hit) || 0),
+  full: Math.abs(Number(COVER_R.full.to_hit) || 0),
+  arc: Number(COVER_R.facing?.arc_deg ?? 45),
+  diagonal: (COVER_R.facing?.diagonal === 'full' ? 'full' : 'half') as 'half' | 'full',
+};
+export type CoverGrade = 'half' | 'full';
+export interface CoverHit { tile: string; grade: CoverGrade; mod: number }
+/** THE cover rule (spec: Cover; rules 1.57 item 4560): what protects a target at `to` from a shot from `from`. A cover
+ * object (or a unit that is cover) on one of the eight tiles round the target counts when the direction from the target
+ * to it lies within COVER.arc degrees of the direction to the shooter and it is nearer the shooter than the target is;
+ * an orthogonal tile gives its own kind, a diagonal one COVER.diagonal at most; the best counts (the first placed among
+ * equals). Null: none. Full cover ON the line is not here: it blocks the line of sight (lineOfSight). One function for
+ * the attack preview, every kind of shot, the enemy AI and the screen's cover word (tileCover). */
+export function coverFor(cb: Combat, from: string, to: string): CoverHit | null {
+  if (from === to) return null;
+  const [tx, ty] = xy(to), [fx, fy] = xy(from), vx = fx - tx, vy = fy - ty, vl = Math.hypot(vx, vy);
+  // a tile's cover is its LAST cover object's (coverOf's order); units that are cover after the objects
+  let near: { k: string; kind: CoverGrade }[] | null = null;
   for (const o of objectsOf(cb)) {
     const c = coverKind(o); if (!c) continue;
     const [cx, cy] = xy(o.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) !== 1) continue;
@@ -990,11 +1010,44 @@ export function coverTileFor(cb: Combat, from: string, to: string): string | nul
   }
   for (const u of coverUnits(cb)) { const [cx, cy] = xy(u.pos); if (Math.max(Math.abs(cx - tx), Math.abs(cy - ty)) === 1 && !(near && near.some((q) => q.k === u.pos))) (near ||= []).push({ k: u.pos, kind: unitCover(u) }); }
   if (!near) return null;
-  const far = dist(from, to);
-  for (const e of near) if (e.kind === 'half' && dist(from, e.k) < far) return e.k;
-  return null;
+  const far = dist(from, to), cosArc = Math.cos((COVER.arc * Math.PI) / 180) - 1e-9;
+  let best: CoverHit | null = null;
+  for (const e of near) {
+    if (dist(from, e.k) >= far) continue;
+    const [cx, cy] = xy(e.k), ox = cx - tx, oy = cy - ty;
+    if ((ox * vx + oy * vy) / (Math.hypot(ox, oy) * vl) < cosArc) continue;
+    const grade: CoverGrade = ox !== 0 && oy !== 0 && e.kind === 'full' ? COVER.diagonal : e.kind;
+    if (!best || (grade === 'full' && best.grade === 'half')) best = { tile: e.k, grade, mod: COVER[grade] };
+  }
+  return best;
 }
-export const coverBonus = (cb: Combat, from: string, to: string) => (coverTileFor(cb, from, to) ? 5 : 0);
+/** The cover tile protecting a target from that shooter, or null (coverFor's tile). */
+export const coverTileFor = (cb: Combat, from: string, to: string): string | null => coverFor(cb, from, to)?.tile ?? null;
+/** What cover takes off a shot from `from` at a target on `to` (coverFor's term; 0 for none). */
+export const coverBonus = (cb: Combat, from: string, to: string): number => coverFor(cb, from, to)?.mod || 0;
+/** The screen's cover word for a tile (rules 1.57 item 4561): the cover a unit of `side` would have there against one
+ * foe: `foeId` if it names a living foe of that side, else the nearest foe the side sees. 'blocked': that foe has no
+ * line of sight to the tile. Null: no foe to measure against. walls: sightBlockers(cb), for a caller asking about many
+ * tiles. Pure; the client draws it and decides nothing. */
+export function tileCover(cb: Combat, k: string, side: 'pc' | 'foe' = 'pc', foeId?: string | null, seen?: Set<string>, walls?: Set<string>): { grade: CoverGrade | 'none' | 'blocked'; mod: number; foeId: string; foe: string } | null {
+  const foes = cb.units.filter((t) => t.side !== side && !t.dead && !t.downed && !t.owned);
+  let f = foeId ? foes.find((t) => t.id === foeId) : undefined;
+  if (!f) { const sees = seen || visibility(cb, side).seen; let bd = Infinity; for (const t of foes) if (sees.has(t.id)) { const d = dist(t.pos, k); if (d < bd) { bd = d; f = t; } } }
+  if (!f) return null;
+  if (!lineOfSight(cb, f.pos, k, false, walls)) return { grade: 'blocked', mod: 0, foeId: f.id, foe: f.name };
+  const c = coverFor(cb, f.pos, k);
+  return { grade: c ? c.grade : 'none', mod: c ? c.mod : 0, foeId: f.id, foe: f.name };
+}
+/** Rules 1.57 item 4563 (the shot that shows; rules.json combat.attack.attack_reveal): a unit that has made an attack
+ * on `tgt` is seen by tgt's side until the start of its own next turn. A Hidden attacker is left to Shadow's rules
+ * (it stays unseen while Hidden). The log names it when the attack is what gave it away. */
+const REVEAL_UNTIL: string = String((RULES.combat.attack as any).attack_reveal?.until || 'off');
+export function showAttacker(cb: Combat, att: Unit, tgt: Unit): void {
+  if (REVEAL_UNTIL !== 'attacker_turn_start' || !tgt || tgt.side === att.side || att.dead || att.hidden || cb.overworld) return;
+  const side = tgt.side, was = att.shownTo === side || sideSeesUnit(cb, side, att);
+  att.shownTo = side;
+  if (!was) say(cb, att.name + ' gives itself away at ' + refOf(att.pos) + ': its attack is seen, and it stays in sight until its next turn.');
+}
 /** Does this tile stand next to (one of the eight tiles round it) cover that still stands? (Predicate `by_cover`.) */
 export function nextToCover(cb: Combat, k: string): boolean {
   const [tx, ty] = xy(k);
@@ -1020,7 +1073,7 @@ export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
   const seen = new Set<string>(), sensed = new Set<string>();
   for (const t of cb.units) if (t.side !== side && !t.dead) {
     // A Hidden unit isn't seen (spec: Helpful states): at most sensed, by Sensory range.
-    let isSeen = tiles.has(t.pos) && !t.hidden, isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3));
+    let isSeen = (tiles.has(t.pos) || t.shownTo === side) && !t.hidden, isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3));
     if (sightHooked(cb)) { const r = seesHook(cb, side, t, null, isSeen, isSensed); isSeen = r.seen; isSensed = !isSeen && r.sensed; }
     if (isSeen) seen.add(t.id); else if (isSensed) sensed.add(t.id);
   }
@@ -1049,7 +1102,7 @@ export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly 
   if (t.side === side) return true;
   if (t.dead) return false;
   const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), off = onMapOnly && !inBounds(cb, t.pos), walls = t.hidden || off ? undefined : walls0 || sightBlockers(cb);
-  let isSeen = !t.hidden && !off && eyes.some((u) => unitSees(cb, u, t.pos, walls));
+  let isSeen = !t.hidden && !off && (t.shownTo === side || eyes.some((u) => unitSees(cb, u, t.pos, walls)));
   if (sightHooked(cb)) { const isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3)); isSeen = seesHook(cb, side, t, null, isSeen, isSensed).seen; }
   return isSeen;
 }
@@ -1152,7 +1205,8 @@ function noteSeen(cb: Combat, side: string, id: string, at: string) {
 }
 /** Does anyone on the attacker's side see the target? */
 export function sideSees(cb: Combat, side: 'pc' | 'foe', tgt: Unit, by?: Unit | null): boolean {
-  const hid = tgt.hidden && tgt.side !== side, walls = hid ? undefined : sightBlockers(cb), base = !hid && cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos, walls));
+  // rules 1.57 item 4563: a unit whose attack showed it to this side is seen wherever it stands (unless Hidden)
+  const hid = tgt.hidden && tgt.side !== side, walls = hid || tgt.shownTo === side ? undefined : sightBlockers(cb), base = !hid && (tgt.shownTo === side || cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos, walls)));
   return sightHooked(cb) ? seesHook(cb, side, tgt, by || null, base, false).seen : base;
 }
 
@@ -1275,7 +1329,9 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   if (bands > MAX_RANGE_BANDS - 1) return fail('Out of range.');
   // hk.coverTile: an item names a half-cover tile that protects the target although it doesn't face the shot (Eyes in
   // the Back): it counts as the cover, so a miss by its margin hits it.
-  const facing = melee ? null : coverTileFor(cb, att.pos, tgt.pos), coverTile0 = facing || hk.coverTile || null, coverTile = hk.ignoreCover || (useW.properties || []).includes('ignores_half_cover') ? null : coverTile0, cover = coverTile ? 5 : 0;
+  // Rules 1.57 item 4560: coverFor, the one cover rule; a weapon that ignores half cover still takes full cover's term.
+  const facingHit = melee ? null : coverFor(cb, att.pos, tgt.pos), facing = facingHit?.tile ?? null, coverTile0 = facing || hk.coverTile || null, grade: CoverGrade = facingHit ? facingHit.grade : 'half';
+  const coverTile = hk.ignoreCover || (grade === 'half' && (useW.properties || []).includes('ignores_half_cover')) ? null : coverTile0, cover = coverTile ? COVER[grade] : 0;
   const rangePenalty = -2 * bands;
   const heat = melee || thrown || !w.heat_limit ? 0 : -Math.floor(att.heat / 2);
   const prone = tgt.prone ? (melee ? condMods('prone').hit?.melee_vs_self : condMods('prone').hit?.ranged_vs_self) || 0 : 0, unbraced = !melee && (w.properties || []).includes('minus2_to_hit_unless_emplaced') && !att.braced && !att.prone ? -2 : 0;
@@ -1297,7 +1353,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const rw = rollWithPick(charFor(att), via, hk.rollWith);
   const terms: Term[] = [...(rw ? T(att.attack + rw.delta, 'Hits with: ' + rollWithWords(rw)) : T(att.attack, 'skill')), ...T(att.song || 0, 'song'), ...T(skillBonus, (w as any).grants?.name || 'weapon skill'), ...T(useW.accuracy || 0, 'weapon accuracy'),
     ...T(mode === 'aimed' ? 2 : 0, 'aimed'), ...T(mode === 'auto' ? -2 : 0, 'full auto'), ...T(opts.extra || 0, 'volley'), ...T(rangePenalty, 'range'), ...T(heat, 'Heat'), ...T(armPenalty(att, useW), 'injured arm'),
-    ...T(tgt.downed ? 2 : 0, 'target Downed'), ...T(prone, 'target prone'), ...T(unbraced, 'not braced'), ...T(-cover, !facing && hk.coverWhy ? 'half cover (' + hk.coverWhy + ')' : 'half cover'), ...T(condHit(att, tgt, cb), 'conditions'),
+    ...T(tgt.downed ? 2 : 0, 'target Downed'), ...T(prone, 'target prone'), ...T(unbraced, 'not braced'), ...T(-cover, !facing && hk.coverWhy ? 'half cover (' + hk.coverWhy + ')' : grade + ' cover'), ...T(condHit(att, tgt, cb), 'conditions'),
     ...T(recoilT, 'recoil'), ...T(emplaced, 'emplaced'), ...T(skillCond, 'brain debuff'), ...T(levelGap(att, tgt, cb) * ENEMY_LEVELS.gap.to_hit_per_level, 'level gap'), ...(hk.terms as Term[]).filter((t) => t && t.v), ...toHitTerms(cb, att, tgt, 'weapon', { mode })]; // the one hook of every roll to hit (rolls.ts)
   if (hk.ignoreCover && coverTile0) terms.push({ v: 0, label: 'cover ignored' });
   if (farBelow(tgt, att, cb)) terms.push({ v: 0, label: 'far below your level: any hit takes it out' }); // rules 1.15
@@ -1431,6 +1487,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   if (att.mg) calmFight(cb, att); // rules 1.5, calming the heart: the first weapon attack of your turn eases 1 Strain
   const fx: any = useW === w ? (w as any).grants?.effect || {} : {};
   const worn = att.maxDur ? wearState(att.dur ?? att.maxDur, att.maxDur) !== 'sound' : false; // Worn or Broken (rules 1.50: the share from data)
+  showAttacker(cb, att, tgt); // rules 1.57 item 4563: the shot shows its shooter as it is fired (a Hidden one: after the roll, below, if it is revealed)
   // The die, then items: 'attack_roll' {att, tgt, mode, die, toHit, need, critMin, noFumble, hit?} (die may be rerolled,
   // critMin lowered; set hit to force the result).
   // An ambush (spec: attacks from Hidden crit on 19-20 and use the Ambush multiplier): the first attack of each Hidden entry.
@@ -1495,6 +1552,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   if (hit && melee && !opts.noMomentum && att.resMax?.momentum != null) resGain(att, 'momentum', 1);
   if (ambush) injury += ' · AMBUSH';
   if (att.hidden && !isSilent(att) && !opts.quiet) injury += reveal(cb, att, 'attacked', { how: 'attack' }); // quiet: a held shot that keeps its shooter Hidden (physical/, Dead to Rights)
+  showAttacker(cb, att, tgt); // rules 1.57 item 4563: the shot that shows (a still-Hidden attacker is untouched)
   const spotBack = att.hidden && !opts.quiet && tgt.side !== att.side && alive(tgt) && !tgt.hidden; // rules 1.32 (2.6): a silent attack from Hidden; rolled after the line
   if (condSource(att, 'taunted') === tgt.id) endCond(att, 'taunted', cb);
   if (condOn(att, 'sharpened')) endCond(att, 'sharpened', cb); // spent on this attack
@@ -1504,7 +1562,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   if (hit && tgt.downed && !killed) ev.downedHit = true;
   if (stopped) injury = ' · stopped by cover' + damageCover(cb, pv.coverTile!, weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) * (who ? weaponMult(who, useW.id) : 1) * (fx.op === 'cover_damage_mult' ? fx.value : 1), 0, att);
   const verb = melee ? 'strikes' : mode === 'thrown' ? 'throws the ' + useW.name.toLowerCase() + ' at' : mode === 'aimed' ? 'takes an aimed shot at' : 'fires at';
-  const line = att.name + ' ' + verb + ' ' + tgt.name + ': d20 ' + roll + ' ' + (pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.toHit) + (pv.cover ? ' (incl. −5 cover)' : '') + ' = ' + total + ' vs ' + pv.need +
+  const line = att.name + ' ' + verb + ' ' + tgt.name + ': d20 ' + roll + ' ' + (pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.toHit) + (pv.cover ? ' (incl. −' + pv.cover + ' cover)' : '') + ' = ' + total + ' vs ' + pv.need +
     (fumble ? (tuned ? ' · natural 1, a miss; the weapon doesn\'t jam (Tuned)' : melee || !canJam(w) ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL, ' : ' · hit, ') + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') + injury : ' · miss' + injury);
   say(cb, line);
   // After the line: 'on_hit' {att, tgt, mode, dmg, crit, killed} or 'on_miss' {att, tgt, mode, die, fumble} (a shot cover stopped is neither).
@@ -1631,6 +1689,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
   const t = turnAp(u, pre.grants || [], pre.penalties || []);
   setAp(u, t.ap); for (const l of t.lines) say(cb, l);
   if (u.dazedNext) say(cb, u.name + ' is Dazed: −2 AP this turn.');
+  if (u.shownTo) delete u.shownTo; // rules 1.57 item 4563: its last attack showed it until now
   clearStagger(u); dazeSpent(u); u.overwatch = null; u.owShots = 0; delete u.owSpend; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - (heatPair(u) ? 4 : 2)); u.firstShotTurn = false; u.sprinted = false; u.attackedTurn = false; // off-turn attacks (Riposte, Overwatch) don't count for this turn's Momentum
   // Stunned (spec): the turn is lost; the engine passes it (endTurn).
   if (condOn(u, 'stunned') && !u.downed) { setAp(u, 0); u.skipTurn = true; say(cb, u.name + ' is Stunned and loses the turn.'); }
@@ -2803,10 +2862,17 @@ const ownedWeight = (u: Unit, t: Unit): number => ((t as any).owned?.kind === 'f
  * target (physical/ai.ts aiTechnique) is multiplied by 1 − techSpread for each OTHER unit of its side that has attacked
  * that target this round. fire_spread bends the plain attack's choice only; a technique's own score outranked it, so
  * a line of Soldiers' Bursts all went on one character. 0: the tier gangs up (focus). */
-export const doctrineOf = (u: Unit): { id: Doctrine; spread: number; near: number; techSpread: number } => {
+/** Focus memory (rules 1.57 item 4564; rules.json combat.focus_memory): `memory` is the share of max HP a target counts
+ * as less hurt for each other unit of its side that attacked it this round, for every enemy (a tier's enemies.json
+ * `focus_memory` overrides the default); `finish` the HP share at or under which a target takes no such penalty. */
+const FOCUS_MEMORY: any = (RULES.combat as any).focus_memory || {};
+export const doctrineOf = (u: Unit): { id: Doctrine; spread: number; near: number; techSpread: number; memory: number } => {
   const e: any = u.charId || u.companion || !u.tier ? null : ENEMY[u.tier], id: Doctrine = e?.doctrine === 'nearest' || e?.doctrine === 'spread' ? e.doctrine : 'focus';
-  return { id, spread: Math.max(0, Number(e?.fire_spread) || 0), near: Math.max(0, Number(e?.fire_near) || 0), techSpread: Math.min(1, Math.max(0, Number(e?.technique_spread) || 0)) };
+  const memory = u.side === 'foe' && !u.charId ? Math.max(0, Number(e?.focus_memory ?? FOCUS_MEMORY.per_attacker) || 0) : 0;
+  return { id, spread: Math.max(0, Number(e?.fire_spread) || 0), near: Math.max(0, Number(e?.fire_near) || 0), techSpread: Math.min(1, Math.max(0, Number(e?.technique_spread) || 0)), memory };
 };
+/** Is this target spared the focus memory's penalty (rules 1.57 item 4564): at or under the finishing share of its max HP? */
+export const finishing = (t: Unit): boolean => !t.downed && t.hp <= Math.max(0, Number(FOCUS_MEMORY.finish_share) || 0) * Math.max(1, t.maxHp);
 /** Why an enemy takes the target it takes, when its doctrine (or the healer weight) decided between two it could have
  * had: shown on its intent and said once in the fight log. */
 export type AimWhy = 'healer' | 'spread' | 'wounded' | 'nearest';
@@ -2839,7 +2905,7 @@ function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], rea
   // Rules 1.37: a tier that leaves Figments for last (Soldiers, Elites, Bosses) sizes up no Figment while a character is
   // in reach (the twelve-Figment End turn: each enemy previewed sixteen targets instead of four); they follow the
   // characters, unpreviewed, in a list that keeps everyone.
-  const late = figmentsLast(u) ? pcs.filter(lateFigment) : [], mk = (t: Unit, pv?: AttackPreview): Aim => ({ t, pv: pv || previewAttack(cb, u, t, mode), healer: false, fire: d.spread ? alliesOn(cb, u, t) : 0, far: d.near ? dist(u.pos, t.pos) : 0 });
+  const late = figmentsLast(u) ? pcs.filter(lateFigment) : [], mk = (t: Unit, pv?: AttackPreview): Aim => ({ t, pv: pv || previewAttack(cb, u, t, mode), healer: false, fire: d.spread || d.memory ? alliesOn(cb, u, t) : 0, far: d.near ? dist(u.pos, t.pos) : 0 });
   let list: Aim[] = (late.length ? pcs.filter((t) => !late.includes(t)) : pcs).map((t) => mk(t));
   if (reachOnly) list = list.filter((x) => x.pv.ok);
   if (late.length) { if (!list.some((x) => x.pv.ok)) { const more = late.map((t) => mk(t)); list = list.concat(reachOnly ? more.filter((x) => x.pv.ok) : more); } else if (!reachOnly) list = list.concat(late.map((t) => mk(t, NO_PREVIEW))); }
@@ -2847,7 +2913,8 @@ function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], rea
   if (mark) for (const x of list) if (aimOwner(x.t) === mark.id && !x.t.downed && (!x.pv.ok || x.pv.pct * 2 >= bestPct)) x.healer = true;
   const near0 = d.near ? Math.min(...list.filter((x) => !x.t.downed).map((x) => x.far), Infinity) : 0;
   const lateOf = (x: Aim) => (late.length && late.includes(x.t) ? 1 : 0);
-  const key = (x: Aim) => hurtShare(cb, x.t) + d.spread * x.fire + ownedWeight(u, x.t) + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
+  // focus memory (rules 1.57 item 4564): each other attacker of its side this round makes the target less worth it, unless it is nearly finished
+  const key = (x: Aim) => hurtShare(cb, x.t) + d.spread * x.fire + (finishing(x.t) ? 0 : d.memory * x.fire) + ownedWeight(u, x.t) + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
   list.sort((a, b) => (aimOwner(b.t) === tauntBy ? 1 : 0) - (aimOwner(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || lateOf(a) - lateOf(b) || key(a) - key(b) || pct(b) - pct(a));
   const top = list[0];
   if (top && aimOwner(top.t) !== tauntBy && !top.t.downed) {

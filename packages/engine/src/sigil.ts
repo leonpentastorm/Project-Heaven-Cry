@@ -14,7 +14,7 @@ import {
 } from './sigilwords';
 export * from './sigilwords';
 import { say, objectAtLevel,
-  type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, emitFx, noteCrit, sightFx,
+  type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, coverBonus, showAttacker, emitFx, noteCrit, sightFx,
   active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction, displace
 } from './combat';
 import { type Rng } from './rng';
@@ -453,13 +453,13 @@ function numbersFor(cb: Combat, caster: Unit | null, sp: Spell, t: Unit, m: numb
   const lf = caster?.mg?.mend ?? mendFactorOf(caster); // rules 1.20: healing and shields grow with the caster's level (a character's; not an enemy caster's)
   const [E, S] = [sigilDamage(mg, 'elemental', el, m, lm, sharp, hook('damage'), 1), sigilDamage(mg, 'sigil', sg, m, lm, sharp, hook('damage'), 1)];
   const arm = (S ? landed(S, armourAgainst(t, 'full')) : 0) + (E ? landed(E, armourAgainst(t, 'half')) : 0); // as harm will take it: Sigil damage meets armour in full, Elemental half
-  const cover = !!origin && sp.missile === 'bolt' && !sp.uniqueSubjects.includes('shock') && !!coverTileFor(cb, origin, t.pos);
-  const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - (cover ? 5 : 0) + inflSum(sp, 'to_hit') + spellGapToHit(cb, caster, t) + toHitAdd(cb, caster, t, 'sigil') : 0; // the one hook of every roll to hit (rolls.ts)
+  const cover = !!origin && sp.missile === 'bolt' && !sp.uniqueSubjects.includes('shock') ? coverBonus(cb, origin, t.pos) : 0; // rules 1.57 item 4560: the one cover rule
+  const bonus = caster ? (mg?.brain ?? 0) + (caster.sk?.brain_power ?? 0) + condSkillMod(caster, 'brain_power') + condHit(caster, t, cb) - cover + inflSum(sp, 'to_hit') + spellGapToHit(cb, caster, t) + toHitAdd(cb, caster, t, 'sigil') : 0; // the one hook of every roll to hit (rolls.ts)
   const saves: Affected['saves'] = [];
   for (const w of sp.uniqueSubjects) { const a: any = (W(w) as any)?.applies; if (a && a.save && SAVES[a.save]) saves.push({ cond: a.condition, fam: SAVES[a.save], tn: saveTn(caster, 'brain_power') + iv(sp, w, 'save_tn') }); }
   if (sp.uniqueSubjects.includes('step') && caster && t.side !== caster.side) saves.push({ cond: 'teleport', fam: 'body', tn: saveTn(caster, 'brain_power') });
   return { dmg: E + S, dmgAfterArmour: arm, heal: gatedAmount('heal', sigilBoon('heal', hl, m, mg?.sigilBoon ?? sm, 1, lf, hook('heal')), { of: 'sigil_mend', own: m }, t, caster), shield: gatedAmount('shield', sigilBoon('shield', sh, m, mg?.sigilBoon ?? sm, 1, lf, hook('shield')), { of: 'sigil_mend', own: m }, t, caster), // the percent spec: the boon is Brain Power's alone (sigil_mend.k carries what Healing given did), through the gate and the cap
-    roll: sp.damaging && roll ? { bonus, need: t.def, pct: Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5)), cover } : null, saves };
+    roll: sp.damaging && roll ? { bonus, need: t.def, pct: Math.max(5, Math.min(95, (21 - (t.def - bonus)) * 5)), cover: cover > 0 } : null, saves };
 }
 /** Who a spell affects on a set of tiles, with every one it spares or skips flagged (spec: Filter KIN; Grammar 9). */
 function affectedOn(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp: Spell, mult: Record<string, number>, base: number, via: Affected['via'], missile: number, origin: string | null, roll: boolean): Affected[] {
@@ -1047,7 +1047,7 @@ function applyToInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe',
     let crit = false, r = 0;
     if (o.roll && by) {
       r = rollD20(rng).die; const add = (emit(cb, 'spell_roll', { u: by, t, die: r, add: 0, kind: 'sigil', cb }) as any).add || 0, sr = judge('roll', { die: r }, (a.roll?.bonus ?? 0) + add, t.def), tot = sr.total;
-      crit = r === 20; rollFx(cb, sr, by, { why: 'sigil' });
+      crit = r === 20; rollFx(cb, sr, by, { why: 'sigil' }); showAttacker(cb, by, t); // rules 1.57 item 4563
       if (!sr.ok) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: sp.element }); line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (a.roll?.cover ? ', cover' : '') + ')'; return { line: line + nonDamage(cb, rng, by, side, sp, t, a, o, harmOk), dealt, missed: true }; }
     }
     const hp0 = t.hp + (t.shield || 0), sharp = by && condOn(by, 'sharpened') && o.roll && !['turret', 'trap', 'field'].includes(a.via) ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
