@@ -123,7 +123,7 @@ slice A. Decisions 116 to 120.
 - **Numbers not yet fitted:** two shields' doubled Guard, the Bulwark's pool by rank, the follow's -2 and Afterword are
   PROVISIONAL and measured only in the lanes' runs.
 - **Doors 3.0 after slice A:** the forks (N1, N2) and Strain and Flux as resource rows (N3b) come later; the reshape,
-  the healing brake and N23 are slice B (below); the feeds' 0.01 is not fitted.
+  and N23 are slice B (below); the healing brake is not built (see "The review"); the feeds' 0.01 is not fitted.
 
 ### Doors 3.0, slice B: the reshape (rules 1.60 items 4619-4644; decision 121)
 
@@ -140,9 +140,8 @@ slice A. Decisions 116 to 120.
 - **The Skirmisher:** Speed Loader is **Hold the Lane** (held shots 1 AP cheaper); Run and Gun is a free move of its
   own (Fire and Move's step and Run and Gun's move both in one turn).
 - **The Operative:** **Vanish** makes your Fade cost no Shadow.
-- **The Mender:** Triage is worded as the medic's Touch (same numbers). **The healing brake:** each further Mend,
-  Touch, Shield or Triage you give the same ally in one round costs half again the MP of the one before (24, 36, 54);
-  another healer meets only their own brake; the preview shows the price on that ally.
+- **The Mender:** Triage is worded as the medic's Touch (same numbers). (The healing brake was built here and removed
+  by the review: see "The review" below.)
 - **Tending's Shield** goes only on a Bonded ally.
 - **The Rigger:** its Double costs no charge and lasts a round longer; Overclock is **Redline**; the Scrap Turret is the
   **Scrap Sentinel** (a free Sentinel, the Figment form, for 3 rounds).
@@ -193,6 +192,28 @@ slice A. Decisions 116 to 120.
   Through the Gap and Lockdown movement and a foe's turn, the Bonds forks a heal row that does not reach Empathy 4).
 - **Not run:** the browser suites (figments.mjs edited for the forks at 4 and 6; tank, levelup and skeleton screens show
   the new fork sections).
+
+### Doors 3.0, the review (rules 1.60; decision 123)
+
+- **Camaraderie's heal back is the share its tab shows:** 3% / 15% / 30% of what your Tending restores to a Bonded ally
+  at Empathy 10. Your own healing received no longer multiplies it again (it gave 57% at 10/10 while the tab said 30%).
+- **Pain Threshold reaches the Bulwark's Reactive Plate:** from rank III each plate soaks the plate's 10 × the same feed
+  as everyone's Guard (11 at Durability 10 and Pain Threshold 1, 20 at 10 and 10); the Guard meter, its hint and the
+  door tab say that number (they said the fed Guard soak while the plate stopped a flat 10).
+- **The healing brake is not built:** it needed a price that sees its target, a piece not approved for this release, so
+  it was removed with that piece. Each Mend, Touch, Shield or Triage costs its own MP again.
+- **Keep the Thread is for a foe:** a Snap on a Bonded ally still heals and ends the Bond (kept, it was a 1 AP heal
+  every turn). The 12 MP is on every Snap with the fork (a price cannot see its target).
+- **Small fixes:** the validator's held-equal checks on five forks run again (they named the wrong ids and checked
+  nothing); the fork card says "this choice comes in a later version" for a step not offered; Grindstone's and Converging
+  Fire's texts say a foe marked by you or by another holder counts; the Breaker's Momentum rule names Wind-up's start of 3;
+  the figments limits say Scrap Sentinel.
+- **Re-recorded on purpose:** the plate's fed soak moved the tank builds' taken lines at L12 and L20 (`builds-normal`,
+  `builds-allin`), the Defender III hazard and blast lines (`costs-items-*`, `itemops-traits-classes`), and one replay of
+  29 (`proving-doors-hiding-watches-wave6`, 154 actions to 130).
+- **For the lead:** the heal back's other reading (the tab saying the larger share) is Leon's; the brake waits on a
+  target-aware price; Grindstone's mark (2 rounds, no source) and Converging Fire's; Stand Fast has no per-round limit;
+  Cover Them and Provoke show no measured reward in the wall and gunner duo.
 
 ## 0.29.0 — Balance 2.0: the nine doors
 
