@@ -68,7 +68,7 @@ await snap('01-meter');
 {
   // (0.31.0: a mini meter; its second line, the eye word, is its hover card now: both are read)
   const rowEl = host.locator('.phc-res-row:not(.phc-res-mini)[data-res="res-shadow"]').first();
-  const row = ((await rowEl.textContent().catch(() => '')) || '') + ' ' + ((await rowEl.getAttribute('data-tip-text').catch(() => '')) || '');
+  const row = ((await rowEl.textContent().catch(() => '')) || '') + ' ' + (await tipOf(rowEl));
   ok('the meter row reads the engine\'s Shadow (' + row.replace(/\s+/g, ' ').slice(0, 60) + ')', row.includes((u.res?.shadow ?? 0) + ' / ' + (u.resMax?.shadow ?? 0)) && (await host.locator('.phc-res-row:not(.phc-res-mini)[data-res="res-shadow"]').count()) === 1);
   ok('the eye word in its hover card (Unseen / In view / Seen)', /Eye: (Unseen|In view|Seen)/.test(row));
   await host.locator('#phc-tab-shadow').click(); await settle(host, 200);

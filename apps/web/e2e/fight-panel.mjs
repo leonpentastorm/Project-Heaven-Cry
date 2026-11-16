@@ -6,7 +6,7 @@
 //   - no shield track when the shield is 0; a segment on the HP bar and "+N" once a shield is granted (a real action)
 //   - the status strip is directly under HP, Hidden is in the HELPING group and not red
 //   - a zero meter is folded into the "+N" chip and opens on click; a fold survives a page reload
-//   - no Say box where there is no Narrator (the Proving Ground, a Survival run: the engine's narratorOff)
+//   - no Say box in a Survival run (no Narrator); the Proving Ground keeps its Say and Attempt
 //   - the row's AP equals the preview's AP, and the plain melee attack is "Hit" (never "Cut")
 //   - the hovered tile does not cover its neighbour's effects (no lift of the whole tile)
 // Screenshots: .check/e2e/shots/fight-panel/ (before any fold change, and with everything opened), at both sizes.
@@ -82,7 +82,7 @@ for (const [vw, vh] of (process.env.FP_NARR ? [] : [[1280, 720], [1600, 900]])) 
   // ---- U5: room for the actions ----
   const rows = await listRoom(p);
   ok(tag + ' the action list shows at least four rows without scrolling the page (' + fmtRoom(rows) + ')', roomOk(rows));
-  ok(tag + ' no Say box in the Proving Ground (no Narrator)', (await p.locator('input[placeholder^="Say something"]').count()) === 0);
+  ok(tag + ' the Proving Ground keeps its Say box (Say and Attempt work there)', (await p.locator('input[placeholder^="Say something"]:visible').count()) === 1);
   ok(tag + ' the AP pips ride in the YOUR TURN strip', (await p.locator('.phc-yt .phc-yt-pips > span').count()) >= 6);
 
   // ---- U3: no shield track at 0 ----

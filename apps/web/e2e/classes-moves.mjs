@@ -315,7 +315,10 @@ await settle(host, 250);
 ok('Eye of the Storm armed: ' + (r || 'confirmed'), !r && fx.some((e) => e.k === 'eye_storm'));
 ok('its button reads ARMED', (await host.locator('[role="tabpanel"] button', { hasText: 'Eye of the Storm · ARMED' }).count()) > 0);
 await snap('12-eye-of-the-storm');
-const bodyTxt = async () => (await host.locator('body').textContent()).replace(/\s+/g, ' ');
+// 0.31.0: a meter at 0 with nothing this fight is folded into the row's "+N" chip: open it (a click) before reading the row
+const bodyTxt = async () => { const more = host.locator('[aria-label="Your resources"] [data-meter-more]:visible');
+  if (await more.count()) { await more.first().click().catch(() => {}); await settle(host, 250); }
+  return (await host.locator('body').textContent()).replace(/\s+/g, ' '); };
 ok('the Channeler\'s panel reads Strain and MP', /STRAIN\s*\d+ \/ \d+/i.test(await bodyTxt()) && /MP\s*\d+ \/ \d+/.test(await bodyTxt()));
 
 // ---------- 9. Defender: the resource panel reads Guard; Shrug It Off's toggle names the one in force ----------

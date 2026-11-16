@@ -112,7 +112,9 @@ export const shot = (page, n) => page.screenshot({ path: OUT + n + '.png', fullP
  *  or when the locator matches nothing. */
 export async function tipOf(locator) {
   if (!(await locator.count().catch(() => 0))) return '';
-  return locator.first().evaluate((el) => (el.getAttribute('aria-description') || el.getAttribute('data-tip-text') || el.getAttribute('title')) || '').catch(() => '');
+  // a structured card (data-tip: a meter's, an action's) reads as its name, chips and lines
+  return locator.first().evaluate((el) => { const own = el.getAttribute('aria-description') || el.getAttribute('data-tip-text') || el.getAttribute('title'); if (own) return own;
+    try { const t = JSON.parse(el.getAttribute('data-tip') || 'null'); return t ? [t.name || '', ...(t.chips || []), ...(t.lines || []).map((l) => (l.label ? l.label + ': ' : '') + l.text)].filter(Boolean).join(' ') : ''; } catch { return ''; } }).catch(() => '');
 }
 /** Rules 1.52: creation picks no kit (gear is given by the mode); `_kit` is kept for old callers and ignored. */
 export async function makeCharacter(page, name, archFamily, archName, _kit) {

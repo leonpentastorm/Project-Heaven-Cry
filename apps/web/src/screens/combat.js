@@ -225,7 +225,7 @@ const COMBAT_CSS = [
   '.phc-meter>span:first-child{font-size:11px!important;letter-spacing:.08em!important}',
   '.phc-meter .phc-meter-track{width:40px;height:6px!important}.phc-meter .phc-meter-pips{gap:2px!important}.phc-meter .phc-meter-pips>span{flex:0 0 5px!important;min-width:5px!important;height:7px!important}',
   '.phc-meter .phc-meter-val{flex:none!important;font-size:12px!important;white-space:nowrap!important;overflow:visible!important;line-height:1.2!important}',
-  '.phc-meter .phc-res-chip{font-size:10px!important;line-height:14px!important;padding:0 5px!important}.phc-meter[data-zero=true]{cursor:pointer}',
+  '.phc-meter .phc-res-chip{font-size:11px!important;line-height:14px!important;padding:0 5px!important}.phc-meter[data-zero=true]{cursor:pointer}',
   '.phc-meter-more:hover,.phc-fold-btn:hover{color:#FFFFFF!important;border-color:#A3AEC2!important}.phc-fold-h:focus-visible,.phc-fold-btn:focus-visible,.phc-meter-more:focus-visible,.phc-st-chip:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}',
   // U4: a status chip grows into its full card on hover (the hover card); the strip never scrolls away (it is pinned)
   '.phc-st-chip{transition:transform .1s}.phc-st-chip:hover{transform:scale(1.06)}',
@@ -483,7 +483,9 @@ export const statusOf = (u, g, phys, refOf, own) => [
   ...effectsOf(u, own).map(([k, t, id]) => ({ key: 'fx-' + k, side: id ? sideOf(id, CONDITION_ROWS, condId) : 'hurts', word: shortWord(k), tip: k.charAt(0) + k.slice(1).toLowerCase() + ': ' + t })),
   ...(own ? ownConds(u, g) : condChips(u, g).filter((c) => c.key !== 'shield')).map((c) => ({ key: c.key, side: c.side || 'state', word: c.word || shortWord(c.k), n: c.n, tip: c.t })),
   // a Physical line: Pressure on you is a harm (its view's own key), a held Watch or a weapon stuck in someone a state
-  ...physChips(phys, refOf, '').map((c) => ({ key: 'ph-' + c.key, side: c.key === 'pressure' ? 'hurts' : 'state', word: shortWord(c.k), tip: c.t })),
+  // (a thrown weapon's chip keeps where it is, "STUCK IN <target>": its first word alone was the weapon's, and said nothing)
+  ...physChips(phys, refOf, '').map((c) => { const m = /^(.*) STUCK IN (.*)$/.exec(c.k);
+    return { key: 'ph-' + c.key, side: c.key === 'pressure' ? 'hurts' : 'state', word: m ? 'STUCK IN ' + shortWord(m[2]) : shortWord(c.k), tip: m ? m[1].charAt(0) + m[1].slice(1).toLowerCase() + ' stuck in ' + m[2].charAt(0) + m[2].slice(1).toLowerCase() + ': ' + c.t : c.t }; }),
 ];
 /** Rules 1.14: the wait for the Narrator's answer to an attempt, as the fight screen shows it. Everyone sees who spoke
  *  and the words; the host can end the wait (everything spent comes back); a human Narrator (the host, in "I'll narrate")
@@ -1511,7 +1513,7 @@ export class CombatLogic extends DCLogic {
     const squad = true;
     // 0.31.0 (U5): no Say box where the room's mode has no Narrator at all (a Survival run, the Proving Ground: the engine's
     // narratorOff names both); a Narrator who is only away keeps the box (its Attempt says why it waits).
-    const noNarrMode = !!(g.sandbox || (g.run && g.run.state !== 'over'));
+    const noNarrMode = !!(g.run && g.run.state !== 'over'); // a run only: the Proving Ground keeps its Say and Attempt (its suites and its talk tests use them)
     const say = { can: !!myU && !cb.over && !noNarrMode, value: S.say || '', onChange: (e) => this.setState({ say: e.target.value }),
       send: () => { const text = (this.state.say || '').trim(); if (!text || !myU) return; act({ type: 'combat/say', charId: myU.charId, text }); this.setState({ say: '' }); } };
     say.submit = (e) => { if (e && e.preventDefault) e.preventDefault(); say.send(); }; // the Say button, or Enter in the box
@@ -1702,8 +1704,9 @@ export class CombatLogic extends DCLogic {
       { const redraw = () => this.setState({ foldTick: Date.now() }), mem = this._meters || (this._meters = new MeterMemory());
         const rows = mePanel.res.rows.map((r) => ({ ...r, now: (rows0.find((x) => x.key === r.key) || {}).now }));
         const { open, folded } = meterFolds(rows, mem, cb.name + '|' + (cb.map && cb.map.id) + '|' + cb.order.join(','));
-        mePanel.res.rows = open.map((r) => ({ ...r, tip: (r.sub ? r.sub + '. ' : '') + r.hint, zero: r.now != null && r.now <= 0,
-          fold: r.now != null && r.now <= 0 ? () => { foldMeter(r.key, true); redraw(); } : () => {} }));
+        // (a zero meter with a warning, RELOAD CORE or EMPTY, never folds: game/fold.ts meterFolds; it takes no fold click)
+        mePanel.res.rows = open.map((r) => ({ ...r, tip: (r.sub ? r.sub + '. ' : '') + r.hint, zero: r.now != null && r.now <= 0 && !r.warn,
+          fold: r.now != null && r.now <= 0 && !r.warn ? () => { foldMeter(r.key, true); redraw(); } : () => {} }));
         mePanel.res.has = open.length > 0 || folded.length > 0;
         mePanel.res.hasFolded = folded.length > 0; mePanel.res.foldedN = '+' + folded.length;
         mePanel.res.foldedTip = 'At zero, nothing this fight (click to show): ' + folded.map((r) => r.label.charAt(0) + r.label.slice(1).toLowerCase()).join(', ');

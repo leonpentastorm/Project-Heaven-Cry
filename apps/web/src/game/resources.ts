@@ -14,6 +14,7 @@ import { unitQuiverCards, quiverCards } from '@engine';
 import { doorLineOf, feedLineOf } from './doorView';
 import { forkChipsLine } from './forkLine';
 import { enchantMark } from './quiverView';
+import { proseTip } from './actionTip';
 import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
   coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam, wearState } from '@engine';
 
@@ -417,6 +418,8 @@ export function resRowView(r: ResRow, compact = false) {
   const value = compact && r.short ? r.short : compact && r.max != null && r.kind !== 'text' && r.value !== 'DOWN' && r.value !== 'BROKEN' ? Math.round(r.now ?? 0) + ' / ' + r.max : r.value;
   return {
     key: r.key, wide: ['ammo', 'held', 'thr', 'off', 'charge'].includes(r.key) || r.value.length > 22 ? 'true' : 'false', label: r.label.toUpperCase(), value, hint: r.hint, sub: r.sub || '', hasSub: !!r.sub && !compact, warn: r.warn || '', hasWarn: !!r.warn, level: r.level || 'none',
+    // the meter's hover card (game/actionTip.ts, look 'meter'): its name, its whole value and warning, then what it is and what to do
+    card: JSON.stringify({ name: r.label.toUpperCase(), chips: [r.value, r.warn || ''].filter(Boolean), lines: [...(r.sub ? [{ key: 'sub', kind: 'note', label: '', text: r.sub }] : []), ...proseTip(r.hint).lines], look: 'meter' }),
     aria: r.label + ': ' + r.value + (r.sub ? ' (' + r.sub + ')' : '') + (r.warn ? '. ' + r.warn : '') + '. ' + r.hint,
     isBar: r.kind === 'bar', isPips: r.kind === 'pips', isText: r.kind === 'text',
     labelStyle: 'flex: none; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + r.colour + (compact ? '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0' : ''),

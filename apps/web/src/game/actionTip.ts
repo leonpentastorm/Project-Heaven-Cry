@@ -24,7 +24,7 @@
 /** One line of the hover card: what it does, the weapon's line, a trait, a note, or the refusal. */
 export interface TipLine { key: string; kind: 'text' | 'weapon' | 'trait' | 'note' | 'why'; label: string; text: string }
 /** A laid-out hover card: the name, its cost chips, its lines. name '' (a prose hover text): a card with no title line. */
-export interface Tip { name: string; chips: string[]; lines: TipLine[] }
+export interface Tip { name: string; chips: string[]; lines: TipLine[]; /** 'meter': a resource meter's card (its name and value at full size: the mini meter grows on hover) */ look?: 'meter' }
 /** What a hover card is made from (the descriptor's own fields). */
 export interface TipSrc {
   name: string;
@@ -143,7 +143,7 @@ export function setTip(el: Element, text: string | null | undefined, opts: { lab
 /** The card an element shows, or null (data-tip first, then data-tip-text). */
 export function tipFor(el: Element): Tip | null {
   const j = el.getAttribute('data-tip');
-  if (j) { try { const t = JSON.parse(j); if (t && (t.name || (t.lines && t.lines.length))) return { name: t.name || '', chips: t.chips || [], lines: t.lines || [] }; } catch { /* fall through */ } }
+  if (j) { try { const t = JSON.parse(j); if (t && (t.name || (t.lines && t.lines.length))) return { name: t.name || '', chips: t.chips || [], lines: t.lines || [], ...(t.look ? { look: t.look } : {}) }; } catch { /* fall through */ } }
   const p = el.getAttribute('data-tip-text');
   if (p && p.trim()) { const t = proseTip(p); return t.lines.length ? t : null; }
   return null;
@@ -159,10 +159,13 @@ export const TIP_CSS = [
   '.phc-atip-n{font-size:13px;font-weight:700;margin-right:3px}',
   '.phc-atip-c{font-size:13px;font-weight:700;padding:0 6px;border-radius:99px;border:1px solid #3B475D;color:#E7EBF3;white-space:nowrap}',
   '.phc-atip-l b{font-weight:700}',
+  // a meter's card (0.31.0): the mini meter grows on hover, so its name and value are read here at full size
+  '.phc-atip[data-look=meter] .phc-atip-n{font-size:13px;letter-spacing:.1em}.phc-atip[data-look=meter] .phc-atip-c{font-size:15px;border:0;padding:0}',
 ].join('');
 /** Lay a card out as elements (the name and its chips if any, a line each). */
 export function tipElement(doc: Document, t: Tip): HTMLElement {
   const box = doc.createElement('div'); box.className = 'phc-atip'; box.setAttribute('role', 'tooltip'); box.setAttribute('data-atip', '1');
+  if (t.look) box.setAttribute('data-look', t.look);
   if (t.name || t.chips.length) {
     const h = doc.createElement('div'); h.className = 'phc-atip-h';
     if (t.name) { const nm = doc.createElement('span'); nm.className = 'phc-atip-n'; nm.textContent = t.name; h.appendChild(nm); }

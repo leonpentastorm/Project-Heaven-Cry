@@ -1426,7 +1426,7 @@ Families: `body`, `brain`, `heart`.
 | name | signature or shape | what for |
 | --- | --- | --- |
 | `TipLine` | `interface TipLine { key, kind, label, text }` | One line of the hover card: what it does, the weapon's line, a trait, a note, or the refusal. |
-| `Tip` | `interface Tip { name, chips, lines }` | A laid-out hover card: the name, its cost chips, its lines. name '' (a prose hover text): a card with no title line. |
+| `Tip` | `interface Tip { name, chips, lines, look }` | A laid-out hover card: the name, its cost chips, its lines. name '' (a prose hover text): a card with no title line. |
 | `TipSrc` | `interface TipSrc { name, cost, text, needs, line, traits, notes, why }` | What a hover card is made from (the descriptor's own fields). |
 | `sentences` | `sentences(prose: string): string[]` | Split prose into sentences at top level: a stop (. ! ? …) followed by a space and a capital, a digit, a sign or an opening bracket. |
 | `actionTip` | `actionTip(src: TipSrc): Tip` | The action's card: the name and cost chips, then its lines (see the top of this file). |

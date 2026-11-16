@@ -19,8 +19,9 @@ export function foldVals(id: string, o: { byRule?: boolean; redraw?: () => void 
 // ---------- the meters' zero rule (U2) ----------
 // A meter at 0 for a door with nothing spent or gained this fight starts folded into the "+N" chip at the end of the
 // meter row; a click opens it (and a click on an open zero meter folds it back). It opens by itself the first time it
-// gains a point: the hand-set state is forgotten then, so the rule (now: open) decides again.
-export interface MeterIn { key: string; now?: number | null }
+// gains a point: the hand-set state is forgotten then, so the rule (now: open) decides again. A zero meter that carries
+// a warning chip (its call to act) is never folded.
+export interface MeterIn { key: string; now?: number | null; warn?: string }
 /** The meters seen above zero in this fight (by the screen, per fight; never stored). */
 export class MeterMemory {
   private fight = ''; private seen = new Set<string>();
@@ -40,7 +41,8 @@ export function meterFolds<T extends MeterIn>(rows: T[], mem: MeterMemory, fight
   for (const k of mem.note(fight, rows)) clearFold(meterFoldId(k)); // its first point: it opens by itself
   const open: T[] = [], folded: T[] = [];
   for (const r of rows) {
-    const zero = r.now != null && r.now <= 0;
+    // a zero meter with a call to act (RELOAD CORE, EMPTY, OUT) never folds: an empty Evoker is the most urgent meter
+    const zero = r.now != null && r.now <= 0 && !r.warn;
     if (zero && isFolded(meterFoldId(r.key), !mem.has(r.key))) folded.push(r); else open.push(r);
   }
   return { open, folded };

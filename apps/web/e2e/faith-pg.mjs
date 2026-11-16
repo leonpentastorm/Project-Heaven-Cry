@@ -248,7 +248,7 @@ ok('Faith 7 and your patron\'s Hymn: Witnessed', !!(await myU()).conds?.witnesse
 ok('the resource rows say WITNESSED', /WITNESSED/.test(await p.locator('aside').first().textContent()));
 { // one fact, one place (Leon, live 0.24.0): Witnessed is the resource row in your panel, said once (no chip beside it)
   const row = p.locator('aside').first().locator('[data-res="witnessed"]').first();
-  const rt = (await row.count()) ? { text: (await row.textContent()) || '', tip: (await row.getAttribute('data-tip-text')) || '' } : null;
+  const rt = (await row.count()) ? { text: (await row.textContent()) || '', tip: await tipOf(row) } : null;
   ok('Witnessed is said once in your panel, and its card says how long (' + JSON.stringify(rt) + ')', !!rt && /until the fight ends or Old Overcast/.test(rt.tip) && (await p.locator('aside').first().locator('[data-tip-text^="Witnessed:"]').count()) === 0 && !/WITNESSED · 99/.test(await p.locator('body').textContent())); }
 ok('the FAITH tab\'s header says so too', /WITNESSED · UNTIL THE FIGHT ENDS OR OLD OVERCAST ACTS/.test((await p.locator('[role="tabpanel"] [data-faith-head="old_overcast"]').textContent().catch(() => '')) || ''));
 if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-hymn.png' });

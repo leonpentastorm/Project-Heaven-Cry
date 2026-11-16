@@ -139,7 +139,9 @@ token's strip is gone):
    meters follow as minis: the three most urgent open ones and one "+N" chip for the rest (the zero ones folded and the
    other open ones; a click opens them all, "‹" goes back to three), at most two lines, scrolling inside past that.
 3. **The You card** (folds): portrait, class, Echo, AP / Movement / Stims and the reaction pip, the folded "Shields N"
-   row with its "?" (the rule), then the **meters**: one row of minis, the zero ones folded into "+N"; then Bonds (one
+   row with its "?" (the rule), then the **meters**: one row of minis, the zero ones folded into "+N" (never one with a
+   warning: an empty Evoker's RELOAD CORE stays on the row); a mini grows on hover into its card (`look: 'meter'`: the
+   name at 13 px, the whole value and warning at 15 px, the focus line, the hint); then Bonds (one
    line at 0 Bonds). The squad list folds too.
 4. **The turn box:** YOUR TURN with the AP pips in the same strip; the vow as one line; the tab row with a cog at its
    end (the Fight tabs settings); the action list (at least four rows under a head line: `listMinPx`, 200 px, and on

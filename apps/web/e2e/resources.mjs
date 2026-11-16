@@ -86,18 +86,29 @@ if (await cut.count()) {
 } else ok('the turn cut-in came up after the reload (it shows for a turn of yours)', false);
 let t = await rowText('ammo');
 ok('gunner: ammo in words, loaded / capacity and spares, RELOAD: ' + t, /AMMO/.test(t) && /3 \/ \d+ loaded/.test(t) && /spare/.test(t) && /RELOAD/.test(t));
+// 0.31.0: a meter at 0 with nothing this fight (Heat, cool) is folded into the row's "+N" chip, which names it; a click opens it
+if (!(await youCard().locator('[data-res="heat"]').count())) {
+  const more = youCard().locator('[data-meter-more]');
+  ok('gunner: cool Heat is folded into the "+N" chip, which names it: ' + (await tipOf(more)), /Heat/.test(await tipOf(more)));
+  await more.first().click(); await pause(p, 300); await p.mouse.move(1435, 895);
+}
 t = await rowText('heat');
 ok('gunner: Heat vs its jam limit: ' + t, /HEAT/.test(t) && /\d+ \/ \d+/.test(t));
 ok('gunner: no Sigil or Soul rows', !(await youCard().locator('[data-res="charge"],[data-res="strain"]').count()));
 ok('the old tiny Ammo line is gone from the You card', !/Ammo \d+\/\d+/.test((await p.locator('[aria-label="You"]').first().textContent()) || ''));
 const sz = await youCard().locator('[data-res="ammo"]').first().evaluate((el) => { const sp = el.querySelectorAll('span'); const fs = [...sp].map((s) => parseFloat(getComputedStyle(s).fontSize)); const bar = [...el.querySelectorAll('span[aria-hidden="true"] > span')].map((s) => s.getBoundingClientRect().height); return { min: Math.min(...fs.filter((x) => x > 0)), max: Math.max(...fs), bar: Math.max(0, ...bar), w: el.getBoundingClientRect().width, card: el.closest('[aria-label="You"]').getBoundingClientRect().width }; });
-ok('readable: labels ≥ 13 px, values ≥ 15 px, bars ≥ 8 px, near the card\'s full width: ' + JSON.stringify(sz), sz.min >= 12 && sz.max >= 15 && sz.bar >= 8 && sz.w >= sz.card - 40);
+// 0.31.0: the meters are one row of MINI meters (Leon: mini, and it grows on hover): the mini at a mini's sizes here, its
+// hover card at the old readable ones (labels ≥ 13 px, values ≥ 15 px) below
+ok('readable mini: text ≥ 11 px, bars ≥ 5 px, inside the card: ' + JSON.stringify(sz), sz.min >= 11 && sz.bar >= 5 && sz.w <= sz.card);
 await snap('gunner-1440');
 // Hover shows the hint.
 await youCard().locator('[data-res="ammo"]').first().hover();
 await pause(p, 200);
 await youCard().locator('[data-res="ammo"]').first().hover(); await pause(p, 500);
-ok('hovering a row shows its hint (what to do) in the one card', (await p.locator('.phc-atip').count()) === 1 && /\S/.test(await tipOf(youCard().locator('[data-res="ammo"]'))));
+const atipTxt = ((await p.locator('.phc-atip').first().textContent().catch(() => '')) || '');
+ok('hovering a row shows its hint (what to do) in the one card: ' + atipTxt.slice(0, 90), (await p.locator('.phc-atip').count()) === 1 && /\S/.test(await tipOf(youCard().locator('[data-res="ammo"]'))) && /AMMO/.test(atipTxt) && /RELOAD/.test(atipTxt));
+const big = await p.locator('.phc-atip').first().evaluate((el) => ({ label: parseFloat(getComputedStyle(el.querySelector('.phc-atip-n')).fontSize), value: parseFloat(getComputedStyle(el.querySelector('.phc-atip-c')).fontSize), text: el.querySelector('.phc-atip-c').textContent })).catch((e) => ({ err: String(e) }));
+ok('readable hover card: label ≥ 13 px, value ≥ 15 px (the mini grows on hover): ' + JSON.stringify(big), big.label >= 13 && big.value >= 15 && /3 \/ \d+ loaded/.test(big.text || ''));
 await snap('gunner-hover-1440');
 // 1280×720: the full card steps aside; the 2–3 most urgent rows sit under the bar.
 await p.setViewportSize(SMALL); await settle();
