@@ -236,7 +236,7 @@ In these formulas an Attribute counts from 1, so "+(Strength − 1)" is 0 at the
 | Soul range bonus | +0.5 tile × Will Power (rules 1.13: it was Lore Master) |
 | Ready designs | 2 + floor(Will Power ÷ 2), at least 3 (rules 1.13: it was Empathy) |
 | Mana Syphon bonus | +10% × (Determination − 1) + 10% × Will Power |
-| Strain limit | 3 + floor(Will Power ÷ 2) |
+| Strain limit | 3 + floor(Will Power ÷ 2) | *(Rules 1.60 item 4611: × Composure's feed, rounded.)*
 | Prayer cooldown (the wait between Hymns) | 9 rounds − 0.75 × Faith − 0.25 × Virtue, rounded up, never under 3 (rules 1.22; it was 4 − 0.5 × (Virtue − 1) − 0.5 × Faith, minimum 1) |
 
 **Social.** Leadership comes from Authority: 0 Unfit, 1–2 Squad, 3–4 Platoon, 5+ Command. Each point of Authority moves Karma 1 further every time it changes, more when it is awarded and more when it is taken (rules 1.13: it was Conscience).
@@ -943,9 +943,9 @@ from either hand, and in the off hand is not a second weapon. Its Defense and Mo
 
 | Type | Dmg | Kg | Price | Hands | Needs |
 |---|---|---|---|---|---|
-| Buckler | 6 | 2 | 200 | 1H | *(PROVISIONAL, rules 1.57)* |
-| Legion riot shield | 8 | 7 | 700 | 1H | *(PROVISIONAL, rules 1.57)* |
-| Pavise | 8 | 10 | 1,200 | 1H | *(PROVISIONAL, rules 1.57: the lead's ruling)* |
+| Buckler | 15 | 2 | 200 | 1H | *(PROVISIONAL, rules 1.60 item 4616: the main hand's blow; its follow ×0.4, 6 as before)* |
+| Legion riot shield | 20 | 7 | 700 | 1H | *(PROVISIONAL, rules 1.60 item 4616: its follow ×0.4, 8 as before)* |
+| Pavise | 20 | 10 | 1,200 | 1H | *(PROVISIONAL, rules 1.57: the lead's ruling; rules 1.60 item 4616: its follow ×0.4, 8 as before)* |
 
 ##### 7.12 Off-hand items: 7 types
 
@@ -1093,7 +1093,7 @@ Guard is a pool of points that takes hits for you. Anyone with Durability has on
 1. **The pool.** Its size is your Durability points, 5 at most *(4 since rules 1.55 item 74)*. A fight starts with 0 Guard and what you hold is lost when the fight ends. The Defender's own pool (5; the same `rules.guard.max`, so 4 since rules 1.55 item 74) stands when it is the larger, and the Defender's class moves are unchanged.
 2. **Gaining Guard.** The **Guard technique** gives 1 Guard, +1 for each Durability point above the first, +1 more with a shield in the off hand: Durability 1 gives 1, Durability 3 gives 3, Durability 3 with a shield 4 (the pool of 3 holds 3 of it). The **Brace action** (1 AP) gives a flat 2 Guard, 3 with a shield. Never above the pool. With a Guard pool you may Brace with any weapon; Brace is still once until you move. *(Rules 1.55 item 71: the Guard technique is Durability's own and is yours with any weapon in the hand, so a tank with a gun can take Guard every turn.)*
 3. **Bracing for Guard is not bracing the weapon.** A weapon that had the Brace action before rules 1.13 (one that must be braced, one at −2 unbraced, one whose skill is a braced bonus) is set as before: Recoil halved, its penalties gone, its techniques' Braced lines open. With any other weapon, Brace sets only you: you gain the Guard and stand in the braced stance that class moves ask for, and nothing else. The Brace technique (ranged, 16) still sets such a weapon where its own rule allows.
-4. **Guard soaks.** When a hit would take HP, each Guard point takes 6 damage off it *(rules 1.55 item 72; was 10)* and is spent, as many points as the hit needs, **but the last point is kept back** so that a reaction (Interpose, Shield Wall, Shrug It Off) can still be paid. If what would get through would take you down, the last point is spent too. Guard is counted last: after armour, after every other reduction, and after your shield of HP. A condition's own tick (Bleeding, Burning, poison) and harm you do to yourself (Strain, a Mana Short) are not hits; a trap, a hazard and an explosion are.
+4. **Guard soaks.** When a hit would take HP, each Guard point takes 6 damage off it *(rules 1.55 item 72; was 10)* *(superseded by rules 1.60 item 4604: × Pain Threshold's feed)* and is spent, as many points as the hit needs, **but the last point is kept back** so that a reaction (Interpose, Shield Wall, Shrug It Off) can still be paid. If what would get through would take you down, the last point is spent too. Guard is counted last: after armour, after every other reduction, and after your shield of HP. A condition's own tick (Bleeding, Burning, poison) and harm you do to yourself (Strain, a Mana Short) are not hits; a trap, a hazard and an explosion are.
 5. **Pressure comes off Guard first:** each point of Pressure that would land on you costs 1 Guard instead, with no reaction, while you have any.
 5a. **The tank hits through its door** *(rules 1.55 item 73)*: while you hold Guard, your weapon attacks roll with Durability's modifier in place of the weapon's own skill modifier when Durability's is higher. It replaces the weapon skill's modifier, never adds to it.
 6. **Momentum.** A hit on a unit that holds Guard points costs it no Momentum. *(See item 1004: the engine asks that Guard soaked part of the hit.)*
@@ -1800,7 +1800,7 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 
 #### 3. Strain, the burn, the Mana Short and calming the heart
 
-1. **Strain limit:** 3 + floor(Will Power ÷ 2). **+1 per Begin** and **+1 per held turn** (the swell), each +2 in Flooded air; +2 a Begin without an Emanator. *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)*
+1. **Strain limit:** 3 + floor(Will Power ÷ 2). *(Superseded by rules 1.60 item 4611: × the Strain limit's beta feed, Composure.)* **+1 per Begin** and **+1 per held turn** (the swell), each +2 in Flooded air; +2 a Begin without an Emanator. *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)*
 2. **Every turn start: −1 Strain, always** (whatever you did), before the swell.
 3. **Over the limit, no roll:** each point over **burns your heart for 8 true damage at the end of your turn**. It Downs, never kills (a foe is subdued).
 4. **The Mana Short is automatic at 3 over the limit** (checked whenever Strain rises, and again at the end of your turn, for a limit that fell: item 544): you are **Stunned** (you lose your next turn), a held Outburst **goes off wild** (at a random creature within its reach, or into the air), and its element's **stage-1 rider lands on your own tile** (you take Frost's Slowed, Acid's Corroded). Then Strain falls to the limit. *(Superseded by rules 1.56, the Mana Shock: Strain no longer falls; the caster is in Mana Shock until it is back at the limit.)* Will Power raises the limit; it no longer rolls you out of trouble.
@@ -3194,7 +3194,7 @@ All in (against the normal-share rifle): 4 glyphs 185 / 142 / 187 / 192 / 205 / 
 | 25 | Abandon | +0.8 | **+1.0** | 2 Strain at the Pump; once in an Outburst | nothing else: the biggest step there is | four of them made ×3.8 on the old table (1.7 times a plain stage 4). Once in an Outburst now. |
 
 7. **Modules.** **Impact is retired** (its card said it changed nothing; it took a slot and a pick: an old design holding it loses it and keeps working). **At Once**: no roll at **×0.8** (was ×0.5, which a free Calm beat outright). **Return**: the second hit is at **×0.3** (was a second full hit: ×2 damage for 20 MP, the strongest thing in the school). **Shell**: a shield of **×0.35** of the Release (was ×0.5) and **Inverse**: a shield of **×0.7** of the damage (was ×1), so both shield about what they did before the base rose. **Quiet** costs **+5 MP** (was −5: it halves the hold's Strain, which now has a price). The other modules, the schools, the shapes (Bolt ×1, Lance ×0.8, Wave and Burst ×0.7, Aura ×0.6) and the tones keep their numbers.
-8. **Strain** is unchanged: the limit (3 + half Will Power), +1 a Begin and a swell, −1 every turn start, 8 a point over the limit, the Mana Short at 3 over. It is the price of the costly feelings now, which is what makes it matter: a heart that pours Rage every turn fills in a fight of the target length.
+8. **Strain** is unchanged: the limit (3 + half Will Power), *(superseded by rules 1.60 item 4611: × Composure's feed)* +1 a Begin and a swell, −1 every turn start, 8 a point over the limit, the Mana Short at 3 over. It is the price of the costly feelings now, which is what makes it matter: a heart that pours Rage every turn fills in a fight of the target length.
 9. **The Will Power perks** (rules 1.14) are unchanged and are part of optimised play: Overdraw is +0.4 for 1 Strain (the first of a fight free), on the yardstick; Heart Overload's free Begin is worth 2 AP a turn; Resonance is +10% a Release to +20% or +30%. Heart Surge's reading past stage 4 is one step of the new table: ×2.8 (was ×2.6).
 
 **Measured** (normal share; percent of the rifle over the same turns; 12 fights of 8 turns a cell, the peak 36 fights of one turn):
@@ -6552,7 +6552,7 @@ Leon (15 Nov 2026): *"weapon can be under or over the line, depends on their pri
 2. **The closed list of kinds** (`variants.json kinds`; twelve): Harder (lands a share harder), True (+N to hit; a focus: and its forced saves N harder), Quick hands (reloading N AP less; a core swap N AP less; the first Vent a turn free), Rider (a hit makes the target Bleed), Kind (a focus's heals and shields a share stronger), Deep magazine (N more rounds), Long reach (N tiles further), Runs cool (N more Heat before it must vent), Kicks less (Recoil N lower), Holds more Flux (an Evoker's Flux limit N higher), Deep cell (each core gives N more charge), Steady heart (the Strain limit N higher). Each kind has the sentence the card shows, what it fits, its worth per unit, and either the base's number field it changes (magazine, range, Heat limit, recoil) or the item effects it carries (each acting only with the instance in a hand, `with_this`; the stat kinds while the focus is in a hand).
 3. **Worth and price.** A modifier's worth is its distance from its kind's neutral value times its form's `worth_per`, in percent of a rifle-turn; a variant's worth is the sum, at most `worth_cap` **20** (Leon). Its price is its base's price x (1 + worth / 100), at its grade's price multiplier, never under its own grade (`priceOf`): a direct upgrade comes at a rarer grade and costs more. A variant is gear, not run power: it does not count on Survival's boon cap.
 4. **What it shows and does.** The card shows the base's lines with the field kinds' numbers already changed, then one line per modifier, its sentence. In the fight its numbers and its modifiers' terms are the base's rules reading the variant's row.
-5. **One copy of the Flux limit and of a core's charge** (C11): the Flux an Evoker holds is `rules.json mana.sigil.flux.safe_max` (6) and a standard core's charge `mana.cores.standard.charge` (10), read once; an item adds to them through the stats `flux_max` and `core_charge` (a variant's Holds more Flux and Deep cell).
+5. **One copy of the Flux limit and of a core's charge** (C11): the Flux an Evoker holds is `rules.json mana.sigil.flux.safe_max` (6) *(superseded by rules 1.60 item 4608: × Rumination's feed, rounded, before what items add)* and a standard core's charge `mana.cores.standard.charge` (10), read once; an item adds to them through the stats `flux_max` and `core_charge` (a variant's Holds more Flux and Deep cell).
 6. **The twenty lines** (ten guns, ten foci; all Fine but the rotary's Masterwork 'Lazy Susan' and the Visualizer's Masterwork 'Steady Eye'): the service rifle's 'Long Belly' (Deep magazine 8, Kicks less 1), the Decrkm 'Steady Hand' (Kicks less 1, True 1), the Legion 'Quickdraw' PDW (Quick hands: reload 1), the coach gun's 'Ranch Pair' (Long reach 2), the Drifter 'Hot Six' (Harder 10%), the Brigade 'Cold Drum' (Runs cool 3, Deep magazine 4), the CCEC 'Pin' (True 1), the rotary's 'Lazy Susan' (Runs cool 6, Kicks less 1), the lever carbine's 'Brush Gun' (Quick hands: reload 1, Long reach 2), the crossbow's 'Barbed' (Rider: Bleed); the Evoker's 'Deep Well' (Holds more Flux 2), 'Long Fuse' (Deep cell 2, Quick hands: core 1), 'Vent Valve' (Quick hands: the first Vent free), 'Marksman's Glove' (True 1); the Emanator's 'Calm Wrist' (Steady heart 1) and 'Red Knuckle' (Harder 10%); the Attuner's 'Warm Palm' (Kind 15%) and 'Tight Thread' (True 1); the Visualizer's 'Long Lens' (True 1) and 'Steady Eye' (True 2). The draft's push rider, the Visualizer's Deep cell and its 'Hard Light' wait (a push on hit and a figment's blow made with the focus are not checked yet; the Visualizer's charge is its own number, `figments.json visualizer.charge`).
 
 ## Rules 1.56 (Balance 2.0), the 0.28.2 merge
@@ -6587,8 +6587,8 @@ Leon (15 Nov 2026): *"revamp all perks in the alpha section, make sure those 2 p
 10. **Answer in Kind** (`shrug_it_off`, Durability): when an enemy's blow hurts you, your weapon attacks deal 8% (II: 12%) more until the end of your next turn; II: the blow also gives 1 Guard (once a round).
 11. **Iron Grip** (`iron_grip`, Raw Power): the technique Grapple and the forbid stay (a held target can't use Answers or reactions); your melee hits deal 6% (II: 12%) more to a Grappled or Prone enemy (II: also Shaken or Afraid).
 12. **Keep Swinging** (`breaching_strike`, Raw Power): when one of your Finishers drops an enemy, you gain 1 (II: 2) Momentum once it is done; II: a Finisher that hits an Elite or a Boss gives 1 Momentum.
-13. **Pressure Point** (`both_hands`, Dexterity): your ranged attacks deal 10% more to a Pressed enemy (Pressure 2+); II: 15%, and 10% more again at Pressure 3+.
-14. **Keep Their Heads Down** (`running_reload`, Dexterity): once a turn (II: once a turn for each enemy), your ranged hit gives its target 1 more Pressure.
+13. **Pressure Point** (`both_hands`, Dexterity): your ranged attacks deal 10% more to a Pressed enemy (Pressure 2+); II: 15%, and 10% more again at Pressure 3+. *(Superseded by rules 1.60 item 4614.)*
+14. **Keep Their Heads Down** (`running_reload`, Dexterity): once a turn (II: once a turn for each enemy), your ranged hit gives its target 1 more Pressure. *(Superseded by rules 1.60 item 4615.)*
 15. **Long Dark** (`sleight_of_hand`, Ingenuity): your attacks made while Hidden deal 8% (II: 14%) more; it multiplies on top of the Break.
 16. **Shadow Step** (`shadow_step`, Ingenuity): once (II: twice) a turn, on your turn, an attack you make while Hidden and holding Shadow costs 1 AP less (never under 1). A preview spends nothing.
 17. **Second Clause** (`hold_the_stroke`, Brain Power): your Sigil spells deal 6% (II: 12%) more to an enemy that is Burning, Slowed, Corroded, Pinned, Blinded, Shaken or Silenced.
@@ -7709,7 +7709,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 88. *(Superseded by rules 1.56 item 1: the gun's own Recoil.)* **Recoil runs** (−1 a shot after the first, less floor(Dexterity ÷ 2), halved braced or Emplaced, none in a volley or a reaction). Emplaced: +2 to attacks with the weapon.
 89. **Reactions are counted** (1 a round; items add; none while Suppressed or Stunned *(Superseded by rules 1.28: Suppressed forbids attacking and moving ones only, item 1751)*); Overwatch can hold several shots on one reaction (class moves).
 90. **The walk is tile by tile:** opportunity attacks and Overwatch on every step; a walk cut short keeps its unwalked tiles in the bank; **one Sprint per turn for everyone** (plan 6a-12, the Drill Echo fix). Path options (wall running, a 2-tile jump, passing allies, rough ground) are opened by items. Traps a side set itself or spotted are known to that side only.
-91. **Hidden in a fight:** Hide is 2 AP, only out of every enemy's sight; the ambush (crit 19–20, × Ambush) applies to the first attack of each time you hide (plan 6a-8); silent weapons don't reveal; spotting at the end of every turn (d20 + notice, enemies +0/+2/+4/+6 by tier, against 10 + Ingenuity modifier + Stealth); adjacency reveals. *Still to do (lane B): the stay-hidden TN rising +2 per success for Shadow Step II.*
+91. **Hidden in a fight:** Hide is 2 AP, only out of every enemy's sight; the ambush (crit 19–20, × Ambush) applies to the first attack of each time you hide (plan 6a-8); silent weapons don't reveal; spotting at the end of every turn (d20 + notice, enemies +0/+2/+4/+6 by tier, against 10 + Ingenuity modifier + Stealth); *(superseded by rules 1.60 item 4607: + Acuity's feed step)* adjacency reveals. *Still to do (lane B): the stay-hidden TN rising +2 per success for Shadow Step II.*
 92. **Kinds and tags** on every unit and NPC (human by default); robots, machines, turrets and drones give +2 on the meter when they die; unaware enemies lose round 1.
 93. **Surrender** (plan 6a-3, the fix for The Name They Whisper): one surrender save per enemy per fight, Heart save vs 12 + the speaker's Heart debuff strength, only at half HP or less or alone; Bosses, machines and no_surrender never. Surrendered and subdued foes count as defeated (XP too) but give no kill credit and no meter rise; they stay as neutral prisoners.
 94. **Talking in a fight:** 2 AP, within 8 tiles; Persuade (Eloquence → Left Brain Debuff, Brain save), Threaten (Intimidation → Shaken, Body save), Parley (the surrender save).
@@ -10216,7 +10216,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2312. **Old saves (rules 1.36):** a character's current HP × scale at its level, held to the max, once (`hpRev` 136); a fight in progress moves its units' HP, max, shield and armour and its objects. PROVISIONAL.
 2313. **A level-up adds the rise in max HP to current HP (rules 1.36).** PROVISIONAL.
 2314. **Shares of max HP or of a hit carry no Level term (rules 1.36):** Shrug It Off, Clean Hands, Field Surgeon, Crawler-Blooded's chitin drop `profile: flat`. PROVISIONAL.
-2315. **A Figment's HP (rules 1.36):** form HP × `output.profiles.figment_hp` (k 0.35, 0.15 a point of Visualization) × hp_mult at its owner's level (`figments.json level.hp` ["hp_mult"], `level.hp_stat`); the damage_mult term is gone. Fitted on a small sample (4 fights a cell). PROVISIONAL.
+2315. **A Figment's HP (rules 1.36):** form HP × `output.profiles.figment_hp` (k 0.35, 0.15 a point of Visualization) × hp_mult at its owner's level *(and × Improvisation's feed, rules 1.60 item 4609)* (`figments.json level.hp` ["hp_mult"], `level.hp_stat`); the damage_mult term is gone. Fitted on a small sample (4 fights a cell). PROVISIONAL.
 2316. **`output.level.mend` and `output.level.reference_hp` (rules 1.36):** M(L) × scale(L) and R(L) × scale(L), the percent spec's section 1 columns on the level scale. PROVISIONAL.
 2317. **The percent gate (rules 1.36; Leon: 20%):** 20% of the target's max HP for a 2-AP heal or shield action (profiles mend, sigil_mend, soul_mend, tend: `min_pct`), 13.3% for a Whisper and Tending's Raise, 33.3% for a Hymn and an intervention (`mending.gate`), times the action's own multipliers; counted up to 145 × scale at the giver's level; rounds up. PROVISIONAL.
 2318. **The cap (rules 1.36):** no single heal more than half its target's max HP (`mending.cap_pct` 0.5); a Miracle is exempt; shields have none. PROVISIONAL.
@@ -10794,8 +10794,8 @@ Items 4174 to 4176.
 4205. **Answer in Kind (item 10):** ×1.08; II ×1.12 and 1 Guard a round. PROVISIONAL.
 4206. **Iron Grip (item 11):** +6%; II +12%. PROVISIONAL.
 4207. **Keep Swinging (item 12):** 1 Momentum; II 2, and 1 on an Elite or Boss hit. The Momentum is given when the Finisher's action is done (`acted`), since a Finisher spends the meter after its strike. PROVISIONAL.
-4208. **Pressure Point (item 13):** +10% at Pressure 2; II +15% at 2, +10% more at 3 (the steps read `target:pressure`; the 2 and 3 are `techniques.json rules.pressure`'s Pressed and Suppressed, held equal by `tools/validate.py` since 16 Nov 2026). PROVISIONAL.
-4209. **Keep Their Heads Down (item 14):** 1 Pressure, once a turn; II once a turn a target. PROVISIONAL.
+4208. **Pressure Point (item 13):** +10% at Pressure 2; II +15% at 2, +10% more at 3 *(superseded by rules 1.60 item 4614)* (the steps read `target:pressure`; the 2 and 3 are `techniques.json rules.pressure`'s Pressed and Suppressed, held equal by `tools/validate.py` since 16 Nov 2026). PROVISIONAL.
+4209. **Keep Their Heads Down (item 14):** 1 Pressure, once a turn; II once a turn a target. PROVISIONAL. *(Superseded by rules 1.60 item 4615.)*
 4210. **Long Dark (item 15):** ×1.08; II ×1.14. PROVISIONAL.
 4211. **Shadow Step (item 16):** −1 AP, at least 1, once a turn; II twice. PROVISIONAL.
 4212. **Second Clause (item 17):** ×1.06; II ×1.12; the seven conditions. PROVISIONAL.
@@ -11073,7 +11073,7 @@ Items 4240 to 4247.
 
 ### Rules 1.57, shields are weapon rows (the lead's rulings, 16 Nov 2026)
 
-4512. **Shield rows (A1 item 1):** `weapons.json` `buckler` (damage 6), `riot_shield` (8), `pavise` (8): category
+4512. **Shield rows (A1 item 1):** `weapons.json` `buckler` (damage 6), `riot_shield` (8), `pavise` (8): *(superseded by rules 1.60 item 4616: 15, 20, 20, the main hand's blow; the follow keeps 6, 8, 8)* category
     `shield`, `hands: 1H`, `phys {system: melee, profile: melee, props: [shield], hits_with: durability, scales_with:
     [strength]}`, `skill: durability`, `mastery_family: unarmed` (`weapon_mastery.json` unarmed lists the category),
     `effects` (Defense, Movement), `mod_slots: []`, `ap_cost.attack` 2, durability 150, price and weight as they were.
@@ -11095,7 +11095,7 @@ Items 4240 to 4247.
     to that hand. A sabre beside a main-hand shield asks its +2 and opens the Both block. No number.
 4517. **Two shields (A1 item 6):** as item 4309 (the stacks measured there hold). PROVISIONAL. *(Superseded by rules 1.59
     items 4540 and 4541: two shields double every Guard gain; the Bulwark's pool is 5 / 6 / 7.)*
-4518. **Shield Bash (A1 item 7):** `techniques.json shield_bash.numbers.mult` 1.5 -> 2.5, struck with the shield's row
+4518. **Shield Bash (A1 item 7):** `techniques.json shield_bash.numbers.mult` 1.5 -> 2.5, *(superseded by rules 1.60 item 4617: 1.0 of the new line, the same damage)* struck with the shield's row
     (`inHand` swaps the shield in, `swapMain` set). Moves: the replays with the tank (riot shield) and the golden
     tables' new rows (each shield's weapon lines; Raise Shield's pad and technique lines, which the harness now plays
     with the shield as the unit's `offItem`). PROVISIONAL.
@@ -11202,3 +11202,92 @@ Items 4240 to 4247.
 4543. **Texts (T7):** Durability's door text and `per_point` rows (pool, shield, two shields), the three shields' texts
     (no typed "1 more Guard"), `items.json mod_follow_guard` (amended in 4540), the Bulwark's resource rule (its ranks
     read `max_by_rank`). No number.
+
+### Rules 1.60 (Doors 3.0), slice A: the layers, the beta feeds, the shields' blow, the gun perks to control, the shield's giver (16 Nov 2026)
+
+Leon, 16 Nov 2026; the spec is `docs/design/proposals/2026-11-doors-3.0-spec.md` (revision 2) sections 1 and 3, with
+Leon's rulings of the same day (they override it). A later revision overrides the body and the earlier ones. This slice
+builds the layer rule's item 7 (the beta feeds its door) and four fits; the forks (items 2 and 3 of the layer rule) come in
+later slices. Leon on the numbers: *"the balance number i laid out was always about how much a class gets rewarded when it
+make all the deceision right, the target is FUN and REWARD for the effort you put in, not a hard cap"*.
+
+4600. **The layers (the spec's section 1, rule text):** each attribute's alpha skill opens its door at 1 point (its verbs,
+    its resource and its stated limits, the same for everyone); a door owns its outcome's best form, never its only form.
+    Each door has two forks, at 4 and 6 points of its alpha skill, two options each, picked once out of a fight and kept
+    (built in a later slice: N1, N2). The base class is the best user of one door up to its ceiling; it adds no outcome
+    the door does not make. The advanced classes are concepts only (Leon's ruling vi): nothing names, builds or balances
+    one, and each door's reserved peak (the spec's table) is reached by nothing below a squared class (a Mastered perk may
+    taste it once a fight). No number.
+4601. **Leon's rulings on the spec (16 Nov 2026), recorded:** (i) Cover Them once a round, with the reaction and a plate;
+    Lightkiller once a fight; Composure doubles the Strain limit like every other beta; the Ward may sit on 4 allies;
+    shields are spent before plates (a Reactive Plate holder's plates first, as built); Lockdown a real free shot only if
+    it can be built from approved pieces, else its Slowed wording. (ii) The healing brake is per giver: each Mend or
+    Shield by the same giver on the same target in the same round costs 50% more MP than that giver's last on it (all
+    Tending). (iii) Two shields deal a little less than a sword and a shield. (iv) The gun alpha perks move from damage to
+    control; guns and melee keep mods. (v) Walking still costs the chain for everyone. (vi) Advanced classes are concept
+    only. Of these, Composure's feed, (iii) and (iv) are built here; the rest come with the forks (later slices). No number.
+4602. **The engine pieces approved for Doors 3.0 (the lead, 16 Nov 2026):** N1, N2, N3, N10, N3b, N23 of the spec's
+    section 6, and one field on the base shield recording its giver. This slice builds N3 (the feed) and N10 (the
+    resource-amount predicate, for item 4615); the others come with the forks. No number.
+4603. **The beta feeds its door (layer rule item 7; N3):** each attribute's beta skill raises one number of its own door,
+    and only that beta raises it: the number × (1 + `per_point.numbers.feed` × alpha points × beta points), `feed` 0.01
+    for all nine (×1.1 at alpha 10 and beta 1, ×1.5 at beta 5, ×2 at beta 10; ×1.06 / ×1.36 / ×1.6 at alpha 6 and beta
+    1 / 6 / 10). The beta's `feed` row in `skills.json` names the carrier (the door's number); `effects/feed.ts doorFeed`
+    is the one formula, `feedCarry` the one carried remainder (a count a turn moved by a fraction keeps the fraction on the
+    unit, so every point counts), `feedStep` the one whole step of a number that rounds (round(`feed_at_double` × (feed −
+    1))). Data rows read it as the source `feed:<door>` (an alpha skill's id). What each beta did before is kept. The
+    door's fight tab (and the Guard and Momentum meters' cards) shows one line from the engine's `doorFeedView`: the
+    number now, the beta that feeds it, what the next point buys (the row's `line` and `next`); each beta's skill card
+    names the door it feeds. PROVISIONAL: 0.01 and every number below.
+4604. **Pain Threshold → the plate soak:** `guardSoak` × the feed (Durability's Guard; the Reactive Plate's own stat is
+    unchanged). A plate soaks 6 × the level scale at Pain Threshold 0, 12 at Durability 10 and Pain Threshold 10.
+4605. **Guts → the Momentum worn off:** a tile walked or a hit taken wears Momentum ÷ the feed (`physical/core.ts
+    wearMomentum`), the kept part carried; a spend (Raise Shield's turn of Momentum into Guard) is not worn off. At 10/10 a
+    2-tile walk costs 1.
+4606. **Athletics → the Pressure you shed:** the final fall at your turn's end (whichever of `decay`, `decay_hidden`,
+    `decay_closing` applied, after the filters) × the feed, the fraction carried; and Slide's reach is 3 × the feed
+    (`pressure.json` Slide, a number block on `feed:dexterity`; the reach counts whole tiles).
+4607. **Acuity → the spot TN against you:** + round(`feed_at_double` 5 × (feed − 1)) on the roll to find you while
+    Hidden (`tactics.ts spotHidden`): +1 / +3 / +5 at Ingenuity 10 and Acuity 1 / 5 / 10.
+4608. **Rumination → the Flux limit:** round(`safe_max` 6 × the feed), then what items add (`fluxMaxOf`): 7 / 9 / 12.
+4609. **Improvisation → the Figment body:** a Figment's HP × the feed (`figmentBlock`).
+4610. **Camaraderie → the heal back:** Tending (`how` tending) that lands on a Bonded ally (`tied` bond) heals the giver
+    `feed_at_double` 0.3 × (feed − 1) of what it restored (3% / 15% / 30% at Empathy 10), healed by nobody: no heal given,
+    no Ledger, no echo, no patron's tag. It is a heal received, so Camaraderie's +10% a point of healing received applies
+    to it (the spec's row did not say; for the lead). The spec's carrier (one data row) cannot be written: a number block
+    has no product of two sources, so it is the one listener in `tactics.ts` (`heal_given`), its numbers in data.
+4611. **Composure → the Strain limit:** round((3 + Will Power ÷ 2, down) × the feed), then what items add: 9 / 12 / 16
+    at Will Power 10 (Leon's ruling i: doubled like every other beta). The Mana Short stays 3 over the limit.
+4612. **Conscience → the prayers' shields:** every shield a prayer gives (a Whisper's, a Hymn's, the Ward) × `feed:faith`
+    (`skills.json conscience.unlocks.1`, a `mend_mult` row on `shield`, `how` blessing; the row names `target: any` as the
+    trigger's own role). Owed fix built: `blessing()` gives its shields as kind `blessing` (it gave none), and the Ward's
+    amount carries `heal_kind` blessing, so every `how: [blessing]` row now meets them (the Survival boon's ×1.15 on a
+    prayer's shield included).
+4613. **The base shield's giver (A4; the approved field):** a unit's base shield records who gave the one that stands
+    (`Unit.shieldBy`, set in `grantShield` when a gift is larger than what stood; an equal or smaller one leaves it). The
+    shield display names the giver on the base segment and inks it in the giver's door (its alpha skill with the most
+    points). An old save has no giver: the segment reads as before. No number.
+4614. **Pressure Point to control (A3):** I: a ranged hit on an enemy already Pressed (Pressure 2+) lays 1 more Pressure
+    (once a turn for each enemy), and ranged attacks deal 5% more to a Pressed enemy; II: 1 more Pressure on a Pressed
+    one and 1 more again on one already Suppressed (3+), 5% more to a Pressed and 5% more again to a Suppressed one.
+    Id, name and tiers kept. PROVISIONAL.
+4615. **Keep Their Heads Down to control (A3):** I: once a turn, a ranged hit on an enemy already Pressed (Pressure 2+)
+    puts it Off Balance (a Body save: it loses AP on its next turn); II: once a turn for each enemy, with no save. Keyed by
+    the resource-amount predicate `target_res` (N10: `{<resource>: {at_least, at_most, at: "max"}}` on self, actor or
+    target; `max` reads `effects/cost.ts resMaxOf`, Pressure's by `pressureCap`). Id, name and tiers kept. Measured
+    (the contract's gun, all in, both perks at Tier II where earned, no feeds): 195% before, 166% after, against 162% with
+    no perk steps. PROVISIONAL.
+4616. **Two shields deal real damage (A2):** the cause: a shield's damage line (6, 8, 8) was sized as a free follow
+    strike; in the main hand it is the whole blow, and a stage-1 foe's flat armour (about 7) left it 1 or 2. Fixed at the
+    cause, in data: a shield row's `damage` is its main-hand blow (`buckler` 15, `riot_shield` 20, `pavise` 20), and the
+    follow keeps its old size through the shields' follow row (`items.json mod_follow_guard`, `damage_mult` 0.4 with
+    `mode: [follow]`: 6, 8, 8 as before). Measured (Survival stage 1, 20 seeds, the all-in Living Wall, before the feeds):
+    two shields deal 88% of a sabre and a Buckler's damage a round (34.2 against 38.9), clear 20 of 20 (0 before; the
+    sword wall 19), with no stall (14 before). PROVISIONAL: 15, 20, 20, 0.4.
+4617. **Shield Bash (A2):** `techniques.json shield_bash.numbers.mult` 2.5 → 1.0: ×1 of the new line, the same damage as
+    before (15, 20, 20). PROVISIONAL.
+4618. **The balance contract and the feeds:** the contract holds each door's line with every feed at ×1 (as it takes no
+    perk steps: a feed is a reward on top of the line), and reports the line with the feeds beside it
+    (`balance-contract.test.ts`). With Composure's feed the simulator's peak Outburst policy holds a stage-4 Release into
+    a second turn where it released in the first, so the one-turn peak row reads lower (114% against 177% unfed): a
+    policy's reading of a bigger budget, for the lead. No number.
