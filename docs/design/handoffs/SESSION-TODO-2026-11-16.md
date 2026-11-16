@@ -117,3 +117,23 @@ already over the 165% melee line, 199 to 246%, and the perks add 8 to 24 points)
 Crystallise: Steady was a dead clause, and cutting Name It needs a price predicate on the Call's id (not approved
 yet), so the perk still gives little: needs a ruling; (3) a bug the swap fixed: `melee: false` on roll contexts
 matched every roll, so Fire and Move armed on any blow and Relocated's +1 applied to every roll, spells included.
+
+## I. Field lane finished (16 Nov)
+
+`wip/lane-0.30-field` at 054749cf: F1 to F7 built, two reviews, review fixes; check ALL GREEN, balance green, 29
+replays. Browser: faith, tending, fight-cards, two-players pass; **survival and magic fail, alone too** (details in the
+fix report, workflow journal wf_42d20191-44b: read its "unfinished"). **F3 is only half done:** in Survival the fight
+starts as you enter the node and foes in the fog are already in it, so walking spends AP; the builder added a line on
+the BATTLE START banner ("Hostiles in the fog: every step costs AP") and left the real fix (a "not yet joined" state
+on the fight, so the first turn after contact is at full AP: Leon's ruling) for the lead to approve as a primitive
+(spec item 4748 on the branch). Approve and build it in 0.31. All work is stopped here: nothing is running.
+
+## J. Order to pick this up
+
+1. Merge into one 0.31 release branch from develop: `wip/hotfix-0.30.1`, then `wip/lane-0.30-field`, then
+   `wip/lane-0.31-dex`, then `wip/lane-0.30-fit` (expect conflicts in the spec's item numbers, CHANGELOG, goldens and
+   replays: keep both sides, re-record on purpose; versions to 0.31.0).
+2. Fix what the merged branch's browser gate shows (survival and magic first).
+3. Build section C (the fight-screen lane), F3's real fix, and section F's rulings.
+4. Full gate, browser look, deploy 0.31.0 on Leon's standing word ("to live when all green"), `backup/live-0.31.0`,
+   then delete `backup/live-0.29.0` as the third-oldest (never 0.22.0 or 0.23.0).
