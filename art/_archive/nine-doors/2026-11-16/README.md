@@ -1,6 +1,6 @@
 # Nine Doors artwork — 16 November 2026
 
-Checkpoint: 26 of 375 requested assets are painted/drawn as review candidates. 349 remain; see CONTINUE.md and progress.json. The source branch snapshot is wip/feature-0.29 at 8f9d45ae5c219bea418fac92d60a453b7af44d9a. Delivery branch: art/nine-doors-2026-11-16.
+Checkpoint: 38 of 375 requested assets are painted/drawn as review candidates. 337 remain; see CONTINUE.md and progress.json. The source branch snapshot is wip/feature-0.29 at 8f9d45ae5c219bea418fac92d60a453b7af44d9a. Delivery branch: art/nine-doors-2026-11-16.
 
 Start with review/ALPHA-18.jpg and review/VISIBLE-EXTRAS-02.jpg. Section sheets check every icon at actual 32px and 44px on #10151F. Ink masters are 1024 RGBA, pure-white visible RGB with transparent cuts and clear edges. Wick icons fit the central 80% box and 90%-diameter medallion. Native image renders and exact prompts are retained. Glimmer is an original in-house monoline SVG on the required 64 grid, 2-unit currentColor stroke, no fill; the Inkscape PNG is a review raster, not a painted master. Gear uses Heavenprint gouache and material colour.
 

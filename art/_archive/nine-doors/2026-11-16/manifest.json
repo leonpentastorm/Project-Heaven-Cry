@@ -628,6 +628,440 @@
     "priority": 1
   },
   {
+    "number": 25,
+    "family": "move_icons",
+    "id": "move-follow-through",
+    "path": "art/icons/moves/follow-through.png",
+    "name": "Follow Through",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Raw Power door step",
+    "paint": "Wick after a full swing, his body turned through, a long curved motion line trailing behind the weapon.",
+    "avoid": "a second foe \u00b7 sparks",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick after a full swing, his body turned through, a long curved motion line trailing behind the weapon.\nAvoid: a second foe \u00b7 sparks\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 3,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "c32cc3c6dac8fbfded8f5a7a4fef462b1d47347117af7789070fb5aec4a2cdcf",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/025-follow-through.png",
+    "source_sha256": "96d84c25ca906120424209278a6c9fa7afb2975fb9f036a9d4a3db8742a8e314",
+    "export_crop": [
+      0,
+      87,
+      1254,
+      1180
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/follow-through.png",
+      "64": "art/icons/moves/exports/64/follow-through.png",
+      "48": "art/icons/moves/exports/48/follow-through.png",
+      "44": "art/icons/moves/exports/44/follow-through.png",
+      "32": "art/icons/moves/exports/32/follow-through.png",
+      "24": "art/icons/moves/exports/24/follow-through.png"
+    },
+    "framing": {
+      "scale": 0.5907992535758447,
+      "offset": [
+        141,
+        189
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 26,
+    "family": "move_icons",
+    "id": "move-heavy-hands",
+    "path": "art/icons/moves/heavy-hands.png",
+    "name": "Heavy Hands",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Raw Power door step",
+    "paint": "Wick's two fists hanging heavy at his sides, each with two short downward weight lines under it.",
+    "avoid": "a dumbbell or gym gear \u00b7 muscles drawn in anatomy detail",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick's two fists hanging heavy at his sides, each with two short downward weight lines under it.\nAvoid: a dumbbell or gym gear \u00b7 muscles drawn in anatomy detail\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 3,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "3b337fcb56bb36f20508a713a0f26595c5e586880729c2ffb697bf29cf0f86e5",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/026-heavy-hands.png",
+    "source_sha256": "88d86bc947a21cb85a5555b30a7dabd3e0caab20cf25d0b83de3169789fc75b5",
+    "export_crop": [
+      0,
+      36,
+      1142,
+      1238
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/heavy-hands.png",
+      "64": "art/icons/moves/exports/64/heavy-hands.png",
+      "48": "art/icons/moves/exports/48/heavy-hands.png",
+      "44": "art/icons/moves/exports/44/heavy-hands.png",
+      "32": "art/icons/moves/exports/32/heavy-hands.png",
+      "24": "art/icons/moves/exports/24/heavy-hands.png"
+    },
+    "framing": {
+      "scale": 0.6001312930821135,
+      "offset": [
+        169,
+        151
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 27,
+    "family": "move_icons",
+    "id": "move-the-charge-carries",
+    "path": "art/icons/moves/the-charge-carries.png",
+    "name": "The Charge Carries",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Breaker gain: a Charge's momentum carries into the next blow",
+    "paint": "Wick mid-charge, low and forward, a long speed line behind him that bends up into his raised fist.",
+    "avoid": "a horse or vehicle \u00b7 a battering ram",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick mid-charge, low and forward, a long speed line behind him that bends up into his raised fist.\nAvoid: a horse or vehicle \u00b7 a battering ram\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 3,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "5119935a0c9de44d6b7f87f4cc964200b8265dcd18d6159bd91359636668bb96",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/027-the-charge-carries.png",
+    "source_sha256": "9bc353aac6c597bff26751b7f1662d20be192840063024d9bcefa7ce07c735c5",
+    "export_crop": [
+      44,
+      57,
+      1240,
+      1214
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/the-charge-carries.png",
+      "64": "art/icons/moves/exports/64/the-charge-carries.png",
+      "48": "art/icons/moves/exports/48/the-charge-carries.png",
+      "44": "art/icons/moves/exports/44/the-charge-carries.png",
+      "32": "art/icons/moves/exports/32/the-charge-carries.png",
+      "24": "art/icons/moves/exports/24/the-charge-carries.png"
+    },
+    "framing": {
+      "scale": 0.5852465008743022,
+      "offset": [
+        162,
+        173
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 28,
+    "family": "move_icons",
+    "id": "move-four-ways-to-finish",
+    "path": "art/icons/moves/four-ways-to-finish.png",
+    "name": "Four Ways to Finish",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Breaker gain: Cleave, Break and Coup with any melee weapon",
+    "paint": "Four short blade strokes meeting at one point like a compass rose, Wick's hand at the centre.",
+    "avoid": "a real compass \u00b7 a clock",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Four short blade strokes meeting at one point like a compass rose, Wick's hand at the centre.\nAvoid: a real compass \u00b7 a clock\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nCOMPOSITION: a close-up of Wick's ONE ceramic mitten hand only at the centre, with FOUR short blade strokes radiating around it in distinct directions. No head or full body, no four arms, no literal compass, no clock. It is a hand gesture/action mark in the same white-ink line weight.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 3,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "7d4f437ed528156de569386e65ab456a11a390f34050989d41919348d9e9c65a",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/028-four-ways-to-finish.png",
+    "source_sha256": "b675c46c57a4a6ab908363a68e6131093c1c056a10f5020c06bda51cc3128c6b",
+    "export_crop": [
+      0,
+      0,
+      1230,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/four-ways-to-finish.png",
+      "64": "art/icons/moves/exports/64/four-ways-to-finish.png",
+      "48": "art/icons/moves/exports/48/four-ways-to-finish.png",
+      "44": "art/icons/moves/exports/44/four-ways-to-finish.png",
+      "32": "art/icons/moves/exports/32/four-ways-to-finish.png",
+      "24": "art/icons/moves/exports/24/four-ways-to-finish.png"
+    },
+    "framing": {
+      "scale": 0.5013899102504873,
+      "offset": [
+        203,
+        197
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 29,
+    "family": "move_icons",
+    "id": "move-launch",
+    "path": "art/icons/moves/launch.png",
+    "name": "Launch",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Breaker gain: throws a foe or a crate across the field",
+    "paint": "Wick heaving a crate-sized block up over his head, knees bent, about to throw.",
+    "avoid": "a barbell \u00b7 a real shipping logo on the crate",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick heaving a crate-sized block up over his head, knees bent, about to throw.\nAvoid: a barbell \u00b7 a real shipping logo on the crate\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 3,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "de4b92f45fea12ee57848e36172acc7d8b23e92092aa0fc0cc3c2ac54418d1b6",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/029-launch.png",
+    "source_sha256": "ca41783a435e52715ada17c274ce1e20d6be9847e0a48a29cc16aa041928043a",
+    "export_crop": [
+      0,
+      9,
+      1238,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/launch.png",
+      "64": "art/icons/moves/exports/64/launch.png",
+      "48": "art/icons/moves/exports/48/launch.png",
+      "44": "art/icons/moves/exports/44/launch.png",
+      "32": "art/icons/moves/exports/32/launch.png",
+      "24": "art/icons/moves/exports/24/launch.png"
+    },
+    "framing": {
+      "scale": 0.5016134548327458,
+      "offset": [
+        201,
+        199
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 30,
+    "family": "move_icons",
+    "id": "move-wrecker",
+    "path": "art/icons/moves/wrecker.png",
+    "name": "Wrecker",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Breaker gain: breaks cover and objects",
+    "paint": "Wick with a sledge resting on one shoulder beside a split crate, splinters as short lines.",
+    "avoid": "fire \u00b7 a building collapsing",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick with a sledge resting on one shoulder beside a split crate, splinters as short lines.\nAvoid: fire \u00b7 a building collapsing\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 3,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "bf9a222562d05cfeff86ebe06d548da26989c4add956a706ef80dc12c44f7ae8",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/030-wrecker.png",
+    "source_sha256": "a0a6b2e68756908a38ddcbce7dea7c125f0cf6cf029b9eed66cfb64b846acabe",
+    "export_crop": [
+      0,
+      21,
+      1218,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/wrecker.png",
+      "64": "art/icons/moves/exports/64/wrecker.png",
+      "48": "art/icons/moves/exports/48/wrecker.png",
+      "44": "art/icons/moves/exports/44/wrecker.png",
+      "32": "art/icons/moves/exports/32/wrecker.png",
+      "24": "art/icons/moves/exports/24/wrecker.png"
+    },
+    "framing": {
+      "scale": 0.5372556556555652,
+      "offset": [
+        185,
+        181
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 31,
+    "family": "move_icons",
+    "id": "move-breach",
+    "path": "art/icons/moves/breach.png",
+    "name": "Breach",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Breaker gain: smash through a wall",
+    "paint": "Wick's fist punched through a plank wall, splinters bursting out as straight lines on the far side.",
+    "avoid": "a door with a handle (that is Breaching Strike's old picture) \u00b7 glass",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick's fist punched through a plank wall, splinters bursting out as straight lines on the far side.\nAvoid: a door with a handle (that is Breaching Strike's old picture) \u00b7 glass\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nCOMPOSITION: show only Wick's single ceramic fist and wrist bursting through the edges of three simple planks, with straight splinter ticks on the far side. The rest of Wick is out of view. No whole mascot or head, and no door frame, hinges or handle.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 3,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "9eb981b261d4739dc040e61ce52ed5991eed76af248621d4f34c77b23c76c4a9",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/031-breach.png",
+    "source_sha256": "530efaa148b9713ca31b79d1992ba92f660c2498a417c5076df8256a81fd9938",
+    "export_crop": [
+      0,
+      99,
+      1232,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/breach.png",
+      "64": "art/icons/moves/exports/64/breach.png",
+      "48": "art/icons/moves/exports/48/breach.png",
+      "44": "art/icons/moves/exports/44/breach.png",
+      "32": "art/icons/moves/exports/32/breach.png",
+      "24": "art/icons/moves/exports/24/breach.png"
+    },
+    "framing": {
+      "scale": 0.6057238359264123,
+      "offset": [
+        139,
+        162
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
     "number": 51,
     "family": "perks",
     "id": "both-hands",
@@ -748,6 +1182,316 @@
       "offset": [
         154,
         220
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 53,
+    "family": "move_icons",
+    "id": "move-quick-draw",
+    "path": "art/icons/moves/quick-draw.png",
+    "name": "Quick Draw",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Dexterity door step",
+    "paint": "Wick's hand already clear of the holster, the pistol level, a single short speed line behind it.",
+    "avoid": "a cowboy hat \u00b7 a western duel setting",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick's hand already clear of the holster, the pistol level, a single short speed line behind it.\nAvoid: a cowboy hat \u00b7 a western duel setting\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 3,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "993de93884c1d66b9075b4bea6a31a1a04af13649581a8c9a2848566c13793c9",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/053-quick-draw.png",
+    "source_sha256": "66f2b377487b6e882a8178f717dc8853bbf135e536e0c61b2ec5fc73fee2e7a7",
+    "export_crop": [
+      17,
+      23,
+      1222,
+      1220
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/quick-draw.png",
+      "64": "art/icons/moves/exports/64/quick-draw.png",
+      "48": "art/icons/moves/exports/48/quick-draw.png",
+      "44": "art/icons/moves/exports/44/quick-draw.png",
+      "32": "art/icons/moves/exports/32/quick-draw.png",
+      "24": "art/icons/moves/exports/24/quick-draw.png"
+    },
+    "framing": {
+      "scale": 0.5735992761570422,
+      "offset": [
+        166,
+        168
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 54,
+    "family": "move_icons",
+    "id": "move-speed-load",
+    "path": "art/icons/moves/speed-load.png",
+    "name": "Speed Load",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Dexterity door step",
+    "paint": "A magazine dropping free from a pistol grip while a fresh one rises into it, two curved arrows.",
+    "avoid": "a revolver cylinder \u00b7 text on the magazine",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: A magazine dropping free from a pistol grip while a fresh one rises into it, two curved arrows.\nAvoid: a revolver cylinder \u00b7 text on the magazine\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nSUBJECT OVERRIDE: this row asks for a prop/sign/partial-view composition. Draw only that requested subject. Do not add a full Wick figure when this row does not name him.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 3,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "f8f3f3849401b7189aea2a20902e98b299242e05494228e3326d99bc71bb5630",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/054-speed-load.png",
+    "source_sha256": "758031dce065b736645302f2cc112007ea7c202a194add94d64b7dac6feff083",
+    "export_crop": [
+      0,
+      15,
+      1240,
+      1235
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/speed-load.png",
+      "64": "art/icons/moves/exports/64/speed-load.png",
+      "48": "art/icons/moves/exports/48/speed-load.png",
+      "44": "art/icons/moves/exports/44/speed-load.png",
+      "32": "art/icons/moves/exports/32/speed-load.png",
+      "24": "art/icons/moves/exports/24/speed-load.png"
+    },
+    "framing": {
+      "scale": 0.5241169458658548,
+      "offset": [
+        187,
+        192
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 55,
+    "family": "move_icons",
+    "id": "move-near-miss",
+    "path": "art/icons/moves/near-miss.png",
+    "name": "Near Miss",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Dexterity door: a miss still adds Pressure",
+    "paint": "Wick firing, a bullet line passing just over a ducking partial head.",
+    "avoid": "a hit with blood \u00b7 a skull",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick firing, a bullet line passing just over a ducking partial head.\nAvoid: a hit with blood \u00b7 a skull\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 3,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "309ea590ef70b04f996c1a0508dfe590fd3e0ddd58f2102899970ea903a54ab2",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/055-near-miss.png",
+    "source_sha256": "e0404a325d40f94c6f3d618f8ba6452bd61454f515f7afd38f303e50dc423e3b",
+    "export_crop": [
+      0,
+      21,
+      1248,
+      1226
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/near-miss.png",
+      "64": "art/icons/moves/exports/64/near-miss.png",
+      "48": "art/icons/moves/exports/48/near-miss.png",
+      "44": "art/icons/moves/exports/44/near-miss.png",
+      "32": "art/icons/moves/exports/32/near-miss.png",
+      "24": "art/icons/moves/exports/24/near-miss.png"
+    },
+    "framing": {
+      "scale": 0.5683060270574091,
+      "offset": [
+        157,
+        169
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 56,
+    "family": "move_icons",
+    "id": "move-shaken-nerves",
+    "path": "art/icons/moves/shaken-nerves.png",
+    "name": "Shaken Nerves",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Dexterity door: a Pressured foe is Shaken",
+    "paint": "Wick leaning in over cover toward a small trembling figure behind it, three short shake lines round the figure.",
+    "avoid": "a scared cartoon face \u00b7 sweat drops",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick leaning in over cover toward a small trembling figure behind it, three short shake lines round the figure.\nAvoid: a scared cartoon face \u00b7 sweat drops\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 3,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "dc731e64ca95adc79e04d6ce5efdfdbf017cf0deb8daeb5473d3d1746e2abbb5",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/056-shaken-nerves.png",
+    "source_sha256": "8f342d116b6fc42f55c532bc6fb0f0f23ad8c87b2c3901ab20ae30ca75157216",
+    "export_crop": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/shaken-nerves.png",
+      "64": "art/icons/moves/exports/64/shaken-nerves.png",
+      "48": "art/icons/moves/exports/48/shaken-nerves.png",
+      "44": "art/icons/moves/exports/44/shaken-nerves.png",
+      "32": "art/icons/moves/exports/32/shaken-nerves.png",
+      "24": "art/icons/moves/exports/24/shaken-nerves.png"
+    },
+    "framing": {
+      "scale": 0.4966113068189639,
+      "offset": [
+        200,
+        200
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 57,
+    "family": "move_icons",
+    "id": "move-reflex",
+    "path": "art/icons/moves/reflex.png",
+    "name": "Reflex",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Skirmisher gain: a second reaction",
+    "paint": "Wick twisting out of the way of two darts at once, two small curved arrows round him.",
+    "avoid": "a lightning bolt \u00b7 a ninja",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick twisting out of the way of two darts at once, two small curved arrows round him.\nAvoid: a lightning bolt \u00b7 a ninja\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 3,
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "901488ee221a03acb75ca9b17c18539ece991c3bc4e296b05943d89a7e952c62",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/057-reflex.png",
+    "source_sha256": "4144051565778733f132d6dd1bb3cf7c881934cc3b1e1c448b3e78f8d6d4a55b",
+    "export_crop": [
+      0,
+      15,
+      1253,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/reflex.png",
+      "64": "art/icons/moves/exports/64/reflex.png",
+      "48": "art/icons/moves/exports/48/reflex.png",
+      "44": "art/icons/moves/exports/44/reflex.png",
+      "32": "art/icons/moves/exports/32/reflex.png",
+      "24": "art/icons/moves/exports/24/reflex.png"
+    },
+    "framing": {
+      "scale": 0.5526639568658857,
+      "offset": [
+        166,
+        169
       ],
       "subject_box": 820,
       "perk_safe_radius": 460.8

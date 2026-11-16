@@ -1,21 +1,9 @@
 # Continue the Nine Doors artwork
 
-26/375 candidates delivered; 349 remain. Do not count the three nothing-to-paint rows. Read the original brief and the current style guide. The CUP over Wick in Mind Without Fog belongs ONLY to that trait, never to Wick anatomy. Wick is the ceramic pixel-screen automaton with capelet, lantern-heart and asymmetry; do not turn him into a literal flame head.
+38/375 candidates delivered; 337 remain. Do not count the three nothing-to-paint rows. Read the original brief and the current style guide. The CUP over Wick in Mind Without Fog belongs ONLY to that trait, never to Wick anatomy. Wick is the ceramic pixel-screen automaton with capelet, lantern-heart and asymmetry; do not turn him into a literal flame head.
 
 Continue in the priority order below, one image per prompt. Source scripts and prompts are in this collection; current records must be preserved. The proposed paths/catalog IDs are exact. Every image remains review-candidate until Leon approves it. No new action-row UI is authorised by this art task.
 
-- P3 · #25 · Follow Through · `art/icons/moves/follow-through.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #26 · Heavy Hands · `art/icons/moves/heavy-hands.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #27 · The Charge Carries · `art/icons/moves/the-charge-carries.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #28 · Four Ways to Finish · `art/icons/moves/four-ways-to-finish.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #29 · Launch · `art/icons/moves/launch.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #30 · Wrecker · `art/icons/moves/wrecker.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #31 · Breach · `art/icons/moves/breach.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #53 · Quick Draw · `art/icons/moves/quick-draw.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #54 · Speed Load · `art/icons/moves/speed-load.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #55 · Near Miss · `art/icons/moves/near-miss.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #56 · Shaken Nerves · `art/icons/moves/shaken-nerves.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #57 · Reflex · `art/icons/moves/reflex.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #58 · Fire and Move · `art/icons/moves/fire-and-move.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #59 · Relocated · `art/icons/moves/relocated.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #60 · Break Them · `art/icons/moves/break-them.png` · Wick icon · in game now · placeholder · no slot yet

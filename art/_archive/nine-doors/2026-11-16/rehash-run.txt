@@ -1,1 +1,1 @@
-482 checksums -> art/checksums.sha256
+592 checksums -> art/checksums.sha256
