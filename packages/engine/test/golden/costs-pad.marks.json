@@ -777,6 +777,7 @@
 "tech/overwatch/hellraiser_service_rifle": "P1 faith.acted0>true faith.apMark6>7",
 "tech/pin_down/hellraiser_service_rifle": "P1 attackedTurn0>true faith.acted0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1 tech._take.t0>1.1",
 "tech/punch_through/hellraiser_service_rifle": "P1 attackedTurn0>true faith.acted0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
+"tech/raise_shield/sabre": "P1 attackedTurn0>true chain.last0>raise_shield chain.n0>1 chain.t0>1.4 faith.acted0>true faith.apMark6>8 tech.raise_shield.def0>2 tech.raise_shield.front0>1/0 tech.raise_shield.on0>true tech.raise_shield.t0>1.4",
 "tech/rake/hellraiser_service_rifle": "P1 attackedTurn0>true faith.acted0>true faith.apMark6>5 faith.lastKey0>combat/technique:rake faith.lastRound0>1 faith.lastSpent0>1 firstShotDone0>true firstShotTurn0>true shotsThisTurn0>2",
 "tech/rout/hellraiser_service_rifle": "P1 attackedTurn0>true faith.acted0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1 tech._take.t0>1.1; F1 tech.charge.run.at0>16,0 tech.charge.run.dx0>1 tech.charge.run.dy0>-1 tech.charge.run.n0>4 tech.charge.run.t0>1.1",
 "tech/run_through/sabre": "P1 attackedTurn0>true chain.ended0>true chain.last0>run_through chain.n0>1 chain.t0>1.4 faith.acted0>true faith.apMark6>7 firstShotDone0>true firstShotTurn0>true",

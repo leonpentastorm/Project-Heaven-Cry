@@ -198,7 +198,8 @@ describe('weapons v2', () => {
   const give = (c: any, extra: any[]) => { c.pack = [...packOf(c), ...extra]; };
   it('equip, slot armour, mods, durability and repair, rarity', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
-    give(c, [{ id: 'buckler', item: 'buckler', name: 'Buckler', qty: 1, kind: 'tool' }, { id: 'ballistic_helmet', item: 'ballistic_helmet', name: 'Helmet', qty: 1, kind: 'tool' },
+    give(c, [{ id: 'buckler', name: 'Buckler', qty: 1, kind: 'weapon', weapon: 'buckler' }, // rules 1.57: a shield is a weapon line
+      { id: 'ballistic_helmet', item: 'ballistic_helmet', name: 'Helmet', qty: 1, kind: 'tool' },
       { id: 'mod_quick_release', item: 'mod_quick_release', name: 'QR', qty: 1, kind: 'tool' }, { id: 'magistrate_pistol', name: 'Magistrate', qty: 1, kind: 'weapon', weapon: 'magistrate_pistol', rarity: 'masterwork' }]);
     const d0 = defense(c);
     expect(equip(c, packOf(c).findIndex((x) => x.id === 'buckler'), 'off')).toBeNull(); expect(defense(c)).toBe(d0 + 1);

@@ -596,7 +596,7 @@ function techReach(x: DescCtx, t: { hand: string; id: string }): Map<string, num
   const u = x.u, w: any = WEAPON[u.weapon], shield = t.hand === 'off' && !u.offWeapon && !!safe(() => shieldOf(u), null);
   const wid = t.hand === 'off' ? u.offWeapon : u.weapon, melee = shield || (wid ? weaponSystem(wid) === 'melee' : true);
   const mode: any = melee ? 'melee' : t.id === 'aimed' ? 'aimed' : 'shot';
-  const props: string[] = ((((mode === 'melee' && !(w && isMelee(w))) || shield ? WEAPON.fists : w) as any)?.phys?.props) || [];
+  const props: string[] = (((shield ? WEAPON[shieldOf(u)!] : mode === 'melee' && !(w && isMelee(w)) ? WEAPON.fists : w) as any)?.phys?.props) || []; // rules 1.57 (A1): a shield's own row
   const ap0 = safe(() => techniquePad(x.cb, u, (t.hand === 'off' ? 'off' : 'main'), x.g).flatMap((gr: any) => gr.entries).find((e: any) => e.id === t.id)?.ap, 2) ?? 2;
   const step = !melee ? 0 : t.id === 'lunge' ? (props.includes('reach') ? 2 : 1) : t.id === 'charge' ? Math.floor(Math.max(0, apFor(x.cb, u) - ap0) * (u.movement || 1) + (u.bank || 0)) : 0;
   return safe(() => reachTiles(x.cb, u, mode, { step, fists: shield }), new Map());

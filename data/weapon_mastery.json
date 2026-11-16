@@ -163,7 +163,8 @@
       "id": "unarmed",
       "name": "Unarmed",
       "categories": [
-        "unarmed"
+        "unarmed",
+        "shield"
       ],
       "perks": [
         "hard_hands",

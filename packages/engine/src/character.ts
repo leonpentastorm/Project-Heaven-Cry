@@ -167,11 +167,13 @@ export const WORN_SHARE: number = Number((RULES as any).weapons_rules?.worn?.sha
 /** The state of a thing that wears (Weapons v2, Durability rules 2 and 3): Broken at 0, Worn at WORN_SHARE of full or
  * less, else sound. The one test of a worn weapon: the fight's jam and melee rules and every screen's mark read it. */
 export const wearState = (now: number, max: number): 'sound' | 'worn' | 'broken' => (max <= 0 ? 'sound' : now <= 0 ? 'broken' : now <= max * WORN_SHARE ? 'worn' : 'sound');
-/** Effects of everything worn and held in a hand that is not a weapon (slot armour, shields, lights; rules 1.56: a
- * shield in the main hand too, so two shields each give theirs). */
+/** Effects of everything worn and held in a hand (slot armour, lights, a focus; rules 1.57 (A1): a shield is a weapon
+ * row whose own `effects` give its Defense and Movement in either hand, so two shields each give theirs). A weapon row
+ * with no `effects` gives nothing here. */
 export function gearEffects(c: Character): { op: string; value?: number; hazard?: string }[] {
-  const ids = [...Object.values(c.worn || {}), ...(!WEAPON[c.weapon] && ITEM[c.weapon] ? [c.weapon] : []), ...(c.offHand && !WEAPON[c.offHand.id] ? [c.offHand.id] : [])];
-  return ids.flatMap((id) => ((ITEM[id] as any)?.effects || []) as { op: string; value?: number; hazard?: string }[]);
+  const held = inHands(c).filter((id) => !!id && id !== 'fists');
+  return [...Object.values(c.worn || {}).map((id) => ITEM[id] as any), ...held.map((id) => (WEAPON[id] as any) || (ITEM[id] as any))]
+    .flatMap((d) => (d?.effects || []) as { op: string; value?: number; hazard?: string }[]);
 }
 export const gearBonus = (c: Character, op: string) => gearEffects(c).filter((e) => e.op === op).reduce((t, e) => t + (e.value || 0), 0);
 export const gearHas = (c: Character, op: string) => gearEffects(c).some((e) => e.op === op);
@@ -673,7 +675,7 @@ export function itemKg(it: PackItem): number {
 export function carriedKg(c: Character) {
   const w = WEAPON[c.weapon];
   const off = c.offHand ? (WEAPON[c.offHand.id]?.weight_kg ?? (ITEM[c.offHand.id]?.weight_kg || 0)) : 0;
-  const parts = { weapon: (w?.weight_kg ?? (ITEM[c.weapon]?.weight_kg || 0)) + (w?.magazine_kg || 0) + loadedOf(c) * roundKg(c.weapon) + off,
+  const parts = { weapon: (w?.weight_kg || 0) + (w?.magazine_kg || 0) + loadedOf(c) * roundKg(c.weapon) + off,
     armour: (ARMOUR_KG[c.armourClass] || 0) + Object.values(c.worn || {}).reduce((t, id) => t + (ITEM[id]?.weight_kg || 0), 0),
     pack: packOf(c).reduce((t, it) => t + itemKg(it), 0) + Object.entries(COUNTED).reduce((t, [id, f]) => t + (c[f] || 0) * (ITEM[id]?.weight_kg || 0), 0) + (c.carried || []).reduce((t, x) => t + (Number(x.kg) || 0), 0) };
   return { ...parts, total: Math.round((parts.weapon + parts.armour + parts.pack) * 100) / 100 };
@@ -684,7 +686,7 @@ export const carryLimit = (c: Character) => fx(c, 'carry', 20 + 5 * (A(c, 'stren
 /** Injury resistance: 10% per Endurance above 1 (rules.json injury_resist_pct). */
 export const injuryResistPct = (c: Character) => fx(c, 'injury_resist', 10 * (A(c, 'endurance') - 1) + gearBonus(c, 'injury_resist_bonus'));
 /** One-handed weapons; everything else needs both arms, so any arm injury hurts it (spec: Injuries). */
-export const ONE_HANDED = ['pistol', 'revolver', 'light_melee', 'thrown', 'unarmed'];
+export const ONE_HANDED = ['pistol', 'revolver', 'light_melee', 'thrown', 'unarmed', 'shield'];
 export const mainHandSide = (c: Pick<Sheet, 'identity'>): 'left' | 'right' => (/^l/i.test(c.identity?.hand || '') ? 'left' : 'right');
 export const injuryText: Record<InjuryLoc, string> = { head: 'Dazed: −2 AP next turn', torso: 'Bleeding: 5 damage a turn for 3 rounds; a stim stops it', arm: '−2 to attacks with that arm, until treated', leg: 'Half Movement, until treated' };
 
@@ -720,7 +722,7 @@ export const overweightKg = (c: Character) => Math.max(0, Math.round((carriedKg(
 export const overburdenPenalty = (c: Character) => Math.ceil(overweightKg(c) / 5);
 export const movement = (c: Character) => Math.max(0.5, fx(c, 'move', (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus')));
 export const defense = (c: Character) => fx(c, 'defense', 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0)) + gearBonus(c, 'defense_bonus')
-  + (c.offHand && (ITEM[c.offHand.id] as any)?.category === 'shield' && (WEAPON[c.weapon] as any)?.grants?.effect?.op === 'defense_with_shield' ? (WEAPON[c.weapon] as any).grants.effect.value : 0));
+  + (c.offHand && isShieldId(c.offHand.id) && (WEAPON[c.weapon] as any)?.grants?.effect?.op === 'defense_with_shield' ? (WEAPON[c.weapon] as any).grants.effect.value : 0));
 // The derived multipliers below are the Stat term of the one formula (effects/output.ts; data/rules.json output.profiles
 // and output.pairs hold the slopes and what each reads): 1 + attr × (Attribute − 1) + skill × Skill.
 export const physicalMult = (c: Character) => fx(c, 'mult_physical', statOf('physical', c));
@@ -928,6 +930,20 @@ export function holds(c: Character, o: HoldSpec): boolean {
 }
 /** A thing's properties (a weapon's or an off-hand item's phys.props). */
 const thingProps = (id: string): string[] => (((WEAPON[id] as any)?.phys?.props || (ITEM[id] as any)?.phys?.props || []) as string[]);
+/** Rules 1.57 (A1, Leon, 16 Nov 2026): THE one test of "a shield": a weapons.json row with the Shield property
+ * (`phys.props`). Every reader of "is a shield held" goes through it (holdsShield, the unit's off-hand item, the
+ * technique core's shieldsOf, Parry's bonus, the second-weapon rule, Defense's Shield Partner). */
+export const isShieldId = (id: string | null | undefined): boolean => !!id && !!WEAPON[id] && thingProps(id).includes('shield');
+/** Is a shield in either hand (rules 1.56: one grant, however many are held)? */
+export const holdsShield = (c: Character): boolean => inHands(c).some(isShieldId);
+/** Rules 1.57 (A1): a pack line from before shields were weapon rows ({item: 'buckler', kind: 'tool'}) as the weapon
+ * line it is now (gearEntry's shape: kind weapon, `weapon` its id), its grade and wear kept; any other line as it was. */
+export function shieldLineNow<T extends PackItem | null | undefined>(it: T): T {
+  if (!it || it.weapon || it.mags || it.calibre) return it;
+  const id = it.item || it.id; if (!isShieldId(id) || ITEM[id]) return it;
+  const { item: _i, ...rest } = it as any; void _i;
+  return { ...rest, id, kind: 'weapon', weapon: id } as T;
+}
 /** Rules 1.56 (P15): the hands half of `holds`. Bare fists in the main hand and no off hand are empty hands; the off
  * hand under a two-handed weapon is filled by it. */
 function handsHold(c: Character, o: { props: string[]; only?: boolean }): boolean {
@@ -1366,11 +1382,12 @@ const equipBanWhy = (c: Character, ctx: any): string => {
 export const isAmmoEntry = (it: PackItem) => !!(it.mags || it.calibre || it.kind === 'ammo' && !ITEM[it.item || it.id]);
 export const AMMO_WHY = 'That is ammunition, not a weapon.';
 /** A weapon in each hand (Leon, 10 Nov 2026): the second weapon asks 2 more of its skill than it does in the main hand
- * (a weapon with no requirement asks 2 of the skill it hits with). Shields, torches and focuses are not weapons. Returns
- * the refusal, or null. */
+ * (a weapon with no requirement asks 2 of the skill it hits with). Torches and focuses are not weapons; a shield in the
+ * off hand is not a second weapon (rules 1.57 A1, 5a amended), but a weapon beside a main-hand shield is. Returns the
+ * refusal, or null. */
 export function secondWeaponWhy(c: Character, offId: string | null | undefined, mainId: string | null | undefined): string | null {
   const ow: any = offId ? WEAPON[offId] : null, mw: any = mainId ? WEAPON[mainId] : null;
-  if (!ow || ow.id === 'fists' || !mw || mw.id === 'fists') return null;
+  if (!ow || ow.id === 'fists' || isShieldId(ow.id) || !mw || mw.id === 'fists') return null;
   const extra = (wpGear as any)?.second_weapon_skill_extra ?? 2, req = ow.requires && Object.keys(ow.requires).length ? ow.requires : { [ow.skill || 'dexterity']: 0 };
   for (const [sk, n] of Object.entries(req)) { const need = (n as number) + extra; if ((c.skills[sk] || 0) < need) return 'A second weapon asks more: the ' + ow.name.toLowerCase() + ' in the off hand needs ' + (SKILL[sk]?.name || sk.replace('_', ' ')) + ' ' + need + '.'; }
   return null;
@@ -1386,15 +1403,8 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
   // Evoker-linked gun or a red dot; Forlorn Hope's armour cap is armourCap) — perk-runtime still-open item 6.
   const ban = (ctx: any) => statQuery({ c }, 'equip_ban', ctx).add > 0 ? equipBanWhy(c, ctx) : null;
   if (to === 'main') {
-    // Rules 1.56 (Leon, 16 Nov 2026): an off-hand item marked `either_hand` (a shield) sits in the main hand as a
-    // weapon does, one to a hand; the hand strikes with bare fists (combat.ts unitFromCharacter).
-    if (!wid && item?.either_hand && item.slot === 'off_hand') {
-      { const rq = requiresWhy(c, item.requires); if (rq) return rq; }
-      take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined, c.loadedType);
-      c.weapon = it.item || it.id; c.weaponState = { ...(it.rarity ? { rarity: it.rarity } : {}), ...(it.dur != null ? { dur: it.dur } : {}), ...(it.prop ? { prop: it.prop } : {}) }; c.loaded = 0; c.loadedType = null;
-      c.pack = pack; return null;
-    }
-    if (!wid) return 'Only weapons and shields go in the main hand.';
+    // Rules 1.57 (A1): a shield is a weapon row, so it goes in the main hand as any one-handed weapon does
+    if (!wid) return 'Only weapons go in the main hand.';
     { const rq = requiresWhy(c, (WEAPON[wid] as any).requires); if (rq) return rq; }
     { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
     if (c.offHand && !twoHands(c, wid)) { const sw = secondWeaponWhy(c, c.offHand.id, wid); if (sw) return sw; }

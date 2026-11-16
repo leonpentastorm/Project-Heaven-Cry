@@ -38,7 +38,7 @@ import { storyForecastVals } from '../game/manaForecast';
 import { askConfirm, askText } from '../game/dialog';
 import { shellVals, narratorVals } from './shell';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
-import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
+import { oocOf, SECOND_SCHOOL, TONE, isShieldId } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
 import { armsTabVals } from './armsTab';
 import { figmentSectionVals } from './figmentsTab';
@@ -503,7 +503,7 @@ export class MainLogic extends DCLogic {
         [(typeof w.damage === 'number' ? w.damage + ' dmg' : 'damage varies') + (typeof w.range_tiles === 'number' ? ' · ' + w.range_tiles + ' tiles' : '') + (w.magazine ? ' · ' + loadedOf(c) + '/' + w.magazine + ' loaded' : ''), wear(wd, wmax),
           (ws.mods || []).map((m) => ITEM[m]?.name).filter(Boolean).join(', '), armsLine(c.weapon), skillLine(c, { id: c.weapon, rarity: ws.rarity, mods: ws.mods })].filter(Boolean).join(' · ')],
       outer: c.armourClass ? [(KITS[c.kit] && KITS[c.kit].armourClass === c.armourClass ? kitDef.armourName : (ARMOUR[c.armourClass]?.name || 'Body') + ' armour') + ' (Class ' + ROMAN[c.armourClass] + ')', 'Armour ' + (ARMOUR[c.armourClass]?.value || 0)] : null,
-      off: c.offHand ? [WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id, WEAPON[c.offHand.id] ? ['Paired attacks', armsLine(c.offHand.id), skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity })].filter(Boolean).join(' · ') : [skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity }), (ITEM[c.offHand.id]?.text || '').slice(0, 80)].filter(Boolean).join(' · ')] : null } : {};
+      off: c.offHand ? [WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id, WEAPON[c.offHand.id] && !isShieldId(c.offHand.id) ? ['Paired attacks', armsLine(c.offHand.id), skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity })].filter(Boolean).join(' · ') : [skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity }), ((WEAPON[c.offHand.id] || ITEM[c.offHand.id])?.text || '').slice(0, 80)].filter(Boolean).join(' · ')] : null } : {};
     if (c) for (const [slot, id] of Object.entries(c.worn || {})) if (WORN_SLOT[slot]) worn[WORN_SLOT[slot]] = [ITEM[id]?.name || id, (ITEM[id]?.text || '').replace(/^[^:]+: /, '')];
     const pack = c ? sheetPack(c) : []; // the engine's list: the counted things (a stim, an Essence) flagged `counted`, with their sell note
     worn.pack = c ? ['Pack', pack.length + (pack.length === 1 ? ' item' : ' items')] : null;
@@ -532,7 +532,7 @@ export class MainLogic extends DCLogic {
       if (!it.mags) { const pi = c && !it.counted ? ri - pack.slice(0, ri).filter((x) => x.counted).length : -1, def = ITEM[it.item || it.id] || {}, wdef = it.weapon ? WEAPON[it.weapon] : null, acts = [];
         if (pi >= 0 && !gearLocked) {
           if (wdef && it.kind === 'weapon') { acts.push({ key: 'm', label: 'Main hand', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'main' }) }); if (wdef.hands === '1H') acts.push({ key: 'o', label: 'Off hand', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'off' }) }); }
-          else if (def.slot === 'off_hand') { if (def.either_hand) acts.push({ key: 'm', label: 'Main hand', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'main' }) }); acts.push({ key: 'o', label: 'Off hand', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'off' }) }); } // rules 1.56: a shield in either hand
+          else if (def.slot === 'off_hand') acts.push({ key: 'o', label: 'Off hand', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'off' }) });
           else if (def.category === 'armour') acts.push({ key: 'w', label: 'Wear', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'worn' }) });
           else if (def.category === 'mod') acts.push({ key: 'f', label: 'Fit', go: () => act({ type: 'gear/mod', charId: c.id, idx: pi }) });
           else if (it.kind === 'plot') { // a plot item: hand it to someone in the party, or drop it
@@ -584,7 +584,7 @@ export class MainLogic extends DCLogic {
       const isMain = which === 'main', id = isMain ? c.weapon : c.offHand?.id, st = isMain ? c.weaponState || {} : c.offHand || {};
       const key = 'hand-' + which; tips[key] = id ? (weaponTip(id, st) || itemTip(id)) : { title: 'Empty', sub: isMain ? 'main hand' : 'off hand', lines: [isMain ? 'Your main-hand weapon.' : 'Hold a one-handed weapon, a shield, a torch, a flare or a focus here.'], glyph: '·', img: '', lore: '' };
       const twoHanded = !isMain && WEAPON[c.weapon]?.hands === '2H';
-      const acts = gearLocked ? [] : isMain ? [...(id && !WEAPON[id] && ITEM[id] ? [{ key: 'main-x', label: 'Take off', go: () => { act({ type: 'gear/unequip', charId: c.id, slot: 'main' }); this.setState({ gearMenu: null }); } }] : []), ...cand((it) => (it.kind === 'weapon' && it.weapon && WEAPON[it.weapon]) || (!it.weapon && ITEM[it.item || it.id]?.either_hand), 'Equip', 'main')] // rules 1.56: a shield too, and a shield there comes off
+      const acts = gearLocked ? [] : isMain ? cand((it) => it.kind === 'weapon' && it.weapon && WEAPON[it.weapon], 'Equip', 'main')
         : twoHanded ? [] : [...(c.offHand ? [{ key: 'off-x', label: 'Take off', go: () => { act({ type: 'gear/unequip', charId: c.id, slot: 'off' }); this.setState({ gearMenu: null }); } }] : []),
           ...cand((it) => (it.weapon && WEAPON[it.weapon]?.hands === '1H') || ITEM[it.item || it.id]?.slot === 'off_hand', 'Hold', 'off')];
       const r = st.rarity || 'standard';

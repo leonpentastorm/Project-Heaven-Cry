@@ -95,6 +95,12 @@ the alpha perks were rewritten so each one helps its own door. The full account,
   Defense and Movement add; Brace and the Guard technique +1 Guard a shield under the pool's cap; Parry and the
   shield's techniques once). The main hand holding one strikes with bare fists. The sheet, the camp, the fight's hand
   change and the Proving Ground offer the main hand for a shield.
+- **Shields are weapons** (rules 1.57, the lead's rulings of 16 Nov 2026; spec items 4497 to 4505): the buckler, the
+  riot shield and the pavise are weapon rows with the Shield property. In the main hand a shield strikes with its own
+  line (buckler 6, riot shield 8, pavise 8; Durability, growing with Strength), wears and is graded as a weapon; in the
+  off hand it is not a second weapon. A shield in the main hand with a sword in the off hand is ordinary dual wielding,
+  and the shield's techniques come from whichever hand holds it. Shield Bash strikes with the shield (x2.5). The pavise
+  is a shield when carried. Old saves' shield lines are moved to weapon lines at load.
 
 ## 0.28.3 — the field is the fight, and the Durability tank
 

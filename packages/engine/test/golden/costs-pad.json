@@ -1033,7 +1033,7 @@
 "tech/pin_down/hellraiser_service_rifle": "P1 ammo24>23 ap9>6 heat0>1 | short: Needs 3 AP. | again: NO One Take a turn. | next: P1 ammo23>22 ap9>6 heat0>1 | later: P1 ammo23>22 ap9>6 heat0>1",
 "tech/pull_out": "REFUSED (no weapon of the table makes it)",
 "tech/punch_through/hellraiser_service_rifle": "P1 ammo24>23 ap9>6 heat0>1 | short: Needs 3 AP. | again: P1 ammo23>22 ap9>6 heat1>2 | next: P1 ammo23>22 ap9>6 heat0>1 | later: P1 ammo23>22 ap9>6 heat0>1",
-"tech/raise_shield": "REFUSED (no weapon of the table makes it)",
+"tech/raise_shield/sabre": "P1 ap9>8 | short: Needs 1 AP. | again: NO Your shield is already raised. | next: P1 ap9>8 | later: P1 ap9>8",
 "tech/rake/hellraiser_service_rifle": "P1 ammo24>14 ap9>5 heat0>5 | short: Needs 4 AP. | again: P1 ammo14>4 ap9>5 heat5>10 | next: P1 ammo14>4 ap9>5 heat3>8 | later: P1 ammo14>4 ap9>5 heat3>8",
 "tech/riposte": "REFUSED (no weapon of the table makes it)",
 "tech/rout/hellraiser_service_rifle": "P1 ammo24>23 ap9>6 heat0>1 | short: Needs 3 AP. | again: NO One Take a turn. | next: P1 ammo23>22 ap9>6 heat0>1 | later: P1 ammo23>22 ap9>6 heat0>1",

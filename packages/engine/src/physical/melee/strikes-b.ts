@@ -200,7 +200,7 @@ technique({
     const v = t.tgt; if (!v) return 'Pick the one your weapon is stuck in.';
     if (!stuckFor(t, v)) return 'No weapon is stuck in ' + v.name + '.';
     if (dist(t.u.pos, v.pos) > 1) return 'Stand next to ' + v.name + ' to pull the weapon out.';
-    const mainFree = (t.u.weapon === 'fists' || !WEAPON[t.u.weapon]) && !t.u.mainItem; // rules 1.56 item 4316: a shield holds the hand
+    const mainFree = t.u.weapon === 'fists' || !WEAPON[t.u.weapon]; // rules 1.57 (A1): a main-hand shield is a weapon: it holds the hand
     if (!mainFree && (t.u.offWeapon || t.u.offItem)) return 'Free a hand first.'; // an off-hand shield or focus holds it too
     return null;
   },

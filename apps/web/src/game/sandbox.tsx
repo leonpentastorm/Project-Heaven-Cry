@@ -619,7 +619,7 @@ function equipTo(it: PackIt): ['main' | 'off' | 'worn' | 'mod', string][] {
   if (w) return [['main', 'Equip · main hand'], ...((w as any).hands === '1H' ? [['off', 'Off hand'] as ['off', string]] : [])];
   if (d?.category === 'mod') return [['mod', 'Fit to weapon']];
   if (d?.category === 'armour') return [['worn', 'Wear']];
-  if (d?.slot === 'off_hand') return [...(d.either_hand ? [['main', 'Equip · main hand'] as ['main', string]] : []), ['off', d.either_hand ? 'Off hand' : 'Equip · off hand']]; // rules 1.56: a shield in either hand
+  if (d?.slot === 'off_hand') return [['off', 'Equip · off hand']];
   return [];
 }
 /** An item's icon (gearIcons.ts: painted when there is one, else monoline), or nothing for an item with none. */

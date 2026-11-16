@@ -43,8 +43,8 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
   const uid = u.id, w: any = (WEAPON as any)[u.weapon] || (WEAPON as any)[c.weapon], two = twoHands(c, c.weapon);
   const disarmed = (u.conds?.disarmed ?? 0) > 0;
   // ---------- hands ----------
-  const mainEmpty = c.weapon === 'fists' || (!(WEAPON as any)[c.weapon] && !(ITEM as any)[c.weapon]); // rules 1.56: a shield in the main hand is held
-  const mainSub = mainEmpty ? 'Your fists.' : !(WEAPON as any)[c.weapon] ? 'Your strikes are bare fists behind it.' : [
+  const mainEmpty = c.weapon === 'fists' || !(WEAPON as any)[c.weapon];
+  const mainSub = mainEmpty ? 'Your fists.' : [
     disarmed ? 'On the ground (Disarmed): Recover it, or draw another' : '',
     w && w.magazine != null ? (u.ammo ?? 0) + '/' + magazineSize(w.id, c.weaponState?.mods) + ' loaded' : '', // the engine's size, fitted mods in it (rules 1.56)
     two ? 'both hands' : '', focusOf(c.weapon) ? 'counts as your ' + focusOf(c.weapon) : ''].filter(Boolean).join(' · ');
@@ -77,11 +77,7 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
         const two2 = twoHands(c, wid);
         acts.push(act('draw-' + i, 'Draw', { op: 'draw', item: i, to: 'main' }, { type: 'combat/equip', unitId: uid, item: i, to: 'main' }, two2 ? ' · both hands' : ''));
         if (wd.hands === '1H') acts.push(act('off-' + i, 'Off hand', { op: 'draw', item: i, to: 'off' }, { type: 'combat/equip', unitId: uid, item: i, to: 'off' }));
-      } else if (def.slot === 'off_hand') {
-        // rules 1.56: a shield (`either_hand` in the data) goes in either hand, the main hand's row as a weapon's Draw
-        if (def.either_hand) acts.push(act('draw-' + i, 'Draw', { op: 'draw', item: i, to: 'main' }, { type: 'combat/equip', unitId: uid, item: i, to: 'main' }, ' · main hand'));
-        acts.push(act('off-' + i, def.either_hand ? 'Off hand' : 'Draw', { op: 'draw', item: i, to: 'off' }, { type: 'combat/equip', unitId: uid, item: i, to: 'off' }, def.either_hand ? '' : ' · off hand'));
-      }
+      } else if (def.slot === 'off_hand') acts.push(act('off-' + i, 'Draw', { op: 'draw', item: i, to: 'off' }, { type: 'combat/equip', unitId: uid, item: i, to: 'off' }, ' · off hand'));
       else if (def.category === 'armour' && def.slot) acts.push(isLightArmour(def.id) ? act('wear-' + i, 'Put on', { op: 'wear', item: i }, { type: 'combat/equip', unitId: uid, item: i, to: 'worn' })
         : { key: 'heavy', label: HEAVY_ROW, cost: '', off: true, why: HEAVY_ROW + '.', action: null });
       else if (def.category === 'mod') acts.push(act('mod-' + i, 'Fit', { op: 'mod', item: i }, { type: 'combat/swap', unitId: uid, mod: i }));

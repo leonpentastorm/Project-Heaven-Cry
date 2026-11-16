@@ -1,10 +1,11 @@
 // Rules 1.13: a shield's own techniques (docs/design/proposals/2026-11-nine-doors.md, section 20 item 9; numbers
-// provisional, in techniques.json). They are the off hand's while it holds a shield (an item with the Shield property),
-// whatever the main hand holds, and every one works with both Momentum and Guard:
+// provisional, in techniques.json). They come from whichever hand holds a shield (rules 1.57 A1: a weapon row with the
+// Shield property; the off hand while it holds no weapon, else a main-hand shield's), once however many are held, and
+// every one works with both Momentum and Guard:
 //   Shield Bash  (Strike, 2 AP)  1 Guard in place of the Strike's Momentum (the core charges it); a hit gives 1 Momentum
 //   Raise Shield (Link, 1 AP)    Momentum into Guard, 1 for 1; ranged attacks from the front −2 until your next turn
 //   Shield Wall  (Answer, 1 Guard) an ally next to you is shot at: half cover counts for them (the −2 went in tuning: item 1000)
-// The strike is the bare hand behind the shield (Raw Power; the core swaps it in as it does an off-hand weapon).
+// The strike is the shield's own row (its line, the skill it hits with; the core swaps it in as it does an off-hand weapon).
 import { technique, strike, landed, stop, answer, momentumOf, turnStamp, onHook, meleeFx, fxMark, movedSince } from './shared';
 import { guardOf, guardMax, addGuard, spendGuard, loseMomentum } from '../core';
 import { inFront } from './links';

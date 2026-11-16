@@ -17,10 +17,10 @@ import { technique, save, cond, stop, forceMove, stepUser, stepsWithin, chainOf,
 import { PHYS_RULES } from '../data';
 import { strikingWith, techSaveTn, techVia, saveOutside, guardGain, guardOf, guardMax, addGuard, spendGuard } from '../core';
 import { say, type Combat, type Unit, alive, dist, xy, key, moveBlockers, moveBlock, moveFx, emitFx, triggerOverwatch, refOf, swapUnits, newStep } from '../../combat';
-import { mod } from '../../character';
+import { mod, inHands, isShieldId } from '../../character';
 import { zoneEnter } from '../../magic';
 import { hazardStep, hazardLiveAt } from '../../hazards';
-import { ITEM } from '../../data';
+import { WEAPON } from '../../data';
 import { emit, charOfUnit } from '../../effects/hooks';
 import { immune } from '../../effects/core';
 import { unitSave } from '../../magic';
@@ -46,11 +46,11 @@ function awayFrom(from: string, at: string): string | null {
   const [ox, oy] = xy(from), [x, y] = xy(at), sx = Math.sign(x - ox), sy = Math.sign(y - oy);
   return sx || sy ? key(x + sx, y + sy) : null;
 }
-/** The Defense a carried shield gives (its defense_bonus), for "ignores a carried shield". 0 without one. */
+/** The Defense the shields held give (their rows' defense_bonus; rules 1.57 A1: a shield in either hand, the one prop
+ * test isShieldId), for "ignores a carried shield". 0 without one. */
 function shieldBonus(u: Unit): number {
-  const c = u.companion ? null : charOfUnit(u), it: any = c?.offHand ? (ITEM as any)[c.offHand.id] : null;
-  if (!it || it.category !== 'shield') return 0;
-  return (it.effects || []).filter((e: any) => e.op === 'defense_bonus' && typeof e.value === 'number').reduce((n: number, e: any) => n + e.value, 0);
+  const c = u.companion ? null : charOfUnit(u); if (!c) return 0;
+  return inHands(c).filter(isShieldId).flatMap((id) => ((WEAPON as any)[id]?.effects || []) as any[]).filter((e: any) => e.op === 'defense_bonus' && typeof e.value === 'number').reduce((n: number, e: any) => n + e.value, 0);
 }
 
 // ---------- 15. Sidestep ----------

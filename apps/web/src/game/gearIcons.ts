@@ -1,6 +1,6 @@
 // Weapon and armour icons (art/style-guide/weapon-icons.md; the working spec is art/icons/weapons/README.md): one monoline SVG
 // per item, art/icons/weapons/<id>.svg for every weapon in data/weapons.json, art/icons/armour/<id>.svg for every
-// armour piece and shield in data/items.json, and art/icons/focus/<id>.svg for the magic foci (the Evoker and the
+// armour piece in data/items.json and every shield (rules 1.57: a weapons.json row; its icon keeps its id and folder), and art/icons/focus/<id>.svg for the magic foci (the Evoker and the
 // Emanator, both gloves at base: Leon, 10 Nov 2026). A 64 × 64 box, a 2-unit `currentColor` stroke, no fill: the screen sets
 // the colour (white ink on the panel, or an attribute's ink).
 //

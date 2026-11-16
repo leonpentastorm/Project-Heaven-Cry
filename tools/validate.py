@@ -1609,7 +1609,7 @@ if isinstance(tq, dict):
     RANGED_PROPS = {"quick", "auto", "precise", "spread", "heavy", "blast", "arc", "silent", "loud", "drawn", "thrown"}
     GROUPS = {"melee": {"opener", "strike", "link", "finisher", "answer"}, "ranged": {"fire", "press", "set", "take", "watch"}}
     AIMS = {"enemy", "tile", "ally", "self", "none", "enemy+tile"}
-    SHIELD_PROPS = {"shield"}  # carried by an off-hand item (items.json phys.props), never by a weapon
+    SHIELD_PROPS = {"shield"}  # rules 1.57 (A1): carried by a shield's weapon row (category shield, 1H melee), and only by one
     trules = tq.get("rules") or {}
     techs = {t.get("id"): t for t in items("techniques") if isinstance(t, dict)}
     if len(techs) != len(items("techniques")):
@@ -1707,20 +1707,12 @@ if isinstance(tq, dict):
     for cls_, need in (hg.get("classes") or {}).items():
         if cls_ not in ("1", "2", "3", "4", "5") or not isinstance(need, int) or not 1 <= need <= 10:
             errors.append(f"techniques: rules.gear_gates.heavy_armour.classes: '{cls_}': {need} is not an armour class with a skill level")
-    shield_items = [i_ for i_ in items("items") if isinstance(i_, dict) and "shield" in ((i_.get("phys") or {}).get("props") or [])]
-    # rules 1.56 (a shield in either hand, Leon, 16 Nov 2026): `either_hand` true lets an off-hand item sit in the main
-    # hand too; only a shield carries it
+    # rules 1.57 (A1): shields are weapons.json rows with the Shield property; an items.json row has no phys block, no
+    # either_hand (gone with the rows) and is never category shield
+    shield_items = [w_ for w_ in items("weapons") if isinstance(w_, dict) and "shield" in ((w_.get("phys") or {}).get("props") or [])]
     for i_ in items("items"):
-        if isinstance(i_, dict) and "either_hand" in i_ and (i_.get("either_hand") is not True or i_.get("category") != "shield" or i_.get("slot") != "off_hand"):
-            errors.append(f"items:{i_.get('id')}: either_hand is true, and only on a shield (category shield, slot off_hand)")
-    for i_ in items("items"):
-        ph = i_.get("phys") if isinstance(i_, dict) else None
-        if ph is None:
-            continue
-        if not isinstance(ph, dict) or set(ph.get("props") or []) - SHIELD_PROPS or not ph.get("props") or set(ph) - {"props"}:
-            errors.append(f"items:{i_.get('id')}: an item's phys block is {{props: [shield]}} and nothing else")
-        elif i_.get("slot") != "off_hand":
-            errors.append(f"items:{i_.get('id')}: the Shield property is for an off-hand item")
+        if isinstance(i_, dict) and ("phys" in i_ or "either_hand" in i_ or i_.get("category") == "shield"):
+            errors.append(f"items:{i_.get('id')}: a shield is a weapons.json row (rules 1.57): no phys, either_hand or category shield on an item")
     for tid, t in techs.items():
         nd, inn = t.get("needs") or {}, t.get("innate")
         if nd.get("shield") and ("shield" not in (t.get("comes_with") or []) or t.get("free")):
@@ -1760,8 +1752,12 @@ if isinstance(tq, dict):
             errors.append(f"{where}: phys.system must be melee or ranged")
             continue
         for pr in ph.get("props") or []:
-            if pr not in (MELEE_PROPS if sysm == "melee" else RANGED_PROPS):
+            if pr not in ((MELEE_PROPS | SHIELD_PROPS) if sysm == "melee" else RANGED_PROPS):
                 errors.append(f"{where}: phys.props names '{pr}', not a {sysm} property")
+        # rules 1.57 (A1, Leon, 16 Nov 2026): a shield is a weapon row: the Shield property, category shield, one-handed,
+        # melee; the one prop test (character.ts isShieldId) reads the property
+        if ("shield" in (ph.get("props") or [])) != (w.get("category") == "shield") or ("shield" in (ph.get("props") or []) and (w.get("hands") != "1H" or sysm != "melee")):
+            errors.append(f"{where}: the Shield property and category shield go together, on a one-handed melee row")
         if ph.get("hits_with") not in skill_ids:
             errors.append(f"{where}: phys.hits_with '{ph.get('hits_with')}' is not a skill")
         for sc in (ph.get("scales_with") or []) + (ph.get("also_scales") or []):
@@ -2625,7 +2621,7 @@ if _sv is not None:
                 if _x not in _wid: errors.append(f"{_aw}.skip: {_x!r} is not a weapon")
         _covered = {(a.get("family"), a.get("category")) for a in _ar.get("list") or []}
         for _f in sorted(_fams, key=str):
-            if _f not in _covered and _f[0] not in (_ar.get("left_out") or {}): errors.append(f"{_w}.archetypes: the family {_f[0]!r} ({_f[1]!r}) is neither an archetype nor left_out with its reason")
+            if _f not in _covered and _f[0] not in (_ar.get("left_out") or {}) and _f[1] not in (_ar.get("left_out") or {}): errors.append(f"{_w}.archetypes: the family {_f[0]!r} ({_f[1]!r}) is neither an archetype nor left_out with its reason")
         _rec = _lo.get("recommended") or {}
         _ralpha = {s.get("id") for s in (data.get("skills") or {}).get("items", []) if s.get("slot") == "alpha"}
         for _rw in _rec.get("weapon") or []:

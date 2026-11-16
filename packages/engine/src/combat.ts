@@ -5,7 +5,7 @@ import { setLogMarker, remarkOpening, say, type LogMark, type LogSideMark } from
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
-import { type Character, type PackItem, plainRounds, gearEntry, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+import { type Character, type PackItem, plainRounds, gearEntry, isShieldId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
@@ -184,9 +184,9 @@ export interface Unit {
   infiniteAmmo?: boolean;
   /** Class resources (Momentum, Guard, Marks, Charges, Supplies…): current values, and maxima. */
   res?: Record<string, number>; resMax?: Record<string, number>;
-  /** Rules 1.13, Durability's Guard: what the off hand holds when it isn't a weapon (a shield, a torch, a focus; null:
+  /** Rules 1.13, Durability's Guard: what the off hand holds when it isn't a second weapon (a shield, rules 1.57: a weapon row that is not one; a torch, a focus; null:
    * nothing), and the unit's Durability points (a PC's come from its sheet; a stat block may give them). */
-  offItem?: string | null; /** rules 1.56: what the main hand holds when it isn't a weapon (a shield); its strike is bare fists */ mainItem?: string | null; durability?: number;
+  offItem?: string | null; durability?: number;
   /** Physical 2.0 (rules 1.12; src/physical). Pressure 0–4 on this unit, how many of its pips its own side can't see (a
    * Silent weapon's), who put it there, who hit it in which round and with which weapon (Crossfire; drill on the kill),
    * turns left of Stopped once, the Watch it holds, its melee chain this turn, per-technique state, a set-up mark, an
@@ -511,11 +511,9 @@ export const dist = (a: string, b: string) => { const [ax, ay] = xy(a), [bx, by]
 /** A character's Vision in tiles (spec: Vision): 12 + 2 per Perception above 1 + Vigilant + items. */
 export const visionOf = (c: Character) => 12 + 2 * ((c.attrs.perception || 1) - 1) + (c.skills.vigilant || 0) + statQuery({ c }, 'vision').add;
 export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
-  // Rules 1.56: a main hand holding an item (a shield, `either_hand`) strikes with the neutral bare fists; the item is
-  // carried as `mainItem`, as the off hand's is as `offItem`.
-  // Item 4315: the fists behind it are plain fists (standard grade, their own durability), never the item's state.
-  const mainItem = !WEAPON[c.weapon] && ITEM[c.weapon] ? c.weapon : null, w = mainItem ? WEAPON.fists : WEAPON[c.weapon] || WEAPON.service_pistol;
-  const ws = mainItem ? undefined : c.weaponState;
+  // Rules 1.57 (A1): a shield is a weapon row, so a main-hand shield is the unit's weapon (its own strike line); an
+  // off-hand shield is not a second weapon: it is carried as `offItem` (the one prop test, isShieldId), never `offWeapon`.
+  const w = WEAPON[c.weapon] || WEAPON.service_pistol, ws = c.weaponState, offW = c.offHand && WEAPON[c.offHand.id] && !isShieldId(c.offHand.id) ? c.offHand : null;
   return {
     id: 'pc-' + c.id, side: 'pc', name: c.name, short: c.name.slice(0, 2).toUpperCase(), charId: c.id, img: c.portrait, level: clampEnemyLevel(c.level),
     pos, hp: c.hp, maxHp: maxHp(c), def: defense(c), armour: armourOf(c, gearBonus(c, 'armour_bonus') + statQuery({ c }, 'armor').add), // rules 1.36: × scale at the wearer's level
@@ -524,8 +522,8 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     downed: c.hp <= 0, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
     injuries: (c.injuries || []).map((i) => ({ ...i })), bleed: 0, dazedNext: 0, injResist: injuryResistPct(c), hand: mainHandSide(c),
     vigilant: c.skills.vigilant || 0, overweight: overweightKg(c),
-    dmgMult: RARITY[ws?.rarity || 'standard'].dmg, dur: mainItem ? maxDurOf(w.id) : weaponDurOf(c), maxDur: maxDurOf(w.id, ws?.rarity), mods: [...(ws?.mods || [])],
-    offWeapon: c.offHand && WEAPON[c.offHand.id] ? c.offHand.id : null, ...(c.offHand && WEAPON[c.offHand.id] && c.offHand.mods?.length ? { offMods: [...c.offHand.mods] } : {}), offAmmo: c.offHand && WEAPON[c.offHand.id] ? Math.min(c.offHand.loaded ?? magazineSize(c.offHand.id, c.offHand.mods) ?? 0, magazineSize(c.offHand.id, c.offHand.mods) ?? 0) : 0, // its own rounds (item 688)
+    dmgMult: RARITY[ws?.rarity || 'standard'].dmg, dur: weaponDurOf(c), maxDur: maxDurOf(w.id, ws?.rarity), mods: [...(ws?.mods || [])],
+    offWeapon: offW ? offW.id : null, ...(offW && offW.mods?.length ? { offMods: [...offW.mods] } : {}), offAmmo: offW ? Math.min(offW.loaded ?? magazineSize(offW.id, offW.mods) ?? 0, magazineSize(offW.id, offW.mods) ?? 0) : 0, // its own rounds (item 688)
     light: gearBonus(c, 'light'), darkSight: gearHas(c, 'dark_sight'), hazardImmune: gearEffects(c).filter((e) => e.op === 'hazard_immune').map((e) => e.hazard || ''),
     ignoreDifficult: gearHas(c, 'ignore_difficult'), unarmedBonus: gearBonus(c, 'unarmed_damage_bonus'), proficiency: c.skills.proficiency || 0,
     parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: visionOf(c), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => plainRounds(x, w.ammo)).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
@@ -541,7 +539,7 @@ function pcExtras(c: Character, w: WeaponDef): Partial<Unit> {
   const thr: Record<string, number> = {};
   for (const it of packOf(c)) { const wid = it.weapon || it.id; if (WEAPON[wid]?.category === 'thrown' && it.qty > 0 && !it.mags) thr[wid] = (thr[wid] || 0) + it.qty; }
   const spare = packOf(c).find((x) => x.weapon === c.weapon && x.mags);
-  const offG = c.offHand && WEAPON[c.offHand.id] && c.offHand.id !== c.weapon ? WEAPON[c.offHand.id] : null;
+  const offG = c.offHand && WEAPON[c.offHand.id] && !isShieldId(c.offHand.id) && c.offHand.id !== c.weapon ? WEAPON[c.offHand.id] : null;
   const offW = offG ? packOf(c).find((x) => x.weapon === offG.id && x.mags) : null;
   const offLoose = offG && offG.reload === 'loose' && offG.ammo && offG.ammo !== w.ammo ? packOf(c).filter((x) => plainRounds(x, offG.ammo)).reduce((t, x) => t + x.qty, 0) : null;
   const kind = (c as any).kind || ((c.traits || []).includes('factory_made') ? 'machine' : 'human');
@@ -558,7 +556,7 @@ function pcExtras(c: Character, w: WeaponDef): Partial<Unit> {
     ...(offW?.mags && offW.magTypes ? { offMagTypes: typesFor(offW.magTypes, offW.mags.length) } : {}),
     ...(c.offHand?.ammoType && c.offHand.loaded ? { offAmmoType: c.offHand.ammoType } : {}),
     ...(offLoose != null ? { offLoose } : {}),
-    offItem: c.offHand && !WEAPON[c.offHand.id] && !twoHands(c, c.weapon) ? c.offHand.id : null, ...(!WEAPON[c.weapon] && ITEM[c.weapon] ? { mainItem: c.weapon } : {}), durability: c.skills.durability || 0,
+    offItem: c.offHand && (!WEAPON[c.offHand.id] || isShieldId(c.offHand.id)) && !twoHands(c, c.weapon) ? c.offHand.id : null, durability: c.skills.durability || 0,
     ...(res ? res : {}),
   };
   void w;
@@ -1154,7 +1152,7 @@ export function sideSees(cb: Combat, side: 'pc' | 'foe', tgt: Unit, by?: Unit | 
 }
 
 // ---------- attacks ----------
-export const isMelee = (w: WeaponDef) => /melee|unarmed/.test(w.category);
+export const isMelee = (w: WeaponDef) => /melee|unarmed|shield/.test(w.category); // rules 1.57 (A1): a shield's row strikes in melee
 /** A weapon a melee strike is made with: a melee weapon, or one whose rules 1.12 system is melee though its category isn't
  * (the Evoker blade, the Emanator gauntlet, the banner, the grand staff). Any other weapon strikes in melee as fists. */
 export const meleeArm = (w: WeaponDef) => isMelee(w) || (w as any).phys?.system === 'melee';

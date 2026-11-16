@@ -935,7 +935,20 @@ Each hit from mana arms releases bots: +1 on the ambient mana meter, like enhanc
 - **Censer gun · Blessed Shell:** a Templar or anyone with a patron can bless a shell (out of combat, a prayer) with a Blessing they hold. Firing it lands the Blessing on the target tile, radius 1, helping allies or harming foes as the Blessing says. *"The Church fires its prayers at range."*
 - **Bot-thread banner · Rally:** 2 AP, once per fight; plant it, and allies within 3 tiles get a shield worth 15 × your Healing given. *"Banner Dancers fight armourless. The banner is the armour."*
 
+##### 7.11a Shields: 3 types (1H, Durability; rules 1.57)
+
+A shield is a weapon row (rules 1.57 item 1): it strikes with its own line in the main hand, lends the shield techniques
+from either hand, and in the off hand is not a second weapon. Its Defense and Movement are in table 7.12's rows.
+
+| Type | Dmg | Kg | Price | Hands | Needs |
+|---|---|---|---|---|---|
+| Buckler | 6 | 2 | 200 | 1H | *(PROVISIONAL, rules 1.57)* |
+| Legion riot shield | 8 | 7 | 700 | 1H | *(PROVISIONAL, rules 1.57)* |
+| Pavise | 8 | 10 | 1,200 | 1H | *(PROVISIONAL, rules 1.57: the lead's ruling)* |
+
 ##### 7.12 Off-hand items: 7 types
+
+*(Rules 1.57: the buckler, the riot shield and the pavise are weapons now, table 7.11a; their rows here keep their Defense, Movement and the pavise's Plant.)*
 
 | Item | Effect | Kg | Price | Durability or HP |
 |---|---|---|---|---|
@@ -1183,7 +1196,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 
 **The shield's techniques, and Interpose (rules 1.13)**
 
-A shield (an off-hand item with the **Shield** property: the buckler and the riot shield; a pavise is carried, not held up) has its own techniques. They are the off hand's while it holds the shield, whatever the main hand holds (a melee weapon, a gun, or nothing), and they are never learned, readied or picked: the shield brings them. A shield-bearer has the Momentum meter. The strike is the bare hand behind the shield. They are not counted in the 27.
+A shield (an off-hand item with the **Shield** property: the buckler and the riot shield; a pavise is carried, not held up) has its own techniques. They are the off hand's while it holds the shield, whatever the main hand holds (a melee weapon, a gun, or nothing), and they are never learned, readied or picked: the shield brings them. A shield-bearer has the Momentum meter. The strike is the bare hand behind the shield. They are not counted in the 27. *(Superseded by rules 1.57: a shield is a weapon row with the Shield property, the pavise too; its techniques come from whichever hand holds it, and they strike with the shield's own line.)*
 
 | # | Technique | Cost | What it does | With the right weapon |
 |---|---|---|---|---|
@@ -6941,6 +6954,47 @@ shield. Now (items 4308 to 4313; every number is the data's and PROVISIONAL):
    fists (standard grade, their own durability; the shield's grade and wear are not theirs, and a fist's wear never
    reaches the shield); Pull Out asks a hand that holds nothing; the fight's shield block names the hand the shield is in.
    A carried pavise gives no Parry bonus (it was +2 by its category): intended, its text says carried it does nothing.
+   **Superseded by rules 1.57 (A1)** for the fists behind a main-hand shield (a shield is a weapon now) and the pavise.
+
+## Rules 1.57, shields are weapon rows
+
+The lead's rulings, 16 Nov 2026, taking the shape of the follow-strike draft's N2
+(`docs/design/proposals/2026-11-follow-strike.md`). Items 4497 to 4505; every number is the data's and PROVISIONAL. This
+revision overrides rules 1.56's items 4308, 4310, 4313, 4315 and 4317 where they differ. (The follow-strike draft names
+its own revision 1.57; when it is built it takes the next number.)
+
+1. **A shield is a weapon** (item 4497). The buckler, the riot shield and the pavise are `weapons.json` rows: category
+   `shield`, one-handed, melee (`phys.system`), the Shield property (`phys.props: [shield]`), mastery family Unarmed,
+   their own strike line: buckler 6, riot shield 8, pavise 8, hitting with Durability and growing with Strength (the
+   melee profile), 2 AP a blow, as any light weapon. Their Defense and Movement are the rows' own `effects`, held in
+   either hand; price, weight and durability are unchanged. `either_hand` is gone: a shield goes in either hand because
+   it is a one-handed weapon.
+2. **One test** (item 4498). "Is a shield held" is one test, the Shield property of the row in a hand (`isShieldId`):
+   the shield techniques, Brace and the Guard technique's +1 a shield, Parry's bonus, Eyes in the Back's carried shield,
+   Sidestep's "ignores a carried shield", the Legion gladius's Shield Partner, the second-weapon rule and the unit's
+   off-hand item all read it.
+3. **In the main hand** (item 4499) a shield is simply a one-handed melee weapon: it strikes with its own line (no bare
+   fists behind it), wears as a weapon wears and is graded as a weapon is. The unit field `mainItem` is gone.
+4. **In the off hand a shield is not a second weapon** (item 4500): it asks no +2 (rule 5a), opens no Both block and makes
+   no paired attack; it lends its techniques, as before.
+5. **Main-hand shield, a one-handed weapon in the off hand** (item 4501): ordinary dual wielding by the rules of today
+   (the off weapon is a second weapon and asks its +2; two melee weapons open the Both block), and the shield's
+   techniques come from the main hand. Item 4313's asymmetry is closed: the shield techniques come from whichever hand
+   holds a shield (the off hand while it holds no weapon), once however many shields are held.
+6. **Two shields** (item 4502), as rules 1.56 item 2: each shield's Defense and Movement add (buckler + buckler +2
+   Defense; buckler + riot shield +3 Defense, -0.5 Movement; riot + riot +4 Defense, -1 Movement); Brace and the Guard
+   technique +1 Guard a shield under the unchanged cap; Parry's bonus once; the shield techniques once. The Open Hand is
+   off with any shield held.
+7. **Shield Bash** (item 4503) strikes with the shield's own row (its line, the skill it hits with: Durability) at
+   `numbers.mult` 2.5 (was the bare hand x1.5 with Raw Power): a buckler's Bash is 15 as before, a riot shield's 20. Its
+   AP is unchanged (2); the follow-strike draft's 1 AP is part B's.
+8. **The pavise** (item 4504, the lead's ruling): a shield row like the others, so carried it is a shield (the
+   techniques, the Parry bonus, the Guard) with no Defense of its own; planting it is still the Narrator's. Item 4317's
+   "carried it does nothing" is withdrawn.
+9. **Gear and saves** (item 4505). The shop rolls a shield with the weapons (graded by the weapon rule); the Forge grades
+   a shield as a weapon; no mod fits one (its row has no mod slot). A save from before keeps a shield in a hand (an
+   id: unchanged) and its pack lines are moved once at load to the weapon line they are now (grade and wear kept), in
+   the packs, the camp's saved packs and the piles.
 
 ## Maps (rules 1.16)
 
@@ -10800,3 +10854,37 @@ Items 4240 to 4247.
     shield block on the fight screen names the hand the shield is in (`WeaponBlock.heldIn`). Open, for the lead: item
     4313's asymmetry (a shield in the main hand with a weapon in the off hand gets Defense, Guard and Parry but no shield
     techniques) and whether the unit field `mainItem` stands (one hands rule: it mirrors `offItem`). PROVISIONAL.
+    **Settled by rules 1.57 (A1)**: the asymmetry is closed (item 4501) and `mainItem` is gone (item 4499).
+
+### Rules 1.57, shields are weapon rows (the lead's rulings, 16 Nov 2026)
+
+4497. **Shield rows (A1 item 1):** `weapons.json` `buckler` (damage 6), `riot_shield` (8), `pavise` (8): category
+    `shield`, `hands: 1H`, `phys {system: melee, profile: melee, props: [shield], hits_with: durability, scales_with:
+    [strength]}`, `skill: durability`, `mastery_family: unarmed` (`weapon_mastery.json` unarmed lists the category),
+    `effects` (Defense, Movement), `mod_slots: []`, `ap_cost.attack` 2, durability 150, price and weight as they were.
+    `rules.json weapons_rules.fx.by_category.shield` blade; `combat.ts isMelee` reads the category; `ONE_HANDED` lists
+    it. The validator: the Shield property and category `shield` go together on a one-handed melee row; an items.json
+    row carries no `phys`, `either_hand` or category `shield`; `survival.json loadout.archetypes.left_out.shield` (the
+    camp's gear shelf sells them, not the rack). PROVISIONAL: the lines 6 / 8 / 8.
+4498. **One prop test (A1 item 2):** `character.ts isShieldId` (and `holdsShield`); read by `physical/core.ts shieldsOf`,
+    `combat.ts unitFromCharacter` (`offItem`; `offWeapon` never a shield), `melee/answers.ts` (Parry), `perks/b.ts`
+    (Eyes in the Back), `melee/links.ts` (Sidestep), `character.ts defense` (Shield Partner) and `secondWeaponWhy`,
+    `run/loadout.ts`, `gearpreview.ts`. No number.
+4499. **Main hand (A1 item 3):** the shield is the unit's `weapon`; the fists fallback (`SHIELD_HAND`, the unit field
+    `mainItem`) is gone; a main-hand shield's attack is `mod(Durability)` + its grade, its wear written back as any
+    weapon's (item 4315 withdrawn). No number.
+4500. **Off hand (A1 item 4):** `secondWeaponWhy` asks nothing of an off-hand shield; the unit carries it as `offItem`,
+    so no Both block, no `combat/paired` ("Nothing in your off hand to attack with."). No number.
+4501. **The hand pairs (A1 item 5):** `physical/core.ts shieldHand`: the off hand while it holds no weapon and a shield is
+    held, else the main hand when it holds a shield and the off hand a weapon; `inShieldHand` routes a shield technique
+    to that hand. A sabre beside a main-hand shield asks its +2 and opens the Both block. No number.
+4502. **Two shields (A1 item 6):** as item 4309 (the stacks measured there hold). PROVISIONAL.
+4503. **Shield Bash (A1 item 7):** `techniques.json shield_bash.numbers.mult` 1.5 -> 2.5, struck with the shield's row
+    (`inHand` swaps the shield in, `swapMain` set). Moves: the replays with the tank (riot shield) and the golden
+    tables' new rows (each shield's weapon lines; Raise Shield's pad and technique lines, which the harness now plays
+    with the shield as the unit's `offItem`). PROVISIONAL.
+4504. **The pavise (A1 item 8):** Shield property, no `defense_bonus`; its text says what it gives. Item 4317 withdrawn.
+    PROVISIONAL: the lead's ruling, to confirm that the pavise was meant to become a carried shield.
+4505. **Saves (A1 item 9):** `character.ts shieldLineNow`, run by `game.ts migrateLoaded` on every sheet's pack, the
+    camp's `base.pack` and the piles of the fight and the story map; nothing is written when no old line is there. The
+    shop's `stock.item_categories` lose `shield`. No number.

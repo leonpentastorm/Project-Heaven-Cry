@@ -44,7 +44,7 @@ import { condSkillMod, STORY_CARRY, CORE_ITEM } from './magic';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
-import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy, packKindOf } from './character';
+import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy, packKindOf, shieldLineNow, isShieldId } from './character';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
 import { type FaithAction, faithReloaded, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreUsed, clearPrayerLimits, FAITH_PATRON, VOW } from './faith';
 import './perks';
@@ -528,6 +528,16 @@ export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
       if (add.length) u.held = { ...u.held, relics: [...(u.held.relics || []), ...add] };
     }
   } catch { /* a fight this old is handled by apply */ }
+  // rules 1.57 (A1): a save from before shields were weapons.json rows holds a shield's pack line as an item
+  // ({item: 'buckler', kind: 'tool'}): each becomes the weapon line it is now (shieldLineNow), on every sheet, in the
+  // camp's saved packs and in the piles of the fight and the area map. A shield in a hand is an id and loads unchanged.
+  // Nothing is written when no such line is there (a save from 0.29 on loads as it was).
+  try {
+    const packs = (xs: any[] | undefined) => { if (!Array.isArray(xs)) return; for (let i = 0; i < xs.length; i++) { const n = shieldLineNow(xs[i]); if (n !== xs[i]) xs[i] = n; } };
+    for (const c of Object.values((g as any)?.characters || {}) as any[]) packs(c?.pack);
+    for (const p of Object.values((g as any)?.run?.loadout || {}) as any[]) packs(p?.base?.pack);
+    for (const objs of [(g as any)?.combat?.objects, (g as any)?.story?.objects]) for (const o of (objs || []) as any[]) for (const e of (o?.items || []) as any[]) if (e?.pack) { const n = shieldLineNow(e.pack); if (n !== e.pack) e.pack = n; }
+  } catch { /* a save this old is handled by apply */ }
   // rules 1.39: a save from before modes played a campaign; playOf reads the missing field so, and nothing is written
   // here (a load must leave the state as it was: the replay guard's save-and-load case)
   return g;
@@ -1980,7 +1990,7 @@ function gearForward(g: GameState, a: Extract<Action, { type: 'gear/equip' | 'ge
 }
 /** What a fight's gear change rebuilds from the character (item 689): the weapon's numbers, the off-hand gun's spares,
  * what gear gives (light, dark sight, hazard immunity, weight, throwables, spare parts) and the d20 item modifiers. */
-const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offMods', 'held', 'offWeapon', 'offItem', 'mainItem', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
+const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offMods', 'held', 'offWeapon', 'offItem', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
   'light', 'darkSight', 'hazardImmune', 'ignoreDifficult', 'overweight', 'noSprint', 'throwables', 'parts', 'sv', 'dbf', 'sk', 'critTaken', 'elemTaken', 'ambushTaken', 'healRecv', 'shieldRecv', 'stealth', 'injResist'] as const;
 /** Rebuild a fighter after its character's gear changed (item 689): the GEAR_FRESH fields from a fresh unit; Defense,
  * armour, Movement and Vision by the difference the change made (`base` is the unit built just before it), so a break,
@@ -2028,8 +2038,7 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
     case 'swap': {
       { const sw = secondWeaponWhy(c, c.weapon, c.offHand?.id); if (sw) return sw; } // the main-hand weapon becomes the second one
       if (disarmed) leaveDowned();
-      // rules 1.56 item 4314: a non-weapon in the main hand (a shield) goes to the off hand with the weapon's place
-      const off = c.offHand!, main = c.weapon !== 'fists' && (WEAPON[c.weapon] || ITEM[c.weapon]) ? { id: c.weapon, ...(c.weaponState || {}), loaded: c.loaded ?? undefined, ammoType: c.loadedType || null } : null;
+      const off = c.offHand!, main = c.weapon !== 'fists' && WEAPON[c.weapon] ? { id: c.weapon, ...(c.weaponState || {}), loaded: c.loaded ?? undefined, ammoType: c.loadedType || null } : null;
       c.weapon = off.id; c.weaponState = { rarity: off.rarity, dur: off.dur, mods: off.mods, ...(off.name ? { name: off.name } : {}), ...(off.prop ? { prop: off.prop } : {}) };
       c.loaded = off.loaded ?? (WEAPON[off.id].magazine ?? 0); c.loadedType = c.loaded && off.ammoType ? off.ammoType : null; // each gun keeps its rounds' type
       c.offHand = main ? { id: main.id, rarity: main.rarity, dur: main.dur, mods: main.mods, ...(main.name ? { name: main.name } : {}), ...(main.prop ? { prop: main.prop } : {}), ...(WEAPON[main.id]?.magazine != null ? { loaded: main.loaded ?? 0, ...(main.loaded && main.ammoType ? { ammoType: main.ammoType } : {}) } : {}) } : null;
@@ -2058,7 +2067,7 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
  * same gear change a draw makes, free of AP. False: no free hand, or the draw refuses it (a skill it needs, a ban). */
 function takeIntoHand(g: GameState, cb: Combat, u: Combat['units'][number], it: PackItem): boolean {
   const c = u.charId && !u.companion ? g.characters[u.charId] : null; if (!c) return false;
-  const mainFree = (u.weapon === 'fists' || !WEAPON[u.weapon]) && !u.mainItem, to = mainFree ? 'main' : !u.offWeapon && !c.offHand && !twoHands(c, c.weapon) ? 'off' : null; if (!to) return false;
+  const mainFree = u.weapon === 'fists' || !WEAPON[u.weapon], to = mainFree ? 'main' : !u.offWeapon && !c.offHand && !twoHands(c, c.weapon) ? 'off' : null; if (!to) return false;
   c.pack = [...packOf(c).map((x) => ({ ...x })), { ...it, qty: 1, _nail: 1 } as any];
   const e = gearInFight(g, cb, u, c, { op: 'draw', item: c.pack.length - 1, to }, { free: true });
   c.pack = packOf(c).filter((x: any) => !(e && x._nail)).map((x: any) => { const { _nail, ...rest } = x; void _nail; return rest; });
@@ -2374,7 +2383,7 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
     c.loaded = u.ammo;
     if (c.offHand && u.offWeapon && u.offWeapon === c.offHand.id && WEAPON[c.offHand.id]?.magazine != null) { const { ammoType: _t, ...oh } = c.offHand; void _t; c.offHand = { ...oh, loaded: Math.max(0, u.offAmmo ?? 0), ...(u.offAmmo && u.offAmmoType ? { ammoType: u.offAmmoType } : {}) }; }
     magicToCharacter(c, u);
-    if (u.maxDur && !u.mainItem) c.weaponState = { ...(c.weaponState || {}), dur: u.dur }; // rules 1.56 item 4315: the fists' wear is not the shield's
+    if (u.maxDur) c.weaponState = { ...(c.weaponState || {}), dur: u.dur }; // rules 1.57 (A1): a main-hand shield wears as the weapon it is
     { const had = packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), used = had - (u.parts ?? had);
       if (used > 0) { let left = used; c.pack = packOf(c).map((x) => { if ((x.item || x.id) !== 'spare_parts' || !left) return x; const n = Math.min(left, x.qty); left -= n; return { ...x, qty: x.qty - n }; }).filter((x) => x.qty > 0 || x.mags); } }
     const pack = packOf(c).map((it) => ({ ...it }));
@@ -4182,7 +4191,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
         const at = sbGive(c, a.item, a.qty || 1, rarity);
         if (a.equip && at >= 0) {
           const it = packOf(c)[at], def = ITEM[a.item] as any;
-          const to = WEAPON[a.item] ? 'main' : def?.category === 'mod' ? 'mod' : def?.category === 'armour' ? 'worn' : def?.slot === 'off_hand' ? 'off' : null;
+          const to = isShieldId(a.item) && !twoHands(c, c.weapon) ? 'off' : WEAPON[a.item] ? 'main' : def?.category === 'mod' ? 'mod' : def?.category === 'armour' ? 'worn' : def?.slot === 'off_hand' ? 'off' : null;
           if (to && it) err = sbEquip(c, at, to);
         }
       });

@@ -12,7 +12,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES, CALIBRE_NAME, COUNTED } from '../data';
-import { type Character, type PackItem, packOf, packKindOf, twoHands, equip, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM, roundsIdOf, specialRoundName } from '../character';
+import { type Character, type PackItem, packOf, packKindOf, twoHands, equip, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM, roundsIdOf, specialRoundName, isShieldId } from '../character';
 import { grantGoods, itemLabel } from '../containers';
 import { type GearPreview, gearPreview } from '../gearpreview';
 import { meBlock, type MeV } from './shopview';
@@ -131,12 +131,12 @@ function rebuild(c: Character, p: LoadoutPick): string | null {
       if (q > 1) return nameOf(l.id) + ': one is worn at a time.';
       if (c.worn![it.slot]) return 'The ' + it.slot.replace(/_/g, ' ') + ' slot already has ' + nameOf(c.worn![it.slot]) + '.';
       c.worn![it.slot] = l.id;
-    } else if (it?.slot === 'off_hand' && !it.focus) {
+    } else if (isShieldId(l.id) || (it?.slot === 'off_hand' && !it.focus)) {
       // rules 1.55 item 50: an off-hand item (a shield) goes in the off hand, through the one equip rule (character.ts equip)
       // rules 1.56 (a shield in either hand): one to a hand, the off hand first, then an empty main hand (no free weapon
-      // picked) for an `either_hand` item; the hand is equip's to judge
+      // picked) for a shield (rules 1.57 A1: a weapon row, the one prop test); the hand is equip's to judge
       for (let i = 0; i < q; i++) {
-        const to = !c.offHand ? 'off' : it.either_hand && c.weapon === 'fists' ? 'main' : null;
+        const to = !c.offHand ? 'off' : isShieldId(l.id) && c.weapon === 'fists' ? 'main' : null;
         if (!to && i > 0) return nameOf(l.id) + ': one is held at a time in each hand, and both hands are full.';
         // rules 1.55 item 52: the refusal says what the player can do; a focus taken while this item held the off hand is the change refused
         if (!to) return was === l.id && p.focus && c.offHand!.id === p.focus ? 'Your off hand holds the ' + nameOf(l.id) + '. Put it back to take a focus.' : nameOf(l.id) + ': the off hand already holds the ' + nameOf(c.offHand!.id) + '.';

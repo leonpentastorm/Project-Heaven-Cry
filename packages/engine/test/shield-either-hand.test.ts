@@ -1,16 +1,18 @@
 // Rules 1.56, a shield in either hand (Leon, 16 Nov 2026: "let the shield be mainhand. So crazy ass double shield mofo
-// is a thing"). A shield row's `either_hand` lets it sit in the main hand as a weapon does, one to a hand: shield + focus,
-// shield + shield, weapon + shield as before. Each shield's own effects apply as carried; Brace and the Guard technique
-// give 1 more Guard per shield held (the pool's cap holds); the Parry bonus and the shield's techniques come once. The
-// main hand holding a shield strikes with bare fists. Every change goes through the reducer (gear/equip out of a fight,
+// is a thing"), and rules 1.57 (A1, the lead's ruling of 16 Nov 2026): a shield is a weapons.json row with the Shield
+// property, one-handed melee, its own strike line. In the main hand it is simply a weapon; in the off hand it is not a
+// second weapon (no +2, no Both block, no paired attack). Each shield's own effects apply as carried; Brace and the
+// Guard technique give 1 more Guard per shield held (the pool's cap holds); the Parry bonus and the shield's techniques
+// come once, from whichever hand holds a shield. Every change goes through the reducer (gear/equip out of a fight,
 // combat/equip in one, combat/brace, combat/technique, combat/perk, combat/draw and combat/evoke, combat/attack).
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, resolveAttack, ITEM, packOf, holds, RuleError, beginTurn, type Character, type Action } from '../src';
+import { phys, resolveAttack, WEAPON, RARITY, packOf, holds, gearEntry, migrateLoaded, actionsFor, RuleError, beginTurn, type Character, type Action } from '../src';
 import { physFight, rig } from './helpers/physfight';
 import { storyWith, withGame } from './helpers/perkfight';
 
 beforeEach(() => rig(null));
-const piece = (id: string): any => ({ id, item: id, name: (ITEM as any)[id].name, qty: 1, kind: 'tool' });
+/** A pack line as the engine makes it (gearEntry: a shield is a weapon line, a focus a focus line). */
+const piece = (id: string): any => ({ ...gearEntry(id)! });
 const refused = (fn: () => void): string => { try { fn(); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal'); };
 
 /** A PC on C5 with nothing in its hands and `pack` in the pack, a foe on D5, the PC's turn with AP to spare. */
@@ -42,21 +44,38 @@ describe('equip: a shield goes in either hand, one to a hand', () => {
     s.act({ type: 'gear/equip', charId: c0.id, idx: at('riot_shield'), to: 'off' } as Action); // the Evoker goes back to the pack
     c = s.g.characters[c0.id];
     expect([c.weapon, c.offHand?.id]).toEqual(['buckler', 'riot_shield']); expect(packOf(c).some((x) => (x.item || x.id) === 'evoker')).toBe(true);
-    expect(refused(() => s.act({ type: 'gear/equip', charId: c0.id, idx: at('evoker'), to: 'main' } as Action))).toBe('Only weapons and shields go in the main hand.');
+    expect(refused(() => s.act({ type: 'gear/equip', charId: c0.id, idx: at('evoker'), to: 'main' } as Action))).toBe('Only weapons go in the main hand.');
     s.act({ type: 'gear/unequip', charId: c0.id, slot: 'main' } as Action); // the main hand puts the shield away: bare fists
     c = s.g.characters[c0.id]; expect(c.weapon).toBe('fists'); expect(packOf(c).some((x) => (x.item || x.id) === 'buckler')).toBe(true);
   });
-  it('an old save with the shield in the off hand loads and fights unchanged', () => {
+  it('an old save with the shield in the off hand loads and fights unchanged: the off-hand shield is not a second weapon', () => {
     const f = physFight([{ weapon: 'sabre', offHand: 'riot_shield', skills: { durability: 3 } }], [{}]);
-    expect(f.char(f.pc).offHand?.id).toBe('riot_shield'); expect(f.pc.offItem).toBe('riot_shield'); expect(f.pc.mainItem).toBeUndefined(); expect(f.pc.weapon).toBe('sabre');
+    expect(f.char(f.pc).offHand?.id).toBe('riot_shield'); expect(f.pc.offItem).toBe('riot_shield'); expect(f.pc.offWeapon ?? null).toBeNull(); expect(f.pc.weapon).toBe('sabre');
   });
-  it('in a fight: 1 AP a hand, shield into the main hand; put away and drop work on it', () => {
+  it('rules 1.57 (A1): an old save\'s shield pack line (an item line) loads as the weapon line it is now, its grade and wear kept, and equips', () => {
+    const s = storyWith([{ name: 'Wall' }]);
+    const c0 = s.g.characters[s.chars[0].id]; c0.weapon = 'fists'; c0.weaponState = {}; c0.offHand = null;
+    c0.pack = [{ id: 'buckler', item: 'buckler', name: 'Buckler', qty: 1, kind: 'tool', rarity: 'fine', dur: 90 } as any, { id: 'riot_shield', item: 'riot_shield', name: 'Legion riot shield', qty: 1, kind: 'tool' } as any];
+    const pile = { id: 'pile-1', kind: 'pile', pos: '3,3', name: 'Pile', text: '', approaches: [], items: [{ item: 'buckler', qty: 1, key: 'k1', pack: { id: 'buckler', item: 'buckler', name: 'Buckler', qty: 1, kind: 'tool' } }] };
+    (s.g.story as any).objects = [...((s.g.story as any).objects || []), pile];
+    const g = migrateLoaded(JSON.parse(JSON.stringify(s.g)));
+    const pk = packOf(g.characters[c0.id]);
+    expect(pk[0]).toMatchObject({ id: 'buckler', kind: 'weapon', weapon: 'buckler', rarity: 'fine', dur: 90 }); expect((pk[0] as any).item).toBeUndefined();
+    expect(pk[1]).toMatchObject({ id: 'riot_shield', kind: 'weapon', weapon: 'riot_shield' });
+    expect(((g.story as any).objects.find((o: any) => o.id === 'pile-1').items[0].pack)).toMatchObject({ kind: 'weapon', weapon: 'buckler' });
+    // a save from 0.29 on (weapon lines already) loads as it was
+    expect(JSON.stringify(migrateLoaded(JSON.parse(JSON.stringify(g))))).toBe(JSON.stringify(g));
+    // and the migrated line equips through the reducer
+    s.g = g as any; s.act({ type: 'gear/equip', charId: c0.id, idx: 0, to: 'off' } as Action);
+    expect(s.g.characters[c0.id].offHand).toMatchObject({ id: 'buckler', rarity: 'fine', dur: 90 });
+  });
+  it('in a fight: 1 AP a hand, shield into the main hand (the unit\'s weapon); put away works on it', () => {
     const f = fight(['buckler', 'riot_shield']);
     u(f).ap = 6; f.act({ type: 'combat/equip', unitId: f.pc.id, item: 'buckler', to: 'main' } as any);
-    expect(u(f).ap).toBe(5); expect(u(f).mainItem).toBe('buckler'); expect(u(f).weapon).toBe('fists');
-    expect(f.cb.log.some((l) => /takes the Buckler in the main hand \(1 AP\)/.test(l))).toBe(true);
+    expect(u(f).ap).toBe(5); expect(u(f).weapon).toBe('buckler');
+    expect(f.cb.log.some((l) => /draws the Buckler \(1 AP\)/.test(l))).toBe(true);
     f.act({ type: 'combat/stow', unitId: f.pc.id, slot: 'main' } as any);
-    expect(u(f).mainItem ?? null).toBeNull(); expect(f.char(f.pc).weapon).toBe('fists');
+    expect(u(f).weapon).toBe('fists'); expect(f.char(f.pc).weapon).toBe('fists');
   });
 });
 
@@ -69,8 +88,8 @@ describe('two shields: each shield\'s own effects add; Guard per Brace +1 a shie
     return { def: u(f).def - base.def, move: u(f).movement - base.move, brace: gain.brace, braced: guard(f), tech: gain.guard, pool: u(f).resMax!.guard };
   };
   it('the stacks (Durability 5: the pool is rules.guard.max)', () => {
-    const G = phys.PHYS_RULES.guard, D = (id: string) => (ITEM as any)[id].effects.find((e: any) => e.op === 'defense_bonus').value;
-    const M = (id: string) => (ITEM as any)[id].effects.find((e: any) => e.op === 'movement_bonus')?.value ?? 0;
+    const G = phys.PHYS_RULES.guard, D = (id: string) => (WEAPON as any)[id].effects.find((e: any) => e.op === 'defense_bonus').value;
+    const M = (id: string) => (WEAPON as any)[id].effects.find((e: any) => e.op === 'movement_bonus')?.value ?? 0;
     const one = stack(['buckler']);
     expect(one).toMatchObject({ def: D('buckler'), brace: G.brace_gain + G.brace_shield_gain });
     for (const pair of [['buckler', 'buckler'], ['buckler', 'riot_shield'], ['riot_shield', 'riot_shield']]) {
@@ -93,13 +112,16 @@ describe('two shields: each shield\'s own effects add; Guard per Brace +1 a shie
   });
 });
 
-describe('the main hand holding a shield strikes with bare fists; the Open Hand stays off', () => {
-  it('a plain attack is the bare-fists fallback (no shield strike is made up)', () => {
-    const f = fight(['buckler', 'evoker']); hold(f, 'buckler', 'main'); hold(f, 'evoker', 'off');
-    expect(u(f).weapon).toBe('fists');
-    rig({ hit: true, die: 12 }); const hp = f.unit(f.foe.id).hp;
+describe('rules 1.57 (A1): the main hand holding a shield strikes with the shield\'s own line; the Open Hand stays off', () => {
+  it('a plain attack is the shield\'s blow: its row, hitting with the skill it hits with (Durability), and it wears', () => {
+    const lo = fight(['buckler', 'evoker'], { dur: 5 }); hold(lo, 'buckler', 'main');
+    const hi = fight(['buckler', 'evoker'], { dur: 9 }); hold(hi, 'buckler', 'main');
+    expect(u(lo).weapon).toBe('buckler'); expect((WEAPON as any).buckler.phys.hits_with).toBe('durability');
+    expect(u(hi).attack - u(lo).attack).toBe(4); // Durability 5 to 9: its modifier 4 to 8
+    const f = lo; hold(f, 'evoker', 'off');
+    rig({ hit: true, die: 12 }); const hp = f.unit(f.foe.id).hp, d0 = u(f).dur!;
     f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode: 'melee' } as any);
-    expect(f.unit(f.foe.id).hp).toBeLessThan(hp);
+    expect(f.unit(f.foe.id).hp).toBeLessThan(hp); expect(u(f).dur!).toBeLessThan(d0);
   });
   it('the Open Hand\'s hands rule (only the family\'s gloves, or none) fails with a shield in either hand', () => {
     const only = { hands: { props: ['open_hand'], only: true } };
@@ -140,7 +162,7 @@ describe('a Sigil drawn and Evoked with the Evoker in the off hand and a shield 
     me().pos = '2,5'; foe().pos = '8,5'; foe().hp = foe().maxHp = 5000; foe().def = 1;
     cb().turn = cb().order.indexOf(me().id); delete cb().window;
     withGame(s.g, () => beginTurn(cb(), s.g.rng));
-    const m = me().mg!; expect(m.evoker).toBe(true); expect(me().mainItem).toBe('buckler');
+    const m = me().mg!; expect(m.evoker).toBe(true); expect(me().weapon).toBe('buckler');
     me().ap = 9; m.words = ['spark', 'seek']; m.charge = 30; m.flux = 0;
     me().pos = '3,5'; s.act({ type: 'combat/draw', unitId: me().id, word: 'spark', tile: '3,5' } as any);
     me().pos = '2,5'; s.act({ type: 'combat/draw', unitId: me().id, word: 'seek', tile: '2,5' } as any);
@@ -157,19 +179,17 @@ describe('rules 1.56 item 7: fixes before release (items 4314 to 4317)', () => {
     u(f).ap = 9; f.act({ type: 'combat/swap', unitId: f.pc.id, from: 'off' } as any);
     const c = f.char(f.pc);
     expect([c.weapon, c.offHand?.id]).toEqual(['service_pistol', 'buckler']);
-    expect(u(f).weapon).toBe('service_pistol'); expect(u(f).offItem).toBe('buckler'); expect(u(f).mainItem ?? null).toBeNull();
+    expect(u(f).weapon).toBe('service_pistol'); expect(u(f).offItem).toBe('buckler');
   });
-  it('the fists behind a main-hand shield are plain fists: the shield\'s grade gives no accuracy, its wear is not theirs', () => {
+  it('rules 1.57 (A1, replaces item 4315): a main-hand shield is a graded weapon: its grade gives its accuracy and damage, and its own wear is written back', () => {
     const at = (rarity?: string) => { const f = fight([]); f.char(f.pc).pack = [{ ...piece('buckler'), ...(rarity ? { rarity } : {}) }]; hold(f, 'buckler', 'main'); return f; };
     const std = at(), mw = at('masterwork');
-    expect(u(mw).attack).toBe(u(std).attack); expect(u(mw).dmgMult).toBe(u(std).dmgMult);
-    expect([u(mw).dur, u(mw).maxDur]).toEqual([u(std).maxDur, u(std).maxDur]);
-    // a fist's wear never reaches the shield: strike, then put the shield away and read its pack line
+    expect(u(mw).attack - u(std).attack).toBe(RARITY.masterwork.acc - RARITY.standard.acc); expect(u(mw).dmgMult).toBe(RARITY.masterwork.dmg);
     rig({ hit: true, die: 12 }); mw.act({ type: 'combat/attack', unitId: mw.pc.id, targetId: mw.foe.id, mode: 'melee' } as any); rig(null);
-    expect(u(mw).dur).toBeLessThan(u(mw).maxDur!);
+    const worn = u(mw).dur!; expect(worn).toBeLessThan(u(mw).maxDur!);
     mw.act({ type: 'combat/stow', unitId: mw.pc.id, slot: 'main' } as any);
-    const line = packOf(mw.char(mw.pc)).find((x) => (x.item || x.id) === 'buckler')!;
-    expect(line.rarity).toBe('masterwork'); expect(line.dur).toBeUndefined();
+    const line = packOf(mw.char(mw.pc)).find((x) => (x.weapon || x.id) === 'buckler')!;
+    expect(line.rarity).toBe('masterwork'); expect(line.dur).toBe(worn);
   });
   it('Pull Out asks a free hand: a shield in the main hand and a focus in the off hand refuse it before the AP is paid', () => {
     const f = physFight([{ weapon: 'combat_knife', known: ['throw'], skills: { athletics: 6, raw_power: 4, dexterity: 6 } }], [{ tier: 'soldier' }], { seed: 'T1' });
@@ -183,10 +203,54 @@ describe('rules 1.56 item 7: fixes before release (items 4314 to 4317)', () => {
     expect(f.tech('pull_out', { targetId: f.foe.id })).toMatch(/Free a hand first/);
     expect(f.unit(f.pc.id).ap).toBe(ap0); expect((f.unit(f.foe.id).stuck || []).length).toBe(1);
   });
-  it('a carried pavise gives no Parry bonus (it does nothing carried; Parry reads the Shield property)', () => {
-    const f = fight(['pavise', 'buckler']); hold(f, 'pavise', 'off');
-    expect(holds(f.char(f.pc), { hands: { props: ['shield'] } })).toBe(false);
-    f.act({ type: 'combat/stow', unitId: f.pc.id, slot: 'off' } as any); hold(f, 'buckler', 'main');
-    expect(holds(f.char(f.pc), { hands: { props: ['shield'] } })).toBe(true);
+  it('rules 1.57 (A1, the lead\'s ruling; replaces item 4317): the pavise is a shield row too: carried it is a shield (Parry, the techniques), with no Defense of its own', () => {
+    const f = fight(['pavise', 'buckler']); const d0 = u(f).def; hold(f, 'pavise', 'off');
+    expect(holds(f.char(f.pc), { hands: { props: ['shield'] } })).toBe(true); expect(u(f).def).toBe(d0); expect(u(f).offItem).toBe('pavise');
+    expect(f.pad(f.pc, 'off').flatMap((g) => g.entries.map((e) => e.id))).toContain('shield_bash');
+  });
+});
+
+describe('rules 1.57 (A1): the hand pairs (the lead\'s rulings of 16 Nov 2026)', () => {
+  const attackIds = (f: F) => withGame(f.g, () => actionsFor(f.g, f.pc.id)).filter((d: any) => d.group === 'attack').map((d: any) => d.id);
+  it('main shield + an ordinary one-handed weapon in the off hand: ordinary dual wielding (the off weapon asks the +2), and the shield techniques from the main hand (item 4313 closed)', () => {
+    const f = fight(['buckler', 'sabre'], { skills: { dexterity: 1 } });
+    hold(f, 'buckler', 'main');
+    // the sabre beside a main-hand shield is a second weapon: Dexterity 1 cannot hold it there (its requirement + 2)
+    expect(() => hold(f, 'sabre', 'off')).toThrow(/A second weapon asks more/);
+    f.char(f.pc).skills.dexterity = 6; hold(f, 'sabre', 'off');
+    expect([u(f).weapon, u(f).offWeapon]).toEqual(['buckler', 'sabre']);
+    const main = f.pad(f.pc, 'main').flatMap((g) => g.entries.map((e) => e.id));
+    for (const id of ['shield_bash', 'raise_shield']) expect(main, id).toContain(id);
+    expect(f.pad(f.pc, 'off').flatMap((g) => g.entries.map((e) => e.id))).not.toContain('shield_bash');
+    expect(attackIds(f)).toContain('paired'); // the Both block
+    guard(f, 4); u(f).ap = 9; rig({ hit: true, die: 12 }); expect(f.tech('shield_bash', { targetId: f.foe.id })).toBeNull(); rig(null); // from the main hand
+    expect(guard(f)).toBe(3);
+  });
+  it('an off-hand shield is not a second weapon: no +2 asked, no Both block, no paired attack', () => {
+    const f = fight(['sabre', 'buckler'], { dur: 0 });
+    hold(f, 'sabre', 'main'); hold(f, 'buckler', 'off'); // Durability 0: no +2 asked of a shield
+    expect([u(f).weapon, u(f).offWeapon ?? null, u(f).offItem]).toEqual(['sabre', null, 'buckler']);
+    expect(attackIds(f)).not.toContain('paired');
+    expect(() => f.act({ type: 'combat/paired', unitId: f.pc.id, targetId: f.foe.id } as any)).toThrow(/Nothing in your off hand to attack with/);
+  });
+  it('Shield Bash strikes with the off-hand shield\'s own row (its line, Durability), not the bare hand', () => {
+    const run = (dur: number) => { const f = fight(['sabre', 'riot_shield'], { dur }); hold(f, 'sabre', 'main'); hold(f, 'riot_shield', 'off'); guard(f, 4); u(f).ap = 9; return f; };
+    const lo = run(3), hi = run(9);
+    const pct = (f: F) => (f.pv('shield_bash', { targetId: f.foe.id, hand: 'off' } as any).attacks[0] as any).pv.pct;
+    expect(pct(hi)).toBeGreaterThan(pct(lo)); // Durability, the skill the shield hits with
+    rig({ hit: true, die: 12 }); expect(lo.tech('shield_bash', { targetId: lo.foe.id, hand: 'off' } as any)).toBeNull(); rig(null);
+    expect(guard(lo)).toBe(3);
+  });
+});
+
+describe('rules 1.57 (A1): the Proving Ground gives a shield into the off hand, as before it was a weapon row', () => {
+  it('sandbox/give a sabre then a buckler, equip: the sabre in the main hand, the buckler in the off hand', async () => {
+    const { newGame, apply } = await import('../src');
+    let g = newGame('SHIELDPG', { id: 'host', name: 'Host' }, 'seed-shield');
+    g = apply(g, { type: 'sandbox/start' } as any, 'host');
+    const c = Object.values(g.characters).find((x) => x.owner === 'host')!;
+    g = apply(g, { type: 'sandbox/give', charId: c.id, item: 'sabre', equip: true } as any, 'host');
+    g = apply(g, { type: 'sandbox/give', charId: c.id, item: 'buckler', equip: true } as any, 'host');
+    expect([g.characters[c.id].weapon, g.characters[c.id].offHand?.id]).toEqual(['sabre', 'buckler']);
   });
 });

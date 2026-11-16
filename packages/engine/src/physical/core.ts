@@ -3,7 +3,7 @@
 // wraps previewAttack/resolveAttack and shapes them through the engine's hooks (so combat.ts is not forked).
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
 import { say, unsay, type Combat, type Unit, noteLoose, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, dist, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, setOffJam, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
-import { WEAPON, ITEM } from '../data';
+import { WEAPON } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
 import { scaleOf } from '../effects/output';
 import { apDebt } from '../effects/ap';
@@ -15,7 +15,7 @@ import { resOf, resGain, resSpend, canReact, react, reactBlocked as reactBlocked
 import { attackEvent, stepEvent, setStrikeTech, setStrikeTechAp } from '../combat';
 import { type Rng } from '../rng';
 import { rollSave } from '../rolls';
-import { mod, holds as holdsGear } from '../character';
+import { mod, holds as holdsGear, isShieldId } from '../character';
 import type { Character } from '../character';
 import { packOf } from '../character';
 import { packRef } from '../gear';
@@ -88,19 +88,19 @@ export const techState = (u: Unit, id: string): Record<string, any> => ((u.tech 
 export const techStateOf = (u: Unit, id: string): Record<string, any> => u.tech?.[id] || {};
 
 // ---------- a shield in the off hand, and Guard (rules 1.13: Durability's door) ----------
-/** The shields a unit holds, the off hand's first: items with the Shield property (items.json `phys.props`). The unit
- * carries what a hand holds when that isn't a weapon as `u.offItem` and `u.mainItem` (combat.ts unitFromCharacter;
- * rules 1.56: a shield in either hand, one to a hand). */
-const shieldsOf = (u: Unit): string[] => [u.offItem, u.mainItem].filter((id): id is string => !!id && (((ITEM as any)[id]?.phys?.props as string[]) || []).includes('shield'));
+/** The shields a unit holds, the off hand's first (rules 1.57, A1: a shield is a weapon row with the Shield property,
+ * the one test isShieldId). The main hand's is the unit's weapon (`swapMain` while the off hand is swapped in for a
+ * strike); the off hand's is `u.offItem` (combat.ts unitFromCharacter: an off-hand shield is never a second weapon). */
+const shieldsOf = (u: Unit): string[] => [u.offItem, u.swapMain || u.weapon].filter((id): id is string => isShieldId(id));
 /** The shield a unit holds (the off hand's first), or null. Its techniques come once, however many are held. */
 export const shieldOf = (u: Unit): string | null => shieldsOf(u)[0] || null;
-/** A shield's techniques strike with the bare hand behind it: this is the weapon they are worked out with. */
-const SHIELD_HAND = 'fists';
-/** What the off hand holds for a technique: its weapon, else (a shield) the bare hand behind it, else nothing. */
-const offHeld = (u: Unit): string | null => u.offWeapon || (shieldOf(u) ? SHIELD_HAND : null);
-/** Is the off hand a shield's (no weapon in it)? A shield in the main hand with no weapon in the off hand counts too
- * (rules 1.56): the techniques are worked from the free hand behind a shield. */
-const shieldHand = (u: Unit, hand: 'main' | 'off') => hand === 'off' && !u.offWeapon && !!shieldOf(u);
+/** What the off hand holds for a technique: its weapon, else (a shield's techniques, worked from the off hand while it
+ * holds no weapon) the shield, its own strike line, else nothing. */
+const offHeld = (u: Unit): string | null => u.offWeapon || (shieldOf(u) || null);
+/** Does this hand's pad carry the shield's techniques (rules 1.57, A1: from whichever hand holds a shield, once)? The
+ * off hand while it holds no weapon and a shield is held (in it, or in the main hand); the main hand when it holds a
+ * shield and the off hand a weapon (item 4313's asymmetry closed). */
+const shieldHand = (u: Unit, hand: 'main' | 'off') => (hand === 'off' ? !u.offWeapon && !!shieldOf(u) : !!u.offWeapon && isShieldId(u.swapMain || u.weapon));
 /** A unit's points in a skill: its character's now, else what the unit was built with (a stat block may give them). */
 export const unitSkill = (u: Unit, skill: string): number => { const c = u.companion ? null : charOfUnit(u); return (c ? (c.skills as any)?.[skill] : (u as any)[skill]) || 0; };
 /** Guard's numbers (techniques.json rules.guard): every one the engine reads must be there, checked once at load, so no
@@ -290,7 +290,8 @@ export function usable(cb: Combat | null, u: Unit, hand: 'main' | 'off', wield?:
     // only the family's gloves in the hands; a unit with no character holds nothing, so an enemy has it only on its list)
     if (d.perk) { if (!wield && !plainOnly && (hand === 'main' && statQuery({ u, cb: cb || undefined } as any, `technique:${d.id}`).add > 0 || comes(d))) out.push({ id: d.id, how: 'comes' }); continue; }
     if (d.innate) { if (hand === 'main' && !wield && !plainOnly && unitSkill(u, d.innate.skill) >= d.innate.min) { out.push({ id: d.id, how: 'comes' }); continue; } if (given(d)) continue; } // a skill's pressed technique: learned as before without the points (rules 1.55 item 71)
-    if (d.needs.shield || shield) { if (shield && d.needs.shield && !wield && !plainOnly) out.push({ id: d.id, how: 'comes' }); continue; }
+    if (d.needs.shield) { if (shield && !wield && !plainOnly) out.push({ id: d.id, how: 'comes' }); continue; }
+    if (shield && hand === 'off') continue; // the off hand that holds only the shield's techniques offers nothing else
     // Rules 1.56 (Leon's ruling B): a technique that needs something stuck (Pull Out) is offered only while there is one
     // to pull, and then with any weapon in the main hand (what is in the hand does not wrench a blade out of a body).
     if (d.needs.stuck) { if (hand !== 'main' || wield || !cb || !stuckToPull(cb, u)) continue; }
@@ -322,7 +323,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   const hand: 'main' | 'off' = args.hand === 'off' && offHeld(u) ? 'off' : 'main', weaponId = hand === 'off' ? offHeld(u)! : u.weapon;
   const props = shieldHand(u, hand) ? ['shield'] : weaponProps(weaponId);
   const wield = (args as any)._w as 'stowed' | 'throwable' | undefined;
-  if (def.needs.shield && !shieldHand(u, hand)) return 'Needs a shield in your off hand.';
+  if (def.needs.shield && !shieldHand(u, hand)) return 'Needs a shield in a hand.';
   if (weaponSystem(weaponId) !== def.system && !def.innate && !def.perk && !def.needs.stuck) return wield === 'stowed' ? 'That isn\'t a ' + def.system + ' weapon.' : def.system === 'melee' ? 'Needs a melee weapon in that hand.' : 'Needs a ranged weapon in that hand.'; // a weapon from the pack isn't in a hand yet
   if (def.needs.stowed && wield !== 'stowed') return 'Pick the weapon to draw.';
   if (!hasUsable(u, hand, def.id, wield, cb)) return wield === 'throwable' ? def.name + ' can\'t be used with that.' : 'You don\'t have ' + def.name + ' ready.';
@@ -369,12 +370,12 @@ const cur = (att?: Unit) => { const a = ACTIVE[ACTIVE.length - 1]; return a && (
 /** Run fn with the technique's hand as the unit's weapon (the off hand is swapped in, as a paired attack does). */
 function inHand<T>(t: Tech, fn: () => T): T {
   const u = t.u; if (t.hand !== 'off' || !offHeld(u)) return fn();
-  if (!u.offWeapon) { // a shield: the strike is the bare hand behind it (Raw Power), whatever the main hand holds
-    const keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, dmgMult: u.dmgMult };
-    const pts = (t.c?.skills as any)?.[weaponPhys(SHIELD_HAND).hits_with];
-    u.weapon = SHIELD_HAND; u.ammo = 0; u.maxDur = 0; u.mods = []; u.ammoType = null; u.jammed = false; u.dmgMult = 1;
+  if (!u.offWeapon) { // a shield (rules 1.57, A1): the strike is the shield's own row, with the skill it hits with
+    const sid = offHeld(u)!, keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, dmgMult: u.dmgMult };
+    const pts = (t.c?.skills as any)?.[weaponPhys(sid).hits_with];
+    u.swapMain = u.weapon; u.weapon = sid; u.ammo = 0; u.maxDur = 0; u.mods = []; u.ammoType = null; u.jammed = false; u.dmgMult = 1;
     if (typeof pts === 'number') u.attack = mod(pts);
-    try { return fn(); } finally { Object.assign(u, keep); }
+    try { return fn(); } finally { Object.assign(u, keep); delete u.swapMain; }
   }
   const ow = WEAPON[u.offWeapon], keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, heat: u.heat };
   const pts = (t.c?.skills as any)?.[weaponPhys(ow.id).hits_with];
@@ -862,7 +863,7 @@ function withG<T>(g: any, fn: () => T): T { if (!g) return fn(); const was = bin
 /** What the technique would do, changing nothing (the card, the AI). Pass the game (`g`) when none is bound: the screen does. */
 export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs = {}, g?: any): TechPreview {
   if (g) return withG(g, () => previewTechnique(cb, u, id, args));
-  args = inShieldHand(id, args);
+  args = inShieldHand(u, id, args);
   if (args.hand === 'both') return previewPaired(cb, u, id, args);
   { // a weapon that isn't in the hand: the card is worked out as if it were
     const def0 = TECHNIQUE[id], wi = def0 ? wieldOf(cb, u, def0, args) : null;
@@ -900,12 +901,13 @@ export function previewTechnique(cb: Combat, u: Unit, id: string, args: TechArgs
   if (def.group === 'take' && t.tgt) { const now = pressureOf(t.tgt), after = Math.max(0, now - PHYS_RULES.pressure.take_cost); (t.pv.pressure ||= []).push({ unit: t.tgt.id, add: after - now, after, state: pressureState({ pressure: after } as any) }); }
   return t.pv;
 }
-/** A shield's technique is the off hand's, whichever hand the caller named. */
-const inShieldHand = (id: string, args: TechArgs): TechArgs => (TECHNIQUE[id]?.needs.shield && args.hand !== 'off' ? { ...args, hand: 'off' } : args);
+/** A shield's technique is the hand's whose pad carries it (shieldHand: the off hand, or a main-hand shield beside an
+ * off-hand weapon; rules 1.57 A1), whichever hand the caller named. */
+const inShieldHand = (u: Unit, id: string, args: TechArgs): TechArgs => { if (!TECHNIQUE[id]?.needs.shield) return args; const hand = shieldHand(u, 'main') ? 'main' : 'off'; return args.hand === hand ? args : { ...args, hand }; };
 /** Use a technique. Returns a refusal in plain words, or null. Nothing is spent on a refusal. */
 export function useTechnique(cb: Combat, u: Unit, id: string, args: TechArgs, rng: Rng): string | null {
   const def = TECHNIQUE[id]; if (!def) return 'No such technique.';
-  args = inShieldHand(id, args);
+  args = inShieldHand(u, id, args);
   if (args.hand === 'both') return usePaired(cb, u, id, args, rng);
   const wi = wieldOf(cb, u, def, args); if (typeof wi === 'string') return wi;
   if (wi?.kind === 'stowed') { // check it as if drawn, then draw it for real (free: the technique's AP pays), then use it

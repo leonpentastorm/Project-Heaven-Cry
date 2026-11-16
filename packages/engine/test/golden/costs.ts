@@ -268,7 +268,7 @@ export function recordPad(T: Record<string, string>) {
     for (const wid of TECH_WEAPONS[system]) {
       const g = fightSpec([{ ...SHOOTER, weapon: wid }, { ...SHOOTER }], [{ tier: 'soldier' }, { tier: 'elite' }, { tier: 'soldier' }], { level: 6, seed: 'tech/' + wid });
       const u = pcs(g)[0], [sold, elite, third] = foes(g), melee = A.isMelee ? !!A.WEAPON[wid] && A.meleeArm(A.WEAPON[wid]) && wid !== 'throwing_knives' : false;
-      if (def.needs?.shield) { u.offItem = 'riot_shield'; u.offWeapon = 'riot_shield'; charOf(g, u).offHand = { id: 'riot_shield' }; }
+      if (def.needs?.shield) { u.offItem = 'riot_shield'; charOf(g, u).offHand = { id: 'riot_shield' }; } // rules 1.57: an off-hand shield is the unit's offItem, never a second weapon
       place(g, [[u, melee ? '6,5' : '3,5'], [sold, '7,5'], [third, '8,5'], [elite, '13,13'], [pcs(g)[1], '3,6']]); turn(g, u); u.braced = true;
       const p = A.phys.ensurePhys(charOf(g, u)); p.known = [def.id]; p.ready = { melee: system === 'melee' ? [def.id] : [], ranged: system === 'ranged' ? [def.id] : [] }; p.uncapped = true;
       if (u.resMax?.momentum != null) (u.res ||= {}).momentum = u.resMax.momentum; try { sold.pressure = W(g, () => A.pressureCap(sold)); } catch { /* no Pressure */ }

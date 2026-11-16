@@ -44,7 +44,7 @@ describe('the camp\'s screen (rules 1.55 item 49)', () => {
   it('rules 1.55 item 53: a kit the reducer would refuse greys the Recommended button and says why', () => {
     ME = 'host'; expect(draw()).not.toContain('data-phc-camp-rec-why');
     const was = G; G = JSON.parse(JSON.stringify(G));
-    G.run!.loadout!.c1.base.pack.push({ id: 'buckler', item: 'buckler', name: 'Buckler', qty: 200, kind: 'gear' } as any); // over any carry limit
+    G.run!.loadout!.c1.base.pack.push({ id: 'buckler', weapon: 'buckler', name: 'Buckler', qty: 200, kind: 'weapon' } as any); // over any carry limit (rules 1.57: a shield is a weapon line)
     const h = draw(), btn = h.slice(h.indexOf('data-phc-camp-recommended'), h.indexOf('</button>', h.indexOf('data-phc-camp-recommended')));
     expect(btn).toContain('disabled=""'); expect(btn).toMatch(/data-phc-camp-rec-why=""[^>]*>Can(&#x27;|')t take it: Too heavy: /);
     G = was;

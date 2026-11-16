@@ -6,7 +6,7 @@ import type { Tech } from './shared';
 import type { StrikeOpts } from '../types';
 import { say, alive, active, dist, type Unit } from '../../combat';
 import { canReact } from '../../tactics';
-import { mod, holds } from '../../character';
+import { mod, holdsShield } from '../../character';
 import { rollVs } from '../../rolls';
 import { weaponPhys } from '../data';
 
@@ -40,8 +40,8 @@ function attackSkill(t: Tech): number {
   return t.u.attack ?? 0;
 }
 /** A shield in the user's off hand (a character's off-hand item of the shield category). */
-/** A shield (the Shield property) in a hand, either hand (rules 1.56): the Parry bonus comes once, however many. */
-const shieldInOffHand = (t: Tech) => !!t.c && holds(t.c, { hands: { props: ['shield'] } });
+/** A shield in a hand, either hand (rules 1.56; the one prop test, rules 1.57 A1): the Parry bonus comes once, however many. */
+const shieldInOffHand = (t: Tech) => !!t.c && holdsShield(t.c);
 
 // 25. Parry: a melee attack hits you: roll your attack skill against the attacker's total. If you win, the hit is halved.
 //     A shield in the off hand adds +2 (with any weapon). Light: and you gain 1 Momentum. Heavy: you may parry for an

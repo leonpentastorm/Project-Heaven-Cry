@@ -72,7 +72,7 @@ describe('2. gained by Brace and by the Guard technique', () => {
     const g = fight([{ dur: 5, shield: 'buckler' }]); guard(g, g.pc, 1);
     g.act({ type: 'combat/brace', unitId: g.pc.id } as any); expect(guard(g)).toBe(4);
     const two = fight([{ dur: 2, shield: 'riot_shield' }]); two.act({ type: 'combat/brace', unitId: two.pc.id } as any); expect(guard(two)).toBe(2); // the pool is the ceiling
-    const p = fight([{ dur: 2, shield: 'pavise' }]); expect(p.bound(() => phys.guardGain(p.pc))).toBe(2); // a pavise is carried, not held up
+    const p = fight([{ dur: 2, shield: 'pavise' }]); expect(p.bound(() => phys.guardGain(p.pc))).toBe(3); // rules 1.57 (A1, the lead's ruling): the pavise is a shield row too
   });
   it('bracing only for Guard sets the stance, not the weapon: Recoil is halved only for a weapon that had Brace before', () => {
     const recoil = (f: F) => { f.unit(f.pc.id).shotsThisTurn = 6; return f.bound(() => previewAttack(f.cb, f.unit(f.pc.id), f.unit(f.foe.id), 'shot', { free: true })).terms!.find((t) => t.label === 'recoil')?.v ?? 0; };

@@ -221,7 +221,7 @@ describe('the sheet\'s gear actions in a fight (forwarded to the combat actions)
     // Ash isn't the active unit: refused with the turn's owner
     const ash = f.g.characters[f.ash.charId!];
     expect(f.refused({ type: 'gear/unequip', charId: ash.id, slot: 'off' })).toMatch(/It's Rook's turn/);
-    expect(f.refused({ type: 'gear/equip', charId: f.c.id, idx: 'smiling_mask', to: 'main' })).toBe('Only weapons and shields go in the main hand.');
+    expect(f.refused({ type: 'gear/equip', charId: f.c.id, idx: 'smiling_mask', to: 'main' })).toBe('Only weapons go in the main hand.');
     expect(f.refused({ type: 'gear/equip', charId: f.c.id, idx: 'ballistic_helmet', to: 'worn' })).toBe(HEAVY_WHY);
   });
   it('gearPlan says what a change costs and why not, without changing anything (for the inventory panel)', () => {

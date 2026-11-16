@@ -2822,7 +2822,7 @@
       "needs": {
         "shield": true
       },
-      "text": "Strike with the shield: bare-hand damage ×{=numbers.mult}, hitting with Raw Power. It costs 1 Guard in place of 1 Momentum. On a hit you gain {=numbers.momentum_on_hit} Momentum, and the target makes a Body save or is pushed {=numbers.push} tile.",
+      "text": "Strike with the shield: its own damage ×{=numbers.mult}, hitting with the skill it hits with (a shield: Durability). It costs 1 Guard in place of 1 Momentum. On a hit you gain {=numbers.momentum_on_hit} Momentum, and the target makes a Body save or is pushed {=numbers.push} tile.",
       "lines": [],
       "free": false,
       "comes_with": [
@@ -2831,7 +2831,7 @@
       "home": [],
       "particular": false,
       "numbers": {
-        "mult": 1.5,
+        "mult": 2.5,
         "momentum_cost": 0,
         "guard_cost": 1,
         "momentum_on_hit": 1,

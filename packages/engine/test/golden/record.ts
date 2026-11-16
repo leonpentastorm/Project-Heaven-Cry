@@ -215,7 +215,7 @@ export function recordTechniques(T: Table): Record<string, number> {
     const defs = (Object.values(A.TECHNIQUE) as any[]).filter((d) => d.system === system && !!d.needs?.shield === !!off); if (!defs.length) continue;
     // one fight per weapon; each technique is made the only one known on a copy of it
     const g0 = fightSpec([{ ...SHOOTER, weapon: wid }, { ...SHOOTER }], [{ tier: 'soldier' }, { tier: 'elite' }, { tier: 'soldier' }], { level: 6, seed: 'tech/' + wid });
-    const u0 = pcs(g0)[0]; if (off) { u0.offWeapon = off; charOf(g0, u0).offHand = { id: off }; }
+    const u0 = pcs(g0)[0]; if (off) { u0.offItem = off; charOf(g0, u0).offHand = { id: off }; } // rules 1.57: an off-hand shield is the unit's offItem, never a second weapon
     const melee = isMeleeW(wid) && wid !== 'throwing_knives', [sold, elite, third] = foes(g0);
     place(g0, [[u0, melee ? '6,5' : '3,5'], [sold, '7,5'], [third, '8,5'], [elite, '13,13'], [pcs(g0)[1], '3,6']]); turn(g0, u0); u0.braced = true;
     for (const def of defs) for (const tier of ['soldier', 'elite']) {

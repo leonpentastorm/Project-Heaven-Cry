@@ -80,9 +80,13 @@ Every rule-bearing item carries both:
   `each_calibre: true` (needs `{item, share}`) expands into one row per calibre.
 
 ## Items, making and loot (rules 1.54)
-- `either_hand: true` (items.json, shields only; rules 1.56, Leon, 16 Nov 2026): the off-hand item may also be held in
-  the main hand, one to a hand (a shield and a focus, two shields). Read by `equip` and the fight's gear plan; the
-  screens offer the main hand where it is set. The main hand holding one strikes with bare fists.
+- **Shields are weapons.json rows** (rules 1.57, A1; Leon's lead ruling, 16 Nov 2026; `either_hand` is gone): category
+  `shield`, `hands: 1H`, `phys.system: melee`, `phys.props: [shield]` (the validator holds the property and the category
+  together), their own strike line (`damage`, `phys.hits_with`, `phys.scales_with`), and their Defense and Movement as
+  the row's own `effects` (read by `gearEffects` for whatever a hand holds). The one test of "a shield" is the Shield
+  property (`character.ts isShieldId`). In the main hand a shield is a one-handed weapon; in the off hand it is not a
+  second weapon (no +2, no Both block, no paired attack) and lends its techniques. An items.json row never carries
+  `phys`, `either_hand` or category `shield`.
 - `pack_kind` (items.json, optional): the kind of pack line the item makes (`weapon`, `ammo`, `tool`, `focus`, `food`,
   `med`, `loot`, `plot`); read by `packKindOf` wherever an item goes into a pack (the kits, loot, the Proving Ground's
   give). Without it each place keeps its default by category. Never pick a kind by an item's id in code.
