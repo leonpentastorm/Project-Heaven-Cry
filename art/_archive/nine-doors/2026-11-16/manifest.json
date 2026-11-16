@@ -10293,6 +10293,84 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 195,
+    "family": "move_icons",
+    "id": "move-rally",
+    "path": "art/icons/moves/rally.png",
+    "name": "Rally (Mender)",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Mender rank III move (asked 13 Nov, C3)",
+    "paint": "Wick with an arm raised, three threads fanning out from his chest to partial figures.",
+    "avoid": "a flag \u00b7 the Rally Call's icon pose (a shout)",
+    "section": "Empathy: Bonds and Tending, and the Mender",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick with an arm raised, three threads fanning out from his chest to partial figures.\nAvoid: a flag \u00b7 the Rally Call's icon pose (a shout)\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Mender Rally: ONE Wick at center in firm planted stance, ONE arm raised straight with OPEN PALM, screen mouth calm and closed (NOT shouting). Exactly THREE thin WHITE THREADS fan from Wick's round chest lantern outward to three ALLY PARTIALS: a cropped mitten at left, cropped shoulder at upper right, cropped forearm at lower right. No other complete figures, no flag, speech bubble, sound arcs or microphone. The threads, raised palm and closed-mouth expression distinguish this from Rally Call. No bowl/halo.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "ca118d9a550e723857f9dc9a4813fd7f15cedc3fb9ba65e6fe841e607cbda912",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/195-rally.png",
+    "source_sha256": "2b0305c94c9692b435acc95446ea44794fe8dbaef8800844ee393cfa20f8587b",
+    "export_crop": [
+      0,
+      81,
+      1254,
+      1238
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/rally.png",
+      "64": "art/icons/moves/exports/64/rally.png",
+      "48": "art/icons/moves/exports/48/rally.png",
+      "44": "art/icons/moves/exports/44/rally.png",
+      "32": "art/icons/moves/exports/32/rally.png",
+      "24": "art/icons/moves/exports/24/rally.png"
+    },
+    "framing": {
+      "scale": 0.5569770855878737,
+      "offset": [
+        163,
+        190
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "d40a716b69e2d2fd0a8ba8352744d0a6190e3eddc305aa1546fddb2f0b8cd932",
+      "64": "5cee01de48fa695902e348a32e093cda6efb23d1b0ace1c65c7eb738ec3e2405",
+      "48": "7f13505608d9c70d7a28b90492c05b28743e6653e723acd1fcd1b3d58022baf7",
+      "44": "376820f5c968d51b63c465a42eefc26ee8639619a265fb5ddc30049ec60cef9d",
+      "32": "d3ac1ee49fd6a37eb4f81f08a2ef75f8978d63bdcfe33a8f9455e5f4ae01c45f",
+      "24": "62698b2f79dcd3d4bf4ede564f97d8b4ce244605e88743740f7e704b21ad4102"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 208,
     "family": "perks",
     "id": "heart-overload",
@@ -10541,6 +10619,236 @@
     },
     "upscaled": false,
     "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 212,
+    "family": "move_icons",
+    "id": "move-shape",
+    "path": "art/icons/moves/shape.png",
+    "name": "Shape",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Channeler rank I move",
+    "paint": "Two hands shaping a heart-burst into a long lance between them.",
+    "avoid": "a potter's wheel \u00b7 clay",
+    "section": "Will Power: the Outburst, and the Channeler",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Two hands shaping a heart-burst into a long lance between them.\nAvoid: a potter's wheel \u00b7 clay\nEXACT STAGING: Shape: TWO CROPPED CERAMIC MITTEN HANDS, one to each side, actively compress and shape ONE angular HEART-BURST into a LONG TAPERED LANCE between them, oriented diagonally lower-left to upper-right. Heart swelling remains at the lance's wider lower base; top becomes one clean long point. One single continuous energy shape, with sparse hard ray ticks showing shaping pressure. No clay, potter wheel, weapon handle, metal spear, blood, whole figure or glow. All internal gaps transparent.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "f68327e05d40758de7c686065a6099e984ab258baead736e5e41d5bebc00e073",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/212-shape.png",
+    "source_sha256": "6e5ef890d8b7d5a392764d88224cc4bc1ca3a9e48df58c5a82e635a27f4772d9",
+    "export_crop": [
+      0,
+      162,
+      1218,
+      1167
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/shape.png",
+      "64": "art/icons/moves/exports/64/shape.png",
+      "48": "art/icons/moves/exports/48/shape.png",
+      "44": "art/icons/moves/exports/44/shape.png",
+      "32": "art/icons/moves/exports/32/shape.png",
+      "24": "art/icons/moves/exports/24/shape.png"
+    },
+    "framing": {
+      "scale": 0.6260352143442784,
+      "offset": [
+        130,
+        197
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "af93103775e1029e832b75933b219035c046e19d94c117dc21cfba59b7c64b37",
+      "64": "68b5fcb313a1029981874c3d5bf5abb3e4cfb70008a980990cd3c23c44666b05",
+      "48": "30e63eee386d2433f3931785cbf3c8eedf6d2d5f91018dc198d1944ac9e4319a",
+      "44": "6f2fc822ade424f16413f83660ff3eaefe1f58bf774162dac1ffeb191f141a83",
+      "32": "9585ada4da4ddf6ea21cdde1f536ac69d586ce8e16cbfc985403c316adff7576",
+      "24": "36b1a7375f32eac19886f9d8cf903887dd3656643a4e056a46fe88b4d04fac10"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 213,
+    "family": "move_icons",
+    "id": "move-iron-heart",
+    "path": "art/icons/moves/iron-heart.png",
+    "name": "Iron Heart",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Channeler rank I move: a higher Strain limit",
+    "paint": "A heart with two riveted bands round it.",
+    "avoid": "a padlock \u00b7 a metal robot heart",
+    "section": "Will Power: the Outburst, and the Channeler",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A heart with two riveted bands round it.\nAvoid: a padlock \u00b7 a metal robot heart\nEXACT STAGING: Iron Heart: ONE familiar clear rounded HEART silhouette encircled by exactly TWO WIDE RIVETED BANDS, one diagonal across upper-left to lower-right and one across lower-left to upper-right, wrapping around its volume. Give each band two small TRANSPARENT round rivet holes, and transparent narrow channels separating bands from heart. Broad flat white shapes, no shading. No padlock, keyhole, machinery, robot valve, chest, human anatomy or whole figure.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "6a6d9c2f5db7517c12687d17bbe3cafcd2be36eb3ca33366916cd0a57be3da17",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/213-iron-heart.png",
+    "source_sha256": "d8b510b04bab35c1937ef7951dac4f6c4a86a01ba94e1788082a79b188e32336",
+    "export_crop": [
+      0,
+      23,
+      1253,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/iron-heart.png",
+      "64": "art/icons/moves/exports/64/iron-heart.png",
+      "48": "art/icons/moves/exports/48/iron-heart.png",
+      "44": "art/icons/moves/exports/44/iron-heart.png",
+      "32": "art/icons/moves/exports/32/iron-heart.png",
+      "24": "art/icons/moves/exports/24/iron-heart.png"
+    },
+    "framing": {
+      "scale": 0.5813467518894264,
+      "offset": [
+        148,
+        154
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "efd9ca52913c7aa02aab08c29d322ea51f5cd1e049337f11356cdf21ed03042f",
+      "64": "4298bb68037d90d4e5de2354ff7e41f1210acb1c766489ee0fb03c652478fff6",
+      "48": "b3d76c18d4513dfa52130aa21fec9a6e6bfaa603d186f2e86580b43859acbefe",
+      "44": "f2600ebe6612f84528bab4013ce48d01018e35a76e73f6e804d7cbb511652b3a",
+      "32": "9a80a9bef62cd4d3f9e61bceeb54faca09a84d7d52b474238fcc90dbe5f4aa27",
+      "24": "c0bc045aa5e0140cdb9bba9ad1cceb21062a4ef3c8eacda6a3a916da301c86fe"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 214,
+    "family": "move_icons",
+    "id": "move-storm-front",
+    "path": "art/icons/moves/storm-front.png",
+    "name": "Storm Front",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Channeler rank II move",
+    "paint": "A wall of three rolling arcs advancing from Wick's spread hands.",
+    "avoid": "weather icons \u00b7 a cloud with rain",
+    "section": "Will Power: the Outburst, and the Channeler",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: A wall of three rolling arcs advancing from Wick's spread hands.\nAvoid: weather icons \u00b7 a cloud with rain\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Storm Front: ONE Wick at lower left in stable low braced stance, BOTH MITTENS spread forward toward right. Ahead of both hands, THREE broad tall ROLLING WHITE ARCS advance to the right as one wall, each arc a separate crisp open curl with broad transparent spacing. Arc wall is the dominant effect, never a cloud or rain. Wick's face determined, capelet streams backward. No weather symbol, lightning bolt, cloud, halo, arrows or bowl. Keep hands, boots and all three arcs complete inside safe circle.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "2e0fb45d4cbf6b73808161b30ff8a5797b3a5b071d3376d8b7f103f80408d535",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/214-storm-front.png",
+    "source_sha256": "c24d201598079237b46896db06b5d35a12fb2d3672af5481bfab271a9c8eaa1e",
+    "export_crop": [
+      23,
+      113,
+      1254,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/storm-front.png",
+      "64": "art/icons/moves/exports/64/storm-front.png",
+      "48": "art/icons/moves/exports/48/storm-front.png",
+      "44": "art/icons/moves/exports/44/storm-front.png",
+      "32": "art/icons/moves/exports/32/storm-front.png",
+      "24": "art/icons/moves/exports/24/storm-front.png"
+    },
+    "framing": {
+      "scale": 0.5618587781235722,
+      "offset": [
+        166,
+        191
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "1021e8bbdeed41e5daf8690c2ca0a341f613facffd2bebf460b1fa43ab54ebda",
+      "64": "c77817b87459945a64e39ddaea2358a3fcd108f4e445c485ff1256a94d6964eb",
+      "48": "b00e42c9bf8c83cb444ea661139b97a0cd0c1cff5778d4e2d2f3f4dfcc9b5054",
+      "44": "fad21864539aea3d2561302a3de5148eea273f4fdc99edba07ee4130d4627d6f",
+      "32": "42156e07de903bf412a8a7d00860c27282ea6eaa007e5d6701d927326e951875",
+      "24": "12a19ffeb1c452deb74646b93e90610aba5462f9e3a9fc3cf644128dadf87390"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
     "number": 220,

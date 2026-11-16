@@ -748,6 +748,11 @@
       "faint_alpha_to_solid_area_ratio": 0.02799
     },
     {
+      "number": 195,
+      "name": "Rally (Mender)",
+      "faint_alpha_to_solid_area_ratio": 0.08005
+    },
+    {
       "number": 208,
       "name": "Clenched Heart",
       "faint_alpha_to_solid_area_ratio": 0.05902
@@ -766,6 +771,21 @@
       "number": 211,
       "name": "Pure Heart",
       "faint_alpha_to_solid_area_ratio": 0.00826
+    },
+    {
+      "number": 212,
+      "name": "Shape",
+      "faint_alpha_to_solid_area_ratio": 0.03696
+    },
+    {
+      "number": 213,
+      "name": "Iron Heart",
+      "faint_alpha_to_solid_area_ratio": 0.02223
+    },
+    {
+      "number": 214,
+      "name": "Storm Front",
+      "faint_alpha_to_solid_area_ratio": 0.05923
     },
     {
       "number": 220,

@@ -3413,6 +3413,41 @@
       },
       "ink": "#FFFFFF"
     },
+    "move-rally": {
+      "label": "Wick \u2014 Rally (Mender)",
+      "path": "art/icons/moves/rally.png",
+      "sha256": "ca118d9a550e723857f9dc9a4813fd7f15cedc3fb9ba65e6fe841e607cbda912",
+      "format": "png",
+      "mode": "wick",
+      "tint": "insight",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #195",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-rally/rally.svg",
+      "previous_sha256": "57c2bbbad12654b6e6c25d9eb6ef1d7ca39584a8a3b5d234c9c20c0c2f5214ac",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/195-rally.png",
+      "upscaled": false,
+      "brief_number": 195,
+      "exports": {
+        "128": "art/icons/moves/exports/128/rally.png",
+        "64": "art/icons/moves/exports/64/rally.png",
+        "48": "art/icons/moves/exports/48/rally.png",
+        "44": "art/icons/moves/exports/44/rally.png",
+        "32": "art/icons/moves/exports/32/rally.png",
+        "24": "art/icons/moves/exports/24/rally.png"
+      },
+      "ink": "#FFFFFF"
+    },
     "move-overdraw": {
       "label": "Overdraw",
       "path": "art/icons/moves/overdraw.png",
@@ -3480,6 +3515,111 @@
         "24": "art/icons/moves/exports/24/pure-heart.png"
       },
       "previous_path": "art/icons/moves/pure-heart.svg"
+    },
+    "move-shape": {
+      "label": "Shape",
+      "path": "art/icons/moves/shape.png",
+      "sha256": "f68327e05d40758de7c686065a6099e984ab258baead736e5e41d5bebc00e073",
+      "format": "png",
+      "mode": "wick",
+      "tint": "determination",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #212",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-shape/shape.svg",
+      "previous_sha256": "5756bcda4a5d3562795e34bae169edbde3f7ece3c96eb48656b8810cf4346569",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/212-shape.png",
+      "upscaled": false,
+      "brief_number": 212,
+      "exports": {
+        "128": "art/icons/moves/exports/128/shape.png",
+        "64": "art/icons/moves/exports/64/shape.png",
+        "48": "art/icons/moves/exports/48/shape.png",
+        "44": "art/icons/moves/exports/44/shape.png",
+        "32": "art/icons/moves/exports/32/shape.png",
+        "24": "art/icons/moves/exports/24/shape.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-iron-heart": {
+      "label": "Iron Heart",
+      "path": "art/icons/moves/iron-heart.png",
+      "sha256": "6a6d9c2f5db7517c12687d17bbe3cafcd2be36eb3ca33366916cd0a57be3da17",
+      "format": "png",
+      "mode": "wick",
+      "tint": "determination",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #213",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-iron-heart/iron-heart.svg",
+      "previous_sha256": "d8f16647815fd38cad7c3d10f39d5255b46d028fb5205abffa4643b8edb3bc5f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/213-iron-heart.png",
+      "upscaled": false,
+      "brief_number": 213,
+      "exports": {
+        "128": "art/icons/moves/exports/128/iron-heart.png",
+        "64": "art/icons/moves/exports/64/iron-heart.png",
+        "48": "art/icons/moves/exports/48/iron-heart.png",
+        "44": "art/icons/moves/exports/44/iron-heart.png",
+        "32": "art/icons/moves/exports/32/iron-heart.png",
+        "24": "art/icons/moves/exports/24/iron-heart.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-storm-front": {
+      "label": "Wick \u2014 Storm Front",
+      "path": "art/icons/moves/storm-front.png",
+      "sha256": "2e0fb45d4cbf6b73808161b30ff8a5797b3a5b071d3376d8b7f103f80408d535",
+      "format": "png",
+      "mode": "wick",
+      "tint": "determination",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #214",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-storm-front/storm-front.svg",
+      "previous_sha256": "dc45e89b6c2b26685564d5bc2611ca5bc5c1addf6b18eb7d025cb965b9701913",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/214-storm-front.png",
+      "upscaled": false,
+      "brief_number": 214,
+      "exports": {
+        "128": "art/icons/moves/exports/128/storm-front.png",
+        "64": "art/icons/moves/exports/64/storm-front.png",
+        "48": "art/icons/moves/exports/48/storm-front.png",
+        "44": "art/icons/moves/exports/44/storm-front.png",
+        "32": "art/icons/moves/exports/32/storm-front.png",
+        "24": "art/icons/moves/exports/24/storm-front.png"
+      },
+      "ink": "#FFFFFF"
     },
     "move-answered-prayer": {
       "label": "Answered Prayer",

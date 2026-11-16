@@ -1,0 +1,76 @@
+{
+  "number": 213,
+  "family": "move_icons",
+  "id": "move-iron-heart",
+  "path": "art/icons/moves/iron-heart.png",
+  "name": "Iron Heart",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Channeler rank I move: a higher Strain limit",
+  "paint": "A heart with two riveted bands round it.",
+  "avoid": "a padlock \u00b7 a metal robot heart",
+  "section": "Will Power: the Outburst, and the Channeler",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A heart with two riveted bands round it.\nAvoid: a padlock \u00b7 a metal robot heart\nEXACT STAGING: Iron Heart: ONE familiar clear rounded HEART silhouette encircled by exactly TWO WIDE RIVETED BANDS, one diagonal across upper-left to lower-right and one across lower-left to upper-right, wrapping around its volume. Give each band two small TRANSPARENT round rivet holes, and transparent narrow channels separating bands from heart. Broad flat white shapes, no shading. No padlock, keyhole, machinery, robot valve, chest, human anatomy or whole figure.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "6a6d9c2f5db7517c12687d17bbe3cafcd2be36eb3ca33366916cd0a57be3da17",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/213-iron-heart.png",
+  "source_sha256": "d8b510b04bab35c1937ef7951dac4f6c4a86a01ba94e1788082a79b188e32336",
+  "export_crop": [
+    0,
+    23,
+    1253,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/iron-heart.png",
+    "64": "art/icons/moves/exports/64/iron-heart.png",
+    "48": "art/icons/moves/exports/48/iron-heart.png",
+    "44": "art/icons/moves/exports/44/iron-heart.png",
+    "32": "art/icons/moves/exports/32/iron-heart.png",
+    "24": "art/icons/moves/exports/24/iron-heart.png"
+  },
+  "framing": {
+    "scale": 0.5813467518894264,
+    "offset": [
+      148,
+      154
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "efd9ca52913c7aa02aab08c29d322ea51f5cd1e049337f11356cdf21ed03042f",
+    "64": "4298bb68037d90d4e5de2354ff7e41f1210acb1c766489ee0fb03c652478fff6",
+    "48": "b3d76c18d4513dfa52130aa21fec9a6e6bfaa603d186f2e86580b43859acbefe",
+    "44": "f2600ebe6612f84528bab4013ce48d01018e35a76e73f6e804d7cbb511652b3a",
+    "32": "9a80a9bef62cd4d3f9e61bceeb54faca09a84d7d52b474238fcc90dbe5f4aa27",
+    "24": "c0bc045aa5e0140cdb9bba9ad1cceb21062a4ef3c8eacda6a3a916da301c86fe"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}
