@@ -153,6 +153,11 @@
       "faint_alpha_to_solid_area_ratio": 0.0647
     },
     {
+      "number": 42,
+      "name": "Run Through",
+      "faint_alpha_to_solid_area_ratio": 0.0445
+    },
+    {
       "number": 51,
       "name": "Pressure Point",
       "faint_alpha_to_solid_area_ratio": 0.05419
@@ -206,6 +211,21 @@
       "number": 61,
       "name": "Slide",
       "faint_alpha_to_solid_area_ratio": 0.06174
+    },
+    {
+      "number": 62,
+      "name": "Fire Discipline",
+      "faint_alpha_to_solid_area_ratio": 0.0734
+    },
+    {
+      "number": 64,
+      "name": "Special Ammo",
+      "faint_alpha_to_solid_area_ratio": 0.02322
+    },
+    {
+      "number": 65,
+      "name": "Duck and Roll",
+      "faint_alpha_to_solid_area_ratio": 0.06576
     },
     {
       "number": 80,

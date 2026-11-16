@@ -30836,18 +30836,39 @@
       "previous_path": "art/icons/moves/slide.svg"
     },
     "move-fire-discipline": {
-      "label": "PLACEHOLDER: Fire Discipline",
-      "path": "art/icons/moves/fire-discipline.svg",
-      "sha256": "39169a48df13ddf4bd79bfd3c2257642a8989a43ddae6aabc9edecc78681f1ad",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Wick \u2014 Fire Discipline",
+      "path": "art/icons/moves/fire-discipline.png",
+      "sha256": "8ef3df46145ab8854871e4d099cff0fd47262a12611f0f1d6f948a9e2e3d7c71",
+      "format": "png",
       "mode": "wick",
       "tint": "agility",
-      "wanted": "art/icons/moves/fire-discipline.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #62",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-fire-discipline/fire-discipline.svg",
+      "previous_sha256": "39169a48df13ddf4bd79bfd3c2257642a8989a43ddae6aabc9edecc78681f1ad",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/062-fire-discipline.png",
+      "upscaled": false,
+      "brief_number": 62,
+      "exports": {
+        "128": "art/icons/moves/exports/128/fire-discipline.png",
+        "64": "art/icons/moves/exports/64/fire-discipline.png",
+        "48": "art/icons/moves/exports/48/fire-discipline.png",
+        "44": "art/icons/moves/exports/44/fire-discipline.png",
+        "32": "art/icons/moves/exports/32/fire-discipline.png",
+        "24": "art/icons/moves/exports/24/fire-discipline.png"
+      },
+      "ink": "#FFFFFF"
     },
     "move-speed-loader": {
       "label": "PLACEHOLDER: Speed Loader",
@@ -30864,32 +30885,74 @@
       "production_approved": false
     },
     "move-special-ammo": {
-      "label": "PLACEHOLDER: Special Ammo",
-      "path": "art/icons/moves/special-ammo.svg",
-      "sha256": "0ac4185646ca6da8ffef2c5bf818d016d31d26b8fbf06884e3e1a658ab0e47b9",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Special Ammo",
+      "path": "art/icons/moves/special-ammo.png",
+      "sha256": "05cba60661e91f8e433a101d9419aa86f65a49fe3275a140ce4b22d1c5e45596",
+      "format": "png",
       "mode": "wick",
       "tint": "agility",
-      "wanted": "art/icons/moves/special-ammo.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #64",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-special-ammo/special-ammo.svg",
+      "previous_sha256": "0ac4185646ca6da8ffef2c5bf818d016d31d26b8fbf06884e3e1a658ab0e47b9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/064-special-ammo.png",
+      "upscaled": false,
+      "brief_number": 64,
+      "exports": {
+        "128": "art/icons/moves/exports/128/special-ammo.png",
+        "64": "art/icons/moves/exports/64/special-ammo.png",
+        "48": "art/icons/moves/exports/48/special-ammo.png",
+        "44": "art/icons/moves/exports/44/special-ammo.png",
+        "32": "art/icons/moves/exports/32/special-ammo.png",
+        "24": "art/icons/moves/exports/24/special-ammo.png"
+      },
+      "ink": "#FFFFFF"
     },
     "move-duck-and-roll": {
-      "label": "PLACEHOLDER: Duck and Roll",
-      "path": "art/icons/moves/duck-and-roll.svg",
-      "sha256": "04debb6355fc492658b5145c3638b22828483722b58a86d2fa44345d436f9a2f",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Wick \u2014 Duck and Roll",
+      "path": "art/icons/moves/duck-and-roll.png",
+      "sha256": "cdc77726a70273901170a7bc50401aafdadda8a9853508fd3a0b5ec012ed4547",
+      "format": "png",
       "mode": "wick",
       "tint": "agility",
-      "wanted": "art/icons/moves/duck-and-roll.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #65",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-duck-and-roll/duck-and-roll.svg",
+      "previous_sha256": "04debb6355fc492658b5145c3638b22828483722b58a86d2fa44345d436f9a2f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/065-duck-and-roll.png",
+      "upscaled": false,
+      "brief_number": 65,
+      "exports": {
+        "128": "art/icons/moves/exports/128/duck-and-roll.png",
+        "64": "art/icons/moves/exports/64/duck-and-roll.png",
+        "48": "art/icons/moves/exports/48/duck-and-roll.png",
+        "44": "art/icons/moves/exports/44/duck-and-roll.png",
+        "32": "art/icons/moves/exports/32/duck-and-roll.png",
+        "24": "art/icons/moves/exports/24/duck-and-roll.png"
+      },
+      "ink": "#FFFFFF"
     },
     "move-killzone": {
       "label": "PLACEHOLDER: Killzone",
@@ -32532,18 +32595,39 @@
       "ink": "#FFFFFF"
     },
     "tech-run-through": {
-      "label": "PLACEHOLDER: Run Through",
-      "path": "art/icons/techniques/run-through.svg",
-      "sha256": "95c9b9d9489d18feea3198326419e9f34219e6b2e47b23f463e29ba24e55d3fa",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Wick \u2014 Run Through",
+      "path": "art/icons/techniques/run-through.png",
+      "sha256": "1ae18cd2e4e3cba1a2b08123b75161051c15348bd5be1f6cc07c33cb4a526d4f",
+      "format": "png",
       "mode": "wick",
       "tint": "strength",
-      "wanted": "art/icons/techniques/run-through.png",
       "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #42",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tech-run-through/run-through.svg",
+      "previous_sha256": "95c9b9d9489d18feea3198326419e9f34219e6b2e47b23f463e29ba24e55d3fa",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/042-run-through.png",
+      "upscaled": false,
+      "brief_number": 42,
+      "exports": {
+        "128": "art/icons/techniques/exports/128/run-through.png",
+        "64": "art/icons/techniques/exports/64/run-through.png",
+        "48": "art/icons/techniques/exports/48/run-through.png",
+        "44": "art/icons/techniques/exports/44/run-through.png",
+        "32": "art/icons/techniques/exports/32/run-through.png",
+        "24": "art/icons/techniques/exports/24/run-through.png"
+      },
+      "ink": "#FFFFFF"
     },
     "tech-suppress": {
       "label": "PLACEHOLDER: Suppress",
