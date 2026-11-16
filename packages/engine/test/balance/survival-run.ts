@@ -55,7 +55,7 @@
 // ammunition carried before it), each stage's credits earned and spent, XP and level, grade steps, the vault.
 import { apply, reachable, runNode, runOptions, lastingFor, creditsOf, packOf, gearAt, wearAt, WEAPON, ITEM, pendingPerkSteps, maxHp,
   counterLines, linePrice, restockRoom, sellValue, gradePrice, nextGrade, GRADE_UP, relicRow, worthOf, capRoom, boonProblem, BOONS, alive, isStartBoon, lineOf, startOffer,
-  dist, standable, zoneMap, makeView, priceOf, ROUND_PRICE, RECIPES, coresCarried, loadoutLines, holds } from '../../src';
+  dist, standable, zoneMap, makeView, priceOf, ROUND_PRICE, RECIPES, coresCarried, loadoutLines, holds, gearEntry, equip } from '../../src';
 import { fxTaps } from '../../src/fxtap';
 import { allPendingDoorPicks } from '../../src/doorpicks';
 import svJ from '../../../../data/survival.json';
@@ -251,6 +251,12 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
     const offer = startOffer(C(id), cfg.seed); if (offer.length) r.must({ type: 'run/boon', charId: id, choice: startPick(offer, C(id)) }, by(id));
   }
   for (const id of ids) if (r.g.run?.state === 'loadout') r.must({ type: 'run/ready' } as any, by(id));
+  // rules 1.59 (the tank measure): a member's `hands` ({main?, off?}: weapon ids) are put in its hands after the camp,
+  // outside the reducer (a measure, not a replay: the camp's budget could not buy a second shield), through the sheet's
+  // own equip; what was in the hand goes to the pack
+  for (const id of ids) { const h = (pcs[ids.indexOf(id)] as any).hands as Record<string, string> | undefined; if (!h) continue;
+    for (const to of ['main', 'off'] as const) { const wid = h[to]; if (!wid) continue; const c = C(id), e = gearEntry(wid); if (!e) continue;
+      c.pack = [...packOf(c), e]; const no = equip(c, c.pack.length - 1, to); if (no) res.errors.push('hands ' + to + ' ' + wid + ': ' + no); } }
   if (!L.has('start')) for (const id of ids) C(id).relics = (C(id).relics || []).filter((x: string) => !isStartBoon(x)); // the lever off: as if there were none (outside the reducer: a measure, not a replay)
   // survival-spec 13.7's forced cell: SIM_START_FORCE names the starting boon every character carries (a measure: so no
   // row dominates its line), put in place of the one picked, outside the reducer

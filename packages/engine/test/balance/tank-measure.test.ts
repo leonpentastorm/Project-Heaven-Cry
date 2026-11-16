@@ -1,6 +1,8 @@
 // @ts-nocheck (a measuring tool)
 // THE DURABILITY TANK (0.28.3, docs/design/proposals/2026-11-tank-fit.md): opt-in. TANK_MEASURE=1 plays Survival's
-// stage 1 for the tank parties over TANK_SEEDS seeds (default 12) and prints a line per character.
+// stage 1 for the tank parties over TANK_SEEDS seeds (default 12) and prints a line per character (rules 1.59: with the
+// fight's length in rounds, the class rank and the Guard pool, and the two-shield wall). TANK_MAX_ROUNDS raises the
+// fight's round cap (20).
 //   TANK_MEASURE=1 npx vitest run --config vitest.balance.config.ts test/balance/tank-measure.test.ts --silent=false
 import { describe, expect, it } from 'vitest';
 import { stage1, tankLine } from './tank-measure';
@@ -15,7 +17,7 @@ describe.skipIf(!env.TANK_MEASURE)('the Durability tank, measured in Survival st
     // TANK_NOHIT=1: the Guard fit without the to-hit door (T.3)
     if (env.TANK_NOHIT) (SKILL as any).durability.unlocks['1'].effects[0].skill = []; // roll_with offers no skill: the weapon's stands
     if (env.TANK_GUARD) Object.assign(PHYS_RULES.guard, JSON.parse(env.TANK_GUARD));
-    const n = Number(env.TANK_SEEDS || 12), parties = String(env.TANK_PARTIES || 'solo_wall,solo_wall_noguard,wall_gunner,wall_noguard_gunner,solo_holdfast,holdfast_gunner').split(',');
+    const n = Number(env.TANK_SEEDS || 12), parties = String(env.TANK_PARTIES || 'solo_wall,solo_wall_2sh,wall_gunner,wall_2sh_gunner,wall_healer,solo_gunner,solo_melee,solo_wall_noguard,solo_holdfast').split(',');
     for (const p of parties) for (const r of stage1(p, n)) console.log(tankLine(r));
     expect(true).toBe(true);
   }, 3_600_000);

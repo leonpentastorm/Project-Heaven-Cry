@@ -66,12 +66,17 @@ export function guardWord(e: Partial<FxEvent> & { k: string }): string | null {
 /** Where plate i of a pool of max stands. The token's own marks sit on its edges (the Pressure pips and the Shadow wisps
  *  on top, the Momentum chip on the left, the Sigil chip on the right, the HP bar along the bottom), so the plates keep to
  *  the four corner windows between them (0.29 integration: the plates never cover another mark), the top two first, a
- *  window's plates side by side when the pool holds more than four. `front` is kept for the callers; the windows don't turn. */
+ *  window's plates side by side when the pool holds more than four. Rules 1.59 (T5: the Bulwark's pool grows to the
+ *  data's max_by_rank, 7 at rank III): past four the windows open as wide as the other marks allow (WIDE), so two plates
+ *  side by side still read as plates. `front` is kept for the callers; the windows don't turn. */
 const RING = 0.66, GAP = 4; // the plates' radius (in tiles) and the gap between two plates in one window (degrees)
 const WINDOWS = [-34, -146, 34, 146], WIN_HALF = 9; // the windows' centres (degrees: top right, top left, bottom right, bottom left) and half-width
+/** The windows past four plates: [from, to] in degrees, each kept clear of the top pips, the side chips and the HP bar. */
+const WIDE: [number, number][] = [[-48, -20], [-160, -132], [24, 51], [129, 156]];
 function plateArc(p: { x: number; y: number }, s: number, i: number, max: number, _front: number[] | null, r = RING): { d: string; mid: { x: number; y: number }; a0: number; a1: number } {
   const m = Math.max(1, max), w = i % WINDOWS.length, inWin = Math.ceil((m - w) / WINDOWS.length), k = Math.floor(i / WINDOWS.length);
-  const rad = Math.PI / 180, span = (2 * WIN_HALF - GAP * (inWin - 1)) / Math.max(1, inWin), lo = WINDOWS[w] - WIN_HALF + k * (span + GAP);
+  const [from, to] = m > WINDOWS.length ? WIDE[w] : [WINDOWS[w] - WIN_HALF, WINDOWS[w] + WIN_HALF];
+  const rad = Math.PI / 180, span = (to - from - GAP * (inWin - 1)) / Math.max(1, inWin), lo = from + k * (span + GAP);
   const a0 = lo * rad, a1 = (lo + Math.max(2, span)) * rad, mid = (a0 + a1) / 2, R = s * r;
   const x0 = p.x + Math.cos(a0) * R, y0 = p.y + Math.sin(a0) * R, x1 = p.x + Math.cos(a1) * R, y1 = p.y + Math.sin(a1) * R;
   return { d: 'M' + x0.toFixed(1) + ' ' + y0.toFixed(1) + ' A' + R.toFixed(1) + ' ' + R.toFixed(1) + ' 0 0 1 ' + x1.toFixed(1) + ' ' + y1.toFixed(1), mid: { x: p.x + Math.cos(mid) * R, y: p.y + Math.sin(mid) * R }, a0, a1 };

@@ -6,7 +6,7 @@
 //   5. Interpose from Durability 3
 //   6. lost when the fight ends; a hit on a unit holding Guard costs no Momentum
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, resolveAttack, previewAttack, applyDamage, classResources, guardPool, resourcesFor, viewFor, weaponActions, type Unit } from '../src';
+import { phys, resolveAttack, previewAttack, applyDamage, classResources, guardPool, resourcesFor, viewFor, weaponActions, CLASS, type Unit } from '../src';
 import { physFight, rig } from './helpers/physfight';
 
 beforeEach(() => rig(null));
@@ -40,10 +40,11 @@ describe('1. the pool', () => {
     const f = fight([{ dur: 2 }]); expect(f.pc.resMax!.guard).toBe(2); expect(f.pc.res!.guard).toBe(0); // a fight starts with none
     expect(fight([{ dur: 7 }]).pc.resMax!.guard).toBe(G.max);
   });
-  it('the Defender keeps its own pool: rules.guard.max with 1 Durability point, and with none', () => {
-    expect(fight([{ dur: 1, classId: 'defender' }]).pc.resMax!.guard).toBe(G.max);
-    const f = fight([{ dur: 0, classId: 'defender' }]); expect(f.pc.resMax!.guard).toBe(G.max);
-    expect(classResources(f.char(f.pc)).filter((r) => r.id === 'guard')).toEqual([{ id: 'guard', max: G.max, persist: false }]);
+  it('the Defender (the Bulwark) keeps its own pool, by its rank (rules 1.59 T5: classes.json resource.max_by_rank), with 1 Durability point, and with none', () => {
+    const R = (CLASS as any).defender.resource.max_by_rank;
+    expect(fight([{ dur: 1, classId: 'defender' }]).pc.resMax!.guard).toBe(R['1']);
+    const f = fight([{ dur: 0, classId: 'defender' }]); expect(f.pc.resMax!.guard).toBe(R['1']);
+    expect(classResources(f.char(f.pc)).filter((r) => r.id === 'guard')).toEqual([{ id: 'guard', max: R['1'], persist: false }]);
   });
   it('a client\'s view carries the pool, and the engine\'s own view of it', () => {
     const f = fight([{ dur: 3 }]); guard(f, f.pc, 2);

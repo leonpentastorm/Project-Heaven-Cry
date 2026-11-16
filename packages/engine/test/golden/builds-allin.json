@@ -878,7 +878,7 @@
 "build/tank/allin/L12/taken/minion": "hit o:weapon/shot:20+0x2.828v0 i:P1:weapon/physical:5 => P1 hp1045>1040",
 "build/tank/allin/L12/taken/soldier": "hit o:weapon/shot:30+0x2.206v0 i:P1:weapon/physical:15 => P1 hp1045>1030",
 "build/tank/allin/L12/taken/vermin": "hit o:weapon/melee:18+0x1.414v0 i:P1:weapon/physical:0 =>",
-"build/tank/allin/L12/tech/lunge": "o:weapon/melee:28+0x5.924v0 i:F3:weapon/physical:149 o:weapon/melee:8+0x5.924v0 i:F3:weapon/physical:31 => F3 hp499>319",
+"build/tank/allin/L12/tech/lunge": "o:weapon/melee:28+0x5.924v0 i:F3:weapon/physical:149 o:weapon/melee:8+0x7.47v0 i:F3:weapon/physical:43 => F3 hp499>307",
 "build/tank/allin/L20/plain/boss": "pv 454.855 a75 c1.69 | hit o:weapon/melee:28+0x16.245v0 i:F5:weapon/physical:379 => F5 hp6957>6578",
 "build/tank/allin/L20/plain/elite": "pv 454.855 a75 c1.69 | hit o:weapon/melee:28+0x16.245v0 i:F4:weapon/physical:379 => F4 hp2036>1657",
 "build/tank/allin/L20/plain/minion": "pv 454.855 a0 c1.69 | hit o:weapon/melee:28+0x16.245v0 i:F2:weapon/physical:454 => F2 hp594>140",
@@ -890,7 +890,7 @@
 "build/tank/allin/L20/taken/minion": "hit o:weapon/shot:20+0x8.531v0 i:P1:weapon/physical:66 => P1 hp3328>3262",
 "build/tank/allin/L20/taken/soldier": "hit o:weapon/shot:30+0x6.654v0 i:P1:weapon/physical:95 => P1 hp3328>3233",
 "build/tank/allin/L20/taken/vermin": "hit o:weapon/melee:18+0x4.266v0 i:P1:weapon/physical:0 =>",
-"build/tank/allin/L20/tech/lunge": "o:weapon/melee:28+0x16.245v0 i:F3:weapon/physical:416 o:weapon/melee:8+0x13.838v0 i:F3:weapon/physical:72 => F3 hp1188>700",
+"build/tank/allin/L20/tech/lunge": "o:weapon/melee:28+0x16.245v0 i:F3:weapon/physical:416 o:weapon/melee:8+0x17.448v0 i:F3:weapon/physical:101 => F3 hp1188>671",
 "build/tank/allin/L3/plain/boss": "pv 58.317 a12 c1.53 | hit o:weapon/melee:28+0x2.083v0 i:F5:weapon/physical:46 => F5 hp1069>1023",
 "build/tank/allin/L3/plain/elite": "pv 58.317 a12 c1.53 | hit o:weapon/melee:28+0x2.083v0 i:F4:weapon/physical:46 => F4 hp313>267",
 "build/tank/allin/L3/plain/minion": "pv 58.317 a0 c1.53 | hit o:weapon/melee:28+0x2.083v0 i:F2:weapon/physical:58 => F2 hp91>33",
@@ -913,7 +913,7 @@
 "build/tank/allin/L6/taken/minion": "hit o:weapon/shot:20+0x1.516v0 i:P1:weapon/physical:17 => P1 hp436>419",
 "build/tank/allin/L6/taken/soldier": "hit o:weapon/shot:30+0x1.182v0 i:P1:weapon/physical:22 => P1 hp436>414",
 "build/tank/allin/L6/taken/vermin": "hit o:weapon/melee:18+0x0.758v0 i:P1:weapon/physical:1 o:physical/item:0.5+0x1v0 i:F1:physical/physical:1 => P1 hp436>435, F1 hp28>27",
-"build/tank/allin/L6/tech/lunge": "o:weapon/melee:28+0x2.863v0 i:F3:weapon/physical:71 o:weapon/melee:8+0x2.999v0 i:F3:weapon/physical:14 => F3 hp259>174",
+"build/tank/allin/L6/tech/lunge": "o:weapon/melee:28+0x2.863v0 i:F3:weapon/physical:71 o:weapon/melee:8+0x3.817v0 i:F3:weapon/physical:21 => F3 hp259>167",
 "build/tank/allin/L9/plain/boss": "pv 110.185 a23 c1.57 | hit o:weapon/melee:28+0x3.935v0 i:F5:weapon/physical:87 => F5 hp2107>2020",
 "build/tank/allin/L9/plain/elite": "pv 110.185 a23 c1.57 | hit o:weapon/melee:28+0x3.935v0 i:F4:weapon/physical:87 => F4 hp617>530",
 "build/tank/allin/L9/plain/minion": "pv 110.185 a0 c1.57 | hit o:weapon/melee:28+0x3.935v0 i:F2:weapon/physical:110 => F2 hp180>70",
@@ -925,5 +925,5 @@
 "build/tank/allin/L9/taken/minion": "hit o:weapon/shot:20+0x2.069v0 i:P1:weapon/physical:24 => P1 hp726>702",
 "build/tank/allin/L9/taken/soldier": "hit o:weapon/shot:30+0x1.614v0 i:P1:weapon/physical:31 => P1 hp726>695",
 "build/tank/allin/L9/taken/vermin": "hit o:weapon/melee:18+0x1.034v0 i:P1:weapon/physical:1 => P1 hp726>725",
-"build/tank/allin/L9/tech/lunge": "o:weapon/melee:28+0x3.935v0 i:F3:weapon/physical:98 o:weapon/melee:8+0x4.31v0 i:F3:weapon/physical:22 => F3 hp360>240"
+"build/tank/allin/L9/tech/lunge": "o:weapon/melee:28+0x3.935v0 i:F3:weapon/physical:98 o:weapon/melee:8+0x5.434v0 i:F3:weapon/physical:31 => F3 hp360>231"
 }

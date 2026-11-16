@@ -7062,7 +7062,7 @@ A shield's system is melee.
     dual wielding (5b), no follow. Shield in the main hand, a focus in the off hand: no follow.
 11. **A shield's follow gives Guard** (item 4517). A shield's follow that lands gives 1 Guard, under the pool's cap, once a
     turn per unit across every shield it holds (the modifier row `mod_follow_guard`, named in each shield's
-    `variant_mods`). Shield Bash and a main-hand shield's own blows never give it.
+    `variant_mods`). Shield Bash and a main-hand shield's own blows never give it. *(Amended by rules 1.59 item 4525: x2 with a shield in each hand.)*
 12. **Enemies and companions** (item 4518). A unit follows only if its off hand holds a follows item (an enemy: only if
     its data row puts one there; none does today). The enemy turn and the AI are unchanged.
 13. **Afterword** (item 4519). The first follows weapon that is not a shield: a knife (15, Dexterity, light blades) made
@@ -7077,6 +7077,37 @@ A shield's system is melee.
 
 *(Guard 2.0's item 17, "the Shield Follows" on P9, is withdrawn: this revision is its follow-up; P9 stays only if Hold
 the Gap needs it. Item 4521.)*
+
+## Rules 1.59, the tank rulings (16 Nov 2026)
+
+Leon, 16 Nov 2026, on the Durability tank: *"Tank with guns need agility alpha skill or they don't hit"*; *"hits that
+roll with durability start at lower ceiling and only get more strong when you put more into strengh or agi depends on
+the weapon scaling skill"*; *"the shield dmg scale with durability attribute to begin with"*; *"let them have double guard
+when doing a guard action, we already have max guard to balance it"*; *"any class that give more max guard, can be fun
+for the dedicated guarder"*. And on balance: *"the target is FUN and REWARD for the effort you put in, not a hard cap to
+cry about when something goes 2% over."* Items 4522 to 4528; every new number is the data's and PROVISIONAL.
+
+1. **Durability hits in melee only** (item 4522). While you hold Guard, your **melee** attacks roll with Durability's
+   modifier in place of the weapon's skill when Durability's is higher: a weapon's blow, a shield's own strike and a
+   follow strike. A gun's shot, a bow's arrow and a throw roll with their own skill, Guard or no Guard.
+2. **The damage stays the weapon's** (item 4523). A blow rolled with Durability deals the weapon's own damage: it grows
+   with the weapon's own attribute (its `scales_with`, through the melee profile), never with Durability or Endurance
+   (unless the weapon itself scales with Endurance). Nothing multiplies it for rolling with Durability.
+3. **A shield's strike scales with Endurance** (item 4524). Every shield row hits with Durability and its damage grows
+   with Endurance, Durability's attribute (was Strength).
+4. **Two shields, double Guard** (item 4525). With a shield in each hand, every Guard gain is multiplied by 2
+   (`techniques.json rules.guard.two_shield_mult`): Brace (2 x 2 = 4), the Guard technique (its plain gain x 2), and a
+   shield's follow plate (1 x 2). It replaces the shield's +1 for that case; one shield keeps its +1. The pool's cap is
+   unchanged.
+5. **The Bulwark's pool by rank** (item 4526). The Bulwark (class id `defender`) holds a Guard pool of 5 at rank I, 6 at
+   rank II and 7 at rank III, whatever its Durability (`classes.json defender resource.max_by_rank`). Everyone else
+   keeps `rules.guard.max` (4). The token draws up to 7 plates, two to a corner past four.
+6. **The camp's tank kit** (item 4527). Survival's Recommended loadout for a character whose top alpha skill is
+   Durability is the unarmed rack's free weapon, the Hand wraps (the cheapest one-handed melee weapon of the rack), and
+   the Buckler in the off hand; no focus. The Buckler (200) leaves 100 of the 300 budget: Class 1 armour (150) does not
+   fit; the tank profile's next buy, a stim injector (80), is taken: 20 credits are left.
+7. **Texts** (item 4528). Durability's door, its per-point rows, the shields' texts and the Bulwark's resource text say
+   these rules and read their numbers from the data.
 
 ## Maps (rules 1.16)
 
@@ -11039,3 +11070,32 @@ Items 4240 to 4247.
     line of its own. No number.
 4521. **Guard 2.0's item 17 withdrawn:** "the Shield Follows" (P9) is rules 1.58's follow strike; P9 stays only if Hold
     the Gap needs it. No number.
+
+### Rules 1.59, the tank rulings (16 Nov 2026)
+
+4522. **Durability's roll is melee only (T1):** `skills.json durability.unlocks.1.effects.0` (op `roll_with`) gains the
+    predicate `melee: true` (the attack is melee: a weapon's blow, a shield's strike, a follow). The gear card's
+    `gearpreview.ts rollWithLines` names an offer only for a weapon that meets its `melee` predicate. No new primitive;
+    no number.
+4523. **The damage of a blow rolled with Durability (T2):** unchanged and confirmed by test
+    (`test/tank-rulings-1-59.test.ts`): the melee profile (`rules.json output.profiles.melee`) reads the weapon's
+    `phys.scales_with`; Durability and Endurance add nothing to a knife's blow. No number.
+4524. **Shields scale with Endurance (T3):** `weapons.json` buckler, riot_shield, pavise `phys.scales_with` strength ->
+    endurance (`hits_with` durability unchanged). PROVISIONAL (the shields' damage lines are unchanged).
+4525. **Two shields double Guard (T4):** `techniques.json rules.guard.two_shield_mult` 2 (mirrored in
+    `skills.json durability.per_point.numbers.two_shields`, held equal by the validator), read by one function,
+    `physical/core.ts guardMult(u)`: `guardGain` (Brace: brace_gain x2; the Guard technique: its plain gain x2, in place
+    of shield_gain or brace_shield_gain for each shield) and `follow` (the plate the follow's own line gave, x2). The cap
+    (`guardMax`) holds. PROVISIONAL: 2.
+4526. **The Bulwark's pool (T5):** `classes.json defender resource.max_by_rank` {1: 5, 2: 6, 3: 7}, provisional; read by
+    `character.ts classResCap(c, id)` from the class's own resource row at `classRank(c)` inside `RES_RULES.guard` (the
+    carrier a class already uses to raise its door's resource: the Operative's Shadow, `RES_RULES.shadow`). The
+    validator holds the ranks 1 to 3 whole, never below `rules.guard.max`, never shrinking. The token's plates
+    (`apps/web/src/game/fx/guard.ts`) open wider windows past four (`WIDE`) so 7 read as plates. PROVISIONAL: 5, 6, 7.
+4527. **The camp's tank kit (T6):** `survival.json loadout.recommended.weapon` the Durability row `{top: durability,
+    archetype: unarmed, focus: false, profile: tank}` (was `hands: 1H`, the dearest free one-hander the character
+    could carry: a gun for an all-in tank). Budget 300: Buckler 200, a stim injector 80, 20 left; Class 1 armour (150)
+    is out of reach. PROVISIONAL.
+4528. **Texts (T7):** Durability's door text and `per_point` rows (pool, shield, two shields), the three shields' texts
+    (no typed "1 more Guard"), `items.json mod_follow_guard` (amended in 4525), the Bulwark's resource rule (its ranks
+    read `max_by_rank`). No number.

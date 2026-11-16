@@ -9,7 +9,9 @@
 // Nothing here decides a rule: every number is the engine's; only the choices (the policies, the walk) are the
 // simulator's. Damage and soak are read on the hook bus during the real reducer's actions only (an event on a copy a
 // policy or the enemy AI previews is dropped: its unit is not in the game the action left).
-import { maxHp } from '../../src';
+import { maxHp, classRank, resourcesFor } from '../../src';
+/** The game the last fight was played in (its characters' level, class rank and Guard pool after the run). */
+const LAST: { g: any } = { g: null };
 import { onHook } from '../../src/effects/hooks';
 import { Rec, type Pc } from '../helpers/replay';
 import { survivalRoom, ownerOf } from '../helpers/survival';
@@ -37,10 +39,15 @@ for (const [k, v] of Object.entries({
   wall_noguard: { build: 'wall', variant: 'allin', level: 1, policy: 'noguard' },
   holdfast: { build: 'holdfast', variant: 'normal', level: 1, policy: 'tank' },
   holdfast_noguard: { build: 'holdfast', variant: 'normal', level: 1, policy: 'noguard' },
+  // rules 1.59 (the tank rulings): the Living Wall with a shield in each hand (the camp's Buckler in the off hand, a
+  // second Buckler put in the main hand after the camp: survival-run.ts `hands`). Survival starts at level 1 and its
+  // stage 1 ends near level 3, so a Bulwark is measured at rank I only (ranks II and III need levels 6 and 12)
+  wall_2sh: { build: 'wall', variant: 'allin', level: 1, policy: 'tank', hands: { main: 'buckler' } },
 })) { (MEMBER as any)[k] = v; (MEMBER_OLD as any)[k] = v; }
 Object.assign(PARTIES, {
   solo_wall: ['wall'], solo_wall_noguard: ['wall_noguard'], wall_gunner: ['wall', 'gunner'], wall_noguard_gunner: ['wall_noguard', 'gunner'],
   solo_holdfast: ['holdfast'], holdfast_gunner: ['holdfast', 'gunner'], wall_healer: ['wall', 'healer'], gunner_gunner: ['gunner', 'gunner'],
+  solo_wall_2sh: ['wall_2sh'], wall_2sh_gunner: ['wall_2sh', 'gunner'],
 });
 
 // ---------- the hook bus: what each unit took and dealt, in the real reducer's actions ----------
@@ -79,20 +86,24 @@ function instrument(r: Rec, per: Record<string, Tally>) {
   };
 }
 
-export interface TankRow { party: string; who: string; seeds: number; fights: number; cleared: number; tally: Tally }
+export interface TankRow { party: string; who: string; seeds: number; fights: number; cleared: number; tally: Tally; /** rules 1.59: the rounds of every fight played, and of the won ones */ rounds: number; won: number; wonRounds: number; capped: number; stalled: number; level: number; rank: number; pool: number }
 /** Stage 1 of Survival for `party` over `seeds` seeds (survival-run.ts simRun, stage cap 1), measured per character. */
 export function stage1(party: string, seeds: number, prefix = 'TANK'): TankRow[] {
   const out: Record<string, TankRow> = {}; let cleared = 0, fights = 0;
   const RecProto: any = Rec.prototype, fight0 = RecProto.fight;
   let per: Record<string, Tally> = {};
-  RecProto.fight = function (this: Rec, ...args: any[]) { if (!this.__tank) { this.__tank = true; instrument(this, per); } return fight0.apply(this, args); };
+  RecProto.fight = function (this: Rec, ...args: any[]) { LAST.g = (this as any).g; if (!this.__tank) { this.__tank = true; instrument(this, per); } const out = fight0.apply(this, args); LAST.g = (this as any).g; return out; };
   try {
     for (let i = 0; i < seeds; i++) {
       per = {};
-      const res = simRun({ party, route: 'gear', seed: prefix + '-' + (i + 1), maxStages: 1 });
+      const env = (globalThis as any).process?.env || {}; // TANK_MAX_ROUNDS: the fight's round cap (survival-run.ts: 20)
+      const res = simRun({ party, route: 'gear', seed: prefix + '-' + (i + 1), maxStages: 1, ...(env.TANK_MAX_ROUNDS ? { maxFightRounds: Number(env.TANK_MAX_ROUNDS) } : {}) });
+      if (res.errors?.some((e: string) => /^hands /.test(e))) throw new Error(res.errors.join('; '));
       if (res.cleared >= 1) cleared++; fights += res.fights.length;
-      PARTIES[party].forEach((m, k) => { const id = 'c' + (k + 1), t = per[id] || blank(); const row = (out[m + '#' + k] ||= { party, who: m, seeds: 0, fights: 0, cleared: 0, tally: blank() });
-        row.seeds++; row.fights += res.fights.length; for (const f of Object.keys(t)) (row.tally as any)[f] += (t as any)[f]; });
+      const rounds = res.fights.reduce((n, f) => n + (f.rounds || 0), 0), won = res.fights.filter((f) => f.won), wonRounds = won.reduce((n, f) => n + (f.rounds || 0), 0);
+      PARTIES[party].forEach((m, k) => { const id = 'c' + (k + 1), t = per[id] || blank(); const row = (out[m + '#' + k] ||= { party, who: m, seeds: 0, fights: 0, cleared: 0, tally: blank(), rounds: 0, won: 0, wonRounds: 0, capped: 0, stalled: 0, level: 0, rank: 0, pool: 0 });
+        row.seeds++; row.fights += res.fights.length; row.rounds += rounds; row.won += won.length; row.wonRounds += wonRounds; row.capped += res.fights.filter((f) => f.capped).length; row.stalled += res.how === 'stalled' ? 1 : 0; for (const f of Object.keys(t)) (row.tally as any)[f] += (t as any)[f];
+        const c = LAST.g?.characters?.[id]; if (c) { row.level = Math.max(row.level, c.level || 0); row.rank = Math.max(row.rank, classRank(c)); row.pool = Math.max(row.pool, resourcesFor(c)?.resMax?.guard ?? 0); } });
     }
   } finally { RecProto.fight = fight0; }
   for (const r of Object.values(out)) r.cleared = cleared;
@@ -101,6 +112,6 @@ export function stage1(party: string, seeds: number, prefix = 'TANK'): TankRow[]
 const pc = (a: number, b: number) => (b > 0 ? Math.round((a / b) * 100) : 0);
 const per1 = (a: number, b: number) => (b > 0 ? Math.round((a / b) * 10) / 10 : 0);
 export const tankLine = (r: TankRow) => { const t = r.tally;
-  return r.party + ' · ' + r.who + ': stage 1 cleared ' + r.cleared + '/' + r.seeds + ' · ' + r.fights + ' fights · to hit ' + pc(t.hits, t.attacks) + '% (' + t.attacks + ' attacks) · dealt ' + per1(t.dealt, r.fights) + '/fight · hits aimed at it ' + per1(t.aimed, r.fights) + '/fight · incoming ' + per1(t.incoming, r.fights) + '/fight · Guard took ' + per1(t.soaked, r.fights) + '/fight (' + pc(t.soaked, t.incoming) + '%) · reached it ' + per1(t.reached, r.fights) + '/fight · Guard AP ' + per1(t.guardAp, r.fights) + '/fight'; };
+  return r.party + ' · ' + r.who + ': stage 1 cleared ' + r.cleared + '/' + r.seeds + ' · ' + r.fights + ' fights · rounds/fight ' + per1(r.rounds, r.fights) + ' (won ' + per1(r.wonRounds, r.won) + '; capped ' + r.capped + ', stalled ' + r.stalled + ') · level ' + r.level + ' rank ' + r.rank + ' pool ' + r.pool + ' · to hit ' + pc(t.hits, t.attacks) + '% (' + t.attacks + ' attacks) · dealt ' + per1(t.dealt, r.fights) + '/fight · hits aimed at it ' + per1(t.aimed, r.fights) + '/fight · incoming ' + per1(t.incoming, r.fights) + '/fight · Guard took ' + per1(t.soaked, r.fights) + '/fight (' + pc(t.soaked, t.incoming) + '%) · reached it ' + per1(t.reached, r.fights) + '/fight · Guard AP ' + per1(t.guardAp, r.fights) + '/fight'; };
 void maxHp; void survivalRoom; void ownerOf;
 export type { Pc };

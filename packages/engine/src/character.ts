@@ -1632,9 +1632,18 @@ export function ledgerCap(c: Character): number {
   const b: any = rawItem('class:bard.ledger')?.amounts?.cap; if (!b || typeof b.base !== 'number') return 0;
   return Math.floor(b.base * (b.profile ? statOf(b.profile, c) * levelFactor((RULES as any).output?.profiles?.[b.profile]?.level ?? null, c.level) : 1));
 }
+/** Rules 1.59 (T5, Leon, 16 Nov 2026: "any class that give more max guard, can be fun for the dedicated guarder"): the
+ * cap a class's own resource row sets for this resource at the character's class rank (classes.json `resource`
+ * {id, max_by_rank: {"1", "2", "3"}}), or null when its row sets none. */
+function classResCap(c: Character, id: string): number | null {
+  const r: any = c.classId ? CLASS[c.classId]?.resource : null; if (!r || r.id !== id || !r.max_by_rank) return null;
+  const n = r.max_by_rank[String(classRank(c))]; return typeof n === 'number' ? n : null;
+}
 const RES_RULES: Record<string, (c: Character) => ClassResource> = {
   momentum: () => ({ id: 'momentum', max: 5, persist: false }),
-  guard: () => ({ id: 'guard', max: GUARD_RULES.max ?? 5, persist: false }),
+  // rules 1.59 (T5): a class that brings Guard (the Bulwark) holds its own pool, by its rank when its resource row says
+  // so (classes.json resource.max_by_rank), else the shared cap
+  guard: (c) => ({ id: 'guard', max: classResCap(c, 'guard') ?? GUARD_RULES.max ?? 5, persist: false }),
   marks: () => ({ id: 'marks', max: 3, persist: false }),
   supplies: (c) => ({ id: 'supplies', max: 3 + Math.floor(P(c, 'proficiency') / 2), persist: true }),
   toxins: (c) => ({ id: 'toxins', max: 2 + Math.floor(P(c, 'ingenuity') / 3), persist: true }),

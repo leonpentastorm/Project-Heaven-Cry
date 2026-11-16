@@ -109,7 +109,7 @@ const shieldHand = (u: Unit, hand: 'main' | 'off') => (hand === 'off' ? !u.offWe
 export const unitSkill = (u: Unit, skill: string): number => { const c = u.companion ? null : charOfUnit(u); return (c ? (c.skills as any)?.[skill] : (u as any)[skill]) || 0; };
 /** Guard's numbers (techniques.json rules.guard): every one the engine reads must be there, checked once at load, so no
  *  fallback in code can disagree with the data (the 0.29 consolidation, SF5). */
-const GUARD_NUMBERS = ['max', 'soak', 'gain_base', 'gain_per_point', 'shield_gain', 'brace_gain', 'brace_shield_gain', 'keep_back', 'interpose_cost'] as const;
+const GUARD_NUMBERS = ['max', 'soak', 'gain_base', 'gain_per_point', 'shield_gain', 'two_shield_mult', 'brace_gain', 'brace_shield_gain', 'keep_back', 'interpose_cost'] as const;
 for (const k of GUARD_NUMBERS) if (typeof PHYS_RULES.guard?.[k] !== 'number') throw new Error('techniques.json rules.guard.' + k + ' is missing: Guard reads it.');
 const GR = (): Record<(typeof GUARD_NUMBERS)[number], number> => PHYS_RULES.guard;
 export const guardOf = (u: Unit) => resOf(u, 'guard');
@@ -117,14 +117,19 @@ export const guardMax = (u: Unit) => u.resMax?.guard ?? 0;
 /** What one Guard point takes off a hit for this unit (rules.guard.soak, in HP: × the level scale, rules 1.36). The one
  * place it is worked out: the soak (guard.ts) and the panel's words (physView) both read it. */
 export const guardSoak = (u: Pick<Unit, 'level'>): number => Math.max(1, Math.round(GR().soak * scaleOf(u.level)));
+/** Rules 1.59 (T4, Leon, 16 Nov 2026: "let them have double guard when doing a guard action, we already have max guard
+ * to balance it"): what every Guard gain of this unit is multiplied by: rules.guard.two_shield_mult with a shield in
+ * each hand, else 1. The one reader: guardGain (Brace, the Guard technique) and the follow strike's plate (follow). */
+const guardMult = (u: Unit): number => (shieldsOf(u).length >= 2 ? GR().two_shield_mult : 1);
 /** What gives this unit Guard, and how much (0 for a unit with no Guard pool; the pool's size cuts it). The Guard
- * technique scales: 1, +1 for each Durability point above 1, +1 with a shield in the off hand. The Brace action is
- * flat: 2, 3 with a shield (the lead's tuning, 10 Nov 2026; provisional, rules.guard brace_gain / brace_shield_gain). */
+ * technique scales: 1, +1 for each Durability point above 1, +1 with a shield in hand. The Brace action is flat: 2, 3
+ * with a shield (the lead's tuning, 10 Nov 2026; provisional, rules.guard brace_gain / brace_shield_gain). Rules 1.59
+ * (T4): with a shield in each hand the shield's +1 gives way to guardMult (the plain gain ×two_shield_mult). */
 export function guardGain(u: Unit, by: 'guard' | 'brace' = 'guard'): number {
   if (u.resMax?.guard == null) return 0;
-  // rules 1.56: each shield held adds its own (two shields, twice); the pool's cap (guardMax) still holds
-  const g = GR(), n = shieldsOf(u).length; if (by === 'brace') return g.brace_gain + n * g.brace_shield_gain;
-  return g.gain_base + Math.max(0, unitSkill(u, 'durability') - 1) * g.gain_per_point + n * g.shield_gain;
+  const g = GR(), n = shieldsOf(u).length, m = guardMult(u), plain = by === 'brace' ? g.brace_gain : g.gain_base + Math.max(0, unitSkill(u, 'durability') - 1) * g.gain_per_point;
+  if (m !== 1) return plain * m; // the pool's cap (guardMax) still holds
+  return plain + n * (by === 'brace' ? g.brace_shield_gain : g.shield_gain);
 }
 /** Why a unit's Guard changed, for the screen (Guard 2.0, rules 1.56 item 4300: the plates): gained, eaten by a hit
  * (soaked: the damage it took off), spent on an order or an Answer, or taken by Pressure. */
@@ -925,7 +930,9 @@ function follow(t: Tech): void {
   if (t.preview) { strike(ft, o); for (const a of ft.pv.attacks) t.pv.attacks.push({ ...a, follow: true, item: id }); return; }
   if (!canStrike(ft, real)) return; // out of its reach: no follow, and nothing is said
   say(cb, '  ' + (WEAPON[id]?.name || fdef.name) + ' follows:');
-  const g0 = guardOf(u); strike(ft, o); if (guardOf(u) > g0) guardFx(cb, u, g0, 'gain'); // a plate its own line gave (a shield's, once a turn) plays as any gain
+  const g0 = guardOf(u); strike(ft, o);
+  { const got = guardOf(u) - g0, m = guardMult(u); if (got > 0 && m > 1) resGain(u, 'guard', got * (m - 1)); } // rules 1.59 (T4): two shields double the plate its own line gave
+  if (guardOf(u) > g0) guardFx(cb, u, g0, 'gain'); // a plate its own line gave (a shield's, once a turn) plays as any gain
 }
 /** A shield's technique is the hand's whose pad carries it (shieldHand: the off hand, or a main-hand shield beside an
  * off-hand weapon; rules 1.57 A1), whichever hand the caller named. */

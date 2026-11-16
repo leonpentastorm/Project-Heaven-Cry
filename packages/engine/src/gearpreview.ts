@@ -60,7 +60,7 @@ function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
   return [
     { key: 'hits_with', label: 'Hits with', value: (SKILL[sk]?.name || sk) + ' · ' + signed(checkMod(c, sk)), num: null },
     // op roll_with (rules 1.55): the skill an item lets the attack roll with instead, when it would (the fight's own choice, combat.ts rollWithPick)
-    ...rollWithLines(c, sk),
+    ...rollWithLines(c, sk, isMelee(w)),
     // only what moves the damage today: no line when every slope of the profile is 0 (lead's ruling, 15 Nov 2026)
     // consolidation 0.29 (ruling i): with the percent the hit's own multiplier adds for this character (weaponMult, the
     // Stat term of the damage line the attack deals): "Damage: Strength · +30%"
@@ -68,10 +68,11 @@ function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
   ];
 }
 /** The character's roll_with offers (items whose effect is op roll_with on `attack`), read without a fight: the card
- * names the skill each would roll with and when (its label), through the same choice the attack makes. */
-function rollWithLines(c: Character, sk: string): PreviewLine[] {
+ * names the skill each would roll with and when (its label), through the same choice the attack makes. An offer whose
+ * predicate `melee` the weapon does not meet is not this weapon's (rules 1.59, T1: Durability's offer is melee only). */
+function rollWithLines(c: Character, sk: string, melee: boolean): PreviewLine[] {
   const offers: RollWithOffer[] = [];
-  for (const h of holdersOf({ c })) for (const e of h.info.effects) if (e?.op === 'roll_with' && e.when === 'attack') offers.push({ skill: e.skill, ifHigher: !!e.if_higher, label: e.label || h.info.name });
+  for (const h of holdersOf({ c })) for (const e of h.info.effects) if (e?.op === 'roll_with' && e.when === 'attack' && !(typeof e.if?.melee === 'boolean' && e.if.melee !== melee)) offers.push({ skill: e.skill, ifHigher: !!e.if_higher, label: e.label || h.info.name });
   const p = rollWithPick(c, sk, offers);
   return p ? [{ key: 'hits_with_alt', label: 'Hits with', value: rollWithWords(p) + ' · ' + signed(p.mod), num: null }] : [];
 }

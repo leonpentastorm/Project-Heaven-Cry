@@ -30,6 +30,7 @@
       "gain_base": 1,
       "gain_per_point": 1,
       "shield_gain": 1,
+      "two_shield_mult": 2,
       "brace_gain": 2,
       "brace_shield_gain": 1,
       "soak": 6,

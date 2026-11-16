@@ -441,3 +441,14 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     "not a melee hit": Momentum, Pressure and every once-a-turn line would otherwise pay twice for one action. Why the
     Both test moved into the engine (`pairs`): the client had its own copy, and a follows weapon is the first off-hand
     weapon that is not a second weapon.
+
+118. **The tank hits through its door in melee only, and its reward is staying power** (Leon, 16 Nov 2026: *"Tank with
+    guns need agility alpha skill or they don't hit"*, *"let them have double guard when doing a guard action, we
+    already have max guard to balance it"*, *"any class that give more max guard, can be fun for the dedicated
+    guarder"*; rules 1.59, spec items 4522 to 4528). Durability's `roll_with` takes the existing predicate `melee: true`
+    (no new primitive); a shield's blow scales with Endurance; two shields multiply every Guard gain by one data field
+    in one function (`guardMult`); the Bulwark's larger pool rides the carrier a class already uses to raise its door's
+    resource (`RES_RULES`, as the Operative's Shadow), read from its own resource row by rank. Why: Leon accepts a
+    tank that is unkillable and slow, not one that kills as fast as a damage dealer; the measure reports fight length in
+    rounds beside the clears so that trade is visible. Why the Hand wraps for the camp's tank: the cheapest one-handed
+    melee weapon of the rack, so the whole budget goes to the Buckler.

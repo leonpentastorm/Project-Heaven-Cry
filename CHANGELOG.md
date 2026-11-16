@@ -8,6 +8,14 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.30.0 (in progress) — the tank rulings
+
+Rules revision 1.59 (spec items 4522 to 4528; every new number PROVISIONAL), Leon's rulings for the Durability tank:
+a tank hits with Durability in melee only (a gun rolls with its own skill); a blow rolled with Durability keeps the
+weapon's own damage (confirmed by test); shields' blows scale with Endurance; a shield in each hand doubles every Guard
+gain (Brace, the Guard technique, the follow's plate); the Bulwark's Guard pool is 5 / 6 / 7 at ranks I / II / III
+(everyone else 4), drawn as up to 7 plates; the camp's Recommended tank kit is the Hand wraps and the Buckler.
+
 ## Next (after 0.29.0) — follow strikes
 
 Rules revision 1.58 (hands 5e; spec items 4507 to 4521; every new number PROVISIONAL), on top of rules 1.57's shields as

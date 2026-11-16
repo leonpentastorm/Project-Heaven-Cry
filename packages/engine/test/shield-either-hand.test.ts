@@ -79,7 +79,7 @@ describe('equip: a shield goes in either hand, one to a hand', () => {
   });
 });
 
-describe('two shields: each shield\'s own effects add; Guard per Brace +1 a shield, under the pool', () => {
+describe('two shields: each shield\'s own effects add; Guard: +1 with one shield, every gain x two_shield_mult with two (rules 1.59 T4), under the pool', () => {
   const stack = (pair: string[]) => {
     const f = fight(pair, { dur: 5 }), base = { def: u(f).def, move: u(f).movement };
     hold(f, pair[0], 'main'); if (pair[1]) hold(f, pair[1], 'off');
@@ -96,7 +96,7 @@ describe('two shields: each shield\'s own effects add; Guard per Brace +1 a shie
       const r = stack(pair);
       expect(r.def, pair.join('+')).toBe(D(pair[0]) + D(pair[1]));
       expect(r.move, pair.join('+')).toBeCloseTo(M(pair[0]) + M(pair[1]), 6);
-      expect(r.brace).toBe(G.brace_gain + 2 * G.brace_shield_gain); expect(r.tech).toBe(G.gain_base + 4 * G.gain_per_point + 2 * G.shield_gain);
+      expect(r.brace).toBe(G.brace_gain * G.two_shield_mult); expect(r.tech).toBe((G.gain_base + 4 * G.gain_per_point) * G.two_shield_mult);
       expect(r.braced).toBe(Math.min(r.pool, r.brace)); expect(r.pool).toBe(G.max);
     }
   });

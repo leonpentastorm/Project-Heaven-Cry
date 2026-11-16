@@ -157,13 +157,14 @@ describe('a rider', () => {
 });
 
 describe('Guard from a shield\'s follow (once a turn across every shield)', () => {
-  it('buckler in the main hand, riot shield in the off: two follows land and a Bash: Guard +1 once, never above the pool', () => {
+  it('buckler in the main hand, riot shield in the off: two follows land and a Bash: the plate once, doubled by the two shields (rules 1.59 T4), never above the pool', () => {
     const f = fight({ weapon: 'buckler', off: 'riot_shield', dur: 5, guard: 1, m: 3 }); calm(f); rig({ hit: true });
+    const plate = phys.PHYS_RULES.guard.two_shield_mult; // the plate's 1, x2 with a shield in each hand
     expect(f.tech('cut', { targetId: f.foe.id })).toBeNull();
-    expect(follows(f)).toHaveLength(1); expect(follows(f)[0].weapon).toBe('riot_shield'); expect(guard(f)).toBe(2);
+    expect(follows(f)).toHaveLength(1); expect(follows(f)[0].weapon).toBe('riot_shield'); expect(guard(f)).toBe(1 + plate);
     expect(f.tech('cut', { targetId: f.foe.id })).toBeNull();
-    expect(follows(f)).toHaveLength(2); expect(guard(f)).toBe(2);
-    expect(f.tech('shield_bash', { targetId: f.foe.id })).toBeNull(); expect(follows(f)).toHaveLength(2); expect(guard(f)).toBe(1);
+    expect(follows(f)).toHaveLength(2); expect(guard(f)).toBe(1 + plate);
+    expect(f.tech('shield_bash', { targetId: f.foe.id })).toBeNull(); expect(follows(f)).toHaveLength(2); expect(guard(f)).toBe(plate);
     expect(f.fx('guard').some((e: any) => e.why === 'gain' && e.unit === f.pc.id)).toBe(true);
   });
 });

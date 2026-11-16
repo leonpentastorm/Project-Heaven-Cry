@@ -257,17 +257,18 @@ describe('the camp as a checklist and a shield for a tank (rules 1.55 items 49 t
     const g2 = lo(campOf('bulwark'), 'Kade', { op: 'pick', slot: 'weapon', id: twoH });
     expect(view(g2).shelves.flatMap((s) => s.cards).find((k) => k.id === S)!.why).toBe(WEAPON[S].name + ': your main-hand weapon needs both hands.');
   });
-  it("rules 1.55 item 51: a Durability all-in's Recommended kit is a one-hander and the shield, accepted by the reducer; a gunner's is unchanged", () => {
+  it("rules 1.55 item 51, 1.59 T6: a Durability all-in's Recommended kit is a one-handed melee weapon (the cheapest of the rack) and the shield, accepted by the reducer; a gunner's is unchanged", () => {
     const row = LOADOUT.recommended.weapon.find((w) => w.top === 'durability')!;
-    expect(row.hands).toBe('1H'); expect(LOADOUT.recommended.buys[row.profile!][0]).toBe(SHIELDS[0]);
+    expect(row.archetype).toBeTruthy(); expect(LOADOUT.recommended.buys[row.profile!][0]).toBe(SHIELDS[0]);
     let g = campOf('living_wall'); const id = Object.values(g.characters)[0].id;
     g = lo(g, 'Kade', { op: 'recommended' }); const c = g.characters[id], p = g.run!.loadout![id];
     expect(c.weapon).toBe(p.weapon); expect(RACK.some((r) => r.free === c.weapon)).toBe(true); expect(twoHands(c, c.weapon)).toBe(false);
     expect(c.offHand?.id).toBe(SHIELDS[0]); expect(p.focus).toBeNull();
     expect(creditsOf(c)).toBe(LOADOUT.budget - loadoutSpent(c, p)); expect(carriedKg(c).total).toBeLessThanOrEqual(carryLimit(c));
-    // the weapon is the scoring's (the most points in its skill, a tie to the dearer), not a named one
-    const pts = (w: string) => c.skills?.[(WEAPON[w] as any).skill] || 0, ones = RACK.map((r) => r.free).filter((w) => !twoHands(c, w));
-    expect(ones.every((w) => pts(w) < pts(c.weapon) || (pts(w) === pts(c.weapon) && (priceOf(w) || 0) <= (priceOf(c.weapon) || 0)))).toBe(true);
+    // rules 1.59 (T6): the row's archetype's free weapon, a one-handed melee weapon, the cheapest one-handed melee weapon the rack holds (its blows hit with Durability)
+    expect(c.weapon).toBe(FREE(row.archetype!)); expect((WEAPON[c.weapon] as any).phys?.system).toBe('melee');
+    const melee1 = RACK.map((r) => r.free).filter((w) => !twoHands(c, w) && (WEAPON[w] as any).phys?.system === 'melee');
+    expect(melee1.every((w) => (priceOf(w) || 0) >= (priceOf(c.weapon) || 0))).toBe(true);
     // a gunner keeps the rifle, its armour and no shield
     const d = lo(campOf('deadeye'), 'Kade', { op: 'recommended' }), dc = Object.values(d.characters)[0];
     expect(dc.weapon).toBe(FREE('rifles')); expect(dc.armourClass).toBe(1); expect(dc.offHand ?? null).toBeNull();

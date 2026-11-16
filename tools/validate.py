@@ -113,6 +113,8 @@ _SAME = {  # (skill, per_point.numbers key) -> (the engine's data value, where i
     ("durability", "guard_base"): (_tech_r.get("gain_base"), "techniques.json rules.guard.gain_base"),
     ("durability", "guard_per_point"): (_tech_r.get("gain_per_point"), "techniques.json rules.guard.gain_per_point"),
     ("durability", "brace"): (_tech_r.get("brace_gain"), "techniques.json rules.guard.brace_gain"),
+    ("durability", "shield"): (_tech_r.get("shield_gain"), "techniques.json rules.guard.shield_gain"),
+    ("durability", "two_shields"): (_tech_r.get("two_shield_mult"), "techniques.json rules.guard.two_shield_mult"),
     ("visualization", "range"): (_fig_r.get("per_point"), "figments.json visualizer.range.per_point"),
     ("faith", "hymn_cut"): (_hymn_r.get("per_faith"), "patrons.json prayer.hymn.cooldown_rule.per_faith"),
     ("faith", "hymn_floor"): (_hymn_r.get("floor"), "patrons.json prayer.hymn.cooldown_rule.floor"),
@@ -1699,9 +1701,20 @@ if isinstance(tq, dict):
     if not isinstance(gd, dict):
         errors.append("techniques: rules.guard is missing (rules 1.13: Durability's Guard)")
     else:
-        for k in ("max", "per_durability", "gain_base", "gain_per_point", "shield_gain", "soak", "pressure_per_point", "interpose_durability", "interpose_cost"):
+        for k in ("max", "per_durability", "gain_base", "gain_per_point", "shield_gain", "two_shield_mult", "soak", "pressure_per_point", "interpose_durability", "interpose_cost"):
             if not isinstance(gd.get(k), (int, float)) or isinstance(gd.get(k), bool) or gd.get(k) <= 0:
                 errors.append(f"techniques: rules.guard.{k} must be a positive number")
+    # rules 1.59 (T5): a class's resource row may raise that resource's cap by the class's rank (classes.json
+    # resource.max_by_rank, the Bulwark's Guard): ranks 1 to 3, each a whole number, never below the shared cap
+    for cl_ in ((_ld("classes").get("base") or []) if isinstance(_ld("classes").get("base"), list) else []):
+        mbr = ((cl_.get("resource") or {}).get("max_by_rank")) if isinstance(cl_, dict) else None
+        if mbr is None: continue
+        rid = (cl_.get("resource") or {}).get("id")
+        if rid not in (cl_.get("resources") or []): errors.append(f"classes:{cl_.get('id')}: resource.max_by_rank is for a resource the class brings ({rid} is not in its resources)")
+        if sorted(mbr.keys()) != ["1", "2", "3"] or any(not isinstance(v, int) or isinstance(v, bool) for v in mbr.values()):
+            errors.append(f"classes:{cl_.get('id')}: resource.max_by_rank holds ranks 1, 2 and 3, each a whole number")
+        elif rid == "guard" and gd and (min(mbr.values()) < gd.get("max", 0) or [mbr["1"], mbr["2"], mbr["3"]] != sorted(mbr.values())):
+            errors.append(f"classes:{cl_.get('id')}: resource.max_by_rank never falls below rules.guard.max and never shrinks with rank")
     hg = ((trules.get("gear_gates") or {}).get("heavy_armour") or {})
     if hg.get("skill") not in skill_ids:
         errors.append(f"techniques: rules.gear_gates.heavy_armour.skill '{hg.get('skill')}' is not a skill")
