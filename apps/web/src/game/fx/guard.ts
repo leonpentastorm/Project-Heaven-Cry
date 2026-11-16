@@ -1,5 +1,7 @@
 // GUARD on the fight map (Guard 2.0, slice 1; rules 1.56 Guard 2.0, item 4300). Leon, 15 Nov 2026: "even with a shield
-// it's just 10 more fake hp a turn". Guard is drawn as plates around the token, one per point of Guard, in Body's amber
+// it's just 10 more fake hp a turn" (his words of the time; the pool's size and a plate's soak are the data's,
+// techniques.json rules.guard max and soak, which the 'guard' event's max and soaked carry: this file types neither).
+// Guard is drawn as plates around the token, one per point of Guard, in Body's amber
 // (#F2A54A) and always with a word or a number:
 //   standing   the plates the unit holds now, the empty slots of its pool faint (melee-techniques.ts's standing layer
 //              draws them: guardMarkup below, with the Guard stance's front arc, so one copy)
