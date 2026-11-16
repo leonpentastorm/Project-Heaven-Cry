@@ -1,6 +1,6 @@
 # Continue the Nine Doors artwork — 0.30 scope applied
 
-Original ledger: **186/375 delivered**. Original unfinished: **189 = 162 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **203 request records**, including replacement/reuse checks.
+Original ledger: **190/375 delivered**. Original unfinished: **185 = 158 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **199 request records**, including replacement/reuse checks.
 
 Read art-hold-list-0.30.md, holds-0.30.json and CONTINUE-0.30.md. All 28 old holds remain enforced. progress.json and records/ own old completion; progress-0.30.json owns added-request completion. Recipe pending flags are not ledgers.
 
@@ -8,10 +8,6 @@ The latest delivered images are review candidates, never automatically approved.
 
 ## Eligible old recipes, in priority order
 
-- P5 · #38 · Coup · `art/icons/techniques/coup.png` · Wick icon
-- P5 · #39 · Cleave · `art/icons/techniques/cleave.png` · Wick icon
-- P5 · #40 · Break · `art/icons/techniques/break.png` · Wick icon
-- P5 · #41 · Throw Down · `art/icons/techniques/throw-down.png` · Wick icon
 - P5 · #42 · Run Through · `art/icons/techniques/run-through.png` · Wick icon
 - P5 · #62 · Fire Discipline · `art/icons/moves/fire-discipline.png` · Wick icon
 - P5 · #64 · Special Ammo · `art/icons/moves/special-ammo.png` · Wick icon

@@ -1750,6 +1750,312 @@
     ]
   },
   {
+    "number": 38,
+    "family": "technique_icons",
+    "id": "tech-coup",
+    "path": "art/icons/techniques/coup.png",
+    "name": "Coup",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, finisher: an Execute on a foe under half HP for the Breaker",
+    "paint": "A short decisive downward stroke ending on a small cracked ring (the foe's last health), Wick's arm at the top of the stroke.",
+    "avoid": "a crown \u00b7 a guillotine",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique icon in the attached object-only icons' flat white graphic style. This row is an OBJECT OR PARTIAL-ARM action, NOT a mascot scene. Pure WHITE #FFFFFF solid flat ink on true TRANSPARENCY. Bold deliberate silhouettes, broad transparent interior cuts, very few details. No full figure, no robot head, face, capelet, lantern-heart or mascot body. A cropped ceramic mitten may appear ONLY when the action requires a grip. No text, letters, numbers, labels, border, background scene, glow, gray shading or gradients. Square 1024x1024 intended master with generous 12\u201315% margins, all decisive action readable at 32px and 44px.\n\nPaint: A short decisive downward stroke ending on a small cracked ring (the foe's last health), Wick's arm at the top of the stroke.\nAvoid: a crown \u00b7 a guillotine\nEXACT STAGING: PARTIAL ARM ONLY. One chunky ceramic mitten and cuff enter from the upper-left edge holding a short original blade. Its SINGLE decisive straight downward white stroke ends at a small ring with one clean zigzag crack, representing the foe's last health. Arm plus stroke plus cracked ring fill one coherent silhouette. No full character, head, face, chest, cape, blood, crown or guillotine.\nDo not add any mascot figure even though a hand is allowed. References establish object-only visual density and pure-white ink; do not copy their incidental motifs.\nKeep the whole action inside the central 75\u201380% square and the centered 90% circular safe area. All holes and negative spaces are transparent, not black paint. No glow, bloom, texture, random rays or duplicate subjects.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object or partial-arm only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "4832ce3d29135e8439e3b5a53169fd6bc46822b9f0862c86c8e9361eae3262b7",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/038-coup.png",
+    "source_sha256": "54d6f2a7ffc6c9d862336ca4ba4e8a773510381debcfe9336d7044cced5d2230",
+    "export_crop": [
+      0,
+      23,
+      1015,
+      1222
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/coup.png",
+      "64": "art/icons/techniques/exports/64/coup.png",
+      "48": "art/icons/techniques/exports/48/coup.png",
+      "44": "art/icons/techniques/exports/44/coup.png",
+      "32": "art/icons/techniques/exports/32/coup.png",
+      "24": "art/icons/techniques/exports/24/coup.png"
+    },
+    "framing": {
+      "scale": 0.6474495955153471,
+      "offset": [
+        183,
+        124
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "4306a5236df207799cf6d31071f13f0bced567387c1c6fcbf00bad873f56c166",
+      "64": "760ff80f9a82b81129ee847d9c8e8908fda27998f63e4d48cbfbc64a837757ca",
+      "48": "8527b02ed03bf5096b131f62977b9a689606d1d647f3e0494052d271f9a79a5c",
+      "44": "db62a1c0f759a72e0c943c5da6bd057847e639b91a539dba51173620f3ff671a",
+      "32": "2c4e03cfaefd133cf2c450d859aac9835011db52021c94e9535a1b85f98529ac",
+      "24": "c7f7bf219d6a1a804dbe749ce7c36693385b086d53251a89b2c525fde906154b"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 39,
+    "family": "technique_icons",
+    "id": "tech-cleave",
+    "path": "art/icons/techniques/cleave.png",
+    "name": "Cleave",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, finisher: one swing through several foes",
+    "paint": "Wick's weapon carving one wide flat arc that passes through three short upright posts.",
+    "avoid": "a meat cleaver \u00b7 gore",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique icon in the attached object-only icons' flat white graphic style. This row is an OBJECT OR PARTIAL-ARM action, NOT a mascot scene. Pure WHITE #FFFFFF solid flat ink on true TRANSPARENCY. Bold deliberate silhouettes, broad transparent interior cuts, very few details. No full figure, no robot head, face, capelet, lantern-heart or mascot body. A cropped ceramic mitten may appear ONLY when the action requires a grip. No text, letters, numbers, labels, border, background scene, glow, gray shading or gradients. Square 1024x1024 intended master with generous 12\u201315% margins, all decisive action readable at 32px and 44px.\n\nPaint: Wick's weapon carving one wide flat arc that passes through three short upright posts.\nAvoid: a meat cleaver \u00b7 gore\nEXACT STAGING: OBJECT/WEAPON ACTION ONLY. One simple original long blade, held by only a cropped ceramic mitten at left, carves ONE wide almost-horizontal white arc through EXACTLY THREE short upright plain practice posts. Posts are simple stout rectangles, not people. Keep all three recognizable and spaced, no splinters cloud. No full robot or head, no meat cleaver, gore or extra props.\nDo not add any mascot figure even though a hand is allowed. References establish object-only visual density and pure-white ink; do not copy their incidental motifs.\nKeep the whole action inside the central 75\u201380% square and the centered 90% circular safe area. All holes and negative spaces are transparent, not black paint. No glow, bloom, texture, random rays or duplicate subjects.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object or partial-arm only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "c6ba6bddafbd5513b29cd2ce63e5228c4c0d439cace7479852e1ed3d14834fac",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/039-cleave.png",
+    "source_sha256": "6d938e1d9ae11de4d9ce3bd1d8b56bcc16756da3a6a6729562d7e94eb095d572",
+    "export_crop": [
+      0,
+      296,
+      1240,
+      1172
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/cleave.png",
+      "64": "art/icons/techniques/exports/64/cleave.png",
+      "48": "art/icons/techniques/exports/48/cleave.png",
+      "44": "art/icons/techniques/exports/44/cleave.png",
+      "32": "art/icons/techniques/exports/32/cleave.png",
+      "24": "art/icons/techniques/exports/24/cleave.png"
+    },
+    "framing": {
+      "scale": 0.6278271258529176,
+      "offset": [
+        122,
+        237
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "15accddb4409c4c3096f25c738e0665fd2bd24867b22ab55b013b08e99345c85",
+      "64": "edeaf81285fabc1c20742191fc87052bf7d29ae0c49025c1e21893f5846c4e04",
+      "48": "db494df0a53b479d5ddbce66a0dc3881cab7f796623fbb7a3381047dff0356ce",
+      "44": "77871569689469df9dff7954f9545c74ba4ec437e35c995f5b4ff366ae9494fc",
+      "32": "3c55e8db3d76b17bb79955493e05092657b0df24c2ea962b745633fa7809356e",
+      "24": "46e56ea5e74c633ff173813d37f41d8dc5670776a33f7354db0cea28021d3308"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 40,
+    "family": "technique_icons",
+    "id": "tech-break",
+    "path": "art/icons/techniques/break.png",
+    "name": "Break",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, finisher: a blow that leaves the target Exposed",
+    "paint": "A heavy blow landing on a small round shield, the shield cracking in two.",
+    "avoid": "bones \u00b7 glass shards",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique icon in the attached object-only icons' flat white graphic style. This row is an OBJECT OR PARTIAL-ARM action, NOT a mascot scene. Pure WHITE #FFFFFF solid flat ink on true TRANSPARENCY. Bold deliberate silhouettes, broad transparent interior cuts, very few details. No full figure, no robot head, face, capelet, lantern-heart or mascot body. A cropped ceramic mitten may appear ONLY when the action requires a grip. No text, letters, numbers, labels, border, background scene, glow, gray shading or gradients. Square 1024x1024 intended master with generous 12\u201315% margins, all decisive action readable at 32px and 44px.\n\nPaint: A heavy blow landing on a small round shield, the shield cracking in two.\nAvoid: bones \u00b7 glass shards\nEXACT STAGING: OBJECT ACTION ONLY. One broad blunt hammer head on a partly cropped haft descends onto a SMALL ROUND SHIELD. The shield is split into TWO unmistakable halves by a bold central transparent crack. Make the shield and crack the dominant prop, with a short clear impact stroke. No bones, glass shards, sparks, stars, full Wick, head or body.\nDo not add any mascot figure even though a hand is allowed. References establish object-only visual density and pure-white ink; do not copy their incidental motifs.\nKeep the whole action inside the central 75\u201380% square and the centered 90% circular safe area. All holes and negative spaces are transparent, not black paint. No glow, bloom, texture, random rays or duplicate subjects.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object or partial-arm only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "f8481330300ce8ed1396eedb4ee7250592b81d779b3db23f67a3a1672823c3f9",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/040-break.png",
+    "source_sha256": "b3844a0dcc0d9a130da98c498545c537437a3981fbff14e4c9d2725168fd2cf6",
+    "export_crop": [
+      75,
+      55,
+      1190,
+      1224
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/break.png",
+      "64": "art/icons/techniques/exports/64/break.png",
+      "48": "art/icons/techniques/exports/48/break.png",
+      "44": "art/icons/techniques/exports/44/break.png",
+      "32": "art/icons/techniques/exports/32/break.png",
+      "24": "art/icons/techniques/exports/24/break.png"
+    },
+    "framing": {
+      "scale": 0.5794547137213857,
+      "offset": [
+        189,
+        173
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "656757004e5d8d5a9c3a81e18946ede5031290e6705fc1b3150c8aefc6b3e219",
+      "64": "3be4d64a733b6c15b62d0ffa0de2f2ef34ded7978875efae6c6e2fd43293c80d",
+      "48": "6298bd6aceed4d572abc8a7e6034160130b0b03c1d9065d05ff1280e0c70c34c",
+      "44": "1a410b5af3021bd7d2ed4ea4788f9cf5e6a018fe5e4b5e437ca16deb3b4ec7fd",
+      "32": "ac780a7a7eb89c6c030c3fd24224cd69e62f62d20fccfe5fc45e58cef4b85cc3",
+      "24": "c5167af0c5fbd9291b0546dfd30aeb2c97777703234a6ce0df8e3b97530828f5"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 41,
+    "family": "technique_icons",
+    "id": "tech-throw-down",
+    "path": "art/icons/techniques/throw-down.png",
+    "name": "Throw Down",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, finisher: a throw to the ground",
+    "paint": "Wick hip-tossing a partial figure over his hip toward the ground line.",
+    "avoid": "wrestling ring ropes \u00b7 a mat",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick hip-tossing a partial figure over his hip toward the ground line.\nAvoid: wrestling ring ropes \u00b7 a mat\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: One full WICK doing a clear HIP TOSS: feet braced apart, hips turned under the opponent's waist, BOTH mitten hands controlling a cropped plain training-dummy fragment that tips over his hip downward toward a short ground line. The other figure is ONLY a partial torso/hip and two legs, NO head, no face, no complete second body. Wick stays upright with his pixel face, head fasteners, capelet and chest lantern readable. The partial's legs go over, Wick's own legs stay on the ground. No ring ropes, mat, blood, injury detail, flames or extra symbols.\nFollow the attached exact Wick construction; the meditation master's bowl and floating arrows are forbidden here.\nKeep the whole action inside the central 75\u201380% square and the centered 90% circular safe area. All holes and negative spaces are transparent, not black paint. No glow, bloom, texture, random rays or duplicate subjects.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick plus cropped partial",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "51067499d271d2493023fd2141b0bf2e2d6bc1e09013aeacfe49069d3f3c0cab",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/041-throw-down.png",
+    "source_sha256": "18befe7a6f5a94ff7544b59e9a22029629837f1173a98b218f456e5c405633f9",
+    "export_crop": [
+      0,
+      33,
+      1235,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/throw-down.png",
+      "64": "art/icons/techniques/exports/64/throw-down.png",
+      "48": "art/icons/techniques/exports/48/throw-down.png",
+      "44": "art/icons/techniques/exports/44/throw-down.png",
+      "32": "art/icons/techniques/exports/32/throw-down.png",
+      "24": "art/icons/techniques/exports/24/throw-down.png"
+    },
+    "framing": {
+      "scale": 0.5071261952199505,
+      "offset": [
+        199,
+        202
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "4c15fbf5b97405c523a1dab43e9ad2e9d6a2c3fee05b122c88e086e9745ab51f",
+      "64": "cfc00a09d704c3415b03fd9d7080103f52711874ff41c6f472841623126aca9c",
+      "48": "feb44a13525e1368cf348788c9fbc7bcc0be8d0bad2e7b129059a479c850dd4f",
+      "44": "74e29e08b730988738ab732d88a0bc7c176dedd6ed73db987a9f79146a392848",
+      "32": "eac473654f24f825e2b3ed4ebc37fa57fdcf05553674dab651034dd9f2d2a59c",
+      "24": "eebb13f48590a2be0d1490d7b5b0852af4a81474e572ab6d11393659fb7740da"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 51,
     "family": "perks",
     "id": "both-hands",

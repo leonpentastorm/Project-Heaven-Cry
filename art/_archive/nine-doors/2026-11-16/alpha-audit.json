@@ -133,6 +133,26 @@
       "faint_alpha_to_solid_area_ratio": 0.07353
     },
     {
+      "number": 38,
+      "name": "Coup",
+      "faint_alpha_to_solid_area_ratio": 0.03543
+    },
+    {
+      "number": 39,
+      "name": "Cleave",
+      "faint_alpha_to_solid_area_ratio": 0.04775
+    },
+    {
+      "number": 40,
+      "name": "Break",
+      "faint_alpha_to_solid_area_ratio": 0.03083
+    },
+    {
+      "number": 41,
+      "name": "Throw Down",
+      "faint_alpha_to_solid_area_ratio": 0.0647
+    },
+    {
       "number": 51,
       "name": "Pressure Point",
       "faint_alpha_to_solid_area_ratio": 0.05419

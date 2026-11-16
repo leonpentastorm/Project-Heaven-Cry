@@ -1,0 +1,78 @@
+{
+  "number": 41,
+  "family": "technique_icons",
+  "id": "tech-throw-down",
+  "path": "art/icons/techniques/throw-down.png",
+  "name": "Throw Down",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, finisher: a throw to the ground",
+  "paint": "Wick hip-tossing a partial figure over his hip toward the ground line.",
+  "avoid": "wrestling ring ropes \u00b7 a mat",
+  "section": "Raw Power: the Momentum chain, and the Breaker",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick hip-tossing a partial figure over his hip toward the ground line.\nAvoid: wrestling ring ropes \u00b7 a mat\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: One full WICK doing a clear HIP TOSS: feet braced apart, hips turned under the opponent's waist, BOTH mitten hands controlling a cropped plain training-dummy fragment that tips over his hip downward toward a short ground line. The other figure is ONLY a partial torso/hip and two legs, NO head, no face, no complete second body. Wick stays upright with his pixel face, head fasteners, capelet and chest lantern readable. The partial's legs go over, Wick's own legs stay on the ground. No ring ropes, mat, blood, injury detail, flames or extra symbols.\nFollow the attached exact Wick construction; the meditation master's bowl and floating arrows are forbidden here.\nKeep the whole action inside the central 75\u201380% square and the centered 90% circular safe area. All holes and negative spaces are transparent, not black paint. No glow, bloom, texture, random rays or duplicate subjects.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick plus cropped partial",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "51067499d271d2493023fd2141b0bf2e2d6bc1e09013aeacfe49069d3f3c0cab",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/041-throw-down.png",
+  "source_sha256": "18befe7a6f5a94ff7544b59e9a22029629837f1173a98b218f456e5c405633f9",
+  "export_crop": [
+    0,
+    33,
+    1235,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/throw-down.png",
+    "64": "art/icons/techniques/exports/64/throw-down.png",
+    "48": "art/icons/techniques/exports/48/throw-down.png",
+    "44": "art/icons/techniques/exports/44/throw-down.png",
+    "32": "art/icons/techniques/exports/32/throw-down.png",
+    "24": "art/icons/techniques/exports/24/throw-down.png"
+  },
+  "framing": {
+    "scale": 0.5071261952199505,
+    "offset": [
+      199,
+      202
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "4c15fbf5b97405c523a1dab43e9ad2e9d6a2c3fee05b122c88e086e9745ab51f",
+    "64": "cfc00a09d704c3415b03fd9d7080103f52711874ff41c6f472841623126aca9c",
+    "48": "feb44a13525e1368cf348788c9fbc7bcc0be8d0bad2e7b129059a479c850dd4f",
+    "44": "74e29e08b730988738ab732d88a0bc7c176dedd6ed73db987a9f79146a392848",
+    "32": "eac473654f24f825e2b3ed4ebc37fa57fdcf05553674dab651034dd9f2d2a59c",
+    "24": "eebb13f48590a2be0d1490d7b5b0852af4a81474e572ab6d11393659fb7740da"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

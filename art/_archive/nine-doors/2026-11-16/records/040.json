@@ -1,0 +1,76 @@
+{
+  "number": 40,
+  "family": "technique_icons",
+  "id": "tech-break",
+  "path": "art/icons/techniques/break.png",
+  "name": "Break",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, finisher: a blow that leaves the target Exposed",
+  "paint": "A heavy blow landing on a small round shield, the shield cracking in two.",
+  "avoid": "bones \u00b7 glass shards",
+  "section": "Raw Power: the Momentum chain, and the Breaker",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique icon in the attached object-only icons' flat white graphic style. This row is an OBJECT OR PARTIAL-ARM action, NOT a mascot scene. Pure WHITE #FFFFFF solid flat ink on true TRANSPARENCY. Bold deliberate silhouettes, broad transparent interior cuts, very few details. No full figure, no robot head, face, capelet, lantern-heart or mascot body. A cropped ceramic mitten may appear ONLY when the action requires a grip. No text, letters, numbers, labels, border, background scene, glow, gray shading or gradients. Square 1024x1024 intended master with generous 12\u201315% margins, all decisive action readable at 32px and 44px.\n\nPaint: A heavy blow landing on a small round shield, the shield cracking in two.\nAvoid: bones \u00b7 glass shards\nEXACT STAGING: OBJECT ACTION ONLY. One broad blunt hammer head on a partly cropped haft descends onto a SMALL ROUND SHIELD. The shield is split into TWO unmistakable halves by a bold central transparent crack. Make the shield and crack the dominant prop, with a short clear impact stroke. No bones, glass shards, sparks, stars, full Wick, head or body.\nDo not add any mascot figure even though a hand is allowed. References establish object-only visual density and pure-white ink; do not copy their incidental motifs.\nKeep the whole action inside the central 75\u201380% square and the centered 90% circular safe area. All holes and negative spaces are transparent, not black paint. No glow, bloom, texture, random rays or duplicate subjects.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object or partial-arm only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f8481330300ce8ed1396eedb4ee7250592b81d779b3db23f67a3a1672823c3f9",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/040-break.png",
+  "source_sha256": "b3844a0dcc0d9a130da98c498545c537437a3981fbff14e4c9d2725168fd2cf6",
+  "export_crop": [
+    75,
+    55,
+    1190,
+    1224
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/break.png",
+    "64": "art/icons/techniques/exports/64/break.png",
+    "48": "art/icons/techniques/exports/48/break.png",
+    "44": "art/icons/techniques/exports/44/break.png",
+    "32": "art/icons/techniques/exports/32/break.png",
+    "24": "art/icons/techniques/exports/24/break.png"
+  },
+  "framing": {
+    "scale": 0.5794547137213857,
+    "offset": [
+      189,
+      173
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "656757004e5d8d5a9c3a81e18946ede5031290e6705fc1b3150c8aefc6b3e219",
+    "64": "3be4d64a733b6c15b62d0ffa0de2f2ef34ded7978875efae6c6e2fd43293c80d",
+    "48": "6298bd6aceed4d572abc8a7e6034160130b0b03c1d9065d05ff1280e0c70c34c",
+    "44": "1a410b5af3021bd7d2ed4ea4788f9cf5e6a018fe5e4b5e437ca16deb3b4ec7fd",
+    "32": "ac780a7a7eb89c6c030c3fd24224cd69e62f62d20fccfe5fc45e58cef4b85cc3",
+    "24": "c5167af0c5fbd9291b0546dfd30aeb2c97777703234a6ce0df8e3b97530828f5"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}
