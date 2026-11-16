@@ -7991,6 +7991,154 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 155,
+    "family": "figment_trait_icons",
+    "id": "trait-keen",
+    "path": "art/icons/figments/trait-keen.png",
+    "name": "Keen",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Figment trait",
+    "paint": "A figment shape with one very sharp point and a small sparkle at it.",
+    "avoid": "a knife \u00b7 an eye",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape with one very sharp point and a small sparkle at it.\nAvoid: a knife \u00b7 an eye\nEXACT STAGING: One angular pointed kite-like abstract Figment body matching this family, two small loose diamond flecks. EXAGGERATE ONE needle-sharp upper-right point. Place one tiny hard four-ray sparkle just outside this point (sparse crisp white ticks, no glow). No knife, blade handle, eye, face, lightning aura or creature.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "22bb8a5ffcad2e0bfa345c22c3fbf63cba35897946def346faa8215dfbee1831",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/155-trait-keen.png",
+    "source_sha256": "8ba98fe5c3fc6313483897b54f88e3472818c9c9adc9d024b1fcd6443889436c",
+    "export_crop": [
+      0,
+      65,
+      1253,
+      1196
+    ],
+    "exports": {
+      "128": "art/icons/figments/exports/128/trait-keen.png",
+      "64": "art/icons/figments/exports/64/trait-keen.png",
+      "48": "art/icons/figments/exports/48/trait-keen.png",
+      "44": "art/icons/figments/exports/44/trait-keen.png",
+      "32": "art/icons/figments/exports/32/trait-keen.png",
+      "24": "art/icons/figments/exports/24/trait-keen.png"
+    },
+    "framing": {
+      "scale": 0.5620696158840724,
+      "offset": [
+        160,
+        194
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "c6e17025ba93edf2c7a985fcd310395c09cd200801384188fc213853d9d8ad5a",
+      "64": "9dc538875eba72565655519661114ff9c86ff211320f2aabe59ac81d9a5b259b",
+      "48": "909b1067006512839708647a3e93364d315baa8562ef32f5fb0ad4550b727d91",
+      "44": "dc6371682dd0638778e5ef13ee834c716f13b4ae6efa34448fe94310fc60f459",
+      "32": "1339df7b16597b499edd9c062bc2b6f69427120709c72dac4f394ce3cbf25081",
+      "24": "355c1548f84dc75578551187ef429bd0cd0105c3d29025d3fe97acfec7433dc6"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 156,
+    "family": "figment_trait_icons",
+    "id": "trait-hollow",
+    "path": "art/icons/figments/trait-hollow.png",
+    "name": "Hollow",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Figment trait",
+    "paint": "A figment outline with an empty centre, flecks only round the edge.",
+    "avoid": "a ghost \u00b7 a donut",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment outline with an empty centre, flecks only round the edge.\nAvoid: a ghost \u00b7 a donut\nEXACT STAGING: One HOLLOW VERSION of the angular pointed kite-like abstract Figment in the references. Broad WHITE OUTLINE follows its pointed angular perimeter but leaves the ENTIRE middle genuinely TRANSPARENT. Two tiny loose diamond flecks just outside edge. NO filled lightning bolt in middle, no glow, gray, ghost, eye, rounded ring or donut. Strong angular silhouette and big empty center.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "3a97b4f064726f5a86d66c219a7d08ddc5680360cc9afcee0f8701c6bb082123",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/156-trait-hollow.png",
+    "source_sha256": "f541069089a7b48dbe5205bd7acf7c84fe4e7ea21a6a3d7dc43e041de71f3a7b",
+    "export_crop": [
+      79,
+      113,
+      1184,
+      1164
+    ],
+    "exports": {
+      "128": "art/icons/figments/exports/128/trait-hollow.png",
+      "64": "art/icons/figments/exports/64/trait-hollow.png",
+      "48": "art/icons/figments/exports/48/trait-hollow.png",
+      "44": "art/icons/figments/exports/44/trait-hollow.png",
+      "32": "art/icons/figments/exports/32/trait-hollow.png",
+      "24": "art/icons/figments/exports/24/trait-hollow.png"
+    },
+    "framing": {
+      "scale": 0.6331348157901676,
+      "offset": [
+        162,
+        179
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "cfa5a0a34f2f856f379d748d14c472fa0705bdbcca7b35796a9babb54a8ee7ee",
+      "64": "9c43f8609e8f8c8fcfe9611838ce0310fccf394d09c628823d9d6693dbf5a3a3",
+      "48": "c0c3962fb71cb2d885eb380af3c0c8e95ec64afb3e2e940657c8bfecf8b2d116",
+      "44": "79cb3b15ff7e8203b43674345184a872986e50f527aba2e4b22790977e486916",
+      "32": "409356fcc5e31613d2e170bc1a73e8bba1df5dddf693be596d20da3622dba235",
+      "24": "47863a5d1bd402ae6e9b795391367111d5d491c94c7665bd561aabf9bc8df474"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 157,
     "family": "move_icons",
     "id": "move-riggers-hands",
@@ -8050,6 +8198,160 @@
     },
     "upscaled": false,
     "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 158,
+    "family": "move_icons",
+    "id": "move-double",
+    "path": "art/icons/moves/double.png",
+    "name": "Double",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Rigger rank I move (`false_image`)",
+    "paint": "Wick and a dotted outline copy of him standing side by side.",
+    "avoid": "two solid Wicks \u00b7 a mirror frame",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick and a dotted outline copy of him standing side by side.\nAvoid: two solid Wicks \u00b7 a mirror frame\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Double / false image: ONE solid white Wick on the left in confident relaxed wide stance, one hand on hip and other mitten out. On right an EMPTY DOTTED OUTLINE COPY of the exact same head/body/boots in identical pose, made from separated white dashes. Only the real left Wick is solid. Dotted copy has transparent screen/body, NO solid second character, no mirror frame, no connecting arrow, no bowls or floating symbols. Keep both silhouettes comfortably separated and complete in circular-safe area.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "c2ffd709b603d7c2b8ec256b2805438ef32c90735da582e212e3befd39509179",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/158-double.png",
+    "source_sha256": "c874b1c3e130e926938ebd0973382f7665ff3abc59ac2f54b5d62022aaa25843",
+    "export_crop": [
+      0,
+      85,
+      1238,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/double.png",
+      "64": "art/icons/moves/exports/64/double.png",
+      "48": "art/icons/moves/exports/48/double.png",
+      "44": "art/icons/moves/exports/44/double.png",
+      "32": "art/icons/moves/exports/32/double.png",
+      "24": "art/icons/moves/exports/24/double.png"
+    },
+    "framing": {
+      "scale": 0.5172540771100024,
+      "offset": [
+        192,
+        209
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "2b0f2364638d95424d4522ca3f01296e0218f4179af6bb960bcd4d4d66a69bfb",
+      "64": "7851056ee398bdf3f410398be607358341876251d2dda8a7d1d453da76934cf6",
+      "48": "18b8db6834a9e2b1295c29963910621232f39d2519add85a0e8d130470de0070",
+      "44": "7a02be99d5281a31f48bb54f62bff8086ab183d778459c39af69ffc561b57857",
+      "32": "3428290401677da8d2c36ac6657e7b161d31b23290de4c379e707852060879ae",
+      "24": "3c34f2f98e0292b01b4f73f989420e752ae4d34e060959e016c7f62875c5abb3"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 159,
+    "family": "move_icons",
+    "id": "move-field-fix",
+    "path": "art/icons/moves/field-fix.png",
+    "name": "Field Fix",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Rigger rank I move (from the Infiltrator)",
+    "paint": "A hand with a wrench tightening one bolt on a small machine plate.",
+    "avoid": "a car \u00b7 a real tool brand",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A hand with a wrench tightening one bolt on a small machine plate.\nAvoid: a car \u00b7 a real tool brand\nEXACT STAGING: Field Fix: one CROPPED ceramic mitten hand from upper-left grips the handle of ONE plain open-ended wrench. Wrench jaw actually encloses ONE LARGE HEXAGONAL BOLT on a small rectangular machine plate at lower-right. Two tiny plate fasteners are enough. Clear mechanical contact between jaw and bolt, no duplicated loose tools, no machine body, no vehicle, no whole character, no lightning. All gaps fully transparent.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "55a5578ed6058bac768ae98773fcb63b3acb78119f3848692a689772144443b6",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/159-field-fix.png",
+    "source_sha256": "37b9226d5ea13f0f6f6a53df24d3fb3d24084f8d6f4b61924e1a6b28fdb6b710",
+    "export_crop": [
+      33,
+      73,
+      1230,
+      1230
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/field-fix.png",
+      "64": "art/icons/moves/exports/64/field-fix.png",
+      "48": "art/icons/moves/exports/48/field-fix.png",
+      "44": "art/icons/moves/exports/44/field-fix.png",
+      "32": "art/icons/moves/exports/32/field-fix.png",
+      "24": "art/icons/moves/exports/24/field-fix.png"
+    },
+    "framing": {
+      "scale": 0.5462690903273416,
+      "offset": [
+        185,
+        196
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "4244df93806d87566a1b39f791586cb36bcc8da7138acb8287a21903fea9453f",
+      "64": "c9b9e3221c906a281af1e82e24eb1729de8cb6b15bc3b9f6378d40b1538e0926",
+      "48": "8c4966b288d2d699aceccca65a4e179075ba1ae7cb3833d610b598541f9e18ec",
+      "44": "d687c96b706587ea07ff70da2866a0d7a40ccd925d2e7b82c522d460c10a2b04",
+      "32": "990a12b46a775f975eaf3cd72b167f016d8ebc95345113058e676c5d921a2b7b",
+      "24": "dff2baf8b23d7afc8f685a82686f4979b0f6915e8a32c34124bb7ad4a6c076d7"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
     "number": 167,

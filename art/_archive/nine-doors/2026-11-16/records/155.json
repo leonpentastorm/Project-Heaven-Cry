@@ -1,0 +1,74 @@
+{
+  "number": 155,
+  "family": "figment_trait_icons",
+  "id": "trait-keen",
+  "path": "art/icons/figments/trait-keen.png",
+  "name": "Keen",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment trait",
+  "paint": "A figment shape with one very sharp point and a small sparkle at it.",
+  "avoid": "a knife \u00b7 an eye",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape with one very sharp point and a small sparkle at it.\nAvoid: a knife \u00b7 an eye\nEXACT STAGING: One angular pointed kite-like abstract Figment body matching this family, two small loose diamond flecks. EXAGGERATE ONE needle-sharp upper-right point. Place one tiny hard four-ray sparkle just outside this point (sparse crisp white ticks, no glow). No knife, blade handle, eye, face, lightning aura or creature.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "22bb8a5ffcad2e0bfa345c22c3fbf63cba35897946def346faa8215dfbee1831",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/155-trait-keen.png",
+  "source_sha256": "8ba98fe5c3fc6313483897b54f88e3472818c9c9adc9d024b1fcd6443889436c",
+  "export_crop": [
+    0,
+    65,
+    1253,
+    1196
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-keen.png",
+    "64": "art/icons/figments/exports/64/trait-keen.png",
+    "48": "art/icons/figments/exports/48/trait-keen.png",
+    "44": "art/icons/figments/exports/44/trait-keen.png",
+    "32": "art/icons/figments/exports/32/trait-keen.png",
+    "24": "art/icons/figments/exports/24/trait-keen.png"
+  },
+  "framing": {
+    "scale": 0.5620696158840724,
+    "offset": [
+      160,
+      194
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "c6e17025ba93edf2c7a985fcd310395c09cd200801384188fc213853d9d8ad5a",
+    "64": "9dc538875eba72565655519661114ff9c86ff211320f2aabe59ac81d9a5b259b",
+    "48": "909b1067006512839708647a3e93364d315baa8562ef32f5fb0ad4550b727d91",
+    "44": "dc6371682dd0638778e5ef13ee834c716f13b4ae6efa34448fe94310fc60f459",
+    "32": "1339df7b16597b499edd9c062bc2b6f69427120709c72dac4f394ce3cbf25081",
+    "24": "355c1548f84dc75578551187ef429bd0cd0105c3d29025d3fe97acfec7433dc6"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

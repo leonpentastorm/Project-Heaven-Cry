@@ -1,0 +1,76 @@
+{
+  "number": 159,
+  "family": "move_icons",
+  "id": "move-field-fix",
+  "path": "art/icons/moves/field-fix.png",
+  "name": "Field Fix",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Rigger rank I move (from the Infiltrator)",
+  "paint": "A hand with a wrench tightening one bolt on a small machine plate.",
+  "avoid": "a car \u00b7 a real tool brand",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A hand with a wrench tightening one bolt on a small machine plate.\nAvoid: a car \u00b7 a real tool brand\nEXACT STAGING: Field Fix: one CROPPED ceramic mitten hand from upper-left grips the handle of ONE plain open-ended wrench. Wrench jaw actually encloses ONE LARGE HEXAGONAL BOLT on a small rectangular machine plate at lower-right. Two tiny plate fasteners are enough. Clear mechanical contact between jaw and bolt, no duplicated loose tools, no machine body, no vehicle, no whole character, no lightning. All gaps fully transparent.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "55a5578ed6058bac768ae98773fcb63b3acb78119f3848692a689772144443b6",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/159-field-fix.png",
+  "source_sha256": "37b9226d5ea13f0f6f6a53df24d3fb3d24084f8d6f4b61924e1a6b28fdb6b710",
+  "export_crop": [
+    33,
+    73,
+    1230,
+    1230
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/field-fix.png",
+    "64": "art/icons/moves/exports/64/field-fix.png",
+    "48": "art/icons/moves/exports/48/field-fix.png",
+    "44": "art/icons/moves/exports/44/field-fix.png",
+    "32": "art/icons/moves/exports/32/field-fix.png",
+    "24": "art/icons/moves/exports/24/field-fix.png"
+  },
+  "framing": {
+    "scale": 0.5462690903273416,
+    "offset": [
+      185,
+      196
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "4244df93806d87566a1b39f791586cb36bcc8da7138acb8287a21903fea9453f",
+    "64": "c9b9e3221c906a281af1e82e24eb1729de8cb6b15bc3b9f6378d40b1538e0926",
+    "48": "8c4966b288d2d699aceccca65a4e179075ba1ae7cb3833d610b598541f9e18ec",
+    "44": "d687c96b706587ea07ff70da2866a0d7a40ccd925d2e7b82c522d460c10a2b04",
+    "32": "990a12b46a775f975eaf3cd72b167f016d8ebc95345113058e676c5d921a2b7b",
+    "24": "dff2baf8b23d7afc8f685a82686f4979b0f6915e8a32c34124bb7ad4a6c076d7"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

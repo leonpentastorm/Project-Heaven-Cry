@@ -588,9 +588,29 @@
       "faint_alpha_to_solid_area_ratio": 0.04627
     },
     {
+      "number": 155,
+      "name": "Keen",
+      "faint_alpha_to_solid_area_ratio": 0.041
+    },
+    {
+      "number": 156,
+      "name": "Hollow",
+      "faint_alpha_to_solid_area_ratio": 0.04752
+    },
+    {
       "number": 157,
       "name": "The Rigger's Hands",
       "faint_alpha_to_solid_area_ratio": 0.03047
+    },
+    {
+      "number": 158,
+      "name": "Double",
+      "faint_alpha_to_solid_area_ratio": 0.13459
+    },
+    {
+      "number": 159,
+      "name": "Field Fix",
+      "faint_alpha_to_solid_area_ratio": 0.02517
     },
     {
       "number": 171,
