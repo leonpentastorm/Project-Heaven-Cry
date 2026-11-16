@@ -478,3 +478,19 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     stall was the line, not armour or the profile); the gun alpha perks lay pips and take AP instead of adding damage,
     keyed by the approved resource-amount predicate (N10); the base shield records its giver (the one approved field).
 
+121. **The reshape: a class move that only repeated its door is re-pointed onto the door, and every number of it is data**
+    (Leon's rulings of 16 Nov 2026 on the Doors 3.0 spec; rules 1.60 items 4619 to 4644; the spec's section 4, R1 to R22).
+    A renamed or re-pointed move keeps its id and key, so a save holding it loads with the new rule; a replaced one gets
+    a new id, and since class moves are read from the class's ranks, never saved, an old save simply holds the new move.
+    Challenge is the one taunt verb, aimed for everyone, and the Bulwark's Called Out is two rows on it (no class
+    predicate, no second taunt). The Breaker's Wind-up and Keep Swinging ride the one approved Momentum piece (N23): the
+    stat `momentum_start` read at the fight's start, and the stat family `momentum_cost:<technique or group>` read in the
+    one Momentum price; Keep Swinging's free Strike is a content condition answering it. The healing brake is per giver
+    (ruling ii) and priced at each verb's own cost site (a grant_action's `brake: true`, the step in `rules.json
+    mending.brake`): the `cost` trigger has no target (N20, not approved), and the price function already sees the
+    target, so the brake is one function, `braked`, read by the preview and the payment alike. What was not built and
+    why: Last Rites' "never stands an ally up" (it contradicts the one heal: a ruling), the exact "half the Momentum
+    spent" of Measured Blow (no source carries the spent count; a flat 1). Two fits hold the contract (item 4644): the
+    long rifle 48 → 47 (Hold the Lane took the reload and swap discount, and the contract's optimised gun then reloaded
+    where it had swapped: 161.75% → 163.0% of a 162.4% band) and Measured Blow at 1 (2 put the heavy blade's level-20
+    line at 211% against 206%). Both are for the lead to keep, or to answer with the band.

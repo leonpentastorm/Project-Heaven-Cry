@@ -198,6 +198,23 @@ actions and the Visualizer's core). **Class emblems:** per `rev4-moves-and-renam
 | The patron's standing presence (Chaplain): eight figures cropped from `art/portraits/patrons/` | `faithArt.ts` | |
 | VFX and SFX **found, not drawn** (CC BY 4.0 or CC0, credited in the game): a particle sheet for bots streaming in and scattering, a build sound and an unravel sound | `sfxCredits.ts`, `credits.ts` | the one thing in the specs no art mode of ours covers: it needs texture, so it is sourced |
 
+### 5b. Doors 3.0, slice B: the reshape (rules 1.60 items 4619-4644; requested 16 Nov 2026)
+
+One line per picture whose name or meaning changed. Renamed moves keep their icon ids (no new art where only the name
+moved); a new move or a changed meaning wants a Wick icon (white flat ink, 1024 x 1024, the STYLE-LOCK).
+
+| # | For | Status | What it must show | Direction | Goes to |
+| --- | --- | --- | --- | --- | --- |
+| D1 | **Wind-up** (the Breaker's rank I, `class:fighter.wind_up`; replaced the class's Shove) | Wanted, requested 16 Nov | Wick rolling the shoulders and gripping the weapon before the first blow: the fight not yet started, the body already moving | One action, no label; reads at 32 px | `art/icons/moves/` (catalog `moves`) |
+| D2 | **Read the Swing** (the Breaker's rank II, `class:fighter.read_the_swing`; in Lingering Dread's place) | Wanted, requested 16 Nov | Wick leaning out of a blade's arc, eyes on the swing, weight already coming back | Distinct from Riposte's (the strike back): this is the dodge that builds | `art/icons/moves/` |
+| D3 | **Hold the Lane** (the Skirmisher's rank I, the `speed_loader` id kept) | Wanted, requested 16 Nov (the meaning changed: a held shot, not a reload) | Wick kneeling behind a rifle, aim held down one corridor | Not a reload; the Speed Loader picture, if any was made, is retired for this move | `art/icons/moves/` |
+| D4 | **Scrap Sentinel** (the Rigger's rank III, the `scrap_turret` id kept; C4 listed it as the Scrap Turret) | Wanted, request amended 16 Nov | Wick's projector hand lifting a Sentinel of light out of a heap of scrap | The Sentinel form's own look (C6b), not a machine turret | `art/icons/moves/` |
+| D5 | Names only, icons kept: **Called Out** (was Draw Fire), **Barrel In** (was Lunge), **Measured Blow** (was the class's Finisher), **Redline** (was the Rigger's Overclock), **Vanish** (now makes Fade free) | No new art | Nothing to draw: the catalog labels change | | `art/catalog.json` labels |
+| D6 | Drawn in-house: the **Staggered** and **Swinging** condition glyphs (line icons), and the Palm's effect (it no longer pushes: the arc that travels a tile ahead in `fx/openhand.ts` should stay at the hand) | In-house | | | conditions table; `apps/web/src/game/fx/openhand.ts` |
+
+Retired with no art wanted: Take the Hit (Durability 3 is a perk step), the class's own Shove and Finisher actions, the
+2 AP Deliver the Sinner mark (now a passive).
+
 ## At risk in the balance pass
 
 The balance pass (`docs/design/proposals/2026-11-balance-pass.md`) will rewrite, merge or remove perks, traits and
@@ -229,6 +246,7 @@ Claude cannot draw Wick in a new pose or expression, or paint anything.
 
 ## Log
 
+- **16 Nov 2026 (rules 1.60, Doors 3.0 slice B):** section 5b opened: four Wick icons for the reshaped moves (Wind-up, Read the Swing, Hold the Lane, Scrap Sentinel), names-only changes listed, two condition glyphs in-house.
 - **16 Nov 2026 (rules 1.56, the Mana Shock):** F3 opened: the Mana Shock sign (a placeholder is in).
 - **16 Nov 2026 (0.29):** section 0: every image the nine doors need, one file (`GPT-PROMPTS-2026-11-16-nine-doors.md`, 375 images: 310 in the game now, 65 designed), and a placeholder on every in-game one without art (305; 20 drawn today: the 18 alpha perks, whose old icons no longer show on the new perks, the Open Hand and Glimmer). Wired art that existed: Survival's lobby card, the medic, Contraband. Section 1b (the alpha perks) folded into it.
 - **15 Nov 2026 (0.28.1):** the 66 images of `GPT-PROMPTS-2026-11-15-everything-missing.md` delivered (4cde72cc) and merged. Wired: 13 gear, 29 boons, 3 markers, 3 keepers, 11 place backdrops, 3 fight-card signs, the Roguelike card. Not wired (no slot in the game yet): the camp backdrop `survival-camp`, the two panel icons `icon-panel-run` / `icon-panel-run_board`, and the Materials card picture `card-materials`. Rows S2, S4, S5, S9, S10, E2c, E2d updated.

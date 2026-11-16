@@ -122,8 +122,43 @@ slice A. Decisions 116 to 120.
 
 - **Numbers not yet fitted:** two shields' doubled Guard, the Bulwark's pool by rank, the follow's -2 and Afterword are
   PROVISIONAL and measured only in the lanes' runs.
-- **Doors 3.0 after slice A:** the forks (N1, N2), Momentum's numbers as stats (N23), Strain and Flux as resource rows
-  (N3b), the healing brake and the rest of the reshape are later slices; the feeds' 0.01 is not fitted.
+- **Doors 3.0 after slice A:** the forks (N1, N2) and Strain and Flux as resource rows (N3b) come later; the reshape,
+  the healing brake and N23 are slice B (below); the feeds' 0.01 is not fitted.
+
+### Doors 3.0, slice B: the reshape (rules 1.60 items 4619-4644; decision 121)
+
+- **One taunt: Challenge.** Everyone's Challenge now names one foe it can see within its 2 tiles (its area and save are
+  as before). The Bulwark's Draw Fire is **Called Out**: its Challenge costs no Guard and the named foe is Taunted with
+  no save (a Boss too, never forced).
+- **Durability 3 is a perk step** (Take the Hit is retired).
+- **The Breaker:** **Wind-up** (rank I, in the class Shove's place) starts each fight on 3 Momentum; Lunge is
+  **Barrel In**; **Read the Swing** (rank II, in Lingering Dread's place): a melee miss on you gives 1 Momentum once a
+  round (it comes before a Riposte, so it can pay for one); the class's own Finisher action is **Measured Blow** (rank
+  III): once a fight, a Finisher gives 1 Momentum back. Everyone's Shove stays.
+- **Keep Swinging:** a Finisher that drops a foe makes your next Strike or Opener (before your next turn ends) cost no
+  Momentum; Tier II also gives 1 Momentum for a Finisher that hits an Elite or a Boss.
+- **The Skirmisher:** Speed Loader is **Hold the Lane** (held shots 1 AP cheaper); Run and Gun is a free move of its
+  own (Fire and Move's step and Run and Gun's move both in one turn).
+- **The Operative:** **Vanish** makes your Fade cost no Shadow.
+- **The Mender:** Triage is worded as the medic's Touch (same numbers). **The healing brake:** each further Mend,
+  Touch, Shield or Triage you give the same ally in one round costs half again the MP of the one before (24, 36, 54);
+  another healer meets only their own brake; the preview shows the price on that ally.
+- **Tending's Shield** goes only on a Bonded ally.
+- **The Rigger:** its Double costs no charge and lasts a round longer; Overclock is **Redline**; the Scrap Turret is the
+  **Scrap Sentinel** (a free Sentinel, the Figment form, for 3 rounds).
+- **The Channeler's Heart Surge** never goes past stage 4.
+- **Deliver the Sinner** (Faith 5): your patron's blows deal 20% more to a foe your squad has Marked (the 2 AP mark is
+  gone: Marking is Shadow's).
+- **The Open Hand's Palm** Staggers (no reaction until its next turn) and pushes nobody.
+- **The Chaplain's Ward** may sit on 4 allies (was 2).
+- **The long rifle** deals 47 (was 48): the gun ceiling held after Hold the Lane took the Skirmisher's reload discount.
+
+### Known and unfinished (slice B)
+
+- **Not built:** Last Rites' "never stands the ally up" (every heal on a Downed unit stands it up today: a ruling for
+  the lead). **Built in a cheaper wording:** Measured Blow (a flat 1, not "half the Momentum spent": no source carries the
+  spent count). Keep Swinging's free Strike lasts to the end of the next turn (a Finisher ends this turn's chain).
+- **Not run:** the browser suites whose truth changed (tank, tending, classes, figments): the browser gate comes later.
 
 ## 0.29.0 — Balance 2.0: the nine doors
 

@@ -59,6 +59,12 @@ How to read the tables:
 - **NEW** = a new move (its numbers are provisional).
 - "Foundation for" names the specialists the class could grow into. Each base move is chosen so all of them still want it.
 
+> **Rules 1.60 (Doors 3.0) slice B, the reshape (16 Nov 2026):** the rows above that changed carry their item. Also
+> changed since this proposal: the Skirmisher's Run and Gun is its own free move (item 4627); Triage is worded as the
+> medic's Touch (item 4630); the Rigger's Double costs no charge and lasts a round longer (4631), Overclock is
+> **Redline** (4632), the Scrap Turret is the **Scrap Sentinel** (4633); the Chaplain's Ward sits on 4 allies (4639);
+> Durability 3 is a perk step (Take the Hit retired, 4620); Deliver the Sinner (Faith 5) adds to a Marked foe (4635).
+
 ### Body
 
 **Defender (Endurance): the body that doesn't fall.**
@@ -70,7 +76,7 @@ How to read the tables:
 | Rank | Move | What it does | Why the fantasy keeps it |
 |---|---|---|---|
 | I | Brace (2 AP) [defender] | Gain Guard (1 + Durability modifier, max 5). +2 Defense until you move. Interpose while you hold Guard. | Makes Guard; protects an ally. |
-| I | Draw Fire (1 AP, 1 Guard) [defender] | One enemy must attack you next turn, or take −2 against anyone else. | Pulls the hits onto you. |
+| I | **Called Out** [defender] (was Draw Fire; rules 1.60 item 4619) | Your Challenge costs no Guard; the foe you name takes it with no save (a Boss too, never forced). | Challenge is the one taunt; the Bulwark's is the surest. |
 | II | Unbroken (once a scene) [adamantile_knight] | The first time you'd drop to 0 HP, drop to 1 and gain 3 Guard. | The tank that doesn't fall. |
 | II | **Shrug It Off** (reaction, 1 Guard) NEW | When you gain Bleeding, Slowed, Weakened or Prone, end it. | Pain Threshold: wounds don't slow you. |
 | III | Reactive Plate (reaction) [defender] | Spend Guard as you take damage: −10 per point. Shed bots raise the meter. | Guard becomes damage you never take. |
@@ -86,11 +92,11 @@ Dropped: Deploy Cover and Bulwark Line (gear; they belong to the siege engineer)
 
 | Rank | Move | What it does | Why |
 |---|---|---|---|
-| I | Lunge (1 Momentum) [fighter] | Move 2 tiles as part of a melee attack, with no opportunity attacks. | Closing the gap. |
-| I | **Shove** (1 AP) NEW | Push an adjacent enemy 1 tile, or knock it Prone (Body save against 12 + your Body debuff strength). | Raw Power's simplest verb. Every melee build wants it. |
+| I | **Barrel In** (1 Momentum) [fighter] (was Lunge; rules 1.60 item 4622) | Move 2 tiles as part of a melee attack, with no opportunity attacks. | Closing the gap. |
+| I | **Wind-up** NEW (rules 1.60 item 4621; replaced the class's Shove) | You start each fight with 2 more Momentum (3). Everyone's Shove stays. | The Breaker comes in swinging. |
 | II | Riposte (reaction, 1 Momentum) [fighter] | When a melee attack misses you, hit back for 0 AP. | The counter (Raw Power). |
-| II | Lingering Dread [shade] | When you kill, enemies within 3 who saw it save or become Shaken. | Intimidation, earned in blood. |
-| III | Finisher (3 AP) [fighter] | Spend all Momentum: +20% damage per point (up to +100%). | Momentum's payoff. |
+| II | **Read the Swing** NEW (rules 1.60 item 4624; Lingering Dread went back to the Shade) | Once a round, a melee attack that misses you gives 1 Momentum. | Riposte spends a miss; this builds on it. |
+| III | **Measured Blow** [fighter] (was the class's Finisher action; rules 1.60 item 4623) | Once a fight, a Finisher (Cleave, Break, Coup, Launch) gives 1 Momentum back. | The door's Finishers are the payoff. |
 | III | **Unstoppable** (once a scene, 1 AP) NEW | Until your next turn, ignore Fear, Shaken, Slowed, Pinned and opportunity attacks, and gain 2 Momentum. | Guts. |
 
 Dropped: Empty Hand and Sweep (the brawler and the banner dancer).
@@ -104,7 +110,7 @@ Dropped: Empty Hand and Sweep (the brawler and the banner dancer).
 | Rank | Move | What it does | Why |
 |---|---|---|---|
 | I | Fire Discipline [marksman] | Aimed shots add no Heat. One Burst a turn costs 2 AP. Bows get +3 on Aimed. | Heat control for every gun. |
-| I | **Speed Loader** NEW | Your first reload each turn costs 1 AP less (minimum 1). | Dexterity: reloads. |
+| I | **Hold the Lane** (the Speed Loader's id; rules 1.60 item 4626) | Your held shots (Overwatch, Deny, Cover Me, Dead to Rights) cost 1 AP less (at least 1). | Owning a lane, not repeating Speed Load. |
 | II | Special Ammo (per rest) [marksman] | One magazine each of AP, hollow-point and incendiary. Swap type while reloading. | Every gun build wants the right round. |
 | II | **Duck and Roll** (reaction) NEW | When a ranged attack targets you, step 1 tile first. If that puts you in cover or out of sight, the attack is at −2 or has no target. | Athletics and Reaction Speed. |
 | III | Killzone [marksman] | Overwatch holds two shots, one each at the first two enemies to move, both at +2. | Owning the ground. |
@@ -123,7 +129,7 @@ Dropped: The Draw and Six for Six (the gunslinger's pistols).
 | Rank | Move | What it does | Why |
 |---|---|---|---|
 | I | Mark (1 AP) [assassin] | Marked: your squad gets +1 to hit it, and it can't hide. | Vigilant: you spot for everyone. |
-| I | **Vanish** (1 AP, once a turn) NEW | If no enemy can see you right now (fog, smoke, full cover), become Hidden. | Ingenuity. |
+| I | **Vanish** (rules 1.60 item 4628) | Your Fade costs no Shadow. | Ingenuity's door, cheaper. |
 | II | Toxin (1 AP, 1 dose) [assassin] | Your next hit also adds Weakened, Slowed or Bleeding (save). | Sleight of hand. |
 | II | **Field Fix** (2 AP) NEW | Adjacent: clear a jammed weapon, restore one item's durability, or repair a robot, drone or turret for 20. | Proficiency: the mechanic, missing until now. |
 | III | Execution [assassin] | A hit on a Marked enemy at a quarter HP or less kills it (not bosses or Celestials). | The patient kill. |
@@ -196,7 +202,7 @@ Without an Emanator, Triage, Stim Throw, Field Surgery and Rally still work. Dro
 | I | **Iron Heart** NEW | Strain limit +1. | Composure. Every Soul specialist lives at the limit. |
 | II | Storm Front (+10 MP, once a turn) [channeler] | A Damage Bolt or Lance arcs to 2 more enemies with its tone's rider. | The storm. |
 | II | **Occult Library** NEW | Learn one more tone; +1 ready design. | Lore Master. |
-| III | Heart Surge (once a turn) [channeler] | A Release fires a stage higher (×2.6 past 4) for double Strain. | The big moment. |
+| III | Heart Surge (once a turn) [channeler] | A Release fires a stage higher, never past stage 4 (rules 1.60 item 4634), for double Strain. | The big moment. |
 | III | **Eye of the Storm** (once a scene) NEW | Your next Release this turn adds no Strain, and its tone's rider counts one stage higher. | Will over the body. |
 
 Dropped: all of the Hexer (fear and subtext are Strength and Insight; a pair later).
