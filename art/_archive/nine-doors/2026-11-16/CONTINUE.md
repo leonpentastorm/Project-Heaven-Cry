@@ -1,66 +1,11 @@
 # Continue the Nine Doors artwork
 
-114/375 candidates delivered; 261 remain. Do not count the three nothing-to-paint rows. Read the original brief and the current style guide. The CUP over Wick in Mind Without Fog belongs ONLY to that trait, never to Wick anatomy. Wick is the ceramic pixel-screen automaton with capelet, lantern-heart and asymmetry; do not turn him into a literal flame head.
+175/375 candidates delivered; 200 remain. Do not count the three nothing-to-paint rows. Read the original brief and the current style guide. The CUP over Wick in Mind Without Fog belongs ONLY to that trait, never to Wick anatomy. Wick is the ceramic pixel-screen automaton with capelet, lantern-heart and asymmetry; do not turn him into a literal flame head.
+
+See BLOCKERS.md for the exact image-generation quota response and the archived Last Turn repaint.
 
 Continue in the priority order below, one image per prompt. Source scripts and prompts are in this collection; current records must be preserved. The proposed paths/catalog IDs are exact. Every image remains review-candidate until Leon approves it. No new action-row UI is authorised by this art task.
 
-- P4 · #237 · Missed Me (verse) · `art/icons/conditions/canticle-the-laughing-mask.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #238 · Not Yet (verse) · `art/icons/conditions/canticle-toll-keeper.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #239 · Warm Hands (verse) · `art/icons/conditions/canticle-mother-ember.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #240 · Gathering (verse) · `art/icons/conditions/canticle-old-overcast.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #241 · Hold My Hand (verse) · `art/icons/conditions/canticle-the-matchmaker.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #242 · Foreknown (verse) · `art/icons/conditions/canticle-counting-weaver.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #243 · Stubborn (verse) · `art/icons/conditions/canticle-plain.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #244 · Crescendo (verse) · `art/icons/conditions/canticle-crescendo.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #245 · Rising (verse) · `art/icons/conditions/canticle-rising.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #275 · Bleeding · `art/icons/conditions/bleeding.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #276 · Burning · `art/icons/conditions/burning.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #277 · Weakened · `art/icons/conditions/weakened.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #278 · Slowed · `art/icons/conditions/slowed.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #279 · Silenced · `art/icons/conditions/silenced.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #280 · Nausea · `art/icons/conditions/nausea.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #281 · Pinned · `art/icons/conditions/pinned.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #282 · Stunned · `art/icons/conditions/stunned.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #283 · Dazed · `art/icons/conditions/dazed.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #284 · Blinded · `art/icons/conditions/blinded.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #285 · Prone · `art/icons/conditions/prone.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #286 · Confused · `art/icons/conditions/confused.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #287 · Fear · `art/icons/conditions/fear.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #288 · Shaken · `art/icons/conditions/shaken.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #289 · Hidden · `art/icons/conditions/hidden.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #290 · Marked · `art/icons/conditions/marked.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #291 · Read · `art/icons/conditions/read.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #292 · Judged · `art/icons/conditions/judged.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #293 · Braced · `art/icons/conditions/braced.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #294 · Overwatch · `art/icons/conditions/overwatch.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #295 · Witnessed · `art/icons/conditions/witnessed.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #296 · Downed · `art/icons/conditions/downed.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #297 · Grappled · `art/icons/conditions/grappled.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #298 · Taunted · `art/icons/conditions/taunted.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #299 · Commanded · `art/icons/conditions/commanded.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #300 · Puppeted · `art/icons/conditions/puppeted.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #301 · Disarmed · `art/icons/conditions/disarmed.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #302 · Injured · `art/icons/conditions/injured.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #303 · Suppressed · `art/icons/conditions/suppressed.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #304 · Corroded · `art/icons/conditions/corroded.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #305 · Off Balance · `art/icons/conditions/off-balance.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #306 · Guarded · `art/icons/conditions/guarded.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #307 · Bonded · `art/icons/conditions/bonded.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #308 · Traced · `art/icons/conditions/traced.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #309 · Exposed · `art/icons/conditions/exposed.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #310 · Reeled · `art/icons/conditions/reeled.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #311 · Settled · `art/icons/conditions/settled.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #312 · Watched · `art/icons/conditions/watched.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #313 · Slipping · `art/icons/conditions/slipping.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #314 · Emplaced · `art/icons/conditions/emplaced.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #315 · Withdrawing · `art/icons/conditions/withdrawing.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #316 · Weapon lowered · `art/icons/conditions/lowered.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #317 · Quickened · `art/icons/conditions/quickened.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #318 · Sharpened · `art/icons/conditions/sharpened.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #319 · Inspired · `art/icons/conditions/inspired.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #320 · Hopeful · `art/icons/conditions/hopeful.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #321 · Scorned · `art/icons/conditions/scorned.png` · white-ink sign · in game now · placeholder · no slot yet
-- P4 · #322 · Smitten · `art/icons/conditions/smitten.png` · white-ink sign · in game now · placeholder · no slot yet
 - P4 · #323 · Last Turn · `art/icons/conditions/last-turn.png` · white-ink sign · in game now · placeholder · no slot yet
 - P4 · #324 · Augment Offline · `art/icons/conditions/augment-offline.png` · white-ink sign · in game now · placeholder · no slot yet
 - P5 · #9 · Brace · `art/icons/moves/brace.png` · Wick icon · in game now · placeholder · no slot yet
@@ -240,10 +185,6 @@ Continue in the priority order below, one image per prompt. Source scripts and p
 - P8 · #120 · Ghost (Way) · `art/icons/moves/way-ghost.png` · Wick icon · designed, not built
 - P8 · #121 · Knife (Way) · `art/icons/moves/way-knife.png` · Wick icon · designed, not built
 - P8 · #122 · Hand (Way) · `art/icons/moves/way-hand.png` · Wick icon · designed, not built
-- P8 · #167 · Glass · `art/icons/figments/figment-glass.svg` · monoline icon · designed, not built
-- P8 · #168 · Ferry · `art/icons/figments/figment-ferry.svg` · monoline icon · designed, not built
-- P8 · #169 · Breaker · `art/icons/figments/figment-breaker.svg` · monoline icon · designed, not built
-- P8 · #170 · Hush · `art/icons/figments/figment-hush.svg` · monoline icon · designed, not built
 - P8 · #198 · Draw Taut · `art/icons/tending/draw-taut.png` · Wick icon · designed, not built
 - P8 · #199 · Take It On · `art/icons/tending/take-it-on.png` · Wick icon · designed, not built
 - P8 · #200 · Pass It On · `art/icons/tending/pass-it-on.png` · Wick icon · designed, not built

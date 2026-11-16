@@ -1,0 +1,60 @@
+{
+  "number": 297,
+  "family": "condition_icons",
+  "id": "cond-grappled",
+  "path": "art/icons/conditions/grappled.png",
+  "name": "Grappled",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Body condition",
+  "paint": "Two arms locked round a small silhouette's waist.",
+  "avoid": "a wrestling ring \u00b7 a choke",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No\noutline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a\nscene: Wick does not appear; a small generic silhouette may. One subject, centred, with clear space around it, square,\n1024 x 1024 PNG with transparency. It must read at 24 px beside a word on a token and at 48 px on a card: silhouette first,\ntwo interior cuts at most. A door emblem must also read inside a 20 px chip. No text, no letters, no numbers, no border,\nno frame. Invented shapes only. The icon shows:\n\nPaint: Two arms locked round a small generic human silhouette's waist.\nAvoid: a wrestling ring \u00b7 a choke\nSTYLE CLARIFICATION: this is a generic condition SIGN. NO Wick, no screen head, no mascot capelet or lantern chest. Only the named subject, 2 interior cuts at most, bold clear silhouette. Center within a 15% transparent margin. Use solid white shapes and transparent cutouts only, including the background and all interior holes. Translate any light/glow into a single white tick or ray; never gray, gradients or bloom.",
+  "refs": [
+    "/workspace/phc-nine-doors-2026-11-16/references/shop.png",
+    "/workspace/phc-nine-doors-2026-11-16/references/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f260e83183cf55066e925a78318b750e6434653e08a0b1f6ac5fca4605ec36fd",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/297-grappled.png",
+  "source_sha256": "89ea19d8cabbdbfb81300358f5ef958925028cd31fd824e48524e17103c1ea6e",
+  "export_crop": [
+    85,
+    23,
+    1125,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/grappled.png",
+    "64": "art/icons/conditions/exports/64/grappled.png",
+    "48": "art/icons/conditions/exports/48/grappled.png",
+    "44": "art/icons/conditions/exports/44/grappled.png",
+    "32": "art/icons/conditions/exports/32/grappled.png",
+    "24": "art/icons/conditions/exports/24/grappled.png"
+  },
+  "framing": {
+    "scale": 0.6661251015434606,
+    "offset": [
+      165,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

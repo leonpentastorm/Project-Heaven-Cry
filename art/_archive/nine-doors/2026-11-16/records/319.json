@@ -1,0 +1,60 @@
+{
+  "number": 319,
+  "family": "condition_icons",
+  "id": "cond-inspired",
+  "path": "art/icons/conditions/inspired.png",
+  "name": "Inspired",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "State word",
+  "paint": "A head with a small ray rising from it.",
+  "avoid": "a light bulb \u00b7 a halo",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No\noutline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a\nscene: Wick does not appear; a small generic silhouette may. One subject, centred, with clear space around it, square,\n1024 x 1024 PNG with transparency. It must read at 24 px beside a word on a token and at 48 px on a card: silhouette first,\ntwo interior cuts at most. A door emblem must also read inside a 20 px chip. No text, no letters, no numbers, no border,\nno frame. Invented shapes only. The icon shows:\n\nPaint: A head with a small ray rising from it.\nAvoid: a light bulb \u00b7 a halo\nSTYLE CLARIFICATION: this is a generic condition SIGN. NO Wick, no screen head, no mascot capelet or lantern chest. Only the named subject, 2 interior cuts at most, bold clear silhouette. Center within a 15% transparent margin. Use solid white shapes and transparent cutouts only, including the background and all interior holes. Translate any light/glow into a single white tick or ray; never gray, gradients or bloom.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "136e88bc73541f2b9e3616a6ae831e9533ac144473a25ba1649b0f027f734db4",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/319-inspired.png",
+  "source_sha256": "5843697bb586a8d628b627fc428386a87302cb2135247ea8e6c8bb4e9974a267",
+  "export_crop": [
+    162,
+    51,
+    1065,
+    1222
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/inspired.png",
+    "64": "art/icons/conditions/exports/64/inspired.png",
+    "48": "art/icons/conditions/exports/48/inspired.png",
+    "44": "art/icons/conditions/exports/44/inspired.png",
+    "32": "art/icons/conditions/exports/32/inspired.png",
+    "24": "art/icons/conditions/exports/24/inspired.png"
+  },
+  "framing": {
+    "scale": 0.7002561912894961,
+    "offset": [
+      196,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

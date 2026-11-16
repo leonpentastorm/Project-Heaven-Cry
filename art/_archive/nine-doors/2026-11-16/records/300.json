@@ -1,0 +1,60 @@
+{
+  "number": 300,
+  "family": "condition_icons",
+  "id": "cond-puppeted",
+  "path": "art/icons/conditions/puppeted.png",
+  "name": "Puppeted",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Brain condition",
+  "paint": "A small figure hung from two thin strings.",
+  "avoid": "a real puppet character \u00b7 a cross bar with text",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "ONE small icon of a JOINTED WOODEN MARIONETTE TOY, featureless round toy head and simple articulated limbs. Both feet planted on a short baseline. TWO STRAIGHT PUPPET STRINGS connect to its LEFT AND RIGHT WRISTS respectively and rise to two tiny control-bar ends above. Neck and head are entirely clear; strings attach only to wrists. The toy stands with its arms lifted by the strings, a symbol of external control. Pure white #FFFFFF flat VECTOR-LIKE fill on fully transparent background. Crisp hard edges, sparse transparent cuts, no shading, soft alpha glow, blur, texture, text, gray, borders or extra props. Match the attached generic white-ink signs, NO Wick or robot. Square 1024x1024 with 15% clear margin, readable at 24px.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "a834e7763e2faaa2ded7579aa31704185971d6fb405092611803b75b9edfa099",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/300-puppeted.png",
+  "source_sha256": "8edb50667824d19442f0755d19612581404fb92854bd760df7292e0b5b327292",
+  "export_crop": [
+    138,
+    31,
+    1218,
+    1238
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/puppeted.png",
+    "64": "art/icons/conditions/exports/64/puppeted.png",
+    "48": "art/icons/conditions/exports/48/puppeted.png",
+    "44": "art/icons/conditions/exports/44/puppeted.png",
+    "32": "art/icons/conditions/exports/32/puppeted.png",
+    "24": "art/icons/conditions/exports/24/puppeted.png"
+  },
+  "framing": {
+    "scale": 0.6793703396851698,
+    "offset": [
+      145,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

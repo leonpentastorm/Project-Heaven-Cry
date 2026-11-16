@@ -1,0 +1,60 @@
+{
+  "number": 297,
+  "family": "condition_icons",
+  "id": "cond-grappled",
+  "path": "art/icons/conditions/grappled.png",
+  "name": "Grappled",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Body condition",
+  "paint": "Two arms locked round a small silhouette's waist.",
+  "avoid": "a wrestling ring \u00b7 a choke",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "ONE small icon of a generic person restrained gently around the waist by TWO LARGE EXTERNAL ARMS reaching in from the left and right frame edges. The two external hands are clasped across the front of the small torso. The small figure's OWN TWO ARMS are raised out to the sides ABOVE the restraining arms, so it is unmistakably another person's grip, not a self-hug. Round featureless head and two small legs. Pure white #FFFFFF flat VECTOR-LIKE fill on fully transparent background. Crisp hard edges, sparse transparent cuts, no shading, soft alpha glow, blur, texture, text, gray, borders or extra props. Match the attached generic white-ink signs, NO Wick or robot. Square 1024x1024 with 15% clear margin, readable at 24px.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "98db0c6565c5bc690b3a54d8ac800e48a8bf43b486e5d2ea0cf7b610dc11e800",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/297-grappled.png",
+  "source_sha256": "4c61b846565ae9c204bc2f0a561ffdfb704e90835892be87e920cbf39f4d3881",
+  "export_crop": [
+    0,
+    37,
+    1254,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/grappled.png",
+    "64": "art/icons/conditions/exports/64/grappled.png",
+    "48": "art/icons/conditions/exports/48/grappled.png",
+    "44": "art/icons/conditions/exports/44/grappled.png",
+    "32": "art/icons/conditions/exports/32/grappled.png",
+    "24": "art/icons/conditions/exports/24/grappled.png"
+  },
+  "framing": {
+    "scale": 0.6539074960127592,
+    "offset": [
+      102,
+      114
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

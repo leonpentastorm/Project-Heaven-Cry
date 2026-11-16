@@ -1,0 +1,35 @@
+{
+  "delivered": 175,
+  "delivered_by_kind": {
+    "wick": 110,
+    "sign": 59,
+    "monoline": 5,
+    "gear": 1
+  },
+  "remaining": 200,
+  "remaining_by_kind": {
+    "sign": 16,
+    "wick": 170,
+    "class": 9,
+    "abstract": 1,
+    "gear": 4
+  },
+  "remaining_by_priority": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 2,
+    "5": 132,
+    "6": 18,
+    "7": 5,
+    "8": 43
+  },
+  "remaining_by_mode": {
+    "Wick icon": 170,
+    "door emblem": 9,
+    "class portrait": 9,
+    "Figment portrait": 1,
+    "painted gear icon": 4,
+    "white-ink sign": 7
+  }
+}

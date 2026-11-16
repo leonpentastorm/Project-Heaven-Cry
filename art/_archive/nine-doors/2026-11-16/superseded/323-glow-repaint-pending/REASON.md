@@ -1,0 +1,1 @@
+Rejected from active delivery: diffuse white-alpha glow violates flat no-glow sign mode (faint-alpha/solid area ratio 0.973). Original source, master, UI exports and record are preserved. Repaint with image generation after quota reset; do not reactivate this candidate.
