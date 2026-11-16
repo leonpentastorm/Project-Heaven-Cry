@@ -106,3 +106,14 @@ lies on the ground: it found "Nothing left on the ground"; "the field has no tur
 field becomes turns), so judge it after `wip/hotfix-0.30.1` and `wip/lane-0.30-field` are merged; if it still fails
 there, the likely cause is the shelves change moving the seed's loot. Not looked at in a browser by anyone: the field
 kit's Treat buttons, the plate chips, the shop icons. Drive C: had 36 GB free (94% full) during the run.
+
+## H. Dexterity lane finished (16 Nov)
+
+`wip/lane-0.31-dex` at 38d0a3e0: built, two reviews, review fixes, check ALL GREEN, balance green, 29 replays. Full
+report: the workflow journal wf_e9b5ffe1-250 (and the CHANGELOG 0.31.0 section on the branch). For the lead before
+merging: (1) read the fix report's verdicts on the blade Flush Out against a Boss and on the pip limit (the review
+said the stop rule, limit 2 to 1, probably should have fired for the sabre and gladius: all-in Dexterity blades were
+already over the 165% melee line, 199 to 246%, and the perks add 8 to 24 points); (2) Rite in the Field now cuts only
+Crystallise: Steady was a dead clause, and cutting Name It needs a price predicate on the Call's id (not approved
+yet), so the perk still gives little: needs a ruling; (3) a bug the swap fixed: `melee: false` on roll contexts
+matched every roll, so Fire and Move armed on any blow and Relocated's +1 applied to every roll, spells included.
