@@ -137,3 +137,41 @@ on the fight, so the first turn after contact is at full AP: Leon's ruling) for 
 3. Build section C (the fight-screen lane), F3's real fix, and section F's rulings.
 4. Full gate, browser look, deploy 0.31.0 on Leon's standing word ("to live when all green"), `backup/live-0.31.0`,
    then delete `backup/live-0.29.0` as the third-oldest (never 0.22.0 or 0.23.0).
+
+## K. 0.31.0 IS LIVE (17 Nov 2026, deployed while Leon slept, on his word "live the build")
+
+Commit b3d9a018 on `main` and `develop`; `backup/live-0.31.0` pushed; `backup/live-0.30.0` kept as the rollback
+(0.29.0's backup deleted as the third-oldest; 0.22.0 and 0.23.0 kept for good). The live page serves the 0.31.0 bundle.
+
+**In it:** the hotfix 0.30.1 (section A), the field lane (F1 to F7; F3 only as a banner line), the Dexterity lane,
+the cover pass (cover beside you, the shot that shows, focus memory), and the fight panel (folds that remember, mini
+meters with a "+N" chip, the shield as a segment on the HP bar, the status strip with a helps/hurts field on all 111
+conditions, at least four action rows, the AP pips on the YOUR TURN strip, no Say box in a Survival run, the vow as one
+line, one preview box, "Hit", the turn strip's glimmer, the tab-order button, the hover fixes, the fork card closeable).
+
+**Gate:** `python tools/check.py` ALL GREEN (engine 4807, web 1523), balance green, 29 replays; all 72 browser suites
+green (voice, shadow, tending, fx-room passed only when run alone: timing under load). The lead looked at the fight
+panel's screenshots at 1280x720 and 1600x900. **Not looked at in a browser by anyone:** the field kit's Treat buttons,
+the plate chips, the shop icons, the banners in motion, the field's three rounds.
+
+**Known and unfixed in live 0.31.0:**
+1. F3: walking into a fog fight still spends the first turn's AP (the banner says so; the real fix needs a "not yet
+   joined" state: approved, not built).
+2. Sabre and gladius in an all-in Dexterity build are far over the melee line (199 to 246% before the perks).
+3. A Pressed Boss can be made Afraid by a Dexterity blade (review flag; read the dex lane's fix report).
+4. Rite in the Field cuts only Crystallise.
+5. The mixed test squad (gunner, tank, Sigilist, Channeler) clears stage 1 on 3 of 20 seeds on the merged rules.
+6. Field Surgeon's Patch and Triage's story heal are still off in Survival (rulings in section F not built).
+7. The fight panel: tabs wrap to a second row with every door open; Strain reads "NEAR THE LIMIT" at 0 / 4; the status
+   strip is not drawn over the token face (hover card only); "Cut 2 AP" against "Cut · 0 AP" was not reproduced.
+8. Healing brake, gamma reliefs, Figment rework, 18 shelved forks, the weak tank camp kit.
+
+**Next version (0.32), "class UI and effects" (Leon):** section C items 3 to 8 (picking UI for every aimed action,
+prayer effects, Figment effects, Shadow: dark maps, Douse, Prone, detect ranges, Stalk, Silent; the level-up banner;
+sounds), section F's rulings (the vow pop-up on entering a mode and its change at a rest, Patch and Triage in
+Survival, Relic properties for gloves), F3's real fix, and section D. The audits with file and line are in the
+workflow journals named in section C.
+
+**Housekeeping owed:** WIP branches of 0.30 and 0.31 (delete one version after their work shipped, per the rule);
+worktrees under E:/phc-wt/ (rel030 is the release tree; int030, field030, dex031, fit030, ui031, icons030 and the older
+lanes can go once Leon agrees); drive C: was 94% full.
