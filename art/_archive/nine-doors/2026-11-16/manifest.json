@@ -10851,6 +10851,236 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 215,
+    "family": "move_icons",
+    "id": "move-occult-library",
+    "path": "art/icons/moves/occult-library.png",
+    "name": "Occult Library",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Channeler rank II move",
+    "paint": "A small shelf of three bound books, a heart mark on the middle spine.",
+    "avoid": "readable titles \u00b7 a skull",
+    "section": "Will Power: the Outburst, and the Channeler",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A small shelf of three bound books, a heart mark on the middle spine.\nAvoid: readable titles \u00b7 a skull\nEXACT STAGING: Occult Library: a SMALL SIMPLE HORIZONTAL SHELF supporting exactly THREE upright thick bound books side by side. Central book is slightly taller, with ONE HEART-SHAPED TRANSPARENT CUT in its white spine; outside books have one broad horizontal binding cut each. No words, titles, runes, skull, candle, whole figure or extra books. One clean white shelf line with two short supports, no enclosing frame. Read clearly as books on shelf at 32px.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "a41f3da668318375770ae28d994466f0aa91475b974ae4dab5655f33be11ef8c",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/215-occult-library.png",
+    "source_sha256": "252e8265016069f0c740f06a43fff14cfe0295aa88b2f93cbaa318fa3cc31fe1",
+    "export_crop": [
+      0,
+      29,
+      1206,
+      1206
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/occult-library.png",
+      "64": "art/icons/moves/exports/64/occult-library.png",
+      "48": "art/icons/moves/exports/48/occult-library.png",
+      "44": "art/icons/moves/exports/44/occult-library.png",
+      "32": "art/icons/moves/exports/32/occult-library.png",
+      "24": "art/icons/moves/exports/24/occult-library.png"
+    },
+    "framing": {
+      "scale": 0.5935137654919574,
+      "offset": [
+        154,
+        162
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "c9d61c426a3f63f6912a794bec20a6ac2195942ffaaacd0f3d1aefd85059aaf7",
+      "64": "1365a85840e89195e7bbf5c2f869a5be0f1cf634aba3e7f022db46d4d12bd8ba",
+      "48": "1037ecf9f8b5812875c3a1815a69ece901f96827bad4dac7a2f8a4a3184dc7b9",
+      "44": "28426c2a28fa660e6bd25262fafea86943c0df9180dfec52b79d38ed92ff6052",
+      "32": "3488bb5e4d91b9541abdd46df594103f8c765f5383cb3282ba3b093c51498cf1",
+      "24": "329d5b8f06932654b3cb88284253f0f7af109bafb65be6a7962fdf42186624a8"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 216,
+    "family": "move_icons",
+    "id": "move-heart-surge",
+    "path": "art/icons/moves/heart-surge.png",
+    "name": "Heart Surge",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Channeler rank III move",
+    "paint": "A heart with a sharp spike rising out of its top like a pulse line.",
+    "avoid": "an ECG of a real monitor \u00b7 blood",
+    "section": "Will Power: the Outburst, and the Channeler",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A heart with a sharp spike rising out of its top like a pulse line.\nAvoid: an ECG of a real monitor \u00b7 blood\nEXACT STAGING: Heart Surge: ONE bold rounded heart, its TOP CENTER cleft rises into ONE very tall narrow angular WHITE SPIKE like an invented pulse. Spike is continuous with heart silhouette, grows upward then returns to the top edge. A single sparse transparent angular cut may clarify the rising spike but no real ECG monitor diagram. No blood, anatomy, additional heartbeat waveform across whole image, lightning bolts, arrows, flame, character or glow.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "875cc719cbfc310627386b448903d209e4f76954db12e9e5fd804be0d7110550",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/216-heart-surge.png",
+    "source_sha256": "7de469d6fa25103312c5afdc3bb4c6d12aed99400d3ad6756ee8ee4df07aa079",
+    "export_crop": [
+      33,
+      37,
+      1168,
+      1196
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/heart-surge.png",
+      "64": "art/icons/moves/exports/64/heart-surge.png",
+      "48": "art/icons/moves/exports/48/heart-surge.png",
+      "44": "art/icons/moves/exports/44/heart-surge.png",
+      "32": "art/icons/moves/exports/32/heart-surge.png",
+      "24": "art/icons/moves/exports/24/heart-surge.png"
+    },
+    "framing": {
+      "scale": 0.5533536288009779,
+      "offset": [
+        198,
+        191
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "19c466fbdd4b4641ba6307e666b5b777f4ec85e1c1cb19569a33af2129f3b1d1",
+      "64": "d062dbcdfb1e83d263c3aee94c143618aa4885b13c0c7b09fff4387237a7dc46",
+      "48": "d40eb7d123fa74900641183249e1bf99ca61a6a285eb09c3bdd7f855f668eb16",
+      "44": "55a51ac3f1945178d6cd69c3f4c7c9a1e04884ab270dbdbf561fc7c4c9476b70",
+      "32": "b3aaabe2e9be363ae0c5e8756c3645d4542ed2d9c782d08ca6d0c0d59e29e84e",
+      "24": "8fc25debdfbdeb947f1a46acb73569ffdfd80e2c78f97d85f41781ed0390a655"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 217,
+    "family": "move_icons",
+    "id": "move-eye-of-the-storm",
+    "path": "art/icons/moves/eye-of-the-storm.png",
+    "name": "Eye of the Storm",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Channeler rank III move",
+    "paint": "Wick standing still at the calm centre of a spiral of arcs.",
+    "avoid": "a hurricane satellite view \u00b7 an eyeball",
+    "section": "Will Power: the Outburst, and the Channeler",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick standing still at the calm centre of a spiral of arcs.\nAvoid: a hurricane satellite view \u00b7 an eyeball\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Eye of the Storm: ONE Wick stands completely STILL and upright with relaxed lowered mittens, feet planted, calm level pixel eyes and small quiet straight mouth. Around him exactly THREE LARGE separated SPIRAL ARCS turn, but leave a CLEAR EMPTY CALM CIRCLE immediately around his full body. Flat WHITE broken curves only, never gray wind or glow. His stillness and centered pose contrast with moving arcs. No eyeball, satellite hurricane, clouds, rain, copied up-arrows, bowl or halo. Full Wick stays visible; arcs must not cross screen/face.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "d664bc4959a21be2afd92c7f444d9140dc6e02194253a1698c94da366c19aa35",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/217-eye-of-the-storm.png",
+    "source_sha256": "6a7c56254cd6dbb8826deff55d869c6dadb62ceb87a5f192a42dfd31c47c8737",
+    "export_crop": [
+      57,
+      31,
+      1240,
+      1205
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/eye-of-the-storm.png",
+      "64": "art/icons/moves/exports/64/eye-of-the-storm.png",
+      "48": "art/icons/moves/exports/48/eye-of-the-storm.png",
+      "44": "art/icons/moves/exports/44/eye-of-the-storm.png",
+      "32": "art/icons/moves/exports/32/eye-of-the-storm.png",
+      "24": "art/icons/moves/exports/24/eye-of-the-storm.png"
+    },
+    "framing": {
+      "scale": 0.6012897303016842,
+      "offset": [
+        156,
+        159
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "7c82c4f518873a91a19c03fdfc8e07377a037864764bb34db523f89aba65aa77",
+      "64": "a8f14f0983264bdf7b7a1dbeddab492d30f76d53d5e219b0cb5836d32f766095",
+      "48": "3eb51f2dd0363126048b1966594d44ef598c705a3dd69083a06ded0a27f3b933",
+      "44": "4133b0ed18179a3a34cce6edcb070c629bd4d5ec7aa81e0ebd27b15ab1ac0278",
+      "32": "44ff7f3cee47e0011df1e6dffaa76c5947a1c139044c82999df6bca39009a3d0",
+      "24": "36a7834fcee3492cb50a2c023d727390fd43b188b3ba34817c71b54c2cbb5e16"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 220,
     "family": "perks",
     "id": "litany",
@@ -11407,6 +11637,84 @@
     },
     "upscaled": false,
     "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 229,
+    "family": "prayers",
+    "id": "whisper-ward",
+    "path": "art/icons/prayers/whisper-ward.png",
+    "name": "Ward",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Chaplain rank I move, a Whisper only the Chaplain says (asked 13 Nov, C1)",
+    "paint": "Wick whispering into his cupped hand, a thin hex-shaped ward forming round a partial ally.",
+    "avoid": "a heater shield \u00b7 the Protection Whisper's arc",
+    "section": "Faith: prayer, and the Chaplain",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick whispering into his cupped hand, a thin hex-shaped ward forming round a partial ally.\nAvoid: a heater shield \u00b7 the Protection Whisper's arc\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Ward: ONE Wick at left leans toward his own CUPPED MITTEN raised close to screen mouth as if whispering quietly into palm. A slender WHITE HEXAGONAL WARD on right encloses only a CROPPED ALLY SHOULDER AND HEAD PARTIAL (no complete second character, no legs). The hexagon is an open center crisp geometric outline, not a heater shield and not a curved arc. One small curved breath-thread joins Wick's hand to hexagon edge. Distinguish the quiet cupped-hand gesture and geometric hexagon. No letters, speech bubble, glow, bowl or full ally.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "9e116a2f207122880e246184547ebe3fbf887e59e05663455a764fa99de65190",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/229-whisper-ward.png",
+    "source_sha256": "72cb0cd7e55505fc5b6b517d0cc4edfc7b6a0af50491664bd55d2584e70fb77d",
+    "export_crop": [
+      0,
+      123,
+      1226,
+      1214
+    ],
+    "exports": {
+      "128": "art/icons/prayers/exports/128/whisper-ward.png",
+      "64": "art/icons/prayers/exports/64/whisper-ward.png",
+      "48": "art/icons/prayers/exports/48/whisper-ward.png",
+      "44": "art/icons/prayers/exports/44/whisper-ward.png",
+      "32": "art/icons/prayers/exports/32/whisper-ward.png",
+      "24": "art/icons/prayers/exports/24/whisper-ward.png"
+    },
+    "framing": {
+      "scale": 0.5527584757498232,
+      "offset": [
+        173,
+        210
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "5d1618d4ff2075c71baa38324282bc80de229513a954cda65d8c17de9f476d01",
+      "64": "5ab0a1cfd16c102bf713b561761fa3c3126b290ff34638d53211f5cddd5c9dd4",
+      "48": "54f412c511aa014276cb3e9efe7ffa8eecfa858a20d50f6f46dd297c7bad94bb",
+      "44": "3fdee582db40c799425cf0f41b92604699fc80c09bd6b2f4af8c74ea0798ccdb",
+      "32": "e1c3682e956995de9d0c03959728cdabfc902373b481f33650af9e21e40e339d",
+      "24": "c57ab3b5326f2cc3d47e38d4e30379eea6a9024ad426878b6d89f14dc64c55f3"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
     "number": 235,

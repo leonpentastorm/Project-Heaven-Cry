@@ -1,0 +1,76 @@
+{
+  "number": 215,
+  "family": "move_icons",
+  "id": "move-occult-library",
+  "path": "art/icons/moves/occult-library.png",
+  "name": "Occult Library",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Channeler rank II move",
+  "paint": "A small shelf of three bound books, a heart mark on the middle spine.",
+  "avoid": "readable titles \u00b7 a skull",
+  "section": "Will Power: the Outburst, and the Channeler",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A small shelf of three bound books, a heart mark on the middle spine.\nAvoid: readable titles \u00b7 a skull\nEXACT STAGING: Occult Library: a SMALL SIMPLE HORIZONTAL SHELF supporting exactly THREE upright thick bound books side by side. Central book is slightly taller, with ONE HEART-SHAPED TRANSPARENT CUT in its white spine; outside books have one broad horizontal binding cut each. No words, titles, runes, skull, candle, whole figure or extra books. One clean white shelf line with two short supports, no enclosing frame. Read clearly as books on shelf at 32px.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "a41f3da668318375770ae28d994466f0aa91475b974ae4dab5655f33be11ef8c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/215-occult-library.png",
+  "source_sha256": "252e8265016069f0c740f06a43fff14cfe0295aa88b2f93cbaa318fa3cc31fe1",
+  "export_crop": [
+    0,
+    29,
+    1206,
+    1206
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/occult-library.png",
+    "64": "art/icons/moves/exports/64/occult-library.png",
+    "48": "art/icons/moves/exports/48/occult-library.png",
+    "44": "art/icons/moves/exports/44/occult-library.png",
+    "32": "art/icons/moves/exports/32/occult-library.png",
+    "24": "art/icons/moves/exports/24/occult-library.png"
+  },
+  "framing": {
+    "scale": 0.5935137654919574,
+    "offset": [
+      154,
+      162
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "c9d61c426a3f63f6912a794bec20a6ac2195942ffaaacd0f3d1aefd85059aaf7",
+    "64": "1365a85840e89195e7bbf5c2f869a5be0f1cf634aba3e7f022db46d4d12bd8ba",
+    "48": "1037ecf9f8b5812875c3a1815a69ece901f96827bad4dac7a2f8a4a3184dc7b9",
+    "44": "28426c2a28fa660e6bd25262fafea86943c0df9180dfec52b79d38ed92ff6052",
+    "32": "3488bb5e4d91b9541abdd46df594103f8c765f5383cb3282ba3b093c51498cf1",
+    "24": "329d5b8f06932654b3cb88284253f0f7af109bafb65be6a7962fdf42186624a8"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

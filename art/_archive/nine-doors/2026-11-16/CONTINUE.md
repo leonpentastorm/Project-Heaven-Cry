@@ -1,6 +1,6 @@
 # Continue the Nine Doors artwork — 0.30 scope applied
 
-Original ledger: **241/375 delivered**. Original unfinished: **134 = 107 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **148 request records**, including replacement/reuse checks.
+Original ledger: **245/375 delivered**. Original unfinished: **130 = 103 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **144 request records**, including replacement/reuse checks.
 
 Read art-hold-list-0.30.md, holds-0.30.json and CONTINUE-0.30.md. All 28 old holds remain enforced. progress.json and records/ own old completion; progress-0.30.json owns added-request completion. Recipe pending flags are not ledgers.
 
@@ -8,10 +8,6 @@ The latest delivered images are review candidates, never automatically approved.
 
 ## Eligible old recipes, in priority order
 
-- P5 · #215 · Occult Library · `art/icons/moves/occult-library.png` · Wick icon
-- P5 · #216 · Heart Surge · `art/icons/moves/heart-surge.png` · Wick icon
-- P5 · #217 · Eye of the Storm · `art/icons/moves/eye-of-the-storm.png` · Wick icon
-- P5 · #229 · Ward · `art/icons/prayers/whisper-ward.png` · Wick icon
 - P5 · #230 · Smite · `art/icons/moves/smite.png` · Wick icon
 - P5 · #231 · Under the Eye · `art/icons/moves/under-the-eye.png` · Wick icon
 - P5 · #232 · Blessed Arms · `art/icons/moves/blessed-arms.png` · Wick icon

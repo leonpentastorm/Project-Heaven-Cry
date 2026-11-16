@@ -788,6 +788,21 @@
       "faint_alpha_to_solid_area_ratio": 0.05923
     },
     {
+      "number": 215,
+      "name": "Occult Library",
+      "faint_alpha_to_solid_area_ratio": 0.02876
+    },
+    {
+      "number": 216,
+      "name": "Heart Surge",
+      "faint_alpha_to_solid_area_ratio": 0.01498
+    },
+    {
+      "number": 217,
+      "name": "Eye of the Storm",
+      "faint_alpha_to_solid_area_ratio": 0.05925
+    },
+    {
       "number": 220,
       "name": "Unbroken Litany",
       "faint_alpha_to_solid_area_ratio": 0.05408
@@ -831,6 +846,11 @@
       "number": 228,
       "name": "Last Rites",
       "faint_alpha_to_solid_area_ratio": 0.0411
+    },
+    {
+      "number": 229,
+      "name": "Ward",
+      "faint_alpha_to_solid_area_ratio": 0.07117
     },
     {
       "number": 235,
