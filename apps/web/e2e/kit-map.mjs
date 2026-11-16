@@ -98,7 +98,7 @@ for (let step = 0; step < 40 && fights < 3; step++) {
     }
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip: ' + e, false); break; }
     await p.locator('[data-phc-field-leave]').click({ timeout: 60000 }); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'field', null, { timeout: 30000 }); // rules 1.55: the field, left at once
-    await click(p, 'Back to the map ›', { timeout: 60000 });
+    await p.waitForFunction(() => window.__phc.getState().screen !== 'combat', null, { timeout: 30000 }); // rules 1.62 item 4903: no end card, straight on
   } else if (r.state === 'reward') {
     await p.waitForSelector('[data-phc-pick-materials], [data-phc-pick], [data-phc-kit] [data-phc-choice]', { timeout: 30000 });
     if (await p.locator('[data-phc-kit] [data-phc-choice]').count()) { await p.locator('[data-phc-kit] [data-phc-choice]').first().click(); await settle(p, 300); if (!(await G()).run.offers) continue; }

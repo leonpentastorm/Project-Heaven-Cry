@@ -134,7 +134,10 @@ function switches(cb: any, u: any, on: string): { id: string; itemKey: string; w
 export const NO_EMANATOR_STRAIN: number = (SOUL_RULES as any).cycle.no_emanator_strain;
 export const noEmanatorText = (): string => 'No Emanator: +' + (SOUL_RULES as any).cycle.no_emanator_strain + ' Strain, paid from the air';
 const OVERDRAW = 'skill:will_power.3#overdraw';
-export function designCards(cb: any, u: any): DesignCard[] {
+/** `verdict`: the reducer's own answer for a Begin of this design (rules 1.62 item 4904: actionFlow.ts verdictOf, the
+ * dry run of the action the click sends, with its credit and switches); the card's numbers stay the preview's. Without
+ * it (a test, a screen with no action to send) the magic preview's own check stands. */
+export function designCards(cb: any, u: any, verdict?: (designId: string) => { ok: boolean; why: string | null } | null): DesignCard[] {
   const mg = u?.mg; if (!mg) return [];
   const mana = cb?.mana ?? MANA_START, blocked = swellNote(cb, u);
   return (mg.designs || []).map((d: any) => {
@@ -145,7 +148,8 @@ export function designCards(cb: any, u: any): DesignCard[] {
     const beginAp = b.ap || plainAp, snapAp = sn.ap || plainAp + SOUL_AP.release, bloodHp = 0;
     const fullMp = (b.cost || 0) + pumpsMp(u, MAX_STAGE, 0, b.cost || 0);
     const again = '';
-    return { ...info, mp: b.cost || info.mp, beginAp, snapAp, beginWhy: b.ok ? '' : b.why || 'Not now.', snapWhy, canBegin: !!b.ok, again, bloodHp,
+    const v = verdict ? verdict(d.id) : null, ok = v ? !!v.ok : !!b.ok, why = v ? v.why || 'Not now.' : b.why || 'Not now.';
+    return { ...info, mp: b.cost || info.mp, beginAp, snapAp, beginWhy: ok ? '' : why, snapWhy, canBegin: ok, again, bloodHp,
       costText: 'Begin ' + beginAp + ' AP' + (d.modules.includes('swift') ? ' (Swift)' : '')
         + ' · Snap ' + snapAp + ' AP ×' + STAGE_MULT[0] + ' · +' + (b.strain ?? 1) + ' Strain'
         // rules 1.24: what a full heart of it comes to (the Begin and its four Pumps), when Pumps take MP

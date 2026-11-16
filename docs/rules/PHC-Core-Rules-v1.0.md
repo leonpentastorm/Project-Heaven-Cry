@@ -357,7 +357,7 @@ The Chaplain's Under the Eye, Blessed Shells and Judgement need a patron and pra
 
 **The map.** Square tiles, 1.5 m each. Line of sight runs centre to centre; anything solid in between blocks it. *(Rules 1.61: and it is the same both ways: clear only when the straight walk is clear from each end; item 4730.)* A character on higher ground gets +1 to hit targets below. *(Not built: maps carry no height, so the engine never gives this +1. Open, item 1500.)*
 
-**Order.** At the start of combat everyone rolls initiative: d20 + Initiative bonus. Highest goes first; ties go to higher Agility. If one side ambushes the other, the ambushers get a **surprise round**: each acts once with up to 3 AP, and the surprised side can't act unless a perk says so. *(Not built, and it stands until Leon rules (item 1501). As built there is no surprise round: an enemy that is unaware when the fight starts loses round 1 (Stealth and awareness; item 92), and an ambush from hiding opens on the attacker's own turn with the AP it has left.)*
+**Order.** At the start of combat everyone rolls initiative: d20 + Initiative bonus. Highest goes first; ties go to higher Agility. If one side ambushes the other, the ambushers get a **surprise round**: each acts once with up to 3 AP, and the surprised side can't act unless a perk says so. *(Not built, and it stands until Leon rules (item 1501). As built there is no surprise round: an enemy that is unaware when the fight starts loses round 1 (Stealth and awareness; item 92), and an ambush from hiding opens on the attacker's own turn with the AP it has left; rules 1.62 item 4902: on its full turn AP.)*
 
 **A turn.**
 
@@ -6370,7 +6370,7 @@ state ?"*. The lead's ruling: Leon is right. PROVISIONAL.
    action is the fight's own (`combat/*`, the one combat reducer path), so every effect, animation, sound, log line
    and number plays exactly as in a fight; Bond, every class move, technique, Call and prayer works; the tokens are the
    fight's units. Only items 62 to 65 differ, each decided in one place.
-62. **No turn order** (game.ts `combatAction`). Any player's character, or a unit it owns, acts at any time (the acting
+62. *(Superseded by rules 1.62 item 4906 (0.31): the field is turns.)* **No turn order** (game.ts `combatAction`). Any player's character, or a unit it owns, acts at any time (the acting
    unit is the one the action names; the owner check stays). Ending the turn is refused in words ("No turns here:
    act freely, then vote to leave."). Turns and rounds do not advance (`endTurn` and the enemies' turns do nothing), so
    nothing that happens at a turn's or a round's start or end happens on the field: no death saves (a Downed character
@@ -6380,10 +6380,10 @@ state ?"*. The lead's ruling: Leon is right. PROVISIONAL.
    down. A once-a-turn or once-a-round use is usable once on the field: its turn and round are the killing turn's and
    round's, so one already spent there stays spent (the lead accepts this). An off-turn window still open at the kill
    is closed as the field opens.
-63. **AP never limits** (effects/cost.ts, the one cost site: `apFor` and `pay`). An action's cost is shown as listed
+63. *(Superseded by rules 1.62 item 4906 (0.31): AP as in a fight.)* **AP never limits** (effects/cost.ts, the one cost site: `apFor` and `pay`). An action's cost is shown as listed
    and is never refused for AP, and no AP is taken; a walk goes anywhere reachable in one move. Syphon and Crystallise
    stay bounded by the meter (items 47 and 48): AP is free there, the meter is not.
-64. **What stays guarded, at the same gates.** A once-a-fight, once-a-scene or once-a-session use stays spent (the same
+64. *(Its "once-a-turn use" part superseded by rules 1.62 item 4906 (0.31).)* **What stays guarded, at the same gates.** A once-a-fight, once-a-scene or once-a-session use stays spent (the same
    fight). Nothing learned by doing grows (item 37: `growthHeld` reads `Combat.field`). Nothing harms a friend (item
    38: `harmHeld` reads `Combat.field`; the whole action is refused in words in `combatAction`). An item's action that
    would be free without limit is refused in words (item 35, `fieldRefusal`, read in the fight's perk action): at will,
@@ -6399,7 +6399,7 @@ state ?"*. The lead's ruling: Leon is right. PROVISIONAL.
 66. **A save from 0.28.2's field** (the run at `field` with the story phase and no running fight) loads and can be left
    (its old close: `magicOut` on the area map, Flux 0, the picks); every other action there is refused in words
    ("Leave this field: ..."). This bridge (and the area map's reading of the old field, `zoneMap`) goes in 0.30.
-67. **The screen.** The field is the fight screen: the same action bar, cards and effect player, fed by the same
+67. *(Superseded by rules 1.62 items 4900, 4901 and 4906 (0.31): End turn, the turn banners and "Round N of M".)* **The screen.** The field is the fight screen: the same action bar, cards and effect player, fed by the same
    effects. End turn is not offered; in its place the words "No turns here: act freely, then vote to leave." The
    initiative strip shows the party with no "NOW". The header holds what lies on the ground, Take all (the fight's
    pickup) and the Leave vote, where they were.
@@ -6408,12 +6408,12 @@ state ?"*. The lead's ruling: Leon is right. PROVISIONAL.
    that would hurt it is refused in the words "They have surrendered." A push, pull, shove or other forced move of a
    friend, or of a surrendered unit, is harm there too and is refused the same way (a unit's own willing move, a swap
    it chose, is not forced).
-69. **Two characters, one player** (0.28.3): on the field a player acts as the character they pick: a click on one of
+69. *(Superseded by rules 1.62 item 4906 (0.31): the unit whose turn it is acts.)* **Two characters, one player** (0.28.3): on the field a player acts as the character they pick: a click on one of
    their own tokens, or its card in the squad panel, makes it the one acting (the action bar, the sheet and the ring
    follow it), unless the action being aimed takes that unit as its target. A Downed character can be picked for
    what a Downed character may do (on the field, nothing: a friend's stim). The default is the player's first
    character that can act, by the engine's own list of its actions.
-70. **AP on the field** (0.28.3): where the AP pips stand, the field shows the word "free" (AP never limits there,
+70. *(Superseded by rules 1.62 items 4901 and 4906 (0.31): the AP pips as in a fight.)* **AP on the field** (0.28.3): where the AP pips stand, the field shows the word "free" (AP never limits there,
    item 63), not the AP left when the last enemy fell.
 
 ### The Durability tank (release 0.28.3)
@@ -7287,7 +7287,7 @@ Outside fights the story runs in rounds, the way a fight does, but with everyone
 
 **Attacking from the overworld** starts the fight on the spot, with everyone where they stand, the target and every hostile token on the map.
 - **Seen:** the attack still lands, but the attacker sits out round 1 and acts from round 2. Allies roll initiative as normal.
-- **Hidden** (sneaking and unseen): an ambush. The attack lands and the fight opens on the attacker's turn, with the AP they had left after it.
+- **Hidden** (sneaking and unseen): an ambush. The attack lands and the fight opens on the attacker's turn, with the AP they had left after it. *(Superseded by rules 1.62 item 4902: the attacker's turn is on its full turn AP, the strike paid from it.)*
 
 **Sneak** is a move mode for +1 AP per tile, with no dice. Starting to sneak hides you. You stay hidden until a hostile notices you, and then you must pass **Ingenuity** (d20 + Ingenuity vs 10 + its notice bonus) or be seen. A hostile notices you when:
 - it has line of sight within its notice range: 4 + its notice bonus − your Dexterity modifier, halved in the dark;
@@ -10737,7 +10737,8 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     opens; XP, credits and the offers are given as before. The old field's machinery (the area-map translation, its
     write-back and its use counters) is removed.
 4139. **The field's gates and screen (rules 1.55 items 68 to 70, 0.28.3):** no number. On the field Syphon and
-    Crystallise are bounded by the meter alone (items 4136 and the Crystallise row: 10 a core), not by AP.
+    Crystallise are bounded by the meter alone (items 4136 and the Crystallise row: 10 a core), not by AP. *(Its "not by
+    AP" superseded by rules 1.62 item 4906: AP as in a fight.)*
 4140. **The Durability tank (rules 1.55 items 71 to 75, 0.28.3; PROVISIONAL):** `rules.guard.soak` 10 → 6 (amends item
     993), `rules.guard.max` 5 → 4 (amends item 991), Guard given by Durability 1 (`innate`), and the new core item op
     `roll_with` on `durability.1`. The measure: `docs/design/proposals/2026-11-tank-fit.md`.
@@ -11620,3 +11621,68 @@ only when both of its options are built**: a step with one option is not offered
 4765. **The field kit on screen:** its text says "Out of a fight (not on the field after one)"; a refused Treat shows its reason as a muted line; solo, the Give module still shows the lines with a use ("Treat yourself").
 4766. **The use ops are data:** the effect_ops.json rows with `use_op: true` (`xp_grant`, `treat`); the validator reads them.
 4767. **Text:** the VEIL line says "smoke fills <tile>" (it said smoke-bots), the art catalog's banner label is "Mana-thread banner" (id kept), and the body line on mana arms says they release mana. **Items 4761 to 4767 are the addendum's round 5.**
+### Rules 1.62 (0.31), the field is turns and the playtest's feedback (16 Nov 2026)
+
+Leon on live 0.29.0 (16 Nov 2026), in short: the move counter stopped working on the field; nothing on screen says a
+fight has begun or ended ("Need a Big ass Battle start, battle finish (won/lost) and a Free roam banner. appear on the
+screen for at least 1.25s"); a walk on the field draws no arrow and lights no square; a fight joined in the fog
+left him at 0 AP; the victory card comes after the vote to leave; Begin (Outburst) greyed when it is legal; a
+healing prayer shows no green number; and "Change the freeroam into certain number of turn after a won battle then
+kick the player out." The lead's rulings F1 to F7. A later revision overrides the body and the earlier ones;
+every number here is PROVISIONAL.
+
+4900. **The fight's banners (F1):** three big banners in the middle of the screen: BATTLE START as a fight is joined
+    (before the first turn's banner), VICTORY or DEFEAT as it ends (after its last effect has played), and FREE ROAM
+    as a won Survival fight's field opens (after VICTORY). Each is on screen, fully drawn, for at least
+    `rules.json combat.cards.hold_ms` (1250 ms; the combat speed never shortens it); they queue one after the other
+    and the turn banners wait for them. They never take a click or a key and never cover the action bar. Their words
+    are data (`combat.cards`, `survival.json run.after_fight.field`). Not in the Proving Ground (its WAVE banner) nor on the
+    area map. Shown once per fight that the page watched (a reload or a late join shows none). PROVISIONAL.
+4901. **Movement on the field is movement in a fight (F2):** the reach squares, the path arrow from the token, the
+    "−N AP · N tiles" chip and the AP pips with their drain are the fight's own, drawn by the one path (the field no
+    longer has a branch of its own: item 4906). The reach squares are the tiles the move's own check accepts with the
+    AP the unit has (`moveOptions` reads the one cost site, `apFor`), never a second AP sum.
+4902. **AP at contact (F3):** a fight joined is round 1 and every character's first turn begins on its full turn AP
+    (`beginTurn`); AP spent before the fight is never taken out of it. A Survival fight is joined as its node is
+    entered (there is no time before contact in a run): when a hostile of the fight is out of the party's sight as it
+    opens, the BATTLE START banner of item 4900 says so in its line (`rules.json combat.cards.joined.fog`, "Hostiles
+    in the fog: every step costs AP"). A true time before contact is item 4908, for the lead.
+    On the area map an ambush from hiding opens on the attacker's turn on its full turn AP, and the opening strike
+    is paid from that turn (it was the AP left of the area map's round); a Silent Kill that opens no fight takes the
+    strike's cost from the area map's AP as before. An attack in the open is unchanged (paid from the area map's AP;
+    the attacker acts from round 2 on its full AP). Supersedes the "with the AP they had left" lines of Overworld
+    rounds and of Order.
+4903. **A passed vote goes straight on (F4):** a won Survival fight's VICTORY card is the banner of item 4900 as the
+    field opens; when the field is left (the vote, or its last round, item 4906) the party is on the path map's
+    rewards at once, with no end card and no click. A lost run and a fight out of a run keep their end card.
+4904. **The Begin button reads the reducer (F5):** whether Begin (and every design card) is offered is the
+    engine's own dry run of the `combat/outburst` action the click sends (`previewDescriptor`, the reducer on a copy),
+    with the action's credit (a Brief's cut, Encore) and the toggles set; the card's numbers stay the preview's. The
+    same for the area map's Begin (`world/act`). The magic preview's own AP check (`previewOutburst`) counts the
+    action's credit too.
+4905. **A prayer's heal is shown as every heal is (F6):** a heal or a shield given by a prayer (a Whisper of Health,
+    the Hymns that heal, Mother Ember's intervention, Hearthlight, Rewoven; Protection and Saint's Shield) puts the
+    one mend's effect on the fight (`mendShown`: the green number, or the ward), the same as the data `mend` op and a
+    Soul heal; no second copy of the effect. Moved on purpose: 6 of the 29 replays (REPLAY_FULL: proving-4v10-boss,
+    cover-4v7-level20-allin, open-4v7-level20-allin, proving-4v12-magic, proving-waves-long,
+    proving-doors-hiding-watches-wave6) were re-recorded because a Soul heal that restores nothing no longer puts an
+    empty heal effect on the fight; with that one line put back all 29 play as recorded, and the games' end states
+    differ in their effects only. The golden damage tables did not move.
+4906. **The field is turns (F7):** after a won Survival fight its field runs `survival.json field.rounds` (3) rounds
+    of real turns. The field opens with a new round at once (the killing turn ends there; the rest of the killing
+    round is not played): the party's units act in initiative order (no foe has a turn on the field, a standing one
+    included), each turn on its full turn AP as in a fight, End turn passes it; waits (a Hymn's), cooldowns, durations,
+    once-a-turn and once-a-round uses, Strain, MP and the held Outburst tick as in a fight; a Downed character rolls
+    no death save on the field (its turn passes; a friend's stim raises it; it stands up at the leave). Still as rules
+    1.55 items 64, 65 and 68: no growth, no harm to a friend or to a surrendered unit, the item refusal, the fight never
+    ends by a win check. A vote to leave ends the field at once; when the last round ends the party leaves by itself,
+    by the same path (`leaveField`). The screen says "Round N of M". Supersedes rules 1.55 items 62, 63, 67, 69 and 70,
+    and item 64's "a once-a-turn use is usable once on the field". PROVISIONAL.
+4907. **A field saved by 0.29 or 0.30** (`Combat.field` true, no round count) loads as a field of `field.rounds`
+    rounds from the next round. No number.
+4908. **Not built, for the lead:** a true time before contact (the foes unaware of the party until either side first
+    sees the other; the party's walk free until then; the fight joined at first sight) needs a new primitive (a
+    Combat state "not yet joined" read by the enemy AI) and is not built. The engine has no fx event for a fight
+    joined, won or lost or a field opened (`phase`, proposed): the banners of item 4900 are drawn from the fight's
+    state (its phase, `over`, `field`).
+4909. **Items 4900 to 4909 are rules 1.62's.**

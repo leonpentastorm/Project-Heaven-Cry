@@ -79,7 +79,9 @@ describe('Grim Reaper from the area map (item 19)', () => {
       const r = ambush({ perks: { grim_reaper: tier } }); const cb = r.s.g.combat!;
       expect(cb.units.find((u) => u.name === 'Sentry')?.dead).toBe(true);
       expect(logHas(cb, /Grim Reaper/)).toBe(true);
-      expect(cb.units.find((u) => u.charId === r.c.id)!.ap).toBe(ap0 + 2);
+      // rules 1.62 item 4902: the ambush is the attacker's first turn of the fight (its own turn AP), so tier I's
+      // "1 AP less on your first turn of each fight" is taken there too
+      expect(cb.units.find((u) => u.charId === r.c.id)!.ap).toBe(ap0 + 2 - (tier === 'I' ? 1 : 0));
     }
   });
 });

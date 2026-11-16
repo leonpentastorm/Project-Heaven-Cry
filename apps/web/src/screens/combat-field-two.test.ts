@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
-// Rules 1.55 items 69 and 70 (0.28.3): on the field a player with two characters acts as the one they pick (a click on
-// its token, or its card in the squad panel); a Downed one is never the default; the AP pips read "free". Rendered with
-// the screen's template and driven through its own handlers (a token clicked, a tile clicked), as the game does.
+// Rules 1.62 item 4906 (0.31; it supersedes rules 1.55 items 69 and 70): the field is turns, so a player with two
+// characters acts with the one whose turn it is, as in a fight: a tile click walks it, End turn hands the turn to the
+// other; a Downed one's turn passes by itself; the AP pips are the fight's. Rendered with the screen's template and
+// driven through its own handlers (a tile clicked, End turn), as the game does.
 import { describe, expect, it, vi } from 'vitest';
 import { ARCHETYPES, apply, newGame, viewFor, reachable, paths, refOf, type GameState, type Sheet } from '@engine';
 
@@ -34,7 +35,7 @@ function field() {
   const node = reachable((G as any).run).find((n: any) => n.kind === 'fight')!.id;
   for (const by of [ME, 'p2']) if ((G as any).run.state === 'map') G = apply(G, { type: 'run/move', node } as any, by);
   doAct({ type: 'run/skip' });
-  expect((G as any).run.state).toBe('field'); expect(G.combat!.field).toBe(true);
+  expect((G as any).run.state).toBe('field'); expect(G.combat!.field).toMatchObject({ round: 1 });
   for (const c of Object.values(G.characters)) c.owner = ME; snap = view();
 }
 function App() {
@@ -56,27 +57,30 @@ async function render() {
 }
 const click = async (b: Element | null | undefined) => { expect(b).toBeTruthy(); await React.act(async () => { (b as HTMLElement).click(); }); };
 
-describe('the field with two characters (rules 1.55 item 69)', () => {
-  it('the first is the default; a click on the second\'s token makes it the one I act as: a tile click walks the second', async () => {
+describe('the field with two characters (rules 1.62 item 4906)', () => {
+  it('the one whose turn it is walks on a tile click; End turn hands the turn to the other, which then walks', async () => {
     vi.useFakeTimers(); field();
     const { el, done } = await render();
-    const med = unitOf('Medic'), gun = unitOf('Gun'), m0 = med.pos, g0 = gun.pos;
-    expect(el.querySelector('[data-phc-ap-free]')?.textContent).toBe('free'); // item 70: "free" where the pips are
-    await click(tileBtn(el, gun.pos)); // my other character's token
-    const to = freeNear(el, gun.id);
-    await click(tileBtn(el, to)); // the default action is a move: it goes for the character I act as
-    expect(unitOf('Gun').pos).toBe(to); expect(unitOf('Medic').pos).toBe(m0); expect(g0).not.toBe(to);
-    // and back to the first, by its card in the squad panel
-    await click(el.querySelector('[data-phc-act-as="true"]'));
-    const to2 = freeNear(el, med.id);
+    const first = G.combat!.units.find((u) => u.id === G.combat!.order[G.combat!.turn])!, other = first.name === 'Medic' ? unitOf('Gun') : unitOf('Medic');
+    const o0 = other.pos;
+    expect(el.querySelector('[data-phc-ap-free]')).toBeNull(); expect(el.querySelector('[data-phc-act-as]')).toBeNull(); // the fight's pips; nobody to pick
+    const to = freeNear(el, first.id);
+    await click(tileBtn(el, to)); // the default action is a move: it goes for the unit whose turn it is
+    expect(unitOf(first.name).pos).toBe(to); expect(unitOf(other.name).pos).toBe(o0);
+    await click(Array.from(el.querySelectorAll('button')).find((b) => /End turn/.test(b.textContent || '') && !(b as HTMLButtonElement).disabled && !b.closest('[aria-hidden="true"]')));
+    expect(G.combat!.order[G.combat!.turn]).toBe(other.id);
+    await React.act(async () => { vi.advanceTimersByTime(15000); });
+    const to2 = freeNear(el, other.id);
     await click(tileBtn(el, to2));
-    expect(unitOf('Medic').pos).toBe(to2); expect(unitOf('Gun').pos).toBe(to);
+    expect(unitOf(other.name).pos).toBe(to2); expect(unitOf(first.name).pos).toBe(to);
     await done(); vi.useRealTimers();
   }, 60_000);
 
-  it('with the first Downed, the second is the default: a tile click walks it', async () => {
+  it('with the Medic Downed, its turn passes by itself: the Gunner is up and a tile click walks it', async () => {
     vi.useFakeTimers(); field();
-    const m = G.combat!.units.find((u) => u.name === 'Medic' && !u.companion)!; m.hp = 0; m.downed = true; snap = view();
+    const m = G.combat!.units.find((u) => u.name === 'Medic' && !u.companion)!; m.hp = 0; m.downed = true;
+    if (G.combat!.order[G.combat!.turn] === m.id) doAct({ type: 'combat/end-turn', unitId: m.id }); // its turn passes
+    expect(G.combat!.order[G.combat!.turn]).toBe(unitOf('Gun').id); snap = view();
     const { el, done } = await render();
     const gun = unitOf('Gun'), to = freeNear(el, gun.id);
     await click(tileBtn(el, to));

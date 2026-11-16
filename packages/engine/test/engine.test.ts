@@ -615,7 +615,7 @@ describe('overworld rounds (spec: Overworld rounds)', () => {
     expect(me.waitRound).toBe(2); expect(g.combat!.log.some((l) => l.startsWith('MPAT') && /fires|shoots|d20/.test(l))).toBe(true);
     expect(npcsOf(g)).toEqual([]);
   });
-  it('sneaking: hidden until seen; an Ingenuity roll to stay hidden; an ambush opens on your turn with the AP left', () => {
+  it('sneaking: hidden until seen; an Ingenuity roll to stay hidden; an ambush opens on your turn on full turn AP (rules 1.62 item 4902)', () => {
     let { g, id } = open('hide');
     g = apply(g, { type: 'narrator/turn', turn: { narration: 'A drone, facing away.', npcs: [{ action: 'place', name: 'Scavenger drone', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: 'O4' }] } as any }, 'host');
     const d = npcsOf(g)[0]; d.facing = [1, 0]; // looking east, away from the party
@@ -627,7 +627,9 @@ describe('overworld rounds (spec: Overworld rounds)', () => {
       g = apply(g, { type: 'world/act', charId: id, act: 'attack', targetId: d.id, mode: 'shot' }, 'host');
       expect(g.combat!.name).toMatch(/^Ambush at O4/); (globalThis as any).__ambush = true;
       expect(g.combat!.order[0]).toBe('pc-' + id);
-      expect(g.combat!.units.find((u) => u.charId === id)!.ap).toBe(left - 2);
+      // The walk before contact is not taken out of the fight's first turn: a full turn's 6 AP, less the shot's 2.
+      expect(left).toBeLessThan(6);
+      expect(g.combat!.units.find((u) => u.charId === id)!.ap).toBe(6 - 2);
     }
   });
   it('the shared spotlight: who is dealing with what, and what they hover', () => {

@@ -6,6 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { apply, newGame, ARCHETYPES, reachable, RuleError, paths, dist } from '../src';
 import tendingJ from '../../../data/tending.json';
+import { upTurn } from './helpers/survival';
 
 const clone = (g: any) => JSON.parse(JSON.stringify(g));
 const refused = (g: any, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
@@ -33,12 +34,14 @@ function besides(g: any) {
 }
 /** The won fight's field by the test room's skip. */
 const toField = (g: any) => { const f = apply(g, { type: 'run/skip' }, 'host'); expect(f.run.state).toBe('field'); return clone(f); };
+/** Rules 1.62 item 4906: the field is turns: the unit acts on its own turn. */
+const up = (g: any, which: 'mu' | 'gu') => clone(upTurn(g, ids(g)[which]));
 
 const grant = (verb: string) => (tendingJ as any).items.find((x: any) => x.id === verb).effects.find((e: any) => e.op === 'grant_action');
 
 describe("the 0.28.3 merge: 0.29's pieces on the field, by the same single gates", () => {
   it('Tug on a willing ally (Bonds 2.0) moves it toward the Bonder, at 12 MP', () => {
-    let g = toField(inFight()); const { mu, gu } = ids(g);
+    let g = up(toField(inFight()), 'mu'); const { mu, gu } = ids(g);
     g = apply(g, { type: 'combat/perk', unitId: mu, id: 'verb:tend.bond', targetId: gu }, 'host');
     // the gunner some tiles off, in sight
     const m = U(g, mu), P = paths(g.combat, m.pos, m.id), taken = new Set(g.combat.units.filter((u: any) => !u.dead).map((u: any) => u.pos));
@@ -47,18 +50,18 @@ describe("the 0.28.3 merge: 0.29's pieces on the field, by the same single gates
     const t = apply(g, { type: 'combat/perk', unitId: mu, id: 'verb:tend.tug', targetId: gu }, 'host');
     expect(dist(U(t, mu).pos, U(t, gu).pos)).toBeLessThan(before);
     expect(mp - U(t, mu).mg.mp).toBe(grant('tend.tug').res.mp); expect(grant('tend.tug').res.mp).toBe(12);
-    expect(t.combat.field).toBe(true);
+    expect(t.combat.field).toBeTruthy();
   });
   it('Slam (Guard 2.0) beside a friend: the friend is not moved', () => {
     let g = toField(inFight((x) => { const c = Object.values(x.characters).find((c: any) => c.name === 'Gun'); c.skills.durability = 5; }));
-    g = besides(g); const { mu, gu } = ids(g); U(g, gu).res = { ...(U(g, gu).res || {}), guard: 3 };
+    g = besides(up(g, 'gu')); const { mu, gu } = ids(g); U(g, gu).res = { ...(U(g, gu).res || {}), guard: 3 };
     const was = U(g, mu).pos;
     const after = apply(g, { type: 'combat/perk', unitId: gu, id: 'skill:durability.1', actionId: 'guard_slam' }, 'p2');
     expect(U(after, gu).res.guard).toBeLessThan(3); // it ran (paid its Guard)
     expect(U(after, mu).pos).toBe(was); expect(U(after, mu).hp).toBe(U(g, mu).hp);
   });
   it('an order to a Figment runs on the field (the owned-unit order site)', () => {
-    let g = toField(inFight((x) => { const c = Object.values(x.characters).find((c: any) => c.name === 'Gun'); c.skills.visualization = 1; c.weapon = 'service_pistol'; c.offHand = { id: 'visualizer' }; }));
+    let g = toField(inFight((x) => { const c = Object.values(x.characters).find((c: any) => c.name === 'Gun'); c.skills.visualization = 1; c.weapon = 'service_pistol'; c.offHand = { id: 'visualizer' }; })); g = up(g, 'gu');
     const { gu } = ids(g), me = U(g, gu), P = paths(g.combat, me.pos, me.id), taken = new Set(g.combat.units.filter((u: any) => !u.dead).map((u: any) => u.pos));
     const free = Object.keys(P.dist).filter((k) => !taken.has(k) && P.dist[k] === 1);
     g = apply(g, { type: 'combat/perk', unitId: gu, id: 'verb:picture', choice: 'double', tile: free[0] }, 'p2');
@@ -66,13 +69,13 @@ describe("the 0.28.3 merge: 0.29's pieces on the field, by the same single gates
     expect(fig).toBeTruthy();
     const to = free.find((k) => k !== free[0] && !g.combat.units.some((u: any) => !u.dead && u.pos === k));
     const o = apply(g, { type: 'combat/owned', unitId: gu, owned: fig.id, verb: 'move', tile: to }, 'p2');
-    expect(U(o, fig.id).pos).toBe(to); expect(o.combat.field).toBe(true);
+    expect(U(o, fig.id).pos).toBe(to); expect(o.combat.field).toBeTruthy();
   });
   it("Hide on the field is the fight's own Hide: with no enemy's eyes on you, you are Hidden", () => {
-    const g = toField(inFight()), { gu } = ids(g);
+    const g = up(toField(inFight()), 'gu'), { gu } = ids(g);
     // the test room's skip opens the field without killing the foes: the field a real last kill opens has none standing
     for (const u of g.combat.units) if (u.side === 'foe') { u.hp = 0; u.dead = true; }
     const h = apply(g, { type: 'combat/hide', unitId: gu }, 'p2');
-    expect(U(h, gu).hidden).toBeTruthy(); expect(h.combat.field).toBe(true);
+    expect(U(h, gu).hidden).toBeTruthy(); expect(h.combat.field).toBeTruthy();
   });
 });

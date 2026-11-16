@@ -10,7 +10,7 @@ import { MANA_SHOCK, WEAPON, musicTraitOf, songOf, active, paths, previewAttack,
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
-  attemptWhy, narratorOff, previewAction, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, NO_TURNS, shieldsView } from '@engine';
+  attemptWhy, narratorOff, previewAction, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, shieldsView, survivalRun } from '@engine';
 import { shieldStrip, shieldBlock } from '../game/shieldLook';
 import { patronPortrait, patronMarkUri, accentOf } from '../game/faithArt';
 import { act as actNow, getState, go, toast, homeScreen } from '../game/store';
@@ -18,19 +18,18 @@ import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxS
 import { seenFigments } from '../game/fx/figments';
 /** The enemies' turns run at once in the engine, so "your turn" arrives while their moves are still being shown: until
  *  they have played, your actions wait (you can still talk). Never longer than the effects layer's cap. */
-/** Rules 1.55 items 61 and 67 (0.28.3): the field is the fight itself, still running with no enemies left
- *  (cb.field): the same screen, action bar and effects. The fight as the screen shows it now, and the unit it acts
- *  for: on the field my character's unit (no turns), else the unit whose turn it is. */
-const fightNow = (g, me, as) => { const cb = g && g.combat ? castFight(g, g.combat, ART) : null;
-  const on = !!(cb && cb.field && !cb.over), aid = on ? fieldActor(g, me, as) : null; // rules 1.55 item 69: the character I picked, else my first that can act
-  const cur = !cb ? null : on ? (aid && cb.units.find((u) => u.id === aid)) || null : active(cb);
-  return { cb, cur, open: on }; };
+/** Rules 1.55 item 61: the field is the fight itself, still running with no enemies left (cb.field): the same screen,
+ *  action bar and effects; rules 1.62 item 4906: it is turns, so the unit the screen acts for is the unit whose turn it
+ *  is, on the field as in a fight (one path: the reach, the arrow, the move counter and the AP pips are the fight's).
+ *  `open`: the field is running (its header). */
+const fightNow = (g) => { const cb = g && g.combat ? castFight(g, g.combat, ART) : null;
+  return { cb, cur: cb ? active(cb) : null, open: !!(cb && cb.field && !cb.over) }; };
 /** Rules 1.55: the field's header (fieldView): what lies on the ground, Take all (the fight's own pickup), the vote. */
 const fieldVals = (fv) => {
   if (!fv) return { show: false };
   const ground = fv.piles ? fv.piles + (fv.piles === 1 ? ' pile' : ' piles') + ', ' + fv.items + (fv.items === 1 ? ' item' : ' items') + ' on the ground' : 'Nothing left on the ground';
   const word = 'Leave the field', tally = fv.solo ? '' : fv.ready + ' of ' + fv.of + ' ready';
-  return { show: true, ground, tally, hasTally: !fv.solo, canTake: !!fv.take, take: () => act(fv.take),
+  return { show: true, head: [survivalRun.after_fight.field.name, fv.roundText].filter(Boolean).join(' · ').toUpperCase(), ground, tally, hasTally: !fv.solo, canTake: !!fv.take, take: () => act(fv.take),
     takeHint: fv.takeTile ? 'Take all' : fv.piles ? 'Walk next to a pile to take it' : '', hasHint: !fv.takeTile && fv.piles > 0,
     leaveLabel: fv.mine ? '✓ ' + word : word, leave: fv.mine ? () => {} : () => act({ type: 'run/leave' }), waiting: fv.mine && fv.waiting.length ? 'Waiting for ' + fv.waiting.join(', ') + '.' : '' };
 };
@@ -49,7 +48,7 @@ import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag
 import { forecastVals } from '../game/manaForecast';
 import { echoView } from '../game/echoView';
 import { castFight } from '../game/cast';
-import { fieldView, fieldActor } from '../game/fieldView'; // rules 1.55: a won run fight's field
+import { fieldView } from '../game/fieldView'; // rules 1.55: a won run fight's field
 import { worldLayer, kindBadge, pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
 import { openReport } from '../game/report';
 import { glyphUri, scratchUri, heartUri, joinUri, SIGIL_INK, SIGIL_GLOW, SOUL_INK } from '../game/glyphs';
@@ -65,7 +64,7 @@ import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
 import { mapLegacy, isLegacyUnit, plainAction, actionGroups, hideHelp, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, tabIdsKnown, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
-import { flowView, pickToggle } from '../game/actionFlow';
+import { flowView, pickToggle, verdictOf } from '../game/actionFlow';
 import { tipAttrs, mountActionTips } from '../game/actionTip';
 import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../game/figmentIcons';
@@ -537,7 +536,7 @@ export class CombatLogic extends DCLogic {
 
   /** An action picked outside the panel (the your-turn card's command tiles): select it, if it is this unit's to use. */
   pickAction(id, unit) {
-    const g = getState().game, me = getState().me.id, F = fightNow(g, me, this.state.fieldAs), cb = F.cb, cur = F.cur;
+    const g = getState().game, me = getState().me.id, F = fightNow(g), cb = F.cb, cur = F.cur;
     if (!cb || (cb.over && !F.open) || !cur || cur.side !== 'pc' || cur.downed || (unit && unit !== cur.id) || g.characters[cur.charId]?.owner !== me) return;
     const w = WEAPON[cur.weapon], act1 = id === 'shot' && w && isMelee(w) ? 'melee' : id, act2 = mapLegacy(cur, act1) || act1;
     if (this._ids && !this._ids.has(act2)) return;
@@ -833,21 +832,21 @@ export class CombatLogic extends DCLogic {
   renderVals() {
     const st = getState(), g = st.game, me = st.me.id;
     // HP follows the effects (fx/play.ts fxShownHp): a bar falls when its hit plays, not when the state arrives.
-    const F0 = fightNow(g, me, this.state.fieldAs), onField = F0.open; // rules 1.55 item 39: walking the field, the fight screen acts on it
+    const F0 = fightNow(g), onField = F0.open; // rules 1.55 item 61: the field's header and its Give; every turn rule is the fight's (rules 1.62 item 4906)
     const cb = (() => { const c0 = F0.cb, shown = c0 ? fxShownHp(g) : null;
       return c0 && shown && shown.size ? { ...c0, units: c0.units.map((u) => (shown.has(u.id) && !u.dead ? { ...u, hp: Math.min(u.maxHp, shown.get(u.id)) } : u)) } : c0; })();
     // A new unit's turn starts clean: a spell (or its aim) picked for the last unit never carries over to this one.
-    const curId = onField ? (F0.cur ? F0.cur.id : null) : cb && active(cb) ? active(cb).id : null;
+    const curId = cb && active(cb) ? active(cb).id : null;
     const newTurn = curId !== this._curId;
     if (curId !== this._curId) { if (this._curId !== undefined) Object.assign(this.state, { aim: null, glyphTile: null, evc: null, sgToast: '', obMode: 'begin', word: null, stroke: null, design: null, ...(MAGIC.includes(this.state.action) ? { action: 'move' } : {}) }); this._curId = curId; }
     const S = this.state;
     if (!cb) return { ...lightboxVals(this), ...shellVals(this, 'combat'), lay: this.layoutVals(PANEL_HIDDEN), mz: this.zoomVals(), initiative: [], tiles: [], legend: [], apPips: [], groups: [], log: [], who: {}, sel: {}, target: {}, toStory: () => go('main'), report: openReport, roundText: 'NO FIGHT', gridStyle: '', gridLeave: () => {}, confirmText: 'Confirm', pad: {}, magicLegend: [] };
     // Whose turn is on screen: while earlier turns are still playing out, the unit whose banner played last, not the
     // one the state has already moved on to (Leon, 11 Nov 2026: the hostiles seemed to attack on your turn).
-    const turnWait = onField ? null : fxShownTurn(g);
-    const cur = onField ? (F0.cur && cb.units.find((u) => u.id === F0.cur.id)) || null : (turnWait && turnWait.unit && cb.units.find((u) => u.id === turnWait.unit)) || active(cb), owner = (u) => (u.charId ? g.characters[u.charId]?.owner : null), playerOf = (pid) => g.players.find((p) => p.id === pid);
+    const turnWait = fxShownTurn(g);
+    const cur = (turnWait && turnWait.unit && cb.units.find((u) => u.id === turnWait.unit)) || active(cb), owner = (u) => (u.charId ? g.characters[u.charId]?.owner : null), playerOf = (pid) => g.players.find((p) => p.id === pid);
     const ring = (u) => (u.side === 'pc' ? playerOf(owner(u))?.color || '#7FD4FF' : '#F65157');
-    const mineTurn = !turnWait && (!cb.over || onField) && cur && cur.side === 'pc' && owner(cur) === me && !cur.downed;
+    const mineTurn = !turnWait && !cb.over && cur && cur.side === 'pc' && owner(cur) === me && !cur.downed;
     // …and the screen looks again when the effects have run out (the hold event does it too; this is the safety net)
     if (turnWait && !this._turnTimer && typeof performance !== 'undefined') this._turnTimer = setTimeout(() => { this._turnTimer = null; if (LIVE === this) this.setState({}); }, Math.max(120, Math.min(4000, fxBusyUntil() - performance.now() + 60)));
     this._mine = mineTurn;
@@ -948,7 +947,7 @@ export class CombatLogic extends DCLogic {
     // refusal, tile and number is the engine's preview.
     const held = mg && mg.held, heldD = held ? designs.find((d) => d.id === held.design) || null : null;
     const dsel = designs.find((d) => d.id === S.design) || designs[0] || null, obMode = S.obMode === 'snap' ? 'snap' : 'begin';
-    const cards = mineTurn && mg && !held && (S.action === 'outburst' || S.tab === 'outbursts') ? withGame(g, () => designCards(pcb, cur)) : []; // the game bound: the engine reads the hands (rules 1.57: a shield stops the swell)
+    const cards = mineTurn && mg && !held && (S.action === 'outburst' || S.tab === 'outbursts') ? withGame(g, () => designCards(pcb, cur, (id) => verdictOf(g, cur.id, me, 'outburst', { design: id, mode: 'begin', ...(S.mods && S.mods.length ? { mods: S.mods } : {}) }))) : []; // the game bound: the engine reads the hands (rules 1.57: a shield stops the swell)
     const card = dsel ? cards.find((x) => x.id === dsel.id) || null : null;
     // ---------- the one action flow (game/actionFlow.ts): the picked action's descriptor, picks and the engine's preview ----------
     // A bespoke panel adds what it picked: the pile's checklist (Pick up), a perk's form. Reading a glyph with Analyze keeps its own path.
@@ -1161,7 +1160,7 @@ export class CombatLogic extends DCLogic {
       const isHeld = !!(u && fxHeld.has(u.id));
       // a Sigil caster's charge and Flux on its token (game/resources.ts sigilChip: its own resource rows)
       const sgc = u && !isHeld && u.side === 'pc' && u.mg && u.charId && g.characters[u.charId] ? sigilChip(resourcesOf(u, g.characters[u.charId], g)) : null;
-      const hv = u ? healthView(u) : null, known = !!(hv && hv.known), hpPct = hv && hv.known ? hv.pct : 0; // the engine's view (rules 1.55 item 29): exact, or a word
+      const hlv = u ? healthView(u) : null, known = !!(hlv && hlv.known), hpPct = hlv && hlv.known ? hlv.pct : 0; // (not `hv`: that is the hovered tile, read by the cost chip and the lift below; Leon on live 0.29.0: no move counter) the engine's view (rules 1.55 item 29): exact, or a word
       const sel = u && tgtUnit && u.id === tgtUnit.id;
       const isCur = u && cur && u.id === cur.id;
       tiles.push({
@@ -1253,7 +1252,7 @@ export class CombatLogic extends DCLogic {
     const rotU = [...ordU.slice(ci), ...ordU.slice(0, ci)];
     this.flipInit(rotU.map((u) => u.id).join(','));
     const sn = (u) => !u.unseen;
-    const initiative = rotU.map((u, idx) => ({ tag: cb.over || cb.field ? '' : idx === 0 ? 'NOW' : idx === 1 ? 'NEXT' : '', hasTag: !cb.over && !cb.field && idx < 2, // rules 1.55 item 67: the field has no turns
+    const initiative = rotU.map((u, idx) => ({ tag: cb.over ? '' : idx === 0 ? 'NOW' : idx === 1 ? 'NEXT' : '', hasTag: !cb.over && idx < 2, // rules 1.62 item 4906: the field has turns too
       tagStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + (idx === 0 ? '#FFFFFF' : '#A3AEC2'),
       ...(() => { const hv = healthView(u), kn = hv.known, pct = kn ? hv.pct : 0; // the engine's view (rules 1.55 item 29): exact, or a word
         return { hasHp: kn, hasLook: !kn, lookText: kn ? '' : lookWord(hv), lookStyle: kn ? '' : lookChip(hv), hpBox: 'position: relative; display: block; width: 64px; height: 4px; border-radius: 2px; overflow: hidden; background: #1C2536' + (kn ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.45)'),
@@ -1264,7 +1263,7 @@ export class CombatLogic extends DCLogic {
       ...(() => { const sn = !u.unseen, fc = sn ? faceOf(u) : ''; return { zoom: zoomer(this, fc, sn ? u.name : 'Unseen hostile', 'portrait'), hasImg: !!fc, noImg: !fc, img: fc, short: sn ? u.short : '?' }; })(),
       key: u.id, name: sn(u) ? u.name + (u.downed ? ' (down)' : u.surrendered ? ' (surrendered)' : '') : 'Unseen hostile', init: u.init,
       // A click on a portrait shows that unit on the map (the camera goes there); an unseen hostile gives nothing away.
-      show: () => { if (!sn(u) || u.dead) return; if (onField && cur && u.id !== cur.id && this.mineOnField(g, u)) this.actAs(u.id); if (this._overview) this.toggleOverview(u.pos); else CAM.follow([u.pos], 'ask'); },
+      show: () => { if (!sn(u) || u.dead) return; if (this._overview) this.toggleOverview(u.pos); else CAM.follow([u.pos], 'ask'); },
       showLabel: sn(u) ? 'Show ' + u.name + ' on the map' : 'Unseen hostile: not on the map', cantShow: !sn(u) || !!u.dead,
       showBtn: 'padding: 0; border: 0; background: transparent; font-family: inherit; line-height: 0; border-radius: 6px; cursor: ' + (sn(u) && !u.dead ? 'pointer' : 'default'),
       imgStyle: 'width: 36px; height: 36px; object-fit: cover; ' + (u.side === 'pc' ? 'border-radius: 50%; border: 3px solid ' + ring(u) : 'border-radius: 4px; border: 2px solid ' + (u.surrendered ? '#A3AEC2' : '#F65157')) + (u.surrendered ? '; filter: grayscale(1) brightness(0.75)' : '') + (u.unseen ? '' : fadeStyle(u)),
@@ -1278,9 +1277,8 @@ export class CombatLogic extends DCLogic {
     else if (ap < this._ap.v) this._drain = { from: this._ap.v, to: ap, seq: ((this._drain && this._drain.seq) || 0) + 1 };
     this._ap = { key: apKey, v: ap };
     const dr = this._drain;
-    // Rules 1.55 item 70: on the field (the fight's own flag) AP never limits: the word "free" stands where the pips are.
-    const apFree = onField;
-    const apPips = apFree ? [] : Array.from({ length: maxAp }, (_, i) => ({ key: 'p' + i + (dr && i >= Math.floor(dr.to) && i < Math.ceil(dr.from) ? '-' + dr.seq : ''), cls: dr && i >= Math.floor(dr.to) && i < Math.ceil(dr.from) ? 'phc-pip-drain' : i >= ap - Math.max(0, cost - encoreLend) && i < ap ? 'phc-pip-cost' : '',
+    // Rules 1.62 items 4901 and 4906: the AP pips (and their drain) on the field as in a fight: the field is turns.
+    const apPips = Array.from({ length: maxAp }, (_, i) => ({ key: 'p' + i + (dr && i >= Math.floor(dr.to) && i < Math.ceil(dr.from) ? '-' + dr.seq : ''), cls: dr && i >= Math.floor(dr.to) && i < Math.ceil(dr.from) ? 'phc-pip-drain' : i >= ap - Math.max(0, cost - encoreLend) && i < ap ? 'phc-pip-cost' : '',
       // the AP the picked action will take: still lit, dimmed and pulsing (they were hollow, and read as already spent)
       style: 'height: 14px; border-radius: 4px; ' + (i < ap - Math.max(0, cost - encoreLend) ? 'background: #E7EBF3' : i < ap ? 'background: #E7EBF3; opacity: 0.45' : 'background: #1C2536') }));
     const mv = cur ? cur.movement : 1;
@@ -1426,7 +1424,7 @@ export class CombatLogic extends DCLogic {
     // ---------- the squad panel: you, then your allies (hover a row for the full card) ----------
     /** An HP bar's layers: the red fill drops at once, the white chip under it trails (CSS .phc-hp-fill / .phc-hp-chip). */
     const abar = (pct, col) => 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + Math.max(0, Math.min(100, pct)) + '%; background: ' + col;
-    const myU = (mineTurn || (onField && cur && owner(cur) === me) ? cur : null) || cb.units.find((u) => u.side === 'pc' && owner(u) === me && !u.dead) || null;
+    const myU = (mineTurn ? cur : null) || cb.units.find((u) => u.side === 'pc' && owner(u) === me && !u.dead) || null;
     const mc = myU ? g.characters[myU.charId] : null, mw = myU ? WEAPON[myU.weapon] : null;
     const FX_CHIP = 'padding: 2px 8px; border-radius: 999px; border: 1px solid #F65157; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #F65157';
     const meCls = mc ? classOf(mc) : null; // the class emblem and name beside YOU (classIcons.ts)
@@ -1438,7 +1436,7 @@ export class CombatLogic extends DCLogic {
       // one fact, one place (Leon, live 0.24.0): with the HEART panel up (the Outbursts tab, an Outburst held) Strain and the
       // held Outburst are the panel's; the unit panel doesn't repeat them
       res: null, // ownRes() below, once the tab is settled
-      line: (onField ? 'AP free' : 'AP ' + Math.round(myU.ap * 10) / 10) + ' · Movement ' + myU.movement + ' · Stims ' + mc.stims,
+      line: 'AP ' + Math.round(myU.ap * 10) / 10 + ' · Movement ' + myU.movement + ' · Stims ' + mc.stims,
       // Classes 3.0 step 10: the reaction pips beside AP (the engine's reactionView), and the Bond strip (bondView) once
       // the resource rows are settled below (it takes the Ledger's row as its end bar)
       react: reactionPipsVals(cb, myU, mc), bonds: { show: false },
@@ -1446,14 +1444,13 @@ export class CombatLogic extends DCLogic {
       echo: { ...echoView(mc.echo), open: !!S.echoOpen, expanded: S.echoOpen ? 'true' : 'false', glyph: S.echoOpen ? '×' : '?', toggle: () => this.setState({ echoOpen: !this.state.echoOpen }) },
       // The one-line summary that stands in for the card on short windows (the bar at the top of the column); the most
       // urgent resources sit in their own row under it (me.res.urgent).
-      miniLine: (onField ? 'AP free' : 'AP ' + Math.round(myU.ap * 10) / 10) + (effectsOf(myU, true).length || condChips(myU, g).length ? ' · ' + [...effectsOf(myU, true).map(([k]) => k), ...condChips(myU, g).map((c) => c.k)].join(' · ') : ''),
+      miniLine: 'AP ' + Math.round(myU.ap * 10) / 10 + (effectsOf(myU, true).length || condChips(myU, g).length ? ' · ' + [...effectsOf(myU, true).map(([k]) => k), ...condChips(myU, g).map((c) => c.k)].join(' · ') : ''),
       fx: [...effectsOf(myU, true).map(([k, t]) => ({ key: k, k, t, style: FX_CHIP })), ...ownConds(myU, g), ...physChips(physOf(g, cb, myU, 'pc'), refOf, FX_CHIP)], noFx: !effectsOf(myU, true).length && !ownConds(myU, g).length && !physChips(physOf(g, cb, myU, 'pc'), refOf, FX_CHIP).length, fig: bodyFigure({ injuries: myU.injuries || [], mainSide: myU.hand || 'right' }) } : null;
     const allyRows = cb.units.filter((u) => u.side === 'pc' && (!myU || u.id !== myU.id)).map((u, i) => { const p = playerOf(owner(u)), fx = [...effectsOf(u), ...condChips(u, g).map((c) => [c.k]), ...(u.mg && u.mg.held ? [['HOLDING · STAGE ' + u.mg.held.stage]] : [])];
       return { key: u.id, name: u.name, img: faceOf(u), hasImg: !!faceOf(u), short: u.short, player: p ? p.name : '', hp: u.dead ? 'DEAD' : fmtNum(u.hp) + ' / ' + fmtNum(u.maxHp), hpFill: abar(u.hp / u.maxHp * 100, '#F65157'), hpChip: abar(u.hp / u.maxHp * 100, '#FFFFFF'),
         fx: fx.map((f) => f[0]).join(' · '), hasFx: fx.length > 0, t: tokenVals(u, { cb, sv: svOf(u), ally: true, player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#7FD4FF', inFight: true, right: false, up: false }),
         imgStyle: 'width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: #000; flex: none; border: 2px solid ' + (p ? p.color : '#7FD4FF') + (u.downed || u.dead ? '; opacity: 0.5' : ''),
-        // rules 1.55 item 69: on the field my other character's card makes it the one I act as
-        ...(() => { const can = onField && this.mineOnField(g, u); return { actAs: can ? 'true' : 'false', pick: can ? () => this.actAs(u.id) : () => {}, pickKey: can ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.actAs(u.id); } } : () => {} }; })() }; });
+      }; });
     const squad = true;
     const say = { can: !!myU && !cb.over, value: S.say || '', onChange: (e) => this.setState({ say: e.target.value }),
       send: () => { const text = (this.state.say || '').trim(); if (!text || !myU) return; act({ type: 'combat/say', charId: myU.charId, text }); this.setState({ say: '' }); } };
@@ -1522,7 +1519,7 @@ export class CombatLogic extends DCLogic {
     const heartV = heartVals(hp, (id) => { if (id === 'release') return this.pickAction('release'); this.heartAct(id); },
       { open: !!S.feelOpen, query: S.feelQ || '', toggle: () => this.setState({ feelOpen: !S.feelOpen }), search: (e) => this.setState({ feelQ: e && e.target ? e.target.value : String(e || '') }) });
     if (heartV.show) heartV.btns = heartV.btns.map((x) => ({ ...x, pressed: S.action === x.key ? 'true' : 'false' }));
-    const won = cb.over === 'win', extracted = cb.over === 'extracted', fv = fieldView(g, me, S.fieldAs); // rules 1.55: the field after a won run fight
+    const won = cb.over === 'win', extracted = cb.over === 'extracted', fv = fieldView(g, me); // rules 1.55: the field after a won run fight
     this._ids = new Set(ITEMS.flatMap((gr) => gr[1].map((x) => x[0])));
     const bM = blocks.find((b) => b.hand === 'main'), bO = blocks.find((b) => b.hand === 'off');
     this._attackKeys = blocks.length ? [bM && bM.plain ? techAction('main', bM.plain.id) : null, bM ? padAction('main') : null, bO && bO.plain ? techAction('off', bO.plain.id) : null, bO ? padAction('off') : null, this._ids.has(TWATCH) ? TWATCH : null] : null;
@@ -1548,7 +1545,7 @@ export class CombatLogic extends DCLogic {
     // On the flow, Confirm is the engine's verdict (the descriptor's preview, through the reducer); else the system's own.
     const cantConfirm = !mineTurn || (flow ? !flow.ready : !(S.action === 'analyze' && readSel)); // the flow's verdict (the engine's); reading a glyph has its own
     const costNet = Math.max(0, cost - encoreLend);
-    const apNow = apFree ? '' : mineTurn ? (ap - costNet < 0 ? 'needs ' + costNet + ' · ' + ap + ' left' : Math.round((ap - costNet) * 10) / 10 + ' / ' + ap + ' after this') : ap + ' AP';
+    const apNow = mineTurn ? (ap - costNet < 0 ? 'needs ' + costNet + ' · ' + ap + ' left' : Math.round((ap - costNet) * 10) / 10 + ' / ' + ap + ' after this') : ap + ' AP';
     const seenCur = !!cur, unseenNow = !cur && !cb.over && isUnseenId(cb.window?.queue[0]?.unitId ?? cb.order[cb.turn]), curInk = cb.over ? (won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157') : cur ? ring(cur) : '#A3AEC2';
     const wait = { kicker: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : unseenNow ? 'HOSTILES ACTING' : !cur ? 'WAITING' : cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING FOR ' + String(curOwner ? curOwner.name : 'a player').toUpperCase(),
       name: cb.over ? cb.name : unseenNow ? 'Unseen hostile' : !cur ? '' : seenCur ? cur.name : 'Unseen hostile', line: cb.over ? 'The fight is over.' : unseenNow ? 'Something moves out of sight' : !cur ? '' : cur.side === 'foe' ? (seenCur ? 'Round ' + cb.round + ' · it moves' : 'Something moves out of sight') : 'Round ' + cb.round + ' · ' + (cur.downed ? 'Downed' : cur.ap + ' AP') + (curOwner && curOwner.id !== me ? ' · their move' : ''),
@@ -1712,8 +1709,8 @@ export class CombatLogic extends DCLogic {
     const bpBtn = (h) => 'display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: ' + h + 'px; padding: 0 10px 0 8px; border-radius: 7px; border: 1px solid ' + (S.bp ? '#FFFFFF' : '#3A4760') + '; background: ' + (S.bp ? '#1C2536' : 'transparent') + '; color: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer';
     const bp = { can: canPack, open: () => this.setState({ bp: !S.bp }), pressed: S.bp ? 'true' : 'false', btnStyle: bpBtn(28) + '; margin-left: auto', miniStyle: bpBtn(26),
       title: (S.bp ? 'Close your backpack' : 'Open your backpack: draw, put away, drop, light armour') + ' (key B)',
-      show: !!bpV, who: bpV ? bpV.who.toUpperCase() : '', apText: bpV ? (onField ? 'free' : bpV.ap + ' AP') : '', // rules 1.55 item 70: on the field AP never limits
-      rule: onField ? 'On the field gear changes cost nothing: no turns here' : '1 AP a hand · a two-handed draw 2 · a drop 0 · light armour 1 a piece',
+      show: !!bpV, who: bpV ? bpV.who.toUpperCase() : '', apText: bpV ? bpV.ap + ' AP' : '',
+      rule: '1 AP a hand · a two-handed draw 2 · a drop 0 · light armour 1 a piece',
       // the field's Give and Use on… (the path map's own Give module, GiveTab.tsx, mounted here: the fight screen has no sheet)
       hasGive: !!bpV && onField, reason: bpV ? bpV.reason : '', hasReason: !!(bpV && bpV.reason), close: () => this.setState({ bp: false }),
       sections: bpV ? bpV.sections.map((sc) => ({ key: sc.key, title: sc.title, isEmpty: !sc.rows.length, empty: sc.empty,
@@ -1725,13 +1722,13 @@ export class CombatLogic extends DCLogic {
             style: 'min-height: 30px; padding: 0 10px; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; white-space: nowrap; ' + (a.off ? 'border: 1px solid #232D3F; background: transparent; color: #5B6577; cursor: default' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; cursor: pointer') })) })) })) : [] };
     const T = {
       tabs, tabPanel, showWho: !mePanel, lock, lockMsg, vow: vowV, bp,
-      mine: mineTurn, waiting: !mineTurn, wait, ytWord: onField ? 'NO TURNS HERE' : 'YOUR TURN', ytInk: curInk, ytSub: apFree ? 'AP FREE' : 'ROUND ' + cb.round + ' · ' + ap + ' AP',
+      mine: mineTurn, waiting: !mineTurn, wait, ytWord: 'YOUR TURN', ytInk: curInk, ytSub: (fv && fv.roundText ? fv.roundText.toUpperCase() : 'ROUND ' + cb.round) + ' · ' + ap + ' AP', // rules 1.62 item 4906: on the field, its round of its rounds
       ytStyle: 'position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; margin: 0 6px; padding: 9px 18px; background: #FFFFFF; color: #0A0D13; box-shadow: -6px 0 0 ' + curInk + ', 0 6px 18px rgba(0, 0, 0, 0.45)',
-      who, zoomPc: zoomer(this, who.img, who.name, 'portrait'), apText: apNow, apPips, apFree, groups, sel, pad,
+      who, zoomPc: zoomer(this, who.img, who.name, 'portrait'), apText: apNow, apPips, groups, sel, pad,
       padTCls: 'phc-a-rise' + pt.cls, padT: pt.val || { groups: [] }, padWShow: pw.show, padWCls: 'phc-a-rise' + pw.cls, padW: pw.val || {}, padDShow: pd.show, padDCls: 'phc-a-rise' + pd.cls, padD: pd.val || {},
       tgtList: tp.show ? [{ ...tp.val, key: 'tgt-' + tp.val.id, cls: 'phc-a-right' + tp.cls }] : [],
       cantConfirm, noConfirm: isPerkInfo(S.action), confirmText: S.action === 'draw' && isMagic ? 'Click a tile to draw' : S.action === 'pickup' && pickPile && pickSel ? pickupLabel(pickPile, pickUntick) : 'Confirm', confirmSfx: isMagic ? 'none' : undefined,
-      confirm: () => this.confirm(), endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn || onField, noTurns: onField, noTurnsText: NO_TURNS, // rules 1.55 item 67
+      confirm: () => this.confirm(), endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn, // rules 1.62 item 4906: End turn on the field too
     };
     // The grid fits the room beside the pinned column (fitGrid measures; it runs again on resize and when the map changes).
     const zoom = this._zoom || 1, fitKey = cb.map.w + 'x' + cb.map.h;
@@ -1752,7 +1749,7 @@ export class CombatLogic extends DCLogic {
     this._quick = hidden ? quick : null;
     const mini = { show: hidden && mineTurn,
       style: 'position: fixed; right: ' + (g.sandbox ? 64 : 20) + 'px; bottom: 16px; z-index: 12; width: min(380px, calc(100vw - 32px)); display: flex; flex-direction: column; gap: 7px; padding: 10px 12px; border-radius: 12px; background: rgba(16, 21, 31, 0.97); border: 1px solid #2E3A50; border-top: 3px solid #FFFFFF; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6)',
-      pips: apPips.map((p) => ({ ...p, style: p.style.replace('height: 14px', 'height: 8px') })), apFree,
+      pips: apPips.map((p) => ({ ...p, style: p.style.replace('height: 14px', 'height: 8px') })),
       cmds: quick.map((c) => { const on = S.action === c.action || (c.action === 'shot' && melee && S.action === 'melee');
         return { key: c.key, label: c.label, title: c.key + ' · ' + c.label + ' · ' + c.sub, off: !!c.off, pressed: on ? 'true' : 'false', action: c.action,
           pick: () => this.pickAction(c.action),
@@ -1796,7 +1793,7 @@ export class CombatLogic extends DCLogic {
       // The header's right cluster (UI pass, screens/shell.js): room, Save, ⚙, ⚑, Leave.
       ...shellVals(this, 'combat'),
       roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
-      turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : onField ? 'NO TURNS HERE' : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
+      turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
       initiative, tiles, apPips, apText: apNow, ytWord: T.ytWord, groups, sel, hasTarget, squad, say, talk, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},
       // The whole fight (the last 120 lines), newest first: the box is a reversed column, so it rests on the newest line
       // and scrolls up into the fight's history (Leon, 11 Nov 2026: it showed six lines and no way back).
@@ -1808,8 +1805,8 @@ export class CombatLogic extends DCLogic {
         // Rules 1.9 (item 695): what the loot cap held back, for the host's eyes only (the engine strips lootLog from
         // everyone else's view).
         ...(me === g.hostId && cb.lootLog && cb.lootLog.length ? [{ key: 'lootlog', text: lootLogLine(cb.lootLog), isPlain: true, isPatron: false, pl: {} }] : [])].reverse(),
-      cantConfirm, noConfirm: T.noConfirm, confirm: T.confirm, endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn || onField, noTurns: onField, noTurnsText: NO_TURNS, // rules 1.55 item 67: the field has no turns
-      toStory: () => go(homeScreen(g)), toStoryLabel: g.run ? (g.phase === 'lobby' ? 'Back to the room ›' : 'Back to the map ›') : 'Back to the story ›', report: openReport, over: !!cb.over && !fv, // a field saved by 0.28.2 shows its vote, not the end card
+      cantConfirm, noConfirm: T.noConfirm, confirm: T.confirm, endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn, // rules 1.62 item 4906: the field has turns
+      toStory: () => go(homeScreen(g)), toStoryLabel: g.run ? (g.phase === 'lobby' ? 'Back to the room ›' : 'Back to the map ›') : 'Back to the story ›', report: openReport, over: !!cb.over && !fv && !(g.run && cb.over === 'win'), // rules 1.62 item 4903: a run's won fight has no end card (VICTORY is its banner; the leave goes straight on) // a field saved by 0.28.2 shows its vote, not the end card
       field: fieldVals(fv), overColor: won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157', overKicker: won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT',
       overTitle: cb.name, overText: (cb.summary || '') + (g.sandbox || g.run ? '' : ' The Narrator picks up the story.') + (me === g.hostId && cb.lootLog && cb.lootLog.length ? ' ' + lootLogLine(cb.lootLog) : ''),
     };
@@ -1818,17 +1815,10 @@ export class CombatLogic extends DCLogic {
   tileClick(k) {
     // In the overview a click on a tile goes back to the camera, centred there; it never acts.
     if (this._overview) { this.toggleOverview(k); return; }
-    const S = this.state, g = getState().game, F = fightNow(g, getState().me.id, S.fieldAs), cb = F.cb, cur = F.cur;
-    if (fieldView(g, getState().me.id, S.fieldAs) && !F.open) return; // rules 1.55 item 66: a field saved by 0.28.2 is only left
+    const S = this.state, g = getState().game, F = fightNow(g), cb = F.cb, cur = F.cur;
+    if (fieldView(g, getState().me.id) && !F.open) return; // rules 1.55 item 66: a field saved by 0.28.2 is only left
     if (MAGIC.includes(S.action) && cur && cur.mg) return this.magicClick(k, cur);
     const u = cb.units.find((x) => x.pos === k && !x.dead);
-    // Rules 1.55 item 69: on the field a click on another of my own characters makes it the one I act as, unless the
-    // picked action takes it as its target (a Bond, a stim on it).
-    if (F.open && u && cur && u.id !== cur.id && this.mineOnField(g, u)) {
-      const p = this._flow ? this._flow.click({ id: u.id, side: u.side }, k) : null;
-      if (p && 'target' in p) return this.setState(p);
-      return this.actAs(u.id);
-    }
     // A perk action that wants a target or a tile takes the click (an ally, anyone, or the tile itself).
     // Its own target first; then a picker's grid field (a second tile, another unit); else the click re-aims the target.
     if (this._vow && this._vow.click(u)) return;
@@ -1855,12 +1845,10 @@ export class CombatLogic extends DCLogic {
   }
 
   /** Rules 1.55 item 69: is this unit one of my own characters on the field (not a companion)? */
-  mineOnField(g, u) { return !!(u && u.charId && !u.companion && !u.dead && g.characters[u.charId]?.owner === getState().me.id); }
   /** Rules 1.55 item 69: act as this character on the field (the action bar, the sheet and the ring follow it). */
-  actAs(id) { this.setState({ fieldAs: id, target: null, target2: null, tile: null, readTile: null, hover: null }); }
   /** A held heart's move (rules 1.5): Pump, Steady, Let go, Feed, Heart Overwatch on or off. */
   heartAct(id) {
-    const g = getState().game, cur = fightNow(g, getState().me.id, this.state.fieldAs).cur; if (!cur || !cur.mg) return;
+    const g = getState().game, cur = fightNow(g).cur; if (!cur || !cur.mg) return;
     // Rules 1.8: a feeling pump ('pump:<feeling>') and Revert Pump. What each sends is the engine's descriptor.
     const [aid, feeling] = id.startsWith('pump:') ? ['pump', id.slice(5)] : [id, null];
     if (aid !== 'heartwatch' && aid !== 'letgo') this.revealHeart(); // what changed, in view
@@ -1870,7 +1858,7 @@ export class CombatLogic extends DCLogic {
   }
   /** A tile click while a spell is chosen: draw there, pick a pattern, or aim. */
   magicClick(k, cur) {
-    const S = this.state, m = this._mg || {}, g = getState().game, cb = fightNow(g, getState().me.id, S.fieldAs).cb;
+    const S = this.state, m = this._mg || {}, g = getState().game, cb = fightNow(g).cb;
     if (S.action === 'draw') { if (m.word) { const a = sendDescriptor(g, cur.id, 'draw', { word: m.word, tile: k, ...(m.stroke ? { stroke: m.stroke } : {}) }, getState().me.id); if (a) act(a); if (S.stroke) this.setState({ stroke: null }); } return; }
     if (S.action === 'evoke') {
       const r = evokeClick(m.evTile ? m.evV || null : null, cb, cur, k, S.evc || {});
@@ -1883,7 +1871,7 @@ export class CombatLogic extends DCLogic {
   }
 
   confirm() {
-    const cur = fightNow(getState().game, getState().me.id, this.state.fieldAs).cur, a = this.state.action, S = this.state, m = this._mg || {};
+    const cur = fightNow(getState().game).cur, a = this.state.action, S = this.state, m = this._mg || {};
     if (isPerkInfo(a)) return; // a row to read: nothing to run (and never an attack on the picked target)
     // The flow: Confirm sends the engine's action for the picks (null: not ready; the panel says why).
     if (this._flow) {

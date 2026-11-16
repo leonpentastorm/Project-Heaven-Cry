@@ -27,7 +27,7 @@ import { canReact, react, loseReactions, dropHeldShot } from './tactics';
 import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
 import { grantGoods, lootToPack } from './containers';
-import { itemWords, wordCostMods, immune } from './effects/core';
+import { itemWords, wordCostMods, immune, mendShown } from './effects/core';
 import { price, priced, costOf, whyNot, canPay, pay, refund, apFor, resGive } from './effects/cost';
 import { masteredWords } from './sigilgrowth';
 import { tilesIn, rngOf } from './kit';
@@ -571,8 +571,7 @@ export function heal(t: Unit, n: number, cb?: Combat, by: Unit | null = null, ki
   // (step a5: the one heal path, effects/output.ts mend; the air's band is the heal's own named multiplier)
   const pct = gate && n > 0 ? gatePct(gate.of) * (gate.own ?? 1) : 0; // the percent gate (heal-shield-percent-spec.md section 4): a source that names it
   const r = mend(cb || null, by, t, { kind: 'heal', base: n, round: 'none', min_pct: pct }, { mults: [term(cb ? manaBand(manaOf(cb)).healing_given_mult ?? 1 : 1, 'the air')], healKind: kind });
-  if (r.revived) { if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp, revive: true }); return ' · ' + t.name + ' is back up at ' + t.hp + ' HP'; }
-  if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored }); return ' · ' + t.name + ' heals ' + r.restored;
+  return mendShown(cb || null, t, 'heal', r); // the one mend's effect and words (effects/core.ts; rules 1.62 item 4905)
 }
 /** Magic forced movement (GALE, PULL, Control push and pull): knockback immunity and the 'forced_move' hook
  * {u, by, tiles, how: 'magic', cancel} can stop it (hooks gap A3). */
@@ -1051,7 +1050,7 @@ export function previewOutburst(cb: Combat, u: Unit, designId: string, aim?: str
   if (oc.fail) return no(oc.fail);
   const cost = Math.max(0, Math.round(oc.mp)), ap = priced({ cb, u }, 'begin', Math.max(0, oc.ap), undefined, { design: d.id }).ap + (release ? SOUL_AP.release : 0), range = oc.range, strain = Math.max(0, oc.strain), hp = Math.max(0, Math.round(oc.hp || 0));
   if (hp && u.hp <= hp) return { ok: false, why: 'Paying ' + hp + ' HP would drop you.', cost, ap, range, strain, stage: 0, hp };
-  { const no = whyNot(cb, u, ap); if (no) return { ok: false, why: no, cost, ap, range, strain, stage: 0, hp }; }
+  { const no = whyNot(cb, u, ap, { as: { type: 'combat/outburst', unitId: u.id, design: d.id } }); if (no) return { ok: false, why: no, cost, ap, range, strain, stage: 0, hp }; } // rules 1.62 item 4904: the action's own credit (a Brief's cut, Encore) counts, as in the reducer
   if (m.emanator && m.mp < cost) return { ok: false, why: 'Needs ' + cost + ' MP (' + m.mp + '): Syphon first.', cost, ap, range, strain, stage: 0, hp };
   const relMult = release ? oc.relMult || 1 : 1, relAll = release ? oc.relAll || 1 : 1, relNotes: string[] = release ? oc.relNotes || [] : [];
   if (release) { const why = aimError(cb, u, d, aim, range); if (why) return { ok: false, why, cost, ap, range, strain, stage: 0, hp, relMult, relAll, relNotes }; }

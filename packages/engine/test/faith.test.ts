@@ -162,6 +162,25 @@ describe('prayer in a fight (faith/pray through combat/pray)', () => {
 });
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Rules 1.62 item 4905 (Leon on live 0.29.0: "Faith healing prayer have no heal effect. still give hp but no green
+// effect and number"): a prayer's heal or shield shows the one mend's effect, as any heal does.
+describe("a prayer's heal and shield are shown (the one mend's effect)", () => {
+  it('a Whisper of Health puts the heal effect with the HP restored on the fight', () => {
+    const h = holy({ patron: 'mother_ember' }); h.ally.hp = 50;
+    h.pray('whisper', 'health', { targetId: h.ally.id });
+    const heals = fx(h.cb, 'heal'); expect(heals.length).toBe(1);
+    expect(heals[0]).toMatchObject({ target: h.ally.id, amount: h.ally.hp - 50 });
+  });
+  it('a Hymn that heals (Warm Hands) shows its number; a shield prayer shows the ward', () => {
+    const h = holy({ patron: 'mother_ember', devotion: 10, faith: 9 }); h.ally.hp = 40;
+    h.pray('hymn', 'mother_ember.warm_hands', { targetId: h.ally.id });
+    expect(fx(h.cb, 'heal').filter((e) => e.target === h.ally.id && e.amount === h.ally.hp - 40).length).toBe(1);
+    const p = holy(); p.pray('whisper', 'protection', { targetId: p.ally.id });
+    expect(fx(p.cb, 'boon').filter((e) => e.word === 'ward' && e.target === p.ally.id && e.amount === p.ally.shield).length).toBe(1);
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
 describe('the Whispers (six, and Rebuke since rules 1.21)', () => {
   it('Luck: +2 on the next attack roll, then gone', () => {
     const h = holy(); h.pray('whisper', 'luck', { targetId: h.me.id });

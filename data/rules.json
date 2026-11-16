@@ -408,6 +408,14 @@
     "note": "Class Roster Revision 3. The rule and every number of it (the level a class is earned at, whose class it is, the attribute and the level of each rank, the shelved advanced classes) are written once, in classes.json `assignment`; the engine reads them there (character.ts CLASS_RULES). The Revision 2 numbers once kept here (signature totals 13 and 18, tutors) are retired."
   },
   "combat": {
+    "cards": {
+      "about": "Rules 1.62 item 4900: the fight's big banners in the middle of the screen (apps/web/src/game/turnIntro.tsx draws them): `hold_ms`, the least time each is fully on screen (the combat speed never shortens it); the words of each (`joined.fog`: BATTLE START's line when a hostile in the fight is out of the party's sight, rules 1.62 item 4902). The field's banner is survival.json run.after_fight.field.",
+      "hold_ms": 1250,
+      "joined": { "name": "BATTLE START", "fog": "Hostiles in the fog: every step costs AP" },
+      "won": { "name": "VICTORY" },
+      "lost": { "name": "DEFEAT" },
+      "provisional": true
+    },
     "grid": {
       "tile_m": 1.5,
       "shape": "square",

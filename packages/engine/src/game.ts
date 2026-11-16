@@ -651,6 +651,7 @@ function reduce(g: GameState, a: Action, by: string) {
   if (a.type.startsWith('sandbox/')) { sandboxAction(g, a as SandboxAction, by); return; }
   if (a.type.startsWith('faith/')) { faithAction(g, a as FaithAction, by); return; } // rules 1.6 (faith.ts)
   if (g.sandbox && SANDBOX_REFUSED.test(a.type) && !SANDBOX_STORY.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
+  fieldRounds(g); // rules 1.62 item 4907: an older field takes its rounds
   if (a.type.startsWith('run/')) { runAction(g, a, by); return; } // rules 1.39 (run/state.ts)
   // rules 1.55 item 66: a field saved by 0.28.2 (the story phase, no running fight) is only left
   if (g.run?.state === 'field' && !g.combat?.field && (FREE_WORLD.test(a.type) || a.type.startsWith('combat/'))) fail('Leave this field: it was saved by an older version of the game, and only leaving works on it (everyone marks Leave).');
@@ -1612,8 +1613,8 @@ function startStoryFight(g: GameState, combat: NonNullable<NarratorTurn['combat'
 function combatAction(g: GameState, a: Action, by: string) {
   const cb = g.combat; if (!cb || g.phase !== 'combat') fail('No fight is on.');
   if (cb!.over) fail('The fight is over.');
-  // rules 1.55 item 62: on the field there is no turn order: the unit the action names acts (its owner's, checked below)
-  const fld = !!cb!.field, u = fld ? fieldUnit(cb!, a) : active(cb!)!;
+  // rules 1.62 item 4906: the field is turns too: the unit whose turn it is acts
+  const fld = !!cb!.field, u = active(cb!)!;
   // rules 1.14: the fight waits for the Narrator's answer to an attempt (nobody acts, the turn can't end)
   // A ruling left pending with no Narrator to answer it (a Survival run, the Proving Ground, an AI Narrator gone, a human
   // Narrator away) never holds the fight: it is given back at once and the action goes on.
@@ -1766,16 +1767,6 @@ function combatAction(g: GameState, a: Action, by: string) {
   runEnemies(g);
 }
 
-/** Rules 1.55 item 62: the unit a field action names, with no turn order: one of the squad, standing, never a turn to end. */
-function fieldUnit(cb: Combat, a: Action): Combat['units'][number] {
-  if (a.type === 'combat/end-turn') fail(NO_TURNS);
-  const u = cb.units.find((x) => x.id === (a as any).unitId); if (!u || u.side === 'foe') fail('Pick one of your squad.');
-  if (u!.dead) fail(u!.name + ' is dead: the dead stand up when the squad leaves the field.');
-  if (u!.downed) fail(u!.name + ' is Downed: a friend\'s stim gets them up.');
-  return u!;
-}
-/** Rules 1.55 item 62: the words for ending a turn on the field. */
-export const NO_TURNS = 'No turns here: act freely, then vote to leave.';
 /** The name the trigger `acted` carries for a reducer action (Classes 3.0 P2): a perk or class action's own id, a
  * technique's id, a move's kind, an attack's 'attack' (its mode is ctx.mode), else the verb's cost site. null: not an
  * action of the unit's own (ending the turn, declining a window, words) or one that fires its own (Analyze). */
@@ -2121,11 +2112,12 @@ function focusLine(c: Character): string {
   return bits.length ? ' · ' + bits.join(', ') : '';
 }
 
+/** Rules 1.62 item 4906: the field's last round has ended (combat.ts endTurn marks it). */
+const fieldDone = (cb: Combat): boolean => !!(cb.field && typeof cb.field === 'object' && cb.field.done);
 /** Enemies act on their own turns until a PC is up or the fight ends. */
 function runEnemies(g: GameState) {
   const cb = g.combat!;
-  if (cb.field) { clearAction(cb); return; } // rules 1.55 item 62: no turns on the field, so nobody else's
-  for (let guard = 0; guard < 40 && !checkOver(cb); guard++) {
+  for (let guard = 0; guard < 40 && !checkOver(cb) && !fieldDone(cb); guard++) { // rules 1.62 item 4906: a field's last round ends it
     const u = active(cb)!;
     // A player's unit Downed, killed or out of the fight on its own turn (a reaction, a trap, a barrel, a Mana Short), or
     // already Downed when the fight began, can't act or press End turn: its turn passes on by itself.
@@ -2143,6 +2135,7 @@ function runEnemies(g: GameState) {
     if (!checkOver(cb)) endTurn(cb, g.rng);
   }
   clearAction(cb);
+  if (fieldDone(cb) && g.run?.state === 'field') { leaveField(g); return; } // rules 1.62 item 4906: the party leaves by itself
   if (cb.over) { if (g.sandbox) sandboxOver(g); else if (g.run) runFightOver(g); else finishCombat(g); }
 }
 
@@ -2920,7 +2913,8 @@ export function strikeFromWorld(targetId: string, ap: number, perform: (cbx: Com
 
 /** Attacking from the overworld starts the fight on this map, everyone where they stand (spec: Overworld rounds).
  * Hidden (sneaking, unseen): an ambush; from the target's front the attacker must pass Ingenuity first. The fight opens
- * on the attacker's turn with the AP they have left. Seen: the attack still lands, but the attacker sits out round 1. */
+ * on the attacker's turn on its full turn AP (rules 1.62 item 4902), the strike paid from it. Seen: the attack still
+ * lands (paid from the area map's AP), but the attacker sits out round 1. */
 function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['units'][number], t: Combat['units'][number], mode: AttackMode, perform?: (cbx: Combat, att: Combat['units'][number]) => string | null) {
   if (!perform) { const pv = previewAttack(cb, u, t, mode); if (!pv.ok) fail(pv.why!); }
   const npc = npcsOf(g).find((n) => n.id === t.id)!;
@@ -2952,6 +2946,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   push(g, { kind: 'combat', text: 'Combat: ' + fightName + (hidden ? ' (' + c.name + ' strikes unseen)' : '') });
   // What each player said this overworld round carries into the fight it opens, as their round-1 line (Verse of War).
   for (const x of cbx.units) { const pc = x.charId ? g.characters[x.charId] : null, t = pc ? g.story.spoken?.[pc.owner] : null; if (pc && t) (cbx.notes ||= []).push(pc.name + ' (round 1): "' + String(t).slice(0, 400) + '"'); }
+  const firstUp = active(cbx);
   sightQuietly(cbx, () => {
     if (hidden) { cbx.order = [att.id, ...cbx.order.filter((id) => id !== att.id)]; cbx.turn = 0; say(cbx, c.name + ' strikes from hiding: the fight opens on their turn.'); hideUnit(cbx, att, 'struck from hiding'); }
     // Everyone else still sneaking unseen starts the fight Hidden too (rules 1.3).
@@ -2961,9 +2956,13 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   // The opening strike is an action of the fight like any other (spotlight.ts): its fx start here, so a crit, a takedown,
   // a revive or an intervention in it cuts in and slows its playback (decision 113).
   const before = cbx.units.map((x) => ({ id: x.id, dead: x.dead, downed: x.downed, hp: x.hp }));
-  setAp(att, apNow); markAction(cbx);
+  // Rules 1.62 item 4902: the ambush is the attacker's first turn of the fight, on its full turn AP (startCombat began
+  // the turn of whoever the initiative put first; the attacker's own begins here); in the open the strike is the area
+  // map's and is paid from the AP left there.
+  if (hidden) { if (firstUp !== att) beginTurn(cbx, g.rng); } else setAp(att, apNow);
+  const full = att.ap; markAction(cbx);
   if (perform) { const e = perform(cbx, att); if (e) say(cbx, c.name + ' can\'t: ' + e); } else resolveAttack(cbx, g.rng, att, tgt, mode, c);
-  if (hidden && silentTakedown(g, cbx, c, att, tgt)) return; // no fight opens: its moments are thrown away with it
+  if (hidden && silentTakedown(g, cbx, c, att, tgt, Math.max(0, apNow - (full - att.ap)))) return; // no fight opens: its moments are thrown away with it
   songTriggers(g, att, c, before);
   critMoment(g);
   if (!hidden) { const cur = active(cbx); if (cur && cur.id === att.id) endTurn(cbx, g.rng); }
@@ -2973,7 +2972,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
  * hostile able to see you, doesn't open the fight: a silent takedown. The fight is unwound back to the area map (the
  * others stay tokens where they stood, the body is the Narrator's), the AP the blow cost is spent and you stay hidden.
  * With no hostile left at all the fight simply ends as won (checkOver). PROVISIONAL, spec 14. */
-function silentTakedown(g: GameState, cbx: Combat, c: Character, att: Combat['units'][number], tgt: Combat['units'][number] | undefined): boolean {
+function silentTakedown(g: GameState, cbx: Combat, c: Character, att: Combat['units'][number], tgt: Combat['units'][number] | undefined, /** the area map's AP after the blow's cost */ apAfter: number): boolean {
   if (!tgt?.dead || !att.hidden || att.dead) return false;
   if (!holdersOf({ c }).some((h) => h.key === 'class:shade.silent_kill')) return false;
   const others = cbx.units.filter((v) => v.side === 'foe' && !v.dead && !v.downed && !v.surrendered);
@@ -2987,7 +2986,7 @@ function silentTakedown(g: GameState, cbx: Combat, c: Character, att: Combat['un
   magicOut(g, cbx, false);
   const back = others.map((u) => { const was = npcsOf(g).find((n) => n.id === u.npcId); return { ...(was || {}), id: u.npcId || u.id, name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: u.pos, portrait: u.img || undefined, ...(u.hp < u.maxHp ? { hp: u.hp } : {}) } as Npc; });
   const ids = new Set(back.map((n) => n.id)); g.story.npcs = [...(g.story.npcs || []).filter((n) => !ids.has(n.id) && n.id !== tgt.npcId), ...back];
-  (g.story.ap ||= {})[c.id] = Math.max(0, att.ap); (g.story.sneak ||= {})[c.id] = true; (g.story.hidden ||= {})[c.id] = true;
+  (g.story.ap ||= {})[c.id] = apAfter; (g.story.sneak ||= {})[c.id] = true; (g.story.hidden ||= {})[c.id] = true;
   for (const l of cbx.log.slice(1)) push(g, { kind: 'system', text: l, act: true, charId: c.id });
   push(g, { kind: 'system', text: c.name + ' takes ' + tgt.name + ' down without a sound (Silent Kill): nobody else saw it, and no fight opens.', charId: c.id });
   g.combat = null; g.phase = 'story'; g.story.await = 'players'; musicAfterFight(g); g.story.needs = true;
@@ -3368,7 +3367,7 @@ function runAction(g: GameState, a: Action, by: string) {
     case 'run/sell': { const res = shopSell(g, by, a); if ('no' in res) fail(res.no); return; } // rules 1.42 (spec rule 27)
     case 'run/leave': { // rules 1.42 (spec rule 11, 8.3): Ready to leave; the party goes when everyone is, or when the host closes
       const field = g.run?.state === 'field', res = leaveShop(g, by, !!a.close); if ('no' in res) fail(res.no);
-      if (field) { if ('left' in res && res.left) { if (g.combat?.field) runFieldClose(g); else oldFieldClose(g); push(g, { kind: 'system', head: 'REWARDS', text: 'The squad leaves the field. Take your pick.' }); runPicksDone(g); } return; } // rules 1.55 items 65, 66
+      if (field) { if ('left' in res && res.left) leaveField(g); return; } // rules 1.55 items 65, 66; rules 1.62 item 4906
       if ('left' in res && res.left) push(g, { kind: 'system', head: 'THE SHOP', text: (res.line ? res.line + ' ' : '') + 'The squad is back on the trail.' });
       return;
     }
@@ -3566,7 +3565,7 @@ function runFightOver(g: GameState) {
     return;
   }
   // rules 1.55 item 61: the field: the same fight, still running, with no enemies left
-  cb.over = null; cb.field = true; delete cb.window;
+  cb.over = null; delete cb.window; cb.field = { from: cb.round + 1, of: FIELD.rounds, round: 1 }; // rules 1.62 item 4906: the field's rounds
   for (const u of cb.units) if (!u.dead) shockClear(cb, u, 'fight over'); // rules 1.56 item 4508: the Mana Shock ends with the fight, the field included
   const xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), offers: Record<string, RunOffer> = {};
   sbChange(g, chars, () => { // the XP may bring a level (its HP): the sheets take it, and the fighters with them
@@ -3578,11 +3577,27 @@ function runFightOver(g: GameState) {
   });
   { const before = r.stats.fights[r.stats.fights.length - 1]?.cores || {}, burnt = Object.fromEntries(chars.map((c) => [c.id, before[c.id] != null ? coresBurnt(before[c.id], coresCarried(c)) : 0])); // the sheets are the fight's now (sbChange)
     r.stats = { ...r.stats, fights: r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, burnt } : f)) }; }
-  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits' + (packCount(k).mags > 0 ? ', the supply pack,' : '') + ' and a pick: the materials' + (Object.values(offers).some((o) => o.weapons.length) ? ' or a weapon' : '') + '. Walk the field, then vote to leave.' });
+  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits' + (packCount(k).mags > 0 ? ', the supply pack,' : '') + ' and a pick: the materials' + (Object.values(offers).some((o) => o.weapons.length) ? ' or a weapon' : '') + '. The field lasts ' + counted(FIELD.rounds, 'round') + ' of turns; vote to leave sooner.' });
   r.renown = renownOf(chars); // rule 6: XP past level 20 counts to the score
   r.out = []; r.state = 'field'; r.ready = {}; r.offers = offers;
   if (k === 'elite' || k === 'gate') r.lasting = Object.fromEntries(chars.map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); // rules 1.43 (rule 41): an Elite's pick of kit
   r.note = { node: n.id, kind: n.kind, xp, credits: cr, ammo: {}, won: true, rounds: cb.round };
+  // Rules 1.62 item 4906: the field opens on a new round (the killing turn ends here), the party's turns in initiative order.
+  endTurn(cb, g.rng, { newRound: true }); runEnemies(g);
+}
+/** Rules 1.62 item 4906: the party leaves the field (a passed vote, or its last round ended): the fight's own end, the
+ * rewards' picks. The one path for both. */
+function leaveField(g: GameState) {
+  const r = g.run!; r.state = 'reward'; r.ready = {};
+  if (g.combat?.field) runFieldClose(g); else oldFieldClose(g);
+  push(g, { kind: 'system', head: 'REWARDS', text: 'The squad leaves the field. Take your pick.' }); runPicksDone(g);
+}
+/** Rules 1.62 item 4907: a field saved by 0.29 or 0.30 (Combat.field true, no rounds) is given its rounds from the next
+ * round: the turn under way ends there, as a field opening's does. */
+function fieldRounds(g: GameState) {
+  const cb = g.combat; if (!cb || cb.field !== true || g.phase !== 'combat') return;
+  cb.field = { from: cb.round + 1, of: FIELD.rounds, round: 1 };
+  endTurn(cb, g.rng, { newRound: true }); runEnemies(g);
 }
 /** Rules 1.61 party fit item 2: the HP a character stands up at after a won fight (the one copy: the dead of rule 5 and
  * the Downed, both at run.dead_return_hp in a run), never above its max HP. */
@@ -3953,7 +3968,7 @@ function freshRound(g: GameState, charId: string | undefined) {
 function freeAgain(g: GameState) { g.story.ap = {}; g.story.ended = {}; g.story.spoken = {}; g.story.needs = false; g.story.work = null; g.story.await = 'players'; }
 /** Rules 1.55 item 35 (`survival.json field`): what the area map carries back to the character, and the ops that give
  * something lasting. */
-const FIELD: { lasting_ops: string[] } = (survivalFieldJ as any).field;
+const FIELD: { lasting_ops: string[]; rounds: number } = (survivalFieldJ as any).field;
 /** Why an item's action is refused on the field (rules 1.55 item 35), or null: at will (no limit that holds on the
  * field), every cost besides AP a resource the area map rebuilds, and something lasting (or nothing the data states:
  * an item's own handler, doubtful). Prayers are left to their own slots and waits. */

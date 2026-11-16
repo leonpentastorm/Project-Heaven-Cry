@@ -27,6 +27,10 @@ function cached<T>(g: any, key: string, f: () => T): T {
   if (!m.has(key)) m.set(key, f());
   return m.get(key);
 }
+/** The reducer's own verdict on a descriptor's action with these picks (previewDescriptor ends in previewAction, the
+ * reducer on a copy), once per game state: what a button that sends that action reads for its enabled state (rules 1.62
+ * item 4904), never a second legality check of the screen's. */
+export const verdictOf = (g: any, unitId: string, me: string | null, id: string, picks: Picks): DescriptorPreview | null => cached(g, 'pv|' + unitId + '|' + me + '|' + id + '|' + JSON.stringify(picks), () => { try { return previewDescriptor(g, unitId, id, picks, me); } catch { return null; } });
 /** Every descriptor of this unit for this viewer, once per game state. */
 export const descriptorsOf = (g: any, unitId: string, me: string | null): ActionDescriptor[] => cached(g, 'list|' + unitId + '|' + me, () => { try { return actionsFor(g, unitId, me); } catch { return []; } });
 

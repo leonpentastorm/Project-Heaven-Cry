@@ -81,6 +81,25 @@ describe('the Outbursts tab (rules 1.5)', () => {
     expect(G.combat!.units.find((v) => v.id === u.id)!.mg!.held).toMatchObject({ design: 'fb', stage: 0 });
   });
 
+  // Rules 1.62 item 4904 (Leon on live 0.29.0: "Begin outbust button greyed out when you can start outburst"): the
+  // button reads the reducer's own verdict on the action it sends, with the action's credit (a Brief's cut).
+  it('Begin is offered exactly when the reducer takes it: the cut of a Brief counts', () => {
+    const { u } = soulFight('heart-brief');
+    const U: any = G.combat!.units.find((v) => v.id === u.id)!; U.ap = 1; U.call = { brief: { by: 'ally', side: 'pc', cuts: [1] } }; snap = view(); // the mark a Brief leaves (calls/handlers.ts)
+    const L = new CombatLogic({}) as any;
+    L.setState({ action: 'outburst', design: 'fb', obMode: 'begin' });
+    let pad = L.renderVals().turnPanels[0].pad;
+    expect(pad.beginOff).toBe(false); // 1 AP and a Brief's cut of 1: the 2 AP Begin is legal
+    pad.begin();
+    expect(G.combat!.units.find((v) => v.id === u.id)!.mg!.held).toMatchObject({ design: 'fb', stage: 0 });
+    // No credit, 1 AP: refused by the reducer, and greyed with its words.
+    const { u: u2 } = soulFight('heart-brief-2');
+    const V: any = G.combat!.units.find((v) => v.id === u2.id)!; V.ap = 1; snap = view();
+    const L2 = new CombatLogic({}) as any; L2.setState({ action: 'outburst', design: 'fb', obMode: 'begin' });
+    pad = L2.renderVals().turnPanels[0].pad;
+    expect(pad.beginOff).toBe(true); expect(pad.beginTitle).toMatch(/Needs 2 AP/);
+  });
+
   it('holding: the HEART panel at the top of the tab; Pump from the panel; Release previews and fires', () => {
     const { u } = soulFight('heart-b');
     doAct({ type: 'combat/outburst', unitId: u.id, design: 'fb', hold: true });

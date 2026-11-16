@@ -224,10 +224,11 @@ export interface Unit {
   drops?: import('./loot').Drops;
 }
 export interface Combat { /** Rules 1.47: the effects a run's fight keeps for its tally (run/tally.ts); absent in every other fight. */ tape?: import('./run/tally').TapeEv[]; /** No XP or weapon kills: the fight started on people who weren't hostile (spec: Anyone is a target). */ noXp?: boolean; /** Rules 1.15: the fight's level (the squad's average, rounded down, unless set); absent in a fight saved before it. */ level?: number; name: string; map: MapDef; units: Unit[]; order: string[]; turn: number; round: number; difficulty: string; log: string[]; /** 'extracted': the squad was lifted out (RTC Contractor's Extraction): neither won nor lost. */ over: null | 'win' | 'loss' | 'extracted'; summary?: string;
-  /** Rules 1.55 item 61: a won Survival fight's field: the same fight, still running, with no enemies left. No turn
-   * order (game.ts combatAction), AP never limits (effects/cost.ts apFor, pay), turns and rounds do not advance (endTurn),
-   * the fight does not end by itself (checkOver): it ends when the party leaves (game.ts run/leave). */
-  field?: true;
+  /** Rules 1.55 item 61: a won Survival fight's field: the same fight, still running, with no enemies left; rules 1.62
+   * item 4906: it is turns: `of` rounds from round `from` (`round`: the field's round now, 1 to `of`); `done` once the
+   * last has ended (game.ts leaveField). The fight does not end by a win check (checkOver): it ends when the party
+   * leaves (game.ts run/leave) or its rounds run out. `true`: a field saved by 0.29 or 0.30 (game.ts fieldRounds). */
+  field?: true | FieldRounds;
   /** Retired in rules 1.9: what lay on the floor in old saves (apply() turns it into piles once; World Play 1.1). */
   floor?: { pos: string; text: string; weapon?: string; rounds?: number }[];
   /** Things said or done mid-fight that need the Narrator's judgement: they ride along in the end-of-fight call. */
@@ -1596,6 +1597,10 @@ export function fightLevel(chars: { level: number }[], o: { level?: unknown; shi
   const sh = Number(o.shift), lim = ENEMY_LEVELS.narrator_shift;
   return clampEnemyLevel(fightLevelOf(chars.map((c) => c.level)) + (Number.isNaN(sh) ? 0 : Math.max(lim.min, Math.min(lim.max, Math.trunc(sh)))));
 }
+/** Rules 1.62 item 4906: a field's rounds. */
+interface FieldRounds { from: number; of: number; round: number; done?: true }
+/** A field's rounds, or null (not a field, or one saved before rules 1.62: game.ts fieldRounds gives it its rounds). */
+const fieldRoundsOf = (cb: Combat | null | undefined): FieldRounds | null => (cb && cb.field && typeof cb.field === 'object' ? cb.field : null);
 export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string; comp?: Record<string, string> }[], foes: FoeSpec[], difficulty: string, rng: Rng, objects?: MapObject[], extra: { fear?: boolean; fromTalk?: boolean; /** rules 1.15: the fight's level outright, or a shift on the squad's */ level?: number | null; levelShift?: number | null } = {}): Combat {
   const map = typeof mapId === 'string' ? MAPS[mapId] || MAPS.rear_pad : mapId;
   const objs = objects ? JSON.parse(JSON.stringify(objects)) as MapObject[] : defaultObjects(map);
@@ -1658,7 +1663,8 @@ export function beginTurn(cb: Combat, rng: Rng) {
   const hzObj = objectsAt(cb, u.pos).find((o) => hazardOf(o) && !(u.hazardImmune || []).includes(o.kind)), hz = hzObj ? hazardOf(hzObj) : null;
   if (hz && !u.dead) { say(cb, u.name + ' starts the turn in ' + (objectsAt(cb, u.pos).find((o) => hazardOf(o))!.name.toLowerCase()) + hurtUnit(u, hz.damage, true, cb, 'hazard')); if (u.downed || u.dead) { setAp(u, 0); return; } }
   if (bleedTick(cb, u)) { setAp(u, 0); return; } // Bleeding bites and loses a round (magic.ts: the condition clock)
-  if (u.downed && !u.dead) {
+  if (u.downed && !u.dead && cb.field) setAp(u, 0); // rules 1.62 item 4906: no death save on the field (a friend's stim raises it; it stands at the leave)
+  else if (u.downed && !u.dead) {
     // Items may add to death saves (stat 'death_save', rules 1.3; Still Standing, Bite the Bullet…).
     const r0 = rollD20(rng).die, dm0 = u.charId || u.held ? statQuery({ u }, 'death_save').add : 0;
     // 'death_save' {u, add, die} (mutable): any unit's items may add (an ally's Squad Anchor: hooks gap A2).
@@ -1713,18 +1719,25 @@ export function checkOver(cb: Combat) {
   return cb.over;
 }
 
-/** Pass the turn to the next unit that can act; Downed PCs still get turns (death saves). */
-export function endTurn(cb: Combat, rng: Rng) {
-  if (cb.field) return; // rules 1.55 item 62: on the field no turn passes and no round begins
+/** Pass the turn to the next unit that can act; Downed PCs still get turns (death saves). o.newRound: the round ends with
+ * this turn (rules 1.62 item 4906: a field opens on a new round). On a field (rules 1.62 item 4906) the round that would
+ * pass its last marks it done and begins nobody's turn (game.ts leaveField). */
+export function endTurn(cb: Combat, rng: Rng, o: { newRound?: boolean } = {}) {
+  if (fieldRoundsOf(cb)?.done) return;
   if (cb.window) { windowStep(cb, true); return; } // ending a window's turn hands it on, not the round
   if (checkOver(cb)) return;
   { const u0 = active(cb); if (u0) { emit(cb, 'turn_end', { u: u0, cb, rng }); closeTurn(cb, rng, u0); } } // 'turn_end' {u}: before the turn passes
   if (checkOver(cb)) return;
+  if (o.newRound) cb.turn = cb.order.length - 1;
   for (let guard = 0; guard < cb.units.length * 3; guard++) {
     cb.turn++;
-    if (cb.turn >= cb.order.length) { cb.turn = 0; cb.round++; magicRoundTick(cb); emit(cb, 'round_start', { cb, round: cb.round, rng }); }
+    if (cb.turn >= cb.order.length) {
+      cb.turn = 0; cb.round++;
+      const f = fieldRoundsOf(cb); if (f) { f.round = cb.round - f.from + 1; if (f.round > f.of) { f.round = f.of; f.done = true; return; } }
+      magicRoundTick(cb); emit(cb, 'round_start', { cb, round: cb.round, rng });
+    }
     const u = active(cb)!;
-    if (u.dead || u.surrendered || (u.side === 'foe' && u.downed)) continue;
+    if (u.dead || u.surrendered || (u.side === 'foe' && (u.downed || cb.field))) continue; // rules 1.62 item 4906: no foe has a turn on the field
     if (u.waitRound && cb.round < u.waitRound) { say(cb, u.name + (u.tags?.includes('unaware') ? ' is caught unaware: no turn this round.' : ' is still reeling from striking in the open: no turn this round.')); continue; }
     beginTurn(cb, rng);
     if (u.dead || (u.downed && u.side === 'pc') || u.skipTurn) { closeTurn(cb, rng, u); checkOver(cb); if (cb.over) return; continue; }

@@ -914,7 +914,7 @@ export function previewDescriptor(g: GameState, unitId: string, id: string, pick
   if (picks.tile) out.marks.tiles.push({ tile: picks.tile, kind: 'pick' });
   if (action && out.ok) {
     const vd = safe(() => previewAction(g, action, x.by), { ok: false, why: 'Not now.', ap: 0, g: null } as any);
-    out.ok = vd.ok; out.why = vd.ok ? null : vd.why; if (vd.ok && !x.cb.field) out.ap = vd.ap; out.action = vd.ok ? action : null; // rules 1.55 item 63: on the field no AP is taken, so the cost shown is the action's listed one
+    out.ok = vd.ok; out.why = vd.ok ? null : vd.why; if (vd.ok) out.ap = vd.ap; out.action = vd.ok ? action : null;
   }
   if (!out.ok && !need && !out.why) out.why = 'Not now.';
   out.cost = out.ap === d.cost.ap ? d.cost.text : apT(out.ap);
