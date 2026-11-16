@@ -95,3 +95,14 @@ Order matters: all of it touches the fight screen.
   with hover detail and a collapsed Shields line; every info box folds and saves its state** (CLAUDE.md).
 - **Silent** is a property (Visualizer by default; a silencer mod later; a Silent weapon costs 1 Shadow a shot).
 - **Plain melee attack is named Hit.**
+
+## G. The hotfix's last gate (16 Nov, before work stopped)
+
+`python tools/check.py` ALL GREEN on `wip/hotfix-0.30.1` (engine 4778, web 1505). Browser suites: 12 of 13 pass
+(gear-icons, physical-pack, old-save, tabs, magic, classes-moves, kit-map, skeleton-screens, two-players, reconnect,
+perks, ui-shell). **survival fails 2 checks, alone too, both in its field section** ("The field is yours" with what
+lies on the ground: it found "Nothing left on the ground"; "the field has no turns: End turn is not offered"), then a
+60 s wait times out. Not investigated (Leon stopped testing for the day). The field lane rewrites that section (the
+field becomes turns), so judge it after `wip/hotfix-0.30.1` and `wip/lane-0.30-field` are merged; if it still fails
+there, the likely cause is the shelves change moving the seed's loot. Not looked at in a browser by anyone: the field
+kit's Treat buttons, the plate chips, the shop icons. Drive C: had 36 GB free (94% full) during the run.
