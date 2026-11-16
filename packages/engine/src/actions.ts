@@ -21,7 +21,7 @@ import { isMedicChar, magazineSize } from './character';
 import { WEAPON } from './data';
 import { type Combat, type Unit, type AttackMode, isMelee, attackApCost, effectiveRange, analyzeCost, analyzeRange, stimAp, reloadBothAp, reloadOffAp, reloadHands, loadMagazine, clearJam, coverOffAp, canJam, moveBlock, moveHowBlock, movePlan,
   sprintTiles, apForTiles, paths, movePaths, meleeReachOf, opticBands, MAX_RANGE_BANDS, lineOfSight, dist, objectsOf, twoJammingGuns, cardFight, type MoveHow } from './combat';
-import { price, whyNot, needs, creditFor, setAp } from './effects/cost';
+import { price, whyNot, needs, creditFor, setAp, apFor } from './effects/cost';
 import { COST_SITE_IDS, type CostSite } from './effects/stats';
 import { emitStory } from './effects/hooks';
 import { STIM_HEAL } from './effects/mending';
@@ -206,7 +206,7 @@ export function moveOptions(g: any, cb: Combat, unitId: string, how: MoveHow = '
     const base = paths(c, u.pos, u.id), ch = sg && u.charId ? sg.characters?.[u.charId] : null;
     // Items count uses and keep notes as they price a move: every tile is asked from the same start.
     const bag = () => JSON.stringify({ u: c.units.map((v) => [v.ps, v.uses, (v as any).tech]), c: sg ? Object.values(sg.characters || {}).map((k: any) => k.uses) : null, ps: sg?.story?.ps, rng: sg?.rng });
-    const start = bag(), own = u.ap, ap0 = own + out.lend, reset = () => { const b = JSON.parse(start); c.units.forEach((v, i) => { v.ps = b.u[i][0]; v.uses = b.u[i][1]; (v as any).tech = b.u[i][2]; });
+    const start = bag(), own = u.ap, ap0 = o.world ? own : apFor(c, u, { type: 'combat/move', how: walk }), reset = () => { const b = JSON.parse(start); c.units.forEach((v, i) => { v.ps = b.u[i][0]; v.uses = b.u[i][1]; (v as any).tech = b.u[i][2]; });
       if (sg && b.c) Object.values(sg.characters || {}).forEach((k: any, i) => { k.uses = b.c[i]; }); if (sg?.story) sg.story.ps = b.ps; if (sg?.rng && b.rng) sg.rng.state = b.rng.state; c.log.length = 0; delete c.logSee; setAp(u, own); };
     let first: string | null = null, dirty = false;
     for (const k of Object.keys(base.dist)) {

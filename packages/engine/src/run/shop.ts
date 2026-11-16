@@ -308,7 +308,7 @@ export function leaveShop(g: G, by: string, close = false): { left: boolean; lin
   r.ready = { ...r.ready, [by]: true };
   const on = g.players.filter((p) => p.online);
   if (!close && on.some((p) => !r.ready[p.id])) return { left: false };
-  if (field) { r.state = 'reward'; r.ready = {}; return { left: true }; }
+  if (field) return { left: true }; // game.ts leaveField writes the state (rules 1.62 item 4746: the one path for a vote and the last round)
   sayLine(r, sh!, 'leave');
   const f = FACES.find((x) => x.id === sh!.face), line = f ? f.name + ': "' + sh!.line.text + '"' : undefined;
   r.shop = null; r.state = 'map'; r.ready = {};

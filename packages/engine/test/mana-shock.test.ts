@@ -207,7 +207,7 @@ describe('it ends with the fight, and is never charged outside one (item 4508)',
     expect(text).toMatch(/heart burns: \d+ damage/);
     expect(text).not.toMatch(new RegExp('heart is in ' + MANA_SHOCK.name + ': \\d+ damage'));
   });
-  it('the field: entering it clears the Mana Shock and sets Strain to the limit; no turns there, so nothing is charged', () => {
+  it('the field: entering it clears the Mana Shock and sets Strain to the limit; its turns (rules 1.62 item 4746) charge nothing', () => {
     const sheet = (name: string, arch: string) => { const a: any = ARCHETYPES.find((x) => x.id === arch); return { name, portrait: '', origin: 'Thousand-Planet frontier', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} }; };
     let g: any = newGame('SHOCKF', { id: 'host', name: 'L' }, 'seed-f'); g.settings.play = 'survival'; g.settings.test = true;
     g = apply(g, { type: 'char/add', sheet: sheet('Medic', 'mender') } as any, 'host');
@@ -218,10 +218,12 @@ describe('it ends with the fight, and is never charged outside one (item 4508)',
     u0.mg.strain = u0.mg.strainLimit + OVER; u0.mg.shock = true; // pushed there in the fight
     g = JSON.parse(JSON.stringify(apply(g, { type: 'run/skip' } as any, 'host'))); expect(g.run.state).toBe('field');
     const u = g.combat.units.find((x: any) => x.side === 'pc' && !x.companion);
-    expect(u.mg.shock).toBeFalsy(); expect(u.mg.strain).toBe(u.mg.strainLimit);
+    // the Shock ends with the fight and Strain is set to the limit (item 4508); the field then opens on a new round, so
+    // the killing turn's end has already calmed it as any turn's end does (rules 1.62 item 4746), and nothing burnt
+    expect(u.mg.shock).toBeFalsy(); expect(u.mg.strain).toBeLessThanOrEqual(u.mg.strainLimit); expect(u.hp).toBe(u0.hp);
     const hp = u.hp;
-    expect(() => apply(g, { type: 'combat/end-turn', unitId: u.id } as any, 'host')).toThrow(/No turns here/);
-    expect(u.hp).toBe(hp);
+    const e = apply(g, { type: 'combat/end-turn', unitId: u.id } as any, 'host'); // a turn passes: the Shock is gone, nothing charged
+    expect(e.combat!.units.find((x: any) => x.id === u.id)!.hp).toBe(hp);
   });
 });
 

@@ -27,6 +27,18 @@ export function leaveField(g: GameState): GameState {
   let x = g; for (const p of g.players) if (x.run?.state === 'field') x = apply(x, { type: 'run/leave' } as any, p.id);
   return x;
 }
+/** Rules 1.62 item 4746: the field is turns: End turn (by the reducer, the active unit's player) until `unitId` is up.
+ * Throws if it never comes up (it is Downed or dead, or the field ran out of rounds). */
+export function upTurn(g: GameState, unitId: string): GameState {
+  let x = g;
+  for (let k = 0; k < 12; k++) {
+    const cb: any = x.combat; if (!cb) break;
+    const cur = cb.order[cb.turn]; if (cur === unitId) return x;
+    const u = cb.units.find((v: any) => v.id === cur), c = u && (u.charId ? x.characters[u.charId] : u.ctrl ? x.characters[u.ctrl] : null);
+    x = apply(x, { type: 'combat/end-turn', unitId: cur } as any, c ? c.owner : 'host');
+  }
+  throw new Error('upTurn: ' + unitId + ' never came up');
+}
 /** Who plays each character (the host, then p2, p3, p4). */
 export const ownerOf = (i: number) => (i ? 'p' + (i + 1) : 'host');
 /** The way the test squad walks: the first reachable node of a kind in `prefer` (in order), else the first reachable. */

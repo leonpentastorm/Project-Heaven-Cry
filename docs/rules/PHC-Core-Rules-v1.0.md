@@ -10737,7 +10737,8 @@ overrides the body and the earlier ones; every number here is PROVISIONAL.
     opens; XP, credits and the offers are given as before. The old field's machinery (the area-map translation, its
     write-back and its use counters) is removed.
 4139. **The field's gates and screen (rules 1.55 items 68 to 70, 0.28.3):** no number. On the field Syphon and
-    Crystallise are bounded by the meter alone (items 4136 and the Crystallise row: 10 a core), not by AP.
+    Crystallise are bounded by the meter alone (items 4136 and the Crystallise row: 10 a core), not by AP. *(Its "not by
+    AP" superseded by rules 1.62 item 4746: AP as in a fight.)*
 4140. **The Durability tank (rules 1.55 items 71 to 75, 0.28.3; PROVISIONAL):** `rules.guard.soak` 10 → 6 (amends item
     993), `rules.guard.max` 5 → 4 (amends item 991), Guard given by Durability 1 (`innate`), and the new core item op
     `roll_with` on `durability.1`. The measure: `docs/design/proposals/2026-11-tank-fit.md`.
@@ -11621,8 +11622,8 @@ every number here is PROVISIONAL.
     Soul heal; no second copy of the effect.
 4746. **The field is turns (F7):** after a won Survival fight its field runs `survival.json field.rounds` (3) rounds
     of real turns. The field opens with a new round at once (the killing turn ends there; the rest of the killing
-    round is not played): the party's units act in initiative order (the fallen, surrendered and Downed foes have no
-    turns), each turn on its full turn AP as in a fight, End turn passes it; waits (a Hymn's), cooldowns, durations,
+    round is not played): the party's units act in initiative order (no foe has a turn on the field, a standing one
+    included), each turn on its full turn AP as in a fight, End turn passes it; waits (a Hymn's), cooldowns, durations,
     once-a-turn and once-a-round uses, Strain, MP and the held Outburst tick as in a fight; a Downed character rolls
     no death save on the field (its turn passes; a friend's stim raises it; it stands up at the leave). Still as rules
     1.55 items 64, 65 and 68: no growth, no harm to a friend or to a surrendered unit, the item refusal, the fight never

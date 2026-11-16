@@ -85,7 +85,7 @@ describe('the Outbursts tab (rules 1.5)', () => {
   // button reads the reducer's own verdict on the action it sends, with the action's credit (a Brief's cut).
   it('Begin is offered exactly when the reducer takes it: the cut of a Brief counts', () => {
     const { u } = soulFight('heart-brief');
-    const U: any = G.combat!.units.find((v) => v.id === u.id)!; U.ap = 1; U.call = { brief: { by: 'ally', side: 'pc', cuts: [1] } }; // the mark a Brief leaves (calls/handlers.ts) snap = view();
+    const U: any = G.combat!.units.find((v) => v.id === u.id)!; U.ap = 1; U.call = { brief: { by: 'ally', side: 'pc', cuts: [1] } }; snap = view(); // the mark a Brief leaves (calls/handlers.ts)
     const L = new CombatLogic({}) as any;
     L.setState({ action: 'outburst', design: 'fb', obMode: 'begin' });
     let pad = L.renderVals().turnPanels[0].pad;

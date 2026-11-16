@@ -13,7 +13,7 @@ import { takeDoorPick, doorOption } from './doorpicks';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV, shockClear } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, given, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { objectAtLevel, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange, layoutMap } from './combat';
+import { objectAtLevel, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, fieldRoundsOf, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange, layoutMap } from './combat';
 import { type Rng, seedFrom } from './rng';
 import { rollD20, rollVs, judge } from './rolls';
 import { CALL, useCall, callView, briefUsed, type CallArgs } from './calls';
@@ -651,6 +651,7 @@ function reduce(g: GameState, a: Action, by: string) {
   if (a.type.startsWith('sandbox/')) { sandboxAction(g, a as SandboxAction, by); return; }
   if (a.type.startsWith('faith/')) { faithAction(g, a as FaithAction, by); return; } // rules 1.6 (faith.ts)
   if (g.sandbox && SANDBOX_REFUSED.test(a.type) && !SANDBOX_STORY.test(a.type)) fail('The Proving Ground has no Narrator and no story: only the engine runs here.');
+  fieldRounds(g); // rules 1.62 item 4747: an older field takes its rounds
   if (a.type.startsWith('run/')) { runAction(g, a, by); return; } // rules 1.39 (run/state.ts)
   // rules 1.55 item 66: a field saved by 0.28.2 (the story phase, no running fight) is only left
   if (g.run?.state === 'field' && !g.combat?.field && (FREE_WORLD.test(a.type) || a.type.startsWith('combat/'))) fail('Leave this field: it was saved by an older version of the game, and only leaving works on it (everyone marks Leave).');
@@ -1604,8 +1605,8 @@ function startStoryFight(g: GameState, combat: NonNullable<NarratorTurn['combat'
 function combatAction(g: GameState, a: Action, by: string) {
   const cb = g.combat; if (!cb || g.phase !== 'combat') fail('No fight is on.');
   if (cb!.over) fail('The fight is over.');
-  // rules 1.55 item 62: on the field there is no turn order: the unit the action names acts (its owner's, checked below)
-  const fld = !!cb!.field, u = fld ? fieldUnit(cb!, a) : active(cb!)!;
+  // rules 1.62 item 4746: the field is turns too: the unit whose turn it is acts
+  const fld = !!cb!.field, u = active(cb!)!;
   // rules 1.14: the fight waits for the Narrator's answer to an attempt (nobody acts, the turn can't end)
   // A ruling left pending with no Narrator to answer it (a Survival run, the Proving Ground, an AI Narrator gone, a human
   // Narrator away) never holds the fight: it is given back at once and the action goes on.
@@ -1758,16 +1759,6 @@ function combatAction(g: GameState, a: Action, by: string) {
   runEnemies(g);
 }
 
-/** Rules 1.55 item 62: the unit a field action names, with no turn order: one of the squad, standing, never a turn to end. */
-function fieldUnit(cb: Combat, a: Action): Combat['units'][number] {
-  if (a.type === 'combat/end-turn') fail(NO_TURNS);
-  const u = cb.units.find((x) => x.id === (a as any).unitId); if (!u || u.side === 'foe') fail('Pick one of your squad.');
-  if (u!.dead) fail(u!.name + ' is dead: the dead stand up when the squad leaves the field.');
-  if (u!.downed) fail(u!.name + ' is Downed: a friend\'s stim gets them up.');
-  return u!;
-}
-/** Rules 1.55 item 62: the words for ending a turn on the field. */
-export const NO_TURNS = 'No turns here: act freely, then vote to leave.';
 /** The name the trigger `acted` carries for a reducer action (Classes 3.0 P2): a perk or class action's own id, a
  * technique's id, a move's kind, an attack's 'attack' (its mode is ctx.mode), else the verb's cost site. null: not an
  * action of the unit's own (ending the turn, declining a window, words) or one that fires its own (Analyze). */
@@ -2116,8 +2107,7 @@ function focusLine(c: Character): string {
 /** Enemies act on their own turns until a PC is up or the fight ends. */
 function runEnemies(g: GameState) {
   const cb = g.combat!;
-  if (cb.field) { clearAction(cb); return; } // rules 1.55 item 62: no turns on the field, so nobody else's
-  for (let guard = 0; guard < 40 && !checkOver(cb); guard++) {
+  for (let guard = 0; guard < 40 && !checkOver(cb) && !fieldRoundsOf(cb)?.done; guard++) { // rules 1.62 item 4746: a field's last round ends it
     const u = active(cb)!;
     // A player's unit Downed, killed or out of the fight on its own turn (a reaction, a trap, a barrel, a Mana Short), or
     // already Downed when the fight began, can't act or press End turn: its turn passes on by itself.
@@ -2135,6 +2125,7 @@ function runEnemies(g: GameState) {
     if (!checkOver(cb)) endTurn(cb, g.rng);
   }
   clearAction(cb);
+  if (fieldRoundsOf(cb)?.done && g.run?.state === 'field') { leaveField(g); return; } // rules 1.62 item 4746: the party leaves by itself
   if (cb.over) { if (g.sandbox) sandboxOver(g); else if (g.run) runFightOver(g); else finishCombat(g); }
 }
 
@@ -3329,7 +3320,7 @@ function runAction(g: GameState, a: Action, by: string) {
     case 'run/sell': { const res = shopSell(g, by, a); if ('no' in res) fail(res.no); return; } // rules 1.42 (spec rule 27)
     case 'run/leave': { // rules 1.42 (spec rule 11, 8.3): Ready to leave; the party goes when everyone is, or when the host closes
       const field = g.run?.state === 'field', res = leaveShop(g, by, !!a.close); if ('no' in res) fail(res.no);
-      if (field) { if ('left' in res && res.left) { if (g.combat?.field) runFieldClose(g); else oldFieldClose(g); push(g, { kind: 'system', head: 'REWARDS', text: 'The squad leaves the field. Take your pick.' }); runPicksDone(g); } return; } // rules 1.55 items 65, 66
+      if (field) { if ('left' in res && res.left) leaveField(g); return; } // rules 1.55 items 65, 66; rules 1.62 item 4746
       if ('left' in res && res.left) push(g, { kind: 'system', head: 'THE SHOP', text: (res.line ? res.line + ' ' : '') + 'The squad is back on the trail.' });
       return;
     }
@@ -3525,7 +3516,7 @@ function runFightOver(g: GameState) {
     return;
   }
   // rules 1.55 item 61: the field: the same fight, still running, with no enemies left
-  cb.over = null; cb.field = true; delete cb.window;
+  cb.over = null; delete cb.window; cb.field = { from: cb.round + 1, of: FIELD.rounds, round: 1 }; // rules 1.62 item 4746: the field's rounds
   for (const u of cb.units) if (!u.dead) shockClear(cb, u, 'fight over'); // rules 1.56 item 4508: the Mana Shock ends with the fight, the field included
   const xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), offers: Record<string, RunOffer> = {};
   sbChange(g, chars, () => { // the XP may bring a level (its HP): the sheets take it, and the fighters with them
@@ -3537,11 +3528,27 @@ function runFightOver(g: GameState) {
   });
   { const before = r.stats.fights[r.stats.fights.length - 1]?.cores || {}, burnt = Object.fromEntries(chars.map((c) => [c.id, before[c.id] != null ? coresBurnt(before[c.id], coresCarried(c)) : 0])); // the sheets are the fight's now (sbChange)
     r.stats = { ...r.stats, fights: r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, burnt } : f)) }; }
-  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits' + (packCount(k).mags > 0 ? ', the supply pack,' : '') + ' and a pick: the materials' + (Object.values(offers).some((o) => o.weapons.length) ? ' or a weapon' : '') + '. Walk the field, then vote to leave.' });
+  push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits' + (packCount(k).mags > 0 ? ', the supply pack,' : '') + ' and a pick: the materials' + (Object.values(offers).some((o) => o.weapons.length) ? ' or a weapon' : '') + '. The field lasts ' + counted(FIELD.rounds, 'round') + ' of turns; vote to leave sooner.' });
   r.renown = renownOf(chars); // rule 6: XP past level 20 counts to the score
   r.out = []; r.state = 'field'; r.ready = {}; r.offers = offers;
   if (k === 'elite' || k === 'gate') r.lasting = Object.fromEntries(chars.map((c) => [c.id, lastingOffer(c, n, r.stage, r.seed)])); // rules 1.43 (rule 41): an Elite's pick of kit
   r.note = { node: n.id, kind: n.kind, xp, credits: cr, ammo: {}, won: true, rounds: cb.round };
+  // Rules 1.62 item 4746: the field opens on a new round (the killing turn ends here), the party's turns in initiative order.
+  endTurn(cb, g.rng, { newRound: true }); runEnemies(g);
+}
+/** Rules 1.62 item 4746: the party leaves the field (a passed vote, or its last round ended): the fight's own end, the
+ * rewards' picks. The one path for both. */
+function leaveField(g: GameState) {
+  const r = g.run!; r.state = 'reward'; r.ready = {};
+  if (g.combat?.field) runFieldClose(g); else oldFieldClose(g);
+  push(g, { kind: 'system', head: 'REWARDS', text: 'The squad leaves the field. Take your pick.' }); runPicksDone(g);
+}
+/** Rules 1.62 item 4747: a field saved by 0.29 or 0.30 (Combat.field true, no rounds) is given its rounds from the next
+ * round: the turn under way ends there, as a field opening's does. */
+function fieldRounds(g: GameState) {
+  const cb = g.combat; if (!cb || cb.field !== true || g.phase !== 'combat') return;
+  cb.field = { from: cb.round + 1, of: FIELD.rounds, round: 1 };
+  endTurn(cb, g.rng, { newRound: true }); runEnemies(g);
 }
 /** Rules 1.61 party fit item 2: the HP a character stands up at after a won fight (the one copy: the dead of rule 5 and
  * the Downed, both at run.dead_return_hp in a run), never above its max HP. */
@@ -3912,7 +3919,7 @@ function freshRound(g: GameState, charId: string | undefined) {
 function freeAgain(g: GameState) { g.story.ap = {}; g.story.ended = {}; g.story.spoken = {}; g.story.needs = false; g.story.work = null; g.story.await = 'players'; }
 /** Rules 1.55 item 35 (`survival.json field`): what the area map carries back to the character, and the ops that give
  * something lasting. */
-const FIELD: { lasting_ops: string[] } = (survivalFieldJ as any).field;
+const FIELD: { lasting_ops: string[]; rounds: number } = (survivalFieldJ as any).field;
 /** Why an item's action is refused on the field (rules 1.55 item 35), or null: at will (no limit that holds on the
  * field), every cost besides AP a resource the area map rebuilds, and something lasting (or nothing the data states:
  * an item's own handler, doubtful). Prayers are left to their own slots and waits. */
