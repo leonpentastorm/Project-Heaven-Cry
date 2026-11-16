@@ -533,10 +533,11 @@ describe('determinism and voice lines', () => {
 
 // ---------------------------------------------------------------------------------------------------------------------
 describe('compatibility', () => {
-  it('Rite in the Field cuts a Hymn\'s AP (actionAp \'pray\')', () => {
-    const f = fightWith([{ skills: { faith: 5 }, perks: ['rite_in_the_field'] }], [{ at: 'F6' }]);
-    const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan';
-    f.turn(f.pc); const pv = previewPrayer(f.g, f.pc.id, 'hymn', 'saints_shield'); expect(pv.ap).toBeLessThanOrEqual(3);
+  it('Rite in the Field no longer cuts a Hymn\'s AP (rules 1.63, D6: it is the heart\'s rituals\' perk)', () => {
+    const ap = (perks: string[]) => { const f = fightWith([{ skills: { faith: 5 }, perks }], [{ at: 'F6' }]);
+      const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan';
+      f.turn(f.pc); return previewPrayer(f.g, f.pc.id, 'hymn', 'saints_shield').ap; };
+    expect(ap(['rite_in_the_field'])).toBe(ap([]));
   });
   it('a Hymn lands through blessing_in (Excommunicated may turn it away; Blessed Shells may load it)', () => {
     const f = fightWith([{ skills: { faith: 5 } }, { name: 'Heretic', traits: ['heretic'] }], [{ at: 'F6' }]);

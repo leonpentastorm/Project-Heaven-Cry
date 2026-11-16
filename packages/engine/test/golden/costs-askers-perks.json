@@ -154,8 +154,6 @@
 "asker/perk/resonance@II/begin": "P1 ap9>7 mg.held0>stage0 mg.mp500>485 mg.strain0>1; air mana20>18",
 "asker/perk/resonance@II/begin-release": "P1 ap9>6 mg.mp500>485 mg.strain0>1; air mana20>18",
 "asker/perk/resonance@II/release": "P1 ap9>8 mg.heldstage1>0",
-"asker/perk/rite_in_the_field@I/#": "no line differs",
-"asker/perk/rite_in_the_field@II/#": "no line differs",
 "asker/perk/roll_with_it@I/#": "no line differs",
 "asker/perk/roll_with_it@II/#": "no line differs",
 "asker/perk/rounding_up@I/#": "no line differs",

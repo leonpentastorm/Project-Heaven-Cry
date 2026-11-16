@@ -24,7 +24,7 @@ import { holds, FOCUS_DOORS, handProps, gearAt, kindOfDoor, FOCUS_IDS } from '..
 import { applyDamage } from './damage';
 import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
 import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile, strikeRider } from '../combat';
-import { WEAPON } from '../data';
+import { WEAPON, SKILL } from '../data';
 import { magsOf, type PackItem } from '../character';
 import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
 import { nextToCover, objectsAt, objectsOf, damageObject, refOf } from '../combat';
@@ -162,6 +162,11 @@ for (const who of ['self', 'actor', 'target'] as Who[]) {
   if (who !== 'self') P(who + '_sees_self', 'bool', who + ' can (or cannot) see the holder: its eyes reach the holder\'s tile and the holder is not Hidden (shadow-spec 2.1)', (ev, v) => { const u = unitOf(ev, who); return !!u && (unitSees(ev.cb, u, ev.self.pos) && !ev.self.hidden) === v; });
 }
 P('melee', 'bool', 'the attack or damage is (true) or is not (false) melee', (ev, v) => !!(ev.ctx.melee ?? ev.ctx.src?.melee) === v);
+// rules 1.63 (0.31, Pressure is Dexterity's): the skill an attack rolls to hit with, as the attack chose it (combat.ts
+// previewAttack: the striking weapon's own, weaponVia, or the one an item's roll_with put in its place, rollWithPick);
+// carried as `via` on attack_roll, on_hit, on_miss, a weapon's to_hit and the damage's source. On `attack` (the preview's
+// hook, before roll_with has spoken) it is not known yet: nothing there passes it.
+P('rolled_with', 'words', 'the attack, or the damage\'s source attack, rolls to hit with one of these skills (its weapon\'s own skill, or the one a roll_with put in its place: combat.ts previewAttack `via`)', (ev, v) => { const s = ev.ctx.via ?? ev.ctx.src?.via; return typeof s === 'string' && list(v).includes(s); }, () => Object.keys(SKILL));
 P('crit', 'bool', 'the attack is (or is not) a critical', (ev, v) => !!(ev.ctx.crit ?? ev.ctx.src?.crit) === v);
 P('mode', 'words', 'the attack\'s mode is one of these (shot, aimed, burst, auto, melee, thrown, paired), or the technique it is made with (riposte…: ctx.tech; on damage, a kill or a downing, its source\'s: src.mode, src.tech)', (ev, v) => { const m = ev.ctx.mode ?? ev.ctx.src?.mode, t = ev.ctx.tech ?? ev.ctx.src?.tech; return list(v).includes(m) || (!!t && list(v).includes(t)); });
 P('damage', 'words', 'the damage is of one of these kinds (' + DMG_WORDS.join(', ') + ')', (ev, v) => list(v).some((w) => dmgIs(ev.ctx.src || ev.ctx, w)));

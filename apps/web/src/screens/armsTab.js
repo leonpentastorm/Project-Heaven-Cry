@@ -18,6 +18,11 @@ const card = 'display: flex; flex-direction: column; gap: 6px; padding: 10px; bo
 const run = (a) => { try { const r = act(a); if (r && typeof r.then === 'function') r.catch((e) => toast(String((e && e.message) || e))); } catch (e) { toast(String((e && e.message) || e)); } };
 /** The weapons that teach a technique (its signature), by name. */
 const teachers = (id) => Object.values(WEAPON).filter((w) => weaponTeaches(w.id) === id).map((w) => w.name);
+/** Rules 1.63 (D5): the techniques a weapon's own properties give whoever holds it (Throw with a Thrown weapon), read
+ * from the engine's technique list (each row's `comes_with`, the list physical/core.ts usable offers them by), in the
+ * weapon's own system: id and the property that brings it. */
+export const propTechniques = (wid) => { const pr = weaponProps(wid), sys = weaponSystem(wid);
+  return TECHNIQUES.filter((t) => t.system === sys && !t.free && (t.comes_with || []).some((p) => pr.includes(p))).map((t) => ({ id: t.id, prop: (t.comes_with || []).find((p) => pr.includes(p)) })); };
 const lineView = (l, i) => ({ key: i + ':' + l.props.join('+'), props: l.props.map((p) => p.toUpperCase()).join(l.match === 'all' ? ' + ' : ' / '), text: l.text, help: l.props.map((p) => p + ': ' + propText(p)).filter((x) => !/: $/.test(x)).join(' · ') });
 
 /** The values the ARMS tab's template reads (ar.*). `sc` is the main screen (state: arPick, arQuiver). */
@@ -27,12 +32,15 @@ export function armsTabVals(sc, g, c) {
   const P = physOf(c), fight = g.phase === 'combat' && !!g.combat && !g.combat.over;
   const lockText = fight ? 'In a fight: change your techniques, drill picks and quivers after it.' : '';
   // ---------- what you know ----------
-  const knownIds = new Set([...TECHNIQUES.filter((t) => t.free).map((t) => t.id), ...P.known]);
+  // (rules 1.63, D5: and what the held weapons' properties give, named by the property: Throw with a Thrown weapon)
+  const comes = new Map([c.weapon, c.offHand && WEAPON[c.offHand.id] ? c.offHand.id : null].filter((id) => id && WEAPON[id]).flatMap((id) => propTechniques(id).map((x) => [x.id, x.prop])));
+  const knownIds = new Set([...TECHNIQUES.filter((t) => t.free).map((t) => t.id), ...P.known, ...comes.keys()]);
   const known = SYS.map(([sys, title]) => {
     const groups = groupsOf(sys).map((gr) => ({ key: gr, label: groupName(gr).toUpperCase(),
       items: TECHNIQUES.filter((t) => t.system === sys && t.group === gr && knownIds.has(t.id)).map((t) => {
         const by = teachers(t.id);
-        return { key: t.id, name: t.name, free: t.free, tag: t.free ? 'EVERYONE KNOWS IT' : by.length ? 'SIGNATURE · ' + by.join(', ') : '', hasTag: t.free || by.length > 0,
+        const tag = t.free ? 'EVERYONE KNOWS IT' + (t.needs && t.needs.stuck ? ' · ONLY WHILE A WEAPON IS STUCK' : '') : comes.has(t.id) ? 'COMES WITH ' + String(comes.get(t.id)).toUpperCase() : by.length ? 'SIGNATURE · ' + by.join(', ') : '';
+        return { key: t.id, name: t.name, free: t.free, tag, hasTag: !!tag,
           text: t.text, lines: (t.lines || []).map(lineView), hasLines: (t.lines || []).length > 0, help: t.name + ': ' + t.text, ap: t.ap.base === 'flat' ? (t.ap.value || 0) + ' AP' : t.ap.base === 'reaction' ? 'reaction' : 'weapon AP' + (t.ap.add ? ' +' + t.ap.add : '') };
       }) })).filter((gr) => gr.items.length);
     return { key: sys, title, ink: INK[sys], titleStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + INK[sys], groups, has: groups.length > 0 };

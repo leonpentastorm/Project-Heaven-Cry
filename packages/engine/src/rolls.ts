@@ -172,10 +172,10 @@ export type HitKind = 'weapon' | 'sigil' | 'soul';
  * A weapon attack's preview (combat.ts previewAttack), a Sigil's hit (sigil.ts) and an Outburst's (magic.ts rollFor,
  * classes/soul.ts soulStrike) all ask here, so an item or a condition that changes "a roll to hit this target" reaches
  * all three. Pure: a listener only adds terms ({v, label}). Returns the terms added (none while nobody listens). */
-export function toHitTerms(cb: Combat | null | undefined, att: Unit | null | undefined, tgt: Unit, type: HitKind, o: { mode?: string; preview?: boolean } = {}): { v: number; label: string }[] {
+export function toHitTerms(cb: Combat | null | undefined, att: Unit | null | undefined, tgt: Unit, type: HitKind, o: { mode?: string; preview?: boolean; /** a weapon attack's: the skill it rolls with (rules 1.63, combat.ts previewAttack) */ via?: string } = {}): { v: number; label: string }[] {
   const fa = type === 'weapon' ? null : focusAccTerm(att, HIT_DOOR[type]); // rules 1.43: a graded focus on its door's roll to hit
   if (!cb || !att || !hookUsed('to_hit')) return fa ? [fa] : [];
-  const ctx: any = emit(cb, 'to_hit', { att, tgt, type, ...(HIT_DOOR_WORD[type] ? { door: HIT_DOOR_WORD[type] } : {}), mode: o.mode ?? null, terms: [] as { v: number; label: string }[], preview: o.preview !== false, cb });
+  const ctx: any = emit(cb, 'to_hit', { att, tgt, type, ...(HIT_DOOR_WORD[type] ? { door: HIT_DOOR_WORD[type] } : {}), mode: o.mode ?? null, ...(o.via ? { via: o.via } : {}), terms: [] as { v: number; label: string }[], preview: o.preview !== false, cb });
   return [...(fa ? [fa] : []), ...(ctx.terms as { v: number; label: string }[]).filter((t) => t && t.v)];
 }
 /** The door each kind of roll to hit is made through (a weapon's own rarity is in its attack already). */

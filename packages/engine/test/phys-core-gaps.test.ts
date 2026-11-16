@@ -27,13 +27,13 @@ technique({ id: 'lob', check: (t) => (t.args.tile ? null : 'Name a tile.'), run(
 
 describe('a thrown strike', () => {
   const fight = () => { const f = physFight([{ weapon: 'combat_knife', known: ['throw'], skills: { dexterity: 5, athletics: 1 } }], [{ at: 'G5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.put(f.foe, 'G5'); f.turn(f.pc); f.foe.hp = f.foe.maxHp = 999; return f; };
-  it('is a ranged attack at throwing range, aimed with Dexterity, that gives Pressure, spends the Strike\'s Momentum and leaves the hand empty', () => {
+  it('is a ranged attack at throwing range, aimed with Dexterity, that gives Pressure, spends no Momentum (rules 1.63, D5) and leaves the hand empty', () => {
     const f = fight(); rig({ hit: true, die: 12 });
     const pv = f.pv('throw', { targetId: f.foe.id }); expect(pv.ok).toBe(true);
     expect(pv.attacks[0].pv.terms!.find((x) => x.label === 'skill')!.v).toBe(4); // Dexterity 5, not Athletics 1
     expect(f.pc.attack).toBe(4); // a knife hits with Dexterity either way now (item 953); nothing left changed after the card
     expect(f.tech('throw', { targetId: f.foe.id })).toBeNull();
-    expect(f.pressure(f.foe)).toBe(1); expect(f.momentum(f.pc)).toBe(0); expect(f.pc.shotsThisTurn).toBe(0); // Throw is a Strike: it spent the 1 the fight began with, and its hit gave none
+    expect(f.pressure(f.foe)).toBe(1); expect(f.momentum(f.pc)).toBe(1); expect(f.pc.shotsThisTurn).toBe(0); // Throw is a Strike that costs no Momentum (rules 1.63, D5): the fight's 1 is kept, and its hit gave none
     expect(f.fx('shot').some((e: any) => e.thrown && e.weapon === 'combat_knife')).toBe(true);
     expect(f.pc.weapon).toBe('fists'); expect(f.char(f.pc).weapon).toBe('fists');
     expect(objectsOf(f.cb).some((o: any) => o.pos === f.tile('G5') && (o.items || []).some((i: any) => i.item === 'combat_knife'))).toBe(true);

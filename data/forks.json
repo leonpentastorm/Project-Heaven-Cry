@@ -783,7 +783,7 @@
           "door_pick": "fork.pressure.converging_fire"
         }
       ],
-      "text": "Each ally's ranged hit on a foe hit at range this round, by you or by anyone holding Converging Fire, adds {=effects.0.value} more Pressure (once a round for each foe).",
+      "text": "Each ally's hit rolled with Dexterity (a gun, a bow, a throw, a light blade, a glove) on a foe hit that way this round, by you or by anyone holding Converging Fire, adds {=effects.0.value} more Pressure (once a round for each foe).",
       "effects": [
         {
           "op": "resource",
@@ -791,7 +791,7 @@
           "if": {
             "actor": "ally",
             "target": "foe",
-            "melee": false,
+            "rolled_with": ["dexterity"],
             "target_has": [
               "in_your_sights"
             ]
@@ -812,7 +812,7 @@
           "if": {
             "actor": "self",
             "target": "foe",
-            "melee": false
+            "rolled_with": ["dexterity"]
           },
           "condition": "in_your_sights",
           "target": "target",
@@ -836,7 +836,7 @@
           "door_pick": "fork.pressure.walk_it_in"
         }
       ],
-      "text": "Your ranged attack that misses a foe still lays {=effects.0.value} Pressure on it (once a turn for each foe).",
+      "text": "Your attack rolled with Dexterity (a shot, a throw, a blade's cut, a glove's blow) that misses a foe still lays {=effects.0.value} Pressure on it (once a turn for each foe).",
       "effects": [
         {
           "op": "resource",
@@ -844,7 +844,7 @@
           "if": {
             "actor": "self",
             "target": "foe",
-            "melee": false
+            "rolled_with": ["dexterity"]
           },
           "resource": "pressure",
           "value": 1,
@@ -873,7 +873,7 @@
           "door_pick": "fork.pressure.through_the_gap"
         }
       ],
-      "text": "Once a turn, when your ranged attack hits a foe and leaves it at its Pressure cap (a Soldier Broken, an Elite Suppressed, a Boss Pressed), your next move this turn costs {=effects.3.value|abs} AP less (a move up to your Movement is free) and draws no opportunity attack. It is not the turn's one free move.",
+      "text": "Once a turn, when your attack rolled with Dexterity hits a foe and leaves it at its Pressure cap (a Soldier Broken, an Elite Suppressed, a Boss Pressed), your next move this turn costs {=effects.3.value|abs} AP less (a move up to your Movement is free) and draws no opportunity attack. It is not the turn's one free move.",
       "effects": [
         {
           "op": "mark",
@@ -881,7 +881,7 @@
           "if": {
             "actor": "self",
             "target": "foe",
-            "melee": false
+            "rolled_with": ["dexterity"]
           },
           "flag": "landed"
         },
@@ -962,7 +962,7 @@
           "door_pick": "fork.pressure.lockdown"
         }
       ],
-      "text": "A foe your ranged attack hits and leaves at its Pressure cap is also Slowed for {=effects.1.rounds} round, with no save.",
+      "text": "A foe your attack rolled with Dexterity hits and leaves at its Pressure cap is also Slowed for {=effects.1.rounds} round, with no save.",
       "effects": [
         {
           "op": "mark",
@@ -970,7 +970,7 @@
           "if": {
             "actor": "self",
             "target": "foe",
-            "melee": false
+            "rolled_with": ["dexterity"]
           },
           "flag": "landed"
         },

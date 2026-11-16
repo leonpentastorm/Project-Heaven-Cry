@@ -12,13 +12,15 @@
 import { technique, strike, loseWeaponInto, takeWeapon, save, cond, stop, landed, techState, techStateOf, onHook, setUpBonus, spendSetUp, turnStamp, meleeFx, fallFx, refuseFx } from './shared';
 import type { Tech } from './shared';
 import { canStrike, loseWeapon, techSaveTn, techVia, saveOutside } from '../core';
-import { say, type Combat, type Unit, alive, dist, lineOfSight, refOf, weaponDamage, dropToPile, hurtUnit } from '../../combat';
+import { say, type Combat, type Unit, alive, dist, lineOfSight, refOf, dropToPile, attackDamage, emitFx, fxFell } from '../../combat';
+import { applyDamage } from '../../effects/damage';
+import { RARITY } from '../../character';
 import { WEAPON } from '../../data';
 import { throwRangeOf } from '../../tactics';
 import { condOn, unitSave } from '../../magic';
 import { boundGame } from '../../effects/hooks';
 import { type Rng } from '../../rng';
-import { scaleOf } from '../../effects/output';
+import { scaleOf, landed as afterArmour } from '../../effects/output';
 import { apFor } from '../../effects/cost';
 
 // ---------- 11. Hamstring ----------
@@ -193,6 +195,9 @@ technique({
 // ---------- 28. Pull Out (free; Leon, 10 Nov 2026) ----------
 // Next to a unit with a thrown weapon stuck in it: wrench it out. The weapon comes straight back into a free hand, the
 // target takes half the weapon's damage (armour counts) and Bleeds. No roll. 1 AP. It neither gives nor spends Momentum.
+// Rules 1.63 (D5): the damage is the one damage path's (combat.ts attackDamage: the weapon's base, its profile's Stat
+// term by its scales_with, the Level term, the melee factor and the items'), with the stuck weapon (its own rarity, no
+// mods) as the one struck, times damage_pct, as a blow with no roll (press.ts noRollHit's way for a round).
 const stuckFor = (t: any, v: any) => { const l: any[] = v?.stuck || []; return l.find((x) => x.by === t.u.id) || l[0] || null; };
 technique({
   id: 'pull_out',
@@ -205,13 +210,18 @@ technique({
     return null;
   },
   run(t) {
-    const v = t.tgt!, e = stuckFor(t, v), w = WEAPON[e.weapon];
-    const dmg = Math.max(1, Math.round(weaponDamage(w, 1, t.c?.skills.raw_power || 0) * t.num('damage_pct', 50) / 100));
-    if (t.preview) { t.note('The ' + w.name.toLowerCase() + ' comes back to your hand. ' + v.name + ' takes ' + dmg + ' (before armour) and is Bleeding. No roll.'); return null; }
+    const v = t.tgt!, e = stuckFor(t, v), w = WEAPON[e.weapon], u = t.u;
+    const was = { weapon: u.weapon, dmgMult: u.dmgMult, mods: u.mods, maxDur: u.maxDur };
+    u.weapon = e.weapon; u.dmgMult = RARITY[(e.item?.rarity as keyof typeof RARITY) || 'standard']?.dmg ?? 1; u.mods = []; delete u.maxDur;
+    let d: ReturnType<typeof attackDamage>; try { d = attackDamage(t.cb, u, v, 'melee', t.c || null, { preview: t.preview }); } finally { Object.assign(u, was); if (was.maxDur == null) delete u.maxDur; }
+    const dmg = afterArmour(d.total * t.num('damage_pct', 50) / 100, d.armour);
+    if (t.preview) { t.note('The ' + w.name.toLowerCase() + ' comes back to your hand. ' + v.name + ' takes ' + dmg + ' and is Bleeding. No roll.'); return null; }
     v.stuck = (v.stuck || []).filter((x: any) => x !== e); if (!v.stuck!.length) delete v.stuck;
     if (!takeWeapon(t.cb, t.u, e.weapon, e.item)) dropToPile(t.cb, t.u.pos, [e.item || { id: e.weapon, name: w.name, qty: 1, kind: 'weapon', weapon: e.weapon } as any], 'drop');
     meleeFx(t, 'throw', { from: v.pos, to: t.u.pos, target: v.id, weapon: e.weapon, back: true });
-    say(t.cb, '  ' + t.u.name + ' wrenches the ' + w.name.toLowerCase() + ' out of ' + v.name + hurtUnit(v, dmg, false, t.cb, 'weapon', t.u) + '.');
+    const r = applyDamage(t.cb, v, dmg, { ...d.src, shield: true, credit: 'all' } as any);
+    emitFx(t.cb, 'hurt', { target: v.id, at: v.pos, dmg: r.amount, why: 'weapon', killed: r.killed, by: t.u.id }); if (r.killed) fxFell(t.cb, v);
+    say(t.cb, '  ' + t.u.name + ' wrenches the ' + w.name.toLowerCase() + ' out of ' + v.name + ' · ' + v.name + ' takes ' + r.amount + (r.killed ? (v.side === 'foe' ? ', down for good' : ', Downed') : '') + '.');
     if (alive(v)) cond(t, v, 'bleeding');
     return null;
   },

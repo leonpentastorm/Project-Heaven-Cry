@@ -125,8 +125,8 @@ describe('never', () => {
 });
 
 describe('a rider', () => {
-  it('no Momentum and no Pressure: a Cut and its follow land, the Pressure is shed once', () => {
-    const f = fight(); calm(f); rig({ hit: true }); const p0 = f.press(f.pc, 4);
+  it('no Momentum and no Pressure: a Cut and its follow land, the Pressure is shed once (a Raw Power blade: rules 1.63, a Dexterity blow sheds none)', () => {
+    const f = fight({ weapon: 'ork_machete' }); calm(f); rig({ hit: true }); const p0 = f.press(f.pc, 4);
     const shed = (phys.PHYS_RULES as any).pressure.melee_hit_sheds;
     expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(follows(f)).toHaveLength(1);
     expect(p0).toBeGreaterThan(shed); expect(f.pressure(f.pc)).toBe(p0 - shed); expect(f.momentum(f.pc)).toBe(2);

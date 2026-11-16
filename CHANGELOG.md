@@ -8,6 +8,64 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.0 — Pressure is Dexterity's (lane 0.31-dex)
+
+Rules revision 1.63, spec items 4800 to 4817, every new number PROVISIONAL. From Leon's live play of 0.30.0: a Dexterity
+melee build got nothing from its door, the knife showed Pull Out with no Throw, and Rite in the Field boosted a glyph.
+The lead's rulings D1 to D7. One closed-list addition, approved: the predicate `rolled_with`.
+
+### Pressure at arm's length (rules 1.63 items 4800 to 4810)
+
+- **Pressure is Dexterity's door, not the gun's.** An attack rolled with Dexterity (a gun, a bow, a throw, a light blade,
+  a Dexterity glove, the Open Hand's gloves when they pick Dexterity) lays and reads Pressure. A blow rolled with
+  anything else sheds your own Pressure as before.
+- **The predicate `rolled_with`.** The skill an attack rolls with is decided once (`combat.ts previewAttack`: the
+  weapon's own, or a `roll_with`'s pick) and carried as `via` on the attack's events and the damage's source.
+- **The melee pip.** A Dexterity blow adds 1 Pressure to its target, at most 2 a target a turn (`skills.json
+  dexterity.unlocks.1`, row `pressing_blade`), and does not shed your own.
+- **Flush Out's blade twin** (Dexterity 5): a Pressed foe you hit with a Dexterity blow saves or is Afraid of you for 1
+  round, once a turn.
+- **The door's pieces read Dexterity, not range:** Near Miss, Pressure Point, Keep Their Heads Down, the four Pressure
+  forks, the Skirmisher's Fire and Move and Relocated, and Trick Shot (a blow carries through; the cover clause stays
+  ranged). Texts reworded ("Strike, step, strike").
+- **Bug fixed on the way:** `melee: false` on `attack_roll` and `to_hit` was always true (those events carried no
+  `melee`), so Fire and Move armed on any blow and Relocated's +1 went on every roll to hit, spells included.
+- **Guns do not move:** every gun rolls with Dexterity; no golden gun line moved and the balance contract passes.
+
+### The knife (item 4811)
+
+- **Throw costs no Momentum** (`techniques.json throw.numbers.momentum_cost` 0): a knife, throwing knives or a hatchet
+  can open from range.
+- **The sheet shows where Throw comes from:** the ARMS tab lists the techniques a held weapon's properties give ("COMES
+  WITH THROWN"), Pull Out says "ONLY WHILE A WEAPON IS STUCK", and the weapon line reads "Thrown: Throw".
+- **Pull Out's damage goes through the one damage path** (the weapon's scaling, the melee factor) instead of its own
+  formula: a knife at Agility 7 pulls out for 14, was 1 after armour.
+
+### Rite in the Field (item 4813)
+
+- In a fight it cuts the heart's rituals, **Crystallise and Steady**, by 1 AP (II: 2), never below 1. It no longer cuts
+  the WARD glyph, prayers, Ward moves or a Guarded Begin. Data rows now; the hand-coded perk and its second Crystallise
+  button are gone (the lint baseline shrinks). Cutting Name It waits on a price predicate on a Call's id (for the lead).
+
+### Measured (item 4812)
+
+- On the range (percent of the plain rifle, levels 1 / 6 / 10, Dexterity 7): the knife with both perks 89 / 97 / 99 ->
+  96 / 109 / 109; the striking gloves 82 / 113 / 109 -> 88 / 127 / 121; 1.3 to 1.4 pips a turn (none before). Under
+  the melee line (165%), so the pip limit stays 2.
+- Survival stage 1, 20 seeds solo: the knife 0 -> 2 cleared, the Dexterity monk (Hand wraps) 10 -> 18.
+- The door-builds simulator has `dex_knife` and `dex_monk` from now on; `test/balance/dex-melee-measure.test.ts`
+  measures them (`DEX_MELEE=1`).
+- For the lead: the sabre and the gladius in an all-in Dexterity build were already over the melee line and gain 8 to
+  24 points more.
+
+### Moved on purpose
+
+- Golden tables: the Dexterity blade rows (the door row's use counter and log line; Fear on a Pressed foe; Throw's
+  Momentum; Pull Out's damage), the marksman's and the shelved gun classes' blow lines (Fire and Move), Rite in the
+  Field's rows. No gun line.
+- 16 of the 29 replays (REPLAY_FULL), re-recorded: Dexterity blows, the Skirmisher's moves on non-Dexterity rolls, and
+  Rite in the Field in the magic games.
+
 ## 0.30.0 — shields as weapons, the follow strike, the tank rulings, the bare heart and the shield display
 
 Rules revisions 1.56 (two late blocks: the bare heart and the Mana Shock; a shield in either hand), 1.57 (shields are

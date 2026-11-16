@@ -1052,7 +1052,7 @@
 "tech/sunder/sabre": "P1 ap9>7 res.momentum3>2 | short: Needs 2 AP. | again: P1 ap9>7 res.momentum2>1 | next: P1 ap9>7 res.momentum2>1 | later: P1 ap9>7 res.momentum2>1",
 "tech/suppress/hellraiser_service_rifle": "P1 ammo24>21 ap9>6 heat0>2 | short: Needs 3 AP. | again: P1 ammo21>18 ap9>6 heat2>4 | next: P1 ammo21>18 ap9>6 heat0>2 | later: P1 ammo21>18 ap9>6 heat0>2",
 "tech/sweep/sabre": "P1 ap9>6 res.momentum3>2 | short: Needs 3 AP. | again: P1 ap9>6 res.momentum2>1 | next: P1 ap9>6 res.momentum2>1 | later: P1 ap9>6 res.momentum2>1",
-"tech/throw/sabre": "P1 ap9>7 res.momentum3>2 | short: Needs 2 AP. | again: NO Nothing to throw: your hands are bare. | next: NO Nothing to throw: your hands are bare. | later: NO Nothing to throw: your hands are bare.",
+"tech/throw/sabre": "P1 ap9>7 | short: Needs 2 AP. | again: NO Nothing to throw: your hands are bare. | next: NO Nothing to throw: your hands are bare. | later: NO Nothing to throw: your hands are bare.",
 "tech/throw_down": "REFUSED (no weapon of the table makes it)",
 "tech/trip/sabre": "P1 ap9>8 | short: Needs 1 AP. | again: NO Foe 1 is already Prone. | next: NO Foe 1 is already Prone. | later: NO Foe 1 is already Prone.",
 "tech/vent": "REFUSED (no weapon of the table makes it)",

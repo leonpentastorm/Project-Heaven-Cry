@@ -68,17 +68,25 @@ describe('Resonance, the perk (rules 1.14): what the rewrite kept', () => {
   });
 });
 
-describe('Rite in the Field', () => {
-  it('I: Pray costs 1 AP less, a WARD glyph down to 0.5; II: Crystallise (rite) costs 1 AP', () => {
-    const f = sigilFight({ rite_in_the_field: 'I' }, { skills: { faith: 5 } });
-    charOf(f.g, f.pc).patron = PATRONS[0].id; f.pc.mg!.words.push('ward');
-    const ap = f.pc.ap; f.g.rng.state = rngFor(15).state;
-    f.act({ type: 'combat/pray', unitId: f.pc.id, choice: PATRONS[0].blessings[0].id });
-    expect(ap - f.pc.ap).toBe(2);
-    const a2 = f.pc.ap; draw(f, 'ward', '3,5'); expect(Math.round((a2 - f.pc.ap) * 10) / 10).toBe(0.5);
-    const g = soulFight({ rite_in_the_field: 'II' }); const a3 = g.pc.ap;
-    g.act({ type: 'combat/perk', unitId: g.pc.id, id: 'rite_in_the_field', actionId: 'crystallise' } as any);
-    expect(a3 - g.pc.ap).toBe(1); expect(logHas(g.cb, /crystallises/)).toBe(true);
+describe('Rite in the Field (rules 1.63, D6: the rituals of the heart)', () => {
+  it('I cuts Crystallise by 1 AP, II by 2 (never below 1); a prayer and a WARD glyph cost what they cost without it', () => {
+    const cost = (tier?: string) => { const g = soulFight(tier ? { rite_in_the_field: tier } : {}); const a = g.pc.ap;
+      g.act({ type: 'combat/crystallise', unitId: g.pc.id } as any); expect(logHas(g.cb, /crystallises/)).toBe(true); return a - g.pc.ap; };
+    const plain = cost(); expect(plain).toBeGreaterThan(2);
+    expect(cost('I')).toBe(plain - 1); expect(cost('II')).toBe(Math.max(1, plain - 2));
+    // the old Perks-tab copy of Crystallise is gone (one copy of the action: the engine's own, priced at its site)
+    const g = soulFight({ rite_in_the_field: 'II' }); expect(() => g.act({ type: 'combat/perk', unitId: g.pc.id, id: 'rite_in_the_field', actionId: 'crystallise' } as any)).toThrow();
+    // the Mind's and Faith's doors are not its: a Hymn and a WARD glyph cost the same with and without it
+    const other = (perks: Record<string, string>) => { const f = sigilFight(perks, { skills: { faith: 5 } });
+      charOf(f.g, f.pc).patron = PATRONS[0].id; f.pc.mg!.words.push('ward');
+      const ap = f.pc.ap; f.g.rng.state = rngFor(15).state; f.act({ type: 'combat/pray', unitId: f.pc.id, choice: PATRONS[0].blessings[0].id });
+      const a2 = f.pc.ap; draw(f, 'ward', '3,5'); return [ap - a2, Math.round((a2 - f.pc.ap) * 10) / 10]; };
+    expect(other({ rite_in_the_field: 'II' })).toEqual(other({}));
+  });
+  it('Steady is never cut below 1 AP', () => {
+    const g = soulFight({ rite_in_the_field: 'II' }); const d = g.pc.mg!.designs[0];
+    g.act({ type: 'combat/outburst', unitId: g.pc.id, design: d.id, hold: true } as any); const a = g.pc.ap;
+    g.act({ type: 'combat/steady', unitId: g.pc.id } as any); expect(a - g.pc.ap).toBe(1);
   });
 });
 

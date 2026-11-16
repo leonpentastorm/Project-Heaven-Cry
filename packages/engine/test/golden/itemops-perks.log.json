@@ -62,6 +62,8 @@
 "perk/overhaul@mastered/stats": "STATS never_jams:1x1 field_repair_amount:0x2 never_jams:1x1",
 "perk/parallel_thought@I/glyph-costs": "GLYPHS fire:0.1/1/1 shock:0.1/1/1 freeze:0.1/1/1 stone:0.1/1/1 acid:0.1/1/1 spark:0.1/1/1 gale:0.1/1/1 blind:0.1/1/1 slow:0.1/1/1 muddle:0.1/2/1",
 "perk/parallel_thought@II/glyph-costs": "GLYPHS fire:0.1/1/0 shock:0.1/1/0 freeze:0.1/1/0 stone:0.1/1/0 acid:0.1/1/0 spark:0.1/1/0 gale:0.1/1/0 blind:0.1/1/0 slow:0.1/1/0 muddle:0.1/2/0",
+"perk/rite_in_the_field@I/prices2": "PRICES clear_jam2 crystallise2 escape2 extinguish1 field_repair2 parley2 pray? recover2 reload_both3 set_explosive? stim_throw1 throw2 triage? ward? whisper? picture2 figment_order1 attempt1 door1 fee",
+"perk/rite_in_the_field@II/prices2": "PRICES clear_jam2 crystallise1 escape2 extinguish1 field_repair2 parley2 pray? recover2 reload_both3 set_explosive? stim_throw1 throw2 triage? ward? whisper? picture2 figment_order1 attempt1 door1 fee",
 "perk/roll_with_it@I/taken-miss": "Far soldier fires at Tester 1: d20 2 +2 = 4 vs 14 · miss / Tester 1 rolls with it: 1 free tile next turn. / Tester 1 stood still, and answers the miss. / Tester 1 fires at Far soldier: d20 2 +4 = 6 vs 13 · miss / Tester 1's near miss keeps Far soldier's head down.",
 "perk/roll_with_it@II/taken-miss": "Far soldier fires at Tester 1: d20 2 +2 = 4 vs 14 · miss / Tester 1 rolls with it: 2 free tiles next turn. / Tester 1 stood still, and answers the miss. / Tester 1 fires at Far soldier: d20 2 +4 = 6 vs 13 · miss / Tester 1's near miss keeps Far soldier's head down.",
 "perk/rounding_up@II/end-turn": "Tester 1 banks 1 AP for next turn (Rounding Up).",

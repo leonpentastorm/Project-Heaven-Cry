@@ -54,7 +54,7 @@ describe('1. only the plain melee attack gives Momentum', () => {
     expect(f.tech('bash', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(1);   // −1, and nothing for the hit
     expect(f.tech('flurry', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(0); // three hits: −1 only
     const t = fight('combat_knife', ['throw'], { foes: [{ at: 'F5' }], m: 2 }); rig({ hit: true, die: 12 });
-    expect(t.tech('throw', { targetId: t.foe.id })).toBeNull(); expect(t.momentum(t.pc)).toBe(1);
+    expect(t.tech('throw', { targetId: t.foe.id })).toBeNull(); expect(t.momentum(t.pc)).toBe(2); // rules 1.63 (D5): Throw costs none, and its hit gives none
     const r = fight('sabre', ['riposte'], { m: 0 }); r.turn(r.foe); r.foe.attack = -100; rig({ die: 15 }); // the foe's 15 misses, the Riposte's 15 hits
     const hp = r.foe.hp; hitPc(r);
     expect(r.cb.log.some((l) => /answers with Riposte/.test(l))).toBe(true); expect(r.foe.hp).toBeLessThan(hp); expect(r.momentum(r.pc)).toBe(0);
@@ -75,8 +75,8 @@ describe('2. a Strike and an Opener spend 1 Momentum', () => {
     expect(f.tech('bash', { targetId: f.foe.id })).toMatch(/reach/); expect(f.momentum(f.pc)).toBe(1); expect(f.pc.ap).toBe(6);
   });
   it('Cut and Pull Out are free and spend none; Links and Answers spend none', () => {
-    for (const id of ['cut', 'pull_out', 'sidestep', 'guard', 'shove', 'trip', 'drag', 'parry', 'riposte', 'keep_back']) expect(phys.momentumCost({} as Unit, phys.TECHNIQUE[id]), id).toBe(0);
-    for (const id of phys.TECHNIQUES.filter((d) => d.system === 'melee' && d.group === 'strike' && !d.free && d.id !== 'shield_bash' /* 1 Guard in its place */).map((d) => d.id)) expect(phys.momentumCost({} as Unit, phys.TECHNIQUE[id]), id).toBe(1);
+    for (const id of ['cut', 'pull_out', 'throw' /* rules 1.63 (D5): its numbers.momentum_cost 0 */, 'sidestep', 'guard', 'shove', 'trip', 'drag', 'parry', 'riposte', 'keep_back']) expect(phys.momentumCost({} as Unit, phys.TECHNIQUE[id]), id).toBe(0);
+    for (const id of phys.TECHNIQUES.filter((d) => d.system === 'melee' && d.group === 'strike' && !d.free && d.id !== 'shield_bash' /* 1 Guard in its place */ && d.id !== 'throw').map((d) => d.id)) expect(phys.momentumCost({} as Unit, phys.TECHNIQUE[id]), id).toBe(1);
     for (const d of phys.TECHNIQUES.filter((x) => x.system === 'ranged')) expect(phys.momentumCost({ openerUsed: true } as Unit, d), d.id).toBe(0);
     const f = fight('sabre', ['sidestep', 'guard', 'shove', 'trip'], { m: 0 }); weak(f.foe); f.pc.strength = 20; rig({ hit: true, die: 12 });
     expect(f.tech('guard')).toBeNull(); expect(f.tech('trip', { targetId: f.foe.id })).toBeNull();

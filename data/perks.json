@@ -1405,7 +1405,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Your ranged hit on an enemy already Pressed (Pressure {=tiers.I.effects.0.value.steps.0.at} or more) lays {=tiers.I.effects.0.value.steps.0.value} more Pressure on it, once a turn for each enemy, and your ranged attacks deal {=tiers.I.effects.1.value.steps.0.value|pct}% more to a Pressed enemy. II: Your ranged hit on an enemy already Pressed (Pressure {=tiers.II.effects.0.value.steps.0.at} or more) lays {=tiers.II.effects.0.value.steps.0.value} more Pressure on it, and {=tiers.II.effects.0.value.steps.1.value} more again on one already Suppressed (Pressure {=tiers.II.effects.0.value.steps.1.at} or more), once a turn for each enemy; your ranged attacks deal {=tiers.II.effects.1.value.steps.0.value|pct}% more to a Pressed enemy and {=tiers.II.effects.1.value.steps.1.value|pct}% more again to a Suppressed one.",
+      "text": "I: Your hit rolled with Dexterity (a gun, a bow, a throw, a light blade, a Dexterity glove) on an enemy already Pressed (Pressure {=tiers.I.effects.0.value.steps.0.at} or more) lays {=tiers.I.effects.0.value.steps.0.value} more Pressure on it, once a turn for each enemy, and your attacks rolled with Dexterity deal {=tiers.I.effects.1.value.steps.0.value|pct}% more to a Pressed enemy. II: Your hit rolled with Dexterity (a gun, a bow, a throw, a light blade, a Dexterity glove) on an enemy already Pressed (Pressure {=tiers.II.effects.0.value.steps.0.at} or more) lays {=tiers.II.effects.0.value.steps.0.value} more Pressure on it, and {=tiers.II.effects.0.value.steps.1.value} more again on one already Suppressed (Pressure {=tiers.II.effects.0.value.steps.1.at} or more), once a turn for each enemy; your attacks rolled with Dexterity deal {=tiers.II.effects.1.value.steps.0.value|pct}% more to a Pressed enemy and {=tiers.II.effects.1.value.steps.1.value|pct}% more again to a Suppressed one.",
       "effects": [
         {
           "op": "resource",
@@ -1413,7 +1413,7 @@
           "if": {
             "actor": "self",
             "hostile": true,
-            "melee": false,
+            "rolled_with": ["dexterity"],
             "target_alive": true
           },
           "resource": "pressure",
@@ -1439,9 +1439,7 @@
           "when": "dealing",
           "if": {
             "hostile": true,
-            "damage": [
-              "ranged"
-            ]
+            "rolled_with": ["dexterity"]
           },
           "value": {
             "base": 1,
@@ -1464,7 +1462,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Your ranged hit on an enemy already Pressed (Pressure {=tiers.I.effects.0.value.steps.0.at} or more) lays {=tiers.I.effects.0.value.steps.0.value} more Pressure on it, once a turn for each enemy, and your ranged attacks deal {=tiers.I.effects.1.value.steps.0.value|pct}% more to a Pressed enemy.",
+          "text": "Your hit rolled with Dexterity (a gun, a bow, a throw, a light blade, a Dexterity glove) on an enemy already Pressed (Pressure {=tiers.I.effects.0.value.steps.0.at} or more) lays {=tiers.I.effects.0.value.steps.0.value} more Pressure on it, once a turn for each enemy, and your attacks rolled with Dexterity deal {=tiers.I.effects.1.value.steps.0.value|pct}% more to a Pressed enemy.",
           "effects": [
             {
               "op": "resource",
@@ -1472,7 +1470,7 @@
               "if": {
                 "actor": "self",
                 "hostile": true,
-                "melee": false,
+                "rolled_with": ["dexterity"],
                 "target_alive": true
               },
               "resource": "pressure",
@@ -1498,9 +1496,7 @@
               "when": "dealing",
               "if": {
                 "hostile": true,
-                "damage": [
-                  "ranged"
-                ]
+                "rolled_with": ["dexterity"]
               },
               "value": {
                 "base": 1,
@@ -1523,7 +1519,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Your ranged hit on an enemy already Pressed (Pressure {=tiers.II.effects.0.value.steps.0.at} or more) lays {=tiers.II.effects.0.value.steps.0.value} more Pressure on it, and {=tiers.II.effects.0.value.steps.1.value} more again on one already Suppressed (Pressure {=tiers.II.effects.0.value.steps.1.at} or more), once a turn for each enemy; your ranged attacks deal {=tiers.II.effects.1.value.steps.0.value|pct}% more to a Pressed enemy and {=tiers.II.effects.1.value.steps.1.value|pct}% more again to a Suppressed one.",
+          "text": "Your hit rolled with Dexterity (a gun, a bow, a throw, a light blade, a Dexterity glove) on an enemy already Pressed (Pressure {=tiers.II.effects.0.value.steps.0.at} or more) lays {=tiers.II.effects.0.value.steps.0.value} more Pressure on it, and {=tiers.II.effects.0.value.steps.1.value} more again on one already Suppressed (Pressure {=tiers.II.effects.0.value.steps.1.at} or more), once a turn for each enemy; your attacks rolled with Dexterity deal {=tiers.II.effects.1.value.steps.0.value|pct}% more to a Pressed enemy and {=tiers.II.effects.1.value.steps.1.value|pct}% more again to a Suppressed one.",
           "effects": [
             {
               "op": "resource",
@@ -1531,7 +1527,7 @@
               "if": {
                 "actor": "self",
                 "hostile": true,
-                "melee": false,
+                "rolled_with": ["dexterity"],
                 "target_alive": true
               },
               "resource": "pressure",
@@ -1562,9 +1558,7 @@
               "when": "dealing",
               "if": {
                 "hostile": true,
-                "damage": [
-                  "ranged"
-                ]
+                "rolled_with": ["dexterity"]
               },
               "value": {
                 "base": 1,
@@ -1590,7 +1584,7 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "guns",
+        "dexterity",
         "pressure"
       ],
       "provisional": true,
@@ -1614,7 +1608,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Once a turn, your ranged hit on an enemy already Pressed (Pressure {=tiers.I.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance (a Body save): it loses AP on its next turn. II: Once a turn for each enemy, your ranged hit on one already Pressed (Pressure {=tiers.II.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance, with no save: it loses AP on its next turn.",
+      "text": "I: Once a turn, your hit rolled with Dexterity (a gun, a bow, a throw, a light blade, a Dexterity glove) on an enemy already Pressed (Pressure {=tiers.I.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance (a Body save): it loses AP on its next turn. II: Once a turn for each enemy, your hit rolled with Dexterity on one already Pressed (Pressure {=tiers.II.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance, with no save: it loses AP on its next turn.",
       "effects": [
         {
           "op": "condition",
@@ -1622,7 +1616,7 @@
           "if": {
             "actor": "self",
             "hostile": true,
-            "melee": false,
+            "rolled_with": ["dexterity"],
             "target_alive": true,
             "target_res": {
               "pressure": {
@@ -1648,7 +1642,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once a turn, your ranged hit on an enemy already Pressed (Pressure {=tiers.I.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance (a Body save): it loses AP on its next turn.",
+          "text": "Once a turn, your hit rolled with Dexterity (a gun, a bow, a throw, a light blade, a Dexterity glove) on an enemy already Pressed (Pressure {=tiers.I.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance (a Body save): it loses AP on its next turn.",
           "effects": [
             {
               "op": "condition",
@@ -1656,7 +1650,7 @@
               "if": {
                 "actor": "self",
                 "hostile": true,
-                "melee": false,
+                "rolled_with": ["dexterity"],
                 "target_alive": true,
                 "target_res": {
                   "pressure": {
@@ -1682,7 +1676,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once a turn for each enemy, your ranged hit on one already Pressed (Pressure {=tiers.II.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance, with no save: it loses AP on its next turn.",
+          "text": "Once a turn for each enemy, your hit rolled with Dexterity on one already Pressed (Pressure {=tiers.II.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance, with no save: it loses AP on its next turn.",
           "effects": [
             {
               "op": "condition",
@@ -1690,7 +1684,7 @@
               "if": {
                 "actor": "self",
                 "hostile": true,
-                "melee": false,
+                "rolled_with": ["dexterity"],
                 "target_alive": true,
                 "target_res": {
                   "pressure": {
@@ -1716,7 +1710,7 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "guns",
+        "dexterity",
         "pressure"
       ],
       "provisional": true,
@@ -4619,13 +4613,17 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: In a fight, wards and rituals cost you 1 AP less: drawing a WARD glyph, beginning an Outburst that makes allies Guarded, a Ward class move, praying and Crystallise. None of them drops below 1 AP (half an AP for the glyph). II: In a fight, wards and rituals cost you 2 AP less: drawing a WARD glyph, beginning an Outburst that makes allies Guarded, a Ward class move, praying and Crystallise. None of them drops below 1 AP (half an AP for the glyph).",
+      "text": "I: In a fight, the heart's rituals cost you {=tiers.I.effects.0.value|abs} AP less: Crystallise (a mana core from the air) and Steady (never below {=tiers.I.effects.0.min} AP). II: In a fight, the heart's rituals cost you {=tiers.II.effects.0.value|abs} AP less: Crystallise (a mana core from the air) and Steady (never below {=tiers.II.effects.0.min} AP).",
       "effects": [
         {
           "op": "cost_mod",
-          "action": "ward_or_ritual",
+          "when": "cost",
+          "if": {
+            "action": ["crystallise", "steady"]
+          },
           "value": -1,
-          "when": "in combat"
+          "min": 1,
+          "label": "Rite in the Field"
         }
       ],
       "tiers": {
@@ -4637,13 +4635,17 @@
             }
           ],
           "ap_cost": null,
-          "text": "In a fight, wards and rituals cost you 1 AP less: drawing a WARD glyph, beginning an Outburst that makes allies Guarded, a Ward class move, praying and Crystallise. None of them drops below 1 AP (half an AP for the glyph).",
+          "text": "In a fight, the heart's rituals cost you {=tiers.I.effects.0.value|abs} AP less: Crystallise (a mana core from the air) and Steady (never below {=tiers.I.effects.0.min} AP).",
           "effects": [
             {
               "op": "cost_mod",
-              "action": "ward_or_ritual",
+              "when": "cost",
+              "if": {
+                "action": ["crystallise", "steady"]
+              },
               "value": -1,
-              "when": "in combat"
+              "min": 1,
+              "label": "Rite in the Field"
             }
           ]
         },
@@ -4655,13 +4657,17 @@
             }
           ],
           "ap_cost": null,
-          "text": "In a fight, wards and rituals cost you 2 AP less: drawing a WARD glyph, beginning an Outburst that makes allies Guarded, a Ward class move, praying and Crystallise. None of them drops below 1 AP (half an AP for the glyph).",
+          "text": "In a fight, the heart's rituals cost you {=tiers.II.effects.0.value|abs} AP less: Crystallise (a mana core from the air) and Steady (never below {=tiers.II.effects.0.min} AP).",
           "effects": [
             {
               "op": "cost_mod",
-              "action": "ward_or_ritual",
+              "when": "cost",
+              "if": {
+                "action": ["crystallise", "steady"]
+              },
               "value": -2,
-              "when": "in combat"
+              "min": 1,
+              "label": "Rite in the Field"
             }
           ],
           "replaces_tier_I": true,
@@ -5735,11 +5741,11 @@
       "ap_cost": null,
       "uses": "per_turn",
       "flavour": "Off the pipe, off the plate, into the second one. You called it.",
-      "text": "Once per turn, you can make a ranged attack a Ricochet. It ignores half cover, and if it hits, the nearest other enemy within 2 tiles of the target takes half the damage the target took.",
+      "text": "Once per turn, you can make an attack you roll with Dexterity a Ricochet: a ranged one ignores half cover, and a blow (a light blade, a Dexterity glove) carries through. If it hits, the nearest other enemy within 2 tiles of the target takes half the damage the target took.",
       "effects": [
         {
           "op": "ignore_cover",
-          "context": "one ranged attack per turn"
+          "context": "one attack rolled with Dexterity per turn (the cover clause: a ranged one)"
         },
         {
           "op": "damage_mod",
@@ -5752,7 +5758,7 @@
       "recovered": null,
       "provisional": true,
       "tags": [
-        "ranged"
+        "dexterity"
       ]
     },
     {

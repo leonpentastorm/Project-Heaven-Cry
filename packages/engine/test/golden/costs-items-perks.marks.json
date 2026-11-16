@@ -30,8 +30,6 @@
 "item/perk/last_wall@mastered/taken-low": "P1 ps.perk:last_wall.flags.guard0>true uses.perk:last_wall|per_combat.n0>1 uses.perk:last_wall|per_combat.s0>c; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "item/perk/on_my_mark@mastered/action/order": "P1 faith.acted0>true faith.apMark6>8 ps.perk:on_my_mark.mark.ally0>pc-c3 ps.perk:on_my_mark.mark.pool0>4 ps.perk:on_my_mark.mark.real0>6 ps.skill:composure.5.acted0>true uses.perk:on_my_mark#order|per_round.n0>1 uses.perk:on_my_mark#order|per_round.s0>r1; P2 uses.perk:on_my_mark|per_round.n0>1 uses.perk:on_my_mark|per_round.s0>r1",
 "item/perk/open_hand@mastered/action/mercy_setting": "P1 faith.acted0>true faith.apMark6>9 ps.skill:composure.5.acted0>true",
-"item/perk/rite_in_the_field@I/action/crystallise": "P1 faith.acted0>true faith.apMark6>7 ps.skill:composure.5.acted0>true",
-"item/perk/rite_in_the_field@II/action/crystallise": "P1 faith.acted0>true faith.apMark6>8 ps.skill:composure.5.acted0>true",
 "item/perk/scar_tissue@I/taken": "P1 ps.perk:scar_tissue.n0>1; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "item/perk/scar_tissue@I/taken-blast": "P1 ps.perk:scar_tissue.n0>1",
 "item/perk/scar_tissue@I/taken-blow": "P1 ps.perk:scar_tissue.n0>1; F1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true",
