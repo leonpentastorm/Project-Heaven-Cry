@@ -1,0 +1,76 @@
+{
+  "number": 330,
+  "family": "technique_icons",
+  "id": "tech-cut",
+  "path": "art/icons/techniques/cut.png",
+  "name": "Cut",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, strike",
+  "paint": "One clean diagonal blade line.",
+  "avoid": "blood \u00b7 a kitchen knife",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: One clean diagonal blade line.\nAvoid: blood \u00b7 a kitchen knife\nEXACT STAGING: Cut: ONE SINGLE CLEAN DIAGONAL WHITE BLADE-STROKE running lower-left to upper-right, long tapered graphic shape with a short squared heel and one sharp leading point. This is the simplest strike icon: no hands, hilt, person, separate weapon, extra slash, motion blur, blood, kitchen knife, sparkle or border. Preserve bold confident single stroke at 32px.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "3a4bfd4ca578ca52cc25bbd3c5c744f6634debc38feb344c49a98cb1968fdfad",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/330-cut.png",
+  "source_sha256": "0eb6be5c3c0a3db9966b0041cc13f67707e973fd684d2b2917257e59e354eab1",
+  "export_crop": [
+    0,
+    248,
+    1198,
+    1156
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/cut.png",
+    "64": "art/icons/techniques/exports/64/cut.png",
+    "48": "art/icons/techniques/exports/48/cut.png",
+    "44": "art/icons/techniques/exports/44/cut.png",
+    "32": "art/icons/techniques/exports/32/cut.png",
+    "24": "art/icons/techniques/exports/24/cut.png"
+  },
+  "framing": {
+    "scale": 0.6232416532223854,
+    "offset": [
+      138,
+      229
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "378ef2c494ecb9f4a7c5d7b6667add72d670a03077393e237defc676437c2c9a",
+    "64": "ee85031092fdb762d20e56d076555af6710e7f836d500bb4ca03472ce896105e",
+    "48": "6ddfbc0efb1f5b48a86fdb0846dadabfb25079042526cd820507f8c533ba7643",
+    "44": "f7c7f4c91bb1c3333dd62b3568f3edfda74ffc5292b161e8d30cd71b034f0a69",
+    "32": "cc260573d14d0e408988826e386b287261265f9f06f6295d4da0f996f329b779",
+    "24": "aabf8e391132744f13a1b574dcb108f2edd3e5693f405f2fd9dbaafeec7e65e9"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

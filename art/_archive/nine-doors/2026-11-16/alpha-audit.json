@@ -1221,6 +1221,41 @@
       "number": 324,
       "name": "Augment Offline",
       "faint_alpha_to_solid_area_ratio": 0.02272
+    },
+    {
+      "number": 325,
+      "name": "Lunge (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.06769
+    },
+    {
+      "number": 326,
+      "name": "Charge",
+      "faint_alpha_to_solid_area_ratio": 0.06457
+    },
+    {
+      "number": 327,
+      "name": "Feint",
+      "faint_alpha_to_solid_area_ratio": 0.07506
+    },
+    {
+      "number": 328,
+      "name": "Draw Cut",
+      "faint_alpha_to_solid_area_ratio": 0.0372
+    },
+    {
+      "number": 329,
+      "name": "Ambush",
+      "faint_alpha_to_solid_area_ratio": 0.05693
+    },
+    {
+      "number": 330,
+      "name": "Cut",
+      "faint_alpha_to_solid_area_ratio": 0.03759
+    },
+    {
+      "number": 331,
+      "name": "Sweep",
+      "faint_alpha_to_solid_area_ratio": 0.05257
     }
   ],
   "excluded": [],
