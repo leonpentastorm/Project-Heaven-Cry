@@ -7,6 +7,7 @@
 // where it has one, in the story; what the engine can't judge goes to the Narrator (note / pendRuling / brief).
 // Recommended fixes from the audit are marked PROVISIONAL and listed in the spec (section 14, tags I…) and docs/design/perk-runtime.md.
 import { isPressed } from '../physical/pressure';
+import { guardSoakOf } from '../physical/guard';
 import { register, stateOf, uses, note, pendRuling, postStory, applyDamage, healUnit, grantShield, modOn, armedOf, AP_MAX, emit, charOfUnit, statQuery, holderOf, effNum, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { stampOf } from '../effects/uses';
 import { num } from '../effects/num';
@@ -447,11 +448,11 @@ register({
   on: {
     damage_in: (ctx, h) => {
       const me = h.u!, cb = h.cb!; if (ctx.phase !== 'reduce' || ctx.t !== me || ctx.dmg <= 0) return;
-      const pol = policy(h, 'auto'); if (pol === 'off') return;
-      const have = resOf(me, 'guard') - (pol === 'keep1' ? 1 : 0); if (have <= 0) return;
-      const per = effNum(h, 'stat_mod'), every = effNum(h, 'meter', 'every'), bots = effNum(h, 'meter'); // its data (P3: no literal)
-      const k = Math.min(have, Math.ceil(ctx.dmg / per)); if (k <= 0) return;
-      resSpend(me, 'guard', k); const was = ctx.dmg; ctx.dmg = Math.max(0, ctx.dmg - per * k);
+      // how much it soaks, what it keeps and in which phase: guard.ts guardSoakOf, the one copy (the screen reads it too)
+      const plan = guardSoakOf(me); if (!plan || plan.phase !== 'before') return;
+      const { k, cut } = plan.spend(ctx.dmg, resOf(me, 'guard'), me.hp); if (k <= 0) return;
+      const every = effNum(h, 'meter', 'every'), bots = effNum(h, 'meter'); // its data (P3: no literal)
+      resSpend(me, 'guard', k); const was = ctx.dmg; ctx.dmg = Math.max(0, ctx.dmg - cut);
       const st = stateOf(h); st.lost = (st.lost || 0) + k;
       let shed = 0; while (st.lost >= every) { st.lost -= every; shed += bots; }
       say(cb, me.name + '\'s plate hardens: ' + k + ' Guard, ' + (was - ctx.dmg) + ' damage stopped.');

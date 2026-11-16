@@ -47,9 +47,15 @@ describe('shields on the token and the card', () => {
     expect(t.shieldSegs[0].ink).toBe('#D36A90'); // the Ward is the Chaplain's: Virtue's ink, read from the class's attribute
     expect(t.shieldSegs[1].ink).not.toBe(t.shieldSegs[0].ink);
     expect(t.t.sh.lines.map((l: any) => [l.glyph, l.name, l.amount])).toEqual([[GLYPH.layer, 'Ward', '30'], [GLYPH.base, L.base.name, '50']]);
-    expect(t.t.sh.absorb).toBe('Absorbs up to 80 before HP'); expect(t.t.sh.rule).toBe(L.rule);
+    expect(t.t.sh.absorb).toBe('Absorbs up to 80 before HP'); expect(t.t.sh.head).toBe(L.head);
+    // the rule line is your panel's and the target card's, never every hover card (it ran the card off the screen)
+    expect(t.t.sh.hasRule).toBe(false); expect(v.me.sh.hasRule).toBe(true); expect(v.me.sh.rule).toBe(L.rule);
     expect(v.me.sh.lines).toHaveLength(2); expect(v.me.sh.absorb).toBe('Absorbs up to 80 before HP');
-    expect(t.label).toContain('Shields: '); expect(t.label).toContain('Ward 30');
+    expect(t.label).toContain(L.head + ': '); expect(t.label).toContain('Ward 30');
+    // the chip and the status read every shield, never the base one alone (a friend's row once said +50 with 80 in front)
+    expect(v.me.fx.find((c: any) => c.key === 'shield')).toBeUndefined(); expect(v.me.miniLine).toContain('+80 SHIELD');
+    // the turn strip shows them too, under the HP bar
+    const card = v.initiative.find((i: any) => i.key === u.id); expect(card.hasSh).toBe(true); expect(card.shSegs.map((s: any) => s.kind)).toEqual(['layer', 'base']);
   });
   it("a friend's card shows its shields exactly (it used to show only HP)", () => {
     const { u, f } = fight('ROOM-F'); twoShields(f, u.id);
@@ -57,6 +63,7 @@ describe('shields on the token and the card', () => {
     expect(t.t.ally).toBe(true); expect(t.t.sh.has).toBe(true);
     expect(t.t.sh.lines.map((l: any) => l.amount)).toEqual(['30', '50']); expect(t.t.sh.lines[0].lasts).toContain('from ' + u.name);
     const row = v.allyRows.find((r: any) => r.key === f.id); expect(row.t.sh.lines).toHaveLength(2);
+    expect(row.fx).toContain('+80 SHIELD'); expect(row.fx).not.toContain('+50 SHIELD');
   });
   it("a foe's shields read by name with a size word (shield_look.size), never a number; its strip is drawn at the word's width", () => {
     const { u, e } = fight('ROOM-E'); e.shield = 60; snap = view(); // 30% of its max HP
@@ -68,17 +75,21 @@ describe('shields on the token and the card', () => {
     expect(t.shieldSegs[0].width).toBeCloseTo(L.size.find((r: any) => r.word === 'strong').bar * 100);
     // the target card: the same block, and the line that says the attack's damage is shown before the shields
     const l = screen(); l.setState({ target: e.id, action: 'shot' }); const tv = l.renderVals().target;
-    expect(tv.sh.lines).toHaveLength(1); void u;
+    expect(tv.sh.lines).toHaveLength(1); expect(tv.sh.hasRule).toBe(true); void u;
   });
-  it('Guard is listed apart, "Guard N plates, each soaks S", and is never a segment of the strip', () => {
+  it('Guard is listed apart, "Guard N plates, each soaks S", and is never a segment of the strip; your own panel says it once (its row)', () => {
     const { u } = fight('ROOM-G'); u.resMax = { ...(u.resMax || {}), guard: 5 }; u.res = { ...(u.res || {}), guard: 3 }; u.shield = 20; snap = view();
     const v = screen().renderVals(), t = tileOf(v, u), sv = shieldsView(G.combat as any, u);
     expect(t.shieldSegs.map((s: any) => s.kind)).toEqual(['base']); expect(t.hasGuard).toBe(true);
-    expect(t.t.sh.hasGuard).toBe(true); expect(t.t.sh.guardLine).toBe('Guard 3 plates, each soaks ' + sv.guard!.soak);
-    expect(t.t.sh.absorb).toBe('Absorbs up to ' + (20 + 3 * sv.guard!.soak) + ' before HP');
+    expect(t.t.sh.hasGuard).toBe(true); expect(t.t.sh.hasGuardLast).toBe(true); expect(t.t.sh.guardLine).toBe('Guard 3 plates, each soaks ' + sv.guard!.soak);
+    // the headline is what an ordinary blow meets (a plate is kept back); the drop case is its own line
+    expect(t.t.sh.absorb).toBe('Absorbs up to ' + (20 + 2 * sv.guard!.soak) + ' before HP');
+    expect(t.t.sh.absorbDrop).toBe('up to ' + (20 + 3 * sv.guard!.soak) + ' against a blow that would drop it');
+    expect(v.me.sh.hasGuard).toBe(false); expect(v.me.sh.has).toBe(true);
   });
   it('the strip: a small shield still shows; the strip stops at the HP bar with a "+"; each pip pairs its ink with a glyph and a name', () => {
     const base = { known: true, maxHp: 100, guard: null, blow: 0, all: 0, allWord: 'faint', rule: 'r' };
+    // the kinds differ by more than colour: a layer is solid, the base shield hatched
     const e = (key: string, kind: 'layer' | 'base', bar: number, attribute: string | null) => ({ key, kind, name: key, attribute, by: null, amount: bar * 100, size: null, bar, lasts: 'x', combines: 'separate', how: '', order: 1 });
     const small = shieldStrip({ ...base, entries: [e('a', 'base', 0.01, null)] });
     expect(small.segs[0].width).toBe(10); expect(small.over).toBe(false);
@@ -86,5 +97,6 @@ describe('shields on the token and the card', () => {
     expect(big.segs.reduce((a, s) => a + s.width, 0)).toBe(100); expect(big.over).toBe(true);
     const b = shieldBlock({ ...base, entries: [e('a', 'layer', 0.2, 'virtue')] });
     expect(b.lines[0]).toMatchObject({ glyph: GLYPH.layer, name: 'a', ink: inkOf({ attribute: 'virtue' }) });
+    expect(big.segs[0].style).toContain('background: ' + inkOf({ attribute: 'virtue' })); expect(big.segs[1].style).toContain('repeating-linear-gradient');
   });
 });

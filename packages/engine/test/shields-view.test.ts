@@ -3,9 +3,10 @@
 // Ward, a layer), applies a blow through the reducer (a shot), and checks that what the view predicted is what was spent.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
-import { shieldsView, d20, RULES, type Unit, type Action } from '../src';
+import { shieldsView, d20, RULES, CLASS_MOVE_POOL, phys, type Unit, type Action } from '../src';
 import { fightWith, type CharSpec } from './helpers/perkfight';
-import { clearPrayerLimits } from '../src';
+import { clearPrayerLimits, resolveAttack, applyDamage } from '../src';
+import { physFight, rig } from './helpers/physfight';
 
 function rngFor(...ns: number[]): number { for (let s = 1; s < 5_000_000; s++) { const r = { state: s }; if (ns.every((n) => d20(r) === n)) return s; } throw new Error('no seed'); }
 const L: any = (RULES as any).combat.shield_look;
@@ -71,5 +72,60 @@ describe('shieldsView: the shields a blow meets, in its order', () => {
     expect(v.known).toBe(false); expect(v.entries[0]).toMatchObject({ name: L.base.name, amount: null, size: 'strong' }); expect(v.all).toBeNull(); expect(v.blow).toBeNull();
     s.f.unit(foe.id).analyzedBy = s.chap().id;
     expect(shieldsView(s.f.cb, s.f.unit(foe.id), s.chap()).entries[0].amount).toBe(foe.shield);
+  });
+
+  it("Durability's Guard: an ordinary blow meets the shields and every plate but the kept one (the headline); a blow that would drop it, every plate", () => {
+    const s = scene(); const a = s.ally(); a.resMax = { ...(a.resMax || {}), guard: 5 }; a.res = { ...(a.res || {}), guard: 3 }; a.shield = 20;
+    const v = shieldsView(s.f.cb, s.ally(), s.chap(), String);
+    expect(v.guard).toMatchObject({ first: false, keep: 1 }); expect(v.guard!.how.startsWith(L.guard.after)).toBe(true);
+    expect(v.absorb).toBe('Absorbs up to ' + (20 + 2 * v.guard!.soak) + ' before HP');
+    expect(v.absorbDrop).toBe('up to ' + (20 + 3 * v.guard!.soak) + ' against a blow that would drop it');
+    expect(v.chip).toBe('+20 SHIELD'); expect(v.vs).toContain(String(20 + 2 * v.guard!.soak));
+  });
+});
+
+// The Defender's Reactive Plate (the Bulwark's rank III): its Guard is spent first, in the 'reduce' phase, before every
+// shield, at the plate's own number a plate (its stat_mod), nothing kept by default. The view reads the same plan
+// (physical/guard.ts guardSoakOf) the plate spends by.
+describe('shieldsView: the Reactive Plate is met before the shields', () => {
+  const PLATE = 'class:defender.reactive_plate';
+  function bulwark() {
+    rig(null);
+    const f = physFight([{ weapon: 'sabre', classId: 'defender', level: 12, attrs: { endurance: 8 }, skills: { durability: 3, athletics: 4 } }], [{ tier: 'elite' }]);
+    f.cb.objects = []; f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc);
+    const u = f.unit(f.pc.id); u.hp = u.maxHp; u.armour = 0; u.resMax = { ...(u.resMax || {}), guard: 5 }; u.res = { ...(u.res || {}), guard: 3 }; u.shield = 30;
+    return { f, u: () => f.unit(f.pc.id) };
+  }
+  const perPlate = (): number => (Object.values(CLASS_MOVE_POOL) as any[]).find((m) => m.id === 'reactive_plate' && m.origin === 'defender').effects.find((e: any) => e.op === 'stat_mod').value;
+  it("the view: Guard first, the plate's own number a plate, nothing kept, so a blow meets every plate", () => {
+    const { f, u } = bulwark(); expect(f.bound(() => phys.holds(u(), PLATE))).toBe(true);
+    const v = shieldsView(f.cb, u(), null, String);
+    expect(v.guard).toMatchObject({ plates: 3, soak: perPlate(), keep: 0, first: true, line: 'Guard 3 plates, each soaks ' + perPlate() });
+    expect(v.guard!.how).toBe(L.guard.before);
+    expect(v.blow).toBe(30 + 3 * perPlate()); expect(v.all).toBe(v.blow); expect(v.absorbDrop).toBe('');
+  });
+  it('a 40-damage blow spends every plate first, then the shield takes the rest: what the view said', () => {
+    const { f, u } = bulwark(); const v = shieldsView(f.cb, u(), null);
+    f.bound(() => applyDamage(f.cb, u(), 40, { type: 'weapon', by: f.unit(f.foe.id) } as any));
+    expect(u().res!.guard).toBe(0); expect(u().shield).toBe(30 - (40 - 3 * perPlate())); expect(u().hp).toBe(u().maxHp);
+    expect(f.cb.log.some((l) => /plate hardens/.test(l))).toBe(true); expect(f.cb.log.some((l) => /Guard takes/.test(l))).toBe(false);
+    expect(40).toBeLessThanOrEqual(v.blow!);
+  });
+  it("a real attack: the plates go before the shield, the shield before HP, and no more than the view's figure is stopped", () => {
+    const { f, u } = bulwark(); const v = shieldsView(f.cb, u(), null); const hp = u().hp;
+    rig({ hit: true, die: 12 }); f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), u(), 'melee', null, { noAp: true })); rig(null);
+    const plates = 3 - (u().res!.guard || 0), shieldLost = 30 - (u().shield || 0), hpLost = hp - u().hp;
+    expect(plates).toBeGreaterThan(0);
+    if (shieldLost > 0) expect(plates).toBe(3);
+    if (hpLost > 0) expect(shieldLost).toBe(30);
+    expect(plates * perPlate() + shieldLost).toBeLessThanOrEqual(v.blow!);
+  });
+  it('its policy is read by the view too: "keep 1" keeps a plate back from every blow', () => {
+    const { f, u } = bulwark();
+    f.act({ type: 'combat/perk', unitId: u().id, id: PLATE, actionId: 'plate_keep1' } as Action, 'host');
+    const v = shieldsView(f.cb, u(), null, String);
+    expect(v.guard).toMatchObject({ keep: 1, first: true }); expect(v.blow).toBe(30 + 2 * perPlate()); expect(v.all).toBe(v.blow);
+    f.bound(() => applyDamage(f.cb, u(), 200, { type: 'weapon', by: f.unit(f.foe.id) } as any));
+    expect(u().res!.guard).toBe(1);
   });
 });
