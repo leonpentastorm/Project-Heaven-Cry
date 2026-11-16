@@ -6,7 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // 1 always fails a save, 20 always makes it. The real roll is still drawn, so the seeded stream doesn't move.
 const D = vi.hoisted(() => ({ die: null as number | null }));
 vi.mock('../src/rng', async (orig) => { const m: any = await orig(); return { ...m, d20: (r: any) => { const v = m.d20(r); return D.die ?? v; } }; });
-import { phys, pullFree, type Unit, type TechPreview } from '../src';
+import { phys, pullFree, landed, type Unit, type TechPreview } from '../src'; // landed: the one rounding of a blow (effects/output.ts; rules 1.57 made the test's old Math.round differ)
 import { physFight, rig, type PhysSpec } from './helpers/physfight';
 import { gameText as snap, term, calm } from './helpers/physfight-ranged';
 
@@ -74,7 +74,7 @@ describe('Pin Down', () => {
     // Heat as a plain Shot with the same weapon
     const s = fight(); rig({ hit: true, die: 12 }); const sh0 = s.pc.heat; s.tech('shot', { targetId: s.foe.id }); expect(f.pc.heat - h0).toBe(s.pc.heat - sh0);
     // the damage the card showed is the damage dealt (less the armour)
-    expect(lastShot(f).dmg).toBe(Math.round(pv.attacks[0].pv.dmg!.total - pv.attacks[0].pv.dmg!.armour));
+    expect(lastShot(f).dmg).toBe(landed(pv.attacks[0].pv.dmg!.total, pv.attacks[0].pv.dmg!.armour));
     // Recoil: the Take's shot had none (the first of the turn) and counts toward the next one's
     expect(term(pv, 0, 'recoil')).toBeUndefined(); expect(f.pc.shotsThisTurn).toBe(1);
     f.pc.dexterity = 0; expect(term(f.pv('shot', { targetId: f.foe.id }), 0, 'recoil')).toBe(-1);
@@ -231,7 +231,7 @@ describe('Storm', () => {
     expect(f.tech('storm', { targetId: f.foe.id })).toBeNull();
     expect(at(f, f.pc)).toBe(f.tile('F3')); expect(f.pc.ap).toBe(3); expect(f.foe.hp).toBeLessThan(hp);
     expect(lastShot(f).from).toBe(f.tile('F3')); expect(f.pressure(f.foe)).toBe(0); expect(f.pc.moved).toBe(true);
-    expect(lastShot(f).dmg).toBe(Math.round(pv.attacks[0].pv.dmg!.total - pv.attacks[0].pv.dmg!.armour));
+    expect(lastShot(f).dmg).toBe(landed(pv.attacks[0].pv.dmg!.total, pv.attacks[0].pv.dmg!.armour));
   });
   it('the target can\'t react to the move; anyone else can', () => {
     // the plain walk sets the target's held shot off

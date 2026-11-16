@@ -6503,7 +6503,7 @@ Leon (15 Nov 2026): *"the skill increase hit chance for all weapons, melee get d
 1. **The skill buys the hit, on every weapon.** A weapon's skill (`phys.hits_with`) adds to the roll to hit and nothing to the damage, as since rules 1.26.
 2. **A melee weapon's damage grows with one Attribute**, the one its row names (`weapons.json phys.scales_with`): Strength for heavy melee, the hatchet and the fists (the machete, maul, lance, war axe, hatchet, greatsword, glaive, rip-saw, bare fists, knuckledusters, servo-fist), Agility for the finesse and thrown blades (the combat knife, sabre, throwing knives, gladius, duelling blade, katana). The hatchet scales with Strength though it is light and thrown (lead's ruling, 15 Nov 2026, after Leon: finesse is "small blades and weapons that feel like they need finesse"; a hatchet is not). The row names its damage profile (`phys.profile: melee`, `rules.json output.profiles.melee`): Stat = k x (1 + 0.05 x (that Attribute - 1)), no skill slope, the Level term `deal` as before, then the melee factor (`output.factors.melee`) as before.
 3. **k re-pins the all-in build.** k is 1.15385 so that Attribute 7 (the all-in build at creation) gives 1.5, the weapon profile's number: the all-in build at level 1 deals exactly what it did, a lower Attribute less (Attribute 1: x0.77; Attribute 4: x0.88), a higher one more (Attribute 10: x1.12). The bases of the melee weapons are not changed: the enemies that carry a sabre, a knife or fists read the bases with their tier and level, and keep them.
-4. **Guns, bows, thrown charges and the foci's weapons get nothing from the user.** Their rows name no profile (the `weapon` profile, no slope). The validator refuses a slope on a weapon that is not melee. The mana arms (the Evoker blade, the Emanator gauntlet and katana, the bot-thread banner, the grand staff) are foci and name none (for the lead to rule).
+4. **Guns, bows, thrown charges and the foci's weapons get nothing from the user.** Their rows name no profile (the `weapon` profile, no slope). The validator refuses a slope on a weapon that is not melee. *(Superseded for guns by rules 1.57 G1: a gun's row names the gun profile and its damage grows with Agility; bows, thrown charges and the foci's weapons still get nothing, and the validator now refuses a skill slope on any weapon and any slope on a focus's weapon.)* The mana arms (the Evoker blade, the Emanator gauntlet and katana, the bot-thread banner, the grand staff) are foci and name none (for the lead to rule).
 5. **The card shows it.** The weapon card's "Damage scales with" line (rules 1.55) now appears on every melee weapon, naming its Attribute.
 
 **Pull Out (overrides rules 1.55's "Throw comes with the thrown prop" where it touched Pull Out):**
@@ -6913,6 +6913,17 @@ created; merged into the lane on 16 Nov 2026), every one `adjudication: engine`,
 Not in slice 1 (each needs a piece the engine lacks; the draft lists them): Weather the Volley (a blow's volley and its
 round are not on the damage), the shield's own swing and its follow-up (P9, P11), cover behind the tank (P10), the
 growth paths (P8), Hold the Gap (P9).
+
+## Rules 1.57 (0.30), G1: gun damage from Agility
+
+Leon (16 Nov 2026): *"add damage per attribute like others, nerf the base dmg, not to a useless degree mind you, the balance number i laid out was always about how much a class gets rewarded when it make all the deceision right, the target is FUN and REWARD for the effort you put in, not a hard cap to cry about when something goes 2% over."* It overrides rules 1.56 L6 item 4 for guns only. A later revision overrides the body and the earlier ones; every number here is PROVISIONAL (items 4520 to 4524).
+
+1. **A character's gun shot grows with one Attribute,** the one the gun's row names (`weapons.json phys.scales_with`): Agility on every gun today (Dexterity's Attribute). The row names its damage profile (`phys.profile: gun`, `rules.json output.profiles.gun`): Stat = k x (1 + 0.05 x (Agility - 1)), no skill slope (Dexterity buys the hit, as rules 1.56 L6 item 1), the Level term `deal` as before. It is the melee profile's shape (rules 1.56 L6 item 2) with its own dial.
+2. **k re-pins the all-in gunner.** k is 1.15385 so that Agility 7 (the all-in build at creation) gives 1.5, the weapon profile's number: that build deals exactly what it did; Agility 1 deals x0.77 of it, 3 x0.85, 5 x0.92, 9 x1.08, 10 x1.12. The guns' bases are not changed (the "nerf the base" is k: a gun shot by a dabbler is under what it was, never useless).
+3. **Which rows are guns:** the pistols, revolvers, SMGs, rifles, shotguns and heavy weapons (26 rows, the launchers and the flamer among them). Bows, thrown charges and the mana arms (the core rifle, the spellslinger pistol, the censer gun: foci, for the lead to rule) name no profile and keep the `weapon` profile's flat 1.5.
+4. **Everything on the shot follows the one multiplier:** a Burst's, a Mag Dump's and a technique's rounds, special rounds, mods and criticals multiply what the shot deals as before; none of their own numbers changes. Damage to cover and objects reads the same multiplier, as it did.
+5. **Enemies are not touched.** An enemy's shot reads its tier and level (`combat.ts attackDamage`, rules 1.15), never a profile: the golden tables' enemy rows are unchanged.
+6. **The card shows it.** The weapon card's "Damage scales with" line (rules 1.55) now appears on every gun, naming Agility.
 
 ## Maps (rules 1.16)
 
@@ -10733,3 +10744,10 @@ Items 4240 to 4247.
     through `braceHook.gain`); the second copy of the formula in combat.ts is gone. `skills.json durability.door_line`
     is the Guard row's line. No number.
 
+### Rules 1.57 (0.30), G1: gun damage from Agility
+
+4520. **The gun profile (rules 1.57 G1 items 1, 2):** `rules.json output.profiles.gun`: k 1.15385, attr 0.05 a point of the gun's `scales_with` Attribute over 1, skill 0, Level `deal`, shape `struck` (the melee profile's). Read by a weapon whose `phys.profile` is `gun` (26 guns). PROVISIONAL (the slope is the melee one, Leon's "like others"; k re-pins Agility 7 to 1.5).
+4521. **The gun list (item 3):** every ranged row of category pistol, revolver, smg, rifle, shotgun or heavy. Not scaled: the bows, the thrown charges, the mana arms (core rifle, spellslinger pistol, Lumeri censer gun), for the lead to rule.
+4522. **The validator (item 3):** a weapon's profile may carry no skill slope; a focus's weapon (category `mana`) may read none with a slope; a profile with an Attribute slope needs an Attribute in `scales_with`. It replaces rules 1.56 L6's "only a melee weapon".
+4523. **Moved on purpose:** the golden tables' character gun rows and every replay with a character's shot (listed in the commit); the balance yardstick (the plain rifle at a normal share) moves with its build's Agility, so every system's percentage against it moves too (the 0.30 G1 report).
+4524. **Items 4520 to 4524 are rules 1.57 G1's.**

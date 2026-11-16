@@ -50,6 +50,7 @@
       "type": "service_pistol",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "quick"
         ],
@@ -107,6 +108,7 @@
       "type": "drifter_revolver",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "quick",
           "precise"
@@ -170,6 +172,7 @@
       "type": "decrkm_smg",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "quick",
           "auto"
@@ -233,6 +236,7 @@
       "type": "hellraiser_service_rifle",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "auto",
           "precise"
@@ -290,6 +294,7 @@
       ],
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "precise",
           "quick"
@@ -356,6 +361,7 @@
       "type": "lumeri_scattergun",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "spread",
           "loud"
@@ -411,6 +417,7 @@
       "type": "long_rifle",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "precise",
           "loud"
@@ -477,6 +484,7 @@
       "type": "blackpoint_700",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "heavy",
           "precise",
@@ -542,6 +550,7 @@
       "type": "hellraiser_lmg",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "heavy",
           "auto"
@@ -1197,6 +1206,7 @@
       "magazine_kg": 0.12,
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "quick",
           "auto"
@@ -1250,6 +1260,7 @@
       "reload": "loose",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "quick",
           "silent"
@@ -1315,6 +1326,7 @@
       "magazine_kg": 0.1,
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "quick",
           "loud"
@@ -1376,6 +1388,7 @@
       "reload_unit": "speedloader",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "loud",
           "precise"
@@ -1443,6 +1456,7 @@
       "magazine_kg": 0.18,
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "quick",
           "auto"
@@ -1505,6 +1519,7 @@
       "magazine_kg": 0.2,
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "auto",
           "silent"
@@ -1564,6 +1579,7 @@
       "reload_unit": "drum",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "auto",
           "loud"
@@ -1628,6 +1644,7 @@
       "magazine_kg": 0.2,
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "precise",
           "loud"
@@ -1690,6 +1707,7 @@
       "magazine_kg": 0.15,
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "precise"
         ],
@@ -1754,6 +1772,7 @@
       "magazine_kg": 0.18,
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "auto",
           "quick"
@@ -1816,6 +1835,7 @@
       "reload": "loose",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "spread",
           "loud"
@@ -1878,6 +1898,7 @@
       "reload": "loose",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "spread",
           "quick"
@@ -1948,6 +1969,7 @@
       "magazine_kg": 0.3,
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "spread",
           "auto"
@@ -2012,6 +2034,7 @@
       "reload_unit": "belt",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "heavy",
           "auto",
@@ -2075,6 +2098,7 @@
       "explosive": true,
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "heavy",
           "blast",
@@ -2135,6 +2159,7 @@
       "explosive": true,
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "heavy",
           "blast",
@@ -2193,6 +2218,7 @@
       "reload": "loose",
       "phys": {
         "system": "ranged",
+        "profile": "gun",
         "props": [
           "heavy",
           "spread"

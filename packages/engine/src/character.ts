@@ -732,8 +732,8 @@ export function weaponMult(c: Character, weaponId: string | null | undefined): n
   return fx(c, 'mult_physical', statOf(weaponProfile(weaponId), c, { attrs: ph.scales_with as string[], skills }));
 }
 /** Rules 1.56 (Balance 2.0, Leon 15 Nov 2026): the damage profile a weapon's Stat term reads (data/rules.json
- * output.profiles): its `phys.profile` (a melee weapon: `melee`, a slope on its `scales_with` Attribute), else `weapon`
- * (no slope: a gun's damage is the gun's and the round's). */
+ * output.profiles): its `phys.profile` (a melee weapon: `melee`; rules 1.57, a gun: `gun`; each a slope on its
+ * `scales_with` Attribute), else `weapon` (no slope: a bow's, a thrown charge's and a focus's weapon's damage is its own). */
 const weaponProfile = (weaponId: string | null | undefined): string => (WEAPON[weaponId || ''] as any)?.phys?.profile || 'weapon';
 /** What that multiplier is made of, in words ("Agility and Dexterity"): the label on the damage line. */
 export function weaponMultLabel(weaponId: string | null | undefined, o: { /** rules 1.55: only the inputs whose slope in the profile weaponMult reads is not 0 ('' when none is) */ live?: boolean } = {}): string {

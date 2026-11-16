@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 87 predicates, 29 ops, 101 effect ops, 125 hooks, 3 never emitted, 17 profiles, 42 cost sites, 15 resources, 61 stats, 24 condition fields, 668 primitive exports, 2074 other exports, 130 fx kinds, 11 data fx kinds, 18 op-written context fields, 174 Unit fields, 60 Combat fields, 41 guards.
+Counts: 35 triggers, 87 predicates, 29 ops, 101 effect ops, 125 hooks, 3 never emitted, 18 profiles, 42 cost sites, 15 resources, 61 stats, 24 condition fields, 668 primitive exports, 2074 other exports, 130 fx kinds, 11 data fx kinds, 18 op-written context fields, 174 Unit fields, 60 Combat fields, 41 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -450,6 +450,7 @@ amount = (base + flat) x Stat x Level x own multipliers x (1 + target bonuses, c
 | `physical` | 1 | 0.1 | 0.05 | scale | physical |  |
 | `weapon` | 1.5 | 0 | 0 | deal | weapon | aimed |
 | `melee` | 1.15385 | 0.05 | 0 | deal | weapon | struck |
+| `gun` | 1.15385 | 0.05 | 0 | deal | weapon | struck |
 | `sigil` | 1.7 | 0 | 0 | deal | sigil | aimed |
 | `elemental` | 1 | 0 | 0 | scale | elemental | aimed |
 | `soul` | 1.55 | 0 | 0 | deal | soul | aimed |

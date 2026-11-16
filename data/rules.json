@@ -355,7 +355,7 @@
       "critical": "min(2.0, 1.5 + 0.03*(perception-1) + 0.02*dexterity + perks, traits and gear) (rules 1.15; provisional). An enemy: 1.5",
       "ambush": "1.5 + 0.05*ingenuity",
       "blessing_power": "0.956 x (1 + 0.06*(virtue-1) + 0.06*faith) (rules 1.26: the landed profile; output.profiles.blessing)",
-      "weapon": "1.5 x Level.deal (rules 1.26: the aimed profile, the same for every weapon and sheet; output.profiles.weapon)"
+      "weapon": "1.5 x Level.deal (rules 1.26: the aimed profile, the same for every sheet, on bows, thrown charges and the foci's weapons; output.profiles.weapon). A melee blow reads output.profiles.melee (rules 1.56) and a gun shot output.profiles.gun (rules 1.57): 1.15385 x (1 + 0.05 x (the weapon's Attribute - 1)) x Level.deal"
     },
     "magic": {
       "sigil_max_words": "2 + floor((intelligence-1)/2)",
@@ -1623,7 +1623,7 @@
       "whisper_turn": {
         "allin": 80,
         "level_hi": 1.42,
-        "what": "a turn with only a Whisper (and the rifle with the AP left: since rules 1.26 the rifle hits as hard in anyone's hands, and the Faith build's Dexterity sets the shape over the levels, hence the high end)",
+        "what": "a turn with only a Whisper (and the rifle with the AP left: since rules 1.57 the rifle's damage follows the shooter's Agility, and the Faith build's Dexterity and Agility set the shape over the levels, hence the high end)",
         "dial": "patrons.json the Whispers' values; rules.json output.profiles.blessing.k"
       },
       "hymn_turn": {
@@ -1879,6 +1879,16 @@
         "shape": "struck",
         "provisional": true,
         "note": "rules 1.56 (Balance 2.0, Leon 15 Nov 2026: melee damage grows with Strength, finesse blades with Agility; the skill buys the hit only): the profile of a character's melee blow, named by the weapon (weapons.json phys.profile); its Attribute is the weapon's phys.scales_with. +attr a point of that Attribute over 1, no skill slope; k re-pins the all-in build (Attribute 7 at creation) to the weapon profile's 1.5 (k x (1 + attr x 6) = 1.5), so a lower Attribute deals less than before 1.56 and a higher one more. PROVISIONAL (spec item 1.56-L6)"
+      },
+      "gun": {
+        "k": 1.15385,
+        "attr": 0.05,
+        "skill": 0,
+        "level": "deal",
+        "pair": "weapon",
+        "shape": "struck",
+        "provisional": true,
+        "note": "rules 1.57 (0.30, G1; Leon 16 Nov 2026: \"add damage per attribute like others, nerf the base dmg, not to a useless degree\"): the profile of a character's gun shot, named by the gun (weapons.json phys.profile: gun); its Attribute is the gun's phys.scales_with (Agility on every gun). +attr a point of that Attribute over 1, no skill slope (Dexterity buys the hit); k re-pins the all-in gunner (Agility 7 at creation) to the weapon profile's 1.5 (k x (1 + attr x 6) = 1.5), so Agility 1 deals x0.77 of what it dealt before 1.57 and Agility 10 x1.12. The melee profile's shape and numbers; its own dial so the two can part. An enemy's gun reads its tier and level, not this. PROVISIONAL (spec item 4520)"
       },
       "sigil": {
         "k": 1.7,
