@@ -2,7 +2,7 @@
 // scales with. The preview's "Hits with" must name the skill whose modifier the real attack's dice breakdown adds.
 import { describe, it, expect } from 'vitest';
 import { gearPreview, previewAttack, SKILL, ITEM, WEAPONS, ATTRS, checkMod, weaponMultLabel, weaponMult } from '../src';
-import { PROFILES, pairOf } from '../src/effects/output';
+import { PROFILES, pairOf, statTerm } from '../src/effects/output';
 import { fightWith, withGame } from './helpers/perkfight';
 
 const line = (p: any, k: string) => p.lines.find((l: any) => l.key === k);
@@ -47,8 +47,8 @@ describe('the gear preview names the skill a weapon hits with and what its damag
       const s = line(gearPreview(c, { id: w.id }), 'scales_with'), ph = (w as any).phys;
       if (!ph) continue;
       if (zero(ph.profile || 'weapon')) expect(s, w.id).toBeUndefined();
-      else { // rules 1.56: the Attribute, never the skill; with the percent the hit's own multiplier adds for this character (consolidation 0.29, ruling i)
-        const n = Math.round((weaponMult(c, w.id) - 1) * 100);
+      else { // rules 1.56: the Attribute, never the skill; with the percent the hit's own multiplier stands from the profile's pin (the flat weapon profile: rules 1.57 R5)
+        const n = Math.round((weaponMult(c, w.id) / statTerm('weapon', [], []) - 1) * 100);
         expect(s?.label, w.id).toBe('Damage');
         expect(s?.value, w.id).toBe((ph.scales_with as string[]).filter((x) => ATTRS.some((a) => a.id === x)).map(nm).join(' and ') + ' · ' + (n >= 0 ? '+' : '') + n + '%');
       }
@@ -70,7 +70,16 @@ describe('the gear preview names the skill a weapon hits with and what its damag
     const pv: any = withGame(f.g, () => previewAttack(f.cb, f.pc, f.foe, 'melee'));
     const stat = (pv.dmg?.mults || []).find((t: any) => Math.abs(t.v - weaponMult(c, 'maul')) < 1e-9);
     expect(stat, JSON.stringify(pv.dmg?.mults)).toBeTruthy(); expect(weaponMult(c, 'maul')).toBeGreaterThan(1);
-    expect(s.value.endsWith(' · +' + Math.round((stat.v - 1) * 100) + '%'), s.value).toBe(true);
+    expect(s.value.endsWith(' · +' + Math.round((stat.v / statTerm('weapon', [], []) - 1) * 100) + '%'), s.value).toBe(true);
+  });
+  it('rules 1.57 R5: the percent stands from the pin (Attribute 7 +0%), for a gun as for a blade: a gun at Agility 1 reads under 0', () => {
+    const at = (attrs: any, id: string) => { const f = fightWith([{ weapon: id, skills: SKILLS, attrs }], [{ tier: 'soldier', classic: true }]); return line(gearPreview(f.g.characters[f.pc.charId!], { id }), 'scales_with').value; };
+    const gun = 'hellraiser_service_rifle', k = PROFILES.gun.k / PROFILES.weapon.k, top = PROFILES.gun.k * (1 + PROFILES.gun.attr * 9) / PROFILES.weapon.k;
+    expect(at({ agility: 1 }, gun)).toBe('Agility · ' + Math.round((k - 1) * 100) + '%');
+    expect(Math.round((k - 1) * 100)).toBeLessThan(0);
+    expect(at({ agility: 7 }, gun)).toBe('Agility · +0%');
+    expect(at({ agility: 10 }, gun)).toBe('Agility · +' + Math.round((top - 1) * 100) + '%');
+    expect(at({ strength: 7 }, 'maul')).toBe('Strength · +0%');
   });
   it('the magazine reads rounds, a middle dot, the calibre', () => {
     const f = fightWith([{ weapon: 'decrkm_smg', skills: SKILLS }], [{ tier: 'soldier', classic: true }]);

@@ -26,7 +26,7 @@
 // weapon put in hand after the build is made: an "as if", marked on its row.
 // The yardstick is the contract's 100%: the plain rifle (service rifle, plain shots, normal share, standard grade) at
 // the loop's 13 tiles, walking allowed (guns-measure.ts rifleYard).
-import { runCell, figures, MAP_ID } from './sim';
+import { runCell, figures, MAP_ID, atYardPin, yardPc } from './sim';
 import { BUILD, BUILDS } from './builds';
 import { POLICIES, type Policy } from './policies';
 import { gunBuild, GUN_TECHNIQUES } from './guns-measure';
@@ -106,6 +106,6 @@ export function nicheCell(build: string, level: number, variant: string, mapKey:
 }
 /** The yardstick at a level: the plain rifle's damage a turn and its mean best turn (guns-measure.ts rifleYard's cell). */
 export function yardOf(level: number, n: number) {
-  const c = runCell({ build: 'plain_gun', variant: 'normal', level }, 'sim_range_soldier', 'open', n, { maxRounds: 8, tag: 'gm8' }), f = figures(c);
+  const c = atYardPin(() => runCell(yardPc(level), 'sim_range_soldier', 'open', n, { maxRounds: 8, tag: 'gm8' })), f = figures(c); // rules 1.57 R1: the yardstick at its pin
   return { perTurn: c.dmg / Math.max(1, c.turns), peak: f.peakTurnAvg };
 }

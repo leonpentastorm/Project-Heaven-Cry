@@ -14,7 +14,7 @@
 //               Rules 1.31: the door's rows, so the sheet with no class (doorFaithBuild: the Chaplain's Smite is its own row)
 //   chaplain    the Chaplain (rules 1.31): Faith all in + Dexterity, a turn with only a Whisper and the weapon, Smite on it
 //   heal        the Soul healer's steady Buff heal (6 AP: one turn) in Soldier-turns (heal-measure.ts inventory), ×100
-import { runCell, runFight } from './sim';
+import { runCell, runFight, atYardPin, YARD } from './sim';
 import { SQUAD, FIGHTS } from './report';
 import { gunBuild, gunRow, ROTATIONS } from './guns-measure';
 import { pattern } from './magic-measure';
@@ -40,7 +40,8 @@ const perTurn = (build: string, variant: string, level: number, n: number, polic
   const c = runCell({ build, variant: variant as any, level, ...(policy ? { policy } : {}) }, 'sim_range_soldier', 'open', n, { maxRounds: 8, tag: 'rf' });
   return { v: c.dmg / Math.max(1, c.turns), errors: c.errors };
 };
-export const yardOf = (level: number, n: number) => perTurn('plain_gun', 'normal', level, Math.max(n, 24)).v;
+/** The yardstick's turn (rules 1.57 R1: the plain rifle at a normal share, its shot at the gun profile's pin; sim.ts atYardPin). */
+export const yardOf = (level: number, n: number) => atYardPin(() => perTurn(YARD.build, YARD.variant, level, Math.max(n, 24)).v);
 
 /** One level, one share: every system asked for, in percent. */
 export function measure(level: number, variant: string, n: number, which: string[] = SYSTEMS, yard = yardOf(level, n), guns = GUN_SET): Record<string, number> {

@@ -450,7 +450,7 @@ amount = (base + flat) x Stat x Level x own multipliers x (1 + target bonuses, c
 | `physical` | 1 | 0.1 | 0.05 | scale | physical |  |
 | `weapon` | 1.5 | 0 | 0 | deal | weapon | aimed |
 | `melee` | 1.15385 | 0.05 | 0 | deal | weapon | struck |
-| `gun` | 1.15385 | 0.05 | 0 | deal | weapon | struck |
+| `gun` | 1.275 | 0.0294118 | 0 | deal | weapon | struck |
 | `sigil` | 1.7 | 0 | 0 | deal | sigil | aimed |
 | `elemental` | 1 | 0 | 0 | scale | elemental | aimed |
 | `soul` | 1.55 | 0 | 0 | deal | soul | aimed |

@@ -4,7 +4,7 @@
 // One row is one WEAPON in the hands of the optimised gun build (builds.ts 'opt_gun': Marksman, a normal share or all
 // in, the drill and perks that build takes), played for 8 turns by the optimised policy. The percent is its damage a
 // turn over the plain rifle's (service rifle, plain shots, normal share, same level): the pass's 100%.
-import { runCell, figures } from './sim';
+import { runCell, figures, atYardPin, yardPc } from './sim';
 import { BUILD, BUILDS } from './builds';
 import { WEAPON } from '../../src';
 
@@ -29,7 +29,7 @@ export function gunBuild(weapon: string, rarity = 'masterwork', o: { offHand?: s
 }
 export interface GRow { what: string; build: string; level: number; variant: string; perTurn: number; pctRifle: number; hitPct: number; critShare: number; dmgPerHit: number; shotsPerTurn: number; apShare: any; actions: Record<string, number>; bigHit: number; bigWhat: string; peakTurn: number; errors: number }
 export function rifleYard(level: number, n: number, rounds = 8): number {
-  const c = runCell({ build: 'plain_gun', variant: 'normal', level }, 'sim_range_soldier', 'open', n, { maxRounds: rounds, tag: 'gm' + rounds });
+  const c = atYardPin(() => runCell(yardPc(level), 'sim_range_soldier', 'open', n, { maxRounds: rounds, tag: 'gm' + rounds })); // rules 1.57 R1: the yardstick at its pin
   return c.dmg / Math.max(1, c.turns);
 }
 export function gunRow(what: string, build: string, variant: string, level: number, n: number, yard: number, o: { tier?: string; rounds?: number; opts?: any; policy?: string } = {}): GRow {

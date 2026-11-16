@@ -14,7 +14,7 @@ import { apply, newGame, bindGame, MAPS, WEAPON, TECHNIQUE, alive, previewAttack
 import { reactionsUsed } from '../../src';
 import { fxTaps } from '../../src/fxtap';
 import { onHook } from '../../src/effects/hooks';
-import { ENEMY, clampEnemyLevel, FEELING } from '../../src';
+import { ENEMY, clampEnemyLevel, FEELING, RULES, PROFILES, statTerm } from '../../src';
 import { buildCharacter, BUILD, type Variant } from './builds';
 import { POLICIES, sigilAfter, type Ctx, type Step } from './policies';
 
@@ -48,6 +48,29 @@ export function foeLevel(spec: { pcs: { level: number }[]; level?: number; shift
 ENEMY.sim_range_soldier = { ...ENEMY.soldier, id: 'sim_range_soldier', name: 'Range target (soldier numbers)', hp: 5000 };
 TIER_WEAPON.sim_range_soldier = TIER_WEAPON.soldier;
 if (!(fxTaps as any).__balanceRange) { (fxTaps as any).__balanceRange = true; onHook('enemy_action_start', (ctx: any) => { if (ctx?.u?.tier === 'sim_range_soldier') { ctx.skip = true; ctx.u.ap = 0; } }); }
+
+// THE YARDSTICK'S PIN (rules 1.57, the lead's ruling R1, 16 Nov 2026; spec item 4540): the balance yardstick is the plain
+// rifle at a normal share (data/rules.json balance.yardsticks.rifle), its shot read at the gun profile's pin (the
+// profile at Attribute `pin`: the creation ceiling, where output.profiles.gun equals the old flat x1.5), whatever the
+// build's own Agility. One definition: every measure that takes the yardstick's turn or its shot does it inside
+// atYardPin. While `fn` runs, every weapon row that names the yardstick's profile reads a test-only copy of that profile
+// with its slope folded into k at the pin (in memory; restored after, even on a throw). Only the yardstick shoots in
+// those measures: the target is the range (it never acts) or a preview of an enemy's shot, which reads its tier and
+// level and never a profile (rules 1.57 G1 item 5).
+export const YARD: { build: string; variant: Variant; profile: string; pin: number } = (RULES as any).balance.yardsticks.rifle;
+const PIN_ID = 'sim_yard_pin';
+/** The yardstick's profile's Stat term at the pin (1.5 while the pin is where the gun profile meets the weapon profile). */
+export const yardPinTerm = (): number => statTerm(YARD.profile, [YARD.pin], []);
+export function atYardPin<T>(fn: () => T): T {
+  const base = PROFILES[YARD.profile]; if (!base) throw new Error('rules.json balance.yardsticks.rifle.profile ' + YARD.profile + ' is not a profile');
+  if (PROFILES[PIN_ID]) return fn(); // already pinned (a measure called from inside another)
+  PROFILES[PIN_ID] = { ...base, k: yardPinTerm(), attr: 0, skill: 0 };
+  const swapped: [any, any][] = [];
+  for (const w of Object.values(WEAPON) as any[]) if (w?.phys?.profile === YARD.profile) { swapped.push([w, w.phys]); w.phys = { ...w.phys, profile: PIN_ID }; }
+  try { return fn(); } finally { for (const [w, ph] of swapped) w.phys = ph; delete PROFILES[PIN_ID]; }
+}
+/** The yardstick's own sheet at a level (balance.yardsticks.rifle). */
+export const yardPc = (level: number): PcSpec => ({ build: YARD.build, variant: YARD.variant, level });
 
 export interface PcSpec { build: string; variant: Variant; level: number; policy?: string; peak?: boolean;
   /** A pattern the policy is held to (the magic measurements, magic-measure.test.ts): sigil {glyphs: 2|3|4};

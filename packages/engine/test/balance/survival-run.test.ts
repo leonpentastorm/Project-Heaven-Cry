@@ -1,7 +1,7 @@
 // @ts-nocheck (a measuring tool)
 // Survival's simulated runs (survival-spec section 5.6, section 10 row 9; rules 1.49). Two parts:
 //  - THE GUARD (always on, in `npm run check`): a small seeded set of whole runs with generous bands on the headline
-//    results, so a later change that breaks the run curve is caught (a solo gunner clears stage 1 most of the time and
+//    results, so a later change that breaks the run curve is caught (a solo gunner at a normal share clears stage 1 about half the time since rules 1.57 R2, and
 //    is beaten by stage 4; a squad of four is beaten in stages 2 to 5; nobody runs dry; levels per stage);
 //  - THE MEASURE (opt-in): SURVIVAL_SIM=1 plays the cells named in SIM_CELLS ("party:route,…"; default all) over
 //    SIM_SEEDS seeds (default 8) and writes every run to SIM_OUT (JSON) for survival-run-report.ts to tabulate.
@@ -23,13 +23,20 @@ describe('Survival, simulated runs (rules 1.49): the guard', () => {
   // in difficulty (stopping the foes' loot roll moved GUARD-2 from a clear to a loss), so the seed set is widened to
   // eight; the bar is the same share, two thirds, rounded down (5 of 8), and at most one in four clears stage 4.
   const SEEDS = Array.from({ length: 8 }, (_, i) => 'GUARD-' + (i + 1));
-  it('a solo gunner clears stage 1 on at least two thirds of the seeds and at most a quarter clear stage 4', () => {
+  // Rules 1.57 R3 (the lead's ruling, 16 Nov 2026; spec item 4543, PROVISIONAL): the solo gunner is plain_gun at a normal
+  // share (survival-run.ts MEMBER.gunner), Agility 4 at level 1: since G1 a low-Agility character's gun deals less on
+  // purpose (R2: x0.90 at Agility 4 of what it dealt before). OLD bar: two thirds of the seeds (5 of 8; measured 60%
+  // before G1). Re-measured with R2 and the dry-gun fallback (R4) on GUARD-1 to GUARD-40: 18 of 40 clear stage 1 (45%,
+  // one standard error 7.9 points), none clears stage 4, none stalls; GUARD-1 to 8: 4 of 8. NEW bar: the measured share
+  // less one standard error, 37%, of the eight seeds rounded down (2 of 8).
+  const BAR = 0.37;
+  it('a solo gunner clears stage 1 on at least the measured share less its noise (rules 1.57 R3) and at most a quarter clear stage 4', () => {
     const runs = SEEDS.map((seed) => simRun({ party: 'solo_gunner', route: 'gear', seed, maxStages: 4 }));
     // a fight that stalls past stage 1 is a simulator limit, listed not failed (8 seeds: develop's GUARD-4 stalls at stage 3
     // holding 618 rounds; with rules 1.55 GUARD-5 stalls at stage 4 with an empty gun, the 0.29 simulator item: it never
     // makes rounds or picks magazines up); stage 1, the question here, must run clean
     for (const r of runs) expect(r.errors.filter((e) => !/levelup/.test(e) && !/did not end in \d+ rounds \(stage [2-9]/.test(e)), r.seed).toEqual([]);
-    expect(runs.filter((r) => r.cleared >= 1).length, runs.map((r) => r.seed + ' ' + r.how + ' ' + r.stage + '.' + r.depth).join('; ')).toBeGreaterThanOrEqual(Math.floor(SEEDS.length * 2 / 3));
+    expect(runs.filter((r) => r.cleared >= 1).length, runs.map((r) => r.seed + ' ' + r.how + ' ' + r.stage + '.' + r.depth).join('; ')).toBeGreaterThanOrEqual(Math.floor(SEEDS.length * BAR));
     const ends = runs.map((r) => r.seed + ' ' + r.how + ' ' + r.stage + '.' + r.depth + ' cleared ' + r.cleared).join('; ');
     expect(runs.filter((r) => r.cleared >= 4).length, ends).toBeLessThanOrEqual(Math.floor(SEEDS.length / 4));
     // levels per stage (rules 1.54 item 9, survival-spec 14.4: level 3 after stage 1's Boss; 139 of 139 measured)

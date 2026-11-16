@@ -10,7 +10,8 @@
 //      against the heal. Arithmetic on the data: no fight.
 // To measure properly (more fights, both shares, every level): REFIT_MEASURE=1 (refit-measure.test.ts).
 import { describe, it, expect } from 'vitest';
-import { RULES, SIGIL, MODULE, WEAPON, ENEMY, profileOf, statTerm } from '../src';
+import { RULES, SIGIL, MODULE, WEAPON, ENEMY, profileOf, statTerm, attrCapAt } from '../src';
+import { atYardPin, YARD } from './balance/sim';
 import { measure, yardOf, soldierTurnAt, refHpAt } from './balance/refit-measure';
 import { inventory } from './balance/heal-measure';
 import { healTurn, shotTurn } from './balance/tending-measure';
@@ -35,12 +36,24 @@ describe('the balance contract (data/rules.json balance; rules 1.26, 1.27)', () 
 
   it('played: each system all in sits on its ceiling (the average over the levels within tolerance.mean, each level within tolerance.level)', () => {
     const rows: Record<string, number[]> = {}; const report: string[] = [];
+    // Rules 1.57 R3 (the lead's ruling, 16 Nov 2026; spec item 4542): a ceiling with `at_pin` (the gun row) is held by the
+    // system measured with the gun profile read at the yardstick's pin (balance.yardsticks.rifle: the guns' own numbers,
+    // as before G1); the row as played (an all-in shooter above the pin deals more, on purpose) is held under the same
+    // band times the gun profile's rise from the pin to the level's Attribute ceiling. OLD expectation (until 16 Nov
+    // 2026): the row as played inside the band itself (gun: 145% ± 12% mean, 109 to 181% a level); G1 gave the all-in
+    // gunner's Agility 8 to 10 (from level 3) more damage on purpose, so the old expectation no longer measured the guns.
+    const pinned = Object.entries(SYS).filter(([, k]) => C[k].at_pin).map(([s]) => s), live: Record<string, number[]> = {};
+    const rise = (lv: number) => statTerm(YARD.profile, [attrCapAt(lv)], []) / statTerm(YARD.profile, [YARD.pin], []);
     for (const lv of LEVELS) {
       const yard = yardOf(lv, N);
-      const r = measure(lv, 'allin', N, Object.keys(SYS), yard, GUARD_GUNS);
+      const r = measure(lv, 'allin', N, Object.keys(SYS).filter((s) => !pinned.includes(s)), yard, GUARD_GUNS);
+      if (pinned.length) {
+        const p = atYardPin(() => measure(lv, 'allin', N, pinned, yard, GUARD_GUNS)), q = measure(lv, 'allin', N, pinned, yard, GUARD_GUNS);
+        r.errors += p.errors + q.errors; for (const s of pinned) { r[s] = p[s]; (live[s] ||= []).push(q[s]); }
+      }
       expect(r.errors, 'level ' + lv + ': the simulator met errors').toBe(0);
       for (const s of Object.keys(SYS)) (rows[s] ||= []).push(r[s]);
-      report.push('L' + lv + ' ' + Object.keys(SYS).map((s) => s + ' ' + r[s]).join(' · '));
+      report.push('L' + lv + ' ' + Object.keys(SYS).map((s) => s + ' ' + r[s] + (live[s] ? ' (at the pin; as played ' + live[s][live[s].length - 1] + ')' : '')).join(' · '));
     }
     const bad: string[] = [];
     for (const [s, k] of Object.entries(SYS)) {
@@ -48,6 +61,11 @@ describe('the balance contract (data/rules.json balance; rules 1.26, 1.27)', () 
       if (mean < lo * (1 - TOL.mean) || mean > hi * (1 + TOL.mean)) bad.push(s + ': the all-in average ' + Math.round(mean) + '% is outside ' + lo + (hi !== lo ? ' to ' + hi : '') + '% ± ' + TOL.mean * 100 + '% (dial: ' + C[k].dial + ')');
       xs.forEach((x, i) => { const low = lo * (C[k].level_lo ?? (1 - TOL.level)), high = hi * (C[k].level_hi ?? (1 + TOL.level));
         if (x < low || x > high) bad.push(s + ' at level ' + LEVELS[i] + ': ' + x + '% is outside ' + Math.round(low) + ' to ' + Math.round(high) + '% (dial: ' + C[k].dial + ')'); });
+      if (live[s]) { // the row as played: under the band times the profile's rise (never a floor: a shooter at the pin deals the pinned row)
+        const lm = live[s].reduce((a, b) => a + b, 0) / live[s].length, rm = LEVELS.reduce((a, lv) => a + rise(lv), 0) / LEVELS.length;
+        if (lm > hi * (1 + TOL.mean) * rm) bad.push(s + ' as played: the all-in average ' + Math.round(lm) + '% is over ' + Math.round(hi * (1 + TOL.mean) * rm) + '% (the band times the gun profile rise from its pin, ' + rm.toFixed(3) + ')');
+        live[s].forEach((x, i) => { const high = hi * (C[k].level_hi ?? (1 + TOL.level)) * rise(LEVELS[i]); if (x > high) bad.push(s + ' as played at level ' + LEVELS[i] + ': ' + x + '% is over ' + Math.round(high) + '%'); });
+      }
     }
     expect(bad, 'measured, all in:\n' + report.join('\n')).toEqual([]);
   }, 600000);

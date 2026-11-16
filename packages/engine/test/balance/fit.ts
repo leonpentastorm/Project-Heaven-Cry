@@ -9,7 +9,7 @@
 //   { "tiers": { "soldier": { "hp": 150, ... } }, "levels": [ { "level": 1, "hp_mult": 1, ... } ] } (any part may be left out;
 //   "gap": { "to_hit_per_level": 2 } tries another level gap).
 import { ENEMY, ENEMY_LEVELS, enemyStats } from '../../src';
-import { runFight, plainPreview, TIER_WEAPON, ALL_TIERS } from './sim';
+import { runFight, plainPreview, TIER_WEAPON, ALL_TIERS, atYardPin, yardPc } from './sim';
 import { SQUAD } from './report';
 
 // Sandbags that shoot back (soldier and elite numbers, 5,000 HP): "under fire from half a standard fight's enemies".
@@ -58,8 +58,8 @@ function fireRow(build: string, lv: number, fire: string, n: number) {
 
 /** The cards: the yardstick's plain shot at an enemy of its level (4 tiles, open ground), and the enemy's shot back. No fight is played. */
 export function fitCards(lv: number) {
-  const pc = { build: 'plain_gun', variant: 'normal', level: lv }, cards: any = {};
-  for (const t of ALL_TIERS) { const pv = plainPreview(pc, t), s = enemyStats(t, lv);
+  const pc = yardPc(lv), cards: any = {};
+  for (const t of ALL_TIERS) { const pv = atYardPin(() => plainPreview(pc, t)) /* rules 1.57 R1: the yardstick's shot at its pin */, s = enemyStats(t, lv);
     cards[t] = { hp: s.hp, armour: s.armour, defense: s.defense, attack: s.attack_bonus, dmgFactor: s.damage, weapon: TIER_WEAPON[t], yardHit: pv.hit, yardCrit: pv.crit, yardPct: pv.pct, hitsToKill: Math.ceil(pv.foeHp / pv.hit), hitsToKillExact: Math.round((pv.foeHp / pv.hit) * 100) / 100,
       foePct: pv.foe?.pct, foeRaw: pv.foe?.raw, foeAfterArmour: pv.foe?.afterArmour, pcHp: pv.pcHp, pcDef: pv.pcDef, pcArmour: pv.pcArmour }; }
   const pv = plainPreview({ build: 'tank', variant: 'normal', level: lv }, 'soldier');

@@ -9,7 +9,7 @@
 // cast took (turns played ÷ casts: a cast that needs 8 AP takes 1.33 turns), the Strain it added, and the cast as a
 // percent of what the plain rifle (normal share, same level) deals over those same turns. That percent is the same
 // number as "spell damage a turn ÷ rifle damage a turn".
-import { runCell, freshFight } from './sim';
+import { runCell, freshFight, atYardPin, YARD } from './sim';
 import { BUILD } from './builds';
 
 export const M_LEVELS = [1, 3, 6, 9, 12, 20];
@@ -21,8 +21,8 @@ export interface Yard { level: number; normal: number; allin: number }
 
 /** The plain rifle's damage a turn on the range (normal share and all in). */
 export function rifle(level: number, n: number): Yard {
-  const f = (v: string) => { const c = runCell({ build: 'plain_gun', variant: v as any, level }, 'sim_range_soldier', 'open', n, { maxRounds: 8, tag: 'mm' }); return c.dmg / Math.max(1, c.turns); };
-  return { level, normal: f('normal'), allin: f('allin') };
+  const f = (v: string) => { const c = runCell({ build: YARD.build, variant: v as any, level }, 'sim_range_soldier', 'open', n, { maxRounds: 8, tag: 'mm' }); return c.dmg / Math.max(1, c.turns); };
+  return { level, normal: atYardPin(() => f(YARD.variant)), allin: f('allin') }; // rules 1.57 R1: the yardstick (normal) at its pin; the all-in rifle as it shoots
 }
 /** One pattern, n fights of 8 turns. `cast` matches the labels of the action that lands the spell. */
 export function pattern(what: string, build: string, variant: string, level: number, n: number, opts: any, cast: RegExp, y: Yard, tier = 'sim_range_soldier', rounds = 8): Row {

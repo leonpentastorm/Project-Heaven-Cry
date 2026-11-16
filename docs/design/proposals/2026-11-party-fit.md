@@ -96,9 +96,13 @@
    lead's own seeds (5001 to 5040) ended with `ammo 0 w drifter_revolver`: the tank and Mender policies (and the tank control) Raised
    Shield or ended the turn for 14 rounds and more once the revolver was dry, and never punched, picked a weapon up or
    switched. Re-measured with a dry-gun fallback (the fists): the Mender is **not** a door that loses whatever the
-   party (two Menders 63%, four 63%, Bulwark + Mender 53%; alone still 15%); the Bulwark alone still loses (3%, its
-   control 5%) as does the Operative (0%) and the Sigilist (3%). No door number should move on the strength of the
+   party (two Menders 63%, four 63%, Bulwark + Mender 53%; ~~alone still 15%~~); ~~the Bulwark alone still loses (3%, its
+   control 5%)~~ as does the Operative (0%) and the Sigilist (3%). No door number should move on the strength of the
    earlier cells.
+   **Corrected again 16 Nov 2026 (section 11, the lead's rulings R1 to R4: the pinned yardstick, the softer gun profile,
+   a fallback for every policy):** alone the Mender clears 25% (13 of its 40 runs still stall, every one a fist
+   stalemate, none an idle turn), the Bulwark 8% (its control 10%), the Operative 0% (no stall left: 40 lost), the
+   Sigilist 3%. Stalled runs in the ten solo rows: 14 of 400 (section 3: 55; section 10: 27).
 
 ## 2. The simulator (what was added)
 
@@ -635,23 +639,26 @@ on the gunner 0%, the Mender on the gunner 0%; the monk's plain control 68% and 
 **What the verdicts become.**
 
 * **The Mender is not a door that loses whatever the party.** With its fists it clears 63% as two and as four, and
-  lifts a Bulwark from 3% to 53%; its own door beats its gun control alone (15% against 0%). Alone it still loses (17 lost, 17
+  lifts a Bulwark from 3% to 53%; its own door beats its gun control alone (15% against 0%). ~~Alone it still loses (17 lost, 17
   stalled); 13 of the 17 stalls end with the revolver dry, in a fist fight against a foe the fists cannot out-damage (the
   two read: a Sergeant at 104 HP, a Heart adept's Mending pulse). A pick-up or a weapon swap would end those, so 15% is
-  a floor.
-* **The Bulwark loses alone as a sheet, not as a door:** 3% with its door, 5% with the plain tank policy, both now
-  losing rather than stalling. Its party cells moved little (duo 13%, four 3%). Raising Bulwark damage may still be right,
-  but it should be fitted on these cells, not on section 3's.
-* **The Operative and the Sigilist are unchanged:** their non-clears are losses (the Operative's 9 stalls alone: 5
+  a floor.~~ *(Section 11: with the pick-up and the softer gun profile, 25% alone; 13 stalls left, all fist stalemates.)*
+* **The Bulwark loses alone as a sheet, not as a door:** ~~3% with its door, 5% with the plain tank policy~~ (section 11:
+  8% and 10%), both now losing rather than stalling. Its party cells moved little (duo 13%, four 3%). Raising Bulwark
+  damage may still be right, but it should be fitted on these cells, not on section 3's.
+* **The Operative and the Sigilist are unchanged:** their non-clears are losses ~~(the Operative's 9 stalls alone: 5
   with the pistol empty, because its policy waits Hidden before it tries a reload, so the fallback never sees a refused
-  one; the rest Hidden waits against a foe that heals. Its own policy item, listed, not built).
+  one; the rest Hidden waits against a foe that heals. Its own policy item, listed, not built)~~ *(section 11: the
+  fallback now reloads an empty gun before the policy may wait Hidden; the Operative's 40 runs are 40 losses, no stall)*.
 * **The stand-up fix is worth 5 to 15 points to the parties that go down and win**: Breaker + Channeler, Chaplain +
   Monk (55 → 70%), the second four (72 → 85%), two Breakers (58 → 65%), Riggers (42 → 50%, 60 → 68%). It moves no solo.
-* **T1** (solo 45 to 75%): unchanged but for the Mender (15%) and the Bulwark (3%); still missed by six doors.
+* **T1** (solo 45 to 75%): ~~unchanged but for the Mender (15%) and the Bulwark (3%); still missed by six doors~~
+  *(section 11: still missed by six, under: Bulwark 8, Operative 0, Sigilist 3, Rigger 35, Mender 25, Chaplain 43%)*.
   **T2** (no party under its members' solo mean minus 10): met by every mixed party; the melee multiples are closer
   (two Breakers 65% against a floor of 63: met; two Monks 53% against 55, four Breakers 15%, four Monks 43%: missed).
   **T3** (a fragile door's mono party not under 30%): met now by the Mender (63%); missed by the Bulwark, the
   Operative and the Sigilist. **T4**: met (no plain fight got longer by more than a round and a half).
+
 
 ### Appendix: the re-measured tables (the party-fit.ts report, every cell, fallback and stand-up fix)
 
@@ -807,3 +814,59 @@ on the gunner 0%, the Mender on the gunner 0%; the monk's plain control 68% and 
 | solo_monk | 73% / 11% / 16% | 59% / 42% / 71% | 5 / 1.1 / 0.7 |
 | mix_breaker_channeler | 73% / 14% / 12% | 61% / 53% / 69% | 2.4 / 0.7 / 0.1 |
 | mix_trio | 81% / 8% / 11% | 56% / 62% / 73% | 3.6 / 0.4 / 0.1 |
+
+
+## 11. The lead's rulings R1 to R4 (16 Nov 2026): the yardstick, the gun profile, the policies
+
+Rules 1.57 G1's rulings (Core Rules items 4540 to 4548). Same stage-1 runs as above (PF-1 to PF-40, the gear route, 40
+seeds a cell), with three changes: **R1** the yardstick is pinned (it does not enter these runs: a Survival clear does not
+read it); **R2** the gun profile's low end is softer (k 1.275, +0.0294118 a point: Agility 1 x0.85 of the old damage,
+was x0.77; Agility 7 unchanged); **R4** every policy has the dry-gun fallback (`run-policies.ts fallback`, the doors' and
+the run's: at an empty gun it reloads if it can, else draws a weapon from the pack that can fight, else picks up a pile's
+rounds, magazines or weapon beside it or walks to one it reaches this turn, else the fists on the weakest foe in reach,
+else walks to one), and the Sigilist walks a new Line away from its target while a melee foe is within 5 tiles
+(`keepRange`). Sections 3, 9 and 10 ran on G1's gun profile.
+
+| Door | Solo, section 10 (lost / stalled) | Solo now (lost / stalled) | Rounds a plain fight | Damage taken a fight | AP left a turn |
+|---|---|---|---|---|---|
+| bulwark | 3% (38 / 1) | **8%** ± 4 (36 / 1) | 6.2 | 69.5 | 0.1 |
+| breaker | 73% | **73%** ± 7 (11 / 0) | 2.8 | 21.8 | 0.6 |
+| skirmisher | 85% | **85%** ± 6 (6 / 0) | 2.6 | 16.9 | 0.3 |
+| operative | 0% (31 / 9) | **0%** (40 / 0) | 6.3 | 54.6 | 0.5 |
+| sigilist | 3% | **3%** ± 2 (39 / 0) | 4.0 | 55.3 | 0.5 |
+| rigger | 30% | **35%** ± 8 (26 / 0) | 4.9 | 24.8 | 0.3 |
+| mender | 15% (17 / 17) | **25%** ± 7 (17 / 13) | 7.9 | 143.1 | 0.3 |
+| channeler | 80% | **80%** ± 6 (8 / 0) | 2.5 | 19.6 | 0.4 |
+| chaplain | 30% | **43%** ± 8 (23 / 0) | 2.4 | 25.6 | 0.8 |
+| monk | 65% | **65%** ± 8 (14 / 0) | 3.8 | 23.7 | 0.1 |
+
+Controls now: the Bulwark's sheet on the tank policy 10% (35 / 1; was 5%), the Operative's on the gunner 0% (40 / 0), the
+Mender's on the gunner 0% (40 / 0), the monk's plain control 68%, the guard's own gunner (plain_gun, normal share,
+Agility 4) **63%** (was 55% under G1; 60% before G1).
+
+**The stalled share.** In the ten solo rows, 14 of 400 runs stall (3.5%; section 3: 55, 13.8%; section 10: 27, 6.8%):
+the Bulwark 1 and the Mender 13. None is a policy that ends its turn with AP and a foe in reach: every one is a fist
+fight at the 20-round cap against a lone foe whose blows land for 1 after the Mender's armour while it Mends itself
+for 38 (a War bot, a Hunter drone, a Sergeant, a Heart adept), with no pile on the field to pick up. That is the
+Mender's sheet in a one-on-one with an empty revolver, not an idle policy; a stage-1 fight that a human would also
+have to walk away from.
+
+**What moved and why.** R2 alone moves the low-Agility gun doors: the Chaplain (the faith build's rifle) 30 to 43%, the
+Rigger's pistol 30 to 35%, the gunner control 55 to 63%, and part of the Bulwark's and the Mender's rise; the doors at
+Agility 7 (Skirmisher) and the blades and casters do not move. R4 moves the stalls: the Operative's 9 become losses
+(the fallback reloads an empty pistol before its policy may wait Hidden), the Mender's pick-ups and draws win some of
+the fist fights it used to stall in.
+
+**The Sigilist's range (R4).** Its damage taken was 60% melee (14.3 melee attacks a fight). Two habits measured on the
+solo cell: stepping back first to the farthest tile it reaches with half its AP (once a turn, before a new Line, a melee
+foe within 3 / 5 / 8 tiles) cleared **0%** each (melee 67 to 68%: the step costs the AP the Line needed, and at
+Agility 1 a step back is one tile while the blade closes four); walking the Line away from its target (each step to the
+next glyph is a step back) while a melee foe is within 3 / 5 / any tiles cleared 3% each, melee 58 / 57 / 55%. Kept:
+the Line walked away at 5 tiles: **3%, melee 57% of its damage taken (12.9 melee attacks a fight)**. The Sigilist's
+solo loss is its sheet and door (a Line takes turns to walk at Agility 1), not a policy that walks into the blades.
+
+**Verdicts struck.** Section 1 item 6's and section 10's "the Mender alone 15%, a floor" (now 25%), "the Bulwark alone
+3%, control 5%" (now 8 and 10%) and "the Operative's 9 stalls" (none) are struck above. T1 (solo 45 to 75%) is now met
+by Breaker 73, Monk 65 and missed by Skirmisher 85 and Channeler 80 (a little over; Leon's rule: not worth chasing) and
+by Bulwark 8, Operative 0, Sigilist 3, Rigger 35, Mender 25 and Chaplain 43% (under). Party cells were not re-measured
+in this pass.

@@ -28,7 +28,8 @@
 //               while Bonds are free; Mend an ally (or itself: Mend Self) under 60% of max HP, the lowest first; Tug a
 //               Bonded ally that is Downed or under 30% toward itself; Snap a Bonded foe (once a turn: Soul damage and
 //               Dazed); else the gun. Never Touch, Settle, Soothe, Shield, Raise or Guide, never Snaps an ally.
-//   (every one: reloads tactical, run-policies.ts tactical; and with its gun dry and nothing to load, the fists: fists below)
+//   (every one: reloads tactical, run-policies.ts tactical; and with its gun dry and nothing to load, run-policies.ts
+//   fallback: a weapon from the pack, a pile's rounds or weapon, the fists; the Sigilist steps back to draw: keepRange)
 //   channeler   the run's Outburst policy (outburstRun: Begin, Pump with the best feeling, Release at the stage that
 //               drops a foe).
 //   chaplain    prayer-led (policies.ts prayer): the Canticle first each turn (once it is a Chaplain), the highest Hymn
@@ -40,7 +41,7 @@
 //               rules forbid it). (A first version put a form on every blow: 3% clears against 68% plain; a strawman.)
 import { previewPerkAction, previewAttack, techniquePad, TECHNIQUE, WEAPON, isMelee, dist, bindGame, paths, apForTiles, hideBlock, figmentsOf } from '../../src';
 import { POLICIES, optimised, tank, gunner, prayer, plainCands, techCands, best, fixOrMove, type Policy, type Ctx, type Step } from './policies';
-import { sigilRun, outburstRun, rigger, tactical } from './run-policies';
+import { sigilRun, outburstRun, rigger, tactical, withFallback, keepRange } from './run-policies';
 
 const W = <T>(g: any, f: () => T): T => { const was = bindGame(g); try { return f(); } finally { bindGame(was); } };
 const ok = (x: Ctx, s: Step | null) => (s && !x.banned.has(JSON.stringify(s.action)) ? s : null);
@@ -176,29 +177,12 @@ export const monk: Policy = (x) => {
 };
 
 // ---------------------------------------------------------------------------------------------- the dry gun
-/** The 0.30 fit's fallback (lead's review of the party fit, 16 Nov 2026: the Bulwark and the Mender ran their revolver dry
- * and then Raised Shield or ended the turn for 14 rounds and more). A gun that is empty with nothing to load (both
- * reloads refused this turn) is a player's cue to fight with what is left: when the door's own policy has nothing but a
- * walk, a reload or a set-up, the fists (combat/attack, mode melee: the engine's strikeWeapon swaps in the fists for a
- * gun), on the weakest foe in reach; none in reach, the walk to the nearest foe that brings one. Its heals, Bonds and
- * verbs come first, as before. Never picks a weapon up or swaps one in (a later policy item). */
-const dryGun = (x: Ctx): boolean => {
-  const u = x.u, w: any = WEAPON[u.weapon];
-  return !!w && !isMelee(w) && w.magazine != null && (u.ammo ?? 0) <= 0 && x.banned.has(JSON.stringify({ type: 'combat/reload' })) && x.banned.has(JSON.stringify({ type: 'combat/reload', tactical: true }));
-};
-export const fists = (pol: Policy): Policy => (x) => {
-  const s = pol(x);
-  if ((s && !['move', 'reload', 'setup'].includes(s.kind)) || !dryGun(x) || !x.foes.length) return s;
-  const u = x.u, inReach = x.foes.map((t) => ({ t, pv: W(x.g, () => previewAttack(x.cb, u, t, 'melee')) })).filter((q) => q.pv.ok && q.pv.ap <= u.ap).sort((a, b) => a.t.hp - b.t.hp);
-  for (const q of inReach) { const f = ok(x, { action: { type: 'combat/attack', targetId: q.t.id, mode: 'melee' }, kind: 'attack', label: 'the fists (gun dry)' }); if (f) return f; }
-  if (s && s.kind !== 'move') return s;
-  const test = (k: string, apLeft: number) => x.foes.some((t) => { const p0 = u.pos, a0 = u.ap; u.pos = k; u.ap = apLeft; try { return W(x.g, () => previewAttack(x.cb, u, t, 'melee')).ok; } finally { u.pos = p0; u.ap = a0; } });
-  return fixOrMove(x, [], test) || s;
-};
+// The dry-gun fallback (reload, a weapon from the pack, a pile's rounds or weapon, the fists) is run-policies.ts
+// fallback, shared with the run's own policies (the lead's ruling R4, 16 Nov 2026).
 
 // Every door's policy reloads tactically (rules 1.9: +1 AP, the magazine or speedloader kept in the pack), as a player
 // with a six-round revolver and few speedloaders does; refused (AP short), the speed reload.
-const T: Record<string, Policy> = { bulwark, breaker, skirmisher, operative, riggerRun, mender, chaplain, monk, sigilRunT: sigilRun, outburstRunT: outburstRun };
-for (const [k, p] of Object.entries(T)) { const t = fists(tactical(p)); (t as any).after = (p as any).after; (POLICIES as any)[k] = t; }
+const T: Record<string, Policy> = { bulwark, breaker, skirmisher, operative, riggerRun, mender, chaplain, monk, sigilRunT: keepRange(sigilRun), outburstRunT: outburstRun };
+for (const [k, p] of Object.entries(T)) { const t = withFallback(tactical(p)); (t as any).after = (p as any).after; (POLICIES as any)[k] = t; }
 // the party fit's controls (party-fit.ts CONTROL) play the same sheet without its door, with the same dry-gun fallback
-Object.assign(POLICIES, { tankDry: fists(tactical(tank)), gunnerDry: fists(tactical(gunner)) });
+Object.assign(POLICIES, { tankDry: withFallback(tactical(tank)), gunnerDry: withFallback(tactical(gunner)) });

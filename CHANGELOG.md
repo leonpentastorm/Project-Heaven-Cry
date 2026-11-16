@@ -16,9 +16,17 @@ The game shows its version in the corner of the title screen and in every "Repor
   revolvers, SMGs, rifles, shotguns, heavy weapons) name `phys.profile: gun`; bows, thrown charges and the foci's
   weapons do not. Agility 7 deals what every gun dealt before; Agility 1 x0.77, Agility 10 x1.12. Enemies are not
   touched. The weapon card's "Damage scales with" line shows Agility on every gun. The golden tables' character gun
-  rows and 22 of the replays were re-recorded on purpose (commit b721970a). **Not green yet:** four balance guards
-  (the gun all-in ceiling, the Mender offence, the enemy table's Soldier hits at levels 1 and 3, the Survival solo
-  gunner) read a yardstick that now moves with its build's Agility; they wait on a ruling before the merge.
+  rows and 22 of the replays were re-recorded on purpose (commit b721970a).
+- **G1, the lead's rulings R1 to R5 (Core Rules items 4540 to 4548):** the balance yardstick is pinned (the plain rifle
+  at a normal share, its shot at the gun profile's pin, Agility 7: `rules.json balance.yardsticks.rifle`, one function
+  in the simulator), so the enemy table's fit holds again (a Soldier is 4 hits). The gun profile's low end is softer:
+  k 1.275, +0.0294118 a point, so Agility 1 deals x0.85 of the old damage (was x0.77) and Agility 10 x1.075 (was
+  x1.12); Agility 7 unchanged. The gun ceiling's guard holds the guns at the pin and lets an all-in gunner above it
+  deal more; the Survival solo gunner's bar is 2 of 8 (measured 45% over 40 seeds). The weapon card's damage percent
+  is now against the pin (Agility or Strength 7 = +0%; a gun at Agility 1 reads -15%). The simulator's policies no
+  longer stall on a dry gun (reload, a weapon from the pack, a pile, the fists). Golden gun rows and 22 replays
+  re-recorded on purpose. **Not green (for the lead):** the Whisper row and the Chaplain row at level 20 and the
+  Mender's offence, each inside its band with every gun at the pin (item 4545).
 - **Survival's party fit (rules 1.57):** a party of two, three or four now faces 0.9 pressure a head (`pressure_per_char`
   [1.3, 1.7, 1.3, 0.9] → [1.3, 0.9, 0.9, 0.9]), so playing together is no longer the harder way to play; a character
   who died in a won fight, or was only Downed when the party leaves the field, stands up at 50 HP, not 1
