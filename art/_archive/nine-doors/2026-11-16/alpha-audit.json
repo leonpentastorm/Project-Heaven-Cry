@@ -1256,6 +1256,46 @@
       "number": 331,
       "name": "Sweep",
       "faint_alpha_to_solid_area_ratio": 0.05257
+    },
+    {
+      "number": 332,
+      "name": "Bash",
+      "faint_alpha_to_solid_area_ratio": 0.02661
+    },
+    {
+      "number": 333,
+      "name": "Sunder",
+      "faint_alpha_to_solid_area_ratio": 0.04454
+    },
+    {
+      "number": 334,
+      "name": "Flurry",
+      "faint_alpha_to_solid_area_ratio": 0.04459
+    },
+    {
+      "number": 335,
+      "name": "Hamstring",
+      "faint_alpha_to_solid_area_ratio": 0.03472
+    },
+    {
+      "number": 336,
+      "name": "Bind",
+      "faint_alpha_to_solid_area_ratio": 0.04687
+    },
+    {
+      "number": 337,
+      "name": "Half-Sword",
+      "faint_alpha_to_solid_area_ratio": 0.04038
+    },
+    {
+      "number": 338,
+      "name": "Throw",
+      "faint_alpha_to_solid_area_ratio": 0.07055
+    },
+    {
+      "number": 339,
+      "name": "Pull Out",
+      "faint_alpha_to_solid_area_ratio": 0.04629
     }
   ],
   "excluded": [],

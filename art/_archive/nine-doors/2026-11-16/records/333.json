@@ -1,0 +1,76 @@
+{
+  "number": 333,
+  "family": "technique_icons",
+  "id": "tech-sunder",
+  "path": "art/icons/techniques/sunder.png",
+  "name": "Sunder",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, strike: breaks the foe's weapon",
+  "paint": "A heavy blade striking a rifle across its middle, the rifle cracking.",
+  "avoid": "an explosion \u00b7 a real gun make",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A heavy blade striking a rifle across its middle, the rifle cracking.\nAvoid: an explosion \u00b7 a real gun make\nEXACT STAGING: Sunder: ONE heavy broad generic BLADE from upper-left strikes the MIDPOINT of ONE invented simple angular RIFLE held horizontally. The rifle has ONE clear large TRANSPARENT ZIGZAG FRACTURE across its middle and two separated halves beginning to bend apart. No ammunition firing, person, real firearm make, explosion, blood, shards cloud or labels. Symbol of equipment breakage, clear graphic contact at center.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "01fac0b59031467d999d9490680ca5a5d4153024dce8ab48919e6f20c41aa22c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/333-sunder.png",
+  "source_sha256": "3dd263152667bb01f45165bf7d95b1c3843d8dfbf1d648a231581d27a91c5d3e",
+  "export_crop": [
+    25,
+    23,
+    1240,
+    1189
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/sunder.png",
+    "64": "art/icons/techniques/exports/64/sunder.png",
+    "48": "art/icons/techniques/exports/48/sunder.png",
+    "44": "art/icons/techniques/exports/44/sunder.png",
+    "32": "art/icons/techniques/exports/32/sunder.png",
+    "24": "art/icons/techniques/exports/24/sunder.png"
+  },
+  "framing": {
+    "scale": 0.575559756513708,
+    "offset": [
+      162,
+      176
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "a6c0dc6675dc4434e4a20d1e3bb7c7726a5cf8cb83132ade42ff22135bb813b6",
+    "64": "087e72b59a58f5c1cb09e9f8da7882361ec4a6217f1da96cf1707416db87da85",
+    "48": "a44a78c13efd681d5c409e5dfd15441777f8671681fa84b656bb5a3fda3f6135",
+    "44": "b088a48bd420fe91154d79fc4f5c9f71ad36f9a660a311faaf9ed83d7a31abdc",
+    "32": "5f9257da9b0fcef6b942f9fe6ff9ef664d428235102bbdc1bbe6e98f4e227ad7",
+    "24": "1952d3f854fd084fe4f1853eed8cea97f5c1c8e7abb0483b414e459b40dc37f8"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

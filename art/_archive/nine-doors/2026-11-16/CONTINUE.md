@@ -1,6 +1,6 @@
 # Continue the Nine Doors artwork — 0.30 scope applied
 
-Original ledger: **257/375 delivered**. Original unfinished: **118 = 91 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **132 request records**, including replacement/reuse checks.
+Original ledger: **265/375 delivered**. Original unfinished: **110 = 83 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **124 request records**, including replacement/reuse checks.
 
 Read art-hold-list-0.30.md, holds-0.30.json and CONTINUE-0.30.md. All 28 old holds remain enforced. progress.json and records/ own old completion; progress-0.30.json owns added-request completion. Recipe pending flags are not ledgers.
 
@@ -8,14 +8,6 @@ The latest delivered images are review candidates, never automatically approved.
 
 ## Eligible old recipes, in priority order
 
-- P5 · #332 · Bash · `art/icons/techniques/bash.png` · Wick icon
-- P5 · #333 · Sunder · `art/icons/techniques/sunder.png` · Wick icon
-- P5 · #334 · Flurry · `art/icons/techniques/flurry.png` · Wick icon
-- P5 · #335 · Hamstring · `art/icons/techniques/hamstring.png` · Wick icon
-- P5 · #336 · Bind · `art/icons/techniques/bind.png` · Wick icon
-- P5 · #337 · Half-Sword · `art/icons/techniques/half-sword.png` · Wick icon
-- P5 · #338 · Throw · `art/icons/techniques/throw.png` · Wick icon
-- P5 · #339 · Pull Out · `art/icons/techniques/pull-out.png` · Wick icon
 - P5 · #340 · Sidestep · `art/icons/techniques/sidestep.png` · Wick icon
 - P5 · #341 · Guard (technique) · `art/icons/techniques/guard-tech.png` · Wick icon
 - P5 · #342 · Shove (technique) · `art/icons/techniques/shove-tech.png` · Wick icon

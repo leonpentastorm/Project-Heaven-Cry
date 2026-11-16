@@ -1,0 +1,76 @@
+{
+  "number": 339,
+  "family": "technique_icons",
+  "id": "tech-pull-out",
+  "path": "art/icons/techniques/pull-out.png",
+  "name": "Pull Out",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, strike",
+  "paint": "A hand drawing a blade back out of a post.",
+  "avoid": "blood \u00b7 a sword in a stone",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A hand drawing a blade back out of a post.\nAvoid: blood \u00b7 a sword in a stone\nEXACT STAGING: Pull Out: ONE cropped CERAMIC MITTEN holds a blade by its HANDLE and draws it BACK toward upper-left OUT OF ONE SMALL PLAIN WOODEN POST at lower-right. Blade remains partly embedded at post side, exposed length runs from clear entry slot to hilt. One short backward motion line emphasizes withdrawal, not insertion. No sword in stone, stone, blood, full figure, stump face, text or extra tools.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "ad0388365c1d622bd7f7228e50e86337377c14ad5826ddbb09a7efe4673920dc",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/339-pull-out.png",
+  "source_sha256": "945ecfae37db33873e613dbdcbe5a1384ab280686bdda9a617801c8d28b4f17c",
+  "export_crop": [
+    0,
+    31,
+    1226,
+    1197
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/pull-out.png",
+    "64": "art/icons/techniques/exports/64/pull-out.png",
+    "48": "art/icons/techniques/exports/48/pull-out.png",
+    "44": "art/icons/techniques/exports/44/pull-out.png",
+    "32": "art/icons/techniques/exports/32/pull-out.png",
+    "24": "art/icons/techniques/exports/24/pull-out.png"
+  },
+  "framing": {
+    "scale": 0.5656496639314901,
+    "offset": [
+      165,
+      182
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "b5b0616f391dec398a1bf77a7969b3a0dd345abe452394948038fb9f001392aa",
+    "64": "e5d6b1e4e1f60ee5413470fdde2218ceeca9025f967c84e5f0a2af4e0ed7ec7e",
+    "48": "0bb51af2c49c491835f404b877913e9d4939c37d3514dfb81532dca93065f252",
+    "44": "bf08f20b64de7d68257fa1969f6a1d05fbc7363436f0e3a44bf8f0d15d27af07",
+    "32": "bbb883e674e331f00e506e5e0fa3da7c88de5fdd1d4d61965936029e06273850",
+    "24": "21a51759d61e3ab457ee2a88c43328439770e51c81a9f8c61200718979b38ec2"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}
