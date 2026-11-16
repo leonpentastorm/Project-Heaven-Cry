@@ -3511,28 +3511,30 @@ if _FK is not None:
     def _fe(i, n=0):
         return ((_rows.get(i) or {}).get("effects") or [{}] * (n + 1))[n] if len((_rows.get(i) or {}).get("effects") or []) > n else {}
     _tend = {x.get("id"): x for x in (data.get("tending") or {}).get("items") or []}
+    for _need in ("fork.tend.keep_the_thread", "fork.tend.short_thread", "fork.tend.shared_pulse", "fork.shadow.spotter", "fork.guard.cover_them"):
+        if _need not in _rows: errors.append(f"forks: the held-equal check names '{_need}', no forks.json row (rename the check with the row)")
     _tug = ((((_tend.get("tend.tug") or {}).get("effects") or [{}])[0]).get("res") or {}).get("mp")
-    if "tend.keep_the_thread" in _rows and not _rows["tend.keep_the_thread"].get("shelved") and _fe("tend.keep_the_thread").get("value") != _tug: errors.append(f"forks:tend.keep_the_thread: the kept Snap's MP is Tug's price ({_tug}), one number")
-    _st = _rows.get("tend.short_thread") or {}
+    if "fork.tend.keep_the_thread" in _rows and not _rows["fork.tend.keep_the_thread"].get("shelved") and _fe("fork.tend.keep_the_thread").get("value") != _tug: errors.append(f"forks:fork.tend.keep_the_thread: the kept Snap's MP is Tug's price ({_tug}), one number")
+    _st = _rows.get("fork.tend.short_thread") or {}
     if _st and not _st.get("shelved"):
         _thr = ((data.get("tending") or {}).get("bond") or {}).get("through")
         _nn = _st.get("numbers") or {}
-        if _nn.get("through") != _thr: errors.append(f"forks:tend.short_thread: numbers.through is tending.json bond.through ({_thr})")
+        if _nn.get("through") != _thr: errors.append(f"forks:fork.tend.short_thread: numbers.through is tending.json bond.through ({_thr})")
         for _e in _st.get("effects") or []:
-            if _e.get("op") == "mend_mult" and abs(_e.get("value", 0) - round(_nn.get("near", 0) / (_thr or 1), 4)) > 1e-9: errors.append(f"forks:tend.short_thread: a mend_mult is near / through ({round(_nn.get('near', 0) / (_thr or 1), 4)})")
-    _sp = _rows.get("tend.shared_pulse") or {}
+            if _e.get("op") == "mend_mult" and abs(_e.get("value", 0) - round(_nn.get("near", 0) / (_thr or 1), 4)) > 1e-9: errors.append(f"forks:fork.tend.short_thread: a mend_mult is near / through ({round(_nn.get('near', 0) / (_thr or 1), 4)})")
+    _sp = _rows.get("fork.tend.shared_pulse") or {}
     if _sp and not _sp.get("shelved"):
         _hb = (((_tend.get("tend.mend") or {}).get("amounts") or {}).get("heal") or {}).get("base")
         _pb = ((_sp.get("amounts") or {}).get("pulse") or {}).get("base")
-        if _hb is None or _pb is None or abs(_pb - _hb * (_sp.get("numbers") or {}).get("share", 0)) > 1e-9: errors.append(f"forks:tend.shared_pulse: amounts.pulse.base is Mend's heal base × numbers.share ({_hb} × {(_sp.get('numbers') or {}).get('share')})")
-    _sp = _rows.get("shadow.spotter") or {}
+        if _hb is None or _pb is None or abs(_pb - _hb * (_sp.get("numbers") or {}).get("share", 0)) > 1e-9: errors.append(f"forks:fork.tend.shared_pulse: amounts.pulse.base is Mend's heal base × numbers.share ({_hb} × {(_sp.get('numbers') or {}).get('share')})")
+    _sp = _rows.get("fork.shadow.spotter") or {}
     if _sp and not _sp.get("shelved"):
         _ab = ((data.get("rules") or {}).get("shadow") or {}).get("ambush_bonus")
-        if _ab is None or abs(_fe("shadow.spotter").get("value", 0) - (1 + _ab)) > 1e-9: errors.append(f"forks:shadow.spotter: the ambush is 1 + rules.json shadow.ambush_bonus ({_ab})")
-    _ct = _rows.get("guard.cover_them") or {}
+        if _ab is None or abs(_fe("fork.shadow.spotter").get("value", 0) - (1 + _ab)) > 1e-9: errors.append(f"forks:fork.shadow.spotter: the ambush is 1 + rules.json shadow.ambush_bonus ({_ab})")
+    _ct = _rows.get("fork.guard.cover_them") or {}
     if _ct and not _ct.get("shelved"):
         _ic = (((data.get("techniques") or {}).get("rules") or {}).get("guard") or {}).get("interpose_cost")
-        if ((_fe("guard.cover_them").get("and") or [{}])[0]).get("value") != -(_ic or 0): errors.append(f"forks:guard.cover_them: its Guard is techniques.json rules.guard.interpose_cost ({_ic})")
+        if ((_fe("fork.guard.cover_them").get("and") or [{}])[0]).get("value") != -(_ic or 0): errors.append(f"forks:fork.guard.cover_them: its Guard is techniques.json rules.guard.interpose_cost ({_ic})")
 
 
 # The text-number guard (tools/text_numbers.py): a number in a player-facing text must be a number in the item's own fields.
