@@ -1,33 +1,9 @@
 # Continue the Nine Doors artwork
 
-38/375 candidates delivered; 337 remain. Do not count the three nothing-to-paint rows. Read the original brief and the current style guide. The CUP over Wick in Mind Without Fog belongs ONLY to that trait, never to Wick anatomy. Wick is the ceramic pixel-screen automaton with capelet, lantern-heart and asymmetry; do not turn him into a literal flame head.
+62/375 candidates delivered; 313 remain. Do not count the three nothing-to-paint rows. Read the original brief and the current style guide. The CUP over Wick in Mind Without Fog belongs ONLY to that trait, never to Wick anatomy. Wick is the ceramic pixel-screen automaton with capelet, lantern-heart and asymmetry; do not turn him into a literal flame head.
 
 Continue in the priority order below, one image per prompt. Source scripts and prompts are in this collection; current records must be preserved. The proposed paths/catalog IDs are exact. Every image remains review-candidate until Leon approves it. No new action-row UI is authorised by this art task.
 
-- P3 · #58 · Fire and Move · `art/icons/moves/fire-and-move.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #59 · Relocated · `art/icons/moves/relocated.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #60 · Break Them · `art/icons/moves/break-them.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #61 · Slide · `art/icons/moves/slide.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #83 · First Shade · `art/icons/moves/first-shade.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #85 · Go to Ground · `art/icons/moves/go-to-ground.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #86 · Close Quarters · `art/icons/moves/close-quarters.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #87 · Shadow Run · `art/icons/moves/shadow-run.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #88 · Still Breath · `art/icons/moves/still-breath.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #89 · Tag · `art/icons/shadow/tag.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #90 · Lift · `art/icons/shadow/lift.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #91 · Fade · `art/icons/shadow/fade.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #92 · Read Intent · `art/icons/shadow/read-intent.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #93 · Open Seam · `art/icons/shadow/open-seam.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #94 · Timing · `art/icons/shadow/timing.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #95 · Cut the Strap · `art/icons/shadow/cut-strap.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #96 · Foul the Action · `art/icons/shadow/foul.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #97 · Plant · `art/icons/shadow/plant.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #98 · Disable · `art/icons/shadow/disable.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #99 · Hijack · `art/icons/shadow/hijack.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #100 · Decoy · `art/icons/shadow/decoy.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #101 · Vault · `art/icons/shadow/vault.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #102 · Pick · `art/icons/shadow/pick.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #103 · Douse · `art/icons/shadow/douse.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #104 · Rig · `art/icons/shadow/rig.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #105 · Slip (group mark) · `art/icons/shadow/slip.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #106 · Mark (group mark and Operative rank I move) · `art/icons/shadow/mark.png` · Wick icon · in game now · placeholder · no slot yet

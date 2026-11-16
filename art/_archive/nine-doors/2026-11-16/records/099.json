@@ -1,0 +1,62 @@
+{
+  "number": 99,
+  "family": "shadow_icons",
+  "id": "shadow-hijack",
+  "path": "art/icons/shadow/hijack.png",
+  "name": "Hijack",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Shadow verb (Work): takes over a machine for a turn",
+  "paint": "A hand on a small drone's back, the drone's single lens turning toward its own side.",
+  "avoid": "a pirate \u00b7 a car",
+  "section": "Ingenuity: Shadow, and the Operative",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: A hand on a small drone's back, the drone's single lens turning toward its own side.\nAvoid: a pirate \u00b7 a car\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nSUBJECT OVERRIDE: this row asks for a prop/sign/partial-view composition. Draw only that requested subject. Do not add a full Wick figure when this row does not name him.\nCOMPOSITION PRIORITY: this is a close-up of ONLY the hand/tool/object action in Paint, NOT a full mascot. No Wick head, body or face, no extra props. One clear silhouette and minimal cuts.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "562d91667da9cfcaae4738d5fba51e18589fd992187fb8fe1417f89a38847413",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/099-hijack.png",
+  "source_sha256": "bfe7fb848763ff5a188f5625b98f62f9d815d94fa93a701d6a519eda547d8c84",
+  "export_crop": [
+    0,
+    83,
+    1254,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/shadow/exports/128/hijack.png",
+    "64": "art/icons/shadow/exports/64/hijack.png",
+    "48": "art/icons/shadow/exports/48/hijack.png",
+    "44": "art/icons/shadow/exports/44/hijack.png",
+    "32": "art/icons/shadow/exports/32/hijack.png",
+    "24": "art/icons/shadow/exports/24/hijack.png"
+  },
+  "framing": {
+    "scale": 0.5674759159962519,
+    "offset": [
+      156,
+      179
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}
