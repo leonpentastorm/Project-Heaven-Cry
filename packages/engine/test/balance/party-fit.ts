@@ -32,6 +32,9 @@ Object.assign(CELLS, {
   mix_tgh_caster: ['bulwark', 'skirmisher', 'mender', 'sigilist'],
   mix_breaker_channeler: ['breaker', 'channeler'], mix_operative_rigger: ['operative', 'rigger'], mix_chaplain_monk: ['chaplain', 'monk'],
   mix_four_rest: ['breaker', 'operative', 'channeler', 'chaplain'],
+  // the fit's added cells (0.30): trios (the trio's budget row was unmeasured) and a second sensible four
+  trio_skirmisher: ['skirmisher', 'skirmisher', 'skirmisher'], trio_channeler: ['channeler', 'channeler', 'channeler'], trio_breaker: ['breaker', 'breaker', 'breaker'],
+  mix_trio: ['breaker', 'skirmisher', 'mender'], mix_four_b: ['monk', 'skirmisher', 'chaplain', 'channeler'],
 });
 // the controls: the same sheet played without its door (is the door's policy the problem, or the door?), and the
 // guard's own gunner (plain_gun, normal share: the earlier reports' "solo gunner")
@@ -58,6 +61,11 @@ export function withLever<T>(lever: string | undefined, n: number, f: () => T): 
     if (lever === 'duopress') ENC_BUDGET.pressurePerChar = was.p.map((v: number, i: number) => (i === 1 ? was.p[0] : v)); // the duo's pressure a head at the solo's, nothing else
     if (lever === 'revive') SV.run.dead_return_hp = REVIVE_HP;
     if (lever === 'smallmap') SV.map_size.steps = [{ units: 99, size: was.steps[0].size }];
+    // lever `set:` (the fit's candidates, in memory only): `set:p=1.3/1.3/1.2/0.9;ret=50;m=4/6/8/10`
+    if (lever && lever.startsWith('set:')) for (const kv of lever.slice(4).split(';')) {
+      const [k, v] = kv.split('='), arr = v.split('/').map(Number);
+      if (k === 'p') ENC_BUDGET.pressurePerChar = arr; if (k === 'm') ENC_BUDGET.maxFoes = arr; if (k === 'ret') SV.run.dead_return_hp = arr[0];
+    }
     void n;
     return f();
   } finally { SV.run.dead_return_hp = was.ret; ENC_BUDGET.pressurePerChar = was.p; ENC_BUDGET.maxFoes = was.m; ENC_BUDGET.share = was.s; SV.map_size.steps = was.steps; }
@@ -113,6 +121,8 @@ function begin(cb: any, doors: string[]): FightStat {
 
 export interface PartyRun { cell: string; lever: string; seed: string; cleared: boolean; how: string; depth: number; fights: FightStat[]; lvlBoss: number | null; errors: number }
 /** Stage 1 of one party on one seed, every fight instrumented. */
+/** How many stages a run may play (PF_STAGES, default 1); `cleared` is still stage 1, `stages` how many were cleared. */
+const STAGES = Number(((globalThis as any).process?.env || {}).PF_STAGES || 1);
 export function partyRun(cell: string, seed: string, lever = 'none'): PartyRun {
   const doors = PARTIES[cell], n = doors.length, fights: FightStat[] = [];
   const P: any = Rec.prototype, fight0 = P.fight;
@@ -139,13 +149,13 @@ export function partyRun(cell: string, seed: string, lever = 'none'): PartyRun {
     }
   };
   let res: any; VERBS = {};
-  try { FOCUS.on = lever === 'focus'; res = withLever(lever, n, () => simRun({ party: cell, route: 'gear', seed, maxStages: 1, maxFightRounds: 20 })); }
+  try { FOCUS.on = lever === 'focus'; res = withLever(lever, n, () => simRun({ party: cell, route: 'gear', seed, maxStages: STAGES, maxFightRounds: 20 })); }
   finally { P.fight = fight0; FOCUS.on = false; LIVE = null; }
   res.fights.forEach((f: any, i: number) => { if (fights[i]) { fights[i].kind = f.kind; fights[i].won = f.won; fights[i].rounds = f.rounds;
     // HP entering it (the stop's record): the lowest member's share, and the members at 10% or less (a Downed member of a won fight stands up at 1 HP)
     const stop = (res.stops || []).find((q: any) => q.stage === f.stage && q.depth === f.depth); if (stop) { (fights[i] as any).enterMin = Math.min(...stop.hpEach); (fights[i] as any).enterLow = stop.hpEach.filter((h: number) => h <= 0.1).length; } } });
   const boss = res.fights.find((f: any) => f.kind === 'boss');
-  return { cell, lever, seed, cleared: res.cleared >= 1, how: res.how, depth: res.depth, fights, lvlBoss: boss?.lvl ? boss.lvl.reduce((t: number, x: number) => t + x, 0) / boss.lvl.length : null, verbs: VERBS, errors: res.errors.length, err: res.errors.slice(0, 2).map((e: string) => e.slice(0, 900)) };
+  return { cell, lever, seed, stages: res.cleared, cleared: res.cleared >= 1, how: res.how, depth: res.depth, fights, lvlBoss: boss?.lvl ? boss.lvl.reduce((t: number, x: number) => t + x, 0) / boss.lvl.length : null, verbs: VERBS, errors: res.errors.length, err: res.errors.slice(0, 2).map((e: string) => e.slice(0, 900)) };
 }
 
 // ---------------------------------------------------------------------------------------------- the tables

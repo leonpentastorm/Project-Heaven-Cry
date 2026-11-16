@@ -351,3 +351,217 @@ reproduction, which is this lane's next step.
 | mix_four_rest | 46% | 30% | 5% (-25) | 30% (+0) | 15% (-15) | - | - |
 
 Gap (solo reference less the party, summed over the party cells where positive): 493 points. Recovered by each lever (summed change): perhead -195 (-40% of the gap), focus -3 (-1% of the gap), smallmap -55 (-11% of the gap), revive 33 (7% of the gap), duopress 140 (28% of the gap).
+
+## 9. The fit (16 Nov 2026, after; data changed: `survival.json pressure_per_char` and `run.dead_return_hp`)
+
+**What changed (rules 1.57 party fit, Core Rules items 4530 to 4534):**
+
+1. `pressure_per_char` [1.3, 1.7, 1.3, 0.9] → **[1.3, 0.9, 0.9, 0.9]**: any party of two or more at the quad's 0.9 a head.
+2. `run.dead_return_hp` 1 → **50**.
+
+Nothing else moved: the solo's 1.3, `bulk_per_char_round`, `max_foes`, `share`, every door's numbers, the enemy guns. A
+solo run cannot move under either change (a solo's pressure is unchanged and a solo who dies has lost), so the solo
+column is the baseline's, re-played and identical (838 of 838 runs reproduced bit for bit before the fit).
+
+**How the number was chosen** (40 seeds a cell, the same PF-1 to PF-40 seeds, paired): the duo's term was tried at 1.3,
+1.1 and 0.9 (all with the walk-on at 50), and at 1.1 with `max_foes` 5 for two:
+
+| Duo cell | Before (1.7) | 1.3 | 1.1 | 1.1, max 5 foes | **0.9** |
+|---|---|---|---|---|---|
+| breaker | 3% | 13% | 18% | 28% | **57%** |
+| skirmisher | 50% | 85% | 88% | 83% | **93%** |
+| channeler | 35% | 73% | 85% | 75% | **90%** |
+| chaplain | 20% | 15% | 33% | 38% | **55%** |
+| monk | 13% | 13% | 20% | 40% | **50%** |
+| rigger | 10% | 10% | 23% | 20% | **43%** |
+
+The trio's term (unmeasured before; three cells added: three Skirmishers, three Channelers, three Breakers, and Breaker +
+Skirmisher + Mender) at 1.3 / 1.1 / 0.9: Skirmishers 80 / 93 / 95%, Channelers 60 / 83 / 88%, Breakers 3 / 30 / 30%. 0.9
+is kept for every party size: one rule ("a party is 0.9 a head"), and the quad's 0.9 already worked.
+
+**A probe of the solo, not applied:** the solo's term at 1.1 and 1.0 (in memory): Bulwark 0 / 0%, Operative 0 / 0%,
+Sigilist 5 / 3%, Mender 5 / 10%, Rigger 45 / 48%, Breaker 88 / 88%, Skirmisher 88 / 90%. Easing the solo lifts the doors
+already winning and leaves the four losing doors where they are: their gap is the door, not the budget, so the solo
+was left at 1.3.
+
+### Stage 1, before → after (40 seeds a cell; the door's solo is the reference)
+
+| Door | Solo | Duo before → after | Trio before → after | Quad before → after | Rounds a plain fight (duo, quad) before → after |
+|---|---|---|---|---|---|
+| bulwark | 0% (7.7 rounds) | 0% → 3% | - | 0% → 0% | 8.3, 8.2 → 8.1, 8.0 |
+| breaker | 73% (2.8 rounds) | 3% → 58% | 3% → 30% | 10% → 13% | 3.3, 4.3 → 3.4, 4.3 |
+| skirmisher | 85% (2.6 rounds) | 50% → 93% | 80% → 95% | 100% → 100% | 2.8, 2.7 → 2.5, 2.7 |
+| operative | 0% (8.1 rounds) | 0% → 0% | - | 0% → 0% | 7.2, 8.9 → 8.7, 9.1 |
+| sigilist | 3% (4.6 rounds) | 0% → 5% | - | 0% → 0% | 6.0, 7.0 → 5.7, 7.1 |
+| rigger | 30% (4.9 rounds) | 10% → 43% | - | 50% → 58% | 6.8, 8.2 → 5.8, 8.1 |
+| mender | 3% (7.9 rounds) | 5% → 13% | - | 18% → 20% | 8.3, 9.1 → 7.3, 9.1 |
+| channeler | 80% (2.6 rounds) | 35% → 90% | 60% → 88% | 78% → 83% | 3.0, 3.2 → 2.7, 3.3 |
+| chaplain | 30% (2.5 rounds) | 20% → 55% | - | 58% → 70% | 2.4, 2.9 → 2.5, 2.9 |
+| monk | 65% (3.7 rounds) | 13% → 50% | - | 30% → 43% | 4.3, 5.4 → 4.1, 5.4 |
+
+| Party | Solo reference | Before | After | T2 floor (reference - 10) | Rounds before → after |
+|---|---|---|---|---|---|
+| mix_tank_gun (bulwark, skirmisher) | 43% | 23% | 75% (40) | 33% | 4.0 → 3.8 |
+| mix_tank_heal (bulwark, mender) | 2% | 0% | 18% (40) | -8% | 9.4 → 9.3 |
+| mix_gun_heal (skirmisher, mender) | 44% | 55% | 90% (40) | 34% | 3.6 → 3.5 |
+| mix_tgh_caster (bulwark, skirmisher, mender, sigilist) | 23% | 58% | 63% (40) | 13% | 6.2 → 6.3 |
+| mix_breaker_channeler (breaker, channeler) | 77% | 10% | 85% (40) | 67% | 3.2 → 3.1 |
+| mix_operative_rigger (operative, rigger) | 15% | 0% | 10% (40) | 5% | 7.0 → 7.1 |
+| mix_chaplain_monk (chaplain, monk) | 48% | 10% | 55% (40) | 38% | 3.1 → 3.1 |
+| mix_four_rest (breaker, operative, channeler, chaplain) | 46% | 30% | 38% (40) | 36% | 4.7 → 4.6 |
+| mix_trio (breaker, skirmisher, mender) | 54% | 75% | 98% (40) | 44% | 4.2 → 3.8 |
+| mix_four_b (monk, skirmisher, chaplain, channeler) | 65% | 70% | 73% (40) | 55% | 3.5 → 3.5 |
+
+
+### Targets (the lead's; targets, not walls)
+
+* **T1, every door's solo 45 to 75%: missed for six doors, not touched by this pass.** Breaker 73 and Monk 65 are in;
+  Skirmisher 85 and Channeler 80 sit a little over (Leon's rule: not worth chasing); Rigger 30, Chaplain 30, Mender 3,
+  Sigilist 3, Bulwark 0, Operative 0 are under. The solo probe above shows a budget move cannot reach them. Their own
+  numbers are for the lead (the hand-back lists them).
+* **T2, no party under its members' solo mean minus 10: met by every mixed party and every caster or gun party; missed
+  by the melee multiples:** two Breakers 58% (floor 63), three Breakers 30%, four Breakers 13% (floor 63); two Monks 50%
+  (floor 55), four Monks 43%. Their cause is measured and is not a budget: the Breaker's arcs hit the partner (5 to 7% of
+  the damage taken) and the foes focus one member (67 to 82% of their attacks), both needing primitives (section 7).
+  **The sensible four (front, damage, support, caster) at 60 to 80%: met.** Bulwark + Skirmisher + Mender + Sigilist
+  63% (was 57%) with two of its four doors at 0 to 3% alone; Monk + Skirmisher + Chaplain + Channeler 73% (was 70%).
+  Breaker + Operative + Channeler + Chaplain 38% (was 30%): one of its four (the Operative) clears 0% alone. Every duo
+  with a winning door now clears more often than the solo reference: playing together is the better way to play.
+* **T3, a fragile door's mono party not under 30%: missed for the four doors that lose alone** (Bulwark, Operative,
+  Sigilist 0 to 5% at any size; Mender 13 to 20%); met by every other door but four Breakers (13%, the melee cause).
+* **T4, fights not longer than 1.5 x today's median rounds: met.** No cell's plain fight got longer by more than 1.5
+  rounds (duo Operative 7.2 to 8.7, a losing cell); most got shorter (duo Rigger 6.8 to 5.8).
+
+### Past the first Boss (report only, not fitted; stages cleared out of the seeds named)
+
+| Cell | Seeds | Stage 1 | Stage 2 | Stage 3 |
+|---|---|---|---|---|
+| Bulwark + Skirmisher + Mender + Sigilist, before | 24 | 46% | 33% | 21% |
+| Bulwark + Skirmisher + Mender + Sigilist, after | 19 | 47% | 47% | 26% |
+| Monk + Skirmisher + Chaplain + Channeler, after | 12 | 92% | 75% | 25% |
+| Breaker + Operative + Channeler + Chaplain, after | 12 | 42% | 8% | 8% |
+| Skirmisher solo (unchanged) | 40 | 85% | 68% | 53% |
+| Channeler solo (unchanged) | 40 | 80% | 45% | 30% |
+| Breaker solo (unchanged) | 40 | 73% | 40% | 28% |
+
+A four-member run past stage 1 is slow to simulate (about four minutes a run with the lane's other jobs), so the fours'
+stage 2 and 3 rows are 12 to 24 seeds (one standard error up to 14 points): read them as a direction. Where a party
+holds stage 1 it mostly holds stage 2 (the mixed four 47 to 47%; the second four 92 to 75%), and stage 3 halves it, as
+for the solos. The fit does not break past the first Boss; whether stage 2 and 3 want their own fit is for the lead.
+
+### The opening volley and the residual
+
+Not fitted in this pass (the lead note's items 5 to 7 still stand). With the duo's budget at 0.9 a head, a duo fields 1.2
+foes a head (was 1.8; 1.35 to 1.6 in the cells that stall) and 0.5 gun foes a head (was about 1.0); the share of damage
+in rounds 1 and 2 in the duo cells that win is about as before (56 to 87%):
+the opening is now lighter because there are fewer guns, not because it is shaped differently.
+
+### Appendix: the after tables (the party-fit.ts report, every party cell after the fit)
+
+| Cell | N | Runs | Clear stage 1 (± SE) | Lost / stalled | Fights | Rounds: plain, Elite, Boss | Foes a head | Gun foes a head | Map | Spawn distance (to a gun) | Foe turns before a character's first | Enemy attacks a round a head | Damage taken a head a fight | Same, a round | Rounds 1-2: share of damage, of Downs; attacks a head; hit % | Downs a fight | Focus share | Friendly fire a fight (share) | Healed a fight (wasted) | AP left a turn | Level at the Boss | Downed first |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| quad_mender | 4 | 40 | 20% ± 6 | 5 / 27 | 4.4 | 8.9, 13.2, 13.4 | 1.29 | 0.65 | 21 | 6.2 (8.3) | 3.3 | 1.29 | 107.2 | 8.3 | 24%, 16%; 3.8; 54% | 0.34 | 48% | 0 (0%) | 374.1 (0%) | 2.1 | 2.5 | mender 19 |
+| mix_gun_heal | 2 | 40 | 90% ± 5 | 3 / 1 | 8.6 | 3.5, 5.1, 5.3 | 1.19 | 0.55 | 16.6 | 7.8 (8.5) | 1.2 | 0.83 | 26.2 | 5.8 | 56%, 38%; 2.2; 51% | 0.04 | 82% | 0 (0%) | 34.7 (1%) | 0.6 | 2.9 | mender 8, skirmisher 1 |
+| mix_tank_gun | 2 | 40 | 75% ± 7 | 7 / 3 | 8 | 3.7, 5.2, 6.3 | 1.2 | 0.54 | 16.6 | 7.8 (8.8) | 1.3 | 0.88 | 21.4 | 4.3 | 59%, 30%; 2.4; 45% | 0.13 | 84% | 0 (0%) | 0.6 (22%) | 0.4 | 2.9 | skirmisher 13, bulwark 9 |
+| duo_operative | 2 | 40 | 0% ± 0 | 27 / 13 | 2.3 | 8.6, -, - | 1.58 | 0.54 | 17.2 | 5.3 (7) | 2 | 1.63 | 54 | 6.2 | 36%, 9%; 4.5; 52% | 1.26 | 67% | 0 (0%) | 0.2 (0%) | 1.6 | - | operative 50 |
+| quad_rigger | 4 | 40 | 57% ± 8 | 13 / 4 | 7.6 | 8, 10, 10.2 | 1.24 | 0.71 | 20.5 | 7 (8.8) | 3.1 | 0.3 | 21.2 | 2.2 | 25%, 16%; 0.8; 52% | 0.57 | 61% | 0 (0%) | 0.1 (7%) | 0.4 | 2.8 | rigger 76 |
+| quad_breaker | 4 | 40 | 13% ± 5 | 35 / 0 | 4.6 | 4.2, 6.2, 4.6 | 1.27 | 0.69 | 20.9 | 7 (8.9) | 3.1 | 1.27 | 40.1 | 8.3 | 65%, 49%; 3.8; 58% | 1.47 | 51% | 8.9 (5%) | 0.3 (0%) | 0.8 | 2.8 | breaker 93 |
+| duo_skirmisher | 2 | 40 | 93% ± 4 | 3 / 0 | 8.8 | 2.5, 3, 3.5 | 1.18 | 0.55 | 16.5 | 8.7 (9.6) | 0.9 | 0.65 | 12.4 | 4.2 | 86%, 88%; 1.6; 46% | 0.07 | 88% | 0 (0%) | 0.2 (0%) | 0.3 | 2.9 | skirmisher 19 |
+| mix_breaker_channeler | 2 | 40 | 85% ± 6 | 6 / 0 | 8.5 | 3.1, 2.9, 3.3 | 1.19 | 0.53 | 16.6 | 6.1 (7.6) | 1.5 | 0.86 | 19.8 | 6.2 | 82%, 69%; 2.2; 59% | 0.23 | 86% | 3.4 (8%) | 8 (7%) | 0.6 | 2.9 | breaker 45, channeler 11 |
+| duo_chaplain | 2 | 40 | 55% ± 8 | 18 / 0 | 7.1 | 2.5, 4, 3.6 | 1.2 | 0.52 | 16.6 | 6.6 (7.8) | 1.4 | 0.65 | 21.3 | 5.9 | 73%, 63%; 1.6; 63% | 0.33 | 84% | 0 (0%) | 0.2 (33%) | 0.7 | 2.9 | chaplain 62 |
+| quad_bulwark | 4 | 40 | 0% ± 0 | 11 / 29 | 2.4 | 7.3, 15.3, - | 1.45 | 0.59 | 21.9 | 6.1 (8.4) | 3.6 | 1.3 | 64.8 | 5.9 | 32%, 4%; 3.5; 44% | 1.23 | 47% | 0 (0%) | 0 (-) | 0.3 | - | bulwark 30 |
+| trio_channeler | 3 | 40 | 88% ± 5 | 5 / 0 | 8.2 | 3, 3.3, 3.6 | 1.17 | 0.65 | 18 | 7.1 (8.8) | 2.3 | 0.69 | 18.8 | 5.8 | 83%, 59%; 1.8; 56% | 0.42 | 73% | 0 (0%) | 18.8 (3%) | 1 | 2.9 | channeler 69 |
+| quad_operative | 4 | 40 | 0% ± 0 | 33 / 7 | 1.9 | 7.8, -, - | 1.51 | 0.59 | 22 | 5.8 (8.1) | 3.8 | 1.29 | 64.8 | 7.2 | 32%, 13%; 3.5; 56% | 3.76 | 43% | 0 (0%) | 0 (-) | 1.4 | - | operative 55 |
+| quad_sigilist | 4 | 40 | 0% ± 0 | 40 / 0 | 2.3 | 7.5, 8, - | 1.44 | 0.59 | 21.8 | 6.4 (8.6) | 3.5 | 1.69 | 63.5 | 9.4 | 46%, 32%; 4.9; 59% | 3.54 | 41% | 0 (0%) | 0 (-) | 0.8 | - | sigilist 76 |
+| duo_sigilist | 2 | 40 | 5% ± 3 | 38 / 0 | 3 | 5.7, 3.3, 6.5 | 1.45 | 0.5 | 17.1 | 4.7 (6.2) | 1.9 | 1.88 | 48.6 | 9.1 | 51%, 37%; 5.1; 57% | 1 | 71% | 0 (0%) | 0 (-) | 0.7 | 2.5 | sigilist 60 |
+| quad_skirmisher | 4 | 40 | 100% ± 0 | 0 / 0 | 8.9 | 2.7, 3.5, 3.7 | 1.19 | 0.72 | 20.3 | 10.9 (11.7) | 1.9 | 0.66 | 12.4 | 3.8 | 83%, 80%; 1.8; 41% | 0.19 | 67% | 0.3 (1%) | 0 (-) | 0.3 | 2.9 | skirmisher 52 |
+| trio_skirmisher | 3 | 40 | 95% ± 3 | 2 / 0 | 8.8 | 2.5, 3.3, 3.8 | 1.18 | 0.66 | 18.1 | 9.7 (10.7) | 1.3 | 0.65 | 13.3 | 4.2 | 86%, 71%; 1.7; 43% | 0.13 | 77% | 0 (0%) | 0.1 (52%) | 0.3 | 2.9 | skirmisher 33 |
+| duo_bulwark | 2 | 40 | 3% ± 2 | 18 / 21 | 2.6 | 6.3, 11, 11 | 1.52 | 0.5 | 17.2 | 5.6 (7.3) | 1.9 | 1.67 | 67.8 | 6.6 | 29%, 2%; 4.2; 42% | 0.59 | 72% | 0 (0%) | 0.3 (0%) | 0.4 | 2 | bulwark 27 |
+| duo_monk | 2 | 40 | 50% ± 8 | 20 / 0 | 6.7 | 4.1, 5.3, 4.5 | 1.21 | 0.54 | 16.6 | 6.3 (7.2) | 1.4 | 1.12 | 25.4 | 5.3 | 61%, 43%; 3; 52% | 0.35 | 82% | 0 (0%) | 0.9 (37%) | 0.1 | 2.9 | monk 61 |
+| mix_tank_heal | 2 | 40 | 18% ± 6 | 2 / 31 | 4.1 | 9.2, 14.2, 13.4 | 1.36 | 0.51 | 16.9 | 5.4 (6.7) | 1.7 | 1.46 | 97.1 | 7.4 | 21%, 0%; 3.5; 51% | 0.07 | 72% | 0.6 (0%) | 154 (0%) | 1.3 | 2.6 | mender 5, bulwark 2 |
+| duo_breaker | 2 | 40 | 57% ± 8 | 17 / 0 | 7.1 | 3.4, 3.7, 3.5 | 1.22 | 0.54 | 16.6 | 6.2 (7.3) | 1.5 | 1.02 | 24.9 | 6.8 | 73%, 64%; 2.7; 59% | 0.32 | 83% | 4.6 (8%) | 1.3 (10%) | 0.5 | 2.9 | breaker 68 |
+| duo_mender | 2 | 40 | 13% ± 5 | 5 / 30 | 4.2 | 7.2, 13.8, 12 | 1.35 | 0.5 | 16.9 | 5.1 (6.4) | 1.8 | 1.4 | 109.6 | 8.7 | 21%, 8%; 3.4; 57% | 0.08 | 71% | 0 (0%) | 194.5 (0%) | 2.4 | 2.6 | mender 5 |
+| quad_monk | 4 | 40 | 43% ± 8 | 23 / 0 | 6.8 | 5.4, 8.1, 6.5 | 1.21 | 0.72 | 20.5 | 6.9 (8.7) | 3.1 | 1.26 | 30.1 | 4.7 | 50%, 38%; 3.8; 46% | 1.13 | 49% | 0 (0%) | 0.6 (8%) | 0.2 | 3 | monk 109 |
+| mix_trio | 3 | 40 | 98% ± 2 | 1 / 0 | 8.9 | 3.8, 5, 5.8 | 1.18 | 0.66 | 18.1 | 8.4 (9.9) | 1.9 | 0.9 | 30.9 | 6.7 | 61%, 40%; 2.6; 54% | 0.12 | 70% | 2.9 (3%) | 69.2 (0%) | 0.5 | 2.9 | breaker 21, mender 5, skirmisher 2 |
+| duo_channeler | 2 | 40 | 90% ± 5 | 4 / 0 | 8.5 | 2.7, 2.3, 2.9 | 1.19 | 0.54 | 16.6 | 5.3 (6.3) | 1.6 | 0.71 | 16.4 | 5.9 | 87%, 50%; 1.7; 62% | 0.13 | 87% | 0 (0%) | 11.1 (4%) | 0.7 | 2.9 | channeler 29 |
+| mix_chaplain_monk | 2 | 40 | 55% ± 8 | 18 / 0 | 7.5 | 3.1, 4.7, 4.1 | 1.2 | 0.54 | 16.6 | 6 (7.1) | 1.4 | 0.95 | 21.3 | 5.4 | 71%, 61%; 2.5; 57% | 0.34 | 87% | 0.1 (0%) | 0.6 (9%) | 0.4 | 2.8 | chaplain 36, monk 32 |
+| quad_channeler | 4 | 40 | 83% ± 6 | 6 / 1 | 8.1 | 3.2, 3.6, 3.4 | 1.19 | 0.72 | 20.3 | 6.2 (8) | 3.1 | 0.71 | 19.9 | 5.5 | 79%, 50%; 2; 54% | 0.61 | 62% | 0 (0%) | 25 (3%) | 1.1 | 2.9 | channeler 81 |
+| quad_chaplain | 4 | 40 | 70% ± 7 | 12 / 0 | 7.8 | 2.9, 4.3, 3.9 | 1.22 | 0.71 | 20.5 | 7.4 (9.1) | 2.7 | 0.67 | 19.5 | 5 | 74%, 61%; 1.9; 53% | 0.62 | 58% | 0.3 (0%) | 0 (-) | 0.9 | 2.9 | chaplain 80 |
+| trio_breaker | 3 | 40 | 30% ± 7 | 28 / 0 | 5.5 | 3.6, 4.8, 4.3 | 1.24 | 0.61 | 18.3 | 7.1 (9) | 2.2 | 1.11 | 31.1 | 7.4 | 69%, 54%; 3.2; 59% | 0.72 | 65% | 8 (8%) | 0.2 (0%) | 0.7 | 2.8 | breaker 77 |
+| duo_rigger | 2 | 40 | 43% ± 8 | 23 / 0 | 6.6 | 5.7, 6.5, 6.4 | 1.2 | 0.51 | 16.6 | 5.9 (7) | 1.4 | 0.38 | 22.7 | 3.9 | 43%, 24%; 0.9; 62% | 0.32 | 85% | 0 (0%) | 0 (-) | 0.3 | 2.8 | rigger 43 |
+| mix_operative_rigger | 2 | 40 | 10% ± 5 | 24 / 12 | 5 | 6.6, 9, 8.5 | 1.28 | 0.5 | 16.8 | 5.9 (6.8) | 1.6 | 0.66 | 28.7 | 3.6 | 36%, 17%; 1.7; 61% | 0.5 | 80% | 0 (0%) | 0.3 (32%) | 1.1 | 2.8 | rigger 36, operative 6 |
+| mix_tgh_caster | 4 | 40 | 63% ± 8 | 4 / 11 | 7.4 | 6.2, 8, 7.8 | 1.22 | 0.72 | 20.5 | 8.5 (9.7) | 2.7 | 1.03 | 46.1 | 6.1 | 44%, 29%; 3.3; 47% | 0.46 | 55% | 0.2 (0%) | 122.9 (0%) | 1 | 2.9 | sigilist 40, skirmisher 12, mender 10 |
+| mix_four_b | 4 | 40 | 73% ± 7 | 11 / 0 | 8 | 3.4, 4.5, 4.9 | 1.21 | 0.71 | 20.4 | 8.4 (9.6) | 2.6 | 0.84 | 20.5 | 4.8 | 71%, 47%; 2.5; 50% | 0.61 | 65% | 0.3 (0%) | 6.2 (1%) | 0.7 | 2.9 | monk 48, chaplain 20, skirmisher 10, channeler 7 |
+| mix_four_rest | 4 | 40 | 38% ± 8 | 21 / 4 | 5.9 | 4.2, 5.6, 6.1 | 1.26 | 0.69 | 20.7 | 6.6 (8.4) | 3.2 | 0.89 | 32.1 | 5.6 | 60%, 40%; 2.8; 56% | 1.46 | 61% | 1.1 (1%) | 7.6 (1%) | 1 | 2.9 | breaker 70, chaplain 18, channeler 15, operative 1 |
+
+| Cell | Fights entered with a member at 10% HP or less | Lost fights entered so | Lost fights entered with everyone above 10% |
+| --- | --- | --- | --- |
+| quad_mender | 1% (1/150) | 1 of 5 | 4 |
+| mix_gun_heal | 1% (4/344) | 1 of 3 | 2 |
+| mix_tank_gun | 3% (10/317) | 0 of 7 | 7 |
+| duo_operative | 1% (1/79) | 1 of 27 | 26 |
+| quad_rigger | 10% (30/301) | 4 of 13 | 9 |
+| quad_breaker | 23% (43/184) | 24 of 35 | 11 |
+| duo_skirmisher | 5% (18/351) | 1 of 3 | 2 |
+| mix_breaker_channeler | 7% (23/340) | 1 of 6 | 5 |
+| duo_chaplain | 11% (32/284) | 7 of 18 | 11 |
+| quad_bulwark | 8% (5/65) | 4 of 11 | 7 |
+| trio_channeler | 4% (13/329) | 0 of 5 | 5 |
+| quad_operative | 7% (5/67) | 5 of 33 | 28 |
+| quad_sigilist | 25% (23/91) | 19 of 40 | 21 |
+| duo_sigilist | 10% (12/121) | 12 of 37 | 25 |
+| quad_skirmisher | 12% (41/356) | 0 of 0 | 0 |
+| trio_skirmisher | 8% (28/351) | 2 of 2 | 0 |
+| duo_bulwark | 2% (2/82) | 2 of 18 | 16 |
+| duo_monk | 11% (29/269) | 8 of 20 | 12 |
+| mix_tank_heal | 1% (1/131) | 0 of 2 | 2 |
+| duo_breaker | 11% (30/285) | 8 of 17 | 9 |
+| duo_mender | 0% (0/137) | 0 of 5 | 5 |
+| quad_monk | 23% (64/273) | 18 of 23 | 5 |
+| mix_trio | 2% (8/357) | 0 of 1 | 1 |
+| duo_channeler | 3% (11/339) | 1 of 4 | 3 |
+| mix_chaplain_monk | 11% (32/299) | 13 of 18 | 5 |
+| quad_channeler | 7% (22/324) | 1 of 6 | 5 |
+| quad_chaplain | 15% (48/312) | 7 of 12 | 5 |
+| trio_breaker | 18% (39/221) | 18 of 28 | 10 |
+| duo_rigger | 7% (18/264) | 11 of 23 | 12 |
+| mix_operative_rigger | 1% (2/188) | 2 of 24 | 22 |
+| mix_tgh_caster | 6% (16/285) | 2 of 4 | 2 |
+| mix_four_b | 14% (43/318) | 7 of 11 | 4 |
+| mix_four_rest | 14% (32/231) | 11 of 21 | 10 |
+
+| Cell | Damage taken from guns / melee / casters | Hit %: guns / melee / casters | Attacks a fight a head: guns / melee / casters |
+| --- | --- | --- | --- |
+| quad_mender | 72% / 23% / 5% | 58% / 58% / 71% | 12.3 / 3.9 / 0.2 |
+| mix_gun_heal | 69% / 10% / 21% | 55% / 49% / 78% | 2.9 / 0.7 / 0.1 |
+| mix_tank_gun | 70% / 14% / 16% | 50% / 42% / 67% | 3.8 / 0.9 / 0.2 |
+| duo_operative | 60% / 33% / 7% | 58% / 54% / 71% | 6.3 / 6.3 / 0.7 |
+| quad_rigger | 91% / 7% / 2% | 56% / 55% / 73% | 3.1 / 0.3 / 0 |
+| quad_breaker | 86% / 9% / 5% | 59% / 55% / 79% | 5.4 / 0.7 / 0.1 |
+| duo_skirmisher | 73% / 11% / 16% | 52% / 49% / 64% | 1.8 / 0.5 / 0 |
+| mix_breaker_channeler | 74% / 15% / 12% | 62% / 55% / 71% | 2.4 / 0.7 / 0.1 |
+| duo_chaplain | 78% / 6% / 16% | 66% / 65% / 67% | 2.3 / 0.2 / 0.1 |
+| quad_bulwark | 62% / 34% / 4% | 44% / 47% / 53% | 12.5 / 5.1 / 0.4 |
+| trio_channeler | 88% / 4% / 8% | 58% / 59% / 62% | 2.4 / 0.2 / 0 |
+| quad_operative | 66% / 31% / 4% | 62% / 59% / 75% | 8.9 / 3.6 / 0.2 |
+| quad_sigilist | 56% / 42% / 2% | 59% / 58% / 65% | 5.4 / 6.3 / 0.1 |
+| duo_sigilist | 49% / 44% / 6% | 58% / 56% / 77% | 3.4 / 8.6 / 0.1 |
+| quad_skirmisher | 87% / 8% / 5% | 41% / 58% / 63% | 2.2 / 0.2 / 0 |
+| trio_skirmisher | 83% / 6% / 11% | 45% / 44% / 70% | 2 / 0.2 / 0 |
+| duo_bulwark | 54% / 37% / 10% | 44% / 41% / 51% | 9.5 / 9.2 / 1 |
+| duo_monk | 70% / 12% / 18% | 55% / 43% / 72% | 4.2 / 0.9 / 0.3 |
+| mix_tank_heal | 60% / 25% / 15% | 53% / 46% / 64% | 11.5 / 6 / 1.3 |
+| duo_breaker | 75% / 13% / 12% | 61% / 56% / 82% | 3.1 / 0.8 / 0.1 |
+| duo_mender | 65% / 15% / 20% | 62% / 56% / 74% | 10.6 / 4.2 / 1.3 |
+| quad_monk | 86% / 9% / 5% | 48% / 50% / 61% | 7.6 / 0.6 / 0.1 |
+| mix_trio | 82% / 7% / 11% | 55% / 60% / 71% | 3.6 / 0.5 / 0.1 |
+| duo_channeler | 75% / 13% / 12% | 66% / 57% / 65% | 1.8 / 0.6 / 0 |
+| mix_chaplain_monk | 73% / 9% / 17% | 57% / 54% / 76% | 3.3 / 0.5 / 0.3 |
+| quad_channeler | 92% / 5% / 3% | 54% / 68% / 63% | 2.7 / 0.1 / 0 |
+| quad_chaplain | 91% / 3% / 6% | 54% / 68% / 77% | 2.9 / 0.1 / 0 |
+| trio_breaker | 84% / 9% / 7% | 59% / 59% / 67% | 3.9 / 0.8 / 0.1 |
+| duo_rigger | 79% / 7% / 14% | 65% / 51% / 86% | 2.4 / 0.6 / 0.1 |
+| mix_operative_rigger | 63% / 22% / 15% | 62% / 56% / 79% | 3.6 / 1.8 / 0.4 |
+| mix_tgh_caster | 82% / 14% / 5% | 49% / 51% / 63% | 7.1 / 1 / 0.1 |
+| mix_four_b | 89% / 6% / 5% | 51% / 58% / 77% | 3.7 / 0.2 / 0 |
+| mix_four_rest | 91% / 6% / 3% | 58% / 61% / 67% | 5.1 / 0.3 / 0.1 |

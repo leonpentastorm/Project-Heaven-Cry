@@ -6925,6 +6925,14 @@ Leon (16 Nov 2026): *"add damage per attribute like others, nerf the base dmg, n
 5. **Enemies are not touched.** An enemy's shot reads its tier and level (`combat.ts attackDamage`, rules 1.15), never a profile: the golden tables' enemy rows are unchanged.
 6. **The card shows it.** The weapon card's "Damage scales with" line (rules 1.55) now appears on every gun, naming Agility.
 
+## Rules 1.57 (0.30), the party fit (Survival's budget a head)
+
+16 Nov 2026, lane 0.30-fit; the measure and its tables are `docs/design/proposals/2026-11-party-fit.md`. Leon's rule on balance numbers holds: a target is what a well-played build earns, not a wall. A later revision overrides the body and the earlier ones; every number here is PROVISIONAL (items 4530 to 4534).
+
+1. **A party is cheaper a head than one character, from two up.** A fight's pressure cap is `pressure_per_char[N - 1]` x N (rules 1.41 item 3): one character 1.3, a party of two, three or four 0.9 a head (it was 1.3 / 1.7 / 1.3 / 0.9). A duo's cap was 31% above a solo's a head and its foes focus one member (67 to 82% of their attacks): two players were the worst way to play. The bulk a head (`bulk_per_char_round`), the quad's `share` and `max_foes` rows and the solo's numbers are unchanged.
+2. **A character who died in a won fight stands up at 50 HP** (`run.dead_return_hp`, was 1; never above max HP; rule 5 of the Survival spec). Walking into the next fight at 1 HP was a second death for the same mistake: 10 to 25% of party fights began with a member at 10% HP or less. A member only Downed (not dead) when the fight ends still stands at 1 HP (`unitToCharacter`, every mode): whether it should read the same field is for the lead.
+3. **Not changed, and why:** the doors' own numbers (damage, costs, Guard, MP); the enemy guns; the map. Four doors lose alone whatever the party (Bulwark, Operative, Mender, Sigilist): that is each door's own fit, listed for the lead in the fit's report.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -10751,3 +10759,11 @@ Items 4240 to 4247.
 4522. **The validator (item 3):** a weapon's profile may carry no skill slope; a focus's weapon (category `mana`) may read none with a slope; a profile with an Attribute slope needs an Attribute in `scales_with`. It replaces rules 1.56 L6's "only a melee weapon".
 4523. **Moved on purpose:** the golden tables' character gun rows and every replay with a character's shot (listed in the commit); the balance yardstick (the plain rifle at a normal share) moves with its build's Agility, so every system's percentage against it moves too (the 0.30 G1 report).
 4524. **Items 4520 to 4524 are rules 1.57 G1's.**
+
+### Rules 1.57 (0.30), the party fit
+
+4530. **The pressure a head (rules 1.57 party fit item 1):** `survival.json pressure_per_char` [1.3, 1.7, 1.3, 0.9] → **[1.3, 0.9, 0.9, 0.9]** (old values: item 4114's). Measured on 40 seeds a cell, stage 1, the gear route (the fit's report). Supersedes items 2806, 3603, 3910, 3915 and 4114's pressure rows. PROVISIONAL.
+4531. **Standing up after a won fight (item 2):** `survival.json run.dead_return_hp` 1 → **50** (old value: item 2819's 1). A flat number, capped at max HP; a share of max HP would be the same field read another way, for the lead. Supersedes item 2819. PROVISIONAL.
+4532. **Unchanged on purpose (item 3):** `bulk_per_char_round` 0.25, `max_foes` [4, 6, 8, 10], `share` (Elite and Boss rows), the solo's 1.3. A duo `max_foes` of 5 was measured (no clear gain over the pressure alone) and not kept. PROVISIONAL.
+4533. **Moved on purpose:** every replay or golden that plays a Survival party of two or more, or a Survival fight won with a member dead (listed in the commit). Solo runs do not move (a solo Downed has lost).
+4534. **Items 4530 to 4534 are rules 1.57 party fit's.**

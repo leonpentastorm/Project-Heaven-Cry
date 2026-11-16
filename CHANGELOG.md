@@ -8,6 +8,13 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.30.0 — (in progress, lane 0.30-fit)
+
+- **Survival's party fit (rules 1.57):** a party of two, three or four now faces 0.9 pressure a head (`pressure_per_char`
+  [1.3, 1.7, 1.3, 0.9] → [1.3, 0.9, 0.9, 0.9]), so playing together is no longer the harder way to play; a character
+  who died in a won fight stands up at 50 HP, not 1 (`run.dead_return_hp`). Measured in
+  `docs/design/proposals/2026-11-party-fit.md`.
+
 ## 0.29.0 — Balance 2.0: the nine doors
 
 Rules revision 1.56 (every new number PROVISIONAL), built on top of live 0.28.3. Each of the nine skills that open a

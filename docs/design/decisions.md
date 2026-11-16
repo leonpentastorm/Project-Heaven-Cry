@@ -420,3 +420,13 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
       are character cards with written lines, engine-written memories and an optional DM. **Dialogue is trees with
       skill checks**; talking can replace fighting in places; every player talks separately.
     - **Every skill, companion and patron gets its own voice and writing style**, cast by Leon later.
+116. **Survival: a party is cheaper a head than one character; the dead stand up at 50 HP** (16 Nov 2026, lane
+    0.30-fit; rules 1.57 party fit, Core Rules items 4530 to 4534; account `docs/design/proposals/2026-11-party-fit.md`).
+    - **Why:** every duo cleared stage 1 less often than its members alone (Breaker 73% alone, 3% as two). The duo's
+      pressure cap was 1.7 a head against the solo's 1.3, and the foes put three quarters of their shots on one member.
+      Leon's target is that playing together is the better way to play, and that a balance line is a reward for a
+      well-played build, not a wall.
+    - **What:** `pressure_per_char` [1.3, 0.9, 0.9, 0.9]: one number a head for any party, the quad's own (which already
+      worked). `run.dead_return_hp` 50. The solo, the bulk, `max_foes` and `share` are unchanged; no door's number moved.
+    - **Not fixed by data, for the lead:** the enemy AI's focus fire (a target-spread term), arcs that hit allies, the
+      opening volley, and the four doors that lose alone (Bulwark, Operative, Mender, Sigilist).
