@@ -1,0 +1,76 @@
+{
+  "number": 364,
+  "family": "technique_icons",
+  "id": "tech-dead-centre",
+  "path": "art/icons/techniques/dead-centre.png",
+  "name": "Dead Centre",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, take",
+  "paint": "A bullet line striking the exact centre of a ring.",
+  "avoid": "a dart board \u00b7 a skull",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A bullet line striking the exact centre of a ring.\nAvoid: a dart board \u00b7 a skull\nEXACT STAGING: Dead Centre: ONE LONG THIN WHITE MOTION STROKE enters from left and ends at the EXACT CENTRAL DOT of ONE EMPTY OUTLINE RING at right. Ring diameter big and hole truly transparent, with dot perfectly centered. No firearm, person, skull, target board, concentric rings, crosshair, flames or extra lines. Single geometric point of precision, all shapes flat pure white.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "d3f30e69a600f7311dace8d165d2214e13e74d4e083dddd7763cf20a7517129f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/364-dead-centre.png",
+  "source_sha256": "08beb159478aa63d958112cf73b04d009943b09abfda77891388bc01a473e655",
+  "export_crop": [
+    41,
+    134,
+    1222,
+    1148
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/dead-centre.png",
+    "64": "art/icons/techniques/exports/64/dead-centre.png",
+    "48": "art/icons/techniques/exports/48/dead-centre.png",
+    "44": "art/icons/techniques/exports/44/dead-centre.png",
+    "32": "art/icons/techniques/exports/32/dead-centre.png",
+    "24": "art/icons/techniques/exports/24/dead-centre.png"
+  },
+  "framing": {
+    "scale": 0.6894119571114633,
+    "offset": [
+      105,
+      162
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "83c81914f62281af1f67a74929049b7c756c5ee8537b44b914d85ed2756ce394",
+    "64": "fe9d493fbf3d1a8c714a76bb87cae0e8ef48cac8c0991078ce748db05fa8986e",
+    "48": "022237b6df00a54afab2d29f7125185f51cd1cd4fcaf4781fab595e5b0feaf7a",
+    "44": "222352cd4f7b7ac38623082a2479764820adcaa2da256b7af48dd9ca0dbd947f",
+    "32": "2a589628c4d4777d3a56782e43dcf6f093757365579222fd82228536597088de",
+    "24": "edd8c49e056271b3fcaee4dad63207f391c7b514524700eaa45428456430e495"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

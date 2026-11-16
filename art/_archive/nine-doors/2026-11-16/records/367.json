@@ -1,0 +1,76 @@
+{
+  "number": 367,
+  "family": "technique_icons",
+  "id": "tech-stopping-shot",
+  "path": "art/icons/techniques/stopping-shot.png",
+  "name": "Stopping Shot",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, take",
+  "paint": "A charging silhouette stopped mid-stride by a bullet line.",
+  "avoid": "a stop sign \u00b7 blood",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A charging silhouette stopped mid-stride by a bullet line.\nAvoid: a stop sign \u00b7 blood\nEXACT STAGING: Stopping Shot: ONE cropped FEATURELESS PRACTICE SILHOUETTE leaning forward in a running stride is STOPPED at center by ONE short straight WHITE MOTION LINE entering from left. Torso abruptly leans backward while one bent boot remains forward, two short upright braking ticks. Only cropped torso and one leg, no whole person or face, wounds, blood, impact penetration, stop-sign, text, skull, sparks or gun. Abstract game action, crisp and non-graphic.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "12b6db0915a0c7868c857916a69fe17e0b369662d2783d04796a6f4c2ff80a46",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/367-stopping-shot.png",
+  "source_sha256": "d9fe4a22a8c78184e9ab30f65de6d578b239348a70d29377fe28f77206e6bdf9",
+  "export_crop": [
+    31,
+    144,
+    1185,
+    1218
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/stopping-shot.png",
+    "64": "art/icons/techniques/exports/64/stopping-shot.png",
+    "48": "art/icons/techniques/exports/48/stopping-shot.png",
+    "44": "art/icons/techniques/exports/44/stopping-shot.png",
+    "32": "art/icons/techniques/exports/32/stopping-shot.png",
+    "24": "art/icons/techniques/exports/24/stopping-shot.png"
+  },
+  "framing": {
+    "scale": 0.6208113260989548,
+    "offset": [
+      154,
+      178
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "501d97225c974867df3a31f9ee2d8f37fc2a7e9b93d447650a129560300fb0b4",
+    "64": "0ea81fb9a5dad7d4bb5efb93265f8ce6ce55e9faf8ab0e456b949c41d2a0310e",
+    "48": "dadff74d4745c87fdc0e0fe0cdb9f42c74a09f55202fc02ccc8838f1dad76356",
+    "44": "aea8b4014de3f7a3fe209dd127291394ad4dcd51d48b47d82c68bf71edc7e437",
+    "32": "d84f0a7a5e4ee473a5ca8168e69d02d65f24e8e76b3046454293ce1dd54a0be8",
+    "24": "08d5b98624007368819c2cc92cf7473995898608d7b88a286f43f0d786148749"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

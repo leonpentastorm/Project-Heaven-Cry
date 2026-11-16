@@ -1,0 +1,64 @@
+{
+  "number": 359,
+  "family": "technique_icons",
+  "id": "tech-brace-tech",
+  "path": "art/icons/techniques/brace-tech.png",
+  "name": "Brace (technique)",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, set",
+  "paint": "A rifle's fore-end resting on a wall edge.",
+  "avoid": "a bipod (Suppressor) \u00b7 a dental brace",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create a static nonviolent RPG equipment icon: ONE unloaded fictional PRACTICE RIFLE in an armory, horizontally facing right, its FORE-END RESTING DIRECTLY ON THE TOP EDGE OF ONE LOW SUPPORT WALL BLOCK. No people, ammunition, projectiles, firing or targets. Depict the mechanical support contact clearly: rear stock at left, fore-end rests on block at center-right, short barrel extends right. Do not add a bipod. Match bold flat pure WHITE #FFFFFF silhouettes with sparse genuinely TRANSPARENT interior cuts. Transparent background and holes, no black/gray fill, glow, shading, gradient, texture, text, brand or border. Square, complete subject in central 75% safe box and circular chip.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [],
+  "composition_scope": "object-only",
+  "service_revision": "Static inert training equipment after rejected input.",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "77545862ea70c3cb7c22f8baeaf0b21a2837296c07bc43f70e00430c3764170d",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/359-brace-tech.png",
+  "source_sha256": "d2556a713e2042a95ef01716106605762611c44d23610291eea1d76ae76f729a",
+  "export_crop": [
+    0,
+    0,
+    1254,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/brace-tech.png",
+    "64": "art/icons/techniques/exports/64/brace-tech.png",
+    "48": "art/icons/techniques/exports/48/brace-tech.png",
+    "44": "art/icons/techniques/exports/44/brace-tech.png",
+    "32": "art/icons/techniques/exports/32/brace-tech.png",
+    "24": "art/icons/techniques/exports/24/brace-tech.png"
+  },
+  "framing": {
+    "scale": 0.540779522052247,
+    "offset": [
+      173,
+      173
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

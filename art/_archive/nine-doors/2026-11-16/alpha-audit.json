@@ -1411,6 +1411,31 @@
       "number": 363,
       "name": "Head Down",
       "faint_alpha_to_solid_area_ratio": 0.02933
+    },
+    {
+      "number": 364,
+      "name": "Dead Centre",
+      "faint_alpha_to_solid_area_ratio": 0.06093
+    },
+    {
+      "number": 366,
+      "name": "Rout",
+      "faint_alpha_to_solid_area_ratio": 0.08394
+    },
+    {
+      "number": 367,
+      "name": "Stopping Shot",
+      "faint_alpha_to_solid_area_ratio": 0.04772
+    },
+    {
+      "number": 368,
+      "name": "Storm",
+      "faint_alpha_to_solid_area_ratio": 0.09357
+    },
+    {
+      "number": 370,
+      "name": "Overwatch (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.07819
     }
   ],
   "excluded": [],
