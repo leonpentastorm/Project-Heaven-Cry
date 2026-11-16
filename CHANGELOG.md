@@ -8,6 +8,16 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.30.0 (in progress) — lane: the shield display
+
+- **Shields on the token and the card** (Leon, 16 Nov 2026). The token's one pale bar became a strip of one segment a
+  shield, in its source's ink, in the order a blow meets them; every card (hover, target, your panel) has a SHIELDS
+  block: each shield's name, amount and how long it lasts, Guard on its own line, what stands before HP and how they
+  combine. A friend's card now shows its shields; a foe's reads by name with a size word, never a number. The engine's
+  new `shieldsView` says it all (`data/rules.json combat.shield_look`); the damage path and the view share one copy of
+  the spend order (`shieldOrder`). Fix: Guard no longer soaks the part of a blow a shield layer (the Ward) would take
+  (it subtracted only the base shield), so plates are spent after every shield, as written.
+
 ## 0.29.0 — Balance 2.0: the nine doors
 
 Rules revision 1.56 (every new number PROVISIONAL), built on top of live 0.28.3. Each of the nine skills that open a

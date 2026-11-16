@@ -10,7 +10,8 @@ import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, an
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
-  attemptWhy, narratorOff, previewAction, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, NO_TURNS } from '@engine';
+  attemptWhy, narratorOff, previewAction, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, NO_TURNS, shieldsView } from '@engine';
+import { shieldStrip, shieldBlock } from '../game/shieldLook';
 import { patronPortrait, patronMarkUri, accentOf } from '../game/faithArt';
 import { act as actNow, getState, go, toast, homeScreen } from '../game/store';
 import { turnsBusyUntil, fxBusyUntil, fxHeldUnits, fxShownHp, fxShownGlyphs, fxShownLog, fxShownTurn, setTokenLooks } from '../game/fx/play';
@@ -431,7 +432,7 @@ const COND_CHIP = 'padding: 2px 8px; border-radius: 999px; font-size: 13px; font
  *  its title and the FAITH tab's header), and gone once the fight is over (it never outlives the fight). */
 const WITNESSED_CHIP = COND_CHIP + 'white-space: nowrap; border: 1px solid var(--faith-light, ' + FAITH_GOLD + '); color: var(--faith-light, ' + FAITH_GOLD + ')';
 /** Your own panel's condition chips: Witnessed is its resource row there (one fact, one place; Leon, live 0.24.0). */
-const ownConds = (u, g) => condChips(u, g).filter((c) => c.key !== 'c-witnessed');
+const ownConds = (u, g) => condChips(u, g).filter((c) => c.key !== 'c-witnessed' && c.key !== 'shield'); // (0.30.0: your shields have their own block under HP)
 /** A condition with no fixed end (its row's `duration.until`, the table's noTick: it lasts until its rule ends it, Off
  *  Balance from a Slam or a Launch): no count of rounds, its row's own end in words (conditions.json ends_on). */
 const untilCond = (id) => !!(condDef(id) && condDef(id).noTick);
@@ -1011,7 +1012,7 @@ export class CombatLogic extends DCLogic {
     const encoreLend = !mineTurn ? 0 : flow ? flowLend : encoreCredit(cur, isMove ? { type: 'combat/move', how: S.action } : null);
     const encoreWaiting = mineTurn && cur.faith && cur.faith.encore ? cur.faith.encore : null;
     const VT0 = CAM.live() && !this._overview ? CAM.tiles() : { x0: 0, y0: 0, x1: cb.map.w - 1, y1: cb.map.h - 1 };
-    const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x - VT0.x0 >= (VT0.x1 - VT0.x0 + 1) / 2, up: y - VT0.y0 >= (VT0.y1 - VT0.y0 + 1) / 2 }; };
+    const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { cb, ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x - VT0.x0 >= (VT0.x1 - VT0.x0 + 1) / 2, up: y - VT0.y0 >= (VT0.y1 - VT0.y0 + 1) / 2 }; };
     const condWord = (u) => healthView(u).word; // the engine's view (rules 1.55 item 29): the look's word
 
     const at = {}; cb.units.filter((u) => !u.dead).forEach((u) => { at[u.pos] = u; });
@@ -1160,7 +1161,7 @@ export class CombatLogic extends DCLogic {
         hasPress: pLook.has && !isHeld, press: pLook.pips, pressStyle: pLook.style, pressTitle: pLook.title, hasPressTag: !!pLook.tag && !isHeld, pressTag: pLook.tag, pressTagStyle: pLook.tagStyle,
         hasMom: mLook.has && !isHeld, mom: mLook.text, momStyle: mLook.style, momTitle: mLook.title, momFull: mLook.full ? '1' : '',
         hasWatchT: !!wT, watchTStyle: wT ? wT.style : '', watchTTitle: wT ? wT.title : '', hasWatchChip: !!wChip && !isHeld, watchChip: wChip ? wChip.text : '', watchChipStyle: wChip ? wChip.style : '', watchChipTitle: wChip ? wChip.title : '',
-        key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + ((ow) => (ow ? ' · ' + ow.line : ''))(ownedView(cb, u)) + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + (u.shield > 0 ? ' · Shield ' + u.shield + ' (damage takes it first)' : '') + (u.res && u.res.guard > 0 ? ' · Guard ' + u.res.guard : '') + (u.downed ? ' · Downed' : '') + (u.surrendered ? ' · Surrendered' : '') + (pLines.length ? ' · ' + pLines.join(' · ') : '') + (() => { const cs = [...effectsOf(u).map(([k, t]) => k + ': ' + t), ...condChips(u, g).filter((c) => c.key !== 'shield').map((c) => c.t)]; return cs.length ? ' · ' + cs.join(' · ') : ''; })() : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight)' : 'Half cover (−5 to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + (spotSet.has(k) ? ' · hide spot: out of the eyes of every enemy you see' + (k === spotNear ? ' (nearest)' : '') : '') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (note ? ' · ' + note : '') + magicNote, title: u ? '' : refOf(k) + (note ? ' · ' + note : '') + magicNote,
+        key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + ((ow) => (ow ? ' · ' + ow.line : ''))(ownedView(cb, u)) + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + ((sb) => (sb.has ? ' · Shields: ' + sb.words : ''))(shieldBlock(shieldsView(cb, u))) + (u.downed ? ' · Downed' : '') + (u.surrendered ? ' · Surrendered' : '') + (pLines.length ? ' · ' + pLines.join(' · ') : '') + (() => { const cs = [...effectsOf(u).map(([k, t]) => k + ': ' + t), ...condChips(u, g).filter((c) => c.key !== 'shield').map((c) => c.t)]; return cs.length ? ' · ' + cs.join(' · ') : ''; })() : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight)' : 'Half cover (−5 to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + (spotSet.has(k) ? ' · hide spot: out of the eyes of every enemy you see' + (k === spotNear ? ' (nearest)' : '') : '') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (note ? ' · ' + note : '') + magicNote, title: u ? '' : refOf(k) + (note ? ' · ' + note : '') + magicNote,
         worldNote: (wc.hz ? ' · ' + wc.hz.title : '') + (wc.cache ? ' · ' + wc.cache.title : '') + (wc.pile ? ' · ' + wc.pile.title.replace(/:\n/, ': ').replace(/\n/g, ', ') : '') + (dr ? ' · ' + dr.npc.name + ' lies here' : '') + (crossAt.has(k) ? ' · your path crosses this hazard' : ''),
         hasPile: !!wc.pile, pileStyle: wc.pile ? wc.pile.style : '', pileIconStyle: wc.pile ? wc.pile.iconStyle : '', pileCount: wc.pile ? wc.pile.count : '', pileCountStyle: wc.pile ? wc.pile.countStyle : '',
         hasPileTip: !!wc.pile && S.hover === k, pileTip: wc.pile ? wc.pile.tip : '', pileRows: wc.pile ? wc.pile.tipRows : [], pileTipStyle: wc.pile ? pileTipStyle(wc.pile, vxOf(x), vyOf(y), vW, !!u) : '',
@@ -1187,9 +1188,10 @@ export class CombatLogic extends DCLogic {
         hasTgtRing: !!(u && redOn && u.id !== cur.id && red.has(k) && !u.downed) && !isHeld, tgtRingStyle: 'position: absolute; inset: 1px; z-index: 3; pointer-events: none; box-sizing: border-box; border-radius: 4px; border: 2px solid #F65157; box-shadow: 0 0 10px rgba(246, 81, 87, 0.6)',
         // What stands in front of the HP, on the token itself (Leon, 11 Nov 2026): a shield as a pale bar over the HP bar
         // (its share of max HP), Guard as pips over that. Both read in the tile's label too.
-        ...(() => { const sh = u && !isHeld ? Math.max(0, u.shield || 0) : 0, gd = u && !isHeld ? Math.max(0, (u.res && u.res.guard) || 0) : 0;
-          return { hasShield: sh > 0, shieldBox: 'position: absolute; left: 5px; right: 5px; bottom: 6px; height: 3px; z-index: 3; border-radius: 2px; overflow: hidden; pointer-events: none; background: rgba(5, 7, 11, 0.85)',
-            shieldFill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + Math.max(8, Math.min(100, sh / Math.max(1, u ? u.maxHp : 1) * 100)) + '%; background: #8BDEEE',
+        // 0.30.0 (Leon, 16 Nov 2026): one segment a shield, in its source's ink, in the order a blow meets them (the
+        // engine's shieldsView, game/shieldLook.ts); Guard stays the plates round the token (fx/guard.ts) and these pips.
+        ...(() => { const st = shieldStrip(u && !isHeld ? shieldsView(cb, u) : null), sh = st.has ? 1 : 0, gd = u && !isHeld ? Math.max(0, (u.res && u.res.guard) || 0) : 0;
+          return { hasShield: st.has, shieldBox: st.boxStyle, shieldSegs: st.segs, shieldOver: st.over, shieldPlus: st.plusStyle,
             hasGuard: gd > 0, guardBox: 'position: absolute; left: 5px; bottom: ' + (sh > 0 ? 10 : 6) + 'px; z-index: 3; display: flex; gap: 2px; pointer-events: none',
             guardPips: Array.from({ length: Math.min(5, gd) }, (_, i) => ({ key: 'g' + i, style: 'width: 5px; height: 5px; border-radius: 1px 1px 3px 3px; background: #E7EBF3; box-shadow: 0 0 0 1px rgba(5, 7, 11, 0.9)' })) }; })(),
         hasLook: !!u && !isHeld && tokWords.has(u.id), lookText: u && tokWords.has(u.id) ? tokWords.get(u.id).text : '', lookStyle: u && tokWords.has(u.id) ? tokWords.get(u.id).style : '',
@@ -1385,6 +1387,10 @@ export class CombatLogic extends DCLogic {
     const target = tgtUnit ? { zoom: zoomer(this, faceOf(tgtUnit), tgtUnit.name, 'portrait'), name: tgtUnit.name, img: faceOf(tgtUnit), hasImg: !!faceOf(tgtUnit), noImg: !faceOf(tgtUnit), short: tgtUnit.short || tgtUnit.name.slice(0, 2).toUpperCase(),
       badgeStyle: 'display: grid; place-items: center; flex: none; width: 40px; height: 50px; box-sizing: border-box; border-radius: 6px; font-size: 13px; font-weight: 700; ' + (tgtUnit.side === 'pc' ? 'border: 2px dashed ' + ring(tgtUnit) + '; color: ' + ring(tgtUnit) + '; background: #10151F' : 'border: 2px solid #F65157; color: #F65157; background: #2A0F14'),
       known: healthView(tgtUnit).known, unknown: !healthView(tgtUnit).known, lookText: lookWord(healthView(tgtUnit)), lookStyle: lookChip(healthView(tgtUnit)), hpFill: 'width: ' + (healthView(tgtUnit).pct || 0) + '%; height: 100%; background: #F65157',
+      // 0.30.0: its shields (the engine's shieldsView), and (d) what stands in front of its HP beside the attack's damage:
+      // the engine's preview gives damage before the target's armour and shields, so the card says so, never subtracts.
+      sh: shieldBlock(shieldsView(cb, tgtUnit)), ...((sv) => ({ hasVsLine: !!(pv && pv.ok && pv.dmg && (sv.entries.length || sv.guard)),
+        vsLine: 'The damage shown is before ' + (sv.entries.length ? (sv.entries.length === 1 ? 'its ' + sv.entries[0].name : 'its shields') : 'its Guard') + (sv.all != null ? ': up to ' + fmtNum(sv.all) + ' is taken there first' : ': ' + sv.allWord + ', taken there first') }))(shieldsView(cb, tgtUnit)),
       line: tgtUnit.analyzedBy ? 'HP ' + fmtNum(tgtUnit.hp) + ' / ' + fmtNum(tgtUnit.maxHp) + ' · Defense ' + tgtUnit.def + ' · Armour ' + fmtNum(tgtUnit.armour) + (effectsOf(tgtUnit).length ? ' · ' + effectsOf(tgtUnit).map((f) => f[0]).join(', ') : '')
         : 'Looks ' + condWord(tgtUnit) + ' · ' + (tgtUnit.tier || 'hostile') + ' · Analyze to see its HP and status',
       odds: pv ? (pv.ok ? 'Hit ' + pv.pct + '% · need ' + pv.need + ' (you roll d20 ' + fmt(pv.toHit) + ')' + (pv.rangePenalty ? ' · range ' + pv.rangePenalty : '') + (pv.cover ? ' · behind half cover −5' : '') : pv.why) : 'Pick an attack to see the odds',
@@ -1416,6 +1422,7 @@ export class CombatLogic extends DCLogic {
     const FX_CHIP = 'padding: 2px 8px; border-radius: 999px; border: 1px solid #F65157; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #F65157';
     const meCls = mc ? classOf(mc) : null; // the class emblem and name beside YOU (classIcons.ts)
     const mePanel = myU && mc ? { name: myU.name, img: faceOf(myU) || IMG['wick-welcome'], zoom: zoomer(this, faceOf(myU), myU.name, 'portrait'), hasCls: !!meCls, clsIcon: meCls ? meCls.icon : '', clsName: meCls ? meCls.name.toUpperCase() : '', clsStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: ' + (meCls ? meCls.ink : '#A3AEC2'),
+      sh: shieldBlock(shieldsView(cb, myU)), // 0.30.0: your shields under your HP (the engine's shieldsView)
       hp: fmtNum(myU.hp) + ' / ' + fmtNum(myU.maxHp), hpFill: abar(myU.hp / myU.maxHp * 100, '#F65157'), hpChip: abar(myU.hp / myU.maxHp * 100, '#FFFFFF'),
       // Everything you spend, below the HP bar (game/resources.ts): ammo, Heat, Evoker charge, cores, Flux, MP, Strain, the
       // held Outburst, class resources, companions. The line under HP keeps AP, Movement, Stims and Echo.
@@ -1434,7 +1441,7 @@ export class CombatLogic extends DCLogic {
       fx: [...effectsOf(myU, true).map(([k, t]) => ({ key: k, k, t, style: FX_CHIP })), ...ownConds(myU, g), ...physChips(physOf(g, cb, myU, 'pc'), refOf, FX_CHIP)], noFx: !effectsOf(myU, true).length && !ownConds(myU, g).length && !physChips(physOf(g, cb, myU, 'pc'), refOf, FX_CHIP).length, fig: bodyFigure({ injuries: myU.injuries || [], mainSide: myU.hand || 'right' }) } : null;
     const allyRows = cb.units.filter((u) => u.side === 'pc' && (!myU || u.id !== myU.id)).map((u, i) => { const p = playerOf(owner(u)), fx = [...effectsOf(u), ...condChips(u, g).map((c) => [c.k]), ...(u.mg && u.mg.held ? [['HOLDING · STAGE ' + u.mg.held.stage]] : [])];
       return { key: u.id, name: u.name, img: faceOf(u), hasImg: !!faceOf(u), short: u.short, player: p ? p.name : '', hp: u.dead ? 'DEAD' : fmtNum(u.hp) + ' / ' + fmtNum(u.maxHp), hpFill: abar(u.hp / u.maxHp * 100, '#F65157'), hpChip: abar(u.hp / u.maxHp * 100, '#FFFFFF'),
-        fx: fx.map((f) => f[0]).join(' · '), hasFx: fx.length > 0, t: tokenVals(u, { ally: true, player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#7FD4FF', inFight: true, right: false, up: false }),
+        fx: fx.map((f) => f[0]).join(' · '), hasFx: fx.length > 0, t: tokenVals(u, { cb, ally: true, player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#7FD4FF', inFight: true, right: false, up: false }),
         imgStyle: 'width: 34px; height: 34px; border-radius: 50%; object-fit: cover; background: #000; flex: none; border: 2px solid ' + (p ? p.color : '#7FD4FF') + (u.downed || u.dead ? '; opacity: 0.5' : ''),
         // rules 1.55 item 69: on the field my other character's card makes it the one I act as
         ...(() => { const can = onField && this.mineOnField(g, u); return { actAs: can ? 'true' : 'false', pick: can ? () => this.actAs(u.id) : () => {}, pickKey: can ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.actAs(u.id); } } : () => {} }; })() }; });

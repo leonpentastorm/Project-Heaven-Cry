@@ -14,7 +14,7 @@
 // move and its policy (the general Interpose stands aside).
 import { say, type Combat, type Unit, alive, dist, emitFx, fxFell, attackDamage, rollInjury, braceHook } from '../combat';
 import { onHook, emit, charOfUnit, statQuery } from '../effects/hooks';
-import { applyDamage } from '../effects/damage';
+import { applyDamage, shieldTotal } from '../effects/damage';
 import { landed } from '../effects/output';
 import { PHYS_RULES } from './data';
 import { technique, answer, guardOf, guardMax, guardGain, guardSoak, addGuard, spendGuard, holds } from './core';
@@ -42,7 +42,7 @@ onHook('damage_in', (ctx: any, cb) => {
   if (u.resMax?.guard == null || guardOf(u) < 1) return;
   if (ctx.self || NOT_A_HIT.has(ctx.src?.type)) return;
   if (holds(u, DEF_PLATE)) return; // the Defender's plate spends this unit's Guard, by its own policy
-  const reach = Math.floor(ctx.dmg) - (shielded ? Math.max(0, u.shield || 0) : 0); if (reach <= 0) return;
+  const reach = Math.floor(ctx.dmg) - (shielded ? shieldTotal(u) : 0); if (reach <= 0) return; // after every shield, the layers too (0.30.0: a Ward was once soaked by Guard first)
   // 1 point is kept back for a reaction (Interpose, Shield Wall, Shrug It Off), unless what gets through would take
   // the unit down: then every point the hit needs is spent (the lead's tuning, 10 Nov 2026; provisional, keep_back).
   const per = guardSoak(u), have = guardOf(u), needs = Math.ceil(reach / per);

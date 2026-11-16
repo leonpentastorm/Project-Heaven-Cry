@@ -872,6 +872,21 @@
       "dead": "dead",
       "provisional": true,
       "source": "rules 1.55 item 29 (Leon's playtest and ruling, 15 Nov 2026)"
+    },
+    "shield_look": {
+      "about": "How a unit's shields read on screen (0.30.0; Leon, 16 Nov 2026: one bar made every shield look like one sum). The engine's screenViews.ts shieldsView is the one place it is worked out, in the order the damage path spends them (effects/damage.ts shieldOrder). `base` is the unit's one shield (Tending's Shield, the Sigil WARD, the Outburst's Shell and Inverse, a prayer's, a perk's: every gift that is not a layer); `layer` is a shield on a layer of its own (a class move's effect with `layer`: its name and its class's attribute are that move's and class's); `guard` is the Guard pool's line. A side's own units and an Analyzed creature read exactly; any other creature's shields read by name with a size word from `size`: its share of the unit's max HP, a rung holding while the share is at or below `upto` (the last rung: above every one); `bar` is the share of max HP the token's strip draws a rung at. `rule` is the one line the card prints.",
+      "base": { "name": "Shield", "lasts": "until spent or the fight ends", "combines": "replaces", "how": "a new one keeps the larger of the two" },
+      "layer": { "lasts": "the rest of the fight, until spent", "combines": "separate", "how": "its own layer, spent before the shield" },
+      "guard": { "name": "Guard", "combines": "separate pool", "how": "soaks what the shields leave, plate by plate; the last plate is kept for a reaction unless the blow would drop the unit" },
+      "rule": "A blow meets each layer in turn, the newest first, then the shield; Guard soaks what is left before HP. Bleeding, burning and true damage go past every shield.",
+      "size": [
+        { "word": "faint", "upto": 0.1, "bar": 0.08 },
+        { "word": "light", "upto": 0.25, "bar": 0.18 },
+        { "word": "strong", "upto": 0.5, "bar": 0.38 },
+        { "word": "massive", "bar": 0.7 }
+      ],
+      "provisional": true,
+      "source": "0.30.0 (the shield display; Leon, 16 Nov 2026)"
     }
   },
   "weapons_rules": {

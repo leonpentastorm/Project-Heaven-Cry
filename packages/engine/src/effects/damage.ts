@@ -80,9 +80,9 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
   if (ctx.dmg <= 0 && dmg > 0) { res.prevented = true; return res; }
   if (src.shield !== false && !t.downed) {
     ctx.phase = 'shield'; if (cb) emit(cb, 'damage_in', ctx);
-    // Classes 3.0 P11: the layers first, the newest first, then the base shield
-    if (t.shields?.length) { for (let i = t.shields.length - 1; i >= 0 && ctx.dmg > 0; i--) { const l = t.shields[i], s = Math.min(l.n, ctx.dmg); l.n -= s; ctx.dmg -= s; res.shielded += s; } t.shields = t.shields.filter((l) => l.n > 0); if (!t.shields.length) delete t.shields; }
-    if (t.shield && t.shield > 0) { const s = Math.min(t.shield, ctx.dmg); t.shield -= s; ctx.dmg -= s; res.shielded += s; }
+    // Classes 3.0 P11: the layers first, the newest first, then the base shield (shieldOrder: the one copy of the order)
+    for (const e of shieldOrder(t)) { if (ctx.dmg <= 0) break; const s = Math.min(e.n, ctx.dmg); if (e.layer) e.layer.n -= s; else t.shield = (t.shield || 0) - s; ctx.dmg -= s; res.shielded += s; }
+    if (t.shields) { t.shields = t.shields.filter((l) => l.n > 0); if (!t.shields.length) delete t.shields; }
   }
   res.amount = ctx.dmg;
   if (t.downed) {
@@ -146,6 +146,14 @@ export interface ShieldLayer { layer: string; n: number; by: string; s: number }
 /** How a shield is given: on a layer above the base (layer), at most `holders` units carrying one giver's layer at once
  * (a new one ends the oldest), or added to what stands (stack). */
 export interface ShieldOpts { layer?: string; holders?: number; stack?: boolean; /** the shield's kind for 'shield_grant' (tending, blessing, perk…: the `how` predicate) */ kind?: string }
+/** The order a blow spends a unit's shields in (Classes 3.0 P11): every layer, the newest first, then the base shield
+ * (`layer` null). The one copy of the order: applyDamage spends by it and screenViews.ts shieldsView lists by it. */
+export function shieldOrder(t: Unit): { layer: ShieldLayer | null; n: number }[] {
+  const out: { layer: ShieldLayer | null; n: number }[] = [];
+  const ls = t.shields || []; for (let i = ls.length - 1; i >= 0; i--) if (ls[i].n > 0) out.push({ layer: ls[i], n: ls[i].n });
+  if ((t.shield || 0) > 0) out.push({ layer: null, n: t.shield! });
+  return out;
+}
 /** A unit's shield in all: the base and every layer. */
 export const shieldTotal = (t: Unit): number => (t.shield || 0) + (t.shields || []).reduce((a, l) => a + l.n, 0);
 /** Give a shield through the hooks ('shield_grant' {by, t, n, layer, kind} may change n). Shields don't stack: the larger

@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 87 predicates, 29 ops, 101 effect ops, 125 hooks, 3 never emitted, 17 profiles, 42 cost sites, 15 resources, 61 stats, 24 condition fields, 668 primitive exports, 2074 other exports, 130 fx kinds, 11 data fx kinds, 18 op-written context fields, 174 Unit fields, 60 Combat fields, 41 guards.
+Counts: 35 triggers, 87 predicates, 29 ops, 101 effect ops, 125 hooks, 3 never emitted, 17 profiles, 42 cost sites, 15 resources, 61 stats, 24 condition fields, 668 primitive exports, 2078 other exports, 130 fx kinds, 11 data fx kinds, 18 op-written context fields, 174 Unit fields, 60 Combat fields, 41 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -337,7 +337,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `displaced` | a unit was moved by someone else, after it landed (where it ended, what stopped it) | `u`, `by`, `from`, `to`, `path`, `how`, `kind`, `stoppedBy`, `blockedAt` | combat.ts:2123 | none |  |
 | `heal_given` | a heal landed (who healed whom, how much) | `t`, `by`, `n`, `kind`, `revived`, `over` | combat.ts:2658 (+1) | classes/k.ts:1251 (+8) | `heal_given` |
 | `heal_in` | a unit is about to be healed (the amount may change) | `t`, `by`, `n`, `kind` | effects/damage.ts:132 | classes/k.ts:1411 (+5) | `heal` |
-| `shield_grant` | a shield is about to be given (the amount may change) | `t`, `by`, `n`, `layer`, `kind` | effects/damage.ts:156 | classes/i.ts:1283 (+6) | `shield` |
+| `shield_grant` | a shield is about to be given (the amount may change) | `t`, `by`, `n`, `layer`, `kind` | effects/damage.ts:164 | classes/i.ts:1283 (+6) | `shield` |
 | `reaction_window` | a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it | `reactor`, `mover`, `kind`, `id`, `spend`, `cancel`, `at` | tactics.ts:147 | classes/i.ts:253 (+5) |  |
 | `reaction` | a reaction is being made (tactics.ts react(), rules 1.28): {u, kind (attack, move, protect), event, payer}; it fires before the reaction resolves | `u`, `kind`, `event`, `payer` | tactics.ts:151 | none | `reaction` |
 | `enemy_action_start` | an enemy is about to act (an item may open a window or make it skip) | `u`, `step`, `skip` | combat.ts:2702 | calls/rules.ts:81 (+5) |  |
@@ -1443,7 +1443,7 @@ Families: `body`, `brain`, `heart`.
 | `pickToggle` | `pickToggle(mods: string[] \| null \| undefined, tgls: { id: string; itemKey: string; on: boolean; defaultOn: boolean }[], t: { id: string; itemKey: string; on: boolean; de…` | A switch chip clicked (Ricochet, the Open Hand's forms): the action's mods after it. |
 | `flowView` | `flowView(g: any, me: string \| null, cur: any, S: any, extra: Picks = {}): FlowView \| null` | The picked action on the flow, or null when it is not (no action, not this player's turn, a system with its own screen code). extra: picks a bespoke panel made (a perk's form, a pile's checklist). |
 
-#### Every other export, by file (2074)
+#### Every other export, by file (2078)
 
 The scan of every file in the engine's source: what the tables above do not show. Read the doc comment in the file before writing a second one.
 
@@ -1473,7 +1473,7 @@ The scan of every file in the engine's source: what the tables above do not show
 | `effects/collect.ts` | `_addRawItems`, `_clearRawItems`, `ADVANCED`, `BASE_CLASS`, `advancedActive`, `_setAdvancedLive`, `REV2_CLASSES`, `revision2Classes`, `_setRevision2Classes`, `perkEffects`, `itemInfo`, `classMove`, `rawItem`, `splitKey`, `keyOf`, `instanceMods`, `Held`, `SKILL_ITEMS`, `allVerbs`, `meetsRequires`, `verbsOf`, `DoorTab`, `DOOR_TABS`, `doorTabsOf`, `skillItemsOf`, `heldAny`, `classMoveKeys`, `itemsOf`, `heldKey`, `effectsOfHeld`, `allItems` |
 | `effects/core.ts` | `TAG_VOCAB`, `wearing`, `contextHolds`, `skillRollMod`, `immuneByItem`, `immune`, `actionAp`, `forbids`, `xpAfter`, `itemWords`, `wordCostMods`, `mendShown`, `pushAway` |
 | `effects/coverage.ts` | `CoverageRow`, `coverageOf`, `coverageReport`, `coverageGaps`, `Verdict`, `verdictOf`, `verdictFor`, `coverageSummary` |
-| `effects/damage.ts` | `tendHook`, `ELEMENTAL_TYPES`, `READ_THEM`, `PAST_SHIELDS`, `ShieldLayer`, `ShieldOpts`, `shieldTotal` |
+| `effects/damage.ts` | `tendHook`, `ELEMENTAL_TYPES`, `READ_THEM`, `PAST_SHIELDS`, `ShieldLayer`, `ShieldOpts`, `shieldOrder`, `shieldTotal` |
 | `effects/dmgwords.ts` | `DAMAGE_WORDS`, `dmgIs` |
 | `effects/echo.ts` | `ECHO_MAX`, `gainEcho` |
 | `effects/index.ts` | `has`, `tierOf`, `stateOf` |
@@ -1526,7 +1526,7 @@ The scan of every file in the engine's source: what the tables above do not show
 | `run/shopview.ts` | `ShopCardV`, `SellRowV`, `ShopViewV`, `MeV`, `WearV`, `wearView`, `meBlock`, `sheetPack`, `MaterialsCardV`, `materialsView`, `shopView` |
 | `run/stage.ts` | `BOON_PICK`, `WORLD`, `SettingCard`, `settingCard`, `settingReady`, `poolBoons`, `holdsBoon`, `boonServes`, `boonOffer`, `START_BOON`, `boonWorks`, `lineOf`, `lineBoons`, `startOffer`, `isStartBoon`, `startBoonProblem`, `boonProblem`, `nextTiles`, `nextPools`, `tileProblem`, `stageLogFor`, `stageLog`, `enterStage`, `renownOf`, `boonsOf`, `keptDraft` |
 | `run/tally.ts` | `TapeEv`, `TallyRow`, `FightTally`, `settleTape`, `fightTally`, `sumTallies` |
-| `screenViews.ts` | `BondChip`, `BondView`, `BondGives`, `bondGives`, `bondView`, `ReactionView`, `reactionView`, `OwnedView`, `ownedView`, `TieLine`, `tieLines` |
+| `screenViews.ts` | `BondChip`, `BondView`, `BondGives`, `bondGives`, `bondView`, `ReactionView`, `reactionView`, `OwnedView`, `ownedView`, `TieLine`, `tieLines`, `ShieldEntry`, `ShieldsView`, `shieldsView` |
 | `sigil.ts` | `sigilReady`, `glyphApOf`, `glyphCost`, `glyphsPerTile`, `groundCap`, `evokeCharge`, `Pattern`, `glyphDrawer`, `Stroke`, `strokeRuns`, `strokesOfGlyph`, `strokeOfGlyph`, `strokeOf`, `strokesAt`, `tidyStrokes`, `findPattern`, `Facing`, `facingFrom`, `spellRange`, `boltPath`, `dir8`, `burstTiles`, `Affected`, `SIGIL_CAP`, `lineMultFor`, `spellCritMult`, `spellGapToHit`, `lineGuards`, `sigilPower`, `sigilParts`, `capParts`, `applyInflections`, `narratorInflections`, `evokeGrowth`, `sigilDamage`, `sigilDamageTerms`, `sigilBoon`, `cleanseList`, `EvokeOpts`, `MissilePlan`, `EvokePreview`, `evokeOrigins`, `planEvoke`, `evokeMarks`, `StrokeOption`, `DrawPreview`, `JUNCTION`, `junctionsFor`, `strokeCandidates`, `strokePick`, `previewDraw`, `drawGlyph`, `scuff`, `readable`, `readGlyph`, `readDrawnBy`, `fadePattern`, `previewEvoke`, `evoke`, `newestCondition`, `destroyPlaced`, `turretAim`, `strikeTurret`, `sigilEnter`, `sigilTurnStart`, `sigilRoundTick`, `sigilSpot`, `placedMagic`, `secretFrom`, `patternAt`, `migrateSigil`, `migrateStorySigil`, `evokeTargets`, `glyphsAt`, `enemyDefaultWords`, `ENEMY_MAX_WORDS`, `enemyMagic`, `enemyCast`, `enemyAvoidMagic`, `CastAtResult`, `castAt` |
 | `sigilgrowth.ts` | `STUDY`, `WORD_MASTERY`, `SigilGrowth`, `growthOf`, `thresholdN`, `picksEarned`, `evokeStudy`, `pendingPicks`, `knowsWord`, `addStudy`, `noteEvoke`, `copyWord`, `masterySync`, `learnable`, `learnStudied`, `noteToStudy`, `learnedElsewhere`, `WordTier`, `wordUses`, `wordTierOf`, `masteredWords`, `Inflection`, `inflectionOf`, `INFLECTION_STATS`, `inflectionValue`, `SigilGrowthView`, `sigilGrowthView` |
 | `sigilwords.ts` | `SigilFam`, `Dir`, `G`, `ENEMY_AI`, `SIGIL_GRAMMAR`, `SIGIL_ELEMENTS`, `SIGIL_REV`, `MAX_GLYPHS`, `MIN_GLYPHS`, `REPEAT_MULT`, `LINE_MULT`, `lineMult`, `LIM`, `W`, `groupOf`, `classOf`, `isSubject`, `isReach`, `isElement`, `isAffliction`, `isBoonWord`, `isWorking`, `count`, `perCopy`, `Spell`, `compileSpell`, `grammarError`, `startingWordsError`, `STARTING_DEFAULT`, `migrateWords` |

@@ -8,7 +8,8 @@ import shellTpl from '../templates/shell.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
-import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION, healthView } from '@engine';
+import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION, healthView, shieldsView } from '@engine';
+import { shieldBlock } from '../game/shieldLook';
 import { kitSprite } from '../game/kitMap';
 import { figmentFaceOf } from '../game/figmentIcons';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
@@ -98,12 +99,16 @@ export const tileBg = (url, k, w, h, tint) => { const [x, y] = k.split(',').map(
 export const spriteStyle = (o) => { const b = o.spriteBox || { w: 1, h: 1, dx: 0, dy: 0 };
   return 'position: absolute; left: ' + b.dx * 100 + '%; top: ' + b.dy * 100 + '%; width: ' + b.w * 100 + '%; height: ' + b.h * 100 + '%; object-fit: contain; pointer-events: none; z-index: 1' + (o.hp != null && o.hp <= 0 ? '; opacity: 0.35' : ''); };
 
+/** 0.30.0: a card's SHIELDS block (game/shieldLook.ts shieldBlock), Y. its values: in the hover card and, by
+ *  <!--SHIELDS:path-->, wherever a template shows a unit's HP (the target card, your own panel). */
+const SHIELDS_TPL = '<sc-if value="{{Y.has}}"><span data-shields-block style="display: flex; flex-direction: column; gap: 2px"><span style="{{Y.headStyle}}">SHIELDS</span><sc-for list="{{Y.lines}}" as="shl"><span data-shield-line="{{shl.kind}}" style="{{Y.lineStyle}}"><span aria-hidden="true" style="{{shl.pipStyle}}">{{shl.glyph}}</span><span style="{{shl.nameStyle}}">{{shl.name}}</span><span style="font-weight: 700; font-variant-numeric: tabular-nums">{{shl.amount}}</span><span style="font-size: 12px; color: #A3AEC2">· {{shl.lasts}}</span></span></sc-for><sc-if value="{{Y.hasGuard}}"><span data-shield-guard style="{{Y.lineStyle}}"><span aria-hidden="true" style="flex: none; width: 10px; text-align: center; font-size: 11px; color: #E7EBF3">⛉</span><span>{{Y.guardLine}}</span></span></sc-if><span data-shield-absorb style="font-size: 13px; font-weight: 700; color: #FFFFFF">{{Y.absorb}}</span><span style="{{Y.subStyle}}">{{Y.rule}}</span></span></sc-if>';
 /** Expand the shared template pieces exactly as design/canvas-build/build.py does. */
-const popTpl = '<span class="phc-pop" role="tooltip" style="{{X.popStyle}}">\n<span style="display: flex; gap: 8px; align-items: center"><sc-if value="{{X.hasImg}}"><img src="{{X.img}}" alt="" style="width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #000; flex: none"></sc-if><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{X.name}}</span><span style="{{X.subStyle}}">{{X.sub}}</span></span></span>\n<sc-if value="{{X.known}}"><span style="display: flex; justify-content: space-between; font-size: 13px"><span style="font-weight: 700; color: #F65157">{{X.hp}}</span><span style="{{X.stateStyle}}">{{X.state}}</span></span><span style="display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="display: block; {{X.hpFill}}"></span></span><sc-if value="{{X.hasAp}}"><span style="font-size: 13px; color: #A3AEC2">{{X.ap}}</span></sc-if><sc-if value="{{X.hasInj}}"><span style="font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #F65157">⚠ {{X.inj}}</span></sc-if></sc-if>\n<sc-if value="{{X.unknown}}"><span style="{{X.stateStyle}}">{{X.state}}</span><span style="font-size: 13px; color: #A3AEC2">{{X.hint}}</span></sc-if>\n';
+const popTpl = '<span class="phc-pop" role="tooltip" style="{{X.popStyle}}">\n<span style="display: flex; gap: 8px; align-items: center"><sc-if value="{{X.hasImg}}"><img src="{{X.img}}" alt="" style="width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #000; flex: none"></sc-if><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{X.name}}</span><span style="{{X.subStyle}}">{{X.sub}}</span></span></span>\n<sc-if value="{{X.known}}"><span style="display: flex; justify-content: space-between; font-size: 13px"><span style="font-weight: 700; color: #F65157">{{X.hp}}</span><span style="{{X.stateStyle}}">{{X.state}}</span></span><span style="display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="display: block; {{X.hpFill}}"></span></span><sc-if value="{{X.hasAp}}"><span style="font-size: 13px; color: #A3AEC2">{{X.ap}}</span></sc-if><sc-if value="{{X.hasInj}}"><span style="font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #F65157">⚠ {{X.inj}}</span></sc-if></sc-if>\n<sc-if value="{{X.unknown}}"><span style="{{X.stateStyle}}">{{X.state}}</span><span style="font-size: 13px; color: #A3AEC2">{{X.hint}}</span></sc-if>\n' + SHIELDS_TPL.replace(/Y\./g, 'X.sh.') + '\n';
 export function expand(tpl) {
   let t = tpl.replace('<!--EPCCG-->', epTpl).replace('<!--LIGHTBOX-->', lbTpl).replace('<!--SHELL-->', shellTpl);
   t = t.replace(/<!--MASTERED:([\w.]+)-->/g, (_, p) => mastTpl.replace(/X\./g, p + '.'));
   t = t.replace(/<!--TOKPOP:([\w.]+)-->/g, (_, p) => popTpl.replace(/X\./g, p + '.'));
+  t = t.replace(/<!--SHIELDS:([\w.]+)-->/g, (_, p) => SHIELDS_TPL.replace(/Y\./g, p + '.'));
   return t.replace(/__WICKMARK__/g, IMG['wick-welcome']).replace(/__WICK__/g, IMG['wick-mind-without-fog']).replace(/__SEAL__/g, IMG['emblem-ahoc-seal']);
 }
 
@@ -323,6 +328,9 @@ export function tokenVals(u, opt) {
     ap: opt.inFight && opt.ally ? 'AP ' + u.ap + ' · Movement ' + u.movement : !opt.ally && known ? 'Defense ' + u.def + ' · Armour ' + u.armour : '', hasAp: !!(opt.inFight && opt.ally) || (!opt.ally && known),
     // opt.extra: lines anyone may read (Physical 2.0: Pressure and its state, Stopped once, a held Watch).
     inj: [...fx.map((f) => f[0]), ...(opt.extra || [])].join(' · '), hasInj: fx.length + (opt.extra || []).length > 0, hint: opt.ally ? '' : 'Analyze to see its HP and status.',
+    // 0.30.0: the SHIELDS block (the engine's shieldsView: exact for the squad and an Analyzed foe, size words for any
+    // other; game/shieldLook.ts draws it), on every card: yours, a friend's, a foe's.
+    sh: shieldBlock(shieldsView(opt.cb || null, u)),
     tokStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; border-radius: 50%; overflow: hidden; box-sizing: border-box; font-size: 9px; font-weight: 700; '
       + (opt.ally ? 'border: 2px solid ' + opt.color + '; background: #000' : opt.color && opt.color !== '#F65157' ? 'border: 2px solid ' + opt.color + '; background: #141922; color: ' + opt.color : 'border: 2px solid #F65157; background: #2A0F14; color: #F65157') + (u.downed || u.dead ? '; opacity: 0.45' : '') + (opt.pose ? '; ' + opt.pose : ''), // opt.pose: Pressure 2.0's crouch (techView pressureLook)
     popStyle: 'position: absolute; z-index: 30; ' + (opt.up ? 'bottom' : 'top') + ': calc(100% + 6px); ' + (opt.right ? 'right: 0' : 'left: 0') + '; width: 210px; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (opt.ally ? opt.color : '#F65157') + '; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6); color: #E7EBF3; text-align: left; pointer-events: none; white-space: normal',
