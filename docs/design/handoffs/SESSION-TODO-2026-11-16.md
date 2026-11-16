@@ -1,13 +1,15 @@
 # Session to-do, 16 Nov 2026 (after 0.30.0 went live)
 
-Leon's word (16 Nov): **"to live when all green"**. 0.30.1 deploys when its fixes, check and browser suites are green;
-0.31.0 deploys when its lanes are merged, reviewed, green and browser-checked. Each deploy gets `backup/live-<version>`.
+Leon's word (16 Nov, later the same day): **0.30.1 is NOT deployed on its own.** Its work is saved on
+`wip/hotfix-0.30.1` and goes live as part of 0.31.0 ("to live when all green"). No more testing on 16 Nov; about 20% of
+the usage was left, so nothing new is started without need. Each deploy gets `backup/live-<version>`.
 
 Live: **0.30.0** (commit 44a1d686, `backup/live-0.30.0`; 0.29.0 kept as rollback).
 
 ## A. Hotfix 0.30.1 (branch `hotfix/0.30.1`, worktree E:/phc-wt/rel030)
 
-Built and green at 15bb42fd; a review found one blocker and two majors, being fixed:
+Built, reviewed, review findings fixed, green at b2df5eff (then int/0.30 merged in: 068340a2); pushed as
+`wip/hotfix-0.30.1`. NOT live. Merge it into the 0.31.0 release branch first. What it holds:
 
 1. Free mod fit by leaving out the action name (blocker): test the action that will run.
 2. Overhaul at the Forge fits the gun that was picked, not always the main hand.
@@ -76,3 +78,20 @@ Order matters: all of it touches the fight screen.
 3. Vows: fold to one line, or a forced choice at the start of each fight.
 4. Level-up banner shown to the whole room or only the player.
 5. Rename Bot-scrambler / Bot Sense (they jam robots; left as is).
+
+## F. Leon's rulings after this list was written (16 Nov)
+
+- **Vows:** entering any game mode opens a pop-up that makes you swear a vow; in a fight the panel only shows the vow
+  held (one line); a rest point is where it is changed. (Asked, not answered: is "Fight unsworn" a choice in the
+  pop-up; Atheists get no pop-up. Lead's pick: unsworn stays, Atheists none.)
+- **Level-up banner:** shown to the whole room.
+- **Field Surgeon's Patch** works in Survival; the spare-parts charge gets dearer (lead's start: 16 to 60 credits,
+  PROVISIONAL; repairs get dearer with it). **Triage's story heal:** once per stage map for each Mender. Price both in
+  the run simulator. Until 0.31 both stay off (they do not carry the `run` scope).
+- **Relic properties for every weapon:** gloves, wraps and the unarmed family take the Relic step (bare fists have no
+  item); walk every weapon category for other gaps (shields, focuses, thrown) and list them.
+- **Dark maps:** kept. Shrine, works and rim dark; AHOC and city lit; measure clears.
+- **Zero meters fold and open on click; the status strip is mini and grows on hover; the shield is one bar segment
+  with hover detail and a collapsed Shields line; every info box folds and saves its state** (CLAUDE.md).
+- **Silent** is a property (Visualizer by default; a silencer mod later; a Silent weapon costs 1 Shadow a shot).
+- **Plain melee attack is named Hit.**
