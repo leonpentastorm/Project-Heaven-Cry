@@ -27,7 +27,7 @@ import { canReact, react, loseReactions, dropHeldShot } from './tactics';
 import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
 import { grantGoods, lootToPack } from './containers';
-import { itemWords, wordCostMods, immune } from './effects/core';
+import { itemWords, wordCostMods, immune, mendShown } from './effects/core';
 import { price, priced, costOf, whyNot, canPay, pay, refund, apFor, resGive } from './effects/cost';
 import { masteredWords } from './sigilgrowth';
 import { tilesIn, rngOf } from './kit';
@@ -571,8 +571,7 @@ export function heal(t: Unit, n: number, cb?: Combat, by: Unit | null = null, ki
   // (step a5: the one heal path, effects/output.ts mend; the air's band is the heal's own named multiplier)
   const pct = gate && n > 0 ? gatePct(gate.of) * (gate.own ?? 1) : 0; // the percent gate (heal-shield-percent-spec.md section 4): a source that names it
   const r = mend(cb || null, by, t, { kind: 'heal', base: n, round: 'none', min_pct: pct }, { mults: [term(cb ? manaBand(manaOf(cb)).healing_given_mult ?? 1 : 1, 'the air')], healKind: kind });
-  if (r.revived) { if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp, revive: true }); return ' · ' + t.name + ' is back up at ' + t.hp + ' HP'; }
-  if (cb) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.restored }); return ' · ' + t.name + ' heals ' + r.restored;
+  return mendShown(cb || null, t, 'heal', r); // the one mend's effect and words (effects/core.ts; rules 1.62 item 4745)
 }
 /** Magic forced movement (GALE, PULL, Control push and pull): knockback immunity and the 'forced_move' hook
  * {u, by, tiles, how: 'magic', cancel} can stop it (hooks gap A3). */

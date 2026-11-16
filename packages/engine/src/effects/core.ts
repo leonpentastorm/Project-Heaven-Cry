@@ -258,9 +258,16 @@ registerGeneric({
 /** What a data heal or shield shows (0.28.2): the heal effect over the token (its number) or the ward's, and the log's
  * words ({then} in the op's say). The one place both runners of the `mend` op (this file's and effects/triggers.ts's) say it. */
 export function mendShown(cb: Combat | null, t: Unit, kind: string, r: { restored: number; revived: boolean; shield: number }): string {
-  if (kind === 'shield') { if (cb && r.shield > 0) emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'ward', amount: r.shield }); return ' · ' + t.name + ' gains a ' + r.shield + ' shield'; }
-  if (cb && (r.restored > 0 || r.revived)) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.revived ? t.hp : r.restored, ...(r.revived ? { revive: true } : {}) });
+  mendFx(cb, t, kind, r);
+  if (kind === 'shield') return ' · ' + t.name + ' gains a ' + r.shield + ' shield';
   return ' · ' + t.name + (r.revived ? ' is back up at ' + t.hp + ' HP' : ' heals ' + r.restored);
+}
+/** The effect of a mend (mendShown's half; rules 1.62 item 4745): the heal's green number over the token (a revive's
+ * HP), or the ward's. The one place a heal or shield is shown: the data `mend` op, a Soul heal, a prayer's heal or shield. */
+export function mendFx(cb: Combat | null, t: Unit, kind: string, r: { restored: number; revived: boolean; shield: number }): void {
+  if (!cb) return;
+  if (kind === 'shield') { if (r.shield > 0) emitFx(cb, 'boon', { target: t.id, at: t.pos, word: 'ward', amount: r.shield }); return; }
+  if (r.restored > 0 || r.revived) emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: r.revived ? t.hp : r.restored, ...(r.revived ? { revive: true } : {}) });
 }
 registerGeneric({
   op: 'mend', claim: () => false, runs: (e) => actPlain(e) && T_OK(e) && !!e.amount,
