@@ -1405,8 +1405,35 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Your ranged attacks deal {=tiers.I.effects.0.value.steps.0.value|pct}% more damage to a Pressed enemy (Pressure {=tiers.I.effects.0.value.steps.0.at} or more). II: Your ranged attacks deal {=tiers.II.effects.0.value.steps.0.value|pct}% more damage to a Pressed enemy (Pressure {=tiers.II.effects.0.value.steps.0.at} or more), and {=tiers.II.effects.0.value.steps.1.value|pct}% more again to one Suppressed or Broken (Pressure {=tiers.II.effects.0.value.steps.1.at} or more).",
+      "text": "I: Your ranged hit on an enemy already Pressed (Pressure {=tiers.I.effects.0.value.steps.0.at} or more) lays {=tiers.I.effects.0.value.steps.0.value} more Pressure on it, once a turn for each enemy, and your ranged attacks deal {=tiers.I.effects.1.value.steps.0.value|pct}% more to a Pressed enemy. II: Your ranged hit on an enemy already Pressed (Pressure {=tiers.II.effects.0.value.steps.0.at} or more) lays {=tiers.II.effects.0.value.steps.0.value} more Pressure on it, and {=tiers.II.effects.0.value.steps.1.value} more again on one already Suppressed (Pressure {=tiers.II.effects.0.value.steps.1.at} or more), once a turn for each enemy; your ranged attacks deal {=tiers.II.effects.1.value.steps.0.value|pct}% more to a Pressed enemy and {=tiers.II.effects.1.value.steps.1.value|pct}% more again to a Suppressed one.",
       "effects": [
+        {
+          "op": "resource",
+          "when": "hit",
+          "if": {
+            "actor": "self",
+            "hostile": true,
+            "melee": false,
+            "target_alive": true
+          },
+          "resource": "pressure",
+          "value": {
+            "base": 0,
+            "steps": [
+              {
+                "of": "target:pressure",
+                "at": 2,
+                "value": 1
+              }
+            ]
+          },
+          "target": "target",
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "each": "target"
+          }
+        },
         {
           "op": "damage_mult",
           "when": "dealing",
@@ -1422,7 +1449,7 @@
               {
                 "of": "target:pressure",
                 "at": 2,
-                "value": 0.1
+                "value": 0.05
               }
             ]
           }
@@ -1437,8 +1464,35 @@
             }
           ],
           "ap_cost": null,
-          "text": "Your ranged attacks deal {=tiers.I.effects.0.value.steps.0.value|pct}% more damage to a Pressed enemy (Pressure {=tiers.I.effects.0.value.steps.0.at} or more).",
+          "text": "Your ranged hit on an enemy already Pressed (Pressure {=tiers.I.effects.0.value.steps.0.at} or more) lays {=tiers.I.effects.0.value.steps.0.value} more Pressure on it, once a turn for each enemy, and your ranged attacks deal {=tiers.I.effects.1.value.steps.0.value|pct}% more to a Pressed enemy.",
           "effects": [
+            {
+              "op": "resource",
+              "when": "hit",
+              "if": {
+                "actor": "self",
+                "hostile": true,
+                "melee": false,
+                "target_alive": true
+              },
+              "resource": "pressure",
+              "value": {
+                "base": 0,
+                "steps": [
+                  {
+                    "of": "target:pressure",
+                    "at": 2,
+                    "value": 1
+                  }
+                ]
+              },
+              "target": "target",
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "each": "target"
+              }
+            },
             {
               "op": "damage_mult",
               "when": "dealing",
@@ -1454,7 +1508,7 @@
                   {
                     "of": "target:pressure",
                     "at": 2,
-                    "value": 0.1
+                    "value": 0.05
                   }
                 ]
               }
@@ -1469,8 +1523,40 @@
             }
           ],
           "ap_cost": null,
-          "text": "Your ranged attacks deal {=tiers.II.effects.0.value.steps.0.value|pct}% more damage to a Pressed enemy (Pressure {=tiers.II.effects.0.value.steps.0.at} or more), and {=tiers.II.effects.0.value.steps.1.value|pct}% more again to one Suppressed or Broken (Pressure {=tiers.II.effects.0.value.steps.1.at} or more).",
+          "text": "Your ranged hit on an enemy already Pressed (Pressure {=tiers.II.effects.0.value.steps.0.at} or more) lays {=tiers.II.effects.0.value.steps.0.value} more Pressure on it, and {=tiers.II.effects.0.value.steps.1.value} more again on one already Suppressed (Pressure {=tiers.II.effects.0.value.steps.1.at} or more), once a turn for each enemy; your ranged attacks deal {=tiers.II.effects.1.value.steps.0.value|pct}% more to a Pressed enemy and {=tiers.II.effects.1.value.steps.1.value|pct}% more again to a Suppressed one.",
           "effects": [
+            {
+              "op": "resource",
+              "when": "hit",
+              "if": {
+                "actor": "self",
+                "hostile": true,
+                "melee": false,
+                "target_alive": true
+              },
+              "resource": "pressure",
+              "value": {
+                "base": 0,
+                "steps": [
+                  {
+                    "of": "target:pressure",
+                    "at": 2,
+                    "value": 1
+                  },
+                  {
+                    "of": "target:pressure",
+                    "at": 3,
+                    "value": 1
+                  }
+                ]
+              },
+              "target": "target",
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "each": "target"
+              }
+            },
             {
               "op": "damage_mult",
               "when": "dealing",
@@ -1486,12 +1572,12 @@
                   {
                     "of": "target:pressure",
                     "at": 2,
-                    "value": 0.15
+                    "value": 0.05
                   },
                   {
                     "of": "target:pressure",
                     "at": 3,
-                    "value": 0.1
+                    "value": 0.05
                   }
                 ]
               }
@@ -1505,10 +1591,10 @@
       "recovered": null,
       "tags": [
         "guns",
-        "pressure",
-        "damage"
+        "pressure"
       ],
-      "provisional": true
+      "provisional": true,
+      "note": "rules 1.60 item 4614 (Doors 3.0 slice A, A3): the damage it added moves to the Pressure door: a pip more on a foe already Pressed (and one more on one already Suppressed at Tier II), a small damage step left. PROVISIONAL."
     },
     {
       "id": "running_reload",
@@ -1528,24 +1614,29 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Once a turn, when your ranged attack hits an enemy, it gains {=tiers.I.effects.0.value} more Pressure. II: Once a turn for each enemy, when your ranged attack hits it, it gains {=tiers.II.effects.0.value} more Pressure.",
+      "text": "I: Once a turn, your ranged hit on an enemy already Pressed (Pressure {=tiers.I.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance (a Body save): it loses AP on its next turn. II: Once a turn for each enemy, your ranged hit on one already Pressed (Pressure {=tiers.II.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance, with no save: it loses AP on its next turn.",
       "effects": [
         {
-          "op": "resource",
+          "op": "condition",
           "when": "hit",
           "if": {
             "actor": "self",
             "hostile": true,
             "melee": false,
-            "target_alive": true
+            "target_alive": true,
+            "target_res": {
+              "pressure": {
+                "at_least": 2
+              }
+            }
           },
-          "resource": "pressure",
-          "value": 1,
           "target": "target",
+          "condition": "off_balance",
           "limit": {
             "per": "per_turn",
             "n": 1
-          }
+          },
+          "say": "{target} keeps its head down{then}."
         }
       ],
       "tiers": {
@@ -1557,24 +1648,29 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once a turn, when your ranged attack hits an enemy, it gains {=tiers.I.effects.0.value} more Pressure.",
+          "text": "Once a turn, your ranged hit on an enemy already Pressed (Pressure {=tiers.I.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance (a Body save): it loses AP on its next turn.",
           "effects": [
             {
-              "op": "resource",
+              "op": "condition",
               "when": "hit",
               "if": {
                 "actor": "self",
                 "hostile": true,
                 "melee": false,
-                "target_alive": true
+                "target_alive": true,
+                "target_res": {
+                  "pressure": {
+                    "at_least": 2
+                  }
+                }
               },
-              "resource": "pressure",
-              "value": 1,
               "target": "target",
+              "condition": "off_balance",
               "limit": {
                 "per": "per_turn",
                 "n": 1
-              }
+              },
+              "say": "{target} keeps its head down{then}."
             }
           ]
         },
@@ -1586,25 +1682,31 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once a turn for each enemy, when your ranged attack hits it, it gains {=tiers.II.effects.0.value} more Pressure.",
+          "text": "Once a turn for each enemy, your ranged hit on one already Pressed (Pressure {=tiers.II.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance, with no save: it loses AP on its next turn.",
           "effects": [
             {
-              "op": "resource",
+              "op": "condition",
               "when": "hit",
               "if": {
                 "actor": "self",
                 "hostile": true,
                 "melee": false,
-                "target_alive": true
+                "target_alive": true,
+                "target_res": {
+                  "pressure": {
+                    "at_least": 2
+                  }
+                }
               },
-              "resource": "pressure",
-              "value": 1,
               "target": "target",
+              "condition": "off_balance",
               "limit": {
                 "per": "per_turn",
                 "n": 1,
                 "each": "target"
-              }
+              },
+              "say": "{target} keeps its head down{then}.",
+              "skip_save": true
             }
           ],
           "replaces_tier_I": true,
@@ -1617,7 +1719,8 @@
         "guns",
         "pressure"
       ],
-      "provisional": true
+      "provisional": true,
+      "note": "rules 1.60 item 4615 (Doors 3.0 slice A, A3): its extra pip (which the gunner's take shots turned into damage) becomes AP taken from a Pressed foe (Off Balance), the Pressure door's control; keyed to the foe's Pressure by the resource-amount predicate (N10). PROVISIONAL."
     },
     {
       "id": "rounding_up",

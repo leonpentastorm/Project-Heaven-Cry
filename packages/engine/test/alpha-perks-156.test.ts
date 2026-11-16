@@ -5,7 +5,7 @@
 // number under its condition and does nothing outside it. Every number is read from data/perks.json.
 import { describe, it, expect } from 'vitest';
 import { onHook } from '../src/effects/hooks';
-import { d20, applyCond, previewAttack, previewDraw, hymnWait, setDevotionXp, devotionThreshold, beginTurn, clearPrayerLimits, type Unit } from '../src';
+import { d20, applyCond, previewAttack, previewDraw, hymnWait, setDevotionXp, devotionThreshold, beginTurn, clearPrayerLimits, condOn, type Unit } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { physFight, rig } from './helpers/physfight';
 import { figFight } from './helpers/figfight';
@@ -124,20 +124,29 @@ describe('Keep Swinging (breaching_strike): a Finisher\'s kill gives Momentum', 
 });
 
 // ============================================================================================================ Dexterity
-describe('Pressure Point (both_hands): ranged damage to a Pressed (II: and Suppressed) enemy', () => {
-  for (const tier of ['I', 'II'] as const) it(tier, () => {
-    const steps = E('both_hands', tier).value.steps;
+// Rules 1.60 items 4614, 4615 (Doors 3.0 slice A, A3): the two gun alpha perks moved from damage to the Pressure door's control.
+describe('Pressure Point (both_hands): a pip on a foe already Pressed (II: and one more on one Suppressed), a small damage step', () => {
+  for (const tier of ['I', 'II'] as const) it(tier + ': the damage term', () => {
+    const steps = E('both_hands', tier, 1).value.steps;
     const run = (p: number) => { const { f, shoot } = gun({ both_hands: tier }); f.foe.pressure = p; return termOf(tap(shoot).rows, 'both_hands'); };
     expect(run(steps[0].at - 1)).toEqual([]);
     expect(run(steps[0].at)[0]).toBeCloseTo(1 + steps[0].value, 6);
     if (tier === 'II') expect(run(steps[1].at)[0]).toBeCloseTo(1 + steps[0].value + steps[1].value, 6);
   });
+  for (const tier of ['I', 'II'] as const) it(tier + ': the pips: none on a foe not yet Pressed, one more on a Pressed one, once a turn for each enemy', () => {
+    const pip = E('both_hands', tier, 0).value.steps;
+    const run = (perk: boolean, p: number) => { const { f, shoot } = gun(perk ? { both_hands: tier } : {}); f.foe.pressure = p; rig({ hit: true }); shoot(); rig(null); return f.foe.pressure || 0; };
+    expect(run(true, pip[0].at - 1) - run(false, pip[0].at - 1)).toBe(0);
+    expect(run(true, pip[0].at) - run(false, pip[0].at)).toBe(pip[0].value);
+  });
 });
-describe('Keep Their Heads Down (running_reload): a ranged hit gives 1 more Pressure', () => {
-  for (const tier of ['I', 'II'] as const) it(tier + ': once a turn (II: once a turn for each enemy)', () => {
-    const run = (perk: boolean) => { const { f, shoot } = gun(perk ? { running_reload: tier } : {}); rig({ hit: true }); shoot(); const one = f.foe.pressure || 0; shoot(); rig(null); return [one, f.foe.pressure || 0]; };
-    const [a1, a2] = run(true), [b1, b2] = run(false);
-    expect(a1 - b1).toBe(E('running_reload', tier).value); expect(a2 - b2).toBe(E('running_reload', tier).value); // the second hit that turn adds none
+describe('Keep Their Heads Down (running_reload): Off Balance on a foe already Pressed', () => {
+  for (const tier of ['I', 'II'] as const) it(tier + ': a ranged hit on a Pressed foe; never on one that is not', () => {
+    const at = E('running_reload', tier).if.target_res.pressure.at_least;
+    const run = (p: number) => { const { f, shoot } = gun({ running_reload: tier }); f.foe.pressure = p; rig({ hit: true }); shoot(); rig(null); return f; };
+    expect(condOn(run(at - 1).foe, 'off_balance')).toBeFalsy();
+    if (tier === 'II') expect(condOn(run(at).foe, 'off_balance')).toBeTruthy(); // Tier II: no save
+    expect(E('running_reload', tier).condition).toBe('off_balance');
   });
 });
 
