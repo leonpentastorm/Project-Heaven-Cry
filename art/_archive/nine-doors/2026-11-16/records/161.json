@@ -1,0 +1,76 @@
+{
+  "number": 161,
+  "family": "move_icons",
+  "id": "move-overclock",
+  "path": "art/icons/moves/overclock.png",
+  "name": "Overclock",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Rigger rank II move (asked 13 Nov, C4)",
+  "paint": "A dial on a machine cranked past its last tick, the needle bent.",
+  "avoid": "a speedometer of a real car \u00b7 flames",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A dial on a machine cranked past its last tick, the needle bent.\nAvoid: a speedometer of a real car \u00b7 flames\nEXACT STAGING: The Rigger's Overclock (later Redline binding): close-up of one compact machine panel with ONE LARGE CIRCULAR DIAL. Use 5\u20136 short blank tick marks around only the upper arc. A white pointer starts at center, points clockwise PAST THE FINAL upper-right tick, and has a clearly BENT elbow near its tip. No numerals, letters, flames, speedometer brand, real vehicle, electricity or hand. Entire panel sits safe inside circular chip. Strong flat white with transparent dial face.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f3319f351e92a874c222d64e3871b4c14c89c97105448fc064b2a999126e38e8",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/161-overclock.png",
+  "source_sha256": "0d23e3e3f800d81e2312055fd1eebbde3e7d0f9fbae05e6ba1210d318b150bcf",
+  "export_crop": [
+    0,
+    16,
+    1242,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/overclock.png",
+    "64": "art/icons/moves/exports/64/overclock.png",
+    "48": "art/icons/moves/exports/48/overclock.png",
+    "44": "art/icons/moves/exports/44/overclock.png",
+    "32": "art/icons/moves/exports/32/overclock.png",
+    "24": "art/icons/moves/exports/24/overclock.png"
+  },
+  "framing": {
+    "scale": 0.5022220797056463,
+    "offset": [
+      200,
+      201
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "6496957a5396737ff9ea82f8a0f3cd0e95b80e294b9f96964fcde6334328b5d2",
+    "64": "ea6c123fdfcb074517659c97d985b6308ff164e33d8e44354af0e46a578545f3",
+    "48": "e220df18061e9502b67b9407d2b46b06963915993194323adf480c4a2b937bb7",
+    "44": "95439f107487803f97ffd4fb5a1d894035f5bb02867c49c5ee4eb030d1b991d4",
+    "32": "4bcb3113336b045691687661bfdd412d2ffaea6dcbb6594a58e22a2a58808f07",
+    "24": "705059ffbacdc61773f6b8d1c233a3005f80068ab4e23856f8cc07d07212f007"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

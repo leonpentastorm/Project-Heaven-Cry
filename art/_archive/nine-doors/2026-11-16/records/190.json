@@ -1,0 +1,76 @@
+{
+  "number": 190,
+  "family": "move_icons",
+  "id": "move-triage",
+  "path": "art/icons/moves/triage.png",
+  "name": "Triage",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Mender rank I move (asked 13 Nov, C3)",
+  "paint": "Three short bars of different lengths, a hand pointing at the shortest.",
+  "avoid": "a red cross \u00b7 a hospital sign",
+  "section": "Empathy: Bonds and Tending, and the Mender",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Three short bars of different lengths, a hand pointing at the shortest.\nAvoid: a red cross \u00b7 a hospital sign\nEXACT STAGING: Triage: THREE bold horizontal white BARS aligned at left, stacked vertically, clearly DIFFERENT LENGTHS: top long, middle medium, bottom shortest. From lower right ONE cropped ceramic mitten pointing finger touches/indicates the SHORTEST BOTTOM BAR. No medical cross, hospital sign, person, text, numerals, graph axes, frame or other props. Make bar differences obvious at 32px.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "557bd8d6c6df6ffd5fe2683e4b9ca1d396e2f7d4b0781d6671007b762465e43e",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/190-triage.png",
+  "source_sha256": "76320e68d00d88d560823870ba5bf189af8f0b3dea7e00b5772649ed59da12a2",
+  "export_crop": [
+    33,
+    111,
+    1202,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/triage.png",
+    "64": "art/icons/moves/exports/64/triage.png",
+    "48": "art/icons/moves/exports/48/triage.png",
+    "44": "art/icons/moves/exports/44/triage.png",
+    "32": "art/icons/moves/exports/32/triage.png",
+    "24": "art/icons/moves/exports/24/triage.png"
+  },
+  "framing": {
+    "scale": 0.5997556864938629,
+    "offset": [
+      161,
+      169
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "7c79fea25d491b34c10235f5c7d6e9aa6a8e05c405f41b8465968e5f0de9e316",
+    "64": "a6085ffeafd86bab83a79f5e180fa520d80d5a9aeaed27bcbb66b6212567b3ea",
+    "48": "23ff5ab27f3811136d1e279f730cc41dc2e802632b96aad8dabdebc8a514c400",
+    "44": "5730aefb5708ea1af4eedf96234b5b80176282339130a490e7d23d79fb1e79bf",
+    "32": "ddb48157bbf0054c62bafae0d66efac8847931cd9d11872564adad30f192e41a",
+    "24": "221021cbfe42287c1327d310580690b3d03b771610085f2cb1543615cdd656f5"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

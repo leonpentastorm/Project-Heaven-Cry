@@ -8354,6 +8354,236 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 160,
+    "family": "move_icons",
+    "id": "move-salvage",
+    "path": "art/icons/moves/salvage.png",
+    "name": "Salvage",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Rigger rank II move (asked 13 Nov, C4)",
+    "paint": "A small round core pulled from a wrecked drone's shell.",
+    "avoid": "a junkyard \u00b7 recycling symbol",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A small round core pulled from a wrecked drone's shell.\nAvoid: a junkyard \u00b7 recycling symbol\nEXACT STAGING: Salvage: a simple wrecked DRONE SHELL below, two short broken rotor stubs and a cracked round casing, with an EMPTY CIRCULAR SOCKET exposed. Above that socket ONE round core is being lifted out by one cropped ceramic mitten, joined by a short clear upward motion stroke. Core has one simple transparent center cut. Sparse parts only, no junkyard, no recycling arrows, no live robot face or body. Clearly show extraction from empty socket.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "29e2a142bf42df5df716cb75ea22d44eb76e5740344400a8e46b4984c0a5bc5f",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/160-salvage.png",
+    "source_sha256": "8239d4802e06b049b687e965aa93662759908ec5cf8bc58cb229da3eac7372be",
+    "export_crop": [
+      81,
+      21,
+      1224,
+      1238
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/salvage.png",
+      "64": "art/icons/moves/exports/64/salvage.png",
+      "48": "art/icons/moves/exports/48/salvage.png",
+      "44": "art/icons/moves/exports/44/salvage.png",
+      "32": "art/icons/moves/exports/32/salvage.png",
+      "24": "art/icons/moves/exports/24/salvage.png"
+    },
+    "framing": {
+      "scale": 0.6009717772772692,
+      "offset": [
+        168,
+        146
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "e737ea4168d552cfc4c72ac92419da5370444f9b49b84b2636170dca16c2597e",
+      "64": "5fd6c95f1241b7f39d84e403aa7432f47d8a3513cded5a333a91e888311efae7",
+      "48": "421a53b5931da6717c77998ee0ecec15cdd8ad319c095719bc083a7a0434a0d4",
+      "44": "e0be17d95571f0cebc5c6c7da4c9ebadc68ac97a03b60e2c85016b5d09a39ae4",
+      "32": "d93acab2ed84746c38bf84c30bf3538e6756169c8043ed5ab16bd0482ce68651",
+      "24": "4121aa6727319f134e0e45a219b89fd0ebf5c0de37c1c25a280bf32d9043f414"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 161,
+    "family": "move_icons",
+    "id": "move-overclock",
+    "path": "art/icons/moves/overclock.png",
+    "name": "Overclock",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Rigger rank II move (asked 13 Nov, C4)",
+    "paint": "A dial on a machine cranked past its last tick, the needle bent.",
+    "avoid": "a speedometer of a real car \u00b7 flames",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A dial on a machine cranked past its last tick, the needle bent.\nAvoid: a speedometer of a real car \u00b7 flames\nEXACT STAGING: The Rigger's Overclock (later Redline binding): close-up of one compact machine panel with ONE LARGE CIRCULAR DIAL. Use 5\u20136 short blank tick marks around only the upper arc. A white pointer starts at center, points clockwise PAST THE FINAL upper-right tick, and has a clearly BENT elbow near its tip. No numerals, letters, flames, speedometer brand, real vehicle, electricity or hand. Entire panel sits safe inside circular chip. Strong flat white with transparent dial face.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "f3319f351e92a874c222d64e3871b4c14c89c97105448fc064b2a999126e38e8",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/161-overclock.png",
+    "source_sha256": "0d23e3e3f800d81e2312055fd1eebbde3e7d0f9fbae05e6ba1210d318b150bcf",
+    "export_crop": [
+      0,
+      16,
+      1242,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/overclock.png",
+      "64": "art/icons/moves/exports/64/overclock.png",
+      "48": "art/icons/moves/exports/48/overclock.png",
+      "44": "art/icons/moves/exports/44/overclock.png",
+      "32": "art/icons/moves/exports/32/overclock.png",
+      "24": "art/icons/moves/exports/24/overclock.png"
+    },
+    "framing": {
+      "scale": 0.5022220797056463,
+      "offset": [
+        200,
+        201
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "6496957a5396737ff9ea82f8a0f3cd0e95b80e294b9f96964fcde6334328b5d2",
+      "64": "ea6c123fdfcb074517659c97d985b6308ff164e33d8e44354af0e46a578545f3",
+      "48": "e220df18061e9502b67b9407d2b46b06963915993194323adf480c4a2b937bb7",
+      "44": "95439f107487803f97ffd4fb5a1d894035f5bb02867c49c5ee4eb030d1b991d4",
+      "32": "4bcb3113336b045691687661bfdd412d2ffaea6dcbb6594a58e22a2a58808f07",
+      "24": "705059ffbacdc61773f6b8d1c233a3005f80068ab4e23856f8cc07d07212f007"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 162,
+    "family": "move_icons",
+    "id": "move-sleight",
+    "path": "art/icons/moves/sleight.png",
+    "name": "Sleight",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Rigger rank III move: swap places",
+    "paint": "Wick and a figment swapping places, two curved arrows crossing between them.",
+    "avoid": "a magician \u00b7 playing cards",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick and a figment swapping places, two curved arrows crossing between them.\nAvoid: a magician \u00b7 playing cards\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Sleight: ONE Wick at lower left, one angular pointed kite-shaped abstract FIGMENT at upper right (not another robot or full person), exchanging places. Exactly TWO CURVED ARROWS between them CROSS in an X-like path, one arrow pointing toward Wick's position and the other toward the Figment's position. Keep heads/boots and figment complete, arrows readable and separated from face. Wick leans and steps into the swap; no magician, hat, cards, portals, floating bowl or halo. Figment is two or three joined angular fragments plus tiny diamond flecks, no eyes.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "ca206b14f65e53c5f306297121484ca891c7323eb380d549fd2e6824e618fe6f",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/162-sleight.png",
+    "source_sha256": "2b54ab8458a94ddb5270c0af3531ae13ee352928fc49aecaadf784ebc369ade4",
+    "export_crop": [
+      0,
+      51,
+      1226,
+      1239
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/sleight.png",
+      "64": "art/icons/moves/exports/64/sleight.png",
+      "48": "art/icons/moves/exports/48/sleight.png",
+      "44": "art/icons/moves/exports/44/sleight.png",
+      "32": "art/icons/moves/exports/32/sleight.png",
+      "24": "art/icons/moves/exports/24/sleight.png"
+    },
+    "framing": {
+      "scale": 0.5228358558013297,
+      "offset": [
+        191,
+        201
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "b37477ae3e2fe32ed4eaeb0116382dd4c15c6c522434e71e9e8a4da59a714d28",
+      "64": "8230393cac4e6adbc698b451abcfae6e25b47751c35257ccac14e172bf5444fb",
+      "48": "77152d7e72a3c2227a4f5d0b49b81467c4ad7c8bbbce66485a7be81d7d96132f",
+      "44": "e120e49d18f0f88cdbbec1fcd382302dbe31145a47acc6107d1e8bd57f959cec",
+      "32": "ba27f224249fa615b279dbcdbe5e1df6d0ac3e573fc17d16a30f707aaf149ea3",
+      "24": "f242715057f959a8c7e29cd1aaa37f4774d469446e81fb5f91fc57c97a9191ec"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 167,
     "family": "figment_icons",
     "id": "figment-glass",
@@ -9677,6 +9907,82 @@
     },
     "upscaled": false,
     "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+  },
+  {
+    "number": 190,
+    "family": "move_icons",
+    "id": "move-triage",
+    "path": "art/icons/moves/triage.png",
+    "name": "Triage",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Mender rank I move (asked 13 Nov, C3)",
+    "paint": "Three short bars of different lengths, a hand pointing at the shortest.",
+    "avoid": "a red cross \u00b7 a hospital sign",
+    "section": "Empathy: Bonds and Tending, and the Mender",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Three short bars of different lengths, a hand pointing at the shortest.\nAvoid: a red cross \u00b7 a hospital sign\nEXACT STAGING: Triage: THREE bold horizontal white BARS aligned at left, stacked vertically, clearly DIFFERENT LENGTHS: top long, middle medium, bottom shortest. From lower right ONE cropped ceramic mitten pointing finger touches/indicates the SHORTEST BOTTOM BAR. No medical cross, hospital sign, person, text, numerals, graph axes, frame or other props. Make bar differences obvious at 32px.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "557bd8d6c6df6ffd5fe2683e4b9ca1d396e2f7d4b0781d6671007b762465e43e",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/190-triage.png",
+    "source_sha256": "76320e68d00d88d560823870ba5bf189af8f0b3dea7e00b5772649ed59da12a2",
+    "export_crop": [
+      33,
+      111,
+      1202,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/triage.png",
+      "64": "art/icons/moves/exports/64/triage.png",
+      "48": "art/icons/moves/exports/48/triage.png",
+      "44": "art/icons/moves/exports/44/triage.png",
+      "32": "art/icons/moves/exports/32/triage.png",
+      "24": "art/icons/moves/exports/24/triage.png"
+    },
+    "framing": {
+      "scale": 0.5997556864938629,
+      "offset": [
+        161,
+        169
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "7c79fea25d491b34c10235f5c7d6e9aa6a8e05c405f41b8465968e5f0de9e316",
+      "64": "a6085ffeafd86bab83a79f5e180fa520d80d5a9aeaed27bcbb66b6212567b3ea",
+      "48": "23ff5ab27f3811136d1e279f730cc41dc2e802632b96aad8dabdebc8a514c400",
+      "44": "5730aefb5708ea1af4eedf96234b5b80176282339130a490e7d23d79fb1e79bf",
+      "32": "ddb48157bbf0054c62bafae0d66efac8847931cd9d11872564adad30f192e41a",
+      "24": "221021cbfe42287c1327d310580690b3d03b771610085f2cb1543615cdd656f5"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
     "number": 208,

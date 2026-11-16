@@ -613,6 +613,21 @@
       "faint_alpha_to_solid_area_ratio": 0.02517
     },
     {
+      "number": 160,
+      "name": "Salvage",
+      "faint_alpha_to_solid_area_ratio": 0.04057
+    },
+    {
+      "number": 161,
+      "name": "Overclock",
+      "faint_alpha_to_solid_area_ratio": 0.05086
+    },
+    {
+      "number": 162,
+      "name": "Sleight",
+      "faint_alpha_to_solid_area_ratio": 0.07607
+    },
+    {
       "number": 171,
       "name": "Taut Thread",
       "faint_alpha_to_solid_area_ratio": 0.06042
@@ -706,6 +721,11 @@
       "number": 189,
       "name": "Syphon",
       "faint_alpha_to_solid_area_ratio": 0.05134
+    },
+    {
+      "number": 190,
+      "name": "Triage",
+      "faint_alpha_to_solid_area_ratio": 0.02036
     },
     {
       "number": 208,
