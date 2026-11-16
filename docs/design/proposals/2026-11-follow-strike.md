@@ -1,410 +1,402 @@
 # Follow strikes: the off hand that swings after the main one (proposal)
 
-16 Nov 2026, first draft. Status: **design, nothing built**. Every number below is PROVISIONAL and a data field (named
-in each row). If it is accepted, the spec changes first ("Hands, off hands and dual wielding" gains 5e, as rules 1.57),
-then the data, then the code. The lead assigns the spec item numbers; this draft calls them F1 to F12. Every item is
-`adjudication: engine`. Sister drafts: `2026-11-guard-2.0.md` (its items 16 and 17, "the shield's own swing" and "the
-Shield Follows", and its P9 and P11, are where this starts) and the "a shield in either hand" lane
-(`lane/shield-either-hand`, nothing committed yet when this was written).
+16 Nov 2026, second draft (the first was reviewed by a rules lawyer, an engine purist and a balance reader; what
+changed and why is in the "Review" section at the end). Status: **design, nothing built**. Every number is PROVISIONAL
+and a data field. If accepted, the spec changes first ("Hands, off hands and dual wielding" gains 5e and amends 5a, 5b
+and Durability 4.1, as rules 1.57), then the data, then the code. Items F1 to F12 are this draft's names; the lead
+assigns the spec numbers. Every item is `adjudication: engine`.
 
-Leon, 16 Nov 2026: his reference is a sword-and-shield moveset where the shield's hits are woven into the weapon's
-attacks. He expects the dual-wield code to carry it and wants it general ("a legendary knife that works just like this
-when you put it in the off hand"). His question: "we have a separate tab for dualweild too the "both" tab, think of how
-the interaction works".
+Sister drafts: `2026-11-guard-2.0.md` (its items 16 and 17 and its P9 and P11 are where this starts; **this draft
+withdraws Guard 2.0's item 17, "the Shield Follows" on P9**, and settles item 16 / P11 jointly with the "a shield in
+either hand" lane: section 5, N2).
+
+Leon, 16 Nov 2026: a sword-and-shield moveset where the shield's hits are woven into the weapon's attacks; the
+dual-wield code should carry it; general ("a legendary knife that works just like this when you put it in the off
+hand"); and: "we have a separate tab for dualweild too the "both" tab, think of how the interaction works".
 
 ## 1. The idea in five lines
 
-1. An item that can sit in the off hand may carry one data block, `phys.follow`. That makes it a **follows** item.
-2. While it is in the off hand, every melee attack **action** you make with the main hand is followed by one strike
-   from it. The strike has its own roll and its own damage line, costs no AP and takes no off-hand penalty.
-3. The follow strike is a **rider**. It hits, wears and does what its own item says, but it is not "a melee hit" for
-   Momentum, Pressure, Smite, perks or Finishers.
-4. A follows item is not a second weapon. It never opens the Both block, never pairs, and does not ask the +2 of rule 5a.
-5. The shield is the first follows item; a legendary off-hand knife (section 8) is the second. A Burst, a throw and a
-   reaction never get a follow.
+1. A row may carry the property word `follows` (a shield, or a melee weapon). In the off hand it is a **follows item**.
+2. Each melee technique you use with a truly one-handed melee weapon in the main hand, as your own action, is followed by
+   **one** strike from it: its own roll at −2, its own damage line, no AP, no off-hand penalty.
+3. The follow is a **rider**: it hits, wears and does what its own row says, but it is not "a melee hit" for Momentum,
+   Pressure, Smite, perks, Finishers or the target's Answers.
+4. A follows item is not a second weapon: it never opens the Both block, never pairs, has no attack of its own in the off
+   hand, and does not ask 5a's +2.
+5. Shields become weapon rows with `follows` (the first follows items); a follows knife (section 8) is the second.
 
 ## 2. The rule, as spec text ready to paste
 
 > ## Rules 1.57: follow strikes (hands 5e)
 >
-> Leon, 16 Nov 2026 (a sword-and-shield moveset: the shield's blows are part of the weapon's attacks). Draft:
-> docs/design/proposals/2026-11-follow-strike.md. Every number is PROVISIONAL and a data field.
+> Leon, 16 Nov 2026. Draft: docs/design/proposals/2026-11-follow-strike.md. Every number is PROVISIONAL and a data field.
+>
+> **5a, amended.** A shield is a weapon row with the properties `shield` and `follows`. A follows item in the off hand
+> is not a second weapon (no +2). A weapon in the off hand beside a main-hand shield is a second weapon and asks +2.
+>
+> **5b, amended.** "Two weapons of one kind" is two weapons of one system whose **off-hand** one is not a follows item.
+> A shield's system is melee.
 >
 > **5e. Follow strikes** (items F1 to F12).
-> 1. **What follows** (F1). An off-hand item whose row carries `phys.follow` is a *follows* item: today the buckler and
->    the Legion riot shield (items.json), and any weapon row that carries the block (the first is the legendary knife
->    Afterword, weapons.json). The block holds the strike's numbers: `mult` (a share of the item's own damage line,
->    default `techniques.json rules.follow.mult` 1.0), `extra` (a to-hit term, default `rules.follow.extra` 0) and `wear`
->    (durability the item loses when it strikes, default `rules.follow.wear` 1).
-> 2. **When it follows** (F2). While a follows item is in your **off** hand, each action of your own, on your own turn,
->    in which your **main** hand made at least one melee roll is followed by **one** strike with the follows item, made
->    after that action has resolved. A Cut, a plain melee attack, a Charge, a Flurry, a Finisher and every other melee
->    technique made with the main hand count, whatever the number of rolls in them: one action, one follow.
-> 3. **Never** (F3). There is no follow after a shot, a Burst, full auto, an aimed shot or a throw (a gun hit at an
->    adjacent foe included); after a reaction or an Answer of any kind (Riposte, Retort, Counter, an opportunity strike, a
->    held strike, Hold the Gap); after an action made with the off hand (Shield Bash, an off-hand Cut); after a paired
->    attack or a both-hands technique; or after another follow.
-> 4. **At whom** (F4). The follow goes at the action's named target, if it is still up and within the follows item's
->    reach. A Finisher's extra targets, a sweep's other targets and an action that names no unit get no follow. If the
->    named target is down, or out of reach, there is no follow and nothing is said.
-> 5. **The roll** (F5). The follow is its own attack: its own d20, rolled with the follows item's own skill (its
->    `hits_with`; a shield's is Durability, F9) plus `follow.extra`, with every to-hit term the attack would have (cover,
->    Pressed, Durability's "holding Guard" roll, the target's Defense). There is no off-hand penalty: the follow is not a
->    paired attack. Its damage is the item's strike line × `follow.mult`, through the melee profile and the target's
->    armour, like any blow.
-> 6. **A rider** (F6). A follow that lands does what its own item says (its row's `when: hit` lines). It does **not**
->    give Momentum, does not shed or add Pressure, does not spend a set-up mark, does not carry Smite or Judged, and is
->    not "a melee hit" for any perk, class move or door. A perk or move that changes how hard or how surely a blow lands
->    (a `roll_mod`, `roll_with` or `damage_mult` on the blow) does change the follow, as it changes any blow; one that
->    reacts to a blow having landed (`hit`, `miss`, a kill or a downing) ignores it unless the line is the follows
->    item's own. A limited use is never spent by a follow. The target answers a follow as any melee attack (its armour,
->    its Guard, its Parry, its Riposte on a miss).
-> 7. **Wear** (F7). The follows item loses `follow.wear` durability for each follow, 5 more on a fumble, as a weapon
->    does. The main weapon's wear is unchanged. An off-hand weapon now wears on every strike it makes (a paired attack's
->    off-hand swing too: before this it never wore).
-> 8. **Not a second weapon** (F8). A follows item is a rider, not a second wielded weapon: it does not open the Both
->    block, and it cannot be the off hand of a paired attack or of a both-hands technique. It keeps its own off-hand
->    block (a shield's techniques; a follows weapon's own off-hand attack and techniques). It asks its own requirement in
->    the off hand (5c), but not the "+2 for a second weapon" of 5a, unless its block says `second_weapon: true`.
-> 9. **A shield's strike** (F9). Every shield carries its own strike line (`items.json phys.strike`: `damage`,
->    `hits_with`, `scales_with`, `reach`), read wherever the shield strikes: the follow, Shield Bash, and (in the main
->    hand, rules "a shield in either hand") the shield's own attack. A shield strikes with **Durability** and grows
->    with **Endurance**; its blows count as Unarmed for mastery (rule 8). Buckler 8, riot shield 10.
-> 10. **A shield in the main hand** (F10). A follows item in the main hand is a weapon with its strike line, and its
->     attack is an ordinary attack. With a shield in each hand the main one attacks and the off one follows. A shield
->     in the main hand with an ordinary one-handed melee weapon in the off hand is ordinary dual wielding: a shield's
->     strike is of the **melee** kind, so the pair opens the Both block (5b), the shield at −1 and the weapon at −3.
-> 11. **A shield's follow gives Guard** (F11). A buckler's or a riot shield's follow that lands gives 1 Guard
->     (`items.json` the shield's `when: hit` line, `resource guard 1`), under the pool's cap, **once a turn**
->     (`limit {per: per_turn, n: 1}`).
-> 12. **Enemies** (F12). An enemy follows only if its data row puts a follows item in its off hand. No enemy has one
->     today; the enemy turn is unchanged.
+> 1. **What follows** (F1). A row whose `phys.props` holds `follows` is a follows item. Only a shield or a melee-system
+>    row (`phys.system: melee`) may carry it; the validator refuses it anywhere else. A follow is always a melee blow,
+>    never a shot or a throw.
+> 2. **When it follows** (F2). While a follows item is in your **off** hand and your main hand holds a one-handed melee
+>    weapon (its row's `hands` is 1H: a heavy weapon held in one hand by Heavyworlder does not count; bare fists and
+>    gloves do), each melee technique you use with the main hand as your own action is followed by **one** follow strike,
+>    after the technique has resolved, if at least one of its rolls was made. One technique, one follow, whatever the
+>    number of rolls (Flurry, a Finisher, a Charge).
+> 3. **Never** (F3). No follow after: a gun's technique or shot, a Burst, a throw, a blow struck with a gun hand's fists;
+>    a reaction or an Answer of any kind, or any action made inside an off-turn window; a technique made with the off
+>    hand (Shield Bash, every shield technique); a both-hands technique or the paired attack; a class move or perk action
+>    that strikes on its own (Launch, Wrecker, the Three-Cut Script; question 6); the old plain `combat/attack` in
+>    melee; another follow.
+> 4. **At whom** (F4). At the unit the technique's **first** roll really struck (after a redirect: Confused, a captive
+>    held as a shield, Duck and Roll), if it is a foe, still up and within the follows item's reach. Else there is no
+>    follow and nothing is said. A Finisher's extra targets and a sweep's later targets never draw it.
+> 5. **The roll** (F5). Its own d20 with the follows item's own skill (`hits_with`; a shield's is Durability) plus
+>    `rules.follow.extra` (−2), with every to-hit term a melee blow has (cover, the target's Defense, Durability's
+>    "holding Guard" roll). No off-hand penalty. A unit with no character sheet (an enemy, a companion) rolls with its
+>    stat block's attack bonus, as any off-hand strike of it does today. Damage: the item's line × the follow
+>    technique's `numbers.mult` (1.0) × any of the item's own sizing lines, through its profile and the target's armour.
+> 6. **A rider** (F6). A follow that lands fires its own item's `when: hit` lines (`with_this`). It gives no Momentum,
+>    sheds or adds no Pressure, spends no set-up mark, carries no Smite or Judged, and is not "a melee hit" for any perk,
+>    class move, door or deed. Lines that **size** a blow (`attack`, `to_hit`, `attack_roll`, `dealing`) apply to it as to
+>    any blow; lines that **react** to a blow (`hit`, `miss`, a kill, a downing) ignore it unless they are the follows
+>    item's own. A follow never spends another item's limited use: such a line applies only while a use is left. The
+>    follows item's own lines spend their limits as normal. The target answers a follow with its armour, Guard soak and
+>    Parry, but a **missed follow draws no Answer** (no Riposte, Keep Back or Retort).
+> 7. **Wear** (F7). The follows item wears as any weapon does when it strikes (1, and 5 more on a fumble). At 0
+>    durability it makes no follow; Worn, it takes the melee −10%. The main weapon's wear is unchanged.
+> 8. **Not a second weapon** (F8). In the off hand a follows item opens no Both block, cannot be the off hand of a paired
+>    attack or a both-hands technique, and has **no off-hand attack of its own**: its off-hand block holds only what
+>    another property gives (a shield's techniques). It asks its own requirement in the off hand (5c), never 5a's +2.
+> 9. **A shield's strike** (F9). Each shield row has its own line: `damage`, `hits_with: durability`,
+>    `scales_with: [strength]`, `range_tiles: 1`, `ap_cost.attack: 2`, `mastery_family: unarmed` (rule 8). Buckler 6,
+>    riot shield 8. Shield Bash strikes with it at `numbers.mult` 2.5, for 1 AP.
+> 10. **A shield in the main hand** (F10). It is a melee weapon with its line. Shield in each hand: the main one attacks,
+>     the off one follows. Shield in the main hand, ordinary one-handed melee weapon in the off hand: ordinary dual
+>     wielding (5b, both melee; the off weapon asks 5a's +2), no follow. What else a main-hand shield keeps (Shield
+>     Bash, Parry's +2, the shield's Guard bonus, whether two shields' Defense adds) is the "shield in either hand"
+>     lane's to rule; until then shield techniques stay off-hand only.
+> 11. **A shield's follow gives Guard** (F11). A shield's follow that lands gives 1 Guard, under the pool's cap, once a
+>     turn per unit across every shield it holds (the modifier row `mod_follow_guard`, named in each shield's
+>     `variant_mods`). Shield Bash and a main-hand shield's own blows never give it.
+> 12. **Enemies and companions** (F12). A unit follows only if its off hand holds a follows item (an enemy: only if its
+>     data row puts one there; none does today). The enemy turn and the AI are unchanged.
 
-**Where a lead ruling cannot hold as written** (each with the nearest rule that can, already in the text above):
+**Where a lead ruling cannot hold as written** (the nearest rule that can is in the text above):
 
 | Ruling | What does not hold | The nearest rule |
 |---|---|---|
-| R1 "no off-hand penalty", its "own damage line" | A follows weapon (the knife) at its full line would be a free second weapon: a Combat knife's 15 after every 26-point gladius blow is +58% (section 7). | `phys.follow.mult` (F1): a follows weapon strikes at a share of its line. A shield's line is its own and needs no share (`mult` 1). |
-| R2 "sword + shield shows the main block only" | Today the shield already has its own off-hand block (Shield Bash, Raise Shield, Shield Wall: `techView.ts:178`, `b.shield`), and it must stay. | "No Both block" holds. The main block gets the follow line (section 9); the shield's off block is unchanged. |
-| R5 "+1 Guard" (no limit) | Per landed follow, two or three follows a turn is +2 to +3 plates. That funds Slam (2 Guard) every turn with no Guard technique, and the Guard technique stops mattering (Reader 3's Guard count). | +1 Guard, under the cap, **once a turn** (F11), a data `limit`. The damage still comes on every action. |
-| R5 "does not count as a melee hit for perks" | Some perks shape the blow (Iron Grip's +%, the Bulwark perk's +2% a Guard), some react to it (Smite, the closing bonus, Pressure shed). Treating both kinds the same either kills R6 (Durability's `roll_with` is a perk-like line on `attack`) or lets Smite ride. | F6's split: sizing lines (`attack`, `to_hit`, `attack_roll`, `dealing`) see the follow; "it landed" lines (`hit`, `miss`, kill, downed) do not, except the follows item's own (`with_this`). No limited use is spent by it. |
-| R6 "the attacker's usual skill for that item" | A shield has no skill today: it strikes as `fists` (Raw Power), `physical/core.ts:95`. | F9: the shield's own `hits_with` (Durability recommended; question 2). |
-| R9 "the preview shows both lines (as the paired attack's preview does today)" | The paired attack has **no** preview today: `paired` is not in `ATTACK_MODES` (`apps/web/src/game/techView.ts:41`), and the target card says "Pick an attack to see the odds" (`screens/combat.js:1390`). | The follow's line comes from the engine's technique preview (section 9, field `follow` on `TechPreview.attacks`); the paired attack gets the same treatment in the same slice. |
+| R1 "its own damage line, no off-hand penalty" | A shield follow at its full chance makes a light blade + riot shield 117% to 123% of the greatsword (section 7), over the 115% band. | No off-hand penalty, but the follow technique's `extra` −2 (F5) and smaller lines (6 / 8). |
+| R1 "each main-hand melee attack action" | The engine has three melee attack paths: techniques (every main-block row, Cut included), the old `combat/attack` melee, and class/perk actions that call `strike()` themselves. Only the first has one tail where the follow can sit without a mark. | Techniques only (F2, F3); class and perk strikes are question 6. |
+| R2 "sword + shield shows the main block only" | The shield's own off block (Shield Bash, Raise Shield, Shield Wall: `techView.ts:178`) must stay. | No Both block; the off block keeps the shield's techniques and nothing else (F8). |
+| R4 "a follows item in the main hand is just a weapon" | A shield is an `items.json` row with no weapon line; `WEAPON[u.weapon]` misses in `pairedAttack`, `attackApCost`, `weaponSystem` (`combat.ts:2283`). | Shields become weapon rows (N2, section 5). |
+| R5 "+1 Guard" | Per landed follow it is 2 to 3 plates a turn, which funds Slam (2 Guard) every turn. | Once a turn per unit, a shared limit (F11). |
+| R5 "not a melee hit for perks" | Sizing lines must still see it, or R6 (Durability's `roll_with`) fails. | F6's split: sizing lines see it, reacting lines do not. |
+| R6 "the attacker's usual skill for that item" | A shield has no skill today: it strikes as `fists` (Raw Power), `physical/core.ts:95`. | F9: `hits_with: durability`. |
+| R7 "wear when it strikes" | The off hand never wears today: every swap sets `maxDur = 0` (`core.ts:376`, `combat.ts:2296`, `:2531`). | F-b, the off hand's durability on the unit, in `withOffHand` only. |
+| R9 "as the paired attack's preview does today" | The paired attack has no preview (`paired` is not in `ATTACK_MODES`, `techView.ts:41`). | The follow's line is a `previewTechnique` attack entry (N3); the paired attack gets one in the same slice. |
 
-R3, R4, R7 and R8 hold as written (R4 with F10's answer: a shield strike is of the melee kind). R1's "one follow per
-attack action" needs **no** new limit scope (Reader 1 found none `per_action`): the trigger `acted` already fires
-exactly once after each action (`combat.ts:2563`, fired from `game.ts:1736`), so the follow hangs off it.
+R3 and R8 hold as written.
 
 ## 3. The Both block and every hand combination
 
-"Blocks" are the Attack tab's areas (`apps/web/src/game/attackAreas.ts:8`): main, off, both, other.
+Blocks are the Attack tab's areas (`apps/web/src/game/attackAreas.ts:8`): main, off, both, other.
 
-| Main hand | Off hand | Blocks shown | What a main-hand melee row does | What the preview shows |
+| Main hand | Off hand | Blocks | A main-hand melee technique | Preview |
 |---|---|---|---|---|
-| 1H melee weapon (gladius) | shield (buckler) | main, off (shield techniques), other. **No Both.** | the main strike, then the buckler's follow at the same target | the main line ("Cut · 72% · 26") and under it "then Buckler · 41% · 8, +1 Guard" |
-| shield | shield | main (the main shield's strike and its techniques), off (the off shield's techniques), other. No Both (the off one follows). | the main shield's attack, then the off shield's follow | both shield lines |
-| shield | focus (Evoker, Emanator) | main (the shield's strike), off (the focus's own rows, as today), other | the shield's attack; no follow (a focus does not follow) | one line |
-| shield | ordinary 1H melee weapon | main, off, **Both** (5b: two melee weapons, the shield's strike is melee) | the shield's attack only; no follow (the off weapon carries no `phys.follow`) | one line; the Both block's paired row shows two lines (main −1, off −3) |
-| 1H melee weapon | follows knife (Afterword) | main, off (the knife's own attack and techniques, at its full line), other. **No Both** (F8). | the main strike, then Afterword's follow at `mult` 0.25 | "then Afterword · 70% · 4, Bleeding (Body save)" |
-| 1H melee weapon | ordinary 1H melee weapon | main, off, Both: **unchanged** from today | the main strike only | one line; the paired row two lines |
-| 2H weapon | none (2H fills both hands) | main, other | the strike only | one line |
-| gun (pistol) | shield | main (the gun), off (shield techniques), other. No Both (one gun, no second melee weapon; a shield is not a gun). | a shot: **no follow** (F3), even at an adjacent foe | one line |
-| gloves (knuckledusters, the fists) | shield | main (the gloves' unarmed rows; no Open Hand forms: those need gloves in both hands, `techniques.json:172` `comes_while`), off (shield techniques), other | the gloved blow, then the shield's follow | two lines |
-| Evoker blade (a weapon and a focus) | shield | main (its melee rows and its Sigil rows), off (shield techniques), other | a blade blow, then the follow; drawing or Evoking a glyph is not a melee attack and gets none | two lines on the blade's melee rows |
+| 1H melee (gladius) | shield | main, off (shield techniques), other. **No Both.** | the technique, then the shield's follow | "Cut · 72% · 47" and "then Buckler · 47% · 4" |
+| shield | shield | main (the shield's melee techniques), off (shield techniques), other. No Both. | the main shield's blow, then the off shield's follow | two lines |
+| shield | focus | main, off (the focus's rows), other | no follow (a focus does not follow) | one line |
+| shield | ordinary 1H melee (sabre) | main, off, **Both** (5b) | no follow (the off weapon is not a follows item); the sabre asks 5a's +2 | one line; the Both row two |
+| 1H melee | follows knife (Afterword) | main, other (Afterword has no off block of its own). **No Both.** | the technique, then Afterword's follow at ×0.25 | two lines |
+| 1H melee | ordinary 1H melee | main, off, Both: **unchanged** | no follow | one line; the Both row two |
+| follows knife (Afterword) | ordinary 1H melee | main, off, Both (the off one is not a follows item) | no follow | as today |
+| 2H weapon | none | main, other | no follow | one line |
+| heavy 2H held in one hand (Heavyworlder) | shield | main, off (shield techniques), other | **no follow** (the main weapon's row is not 1H) | one line |
+| gun | shield | main (the gun), off (shield techniques), other | a gun technique: no follow; a melee blow with the gun hand (`combat/attack` melee, fists fallback): no follow | one line |
+| fists or gloves | shield | main (the unarmed rows; no Open Hand forms, which need gloves in both hands), off, other | the gloved Strike, then the follow | two lines |
+| Evoker blade | shield | main (its melee and Sigil rows), off, other | a blade technique, then the follow; drawing or Evoking a glyph gets none | two lines on melee rows |
 
 ## 4. Built from
 
 | Rule | Carried by (existing primitive) | Where |
 |---|---|---|
-| The off hand's strike made as its own attack, with its own weapon, mods, jam and skill | `inHand`: swaps the off hand's weapon (or, for a shield, the hand behind it) into the main slots for one strike | `packages/engine/src/physical/core.ts:364-380` |
+| Once per technique, after it resolved, own action only | the tail of `useTechnique` (paired halves carry `args._pair`; Answers, watches and opportunity strikes never pass through it) | `physical/core.ts:944-950`, `:1083-1087` |
+| The preview's second line | the tail of `previewTechnique`; `strike()` in a preview pushes into `t.pv.attacks` | `physical/core.ts:858`, `:436` |
+| At the unit really struck | `act.real` (set at the first `attack_roll`), returned as `StrikeResult.target` | `physical/core.ts:451-452`, `:474` |
+| The off hand's strike as its own attack (its weapon, mods, jam, skill, `swapMain`) | the weapon branch of `inHand`, routed through `withOffHand` | `physical/core.ts:375-379`; `combat.ts:2528` |
 | One attack through every hook, the log and the fx | `strike()` → `resolveAttack` | `physical/core.ts:401-458`; `combat.ts:1403-1506` |
-| No Momentum from the follow | a technique's strike is not the plain melee attack: `isPlainMelee(def)` false → `noMomentum` | `physical/core.ts:163`, `:441`; `combat.ts:1488` |
-| No Recoil, the strike numbered in a named volley | `StrikeOpts.volley` → `asVolley(name)`; `noRecoil` inside a volley | `physical/core.ts:409`, `:445`; `combat.ts:413`, `:433` |
-| `free_tech` false for the follow (Fire Discipline and every "free technique" line ignore it) | the predicate reads `ctx.tech` / `ctx.volley` | `effects/triggers.ts:266` |
-| Once per action | the trigger `acted`, fired once after each successful action, with the action's target `t` | `combat.ts:2563-2566`; `game.ts:1736`, `:1763-1771` |
-| At the named target, only if it is up | `acted`'s ctx `t`; the predicate `target_alive` | `game.ts:1736`; `effects/triggers.ts:182` |
-| Within the follows item's reach | `canStrike` (reach and sight, the strike's own preview) | `physical/core.ts:488` `canStrike` (used by Riposte, `physical/melee/answers.ts:21`) |
-| Durability's roll while holding Guard (R6) | `roll_with` on `attack`, mode `melee` already listed | `data/skills.json:83-104` |
-| The item's own on-hit lines (a shield's +1 Guard, the knife's Bleeding) | an item effect `when: hit` with `if: {with_this: true}`; ops `resource`, `condition` | `effects/triggers.ts:212-239` (`madeWith`), `:239` (`with_this`) |
-| Guard +1 under the cap, once a turn | op `resource` (capped by the pool); `limit {per: per_turn, n: 1}` | `docs/ENGINE-HOOKS.md` "Limits and scopes"; `physical/core.ts` `addGuard` |
-| Guard's soak, Parry, Riposte on the target's side | unchanged: they read the attack on the target | `physical/guard.ts`; `physical/melee/answers.ts:15-24` |
-| The shield's techniques stay in the off block | `shieldOf`, the shield block | `physical/core.ts:93`; `apps/web/src/game/techView.ts:178` |
-| Requirements in the off hand | the gear gate checked in the hand it goes to (5c) | `character.ts` (gear gates); `secondWeaponWhy` `character.ts:1370-1376` is the one place the +2 is added |
-| Mastery credit for a kill | the kill counts for the weapon of the final hit (rule 8; a shield's is Unarmed) | `src.weapon` on the damage source, `combat.ts:1342` |
-| The follow's wear (the formula) | the one wear line: 1 an attack, 5 more on a jam or fumble | `combat.ts:1456` |
-| Enemies unchanged | `unitFromEnemy` puts nothing in `offItem` unless the row says so | `combat.ts` `unitFromEnemy`; `data/enemies.json` (no shield: only the AI note mentions one) |
-| The fx of the second swing | the ordinary `melee` fx event of the follow's own roll; the `guard` fx (`why: gain`) for its plate | `combat.ts:1458`; `physical/core.ts:123` (`guardFx`); `apps/web/src/game/fx/guard.ts:161` |
-
-**Can the paired-attack path carry it with a data field?** No. `pairedAttack` (`combat.ts:2281-2301`) is its own action
-(`combat/paired`, `game.ts:1669`), paid once and made only from the Both block; the follow has to ride **other**
-actions (Cut, a Charge, a Finisher), and the plain melee row of the main block is itself a technique (Cut,
-`techView.ts:175`). What the paired path has that the follow needs is its swap of the off hand into the main slots,
-and that swap already exists in general form in `inHand` (`core.ts:364`), which the follow uses. So the paired path is
-not touched by the follow; it is touched only by F8 (it must refuse a follows item) and F7 (its off-hand swing must
-wear).
+| No Momentum, no Finisher chain | not Cut (`isPlainMelee` false → `noMomentum`); `noteChain` is never reached | `physical/core.ts:163`, `:441`, `:947` |
+| No Pressure added or shed | `StrikeOpts.noPressure` (`strikeNoPressure`), extended to the melee shed | `physical/rules.ts:35-42` |
+| `free_tech` false for the follow | the follow row is not `free` | `effects/triggers.ts:266` |
+| Durability's roll while holding Guard (R6) | `roll_with` on `attack`, mode `melee` | `data/skills.json:83-104` |
+| A shield's and a knife's own on-hit and sizing lines | a modifier row named in the row's `variant_mods`, held by `instanceMods` for an instance in a hand; matched by `with_this` (the strike's `src.weapon` is the shield's own id once shields are weapon rows) and `mode: [follow]` (reads `ctx.tech`) | `effects/collect.ts:206-208`; `effects/hooks.ts:193-211`; `effects/triggers.ts:212-224`, `:164` |
+| Once a turn across every shield | `limit {per: per_turn, n: 1}` on one shared modifier row (the limit is keyed by the item, so both shields spend one use) | `effects/triggers.ts:611-616` |
+| The +1 Guard under the cap | op `resource`, `addGuard` | `physical/core.ts` `addGuard`; `guardFx` |
+| Requirements in the off hand; no +2 | the gear gate (5c); `secondWeaponWhy` skips an off-hand row with `follows` | `character.ts:1370-1376` |
+| The follow's wear | the one wear line (1, 5 more on a fumble) | `combat.ts:1456` |
+| The Both block | one engine test `pairs(u)` (F-d) | `combat.ts:2281`; `physical/core.ts:1049-1063`; `descriptors.ts:554` |
+| Kill credit, mastery | `src.weapon` (the shield's own id), its row's `mastery_family` | `combat.ts:1342` |
+| The fx | the `melee` event of the follow's own roll; the `guard` event for its plate | `combat.ts:1458`; `apps/web/src/game/fx/guard.ts:161` |
+| Enemies unchanged | `unitFromEnemy` fills the off hand only from the row | `combat.ts` `unitFromEnemy` |
 
 ## 5. Needs a new primitive
 
-Four, each general. The lead approves each one; none is built until then.
+Each one is the lead's to approve; none is built until then.
 
-1. **N1, `phys.follow` (a follows block on an item row).** The flag of R1 with its three numbers (`mult`, `extra`,
-   `wear`, and `second_weapon` for F8), on any row that can sit in the off hand (`items.json`, `weapons.json`). One
-   reader, `followOf(u)`, which returns the block of the off-hand item or null. It is read in five places: the follow
-   rule (N3), the Both block's one test (below), `pairedAttack`/`pairedWhy`/`pairedPad` (refuse it), `secondWeaponWhy`
-   (skip the +2), and the preview (section 9). *Nearest piece:* `phys.props` (`'shield'`, `'light'`, `'bare'`) is a list
-   of words; a word cannot carry the numbers, so a prop is not enough.
-2. **N2, an off-hand item's own strike line, `phys.strike`** (= Guard 2.0's P11, shared with the either-hand lane).
-   `damage`, `damage_type`, `hits_with`, `scales_with`, `reach` on a non-weapon row; `inHand` reads it before its
-   `fists` fallback (`core.ts:367-372`), and so do `strikeWeapon` and Shield Bash. *Nearest piece:* `SHIELD_HAND =
-   'fists'` (`core.ts:95`), which makes every shield strike the same bare hand: it cannot tell a buckler from a riot
-   shield, and it ties the shield to Raw Power. If the either-hand lane builds P11 first, this draft uses it unchanged.
-3. **N3, the follow rule** (one engine site). A handler on `acted` (`physical/core.ts`, beside the paired techniques):
-   if the unit marked this action as "struck in melee with the main hand, on its own turn" and its off hand holds a
-   follows item, it makes one `strike()` with hand `off`, the technique row named by `techniques.json
-   rules.follow.technique` (`"follow"`, a row nobody learns and no pad shows), `volley: 'follow'`, `rider: true`. The
-   mark is a transient field set in `resolveAttack` (melee, not swapped, `active(cb) === att`, no reaction window, not a
-   rider) and cleared at `acted`. *Nearest pieces:* Guard 2.0's P9 (a `strike` op on a data trigger) would need a further
-   predicate to know the action made a main-hand melee roll, and the `mark`/`flag` pair cannot be set on the right roll
-   because attack hooks do not carry `ctx.hand` (`effects/triggers.ts:174` defaults it to `main`, so Shield Bash would
-   mark too). If P9 is approved for Hold the Gap, N3 can later become one data line on P9; today N3 is the smaller piece.
-4. **N4, the rider rule** (`StrikeOpts.rider`). One flag on a strike, read in two places: `resolveAttack` skips its
-   built-in gains for a rider (Momentum is already skipped; also the Pressure shed and add, `physical/rules.ts:35`, the
-   set-up mark, the closing bonus), and the trigger runner skips the attacker's own `hit`, `miss`, kill and downed item
-   lines for a rider unless the line is `with_this` the striking item, and never spends a limited use on a rider.
-   *Nearest pieces:* `noMomentum` and `noPressure` (`physical/types.ts:66`, `core.ts:404-405`) stop two gains only and
-   do nothing for items. `free_tech: false` would make every "free technique" line skip the follow, but no perk that
-   counts melee hits (Smite, Iron Grip's sister lines, Charge Carries) reads it. Without N4, every such row would need
-   a new negative predicate (there is no `not_mode`), and the hundredth perk would need one too.
+1. **N1, two data words.** The property `follows` (`techniques.json rules.props`, `tools/validate.py`'s prop set, with
+   the rule "only on a shield or a `phys.system: melee` row") and the technique group `follow` (in `rules.groups.melee`
+   and `group_names`; no `tech_group` row names it). One reader, `followOf(u)`: the off-hand weapon if its row has the
+   word, else null (shaped like `shieldOf`, `core.ts:93`). No numbers on the flag: the to-hit and multiplier live on the
+   `follow` technique row (`numbers.extra` −2, `numbers.mult` 1.0) and per item on its modifier row; the wear is the one
+   wear line.
+2. **N2, shields as weapon rows (a ruling, not a primitive; shared with the either-hand lane, which owns Guard 2.0's
+   P11).** `buckler` and `riot_shield` move to `weapons.json` under their own ids (category `shield`, slot off hand,
+   `phys.props [shield, follows]`, `phys.system melee`, the line of F9, Defense and Movement kept as the row's
+   `effects`, durability 150). Then the strike's `u.weapon` is the shield's id, so `WEAPON[...]`, `with_this`, kill
+   credit and the AP all work, and P11 and the `fists` fallback (`SHIELD_HAND`) go away. The sites that read "a shield"
+   become one test of the `shield` prop: `shieldOf` (`core.ts:93`), `unitFromCharacter`'s `offItem` (`combat.ts:557`),
+   `answers.ts:44` `shieldInOffHand`, `gearBonus` (`character.ts:721`) and `secondWeaponWhy`'s "shields are not
+   weapons". Both lanes must take this answer before either builds; if the either-hand lane keeps P11 instead, P11 needs
+   an `ap` field and must be read by `pairedAttack`, `pairedWhy`, `pairedAp`, `attackApCost` and `weaponSystem`.
+3. **N3, `follow(t)`**, one engine function in `physical/core.ts`, called from the tail of `useTechnique` (real) and of
+   `previewTechnique` (preview). It runs when: `!t.args._pair`, `t.hand === 'main'`, `t.def.system === 'melee'`, the
+   main weapon is a melee arm whose row is `hands: 1H`, `t.wield` is not a throwable, `!cb.reacting`, `!cb.window`,
+   `followOf(u)`, and `scratch(t).real` names a foe still up within reach. `strike()` records `scratch(t).real` (the
+   `act.real` of the first non-thrown melee roll of the main hand). It builds a Tech for the `follow` row with hand
+   `off` and calls `strike()` directly (never `useTechnique`: no AP, no Momentum cost, no chain, no "uses Follow"
+   line), with `rider: true` and `noPressure: true`. The `follow` row is not `free`, not `particular`, has no
+   `comes_with`, is learned by nobody, so it is never padded. In a preview the attack entry carries `follow: true`
+   (F-c). It runs inside the action, so the field's harm-to-a-friend refusal (`game.ts:1734`) covers it.
+4. **N4, the rider rule** (`StrikeOpts.rider`, read through one helper `strikeRider(att)` beside `strikeNoPressure`).
+   Three readers: the trigger runner skips the attacker's `hit`, `miss`, kill and downed item lines for a rider unless
+   the line is `with_this` the striking item, and spends no limited use of a line that is not the follows item's own
+   (such a line applies only while a use is left); the melee Answers (`physical/melee/answers.ts` `on_miss`: Riposte,
+   Keep Back, Retort) do not answer a rider's miss; the melee Pressure shed (`physical/rules.ts:35`) reads
+   `strikeNoPressure` as the ranged branch already does.
 
-**Fields, not primitives (listed so the review sees them):**
-- **F-a, `ctx.hand` on the attack hooks** (`attack_preview`, `attack_target`, `attack_roll`, `on_hit`, `on_miss`):
-  `'off'` while `inHand` has swapped the off hand in, else `'main'`. The existing predicate `hand` then tells the truth
-  (today it always says `main` on an attack).
-- **F-b, the off hand's durability on the Unit** (`offDur`, `offMaxDur`, from `c.offHand`'s GearState,
-  `character.ts:83`) and its write-back beside the main one (`game.ts:2384`). This also fixes a defect: `inHand` and
-  `pairedAttack` set `maxDur = 0` for the off hand (`core.ts:376`, `combat.ts:2296`), so an off-hand weapon never wears.
-- **F-c, `follow: true`** on the follow's entry in `TechPreview.attacks`, and on its `melee` fx event (through `ro.fx`,
-  `core.ts:443`).
-- **F-d, one engine test for the Both block** (`pairs(u)`: two weapons of one system, neither a follows item, no
-  shield in the off hand). It replaces four copies of the rule: `descriptors.ts:554`, `core.ts:1053-1054`
-  (`pairedWhy`), `core.ts:1063` (`pairedPad`) and the client's own `techView.ts:158`. The client reads the engine's
-  descriptor `hand: 'both'` and stops deciding it. This shrinks code; it adds no export if `pairedPad` returning `[]`
-  is the signal.
+**Fields and consolidation, not primitives:**
+- **F-b, the off hand's durability on the unit** (`offDur`, `offMaxDur` from `c.offHand`'s GearState, written back
+  beside the main one at `game.ts:2384`), swapped in by `withOffHand` only (`combat.ts:2528`). The other four copies of
+  the swap (`inHand`'s two branches, `pairedAttack`, `ranged/press.ts:90`) are routed through it (one copy, rule 3).
+  Until question 4 is ruled, `withOffHand` swaps the durability in only for a follow; every other off-hand strike keeps
+  `maxDur = 0` as today.
+- **F-c, `follow: true`** on the follow's `TechPreview.attacks` entry and its `melee` fx event (`ro.fx`, `core.ts:443`).
+- **F-d, `pairs(u)`**: two weapons of one system whose off-hand one carries no `follows`. Read by `pairedAttack`
+  (which checks no system today), `pairedWhy`, `pairedPad`, `descriptors.ts:554` and, through the descriptor, the
+  client (`techView.ts:158` stops deciding it).
+- **F-e, the off hand of a follows item offers no attack** (`usable(cb, u, 'off')` lists only `comes_with` techniques of
+  its other properties when the off row has `follows`).
 
-**Data, not primitives:** the technique row `follow`; `rules.follow` (`technique`, `mult`, `extra`, `wear`); the
-shields' `phys.strike`, `phys.follow` and `when: hit` Guard line; Afterword's row.
+**Data, not primitives:** the technique row `follow`; the shields' rows (N2); `mod_follow_guard` and
+`mod_afterword` (items.json modifier rows); Afterword's row; Shield Bash's `ap` and `mult`.
 
 ## 6. Collisions
 
-| # | Item, perk or move | What would change | Ruling proposed |
-|---|---|---|---|
-| 1 | Momentum (+1 a plain melee hit, `combat.ts:1488`) | a follow would double the chain's fill | none from a follow (the technique is not Cut; N4 states it) |
-| 2 | The Breaker's closing bonus (first melee attack a turn, `classes.json:213`) | a follow is never the first attack, but if the main missed it could be read as one | the follow never takes it (N4) |
-| 3 | Charge Carries (mode `charge`, `classes.json:345-420`) | the follow is mode `melee`, tech `follow`, so its predicates never match | unchanged, follows the Charge once |
-| 4 | Smite (once a turn, "a hit that kills leaves it for a later hit", `classes.json:2467`) | the follow would pick it up and put Judged on | never rides a follow (N4: a `hit` line not `with_this`) |
-| 5 | The Bulwark perk (+2% a Guard held, `perks.json:23-40`) | a sizing line: it multiplies the follow, as any blow; and the follow's +1 Guard feeds it | kept (F6): it shapes the blow; the Guard is once a turn |
-| 6 | Iron Grip, Last Charge (melee damage multipliers, `perks.json:816`, `:7360`) | sizing lines | kept (F6); their per-turn uses are never spent by a follow |
-| 7 | Pressure (a melee hit sheds the attacker's Pressure, `physical/rules.ts:35`) | twice a turn | not shed by a follow (N4) |
-| 8 | Guard's `roll_with` (modes melee, paired; `skills.json:83-104`) | the follow is mode `melee`: it rolls with Durability while holding Guard | intended (R6) |
-| 9 | Flurry (two strikes, `techniques.json:598`) | per hit it would be two follows | one action, one follow (F2) |
-| 10 | Mastery credit (rule 8: shield bashes count as Unarmed) | a follow kill | credits the follows item's family (a shield: Unarmed; Afterword: light blades) |
-| 11 | Retort, Close Guard, Set Against the Blow (`skills.json:116-243`) | answer foe blows; no enemy has a follows item | unchanged; when one does, a follow is a melee blow a Retort answers (once a round, its own limit) |
-| 12 | Riposte, Parry on the foe's side | a missed follow can be Riposted | intended: a real swing has a real risk |
-| 13 | Sidestep "ignores a carried shield" (`techniques.json:860`), Eyes in the Back (`perks.json:2290`) | read the shield as defence | unaffected |
-| 14 | Legion gladius "Shield Partner" (+1 Defense with a shield, `weapons.json:2523-2528`) | the natural follow partner | unchanged |
-| 15 | Open Hand (forms need gloves in both hands, `techniques.json:172`) | a shield already turns them off | unchanged |
-| 16 | **Shield Bash** (`techniques.json:2814-2845`: 2 AP, bare hand ×1.5 with Raw Power, 1 Guard, +1 Momentum, push) | the follow is a small free shield swing; Bash must stay the big one | Bash stays: it is the shield's own strike line × `numbers.mult` **1.9** (buckler 15, today's number; riot shield 19), hitting with the shield's `hits_with` (Durability), still the only shield blow that pushes and gives Momentum. Bash is made with the off hand, so it gets no follow (F3) |
-| 17 | The Defender's plate, Interpose, Draw Fire (Revision 3 moves) | none read melee hits | unchanged |
-| 18 | `deeds.ts:146-147` (one volley is one attack) | a follow would count as a second attack for "three hits in a turn" deeds | a rider is not counted (N4's second reader) |
-| 19 | The paired attack | a follows item must not pair | refused (F8, F-d) |
-| 20 | `free_tech` lines (Fire Discipline) | the follow is in volley `follow` | never free (already so, `triggers.ts:266`) |
+| # | Item, perk or move | Ruling |
+|---|---|---|
+| 1 | Momentum (+1 a Cut hit) | none from a follow (not Cut) |
+| 2 | The Breaker's closing bonus | cannot ride: `attackedTurn` is set by the main technique first (`core.ts:948`) |
+| 3 | Charge Carries | the Charge gets one follow; its predicates never match the follow's mode |
+| 4 | Smite, Judged | never ride a follow (N4) |
+| 5 | The Bulwark perk (+2% a Guard), Iron Grip, Last Charge, Weight of the Wall | sizing lines: they shape the follow; their limited uses are not spent by it |
+| 6 | Pressure shed on a melee hit | not by a follow (N4) |
+| 7 | Durability's `roll_with` (mode melee) | the follow rolls with Durability while holding Guard (R6) |
+| 8 | Flurry, Finishers | one technique, one follow, at the first roll's real target |
+| 9 | Mastery credit | the follows item's family (a shield: Unarmed; Afterword: light blades) |
+| 10 | Riposte, Keep Back, Retort on the foe's side | a missed follow draws none (F6); a landed one meets armour, soak and Parry |
+| 11 | Sidestep "ignores a carried shield", Eyes in the Back | unaffected |
+| 12 | Legion gladius "Shield Partner" | must read the `shield` prop, not `items.json` category (N2's site list) |
+| 13 | Open Hand forms | a shield already turns them off |
+| 14 | **Shield Bash** | the shield's own line × 2.5, **1 AP**, 1 Guard, no follow (off hand), still the only shield blow that pushes and gives Momentum |
+| 15 | Dance of Iron and other deeds (`deeds.ts:146-154`) | they count attacks aimed at a PC, not the attacker's hits: nothing to change |
+| 16 | The paired attack | refuses a follows item (F-d) |
+| 17 | Guard 2.0's item 17 (the Shield Follows on P9) | withdrawn in favour of this draft; P9 stays only if Hold the Gap needs it |
 
-**Found while reading (not this draft's to fix; for the consolidation list):** Guard's pool is 4 at most in data
-(`techniques.json:28`, `skills.json:53`) but 5 in the Defender's rule text (`classes.json:72`) and in a comment in
-`fx/guard.ts:3`; each plate soaks 6 (`techniques.json:35`) but the same texts say 10 (`classes.json:73`, `fx/guard.ts:6`).
-The client copies the paired attack's numbers into its own text in three places (`techView.ts:162`, `:176`, `:179`,
-beside `descriptors.ts:442`, `:555`): one copy of the rule is the engine's descriptor text (rule 3).
+**Found while reading (for the consolidation list, not this draft):** Guard's pool is 4 in data (`techniques.json:28`)
+but 5 in `classes.json:72` and `fx/guard.ts:3`; a plate soaks 6 (`techniques.json:35`) but 10 in the same texts. The
+client copies the paired attack's numbers into its own text (`techView.ts:162`, `:176`, `:179`).
 
-## 7. Numbers (estimates by arithmetic; nothing was run)
+## 7. Numbers (by arithmetic; nothing was run)
 
 **The fields, all PROVISIONAL:**
 
 | Field | Value | Why |
 |---|---|---|
-| `techniques.json rules.follow.mult` | 1.0 | a shield's line is its own |
-| `rules.follow.extra` | 0 | R1: no off-hand penalty |
-| `rules.follow.wear` | 1 | the one wear rule |
-| `items.json buckler.phys.strike` | `damage 8, hits_with durability, scales_with [endurance], reach 1` | the light-blade dealer gains about 10% (below) |
-| `items.json riot_shield.phys.strike` | `damage 10`, the rest as the buckler | the heavier shield, paid for by −0.5 Movement |
-| each shield's `when: hit` | `resource guard 1`, `limit {per: per_turn, n: 1}`, `if {with_this: true}` | F11 |
-| `techniques.json shield_bash.numbers.mult` | 1.5 → **1.9** | the buckler's Bash stays 15 (8 × 1.9 = 15.2); the riot shield's is 19 |
-| Afterword `phys.follow.mult` | 0.25 | section 8 |
+| `techniques.json follow.numbers.extra` | −2 | keeps a light blade + riot shield near the 115% band (below) |
+| `follow.numbers.mult` | 1.0 | a shield's line is its own |
+| buckler line | 6, Durability, scales with Strength | the duelist gains little, the tank about +15% |
+| riot shield line | 8, the rest as the buckler | the heavier shield, paid by −0.5 Movement |
+| `mod_follow_guard` | `resource guard 1`, `when: hit`, `if {with_this: true, mode: [follow]}`, `limit {per: per_turn, n: 1}` | F11 |
+| `shield_bash.ap` | 2 → **1** | a plate buys a blow better than a Cut and its follow |
+| `shield_bash.numbers.mult` | 1.5 → **2.5** | buckler Bash 15 (today's 15), riot shield 20 |
+| `mod_afterword` | `damage_mult 0.25` and Bleeding (Body save), both `with_this`, `mode: [follow]`, the Bleeding once a turn | section 8 |
 
-**The yardstick** (`2026-11-balance-2.0.md:163-179`; the band is 85% to 115% of the Adamantile greatsword; melee's
-ceiling is 165 all in, `data/rules.json:1593`, the dial `output.factors.melee` 1.35, `:2021`). Normal share, % of the
-plain rifle: greatsword 147 / 157 / 150 / 157 (mean 152.75); Legion gladius 129 / 142 / 163 / 145 (mean 144.75, 94.8%
-of the greatsword); katana 107%. A sword and shield today is the gladius alone: the shield adds no damage.
+**How it is worked:** damage = line × melee profile (1.15385 × (1 + 0.05 × (attribute − 1)): 1.154 at 1, 1.50 at 7) ×
+`output.factors.melee` 1.35, minus armour (Soldier 5, Elite and Boss 10, × the level scale; `effects/output.ts:211`);
+one modifier point is 5 percentage points.
 
-**The melee profile** (`rules.json:1874`): k 1.15385 × (1 + 0.05 × (the Attribute − 1)). At 7, 1.15385 × 1.30 = 1.50;
-at 1, 1.154.
+**The duelist** (Dexterity 7, Agility 7, Durability 0, Strength 1), gladius + buckler, level 1, against a Soldier. Main:
+26 × 1.50 × 1.35 − 5 = 47.7 at 75%. Follow: 6 × 1.154 × 1.35 − 5 = 4.3 at 25% (10 points worse). Share **0.03** (riot
+shield 0.05; against an Elite about 0). The gladius stays near 95% of the greatsword: for a Dexterity duelist a shield is
+Defense, Guard and techniques, not damage.
 
-**Case A: the light-blade dealer with a buckler** (the measure's Dexterity twin: Dexterity 7, Agility 7, Durability 0,
-Endurance 1).
-- Main: the gladius (26, scales with Agility, `weapons.json:2542`), modifier +6. Take its hit chance as 75%.
-- Follow: the buckler (8, scales with Endurance), Durability 0, so modifier −2: 8 points worse, 40 percentage points:
-  35%.
-- Follow / main per action = (0.35 × 8 × 1.154) / (0.75 × 26 × 1.50) = 3.23 / 29.25 = **0.110**.
-- The gladius goes 144.75 → 160.7 = **105% of the greatsword**. In band, under the katana. Riot shield (10): 0.138,
-  108%.
+**The light-blade band.** Katana (107% of the greatsword) + riot shield: at Durability 0 the follow is 7.5 at 25%,
+**about 112%**; at Durability 3 holding Guard (45%), **about 116%**, on the band's edge. If the measure confirms it, the
+lever is question 1 (once a turn).
 
-**Case B: the Bulwark with a buckler** (Durability 7 holding Guard, Endurance 7, Agility 1).
-- Main: the gladius rolls with Durability (+6) while Guard is held; its damage scales with Agility 1 (1.154).
-- Follow: the buckler rolls with Durability too (the same chance) and scales with Endurance 7 (1.50).
-- Follow / main = (8 × 1.50) / (26 × 1.154) = 12 / 30.0 = **0.40**.
-- The tank measures 77 / 55 / 78 / 124 (mean 83.5; `docs/design/balance-contract.md:59`). With 0.40 it is about
-  108 / 77 / 109 / 174 (mean 117). That is below the melee ceiling (165) on the mean. L20 (174) is 105% of 165, inside the
-  ±25% level tolerance (`rules.json` `tolerance.level`). Riot shield (10): 0.50, mean 125.
-- Read: the follow is the tank's damage fix (Leon: "the tank can't hit shit"), and it is aimed where Leon asked. It is
-  also the largest number in this draft. Question 3.
+**The tank** (`packages/engine/test/balance/builds.ts:67`: sabre and riot shield, Durability 7 holding Guard, Strength
+1). Level 1: main 28 × 1.269 × 1.35 − 5 = 43.0 at 75%; follow 7.5 at 65%; share **0.15**. With the level scale on both
+blows the share is about 0.15 / 0.16 / 0.17 / 0.17 at levels 1 / 5 / 10 / 20. Measured tank 77 / 55 / 78 / 124 becomes
+about **89 / 64 / 91 / 145**, against the dealer's 156 / 150 / 133 / 178: the tank goes from 49%–70% of the dealer to
+**43%–81%**, under the dealer and under the melee ceiling (165) at every level. Scaling with Strength (not Endurance)
+is what keeps it there: an Endurance-scaled riot shield 10 put the tank at about 180 at level 20, above the dealer.
 
-**Guard** (Reader 3's count). The Guard technique at Durability 4 with a shield gives 5, which fills a pool of 4 in one
-AP. So the follow's +1 a turn mostly matters to a low-Durability shield user (a pool of 1 or 2: a free plate a turn).
-It never funds Slam on its own (2 Guard): at most 1 a turn.
+**Shield Bash** at 1 AP (the tank, level 1, Soldier): 20 × 1.154 × 1.35 − 5 = 26.2 at 75%, about 19.6 per AP, against
+about 18.5 per AP for a Cut and its follow; it costs a plate and pushes. The follow's once-a-turn plate funds one Bash a
+turn.
 
-**Caveats.** Armour comes off each blow, so a small blow loses a larger share. An 8-point follow into Class 3 armour
-lands less than 8/26 of a gladius blow, and the real gains are lower than the ratios above. Crits, the level scale and
-Recoil (none for either) are the same on both sides. Measure before fixing:
-`MELEE_MEASURE=1 npx vitest run test/balance/melee-measure.test.ts` with a `gladius+buckler` and `gladius+riot` cell
-in both builds, and `tank-measure.ts` for case B. The goldens are re-recorded only on purpose.
+**Guard.** The Guard technique gives Durability + 2 with a shield, so the tank's pool is full whenever the follow lands:
+for it the plate is worth almost nothing. A pool of 1 is kept back (`guard.ts:49`, `keep_back` 1). The follow's plate
+matters to **pools of 2 and 3**: one soak, or one Retort or Challenge, a turn. It never funds Slam (2 Guard) alone.
 
-## 8. Worked example: the legendary off-hand knife
+**The Riposte risk** is gone (F6): a missed follow draws no Answer, so a shield never costs its holder damage.
 
-**Afterword** (in-universe: a Legion quartermaster's last-issue knife, made for the hand that isn't holding the
-sword; "the last word after the argument"). A weapons.json row. It is a weapon, so it has its own off-hand block (its
-own attack at its full line, its techniques), and the follows block makes it ride the main hand:
+**Measure before fixing** (named cells, Soldier **and** Elite and Boss fights): `melee-measure` with gladius+buckler,
+gladius+riot, katana+riot (Durability 0 and 3), sabre+riot, gladius+Afterword, katana+Afterword; `tank-measure` from the
+`tank` row. The goldens are re-recorded only on purpose.
+
+## 8. Worked example: the off-hand knife
+
+**Afterword** (in-universe: a Legion quartermaster's last-issue knife, made for the hand that isn't holding the sword).
+A weapons.json row with `follows`; in the main hand it is an ordinary knife (15, Dexterity); in the off hand it only
+follows (F8). Its edge is in its modifier row, not in code:
 
 ```json
-{
-  "id": "afterword",
-  "name": "Afterword",
-  "category": "blade",
-  "damage": 15, "damage_type": "physical", "range_tiles": 1,
-  "ap_cost": { "attack": 2 }, "skill": "dexterity", "accuracy": 0,
-  "hands": "1H", "durability": 160, "mastery_family": "light_blades",
-  "rarity": "legendary", "price_credits": 2400, "provisional": true, "adjudication": "engine",
-  "text": "In the off hand it follows: after each melee attack you make with your main hand, Afterword strikes the same target for ×{=phys.follow.mult} of its damage, with its own roll and no AP. A follow that lands opens the wound: Bleeding (Body save), once a turn. It is not a second weapon: it asks no more Dexterity in the off hand and never strikes with both hands.",
-  "lore": "Issued last, to the ones who came back.",
-  "phys": {
-    "system": "melee", "profile": "melee",
-    "props": ["light"],
-    "hits_with": "dexterity", "scales_with": ["agility"],
-    "follow": { "mult": 0.25 }
-  },
-  "effects": [
-    { "op": "condition", "when": "hit", "condition": "bleeding", "target": "target",
-      "if": { "with_this": true, "mode": ["follow"] },
-      "limit": { "per": "per_turn", "n": 1 } }
-  ]
-}
+{ "id": "afterword", "name": "Afterword", "category": "blade",
+  "damage": 15, "damage_type": "physical", "range_tiles": 1, "ap_cost": { "attack": 2 },
+  "skill": "dexterity", "hands": "1H", "durability": 160, "mastery_family": "light_blades",
+  "rarity": "rare", "price_credits": 700, "provisional": true, "adjudication": "engine",
+  "variant_mods": ["mod_afterword"],
+  "phys": { "system": "melee", "profile": "melee", "props": ["light", "follows"],
+            "hits_with": "dexterity", "scales_with": ["agility"] } }
 ```
 
-- `phys.follow` is the whole flag. No code names `afterword`, and a hundredth follows knife is one more row.
-- `mode: ["follow"]` matches because the follow strike is made with the technique row `follow` (`effects/triggers.ts:164`
-  reads `ctx.tech`). So the Bleeding comes from a follow only, not from the knife's own off-hand attack.
-- **Numbers.** Same hit chance as the gladius (both Dexterity), the same profile (both Agility). Follow / main =
-  (15 × 0.25) / 26 = **0.144**, so the gladius goes 144.75 → 165.6 = **108.4% of the greatsword**, with Bleeding on
-  top (measure it). At `mult` 0.30 it would be 111%; at the full line, +58% (why R1 needs `mult`).
-- **What it costs:** no Defense, no Guard and no shield techniques. Compared with a buckler it trades the tank's tools
-  for a sure hit with Dexterity.
-- **Requirements:** a combat knife asks Dexterity as its skill (5c). In the off hand there is no +2 (F8; its block has
-  no `second_weapon`).
-- **Art:** a weapon icon in the monoline mode (`art/style-guide/weapon-icons.md`): a short reversed-grip blade with a
-  quartermaster's stamp notch on the spine. One line in `art/briefs/ART-REQUESTS.md` when the row is added.
+`mod_afterword` (items.json, shaped like `mod_serrated`): `damage_mult 0.25` and `condition bleeding` (Body save,
+`limit {per: per_turn, n: 1}`), both `if {with_this: true, mode: [follow]}`. No code names `afterword`.
+
+- **Numbers.** Gladius + Afterword, level 1, Soldier: the follow is 15 × 0.25 × 1.50 × 1.35 − 5 = 2.6 at 65%, about
+  5%; Bleeding (a flat 5 a turn) about 5% more at level 1 and under 1% at level 20. **Rarity: rare at the riot shield's
+  price**, because it has none of a shield's Defense, Guard or techniques, and it cannot be raised on damage (the katana
+  has 8 points of headroom in the band). Question 5.
+- **Requirements:** its own Dexterity requirement in the off hand; no +2.
+- **Art:** a monoline weapon icon (`art/style-guide/weapon-icons.md`): a short reversed-grip blade with a stamp notch on
+  the spine; a line in `art/briefs/ART-REQUESTS.md` when the row is added. The shields, as weapon rows, keep their
+  current armour icons.
 
 ## 9. Screens and effects
 
 Every mode keeps its left and right panels; the fight screen is the stated exception, as today.
 
-- **The rows.** No new row. Each main-block melee row whose action would get a follow carries a second line from the
-  engine's preview: "then Buckler · 41% · 8 · +1 Guard" (the Guard part only while the once-a-turn plate is unspent).
-  The line comes from `previewTechnique`'s `attacks` entry marked `follow: true` (F-c), never worked out by the
-  client. A row whose target is out of the follows item's reach says "then Buckler · out of reach".
-- **The target card.** The `odds` slot shows both chances: "Cut 72% · then Buckler 41%". The hover chip `atkTag`
-  shows the main one and a small "+1 follow" mark.
-- **The Both block.** Its existence is the engine's (F-d). The client's own test (`techView.ts:158`) and its typed
-  texts go (`techView.ts:162`, `:176`, `:179`); it reads the descriptor rows. Same slice: the paired attack gets the
-  preview it never had (two lines: main −1, off −3), so the Both block and the follow read the same way.
-- **The log.** Two lines, both the engine's: the main roll's own line, then "Buckler follows: 9 + 6 vs 12, hit, 8
-  damage (+1 Guard)." A follow that is not made says nothing.
-- **The effect** (`apps/web/src/game/fx/`, Guard 2.0 section 7's "Shield follows" row, made general). The follow's
-  `melee` event carries `follow: true` and is chained after the main swing. A small module (`fx/follow.ts`, registered
-  into `H` as `fx/guard.ts` is at `fx/play.ts:1410`) plays it: after the main swing, a second 4 px lunge from the token's
-  off-hand side (mirrored from the main swing), 120 ms later. A shield draws its rim as a short arc swept across the
-  target (100 ms); a blade draws the existing slash line, thinner. On a hit the target tilts 6 degrees. The +1 Guard
-  plays through the existing `guard` event (`why: gain`: "+1 GUARD", one plate slides in). Paced by `dom.ts`; under
-  Reduce motion there is no travel and the words show.
-- **Sound.** The shield's rim reuses the soak clang at a lower volume; a blade follow reuses the slash. No new asset.
-- **Icons.** None for the rule (it is not a technique on a pad). Afterword's weapon icon (section 8).
+- **The rows.** Each main-block melee row that would draw a follow carries a second line, the engine's preview entry
+  marked `follow: true`: "then Buckler · 47% · 4". Out of reach: "then Buckler · out of reach". The Guard plate is not on
+  the line (no `hit` line runs in a preview); it shows through the `guard` fx and the log.
+- **The target card.** The `odds` slot shows both: "Cut 72% · then Buckler 47%".
+- **The Both block** exists by the engine's `pairs(u)` (F-d). The client's test and typed texts go; the paired attack
+  gets the preview it never had (two lines), so the Both block and the follow read the same way.
+- **The log.** The main roll's line, then the follow's ordinary attack line from the engine, headed "Buckler follows:".
+  A follow not made says nothing.
+- **The effect** (`fx/follow.ts`, registered as `fx/guard.ts` is at `fx/play.ts:1410`): the `melee` event with
+  `follow: true`, chained after the main swing; a second 4 px lunge from the off-hand side 120 ms later; a shield draws
+  its rim as a short arc swept across the target (100 ms), a blade the existing slash, thinner; on a hit the target tilts
+  6 degrees. The plate plays through the `guard` event (`why: gain`). Under Reduce motion, no travel; the words show.
+- **Sound.** The soak clang at a lower volume for a shield, the slash for a blade. No new asset.
 
 ## 10. Tests that would prove it
 
-Every one goes through the reducer with real actions (`apply(g, {type: 'combat/technique', id: 'cut', ...})`), never a
-hand call to `strike` or the handler.
+All through the reducer with real actions (`apply(g, {type: 'combat/technique', id: 'cut', ...})`).
 
 | # | Test | Asserts |
 |---|---|---|
-| 1 | gladius + buckler, Cut at an adjacent foe | two `attack_roll`s, the second `tech: 'follow'`; AP spent = Cut's; Momentum +1 at most (the main hit only); the buckler's durability −1, the gladius −1 |
-| 2 | Flurry with a buckler | two main rolls, one follow |
-| 3 | a Finisher with extra targets | one follow, at the named target |
-| 4 | the main blow kills | no follow, no log line |
-| 5 | pistol + buckler, a shot at an adjacent foe; a throw | no follow |
-| 6 | a foe misses in melee: Riposte fires; Retort fires; an opportunity strike | no follow after any |
-| 7 | Shield Bash | no follow; Bash's damage = 8 × 1.9 rounded; it hits with Durability |
-| 8 | two follows that land in one turn | Guard +1 once; never above the pool |
-| 9 | a Skirmisher with Pressure on it, a Cut and a follow that both land | Pressure shed once |
-| 10 | a Chaplain with a buckler: the main misses, the follow lands | no Smite, no Judged |
-| 11 | a Durability 7 tank holding Guard | the follow's preview has the "holding Guard" term |
-| 12 | gladius + Afterword | no `paired` descriptor; `combat/paired` refused ("Afterword follows; it does not strike with both hands."); a follow at ×0.25; Bleeding once a turn; the knife's own off-hand attack gives no Bleeding |
-| 13 | equip Afterword in the off hand with Dexterity at its requirement (the gear action) | accepted (no +2); an ordinary combat knife with the same Dexterity is refused by 5a |
-| 14 | a shield in each hand; a shield in the main hand with a sabre in the off hand | the off shield follows; the second pair has a Both block (melee kind) |
-| 15 | an enemy turn on a seed fixed before the change | the same moves (AI unchanged) |
-| 16 | a paired attack with two swords | the off-hand sword now wears (F-b) |
-| 17 | `boundary.test.ts`, the lints | `lint-item-ops` gains no bespoke op; baselines unchanged or smaller |
+| 1 | gladius + buckler, Cut at an adjacent foe | two `attack_roll`s, the second `tech: 'follow'`; AP = Cut's; Momentum from the main hit only; buckler and gladius durability −1 each |
+| 2 | Flurry; a Finisher with extra targets | one follow, at the first roll's real target |
+| 3 | the main blow kills; the main blow is redirected (a captive as a shield) | no follow; the follow at the unit really struck |
+| 4 | pistol + buckler: a shot, a Burst, a throw, `combat/attack` melee with the pistol | no follow |
+| 5 | Riposte, Retort, an opportunity strike, an own-turn Answer, a technique in an off-turn window | no follow |
+| 6 | Shield Bash | no follow; 1 AP; damage = 6 × 2.5 through the profile; hits with Durability; no Guard from `mod_follow_guard` |
+| 7 | buckler + riot shield (one each hand), two follows that land in a turn, plus a Bash | Guard +1 once in the turn; never above the pool |
+| 8 | a Skirmisher with Pressure; a Cut and its follow land | Pressure shed once |
+| 9 | a Chaplain with a buckler: the main misses, the follow lands | no Smite, no Judged |
+| 10 | an Elite with Riposte; the follow misses | no Riposte |
+| 11 | a Durability 7 tank holding Guard | the follow's preview carries the holding-Guard roll |
+| 12 | gladius + Afterword | no Both block; `combat/paired` refused; no off-hand attack offered; a follow at ×0.25; Bleeding once a turn |
+| 13 | equip Afterword / a buckler off hand at its bare requirement; a sabre beside a main-hand shield | accepted, accepted; refused by 5a |
+| 14 | shield in each hand; main shield + off sabre; main Afterword + off gladius | the off shield follows; Both opens; Both opens |
+| 15 | Heavyworlder greatsword + buckler | no follow |
+| 16 | a follows item at 0 durability | no follow |
+| 17 | the field after a fight: a follow that would hit a friend | the action is refused |
+| 18 | an enemy turn on a fixed seed | the same moves |
+| 19 | `boundary.test.ts`, the lints | no bespoke op; baselines unchanged or smaller |
 
-**Goldens:** the cost tables gain no line (a follow costs no AP: no new cost site). The damage golden gains the
-buckler, riot-shield and Afterword follow rows (re-recorded on purpose). Shield Bash's row changes (its line and
-mult).
+**Client truths that change:** `combat-attack-areas.test.ts:71-80`, `:173` (gladius + Afterword: `main other`; gladius +
+buckler stays `main off other`); `techView.test.ts` (the Both block from the descriptor); `e2e/physical-pack.mjs:69-80`
+(the Cut row's second line names the buckler); a new `fx/follow.test.ts`.
 
-**Truths that change in the client suites:**
-- `apps/web/src/screens/combat-attack-areas.test.ts:71-80`, `:173`: a gladius + Afterword case with areas `main off
-  other` (no `both`); gladius + buckler stays `main off other`.
-- `apps/web/src/game/techView.test.ts`: the Both block now comes from the descriptor, not the client's system test.
-- `apps/web/e2e/physical-pack.mjs:69-80`: the areas list is unchanged for sword + shield; one new truth: the Cut row's
-  second line names the buckler and a percentage.
-- a new `apps/web/src/game/fx/follow.test.ts` (as `guard.test.ts`): a real fight's fx list has the follow's `melee`
-  event with `follow: true` after the main one, and its Guard event.
-
-**Build order (each slice ships alone):** (1) F-b and F-d, the consolidation and the wear fix, no rule change; (2) N2
-(if the either-hand lane has not built it), the shields' lines, Bash re-based; (3) N1, N3, N4, the follow, the
-preview line, the fx; (4) Afterword. Before the release, the consolidation pass (rule 4) reads N1 to N4 against P9 and
-P11.
+**Build order (each slice ships alone):** (1) F-b and F-d, the swap consolidation, no rule change; (2) N2 (with the
+either-hand lane), the shields' lines, Bash re-based; (3) N1, N3, N4, F-c, F-e, the preview, the fx; (4) Afterword.
+Before the release, the consolidation pass (rule 4) reads N1 to N4 against Guard 2.0's P9.
 
 ## 11. Questions that are Leon's
 
-1. **Per action or once a turn?** R1 says every main-hand melee action. The numbers above assume that, with a small
-   shield line (8 / 10) and the Guard plate once a turn. The alternative is once a turn with a bigger line (about 16):
-   it reads cleaner ("your first blow each turn brings the shield") but it is less like your reference. Recommended: per
-   action.
-2. **What does a shield hit with?** Today it strikes as the bare hand, with Raw Power. Recommended: Durability, growing
-   with Endurance (Guard 2.0 item 16), so the shield is the tank's weapon and a Dexterity duelist's buckler is mostly
-   Defense.
-3. **The tank's damage.** With Durability-rolled follows the Bulwark gains about +40% (mean 83 → 117, still under the
-   melee line). Is that the "tank can hit" you want, or should the buckler be 6 for the tank (+30%) and the duelist
-   (+8%)?
-4. **A follows weapon never pairs** (R2). Gladius + Afterword has no Both block. Recommended: yes, keep it a rider;
-   whoever wants to pair holds an ordinary knife.
-5. **Guns.** Guard 2.0 recommended a shield swing after any weapon attack at an adjacent foe (your "he swing his shield
-   with his weapon too"). The lead's R1 says melee only. Recommended: melee only (a gun user already has a shield's
-   Defense and Guard, and adjacent shooting provokes).
-6. **Actions that name no unit** (a sweep, a tile technique). Recommended: no follow. The alternative is a follow at the
-   first unit the main hand struck.
+1. **Per technique or once a turn?** Recommended: per technique (your reference). Once a turn is the lever if a light
+   blade + riot shield measures over 115%.
+2. **A shield hits with Durability and grows with Strength.** Strength, not Endurance, so the tank does not catch the
+   damage dealer at level 20. Recommended: yes.
+3. **Shields become weapon rows** (N2), shared with the either-hand lane. Recommended: yes; it removes a primitive.
+4. **Off-hand wear beyond the follow.** Today no off-hand weapon ever wears; R7 asks only for the follow. Should a paired
+   attack's off swing and an off-hand Cut wear too? That changes "an attack action wears 1" (spec Durability 4.1).
+   Recommended: yes, as its own spec item; until you rule, only the follow wears.
+5. **Afterword's rarity.** Recommended: rare, 700 credits. A legendary needs a non-damage edge, tested on the katana
+   loadout.
+6. **Class and perk strikes** (Launch, Wrecker, the Three-Cut Script). Recommended: no follow for now; one may be given
+   later by its own row, never by code.
+7. **Two shields' Defense:** stack or the higher only? The either-hand lane's call; recommended: the higher only.
+
+## Review (16 Nov 2026: what the reviewers found and what changed)
+
+Accepted, now in the text:
+- **The carrier** (rules lawyer 1, purist 1): a gear row's own `when:` lines are never held; the on-hit and sizing
+  lines are modifier rows named by `variant_mods`.
+- **`with_this` and the strike's id** (purist 2, rules lawyer 11): shields become weapon rows (N2), which also gives a
+  main-hand shield its AP and the Both block their lookups; `phys.strike` is dropped.
+- **`phys.follow` became the prop `follows`** (purist 3): its `wear` was a second copy of the wear line; `mult` and
+  `extra` live on the technique row and per item on its modifier row; `second_weapon` had no user.
+- **No mark, no `acted` handler** (purist 4): the follow sits at the `useTechnique` / `previewTechnique` tails. This
+  closes rules lawyer 5 (Shield Bash is made with the off hand), 9 (no stale mark), 10 (`cb.reacting` and windows are
+  tested) and gives the preview R9 needs; the field's friend-harm check still covers it.
+- **Limits** (rules lawyer 2 and 3, purist 5): a follow spends no other item's use; the follows item's own lines spend
+  theirs; the Guard line is `mode: [follow]` on one shared row, once a turn across all shields.
+- **F-d** (rules lawyer 4, purist 8): the off hand only decides, `pairedAttack` reads it too, "no shield in the off
+  hand" dropped.
+- **A second weapon by the back door** (rules lawyer 6): a follows item has no off-hand attack.
+- **Guns** (rules lawyer 7 and 8): `follows` only on shields and melee rows; a gun hand's fists blow never follows.
+- **5a, 5b amended** (rules lawyer 11); **Heavyworlder** (12): the main weapon must be truly 1H; **at whom** (13): the
+  first roll's real unit; **Pressed** dropped and no-sheet units stated (14); **Worn, Broken** (15); the paired
+  attack's wear made a question (16, purist 7); **the follow row** specified (17); **the five swap copies** routed
+  through `withOffHand` (purist 7); the preview line without "+1 Guard" and the group named (purist 9); P9's "Shield
+  Follows" withdrawn (purist 10).
+- **Balance 1 to 7:** Strength scaling, case B redone from the `tank` build, armour and the 1.35 factor applied, the
+  −2 follow term with lines 6 / 8, Bash at 1 AP, the plate economy corrected, no Answer to a missed follow; Afterword
+  re-tiered to rare.
+
+Rejected or narrowed:
+- **Purist 6, "N4 is half existing flags":** partly. Momentum, the closing bonus and the Finisher count are existing
+  behaviour (now in the Built-from table and collisions), and the deeds reading was a misreading (collision 15). But the
+  Answers' skip of a missed rider (balance 7) is a real third reader, so N4 keeps three readers, not one.
+- **Purist 3's `comes_with: ["follows"]` gate:** not taken. A row with `comes_with` is listed by `usable()` and so
+  would be drawn on the off pad; the gate is `followOf(u)` in N3 and the row stays unlearnable.
+- **Rules lawyer 13's "the main hand's last roll":** narrowed to the **first** roll's real unit, so a Finisher's or a
+  sweep's later targets never draw the follow (R1).
