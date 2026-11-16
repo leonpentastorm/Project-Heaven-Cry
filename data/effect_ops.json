@@ -4928,6 +4928,69 @@
         "arg": "number",
         "about": "the move (its priced walk: ctx.tiles) is at most this many tiles"
       },
+      "self_res": {
+        "arg": "res",
+        "about": "self has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most)",
+        "values": [
+          "mp",
+          "charge",
+          "cores",
+          "momentum",
+          "guard",
+          "supplies",
+          "toxins",
+          "parts",
+          "stims",
+          "echo",
+          "pressure",
+          "vcharge",
+          "shadow",
+          "ledger",
+          "devotion_xp"
+        ]
+      },
+      "actor_res": {
+        "arg": "res",
+        "about": "actor has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most)",
+        "values": [
+          "mp",
+          "charge",
+          "cores",
+          "momentum",
+          "guard",
+          "supplies",
+          "toxins",
+          "parts",
+          "stims",
+          "echo",
+          "pressure",
+          "vcharge",
+          "shadow",
+          "ledger",
+          "devotion_xp"
+        ]
+      },
+      "target_res": {
+        "arg": "res",
+        "about": "target has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most)",
+        "values": [
+          "mp",
+          "charge",
+          "cores",
+          "momentum",
+          "guard",
+          "supplies",
+          "toxins",
+          "parts",
+          "stims",
+          "echo",
+          "pressure",
+          "vcharge",
+          "shadow",
+          "ledger",
+          "devotion_xp"
+        ]
+      },
       "self_has_res": {
         "arg": "words",
         "about": "the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)",

@@ -53,3 +53,5 @@ export function stateOf(h: { key: string; u?: Unit | null; c?: Character | null;
 export * from './stats';
 export { num, effNum } from './num';
 export { price, priced, bill, costOf, hasCost, whyNot, canPay, pay, refund, spend, needs, poolWhyNot, grantAp, loseAp, setAp, freely, withAp, apFor, apMeter, actionName, resWhyNot, resPay, creditFor, lend, settleCredit, unlend, resLeft, RESOURCES, type Cost, type Priced, type Credit } from './cost';
+// rules 1.60 (Doors 3.0, N3): the beta feeds its door (one formula, its carried remainder, the door tab's line)
+export { FEEDS, FEED_BY_CARRIER, doorFeed, feedOf, feedStep, feedCarry, feedRow, doorFeedView, showFeedNumber, type Feed, type DoorFeedView } from './feed';

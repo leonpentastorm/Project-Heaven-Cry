@@ -15,10 +15,18 @@ import { measure, yardOf, soldierTurnAt, refHpAt } from './balance/refit-measure
 import { inventory } from './balance/heal-measure';
 import { healTurn, shotTurn } from './balance/tending-measure';
 import { STEPS } from './balance/builds';
+import { FEEDS } from '../src/effects/feed';
 
 // Rules 1.56 (Leon, 15 Nov 2026): perk steps sit on top of a class's damage line; the contract holds the line, so its
 // builds take no perk steps (test/balance/builds.ts STEPS).
 STEPS.perks = false;
+// Rules 1.60 (Doors 3.0, the beta feeds its door; Leon, 16 Nov 2026: the balance numbers are what a class earns when it makes
+// every decision right, reward for the effort, not a cap): the beta feed sits on top of a door's line as the perk steps do,
+// so the contract holds the line with every feed at x1 (the step per_point.numbers.feed set to 0 for the measure) and
+// reports the line with the feeds below.
+const FEED_STEP = FEEDS.map((f) => f.per);
+const feeds = (on: boolean) => FEEDS.forEach((f, i) => { f.per = on ? FEED_STEP[i] : 0; });
+feeds(false);
 const B: any = (RULES as any).balance, C = B.ceilings, TOL = B.tolerance, LEVELS: number[] = B.levels;
 const N = 6; // fights a cell: deterministic (seeded), so the band only has to hold the noise of a small sample once
 const GUARD_GUNS = ['adamantile_battle_rifle', 'long_rifle', 'hellraiser_service_rifle'];
@@ -59,6 +67,14 @@ describe('the balance contract (data/rules.json balance; rules 1.26, 1.27)', () 
     } finally { STEPS.perks = false; }
     const lines = Object.entries(SYS).map(([s, k]) => s + ' with both alpha perks at Tier II: ' + Math.round(rows[s].reduce((a, b) => a + b, 0) / rows[s].length) + '% (levels ' + LEVELS.join(' / ') + ': ' + rows[s].join(' / ') + '; its line ' + band(k).join(' to ') + ')');
     console.info(lines.join('\n'));
+  }, 600000);
+
+  it('reported, not asserted (rules 1.60: the beta feeds go above the line): each system all in with its beta feeding its door', () => {
+    const rows: Record<string, number[]> = {}; feeds(true);
+    try {
+      for (const lv of LEVELS) { const r = measure(lv, 'allin', N, Object.keys(SYS), yardOf(lv, N), GUARD_GUNS); expect(r.errors, 'level ' + lv).toBe(0); for (const s of Object.keys(SYS)) (rows[s] ||= []).push(r[s]); }
+    } finally { feeds(false); }
+    console.info(Object.entries(SYS).map(([s, k]) => s + ' with its beta feed: ' + Math.round(rows[s].reduce((a, b) => a + b, 0) / rows[s].length) + '% (levels ' + LEVELS.join(' / ') + ': ' + rows[s].join(' / ') + '; its line ' + band(k).join(' to ') + ')').join(' · '));
   }, 600000);
 
   it('played: a normal share at level 1 is not over any ceiling (it should sit near ceiling ÷ ' + 1.25 + ')', () => {

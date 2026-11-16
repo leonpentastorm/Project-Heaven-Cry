@@ -16,13 +16,14 @@ import { rollD20, judge, rollFx, contest, CONTEST_BASE } from './rolls';
 import { applyCond, condOn, condSource, endCond, harm, withDoor, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength, saveAgainst, condName } from './magic';
 import { condMods } from './condtable';
 import { emit, statQuery, charOfUnit, boundGame, heldOfUnit, hookUsed, onHook } from './effects/hooks';
-import { grantShield, tendHook } from './effects/damage';
+import { grantShield, tendHook, healUnit } from './effects/damage';
+import { feedStep, feedOf, showFeedNumber, FEED_BY_CARRIER } from './effects/feed';
 import { actionAp, immuneByItem } from './effects/core';
 import { note } from './effects/narrator';
 import { sessionN, uses } from './effects/uses';
 import { makeObject } from './objects';
 import { residueFlag } from './feelings';
-import { tilesAround, unitsIn } from './kit';
+import { tilesAround, unitsIn, tiedTo } from './kit';
 import { rawHidden, setDowned, startHidden } from './unitstate';
 import { setCondRounds } from './magic';
 import { price, costOf, whyNot, pay, setAp, spend } from './effects/cost';
@@ -263,6 +264,20 @@ export function hideAction(cb: Combat, u: Unit): string | null {
 }
 /** An ambush: the first attack from each Hidden entry (spec item 41; plan 6a-8): crit on 19-20, × the Ambush multiplier. */
 export const ambushReady = (u: Unit) => !!u.hidden && (u.ambushUsed || 0) < (u.hideEntry || 1);
+// ---------- Camaraderie's carrier (rules 1.60 item 4610): the heal back down a thread ----------
+// Tending (`how`) a unit tied to you (`tied`) heals you a share of what it restored: at_double x (feed - 1). It is
+// healed by nobody (no giver), so it is never a heal given: no Ledger, no echo, no brake, no patron's tag.
+onHook('heal_given', (ctx: any, cb: Combat) => {
+  const by: Unit | null = ctx.by, t: Unit | null = ctx.t;
+  if (!by || !t || by === t || by.side !== t.side || !(ctx.n > 0) || by.dead || by.downed) return;
+  const f = FEED_BY_CARRIER.heal_back; if (!f || ctx.kind !== f.row.how || !tiedTo(cb, by, t, f.row.tied)) return;
+  const n = Math.floor(ctx.n * f.atDouble * (feedOf(by, 'heal_back') - 1)); if (n < 1) return;
+  const r = healUnit(cb, by, n, null, 'heal_back'); if (r.restored > 0) say(cb, by.name + ' heals ' + r.restored + ' back down the thread from ' + t.name + '.');
+});
+/** The door tab's number for Camaraderie's feed: the share healed back, in percent. */
+showFeedNumber('heal_back', (x) => Math.round(FEED_BY_CARRIER.heal_back.atDouble * (feedOf(x, 'heal_back') - 1) * 100));
+/** The door tab's number for Acuity's feed: what a foe needs more to find you (rules 1.60 item 4607). */
+showFeedNumber('spot_tn', (x) => feedStep(x, 'spot_tn'));
 /** Spotting, at the end of a unit's turn (rules 1.3): it rolls d20 + its notice (enemies by tier, PCs Vigilant) against
  * 10 + each Hidden enemy's Ingenuity modifier + Stealth, for every one whose tile it can see; ending next to one finds
  * it outright. 'spot' {by, u, die, mod, tn, cancel} lets items change it. only: look for that one unit alone (rules 1.32:
@@ -271,7 +286,7 @@ export function spotHidden(cb: Combat, rng: Rng, by: Unit, only?: Unit | null) {
   if (!alive(by)) return;
   for (const u of cb.units) {
     if (u.side === by.side || !u.hidden || u.dead || (only && u !== only)) continue;
-    const m = by.side === 'foe' ? TIER_NOTICE[by.tier || 'minion'] ?? 0 : mod(by.vigilant || 0) + (by.sk?.vigilant || 0), tn0 = CONTEST_BASE + (u.ingMod ?? -2) + (u.stealth || 0) + (u.sk?.ingenuity || 0);
+    const m = by.side === 'foe' ? TIER_NOTICE[by.tier || 'minion'] ?? 0 : mod(by.vigilant || 0) + (by.sk?.vigilant || 0), tn0 = CONTEST_BASE + (u.ingMod ?? -2) + (u.stealth || 0) + (u.sk?.ingenuity || 0) + feedStep(u, 'spot_tn'); // rules 1.60 item 4607: Acuity's feed
     // next to it: found outright, unless an item makes it a roll (op close_roll: Shadow's Close Quarters, rules 1.32);
     // the hook is asked only when someone listens, and the die is rolled only for a roll (an outright find rolls nothing)
     const close = dist(u.pos, by.pos) <= 1;
@@ -414,8 +429,8 @@ export function blessing(cb: Combat, rng: Rng, u: Unit, t: Unit, bl: any, power:
   for (const e of bl.effects || []) {
     if (e.op === 'stat_mod' && e.stat === 'hp' && typeof e.value === 'number') out += e.value > 0 ? heal(t, e.value * power, cb, u, 'blessing') : withDoor('prayer', null, () => harm(cb, rng, u, t, -e.value * power, 'soul')); // rules 1.56 P1: a Blessing's harm is a prayer's
     else if (e.op === 'heal' && typeof e.value === 'number') out += heal(t, e.value * power, cb, u, 'blessing'); // rules 1.6 data
-    else if (e.op === 'shield' && typeof e.value === 'number') out += ' · ' + t.name + ' gains a ' + grantShield(cb, t, e.value * power, u) + ' shield';
-    else if (e.op === 'stat_mod' && e.stat === 'shield' && typeof e.value === 'number') out += ' · ' + t.name + ' gains a ' + grantShield(cb, t, e.value * power, u) + ' shield';
+    else if (e.op === 'shield' && typeof e.value === 'number') out += ' · ' + t.name + ' gains a ' + grantShield(cb, t, e.value * power, u, { kind: 'blessing' }) + ' shield'; // rules 1.60 item 4612: a prayer's shield is a blessing's (the `how` predicate)
+    else if (e.op === 'stat_mod' && e.stat === 'shield' && typeof e.value === 'number') out += ' · ' + t.name + ' gains a ' + grantShield(cb, t, e.value * power, u, { kind: 'blessing' }) + ' shield';
     else if (e.op === 'condition' && isCondition(e.condition || e.id)) out += applyCond(cb, rng, u, t, e.condition || e.id, e.rounds, undefined, { skipSave: t.side === u.side, via: 'faith' });
     else if (e.op === 'cleanse') { const ids = Object.keys(t.conds || {}); for (const id of ids) endCond(t, id, cb); out += ' · ' + t.name + ' is cleansed'; if (ids.length) tendHook.f?.(cb, u, t); } // tending others (rules 1.5, 3.3)
     else left = true;

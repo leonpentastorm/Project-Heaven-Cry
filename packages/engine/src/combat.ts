@@ -94,6 +94,10 @@ export interface Unit {
   downed: boolean; dead: boolean; saves: { ok: number; fail: number }; stunnedNext: number; kills: number;
   /** The Proving Ground's Effect testing room: this unit can't be brought to 0 HP (effects/damage.ts). */
   undying?: boolean;
+  /** Rules 1.60 (the beta feeds): the fraction of a per-turn count a beta has moved, carried to the next time, by carrier (effects/feed.ts feedCarry). */
+  feedCarry?: Record<string, number>;
+  /** Rules 1.60 item 4613: the id of the unit whose gift is the base shield standing now (effects/damage.ts grantShield; the shield display reads it). */
+  shieldBy?: string;
   /** A music trait's modifier to the weapon skill while its song state holds (spec: Music). */
   song?: number;
   /** The overworld token this enemy came from (spec: Overworld rounds): survivors go back on the map. */

@@ -4,7 +4,7 @@
 // first-fight tip (tips.tsx), and the tab a character's first turn opens on (screens/combat.js). Nothing here is a rule:
 // the line is data, a number in it is an ordinary {=placeholder} of its row (the engine's data-text filler), and whether an action can be used
 // now is the engine's own refusal on the row (commands.ts actionGroups).
-import { SKILLS, CLASS, kindOfDoor, focusHand } from '@engine';
+import { SKILLS, CLASS, kindOfDoor, focusHand, doorFeedView } from '@engine';
 import { ATTR_INK } from './classView';
 import type { ActionGroup } from './commands';
 
@@ -32,6 +32,11 @@ export const doorsOf = (ch: any): Door[] => DOORS.filter((d) => pointsOf(ch, d.s
 export const hasDoor = (ch: any, skill: string): boolean => pointsOf(ch, skill) > 0;
 /** A door's one line by its skill ('' when the skill has none). */
 export const doorLineOf = (skill: string): string => DOORS.find((d) => d.skill === skill)?.line || '';
+
+/** The door's beta line (rules 1.60 item 4603, the beta feeds its door): the engine's doorFeedView for this unit or
+ *  sheet, in the feed row's words (the number now, the beta that feeds it, what the next point buys). '' for a door
+ *  no beta feeds or nobody to read. */
+export const feedLineOf = (who: any, skill: string): string => { if (!who || !skill) return ''; try { return doorFeedView(who, skill)?.line || ''; } catch { return ''; } };
 
 /** The character's top door: the door skill it has the most points in (1 or more); a tie goes to the first in the data's
  *  order. A door with no tab of its own (Momentum, Pressure: their actions are on Attack) is still the top door: its tip

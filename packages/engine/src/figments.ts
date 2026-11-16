@@ -30,6 +30,7 @@ import { addImage, dropImage, imagesOf, imageOfOwner, imageTurnStart, type False
 import { registerDoorPicks, doorPicksOf, doorKeptOf, type DoorGrant } from './doorpicks';
 import { react } from './tactics';
 import type { Rng } from './rng';
+import { feedOf, showFeedNumber } from './effects/feed';
 
 export const FIG: any = figmentsJ;
 export const FORM: Record<string, any> = Object.fromEntries((FIG.forms as any[]).map((f) => [f.id, f]));
@@ -228,10 +229,13 @@ export function figmentDesignView(c: Character, o: { inFight?: boolean } = {}) {
 /** The block op `spawn` makes for a form with these traits, for this owner (spawnOwned levels it by its owner's level:
  * HP by hp_mult, armour by armour_mult, Defense by defense_plus; the damage_mult share of HP and the traits' HP are
  * put in here). */
+/** The door tab's number for Improvisation's feed: how much tougher your Figments are, in percent (rules 1.60 item 4609). */
+showFeedNumber('figment_hp', (x) => Math.round((feedOf(x, 'figment_hp') - 1) * 100));
 export function figmentBlock(owner: Unit, form: string, traits: string[], name?: string): any {
   const f = FORM[form], row: any = enemyLevelRow(owner.level ?? 1);
   const hpMult = traits.reduce((m, t) => m * (FIG_TRAIT[t]?.hp_mult ?? 1), 1) * (FIG.level.hp as string[]).filter((k) => k !== 'hp_mult').reduce((m, k) => m * (row[k] ?? 1), 1)
-    * (FIG.level.hp_stat ? statTerm(String(FIG.level.hp_stat), [], [visPoints(owner)]) : 1); // rules 1.36: a Figment's HP follows its maker (Visualization's points, through the profile figments.json level.hp_stat names)
+    * (FIG.level.hp_stat ? statTerm(String(FIG.level.hp_stat), [], [visPoints(owner)]) : 1) // rules 1.36: a Figment's HP follows its maker (Visualization's points, through the profile figments.json level.hp_stat names)
+    * feedOf(owner, 'figment_hp'); // rules 1.60 item 4609: the Figment body's beta feed (Improvisation)
   const lasting = traits.some((t) => FIG_TRAIT[t]?.upkeep === 0);
   return { ...f, name: name || f.name, hp: f.hp * hpMult, defense: typeof f.defense === 'number' ? f.defense : 0, armour: f.armour, attack_bonus: 0,
     movement: (typeof f.movement === 'number' ? f.movement : owner.movement) + traits.reduce((s, t) => s + (FIG_TRAIT[t]?.tiles || 0), 0),

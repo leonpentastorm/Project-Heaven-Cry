@@ -2102,7 +2102,8 @@ def check_pred(k, v, w):
     elif a == "hold" and not _hold_ok(v, p): errors.append(f"{w}: `if.{k}` is {{slot: hand or person, door: {p.get('values')}}} or {{slot, item: <id>}}, and / or {{hands: {{props: [weapon properties], only: bool}}, body: {{armour_at_most: {_ARMOUR_NAMES} or a class number}}}}")
     elif a == "skill" and not (isinstance(v, dict) and v and all(sk in known["skill"] and isinstance(n, int) for sk, n in v.items())): errors.append(f"{w}: `if.{k}` maps skills to points ({{empathy: 5}})")
     elif a == "limit" and not (isinstance(v, dict) and (v.get("per") in LIMIT_SCOPES or isinstance(v.get("cooldown"), (int, float))) and set(v) <= {"per", "n", "key", "each", "cooldown"}): errors.append(f"{w}: `if.{k}` is a limit ({{per, n?, key?, each?}} or {{cooldown}})")
-    elif a in ("zone", "tie", "hold", "skill", "limit"): pass
+    elif a == "res" and not (isinstance(v, dict) and v and all(isinstance(b, dict) and b and set(b) <= {"at_least", "at_most", "at"} and all(isinstance(b[x], (int, float)) and not isinstance(b[x], bool) for x in ("at_least", "at_most") if x in b) and b.get("at", "max") == "max" and r in (p.get("values") or []) for r, b in v.items())): errors.append(f"{w}: `if.{k}` maps resources ({p.get('values')}) to bounds {{at_least: n, at_most: n, at: max}} (rules 1.60, N10)")
+    elif a in ("zone", "tie", "hold", "skill", "limit", "res"): pass
     elif p.get("values") and not all(x in p["values"] for x in vals): errors.append(f"{w}: `if.{k}` takes only {p['values']}")
 # rules 1.57 (A2): the swell's condition slot (soul_modules.json cycle.swell.unless) is an `if` block of the item ops'
 # predicates, and its line is words
@@ -2114,7 +2115,26 @@ if _swell is not None:
         for k, v in _swell["unless"].items(): check_pred(k, v, "soul_modules:cycle.swell.unless")
 # Classes 3.0 P3: a number block {base, per: [{of, value}], min?, max?}; in an item op its `of` names a source
 # (effects/triggers.ts sourceOf): res:<id>, event:<field>, self:/actor:/target:<field>.
-SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill"]
+SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill", "feed"]  # feed: rules 1.60 (N3), a door's beta feed
+# Rules 1.60 (Doors 3.0, N3): a beta's `feed` names the carrier of its alpha door's number (effects/feed.ts); its step is
+# per_point.numbers.feed (> 0), each carrier is fed by one beta only, and a `feed:<door>` source names an alpha skill fed so.
+FEED_DOORS = set()
+_feed_carriers = {}
+for _s in (data.get("skills") or {}).get("items") or []:
+    _f = _s.get("feed")
+    if _f is None: continue
+    _w = f"skills:{_s.get('id')}.feed"
+    if _s.get("slot") != "beta": errors.append(f"{_w}: only a beta skill feeds its door")
+    if not isinstance(_f, dict) or not isinstance(_f.get("carrier"), str) or not _f["carrier"]: errors.append(f"{_w}: needs a carrier (the door's number it raises)"); continue
+    if _f["carrier"] in _feed_carriers: errors.append(f"{_w}: the carrier {_f['carrier']!r} is fed by {_feed_carriers[_f['carrier']]} too (one beta a number)")
+    _feed_carriers[_f["carrier"]] = _s.get("id")
+    _n = ((_s.get("per_point") or {}).get("numbers") or {})
+    if not (isinstance(_n.get("feed"), (int, float)) and not isinstance(_n.get("feed"), bool) and _n["feed"] > 0): errors.append(f"{_w}: its step is per_point.numbers.feed, a number above 0")
+    if _f.get("provisional") is not True: errors.append(f"{_w}: provisional: true (rules 1.60 numbers are PROVISIONAL)")
+    for _k in ("line", "next"):
+        if not isinstance(_f.get(_k), str) or not _f[_k]: errors.append(f"{_w}: needs its door tab words `{_k}`")
+    _door = next((a for a in (data.get("skills") or {}).get("items") or [] if a.get("attribute") == _s.get("attribute") and a.get("slot") == "alpha"), None)
+    if _door: FEED_DOORS.add(_door.get("id"))
 def check_number_block(b, w, item_op=True):
     if not isinstance(b.get("base"), (int, float)) or isinstance(b.get("base"), bool) or "kind" in b:
         errors.append(f"{w} is a number block: {{base: <number>, per: [{{of, value}}], min?, max?}}"); return
@@ -2129,6 +2149,8 @@ def check_number_block(b, w, item_op=True):
             errors.append(f"{w}: a number block's per-point part is {{of, value}}"); continue
         if item_op and pp["of"].split(":", 1)[0] not in SOURCE_SPACES or item_op and ":" not in pp["of"]:
             errors.append(f"{w}: an item op's number block counts '{pp['of']}': name a source ({', '.join(s + ':' for s in SOURCE_SPACES)})")
+        elif item_op and pp["of"].startswith("feed:") and pp["of"].split(":", 1)[1] not in FEED_DOORS:
+            errors.append(f"{w}: '{pp['of']}' names no door a beta feeds (skills.json <beta>.feed)")
 # Classes 3.0 P5: `targets` on any op (the unit set it runs on): its fields and words are item_ops.targets.fields.
 def check_targets(t, w):
     fields = (IOPS.get("targets") or {}).get("fields") or {}

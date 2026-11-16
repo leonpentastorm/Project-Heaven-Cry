@@ -163,7 +163,7 @@ describe('class resources, named from the data', () => {
     const r = row(resourcesOf(u, c, g), 'res-guard');
     expect(r).toMatchObject({ label: 'Guard', value: '2 / ' + u.resMax.guard, kind: 'pips', now: 2 });
     // the soak is the engine's, at the unit's level (rules 1.36: Guard's soak is in HP and scales with level)
-    const soak = phys.guardSoak(u);
+    const soak = phys.guardSoak({ level: u.level, skills: c.skills }); // rules 1.60: fed by Pain Threshold (the sheet's skills)
     // its line is Durability's door line (skills.json durability.door_line, rules 1.56 Guard 2.0); the rule with the soak is the hover
     expect(r.sub).toBe((SKILL as any).durability.door_line);
     expect(r.hint.startsWith(guardRule(soak))).toBe(true);

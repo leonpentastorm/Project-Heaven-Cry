@@ -31,6 +31,7 @@ import { itemWords, wordCostMods, immune } from './effects/core';
 import { price, priced, costOf, whyNot, canPay, pay, refund, apFor, resGive } from './effects/cost';
 import { masteredWords } from './sigilgrowth';
 import { tilesIn, rngOf } from './kit';
+import { feedOf, showFeedNumber } from './effects/feed';
 
 type Fam = 'body' | 'brain' | 'heart';
 /** A glyph on a tile. v: the rules revision it was drawn under (14 = rules 1.4; a glyph without it is from 1.2). */
@@ -111,8 +112,10 @@ export const MANA_START = 15;
 /** The Flux an Evoker holds before it overloads (rules 1.4; data/rules.json mana.sigil.flux.safe_max): the one copy (C11). */
 export const FLUX_MAX: number = Number((RULES as any).mana?.sigil?.flux?.safe_max);
 if (!(FLUX_MAX > 0)) throw new Error('data/rules.json mana.sigil.flux.safe_max is missing');
-/** This unit's Flux limit: FLUX_MAX plus what its items add (stat `flux_max`: a variant's Holds more Flux, rules 1.56 L4). */
-export const fluxMaxOf = (u: Unit, cb?: Combat | null): number => FLUX_MAX + statQuery({ u, cb: cb || null }, 'flux_max').add;
+/** This unit's Flux limit: FLUX_MAX (fed by Rumination) plus what its items add (stat `flux_max`: a variant's Holds more Flux, rules 1.56 L4). */
+/** Rules 1.60 item 4608 (the beta feeds: Rumination): FLUX_MAX x the Flux limit's feed, rounded, then what items add. */
+export const fluxMaxOf = (u: Unit, cb?: Combat | null): number => Math.round(FLUX_MAX * feedOf(u, 'flux_limit')) + statQuery({ u, cb: cb || null }, 'flux_max').add;
+showFeedNumber('flux_limit', (x) => Math.round(FLUX_MAX * feedOf(x, 'flux_limit')));
 export { CORE_CHARGE, coreChargeOf };
 /** The standard mana core's item id (a resource's neutral item: every core line is lootToPack of it). */
 export const CORE_ITEM = 'standard_core';

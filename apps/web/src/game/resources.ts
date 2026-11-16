@@ -11,7 +11,7 @@
 // (Outburst 2.0: a held heart with design, stage 0–4, tone, form, free pumps left), so that is the one place to update.
 import * as E from '@engine';
 import { unitQuiverCards, quiverCards } from '@engine';
-import { doorLineOf } from './doorView';
+import { doorLineOf, feedLineOf } from './doorView';
 import { enchantMark } from './quiverView';
 import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
   coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam, wearState } from '@engine';
@@ -322,6 +322,9 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
   const MOMENTUM_SUB = 'Built by plain attacks that hit; Strikes, Openers and Finishers spend it.';
   const resMax: Record<string, number> = u?.resMax || (c ? Object.fromEntries(classResources(c).filter((r: any) => r.persist).map((r: any) => [r.id, r.max])) : {});
   const resNow: Record<string, number> = u?.res || (c?.res ? c.res : {});
+  // rules 1.60 (the beta feeds its door): a door resource's beta line, from the engine's view (techniques.json rules.<id>.door
+  // names the door: Guard, Momentum)
+  const feedNote = (id: string): string => { const door = (E.phys as any).PHYS_RULES?.[id]?.door; const l = door ? feedLineOf(c || u, String(door)) : ''; return l ? ' ' + l + '.' : ''; };
   for (const id of Object.keys(resMax)) {
     const info = classResInfo(c, id), n = resNow[id] ?? (u ? 0 : resMax[id]), max = resMax[id];
     const ink = (RES_INK as any)[info.core] || RES_INK.body;
@@ -333,13 +336,13 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     // Guard (rules 1.13) is anyone's with Durability, not a class's: its rule in one sentence, the soak read from the
     // engine (physView), and the engine's fuller hint beside the pips in a fight.
     const gv = id === 'guard' && u && cb ? (() => { try { return E.phys.physView(cb, u, u.side, g)?.guard || null; } catch { return null; } })() : null;
-    const gRule = id === 'guard' ? guardRule(gv?.soak ?? E.phys.guardSoak({ level: u?.level ?? c?.level ?? 1 })) : '';
+    const gRule = id === 'guard' ? guardRule(gv?.soak ?? E.phys.guardSoak(u || { level: c?.level ?? 1, skills: c?.skills })) : '';
     // Shadow (rules 1.32): Perception's door, in Perception ink, with the engine's sight word for the unit (Unseen, In view, Seen)
     const sight = id === 'shadow' && u && cb ? (() => { try { const [s1, s2] = E.sightOf(cb, u); return s1 === 'seen' ? 'Seen' : s2 === 'in_view' ? 'In view' : 'Unseen'; } catch { return ''; } })() : '';
     const sRule = id === 'shadow' ? 'Shadow: built while unseen (a turn ended Hidden with no attack, a move from cover to cover, a kill nobody saw; at most 2 a turn), lost 1 at the start of a turn while seen, spent all at once by a Break on a weapon attack from Hidden.' : '';
     rows.push({ key: 'res-' + id, label: info.label, value: n + ' / ' + max, now: n, max, kind: max <= 10 ? 'pips' : 'bar', colour: id === 'shadow' ? RES_INK.perception : ink, sub: id === 'momentum' ? MOMENTUM_SUB : id === 'shadow' ? (sight ? 'Eye: ' + sight : 'Built while unseen') : (id === 'guard' ? doorLineOf('durability') || gRule : '') || info.source || '',
       ...(n >= max && max > 0 ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : n <= 0 && id === 'supplies' ? { warn: 'EMPTY' as ResWarn, level: 'caution' as const } : {}),
-      hint: (mRule || sRule || (gRule ? gRule + (gv?.hint ? ' ' + gv.hint : '') : '') || rule || (info.source ? info.label + ' (' + info.source + ').' : info.label + '.')) + spend });
+      hint: (mRule || sRule || (gRule ? gRule + (gv?.hint ? ' ' + gv.hint : '') : '') || rule || (info.source ? info.label + ' (' + info.source + ').' : info.label + '.')) + spend + feedNote(id) });
   }
   // ---- faith (Blessing 2.0, rules 1.6): Devotion with its gates, Witnessed, the vow; an Atheist's pieces ----
   rows.push(...faithRows(u, c));

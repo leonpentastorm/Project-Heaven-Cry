@@ -14,6 +14,7 @@ const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
 import { statOf, levelFactor, scaleOf, profileOf, pairOf } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
+import { feedOf, showFeedNumber } from './effects/feed';
 
 export interface Sheet {
   name: string; portrait: string; origin: string;
@@ -799,7 +800,10 @@ export const swellFree = (c: Character) => P(c, 'will_power') >= ((SOUL_RULES as
 export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
 export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'will_power'))); // rules 1.13: Will Power's (it was Lore Master's)
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
-export const strainLimit = (c: Character) => fx(c, 'strain_limit', 3 + Math.floor(P(c, 'will_power') / 2));
+/** The Strain limit: 3 + half Will Power, x the Strain limit's beta feed (rules 1.60 item 4611: Composure), rounded; then
+ * what items add (stat strain_limit). */
+export const strainLimit = (c: Character) => fx(c, 'strain_limit', Math.round((3 + Math.floor(P(c, 'will_power') / 2)) * feedOf(c, 'strain_limit')));
+showFeedNumber('strain_limit', (x) => strainLimit(x));
 export const moduleSlots = (c: Character) => fx(c, 'module_slots', 1 + Math.floor(P(c, 'will_power') / 3));
 export const readyDesigns = (c: Character) => fx(c, 'ready_designs', Math.max(((SOUL_RULES as any).start?.min_ready_designs ?? 3), 2 + Math.floor(P(c, 'will_power') / 2))); // rules 1.13: ready designs are Will Power's (they were Empathy's)
 // ---------- rules 1.8: practice, module gates and picks (spec: Soul magic 12, sections 4 and 5) ----------

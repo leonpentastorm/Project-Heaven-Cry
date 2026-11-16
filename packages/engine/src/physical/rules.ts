@@ -15,10 +15,13 @@ import { condOn } from '../magic';
 import { WEAPON } from '../data';
 import { PHYS_RULES, TECHNIQUE, addDrill, drillMult } from './data';
 import { pressureOf, pressureState, addPressureTo, lowerPressureOf, isPressed, isSuppressed, onPressureState, hitPressure, coveredUnseen } from './pressure';
-import { ensureMomentum, momentumOf, loseMomentum, guardUp, strikeNoPressure, turnStamp, endWatch } from './core';
+import { ensureMomentum, momentumOf, wearMomentum, guardUp, strikeNoPressure, turnStamp, endWatch } from './core';
+import { feedOf, feedCarry, showFeedNumber } from '../effects/feed';
 import { foesOf } from '../kit';
 
 const P = () => PHYS_RULES.pressure;
+/** The door tab's number for Athletics' feed: Pressure shed at a plain turn's end (rules 1.60 item 4606). */
+showFeedNumber('pressure_fall', (x) => Math.round(P().decay * feedOf(x, 'pressure_fall') * 100) / 100);
 const nearestFoe = (cb: Combat, u: Unit): number => foesOf(cb, u).reduce((m, v) => Math.min(m, dist(u.pos, v.pos)), 99);
 /** Every weapon an attacker has damaged a unit with this fight (drill is paid for each on the kill). */
 function hitWith(tgt: Unit, attId: string, weaponId: string) { const l = ((tgt.hitWith ||= {})[attId] ||= []); if (!l.includes(weaponId)) l.push(weaponId); }
@@ -52,7 +55,7 @@ onHook('combat_start', (_ctx: any, cb) => {
 // come here (they are 'forced_move').
 onHook('moved', (ctx: any, cb) => {
   const u: Unit = ctx.u; if (!u || ctx.forced || ctx.part || !['move', 'sprint', 'disengage'].includes(ctx.how) || !(ctx.tiles > 0) || !momentumOf(u)) return;
-  loseMomentum(cb, u, ctx.tiles * (M().step_loss ?? 1));
+  wearMomentum(cb, u, ctx.tiles * (M().step_loss ?? 1)); // rules 1.60 item 4605: Guts divides it
 });
 // Being hit: −1 for each damaging hit taken, from any source. Not while guarding: the Guard technique is up, the hit
 // was Parried, or the unit held Guard points as it arrived. A condition's own tick (Bleeding, Burning) and the harm a
@@ -62,7 +65,7 @@ onHook('damage_in', (ctx: any, cb) => {
   const u: Unit = ctx.t; if (ctx.phase !== 'after' || !u || !(ctx.dealt > 0) || !momentumOf(u)) return;
   if (ctx.self || NOT_A_HIT.has(ctx.src?.type)) return;
   if (guardUp(u) || ctx.parryWon || (ctx.guardSoaked || 0) > 0) return; // Guard points keep Momentum only on a hit they soaked part of (Leon, 10 Nov 2026: a kept point must not protect it for ever)
-  loseMomentum(cb, u, M().hit_loss ?? 1);
+  wearMomentum(cb, u, M().hit_loss ?? 1); // rules 1.60 item 4605: Guts divides it
 });
 
 onHook('on_kill', (ctx: any, cb) => {
@@ -105,6 +108,9 @@ onHook('turn_end', (ctx: any, cb) => {
   if (coveredUnseen(cb, u)) { fall = P().decay_hidden; why = 'in cover and out of sight'; }
   else if (nearestFoe(cb, u) < ((u as any).nearFoe0 ?? 0)) { fall = P().decay_closing; why = 'closing in'; }
   for (const f of DECAY) fall = f(cb, u, fall);
+  // rules 1.60 item 4606 (the beta feeds: Athletics): the final fall, whichever value applied, x the Pressure fall's feed,
+  // the fraction carried to the next turn's end
+  if (fall > 0) fall += feedCarry(u, 'pressure_fall', fall * (feedOf(u, 'pressure_fall') - 1));
   if (fall > 0) lowerPressureOf(cb, u, fall, why);
 });
 

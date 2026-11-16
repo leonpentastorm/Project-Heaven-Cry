@@ -37,9 +37,10 @@ import patronsJ from '../../../../data/patrons.json';
 import { TECHNIQUES, PHYS_RULES as TECH_RULES, techGroupOf, techSystemOf } from '../physical/data';
 import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
-import { loseAp, weaponOwnSite } from './cost';
+import { loseAp, weaponOwnSite, resMaxOf } from './cost';
 import { resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
 import { gainEcho } from './echo';
+import { doorFeed } from './feed';
 import { deal, mend, amountOf, type AmountSpec } from './output';
 import { mendShown } from './core'; // (a cycle core ↔ triggers: used at run time only)
 import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amounts';
@@ -132,13 +133,13 @@ const flags = (ev: Ev): Record<string, any> => (ev.self.ps?.[ev.h.key] as any)?.
 // ============================================================================================== the predicates
 /** The closed list of `if` keys. Each reads the event; all of an effect's keys must hold. `<who>` is self, actor or
  * target. Numbers are shares of max HP (0.5: half) or tiles. */
-export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie' | 'hold' | 'skill' | 'limit'; test: (ev: Ev, v: any) => boolean; values?: string[] }> = {};
+export const PREDICATES: Record<string, { about: string; arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie' | 'hold' | 'skill' | 'limit' | 'res'; test: (ev: Ev, v: any) => boolean; values?: string[] }> = {};
 /** faith.ts lends the predicate `answered` its prayer door as it loads (this file can't import it: load order). */
 let ANSWERED: ((cb: Combat, rng: { state: number } | null, u: Unit, preview: boolean) => boolean) | null = null;
 /** faith.ts sets the door the predicate `answered` asks (prayerAnswered: Classes 3.0 step 5, the Chaplain). */
 export const setAnsweredDoor = (f: typeof ANSWERED) => { ANSWERED = f; };
 /** Add a predicate; `values`: the closed list its words come from (the validator refuses any other word). */
-const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie' | 'hold' | 'skill' | 'limit', about: string, test: (ev: Ev, v: any) => boolean, values?: string[] | (() => string[])) => {
+const P = (name: string, arg: 'rel' | 'number' | 'bool' | 'ids' | 'words' | 'string' | 'zone' | 'tie' | 'hold' | 'skill' | 'limit' | 'res', about: string, test: (ev: Ev, v: any) => boolean, values?: string[] | (() => string[])) => {
   PREDICATES[name] = { about, arg, test };
   // (a function: read when asked, for a list defined in a module this one is loaded inside of: tactics.ts SIGHT_WORDS)
   if (values) Object.defineProperty(PREDICATES[name], 'values', { enumerable: true, get: typeof values === 'function' ? values : () => values });
@@ -266,6 +267,19 @@ P('tech_group', 'words', "the technique the event is made with (the attack's, it
 P('free_tech', 'bool', 'the attack is (true) or is not (false) made with a free technique, everyone\'s (techniques.json free: Shot, Aimed Shot, Cut, Overwatch), or with no technique a lone shot, aimed shot, blow or throw (a roll of a volley is not: a Burst, full auto, a weapon skill, both hands)', (ev, v) => { const t = ev.ctx.tech ?? ev.ctx.src?.tech, m = ev.ctx.mode ?? ev.ctx.src?.mode, vo = ev.ctx.volley ?? ev.ctx.src?.volley; return (t ? FREE_TECH.includes(t) : !vo && ['shot', 'aimed', 'melee', 'thrown'].includes(m)) === v; }); // (on damage, a kill or a downing: its source's, as mode)
 P('tech_ap_at_least', 'number', 'the attack\'s own price is at least this many AP: its technique\'s cost with the weapon before any item (ctx.techAp), or with no technique the attack\'s base AP', (ev, v) => typeof ev.ctx.techAp === 'number' && ev.ctx.techAp >= v);
 P('path_tiles_at_most', 'number', 'the move (its priced walk: ctx.tiles) is at most this many tiles', (ev, v) => typeof ev.ctx.tiles === 'number' && ev.ctx.tiles <= v);
+// Rules 1.60 (N10, approved by the lead 16 Nov 2026): the resource-amount predicate. {<resource>: {at_least: n, at_most: n,
+// at: "max"}} on the holder, the event's actor or its target; every resource named must meet every bound given. `max`
+// is the resource's own most for that unit (effects/cost.ts resMaxOf: Pressure's cap by tier, a class meter's resMax, a
+// row's max path). (`at: "limit"`, a named stat such as the Strain limit, comes with Strain as a resource row: N3b.)
+const resAmt = (ev: Ev, u: Unit | null, id: string): number => (!u ? 0 : u.resMax?.[id] != null || !RESOURCES[id] ? resOf(u, id) : resLeft(u, id, u === ev.self ? ev.h.c : charOfUnit(u)));
+const resMeets = (ev: Ev, u: Unit | null, v: any): boolean => !!u && !!v && typeof v === 'object' && Object.entries(v).every(([id, b]: [string, any]) => {
+  const n = resAmt(ev, u, id);
+  if (typeof b?.at_least === 'number' && n < b.at_least) return false;
+  if (typeof b?.at_most === 'number' && n > b.at_most) return false;
+  if (b?.at === 'max' && n < resMaxOf(u, id, u === ev.self ? ev.h.c : charOfUnit(u))) return false;
+  return true;
+});
+for (const who of ['self', 'actor', 'target'] as Who[]) P(who + '_res', 'res', who + ' has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: "max"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter\'s most)', (ev, v) => resMeets(ev, unitOf(ev, who), v), () => Object.keys(RESOURCES));
 P('self_has_res', 'words', 'the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)', (ev, v) => list(v).every((id) => resNow(ev, id) >= 1), () => Object.keys(RESOURCES));
 P('self_lacks_res', 'words', 'the holder has none of one of these resources (as self_has_res)', (ev, v) => list(v).some((id) => resNow(ev, id) < 1), () => Object.keys(RESOURCES));
 P('patron', 'words', 'the holder is Faithful to one of these patrons (patrons.json ids)', (ev, v) => { const id = patronIdOf(ev.h.c || charOfUnit(ev.self)); return !!id && list(v).includes(id); }, PATRON_IDS);
@@ -298,10 +312,11 @@ export function sourceOf(ev: Ev, of: string): number {
   if (ns === 'self' || ns === 'actor' || ns === 'target') return unitField(unitOf(ev, ns as Who), f);
   if (ns === 'ties') return tiesOfK(ev.cb, ev.self, f).length; // section 6: how many ties of a kind the holder has
   if (ns === 'skill') return skillPts(ev, f); // rules 1.33: the holder's points in a skill (Share a Hit's 5% a point of Camaraderie)
+  if (ns === 'feed') return doorFeed(ev.self, f); // rules 1.60 (N3): the holder's beta feed of a door, 1 + per_product x alpha x beta (effects/feed.ts)
   return 0;
 }
 /** The namespaces a number block's `of` may name in an item op. */
-export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill'];
+export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill', 'feed'];
 /** The numeric fields of an item op that may be number blocks. */
 const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds', 'pool', 'within', 'holders', 'share', 'count'];
 /** Rules 1.33: `{choice}` in a word field (a condition's id, a limit's key) is the action's pick (a felt feeling). */

@@ -24,6 +24,7 @@ import { TECHNIQUE, TECHNIQUES, PHYS_RULES, hitsWith, weaponPhys, weaponProps, w
 import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure, hitPressure } from './pressure';
 import { setBraced, setNailed, bracedAs } from '../unitstate';
 import { condsAside } from '../magic';
+import { feedOf, feedCarry, showFeedNumber } from '../effects/feed';
 
 // ---------- the registry ----------
 const HANDLERS: Record<string, TechHandler> = {};
@@ -114,9 +115,11 @@ for (const k of GUARD_NUMBERS) if (typeof PHYS_RULES.guard?.[k] !== 'number') th
 const GR = (): Record<(typeof GUARD_NUMBERS)[number], number> => PHYS_RULES.guard;
 export const guardOf = (u: Unit) => resOf(u, 'guard');
 export const guardMax = (u: Unit) => u.resMax?.guard ?? 0;
-/** What one Guard point takes off a hit for this unit (rules.guard.soak, in HP: × the level scale, rules 1.36). The one
- * place it is worked out: the soak (guard.ts) and the panel's words (physView) both read it. */
-export const guardSoak = (u: Pick<Unit, 'level'>): number => Math.max(1, Math.round(GR().soak * scaleOf(u.level)));
+/** What one Guard point takes off a hit for this unit (rules.guard.soak, in HP: × the level scale, rules 1.36; × the
+ * plate soak's beta feed, rules 1.60 item 4604: Pain Threshold). The one place it is worked out: the soak (guard.ts),
+ * the panel's words (physView) and the door tab's line (effects/feed.ts) read it. A unit, or a sheet ({level, skills}). */
+export const guardSoak = (u: Pick<Unit, 'level'> & { skills?: any }): number => Math.max(1, Math.round(GR().soak * scaleOf(u.level) * feedOf(u, 'plate_soak')));
+showFeedNumber('plate_soak', (x) => guardSoak(x));
 /** Rules 1.59 (T4, Leon, 16 Nov 2026: "let them have double guard when doing a guard action, we already have max guard
  * to balance it"): what every Guard gain of this unit is multiplied by: rules.guard.two_shield_mult with a shield in
  * each hand, else 1. The one reader: guardGain (Brace, the Guard technique) and the follow strike's plate (follow). */
@@ -194,6 +197,14 @@ export function loseMomentum(cb: Combat, u: Unit, n: number): number {
   u.res.momentum = was - take; momentumFx(cb, u, was);
   return take;
 }
+/** Rules 1.60 item 4605 (the beta feeds: Guts): Momentum worn off by a tile walked or a hit taken (physical/rules.ts),
+ * divided by the Momentum loss's feed; the part kept is carried (effects/feed.ts feedCarry), so a whole point is kept
+ * when it has been earned. A spend (Raise Shield's turn of Momentum into Guard) is not worn off: loseMomentum. */
+export function wearMomentum(cb: Combat, u: Unit, n: number): number {
+  const kept = feedCarry(u, 'momentum_loss', n - n / feedOf(u, 'momentum_loss'));
+  return loseMomentum(cb, u, n - kept);
+}
+showFeedNumber('momentum_loss', (x) => Math.round(100 / feedOf(x, 'momentum_loss')) / 100);
 /** Is the Guard technique up on this unit (melee/links.ts keeps its state)? A guard keeps Momentum when you are hit. */
 export const guardUp = (u: Unit): boolean => !!u.tech?.guard?.on;
 

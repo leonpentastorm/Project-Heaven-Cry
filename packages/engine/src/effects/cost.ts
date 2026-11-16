@@ -102,6 +102,20 @@ const SETTERS: Record<string, ResSetter> = {};
 /** Register a resource row's setter (data/actions.json resources.<id>.setter): the system that owns the meter gives it
  * (physical/pressure.ts: addPressureTo). */
 export function setResSetter(name: string, fn: ResSetter): void { SETTERS[name] = fn; }
+/** Rules 1.60 (N10, the resource-amount predicate's `at: "max"`): a resource's most for a unit. A registered reader
+ * first (physical/pressure.ts: Pressure's cap by tier, pressureCap), else a class meter's own most (resMax), else the
+ * row's `max` path (MP: mg.mpMax); Infinity when it has none. */
+const MAXES: Record<string, (u: Unit) => number> = {};
+/** Register a resource's most for a unit (rules 1.60, N10): the system that owns the meter says it (Pressure: pressureCap). */
+export function setResMax(id: string, fn: (u: Unit) => number): void { MAXES[id] = fn; }
+/** A resource's most for this unit (rules 1.60, N10): the registered reader, a meter's resMax, the row's max path; Infinity with none. */
+export function resMaxOf(u: Unit | null | undefined, id: string, c?: Character | null): number {
+  if (!u) return Infinity;
+  if (MAXES[id]) return MAXES[id](u);
+  if (u.resMax?.[id] != null) return u.resMax[id];
+  const d = RESOURCES[id]; if (!d?.max) return Infinity;
+  const x = cell({ ...d, path: d.max }, holderOfRes(d, u, c)); return x && x.o[x.k] != null ? Number(x.o[x.k]) : Infinity;
+}
 /** Is a row's `needs` met on its holder (one path set, or one of a list; a row with no `needs`: always)? */
 const needsMet = (d: ResDef, root: any): boolean => !d.needs || (Array.isArray(d.needs) ? d.needs : [d.needs]).some((p) => { const x = cell({ ...d, path: p }, root); return !!x && !!x.o[x.k]; });
 /** GIVE (or with a negative n take) a resource of data/actions.json `resources` to a unit outside an action's price

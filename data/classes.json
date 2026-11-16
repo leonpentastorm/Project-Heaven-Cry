@@ -2397,6 +2397,7 @@
                   "kind": "shield",
                   "base": 10,
                   "profile": "blessing_mend",
+                  "heal_kind": "blessing",
                   "provisional": true
                 }
               },

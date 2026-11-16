@@ -501,12 +501,24 @@
       "core": "body",
       "slot": "beta",
       "summary": "Wounds don't slow you down.",
+      "feed": {
+        "carrier": "plate_soak",
+        "line": "{beta} {points}: each plate soaks {now}",
+        "next": " (next point: {next})",
+        "provisional": true,
+        "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
+      },
       "per_point": {
         "numbers": {
+          "feed": 0.01,
           "elemental_taken": 0.1,
           "hp_per_level": 2
         },
         "rows": [
+          {
+            "at": "each",
+            "text": "Feeds Durability's Guard: each plate soaks {=per_point.numbers.feed|pct}% more for each Durability point times each Pain Threshold point"
+          },
           {
             "at": "each",
             "text": "−{=per_point.numbers.elemental_taken|pct}% elemental damage taken"
@@ -969,11 +981,23 @@
       "core": "body",
       "slot": "beta",
       "summary": "Fear doesn't get a vote.",
+      "feed": {
+        "carrier": "momentum_loss",
+        "line": "{beta} {points}: a hit taken or a tile walked wears off {now} Momentum (what you keep adds up to whole points)",
+        "next": " (next point: {next})",
+        "provisional": true,
+        "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
+      },
       "per_point": {
         "numbers": {
+          "feed": 0.01,
           "save": 1
         },
         "rows": [
+          {
+            "at": "each",
+            "text": "Feeds Raw Power's Momentum: the Momentum a hit or a tile wears off is divided by {=per_point.numbers.feed|pct}% more for each Raw Power point times each Guts point"
+          },
           {
             "at": "each",
             "text": "+{=per_point.numbers.save} on Body saves: poison, knock-downs, pushes and pins"
@@ -1510,11 +1534,23 @@
       "core": "body",
       "slot": "beta",
       "summary": "Armour just slows you down.",
+      "feed": {
+        "carrier": "pressure_fall",
+        "line": "{beta} {points}: you shed {now} of your Pressure at a plain turn's end, and Slide reaches further",
+        "next": " (next point: {next})",
+        "provisional": true,
+        "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
+      },
       "per_point": {
         "numbers": {
+          "feed": 0.01,
           "defense": 1
         },
         "rows": [
+          {
+            "at": "each",
+            "text": "Feeds Dexterity's Pressure: the Pressure you shed at a turn's end, and Slide's reach, are {=per_point.numbers.feed|pct}% more for each Dexterity point times each Athletics point"
+          },
           {
             "at": "each from 2",
             "text": "+{=per_point.numbers.defense} Defense: you are harder to hit"
@@ -2308,12 +2344,25 @@
       "core": "mind",
       "slot": "beta",
       "summary": "Seeing how a thing works: a lock, a mechanism, a crime scene, an enemy. Analyze (2 AP) reveals one enemy's HP, armour, resistances and weak points.",
+      "feed": {
+        "carrier": "spot_tn",
+        "line": "{beta} {points}: foes need {now} more to find you while you are Hidden",
+        "next": " (next point: {next})",
+        "provisional": true,
+        "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
+      },
       "per_point": {
         "numbers": {
+          "feed": 0.01,
+          "feed_at_double": 5,
           "crit_taken": 0.05,
           "range": 1
         },
         "rows": [
+          {
+            "at": "each",
+            "text": "Feeds Ingenuity's Shadow: a foe needs more to find you, up to {=per_point.numbers.feed_at_double} more when Ingenuity and Acuity are both at their top ({=per_point.numbers.feed|pct}% of that for each Ingenuity point times each Acuity point)"
+          },
           {
             "at": "each",
             "text": "−{=per_point.numbers.crit_taken|pct}% critical damage taken"
@@ -2811,11 +2860,23 @@
       "core": "mind",
       "slot": "beta",
       "summary": "The scientist's library. Mirrors Lore Master.",
+      "feed": {
+        "carrier": "flux_limit",
+        "line": "{beta} {points}: your Flux limit is {now}",
+        "next": " (next point: {next})",
+        "provisional": true,
+        "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
+      },
       "per_point": {
         "numbers": {
+          "feed": 0.01,
           "save": 1
         },
         "rows": [
+          {
+            "at": "each",
+            "text": "Feeds Brain Power's Sigils: your Flux limit is {=per_point.numbers.feed|pct}% more for each Brain Power point times each Rumination point"
+          },
           {
             "at": "each",
             "text": "+{=per_point.numbers.save} on Brain saves: confusion, illusions, your mind turned"
@@ -3278,11 +3339,23 @@
       "core": "mind",
       "slot": "beta",
       "summary": "Making a thing work now with what is at hand. Fixes guns, gear and machines in the field, robot squadmates included.",
+      "feed": {
+        "carrier": "figment_hp",
+        "line": "{beta} {points}: your Figments are {now}% tougher",
+        "next": " (next point: {next}%)",
+        "provisional": true,
+        "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
+      },
       "per_point": {
         "numbers": {
+          "feed": 0.01,
           "ambush_taken": 0.1
         },
         "rows": [
+          {
+            "at": "each",
+            "text": "Feeds Visualization's Figments: their HP is {=per_point.numbers.feed|pct}% more for each Visualization point times each Improvisation point"
+          },
           {
             "at": "each",
             "text": "−{=per_point.numbers.ambush_taken|pct}% ambush damage taken"
@@ -3750,11 +3823,26 @@
       "core": "soul",
       "slot": "beta",
       "summary": "The squad is a world of its own.",
+      "feed": {
+        "carrier": "heal_back",
+        "tied": "bond",
+        "how": "tending",
+        "line": "{beta} {points}: {now}% of what you heal down a Bond comes back to you",
+        "next": " (next point: {next}%)",
+        "provisional": true,
+        "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
+      },
       "per_point": {
         "numbers": {
+          "feed": 0.01,
+          "feed_at_double": 0.3,
           "heal": 0.1
         },
         "rows": [
+          {
+            "at": "each",
+            "text": "Feeds Empathy's Bonds: what you Tend a Bonded ally heals you too, up to {=per_point.numbers.feed_at_double|pct}% of it when Empathy and Camaraderie are both at their top ({=per_point.numbers.feed|pct}% of that for each Empathy point times each Camaraderie point); it is no heal given"
+          },
           {
             "at": "each",
             "text": "+{=per_point.numbers.heal|pct}% healing received"
@@ -4325,11 +4413,23 @@
       "core": "soul",
       "slot": "beta",
       "summary": "A face that never moves.",
+      "feed": {
+        "carrier": "strain_limit",
+        "line": "{beta} {points}: your Strain limit is {now}",
+        "next": " (next point: {next})",
+        "provisional": true,
+        "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
+      },
       "per_point": {
         "numbers": {
+          "feed": 0.01,
           "save": 1
         },
         "rows": [
+          {
+            "at": "each",
+            "text": "Feeds Will Power's Outbursts: your Strain limit is {=per_point.numbers.feed|pct}% more for each Will Power point times each Composure point"
+          },
           {
             "at": "each",
             "text": "+{=per_point.numbers.save} on Heart saves: fear, despair, losing your nerve"
@@ -4795,11 +4895,23 @@
       "core": "soul",
       "slot": "beta",
       "summary": "Seeing where an act leads.",
+      "feed": {
+        "carrier": "prayer_shield",
+        "line": "{beta} {points}: the shields your prayers give are {now}% stronger",
+        "next": " (next point: {next}%)",
+        "provisional": true,
+        "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
+      },
       "per_point": {
         "numbers": {
+          "feed": 0.01,
           "shield": 0.1
         },
         "rows": [
+          {
+            "at": "each",
+            "text": "Feeds Faith's prayers: every shield your prayers give (Protection, a Hymn's, the Ward) is {=per_point.numbers.feed|pct}% stronger for each Faith point times each Conscience point"
+          },
           {
             "at": "each",
             "text": "+{=per_point.numbers.shield|pct}% to every shield you are given"
@@ -4808,6 +4920,36 @@
       },
       "gates": [],
       "unlocks": {
+        "1": {
+          "name": "The prayers' shields (the feed)",
+          "mastery": 0,
+          "text": "Every shield your prayers give (a Whisper's, a Hymn's, the Ward) is multiplied by Faith's beta feed: {=per_point.numbers.feed|pct}% more for each Faith point times each Conscience point (rules 1.60 item 4612).",
+          "effects": [
+            {
+              "op": "mend_mult",
+              "when": "shield",
+              "if": {
+                "actor": "self",
+                "target": "any",
+                "how": [
+                  "blessing"
+                ]
+              },
+              "value": {
+                "base": 0,
+                "per": [
+                  {
+                    "of": "feed:faith",
+                    "value": 1
+                  }
+                ]
+              }
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "item": true
+        },
         "3": {
           "name": "Foresight",
           "category": "Passive",
