@@ -122,11 +122,11 @@ describe('Strain: the burn, the automatic Mana Short (section 3)', () => {
     A(f, { type: 'combat/end-turn' });
     expect(fx(f.cb, 'burn')[0]).toMatchObject({ unit: f.pc.id, over: 2, dmg: 16 }); expect(logHas(f.cb, /heart burns: 16 damage \(2 over/)).toBe(true);
   });
-  it('3 over the limit: an automatic Mana Short: Stunned, the held one goes wild with the stage-1 rider on you; Strain falls to the limit', () => {
+  it('3 over the limit: an automatic Mana Short: Stunned, the held one goes wild with the stage-1 rider on you; Strain stays and the heart is in Mana Shock (rules 1.56)', () => {
     const f = rig(); me(f).mg!.strainLimit = 4; me(f).mg!.strain = 6; const d = give(f.pc, { tone: 'frost' });
     begin(f, d);
     expect(logHas(f.cb, /MANA SHORT/)).toBe(true); expect(condOn(me(f), 'stunned')).toBe(true);
-    expect(me(f).mg!.held).toBeNull(); expect(me(f).mg!.strain).toBe(4);
+    expect(me(f).mg!.held).toBeNull(); expect(me(f).mg!.strain).toBe(7); expect(me(f).mg!.shock).toBe(true); // rules 1.56: item 500's fall to the limit is retired
     expect(logHas(f.cb, /releases wild/)).toBe(true); expect(condOn(f.foe, 'slowed')).toBe(false); // stage 0: no rider on the foe
     expect(condOn(me(f), 'slowed')).toBe(true); // Frost's stage-1 rider on your own tile
     expect(fx(f.cb, 'short').at(-1)).toMatchObject({ held: true, tone: 'frost', element: 'freeze' });

@@ -8,6 +8,15 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## Unreleased (after 0.29.0) — the Mana Shock
+
+- **Rules 1.56, the Mana Shock** (Leon, 16 Nov 2026; decision 116): a Mana Short (3 over the Strain limit) still Stuns
+  and throws a held Outburst wild, but Strain no longer falls to the limit: the caster is in **Mana Shock** until it
+  calms the heart back to the limit, and each of its turns that ends in it costs 25% of max HP (nothing soaks it; it
+  Downs, never kills; a Down ends it). No second Short while it lasts. For every Soul caster, characters and enemies.
+  Shown on the token and panels (MANA SHOCK, damage red), the Strain row, the held heart's warning, the Outbursts
+  door line and the bare-handed warning. Data: `soul_modules.json strain.after_short` (`keep`) and `strain.shock`.
+
 ## 0.29.0 — Balance 2.0: the nine doors
 
 Rules revision 1.56 (every new number PROVISIONAL), built on top of live 0.28.3. Each of the nine skills that open a

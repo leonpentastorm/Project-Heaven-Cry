@@ -192,7 +192,8 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
   const off = lg.err ? 0 : Math.max(0, m.strain - (lg.u?.mg?.strain ?? m.strain));
   const glyphHere = (cb.glyphs || []).some((g: any) => g.pos === u.pos && !g.keystone);
   const over = H.strain - H.limit;
-  const warn = plan.shortWarning ? 'MANA SHORT: ' + over + ' over the limit. You are Stunned and the held Outburst goes off wild.' : plan.burnWarning > 0 ? 'OVER THE LIMIT: the heart burns you for ' + plan.burnWarning + ' true damage at the end of your turn.' : over === 0 ? 'AT THE LIMIT: one more Strain and the heart starts to burn you.' : '';
+  const SH: any = (SOUL_RULES as any).strain?.shock || {};
+  const warn = m.shock ? String(SH.name || 'Mana Shock').toUpperCase() + ': ' + over + ' over the limit. ' + (SH.text || '') : plan.shortWarning ? 'MANA SHORT: ' + over + ' over the limit. You are Stunned and the held Outburst goes off wild.' : plan.burnWarning > 0 ? 'OVER THE LIMIT: the heart burns you for ' + plan.burnWarning + ' true damage at the end of your turn.' : over === 0 ? 'AT THE LIMIT: one more Strain and the heart starts to burn you.' : '';
   const swell = h.steady ? 'Steadied: no swell next turn.' : stage >= maxStage ? 'At full stage: next turn only your Strain grows (+' + H.swell + ').' : 'Next turn it swells: +1 stage (×' + STAGE_MULT[Math.min(maxStage, stage + 1)] + ') and +' + H.swell + ' Strain.';
   const relWhy = plan.ok || /Pick a|direction/.test(plan.why || '') ? '' : plan.why || '';
   const freeLeft = H.held?.freePumps ?? null;
@@ -202,7 +203,7 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
     stages: STAGE_MULT.slice(0, maxStage + 1).map((x, n) => ({ n, mult: x, on: n <= stage, now: n === stage, next: pp.ok && n === pp.stage, feeling: n <= stage ? fAt(n) : null })),
     felt, does: plan.does || [], feelings: feelingButtons(cb, u),
     revert: { id: 'revert', label: '↶ Revert', cost: 'FREE', ok: rv.ok, why: rv.ok ? '' : rv.why, title: 'Take back your last Pump this turn: its stage, its feeling, and the AP, MP and Strain it cost.' },
-    freePumps: freeLeft, strain: H.strain, limit: H.limit, warn, warnLevel: plan.shortWarning || plan.burnWarning > 0 ? 'alert' : warn ? 'caution' : '', swell,
+    freePumps: freeLeft, strain: H.strain, limit: H.limit, warn, warnLevel: m.shock || plan.shortWarning || plan.burnWarning > 0 ? 'alert' : warn ? 'caution' : '', swell,
     watch: !!m.held.watch, steady: !!m.held.steady, rider: plan.riderText, feedShow: glyphHere,
     // Rules 1.24: a Pump takes MP too (the engine's number). A free Pump is free of AP only, so with MP owed it reads "0 AP · 4 MP".
     pump: { id: 'pump', label: 'Pump', ap: pp.ap, mp: pp.mp || 0, cost: pp.ok ? pumpCost(pp) : (pp.ap ? pp.ap + ' AP' : '—'), ok: pp.ok, why: pp.ok ? '' : pp.why || '', free: pp.ok && pp.free,

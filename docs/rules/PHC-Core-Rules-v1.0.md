@@ -1789,7 +1789,7 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 1. **Strain limit:** 3 + floor(Will Power ÷ 2). **+1 per Begin** and **+1 per held turn** (the swell), each +2 in Flooded air; +2 a Begin without an Emanator. *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)*
 2. **Every turn start: −1 Strain, always** (whatever you did), before the swell.
 3. **Over the limit, no roll:** each point over **burns your heart for 8 true damage at the end of your turn**. It Downs, never kills (a foe is subdued).
-4. **The Mana Short is automatic at 3 over the limit** (checked whenever Strain rises, and again at the end of your turn, for a limit that fell: item 544): you are **Stunned** (you lose your next turn), a held Outburst **goes off wild** (at a random creature within its reach, or into the air), and its element's **stage-1 rider lands on your own tile** (you take Frost's Slowed, Acid's Corroded). Then Strain falls to the limit. Will Power raises the limit; it no longer rolls you out of trouble.
+4. **The Mana Short is automatic at 3 over the limit** (checked whenever Strain rises, and again at the end of your turn, for a limit that fell: item 544): you are **Stunned** (you lose your next turn), a held Outburst **goes off wild** (at a random creature within its reach, or into the air), and its element's **stage-1 rider lands on your own tile** (you take Frost's Slowed, Acid's Corroded). Then Strain falls to the limit. *(Superseded by rules 1.56, the Mana Shock: Strain no longer falls; the caster is in Mana Shock until it is back at the limit.)* Will Power raises the limit; it no longer rolls you out of trouble.
 5. **No vent** (Leon: "feels like ripping off Sigil"). Strain falls by **calming the heart**, through what the body does, so fighting mages and support mages each have their own way. All five add to the turn-start −1:
    1. **A turn of stillness:** end a turn in which you didn't Begin, Pump or Feed **and hold no Outburst**: −1 more. Holding is not stillness (Leon, 8 Nov 2026): a held heart that only waits nets 0 a turn (+1 swell, −1 turn start); Steady the heart nets −2 at the cost of growth.
    2. **Fighting it out:** your first weapon attack each turn (melee or shot): −1. Only the first counts, even one made at Strain 0.
@@ -6924,9 +6924,30 @@ mage too". In force:
    same +4 is what every move that begins an Outburst bare-handed adds (the class Outburst moves, Gift, Inner Charge):
    one field, `soul_modules.json cycle.no_emanator_strain`, which the warning's text copies (`skills.json will_power
    door_numbers`, held equal by the validator).
-2. **The Mana Short's burn (25% of Max HP a turn) is not in force yet** (item 4501): how "going into manashock" is read
-   (the state at 3 over, or every turn spent over the limit) is the lead's ruling, and with it whether anything that
-   keeps a unit from dropping stops the burn. Until then the burn is 8 true a point over the limit, as before.
+2. **The Mana Shock** (Leon, 16 Nov 2026, choosing the first of three readings put to him: "for the out burst
+   decision, use 1"; items 4501 to 4509; it reverses item 500). For every Soul caster, with or without an Emanator,
+   characters and enemies alike:
+   1. **The Mana Short** keeps its name and its trigger (3 over the limit, `soul_modules.json strain.short_at_over`):
+      Stunned 1 round, a held Outburst goes off wild, its element's stage-1 rider on the caster's own tile, as before.
+      **Strain is no longer set back to the limit** (`strain.after_short`: `keep`), and the caster enters **Mana Shock**
+      (`conditions.json mana_shock`).
+   2. **Mana Shock lasts until Strain is at or under the limit**, by the ways that already lower it: the turn start's
+      −1, a still turn, fighting it out, tending, Let go, Steady, Relief, Revert. While it lasts, more Strain brings
+      **no second Short** (no Stun, no wild release). Leaving it and reaching 3 over again is a new Short.
+   3. **The cost:** at the end of each of the caster's own turns that ends in Mana Shock, **25% of Max HP** (the row's
+      `amounts.tick`: max_hp × 0.25, rounded down), after the burn of 8 a point over (which stays as it was) and after a
+      still turn's −1. A turn that brings Strain back to the limit pays nothing. The turn lost to the Short's own Stun
+      pays (it can't calm). It is true damage of the self-harm kind (`strain`): no armour, no shield, no Guard plate,
+      no Close Guard or Interpose, no redirect, no drop-to-0 saver (Last Plate included), no multiplier.
+   4. **It Downs, never kills** (a foe is subdued), as every burn of the heart. **A Downed caster leaves Mana Shock and
+      its Strain is set to the limit**, so a raised caster is not shocked.
+   5. **Pure Heart** still turns away the first Short of a fight (no Mana Shock from it); **Hollow Heart** still refuses
+      the Short's Stun (not the Mana Shock) and keeps a heart-Downed caster stable.
+   6. **Enemies:** an enemy caster's own choices never reach 3 over (its cap is the limit, or the limit + 2 when
+      desperate); pushed there from outside, it is in Mana Shock like anyone, and with nothing held it Begins nothing
+      until the Shock ends (it walks and shoots: the first attack of a turn calms).
+   7. **The field** (rules 1.55: no turns) costs nothing and calms nothing; Strain and every condition are cleared when the
+      party leaves it, as after every fight.
 
 ## Maps (rules 1.16)
 
@@ -8992,7 +9013,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 497. **Shape damage:** Bolt ×1, Lance ×0.8, Wave ×0.7, Burst ×0.7, Aura ×0.6; Bolt and Lance roll Will Power against Defense, the areas don't roll. Not in the proposal: added so an unrolled area isn't a full-damage Bolt on everyone. *Settled by Leon (8 Nov 2026): the shape and roll rules confirmed; the multipliers stay provisional for the balance pass.*
 498. **Strain falls by 1 at the start of every one of your turns, always** (Leon), and the five calming ways add to it.
 499. **The burn:** 8 true damage a point over the limit at the end of your turn; it Downs, never kills (a foe is subdued).
-500. **The automatic Mana Short at 3 over:** Stunned 1 turn, a held Outburst wild, its element's stage-1 rider on your own tile (conditions only), then **Strain falls to the limit** (not in the proposal: otherwise the Short would repeat on every point). *Settled by Leon (8 Nov 2026).*
+500. **The automatic Mana Short at 3 over:** Stunned 1 turn, a held Outburst wild, its element's stage-1 rider on your own tile (conditions only), then **Strain falls to the limit** (not in the proposal: otherwise the Short would repeat on every point). *Settled by Leon (8 Nov 2026).* *(Superseded by rules 1.56, the Mana Shock: Strain no longer falls; the caster is in Mana Shock until it is back at the limit.)* (Leon, 16 Nov 2026, reversing this item; items 4501 to 4509.)
 501. **Stillness:** a turn with no Begin, Pump or Feed (class casts count as a Begin) **and no Outburst held**. *Settled by Leon (8 Nov 2026): holding does not count as stillness*, so a held heart that only waits nets 0 Strain a turn (+1 swell, −1 turn start), and Steady the heart nets −2 at the cost of growth (the first draft let the held heart net −1, which made holding still too cheap). The −1 stays provisional for the balance pass.
 502. **Fighting it out and Tending others** are once each per turn, on your own turn only (reaction shots and heals out of turn don't calm). Tending counts a heal or shield that lands, a stim, and each CLEANSE that ends a condition.
 503. **Let it go:** free, on your own turn; Strain −stage (0 at stage 0), at most the Strain the swells cost (item 541); the meter +1.
@@ -9042,7 +9063,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 541. **Let it go gives back only what the swells cost.** As written ("Strain falls by its stage"), stage bought with AP or free Pumps (Empathy, Shape, Fed, Overdraw, Overflow, Love Made Manifest's stage 4) turned into Strain removal 1:1 with no cap: Begin (+1), Pump ×4, let go (−4) netted −3 in one turn, a vent by another name, and Love Made Manifest was −3 for 2 AP. Now the fall is the stage **capped at the Strain the hold's swells have cost** (Flooded swells count 2; a Twin Pays hold, whose swells cost nothing, gives nothing back). A hold that only swelled behaves as before. *Accepted by Leon, 8 Nov 2026 ("do yours"). The same day he called two side effects intended: the Proving Ground's Refill also resets Strain and Charges, and Pure Heart (Will Power M2) turns away the first Mana Short of each fight.*
 542. **The second school works on the primary's side.** Buff and Inverse Damage on allies; Damage, Control and Status on foes. A cross-side pairing is refused by `magic/design` (and Beloved Spells, the Twinbound twin, the Proving Ground); an old design that has one keeps its primary and drops the rider. The section 4.2 example "Buff (heal) + Status (Inspired)" was impossible as written (Inspired is a Buff option, and a Status rider would have Shaken the healed ally); it is now "Damage + Status (Shaken)" and "Buff (heal) + Damage with Inverse".
 543. **"Landed" means took effect.** The primary lands when its roll hits, its push moves the target (a Body save that holds, or an immunity, is not a landing) or its condition takes hold (a resisted or cancelled one is not). Only then do the second school and the tone's riders ride, and only then does the creature count as hit for `outburst_after` (Storm Front, Twin Souls).
-544. **The Short is a state, checked at the end of your turn too.** A limit that falls without a Strain gain (Heart's Own's +2 ending when the Beloved spell is released) is checked before the burn: 3 over shorts then (and Strain falls to the limit, so it doesn't also burn).
+544. **The Short is a state, checked at the end of your turn too.** A limit that falls without a Strain gain (Heart's Own's +2 ending when the Beloved spell is released) is checked before the burn: 3 over shorts then (and Strain falls to the limit, so it doesn't also burn). *(Superseded by rules 1.56, the Mana Shock: Strain stays, so the burn and the Mana Shock's share follow at that turn end; a caster already in Mana Shock does not short again.)*
 
 **Rules 1.5: gaps closed after the review (8 Nov 2026). PROVISIONAL.**
 
@@ -10751,6 +10772,23 @@ Items 4240 to 4247.
 
 4500. **A bare-handed Begin (rules 1.56, the bare heart, item 1; `soul_modules.json cycle.no_emanator_strain`):** +4
     Strain (was +2, item 631). Leon's number, 16 Nov 2026. PROVISIONAL.
-4501. **The Mana Short's burn (item 2):** 25% of Max HP a turn, Leon, 16 Nov 2026, "for normal soul mage too"; not
-    built: needs the lead's reading of when it runs (at the Mana Short, or over the limit) and whether a death-preventing
-    effect stops it. Needs a ruling.
+4501. **The Mana Shock (rules 1.56, the Mana Shock):** the Mana Short leaves Strain where it is (`soul_modules.json
+    strain.after_short` `keep`; item 500's fall to the limit is retired) and puts the caster in Mana Shock
+    (`conditions.json mana_shock`, `duration.until` `strain_at_limit`). Leon, 16 Nov 2026 ("use 1").
+4502. **Mana Shock's cost:** 25% of Max HP (`mana_shock.amounts.tick`, max_hp × 0.25, rounded down) at the end of each
+    of the caster's own turns that ends in it. Leon's number. PROVISIONAL.
+4503. **When it is paid** (the lead's call for Leon, reversible): at the end of the caster's own turn, after the burn and
+    after a still turn's −1, so a turn that brings Strain to the limit pays nothing; the Stunned turn pays. PROVISIONAL.
+4504. **No second Short while in Mana Shock** (the lead's call): further Strain burns as before but does not Stun again
+    or throw a held Outburst wild.
+4505. **Nothing softens it** (Leon: "no negociation"): the self-harm type `strain`, outside every hit, shield, armour,
+    redirect and drop-to-0 rule (NOT_A_HIT, `self_harm`). Hollow Heart's stable Down still applies (it acts after the
+    Down).
+4506. **It Downs, never kills; a Down ends it** (the lead's call): the caster's Strain is set to the limit and Mana Shock
+    ends when it is Downed, so being raised is not a death loop. A Down while not in Mana Shock leaves Strain as before.
+4507. **Enemies** (the lead's call): an enemy caster in Mana Shock with nothing held Begins nothing (it walks and shoots
+    until the Shock ends); holding, it releases, Steadies or lets go as before.
+4508. **The field** (rules 1.55): no turns, so no cost and no calming; the party leaving clears Strain and conditions as
+    every fight's end does. Open for the lead: whether entering the field should clear Mana Shock at once.
+4509. **Pure Heart and Hollow Heart** keep their texts: Pure Heart's refusal still sets Strain to the limit (no Shock);
+    Hollow Heart refuses the Stun only.

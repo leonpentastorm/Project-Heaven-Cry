@@ -420,3 +420,14 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
       are character cards with written lines, engine-written memories and an optional DM. **Dialogue is trees with
       skill checks**; talking can replace fighting in places; every player talks separately.
     - **Every skill, companion and patron gets its own voice and writing style**, cast by Leon later.
+116. **The Mana Shock: a Mana Short no longer empties the heart** (Leon, 16 Nov 2026: "Keep everything as now, +4 strain
+    on the begin, going into manashock eat 25% your max HP per turn no negociation. find a way to reduce strain or say bye
+    bye, for normal soul mage too"; of the three readings put to him, "for the out burst decision, use 1"). Rules 1.56,
+    the Mana Shock; spec items 4501 to 4509; it reverses item 500 (Leon's own 8 Nov ruling that Strain falls to the limit
+    after a Short). The Short keeps its Stun and its wild release; Strain stays; the caster is in Mana Shock until it
+    calms the heart back to the limit, and every one of its turns that ends in it costs 25% of max HP (true, self-harm,
+    nothing soaks it, it Downs and never kills; a Down ends it). Why: drawing on the air bare-handed (+4 Strain) has to
+    be a real danger, and the one way out is the calming the Outburst system already teaches. Calls made for Leon
+    (reversible): the cost at the turn's end after stillness, no second Short while in it, a Down ends it, an enemy in it
+    Begins nothing, the field neither charges nor calms it. Kept as one flag on the heart (MagicUnit.shock) rather than a
+    condition row, so that no cleanse, debuff count or immunity can touch it.

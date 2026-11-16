@@ -83,7 +83,7 @@ describe('Outbursts (spec: Soul magic)', () => {
     u.mg!.strain = u.mg!.strainLimit + 2; u.mg!.held = { design: u.mg!.designs[0].id, stage: 1, cost: 20 };
     addStrain(cb, rng, u, 1, 'test');
     expect(cb.log.join(' ')).toMatch(/MANA SHORT/); expect(u.mg!.held).toBeNull(); expect(u.conds?.stunned).toBeGreaterThan(0);
-    expect(u.mg!.strain).toBe(u.mg!.strainLimit); expect(u.dead).toBe(false);
+    expect(u.mg!.strain).toBe(u.mg!.strainLimit + 3); expect(u.mg!.shock).toBe(true); expect(u.dead).toBe(false); // rules 1.56: Strain stays, Mana Shock
   });
   it('Syphon refills MP and thins the air; Crystallise makes a core, written to the pack', () => {
     const { c, cb, u } = fight(sheet('stormcaller', 'W', { kit: 'soul' }));

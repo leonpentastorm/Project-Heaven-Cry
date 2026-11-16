@@ -49,7 +49,14 @@
     "burn_per_point": 8,
     "short_at_over": 3,
     "short_stun_rounds": 1,
-    "after_short": "limit",
+    "after_short": "keep",
+    "shock": {
+      "id": "mana_shock",
+      "name": "Mana Shock",
+      "hp_share": 0.25,
+      "provisional": true,
+      "text": "Your heart shorted and is still over its limit. At the end of each of your turns that ends with your Strain still over it, you lose {=hp_share|pct}% of your max HP, on top of the burn for each point over: nothing soaks, shields, redirects or prevents it, and it Downs but never kills. It ends when your Strain is back at your limit (a new turn, a still turn, fighting, tending, Let go, Steady) or when you are Downed. While it lasts, more Strain brings no second Mana Short."
+    },
     "provisional": true,
     "calming": [
       {

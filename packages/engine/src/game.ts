@@ -153,7 +153,7 @@ export interface GameState {
      * so ids never repeat between area-map actions (an Evoke uses its glyphs up, a wall outlives them). */
     glyphSeq?: number;
     magic?: Record<string, { flux: number; strain: number; held: HeldOutburst | null; conds?: Record<string, number>; shield?: number; cast?: boolean; condBy?: Record<string, string>; condVia?: Record<string, string>;
-      /** Rules 1.5: free Pumps left this round, the calming ways used this round. */ freePumps?: number; calmFight?: boolean; calmTend?: boolean }>;
+      /** Rules 1.5: free Pumps left this round, the calming ways used this round. */ freePumps?: number; calmFight?: boolean; calmTend?: boolean; /** rules 1.56: in Mana Shock */ shock?: boolean }>;
     /** Something this round needs the Narrator (a line said, an examine, an approach, a travel request, a spotting). */
     needs?: boolean;
     /** Actions the Narrator mapped from players' words, waiting for the next round to open. */
@@ -1284,7 +1284,7 @@ export function applyRest(g: GameState, kind: 'short' | 'long', o: { settlement?
     const max = maxHp(c), back = kind === 'long' ? Math.ceil((max - Math.max(c.hp, 0)) * hm) : Math.ceil(max * 0.25 * (ctx.hpMult || 1) * hm);
     if (c.hp > 0 || kind === 'long') { c.hp = Math.min(max, Math.max(c.hp, 0) + back); if (c.hp > 0) c.downedFails = 0; }
     if (g.story.heat) g.story.heat[c.id] = 0;
-    const m = g.story.magic?.[c.id]; if (m) { m.flux = 0; m.strain = 0; m.held = null; }
+    const m = g.story.magic?.[c.id]; if (m) { m.flux = 0; m.strain = 0; m.held = null; delete m.shock; }
     if (kind === 'long') { if (carriesMpFocus(c) && band !== 'thin') { const mx = maxMp(c), mw = c.mp ?? mx; c.mp = Math.min(mx, mw + Math.ceil((mx - mw) * mm)); } restockResources(c); }
   }
   push(g, { kind: 'system', text: (kind === 'long' ? 'A long rest' : 'A short rest') + ': ' + (kind === 'long' ? 'everyone is back to full. Day ' + dayOf(g) + '.' : 'a quarter of everyone\'s HP back; Heat, Flux and Strain reset.') });
@@ -2539,7 +2539,7 @@ function magicIn(g: GameState, cb: Combat) {
   for (const u of cb.units) {
     const s = u.charId ? g.story.magic?.[u.charId] : null; if (!s) continue;
     if (u.mg) { u.mg.flux = s.flux || 0; u.mg.strain = s.strain || 0; u.mg.held = s.held ? migrateHeld(s.held, u.mg.designs.find((d) => d.id === s.held!.design)) : null; u.mg.cast = !!s.cast;
-      if (s.freePumps != null) u.mg.freePumps = s.freePumps; u.mg.calmFight = !!s.calmFight; u.mg.calmTend = !!s.calmTend; if ((s as any).pumps) u.mg.pumps = JSON.parse(JSON.stringify((s as any).pumps)); }
+      if (s.freePumps != null) u.mg.freePumps = s.freePumps; u.mg.calmFight = !!s.calmFight; u.mg.calmTend = !!s.calmTend; if (s.shock) u.mg.shock = true; if ((s as any).pumps) u.mg.pumps = JSON.parse(JSON.stringify((s as any).pumps)); }
     // Merged with what the fight's start put on (a grudge's condition, item 723): the longer of the two stays, and each
     // condition's numbers are applied once (magic.ts restoreConds: the one way conditions are put back).
     restoreConds(u, s.conds || {}, s.condBy, s.condVia);
@@ -2575,7 +2575,7 @@ function magicOut(g: GameState, cb: Combat, afterFight: boolean) {
   for (const u of cb.units) if (u.charId) {
     const conds = afterFight ? {} : { ...(u.conds || {}) };
     m[u.charId] = { flux: u.mg?.flux || 0, strain: afterFight ? 0 : u.mg?.strain || 0, held: afterFight ? null : u.mg?.held || null, conds, shield: afterFight ? 0 : u.shield || 0, cast: afterFight ? false : !!u.mg?.cast,
-      ...(!afterFight && u.mg && u.mg.freePumps != null ? { freePumps: u.mg.freePumps } : {}), ...(!afterFight && u.mg?.pumps?.length ? { pumps: u.mg.pumps } : {}), ...(!afterFight && u.mg?.calmFight ? { calmFight: true } : {}), ...(!afterFight && u.mg?.calmTend ? { calmTend: true } : {}),
+      ...(!afterFight && u.mg && u.mg.freePumps != null ? { freePumps: u.mg.freePumps } : {}), ...(!afterFight && u.mg?.pumps?.length ? { pumps: u.mg.pumps } : {}), ...(!afterFight && u.mg?.calmFight ? { calmFight: true } : {}), ...(!afterFight && u.mg?.calmTend ? { calmTend: true } : {}), ...(!afterFight && u.mg?.shock ? { shock: true } : {}),
       ...(!afterFight && u.condBy && Object.keys(u.condBy).length ? { condBy: { ...u.condBy } } : {}),
       ...(!afterFight && u.condVia && Object.keys(u.condVia).length ? { condVia: { ...u.condVia } } : {}) };
     // Shaken out of combat lasts the rest of the scene (spec: Conditions): a fight that ends with a PC Shaken carries it on.
@@ -3605,7 +3605,7 @@ const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed'
 /** What a fighter's heart keeps when it is rebuilt (SB_KEEP's part for u.mg): Flux, Strain, a held Outburst, and the
  * fight's own counters (rules 1.55 item 61: a give on the field must not hand back the free first Pump, this turn's free
  * stages or the Strain owed). */
-const SB_KEEP_MG = ['flux', 'strain', 'held', 'cast', 'lockRound', 'firstUsed', 'freeUsed', 'freePumps', 'pumps', 'debt', 'calmFight', 'calmTend'] as const;
+const SB_KEEP_MG = ['flux', 'strain', 'held', 'cast', 'lockRound', 'firstUsed', 'freeUsed', 'freePumps', 'pumps', 'debt', 'calmFight', 'calmTend', 'shock'] as const;
 /** Rebuild a character's fighter after the tools changed the character. mode 'keep' carries the fight's state (HP,
  * AP, stance, conditions, Flux, Strain, a held Outburst); 'refill' starts it fresh where it stands (AP full on its turn). */
 function sbRebuild(g: GameState, c: Character, mode: 'keep' | 'refill') {

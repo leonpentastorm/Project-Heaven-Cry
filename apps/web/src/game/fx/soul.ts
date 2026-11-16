@@ -7,7 +7,7 @@
 // quiet, then a crack). Storm Hand's infusion, Charges and Discharge live here too. The standing look of a held heart
 // (its glow by stage, the elemental aura, Heart Overwatch's eye) is drawn from the game state by ambient.ts with
 // heartNode below, so everyone sees it, on joining too. Nothing here reads or changes the rules.
-import type { FxEvent } from '@engine';
+import { type FxEvent, MANA_SHOCK } from '@engine';
 import { type Sfx, duckSfx, reducedMotion } from '../sfx';
 import { GLYPH_PATHS, SIGIL_INK, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type ElementId, ELEMENTS, elementFx, elementImpact, jag, mix, shardCss } from './elements';
@@ -412,6 +412,8 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
       const p = at(e.at); play('soul_crack', p, { gain: 0.8, rate: 1.05 });
       if (!p) return;
       cracks(p, HP, 900); flash(tokOf(e.unit, e.at), 'hurt'); screenTint('red', 380);
+      // Rules 1.56: entering Mana Shock (shock 'on') and each turn it burns (shock 'burn'): the word, in the damage colour.
+      if (e.shock) floatText(e.shock === 'on' ? MANA_SHOCK.name.toUpperCase() : MANA_SHOCK.name.toUpperCase() + ' −' + (e.dmg || 0), p, HP, { small: e.shock !== 'on', delay: e.shock === 'on' ? 1500 : 0 });
     },
     // The Mana Short: the heartbeat stops, the screen goes grey and quiet, then a crack.
     short(e) {

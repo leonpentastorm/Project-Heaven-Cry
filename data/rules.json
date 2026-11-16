@@ -1412,7 +1412,7 @@
         "burn": "8 true damage per point over the limit at the end of your turn",
         "mana_short": {
           "automatic_at_over": 3,
-          "effect": "Stunned 1 turn; a held Outburst goes off wild with its element's stage-1 rider on your own tile; Strain falls to the limit"
+          "effect": "Stunned 1 turn; a held Outburst goes off wild with its element's stage-1 rider on your own tile; Strain stays, and the caster is in Mana Shock (soul_modules.json strain.shock) until it is back at the limit: 25% of max HP at the end of each of its turns in it, no second Short while it lasts (rules 1.56)"
         },
         "calming": [
           "stillness -1",
