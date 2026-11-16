@@ -395,7 +395,7 @@ register({
     },
     run: (h, a) => {
       const cb = h.cb!, u = h.u!, t = tileOf(cb, a.tile)!, id = 'banner-' + u.id + '-' + cb.round;
-      (cb.objects = objectsOf(cb)).push(makeObject(id, 'poi', t, { name: 'Rally banner', text: u.name + '\'s bot-thread banner.', hp: 20, max: 20 } as any));
+      (cb.objects = objectsOf(cb)).push(makeObject(id, 'poi', t, { name: 'Rally banner', text: u.name + '\'s mana-thread banner.', hp: 20, max: 20 } as any));
       stateOf(h).banner = id; say(cb, u.name + ' plants a rally banner at ' + refOf(t) + '.'); return null;
     },
   }],

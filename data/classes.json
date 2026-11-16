@@ -5790,7 +5790,7 @@
         "medic"
       ],
       "tutor": "237th Hellraiser Division",
-      "summary": "Armourless skirmisher whose bot-thread banners shield and rally allies.",
+      "summary": "Armourless skirmisher whose mana-thread banners shield and rally allies.",
       "requires": [
         {
           "tutor": "237th Hellraiser Division"

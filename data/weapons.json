@@ -3676,7 +3676,7 @@
     },
     {
       "id": "bot_thread_banner",
-      "name": "Bot-thread banner",
+      "name": "Mana-thread banner",
       "category": "mana",
       "damage": 24,
       "damage_type": "physical",

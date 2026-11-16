@@ -680,7 +680,7 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 5c. **Gear gates (rules 1.13; provisional, item 1002; techniques.json `rules.gear_gates`).**
     - **Hellraiser servo-fist:** needs Raw Power 3 (was Proficiency 3).
     - **Science Team core rifle:** needs Dexterity 3 (was Proficiency 3).
-    - **Bot-thread banner:** needs Empathy 3 (was Camaraderie 3).
+    - **Mana-thread banner:** needs Empathy 3 (was Camaraderie 3).
     - **Heavy armour:** outer-torso armour of Class 4 needs Pain Threshold 3; Class 5 needs Pain Threshold 5. Classes 0 to 3 ask nothing.
     - **Light blades and guns** are gated by Dexterity as before: it is the skill they hit with, and they ask no level.
     - **The off hand asks what the main hand asks.** A weapon's or an item's requirement is checked in whichever hand it goes to (and for a worn piece). A second weapon still asks 2 more of its skill than it does in the main hand (5a).
@@ -924,7 +924,7 @@ Guns and light blades use Dexterity; heavy melee and bare hands use Raw Power. T
 | Emanator gauntlet | 1H | 18 + one element | 1 | counts as an Emanator | 1.5 | 2,200 | Will Power 3 |
 | Emanator katana (rules 1.38) | 1H | 26 | 1 | counts as an Emanator | 1.8 | 2,400 | Will Power 3 |
 | Lumeri censer gun | 2H | 30 / 18 (shotgun) | 8 | shells, or blessed shells | 4.5 | 2,000 | Faith 3 |
-| Bot-thread banner | 2H | 24 | 2 | none | 3 | 1,800 | Empathy 3 (rules 1.13; was Camaraderie 3) |
+| Mana-thread banner | 2H | 24 | 2 | none | 3 | 1,800 | Empathy 3 (rules 1.13; was Camaraderie 3) |
 | Grand staff | 2H | 24 | 1  *(its melee strike reaches 2: the Reach property, rules 1.12)*| counts as an Evoker | 2.5 | 2,400 | Brain Power 3 |
 
 Each hit from mana arms releases bots: +1 on the ambient mana meter, like enhanced rounds.
@@ -934,7 +934,7 @@ Each hit from mana arms releases bots: +1 on the ambient mana meter, like enhanc
 - **Evoker blade · Edge Word:** after a hit, your next glyph this turn costs 0 AP (drawn on your own tile; its charge and Flux still apply; not on an attack that already drew one, item 487). *"The Blade Scribes write with the edge."*
 - **Emanator gauntlet · Charged Strike:** kills charge it (up to 3). Spend all charge on a hit for +15 element damage per charge. *"The Storm Hand's heart goes into the fist."*
 - **Censer gun · Blessed Shell:** a Templar or anyone with a patron can bless a shell (out of combat, a prayer) with a Blessing they hold. Firing it lands the Blessing on the target tile, radius 1, helping allies or harming foes as the Blessing says. *"The Church fires its prayers at range."*
-- **Bot-thread banner · Rally:** 2 AP, once per fight; plant it, and allies within 3 tiles get a shield worth 15 × your Healing given. *"Banner Dancers fight armourless. The banner is the armour."*
+- **Mana-thread banner · Rally:** 2 AP, once per fight; plant it, and allies within 3 tiles get a shield worth 15 × your Healing given. *"Banner Dancers fight armourless. The banner is the armour."*
 
 ##### 7.11a Shields: 3 types (1H, Durability; rules 1.57)
 
@@ -1297,7 +1297,7 @@ Melee:
 | Hellraiser servo-fist | Heavy, Bare, Blunt | Raw Power | Strength, Raw Power, Dexterity | Throw Down |
 | Evoker blade | Light, Edge | Dexterity | Agility | — |
 | Emanator gauntlet | Light, Bare, Blunt | Raw Power | Strength, Raw Power, Dexterity | — |
-| Bot-thread banner | Reach, Blunt | Dexterity | Agility | — |
+| Mana-thread banner | Reach, Blunt | Dexterity | Agility | — |
 | Grand staff | Heavy, Blunt, Reach | Dexterity | Agility | — |
 | Bite and claws | Light, Bare, Edge | Raw Power | Strength, Raw Power, Dexterity | — |
 
@@ -6518,7 +6518,7 @@ Leon (15 Nov 2026): *"the skill increase hit chance for all weapons, melee get d
 1. **The skill buys the hit, on every weapon.** A weapon's skill (`phys.hits_with`) adds to the roll to hit and nothing to the damage, as since rules 1.26.
 2. **A melee weapon's damage grows with one Attribute**, the one its row names (`weapons.json phys.scales_with`): Strength for heavy melee, the hatchet and the fists (the machete, maul, lance, war axe, hatchet, greatsword, glaive, rip-saw, bare fists, knuckledusters, servo-fist), Agility for the finesse and thrown blades (the combat knife, sabre, throwing knives, gladius, duelling blade, katana). The hatchet scales with Strength though it is light and thrown (lead's ruling, 15 Nov 2026, after Leon: finesse is "small blades and weapons that feel like they need finesse"; a hatchet is not). The row names its damage profile (`phys.profile: melee`, `rules.json output.profiles.melee`): Stat = k x (1 + 0.05 x (that Attribute - 1)), no skill slope, the Level term `deal` as before, then the melee factor (`output.factors.melee`) as before.
 3. **k re-pins the all-in build.** k is 1.15385 so that Attribute 7 (the all-in build at creation) gives 1.5, the weapon profile's number: the all-in build at level 1 deals exactly what it did, a lower Attribute less (Attribute 1: x0.77; Attribute 4: x0.88), a higher one more (Attribute 10: x1.12). The bases of the melee weapons are not changed: the enemies that carry a sabre, a knife or fists read the bases with their tier and level, and keep them.
-4. **Guns, bows, thrown charges and the foci's weapons get nothing from the user.** Their rows name no profile (the `weapon` profile, no slope). The validator refuses a slope on a weapon that is not melee. *(Superseded for guns by rules 1.61 G1: a gun's row names the gun profile and its damage grows with Agility; bows, thrown charges and the foci's weapons still get nothing, and the validator now refuses a skill slope on any weapon and any slope on a focus's weapon.)* The mana arms (the Evoker blade, the Emanator gauntlet and katana, the bot-thread banner, the grand staff) are foci and name none (for the lead to rule).
+4. **Guns, bows, thrown charges and the foci's weapons get nothing from the user.** Their rows name no profile (the `weapon` profile, no slope). The validator refuses a slope on a weapon that is not melee. *(Superseded for guns by rules 1.61 G1: a gun's row names the gun profile and its damage grows with Agility; bows, thrown charges and the foci's weapons still get nothing, and the validator now refuses a skill slope on any weapon and any slope on a focus's weapon.)* The mana arms (the Evoker blade, the Emanator gauntlet and katana, the mana-thread banner, the grand staff) are foci and name none (for the lead to rule).
 5. **The card shows it.** The weapon card's "Damage scales with" line (rules 1.55) now appears on every melee weapon, naming its Attribute.
 
 **Pull Out (overrides rules 1.55's "Throw comes with the thrown prop" where it touched Pull Out):**
@@ -8794,7 +8794,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
     stands as written. OPEN for Leon: +1 tile per AP doubles speed at Agility 1; the alternative is +0.5. PROVISIONAL.
 315. *(J11)* **Rally Banner** (audit 1-6). The banner is a 20 HP object enemies can cut down. The shield is 10 × the dancer's
     Healing given, topped up and never stacked; the dancer counts as an ally. It holds while the dancer stands within
-    3 tiles and isn't Downed. The bot-thread banner weapon's Rally is a separate one-off burst. PROVISIONAL.
+    3 tiles and isn't Downed. The mana-thread banner weapon's Rally is a separate one-off burst. PROVISIONAL.
 316. *(J12)* **Sweep** (audit 3, 5-7). Hits during Sweep build no Momentum (no free loop). Heals are 10 × Healing given,
     once per ally. Only tiles entered count, not the start tile. The walk draws opportunity attacks and Overwatch like
     a move (Leon's call; the alternative is none, like Lunge). A gun in hand strikes with fists. Data fix: rename the
@@ -10809,7 +10809,7 @@ Items 4174 to 4176.
 ### Rules 1.56 (Balance 2.0), L6
 
 4177. **The melee profile (rules 1.56 L6 item 2):** `rules.json output.profiles.melee`: k 1.15385, attr 0.05 a point of the weapon's `scales_with` Attribute over 1, skill 0, Level `deal`. Read by a weapon whose `phys.profile` is `melee` (17 melee weapons). PROVISIONAL (the slope, Leon's starting point; k re-pins Attribute 7 to 1.5).
-4178. **The finesse list (rules 1.56 L6 item 2):** Agility: combat knife, sabre, throwing knives, legion gladius, Kemizuchi duelling blade, katana. Strength: Ork machete, maul, lance, war axe, hatchet, Adamantile greatsword, glaive, Ork rip-saw, fists, knuckledusters, Hellraiser servo-fist. Not scaled (foci): Evoker blade, Emanator gauntlet, Emanator katana, bot-thread banner, grand staff. Ruled by the lead (15 Nov 2026): the list stands except the hatchet, which scales with Strength (Leon: finesse is "small blades and weapons that feel like they need finesse"; a hatchet is not).
+4178. **The finesse list (rules 1.56 L6 item 2):** Agility: combat knife, sabre, throwing knives, legion gladius, Kemizuchi duelling blade, katana. Strength: Ork machete, maul, lance, war axe, hatchet, Adamantile greatsword, glaive, Ork rip-saw, fists, knuckledusters, Hellraiser servo-fist. Not scaled (foci): Evoker blade, Emanator gauntlet, Emanator katana, mana-thread banner, grand staff. Ruled by the lead (15 Nov 2026): the list stands except the hatchet, which scales with Strength (Leon: finesse is "small blades and weapons that feel like they need finesse"; a hatchet is not).
 4179. **Pull Out's availability (rules 1.56 L6 items 6, 7):** `needs.stuck` on a technique: offered only while something is stuck for the unit to pull, with any weapon in the main hand.
 4180. **Items 4177 to 4180 are rules 1.56 L6's.**
 
