@@ -10,7 +10,7 @@ import { WEAPON, ITEM, magazineSize, packOf, twoHands, isPlotItem, gearCost, isL
 import { magGearId, roundsGearId, torsoGearId } from './gearIcons';
 
 export interface BpAct { key: string; label: string; cost: string; off: boolean; why: string; action: any }
-/** item: the item (or derived gear id: rounds-<calibre>, mag-<family>) the row is, for its icon (gearIcons.ts); absent when there is none. */
+/** item: the item (or derived gear id: rounds-<calibre>, mag:<weapon>, armour:<class>) the row is, for its icon (gearIcons.ts); absent when there is none. */
 export interface BpRow { key: string; tag: string; name: string; sub: string; acts: BpAct[]; note: string; item?: string }
 export interface BpSection { key: string; title: string; rows: BpRow[]; empty: string }
 export interface Backpack { who: string; ap: number; sections: BpSection[]; reason: string }

@@ -74,10 +74,14 @@ describe('painted gear icons', () => {
     expect(roundsGearId('40 mm grenade')).toBe('rounds-40mm_grenade');
     expect(roundsGearId('.700')).toBe('rounds-700');
     expect(roundsGearId('no calibre')).toBe('');
-    expect(magGearId('service_pistol')).toBe('mag-pistol_32');
-    expect(magGearId('hellraiser_rotary')).toBe('mag-belt');
+    // a magazine and the body armour of a class answer to the engine's own ids (the catalog's data_ids)
+    expect(magGearId('service_pistol')).toBe('mag:service_pistol');
+    expect(gearIconUri(magGearId('service_pistol'))).toMatch(/gear-mag-pistol_32\.webp/);
+    expect(gearIconUri(magGearId('hellraiser_rotary'))).toMatch(/gear-mag-belt\.webp/);
+    expect(gearIconUri('mag:hellraiser_service_rifle:0')).toMatch(/gear-mag-rifle\.webp/); // an empty one: the same picture
     expect(magGearId('crossbow')).toBe('');
-    expect(torsoGearId(2)).toBe('armour-torso_class2_medium');
+    expect(torsoGearId(2)).toBe('armour:2');
+    expect(gearIconUri('armour:2')).toMatch(/gear-armour-torso_class2_medium\.webp/);
     expect(gearIconUri(roundsGearId('rifle'))).toMatch(/gear-rounds-rifle\.webp/);
   });
   it("rules 1.56: a special round shows its own item's picture, a plain one its calibre's; a rounds id resolves either", async () => {

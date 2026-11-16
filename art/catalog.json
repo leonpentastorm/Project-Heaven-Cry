@@ -14308,7 +14308,10 @@
         1254
       ],
       "brief_number": 9,
-      "origin": "brief"
+      "origin": "brief",
+      "data_ids": [
+        "armour:1"
+      ]
     },
     "armour-torso_class2_medium": {
       "label": "Medic plate",
@@ -14331,7 +14334,10 @@
         1254
       ],
       "brief_number": 10,
-      "origin": "brief"
+      "origin": "brief",
+      "data_ids": [
+        "armour:2"
+      ]
     },
     "armour-torso_class3_heavy": {
       "label": "Flak vest",
@@ -14354,7 +14360,10 @@
         1254
       ],
       "brief_number": 11,
-      "origin": "brief"
+      "origin": "brief",
+      "data_ids": [
+        "armour:3"
+      ]
     },
     "armour-torso_class4_assault": {
       "label": "armour-torso_class4_assault",
@@ -14377,7 +14386,10 @@
         1254
       ],
       "brief_number": 98,
-      "origin": "brief"
+      "origin": "brief",
+      "data_ids": [
+        "armour:4"
+      ]
     },
     "armour-torso_class5_juggernaut": {
       "label": "armour-torso_class5_juggernaut",
@@ -14400,7 +14412,10 @@
         1254
       ],
       "brief_number": 99,
-      "origin": "brief"
+      "origin": "brief",
+      "data_ids": [
+        "armour:5"
+      ]
     },
     "armour-trauma_plate": {
       "label": "Trauma plate insert",
@@ -14975,7 +14990,11 @@
         1254
       ],
       "brief_number": 147,
-      "origin": "brief"
+      "origin": "brief",
+      "data_ids": [
+        "mag:hellraiser_lmg",
+        "mag:hellraiser_rotary"
+      ]
     },
     "mag-blackpoint_700": {
       "label": "mag-blackpoint_700",
@@ -14998,7 +15017,10 @@
         1254
       ],
       "brief_number": 144,
-      "origin": "brief"
+      "origin": "brief",
+      "data_ids": [
+        "mag:blackpoint_700"
+      ]
     },
     "mag-brigade_shotgun": {
       "label": "Brigade auto-shotgun magazine",
@@ -15020,7 +15042,10 @@
         1254,
         1254
       ],
-      "origin": "survival-followup"
+      "origin": "survival-followup",
+      "data_ids": [
+        "mag:brigade_auto_shotgun"
+      ]
     },
     "mag-drum_32": {
       "label": "mag-drum_32",
@@ -15043,7 +15068,10 @@
         1254
       ],
       "brief_number": 146,
-      "origin": "brief"
+      "origin": "brief",
+      "data_ids": [
+        "mag:mandestra_drum_gun"
+      ]
     },
     "mag-magistrate": {
       "label": "Magistrate heavy-pistol magazine",
@@ -15065,7 +15093,10 @@
         1254,
         1254
       ],
-      "origin": "survival-followup"
+      "origin": "survival-followup",
+      "data_ids": [
+        "mag:magistrate_pistol"
+      ]
     },
     "mag-pistol_32": {
       "label": "Pistol magazine",
@@ -15096,7 +15127,12 @@
         "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/mag-pistol_32.png",
         "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/mag-pistol_32.png"
       },
-      "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/mag-pistol_32.png"
+      "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/mag-pistol_32.png",
+      "data_ids": [
+        "mag:service_pistol",
+        "mag:decrkm_autopistol",
+        "mag:spellslinger_pistol"
+      ]
     },
     "mag-repeating_crossbow": {
       "label": "Repeating crossbow magazine",
@@ -15118,7 +15154,10 @@
         1254,
         1254
       ],
-      "origin": "survival-followup"
+      "origin": "survival-followup",
+      "data_ids": [
+        "mag:repeating_crossbow"
+      ]
     },
     "mag-rifle": {
       "label": "Rifle magazine",
@@ -15149,7 +15188,13 @@
         "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/mag-rifle.png",
         "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/mag-rifle.png"
       },
-      "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/mag-rifle.png"
+      "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/mag-rifle.png",
+      "data_ids": [
+        "mag:hellraiser_service_rifle",
+        "mag:adamantile_battle_rifle",
+        "mag:ccec_marksman_rifle",
+        "mag:legion_bullpup"
+      ]
     },
     "mag-smg_32": {
       "label": "mag-smg_32",
@@ -15180,7 +15225,12 @@
         "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/mag-smg_32.png",
         "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/mag-smg_32.png"
       },
-      "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/mag-smg_32.png"
+      "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/mag-smg_32.png",
+      "data_ids": [
+        "mag:decrkm_smg",
+        "mag:whisper_smg",
+        "mag:legion_pdw"
+      ]
     },
     "mag-speedloader_50": {
       "label": "mag-speedloader_50",
@@ -15203,7 +15253,10 @@
         1254
       ],
       "brief_number": 145,
-      "origin": "brief"
+      "origin": "brief",
+      "data_ids": [
+        "mag:frontier_hand_cannon"
+      ]
     },
     "mag-speedloader_revolver": {
       "label": "Revolver loader",
@@ -15226,7 +15279,10 @@
         1254
       ],
       "brief_number": 14,
-      "origin": "brief"
+      "origin": "brief",
+      "data_ids": [
+        "mag:drifter_revolver"
+      ]
     },
     "mod-bayonet": {
       "label": "Bayonet",

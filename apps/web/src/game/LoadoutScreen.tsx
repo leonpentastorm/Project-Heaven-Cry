@@ -14,7 +14,7 @@
 import React from 'react';
 import { act, getState } from './store';
 import { loadoutView, type LoadoutCardV, type LoadoutViewV, type CompareRowV, type CarryRowV } from '@engine';
-import { gearIconUri, magGearId } from './gearIcons';
+import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { FRAME_INK as I } from './FullScreenFrame';
 import { boonCards, campBackdrop, campChecklist, campHelp, campGuard, freeAction, type CampCheckV } from './campView';
@@ -50,13 +50,9 @@ const CSS = '.phc-camp ::-webkit-scrollbar{width:10px}.phc-camp ::-webkit-scroll
   // a stat row: label | value (| the better one's value); the label always shown, whole, wrapping
   + '.phc-camp-stats{margin:0;display:grid;gap:3px 10px;font-size:14px;line-height:1.3}'
   + '.phc-camp-stats dt{color:#A3AEC2;overflow-wrap:break-word}.phc-camp-stats dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:break-word}';
-/** A card's picture: the painted gear icon (rounds and magazines by their gear ids), else the line icon. */
-function iconOf(id: string): string {
-  const r = /^rounds:([^:]+)/.exec(id), m = /^mag:([^:]+)/.exec(id); // rules 1.55: mag:<weapon>:0 is an empty one; rules 1.56: rounds:<calibre>:<type> a special round of it
-  if (r) return gearIconUri(id, undefined, { large: true }); // gearIconUri reads a rounds id (a special round: its own picture)
-  if (m) return gearIconUri(magGearId(m[1]), undefined, { large: true }) || gearIconUri(m[1], undefined, { large: true });
-  return gearIconUri(id.replace(/^armour:\d$/, 'armour'), undefined, { large: true });
-}
+/** A card's picture: the one resolver (gearIcons.ts), which reads the engine's ids as they come (rounds, magazines,
+ *  body armour of a class), the same picture the sheet's GEAR tab and the shop show. */
+const iconOf = (id: string): string => gearIconUri(id, undefined, { large: true });
 const head = (title: string, note?: string) => (
   <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, margin: '4px 0 12px' }}>
     <h2 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>{title}</h2>

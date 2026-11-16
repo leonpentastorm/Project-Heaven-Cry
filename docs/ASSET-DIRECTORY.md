@@ -175,7 +175,7 @@ Portraits are 800 × 1000 RGB; world scenes are 1600 × 900 RGB. The [opening-sa
 
 ## Painted gear icons (Heavenprint, 13 Nov 2026)
 
-151 painted icons in `catalog.gear` (key = file stem `<kind>-<id>`, rule: [gear-icons.md](../art/style-guide/gear-icons.md)); masters in [art/icons/gear/](../art/icons/gear/), exports at 256 / 128 / 64 / 32 px under `art/icons/gear/exports/`. `npm run assets` builds each one by **item id**: `gear-<item id>` (from the 64 px export) and `gear-<item id>-lg` (from the 256 px export); derived gear with no item id keeps its kind (`gear-rounds-<calibre>`, `gear-mag-<family>`, `gear-armour-torso_class<N>_<name>`, `gear-loot-personal_effects`). The game resolves them in `apps/web/src/game/gearIcons.ts`.
+151 painted icons in `catalog.gear` (key = file stem `<kind>-<id>`, rule: [gear-icons.md](../art/style-guide/gear-icons.md)); masters in [art/icons/gear/](../art/icons/gear/), exports at 256 / 128 / 64 / 32 px under `art/icons/gear/exports/`. `npm run assets` builds each one by **item id**: `gear-<item id>` (from the 64 px export) and `gear-<item id>-lg` (from the 256 px export); derived gear with no item id keeps its kind (`gear-rounds-<calibre>`, `gear-mag-<family>`, `gear-armour-torso_class<N>_<name>`, `gear-loot-personal_effects`); an entry's `data_ids` (a magazine's guns as `mag:<weapon>`, a torso's `armour:<class>`) make the same files also answer to `gear-<data id>`, the id the engine gives. The game resolves them in `apps/web/src/game/gearIcons.ts` (`gearIconUri`, the one resolver).
 
 ## Survival map kits (rules 1.45, 13 Nov 2026)
 

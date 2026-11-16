@@ -122,12 +122,12 @@ export interface PileLook { id: string; tile: string; n: number; lines: string[]
 // (a magazine or rounds carry their gun's id: they are not the gun, so they get none)
 export const pileEntryId = (e: any): string => (e && !e.pack?.mags && !e.pack?.calibre && (e.item || e.pack?.weapon || e.pack?.item || e.pack?.id)) || '';
 /** The gear id a pile entry's icon is drawn from (gearIcons.ts): its item, or for loose rounds and magazines the derived
- *  gear id (rounds-<calibre>, mag-<family>), '' when there is none. */
+ *  gear id (rounds-<calibre>, mag:<weapon>), '' when there is none. */
 export function pileGearId(e: any): string {
   const id = pileEntryId(e);
   if (!e) return '';
   const it = typeof e.item === 'string' ? e.item : '';
-  if (e.pack?.mags || it.startsWith('mag:')) return magGearId(e.pack?.weapon || it.slice(4));
+  if (e.pack?.mags || it.startsWith('mag:')) return e.pack?.mags ? magGearId(e.pack.weapon) : it; // gearIconUri reads mag:<weapon>[:<rounds>] itself
   if (e.pack?.calibre || it.startsWith('rounds:')) return e.pack?.calibre ? roundsGearId(e.pack.calibre, e.pack.ammoType) : roundsIdGear(it); // rules 1.56: rounds:<calibre>:<type>, a special round its own picture
   return id;
 }

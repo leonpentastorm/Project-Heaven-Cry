@@ -221,6 +221,13 @@ for stem, a in C.get("gear", {}).items():
     ex = a.get("exports", {})
     emit(key, ROOT / ex.get("64", a["path"]), (64, 64), None, 85)
     emit(key, ROOT / ex.get("256", a["path"]), None, (256, 256), 85)
+    # `data_ids`: the engine ids this picture is (a gun's magazine `mag:<weapon>`, the body armour of an Armour Class
+    # `armour:<class>`, as the shop, the camp, the rewards and the pack name them): the same images also answer to
+    # "gear-" + that id, so the one resolver (game/gearIcons.ts) finds them by the engine's id. No second copy is written.
+    for did in a.get("data_ids", []):
+        for suffix in ("", "-lg"):
+            assert "gear-" + did + suffix not in assets, f"gear alias {did} is already a key"
+            assets["gear-" + did + suffix] = assets[key + suffix]
 # Title screen (art/briefs/title-screen.md, docs/design/title-screen.md §8). The painted layers are 4096 x 2304 with
 # overscan (the central safe rect is art/ui/title-screen/technical-review.json); they are exported whole, at three
 # widths, and the title picks one by viewport (srcset): <layer> 1600 w, <layer>-lg 2560 w, <layer>-xl 3840 w.
