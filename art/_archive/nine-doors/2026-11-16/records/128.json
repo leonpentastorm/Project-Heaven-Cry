@@ -1,0 +1,76 @@
+{
+  "number": 128,
+  "family": "move_icons",
+  "id": "move-core-change",
+  "path": "art/icons/moves/core-change.png",
+  "name": "Core Change",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Sigilist rank I move: a cheaper core swap",
+  "paint": "A spent round core popping out of the back of a glove as a fresh one slides in.",
+  "avoid": "a battery with a plus sign \u00b7 a brand",
+  "section": "Brain Power: Sigils, and the Sigilist",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A spent round core popping out of the back of a glove as a fresh one slides in.\nAvoid: a battery with a plus sign \u00b7 a brand\nEXACT STAGING: ONE science-fantasy casting GLOVE seen from the BACK, wrist at bottom, short mitten-like finger shapes up. There is one large ROUND CORE SOCKET on its back. An EMPTY OUTLINE round core pops out toward upper-left; a fresh SOLID WHITE round core slides into the socket from upper-right. Use one very short hard arrow for each direction if needed. Exactly two loose cores, one socket. No stars, glyph decorations, batteries, plus marks, brands, text, full Wick or glow. The reference glove's star is NOT part of this icon; replace it with the round core port.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-125.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-125.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "929b1af3ef9731b9dfd7873a8aebe1765266edcc3f9c7bc2b381dee456c2e2bf",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/128-core-change.png",
+  "source_sha256": "9df972cf5378323104f5ea77fc870cd51c8c73ff150da58b9d99384b1d61c819",
+  "export_crop": [
+    0,
+    0,
+    1234,
+    1188
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/core-change.png",
+    "64": "art/icons/moves/exports/64/core-change.png",
+    "48": "art/icons/moves/exports/48/core-change.png",
+    "44": "art/icons/moves/exports/44/core-change.png",
+    "32": "art/icons/moves/exports/32/core-change.png",
+    "24": "art/icons/moves/exports/24/core-change.png"
+  },
+  "framing": {
+    "scale": 0.5141665977901212,
+    "offset": [
+      195,
+      206
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "78f1dab291f86030b734b97beb12abfc19fedda66cb2118ac86581941ead9291",
+    "64": "1daddb4dffc6b2913f7d79a240b48fee110f08d34478a377a5040b240b6cc6a5",
+    "48": "8ae9a7b4ce80a0047997c85b897a2411f4a0b604a45d532b61e3752248a6651d",
+    "44": "a6f38ca47d1aa66e2e6c63b3b1d3df2c94bb2734f204bb0daa3e1ff2c6f67080",
+    "32": "54c45b511a1ec0bbef1c0e7fd6bfc8339deed3007104a37a1b89345f662ae5f7",
+    "24": "945f58be3d712685683c97080263d32c6999320f0005bbce15efe6e13fe9b083"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

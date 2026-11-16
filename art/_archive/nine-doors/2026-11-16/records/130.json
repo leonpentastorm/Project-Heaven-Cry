@@ -1,0 +1,76 @@
+{
+  "number": 130,
+  "family": "move_icons",
+  "id": "move-bleed-the-flux",
+  "path": "art/icons/moves/bleed-the-flux.png",
+  "name": "Bleed the Flux",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Sigilist rank II move: cheaper Vent",
+  "paint": "A glove venting three short curls from a valve at the wrist.",
+  "avoid": "steam train \u00b7 smoke clouds",
+  "section": "Brain Power: Sigils, and the Sigilist",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A glove venting three short curls from a valve at the wrist.\nAvoid: steam train \u00b7 smoke clouds\nEXACT STAGING: ONE simple casting glove/cropped wrist, its back angled toward us, with a SMALL ROUND VALVE at the wrist cuff. Exactly THREE SHORT SEPARATE WHITE CURLS vent from that valve toward viewer-right. They are clean hard curved ink marks, NOT a cloudy steam plume or gray smoke. Keep a round core fitting on the glove's back if needed, no decorative star. No train, chimney, full Wick, flames, lightning, letters or extra prop. Glove and valve form one readable object.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-125.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-125.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "4a2ec73db7834909c7fdd9932cfd64cb15943441b323becafbc07dd61d1f8f3b",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/130-bleed-the-flux.png",
+  "source_sha256": "75c012711bc2d2ba10bf89c604442e724309d26e368909e35feece4773802212",
+  "export_crop": [
+    21,
+    186,
+    1184,
+    1238
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/bleed-the-flux.png",
+    "64": "art/icons/moves/exports/64/bleed-the-flux.png",
+    "48": "art/icons/moves/exports/48/bleed-the-flux.png",
+    "44": "art/icons/moves/exports/44/bleed-the-flux.png",
+    "32": "art/icons/moves/exports/32/bleed-the-flux.png",
+    "24": "art/icons/moves/exports/24/bleed-the-flux.png"
+  },
+  "framing": {
+    "scale": 0.705073086844368,
+    "offset": [
+      102,
+      141
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "89db831b4c1734cc8759ea44b57b76e4ac5906348058c601380c6bca8cb6badf",
+    "64": "aa5f00cc450f435c2bc49c350d83900b2f7823124a3ea18b9a404377951390aa",
+    "48": "9eb4859edc92e7535ade79ecadd81ca364dbf2ce396497a1b264b1e141f0ef90",
+    "44": "b3eab9f3176c720a424f7e55717190e43df19ead64a019d8a11f0c8074fe36f3",
+    "32": "b509480b3281dea15aff2a6a5021a050b67494ad706907b3256708f2c8ef9dfb",
+    "24": "b16a1f954d5fb57efa7754e5cea44742dfb9ffb4426f6e004fe25dd7c2b7c649"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

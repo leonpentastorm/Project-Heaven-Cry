@@ -1,0 +1,76 @@
+{
+  "number": 129,
+  "family": "move_icons",
+  "id": "move-overcharge",
+  "path": "art/icons/moves/overcharge.png",
+  "name": "Overcharge",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Sigilist rank II move",
+  "paint": "A glyph line swelling thicker at its end, cracks of light at the edge.",
+  "avoid": "lightning bolts \u00b7 an explosion",
+  "section": "Brain Power: Sigils, and the Sigilist",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A glyph line swelling thicker at its end, cracks of light at the edge.\nAvoid: lightning bolts \u00b7 an explosion\nEXACT STAGING: ONE short line of THREE abstract geometric glyphs connected by a simple thin white baseline. The final glyph is a markedly LARGER, THICKER hollow hexagon, visibly swelling compared with the preceding small diamond and triangle. TWO small transparent zigzag notches crack its outer edge, with three tiny hard white ticks at that edge only. No letter-like glyphs, words, actual glow, lightning bolts, explosions, rays everywhere, hands, glove or full Wick. Keep the enlarged end-glyph the dominant silhouette.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-127.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-127.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "15a17afee935dba2966d73dab732523c5bf7301f6bd2b39f33df9fa467444b30",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/129-overcharge.png",
+  "source_sha256": "ecfd2de0efa94068c623da4ad6bd6b34e74a22bbc4e9f2049fa34a84541c284d",
+  "export_crop": [
+    57,
+    69,
+    1232,
+    1150
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/overcharge.png",
+    "64": "art/icons/moves/exports/64/overcharge.png",
+    "48": "art/icons/moves/exports/48/overcharge.png",
+    "44": "art/icons/moves/exports/44/overcharge.png",
+    "32": "art/icons/moves/exports/32/overcharge.png",
+    "24": "art/icons/moves/exports/24/overcharge.png"
+  },
+  "framing": {
+    "scale": 0.5863847485258465,
+    "offset": [
+      167,
+      195
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "8094d8ca167e894914bd8591c91755416b3a90375a03a657a1c371d24962916d",
+    "64": "2f8174c746a85f77dce8d5edae29a7baeb243367d7617df130a5010a22cfb305",
+    "48": "bfe9866baf7776869e355b0b289624a36310599b41263c2b4bc4a2e05a85ce9a",
+    "44": "d9386da2b88b0910e02786518e725ff6f9714a8890adc42b335f053888861e48",
+    "32": "5a3298913471a46f1032958acfe081a3f21ca82567008a2812707e1d6f7e82e0",
+    "24": "c406b8ad45ff0606ce14f8a80f850ac91f3c0d3fc69508150ac84eb78fe18dd4"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

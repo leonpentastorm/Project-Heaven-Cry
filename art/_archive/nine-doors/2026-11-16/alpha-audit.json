@@ -468,6 +468,26 @@
       "faint_alpha_to_solid_area_ratio": 0.06537
     },
     {
+      "number": 128,
+      "name": "Core Change",
+      "faint_alpha_to_solid_area_ratio": 0.0414
+    },
+    {
+      "number": 129,
+      "name": "Overcharge",
+      "faint_alpha_to_solid_area_ratio": 0.04451
+    },
+    {
+      "number": 130,
+      "name": "Bleed the Flux",
+      "faint_alpha_to_solid_area_ratio": 0.02928
+    },
+    {
+      "number": 131,
+      "name": "Payload",
+      "faint_alpha_to_solid_area_ratio": 0.04392
+    },
+    {
       "number": 135,
       "name": "Many-Eyed Dream",
       "faint_alpha_to_solid_area_ratio": 0.05831
