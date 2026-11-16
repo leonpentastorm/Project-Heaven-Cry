@@ -1097,12 +1097,14 @@ function seesHook(cb: Combat, side: 'pc' | 'foe', t: Unit, by: Unit | null, seen
  * visibility(cb, side).seen.has(t.id) (its own side always sees it), for one unit, without walking the map. A unit
  * standing OFF the map (a bug or an old save; no rule puts one there) is where the two part: this draws the line of
  * sight to it all the same, visibility() only looks at the map's tiles. `onMapOnly` gives visibility()'s answer there
- * too (noteSighted; test/sight-order.test.ts holds the two together). */
-export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly = false, walls0?: Set<string>): boolean {
+ * too (noteSighted; test/sight-order.test.ts holds the two together). `readShown` false leaves out the shot that shows
+ * (Unit.shownTo, rules 1.57 item 4563): the sight words data reads (tactics.ts sightOf) are judged by eyes alone, so
+ * no Shadow outcome moves (rules 1.57 item 4570). */
+export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly = false, walls0?: Set<string>, readShown = true): boolean {
   if (t.side === side) return true;
   if (t.dead) return false;
   const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), off = onMapOnly && !inBounds(cb, t.pos), walls = t.hidden || off ? undefined : walls0 || sightBlockers(cb);
-  let isSeen = !t.hidden && !off && (t.shownTo === side || eyes.some((u) => unitSees(cb, u, t.pos, walls)));
+  let isSeen = !t.hidden && !off && ((readShown && t.shownTo === side) || eyes.some((u) => unitSees(cb, u, t.pos, walls)));
   if (sightHooked(cb)) { const isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3)); isSeen = seesHook(cb, side, t, null, isSeen, isSensed).seen; }
   return isSeen;
 }
