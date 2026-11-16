@@ -2068,6 +2068,14 @@ def check_pred(k, v, w):
     elif a == "limit" and not (isinstance(v, dict) and (v.get("per") in LIMIT_SCOPES or isinstance(v.get("cooldown"), (int, float))) and set(v) <= {"per", "n", "key", "each", "cooldown"}): errors.append(f"{w}: `if.{k}` is a limit ({{per, n?, key?, each?}} or {{cooldown}})")
     elif a in ("zone", "tie", "hold", "skill", "limit"): pass
     elif p.get("values") and not all(x in p["values"] for x in vals): errors.append(f"{w}: `if.{k}` takes only {p['values']}")
+# rules 1.57 (A2): the swell's condition slot (soul_modules.json cycle.swell.unless) is an `if` block of the item ops'
+# predicates, and its line is words
+_swell = ((data.get("soul_modules") or {}).get("cycle") or {}).get("swell")
+if _swell is not None:
+    if not isinstance(_swell, dict) or not isinstance(_swell.get("unless"), dict) or not _swell["unless"] or not isinstance(_swell.get("unless_text"), str) or not _swell["unless_text"].strip():
+        errors.append("soul_modules: cycle.swell is {unless: {predicates}, unless_text: words}")
+    else:
+        for k, v in _swell["unless"].items(): check_pred(k, v, "soul_modules:cycle.swell.unless")
 # Classes 3.0 P3: a number block {base, per: [{of, value}], min?, max?}; in an item op its `of` names a source
 # (effects/triggers.ts sourceOf): res:<id>, event:<field>, self:/actor:/target:<field>.
 SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill"]

@@ -180,7 +180,7 @@
       "silent": "No report. Never reveals you; no Pressure on a miss, more on a hit from unseen; its pips are hidden.",
       "loud": "A cannon in the hand. A miss still gives Pressure; saves against it are harder.",
       "drawn": "Your arm is the powder. No Heat or Recoil; quivers, not magazines: its reload is Switch quiver, and a quiver is never refilled in a fight.",
-      "shield": "Carried in either hand, one to a hand. It lends its own techniques, which run on Guard and Momentum."
+      "shield": "Carried in either hand, one to a hand. It lends its own techniques, which run on Guard and Momentum. While you hold one, a held Outburst does not swell on its own."
     },
     "provisional": true
   },

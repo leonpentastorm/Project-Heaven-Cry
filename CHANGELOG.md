@@ -101,6 +101,9 @@ the alpha perks were rewritten so each one helps its own door. The full account,
   off hand it is not a second weapon. A shield in the main hand with a sword in the off hand is ordinary dual wielding,
   and the shield's techniques come from whichever hand holds it. Shield Bash strikes with the shield (x2.5). The pavise
   is a shield when carried. Old saves' shield lines are moved to weapon lines at load.
+- **No swell with a shield** (rules 1.57 item 10, Leon, 16 Nov 2026): while a shield is in either hand a held Outburst
+  keeps its stage at the turn start (the Strain of holding still comes); Pumps are untouched. The heart panel and the
+  Outbursts tab say so.
 
 ## 0.28.3 — the field is the fight, and the Durability tank
 

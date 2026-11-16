@@ -6995,6 +6995,12 @@ its own revision 1.57; when it is built it takes the next number.)
    a shield as a weapon; no mod fits one (its row has no mod slot). A save from before keeps a shield in a hand (an
    id: unchanged) and its pack lines are moved once at load to the weapon line they are now (grade and wear kept), in
    the packs, the camp's saved packs and the piles.
+10. **No swell with a shield** (item 4506; Leon, 16 Nov 2026: *"build the no swell when using a shield rule, not when
+    having guard on, when you equip a shield period"*). While a character holds a shield in either hand, a held
+    Outburst does not swell at the start of its turn: it keeps its stage. The Strain of holding it one more turn still
+    comes, as it does at full stage (+1, +2 in Flooded air, none from Will Power 7). Only the swell from holding is
+    stopped: a Pump (free or with AP), a fed glyph and every other stage are untouched, and Guard plays no part. The
+    heart panel and the Outbursts tab say "A shield in hand: the heart will not swell on its own."
 
 ## Maps (rules 1.16)
 
@@ -10888,3 +10894,12 @@ Items 4240 to 4247.
 4505. **Saves (A1 item 9):** `character.ts shieldLineNow`, run by `game.ts migrateLoaded` on every sheet's pack, the
     camp's `base.pack` and the piles of the fight and the story map; nothing is written when no old line is there. The
     shop's `stock.item_categories` lose `shield`. No number.
+4506. **No swell with a shield (A2 item 10):** `soul_modules.json cycle.swell` `{unless: {self_holds: {hands: {props:
+    [shield]}}}, unless_text}`: the swell row's condition slot, an `if` block of the item ops' existing predicates (no
+    new predicate; the validator checks it with `check_pred`). `magic.ts swellBlockedWhy` asks it through `ifFails`;
+    `heartTurnStart` skips the +1 stage while it holds (the log: "holds at stage N (A shield in hand: …)"), and the
+    hold's Strain is unchanged. The screens read the engine's line (`heartView.ts swellNote`: the heart panel's swell
+    line, each design card); the shield property's text (`techniques.json rules.props.shield`, shown on every shield)
+    names the rule. Interpretation, for the lead: the swell's Strain is the Strain of holding, so it still comes (as at
+    full stage); a reading where the shield also stops that Strain would make holding with a shield free of Strain.
+    PROVISIONAL.

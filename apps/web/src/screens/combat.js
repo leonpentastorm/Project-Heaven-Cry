@@ -937,7 +937,7 @@ export class CombatLogic extends DCLogic {
     // refusal, tile and number is the engine's preview.
     const held = mg && mg.held, heldD = held ? designs.find((d) => d.id === held.design) || null : null;
     const dsel = designs.find((d) => d.id === S.design) || designs[0] || null, obMode = S.obMode === 'snap' ? 'snap' : 'begin';
-    const cards = mineTurn && mg && !held && (S.action === 'outburst' || S.tab === 'outbursts') ? designCards(pcb, cur) : [];
+    const cards = mineTurn && mg && !held && (S.action === 'outburst' || S.tab === 'outbursts') ? withGame(g, () => designCards(pcb, cur)) : []; // the game bound: the engine reads the hands (rules 1.57: a shield stops the swell)
     const card = dsel ? cards.find((x) => x.id === dsel.id) || null : null;
     // ---------- the one action flow (game/actionFlow.ts): the picked action's descriptor, picks and the engine's preview ----------
     // A bespoke panel adds what it picked: the pile's checklist (Pick up), a perk's form. Reading a glyph with Analyze keeps its own path.
@@ -958,7 +958,7 @@ export class CombatLogic extends DCLogic {
     const tglOn = TOGGLE_ON[S.action] || null; // (on the flow, the descriptor's own: a technique's are an attack's)
     const tgls = flow ? flow.pv.toggles : mineTurn && tglOn ? (() => { try { return withGame(g, () => togglesFor({ u: cur, c: ch, cb, g }, tglOn, { action: S.action, target: tgtUnit }, S.mods || [])); } catch { return []; } })() : [];
     this._mods = modsOf(tgls);
-    const hp = mineTurn && held ? heartPanel(pcb, cur, this._mods) : null;
+    const hp = mineTurn && held ? withGame(g, () => heartPanel(pcb, cur, this._mods)) : null;
     // The grid preview: aimed (a Snap, a Release) on the aim once picked, else on the hovered tile; while holding, your
     // reach ring faintly and the aura's tiles; a design picked to Begin shows its reach.
     let hz = noOverlay(), hzPlan = null;

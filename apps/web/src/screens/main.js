@@ -903,7 +903,7 @@ export class MainLogic extends DCLogic {
       } else if (W === 'outburst') {
         // Rules 1.5 (game/heartView.ts): Begin (hold at stage 0) or Snap (Begin and Release at once, aimed). The overlay
         // is the engine's plan: reach ring, the tinted shape, everyone affected with their numbers.
-        wCards = designCards(cbx, u);
+        wCards = withGame(g, () => designCards(cbx, u)); // the game bound (rules 1.57: a shield stops the swell)
         const card = designSel ? wCards.find((x) => x.id === designSel.id) : null, snap = S.wObMode === 'snap';
         if (!designSel) mHint = 'You have no designs ready: make one on the MAGIC tab.';
         else if (u.mg && u.mg.held) mHint = 'You are holding an Outburst: Pump, Release or Let it go.';
@@ -916,14 +916,14 @@ export class MainLogic extends DCLogic {
           mHint = mReady ? designSel.name + (aura ? ' all around you. ' : ' at ' + refOf(S.wAim) + '. ') + (ov.summary.join(' ') || 'Nobody is there.') + (pl.affected || []).filter((x) => x.enemy).map((x) => ' ' + x.name + ' is a person on the map: this starts a fight.').slice(0, 1).join('')
             : !S.wAim && !aura ? 'Snap ' + designSel.name + ' (' + (card ? card.line : '') + '): hover to preview, click a tile to aim.' : designSel.name + ': ' + ((pl && pl.why) || 'not now.'); }
       } else if (W === 'release') {
-        wHp = MN.held ? heartPanel(cbx, u) : null;
+        wHp = MN.held ? withGame(g, () => heartPanel(cbx, u)) : null;
         if (!wHp) mHint = 'Nothing held.';
         else { const aura = wHp.form === 'aura', at = S.wAim || S.hoverTile || null, ov = aimOverlay(cbx, u, 'held', at), pl = aimOverlay(cbx, u, 'held', S.wAim).plan; mHz = ov;
           mReady = !!(pl && pl.ok && (S.wAim || aura)); mLabel = 'Release · ' + (pl && pl.ap ? pl.ap : 1) + ' AP';
           mHint = mReady ? 'Release ' + wHp.name + ' at stage ' + wHp.stage + ' (×' + wHp.mult + ')' + (aura ? ' all around you. ' : ' at ' + refOf(S.wAim) + '. ') + (ov.summary.join(' ') || 'Nobody is there.') + (pl.affected || []).filter((x) => x.enemy).map((x) => ' ' + x.name + ' is a person on the map: this starts a fight.').slice(0, 1).join('')
             : !S.wAim && !aura ? 'Click a tile to release ' + wHp.name + ' (' + wHp.shape + ', stage ' + wHp.stage + ').' : 'Release ' + wHp.name + ': ' + ((pl && pl.why) || 'not now.'); }
       } else if (HEART_W.includes(W)) {
-        wHp = heartPanel(cbx, u); mHz = idleOverlay(cbx, u);
+        wHp = withGame(g, () => heartPanel(cbx, u)); mHz = idleOverlay(cbx, u);
         const B = wHp ? { pump: wHp.pump, steady: wHp.steadyBtn, letgo: wHp.letgo, feed: wHp.feed, heartwatch: wHp.watchBtn }[W] : null;
         mReady = !!(B && B.ok); mLabel = (B ? B.label + ' · ' + B.cost : 'Confirm');
         mHint = !wHp ? 'You hold no Outburst.' : B.ok ? B.title : B.label + ': ' + B.why;

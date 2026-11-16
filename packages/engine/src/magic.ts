@@ -15,7 +15,7 @@ import { type Rng, die } from './rng';
 import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
 import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
 import { rollSave, rollD20, judge, rollFx, SAVE_TN, tierSave, tierStrength, type RollResult, toHitAdd } from './rolls';
-import { emit, boundGame, statQuery, onHook, charOfUnit, growthHeld, harmHeld } from './effects/hooks';
+import { emit, boundGame, statQuery, onHook, charOfUnit, growthHeld, harmHeld, ifFails } from './effects/hooks';
 import { FEELING, PLAIN_STEP, ONCE_EACH, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
 import { apDebt } from './effects/ap';
 import { canSurrender, surrender, deathMana } from './tactics';
@@ -1670,8 +1670,15 @@ export function feelEnter(cb: Combat, rng: Rng, u: Unit, k: string) {
   if (fz && !u.dead) fuseGo(cb, rng, fz, u.name + ' stepped in');
   residueTick(cb, rng, u, 'entry');
 }
+/** Rules 1.57 (A2, Leon, 16 Nov 2026): why a held Outburst does not swell on its own for this unit, in the data's words
+ * (soul_modules.json cycle.swell.unless_text), or null. The condition is the swell row's own `unless`, an `if` block of
+ * the item ops' predicates (self_holds: a shield in either hand), asked of the unit through ifFails: no new predicate. */
+export function swellBlockedWhy(cb: Combat, u: Unit): string | null {
+  const sw: any = (CYC as any).swell; if (!sw?.unless || !u.charId || u.companion) return null;
+  return ifFails({ u, cb } as any, sw.unless) == null ? String(sw.unless_text || '') : null;
+}
 /** The held heart at a turn start (rules 1.5): Strain −1 (always), the swell (+1 stage and +1 Strain, +2 Flooded,
- * unless steadied), the elemental aura's tick on adjacent enemies, the round's free Pumps back, and 'held_turn_start'
+ * unless steadied; rules 1.57: no stage while the swell row's `unless` holds, a shield in hand), the elemental aura's tick on adjacent enemies, the round's free Pumps back, and 'held_turn_start'
  * {u, held, cb, rng} for items. */
 function heartTurnStart(cb: Combat, rng: Rng, u: Unit) {
   const m = heart(u); if (!m) return;
@@ -1682,7 +1689,9 @@ function heartTurnStart(cb: Combat, rng: Rng, u: Unit) {
   h.turns = (h.turns || 0) + 1;
   if (h.steady) { delete h.steady; say(cb, u.name + "'s steadied heart holds at stage " + h.stage + '.'); }
   else {
-    if (h.stage < MAX_STAGE) { h.stage++; emitFx(cb, 'swell', { unit: u.id, at: u.pos, stage: h.stage, mult: stageMult(h.stage), tone: h.tone || 'raw' }); say(cb, u.name + "'s held Outburst swells to stage " + h.stage + ' (×' + stageMult(h.stage) + ').'); }
+    const blocked = swellBlockedWhy(cb, u);
+    if (blocked) say(cb, u.name + "'s held Outburst holds at stage " + h.stage + ' (' + blocked.replace(/\.$/, '') + ').');
+    else if (h.stage < MAX_STAGE) { h.stage++; emitFx(cb, 'swell', { unit: u.id, at: u.pos, stage: h.stage, mult: stageMult(h.stage), tone: h.tone || 'raw' }); say(cb, u.name + "'s held Outburst swells to stage " + h.stage + ' (×' + stageMult(h.stage) + ').'); }
     // 'outburst_hold' {u, strain} (mutable): the Strain of holding one more turn (hooks gap D7).
     // Rules 1.19: from Will Power 7 a swell adds no Strain (rules 1.33; it was Empathy's).
     const oh: any = emit(cb, 'outburst_hold', { u, strain: m.swellFree ? 0 : flooded(cb) ? CYC.flooded_strain ?? 2 : CYC.swell_strain ?? 1, cb });

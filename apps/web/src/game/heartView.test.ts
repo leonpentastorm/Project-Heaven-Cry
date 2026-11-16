@@ -239,3 +239,22 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
 });
 
 // (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('rules 1.14: Heart Overload needs an Emanator
+
+// Rules 1.57 (A2): a shield in hand stops the swell; the heart panel and the design cards say so in the engine's words
+// (soul_modules.json cycle.swell.unless_text), with the game bound as the fight screen binds it.
+describe('rules 1.57 (A2): the heart says a shield stops the swell', () => {
+  it('a shield in the main hand: the cards and the held heart carry the line; without one they do not', async () => {
+    const { fightWith, withGame } = await import('../../../../packages/engine/test/helpers/perkfight');
+    const { SOUL_RULES, gearEntry, beginOutburst: begin } = await import('@engine');
+    const LINE = String((SOUL_RULES as any).cycle.swell.unless_text);
+    const f = fightWith([{ archetype: 'stormcaller', kit: 'soul' }], [{ tier: 'minion' }]);
+    const c = f.g.characters[f.pc.charId!]; c.pack = [...(c.pack || []), { ...gearEntry('buckler')! }];
+    let u = f.turn(f.pc); u.ap = 60; u.mg!.mp = 9999; u.mg!.mpMax = 9999;
+    const id = 'dz'; u.mg!.designs.push({ id, name: 'Test', school: 'damage', modules: [] } as any);
+    expect(withGame(f.g, () => designCards(f.cb, u)).every((k) => !k.costText.includes(LINE))).toBe(true);
+    f.act({ type: 'combat/equip', unitId: u.id, item: 'buckler', to: 'main' } as any); u = f.unit(f.pc.id);
+    expect(withGame(f.g, () => designCards(f.cb, u)).every((k) => k.costText.includes(LINE))).toBe(true);
+    expect(withGame(f.g, () => begin(f.cb, { state: 7 } as any, u, id, undefined, true))).toBeNull();
+    expect(withGame(f.g, () => heartPanel(f.cb, u))!.swell.startsWith(LINE)).toBe(true);
+  });
+});
