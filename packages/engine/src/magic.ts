@@ -1051,7 +1051,7 @@ export function previewOutburst(cb: Combat, u: Unit, designId: string, aim?: str
   if (oc.fail) return no(oc.fail);
   const cost = Math.max(0, Math.round(oc.mp)), ap = priced({ cb, u }, 'begin', Math.max(0, oc.ap), undefined, { design: d.id }).ap + (release ? SOUL_AP.release : 0), range = oc.range, strain = Math.max(0, oc.strain), hp = Math.max(0, Math.round(oc.hp || 0));
   if (hp && u.hp <= hp) return { ok: false, why: 'Paying ' + hp + ' HP would drop you.', cost, ap, range, strain, stage: 0, hp };
-  { const no = whyNot(cb, u, ap); if (no) return { ok: false, why: no, cost, ap, range, strain, stage: 0, hp }; }
+  { const no = whyNot(cb, u, ap, { as: { type: 'combat/outburst', unitId: u.id, design: d.id } }); if (no) return { ok: false, why: no, cost, ap, range, strain, stage: 0, hp }; } // rules 1.62 item 4744: the action's own credit (a Brief's cut, Encore) counts, as in the reducer
   if (m.emanator && m.mp < cost) return { ok: false, why: 'Needs ' + cost + ' MP (' + m.mp + '): Syphon first.', cost, ap, range, strain, stage: 0, hp };
   const relMult = release ? oc.relMult || 1 : 1, relAll = release ? oc.relAll || 1 : 1, relNotes: string[] = release ? oc.relNotes || [] : [];
   if (release) { const why = aimError(cb, u, d, aim, range); if (why) return { ok: false, why, cost, ap, range, strain, stage: 0, hp, relMult, relAll, relNotes }; }

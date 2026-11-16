@@ -65,7 +65,7 @@ import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
 import { mapLegacy, isLegacyUnit, plainAction, actionGroups, hideHelp, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, tabIdsKnown, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
-import { flowView, pickToggle } from '../game/actionFlow';
+import { flowView, pickToggle, verdictOf } from '../game/actionFlow';
 import { tipAttrs, mountActionTips } from '../game/actionTip';
 import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../game/figmentIcons';
@@ -948,7 +948,7 @@ export class CombatLogic extends DCLogic {
     // refusal, tile and number is the engine's preview.
     const held = mg && mg.held, heldD = held ? designs.find((d) => d.id === held.design) || null : null;
     const dsel = designs.find((d) => d.id === S.design) || designs[0] || null, obMode = S.obMode === 'snap' ? 'snap' : 'begin';
-    const cards = mineTurn && mg && !held && (S.action === 'outburst' || S.tab === 'outbursts') ? withGame(g, () => designCards(pcb, cur)) : []; // the game bound: the engine reads the hands (rules 1.57: a shield stops the swell)
+    const cards = mineTurn && mg && !held && (S.action === 'outburst' || S.tab === 'outbursts') ? withGame(g, () => designCards(pcb, cur, (id) => verdictOf(g, cur.id, me, 'outburst', { design: id, mode: 'begin', ...(S.mods && S.mods.length ? { mods: S.mods } : {}) }))) : []; // the game bound: the engine reads the hands (rules 1.57: a shield stops the swell)
     const card = dsel ? cards.find((x) => x.id === dsel.id) || null : null;
     // ---------- the one action flow (game/actionFlow.ts): the picked action's descriptor, picks and the engine's preview ----------
     // A bespoke panel adds what it picked: the pile's checklist (Pick up), a perk's form. Reading a glyph with Analyze keeps its own path.

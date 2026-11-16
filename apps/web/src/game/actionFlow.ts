@@ -10,7 +10,7 @@
 // other pick (an option, a perk's form, a pile's checklist) in S.picks[key]. Nothing here works out a cost, a range, a
 // legality check or a target list: a step's choices and the verdict are the engine's. A system whose actions are
 // descriptors needs NO code here (docs/design/handoffs/client-boundary-3-actions.md, "How to add an action").
-import { previewDescriptor, actionsFor, stepOn, type ActionDescriptor, type DescriptorPreview, type PickStep, type Picks } from '@engine';
+import { previewDescriptor, previewAction, actionsFor, stepOn, type ActionDescriptor, type DescriptorPreview, type PickStep, type Picks } from '@engine';
 
 /** The descriptor previews that run on this flow. A system not listed keeps its own screen code (Sigils and Outbursts:
  *  the glyph keyboard and the HEART panel; a Move's hover route), until it moves here. */
@@ -27,6 +27,12 @@ function cached<T>(g: any, key: string, f: () => T): T {
   if (!m.has(key)) m.set(key, f());
   return m.get(key);
 }
+/** The reducer's own verdict on a descriptor's action with these picks (previewDescriptor ends in previewAction, the
+ * reducer on a copy), once per game state: what a button that sends that action reads for its enabled state (rules 1.62
+ * item 4744), never a second legality check of the screen's. */
+export const verdictOf = (g: any, unitId: string, me: string | null, id: string, picks: Picks): DescriptorPreview | null => cached(g, 'pv|' + unitId + '|' + me + '|' + id + '|' + JSON.stringify(picks), () => { try { return previewDescriptor(g, unitId, id, picks, me); } catch { return null; } });
+/** The reducer's own verdict on an action (previewAction), once per game state: the area map's buttons (rules 1.62 item 4744). */
+export const actionVerdict = (g: any, action: any, me: string | null): { ok: boolean; why: string | null } => cached(g, 'act|' + me + '|' + JSON.stringify(action), () => { try { const v = previewAction(g, action, me || ''); return { ok: !!v.ok, why: v.ok ? null : v.why || 'Not now.' }; } catch (e: any) { return { ok: false, why: e?.message || 'Not now.' }; } });
 /** Every descriptor of this unit for this viewer, once per game state. */
 export const descriptorsOf = (g: any, unitId: string, me: string | null): ActionDescriptor[] => cached(g, 'list|' + unitId + '|' + me, () => { try { return actionsFor(g, unitId, me); } catch { return []; } });
 

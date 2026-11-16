@@ -38,6 +38,7 @@ import { storyForecastVals } from '../game/manaForecast';
 import { askConfirm, askText } from '../game/dialog';
 import { shellVals, narratorVals } from './shell';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
+import { actionVerdict } from '../game/actionFlow';
 import { oocOf, SECOND_SCHOOL, TONE, isShieldId } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
 import { armsTabVals } from './armsTab';
@@ -904,7 +905,7 @@ export class MainLogic extends DCLogic {
       } else if (W === 'outburst') {
         // Rules 1.5 (game/heartView.ts): Begin (hold at stage 0) or Snap (Begin and Release at once, aimed). The overlay
         // is the engine's plan: reach ring, the tinted shape, everyone affected with their numbers.
-        wCards = withGame(g, () => designCards(cbx, u)); // the game bound (rules 1.57: a shield stops the swell)
+        wCards = withGame(g, () => designCards(cbx, u, (id) => actionVerdict(g, { type: 'world/act', charId: c.id, act: 'outburst', design: id, hold: true }, me))); // rules 1.62 item 4744: the reducer's verdict on the Confirm's own action // the game bound (rules 1.57: a shield stops the swell)
         const card = designSel ? wCards.find((x) => x.id === designSel.id) : null, snap = S.wObMode === 'snap';
         if (!designSel) mHint = 'You have no designs ready: make one on the MAGIC tab.';
         else if (u.mg && u.mg.held) mHint = 'You are holding an Outburst: Pump, Release or Let it go.';
