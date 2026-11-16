@@ -3047,6 +3047,312 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 66,
+    "family": "move_icons",
+    "id": "move-killzone",
+    "path": "art/icons/moves/killzone.png",
+    "name": "Killzone",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Skirmisher rank III move",
+    "paint": "A rectangle marked on the ground by four corner ticks, Wick's sight-line across it.",
+    "avoid": "a crosshair over a person \u00b7 skulls",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A rectangle marked on the ground by four corner ticks, Wick's sight-line across it.\nAvoid: a crosshair over a person \u00b7 skulls\nEXACT STAGING: A simple low perspective rectangle made ONLY of FOUR large right-angle corner ticks marks a ground area. One clean straight sight-line goes ACROSS the rectangle from a cropped ceramic mitten and short plain rifle barrel entering from the left edge. The gun itself is mostly out of the icon: the marked ZONE dominates, not the weapon. No full figure, humanoid target, reticle, crosshair, skulls, text, ground texture, scene or frame. Use two or three very sparse interior line segments at most.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "0573668951dbf0ce213f3955d365ad97d558612c4f4d5eb5170682df5630a78f",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/066-killzone.png",
+    "source_sha256": "63cbca2026a4a6234244fbcae59e906d4653001176d5b41278189b0e87284a01",
+    "export_crop": [
+      0,
+      85,
+      1226,
+      1196
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/killzone.png",
+      "64": "art/icons/moves/exports/64/killzone.png",
+      "48": "art/icons/moves/exports/48/killzone.png",
+      "44": "art/icons/moves/exports/44/killzone.png",
+      "32": "art/icons/moves/exports/32/killzone.png",
+      "24": "art/icons/moves/exports/24/killzone.png"
+    },
+    "framing": {
+      "scale": 0.6335486592968916,
+      "offset": [
+        123,
+        160
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "ba7dc77d9b42d144302f190fa76a577bc97fb255c6e2f99494978fcaebea27f4",
+      "64": "8baf6d1aceb9337bbf4764104357b90e0abd832f86a79788601280525d1018b0",
+      "48": "1e5ed614fdb8de6e156842d153c3588cdfc56732ee9c4ab19563fba1c7eab398",
+      "44": "aef9838c05dad8d1d522e2f97d0c05e915ffda9db95cca9c7d07d88a183fd64e",
+      "32": "3b110ce40e4fda2f1e62a4709278bc1d4dc0097727bd9c0898310c2a6f8c677a",
+      "24": "8c1dd1f8839e342d02f172748524cc1181389120c0ffc68ba7851de45986d2bf"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 67,
+    "family": "move_icons",
+    "id": "move-run-and-gun",
+    "path": "art/icons/moves/run-and-gun.png",
+    "name": "Run and Gun",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Skirmisher rank III move: a free move after an attack",
+    "paint": "Wick running hard, the gun held level and steady while his legs blur.",
+    "avoid": "a vehicle \u00b7 flames",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick running hard, the gun held level and steady while his legs blur.\nAvoid: a vehicle \u00b7 flames\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: One full Wick in a committed long RUNNING stride, legs spread front and back with two short solid speed ticks behind the boots. The gun remains perfectly LEVEL at his shoulder, held steadily by both mittens even as he runs. Clear front foot/back foot anatomy; head and torso lean forward, pixel face intent, capelet swept back. No vehicle, flame, smoke, floating arrows, shooting target or extra person. Translate 'legs blur' into crisp solid motion ticks, never blur or gray.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "8925f74a199f3578b00b223537497d837b2f52d8e68fc5ee9e7fdabff5776a38",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/067-run-and-gun.png",
+    "source_sha256": "0dbc5419d7e4ffa6cd441ea97dc5c7812c67b216115399f5650dd9edceecb5ef",
+    "export_crop": [
+      35,
+      21,
+      1238,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/run-and-gun.png",
+      "64": "art/icons/moves/exports/64/run-and-gun.png",
+      "48": "art/icons/moves/exports/48/run-and-gun.png",
+      "44": "art/icons/moves/exports/44/run-and-gun.png",
+      "32": "art/icons/moves/exports/32/run-and-gun.png",
+      "24": "art/icons/moves/exports/24/run-and-gun.png"
+    },
+    "framing": {
+      "scale": 0.5899453861093231,
+      "offset": [
+        157,
+        148
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "8f4d71236337e5e15d81add194755528bdd1bbc26afed9701de9fef44b0d53c0",
+      "64": "fd5b6a5a33a5f0f946f6f1ca199b6f1aab1f3be29b29ad48a917f753d74a0de5",
+      "48": "5849b2ac6b163f5122f6d95e09eb1d01999a8940a4c58b02d66fab115a1d7415",
+      "44": "d677769a0e797920dd5c80f985454a8f50e87298422b377df545445a2fd18c98",
+      "32": "c5e0025be7bae432029d870f00b8e70f9d352625f386141af50c63b25ac2ffb5",
+      "24": "4c74ce5bcf6f09d6b4087de7d480a8a33c29c6cb023f1d208dcc23588a5c982a"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 68,
+    "family": "technique_icons",
+    "id": "tech-suppress",
+    "path": "art/icons/techniques/suppress.png",
+    "name": "Suppress",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, press: pins a foe down",
+    "paint": "A low burst of four bullet lines raking just over a crate's top edge.",
+    "avoid": "a soldier's helmet with insignia \u00b7 fire",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A low burst of four bullet lines raking just over a crate's top edge.\nAvoid: a soldier's helmet with insignia \u00b7 fire\nEXACT STAGING: ONE broad plain crate occupies the bottom third of the frame, with a clear straight top edge and a single thick band cut. EXACTLY FOUR short straight parallel projectile streaks skim HORIZONTALLY just above that top edge, low and close together. The crate is cover, with no person hiding behind it. No full Wick, hands, gun, helmet, insignia, fire, smoke or explosion. Bold coherent crate-and-streaks silhouette readable at 32px.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "d92d3a21eb641df080cd81e3b46c46efa24895cb17ed1803dd4c2e1f8ea2beb8",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/068-suppress.png",
+    "source_sha256": "e09d5cdcffce580bbd32d63a98f13c0a0fb546e43f104d9c48a7fd2d7efbdefb",
+    "export_crop": [
+      0,
+      158,
+      1224,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/suppress.png",
+      "64": "art/icons/techniques/exports/64/suppress.png",
+      "48": "art/icons/techniques/exports/48/suppress.png",
+      "44": "art/icons/techniques/exports/44/suppress.png",
+      "32": "art/icons/techniques/exports/32/suppress.png",
+      "24": "art/icons/techniques/exports/24/suppress.png"
+    },
+    "framing": {
+      "scale": 0.5761420642457881,
+      "offset": [
+        159,
+        196
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "52c9839333f2a2a0e949966c01b6e7ec8bdaa9ce17dde6a42e6b4e631b4916ae",
+      "64": "551374c65919ca6013ce11d39ddf7a2998b3fb486cd3dd7636088a3303f4adaa",
+      "48": "5141ae2600d117b68fb8ce504435fb705eb9a968e77d9484831b6713e04604c4",
+      "44": "6d5a66dd322477dab250deb0d3d4ce1179fef7037f20672e19c414f6154016b7",
+      "32": "83f176268b7a73748bd40297ebd61f4f3cedaaf85312fba79b39a7ec5d50b3af",
+      "24": "52235ef44710c6e801a5297af995771a74627b5155dddcd1ffc069f0c8e12c85"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 69,
+    "family": "technique_icons",
+    "id": "tech-rake",
+    "path": "art/icons/techniques/rake.png",
+    "name": "Rake",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, press: sweeps a line",
+    "paint": "A sweeping fan of short bullet lines spreading across the ground.",
+    "avoid": "a garden rake \u00b7 blood",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A sweeping fan of short bullet lines spreading across the ground.\nAvoid: a garden rake \u00b7 blood\nEXACT STAGING: A sparse WIDE FAN of FIVE short projectile-streak shapes spreads low across a single short ground baseline, all starting near one cropped barrel end at viewer-left and widening toward viewer-right. Keep the fan shallow and sweeping, not a radial burst or lightning bolt. No full gun, figure, mascot, gardening tool, sparks, blood, smoke or scene. Streaks are solid white straight dashes with clear transparent gaps.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "526ddfe9c3d987ca58492e3a0c4055dca9d07467c95bec8aadde56a681d5519f",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/069-rake.png",
+    "source_sha256": "1da22086bd9d255f227d4b0f16378e4c6eadfc52d6bb66b9a50de727899148e9",
+    "export_crop": [
+      33,
+      117,
+      1214,
+      1085
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/rake.png",
+      "64": "art/icons/techniques/exports/64/rake.png",
+      "48": "art/icons/techniques/exports/48/rake.png",
+      "44": "art/icons/techniques/exports/44/rake.png",
+      "32": "art/icons/techniques/exports/32/rake.png",
+      "24": "art/icons/techniques/exports/24/rake.png"
+    },
+    "framing": {
+      "scale": 0.6450612708922954,
+      "offset": [
+        131,
+        200
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "28dd0ddc339dafa2c21e0c7bba3f2c3f6a06b17b2e0bc871ed956e7d68ebb5ce",
+      "64": "b00e4376713c697d296ac4bdab28a3bedb5f1cee7720cd228ce050529aef4f6c",
+      "48": "5086b4cce37548e1099557f6812b80d101c050a3a70d9926a53bb6c39c3cc383",
+      "44": "605816a8fc747740875a445c395f9442005d69db8d5cc53d883a92e07721a1da",
+      "32": "4924aafc8d6c65479c8e95d5418408e5bd41930849d482a0feafa1246fdb65d3",
+      "24": "2f7d6f72f334d77c65018b38f397f2febf022736eb6fdedeed02b702fffa44bf"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 80,
     "family": "perks",
     "id": "sleight-of-hand",

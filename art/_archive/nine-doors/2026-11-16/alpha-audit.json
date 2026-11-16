@@ -228,6 +228,26 @@
       "faint_alpha_to_solid_area_ratio": 0.06576
     },
     {
+      "number": 66,
+      "name": "Killzone",
+      "faint_alpha_to_solid_area_ratio": 0.08188
+    },
+    {
+      "number": 67,
+      "name": "Run and Gun",
+      "faint_alpha_to_solid_area_ratio": 0.06359
+    },
+    {
+      "number": 68,
+      "name": "Suppress",
+      "faint_alpha_to_solid_area_ratio": 0.05293
+    },
+    {
+      "number": 69,
+      "name": "Rake",
+      "faint_alpha_to_solid_area_ratio": 0.07617
+    },
+    {
       "number": 80,
       "name": "Long Dark",
       "faint_alpha_to_solid_area_ratio": 0.04579

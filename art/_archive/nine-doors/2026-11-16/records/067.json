@@ -1,0 +1,78 @@
+{
+  "number": 67,
+  "family": "move_icons",
+  "id": "move-run-and-gun",
+  "path": "art/icons/moves/run-and-gun.png",
+  "name": "Run and Gun",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Skirmisher rank III move: a free move after an attack",
+  "paint": "Wick running hard, the gun held level and steady while his legs blur.",
+  "avoid": "a vehicle \u00b7 flames",
+  "section": "Dexterity: Pressure, and the Skirmisher",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick running hard, the gun held level and steady while his legs blur.\nAvoid: a vehicle \u00b7 flames\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: One full Wick in a committed long RUNNING stride, legs spread front and back with two short solid speed ticks behind the boots. The gun remains perfectly LEVEL at his shoulder, held steadily by both mittens even as he runs. Clear front foot/back foot anatomy; head and torso lean forward, pixel face intent, capelet swept back. No vehicle, flame, smoke, floating arrows, shooting target or extra person. Translate 'legs blur' into crisp solid motion ticks, never blur or gray.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "8925f74a199f3578b00b223537497d837b2f52d8e68fc5ee9e7fdabff5776a38",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/067-run-and-gun.png",
+  "source_sha256": "0dbc5419d7e4ffa6cd441ea97dc5c7812c67b216115399f5650dd9edceecb5ef",
+  "export_crop": [
+    35,
+    21,
+    1238,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/run-and-gun.png",
+    "64": "art/icons/moves/exports/64/run-and-gun.png",
+    "48": "art/icons/moves/exports/48/run-and-gun.png",
+    "44": "art/icons/moves/exports/44/run-and-gun.png",
+    "32": "art/icons/moves/exports/32/run-and-gun.png",
+    "24": "art/icons/moves/exports/24/run-and-gun.png"
+  },
+  "framing": {
+    "scale": 0.5899453861093231,
+    "offset": [
+      157,
+      148
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "8f4d71236337e5e15d81add194755528bdd1bbc26afed9701de9fef44b0d53c0",
+    "64": "fd5b6a5a33a5f0f946f6f1ca199b6f1aab1f3be29b29ad48a917f753d74a0de5",
+    "48": "5849b2ac6b163f5122f6d95e09eb1d01999a8940a4c58b02d66fab115a1d7415",
+    "44": "d677769a0e797920dd5c80f985454a8f50e87298422b377df545445a2fd18c98",
+    "32": "c5e0025be7bae432029d870f00b8e70f9d352625f386141af50c63b25ac2ffb5",
+    "24": "4c74ce5bcf6f09d6b4087de7d480a8a33c29c6cb023f1d208dcc23588a5c982a"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}
