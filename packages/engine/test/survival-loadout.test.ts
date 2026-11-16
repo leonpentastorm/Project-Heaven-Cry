@@ -306,6 +306,16 @@ describe('the camp as a checklist and a shield for a tank (rules 1.55 items 49 t
     expect(refused(g, { type: 'run/loadout', charId: idOf(g, 'Kade'), op: 'pick', slot: 'focus', id: LOADOUT.focuses[0] })).toBe(want);
     expect(view(g).focus.find((k) => k.id === LOADOUT.focuses[0])!.why).toBe(want);
   });
+  it('rules 1.56 (a shield in either hand): with a focus and no weapon picked the shield goes in the main hand; a second is refused', () => {
+    const S = SHIELDS.find((id) => (ITEM[id] as any).either_hand)!; expect(S).toBeTruthy();
+    let g = campOf('sigilist');
+    g = lo(g, 'Kade', { op: 'pick', slot: 'focus', id: LOADOUT.focuses[0] });
+    const key = view(g).shelves.flatMap((s) => s.cards).find((k) => k.id === S)!.key;
+    g = lo(g, 'Kade', { op: 'take', key });
+    const c = Object.values(g.characters)[0]; expect([c.weapon, c.offHand?.id]).toEqual([S, LOADOUT.focuses[0]]);
+    // a second one: both hands are full (and the camp's budget pays for one shield only)
+    expect(refused(g, { type: 'run/loadout', charId: c.id, op: 'take', key })).toMatch(/one is held at a time/);
+  });
   it('rules 1.55 item 53: when the reducer would refuse the Recommended kit, the view says why (and nothing when it would not)', () => {
     let g = campOf('deadeye'); const id = idOf(g, 'Kade');
     expect(view(g).recommended.why).toBeNull();

@@ -1708,6 +1708,11 @@ if isinstance(tq, dict):
         if cls_ not in ("1", "2", "3", "4", "5") or not isinstance(need, int) or not 1 <= need <= 10:
             errors.append(f"techniques: rules.gear_gates.heavy_armour.classes: '{cls_}': {need} is not an armour class with a skill level")
     shield_items = [i_ for i_ in items("items") if isinstance(i_, dict) and "shield" in ((i_.get("phys") or {}).get("props") or [])]
+    # rules 1.56 (a shield in either hand, Leon, 16 Nov 2026): `either_hand` true lets an off-hand item sit in the main
+    # hand too; only a shield carries it
+    for i_ in items("items"):
+        if isinstance(i_, dict) and "either_hand" in i_ and (i_.get("either_hand") is not True or i_.get("category") != "shield" or i_.get("slot") != "off_hand"):
+            errors.append(f"items:{i_.get('id')}: either_hand is true, and only on a shield (category shield, slot off_hand)")
     for i_ in items("items"):
         ph = i_.get("phys") if isinstance(i_, dict) else None
         if ph is None:

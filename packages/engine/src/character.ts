@@ -167,9 +167,10 @@ export const WORN_SHARE: number = Number((RULES as any).weapons_rules?.worn?.sha
 /** The state of a thing that wears (Weapons v2, Durability rules 2 and 3): Broken at 0, Worn at WORN_SHARE of full or
  * less, else sound. The one test of a worn weapon: the fight's jam and melee rules and every screen's mark read it. */
 export const wearState = (now: number, max: number): 'sound' | 'worn' | 'broken' => (max <= 0 ? 'sound' : now <= 0 ? 'broken' : now <= max * WORN_SHARE ? 'worn' : 'sound');
-/** Effects of everything worn and held in the off hand (slot armour, shields, lights). */
+/** Effects of everything worn and held in a hand that is not a weapon (slot armour, shields, lights; rules 1.56: a
+ * shield in the main hand too, so two shields each give theirs). */
 export function gearEffects(c: Character): { op: string; value?: number; hazard?: string }[] {
-  const ids = [...Object.values(c.worn || {}), ...(c.offHand && !WEAPON[c.offHand.id] ? [c.offHand.id] : [])];
+  const ids = [...Object.values(c.worn || {}), ...(!WEAPON[c.weapon] && ITEM[c.weapon] ? [c.weapon] : []), ...(c.offHand && !WEAPON[c.offHand.id] ? [c.offHand.id] : [])];
   return ids.flatMap((id) => ((ITEM[id] as any)?.effects || []) as { op: string; value?: number; hazard?: string }[]);
 }
 export const gearBonus = (c: Character, op: string) => gearEffects(c).filter((e) => e.op === op).reduce((t, e) => t + (e.value || 0), 0);
@@ -672,7 +673,7 @@ export function itemKg(it: PackItem): number {
 export function carriedKg(c: Character) {
   const w = WEAPON[c.weapon];
   const off = c.offHand ? (WEAPON[c.offHand.id]?.weight_kg ?? (ITEM[c.offHand.id]?.weight_kg || 0)) : 0;
-  const parts = { weapon: (w?.weight_kg || 0) + (w?.magazine_kg || 0) + loadedOf(c) * roundKg(c.weapon) + off,
+  const parts = { weapon: (w?.weight_kg ?? (ITEM[c.weapon]?.weight_kg || 0)) + (w?.magazine_kg || 0) + loadedOf(c) * roundKg(c.weapon) + off,
     armour: (ARMOUR_KG[c.armourClass] || 0) + Object.values(c.worn || {}).reduce((t, id) => t + (ITEM[id]?.weight_kg || 0), 0),
     pack: packOf(c).reduce((t, it) => t + itemKg(it), 0) + Object.entries(COUNTED).reduce((t, [id, f]) => t + (c[f] || 0) * (ITEM[id]?.weight_kg || 0), 0) + (c.carried || []).reduce((t, x) => t + (Number(x.kg) || 0), 0) };
   return { ...parts, total: Math.round((parts.weapon + parts.armour + parts.pack) * 100) / 100 };
@@ -1385,7 +1386,15 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
   // Evoker-linked gun or a red dot; Forlorn Hope's armour cap is armourCap) — perk-runtime still-open item 6.
   const ban = (ctx: any) => statQuery({ c }, 'equip_ban', ctx).add > 0 ? equipBanWhy(c, ctx) : null;
   if (to === 'main') {
-    if (!wid) return 'Only weapons go in the main hand.';
+    // Rules 1.56 (Leon, 16 Nov 2026): an off-hand item marked `either_hand` (a shield) sits in the main hand as a
+    // weapon does, one to a hand; the hand strikes with bare fists (combat.ts unitFromCharacter).
+    if (!wid && item?.either_hand && item.slot === 'off_hand') {
+      { const rq = requiresWhy(c, item.requires); if (rq) return rq; }
+      take(); putBack(c.weapon, c.weaponState, c.loaded ?? undefined, c.loadedType);
+      c.weapon = it.item || it.id; c.weaponState = { ...(it.rarity ? { rarity: it.rarity } : {}), ...(it.dur != null ? { dur: it.dur } : {}), ...(it.prop ? { prop: it.prop } : {}) }; c.loaded = 0; c.loadedType = null;
+      c.pack = pack; return null;
+    }
+    if (!wid) return 'Only weapons and shields go in the main hand.';
     { const rq = requiresWhy(c, (WEAPON[wid] as any).requires); if (rq) return rq; }
     { const b = ban({ weapon: wid, mods: it.mods || [] }); if (b) return b; }
     if (c.offHand && !twoHands(c, wid)) { const sw = secondWeaponWhy(c, c.offHand.id, wid); if (sw) return sw; }

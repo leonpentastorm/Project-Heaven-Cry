@@ -6913,6 +6913,30 @@ Not in slice 1 (each needs a piece the engine lacks; the draft lists them): Weat
 round are not on the damage), the shield's own swing and its follow-up (P9, P11), cover behind the tank (P10), the
 growth paths (P8), Hold the Gap (P9).
 
+## Rules 1.56 (Balance 2.0), a shield in either hand
+
+Leon, 16 Nov 2026: *"fix for that is just let the shield be mainhand. So crazy ass double shield mofo is a thing"*. A
+focus (Evoker, Emanator, Attuner, Visualizer) and a shield both went in the off hand, so a caster could never carry a
+shield. Now (items 4308 to 4313; every number is the data's and PROVISIONAL):
+
+1. **A shield may be held in either hand, one to a hand** (item 4308). A shield row in `items.json` carries
+   `either_hand: true`; it goes in the main hand as a weapon does, through the one equip rule (the sheet, the fight's
+   1 AP hand change, the camp). Shield + focus, shield + shield and weapon + shield (as before) are legal. A save with
+   the shield in the off hand loads unchanged.
+2. **Two shields** (item 4309): each shield's own effects apply as carried (Defense adds, Movement penalties add).
+   Brace and the Guard technique give 1 more Guard (`rules.guard.brace_shield_gain`, `shield_gain`) **per shield
+   held**; the Guard pool's cap is unchanged. The Parry bonus (`parry.numbers.shield_bonus`) is a shield in a hand, once
+   however many (the engine has no best-of rule: it never doubled). Shield Bash, Raise Shield and Shield Wall come from
+   holding at least one shield, one grant, each with its own limits.
+3. **The main hand holding a shield strikes with bare fists** (item 4310), the engine's neutral fallback for a hand
+   with no weapon; there is no shield strike beyond Shield Bash. The Open Hand's hands rule (only the family's gloves,
+   or none) is off with a shield in either hand.
+4. **Durability's door is unchanged** (item 4311): Guard soaks, Close Guard, Retort, Challenge and Slam work with
+   shield + focus and with two shields; a Sigil is drawn and Evoked with the Evoker in the off hand and a shield in the
+   main hand.
+5. **The camp** (item 4312): a shield taken goes in the off hand, else in an empty main hand (no free weapon picked).
+6. **Enemies, their AI and Survival's recommended kits are untouched** (item 4313).
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -10732,3 +10756,26 @@ Items 4240 to 4247.
     through `braceHook.gain`); the second copy of the formula in combat.ts is gone. `skills.json durability.door_line`
     is the Guard row's line. No number.
 
+### Rules 1.56 (Balance 2.0), a shield in either hand
+
+4308. **Either hand (rules 1.56, a shield in either hand, item 1):** `items.json` `either_hand: true` on the buckler,
+    the riot shield and the pavise (the validator: only on a shield, slot `off_hand`). `character.ts equip` puts it in
+    the main hand (`c.weapon` holds its id; the hand's state its grade and wear); the fight's gear plan asks equip on a
+    copy (gear.ts), so the plan and the change are one rule. The unit carries it as `mainItem` (combat.ts), as the off
+    hand's is `offItem`. Old saves: unchanged. PROVISIONAL.
+4309. **Two shields (item 2):** `gearEffects` reads a non-weapon main hand too, so each shield's `defense_bonus` and
+    `movement_bonus` add (buckler + buckler +2 Defense; buckler + riot shield +3 Defense, −0.5 Movement; riot + riot +4
+    Defense, −1 Movement). `guardGain` adds `shield_gain` / `brace_shield_gain` per shield held: Brace gives 2 + 1 a
+    shield (4 with two), never past the pool (`guardMax`, 4 at most). Parry's `shield_bonus` once (`holds`, the
+    Shield property). Eyes in the Back's −5 reads a shield in either hand by the Shield property (the code no longer
+    names the pavise). PROVISIONAL: the stack is the lead's to judge.
+4310. **Bare fists (item 3):** a main hand holding an item is `WEAPON.fists` on the unit (the neutral fallback). The
+    Open Hand's `self_holds.hands.only` fails with a shield in either hand (`handsHold`). No number.
+4311. **Durability's door (item 4):** proved through the reducer with buckler + Evoker and buckler + riot shield
+    (Brace, a soaked blow, Shield Bash, Slam, Challenge) and a Sigil drawn and Evoked (test/shield-either-hand.test.ts);
+    Close Guard and Retort read no hand. No number.
+4312. **The camp (item 5):** run/loadout.ts: a shield goes in the off hand, else an empty main hand; a second is
+    refused while both hands are full. The camp's budget (300) pays for one buckler. PROVISIONAL.
+4313. **Untouched (item 6):** enemies, the enemy AI and `survival.json` `recommended`. A shield in the main hand with a
+    one-handed weapon in the off hand gets no shield techniques (the technique core works the shield from a free off
+    hand); not built, for the lead.

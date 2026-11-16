@@ -207,8 +207,9 @@
       "price_credits": 200,
       "adjudication": "engine",
       "provisional": true,
-      "text": "+{=effects.0.value} Defense. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, +2 on a Parry roll, and Brace and the Guard technique give 1 more Guard.",
+      "text": "Held in either hand, one to a hand. +{=effects.0.value} Defense. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, +2 on a Parry roll, and Brace and the Guard technique give 1 more Guard.",
       "slot": "off_hand",
+      "either_hand": true,
       "effects": [
         {
           "op": "defense_bonus",
@@ -230,8 +231,9 @@
       "price_credits": 700,
       "adjudication": "engine",
       "provisional": true,
-      "text": "+{=effects.0.value} Defense. {=effects.1.value} Movement. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, and Brace and the Guard technique give 1 more Guard.",
+      "text": "Held in either hand, one to a hand. +{=effects.0.value} Defense. {=effects.1.value} Movement. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, and Brace and the Guard technique give 1 more Guard.",
       "slot": "off_hand",
+      "either_hand": true,
       "effects": [
         {
           "op": "defense_bonus",
@@ -257,8 +259,9 @@
       "price_credits": 1200,
       "adjudication": "narrator",
       "provisional": true,
-      "text": "Carried, it does nothing. Plant it for 2 AP and it becomes a tile of full cover in front of you, with 80 HP. Picking it back up costs 2 AP.",
+      "text": "Carried, in either hand, it does nothing. Plant it for 2 AP and it becomes a tile of full cover in front of you, with 80 HP. Picking it back up costs 2 AP.",
       "slot": "off_hand",
+      "either_hand": true,
       "effects": [
         {
           "op": "narrator",

@@ -420,3 +420,12 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
       are character cards with written lines, engine-written memories and an optional DM. **Dialogue is trees with
       skill checks**; talking can replace fighting in places; every player talks separately.
     - **Every skill, companion and patron gets its own voice and writing style**, cast by Leon later.
+
+116. **A shield goes in either hand, one to a hand** (Leon, 16 Nov 2026: *"fix for that is just let the shield be
+    mainhand. So crazy ass double shield mofo is a thing"*; rules 1.56, spec items 4308 to 4313). A focus and a shield
+    both lived in the off hand, so a caster could never carry a shield. A shield row's `either_hand: true` lets equip put
+    it in the main hand (the field that holds a 1H weapon; no new slot); that hand strikes with bare fists. Two shields
+    stack each shield's own Defense and Movement and give Brace and the Guard technique +1 Guard each, under the pool's
+    cap; the Parry bonus and the shield's techniques come once. Why this over a new hand slot: one equip rule, old
+    saves unchanged, and the fight's gear plan now asks equip itself (one copy of the rule). Enemies and the
+    recommended kits are untouched.

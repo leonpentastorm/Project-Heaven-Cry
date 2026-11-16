@@ -1980,7 +1980,7 @@ function gearForward(g: GameState, a: Extract<Action, { type: 'gear/equip' | 'ge
 }
 /** What a fight's gear change rebuilds from the character (item 689): the weapon's numbers, the off-hand gun's spares,
  * what gear gives (light, dark sight, hazard immunity, weight, throwables, spare parts) and the d20 item modifiers. */
-const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offMods', 'held', 'offWeapon', 'offItem', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
+const GEAR_FRESH = ['weapon', 'ammo', 'attack', 'dmgMult', 'dur', 'maxDur', 'mods', 'offMods', 'held', 'offWeapon', 'offItem', 'mainItem', 'offAmmo', 'mags', 'loose', 'ammoType', 'magTypes', 'offMags', 'offMagTypes', 'offAmmoType', 'offLoose', 'unarmedBonus',
   'light', 'darkSight', 'hazardImmune', 'ignoreDifficult', 'overweight', 'noSprint', 'throwables', 'parts', 'sv', 'dbf', 'sk', 'critTaken', 'elemTaken', 'ambushTaken', 'healRecv', 'shieldRecv', 'stealth', 'injResist'] as const;
 /** Rebuild a fighter after its character's gear changed (item 689): the GEAR_FRESH fields from a fresh unit; Defense,
  * armour, Movement and Vision by the difference the change made (`base` is the unit built just before it), so a break,
@@ -2057,7 +2057,7 @@ function gearInFight(g: GameState, cb: Combat, u: Combat['units'][number], c: Ch
  * same gear change a draw makes, free of AP. False: no free hand, or the draw refuses it (a skill it needs, a ban). */
 function takeIntoHand(g: GameState, cb: Combat, u: Combat['units'][number], it: PackItem): boolean {
   const c = u.charId && !u.companion ? g.characters[u.charId] : null; if (!c) return false;
-  const mainFree = u.weapon === 'fists' || !WEAPON[u.weapon], to = mainFree ? 'main' : !u.offWeapon && !c.offHand && !twoHands(c, c.weapon) ? 'off' : null; if (!to) return false;
+  const mainFree = (u.weapon === 'fists' || !WEAPON[u.weapon]) && !u.mainItem, to = mainFree ? 'main' : !u.offWeapon && !c.offHand && !twoHands(c, c.weapon) ? 'off' : null; if (!to) return false;
   c.pack = [...packOf(c).map((x) => ({ ...x })), { ...it, qty: 1, _nail: 1 } as any];
   const e = gearInFight(g, cb, u, c, { op: 'draw', item: c.pack.length - 1, to }, { free: true });
   c.pack = packOf(c).filter((x: any) => !(e && x._nail)).map((x: any) => { const { _nail, ...rest } = x; void _nail; return rest; });

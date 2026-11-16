@@ -13,7 +13,7 @@ import { SKILL, WEAPON, ITEM } from '../data';
 import { say, type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight, attackApCost } from '../combat';
 import { hide, reveal, seenByFoes, TIER_NOTICE, HIDE_WHY } from '../tactics';
 import { applyCond, condOn } from '../magic';
-import { type Character, ARMOUR, gearBonus, packOf, mod, checkMod } from '../character';
+import { type Character, ARMOUR, gearBonus, packOf, mod, checkMod, holds } from '../character';
 import { blocksMove, blocksSight, coverKind, kindOf, type MapObject } from '../objects';
 import { die, type Rng } from '../rng';
 import { RuleError, zoneTags, positionsOf, npcsOf, senseLurkers } from '../game';
@@ -277,7 +277,7 @@ register({
 // gives the same −5 from every side (PROVISIONAL, spec 14: the shield's own frontal cover isn't built). II: allies
 // next to you too.
 // =====================================================================================================================
-const carriesShield = (h: Holder, t: Unit) => { const c = t.charId ? gameOf(h)?.characters?.[t.charId] : null; const it = c?.offHand ? (ITEM as any)[c.offHand.id] : null; return !!it && it.category === 'shield' && it.id !== 'pavise'; };
+const carriesShield = (h: Holder, t: Unit) => { const c = t.charId ? gameOf(h)?.characters?.[t.charId] : null; return !!c && holds(c, { hands: { props: ['shield'] } }); }; // rules 1.56: a shield (the Shield property: not a planted pavise) in either hand
 register({
   id: 'eyes_in_the_back', claims: 'all',
   on: {

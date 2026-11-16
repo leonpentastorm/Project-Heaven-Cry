@@ -133,11 +133,16 @@ function rebuild(c: Character, p: LoadoutPick): string | null {
       c.worn![it.slot] = l.id;
     } else if (it?.slot === 'off_hand' && !it.focus) {
       // rules 1.55 item 50: an off-hand item (a shield) goes in the off hand, through the one equip rule (character.ts equip)
-      if (q > 1) return nameOf(l.id) + ': one is held at a time.';
-      // rules 1.55 item 52: the refusal says what the player can do; a focus taken while this item held the off hand is the change refused
-      if (c.offHand) return was === l.id && p.focus && c.offHand.id === p.focus ? 'Your off hand holds the ' + nameOf(l.id) + '. Put it back to take a focus.' : nameOf(l.id) + ': the off hand already holds the ' + nameOf(c.offHand.id) + '.';
-      add(lineGoods(l.id, 1));
-      const no = equip(c, packOf(c).findIndex((x) => (x.item || x.id) === l.id), 'off'); if (no) return nameOf(l.id) + ': ' + no.charAt(0).toLowerCase() + no.slice(1);
+      // rules 1.56 (a shield in either hand): one to a hand, the off hand first, then an empty main hand (no free weapon
+      // picked) for an `either_hand` item; the hand is equip's to judge
+      for (let i = 0; i < q; i++) {
+        const to = !c.offHand ? 'off' : it.either_hand && c.weapon === 'fists' ? 'main' : null;
+        if (!to && i > 0) return nameOf(l.id) + ': one is held at a time in each hand, and both hands are full.';
+        // rules 1.55 item 52: the refusal says what the player can do; a focus taken while this item held the off hand is the change refused
+        if (!to) return was === l.id && p.focus && c.offHand!.id === p.focus ? 'Your off hand holds the ' + nameOf(l.id) + '. Put it back to take a focus.' : nameOf(l.id) + ': the off hand already holds the ' + nameOf(c.offHand!.id) + '.';
+        add(lineGoods(l.id, 1));
+        const no = equip(c, packOf(c).findIndex((x) => (x.item || x.id) === l.id), to); if (no) return nameOf(l.id) + ': ' + no.charAt(0).toLowerCase() + no.slice(1);
+      }
     } else if (it?.focus) { for (let i = 0; i < q; i++) add([focusEntry(l.id)]); }
     else add(lineGoods(l.id, l.per * q));
   }

@@ -180,7 +180,7 @@
       "silent": "No report. Never reveals you; no Pressure on a miss, more on a hit from unseen; its pips are hidden.",
       "loud": "A cannon in the hand. A miss still gives Pressure; saves against it are harder.",
       "drawn": "Your arm is the powder. No Heat or Recoil; quivers, not magazines: its reload is Switch quiver, and a quiver is never refilled in a fight.",
-      "shield": "Carried in the off hand. It lends its own techniques, which run on Guard and Momentum."
+      "shield": "Carried in either hand, one to a hand. It lends its own techniques, which run on Guard and Momentum."
     },
     "provisional": true
   },
@@ -1277,7 +1277,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "When a melee attack hits you: roll your attack skill against the attacker's roll. If you win, the hit does half damage. A shield in your off hand adds +2 to your roll. Uses your reaction.",
+      "text": "When a melee attack hits you: roll your attack skill against the attacker's roll. If you win, the hit does half damage. A shield in a hand adds +{=numbers.shield_bonus} to your roll (once, however many you hold). Uses your reaction.",
       "trigger": "a melee attack hits you",
       "lines": [
         {

@@ -88,14 +88,18 @@ export const techState = (u: Unit, id: string): Record<string, any> => ((u.tech 
 export const techStateOf = (u: Unit, id: string): Record<string, any> => u.tech?.[id] || {};
 
 // ---------- a shield in the off hand, and Guard (rules 1.13: Durability's door) ----------
-/** The shield a unit holds in its off hand: an item with the Shield property (items.json `phys.props`), or null. The
- * unit carries what its off hand holds when that isn't a weapon as `u.offItem` (combat.ts unitFromCharacter). */
-export const shieldOf = (u: Unit): string | null => { const id = u.offItem; return id && (((ITEM as any)[id]?.phys?.props as string[]) || []).includes('shield') ? id : null; };
+/** The shields a unit holds, the off hand's first: items with the Shield property (items.json `phys.props`). The unit
+ * carries what a hand holds when that isn't a weapon as `u.offItem` and `u.mainItem` (combat.ts unitFromCharacter;
+ * rules 1.56: a shield in either hand, one to a hand). */
+const shieldsOf = (u: Unit): string[] => [u.offItem, u.mainItem].filter((id): id is string => !!id && (((ITEM as any)[id]?.phys?.props as string[]) || []).includes('shield'));
+/** The shield a unit holds (the off hand's first), or null. Its techniques come once, however many are held. */
+export const shieldOf = (u: Unit): string | null => shieldsOf(u)[0] || null;
 /** A shield's techniques strike with the bare hand behind it: this is the weapon they are worked out with. */
 const SHIELD_HAND = 'fists';
 /** What the off hand holds for a technique: its weapon, else (a shield) the bare hand behind it, else nothing. */
 const offHeld = (u: Unit): string | null => u.offWeapon || (shieldOf(u) ? SHIELD_HAND : null);
-/** Is the off hand a shield's (no weapon in it)? */
+/** Is the off hand a shield's (no weapon in it)? A shield in the main hand with no weapon in the off hand counts too
+ * (rules 1.56): the techniques are worked from the free hand behind a shield. */
 const shieldHand = (u: Unit, hand: 'main' | 'off') => hand === 'off' && !u.offWeapon && !!shieldOf(u);
 /** A unit's points in a skill: its character's now, else what the unit was built with (a stat block may give them). */
 export const unitSkill = (u: Unit, skill: string): number => { const c = u.companion ? null : charOfUnit(u); return (c ? (c.skills as any)?.[skill] : (u as any)[skill]) || 0; };
@@ -114,8 +118,9 @@ export const guardSoak = (u: Pick<Unit, 'level'>): number => Math.max(1, Math.ro
  * flat: 2, 3 with a shield (the lead's tuning, 10 Nov 2026; provisional, rules.guard brace_gain / brace_shield_gain). */
 export function guardGain(u: Unit, by: 'guard' | 'brace' = 'guard'): number {
   if (u.resMax?.guard == null) return 0;
-  const g = GR(); if (by === 'brace') return g.brace_gain + (shieldOf(u) ? g.brace_shield_gain : 0);
-  return g.gain_base + Math.max(0, unitSkill(u, 'durability') - 1) * g.gain_per_point + (shieldOf(u) ? g.shield_gain : 0);
+  // rules 1.56: each shield held adds its own (two shields, twice); the pool's cap (guardMax) still holds
+  const g = GR(), n = shieldsOf(u).length; if (by === 'brace') return g.brace_gain + n * g.brace_shield_gain;
+  return g.gain_base + Math.max(0, unitSkill(u, 'durability') - 1) * g.gain_per_point + n * g.shield_gain;
 }
 /** Why a unit's Guard changed, for the screen (Guard 2.0, rules 1.56 item 4300: the plates): gained, eaten by a hit
  * (soaked: the damage it took off), spent on an order or an Answer, or taken by Pressure. */

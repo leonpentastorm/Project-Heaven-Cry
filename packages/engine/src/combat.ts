@@ -186,7 +186,7 @@ export interface Unit {
   res?: Record<string, number>; resMax?: Record<string, number>;
   /** Rules 1.13, Durability's Guard: what the off hand holds when it isn't a weapon (a shield, a torch, a focus; null:
    * nothing), and the unit's Durability points (a PC's come from its sheet; a stat block may give them). */
-  offItem?: string | null; durability?: number;
+  offItem?: string | null; /** rules 1.56: what the main hand holds when it isn't a weapon (a shield); its strike is bare fists */ mainItem?: string | null; durability?: number;
   /** Physical 2.0 (rules 1.12; src/physical). Pressure 0–4 on this unit, how many of its pips its own side can't see (a
    * Silent weapon's), who put it there, who hit it in which round and with which weapon (Crossfire; drill on the kill),
    * turns left of Stopped once, the Watch it holds, its melee chain this turn, per-technique state, a set-up mark, an
@@ -511,7 +511,9 @@ export const dist = (a: string, b: string) => { const [ax, ay] = xy(a), [bx, by]
 /** A character's Vision in tiles (spec: Vision): 12 + 2 per Perception above 1 + Vigilant + items. */
 export const visionOf = (c: Character) => 12 + 2 * ((c.attrs.perception || 1) - 1) + (c.skills.vigilant || 0) + statQuery({ c }, 'vision').add;
 export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
-  const w = WEAPON[c.weapon] || WEAPON.service_pistol;
+  // Rules 1.56: a main hand holding an item (a shield, `either_hand`) strikes with the neutral bare fists; the item is
+  // carried as `mainItem`, as the off hand's is as `offItem`.
+  const mainItem = !WEAPON[c.weapon] && ITEM[c.weapon] ? c.weapon : null, w = mainItem ? WEAPON.fists : WEAPON[c.weapon] || WEAPON.service_pistol;
   return {
     id: 'pc-' + c.id, side: 'pc', name: c.name, short: c.name.slice(0, 2).toUpperCase(), charId: c.id, img: c.portrait, level: clampEnemyLevel(c.level),
     pos, hp: c.hp, maxHp: maxHp(c), def: defense(c), armour: armourOf(c, gearBonus(c, 'armour_bonus') + statQuery({ c }, 'armor').add), // rules 1.36: × scale at the wearer's level
@@ -554,7 +556,7 @@ function pcExtras(c: Character, w: WeaponDef): Partial<Unit> {
     ...(offW?.mags && offW.magTypes ? { offMagTypes: typesFor(offW.magTypes, offW.mags.length) } : {}),
     ...(c.offHand?.ammoType && c.offHand.loaded ? { offAmmoType: c.offHand.ammoType } : {}),
     ...(offLoose != null ? { offLoose } : {}),
-    offItem: c.offHand && !WEAPON[c.offHand.id] && !twoHands(c, c.weapon) ? c.offHand.id : null, durability: c.skills.durability || 0,
+    offItem: c.offHand && !WEAPON[c.offHand.id] && !twoHands(c, c.weapon) ? c.offHand.id : null, ...(!WEAPON[c.weapon] && ITEM[c.weapon] ? { mainItem: c.weapon } : {}), durability: c.skills.durability || 0,
     ...(res ? res : {}),
   };
   void w;

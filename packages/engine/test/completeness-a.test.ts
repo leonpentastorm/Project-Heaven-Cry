@@ -167,7 +167,8 @@ describe('Eyes in the Back: the cover tile counts (a miss by its margin hits it)
     expect(withGame(g.g, () => previewAttack(g.cb, g.foe, g.pcs[1], 'shot')).coverTile).toBeFalsy(); // Tier I: only you
   });
   it('a carried riot shield gives −5 from every side', () => {
-    const f = fightWith([{ perks: { eyes_in_the_back: 'I' } }], [{ at: 'O10' }]);
+    const f = fightWith([{ perks: { eyes_in_the_back: 'I' }, weapon: 'service_pistol' }], [{ at: 'O10' }]);
+    // rules 1.56: a shield is held in a hand (character.ts holds), so a one-handed weapon in the main hand: under the kit's two-handed rifle the off hand is filled
     const c = f.g.characters[f.pc.charId!]; c.offHand = { id: 'riot_shield' } as any;
     f.pc.pos = '5,5'; f.foe.pos = '10,5'; f.foe.ap = 6; f.cb.objects = [];
     const pv = withGame(f.g, () => previewAttack(f.cb, f.foe, f.pc, 'shot'));

@@ -532,7 +532,7 @@ export class MainLogic extends DCLogic {
       if (!it.mags) { const pi = c && !it.counted ? ri - pack.slice(0, ri).filter((x) => x.counted).length : -1, def = ITEM[it.item || it.id] || {}, wdef = it.weapon ? WEAPON[it.weapon] : null, acts = [];
         if (pi >= 0 && !gearLocked) {
           if (wdef && it.kind === 'weapon') { acts.push({ key: 'm', label: 'Main hand', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'main' }) }); if (wdef.hands === '1H') acts.push({ key: 'o', label: 'Off hand', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'off' }) }); }
-          else if (def.slot === 'off_hand') acts.push({ key: 'o', label: 'Off hand', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'off' }) });
+          else if (def.slot === 'off_hand') { if (def.either_hand) acts.push({ key: 'm', label: 'Main hand', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'main' }) }); acts.push({ key: 'o', label: 'Off hand', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'off' }) }); } // rules 1.56: a shield in either hand
           else if (def.category === 'armour') acts.push({ key: 'w', label: 'Wear', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'worn' }) });
           else if (def.category === 'mod') acts.push({ key: 'f', label: 'Fit', go: () => act({ type: 'gear/mod', charId: c.id, idx: pi }) });
           else if (it.kind === 'plot') { // a plot item: hand it to someone in the party, or drop it
@@ -584,7 +584,7 @@ export class MainLogic extends DCLogic {
       const isMain = which === 'main', id = isMain ? c.weapon : c.offHand?.id, st = isMain ? c.weaponState || {} : c.offHand || {};
       const key = 'hand-' + which; tips[key] = id ? (weaponTip(id, st) || itemTip(id)) : { title: 'Empty', sub: isMain ? 'main hand' : 'off hand', lines: [isMain ? 'Your main-hand weapon.' : 'Hold a one-handed weapon, a shield, a torch, a flare or a focus here.'], glyph: '·', img: '', lore: '' };
       const twoHanded = !isMain && WEAPON[c.weapon]?.hands === '2H';
-      const acts = gearLocked ? [] : isMain ? cand((it) => it.kind === 'weapon' && it.weapon && WEAPON[it.weapon], 'Equip', 'main')
+      const acts = gearLocked ? [] : isMain ? [...(id && !WEAPON[id] && ITEM[id] ? [{ key: 'main-x', label: 'Take off', go: () => { act({ type: 'gear/unequip', charId: c.id, slot: 'main' }); this.setState({ gearMenu: null }); } }] : []), ...cand((it) => (it.kind === 'weapon' && it.weapon && WEAPON[it.weapon]) || (!it.weapon && ITEM[it.item || it.id]?.either_hand), 'Equip', 'main')] // rules 1.56: a shield too, and a shield there comes off
         : twoHanded ? [] : [...(c.offHand ? [{ key: 'off-x', label: 'Take off', go: () => { act({ type: 'gear/unequip', charId: c.id, slot: 'off' }); this.setState({ gearMenu: null }); } }] : []),
           ...cand((it) => (it.weapon && WEAPON[it.weapon]?.hands === '1H') || ITEM[it.item || it.id]?.slot === 'off_hand', 'Hold', 'off')];
       const r = st.rarity || 'standard';

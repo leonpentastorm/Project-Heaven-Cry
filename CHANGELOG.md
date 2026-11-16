@@ -88,6 +88,14 @@ the alpha perks were rewritten so each one helps its own door. The full account,
 - **Numbers not yet fitted:** guns go above their line once perks are added; the solo tank; casters and duos in
   Survival. Every 1.56 number is PROVISIONAL.
 
+### After 0.29.0 (for the next release; the lead places it)
+
+- **A shield in either hand** (Leon, 16 Nov 2026; decision 116, spec items 4308 to 4313): a shield goes in the main
+  hand too, one to a hand, so a caster carries a shield with the focus, and two shields are legal (each shield's
+  Defense and Movement add; Brace and the Guard technique +1 Guard a shield under the pool's cap; Parry and the
+  shield's techniques once). The main hand holding one strikes with bare fists. The sheet, the camp, the fight's hand
+  change and the Proving Ground offer the main hand for a shield.
+
 ## 0.28.3 — the field is the fight, and the Durability tank
 
 A patch release from Leon's playtest of 0.28.2 (rules 1.55 items 45 to 75, every number PROVISIONAL). Leon on live
