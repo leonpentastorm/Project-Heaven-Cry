@@ -174,6 +174,9 @@ export function grantShield(cb: Combat | null, t: Unit, n: number, by: Unit | nu
   const ctx: any = { t, by, n: Math.floor(n * (t.shieldRecv || 1)), cb, ...(so.layer ? { layer: so.layer } : {}), ...(so.kind ? { kind: so.kind } : {}) }; if (cb) emit(cb, 'shield_grant', ctx); // shields received: +10% × Conscience (rules 1.13)
   if (so.layer) return layerShield(cb, t, Math.max(0, Math.floor(ctx.n)), by, so);
   const had = t.shield || 0, v = Math.max(0, Math.floor(ctx.n)); t.shield = stack ? had + v : Math.max(had, v);
+  // rules 1.60 item 4613 (the lead's approval, 16 Nov 2026): the base shield records who gave the one that stands (the shield
+  // display names the giver and inks the segment in the giver's door); an equal or smaller gift leaves it as it was
+  if ((t.shield || 0) > had) { if (by) t.shieldBy = by.id; else delete t.shieldBy; }
   noteTended(cb, by, t, (t.shield || 0) - had); // rules 1.23: only what the shield really added (a smaller one over a bigger adds nothing)
   if (cb && by && v > 0) tendHook.f?.(cb, by, t);
   return v;

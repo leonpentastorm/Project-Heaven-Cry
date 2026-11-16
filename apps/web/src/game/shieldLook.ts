@@ -13,7 +13,8 @@
 import { ATTR_INK } from './classView';
 import { fmtNum } from './numbers';
 
-/** A shield with no one attribute (the base shield: many givers) draws in the text ink. */
+/** A shield with no known attribute (a base shield whose giver is not known: an old save, a gift from nobody) draws in
+ *  the text ink; a base shield whose giver is known takes its giver's door ink (rules 1.60 item 4613). */
 export const NEUTRAL_INK = '#E7EBF3';
 /** The least share of the strip a shield takes, so a small one still shows (percent of the HP bar's width). */
 export const MIN_SEG = 10;

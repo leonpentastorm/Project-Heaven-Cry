@@ -13,7 +13,8 @@ import { condName, condOn } from './magic';
 import { UNTIL } from './condtable';
 import { maxReactions, reactionsUsed, cueLive } from './tactics';
 import { TECHNIQUE } from './physical';
-import { SKILL, RULES, CLASSES, CLASS, CLASS_MOVE_POOL } from './data';
+import { SKILL, SKILLS, RULES, CLASSES, CLASS, CLASS_MOVE_POOL } from './data';
+import { charOfUnit } from './effects/hooks';
 import { shieldOrder, shieldTotal } from './effects/damage';
 import { guardOf, guardMax } from './physical/core';
 import { guardSoakOf } from './physical/guard';
@@ -163,9 +164,10 @@ export interface ShieldEntry {
   key: string; kind: 'layer' | 'base';
   /** its name: a layer's is the class move that gives it (classes.json, the effect with `layer`); the base's from data */
   name: string;
-  /** the attribute it belongs to (a layer: its class's attribute), for its ink; null: the base shield (many givers) */
+  /** the attribute it belongs to (a layer: its class's attribute; the base shield: its giver's door, rules 1.60 item
+   *  4613), for its ink; null: no giver known (an old save, a gift from nobody) */
   attribute: string | null;
-  /** who gave it (a layer keeps its giver), else null */
+  /** who gave it (a layer keeps its giver; the base shield records the giver of the one standing), else null */
   by: string | null;
   /** `by` in words (shield_look.from), '' with no giver */
   from: string;
@@ -239,6 +241,14 @@ function layerSource(layer: string): { name: string; attribute: string | null } 
   }
   return LAYER_OF.get(layer) || { name: SL().base.name, attribute: null };
 }
+/** The attribute of a giver's door (rules 1.60 item 4613: the base shield's segment takes its giver's door ink): its alpha
+ *  skill with the most points (a tie: the first in the data's order); null with no giver or no door. */
+function doorAttrOf(g: Unit | null): string | null {
+  if (!g) return null;
+  const c: any = g.companion ? null : charOfUnit(g); let best: string | null = null, n = 0;
+  for (const s of SKILLS as any[]) { if (s.slot !== 'alpha') continue; const p = Number(c ? c.skills?.[s.id] : (g as any)[s.id]) || 0; if (p > n) { n = p; best = s.attribute; } }
+  return best;
+}
 const sizeOf = (share: number): { word: string; bar: number } => { const S: any[] = SL().size; const r = S.find((x) => x.upto != null && share <= x.upto) || S[S.length - 1]; return { word: r.word, bar: r.bar }; };
 /** The shields a unit holds, as `viewer` may know them (null: as the squad sees it, like healthView). `fmt` writes a
  *  number into the texts (the client passes its one formatter; default: plain digits). */
@@ -246,8 +256,8 @@ export function shieldsView(cb: Combat | null, u: Unit, viewer: Pick<Unit, 'side
   const L = SL(), known = (viewer ? viewer.side === u.side : u.side === 'pc') || !!u.analyzedBy, maxHp = Math.max(1, u.maxHp);
   const entries: ShieldEntry[] = shieldOrder(u).map((e, i) => {
     const src = e.layer ? layerSource(e.layer.layer) : { name: L.base.name, attribute: null }, row = e.layer ? L.layer : L.base, sz = sizeOf(e.n / maxHp);
-    const giver = e.layer && cb ? cb.units.find((x) => x.id === e.layer!.by) : null;
-    return { key: e.layer ? 'layer:' + e.layer.layer + ':' + e.layer.by : 'base', kind: e.layer ? 'layer' : 'base', name: src.name, attribute: src.attribute, by: giver ? giver.name : null,
+    const giver = cb ? cb.units.find((x) => x.id === (e.layer ? e.layer.by : u.shieldBy)) || null : null; // rules 1.60 item 4613: the base shield's giver too
+    return { key: e.layer ? 'layer:' + e.layer.layer + ':' + e.layer.by : 'base', kind: e.layer ? 'layer' : 'base', name: src.name, attribute: e.layer ? src.attribute : doorAttrOf(giver), by: giver ? giver.name : null,
       from: giver ? fill(L.from, { by: giver.name }) : '',
       amount: known ? e.n : null, size: known ? null : sz.word, bar: known ? e.n / maxHp : sz.bar, lasts: row.lasts, combines: row.combines, how: row.how, order: i + 1 };
   });
