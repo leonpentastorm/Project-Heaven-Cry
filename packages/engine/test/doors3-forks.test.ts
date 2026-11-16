@@ -102,7 +102,7 @@ describe('Figments\' forks move to 4 and 6 (spec 2.9): old saves', () => {
     const g = migrateLoaded(JSON.parse(JSON.stringify(s.g))); const c = g.characters[id];
     expect(c.figRev).toBe(FIG_REV);
     expect(formsOf(c)).toEqual(expect.arrayContaining(['wall', 'beast']));
-    for (const p of [5, 6]) { c.skills.visualization = p; expect(pendingDoorPicks(c, 'visualization'), 'at ' + p).toEqual([]); }
+    for (const p of [4, 5, 6]) { c.skills.visualization = p; expect(pendingDoorPicks(c, 'visualization'), 'at ' + p).toEqual([]); }
   });
   it('a 0.29.0 character at Visualization 5 that picked only at 3: the second fork waits for 6 (it was open at 5)', () => {
     const s = storyWith([{ skills: { visualization: 5 }, forms: ['eye'] }]), id = s.chars[0].id;
@@ -316,6 +316,16 @@ describe('Bonds, the first fork: Keep the Thread and Short Thread', () => {
       else expect(err).toMatch(/range|reach|next to/i);
     }
     expect(healed[0]).toBeGreaterThan(0);
+  });
+  it('Short Thread: a Mend on a Bonded ally within 2 tiles is x near (1.4), beyond 2 the Bond x through (1.2), as data', () => {
+    const FS: any = FK['fork.tend.short_thread'], near = FS.numbers.near, through = FS.numbers.through, within = FS.effects[0].if.target_within;
+    const mend = (picks: string[], pos: string) => { const r = bondRig(picks); r.bond(r.al); r.U(r.al.id).pos = pos; r.U(r.al.id).hp = 1; r.U(r.me.id).ap = 12;
+      expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull(); return r.U(r.al.id).hp - 1; };
+    const nearPos = '3,' + (5 + within), farPos = '3,' + (5 + within + 3);
+    const sNear = mend(['fork.tend.short_thread'], nearPos), sFar = mend(['fork.tend.short_thread'], farPos), kNear = mend(['fork.tend.keep_the_thread'], nearPos);
+    expect(sFar).toBe(kNear); // beyond 2 tiles Short Thread adds nothing: the Bond's own x through, as for anyone
+    expect(Math.abs(sNear - kNear * near / through)).toBeLessThanOrEqual(1); // within 2: x near in place of x through (whole HP)
+    expect(sNear).toBeGreaterThan(kNear);
   });
   it('no fork makes a Mend free: with Short Thread the second Mend on one ally in a round costs its MP again', () => {
     const r = bondRig(['fork.tend.short_thread']); r.bond(r.al); r.U(r.al.id).hp = 1;

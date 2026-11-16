@@ -215,7 +215,7 @@
       "resource": {
         "id": "momentum",
         "max": 5,
-        "rule": "Momentum is a pool of up to 5 points, and you start each fight with 1. Each hit with a plain melee attack, a Lunge, a Riposte or a Finisher gives 1. On your first melee attack each turn you also gain 1 for each tile you closed on the target that turn, up to 2. Each tile you walk costs 1, and so does each hit you take, unless you Parry it or your Guard takes part of it. Momentum carries over from turn to turn and is lost when the fight ends."
+        "rule": "Momentum is a pool of up to 5 points; you start each fight with 1, and the Breaker's Wind-up adds 2 more (3). Each hit with a plain melee attack, a Lunge, a Riposte or a Finisher gives 1. On your first melee attack each turn you also gain 1 for each tile you closed on the target that turn, up to 2. Each tile you walk costs 1, and so does each hit you take, unless you Parry it or your Guard takes part of it. Momentum carries over from turn to turn and is lost when the fight ends."
       },
       "resources": [
         "momentum"

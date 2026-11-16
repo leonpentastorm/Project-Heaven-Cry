@@ -392,10 +392,16 @@ describe('the reshape (rules 1.60, slice B) on old saves', () => {
     const r = new Rec(load('save-develop-cb40e92-mid-fight'), GUNS);
     r.fight(8); expect(r.errors).toEqual([]);
   }, 60_000);
-  it('save-0.28.2-rigger-mid-fight: its Rigger holds the Scrap Sentinel and Redline under their old keys, and plays on', () => {
+  it('save-0.28.2-rigger-mid-fight: its Rigger holds the Scrap Sentinel and Redline under their old keys once it reaches their ranks, and plays on', () => {
     const g = load('save-0.28.2-rigger-mid-fight');
     const c = (Object.values(g.characters) as any[]).find((x) => x.classId === 'trickster');
-    if (c) { const keys = itemsOf(heldOfChar(c)).filter((i) => i.kind === 'class').map((i) => i.key); for (const k of keys.filter((k) => /scrap_turret|overclock/.test(k))) expect(['class:trickster.scrap_turret', 'class:trickster.overclock']).toContain(k); }
+    expect(c).toBeTruthy();
+    const keysOf = () => itemsOf(heldOfChar(c)).filter((i) => i.kind === 'class').map((i) => i.key);
+    const k0 = keysOf(); expect(k0).not.toContain('class:trickster.scrap_turret'); expect(k0).not.toContain('class:trickster.overclock'); // rank I in this save
+    const was = { level: c.level, attrs: { ...c.attrs } };
+    c.level = 12; for (const a of Object.keys(c.attrs)) c.attrs[a] = Math.max(c.attrs[a], 8); // the ranks II and III (rules 1.29), on the loaded save
+    const k3 = keysOf(); expect(k3).toContain('class:trickster.scrap_turret'); expect(k3).toContain('class:trickster.overclock');
+    c.level = was.level; c.attrs = was.attrs;
     const r = new Rec(g, GUNS); r.fight(6); expect(r.errors).toEqual([]);
   }, 60_000);
 });

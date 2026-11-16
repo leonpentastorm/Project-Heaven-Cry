@@ -11448,13 +11448,17 @@ only when both of its options are built**: a step with one option is not offered
     tile shorter (2; N23 `tech_num:charge.min_run`), a Charge costs no Momentum (N23 `momentum_cost:charge`, never below
     0) and builds 1 if it hits. **Grindstone**: a plain melee hit (the free technique: Cut, or a plain swing) on the foe
     you hit last builds 1 more (2 in all); "the foe you hit last" is the content condition `ground`, put by your melee hit
-    for 2 rounds (to the end of your next turn). A Strike or an Opener builds nothing, as before. PROVISIONAL: 1, 1, 1, 2.
+    for 2 rounds (to the end of your next turn). A Strike or an Opener builds nothing, as before. As built the mark goes on
+    every foe you hit in melee and does not say whose it is, so a foe hit by you (or by another Grindstone holder) within 2
+    rounds pays, not only the last one; the text says so (0.30.0 review; a check of the mark's source, or 1 round, is the
+    lead's call). PROVISIONAL: 1, 1, 1, 2.
 4652. **Momentum, the second fork: not offered.** **Spill** waits on N21 (a kill carries no overkill); its cheaper
     wording needs the Momentum a Finisher spent as a number (no source carries it, item 4623). **Headlong** needs only
     approved pieces (N10, N23) but is not built while its step is not offered.
 4653. **Pressure, the first fork (Dexterity 4; runs on the pips):** **Converging Fire**: each ally's ranged hit on a foe
     you have hit this round adds 1 more Pressure, once a round for each foe (your mark: the content condition
-    `in_your_sights`, 1 round). **Walk It In**: your ranged attack that misses a foe still lays 1 Pressure on it, once a
+    `in_your_sights`, 1 round; the mark does not say whose it is, so with two holders either's mark pays: the text says
+    so, 0.30.0 review). **Walk It In**: your ranged attack that misses a foe still lays 1 Pressure on it, once a
     turn for each foe. PROVISIONAL: 1, 1.
 4654. **Pressure, the second fork (Dexterity 6):** both keyed to **the foe's own cap** (N10 `target_res {pressure: {at:
     max}}`, `pressureCap`: a Soldier Broken, an Elite Suppressed, a Boss Pressed), read **after** the attack (on

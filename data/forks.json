@@ -688,7 +688,7 @@
           "door_pick": "fork.momentum.grindstone"
         }
       ],
-      "text": "A plain melee hit on the foe you hit last builds {=effects.0.value} more Momentum (two in all).",
+      "text": "A plain melee hit on a foe hit in melee in the last {=effects.1.rounds} rounds, by you or by anyone holding Grindstone, builds {=effects.0.value} more Momentum (two in all).",
       "effects": [
         {
           "op": "resource",
@@ -783,7 +783,7 @@
           "door_pick": "fork.pressure.converging_fire"
         }
       ],
-      "text": "Each ally's ranged hit on a foe you have hit this round adds {=effects.0.value} more Pressure (once a round for each foe).",
+      "text": "Each ally's ranged hit on a foe hit at range this round, by you or by anyone holding Converging Fire, adds {=effects.0.value} more Pressure (once a round for each foe).",
       "effects": [
         {
           "op": "resource",

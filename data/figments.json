@@ -25,7 +25,7 @@
   "limits": {
     "bodies": 6,
     "held_most": 4,
-    "note": "At most 4 Figments held (the Rigger at Visualization 7), plus the Rigger's Double and one Scrap Turret: 6 owned units a character."
+    "note": "At most 4 Figments held (the Rigger at Visualization 7), plus the Rigger's Double and one Scrap Sentinel: 6 owned units a character."
   },
   "upkeep": {
     "res": "vcharge",
