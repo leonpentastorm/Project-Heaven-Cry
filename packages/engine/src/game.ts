@@ -2898,7 +2898,8 @@ export function strikeFromWorld(targetId: string, ap: number, perform: (cbx: Com
 
 /** Attacking from the overworld starts the fight on this map, everyone where they stand (spec: Overworld rounds).
  * Hidden (sneaking, unseen): an ambush; from the target's front the attacker must pass Ingenuity first. The fight opens
- * on the attacker's turn with the AP they have left. Seen: the attack still lands, but the attacker sits out round 1. */
+ * on the attacker's turn on its full turn AP (rules 1.62 item 4742), the strike paid from it. Seen: the attack still
+ * lands (paid from the area map's AP), but the attacker sits out round 1. */
 function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['units'][number], t: Combat['units'][number], mode: AttackMode, perform?: (cbx: Combat, att: Combat['units'][number]) => string | null) {
   if (!perform) { const pv = previewAttack(cb, u, t, mode); if (!pv.ok) fail(pv.why!); }
   const npc = npcsOf(g).find((n) => n.id === t.id)!;
@@ -2930,6 +2931,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   push(g, { kind: 'combat', text: 'Combat: ' + fightName + (hidden ? ' (' + c.name + ' strikes unseen)' : '') });
   // What each player said this overworld round carries into the fight it opens, as their round-1 line (Verse of War).
   for (const x of cbx.units) { const pc = x.charId ? g.characters[x.charId] : null, t = pc ? g.story.spoken?.[pc.owner] : null; if (pc && t) (cbx.notes ||= []).push(pc.name + ' (round 1): "' + String(t).slice(0, 400) + '"'); }
+  const firstUp = active(cbx);
   sightQuietly(cbx, () => {
     if (hidden) { cbx.order = [att.id, ...cbx.order.filter((id) => id !== att.id)]; cbx.turn = 0; say(cbx, c.name + ' strikes from hiding: the fight opens on their turn.'); hideUnit(cbx, att, 'struck from hiding'); }
     // Everyone else still sneaking unseen starts the fight Hidden too (rules 1.3).
@@ -2939,9 +2941,13 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
   // The opening strike is an action of the fight like any other (spotlight.ts): its fx start here, so a crit, a takedown,
   // a revive or an intervention in it cuts in and slows its playback (decision 113).
   const before = cbx.units.map((x) => ({ id: x.id, dead: x.dead, downed: x.downed, hp: x.hp }));
-  setAp(att, apNow); markAction(cbx);
+  // Rules 1.62 item 4742: the ambush is the attacker's first turn of the fight, on its full turn AP (startCombat began
+  // the turn of whoever the initiative put first; the attacker's own begins here); in the open the strike is the area
+  // map's and is paid from the AP left there.
+  if (hidden) { if (firstUp !== att) beginTurn(cbx, g.rng); } else setAp(att, apNow);
+  const full = att.ap; markAction(cbx);
   if (perform) { const e = perform(cbx, att); if (e) say(cbx, c.name + ' can\'t: ' + e); } else resolveAttack(cbx, g.rng, att, tgt, mode, c);
-  if (hidden && silentTakedown(g, cbx, c, att, tgt)) return; // no fight opens: its moments are thrown away with it
+  if (hidden && silentTakedown(g, cbx, c, att, tgt, Math.max(0, apNow - (full - att.ap)))) return; // no fight opens: its moments are thrown away with it
   songTriggers(g, att, c, before);
   critMoment(g);
   if (!hidden) { const cur = active(cbx); if (cur && cur.id === att.id) endTurn(cbx, g.rng); }
@@ -2951,7 +2957,7 @@ function overworldAttack(g: GameState, cb: Combat, c: Character, u: Combat['unit
  * hostile able to see you, doesn't open the fight: a silent takedown. The fight is unwound back to the area map (the
  * others stay tokens where they stood, the body is the Narrator's), the AP the blow cost is spent and you stay hidden.
  * With no hostile left at all the fight simply ends as won (checkOver). PROVISIONAL, spec 14. */
-function silentTakedown(g: GameState, cbx: Combat, c: Character, att: Combat['units'][number], tgt: Combat['units'][number] | undefined): boolean {
+function silentTakedown(g: GameState, cbx: Combat, c: Character, att: Combat['units'][number], tgt: Combat['units'][number] | undefined, /** the area map's AP after the blow's cost */ apAfter: number): boolean {
   if (!tgt?.dead || !att.hidden || att.dead) return false;
   if (!holdersOf({ c }).some((h) => h.key === 'class:shade.silent_kill')) return false;
   const others = cbx.units.filter((v) => v.side === 'foe' && !v.dead && !v.downed && !v.surrendered);
@@ -2965,7 +2971,7 @@ function silentTakedown(g: GameState, cbx: Combat, c: Character, att: Combat['un
   magicOut(g, cbx, false);
   const back = others.map((u) => { const was = npcsOf(g).find((n) => n.id === u.npcId); return { ...(was || {}), id: u.npcId || u.id, name: u.name, side: 'hostile', tier: u.tier || 'minion', weapon: u.weapon, pos: u.pos, portrait: u.img || undefined, ...(u.hp < u.maxHp ? { hp: u.hp } : {}) } as Npc; });
   const ids = new Set(back.map((n) => n.id)); g.story.npcs = [...(g.story.npcs || []).filter((n) => !ids.has(n.id) && n.id !== tgt.npcId), ...back];
-  (g.story.ap ||= {})[c.id] = Math.max(0, att.ap); (g.story.sneak ||= {})[c.id] = true; (g.story.hidden ||= {})[c.id] = true;
+  (g.story.ap ||= {})[c.id] = apAfter; (g.story.sneak ||= {})[c.id] = true; (g.story.hidden ||= {})[c.id] = true;
   for (const l of cbx.log.slice(1)) push(g, { kind: 'system', text: l, act: true, charId: c.id });
   push(g, { kind: 'system', text: c.name + ' takes ' + tgt.name + ' down without a sound (Silent Kill): nobody else saw it, and no fight opens.', charId: c.id });
   g.combat = null; g.phase = 'story'; g.story.await = 'players'; musicAfterFight(g); g.story.needs = true;
