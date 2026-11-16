@@ -6564,6 +6564,82 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 132,
+    "family": "move_icons",
+    "id": "move-stored-spell",
+    "path": "art/icons/moves/stored-spell.png",
+    "name": "Stored Spell",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Sigilist rank III move",
+    "paint": "A glyph sealed inside a small round core, held between two fingers.",
+    "avoid": "a potion \u00b7 a book",
+    "section": "Brain Power: Sigils, and the Sigilist",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A glyph sealed inside a small round core, held between two fingers.\nAvoid: a potion \u00b7 a book\nEXACT STAGING: ONLY two short rounded ceramic fingertip shapes enter from the lower-left in a gentle PINCH: one thumb and one finger pad. They hold ONE generously sized ROUND CORE near the center. Inside the core is ONE hollow geometric diamond glyph, sealed and static. The core is a round token with a clear rim and the geometric glyph cut, not a glowing orb. No full hand/body, Wick head, potion, vial, book, words, sparkle, rays or decorative star.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-125.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-127.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-125.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-127.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "3b51b820bfa01be423f59edc7cbc9b388afe2f9f33379eced1ca770ec55c555c",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/132-stored-spell.png",
+    "source_sha256": "f75b5e7ef65f6fd3bff1ab83c83f6ba4f55f796a8f3bc6e069777a092604ef66",
+    "export_crop": [
+      9,
+      302,
+      1152,
+      1230
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/stored-spell.png",
+      "64": "art/icons/moves/exports/64/stored-spell.png",
+      "48": "art/icons/moves/exports/48/stored-spell.png",
+      "44": "art/icons/moves/exports/44/stored-spell.png",
+      "32": "art/icons/moves/exports/32/stored-spell.png",
+      "24": "art/icons/moves/exports/24/stored-spell.png"
+    },
+    "framing": {
+      "scale": 0.6531013756290576,
+      "offset": [
+        139,
+        209
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "76e33f05416ea9b338d3dda260559bd13ed5634b841bc48e09166c51890a3d21",
+      "64": "e44e4be0601f3fa18468ccc147bc31ead4676c728aac02b9580fa7ebcf84cfc2",
+      "48": "3d35c4f7d0a8917ceca52b12f29ab578969346e45d7d3bb1ae492bd999f3c1ee",
+      "44": "7cf13824b4608ca2d0d029348914a0d87c726040927404908f71c1adf63b761b",
+      "32": "649ae6c382a78d5f393cfdf0d9f21df48aed88f0cdc13664072cfd1db7357da7",
+      "24": "0cd7384b0a6c881b5d7d3d6c363256c4f04cb8d4d9f93610b2a607c434ba0a57"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 135,
     "family": "perks",
     "id": "mirage",
@@ -6728,6 +6804,158 @@
     "exports": {},
     "upscaled": false,
     "creation_method": "Original vector geometry drawn in house as explicitly permitted by the brief; 2-unit currentColor stroke, no fill; Inkscape proof rasterization"
+  },
+  {
+    "number": 138,
+    "family": "move_icons",
+    "id": "move-eye-and-wall",
+    "path": "art/icons/moves/eye-and-wall.png",
+    "name": "Eye and Wall (fork)",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Visualization 3 fork choice",
+    "paint": "A lens shape and a short wall block side by side, a small fork line joining them below.",
+    "avoid": "an eyeball \u00b7 bricks with text",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A lens shape and a short wall block side by side, a small fork line joining them below.\nAvoid: an eyeball \u00b7 bricks with text\nEXACT STAGING: TWO equally prominent simple objects sit side by side: on the left an optical LENS, a thick ring with one shallow curved lens cut; on the right a SHORT PLAIN WALL BLOCK, a solid rectangle with just one top-edge cut. Under them a small WHITE Y-SHAPED FORK LINE joins their two bases, a clear choice between these forms. No eyeball, pupil, face, brick pattern, lettering, full character, scenery, shadow, arrows or checkmark.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "b9719915dffd907dd56e6b4636aae737fba204a89b2935c921b62b13621771bb",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/138-eye-and-wall.png",
+    "source_sha256": "f6d2135f82c72a41421c647dab49132ef03987804e1d5665907bb23cca8b2715",
+    "export_crop": [
+      0,
+      165,
+      1232,
+      1182
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/eye-and-wall.png",
+      "64": "art/icons/moves/exports/64/eye-and-wall.png",
+      "48": "art/icons/moves/exports/48/eye-and-wall.png",
+      "44": "art/icons/moves/exports/44/eye-and-wall.png",
+      "32": "art/icons/moves/exports/32/eye-and-wall.png",
+      "24": "art/icons/moves/exports/24/eye-and-wall.png"
+    },
+    "framing": {
+      "scale": 0.6238178114839199,
+      "offset": [
+        127,
+        195
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "a5d5fc8d34c82f41760d346f38db92847665a86c30cba54e8a9f938eb1e2266e",
+      "64": "4fd8742bb1ce131a470b74b8251834ea91926e328801af911cc794125a85087a",
+      "48": "20a7ba1a697b12d1b91443410655bf58a7752331d4facfcd993e13e5103ab1a2",
+      "44": "19c89877cf372cd9791a819c89bc4f27a9a8b499a50e3be03af9f12578e1baf0",
+      "32": "77eabc534686bc2e3676930f0cd5facbc06f2cd1edbc9052f73481210a44fcd4",
+      "24": "67774d81e6f0752913aebcaddf8bf2edbf3bf061539408d7d5aebf59371e222e"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 139,
+    "family": "move_icons",
+    "id": "move-beast-and-blade",
+    "path": "art/icons/moves/beast-and-blade.png",
+    "name": "Beast and Blade (fork)",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Visualization 5 fork choice",
+    "paint": "A beast's head silhouette and a blade side by side, a fork line joining them below.",
+    "avoid": "a real animal species badge \u00b7 a sword from a known work",
+    "section": "Visualization: Figments, and the Rigger",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A beast's head silhouette and a blade side by side, a fork line joining them below.\nAvoid: a real animal species badge \u00b7 a sword from a known work\nEXACT STAGING: Two simple form marks side by side: LEFT, an invented ANGULAR CONSTRUCT-BEAST HEAD made from jagged white facets and two tiny loose diamond flecks, with a short asymmetrical horn/crest so it is no real animal species badge; RIGHT, one plain original short BLADE silhouette with a simple guard. Under both, one small Y-SHAPED FORK LINE joins their bases as a choice. No full animal body, real-world species emblem, famous sword shape, person, robot or text.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "1650639b3ab81ede2979b3abeb507dcfccac9fea35b6db0fb49f4172501fa5db",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/139-beast-and-blade.png",
+    "source_sha256": "52e8f39ce1fce984071e7c98c990d9e7e8de630d539a9b62f0f86bbc33a9f96b",
+    "export_crop": [
+      33,
+      0,
+      1192,
+      1164
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/beast-and-blade.png",
+      "64": "art/icons/moves/exports/64/beast-and-blade.png",
+      "48": "art/icons/moves/exports/48/beast-and-blade.png",
+      "44": "art/icons/moves/exports/44/beast-and-blade.png",
+      "32": "art/icons/moves/exports/32/beast-and-blade.png",
+      "24": "art/icons/moves/exports/24/beast-and-blade.png"
+    },
+    "framing": {
+      "scale": 0.6152418707978539,
+      "offset": [
+        155,
+        154
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "bfa1962259f91415955f65fc58549fe4fcefc35db896d7a3549de87bca6d840c",
+      "64": "14e833284b55571079211a7f511c8bb34cb2bb59d3f9878dee4bcb6c9a3ebfdb",
+      "48": "6c5aad47f6790f07df43f29053259ec6f21673a2b3d03ad66fd608dad1ead50a",
+      "44": "75d59f035e96c8a8edac197f8f74b2765b8bbb8b0d17937d801579f3d710c6ec",
+      "32": "c045afe57112047dd6b6b4f78240ae2e6fd4033d9b33ce3a84d62446995aad62",
+      "24": "2b588eba26c127a75998b0e49182bcccd89581d23cfdb9be3e9c93d58d9e1873"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
     "number": 140,

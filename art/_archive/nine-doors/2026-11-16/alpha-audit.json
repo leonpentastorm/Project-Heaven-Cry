@@ -488,6 +488,11 @@
       "faint_alpha_to_solid_area_ratio": 0.04392
     },
     {
+      "number": 132,
+      "name": "Stored Spell",
+      "faint_alpha_to_solid_area_ratio": 0.02765
+    },
+    {
       "number": 135,
       "name": "Many-Eyed Dream",
       "faint_alpha_to_solid_area_ratio": 0.05831
@@ -496,6 +501,16 @@
       "number": 136,
       "name": "Wake of the Kill",
       "faint_alpha_to_solid_area_ratio": 0.04661
+    },
+    {
+      "number": 138,
+      "name": "Eye and Wall (fork)",
+      "faint_alpha_to_solid_area_ratio": 0.02711
+    },
+    {
+      "number": 139,
+      "name": "Beast and Blade (fork)",
+      "faint_alpha_to_solid_area_ratio": 0.05068
     },
     {
       "number": 140,

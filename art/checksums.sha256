@@ -1123,19 +1123,19 @@ dabfb274487b88437bd28a2bbc6e76112230a60fc01c29c61ea99149fe66cbdd  art/_archive/m
 a89c7da0f6c1f5e15b7940287288c9094942026a7b016436b2fabf032ae11072  art/_archive/mascot/wick-anim/sources/v1/stop-sheet.png
 5ede844881571001a8dc69203aaaf245dd95b141b4213391be58f708bedd07fe  art/_archive/mascot/wick-anim/sources/v1/stop-sheet.prompt.txt
 6467ac07d160187795d22716900f24c16cc0e462f3f67757c4ca50cb3b1445d1  art/_archive/nine-doors/2026-11-16/BLOCKERS.md
-d574f2851f716eb45cce7244d55a209bd6462f4ce086e4dc940b883030367465  art/_archive/nine-doors/2026-11-16/CONTINUE-0.30.md
-09aa914040ca59316379f8707494d4fd59e932167c1ef9632e1d1565b206a79a  art/_archive/nine-doors/2026-11-16/CONTINUE.md
-00a42196c8321096860b385bfbcd361dd9b9c1406b55e40fcd49bfe9b96417e6  art/_archive/nine-doors/2026-11-16/CURRENT-CHECKPOINT.md
+d8c1be9b7e2829cc57a13cb106b78850706937c9b8ae65ca74228efd0e8dc5c2  art/_archive/nine-doors/2026-11-16/CONTINUE-0.30.md
+d2bbf1827d6359e94676d74f9f2f51fdaac370a906a4524df50fe06b18620dff  art/_archive/nine-doors/2026-11-16/CONTINUE.md
+626d3ca33a383106d2affcccc44d53107af84310355331ed8161fa36f7fc5f45  art/_archive/nine-doors/2026-11-16/CURRENT-CHECKPOINT.md
 6149c3cb2827f2800152cccd934066c99db91aa82807f292295c24116451678f  art/_archive/nine-doors/2026-11-16/README.md
-b992a58d97e00f5f28a32a9a4cb85aacb651ff1052267b46e2b77cccc76660ca  art/_archive/nine-doors/2026-11-16/RESUME-PROMPT.md
-e5c6e964d4f8adf5a199bd3de5c16491b40b417dbc3f1e22a5ae8a063adc6440  art/_archive/nine-doors/2026-11-16/SHA256SUMS.txt
+1a9892d9ad2133b466583a5fff3f865135488c45649d97e34195eda8e0d864bf  art/_archive/nine-doors/2026-11-16/RESUME-PROMPT.md
+3495c00dd4164f1b48ebb245b64df7a2a1a88d67c422a6f80a67c7ce59cbaee0  art/_archive/nine-doors/2026-11-16/SHA256SUMS.txt
 682a51d70b0600e2975f6fb1aeee885235c18f070b20c6a4f4b75a9796d9ecb4  art/_archive/nine-doors/2026-11-16/WORK-STATE.md
-227d190ad29c5e2047a0fe57571ae27792c909466ab32f35fce271860b9d5fee  art/_archive/nine-doors/2026-11-16/alpha-audit.json
+93021ea3744d430ffa636b0ef19dc60d7d26072267d4db0569b2fdfeb36acaba  art/_archive/nine-doors/2026-11-16/alpha-audit.json
 746c1a64ed878c8aa3e75cc768ce40a3b58cc075fbacd6c0bb28b06efcfa17e0  art/_archive/nine-doors/2026-11-16/art-hold-list-0.30.md
 f14b2343af4174a8c6b30162f4985e4fc0b7814d999d0be58a722a9e849913e6  art/_archive/nine-doors/2026-11-16/asset-build-check.txt
 270eefa8dde3440f51107021325e0b6e06df6c2c1b3cc1868ca3536b2a7400b2  art/_archive/nine-doors/2026-11-16/batch-runner.js
 d12bf4b29e175134f2da7eca3d195b8e6f79bb948de264bc1b12b2f51a8255ea  art/_archive/nine-doors/2026-11-16/blockers.json
-aa7ff5b80b6ea1138f3950cd2f58d620dde948e352147faeeed7068c1e937c07  art/_archive/nine-doors/2026-11-16/catalog-fragment.json
+81ef59ea0a5b7358dd838ed739e0a81d1cc068ed28a678ea587eb7df5a74950b  art/_archive/nine-doors/2026-11-16/catalog-fragment.json
 c21fe83efcb4cd49c3ec3928de9ed84ad82178263d6defffeee9bf8c1199194b  art/_archive/nine-doors/2026-11-16/checkpoint.py
 707bafb9788d6ae3c7d006cb9e4cbfe172445a89bee6c1dd7dc13f375bf6ee47  art/_archive/nine-doors/2026-11-16/continuation-asset-build-check.txt
 f827c2ffcd7eae0674689da61e23b8dd97b54d0fec0b252296fb40d51d83b679  art/_archive/nine-doors/2026-11-16/continuation-attempts/2026-11-16-0630/README.md
@@ -1143,26 +1143,26 @@ f827c2ffcd7eae0674689da61e23b8dd97b54d0fec0b252296fb40d51d83b679  art/_archive/n
 f4fb33b558fb9b766f996e630aab8a81089b7e66b2a0b42976ef925a8923274d  art/_archive/nine-doors/2026-11-16/continuation-attempts/2026-11-16-0630/native-323.png
 dbca8d4ddab95c75d9f6e992eee8190c9406fbd8688667ff5dc1b0ee1c62f200  art/_archive/nine-doors/2026-11-16/continuation-attempts/2026-11-16-0630/native-324.png
 acf4efcc97d342d72922c93ceb1f7cb8248dd4e04248dd01cdfc1bb9bd8f5abe  art/_archive/nine-doors/2026-11-16/continuation-full-library-check.txt
-60bc881144825e6b0fae3cc7c868b39db2e450aaca3ad9da77336ee3b46d1be5  art/_archive/nine-doors/2026-11-16/continuation-scoped-check.txt
+10c503ae89f7d477d1049aa592bee8511bfa30b47344a37a9b37be43322a0269  art/_archive/nine-doors/2026-11-16/continuation-scoped-check.txt
 3186e9a48a9d1af3c40358671708d034f4658dffdd4dd06ced0c815d2e093e70  art/_archive/nine-doors/2026-11-16/continuation-start.json
 c33a765a234361d05b2df465d6deb86f50c9be2bc411dceba31d369c8db4fef8  art/_archive/nine-doors/2026-11-16/continuation-tools/README.md
 273760d13d0c485cd27aa554a14e1bc6fb3ef25cb296a2b5a13b49abd1f00ad5  art/_archive/nine-doors/2026-11-16/continuation-tools/export-one.py
 47dbb43a08f563153ab91e612ec48e8ea544987d479ff7c74f4b4ea7a82cf5a9  art/_archive/nine-doors/2026-11-16/continuation-tools/review_ids.py
 c250e68845055a7a12c586deec0f7cafb40ac687adc9b87cae8412902bf4d717  art/_archive/nine-doors/2026-11-16/continuation-tools/seal_batch.py
 0a1b28a87c4d7fc86ca08f650a9ef42e8083798055c9c307ee03edf4f4ec9862  art/_archive/nine-doors/2026-11-16/continuation-tools/update_state.py
-ea34fa80b1223afa44f3787d20df3ad15b4dae3f54bc09bd9d61f65a835b182e  art/_archive/nine-doors/2026-11-16/continuation-validation.json
+4594d5fd6941f8ab1bef45b69fb66dbc09839a6146aaad62953df6f1f40491f2  art/_archive/nine-doors/2026-11-16/continuation-validation.json
 247c4304a0c6a43afdbd2397cc3e558eb287aaf389889520306c5f877a31dec3  art/_archive/nine-doors/2026-11-16/deliveries/continuation-178-candidates-increment.zip
 13895f0c2bf6d67f633f0a1736089f30e766560f10afa915e02c191a6afcdbd1  art/_archive/nine-doors/2026-11-16/deliveries/continuation-178-candidates-increment.zip.sha256
-1cf5eff3398df0b5bf44b36f94184518b46b9167a2cdece3306c7e79a385fc57  art/_archive/nine-doors/2026-11-16/delivery-counts.json
+af7b119186bf6d0f38e5e455566c2b54af30e9822bb90100862de69fcebc186e  art/_archive/nine-doors/2026-11-16/delivery-counts.json
 6cd48ea7218deffc20e306eb49a67e755de883119422b7a48181497e769acb98  art/_archive/nine-doors/2026-11-16/draw-line-icons.py
 e1e6e222945192978fbca2ee97831474718a3f5b84b2b24272a231badde95fb9  art/_archive/nine-doors/2026-11-16/export-one.py
 9584de4ec2a92802a2354150dc1f36682e719b1ea01943651caddec8cf0f2e9e  art/_archive/nine-doors/2026-11-16/finalize-review.py
 12efac84db1e4c3aaafcde97c2530c98c8da8ad7aa4950ed272eb59eff6246bf  art/_archive/nine-doors/2026-11-16/full-library-check.txt
 cafa62f410d2ccd7facf3c2a445b6080d75f3fac46b7743936ce7cd7264fc9bf  art/_archive/nine-doors/2026-11-16/generation-worker.js
 d72ee72fb7a9ffa89eb9748d81255f930f5f616e0983fcbba9fb837e3ff2d594  art/_archive/nine-doors/2026-11-16/glimmer-render.txt
-6aad352c69782a7b99c8c9c7052214b593a991fb61eb4c11437e3b93add11004  art/_archive/nine-doors/2026-11-16/holds-0.30.json
+b0b550bcac447963d6b2de7345dd5bd52f9b1fa4c56dd515f31ff5357f088931  art/_archive/nine-doors/2026-11-16/holds-0.30.json
 32e67011cc4159155c0ab9bafb3349db082111e1e8eef29c10750ae483420155  art/_archive/nine-doors/2026-11-16/inventory-audit.json
-306efed9164c122cd815b5e92ebb98324cafab0609a61fc70cbb26b5cb692fe7  art/_archive/nine-doors/2026-11-16/manifest.json
+ccaa1a7af21d9f8e08639bc3661be8b90caa04e75c5ae1a5788c46281202396a  art/_archive/nine-doors/2026-11-16/manifest.json
 f25bd59d2f852851de7b2866aefdcf13cbc195b562848690bd59a51c20929c81  art/_archive/nine-doors/2026-11-16/native-renders/001-bulwark.png
 5b5444dbaff5e6a6727b99c1122f618fc9067efd3c509a28355b690707eea905  art/_archive/nine-doors/2026-11-16/native-renders/002-shrug-it-off.png
 fada0a004f1771ebec93f0cca3b299fe94e50ae23da42764b66b076f2325dcff  art/_archive/nine-doors/2026-11-16/native-renders/003-close-guard.png
@@ -1260,8 +1260,11 @@ d9cae7a589debcc393db80687abda2aaffd283edb38394d0e057807d8e274136  art/_archive/n
 ecfd2de0efa94068c623da4ad6bd6b34e74a22bbc4e9f2049fa34a84541c284d  art/_archive/nine-doors/2026-11-16/native-renders/129-overcharge.png
 75c012711bc2d2ba10bf89c604442e724309d26e368909e35feece4773802212  art/_archive/nine-doors/2026-11-16/native-renders/130-bleed-the-flux.png
 bd6ab9769b89dd638eef00a1223a7441d8967c5a33454aca60b7276e89c445ba  art/_archive/nine-doors/2026-11-16/native-renders/131-payload.png
+f75b5e7ef65f6fd3bff1ab83c83f6ba4f55f796a8f3bc6e069777a092604ef66  art/_archive/nine-doors/2026-11-16/native-renders/132-stored-spell.png
 7caa67452393e167dcaf8f151810ae17371d54e7a3d4092fc0237b4307bd60ed  art/_archive/nine-doors/2026-11-16/native-renders/135-mirage.png
 8d353f5f5b37b2f9271c2991a92833cb452ae61bddbbc5b1dc4d91a5ee594470  art/_archive/nine-doors/2026-11-16/native-renders/136-blueprint.png
+f6d2135f82c72a41421c647dab49132ef03987804e1d5665907bb23cca8b2715  art/_archive/nine-doors/2026-11-16/native-renders/138-eye-and-wall.png
+52e8f39ce1fce984071e7c98c990d9e7e8de630d539a9b62f0f86bbc33a9f96b  art/_archive/nine-doors/2026-11-16/native-renders/139-beast-and-blade.png
 92c165b088be8571084cef9c54c789ae417aaf6764d3aa263b77e95ce5437770  art/_archive/nine-doors/2026-11-16/native-renders/140-order-strike.png
 47c05ca40cba7cf889c7725d4c61d10320d207a8d2328936613fc12ad1c86be0  art/_archive/nine-doors/2026-11-16/native-renders/141-order-pounce.png
 de830cf7801aec28b326a19654501eacf715e6ef6db26d62d023b5879eb699b5  art/_archive/nine-doors/2026-11-16/native-renders/142-order-cut.png
@@ -1386,7 +1389,7 @@ cd31f737186949ec1d6eb93af27188af256d1e989f3d198f4d14f45fdf83d5cb  art/_archive/n
 c0bef87fac8b1abfecb5e786119c1f68b22ef4470acd8af49b0c7ef5f60baddb  art/_archive/nine-doors/2026-11-16/previews/169-figment-breaker.png
 cbc16fea12876479b66753d57ece803fe5748ed3c60114146f6b9c87d5588e2e  art/_archive/nine-doors/2026-11-16/previews/170-figment-hush.png
 b2579e67ea35d1cdfad110b6800ff42af38a1fec63c4670f0ccf4e8a043ad565  art/_archive/nine-doors/2026-11-16/progress-0.30.json
-47b8e0f782de02eb5b742d5a345cd590b39ba3cdc404439a0ffa5eb402809455  art/_archive/nine-doors/2026-11-16/progress.json
+6e14e13b01f1b2af8c4741ec8955295c4e9c724439dd250ed3aed10bbf283314  art/_archive/nine-doors/2026-11-16/progress.json
 cc5e90a233013d0181173b8bbb549791f217f7299f368993798171a59e78561e  art/_archive/nine-doors/2026-11-16/queue-history/CONTINUE-before-0.30.md
 e0147e39983d0349f328c123f6cb347ece161451442aac894f82cb33481a5244  art/_archive/nine-doors/2026-11-16/record-glimmer.py
 7f0ff86753d6a5a6034a077756d33020e02b99ee27074064abc380887ead652d  art/_archive/nine-doors/2026-11-16/records/001.json
@@ -1486,9 +1489,12 @@ eefee28f1b71eff71a6b9042b73802acd71929a98df7f347649759e90c5061c9  art/_archive/n
 1e1f88d773cb9766b02f97b7fc2ee61a5b849e70f2cfe71710e16fa95c9b000e  art/_archive/nine-doors/2026-11-16/records/129.json
 7d7cd9eadff19468f74c657e2dac249471dfaa53af0d542c8a1ca44d52dc55d2  art/_archive/nine-doors/2026-11-16/records/130.json
 5c9521556645e6e32e047cfe5cd1b2d1f2da49c65ceb8a909ef7c336a739b158  art/_archive/nine-doors/2026-11-16/records/131.json
+f870882681540fb02a2155224d0790a551dbb557f37f6d04eb2cf8319adfcfdd  art/_archive/nine-doors/2026-11-16/records/132.json
 0236a8535854abf550563b45629a6403e55e55bcaa554569447ce68d9adda9be  art/_archive/nine-doors/2026-11-16/records/135.json
 938e784d3969a797bff598ee90f841f3fcec54f1338fd7cef54cc5c7e4bb3371  art/_archive/nine-doors/2026-11-16/records/136.json
 671d53271bd35460fa8fae625f39b8633a9a5762826fdcac2a1116daf6cb9da7  art/_archive/nine-doors/2026-11-16/records/137.json
+d295fcd5f4c3b0839de523fc66324649863945b62b1632800b5249514e840062  art/_archive/nine-doors/2026-11-16/records/138.json
+d35be03aafa3b8e5d52734bcf4d1fd81832c5efaf883d2648fd9e7efcf130c5e  art/_archive/nine-doors/2026-11-16/records/139.json
 275b6c21a24c232c1531bc0f3d7226da1173a3fe0c30e3cdcd9be0f3346845be  art/_archive/nine-doors/2026-11-16/records/140.json
 cecc20a35e3526f4223b2d397dbe0f7086b2b8137b889532861be7985f45f113  art/_archive/nine-doors/2026-11-16/records/141.json
 5b55b445c44b4a6509e45576459b1b3dd38f65c0a6e8d7618de1a37e88a15e25  art/_archive/nine-doors/2026-11-16/records/142.json
@@ -1685,6 +1691,7 @@ de0f5cfc0ab928f309341aaeaa2ef9dcc653f2b2f5a027cbab43690bd9d3fa3e  art/_archive/n
 7489a3603f9894dee39aed478ab333eebf60d9ef08af15fcfa0a22b029ca32d0  art/_archive/nine-doors/2026-11-16/review/continuation-112-113-114.jpg
 0ee8344a671657afd699d36b3b9c798f552dca5b17874a84d1e864a5c742ddcb  art/_archive/nine-doors/2026-11-16/review/continuation-128-129-130-131.jpg
 a334e01c479d64f8a9fd5864afff97942bf90f96dd1690c35b7af8bdf6c4b3d0  art/_archive/nine-doors/2026-11-16/review/continuation-13-14.jpg
+84462a3a6ec4bb884c2067719645ad8a1753c36a8d0db1c316b747dcf3f0818a  art/_archive/nine-doors/2026-11-16/review/continuation-132-138-139-147.jpg
 9d5ca00e168b23e907c9a97527af519fe96ccd43117f2ff7abd285acbed3a751  art/_archive/nine-doors/2026-11-16/review/continuation-32-34-36-37.jpg
 fc6ff94046b21da74f39dd05c4f2c3c200a81d6ca6e78166174ab26b663441c5  art/_archive/nine-doors/2026-11-16/review/continuation-38-39-40-41.jpg
 09f823197db235186db346f6bc552222478f742b8c3677e6cbe063758d932281  art/_archive/nine-doors/2026-11-16/review/continuation-42-62-64-65.jpg
@@ -1753,6 +1760,16 @@ eb78b7e555fa176dff8efd194329306ae5e68a54aad227cab7c9e6d6e139488c  art/_archive/n
 f4e05ef6c6dc6f51bd31353a2d052a79dfafe71089d4c2f3b2383940729f1088  art/_archive/nine-doors/2026-11-16/superseded/143-unwanted-mascot-v1/master.png
 3687856d0832a43cea3859a38906058e28ee92ddf620ffaeea406aa1d3b46b23  art/_archive/nine-doors/2026-11-16/superseded/143-unwanted-mascot-v1/native.png
 2251f52dd5f8f880cecd9ed516e2bf08e23e3e19ba3d2c9236c75a5f2dafe792  art/_archive/nine-doors/2026-11-16/superseded/143-unwanted-mascot-v1/record.json
+667d9cced374038603af954fa2169c72b19cea45d271b2d278e9b0786432a12b  art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/REVIEW.md
+4d598c1fc3fb9eaa40a6255e76602cbdcb71fb9395d23a9b44b0f660ffdf6ca1  art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/exports/128/trait-armoured.png
+3da4438a33cbc0812b990ff05aa941fde43197189c97927ed5ba80978f910cef  art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/exports/24/trait-armoured.png
+2bae9debf8652afd648026df09ffbe6da17d693daa7c4b8f4bcfbd8ce38f8e54  art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/exports/32/trait-armoured.png
+310aa94518813ee6b824b6b8103ceb24a35faffe2df73f7b63dab730a583112e  art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/exports/44/trait-armoured.png
+f6c2a577a546a545666d58f9cc09fdf39a4be3a83bc7f9859b9da4b0f0869eec  art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/exports/48/trait-armoured.png
+0c205a98a18d60fd38982f9563bb86f8ba823b97c2100ec237125ac74f0f8d04  art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/exports/64/trait-armoured.png
+79052cc9a710bba47ef26a0d897fb0d5f5bb6c3f7ea01d0b7be43368f86c9992  art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/master.png
+95b78eac8d1a1616dfa7a3c8b76705b89d35c5a1fd5c9aca080fcf5e31a9317a  art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/native.png
+79ffbee4a4d04cc8dd711ca6a1f5f9ef73679b34fbec4e34aabff08826ef8b43  art/_archive/nine-doors/2026-11-16/superseded/147-alpha-cut-fix/record.json
 e2f1a26475356d7ee3ca8acadae2e87a39ba7cad3774401d8f9b2dd45b461426  art/_archive/nine-doors/2026-11-16/superseded/183-unwanted-brush-v1/master.png
 9d590e62cb7ef1c0c0af2dd8ebc2b00300fb2cd49f3b912ec6bac6d300761aa3  art/_archive/nine-doors/2026-11-16/superseded/183-unwanted-brush-v1/native.png
 1ae81110b56aec06fcf8f22b0cda4617df1f8c2de4af2ae8f179bcef58632cf4  art/_archive/nine-doors/2026-11-16/superseded/183-unwanted-brush-v1/record.json
@@ -1798,12 +1815,14 @@ de0af74b8bb950aac7d7c1ed7b085724a0104b645f1c21912b28ff52fd385ca0  art/_archive/n
 cb9adcc6796940dd1d67dcb172622f3bef4ef5f0080890df804d12b67c2b118e  art/_archive/nine-doors/2026-11-16/superseded/placeholders/mod-open_hand/mod-open_hand.png
 367236e63ff45642f934552c6d5ab99ab676c9113f03c9977ddd1218725b0f12  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-anchor/anchor.svg
 2ded579c3f54accd16fa02d0e69cae1d7c3ff45047d5310fc3fce8219b06bd81  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-barrage/barrage.svg
+c548b8694b329f53db8ddd502d79101ecd46b7140af374f375c247e48ba3076c  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-beast-and-blade/beast-and-blade.svg
 a3b47c01ae5bd22c5ef2335940bd75310380439b32e897e9dc3d402a1f6194d5  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-bleed-the-flux/bleed-the-flux.svg
 a4508d1595fed76747f769ee32c59f20501ad5e5d86e41d02ec36b1ce5f3d9eb  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-brace/brace.svg
 772d640708bbcbb6ba333b6ace23c12c94b3a6adebda25b57242ddd3e5673ffe  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-called-shot/called-shot.svg
 f6485cc7bffc8af8c7a7965a2c59d514469cef62052999ca75c19d5b14c0827b  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-core-change/core-change.svg
 04debb6355fc492658b5145c3638b22828483722b58a86d2fa44345d436f9a2f  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-duck-and-roll/duck-and-roll.svg
 4c15162e388b2dcae2d0e9a8705b8956e6de22cd1da57c5c17f364a421368c00  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-execution/execution.svg
+2e2cdaddae15c0154050109ea0e3d87015c4436fdce482069856944a6f4045d7  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-eye-and-wall/eye-and-wall.svg
 5dff4d8b23c1696dc8fc5e5beb4391b02fa299115039b27f3934d4dafa8f8adf  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-finisher/finisher.svg
 39169a48df13ddf4bd79bfd3c2257642a8989a43ddae6aabc9edecc78681f1ad  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-fire-discipline/fire-discipline.svg
 d121b7b752f9e9317f4a2ebe5d86a81b5e1ed891ee9f727dadedd6426af63088  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-ghost-kill/ghost-kill.svg
@@ -1818,6 +1837,7 @@ eae23435f5db0604416301a36fdf8430f38a5b08197f3c0ab4e827c3caf025f6  art/_archive/n
 4759e11ccf66ce35c2f900b228f69572c6bf77a4d3ad980585f320fb1e0127e9  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-sabotage/sabotage.svg
 3b934535027e33af794b2a46ccc2ba0b05ba578c0d849ea91fc346b10838d1e9  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-shrug-it-off-move/shrug-it-off-move.svg
 0ac4185646ca6da8ffef2c5bf818d016d31d26b8fbf06884e3e1a658ab0e47b9  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-special-ammo/special-ammo.svg
+8192d9ead434a3520f938317763f74dc2139b9167d6997526e507c11c4d0dc8d  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-stored-spell/stored-spell.svg
 9bc40e317b7c33ce762810e1237d1ff05b0fca32bf62a7f7b498ce0a606dc8b2  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-toxin/toxin.svg
 5572c852612fbc17fe12d27c11aec5d2c22cc940fe0bffe1ff4cafcc93282305  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-unbroken/unbroken.svg
 05c96e4316c61f442d4fe1b78ec99ab830b3894f5cfb9cb28bb8942c7b56c963  art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-unstoppable/unstoppable.svg
@@ -3373,7 +3393,7 @@ ebf3997460b615c4c9fa5c72481a7810b0048f09b13f04b52a45930489953fa7  art/briefs/GPT
 037a15e219ff6d9acf925fc9b626f7550a86be052b8d86199593a422f5c4659a  art/briefs/GPT-PROMPTS-2026-11-15-everything-missing.md
 c6d81b29b4cf1e77c4c25df521c47735abd5f561fe40e717c11c238fd39fde44  art/briefs/GPT-PROMPTS-2026-11-15-figments.md
 ba5d7c646d34195c777e5e23200a0953fe0910dbd40984a30ddfd5e9d64319dc  art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md
-8825bed8c35300e800a912852be79612cb8afa5ea5e91ad59937dc0d8b0ba849  art/briefs/NINE-DOORS-ART-HANDOFF-2026-11-16.md
+e79effc6fd21ff5b89f5937d0f1ee8973eb6d1719d802e1c203c4a56f9c53b16  art/briefs/NINE-DOORS-ART-HANDOFF-2026-11-16.md
 74862e11059029851b0152176699f3a057789d839b0d5926d75bd81980701040  art/briefs/archetype-portraits.md
 ca90bd7e555afdd1bad775f64454bf410cf6d1856070e566cc181ddbfe784138  art/briefs/first-patch-revival-redo.md
 821628bf1325a4023d390dbe8b0908751f860aab17ab4b138997f785aade81db  art/briefs/m813-mpat.md
@@ -3390,7 +3410,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-f809dc039ac4c54207807f6ec2410ad85f8f3f824fffacfc1acd814af9f942e8  art/catalog.json
+dfff08c3014690a64ec7ddb4ca425df0f266002bd56f590abaaf646d97a749a8  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 79a8fdcfaf94dfbd8fabd5492492ddae430bb3f773cc2826712103ad667c8347  art/emblems/patrons/mother_ember.png
@@ -5737,6 +5757,7 @@ eb69ed478cc68718b6de1919d40174bd85be3cc92da19aedda8c7db6ebd703bd  art/icons/move
 e1968921a4b6f8643addcb6654694d06f31907105a644d2aae962b4f61e705c0  art/icons/moves/at-your-side.svg
 747f45405c688ae97a6dfe2dc5f8f240500e60debbf421305b6f5eb12d2977a9  art/icons/moves/barrage.png
 2ded579c3f54accd16fa02d0e69cae1d7c3ff45047d5310fc3fce8219b06bd81  art/icons/moves/barrage.svg
+1650639b3ab81ede2979b3abeb507dcfccac9fea35b6db0fb49f4172501fa5db  art/icons/moves/beast-and-blade.png
 c548b8694b329f53db8ddd502d79101ecd46b7140af374f375c247e48ba3076c  art/icons/moves/beast-and-blade.svg
 4a2ec73db7834909c7fdd9932cfd64cb15943441b323becafbc07dd61d1f8f3b  art/icons/moves/bleed-the-flux.png
 a3b47c01ae5bd22c5ef2335940bd75310380439b32e897e9dc3d402a1f6194d5  art/icons/moves/bleed-the-flux.svg
@@ -5777,6 +5798,7 @@ f458210e805775913e653e38f8f377371e0dbd7fdf77ba4b4612977f798617a1  art/icons/move
 5b5be928210381c1eed427e7ddae5cf3c4a53bf490705a25ed6a197c1aae421d  art/icons/moves/exports/128/answered-prayer.png
 5fe9eae3fcfcff013973d529195a489fd6f4e632354624ff2e79fc45f1fc59a1  art/icons/moves/exports/128/at-your-side.png
 51b8a48dd63a8f236f36e8fdec2b25a6725d3b74cc95f6ba15ab0a55d40b14bb  art/icons/moves/exports/128/barrage.png
+bfa1962259f91415955f65fc58549fe4fcefc35db896d7a3549de87bca6d840c  art/icons/moves/exports/128/beast-and-blade.png
 89db831b4c1734cc8759ea44b57b76e4ac5906348058c601380c6bca8cb6badf  art/icons/moves/exports/128/bleed-the-flux.png
 24e7221093ec7cb53953d3b4b9b801de93c55aa969e6cbc81aca6605a4f40b6d  art/icons/moves/exports/128/brace.png
 55f26a8145528a8c9441192cd8077a8ba23a90ee3dfa96c415e50b179ca2110f  art/icons/moves/exports/128/breach.png
@@ -5792,6 +5814,7 @@ bd2c740a3f925fa1f381ef22710b455436d1852bd9edf4a37985c9a37d89e0d8  art/icons/move
 2088e7de94448ba6ab913f4e5e50dc9d914ce86083438cf7841527838118a731  art/icons/moves/exports/128/deliver-the-sinner.png
 4415f5130ccca416ec84e7ea7e18832dd4b7357b83b1de08ae5c8410354558b9  art/icons/moves/exports/128/duck-and-roll.png
 e6894293f58460b896c9b3d02254da079c71a121885e10e57953623e9d5809ab  art/icons/moves/exports/128/execution.png
+a5d5fc8d34c82f41760d346f38db92847665a86c30cba54e8a9f938eb1e2266e  art/icons/moves/exports/128/eye-and-wall.png
 4ab6b5e6db588c45a8df5adc7673a46b3f4f4cca7a4f2874131f69db6a2d8304  art/icons/moves/exports/128/feel-their-pain.png
 21a3ef2f2692f352a4561353b0ce5c52e26430e92ecb021c565aa0ba17dbdec8  art/icons/moves/exports/128/finisher.png
 165bafb7b981c01860210b8db4b1d6bbf2da9f58de150b9c731c685a353db34e  art/icons/moves/exports/128/fire-and-move.png
@@ -5838,6 +5861,7 @@ a1a6502ec811f30ef0e141a5bdf902110f546318fad5d437681a19c9d6a864e3  art/icons/move
 c243d16bc36074f32938a56c8e7e8e16355ad1cc7474a1e968d0914e49aa17f8  art/icons/moves/exports/128/special-ammo.png
 188807301936fff5fa7cf1cb52d56c8bc521eef11a40efc05d4b5f6e05829076  art/icons/moves/exports/128/speed-load.png
 333a2a37bf8c19661c8676edef96c082456f4d60e3bd6aa94517670955ddfee3  art/icons/moves/exports/128/still-breath.png
+76e33f05416ea9b338d3dda260559bd13ed5634b841bc48e09166c51890a3d21  art/icons/moves/exports/128/stored-spell.png
 58c940deb2bb752fc787755c7a413a597ccc50f50a4a4e5249f7377069ef620f  art/icons/moves/exports/128/sway.png
 33887fdaea117b8b4fb1d9d7b1732c99c65f608273029973633476530634f8ef  art/icons/moves/exports/128/sweep-form.png
 2ae704a7b382430caf310593e95f03b253ca4369dcdfed99dc44a5efcaeb9c92  art/icons/moves/exports/128/the-charge-carries.png
@@ -5853,6 +5877,7 @@ be28366ef90bcc9d27a93782ea6905d9938404288a645b4a3170720efcfd078b  art/icons/move
 a9ff66b8b4c8a823d4a0bef18b9a8fcbbc35a83d77557ecc0247c744eb1f0164  art/icons/moves/exports/24/answered-prayer.png
 4cf0c05495a3fbe33f7918abcb7701b9e5f5d0b1ac580c7562ab0112acce5876  art/icons/moves/exports/24/at-your-side.png
 0d6ca99285c93bece714532dea01988afcd90c075fab55616583980a2a504372  art/icons/moves/exports/24/barrage.png
+2b588eba26c127a75998b0e49182bcccd89581d23cfdb9be3e9c93d58d9e1873  art/icons/moves/exports/24/beast-and-blade.png
 b16a1f954d5fb57efa7754e5cea44742dfb9ffb4426f6e004fe25dd7c2b7c649  art/icons/moves/exports/24/bleed-the-flux.png
 30ab8ce49e3409b94a679ed689fafc36fcff932da04d02be18008dd428d2b273  art/icons/moves/exports/24/brace.png
 e78993d67cc6d0412a30b5a2a711c0d9f78fb98bf92f2aa478588b50329b4335  art/icons/moves/exports/24/breach.png
@@ -5868,6 +5893,7 @@ f3cd4da735b75150ae8121286c4538e0695a83217e105e83f69fcafaf47cf6fd  art/icons/move
 157dd5c9f748c88ca21741abcb47ff3f328cd2c3aaee05e31f96aea25eefdcb7  art/icons/moves/exports/24/deliver-the-sinner.png
 01ed07e3bc07bd7d2805a85a6e9e4af58000bb1f43504e8259603c3aaf27402a  art/icons/moves/exports/24/duck-and-roll.png
 ae377ac00c577bb508c413b1511d5e7b16d44030915c9247eec76a5d02ff4c3a  art/icons/moves/exports/24/execution.png
+67774d81e6f0752913aebcaddf8bf2edbf3bf061539408d7d5aebf59371e222e  art/icons/moves/exports/24/eye-and-wall.png
 ab86034cfdadb50d2872efde7db7813cc085ad2bc9b1d771d46d00f0e3131d7c  art/icons/moves/exports/24/feel-their-pain.png
 f3430eaf216e15c203e8bbd14d76b040c62b34a1deaf6a4fac0555a5214deaaa  art/icons/moves/exports/24/finisher.png
 1b2fa26628243d435a2c9f9985c2d8a69f54a050ce0b203b82bcfc26a37518a6  art/icons/moves/exports/24/fire-and-move.png
@@ -5914,6 +5940,7 @@ af66a09d445c95493c43e5604528860d0daafb8524dc4cc52c2172226fe6c152  art/icons/move
 12526539f7ab38f79d6ae6e72fcbe04258b5dc0ac757e174acf02f3e57af8885  art/icons/moves/exports/24/special-ammo.png
 8c06407560bdec6695d77bfa57feb2d5d7b972e8b51e225aa05d7cdd9afb6782  art/icons/moves/exports/24/speed-load.png
 f3da7e4b85a2d0ef8315f573f2de4b44be502314ba864a2d250926f3e74ce4f4  art/icons/moves/exports/24/still-breath.png
+0cd7384b0a6c881b5d7d3d6c363256c4f04cb8d4d9f93610b2a607c434ba0a57  art/icons/moves/exports/24/stored-spell.png
 10234f35b99d0af4f6c2cb47c8f56267778d4774a71f79cfbbbc71b7ef81282d  art/icons/moves/exports/24/sway.png
 362fdfee1730673470a858a4dfc0667fdcb120f3255657dab754230c3066717b  art/icons/moves/exports/24/sweep-form.png
 778979807b338b7c49ea3f1c127341def9a36383e271de02dd6ab5d3f3df40c7  art/icons/moves/exports/24/the-charge-carries.png
@@ -5929,6 +5956,7 @@ e4d9a287398ba1b66bce4defde634e4bf7cafd7eabe753d569b20f15913d6f10  art/icons/move
 129930ed55fbc4d53e3b050e497c37de294f98d18b2d497bbb84d3e9f5ce33ab  art/icons/moves/exports/32/answered-prayer.png
 569d90becb70de74820b9911a29388c2b5997b7b2b002bfbf729634fc8819e42  art/icons/moves/exports/32/at-your-side.png
 b41b19650a744669e4355789b4727c24cb0ea65d75e7db1d96d1c97f155db3ee  art/icons/moves/exports/32/barrage.png
+c045afe57112047dd6b6b4f78240ae2e6fd4033d9b33ce3a84d62446995aad62  art/icons/moves/exports/32/beast-and-blade.png
 b509480b3281dea15aff2a6a5021a050b67494ad706907b3256708f2c8ef9dfb  art/icons/moves/exports/32/bleed-the-flux.png
 2f02f30581eb44241fefee96b1f1dc113b5e87ac53c55174db7b9ff7cb4b6b5b  art/icons/moves/exports/32/brace.png
 ad178b1683a557aea3a3412d8a7d64ee2fe284b33df09913c967a8b6bc24c7b9  art/icons/moves/exports/32/breach.png
@@ -5944,6 +5972,7 @@ e2b10ca7099c0f3c4d023f2b6c776a66c2f0bce3e128f06721ffbff9edcd52b0  art/icons/move
 73d7939f64129bcc6c0127ea1d981ff59975430f7b3b7caa1c2ec00a83ed15ca  art/icons/moves/exports/32/deliver-the-sinner.png
 0decd779e2f79ade5c0dcd72bd07ea549c5dcbb524de27490707b84d8003e5c4  art/icons/moves/exports/32/duck-and-roll.png
 34c4aea57542ce558a08f3eef2b80f9c94a5d215bc82075bcef62d0ee783084c  art/icons/moves/exports/32/execution.png
+77eabc534686bc2e3676930f0cd5facbc06f2cd1edbc9052f73481210a44fcd4  art/icons/moves/exports/32/eye-and-wall.png
 db8171ee414f58fdc0b6c61de6aea69d8d79f0143fc241a8834f9791d607fad7  art/icons/moves/exports/32/feel-their-pain.png
 58b9b6c285066bb52219d166606b6b5e45bd178428193c7ca41d725acb6d44bb  art/icons/moves/exports/32/finisher.png
 d367c631fc4cd3bd758f88aae2a85947b80c6a0b65f22042218efdeb275a8871  art/icons/moves/exports/32/fire-and-move.png
@@ -5990,6 +6019,7 @@ b3959564eb00ee00dbce17e9e87daf5ad4809a0e09229cbc8a73928f98dccf08  art/icons/move
 534adddf039dcf12776bf984344d404200b6775e3c0128df3b474e4c8c9d9fe0  art/icons/moves/exports/32/special-ammo.png
 887597d920f9486893a4052a41a0e406928508750b058139be1193c290b5a72e  art/icons/moves/exports/32/speed-load.png
 3f1ffa40457c7b3fd326cbec5b5401396d74db29edda860e6cefa40f95456519  art/icons/moves/exports/32/still-breath.png
+649ae6c382a78d5f393cfdf0d9f21df48aed88f0cdc13664072cfd1db7357da7  art/icons/moves/exports/32/stored-spell.png
 2dd095d81b83ba423df07140fa20133d62e436a2a95b37276b14ca4088f31dad  art/icons/moves/exports/32/sway.png
 31353f22694970b13d40cd5142d4343c6a23f74a7b47cfcfac938cbcccfb4237  art/icons/moves/exports/32/sweep-form.png
 2a9724fb63e05dc68f62996df233677c5fe7b662162b2098e7381f0bd8b237b4  art/icons/moves/exports/32/the-charge-carries.png
@@ -6005,6 +6035,7 @@ dccd4bc2e2c688eadc225d44b9eb6bc9daa8ab3ed2009040431bc0f177dd2a49  art/icons/move
 eb7bd51fee51ffa50851a891db4bdd51154bcb7f18754d8494d1166cf68cff33  art/icons/moves/exports/44/answered-prayer.png
 e6d11baf4f45c4d62d691574bc01833dfc7e724881d404f0b59e5677faddbe87  art/icons/moves/exports/44/at-your-side.png
 62b98ba6f0f83162f5958bec302e81dcc907855b11f9f125d4c288263ae248d7  art/icons/moves/exports/44/barrage.png
+75d59f035e96c8a8edac197f8f74b2765b8bbb8b0d17937d801579f3d710c6ec  art/icons/moves/exports/44/beast-and-blade.png
 b3eab9f3176c720a424f7e55717190e43df19ead64a019d8a11f0c8074fe36f3  art/icons/moves/exports/44/bleed-the-flux.png
 95746634bcb363537556c5124509756665bb2f52be6d0cf50f19595f27e8f828  art/icons/moves/exports/44/brace.png
 b2808177ee10b80099eb9c24aba8345e34091e456c5838d86ce65be6a1feb165  art/icons/moves/exports/44/breach.png
@@ -6020,6 +6051,7 @@ a6f38ca47d1aa66e2e6c63b3b1d3df2c94bb2734f204bb0daa3e1ff2c6f67080  art/icons/move
 43a4e86e867da4026dd92bd1f361fa6ff3430f8c3bffbd926c506811859a05bd  art/icons/moves/exports/44/deliver-the-sinner.png
 8645d16a08203af84551227a0d8d2eb9162cd32341c03a19532ed32fe22883c0  art/icons/moves/exports/44/duck-and-roll.png
 f7fab8d522c9d5d3c4ebd6f05859f64c2d1cd78ad290d7427bca83a337e7d67d  art/icons/moves/exports/44/execution.png
+19c89877cf372cd9791a819c89bc4f27a9a8b499a50e3be03af9f12578e1baf0  art/icons/moves/exports/44/eye-and-wall.png
 f21476890403608fa9dea2786caec97dc2bcb28924a01ee5618eba4a19f4f942  art/icons/moves/exports/44/feel-their-pain.png
 c546d15499406eabec739800ac2015d314daf19e2ef44e4c2d8ac701574eab58  art/icons/moves/exports/44/finisher.png
 66a142e252d4fe711c2ce74757e8348ea9c4b19bdaf8171480f39f9588af1ead  art/icons/moves/exports/44/fire-and-move.png
@@ -6066,6 +6098,7 @@ b0615937547af0c821a0aa79a08521c02ba98c85e038eccfa7199914f20813da  art/icons/move
 8a0070bc22555f5f3636226783377bb5eab6c450267311f33eafa33ca0257384  art/icons/moves/exports/44/special-ammo.png
 56d8e3c80bac0b29ccccf7bcca7b39409d696a05a87be3309dda5533f14ea02b  art/icons/moves/exports/44/speed-load.png
 aa48b891bf8ef8345d3b64ad48d78b6705958c94a2e0d05bc990362fb36254bf  art/icons/moves/exports/44/still-breath.png
+7cf13824b4608ca2d0d029348914a0d87c726040927404908f71c1adf63b761b  art/icons/moves/exports/44/stored-spell.png
 6480f2ab83222bc33a81b4ee952903367bbfbd8d92566e7c9d587c830290bada  art/icons/moves/exports/44/sway.png
 7d9437ee7fde3c9c6aeb84fca000beb2662a952588231bca7edc0390c946c430  art/icons/moves/exports/44/sweep-form.png
 c1ef1d96542568ed41a07f369fbc54ef65d179c5e79bd60e136e19e12726b90b  art/icons/moves/exports/44/the-charge-carries.png
@@ -6081,6 +6114,7 @@ d551e29aa16c2bdec9ec4095bff5abf32604bb9d6d80f9b61cfd8d59b075f12a  art/icons/move
 914a2d8b7f67ab35d03bd47b73bc1a9792ce66c1b93d6b563de64c2b07d0385e  art/icons/moves/exports/48/answered-prayer.png
 ec1d991a381215eaa4ee622fee5bf7e838a9b90854162efee358f586e2398ad4  art/icons/moves/exports/48/at-your-side.png
 f37c48c7af131c899606e5bd13a32cb8c127e84e80404b67c40f3259e4a42cab  art/icons/moves/exports/48/barrage.png
+6c5aad47f6790f07df43f29053259ec6f21673a2b3d03ad66fd608dad1ead50a  art/icons/moves/exports/48/beast-and-blade.png
 9eb4859edc92e7535ade79ecadd81ca364dbf2ce396497a1b264b1e141f0ef90  art/icons/moves/exports/48/bleed-the-flux.png
 4b85b3f0774798333b4b39b2a9082a34870f5638276a376520c2611e105cc2e3  art/icons/moves/exports/48/brace.png
 0c68d823c38113c960d6c711c4ab4c1be2fc0b647b971073c606e69bd360a188  art/icons/moves/exports/48/breach.png
@@ -6096,6 +6130,7 @@ d9c908146b961662de4465b0433c90955bd3eb7f931db97e3f07bda28168f5eb  art/icons/move
 b7128321f43c07a73317e480c3d70b0866dd713af59f7627070e3247a694934b  art/icons/moves/exports/48/deliver-the-sinner.png
 f8aa7e975e5b322c417056fc39a955693a165e7c4b4927b5f39844517c23a2a8  art/icons/moves/exports/48/duck-and-roll.png
 f8d170d534f8e13270740aab94ffed484a3bcc81ca1f7c2d42423bab5e6d2e8d  art/icons/moves/exports/48/execution.png
+20a7ba1a697b12d1b91443410655bf58a7752331d4facfcd993e13e5103ab1a2  art/icons/moves/exports/48/eye-and-wall.png
 b7175b1c8f251abd38f2e5f106ecbe2df1bf20764b89c63223279a26db2ba5e4  art/icons/moves/exports/48/feel-their-pain.png
 7650905ef5555a8431fe7a54b317165d437e0a821105556afd9e5c67ba468849  art/icons/moves/exports/48/finisher.png
 bbb590e16e6f454fce314a0dda7ac606f41c68bdd85dbfa1258cf96d3c2b31c3  art/icons/moves/exports/48/fire-and-move.png
@@ -6142,6 +6177,7 @@ cba62acbe938774cb738bb049f86e7969b044ab2cac9eb97f4fcbec55bc38984  art/icons/move
 0e4514c57be0c5e6afddd6b6e68ffca6f055f7cc8c19da86c54417892714a6cd  art/icons/moves/exports/48/special-ammo.png
 a03ad2e5625b6584326d8f7ffbc822a3b8e4f1cde3322e44028923d1f3f857b9  art/icons/moves/exports/48/speed-load.png
 3c96e0e9fa3f49450f3af19eebe6b393d83638fe113d92945acb9a84051683be  art/icons/moves/exports/48/still-breath.png
+3d35c4f7d0a8917ceca52b12f29ab578969346e45d7d3bb1ae492bd999f3c1ee  art/icons/moves/exports/48/stored-spell.png
 1e52cb511c5ddcf02c742cd0f43a762b87519d592dc2869be8302d6a47944df1  art/icons/moves/exports/48/sway.png
 38b9aa4101f0ef5dcb671ecda6d2fe4caa064e21e37d115cb1ed2329b370741c  art/icons/moves/exports/48/sweep-form.png
 862270b17f820f49c7b4786b8f73026dcbf567a78eaaf6447257f42b6f036a5b  art/icons/moves/exports/48/the-charge-carries.png
@@ -6157,6 +6193,7 @@ debd2908efd717775e06644eb783239e1f2a703ac6fe4dbc9ae3870bc96b5d61  art/icons/move
 1cc697a12b4eb148a7232e5f044b6650016818dd3a75757e40227d0bb16f4909  art/icons/moves/exports/64/answered-prayer.png
 9a6eb768688baa2b25b69575d21c3709bee7f48ca42014f6d2381d0422f4c131  art/icons/moves/exports/64/at-your-side.png
 f7bc57ef6595ee919709dc06e8c31e9f35775df368e6ccfdea5490d957686ff8  art/icons/moves/exports/64/barrage.png
+14e833284b55571079211a7f511c8bb34cb2bb59d3f9878dee4bcb6c9a3ebfdb  art/icons/moves/exports/64/beast-and-blade.png
 aa5f00cc450f435c2bc49c350d83900b2f7823124a3ea18b9a404377951390aa  art/icons/moves/exports/64/bleed-the-flux.png
 c81e1df51cdf98247ae3dde5bd614e7eaf12a7515caf4320d9faa9ab943d3dec  art/icons/moves/exports/64/brace.png
 0a063eadac01fad0907273f3bf4ecadd6e591519f93eacfbb03c45ad5d1eca0b  art/icons/moves/exports/64/breach.png
@@ -6172,6 +6209,7 @@ fb4c7a94e61c8e065e9652203d645f6bb979e11880de4d3119be4ea9ad39ba5b  art/icons/move
 553d071cd0687a319dbabaae054dab3b40080164d5472accd7a92ede15693a00  art/icons/moves/exports/64/deliver-the-sinner.png
 610af2ab02c62553700c3197ff927965ef5eb247b778db9317ef4673f31beb40  art/icons/moves/exports/64/duck-and-roll.png
 1aab0d6010731832b36b564def7d2b98dbeb61b51a5ad612ed0b538798967461  art/icons/moves/exports/64/execution.png
+4fd8742bb1ce131a470b74b8251834ea91926e328801af911cc794125a85087a  art/icons/moves/exports/64/eye-and-wall.png
 5af560df955c2224f1770b6935b9c3346724c221bd1f678801e2c59538747aef  art/icons/moves/exports/64/feel-their-pain.png
 84b17e60c14fde1195c8d6e9381326f18d811812414c45ccd5c66579407d647c  art/icons/moves/exports/64/finisher.png
 2896fadaadeaa960edc0c3809208e9a136d0e8b09e90b30391763c6b1154ed28  art/icons/moves/exports/64/fire-and-move.png
@@ -6218,6 +6256,7 @@ f62ee680949e224ff9bf961272050d8e69b131adfebe45feb8082dc66d976e6d  art/icons/move
 333a95341ba77dc2808b9041867bd96f4ea7ae02b7e75ba3937a7b58b2d700b6  art/icons/moves/exports/64/special-ammo.png
 d2e7f70be3a262e60e5b1ab9dd229883d995997054077465ca78fde86d3afb99  art/icons/moves/exports/64/speed-load.png
 f75755076a3897db89293b1dfb92a2cc50f3a70968b8aa971e14290d0be6c437  art/icons/moves/exports/64/still-breath.png
+e44e4be0601f3fa18468ccc147bc31ead4676c728aac02b9580fa7ebcf84cfc2  art/icons/moves/exports/64/stored-spell.png
 bb9ee465a2d07f9584abd081f7731ea40f7544f4150d6eacc22aaf7c60edb1fd  art/icons/moves/exports/64/sway.png
 182eb6523f27bad1bf154fbffdf2b8ce1a9b6cd5eae3f2a15edbadfb3ede0039  art/icons/moves/exports/64/sweep-form.png
 41322bd04b3b0be2965821611b62de6fe56f9281b7c4fd143027311a5b79db52  art/icons/moves/exports/64/the-charge-carries.png
@@ -6228,6 +6267,7 @@ d4520c5e3e92d56a6797080cefbceb707b9b3ef177619cf4f4ea26b3d53f586d  art/icons/move
 fdbebcd9b518d9a39058ebb9c1f710a00daad7b92076fdf02fccfe93a19aa636  art/icons/moves/exports/64/unstoppable.png
 e6229b2045d015824016c937ef7581704f35bcf5b0ec6003e1351db023a17093  art/icons/moves/exports/64/vanish.png
 aa6bc6b24a756cda168b3637da2273a9a5fde6798737eadc2e29ba7a6bceea85  art/icons/moves/exports/64/wrecker.png
+b9719915dffd907dd56e6b4636aae737fba204a89b2935c921b62b13621771bb  art/icons/moves/eye-and-wall.png
 2e2cdaddae15c0154050109ea0e3d87015c4436fdce482069856944a6f4045d7  art/icons/moves/eye-and-wall.svg
 6b1c2c7849f50a0c4a7e7068d8abde449d027942e1eff953b7a7e416b0c1943e  art/icons/moves/eye-of-the-storm.svg
 e8a570305321552661e150bab346e6efa18ba6612ebaeee6fdc9b46e068ae00b  art/icons/moves/feel-their-pain.png
@@ -6337,6 +6377,7 @@ f8f3f3849401b7189aea2a20902e98b299242e05494228e3326d99bc71bb5630  art/icons/move
 03f38eca281289a50de265b63ff8331295e67cb9d9311f28e965e2998c67f63b  art/icons/moves/speed-loader.svg
 42d421ffbc6668d69eea73b3fa76d520658a328f5c44ea8f8c66b3c7207663d1  art/icons/moves/still-breath.png
 d061dc2c69b399d78f1133b630693a037670d1febccee67b74c56f9ee47dad99  art/icons/moves/still-breath.svg
+3b51b820bfa01be423f59edc7cbc9b388afe2f9f33379eced1ca770ec55c555c  art/icons/moves/stored-spell.png
 8192d9ead434a3520f938317763f74dc2139b9167d6997526e507c11c4d0dc8d  art/icons/moves/stored-spell.svg
 dc45e89b6c2b26685564d5bc2611ca5bc5c1addf6b18eb7d025cb965b9701913  art/icons/moves/storm-front.svg
 1c9bd219d56e8f54614c55dc71394c3be6c83f2052cdf631b8539f1d6585fbca  art/icons/moves/sway.png

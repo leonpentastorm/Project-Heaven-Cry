@@ -1,0 +1,76 @@
+{
+  "number": 138,
+  "family": "move_icons",
+  "id": "move-eye-and-wall",
+  "path": "art/icons/moves/eye-and-wall.png",
+  "name": "Eye and Wall (fork)",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Visualization 3 fork choice",
+  "paint": "A lens shape and a short wall block side by side, a small fork line joining them below.",
+  "avoid": "an eyeball \u00b7 bricks with text",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A lens shape and a short wall block side by side, a small fork line joining them below.\nAvoid: an eyeball \u00b7 bricks with text\nEXACT STAGING: TWO equally prominent simple objects sit side by side: on the left an optical LENS, a thick ring with one shallow curved lens cut; on the right a SHORT PLAIN WALL BLOCK, a solid rectangle with just one top-edge cut. Under them a small WHITE Y-SHAPED FORK LINE joins their two bases, a clear choice between these forms. No eyeball, pupil, face, brick pattern, lettering, full character, scenery, shadow, arrows or checkmark.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "b9719915dffd907dd56e6b4636aae737fba204a89b2935c921b62b13621771bb",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/138-eye-and-wall.png",
+  "source_sha256": "f6d2135f82c72a41421c647dab49132ef03987804e1d5665907bb23cca8b2715",
+  "export_crop": [
+    0,
+    165,
+    1232,
+    1182
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/eye-and-wall.png",
+    "64": "art/icons/moves/exports/64/eye-and-wall.png",
+    "48": "art/icons/moves/exports/48/eye-and-wall.png",
+    "44": "art/icons/moves/exports/44/eye-and-wall.png",
+    "32": "art/icons/moves/exports/32/eye-and-wall.png",
+    "24": "art/icons/moves/exports/24/eye-and-wall.png"
+  },
+  "framing": {
+    "scale": 0.6238178114839199,
+    "offset": [
+      127,
+      195
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "a5d5fc8d34c82f41760d346f38db92847665a86c30cba54e8a9f938eb1e2266e",
+    "64": "4fd8742bb1ce131a470b74b8251834ea91926e328801af911cc794125a85087a",
+    "48": "20a7ba1a697b12d1b91443410655bf58a7752331d4facfcd993e13e5103ab1a2",
+    "44": "19c89877cf372cd9791a819c89bc4f27a9a8b499a50e3be03af9f12578e1baf0",
+    "32": "77eabc534686bc2e3676930f0cd5facbc06f2cd1edbc9052f73481210a44fcd4",
+    "24": "67774d81e6f0752913aebcaddf8bf2edbf3bf061539408d7d5aebf59371e222e"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}
