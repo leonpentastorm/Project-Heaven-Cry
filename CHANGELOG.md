@@ -73,6 +73,7 @@ the alpha perks were rewritten so each one helps its own door. The full account,
 - Text in the fight, run and camp screens is never smaller than 13 px.
 - One rule for Taunt, one for a Boss holding against forced moves, one health ladder.
 - Tug costs 12 MP (three times its first price, as 0.28.3 did for every Tending verb).
+- Fight tabs per character: a stable order (a new tab goes at the end), the cog's Fight tabs panel (in a fight and out of one: move up / down, hide, Reset), number keys follow the order shown; a focus door's tab is hidden with no focus anywhere and says to put it on when the focus is only in the pack.
 
 ### Fixes
 

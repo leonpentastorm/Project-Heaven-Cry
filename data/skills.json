@@ -2623,6 +2623,7 @@
       "slot": "alpha",
       "summary": "Raw processing speed for Sigils. Attack skill for Sigils that strike.",
       "door_line": "Draw words on your own tile in a straight row of {=door_numbers.line_min} to {=door_numbers.line_max}, then Evoke from an end or the side.",
+      "door_focus_line": "Your Evoker is in your pack, not in a hand: open the Backpack and draw it to draw glyphs.",
       "door_numbers": {
         "line_min": 2,
         "line_max": 4,
@@ -3115,6 +3116,7 @@
       "slot": "alpha",
       "summary": "Shapes thought into images; pictures the Figments the bots build.",
       "door_line": "In a fight, Picture offers your ready designs first, then every bare form you have opened (the Visualizer in hand).",
+      "door_focus_line": "Your Visualizer is in your pack, not in a hand: open the Backpack and draw it to Picture.",
       "door_tab": "figments",
       "door_title": "FIGMENTS · PICTURED",
       "per_point": {
@@ -3584,6 +3586,7 @@
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
       "door_line": "A Bond does not heal by itself: Tend a Bonded ally to heal it (Mend or Shield at any range you see, Touch beside you).",
+      "door_focus_line": "Your Attuner is in your pack, not in a hand: open the Backpack and draw it to Bond and Tend.",
       "door_tab": "tend",
       "door_title": "TEND · BONDS AND CARE",
       "per_point": {
@@ -4116,6 +4119,7 @@
       "slot": "alpha",
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
       "door_line": "Begin a design, Pump it up to its top stage, then Release. Strain is the cost, and MP pays.",
+      "door_focus_line": "Your Emanator is in your pack, not in a hand: open the Backpack and draw it, so your Outbursts are paid in MP instead of drawing on the air.",
       "door_tab": "outbursts",
       "per_point": {
         "numbers": {

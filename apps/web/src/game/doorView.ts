@@ -4,17 +4,17 @@
 // first-fight tip (tips.tsx), and the tab a character's first turn opens on (screens/combat.js). Nothing here is a rule:
 // the line is data, a number in it is an ordinary {=placeholder} of its row (the engine's data-text filler), and whether an action can be used
 // now is the engine's own refusal on the row (commands.ts actionGroups).
-import { SKILLS, CLASS } from '@engine';
+import { SKILLS, CLASS, kindOfDoor, focusHand } from '@engine';
 import { ATTR_INK } from './classView';
 import type { ActionGroup } from './commands';
 
 /** A door: its skill, its line, the fight tab it opens, and (a door system's own tab) the tab's header and ink: the
  *  row's door_title, in its attribute's ink. */
-export interface Door { skill: string; name: string; attribute: string; line: string; tab: string | null; title: string | null; ink: string | null }
+export interface Door { skill: string; name: string; attribute: string; line: string; tab: string | null; title: string | null; ink: string | null; /** the line a tab shows while its focus is only in the pack (skills.json door_focus_line; '' none) */ focusLine: string }
 
 /** Every door the data describes, in the data's order (an alpha skill with a `door_line`). */
 export const DOORS: Door[] = (SKILLS as any[]).filter((s) => s.slot === 'alpha' && typeof s.door_line === 'string' && s.door_line)
-  .map((s) => ({ skill: s.id, name: s.name, attribute: s.attribute, line: s.door_line, tab: s.door_tab || null, title: s.door_title || null, ink: ATTR_INK[s.attribute] || null }));
+  .map((s) => ({ skill: s.id, name: s.name, attribute: s.attribute, line: s.door_line, tab: s.door_tab || null, title: s.door_title || null, ink: ATTR_INK[s.attribute] || null, focusLine: typeof s.door_focus_line === 'string' ? s.door_focus_line : '' }));
 
 const pointsOf = (ch: any, skill: string): number => Number(ch?.skills?.[skill]) || 0;
 
@@ -57,3 +57,26 @@ export function firstTurnTab(cb: any, ch: any, groups: ActionGroup[], isInfo: (k
   const first = gr ? gr[1].find((it) => !isInfo(it[0])) : null;
   return first && !first[4] ? d.tab : null;
 }
+
+/** The focus rule of a door's fight tab (Leon, 16 Nov 2026): for a tab whose door opens with a focus (the engine's
+ *  kindOfDoor on the door's skill: Sigils the Evoker, Outbursts the Emanator, Figments the Visualizer, Tend the
+ *  Attuner), where the character's focus of that door is (the engine's focusHand): 'hand', 'pack' (carried, not worn:
+ *  the tab shows with its door's focus line on top) or 'none' (none anywhere: the tab is not shown). Null for any other
+ *  tab (Body doors, Shadow, prayer: unchanged) or with no character. */
+export type TabFocus = 'hand' | 'pack' | 'none';
+export function tabFocus(ch: any, tab: string | null | undefined): TabFocus | null {
+  if (!ch || !tab) return null;
+  const d = DOORS.find((x) => x.tab === tab), k = d ? kindOfDoor(d.skill) : null;
+  if (!k) return null;
+  let at: string | null = null; try { at = focusHand(ch, k); } catch { return null; }
+  return at === 'main' || at === 'off' ? 'hand' : at === 'pack' ? 'pack' : 'none';
+}
+/** The line on top of a door's tab while its focus is only in the pack ('' otherwise). */
+export const tabFocusLine = (ch: any, tab: string | null | undefined): string => (tabFocus(ch, tab) === 'pack' ? DOORS.find((x) => x.tab === tab)?.focusLine || '' : '');
+/** The tabs a character is shown under the focus rule: a focus door's tab with no focus of its door anywhere is left
+ *  out when the engine refuses the tab's first action (the door's own verb: Draw, Picture, a Tend verb). A door whose
+ *  verb the engine allows with no focus (an Outburst Begun with no Emanator draws on the air) keeps its tab: the client
+ *  never takes away an action the engine offers. firstRefused: the engine's refusal on the tab's first row (as
+ *  firstTurnTab reads it). */
+export const focusFilter = <T>(ch: any, items: T[], tabOf: (x: T) => string, firstRefused: (x: T) => boolean): T[] =>
+  items.filter((x) => !(tabFocus(ch, tabOf(x)) === 'none' && firstRefused(x)));
