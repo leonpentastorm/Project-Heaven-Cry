@@ -1,13 +1,15 @@
 # Session to-do, 16 Nov 2026 (after 0.30.0 went live)
 
-Leon's word (16 Nov): **"to live when all green"**. 0.30.1 deploys when its fixes, check and browser suites are green;
-0.31.0 deploys when its lanes are merged, reviewed, green and browser-checked. Each deploy gets `backup/live-<version>`.
+Leon's word (16 Nov, later the same day): **0.30.1 is NOT deployed on its own.** Its work is saved on
+`wip/hotfix-0.30.1` and goes live as part of 0.31.0 ("to live when all green"). No more testing on 16 Nov; about 20% of
+the usage was left, so nothing new is started without need. Each deploy gets `backup/live-<version>`.
 
 Live: **0.30.0** (commit 44a1d686, `backup/live-0.30.0`; 0.29.0 kept as rollback).
 
 ## A. Hotfix 0.30.1 (branch `hotfix/0.30.1`, worktree E:/phc-wt/rel030)
 
-Built and green at 15bb42fd; a review found one blocker and two majors, being fixed:
+Built, reviewed, review findings fixed, green at b2df5eff (then int/0.30 merged in: 068340a2); pushed as
+`wip/hotfix-0.30.1`. NOT live. Merge it into the 0.31.0 release branch first. What it holds:
 
 1. Free mod fit by leaving out the action name (blocker): test the action that will run.
 2. Overhaul at the Forge fits the gun that was picked, not always the main hand.
@@ -76,3 +78,62 @@ Order matters: all of it touches the fight screen.
 3. Vows: fold to one line, or a forced choice at the start of each fight.
 4. Level-up banner shown to the whole room or only the player.
 5. Rename Bot-scrambler / Bot Sense (they jam robots; left as is).
+
+## F. Leon's rulings after this list was written (16 Nov)
+
+- **Vows:** entering any game mode opens a pop-up that makes you swear a vow; in a fight the panel only shows the vow
+  held (one line); a rest point is where it is changed. (Asked, not answered: is "Fight unsworn" a choice in the
+  pop-up; Atheists get no pop-up. Lead's pick: unsworn stays, Atheists none.)
+- **Level-up banner:** shown to the whole room.
+- **Field Surgeon's Patch** works in Survival; the spare-parts charge gets dearer (lead's start: 16 to 60 credits,
+  PROVISIONAL; repairs get dearer with it). **Triage's story heal:** once per stage map for each Mender. Price both in
+  the run simulator. Until 0.31 both stay off (they do not carry the `run` scope).
+- **Relic properties for every weapon:** gloves, wraps and the unarmed family take the Relic step (bare fists have no
+  item); walk every weapon category for other gaps (shields, focuses, thrown) and list them.
+- **Dark maps:** kept. Shrine, works and rim dark; AHOC and city lit; measure clears.
+- **Zero meters fold and open on click; the status strip is mini and grows on hover; the shield is one bar segment
+  with hover detail and a collapsed Shields line; every info box folds and saves its state** (CLAUDE.md).
+- **Silent** is a property (Visualizer by default; a silencer mod later; a Silent weapon costs 1 Shadow a shot).
+- **Plain melee attack is named Hit.**
+
+## G. The hotfix's last gate (16 Nov, before work stopped)
+
+`python tools/check.py` ALL GREEN on `wip/hotfix-0.30.1` (engine 4778, web 1505). Browser suites: 12 of 13 pass
+(gear-icons, physical-pack, old-save, tabs, magic, classes-moves, kit-map, skeleton-screens, two-players, reconnect,
+perks, ui-shell). **survival fails 2 checks, alone too, both in its field section** ("The field is yours" with what
+lies on the ground: it found "Nothing left on the ground"; "the field has no turns: End turn is not offered"), then a
+60 s wait times out. Not investigated (Leon stopped testing for the day). The field lane rewrites that section (the
+field becomes turns), so judge it after `wip/hotfix-0.30.1` and `wip/lane-0.30-field` are merged; if it still fails
+there, the likely cause is the shelves change moving the seed's loot. Not looked at in a browser by anyone: the field
+kit's Treat buttons, the plate chips, the shop icons. Drive C: had 36 GB free (94% full) during the run.
+
+## H. Dexterity lane finished (16 Nov)
+
+`wip/lane-0.31-dex` at 38d0a3e0: built, two reviews, review fixes, check ALL GREEN, balance green, 29 replays. Full
+report: the workflow journal wf_e9b5ffe1-250 (and the CHANGELOG 0.31.0 section on the branch). For the lead before
+merging: (1) read the fix report's verdicts on the blade Flush Out against a Boss and on the pip limit (the review
+said the stop rule, limit 2 to 1, probably should have fired for the sabre and gladius: all-in Dexterity blades were
+already over the 165% melee line, 199 to 246%, and the perks add 8 to 24 points); (2) Rite in the Field now cuts only
+Crystallise: Steady was a dead clause, and cutting Name It needs a price predicate on the Call's id (not approved
+yet), so the perk still gives little: needs a ruling; (3) a bug the swap fixed: `melee: false` on roll contexts
+matched every roll, so Fire and Move armed on any blow and Relocated's +1 applied to every roll, spells included.
+
+## I. Field lane finished (16 Nov)
+
+`wip/lane-0.30-field` at 054749cf: F1 to F7 built, two reviews, review fixes; check ALL GREEN, balance green, 29
+replays. Browser: faith, tending, fight-cards, two-players pass; **survival and magic fail, alone too** (details in the
+fix report, workflow journal wf_42d20191-44b: read its "unfinished"). **F3 is only half done:** in Survival the fight
+starts as you enter the node and foes in the fog are already in it, so walking spends AP; the builder added a line on
+the BATTLE START banner ("Hostiles in the fog: every step costs AP") and left the real fix (a "not yet joined" state
+on the fight, so the first turn after contact is at full AP: Leon's ruling) for the lead to approve as a primitive
+(spec item 4748 on the branch). Approve and build it in 0.31. All work is stopped here: nothing is running.
+
+## J. Order to pick this up
+
+1. Merge into one 0.31 release branch from develop: `wip/hotfix-0.30.1`, then `wip/lane-0.30-field`, then
+   `wip/lane-0.31-dex`, then `wip/lane-0.30-fit` (expect conflicts in the spec's item numbers, CHANGELOG, goldens and
+   replays: keep both sides, re-record on purpose; versions to 0.31.0).
+2. Fix what the merged branch's browser gate shows (survival and magic first).
+3. Build section C (the fight-screen lane), F3's real fix, and section F's rulings.
+4. Full gate, browser look, deploy 0.31.0 on Leon's standing word ("to live when all green"), `backup/live-0.31.0`,
+   then delete `backup/live-0.29.0` as the third-oldest (never 0.22.0 or 0.23.0).
