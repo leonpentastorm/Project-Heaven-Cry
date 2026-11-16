@@ -799,14 +799,14 @@ register({
 // of each fight while the use is left; stand it down with the action). The engine can't pause an enemy turn to ask, so
 // the arm-then-auto rule (plan 6, Rabbit's Foot 1; PROVISIONAL). Only opposing rolls count, not your saves. In the story:
 // ask the Narrator to reroll an NPC's roll against you. Vengeful: when an ally is Downed, +2 AP on your next turn (once).
-// Prey: −1 Guts, Intimidation and Authority (generic); hunters and Orks deal +25% to you; Take the Hit and taunts can't
+// Prey: −1 Guts, Intimidation and Authority (generic); hunters and Orks deal +25% to you; an Interpose and taunts can't
 // pull their attacks off you (attack_target's locked; previewAttack's ignoreTaunt).
 const preyBy = (u: Unit | null | undefined) => !!u && (u.kind === 'ork' || (u.tags || []).includes('hunter'));
 const LUCKY = (h: Holder) => h.key + '#lucky_foot';
 const luckyLeft = (h: Holder) => uses(h).left('per_session', 1, LUCKY(h)) > 0;
 register({
   id: 'rabbits_foot', claims: [0, 1, 5, 6],
-  // 'prey_lock' {by}: a hunter's or an Ork's blow stays on you: an ally's Interpose (Take the Hit) can't take it.
+  // 'prey_lock' {by}: a hunter's or an Ork's blow stays on you: an ally's Interpose can't take it.
   stat: (h, stat, ctx) => (stat === 'prey_lock' && preyBy(ctx?.by) ? 1 : 0),
   actions: [
     {
@@ -841,7 +841,7 @@ register({
       const by: Unit | null = ctx.src?.by; if (ctx.phase !== 'reduce' || ctx.t !== h.u || !by) return;
       if (by.kind === 'ork' || (by.tags || []).includes('hunter')) ctx.dmg = ctx.dmg * 1.25;
     },
-    // Prey: a hunter's or an Ork's attack on you stays on you: a taunt doesn't stop it, Take the Hit doesn't take it.
+    // Prey: a hunter's or an Ork's attack on you stays on you: a taunt doesn't stop it, an Interpose doesn't take it.
     attack_preview: (ctx, h) => { if (ctx.tgt === h.u && preyBy(ctx.att)) ctx.ignoreTaunt = true; },
     attack_target: (ctx, h) => { if (ctx.orig === h.u && preyBy(ctx.att) && alive(h.u!)) ctx.locked = h.u; },
   },

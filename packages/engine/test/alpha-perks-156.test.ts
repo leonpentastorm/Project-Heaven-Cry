@@ -108,18 +108,38 @@ describe('Iron Grip: the Grapple stays; melee hits on a Grappled or Prone (II: S
     expect(run('shaken')).toEqual(tier === 'II' ? [expect.closeTo(v, 6)] : []);
   });
 });
-describe('Keep Swinging (breaching_strike): a Finisher\'s kill gives Momentum', () => {
-  for (const tier of ['I', 'II'] as const) it(tier + ': the kill event carries its technique; a plain blow\'s kill gives nothing', () => {
+// Rules 1.60 item 4625 (R7): a Finisher's kill no longer leaves Momentum (Follow Through is the one source); it makes the
+// next Strike or Opener, before the end of the holder's next turn, cost no Momentum (the condition `swinging`).
+describe('Keep Swinging (breaching_strike): a Finisher\'s kill makes the next Strike or Opener free of Momentum', () => {
+  for (const tier of ['I', 'II'] as const) it(tier + ': the kill event carries its technique; a plain blow\'s kill gives nothing; the next turn\'s Bash costs no Momentum', () => {
     const run = (perk: boolean, how: 'coup' | 'melee') => {
-      const f = physFight([{ weapon: 'sabre', known: ['coup'], perks: perk ? { breaching_strike: tier } : {}, skills: { raw_power: 3 } }], [{ at: 'D5', tier: 'minion' }]);
-      f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.foe.hp = 1; f.turn(f.pc); f.pc.ap = 9; f.momentum(f.pc, 2); rig({ hit: true });
-      const t = tap(() => (how === 'coup' ? f.tech('coup', { targetId: f.foe.id }) : f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode: 'melee' } as any))); rig(null);
-      return { m: f.momentum(f.pc), kills: t.kills, dead: f.foe.dead || f.foe.hp <= 0 };
+      const f = physFight([{ weapon: 'sabre', known: ['coup', 'bash'], perks: perk ? { breaching_strike: tier } : {}, skills: { raw_power: 3 } }], [{ at: 'D5', tier: 'minion' }, { at: 'D6' }]);
+      const [first, second] = f.cb.units.filter((u: any) => u.side === 'foe');
+      f.put(f.pc, 'C5'); f.put(first, 'D5'); f.put(second, 'C6'); f.unit(first.id).hp = 1; f.unit(second.id).hp = f.unit(second.id).maxHp = 900;
+      f.turn(f.pc); f.pc.ap = 9; f.momentum(f.pc, 2); rig({ hit: true });
+      const t = tap(() => (how === 'coup' ? f.tech('coup', { targetId: first.id }) : f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: first.id, mode: 'melee' } as any))); rig(null);
+      const m = f.momentum(f.pc), swinging = condOn(f.unit(f.pc.id), 'swinging');
+      return { f, second, m, swinging, kills: t.kills, dead: f.unit(first.id).dead || f.unit(first.id).hp <= 0 };
     };
     const a = run(true, 'coup'), b = run(false, 'coup');
     expect(a.dead).toBe(true); expect(a.kills[0]?.tech).toBe('coup');
-    expect(a.m - b.m).toBe(E('breaching_strike', tier, 1).value);
-    const c = run(true, 'melee'), d = run(false, 'melee'); expect(c.m - d.m).toBe(0);
+    expect(a.m).toBe(b.m); // no Momentum left by the kill (rules 1.60: Follow Through is the one source)
+    expect(a.swinging).toBe(true); expect(b.swinging).toBe(false);
+    const c = run(true, 'melee'); expect(c.swinging).toBe(false);
+    // the holder's next turn: at 0 Momentum a Bash (a Strike, 1 Momentum) is refused without the perk, and free with it
+    for (const [r, free] of [[a, true], [b, false]] as const) {
+      r.f.cb.round++; r.f.turn(r.f.pc); r.f.pc.ap = 9; r.f.momentum(r.f.pc, 0); rig({ hit: true }); // a new round: a new chain
+      const no = r.f.tech('bash', { targetId: r.second.id }); rig(null);
+      if (free) { expect(no).toBe(null); expect(r.f.momentum(r.f.pc)).toBe(0); expect(condOn(r.f.unit(r.f.pc.id), 'swinging')).toBe(false); } else expect(no).toMatch(/Momentum/);
+    }
+  });
+  it('II: a Finisher that hits an Elite or a Boss gives the perk\'s Momentum once it is done', () => {
+    const run = (perk: boolean) => {
+      const f = physFight([{ weapon: 'sabre', known: ['coup'], perks: perk ? { breaching_strike: 'II' } : {}, skills: { raw_power: 5 } }], [{ at: 'D5', tier: 'elite' }]);
+      f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 900; f.turn(f.pc); f.pc.ap = 9; f.momentum(f.pc, 2); rig({ hit: true });
+      f.tech('coup', { targetId: f.foe.id }); rig(null); return f.momentum(f.pc);
+    };
+    expect(run(true) - run(false)).toBe(E('breaching_strike', 'II', 3).value);
   });
 });
 

@@ -147,8 +147,9 @@ export const TECH_FX: Record<string, TechRow> = {
 
   // ----- class moves that are physical attacks (data/classes.json; the engine marks their events with `move`) -----
   'move:fighter.lunge': row([p('dashes', { len: 1.0 }), p('thrust', { len: 0.45, w: 0.08 })], [p('cross', { n: 1 }), p('ring', { r: 0.4 })]),
-  'move:fighter.finisher': row([p('chop', { h: 1.25, w: 0.18 })], [p('cross', { n: 2, size: 0.3 }), p('crack', { n: 2 })], [p('star', { n: 14 })]),
-  'move:fighter.shove': { attack: [p('bash', { half: 0.36 })], hit: [p('chevrons', { n: 3 })], crit: [], on: 'shove' },
+  // (the Breaker's own Finisher and Shove actions left with rules 1.60, items 4621 and 4623: the door's Finishers play
+  // their technique rows; everyone's Shove, data/actions.json shove, keeps the Shove's look under its action key)
+  'action:shove': { attack: [p('bash', { half: 0.36 })], hit: [p('chevrons', { n: 3 })], crit: [], on: 'shove' },
   'move:defender.anchor': { attack: [p('guard', { span: 160 }), p('ring', { at: 'a', r: 0.5 })], hit: [p('bracket', { r: 0.5, color: '#F65157' })], crit: [], on: 'anchor' },
   // Called Shot (the Operative's, rules 1.32): the technique's own look, with any weapon
   'move:gunslinger.called_shot': row([p('aim', { dash: '2 3' })], [p('round'), p('brand', { shape: 'target', up: 0, size: 0.2 }), p('ring', { r: 0.3 })]),
@@ -173,7 +174,7 @@ export function rowKey(e: { k: string; tech?: string; move?: string; thrown?: bo
   }
   if (e.k === 'technique') return TECH_FX[e.id]?.on === 'use' ? e.id : null;
   // Interpose (the Answer, physical/guard.ts, and the Bulwark's move) is a 'shove' marked interpose: the tank's own row (Guard 2.0, the audit's d)
-  if (e.k === 'shove') return e.interpose && e.unit ? 'interpose' : e.unit && !e._tech && !e.magic ? 'move:fighter.shove' : null;
+  if (e.k === 'shove') return e.interpose && e.unit ? 'interpose' : e.unit && !e._tech && !e.magic ? 'action:shove' : null;
   if (e.k === 'anchor') return e.what === 'oa' && e.target ? 'move:defender.anchor' : null;
   return null;
 }

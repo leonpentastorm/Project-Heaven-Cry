@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CLASS, d20, healingMult, applyCond, condOn, moveUnit, beginTurn, objectsOf, manaOf, strainLimit, readyDesigns, enemyIntent, coverageOf, itemInfo, handlerOf, paths,
   type Unit, type Combat, type Character,
-  mendFactor, levelFactor,
+  mendFactor, levelFactor, resolveAttack,
 } from '../src';
 import { makeObject } from '../src/objects';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
@@ -33,7 +33,7 @@ const order = (f: F, ...us: Unit[]) => { f.cb.order = us.map((u) => u.id); };
 describe('the 20 new moves are handled', () => {
   it('every new move has a handler and every effect is engine-run (no gap, nothing left to the Narrator)', () => {
     const NEW = Object.values(CLASS).flatMap((k: any) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new);
-    expect(NEW.length).toBe(25); // + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite, − Command; − Field Fix (to the move pool, rules 1.32); rules 1.33: + the Ledger and Take the Weight; rules 1.34: + Salvage, Overclock, Scrap Turret, − Silver Tongue
+    expect(NEW.length).toBe(26); // rules 1.60: + Read the Swing; + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite, − Command; − Field Fix (to the move pool, rules 1.32); rules 1.33: + the Ledger and Take the Weight; rules 1.34: + Salvage, Overclock, Scrap Turret, − Silver Tongue
     for (const m of NEW as any[]) {
       const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic' || r.owner === 'action'), m.key).toBe(true); // a handler, or data only (engine foundations 3; a data action: P6, rules 1.32's Vanish; rules 1.33: a data action whose ops run on acted)
       expect(coverageOf(info).filter((r) => r.owner === 'gap' || r.owner === 'narrator'), m.key).toEqual([]);
@@ -72,13 +72,7 @@ describe('Defender', () => {
     expect(f.unit(d.id).braced).toBe(true);
     f.turn(p); act(f, f.unit(p.id), { type: 'combat/shove', targetId: d.id });
     expect(f.unit(d.id).pos).toBe('4,2'); expect(logHas(f.cb, /doesn't budge/)).toBe(true);
-    // A Fighter's knockdown shove (Prone) is cancelled too.
-    const g = fightWith([cls('defender', 8), cls('fighter', 3)], [{ at: 'P11' }]);
-    const [d2, fi] = g.pcs; at(g, d2, '4,2'); at(g, fi, '3,2'); saves(g.unit(d2.id), -50);
-    g.turn(d2); perk(g, g.unit(d2.id), 'class:defender.brace', { actionId: 'brace' });
-    g.turn(fi); g.unit(fi.id).side = 'foe' as any; // the Fighter's Shove needs an enemy: stand it on the other side for the test
-    perk(g, g.unit(fi.id), 'class:fighter.shove', { targetId: d2.id, choice: 'prone' });
-    expect(g.unit(d2.id).prone).toBeFalsy(); expect(g.unit(d2.id).braced).toBe(true);
+    // (the Fighter's own knockdown Shove left with rules 1.60, R3: Wind-up; everyone's Shove is the one above)
   });
   it('Anchor: an enemy that started its turn next to you can\'t Disengage away without your opportunity attack', () => {
     for (const rank of [8, 5]) {
@@ -107,24 +101,25 @@ describe('Defender', () => {
 
 // ======================================================================================================== FIGHTER
 describe('Fighter', () => {
-  it('Shove: 1 AP, push 1 tile on a failed Body save, or knock Prone; a save holds', () => {
-    const f = fightWith([cls('fighter', 3)], [{}]);
-    const u = at(f, f.pc, '4,2'); saves(at(f, f.foe, '5,2'), -50); f.turn(u);
-    perk(f, u, 'class:fighter.shove', { targetId: f.foe.id, choice: 'push' });
-    expect(f.foe.pos).toBe('6,2'); expect(f.unit(u.id).ap).toBe(5); expect(fx(f, 'shove').at(-1)).toMatchObject({ ok: true, to: '6,2' });
-    at(f, f.foe, '5,2'); seed(f, 5); perk(f, u, 'class:fighter.shove', { targetId: f.foe.id, choice: 'prone' });
-    expect(f.foe.prone).toBe(true);
-    saves(f.unit(f.foe.id), 50); f.unit(f.foe.id).prone = false; seed(f, 10);
-    perk(f, u, 'class:fighter.shove', { targetId: f.foe.id, choice: 'push' });
-    expect(f.foe.pos).toBe('5,2'); expect(logHas(f.cb, /holds firm/)).toBe(true);
+  // Rules 1.60 item 4621 (R3): Wind-up replaced the Breaker's Shove: a fight starts with more Momentum (stat momentum_start).
+  it('Wind-up: a Breaker starts the fight with its data\'s Momentum more than anyone else (within its pool)', () => {
+    const add = (CLASS.fighter.ranks.I.moves.find((m: any) => m.id === 'wind_up') as any).effects[0].value;
+    const f = fightWith([cls('fighter', 3, { weapon: 'sabre' }), { weapon: 'sabre' }], [{}]);
+    const [b, o] = f.pcs;
+    expect(f.unit(b.id).res!.momentum).toBe(Math.min(f.unit(b.id).resMax!.momentum!, f.unit(o.id).res!.momentum! + add));
+    expect(itemInfo('class:fighter.shove')).toBeFalsy(); // its action is gone; the base Shove stays everyone's
   });
-  it('Shove: refused (nothing spent) when the push is blocked, or the target isn\'t adjacent', () => {
-    const f = fightWith([cls('fighter', 3)], [{}, {}]);
-    const u = at(f, f.pc, '4,2'); at(f, f.foes[0], '5,2'); at(f, f.foes[1], '6,2'); f.turn(u);
-    expect(() => perk(f, u, 'class:fighter.shove', { targetId: f.foes[0].id, choice: 'push' })).toThrow(/Knock them Prone instead/);
-    at(f, f.foes[0], '8,2');
-    expect(() => perk(f, u, 'class:fighter.shove', { targetId: f.foes[0].id })).toThrow(/Out of range/);
-    expect(f.unit(u.id).ap).toBe(6);
+  // Rules 1.60 item 4624 (R6): Read the Swing, at rank II in Lingering Dread's place: a melee miss on you, once a round, +1 Momentum.
+  it('Read the Swing: a melee attack that misses the Breaker gives it Momentum, once a round', () => {
+    const add = (CLASS.fighter.ranks.II.moves.find((m: any) => m.id === 'read_the_swing') as any).effects[0].value;
+    const f = fightWith([cls('fighter', 5, { weapon: 'sabre', level: 6 })], [{ weapon: 'combat_knife' }]);
+    const u = tough(at(f, f.pc, '4,2')), foe = at(f, f.foe, '5,2'); foe.attack = -90; f.turn(foe);
+    f.unit(u.id).res!.momentum = 0;
+    withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(foe.id), f.unit(u.id), 'melee', null, { noAp: true }));
+    withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(foe.id), f.unit(u.id), 'melee', null, { noAp: true }));
+    const lines = f.cb.log.filter((l) => /reads Foe 1's swing/.test(l));
+    expect(lines.length).toBe(1); // once a round
+    expect(lines[0]).toContain('+' + add + ' Momentum'); // (the Riposte it then pays for spends it: the Answer's own rule)
   });
   it('Unstoppable: Pinned and Slowed set aside (they come back next turn), Fear refused, no opportunity attack, +2 Momentum; once a scene', () => {
     const f = fightWith([cls('fighter', 8)], [{}]);
@@ -132,7 +127,7 @@ describe('Fighter', () => {
     withGame(f.g, () => { applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'pinned', 3, undefined, { skipSave: true }); applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'slowed', 3, undefined, { skipSave: true }); });
     expect(() => act(f, u, { type: 'combat/move', to: '2,2' })).toThrow(/Pinned/);
     perk(f, u, 'class:fighter.unstoppable');
-    expect(condOn(f.unit(u.id), 'pinned')).toBe(false); expect(f.unit(u.id).res!.momentum).toBe(3); // the 1 a fight starts with, +2
+    expect(condOn(f.unit(u.id), 'pinned')).toBe(false); expect(f.unit(u.id).res!.momentum).toBe(Math.min(f.unit(u.id).resMax!.momentum!, 3 + 2)); // the 3 a Breaker's fight starts with (Wind-up, rules 1.60), +2
     expect(fx(f, 'unstoppable').length).toBe(1);
     withGame(f.g, () => applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'fear', 2, undefined, { skipSave: true }));
     expect(condOn(f.unit(u.id), 'fear')).toBe(false);
@@ -146,14 +141,16 @@ describe('Fighter', () => {
 
 // ======================================================================================================== MARKSMAN
 describe('Marksman', () => {
-  it('Speed Loader: the first reload of a turn costs 1 AP less, the second the full 2', () => {
+  // Rules 1.60 item 4626 (R8): Hold the Lane (the Speed Loader's id): held shots cost 1 AP less; a reload is full price.
+  it('Hold the Lane: a held shot (Overwatch) costs 1 AP less than for anyone else; a reload is full price', () => {
+    const cut = -(CLASS.marksman.ranks.I.moves.find((m: any) => m.id === 'speed_loader') as any).effects[0].value;
+    const took = (who: CharSpec) => { const f = fightWith([{ ...who, weapon: 'hellraiser_service_rifle' }], [{ at: 'P11' }]); const u = f.turn(f.pc); const ap = f.unit(u.id).ap; act(f, u, { type: 'combat/technique', id: 'overwatch' }); return ap - f.unit(u.id).ap; };
+    expect(took(cls('marksman', 3))).toBe(Math.max(1, took({}) - cut));
     const f = fightWith([cls('marksman', 3, { weapon: 'hellraiser_service_rifle' })], [{}]);
-    let u = f.turn(f.pc); u.ammo = 3; u.mags = [30, 30];
-    act(f, u, { type: 'combat/reload' }); expect(f.unit(u.id).ap).toBe(5);
-    f.unit(u.id).ammo = 3; act(f, u, { type: 'combat/reload' }); expect(f.unit(u.id).ap).toBe(3);
-    f.cb.round++; u = f.turn(u); f.unit(u.id).ammo = 3; f.unit(u.id).mags = [30]; act(f, u, { type: 'combat/reload' }); expect(f.unit(u.id).ap).toBe(5);
+    const u = f.turn(f.pc); u.ammo = 3; u.mags = [30, 30];
+    act(f, u, { type: 'combat/reload' }); expect(f.unit(u.id).ap).toBe(4);
   });
-  it('Speed Loader: a character without it pays 2', () => {
+  it('a reload: a character without the class pays 2 too', () => {
     const f = fightWith([cls('fighter', 3, { weapon: 'hellraiser_service_rifle' })], [{}]);
     const u = f.turn(f.pc); u.ammo = 3; u.mags = [30];
     act(f, u, { type: 'combat/reload' }); expect(f.unit(u.id).ap).toBe(4);
@@ -186,14 +183,12 @@ describe('Marksman', () => {
 
 // ======================================================================================================== INFILTRATOR
 describe('Infiltrator', () => {
-  it('Vanish: 1 AP, Hidden when no enemy sees you; refused in sight', () => {
-    const f = fightWith([cls('infiltrator', 3)], [{}]);
-    let u = at(f, f.pc, '9,6'); at(f, f.foe, '12,6'); u = f.turn(u);
-    perk(f, u, 'class:infiltrator.vanish');
-    expect(f.unit(u.id).hidden).toBe(true); expect(f.unit(u.id).ap).toBe(5);
-    const g = fightWith([cls('infiltrator', 3)], [{}]);
-    const v = g.turn(at(g, g.pc, '4,2')); at(g, g.foe, '8,2');
-    expect(() => perk(g, v, 'class:infiltrator.vanish')).toThrow(/Not now/); // rules 1.32: data only, its `if` (out of view)
+  // Rules 1.60 item 4628 (R10): Vanish re-pointed: the Operative's Fade (Ingenuity 5's verb) costs no Shadow.
+  it('Vanish: the Operative\'s Fade takes no Shadow; anyone else\'s takes its price', () => {
+    const run = (spec: CharSpec) => { const f = fightWith([spec], [{}]); const u = at(f, f.pc, '3,4'); at(f, f.foe, '8,4'); f.turn(u); (f.unit(u.id).res ||= {}).shadow = 2; f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:shadow.fade' } as any); return { hidden: !!f.unit(u.id).hidden, shadow: f.unit(u.id).res!.shadow }; };
+    const op = run(cls('infiltrator', 8, { level: 12, skills: { ingenuity: 7 } })), other = run({ skills: { ingenuity: 7 }, attrs: { perception: 7 } });
+    expect(op.hidden).toBe(true); expect(other.hidden).toBe(true);
+    expect(op.shadow).toBe(2); expect(other.shadow).toBeLessThan(2);
   });
   it('Field Fix (now the Rigger\'s, rules 1.34): clear a squadmate\'s jam, restore their weapon, repair a machine; nothing to fix is refused', () => {
     const f = fightWith([cls('trickster', 5), { traits: ['factory_made'] }], [{ at: 'P11' }]);

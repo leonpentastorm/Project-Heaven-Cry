@@ -1,7 +1,8 @@
 // The 0.29 consolidation (SF1, the lead's ruling of 16 Nov 2026): a Boss is never moved by a forced move from an
 // opponent's item (data/rules.json forced_movement.boss_holds; combat.ts forcedRefusal, the one gate every push, pull,
 // throw, teleport and swap passes), but for the items the data names (Tug: its own row moves a Boss 1 tile). Every
-// source goes through the reducer with a real action: Slam (Durability's door), Palm (the Open Hand), Shove; Press (the
+// source goes through the reducer with a real action: Slam (Durability's door), Shove (the Open Hand's Palm pushes nobody
+// since rules 1.60 R19: it Staggers); Press (the
 // Wall's order) is in figments-2.test.ts, Launch in momentum-2.test.ts and Tug in bonds-slice1.test.ts. Each still moves a Soldier.
 import { describe, it, expect, afterEach } from 'vitest';
 import './helpers/yard16';
@@ -27,7 +28,8 @@ describe('a Boss holds against every forced move of a player\'s item; a Soldier 
     moved(tier, was, f.unit(foe.id).pos);
   });
 
-  for (const tier of TIERS) it('Palm (' + tier + ')', () => {
+  // rules 1.60 item 4637 (R19): the Palm Staggers (no reaction until its next turn) and pushes nobody, a Boss or a Soldier
+  for (const tier of TIERS) it('Palm (' + tier + '): Staggered, never moved', () => {
     const f = fightWith([{ archetype: 'monk', weapon: 'hand_wraps' }], [{ at: 'F6', tier }]);
     const [x, y] = f.foe.pos.split(',').map(Number);
     f.g.combat!.units.find((u) => u.side === 'pc')!.pos = (x - 1) + ',' + y;
@@ -35,8 +37,9 @@ describe('a Boss holds against every forced move of a player\'s item; a Soldier 
     expect(previewDescriptor(f.g, u.id, 'tq:main:cut', { targetId: f.foe.id, mods }, 'host')).toBeTruthy();
     FAIL_SAVES = true;
     dice({ die: 10, hit: true }, () => f.act(sendDescriptor(f.g, u.id, 'tq:main:cut', { targetId: f.foe.id, mods }, 'host')!));
-    expect(f.unit(f.foe.id).conds?.off_balance, f.g.combat!.log.slice(-3).join(' | ')).toBeTruthy();
-    moved(tier, was, f.unit(f.foe.id).pos);
+    expect(f.unit(f.foe.id).conds?.staggered, f.g.combat!.log.slice(-3).join(' | ')).toBeTruthy();
+    expect(f.unit(f.foe.id).conds?.off_balance).toBeFalsy();
+    expect(f.unit(f.foe.id).pos).toBe(was);
   });
 
   for (const tier of TIERS) it('Shove (' + tier + ')', () => {

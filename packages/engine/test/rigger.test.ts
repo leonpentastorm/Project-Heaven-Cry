@@ -72,15 +72,20 @@ describe('the Rigger: the moves', () => {
     const b = f.figments(u)[0], was = u.pos; use(f, u, 'class:trickster.sleight', { targetId: b.id }); u = f.unit(u.id);
     expect(u.pos).toBe('3,4'); expect(f.unit(b.id).pos).toBe(was);
   });
-  it('Scrap Turret: from a barricade-less wreck next to you, a turret that fires at your turn starts for `rounds` rounds, then is gone', () => {
+  // Rules 1.60 item 4633 (R15): the Scrap Turret is the Scrap Sentinel: the Sentinel form, for no charge, outside the held
+  // count and with no upkeep, gone after `rounds` rounds; no Visualization needed.
+  it('Scrap Sentinel: from a wreck next to you, a free Sentinel (the Figment form) for `rounds` rounds, then gone', () => {
     const f = rigger({ vis: 0, foes: [{ tier: 'soldier', at: '9,4', classic: true }, { tier: 'soldier', at: '12,4', classic: true }] }); let u = f.turn(f.pc);
     const w = f.foes[0]; w.kind = 'drone'; w.pos = '2,4'; withGame(f.g, () => applyDamage(f.cb, w, 9999, { by: u, type: 'weapon' } as any));
+    const charge0 = f.unit(u.id).mg?.vcarry ?? null;
     use(f, u, 'class:trickster.scrap_turret', { tile: '2,4' }); u = f.unit(u.id);
-    const tr = f.cb.units.find((x: any) => x.owned?.kind === 'machine')!; expect(tr).toBeTruthy(); expect(tr.owned!.turn).toBe('auto');
-    const n0 = f.cb.log.length; f.cb.round++; u = f.turn(u);
-    expect(f.cb.log.slice(n0).some((l: any) => String(l.text || l).includes(tr.name))).toBe(true);
-    for (let i = 1; i < move('scrap_turret').numbers.rounds; i++) { f.cb.round++; u = f.turn(u); }
-    expect(f.cb.units.some((x: any) => x.owned?.kind === 'machine')).toBe(false);
+    const form = move('scrap_turret').figment_form;
+    const s = f.cb.units.find((x: any) => x.figment?.form === form)!; expect(s).toBeTruthy();
+    expect(s.owned!.kind).toBe('figment'); expect(s.owned!.free).toBe(true); expect(s.owned!.left).toBe(move('scrap_turret').numbers.rounds);
+    expect(f.unit(u.id).mg?.vcarry ?? null).toBe(charge0); // no charge
+    expect(() => use(f, u, 'class:trickster.scrap_turret', { tile: '2,4' })).toThrow(); // once a scene, one at a time
+    for (let i = 0; i < move('scrap_turret').numbers.rounds; i++) { f.cb.round++; u = f.turn(u); }
+    expect(f.cb.units.some((x: any) => x.figment?.form === form && !x.dead)).toBe(false);
   });
 });
 

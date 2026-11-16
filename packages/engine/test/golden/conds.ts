@@ -197,7 +197,6 @@ export function recordConditions(): { state: Record<string, string>; log: Record
   //   moved/tech-bleed/<technique>/<door>  each technique that puts Bleeding on with no rounds of its own (3 rounds since
   //                                        the text-number sweep, spec item 1512; listed in item 1581), on an edge weapon
   //   moved/stop-prone/<door>              a technique's Stop: Prone (the Shove technique into a wall: no save)
-  //   moved/fighter-shove/<door>           the Fighter's Shove (Prone), with how many times cond_landed was told
   //   moved/called-shot-<place>/<door>     the Called Shot through the move (the injury hook and the condition door)
   //   moved/unravel                        the Counting Weaver's Unravel on a seen enemy (its boons, its Brace, its shield)
   //   moved/drop-prone-braced              dropping Prone by choice keeps a weapon Brace (spec item 1583)
@@ -226,15 +225,7 @@ export function recordConditions(): { state: Record<string, string>; log: Record
       const s = stageOf(gT, 'soldier'); s.src.strength = 50; s.t.pos = '6,5'; s.other.pos = '7,5'; s.t.braced = true; s.base = snap(s.t); doors(s, door, ['prone']);
       record('moved/stop-prone/' + door, s, () => tech(s, 'shove', 10));
     }
-    {
-      const gF = fightSpec([{ ...EVEN, classId: 'fighter', level: 12, attrs: { ...EVEN.attrs, strength: 6 } }, { ...EVEN }, { ...EVEN }], TIERS.map((tier) => ({ tier })), { level: 6, seed: 'conds-shove' });
-      for (const u of gF.combat.units) { u.hp = u.maxHp; u.hidden = false; }
-      for (const door of ['plain', 'query', 'hook', 'shrug']) {
-        const s = stageOf(gF, 'soldier'); s.t.sv = { body: -50, brain: -50, heart: -50 }; s.t.braced = true; s.base = snap(s.t); doors(s, door, ['prone']); if (door === 'shrug') MARK.shrug = s.t.id;
-        MARK.landed = 0;
-        record('moved/fighter-shove/' + door, s, () => A.runPerkAction({ u: s.src, c: s.g.characters[s.src.charId], cb: s.cb, g: s.g }, 'class:fighter.shove', { targetId: s.t.id, choice: 'prone' }, s.g.rng, 'combat'), () => ' landed' + MARK.landed);
-      }
-    }
+    // (moved/fighter-shove: the Fighter's own Shove left with rules 1.60 item 4621, Wind-up; its rows are gone on purpose)
     {
       const gC = fightSpec([{ ...EVEN, classId: 'marksman', level: 12, attrs: { ...EVEN.attrs, agility: 8 }, weapon: 'service_pistol' }, { ...EVEN }, { ...EVEN }], TIERS.map((tier) => ({ tier })), { level: 12, seed: 'conds-called' });
       for (const u of gC.combat.units) { u.hp = u.maxHp; u.hidden = false; }

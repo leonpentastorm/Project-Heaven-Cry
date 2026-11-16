@@ -628,7 +628,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When one of your Finishers drops an enemy, you gain {=tiers.I.effects.1.value} Momentum once it is done. II: When one of your Finishers drops an enemy, you gain {=tiers.II.effects.1.value} Momentum once it is done, and a Finisher that hits an Elite or a Boss gives you {=tiers.II.effects.3.value} Momentum.",
+      "text": "I: When one of your Finishers drops an enemy, your next Strike or Opener before the end of your next turn costs no Momentum (a Finisher ends this turn's chain). II: That, and a Finisher that hits an Elite or a Boss gives you {=tiers.II.effects.3.value} Momentum.",
       "effects": [
         {
           "op": "mark",
@@ -642,7 +642,7 @@
           "flag": "swing"
         },
         {
-          "op": "resource",
+          "op": "condition",
           "when": "acted",
           "if": {
             "flag": "swing",
@@ -651,8 +651,8 @@
                 ]
           },
           "priority": 150,
-          "resource": "momentum",
-          "value": 1,
+          "condition": "swinging",
+          "skip_save": true,
           "and": [
             {
               "op": "mark",
@@ -671,7 +671,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "When one of your Finishers drops an enemy, you gain {=tiers.I.effects.1.value} Momentum once it is done.",
+          "text": "When one of your Finishers drops an enemy, your next Strike or Opener before the end of your next turn costs no Momentum (a Finisher ends this turn's chain).",
           "effects": [
             {
               "op": "mark",
@@ -685,7 +685,7 @@
               "flag": "swing"
             },
             {
-              "op": "resource",
+              "op": "condition",
               "when": "acted",
               "if": {
                 "flag": "swing",
@@ -694,8 +694,8 @@
                 ]
               },
               "priority": 150,
-              "resource": "momentum",
-              "value": 1,
+              "condition": "swinging",
+              "skip_save": true,
               "and": [
                 {
                   "op": "mark",
@@ -714,7 +714,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "When one of your Finishers drops an enemy, you gain {=tiers.II.effects.1.value} Momentum once it is done, and a Finisher that hits an Elite or a Boss gives you {=tiers.II.effects.3.value} Momentum.",
+          "text": "When one of your Finishers drops an enemy, your next Strike or Opener before the end of your next turn costs no Momentum; and a Finisher that hits an Elite or a Boss gives you {=tiers.II.effects.3.value} Momentum.",
           "effects": [
             {
               "op": "mark",
@@ -728,7 +728,7 @@
               "flag": "swing"
             },
             {
-              "op": "resource",
+              "op": "condition",
               "when": "acted",
               "if": {
                 "flag": "swing",
@@ -737,8 +737,8 @@
                 ]
               },
               "priority": 150,
-              "resource": "momentum",
-              "value": 2,
+              "condition": "swinging",
+              "skip_save": true,
               "and": [
                 {
                   "op": "mark",

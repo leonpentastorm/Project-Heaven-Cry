@@ -4,11 +4,11 @@
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
 import { say, unsay, type Combat, type Unit, noteLoose, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, dist, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, setOffJam, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON } from '../data';
-import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery } from '../effects/hooks';
+import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery, statHeard } from '../effects/hooks';
 import { scaleOf } from '../effects/output';
 import { apDebt } from '../effects/ap';
 import { price, priced, whyNot, pay, refund } from '../effects/cost';
-import type { CostSite } from '../effects/stats';
+import type { CostSite, StatId } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
 import { resOf, resGain, resSpend, canReact, react, reactBlocked as reactBlockedOf, type ReactKind } from '../tactics';
@@ -186,10 +186,23 @@ export function momentumCost(u: Unit, def: TechDef, args?: TechArgs): number {
   const R = PHYS_RULES.momentum;
   if (def.system !== 'melee' || def.free || (def.group !== 'strike' && def.group !== 'opener')) return 0;
   if ((args as any)?._pair?.second) return 0;
-  const own = (def.numbers as any)?.momentum_cost; if (typeof own === 'number') return own;
-  if (def.group === 'opener') return R.first_opener_free && !u.openerUsed ? 0 : R.opener_cost ?? 1;
-  return R.strike_cost ?? 1;
+  const own = (def.numbers as any)?.momentum_cost;
+  const base = typeof own === 'number' ? own : def.group === 'opener' ? (R.first_opener_free && !u.openerUsed ? 0 : R.opener_cost ?? 1) : R.strike_cost ?? 1;
+  return base ? Math.max(0, base + momentumCostMod(u, def)) : 0;
 }
+/** Rules 1.60 (N23, approved 16 Nov 2026): what a unit's items and conditions add to a Strike's or an Opener's Momentum
+ * price, the stat family `momentum_cost:<technique id, or its group>` (a negative answer cuts it, never below 0; a
+ * price of 0 stays 0): Keep Swinging's "your next Strike or Opener costs no Momentum" is a condition row answering
+ * `momentum_cost:strike` and `momentum_cost:opener`. Asked only while something in the fight answers it (statHeard). */
+function momentumCostMod(u: Unit, def: TechDef): number {
+  const cb = boundGame()?.combat; let n = 0;
+  for (const id of ['momentum_cost:' + def.id, 'momentum_cost:' + def.group] as StatId[]) if (statHeard(cb, id)) n += statQuery({ u, cb }, id).add;
+  return n;
+}
+/** Rules 1.60 (N23; the Breaker's Wind-up, R3): the Momentum a unit starts a fight with: the door's own start
+ * (techniques.json rules.momentum.start) and what its items add (stat `momentum_start`). The one reader is the fight's
+ * start (physical/rules.ts), within the unit's pool. */
+export const momentumStart = (cb: Combat, u: Unit): number => (PHYS_RULES.momentum.start ?? 1) + (statHeard(cb, 'momentum_start') ? statQuery({ u, cb }, 'momentum_start').add : 0);
 /** Momentum lost to something that happened to the unit (a tile walked, a hit taken): −n, never below 0. The meter's
  * own effects event shows it; the log says nothing (a walk's line stays one line). */
 export function loseMomentum(cb: Combat, u: Unit, n: number): number {

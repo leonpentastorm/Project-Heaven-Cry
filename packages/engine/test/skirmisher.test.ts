@@ -133,17 +133,17 @@ describe('Fire Discipline (rules 1.30 item 1804, the lead\'s ruling 13 Nov 2026)
   });
 });
 
-describe('Speed Loader (rules 1.30 item 1805)', () => {
-  it('a pick-up and a swap are cut as a reload is: once a turn, shared', () => {
+// Rules 1.60 item 4626 (R8): the Skirmisher's rank I move (the Speed Loader's id) is Hold the Lane: its held shots (the
+// watch group) cost 1 AP less; a pick-up, a swap and a reload are full price (Speed Load, Dexterity 3, is the reload's).
+describe('Hold the Lane (rules 1.60 item 4626; was Speed Loader)', () => {
+  it('a pick-up and a swap are full price; the cut is on the held shots (the watch group)', () => {
     const c = eff('class:marksman.speed_loader', 'cost_mod', 'cost');
+    expect(c.if.tech_group).toEqual(['watch']);
     const f = fightWith([sk(1)], [{}]);
     const u = f.turn(f.pc);
-    expect(withGame(f.g, () => price({ cb: f.cb, u: f.unit(u.id) }, 'pickup', 3)).ap).toBe(3 + c.value);
-    const sw: any = withGame(f.g, () => emit(f.cb, 'swap', { u: f.unit(u.id), ap: 2, cb: f.cb }));
-    expect(sw.ap).toBe(2 + c.value); // the swap takes the turn's use
-    const sw2: any = withGame(f.g, () => emit(f.cb, 'swap', { u: f.unit(u.id), ap: 2, cb: f.cb }));
-    expect(sw2.ap).toBe(2);
     expect(withGame(f.g, () => price({ cb: f.cb, u: f.unit(u.id) }, 'pickup', 3)).ap).toBe(3);
+    const sw: any = withGame(f.g, () => emit(f.cb, 'swap', { u: f.unit(u.id), ap: 2, cb: f.cb }));
+    expect(sw.ap).toBe(2);
   });
 });
 
@@ -211,33 +211,27 @@ describe('Run and Gun (rules 1.30 item 1808)', () => {
     const rel = (CLASS.marksman as any).gain.find((m: any) => m.id === 'relocated').effects[2].value;
     expect(added(true) - added(false)).toBe(rg().numbers.pressure + rel);
   });
-  it('rank III holds Fire and Move and Run and Gun: one free move a turn between them, and it is the longer one', () => {
+  // Rules 1.60 item 4627 (R9): Run and Gun is no longer the turn's one free move: it neither reads nor puts the
+  // free_move_spent marker, so a rank III Skirmisher may take Run and Gun's move and Fire and Move's step in one turn.
+  it('rank III: the Run and Gun free move and the Fire and Move step are both free in one turn', () => {
     const fm = (CLASS.marksman as any).gain.find((m: any) => m.id === 'fire_and_move'), step = fm.effects[1].if.path_tiles_at_most;
-    // a long free move first (Run and Gun's), then a short one: the short one is paid (no second free move from Fire and Move)
     const a = setUp(); at(a.f, a.f.foe, '9,4');
     a.f.act({ unitId: a.u.id, type: 'combat/attack', targetId: a.f.foe.id, mode: 'shot' } as any);
     let ap = a.f.unit(a.u.id).ap;
     a.f.act({ unitId: a.u.id, type: 'combat/move', to: '4,' + (4 - rg().numbers.tiles) } as any);
-    expect(a.f.unit(a.u.id).ap).toBe(ap);
+    expect(a.f.unit(a.u.id).ap).toBe(ap); // Run and Gun's
+    expect(condOn(a.f.unit(a.u.id), 'free_move_spent')).toBe(false); // Run and Gun puts no marker now
     a.f.unit(a.u.id).ap = 6; a.f.unit(a.u.id).heat = 0;
     a.f.act({ unitId: a.u.id, type: 'combat/attack', targetId: a.f.foe.id, mode: 'shot' } as any);
     ap = a.f.unit(a.u.id).ap;
     a.f.act({ unitId: a.u.id, type: 'combat/move', to: '4,' + (4 - rg().numbers.tiles - step) } as any);
-    expect(a.f.unit(a.u.id).ap).toBeLessThan(ap);
-    // a short free move first is Run and Gun's (the longer one, asked first: its Pressure rider is set), and the next move is paid
-    const b = setUp(); at(b.f, b.f.foe, '9,4');
-    b.f.act({ unitId: b.u.id, type: 'combat/attack', targetId: b.f.foe.id, mode: 'shot' } as any);
-    ap = b.f.unit(b.u.id).ap;
-    b.f.act({ unitId: b.u.id, type: 'combat/move', to: '4,' + (4 - step) } as any);
-    expect(b.f.unit(b.u.id).ap).toBe(ap);
-    expect((b.f.unit(b.u.id) as any).ps?.['class:marksman.run_and_gun']?.flags?.ran).toBe(true);
-    ap = b.f.unit(b.u.id).ap;
-    b.f.act({ unitId: b.u.id, type: 'combat/move', to: '4,' + (4 - 2 * step) } as any);
-    expect(b.f.unit(b.u.id).ap).toBeLessThan(ap);
-    // the next turn has its free move again (the marker ends with the turn)
-    expect(condOn(b.f.unit(b.u.id), 'free_move_spent')).toBe(true);
-    b.f.act({ unitId: b.u.id, type: 'combat/end-turn' } as any);
-    expect(condOn(b.f.unit(b.u.id), 'free_move_spent')).toBe(false);
+    expect(a.f.unit(a.u.id).ap).toBe(ap); // Fire and Move's step, free as well
+    expect(condOn(a.f.unit(a.u.id), 'free_move_spent')).toBe(true); // Fire and Move's own marker
+    ap = a.f.unit(a.u.id).ap;
+    a.f.act({ unitId: a.u.id, type: 'combat/move', to: '4,' + (4 - rg().numbers.tiles - 2 * step) } as any);
+    expect(a.f.unit(a.u.id).ap).toBeLessThan(ap); // a third move is paid
+    a.f.act({ unitId: a.u.id, type: 'combat/end-turn' } as any);
+    expect(condOn(a.f.unit(a.u.id), 'free_move_spent')).toBe(false); // the marker ends with the turn
   });
 });
 
@@ -260,10 +254,13 @@ describe('Riposte, one Answer (rules 1.30 item 1810)', () => {
     expect(reactionsUsed(f.cb, f.unit(me.id))).toBe(1);
     expect(f.cb.log.some((l) => /Counter/.test(l)) || (f.unit(me.id).counter || 0) === 0).toBe(true);
   });
-  it('with no Momentum the Breaker does not Riposte, and keeps its reaction', () => {
+  // Rules 1.60 item 4624 (R6): a rank II Breaker also holds Read the Swing, whose Momentum (the miss itself) comes before
+  // the Answer: at 0 Momentum the miss pays for the Riposte. Riposte's own rule (no Momentum, no Riposte) is unchanged.
+  it('with no Momentum, the Momentum Read the Swing takes from the miss pays for the Riposte (it comes first)', () => {
     const { f, me, foe } = fight(0);
     withGame(f.g, () => resolveAttack(f.cb, f.g.rng, foe, me, 'melee', null, { noAp: true }));
-    expect(count(f, /answers with Riposte/)).toBe(0);
-    expect(reactionsUsed(f.cb, f.unit(me.id))).toBe(0);
+    const i = f.cb.log.findIndex((l) => /reads .*swing/.test(l)), j = f.cb.log.findIndex((l) => /answers with Riposte/.test(l));
+    expect(i).toBeGreaterThanOrEqual(0); expect(j).toBeGreaterThan(i);
+    expect(reactionsUsed(f.cb, f.unit(me.id))).toBe(1);
   });
 });

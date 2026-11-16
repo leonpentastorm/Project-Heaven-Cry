@@ -8,6 +8,8 @@ import './helpers/yard16';
 import { actionsFor, previewDescriptor, sendDescriptor, archetypeWeapons, RACK, LOADOUT, WEAPON, ITEM } from '../src';
 import { fightWith } from './helpers/perkfight';
 import { dice } from './golden/harness';
+import { condOn } from '../src/magic';
+import { canReact } from '../src/tactics';
 
 const HIT = { die: 10, hit: true };
 /** A monk in these gloves next to one foe, on its turn. */
@@ -60,16 +62,18 @@ describe('the Open Hand: the glove family (rules 1.56, the unarmed fighter)', ()
     expect(jab.fx.some((e: any) => e.k === 'stance' && e.what === 'jab' && e.target === a.u.id)).toBe(true);
   });
 
-  it('Palm: a lighter blow, then the target saves or is Off Balance and pushed a tile', () => {
-    let pushed = 0, saved = 0;
+  // rules 1.60 item 4637 (R19): the Palm Staggers (no reaction of any kind until its next turn, no AP lost) and pushes nobody
+  it('Palm: a lighter blow, then the target saves or is Staggered (no reaction until its next turn); nobody is pushed', () => {
+    let staggered = 0, saved = 0;
     for (let i = 0; i < 6; i++) {
       const { f, u } = monk(); const at0 = f.foe.pos, r = strike(f, u, ['palm']);
-      const c = r.fx.find((e: any) => e.k === 'cond' && e.id === 'off_balance'); expect(c, 'a save is rolled').toBeTruthy();
-      if (c.resisted) { saved++; expect(r.foe.pos).toBe(at0); } else { pushed++; expect(r.foe.pos).not.toBe(at0); expect(r.fx.some((e: any) => e.k === 'shove')).toBe(true); }
+      const c = r.fx.find((e: any) => e.k === 'cond' && e.id === 'staggered'); expect(c, 'a save is rolled').toBeTruthy();
+      expect(r.foe.pos).toBe(at0); expect(r.fx.some((e: any) => e.k === 'shove')).toBe(false);
+      if (c.resisted) { saved++; expect(canReact(f.cb, f.unit(f.foe.id), 'attack')).toBe(true); } else { staggered++; expect(condOn(f.unit(f.foe.id), 'staggered')).toBe(true); expect(canReact(f.cb, f.unit(f.foe.id), 'protect')).toBe(false); }
       expect(r.fx.some((e: any) => e.k === 'stance' && e.what === 'palm')).toBe(true);
-      f.turn(f.foe); f.turn(u); // a new turn for the next try
+      f.turn(f.foe); expect(condOn(f.unit(f.foe.id), 'staggered')).toBe(false); f.turn(u); // its next turn ends it
     }
-    expect(pushed + saved).toBe(6);
+    expect(staggered + saved).toBe(6);
   });
 
   it('Sweep: one AP more, a light blow, and the target is Prone (no save); never a Boss', () => {
@@ -92,7 +96,7 @@ describe('the Open Hand: the glove family (rules 1.56, the unarmed fighter)', ()
     const a = monk();
     expect(() => strike(a.f, a.u, ['palm', 'sweep'])).toThrow(/One at a time/);
     const r = strike(a.f, a.u, ['palm']);
-    const tries = r.fx.filter((e: any) => (e.k === 'cond' && e.id === 'off_balance') || (e.k === 'stance' && e.what === 'swept'));
+    const tries = r.fx.filter((e: any) => (e.k === 'cond' && e.id === 'staggered') || (e.k === 'stance' && e.what === 'swept'));
     expect(tries.length).toBe(1);
     const again = strike(a.f, a.u, ['sweep']); // the same turn: Sweep's Prone waits for the next turn
     expect(again.fx.some((e: any) => e.what === 'swept')).toBe(false);

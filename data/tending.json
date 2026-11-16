@@ -811,11 +811,12 @@
           "min": 1
         }
       ],
-      "text": "{=effects.0.ap} AP and {=effects.0.res.mp.base} MP ({=effects.0.res.mp.steps.0.value|abs} less from Empathy {=effects.0.res.mp.steps.0.at}): an ally within {=effects.0.reach.tiles} tiles you see, or a Bonded ally anywhere you see, heals {=amounts.heal.base} × your Healing given, more as you level.",
+      "text": "{=effects.0.ap} AP and {=effects.0.res.mp.base} MP ({=effects.0.res.mp.steps.0.value|abs} less from Empathy {=effects.0.res.mp.steps.0.at}): an ally within {=effects.0.reach.tiles} tiles you see, or a Bonded ally anywhere you see, heals {=amounts.heal.base} × your Healing given, more as you level. The brake: each further Mend, Touch or Shield you give the same ally in a round costs half again the MP of your last on them.",
       "effects": [
         {
           "op": "grant_action",
           "action": "tend_mend",
+          "brake": true,
           "ap": 2,
           "uses": "at_will",
           "res": {
@@ -960,11 +961,12 @@
           "min": 1
         }
       ],
-      "text": "{=effects.0.ap} AP and {=effects.0.res.mp.base} MP ({=effects.0.res.mp.steps.0.value|abs} less from Empathy {=effects.0.res.mp.steps.0.at}): an ally next to you heals {=amounts.heal.base} × your Healing given, more as you level.",
+      "text": "{=effects.0.ap} AP and {=effects.0.res.mp.base} MP ({=effects.0.res.mp.steps.0.value|abs} less from Empathy {=effects.0.res.mp.steps.0.at}): an ally next to you heals {=amounts.heal.base} × your Healing given, more as you level. The brake: each further Mend, Touch or Shield you give the same ally in a round costs half again the MP of your last on them.",
       "effects": [
         {
           "op": "grant_action",
           "action": "tend_touch",
+          "brake": true,
           "ap": 2,
           "uses": "at_will",
           "res": {
@@ -1241,7 +1243,7 @@
           "min": 2
         }
       ],
-      "text": "{=effects.0.ap} AP and {=effects.0.res.mp.base} MP ({=effects.0.res.mp.steps.0.value|abs} less from Empathy {=effects.0.res.mp.steps.0.at}): an ally in reach gains a shield of {=amounts.shield.base} × your Healing given, more as you level (the larger shield stands).",
+      "text": "{=effects.0.ap} AP and {=effects.0.res.mp.base} MP ({=effects.0.res.mp.steps.0.value|abs} less from Empathy {=effects.0.res.mp.steps.0.at}): an ally Bonded to you, anywhere you see, gains a shield of {=amounts.shield.base} × your Healing given, more as you level (the larger shield stands). Only a Bonded ally: the Bond is what carries it. The brake: each further Mend, Touch or Shield you give the same ally in a round costs half again the MP of your last on them.",
       "effects": [
         {
           "op": "grant_action",
@@ -1267,10 +1269,10 @@
             }
           },
           "reach": {
-            "tiles": 3,
             "sight": true,
             "side": "ally",
             "beyond": "bond",
+            "tied": "bond",
             "if": {
               "target_alive": true
             },
@@ -1278,6 +1280,7 @@
               "target_alive": "{target} is Downed: Raise them first."
             }
           },
+          "brake": true,
           "effects": [
             {
               "op": "mend",

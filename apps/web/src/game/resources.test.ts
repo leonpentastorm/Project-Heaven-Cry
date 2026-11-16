@@ -140,7 +140,7 @@ describe('class resources, named from the data', () => {
     u.res.momentum = 3;
     const r = row(resourcesOf(u, c, g), 'res-momentum');
     expect(r).toMatchObject({ label: 'Momentum', value: '3 / 5', kind: 'pips', colour: '#F2A54A' });
-    expect(r.hint).toMatch(/Lunge/);
+    expect(r.hint).toMatch(/Barrel In/); // rules 1.60 item 4622: the class's Lunge is Barrel In
     u.res.momentum = 5;
     expect(row(resourcesOf(u, c, g), 'res-momentum')).toMatchObject({ warn: 'FULL', level: 'ready' });
   });

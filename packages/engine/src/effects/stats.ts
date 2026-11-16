@@ -57,6 +57,8 @@ export const STATS = {
   always_seen: 'The other side sees this unit wherever it is (>0; tactics.ts sightOf, Classes 3.0 P7: Traced, a Figment\'s Stare)',
   // Classes 3.0 step 8 (rules 1.34): Figments
   figment_designs: 'Figment designs kept ready beyond the door\'s ladder (figments.ts designsMax; the Rigger +1)',
+  // Rules 1.60 (N23, approved by the lead 16 Nov 2026): Momentum's numbers as stats
+  momentum_start: 'Momentum a unit starts a fight with, beside techniques.json rules.momentum.start (physical/core.ts momentumStart; the Breaker\'s Wind-up)',
   // Rules 1.44 (Survival, build step 5): what a run pays, asked of the character's relics (a boon)
   run_ammo: 'The supply pack after a fight or a cache, its magazines, a multiplier (run/rewards.ts ammoPack; Bandolier)',
   run_supply: 'The supply pack after a fight or a cache, its cores and MP, a multiplier (run/rewards.ts ammoPack, supplyMp; Deep Satchel)',
@@ -77,9 +79,11 @@ export const STAT_FAMILIES = {
   'passive:': 'a passive score of this skill id (character.ts passive)',
   'technique:': 'this technique id comes with a perk (>0; physical/core.ts)',
   'momentum_needed:': 'Momentum a finisher of this technique id needs (physical/core.ts finisherNeed)',
+  // rules 1.60 (N23, approved by the lead 16 Nov 2026): Momentum's numbers as stats
+  'momentum_cost:': 'Momentum a Strike or an Opener costs, added to its price: a technique id or its group, strike or opener (physical/core.ts momentumCost; never below 0)',
 } as const;
 
-export type StatId = PlainStatId | `ap_cost:${CostSite}` | `skill:${string}` | `immune:${string}` | `save_${'body' | 'brain' | 'heart'}` | `passive:${string}` | `technique:${string}` | `momentum_needed:${string}` | `ties_max:${string}` | `ties_keep:${string}`;
+export type StatId = PlainStatId | `ap_cost:${CostSite}` | `skill:${string}` | `immune:${string}` | `save_${'body' | 'brain' | 'heart'}` | `passive:${string}` | `technique:${string}` | `momentum_needed:${string}` | `momentum_cost:${string}` | `ties_max:${string}` | `ties_keep:${string}`;
 
 /** Is this string a declared stat id? (For data and tests; code is checked by the type.) */
 export function isStatId(id: string): id is StatId {

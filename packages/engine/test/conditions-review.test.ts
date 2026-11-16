@@ -16,29 +16,8 @@ onHook('cond_landed', (ctx: any) => {
 const cls = (id: string, n: number) => ({ classId: id, level: 12, attrs: { [CLASS[id].attribute]: n } });
 const rngFor = (n: number) => { for (let s = 1; s < 2000000; s++) if (d20({ state: s }) === n) return s; throw new Error('no seed'); };
 
-describe('problem 4: the Fighter\'s Shove (Prone) tells cond_landed once, and its line comes before what reacts to it', () => {
-  function shove(shrug: boolean) {
-    const f = fightWith([cls('fighter', 3)], [{ name: 'Big Foe' }]);
-    const u = f.unit(f.pc.id), t = f.unit(f.foe.id); u.pos = '4,2'; t.pos = '5,2'; t.sv = { body: -50, brain: -50, heart: -50 }; f.turn(u);
-    TAP.landed = []; TAP.shrug = shrug ? t.id : undefined; f.g.rng.state = rngFor(5);
-    const n0 = f.cb.log.length;
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'class:fighter.shove', targetId: t.id, choice: 'prone' } as any);
-    TAP.shrug = undefined;
-    return { f, log: f.cb.log.slice(n0), fx: (f.cb.fx || []).filter((e: any) => e.k === 'shove') };
-  }
-  it('one cond_landed for the Prone it puts on', () => {
-    const { f, fx } = shove(false);
-    expect(TAP.landed.filter((x) => x === 'prone')).toEqual(['prone']);
-    expect(f.foe.prone).toBe(true); expect(fx.at(-1)).toMatchObject({ ok: true, prone: true });
-  });
-  it('a target that shrugs it off at once: "knocks Big Foe Prone", then the shrug; the shove itself landed', () => {
-    const { f, log, fx } = shove(true);
-    const knock = log.findIndex((l) => /knocks Big Foe Prone/.test(l)), shrugged = log.findIndex((l) => /Big Foe shrugs it off/.test(l));
-    expect(knock, log.join('\n')).toBeGreaterThanOrEqual(0); expect(shrugged).toBeGreaterThan(knock);
-    expect(log.some((l) => /shoves Big Foe: Foe is/.test(l))).toBe(false);
-    expect(f.foe.prone).toBe(false); expect(fx.at(-1)).toMatchObject({ ok: true, prone: true });
-  });
-});
+// problem 4 (the Fighter's own Shove telling cond_landed once) left with the move: rules 1.60 item 4621 (R3) made it
+// Wind-up; everyone's Shove (2 AP) is tested in boss-holds.test.ts and actions.test.ts.
 
 describe('problem 7: hideAgain takes the action\'s rng (it works with no game bound, and never draws the live game\'s dice)', () => {
   it('outside withGame it hides the unit as the same entry', () => {

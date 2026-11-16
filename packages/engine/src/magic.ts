@@ -1816,7 +1816,7 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
   if (held && m.held) {
     const e = canCast(u, cb); if (e) why = e;
     // 'release_cost' (preview) {…, surge, mult, notes}: an item that raises the release's stage says so (Heart Surge:
-    // true below stage 4; past it, the multiplier to use); one that multiplies the release ('outburst_release' mult)
+    // true; never past the top stage, rules 1.60 item 4634); one that multiplies the release ('outburst_release' mult)
     // says by how much in `mult`, with a line for the preview in `notes` (the Resonance perk, rules 1.14).
     const longing = (m.held.felt || []).includes('longing') ? (FEELING.longing?.pour as any)?.reach ?? 2 : 0; // rules 1.8
     const rc: any = emit(cb, 'release_cost', { u, design: d, ap: SOUL_AP.release, range: designRange(m, d) + longing, fail: '', preview: true, surge: 0, mult: 1, notes: [] as string[], cb });
@@ -1824,7 +1824,7 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
     mp = pumpsMp(u, Math.max(0, stage - stage0), stage0); // rules 1.24: the Pumps still to make cost MP
     if (rc.fail) why ||= rc.fail; else if (!canPay(cb, u, ap)) why ||= whyNot(cb, u, ap)!; else if (mp > m.mp) why ||= 'The Pumps need ' + mp + ' MP (' + Math.floor(m.mp) + ').';
     if (!why) why = aimError(cb, u, d, form === 'aura' ? u.pos : aim, rc.range) || undefined;
-    if (rc.surge) { if (stage < MAX_STAGE) stage++; else itemMult = typeof rc.surge === 'number' ? rc.surge / stageMult(MAX_STAGE) : 1; }
+    if (rc.surge && stage < MAX_STAGE) stage++;
     itemMult *= rc.mult || 1; multNotes = rc.notes || [];
   } else {
     const pv = previewOutburst(cb, u, d.id, form === 'aura' ? u.pos : aim, true);

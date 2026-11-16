@@ -26,7 +26,8 @@ interface Allow { words?: string[]; modes?: string[]; context?: boolean; code?: 
 const DOOR: Record<string, Allow> = {
   'class:fighter.lunge': { words: ['melee'], code: 2, why: 'Momentum is melee\'s door: Lunge strikes with the melee weapon or fists (reachOf, meleeAp); its hit builds Momentum only as a melee hit (isMelee)' },
   'class:fighter.riposte': { words: ['melee'], modes: ['riposte'], why: 'Momentum\'s door: a Riposte answers a melee miss; folded into the Answer (rules 1.30): its riders read the technique (mode riposte), the handler is gone' },
-  'class:fighter.finisher': { words: ['melee'], code: 1, why: 'Momentum\'s door: the Finisher is a melee strike' },
+  'class:fighter.finisher': { why: 'Measured Blow (rules 1.60 item 4623): a door Finisher gives Momentum back; no family read left (the class own Finisher action is gone)' },
+  'class:fighter.read_the_swing': { words: ['melee'], modes: ['melee'], why: 'Read the Swing (rules 1.60 item 4624): the door of Momentum, and the incoming attack: a melee attack that misses you (as Riposte answers one)' },
   'class:defender.anchor': { words: ['melee'], why: 'every opportunity attack is a melee strike (base rule), not the class\'s choice' },
   'class:defender.brace': { words: ['weapon attack'], why: 'Interpose answers an enemy\'s weapon attack (the incoming attack)' },
   // The Skirmisher's step (rules 1.30): neutral in rule; what stays is a door or a branch, never a lock.
@@ -38,7 +39,7 @@ const DOOR: Record<string, Allow> = {
   'class:infiltrator.field_fix': { words: ['jammed weapon', 'gun'], why: 'support: it clears an ally\'s jam (a gun\'s own state), not a hit' },
   // The Rigger's step (rules 1.34): the Scrap Turret makes ANY weapon's plain attack; the one family read picks which
   // (a strike for a melee weapon, else a shot): a branch, never a lock (audit 4.6).
-  'class:trickster.scrap_turret': { code: 1, why: 'Scrap Turret (rules 1.34): isMelee picks the weapon\'s plain attack (a strike or a shot) for the turret\'s auto verb; every weapon builds one' },
+  'class:trickster.scrap_turret': { why: 'Scrap Sentinel (rules 1.60 item 4633): it stands the Sentinel form, whatever the wreck or pile held; no family read left' },
   // The Chaplain's step (rules 1.31): Verdict takes any weapon; the one family read left picks the weapon's plain attack
   // (a strike with a melee weapon, a throw with a thrown one, else a shot): a branch, never a lock.
   'class:lumeri_templar.blessed_shells': { words: ['round', 'arrow', 'edge', 'thrown', 'blade'], why: 'Blessed Arms (rules 1.31): the text names every form a weapon takes (a round, an arrow, an edge, a thrown blade) so it reads as any weapon, as the audit 4.7 asks' },

@@ -181,18 +181,19 @@ describe('the enemy AI still plays', () => {
 
 // Rules 1.56, the 0.29 integration: Keep Swinging (perks.json breaching_strike) counts a Finisher by its technique group
 // (techniques.json group finisher; the Launch, an action, through rules.group_actions), never by a list of ids.
+// Rules 1.60 item 4625 (R7): the kill gives no Momentum now; it puts the perk's condition (the next Strike or Opener free).
 describe('Keep Swinging counts every Breaker Finisher by its group: Cleave, Break, Coup and Launch', () => {
   const PERK: any = (PERKSJ as any).items.find((p: any) => p.id === 'breaching_strike');
-  const gain = PERK.tiers.I.effects[1].value;
+  const cond = PERK.tiers.I.effects[1].condition;
   const drop = (how: string, perk: boolean) => {
-    const f = fight({ m: 3, perks: perk ? { breaching_strike: 'I' } : undefined }); weak(f.foe); f.foe.hp = 1; rig({ hit: true, die: 12 });
+    const f = fight({ m: 3, perks: perk ? { breaching_strike: 'I' } : undefined, foes: [{ at: 'D5' }, { at: 'H9' }] }); weak(f.foe); f.unit(f.foe.id).hp = 1; rig({ hit: true, die: 12 });
     if (how === 'launch') launch(f, f.foe); else f.tech(how, { targetId: f.foe.id });
-    rig(null); const t = f.unit(f.foe.id); return { m: f.momentum(f.pc), down: !!t.dead || t.hp <= 0 };
+    rig(null); const t = f.unit(f.foe.id); return { m: f.momentum(f.pc), down: !!t.dead || t.hp <= 0, swinging: !!f.unit(f.pc.id).conds?.[cond] };
   };
-  for (const how of ['cleave', 'break', 'coup', 'launch']) it(how + ": the kill gives the perk's Momentum", () => {
+  for (const how of ['cleave', 'break', 'coup', 'launch']) it(how + ': the kill puts the perk\'s condition on, and leaves no more Momentum than without it', () => {
     const a = drop(how, true), b = drop(how, false);
     expect(a.down).toBe(true); expect(b.down).toBe(true);
-    expect(a.m - b.m).toBe(gain);
+    expect(a.m).toBe(b.m); expect(a.swinging).toBe(true); expect(b.swinging).toBe(false);
   });
 });
 

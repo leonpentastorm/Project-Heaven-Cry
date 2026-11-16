@@ -1181,7 +1181,7 @@
       "weight_kg": 0,
       "adjudication": "engine",
       "provisional": true,
-      "text": "The Open Hand, a monk's gloves (with only the family's gloves in your hands, or none). Open guard: in Light armour or none, with light gloves, blows aimed at you are at {=effects.0.value|signed} to hit. Sway (an Answer, your reaction): the first blow that lands on you in a round does ×{=effects.1.value} damage. Breath ({=effects.2.ap} AP, once a turn): end your newest Body harm and be Guarded. One attribute is enough: a glove's blows roll to hit with the better of Raw Power and Dexterity (in place of the glove's own skill, never on top). Forms on a plain blow (one a blow, never with a technique): Jab ({=toggles.0.effects.0.value|signed} AP, ×{=toggles.0.effects.1.value} damage), Palm (×{=toggles.1.effects.0.value}; a hit saves or is Off Balance and pushed {=toggles.1.effects.2.tiles} tile, once a turn a target, never a Boss), Sweep ({=toggles.2.effects.0.value|signed} AP, ×{=toggles.2.effects.1.value}; a hit knocks it Prone, never a Boss), Snatch (×{=toggles.3.effects.0.value}; a hit saves or drops its weapon, never a Boss). One form's hold lands a turn.",
+      "text": "The Open Hand, a monk's gloves (with only the family's gloves in your hands, or none). Open guard: in Light armour or none, with light gloves, blows aimed at you are at {=effects.0.value|signed} to hit. Sway (an Answer, your reaction): the first blow that lands on you in a round does ×{=effects.1.value} damage. Breath ({=effects.2.ap} AP, once a turn): end your newest Body harm and be Guarded. One attribute is enough: a glove's blows roll to hit with the better of Raw Power and Dexterity (in place of the glove's own skill, never on top). Forms on a plain blow (one a blow, never with a technique): Jab ({=toggles.0.effects.0.value|signed} AP, ×{=toggles.0.effects.1.value} damage), Palm (×{=toggles.1.effects.0.value}; a hit saves or is Staggered: no reaction until its next turn, once a turn), Sweep ({=toggles.2.effects.0.value|signed} AP, ×{=toggles.2.effects.1.value}; a hit knocks it Prone, never a Boss), Snatch (×{=toggles.3.effects.0.value}; a hit saves or drops its weapon, never a Boss). One form's hold lands a turn.",
       "effects": [
         {
           "op": "roll_mod",
@@ -1426,43 +1426,13 @@
                 "target_alive": true
               },
               "target": "target",
-              "condition": "off_balance",
+              "condition": "staggered",
               "limit": {
                 "per": "per_turn",
                 "n": 1,
                 "key": "form"
               },
               "say": "{self}'s palm strikes {target}{then}."
-            },
-            {
-              "op": "displace",
-              "when": "hit",
-              "if": {
-                "with_this": true,
-                "self_holds": {
-                  "hands": {
-                    "props": [
-                      "open_hand"
-                    ],
-                    "only": true
-                  }
-                },
-                "free_tech": true,
-                "melee": true,
-                "target_alive": true,
-                "target_has": [
-                  "off_balance"
-                ]
-              },
-              "target": "target",
-              "how": "push",
-              "tiles": 1,
-              "limit": {
-                "per": "per_turn",
-                "n": 1,
-                "each": "target",
-                "key": "palm_push"
-              }
             }
           ]
         },

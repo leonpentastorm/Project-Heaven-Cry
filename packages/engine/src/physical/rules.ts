@@ -15,7 +15,7 @@ import { condOn } from '../magic';
 import { WEAPON } from '../data';
 import { PHYS_RULES, TECHNIQUE, addDrill, drillMult } from './data';
 import { pressureOf, pressureState, addPressureTo, lowerPressureOf, isPressed, isSuppressed, onPressureState, hitPressure, coveredUnseen } from './pressure';
-import { ensureMomentum, momentumOf, wearMomentum, guardUp, strikeNoPressure, turnStamp, endWatch } from './core';
+import { ensureMomentum, momentumOf, momentumStart, wearMomentum, guardUp, strikeNoPressure, turnStamp, endWatch } from './core';
 import { feedOf, feedCarry, showFeedNumber } from '../effects/feed';
 import { foesOf } from '../kit';
 
@@ -46,9 +46,10 @@ onHook('on_hit', (ctx: any, cb) => {
 
 // ---------- Momentum: what starts it and what wears it off ----------
 const M = () => PHYS_RULES.momentum;
-// A fight starts with 1 Momentum for every unit that has the meter.
+// A fight starts with the door's start (1) of Momentum for every unit that has the meter, and what its items add
+// (rules 1.60, N23: momentumStart; the Breaker's Wind-up).
 onHook('combat_start', (_ctx: any, cb) => {
-  for (const u of cb.units) { ensureMomentum(u); delete u.openerUsed; if (u.resMax?.momentum != null && u.res) u.res.momentum = Math.max(u.res.momentum || 0, Math.min(u.resMax.momentum, M().start ?? 1)); }
+  for (const u of cb.units) { ensureMomentum(u); delete u.openerUsed; if (u.resMax?.momentum != null && u.res) u.res.momentum = Math.max(u.res.momentum || 0, Math.min(u.resMax.momentum, momentumStart(cb, u))); }
 });
 // Walking: −1 for each tile of a walk, a Sprint or a Disengage. A step that is part of something else (ctx.part: a
 // technique's own step or run, a Link's move, a class move's or a perk's free step) costs none; forced moves never

@@ -112,11 +112,11 @@ describe('rules 3 and 4: Ward', () => {
     const h = chap(); expect(() => ward(h, h.me)).toThrow(/Not on yourself/); expect(() => ward(h, h.foe)).toThrow(/Pick an ally/);
     const n = chap({ cls: false }); expect(() => ward(n, n.a1)).toThrow();
   });
-  it('two held at most: a third ends the oldest; a second on the same ally tops it up, never doubles', () => {
+  it('the squad at most (rules 1.60 item 4639: holders 4): one more ends the oldest; a second on the same ally tops it up, never doubles', () => {
     const h = chap(); ward(h, h.a1); clearPrayerLimits(h.me); ward(h, h.a2); clearPrayerLimits(h.me);
     h.a1.shields![0].n = 3; ward(h, h.a1); expect(h.a1.shields![0].n).toBe(wardOf(h, h.a1)); // topped up
     clearPrayerLimits(h.me); h.me.ap = 6; const m = h.f.pcs.find((u) => u.id !== h.me.id && u.id !== h.a1.id && u.id !== h.a2.id);
-    expect(WARD_HOLDERS).toBe(2); void m;
+    expect(WARD_HOLDERS).toBe(4); void m; // rules 1.60 item 4639 (Leon's ruling i): the Ward may sit on 4 allies
   });
   it('it stacks over any base shield and is spent first', () => {
     const h = chap(); h.a1.shield = 5; ward(h, h.a1); const n = wardOf(h, h.a1), hp = h.a1.hp;

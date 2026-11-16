@@ -1291,7 +1291,7 @@
       "save": false,
       "engine": "table",
       "boon": true,
-      "text": "You have taken this turn's free move (Fire and Move or Run and Gun: one a turn between them); your next move costs its AP. It ends when your turn does.",
+      "text": "You have taken this turn's Fire and Move step; your next move costs its AP (Run and Gun's own free move is apart from it). It ends when your turn does.",
       "effects": [
         {
           "op": "cleanse",
@@ -1308,7 +1308,76 @@
       "stacks": false,
       "adjudication": "engine",
       "provisional": true,
-      "source": "Pressure 2.0 review fix (16 Nov 2026): Fire and Move and Run and Gun share one free move a turn, the longer (Run and Gun) first"
+      "source": "Pressure 2.0 review fix (16 Nov 2026); rules 1.60 item 4627 (R9): Run and Gun no longer shares it"
+    },
+    {
+      "id": "swinging",
+      "name": "Swinging",
+      "label": "Swinging (the next Strike or Opener is free)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "A Finisher dropped its foe: your next Strike or Opener is {=effects.0.value|abs} Momentum cheaper (it takes none). It ends when you use one, or after your next turn.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "momentum_cost:strike",
+          "value": -1
+        },
+        {
+          "op": "stat_mod",
+          "stat": "momentum_cost:opener",
+          "value": -1
+        },
+        {
+          "op": "cleanse",
+          "when": "acted",
+          "if": {
+            "tech_group": [
+              "strike",
+              "opener"
+            ]
+          },
+          "condition": "swinging"
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.60 item 4625 (R7): Keep Swinging"
+    },
+    {
+      "id": "staggered",
+      "name": "Staggered",
+      "kind": "debuff",
+      "family": "body",
+      "save": true,
+      "engine": "table",
+      "text": "Rocked by an open-hand blow: you can't make any reaction until your next turn starts. You lose no AP.",
+      "effects": [
+        {
+          "op": "forbid",
+          "action": "reaction"
+        }
+      ],
+      "duration": {
+        "until": "next_turn"
+      },
+      "ends_on": [
+        "used at your next turn start"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.60 item 4637 (R19): the Open Hand's Palm"
     },
     {
       "id": "bonded",

@@ -287,13 +287,13 @@ let lunging: Unit | null = null;
 register({
   id: 'fighter.lunge', claims: (e: any) => e?.when !== 'hit', // Momentum on a Shaken or Frightened enemy (Classes 3.0) is an item op: the runner runs it
   actions: [{
-    id: 'lunge', label: 'Lunge', scope: ['combat'], target: 'enemy', ap: (h) => (h.u ? meleeAp(h.u) : 2),
+    id: 'lunge', label: 'Barrel In', scope: ['combat'], target: 'enemy', ap: (h) => (h.u ? meleeAp(h.u) : 2),
     text: 'Costs 1 Momentum and the AP of a strike. Move up to 2 tiles and strike, as one action. The move draws no opportunity attacks.',
     available: (h) => { const u = h.u; if (!u) return false; if (resOf(u, 'momentum') < 1) return 'Needs 1 Momentum. You earn it with melee hits and by closing in.'; return true; },
     preview: (h, args) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
       const at = lungeTile(cb, u, t); if (!at) return { ok: false, why: 'No tile within 2 tiles puts you in reach.' };
-      return { tiles: [at], lines: ['Lunge to ' + refOf(at) + ' and strike ' + t.name + ' (' + meleeAp(u) + ' AP, 1 Momentum).'] };
+      return { tiles: [at], lines: ['Barrel in to ' + refOf(at) + ' and strike ' + t.name + ' (' + meleeAp(u) + ' AP, 1 Momentum).'] };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, at = lungeTile(cb, u, t); if (!at) return 'No tile within 2 tiles puts you in reach.';
@@ -322,30 +322,8 @@ register({
 // (stat technique:riposte) and its riders as item ops (1 Momentum on the strike's roll, the Counter bonus to hit, no
 // Riposte with no Momentum). No handler.
 
-// ---------- Finisher (rank III, 3 AP) ----------
-// Spend all your Momentum (at least 1) on one melee strike: +20% damage per point, up to +100%. Momentum is spent even
-// on a miss; a hit then earns the usual +1.
-let finishing: { u: Unit; n: number } | null = null;
-/** The Finisher's multiplier for n Momentum spent: its data's number block (P3: base, per momentum_spent, max). */
-const finisherMult = (h: Holder, n: number) => effNum(h, 'damage_mult', 'value', { momentum_spent: n });
-register({
-  id: 'fighter.finisher', claims: 'all',
-  actions: [{
-    id: 'finisher', label: 'Finisher', scope: ['combat'], target: 'enemy', ap: 'data',
-    available: (h) => (h.u ? (resOf(h.u, 'momentum') < 1 ? 'Needs at least 1 Momentum.' : true) : false),
-    preview: (h, args) => { const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {}; if (dist(u.pos, t.pos) > reachOf(u)) return { ok: false, why: 'Out of melee reach.' };
-      const pv = previewAttack(cb, u, t, 'melee', { free: true }); if (!pv.ok) return { ok: false, why: pv.why };
-      const n = resOf(u, 'momentum'); return { lines: ['Finisher: ' + n + ' Momentum, +' + Math.round((finisherMult(h, n) - 1) * 100) + '% damage, ' + pv.pct + '% to hit.'] }; },
-    run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, n = resOf(u, 'momentum');
-      u.res!.momentum = 0; say(cb, u.name + ' spends ' + n + ' Momentum on a Finisher.');
-      finishing = { u, n }; try { resolveAttack(cb, rng as Rng, u, t, 'melee', null, { noAp: true, fx: { move: 'fighter.finisher' } }); } finally { finishing = null; }
-      checkOver(cb);
-    },
-  }],
-  on: { damage_out: (ctx, h) => { if (finishing && finishing.u === h.u && ctx.att === h.u) ctx.mults.push({ v: finisherMult(h, finishing.n), label: 'Finisher' }); } },
-  brief: () => null,
-});
+// ---------- Measured Blow (rank III; was the class's own Finisher action; rules 1.60 item 4623) ----------
+// Data only (classes.json fighter.finisher, the id kept): once a fight, a door Finisher gives some of its Momentum back.
 
 // ======================================================================================================== DEFENDER
 // Guard (0-5, lost after the fight) is gained by Brace. Interpose (Brace's handler, a reaction, 0 AP, while you hold
@@ -416,24 +394,9 @@ register({
   brief: () => null,
 });
 
-// ---------- Draw Fire (rank II, 1 AP) ----------
-// Spend 1 Guard: an enemy you can see is Taunted (no save; it costs Guard, PROVISIONAL): the condition's own rule does the
-// rest (a Boss too: never forced, with Taunted's penalty against anyone else).
-register({
-  id: 'defender.draw_fire', claims: 'all',
-  actions: [{
-    id: 'draw_fire', label: 'Draw Fire', scope: ['combat'], target: 'enemy', ap: 'data', res: { guard: 1 },
-    available: (h) => (h.u ? (resOf(h.u, 'guard') < 1 ? 'Needs 1 Guard. Brace first.' : true) : false),
-    preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (t && !sideSees(h.cb!, h.u!.side, t)) return { ok: false, why: 'You can\'t see them.' }; return {}; },
-    run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!;
-      say(cb, u.name + ' draws ' + t.name + '\'s fire' + applyCond(cb, rng as Rng, u, t, 'taunted', 1, undefined, { skipSave: true }) + '.');
-    },
-  }],
-  // Taunted's penalty to hit anyone else, and a Boss never forced, are the condition's own rule (combat.ts tauntedBy;
-  // conditions.json taunted): one rule for every Taunt (Draw Fire, Challenge, a Figment's Draw fire, a Call).
-  brief: () => 'Celestials (Narrator-run) honour the Taunted penalty against anyone but the Bulwark.',
-});
+// ---------- Called Out (rank I; was Draw Fire; rules 1.60 item 4619) ----------
+// Data only (classes.json defender.draw_fire, the id kept): the Bulwark's Challenge costs no Guard and its named foe is
+// Taunted with no save. Taunted's penalty and a Boss never forced are the condition's own rule (combat.ts tauntedBy).
 
 // ---------- Reactive Plate (rank III, passive; no reaction, PROVISIONAL) ----------
 // When you take damage, spend Guard: each point cuts it by 10 (down to 0), after armour and before the shield. Every 3
@@ -1236,32 +1199,31 @@ register({
 });
 
 // ---------- Heart Surge (rank III; a toggle on Release or a snap cast; once a turn; rules 1.5) ----------
-// The release fires one stage higher: a held Outburst's stage really rises (its tone's rider too); past stage 4, and on a
-// snap cast, the multiplier reads one step higher (past stage 4: one more step of the table, ×1.8 under rules 1.19; a snap: stage 1, ×1.0).
+// The release fires one stage higher: a held Outburst's stage really rises (its tone's rider too), never past the top
+// stage (rules 1.60 item 4634: anything past stage 4 is the Outburst door's reserved peak; at the top the switch is
+// refused and nothing is spent); on a snap cast the multiplier reads one step higher (a snap: stage 1, ×1.0).
 // For double the Strain: the Begin's Strain again (1, 2 in Flooded air), added once the release has landed (it can burn
 // and short like any Strain). Item 524, PROVISIONAL (1.2's ×2 for +1 Strain is gone: 1.5 already pays for holding).
-const SURGE_PAST = Math.round((stageMult(MAX_STAGE) + (stageMult(MAX_STAGE) - stageMult(MAX_STAGE - 1))) * 100) / 100; // one more step of the stage table past its top (rules 1.19: ×1.8; rules 1.17: ×2.8)
+const surgeTop = (h: Holder): boolean => (h.u?.mg?.held?.stage ?? 0) >= MAX_STAGE;
 register({
   id: 'channeler.heart_surge', claims: 'all',
   toggles: [{ id: 'surge', label: 'Heart Surge (+1 stage at release, double Strain)', on: ['combat/release', 'combat/outburst'],
-    available: (h) => (uses(h).left('per_turn', 1, h.key + '#surge') > 0 ? true : 'Used this turn.'), preview: (h) => (h.cb ? 'Once a turn: the Outburst releases 1 stage higher. At stage 4 it releases at ×' + SURGE_PAST + ' instead. You take +' + baseStrain(h.cb) + ' Strain after it lands.' : null) }],
+    available: (h) => (surgeTop(h) ? 'Your heart is at its top stage: nothing to surge into.' : uses(h).left('per_turn', 1, h.key + '#surge') > 0 ? true : 'Used this turn.'), preview: (h) => (h.cb ? 'Once a turn: the Outburst releases 1 stage higher, never past the top stage. You take +' + baseStrain(h.cb) + ' Strain after it lands.' : null) }],
   priority: 60,
   on: {
     // A held release: the stage itself rises (the release_cost of the real release, not a preview).
-    // The preview (rules 1.5: the same standard as Sigil's) shows the surged stage: ctx.surge true below stage 4, past
-    // it the multiplier; nothing is spent.
+    // The preview (rules 1.5: the same standard as Sigil's) shows the surged stage (ctx.surge true); nothing is spent.
     outburst_cost: (ctx, h) => { if (ctx.u === h.u && ctx.preview && ctx.release && modOn(h, 'surge') && uses(h).left('per_turn', 1, h.key + '#surge') > 0) ctx.relMult = (ctx.relMult || 1) * stageMult(1) / stageMult(0); },
     release_cost: (ctx, h) => {
-      const m0 = h.u?.mg; if (ctx.u === h.u && ctx.preview && m0?.held && modOn(h, 'surge') && uses(h).left('per_turn', 1, h.key + '#surge') > 0) { ctx.surge = m0.held.stage < MAX_STAGE ? true : SURGE_PAST; return; }
-      const m = h.u?.mg; if (ctx.u !== h.u || ctx.preview || !m?.held || !modOn(h, 'surge') || !uses(h).take('per_turn', 1, h.key + '#surge')) return;
-      const st = stateOf(h); if (m.held.stage < MAX_STAGE) { m.held.stage++; st.surge = 'stage'; } else st.surge = 'past';
-      say(h.cb, h.u!.name + '\'s heart surges' + (st.surge === 'stage' ? ': stage ' + m.held.stage + '.' : ' past the full heart.'));
+      const m0 = h.u?.mg; if (ctx.u === h.u && ctx.preview && m0?.held && modOn(h, 'surge') && !surgeTop(h) && uses(h).left('per_turn', 1, h.key + '#surge') > 0) { ctx.surge = true; return; }
+      const m = h.u?.mg; if (ctx.u !== h.u || ctx.preview || !m?.held || !modOn(h, 'surge') || surgeTop(h) || !uses(h).take('per_turn', 1, h.key + '#surge')) return;
+      const st = stateOf(h); m.held.stage++; st.surge = 'stage';
+      say(h.cb, h.u!.name + '\'s heart surges: stage ' + m.held.stage + '.');
     },
     outburst_begin: (ctx, h) => { if (ctx.u === h.u && !ctx.hold && modOn(h, 'surge') && uses(h).take('per_turn', 1, h.key + '#surge')) { stateOf(h).surge = 'snap'; say(h.cb, h.u!.name + '\'s heart surges.'); } },
     outburst_release: (ctx, h) => {
       const st = stateOf(h); if (ctx.u !== h.u || !st.surge || ctx.wild || ctx.reaction) return;
       if (st.surge === 'snap') ctx.mult = (ctx.mult || 1) * stageMult(Math.min(MAX_STAGE, ctx.stage + 1)) / stageMult(ctx.stage);
-      else if (st.surge === 'past') ctx.mult = (ctx.mult || 1) * SURGE_PAST / stageMult(MAX_STAGE);
       st.surge = null; st.owed = (st.owed || 0) + baseStrain(h.cb!); markRelease(h, ctx, 'surge');
     },
     action_done: (ctx, h) => {

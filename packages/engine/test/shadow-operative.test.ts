@@ -96,11 +96,12 @@ describe('the Operative', () => {
     f.act({ type: 'combat/analyze', unitId: u.id, targetId: b.id } as any);
     expect(shadow(f, u)).toBe(s0 + tc.numbers.gain); // once a turn
   });
-  it('Vanish is data: out of view, Hidden', () => {
-    const f = fightWith([operative(7)], [{}]); foeAt(f, '15,10', true);
-    const u = f.turn(f.pc); at(f, u, '1,4');
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'class:infiltrator.vanish' } as any);
-    expect(f.unit(u.id).hidden).toBe(true);
+  // Rules 1.60 item 4628 (R10): Vanish re-pointed onto the door: the Operative's Fade takes no Shadow.
+  it('Vanish is data: the Fade of the Operative, seen, for no Shadow', () => {
+    const f = fightWith([operative(7)], [{}]); foeAt(f, '8,4');
+    const u = f.turn(f.pc); at(f, u, '3,4'); setShadow(f, u, 0);
+    use(f, u, 'shadow.fade');
+    expect(f.unit(u.id).hidden).toBe(true); expect(shadow(f, u)).toBe(0);
   });
   it('Toxin coats a gun (weapon-neutral)', () => {
     const f = fightWith([operative(7, { weapon: 'hellraiser_service_rifle' })], [{}]);

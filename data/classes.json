@@ -235,37 +235,27 @@
               "ref": "fighter.lunge"
             },
             {
-              "id": "shove",
-              "name": "Shove",
-              "ap_cost": 1,
+              "id": "wind_up",
+              "name": "Wind-up",
+              "ap_cost": 0,
               "uses": "at_will",
-              "text": "Costs 1 AP. Push an enemy next to you 1 tile straight back, or knock it Prone: your choice. It makes a Body save against 12 + your strength with Raw Power, and nothing happens if it succeeds. You can't push it into a wall or another unit.",
+              "text": "You start each fight with {=effects.0.value} more Momentum than the door gives anyone (within your pool).",
               "effects": [
                 {
-                  "op": "grant_action",
-                  "action": "class_shove",
-                  "ap": 1,
-                  "uses": "at_will",
-                  "range": 1,
-                  "target": "enemy_adjacent"
-                },
-                {
-                  "op": "knockback",
-                  "tiles": 1,
-                  "target": "target",
-                  "save": "body",
-                  "tn": "12+strength:raw_power",
-                  "alt": "prone"
+                  "op": "stat_mod",
+                  "stat": "momentum_start",
+                  "value": 2
                 }
               ],
               "adjudication": "engine",
               "provisional": true,
               "origin": "fighter",
               "new": true,
+              "source": "rules 1.60 item 4621 (R3): replaces the Breaker's Shove (the generic Shove action stays for everyone)",
               "fantasy_tags": [
                 "melee",
-                "push",
-                "control"
+                "momentum",
+                "start"
               ],
               "attributes": [
                 "strength"
@@ -282,7 +272,46 @@
               "ref": "fighter.riposte"
             },
             {
-              "ref": "shade.lingering_dread"
+              "id": "read_the_swing",
+              "name": "Read the Swing",
+              "ap_cost": 0,
+              "uses": "per_round",
+              "text": "Once a round, a melee attack that misses you gives you {=effects.0.value} Momentum.",
+              "effects": [
+                {
+                  "op": "resource",
+                  "when": "miss",
+                  "resource": "momentum",
+                  "value": 1,
+                  "if": {
+                    "target": "self",
+                    "actor": "foe",
+                    "mode": [
+                      "melee"
+                    ]
+                  },
+                  "limit": {
+                    "per": "per_round",
+                    "n": 1
+                  },
+                  "say": "{self} reads {actor}'s swing (+{gain} Momentum)."
+                }
+              ],
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "fighter",
+              "new": true,
+              "source": "rules 1.60 item 4624 (R6): replaces Lingering Dread on the Breaker (Fear is another door's outcome; the shelved Shade keeps its row)",
+              "fantasy_tags": [
+                "melee",
+                "momentum",
+                "counter"
+              ],
+              "attributes": [
+                "strength"
+              ],
+              "status": "active",
+              "surface": "combat"
             }
           ]
         },
@@ -985,10 +1014,10 @@
             },
             {
               "id": "speed_loader",
-              "name": "Speed Loader",
+              "name": "Hold the Lane",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Your first main-hand reload, draw, swap or pick-up each turn costs {=effects.0.value|abs} AP less, but never less than {=effects.0.min} AP. It doesn't apply to your off-hand weapon or to reloading two weapons at once.",
+              "text": "Your held shots (Overwatch, Deny, Cover Me, Dead to Rights) cost {=effects.0.value|abs} AP less, never less than {=effects.0.min} AP.",
               "effects": [
                 {
                   "op": "cost_mod",
@@ -996,67 +1025,20 @@
                   "min": 1,
                   "when": "cost",
                   "if": {
-                    "action": [
-                      "reload",
-                      "pickup"
-                    ],
-                    "hand": [
-                      "main"
+                    "tech_group": [
+                      "watch"
                     ]
-                  },
-                  "limit": {
-                    "per": "per_turn",
-                    "n": 1,
-                    "peek": true
-                  }
-                },
-                {
-                  "op": "use",
-                  "when": "reload",
-                  "if": {
-                    "hand": [
-                      "main"
-                    ]
-                  },
-                  "limit": {
-                    "per": "per_turn",
-                    "n": 1
-                  }
-                },
-                {
-                  "op": "use",
-                  "when": "acted",
-                  "if": {
-                    "action": [
-                      "pickup"
-                    ]
-                  },
-                  "limit": {
-                    "per": "per_turn",
-                    "n": 1
-                  }
-                },
-                {
-                  "op": "cost_mod",
-                  "value": -1,
-                  "min": 1,
-                  "when": "swap",
-                  "if": {
-                    "ap_above": 0
-                  },
-                  "limit": {
-                    "per": "per_turn",
-                    "n": 1
                   }
                 }
               ],
+              "source": "rules 1.60 item 4626 (R8): was Speed Loader, which repeated Speed Load (Dexterity 3); the id is kept so saves load",
               "adjudication": "engine",
               "provisional": true,
               "origin": "marksman",
               "new": true,
               "fantasy_tags": [
                 "guns",
-                "reload"
+                "overwatch"
               ],
               "attributes": [
                 "agility"
@@ -1126,7 +1108,7 @@
                 "tiles": 2,
                 "pressure": 1
               },
-              "text": "Once a turn, after you attack, your next move of up to {=numbers.tiles} tiles costs no AP and draws no opportunity attack, and your next hit this turn, with any weapon, adds {=numbers.pressure} more Pressure.",
+              "text": "Once a turn, after you attack, your next move of up to {=numbers.tiles} tiles costs no AP and draws no opportunity attack, and your next hit this turn, with any weapon, adds {=numbers.pressure} more Pressure. It is a free move of its own, apart from Fire and Move's step: you may take both in one turn.",
               "effects": [
                 {
                   "op": "mark",
@@ -1146,10 +1128,7 @@
                     ],
                     "flag": "fired",
                     "ap_above": 0,
-                    "path_tiles_at_most": 2,
-                    "self_lacks": [
-                      "free_move_spent"
-                    ]
+                    "path_tiles_at_most": 2
                   },
                   "limit": {
                     "per": "per_turn",
@@ -1160,11 +1139,6 @@
                     {
                       "op": "condition",
                       "condition": "slipping",
-                      "skip_save": true
-                    },
-                    {
-                      "op": "condition",
-                      "condition": "free_move_spent",
                       "skip_save": true
                     },
                     {
@@ -1261,36 +1235,23 @@
             {
               "id": "vanish",
               "name": "Vanish",
-              "ap_cost": 1,
-              "uses": "per_turn",
-              "text": "Costs {=ap_cost} AP, once per turn. If no enemy can see you right now (fog, smoke, full cover, darkness), you become Hidden: a new entry, a fresh ambush. You can't Vanish while you are Marked.",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Your Fade (Ingenuity's door) is {=effects.0.value|abs} Shadow cheaper: it takes none at all.",
               "effects": [
                 {
-                  "op": "grant_action",
-                  "action": "vanish",
-                  "ap": 1,
-                  "uses": "per_turn",
+                  "op": "cost_mod",
+                  "when": "cost",
+                  "res": "shadow",
+                  "value": -2,
                   "if": {
-                    "self_sight": [
-                      "out_of_view"
-                    ],
-                    "self_lacks": [
-                      "marked",
-                      "hidden"
+                    "action": [
+                      "verb:shadow.fade#fade"
                     ]
-                  },
-                  "effects": [
-                    {
-                      "op": "condition",
-                      "condition": "hidden",
-                      "target": "self",
-                      "when": "acted",
-                      "skip_save": true,
-                      "say": "{self} vanishes{then}."
-                    }
-                  ]
+                  }
                 }
               ],
+              "source": "rules 1.60 item 4628 (R10): was its own Hide out of view, which repeated Fade; the id is kept so saves load",
               "adjudication": "engine",
               "provisional": true,
               "origin": "infiltrator",
@@ -1663,11 +1624,12 @@
               "ap_cost": 2,
               "uses": "at_will",
               "numbers": {
-                "charge": 1,
-                "rounds": 2,
+                "charge": 0,
+                "rounds": 3,
                 "range_no_door": 6
               },
-              "text": "Costs {=ap_cost} AP and {=numbers.charge} charge, with the Visualizer in hand. A bare Double (a Figment of you) appears on a free tile your side sees within your projection range ({=numbers.range_no_door} tiles without the door) and lasts until your turn starts {=numbers.rounds} rounds on. It needs no upkeep and is outside your held count. One at a time.",
+              "text": "The Rigger's Double: {=ap_cost} AP and no charge, with the Visualizer in hand (Visualization not needed). A bare Double (a Figment of you) appears on a free tile your side sees within your projection range ({=numbers.range_no_door} tiles without the door) and lasts until your turn starts {=numbers.rounds} rounds on, a round longer than it used to. It needs no upkeep and is outside your held count. One at a time.",
+              "source": "rules 1.60 item 4631 (R13): no charge (was 1) and a round longer (was 2): the Rigger's better Double, not a copy of the door's",
               "effects": [
                 {
                   "op": "grant_action",
@@ -1675,7 +1637,7 @@
                   "ap": 2,
                   "uses": "at_will",
                   "res": {
-                    "vcharge": 1
+                    "vcharge": 0
                   }
                 }
               ],
@@ -1752,7 +1714,7 @@
             },
             {
               "id": "overclock",
-              "name": "Overclock",
+              "name": "Redline",
               "ap_cost": 1,
               "uses": "per_turn",
               "numbers": {
@@ -1768,7 +1730,7 @@
                   "provisional": true
                 }
               },
-              "text": "Costs {=ap_cost} AP, once a turn. A Figment, robot, drone or turret of your side within {=numbers.range} tiles that your side sees takes one of its actions now, of up to {=numbers.max_ap} AP, at no AP. It takes {=amounts.strain.base} damage, more at higher levels. Never a squadmate.",
+              "text": "Costs {=ap_cost} AP, once a turn. A Figment, robot, drone or turret of your side within {=numbers.range} tiles that your side sees takes one of its actions now, of up to {=numbers.max_ap} AP, at no AP. It takes {=amounts.strain.base} damage, more at higher levels. Never a squadmate. (Was Overclock: Brain Power's Overclock keeps the name.)",
               "effects": [
                 {
                   "op": "grant_action",
@@ -1834,13 +1796,15 @@
             },
             {
               "id": "scrap_turret",
-              "name": "Scrap Turret",
+              "name": "Scrap Sentinel",
               "ap_cost": 3,
               "uses": "per_scene",
               "numbers": {
                 "rounds": 3
               },
-              "text": "Costs {=ap_cost} AP, once a scene, one at a time. From a wreck, a pile with a weapon, or a barricade next to you, a turret stands on a free tile next to it. At each of your turn starts for {=numbers.rounds} rounds it makes that weapon's plain attack at the nearest enemy it can reach (a barricade, or a weapon that is used up, gives it the turret's own), rolling with your Improvisation. It is a machine: Overclock and repairs work on it.",
+              "figment_form": "sentinel",
+              "text": "Costs {=ap_cost} AP, once a scene, one at a time. From a wreck, a pile with a weapon, or a barricade next to you, a Sentinel (the Figment form) stands on a free tile next to it, for no charge and outside your held count, with no upkeep, until your turn starts {=numbers.rounds} rounds on. You need no Visualization for it.",
+              "source": "rules 1.60 item 4633 (R15): was the Scrap Turret, a body that attacked by itself; the id is kept so saves load",
               "effects": [
                 {
                   "op": "grant_action",
@@ -1853,10 +1817,9 @@
               "new": true,
               "fantasy_tags": [
                 "mechanic",
-                "turret",
+                "figment",
                 "scrap"
               ],
-              "source": "rules 1.34: was Jury-Rig (Revision 4)",
               "adjudication": "engine",
               "provisional": true,
               "attributes": [
@@ -2401,7 +2364,7 @@
                   "provisional": true
                 }
               },
-              "text": "A Whisper only you can say, and it is your Whisper for the turn ({=effects.0.ap} AP; no MP, no Strain). An ally you can see (not you) gains a shield of {=amounts.ward.base} × your Blessing power for the rest of the fight; like every prayer's shield it grows with your level. It is a layer of its own on top of any other shield, spent first. At most {=effects.0.effects.0.holders} allies carry your Ward at once: a third Ward ends the oldest, and a Ward on an ally who has one tops it up, never doubles it. An Atheist rolls for it as for any Whisper.",
+              "text": "A Whisper only you can say, and it is your Whisper for the turn ({=effects.0.ap} AP; no MP, no Strain). An ally you can see (not you) gains a shield of {=amounts.ward.base} × your Blessing power for the rest of the fight; like every prayer's shield it grows with your level. It is a layer of its own on top of any other shield, spent first. At most {=effects.0.effects.0.holders} allies carry your Ward at once (the whole squad): one more Ward ends the oldest, and a Ward on an ally who has one tops it up, never doubles it. An Atheist rolls for it as for any Whisper.",
               "effects": [
                 {
                   "op": "grant_action",
@@ -2420,7 +2383,7 @@
                       "amount": "ward",
                       "target": "target",
                       "layer": "ward",
-                      "holders": 2,
+                      "holders": 4,
                       "fx": {
                         "k": "ward_seal"
                       }
@@ -3431,7 +3394,7 @@
       },
       {
         "id": "lunge",
-        "name": "Lunge",
+        "name": "Barrel In",
         "ap_cost": null,
         "uses": "at_will",
         "text": "Costs the AP of your melee attack and {=effects.0.value|abs} Momentum. Move up to {=effects.1.value} tiles and strike an enemy, all in one action. The move provokes no opportunity attacks. Once a turn, your first hit on a Shaken or Frightened enemy, with any weapon, gives you {=effects.2.value} Momentum (the Breaker's).",
@@ -3554,25 +3517,30 @@
       },
       {
         "id": "finisher",
-        "name": "Finisher",
-        "ap_cost": 3,
-        "uses": "at_will",
-        "text": "Costs {=ap_cost} AP and all your Momentum (at least 1). Make one melee strike that deals +{=effects.0.value.per.0.value|pct}% damage for each point spent, up to +{=effects.0.value.max|more}%. The Momentum is spent even if you miss.",
+        "name": "Measured Blow",
+        "ap_cost": 0,
+        "uses": "per_combat",
+        "text": "Once a fight, when one of your Finishers (Cleave, Break, Coup, Launch) is done, {=effects.0.value} of the Momentum it spent comes back to you: a Finisher that did not spend it all.",
         "effects": [
           {
-            "op": "damage_mult",
-            "value": {
-              "base": 1,
-              "per": [
-                {
-                  "of": "momentum_spent",
-                  "value": 0.2
-                }
-              ],
-              "max": 2.0
-            }
+            "op": "resource",
+            "when": "acted",
+            "resource": "momentum",
+            "value": 1,
+            "if": {
+              "tech_group": [
+                "finisher"
+              ]
+            },
+            "limit": {
+              "per": "per_combat",
+              "n": 1
+            },
+            "priority": 150,
+            "say": "{self} holds something back (Measured Blow): +{gain} Momentum."
           }
         ],
+        "source": "rules 1.60 item 4623 (R5): was the Breaker's own Finisher action; the door's Finishers are Cleave, Break, Coup and Launch",
         "adjudication": "engine",
         "provisional": true,
         "origin": "fighter",
@@ -3640,25 +3608,41 @@
       },
       {
         "id": "draw_fire",
-        "name": "Draw Fire",
-        "ap_cost": 1,
+        "name": "Called Out",
+        "ap_cost": 0,
         "uses": "at_will",
-        "text": "Costs {=ap_cost} AP and {=effects.0.value|abs} Guard. An enemy you can see is Taunted, with no save: its next attack must be aimed at you if it can see you, and it is worse at hitting anyone else. A Boss or a Celestial is Taunted too but never forced: it chooses its target, with the same penalty against anyone but you.",
+        "text": "Your Challenge costs no Guard, and the foe you name takes it with no save: its next attack must be aimed at you if it can see you, and it is worse at hitting anyone else. A Boss or a Celestial is Taunted too but never forced: it chooses its target, with the same penalty against anyone but you.",
         "effects": [
           {
-            "op": "resource",
-            "resource": "guard",
-            "value": -1,
-            "when": "on_use"
+            "op": "cost_mod",
+            "when": "cost",
+            "res": "guard",
+            "set": 0,
+            "if": {
+              "action": [
+                "skill:durability.1#guard_challenge"
+              ]
+            }
           },
           {
             "op": "condition",
+            "when": "acted",
             "condition": "taunted",
             "target": "target",
-            "when": "on_use"
+            "skip_save": true,
+            "via": "durability",
+            "if": {
+              "action": [
+                "guard_challenge"
+              ],
+              "target": "foe",
+              "target_alive": true
+            },
+            "say": "{self} calls out {target}{then}."
           }
         ],
-        "adjudication": "hybrid",
+        "source": "rules 1.60 item 4619 (R1): Draw Fire merged into Challenge; the id is kept so saves load",
+        "adjudication": "engine",
         "provisional": true,
         "origin": "defender",
         "origin_rank": "II",
@@ -3728,11 +3712,12 @@
         "numbers": {
           "rest_mult": 3
         },
-        "text": "{=effects.0.ap} AP and {=effects.0.res.mp} MP, with an Attuner in hand: an ally next to you, or a Bonded ally you see, heals {=amounts.heal.base} × your Healing given, more as you level, and stops Bleeding. Once an ally a turn. Out of a fight, with time to work: ×{=numbers.rest_mult}, once an ally a scene.",
+        "text": "Your Touch, the medic's way: {=effects.0.ap} AP and {=effects.0.res.mp} MP (less than a Touch), with an Attuner in hand: an ally next to you, or a Bonded ally you see, heals {=amounts.heal.base} × your Healing given, more as you level, as a Touch does, and it also stops Bleeding. Once an ally a turn; the brake counts it as a Touch. Out of a fight, with time to work: ×{=numbers.rest_mult}, once an ally a scene.",
         "effects": [
           {
             "op": "grant_action",
             "action": "triage",
+            "brake": true,
             "ap": 2,
             "uses": "at_will",
             "res": {
@@ -4420,7 +4405,7 @@
         "name": "Heart Surge",
         "ap_cost": 0,
         "uses": "per_turn",
-        "text": "Once per turn, when you Release an Outburst or snap cast one (Begin and Release at once), you can make it fire one stage higher. Past stage 4 it reads one more step of the stage table, and a snap cast fires at stage {=effects.0.value}. It costs double Strain: the Begin's Strain is added again once the Outburst lands.",
+        "text": "Once per turn, when you Release an Outburst or snap cast one (Begin and Release at once), you can make it fire one stage higher, never past the top stage (a full heart has nothing to surge into), and a snap cast fires at stage {=effects.0.value}. It costs double Strain: the Begin's Strain is added again once the Outburst lands.",
         "effects": [
           {
             "op": "stat_mod",
@@ -6821,7 +6806,7 @@
           "attributes": [
             "strength"
           ],
-          "status": "active"
+          "status": "shelved"
         }
       ],
       "shelved": true,

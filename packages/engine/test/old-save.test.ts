@@ -373,3 +373,29 @@ describe('a save written by live 0.28.2 on the old field (rules 1.55 item 66) lo
     expect(p.run.state).toBe('map');
   });
 });
+
+// Rules 1.60 (Doors 3.0) slice B, the reshape: class moves are read from the class's ranks in data, never saved, so an
+// old save's Breaker and Skirmisher hold the reshaped moves at once (Wind-up and Read the Swing where Shove and Lingering
+// Dread stood; Hold the Lane under the Speed Loader's key), and a fight saved mid-way plays on to its end.
+describe('the reshape (rules 1.60, slice B) on old saves', () => {
+  for (const f of ['save-develop-cb40e92-mid-fight', 'save-develop-cb40e92-after-fight']) it(f + ': the reshaped moves are held under their keys; the retired ones are not', () => {
+    const g = load(f);
+    for (const c of Object.values(g.characters) as any[]) {
+      if (!c.classId) continue;
+      const keys = itemsOf(heldOfChar(c)).filter((i) => i.kind === 'class').map((i) => i.key);
+      expect(keys).not.toContain('class:fighter.shove'); expect(keys).not.toContain('class:shade.lingering_dread');
+      if (c.classId === 'fighter') expect(keys).toContain('class:fighter.wind_up');
+      if (c.classId === 'marksman') expect(keys).toContain('class:marksman.speed_loader');
+    }
+  });
+  it('save-develop-cb40e92-mid-fight plays on to the end of its fight with the reshaped moves', () => {
+    const r = new Rec(load('save-develop-cb40e92-mid-fight'), GUNS);
+    r.fight(8); expect(r.errors).toEqual([]);
+  }, 60_000);
+  it('save-0.28.2-rigger-mid-fight: its Rigger holds the Scrap Sentinel and Redline under their old keys, and plays on', () => {
+    const g = load('save-0.28.2-rigger-mid-fight');
+    const c = (Object.values(g.characters) as any[]).find((x) => x.classId === 'trickster');
+    if (c) { const keys = itemsOf(heldOfChar(c)).filter((i) => i.kind === 'class').map((i) => i.key); for (const k of keys.filter((k) => /scrap_turret|overclock/.test(k))) expect(['class:trickster.scrap_turret', 'class:trickster.overclock']).toContain(k); }
+    const r = new Rec(g, GUNS); r.fight(6); expect(r.errors).toEqual([]);
+  }, 60_000);
+});

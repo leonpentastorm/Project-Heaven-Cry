@@ -173,11 +173,13 @@ describe('rules 1.33 section 3: the verbs', () => {
     const f = fight([{ skills: { empathy: 3 } }], [{ at: '12,9' }]), [u] = f.pcs(); f.turn(u); u.hp = 10;
     expect(f.act(u, 'verb:tend.mend_self')).toBeNull(); expect(f.pv(u, 'verb:tend.mend_self').ok).toBe(false);
   });
-  it('Touch: adjacent only; Shield: a shield; Settle: Settled; Soothe: the newest Body condition', () => {
+  it('Touch: adjacent only; Shield: a shield, on a Bonded ally only; Settle: Settled; Soothe: the newest Body condition', () => {
     const f = fight([{ skills: { empathy: 5 } }, { name: 'Ally' }], [{ at: '12,9' }]), [u, al] = f.pcs();
     u.pos = '3,3'; al.pos = '6,3'; f.turn(u);
     expect(f.pv(u, 'verb:tend.touch', { targetId: al.id }).ok).toBe(false); al.pos = '4,3';
     expect(f.pv(u, 'verb:tend.touch', { targetId: al.id }).ok).toBe(true);
+    expect(f.pv(u, 'verb:tend.shield', { targetId: al.id }).ok).toBe(false); // rules 1.60 item 4638 (R20): a Bonded ally only
+    f.act(u, 'verb:tend.bond', { targetId: al.id }); u.ap = 9;
     al.shield = 0; f.act(u, 'verb:tend.shield', { targetId: al.id }); expect(al.shield).toBeGreaterThan(0); u.ap = 9;
     f.act(u, 'verb:tend.settle', { targetId: al.id }); expect(condOn(al, 'settled')).toBe(true); u.ap = 9;
     al.conds = { ...(al.conds || {}), weakened: 2, slowed: 2 }; al.condAt = { weakened: 1, slowed: 2 };

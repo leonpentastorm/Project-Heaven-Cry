@@ -120,10 +120,12 @@ describe('the forms\' limits (the reviewer\'s abuse list)', () => {
     dice(HIT, () => f.act(sendDescriptor(f.g, u.id, 'tq:main:cut', { targetId: f.foe.id, mods: [OH('palm')] }, 'host')!));
     expect(f.foe.hp).toBeLessThan(hp0);
   });
-  it('Palm pushes a target at most once a turn, and never a Boss', () => {
-    const { f, u } = monk({ tier: 'boss' }); const at0 = f.foe.pos;
-    for (let i = 0; i < 2; i++) { f.unit(u.id).ap = 6; dice({ die: 15, hit: true }, () => f.act(sendDescriptor(f.g, u.id, 'tq:main:cut', { targetId: f.foe.id, mods: [OH('palm')] }, 'host')!)); }
-    expect(f.foe.pos).toBe(at0);
+  it('Palm pushes nobody (rules 1.60 R19: it Staggers), a Boss or not, however often it lands', () => {
+    for (const tier of ['boss', 'soldier']) {
+      const { f, u } = monk({ tier }); const at0 = f.foe.pos;
+      for (let i = 0; i < 2; i++) { f.unit(u.id).ap = 6; dice({ die: 15, hit: true }, () => f.act(sendDescriptor(f.g, u.id, 'tq:main:cut', { targetId: f.foe.id, mods: [OH('palm')] }, 'host')!)); }
+      expect(f.foe.pos).toBe(at0);
+    }
   });
 });
 

@@ -13,6 +13,7 @@
 import { register, stateOf, uses, note, healUnit, emit, immune, postStory, type Holder, type ActionDef, type ActionArgs } from '../effects';
 import { itemAmount } from '../effects/amounts';
 import { num, effNum } from '../effects/num';
+import { rawItem } from '../effects/collect';
 import { levelFactor } from '../effects/output';
 import { withAp, resGive } from '../effects/cost';
 import { RULES } from '../data';
@@ -143,46 +144,9 @@ register({
 });
 
 // ======================================================================================================== FIGHTER
-// ---------- Shove (rank I, 1 AP) ----------
-// An adjacent enemy: push it 1 tile straight away from you, or knock it Prone (you choose). It makes a Body save
-// against 12 + your Raw Power strength; a save, an immunity (Heavyworlder, a Braced Anchor) or a blocked tile and it
-// holds. A push into a wall, a unit or the map's edge is refused before anything is spent: knock it Prone instead.
-// Not the base Shove (2 AP, an opposed roll), which every character keeps.
-register({
-  id: 'fighter.shove', claims: 'all',
-  actions: [{
-    id: 'class_shove', label: 'Shove', scope: ['combat'], target: 'enemy', ap: 'data', range: 1, pick: ['push', 'prone'], pickLabel: 'Push it back, or knock it down',
-    text: 'Push an enemy next to you 1 tile straight back, or knock it Prone: your choice. It makes a Body save against 12 + your strength with Raw Power, and nothing happens if it succeeds.',
-    preview: (h, args) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
-      const how = args.choice === 'prone' ? 'prone' : 'push';
-      if (how === 'prone' && t.prone) return { ok: false, why: t.name + ' is already prone.' };
-      if (how === 'push') { const to = pushTile(cb, u, t); if (!to || !canStand(cb, to, t)) return { ok: false, why: 'There is no free tile behind them to push them into. Knock them Prone instead.' }; return { tiles: [to], lines: ['Push ' + t.name + ' to ' + refOf(to) + ' (Body save vs ' + (saveTn(u, 'raw_power')) + ').'] }; }
-      return { lines: ['Knock ' + t.name + ' Prone (Body save vs ' + (saveTn(u, 'raw_power')) + ').'] };
-    },
-    run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, how = args.choice === 'prone' ? 'prone' : 'push', was = t.pos;
-      const im = immune({ u: t }, 'shove') || (how === 'push' ? immune({ u: t }, 'knockback') : null);
-      if (im) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ', who doesn\'t budge (' + im + ').'); return; }
-      const s = famSave(cb, rng as Rng, u, t, how === 'prone' ? 'prone' : 'shoved', 'body', 'raw_power');
-      if (s.ok) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': ' + (s.cancel ? s.line : 'holds firm (' + s.line + ')') + '.'); return; }
-      if (how === 'push') {
-        const mv = displace(cb, rng as Rng, t, { away: u.pos, tiles: 1 }, { by: u, how: 'push', source: 'shove' }); // the one forced move (combat.ts)
-        if (!mv.moved) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + ': holds firm.'); return; }
-        say(cb, u.name + ' shoves ' + t.name + ' back to ' + refOf(mv.to) + ' (' + s.line + ')' + mv.text + '.'); sightCheck(cb); return;
-      }
-      // the save above was the save: the condition lands with none (and every item is asked once more, as for any condition)
-      // the line is said as it lands, before 'cond_landed' (applyCond tells it once): Shrug It Off's line reads after it
-      let fell = false;
-      const pr = applyCond(cb, rng as Rng, u, t, 'prone', undefined, undefined, { skipSave: true, via: 'raw_power', onLand: () => {
-        fell = true; emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: true, prone: true });
-        say(cb, u.name + ' knocks ' + t.name + ' Prone (' + s.line + ').');
-      } });
-      if (!fell) { emitFx(cb, 'shove', { unit: u.id, target: t.id, from: was, to: was, ok: false }); say(cb, u.name + ' shoves ' + t.name + (pr.startsWith(' · ' + t.name + ' ') ? ', who' + pr.slice(3 + t.name.length) : ': ' + pr.replace(/^ · /, '')) + '.'); }
-    },
-  }],
-  brief: () => null,
-});
+// ---------- Wind-up (rank I; replaced the class's Shove, rules 1.60 item 4621) ----------
+// Data only (classes.json fighter.wind_up: stat momentum_start, read by physical/core.ts momentumStart). The base Shove
+// (2 AP, an opposed roll) stays every character's.
 
 // ---------- Unstoppable (rank III, 1 AP, once a scene) ----------
 // Until your next turn starts: Fear, Shaken, Slowed and Pinned don't touch you (new ones are cancelled; ones you carry
@@ -514,7 +478,7 @@ register({
   brief: () => null,
 });
 
-// ---------- Overclock (rank II, 1 AP, once a turn) ----------
+// ---------- Redline (rank II, 1 AP, once a turn; was Overclock, renamed in rules 1.60 item 4632, the key kept) ----------
 // A Figment, robot, drone or turret of your side within range that your side sees attacks now, at no AP (its attack of
 // up to max_ap AP; the nearest enemy it can reach), and takes `strain`. Never a character (AP for a character is a
 // gamma's). The Rigger's "one thing a turn cheaper" (Rev 4 section 2).
@@ -527,18 +491,18 @@ function overclockVerb(t: Unit): string | null {
 register({
   id: 'trickster.overclock', claims: 'all',
   actions: [{
-    id: 'overclock', label: 'Overclock', scope: ['combat'], target: 'ally', ap: 'data', uses: { per: 'per_turn', n: 1 }, range: num({ key: 'class:trickster.overclock' }, 'range'),
+    id: 'overclock', label: 'Redline', scope: ['combat'], target: 'ally', ap: 'data', uses: { per: 'per_turn', n: 1 }, range: num({ key: 'class:trickster.overclock' }, 'range'),
     text: 'A Figment or machine of your side in range acts now, at no AP: its attack at the nearest enemy it can reach. It takes strain damage.',
     preview: (h, args) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {};
       if (t.charId) return { ok: false, why: 'Never a squadmate.' }; if (!overclockable(cb, u, t)) return { ok: false, why: t.name + ' isn\'t a Figment or machine of your side.' };
       if (!sideSeesUnit(cb, u.side, t)) return { ok: false, why: 'Your side can\'t see ' + t.name + '.' };
       const foe = overclockFoe(cb, t); if (!foe) return { ok: false, why: t.name + ' has no enemy in reach.' };
-      return { targets: [t.id, foe.id], lines: ['Overclock: ' + t.name + ' attacks ' + foe.name + ' now.'] };
+      return { targets: [t.id, foe.id], lines: ['Redline: ' + t.name + ' attacks ' + foe.name + ' now.'] };
     },
     run: (h, args, rng) => {
       const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, foe = overclockFoe(cb, t)!, v = overclockVerb(t)!, dv = OWNED_DATA_VERBS[v];
-      say(cb, u.name + ' overclocks ' + t.name + '.');
+      say(cb, u.name + ' redlines ' + t.name + '.');
       const no = attackNow(cb, rng as Rng, u, t, v, foe, num(h, 'max_ap')); void dv;
       if (no) return no;
       if (!t.dead) say(cb, t.name + ' strains' + hurtUnit(t, Math.floor(itemAmount('class:trickster.overclock', 'strain', [{ v: levelFactor('deal', u.level ?? 1), label: 'level' }])), true, cb, 'overclock', u) + '.');
@@ -554,12 +518,14 @@ function overclockFoe(cb: Combat, t: Unit): Unit | null {
   return foes.find((x) => (dv ? dist(t.pos, x.pos) <= (dv.reach?.tiles ?? 1) && !dv.dash : withAp(t, Number.POSITIVE_INFINITY, () => previewAttack(cb, t, x, v as any).ok))) || null;
 }
 
-// ---------- Scrap Turret (rank III, 3 AP, once a scene; was Jury-Rig) ----------
-// From a wreck, a pile with a weapon, or a barricade next to you: a turret (an owned unit, turn auto: figments.json
-// turret) on a free tile next to it. At each of your turn starts for `rounds` rounds it makes that weapon's plain
-// attack (a gun or bow at the nearest enemy it sees in range, a melee weapon at one in its reach; a wreck's or a pile's
-// weapon if it has one that is not used up, else the turret block's own), rolling d20 + your Improvisation modifier,
-// damage on the weapon profile at your level. One at a time. A machine: Overclock and repairs work on it.
+// ---------- Scrap Sentinel (rank III, 3 AP, once a scene; was the Scrap Turret; rules 1.60 item 4633) ----------
+// From a wreck, a pile with a weapon, or a barricade next to you: a Sentinel, the Figment form (figments.json forms:
+// sentinel), stands on a free tile next to it for no charge, outside the held count and with no upkeep (makeFigment's
+// `free`, as the Rigger's Double), until the owner's turn starts `rounds` rounds on. One at a time. No Visualization needed.
+/** The Figment form the move stands up: its data's `figment_form` (no form id in code). */
+const scrapForm = (h: Pick<Holder, 'key'>): string => { const f = rawItem(h.key)?.figment_form; if (typeof f !== 'string') throw new Error(h.key + ': no figment_form in its data'); return f; };
+/** What the source next to you is (a wreck, a pile with a weapon, a barricade): the weapon it carries (null: none), or
+ * undefined when there is nothing there to build from. */
 function scrapWeapon(cb: Combat, tile: string): string | null | undefined {
   const wreck = unitsIn(cb, [tile], { dead: true }).find((x) => wreckOf(x)); if (wreck) return WEAPON[wreck.weapon] && !(WEAPON[wreck.weapon] as any).consumable ? wreck.weapon : null;
   const pile = objectsAt(cb, tile).find((o) => o.kind === 'pile'); if (pile) { const w = (pile.items || []).map((x: any) => x.weapon || x.item || x.id).find((id: string) => WEAPON[id] && !(WEAPON[id] as any).consumable && WEAPON[id].category !== 'thrown'); return w || null; }
@@ -569,23 +535,20 @@ function scrapWeapon(cb: Combat, tile: string): string | null | undefined {
 register({
   id: 'trickster.scrap_turret', claims: 'all',
   actions: [{
-    id: 'scrap_turret', label: 'Scrap Turret', scope: ['combat'], target: 'tile', ap: 'data', uses: { per: 'per_scene', n: 1 },
-    text: 'From a wreck, a pile with a weapon, or a barricade next to you: a turret that attacks at your turn starts for a few rounds.',
-    available: (h) => (h.cb && h.u && ownedBy(h.cb, h.u).some((x) => (x as any).owned?.kind === 'machine' && !x.dead && h.cb!.units.includes(x)) ? 'One turret at a time.' : true),
+    id: 'scrap_turret', label: 'Scrap Sentinel', scope: ['combat'], target: 'tile', ap: 'data', uses: { per: 'per_scene', n: 1 },
+    text: 'From a wreck, a pile with a weapon, or a barricade next to you: a Sentinel stands for no charge, outside your held count, for a few rounds.',
+    available: (h) => (h.cb && h.u && figmentsOf(h.cb, h.u).some((x) => (x as any).owned?.free && (x as any).figment?.form === scrapForm(h)) ? 'One Scrap Sentinel at a time.' : true),
     preview: (h, args) => {
       const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile); if (!k) return {};
       if (dist(u.pos, k) > 1) return { ok: false, why: 'Next to you.' };
       if (scrapWeapon(cb, k) === undefined) return { ok: false, why: 'No wreck, pile with a weapon or barricade there.' };
       const at = turretTile(cb, k); if (!at) return { ok: false, why: 'No free tile next to it.' };
-      return { tiles: [at], lines: ['A Scrap Turret at ' + refOf(at) + '.'] };
+      return { tiles: [at], lines: ['A Scrap Sentinel at ' + refOf(at) + '.'] };
     },
     run: (h, args, rng) => {
-      const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!, at = turretTile(cb, k)!, w = scrapWeapon(cb, k) || FIG.turret.weapon;
-      const melee = isMelee(WEAPON[w]), block = { ...FIG.turret, weapon: w, auto: { ...FIG.turret.auto, verb: melee ? 'melee' : 'shot' } };
-      const tr = spawnOwned(cb, u, FIG.turret.id, at, rng as Rng, { block }); if (typeof tr === 'string') return tr;
-      setUpTurret(u, tr);
-      (tr as any).owned.free = true; (tr as any).owned.left = num(h, 'rounds');
-      say(cb, u.name + ' rigs a Scrap Turret at ' + refOf(at) + ' (' + (WEAPON[w]?.name || w) + ').'); sightCheck(cb);
+      const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!, at = turretTile(cb, k)!;
+      const s = makeFigment(cb, rng as Rng, u, scrapForm(h), [], at, { charge: 0, free: { rounds: num(h, 'rounds') } }); if (typeof s === 'string') return s;
+      say(cb, u.name + ' builds a Scrap Sentinel at ' + refOf(at) + '.');
       return null;
     },
   }],

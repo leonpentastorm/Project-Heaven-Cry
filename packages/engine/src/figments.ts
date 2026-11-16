@@ -111,8 +111,9 @@ export function heldMax(u: Unit | null | undefined, c?: Character | null): numbe
   const p = visPoints(u, c); if (p < 1) return 0;
   return Math.min(FIG.limits.held_most, ladderAt(p).held + statQuery({ u, c: c ?? charOfUnit(u) }, 'ties_max:owned').add);
 }
-/** How many designs it keeps ready (the ladder's, plus the stat `figment_designs`). */
-export function designsMax(c: Character, u?: Unit | null): number { const p = c.skills?.visualization || 0; return p >= 3 ? ladderAt(p).designs + statQuery({ c, u }, 'figment_designs').add : 0; }
+/** How many designs it keeps ready (the ladder's, plus the stat `figment_designs`): none until the ladder's first row
+ * that gives designs (rules 1.60 item 4641: read from figments.json, no typed point). */
+export function designsMax(c: Character, u?: Unit | null): number { const L = ladderAt(c.skills?.visualization || 0); return L.designs > 0 ? L.designs + statQuery({ c, u }, 'figment_designs').add : 0; }
 /** How many traits a design may carry. */
 export const traitsMax = (points: number): number => ladderAt(points).traits;
 /** Why this character can't use this form yet (null: it can): its points, or its fork not taken. */

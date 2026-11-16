@@ -55,13 +55,16 @@ describe('Channeler: Storm Front under 1.5 (item 523)', () => {
 });
 
 describe('Channeler: Heart Surge on a stage-4 heart and a snap (item 524)', () => {
-  it('past stage 4 the multiplier reads ×1.8 (one more step of the table, rules 1.19); a snap reads stage 1 (×1.0)', () => {
+  // Rules 1.60 item 4634 (R16): Heart Surge never goes past stage 4 (the Outburst door's reserved peak): on a full heart
+  // the switch is refused (greyed) and does nothing; the release is the table's top.
+  it('on a stage-4 heart the surge does nothing (never past stage 4); a snap reads stage 1 (×1.0)', () => {
     const f = fightWith([cls('channeler', 3)], [{}]); clean(f);
     const u = f.turn(f.pc); u.ap = 12; place(f, u, '2,2'); place(f, f.foe, '5,2'); const d = give(f.unit(u.id), { at_once: true } as any);
     f.unit(u.id).mg!.designs.find((x) => x.id === d)!.modules = ['at_once']; // no roll: the numbers are exact (At Once: ×0.8, rules 1.17)
     A(f, f.unit(u.id), { type: 'combat/outburst', design: d }); for (let i = 0; i < 4; i++) A(f, f.unit(u.id), { type: 'combat/pump' });
     A(f, f.unit(u.id), { type: 'combat/release', aim: '5,2', mods: ['class:channeler.heart_surge#surge'] });
-    expect(Math.abs(lost(f.unit(f.foe.id)) - 20 * (1.6 + 0.1) * (1.8 / 1.6) * 0.8)).toBeLessThanOrEqual(1);
+    expect(Math.abs(lost(f.unit(f.foe.id)) - 20 * (1.6 + 0.1) * 0.8)).toBeLessThanOrEqual(1); // the top of the table, no step past it
+    expect(f.cb.log.some((l) => /heart surges/.test(l))).toBe(false); // the switch did nothing on a full heart
     const g = fightWith([cls('channeler', 3)], [{}]); clean(g);
     const v = g.turn(g.pc); v.ap = 9; place(g, v, '2,2'); place(g, g.foe, '5,2'); const e = give(g.unit(v.id), { modules: ['at_once'] });
     A(g, g.unit(v.id), { type: 'combat/outburst', design: e, aim: '5,2', mods: ['class:channeler.heart_surge#surge'] });

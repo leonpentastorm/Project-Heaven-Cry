@@ -129,7 +129,7 @@ describe('item 10, Challenge: 1 AP and 1 Guard, foes within 2 save or are Taunte
   it('through the reducer: the price, each foe in reach Taunted or saved, the far foe untouched', () => {
     const f = fight(3, { foes: [{ at: 'D5' }, { at: 'E5' }, { at: 'C7', tier: 'boss' }, { at: 'K5' }] }); guard(f, 3);
     const ap = tank(f).ap, g = DOOR.effects.find((e: any) => e.action === 'guard_challenge');
-    f.act({ type: 'combat/perk', unitId: f.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge' } as any);
+    f.act({ type: 'combat/perk', unitId: f.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge', targetId: foes(f)[0].id } as any); // rules 1.60 item 4619: Challenge names a foe within its reach
     expect(tank(f).ap).toBe(ap - g.ap); expect(guard(f)).toBe(3 - g.res.guard);
     const [a, b, boss, far] = foes(f).map((u) => f.unit(u.id));
     const log = f.cb.log.join(' ');
@@ -139,9 +139,11 @@ describe('item 10, Challenge: 1 AP and 1 Guard, foes within 2 save or are Taunte
   });
   it('refused below Durability 3 and with no Guard', () => {
     const f = fight(2); guard(f, 3);
-    expect(() => f.act({ type: 'combat/perk', unitId: f.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge' } as any)).toThrow();
+    expect(() => f.act({ type: 'combat/perk', unitId: f.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge', targetId: foes(f)[0].id } as any)).toThrow();
     const g = fight(3); guard(g, 0);
-    expect(() => g.act({ type: 'combat/perk', unitId: g.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge' } as any)).toThrow();
+    expect(() => g.act({ type: 'combat/perk', unitId: g.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge', targetId: foes(g)[0].id } as any)).toThrow();
+    const h = fight(3, { foes: [{ at: 'K5' }] }); guard(h, 3); // rules 1.60 item 4619: the named foe must be within its reach
+    expect(() => h.act({ type: 'combat/perk', unitId: h.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge', targetId: foes(h)[0].id } as any)).toThrow(/Out of range/);
   });
 });
 
@@ -158,7 +160,7 @@ describe('item 10, Challenge and a Boss: Taunted as by any other source, never f
     f.cb.objects = []; f.put(f.pcs[0], 'C5'); f.put(f.pcs[1], 'E6'); const foe = f.cb.units.find((u) => u.side === 'foe')!; f.put(foe, 'D5'); foe.hp = foe.maxHp = 900;
     f.cb.order = [f.pcs[0].id, f.pcs[1].id, foe.id]; f.cb.round = 1; f.turn(f.pcs[0]);
     guard(f, 3); FAIL_SAVES = true;
-    try { f.act({ type: 'combat/perk', unitId: f.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge' } as any); } finally { FAIL_SAVES = false; }
+    try { f.act({ type: 'combat/perk', unitId: f.pcs[0].id, id: 'skill:durability.1', actionId: 'guard_challenge', targetId: foe.id } as any); } finally { FAIL_SAVES = false; }
     expect(f.unit(foe.id).conds?.taunted, f.cb.log.slice(-4).join(' | ')).toBeTruthy();
     const pv = f.bound(() => previewAttack(f.cb, f.unit(foe.id), f.unit(f.pcs[1].id), 'melee', { free: true }));
     if (tier === 'boss') { expect(pv.ok, pv.why).toBe(true); expect(pv.terms!.find((t) => t.label === 'conditions')?.v).toBe(TAUNT_OTHERS); }

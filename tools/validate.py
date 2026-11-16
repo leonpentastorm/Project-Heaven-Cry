@@ -517,6 +517,19 @@ for _p in items("perks"):
     if isinstance(_p, dict) and _p.get("name", "").lower() in _class_names:
         errors.append(f"perk {_p.get('id')}: name {_p.get('name')!r} collides with a class name")
 
+# Rules 1.60 item 4642 (the spec's section 4.3): the layering shield is Prayer's. A `mend` op that names a `layer` must
+# sit inside a prayer (a grant_action with `prayer`): no other door may give a shield that layers on the base shield.
+def _layer_outside_prayer(o, where, in_prayer=False):
+    if isinstance(o, dict):
+        pr = in_prayer or (o.get("op") == "grant_action" and o.get("prayer") is not None)
+        if o.get("op") == "mend" and o.get("layer") is not None and not pr:
+            errors.append(f"{where}: a mend with layer {o.get('layer')!r} outside a prayer (rules 1.60 item 4642: only Prayer's shield layers)")
+        for k, v in o.items(): _layer_outside_prayer(v, where + "." + str(k) if k in ("effects", "moves") else where, pr)
+    elif isinstance(o, list):
+        for v in o: _layer_outside_prayer(v, where, in_prayer)
+for _name, _doc in data.items():
+    _layer_outside_prayer(_doc, _name)
+
 # Classes 3.0 step 5, the Chaplain (rules 1.31; chaplain-spec.md section 10): Smite is Rebuke's size; every shield
 # layer a move names is a known one; the Judged row exists; no Virtue base-class move costs MP or Strain.
 _SHIELD_LAYERS = {"ward"}

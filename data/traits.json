@@ -1292,11 +1292,11 @@
         "Vengeful: when an ally is Downed, you have 2 more AP on your next turn. Once every 3 turns."
       ],
       "downsides": [
-        "Prey: {=effects.2.value} Guts, Intimidation and Authority. Hunters and Orks deal +{=effects.5.value_pct}% damage to you, and neither Take the Hit nor a taunt can pull their attacks off you."
+        "Prey: {=effects.2.value} Guts, Intimidation and Authority. Hunters and Orks deal +{=effects.5.value_pct}% damage to you, and neither an Interpose nor a taunt can pull their attacks off you."
       ],
       "notes": [],
       "narrator_hook": "the trophy-hunter who wants your foot.",
-      "text": "Half-Lapin by blood, or just someone who carries a rabbit's-foot charm. Either way, luck follows you, and so do the hunters.\n+ Lucky Foot: once per session, the first enemy attack that would hit you in a fight is rerolled; you may hold it back for a later fight. Outside a fight, ask the Narrator to reroll one roll made against you.\n+ Vengeful: when an ally is Downed, you have 2 more AP on your next turn. Once every 3 turns.\n− Prey: {=effects.2.value} Guts, Intimidation and Authority. Hunters and Orks deal +{=effects.5.value_pct}% damage to you, and neither Take the Hit nor a taunt can pull their attacks off you.",
+      "text": "Half-Lapin by blood, or just someone who carries a rabbit's-foot charm. Either way, luck follows you, and so do the hunters.\n+ Lucky Foot: once per session, the first enemy attack that would hit you in a fight is rerolled; you may hold it back for a later fight. Outside a fight, ask the Narrator to reroll one roll made against you.\n+ Vengeful: when an ally is Downed, you have 2 more AP on your next turn. Once every 3 turns.\n− Prey: {=effects.2.value} Guts, Intimidation and Authority. Hunters and Orks deal +{=effects.5.value_pct}% damage to you, and neither an Interpose nor a taunt can pull their attacks off you.",
       "effects": [
         {
           "op": "reroll",
@@ -1331,7 +1331,7 @@
         },
         {
           "op": "narrator",
-          "note": "Take the Hit and taunts can't pull hunters' or Orks' attacks off you"
+          "note": "Interpose and taunts can't pull hunters' or Orks' attacks off you"
         }
       ],
       "adjudication": "engine",

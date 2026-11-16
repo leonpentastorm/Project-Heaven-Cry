@@ -132,13 +132,7 @@ describe('Fighter', () => {
     expect(logHas(f.cb, /answers with Riposte/)).toBe(true); expect(f.pc.res!.momentum).toBeLessThanOrEqual(2); // rules 1.30: the class gives the technique's Answer
     expect(f.cb.log.filter((l) => /strikes Foe 1/.test(l)).length).toBe(1);
   });
-  it('Finisher: 3 AP, all Momentum on one strike (+20% each)', () => {
-    const f = fightWith([cls('fighter', 3, { weapon: 'combat_knife' })], [{}]);
-    line(f, [f.pc, 4], [f.foe, 5]); const u = f.turn(f.pc); f.unit(u.id).res!.momentum = 4; sure(f.unit(u.id));
-    act(f, u, { type: 'combat/perk', id: 'class:fighter.finisher', targetId: f.foe.id });
-    expect(logHas(f.cb, /spends 4 Momentum on a Finisher/)).toBe(true); expect(f.pc.ap).toBe(3);
-    expect(f.pc.res!.momentum).toBeLessThanOrEqual(1);
-  });
+  // (the class's own Finisher action became Measured Blow, data only: rules 1.60 item 4623; doors3-reshape.test.ts)
 });
 
 // ======================================================================================================== DEFENDER
@@ -159,24 +153,8 @@ describe('Defender', () => {
     act(f, f.unit(d.id), { type: 'combat/move', to: '3,3' });
     expect(f.unit(d.id).def).toBe(def0);
   });
-  // The 0.29 consolidation (MF2): one rule for every Taunt, the condition's own (conditions.json taunted; combat.ts
-  // tauntedBy): a Boss is Taunted too but never forced; it has the row's penalty against anyone else, as every Taunted unit.
-  it('Draw Fire: 1 Guard, the enemy is Taunted (no save) and forced; a Boss is Taunted, never forced, with the Taunted penalty against anyone else', () => {
-    const f = fightWith([cls('defender', 2), {}], [{}, { tier: 'boss' }]);
-    const [d, ally] = f.pcs, [s, boss] = f.foes; line(f, [d, 3], [ally, 5], [s, 9], [boss, 11]);
-    const u = f.turn(d); f.unit(d.id).res!.guard = 2;
-    act(f, u, { type: 'combat/perk', id: 'class:defender.draw_fire', targetId: s.id });
-    expect(condOn(f.unit(s.id), 'taunted')).toBe(true); expect(f.unit(d.id).res!.guard).toBe(1);
-    const forced = withGame(f.g, () => previewAttack(f.cb, f.unit(s.id), f.unit(ally.id), 'shot', { free: true }));
-    expect(forced.ok).toBe(false); expect(forced.why).toMatch(/Taunted/);
-    act(f, f.unit(d.id), { type: 'combat/perk', id: 'class:defender.draw_fire', targetId: boss.id });
-    expect(condOn(f.unit(boss.id), 'taunted')).toBe(true);
-    const pv = withGame(f.g, () => previewAttack(f.cb, f.unit(boss.id), f.unit(ally.id), 'shot', { free: true }));
-    expect(pv.ok).toBe(true);
-    expect(pv.terms!.find((t) => t.label === 'conditions')?.v).toBe(TAUNT_OTHERS);
-    const onMe = withGame(f.g, () => previewAttack(f.cb, f.unit(boss.id), f.unit(d.id), 'shot', { free: true }));
-    expect(onMe.terms!.find((t) => t.label === 'conditions')?.v ?? 0).toBe(0);
-  });
+  // (Draw Fire became Called Out, data on Challenge: rules 1.60 item 4619; its Taunt, no save, and a Boss never forced
+  // are tested through the reducer in doors3-reshape.test.ts)
   it('Reactive Plate: each Guard cuts 10 damage; 3 Guard lost raise the meter by 2', () => {
     const f = fightWith([cls('defender', 3)], [{}]);
     const u = f.unit(f.pc.id); u.res!.guard = 4; const hp = u.hp, m0 = manaOf(f.cb);

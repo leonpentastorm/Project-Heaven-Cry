@@ -29,9 +29,9 @@ describe('the nine classes (data)', () => {
     for (const k of CLASSES) for (const r of ['I', 'II', 'III']) expect(k.ranks[r].moves.length, k.id + ' ' + r).toBe(2);
     const all = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves));
     expect(all.length).toBe(54);
-    expect(all.filter((m: any) => m.new).length).toBe(25); // the 20 new moves and Run and Gun (rules 1.30); rules 1.31: Ward and Smite in, Command out; less Field Fix (to the move pool, rules 1.32); rules 1.33: the Ledger and Take the Weight; rules 1.34: Salvage, Overclock, Scrap Turret in, Silver Tongue out
+    expect(all.filter((m: any) => m.new).length).toBe(26); // rules 1.60: + Read the Swing; the 20 new moves and Run and Gun (rules 1.30); rules 1.31: Ward and Smite in, Command out; less Field Fix (to the move pool, rules 1.32); rules 1.33: the Ledger and Take the Weight; rules 1.34: Salvage, Overclock, Scrap Turret in, Silver Tongue out
     expect(all.filter((m: any) => m.ref && !ADVANCED[m.ref.split('.')[0]]).length).toBe(24); // 28 old base moves; rules 1.31: Will Shield out (Ward); rules 1.33: Stim Throw and Field Surgery out (everyone's); rules 1.34: Blind and Slow and Rewrite leave the Rigger, Field Fix is its ref
-    expect(all.filter((m: any) => m.ref && ADVANCED[m.ref.split('.')[0]]).length).toBe(6); // 6 old advanced moves (Called Shot left the Skirmisher, rules 1.30, and came to the Operative, rules 1.32)
+    expect(all.filter((m: any) => m.ref && ADVANCED[m.ref.split('.')[0]]).length).toBe(5); // rules 1.60: Lingering Dread left the Breaker; was 6 old advanced moves (Called Shot left the Skirmisher, rules 1.30, and came to the Operative, rules 1.32)
   });
   it('a reused move keeps its old key: Bard\'s Triage is class:medic.triage; a new move is under its class', () => {
     const triage = CLASS.bard.ranks.I.moves.find((m: any) => m.id === 'triage');
@@ -47,7 +47,7 @@ describe('the nine classes (data)', () => {
     const moves = Object.values(CLASS_MOVE_POOL);
     for (const m of moves) { expect(m.origin).toBeTruthy(); expect(m.fantasy_tags?.length).toBeGreaterThan(0); expect(m.attributes?.length).toBeGreaterThan(0); expect(['active', 'shelved']).toContain(m.status); }
     expect(moves.filter((m) => !ADVANCED[m.origin] && m.status === 'shelved').length).toBe(14); // + Field Fix (rules 1.32); rules 1.34: + Silver Tongue, Blind and Slow, Rewrite, − Field Fix (the Rigger's)
-    expect(moves.filter((m) => ADVANCED[m.origin] && m.status === 'shelved').length).toBe(57); // Called Shot is the Operative's (rules 1.32)
+    expect(moves.filter((m) => ADVANCED[m.origin] && m.status === 'shelved').length).toBe(58); // rules 1.60: + Lingering Dread (the Shade's again); Called Shot is the Operative's (rules 1.32)
   });
 });
 
@@ -106,14 +106,14 @@ describe('ranks read the class\'s own attribute', () => {
     const s = storyWith([{ classId: 'fighter', level: 6, attrs: { strength: 4 } }]);
     const c = s.g.characters[s.chars[0].id]; c.unspent.attr = 1; c.cores.body = Math.max(c.cores.body, 5);
     s.act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: 'strength' });
-    expect(s.g.story.entries.at(-1)!.text).toContain(CLASS.fighter.name + ' II: Riposte, Lingering Dread');
+    expect(s.g.story.entries.at(-1)!.text).toContain(CLASS.fighter.name + ' II: Riposte, Read the Swing');
   });
   it('a rank that comes with the level (rules 1.11) is announced the same way; no rise, no line', () => {
     const s = storyWith([{ classId: 'fighter', level: 5, attrs: { strength: 5 } }]);
     const c = s.g.characters[s.chars[0].id]; expect(classRank(c)).toBe(1);
     const n0 = s.g.story.entries.length; rankReached(s.g, c, 1); expect(s.g.story.entries.length).toBe(n0);
     c.level = 6; rankReached(s.g, c, 1);
-    expect(s.g.story.entries.at(-1)!.text).toContain('reaches ' + CLASS.fighter.name + ' II: Riposte, Lingering Dread');
+    expect(s.g.story.entries.at(-1)!.text).toContain('reaches ' + CLASS.fighter.name + ' II: Riposte, Read the Swing');
   });
 });
 
@@ -122,8 +122,8 @@ describe('reused moves run their old handlers', () => {
     // rules 1.33: Triage is data now (an Attuner in hand, MP, priced at its site); its play: test/tending.test.ts
     expect(itemInfo('class:medic.triage')!.effects.some((e: any) => e.op === 'grant_action' && e.site === 'triage')).toBe(true);
   });
-  it('a Fighter at rank II holds Lingering Dread under its Shade key; a Defender Unbroken under the Knight\'s', () => {
-    expect(classKeys(charOf({ strength: 5 }, { classId: 'fighter', level: 6 }))).toContain('class:shade.lingering_dread');
+  it('a Fighter at rank II holds Read the Swing under its own key (rules 1.60: Lingering Dread is the Shade\'s again); a Defender Unbroken under the Knight\'s', () => {
+    expect(classKeys(charOf({ strength: 5 }, { classId: 'fighter', level: 6 }))).toContain('class:fighter.read_the_swing');
     expect(classKeys(charOf({ endurance: 5 }, { classId: 'defender', level: 6 }))).toContain('class:adamantile_knight.unbroken');
   });
 });
@@ -218,7 +218,7 @@ describe('Revision 2 saves migrate', () => {
 describe('the 20 new moves have handlers (phase B; behaviour in classes-rev3-moves.test.ts)', () => {
   const NEW = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new).map((m: any) => m.key.replace(/^class:/, ''));
   it('each has its full data entry, a registered handler, and no effect is a coverage gap', () => {
-    expect(NEW.length).toBe(25); // + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite (data only), − Command; − Field Fix (rules 1.32); rules 1.33: + the Ledger and Take the Weight; rules 1.34: + Salvage, Overclock, Scrap Turret, − Silver Tongue
+    expect(NEW.length).toBe(26); // rules 1.60: + Read the Swing (Wind-up replaced Shove); + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite (data only), − Command; − Field Fix (rules 1.32); rules 1.33: + the Ledger and Take the Weight; rules 1.34: + Salvage, Overclock, Scrap Turret, − Silver Tongue
     for (const k of NEW) {
       const info = itemInfo('class:' + k)!;
       expect(info, k).toBeTruthy(); expect(info.text.length, k).toBeGreaterThan(10); expect(info.provisional, k).toBe(true);
@@ -230,6 +230,6 @@ describe('the 20 new moves have handlers (phase B; behaviour in classes-rev3-mov
   });
   it('an active one is a lane action under the data\'s action id', () => {
     expect(actionDefs(itemInfo('class:bard.rally')!).map((d) => d.id)).toEqual(['rally']); // rules 1.33: data's own action
-    expect(actionDefs(itemInfo('class:fighter.shove')!).map((d) => d.id)).toEqual(['class_shove']);
+    expect(itemInfo('class:fighter.shove')).toBeFalsy(); // rules 1.60: the Breaker's Shove became Wind-up (data, no action)
   });
 });

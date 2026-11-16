@@ -22,7 +22,7 @@ describe('Speed Loader: the turn\'s first main-hand reload only (spec item 564)'
     for (let i = 0; i < 2; i++) { const b = f.unit(id).ap; f.act({ type: 'combat/reload', unitId: id, hand: 'off' } as any); f.unit(id).offAmmo = 0; spent.push(b - f.unit(id).ap); }
     expect(spent).toEqual([2, 2]);
     const b = f.unit(id).ap; f.act({ type: 'combat/reload', unitId: id } as any);
-    expect(b - f.unit(id).ap).toBe(1); // the main hand still gets it
+    expect(b - f.unit(id).ap).toBe(2); // rules 1.60: the main hand is full price too
   });
   it('reloading both guns at once (its own 3 AP price) leaves the discount for the next main-hand reload', () => {
     const { f, id } = setup();
@@ -30,7 +30,7 @@ describe('Speed Loader: the turn\'s first main-hand reload only (spec item 564)'
     expect(b0 - f.unit(id).ap).toBe(3);
     f.unit(id).ammo = 0;
     const b = f.unit(id).ap; f.act({ type: 'combat/reload', unitId: id } as any);
-    expect(b - f.unit(id).ap).toBe(1);
+    expect(b - f.unit(id).ap).toBe(2);
   });
   it('a refused reload (called by the engine, not through the reducer\'s rollback) spends nothing', () => {
     const { f, id } = setup();
@@ -38,7 +38,7 @@ describe('Speed Loader: the turn\'s first main-hand reload only (spec item 564)'
     withGame(f.g, () => expect(reload(f.cb, u)).toMatch(/No loaded spare/));
     u.mags = [15];
     const b = u.ap; withGame(f.g, () => expect(reload(f.cb, u)).toBeNull());
-    expect(b - u.ap).toBe(1);
+    expect(b - u.ap).toBe(2);
   });
 });
 

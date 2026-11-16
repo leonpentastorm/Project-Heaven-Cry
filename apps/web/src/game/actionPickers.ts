@@ -272,9 +272,6 @@ const COMBAT: Record<string, Maker> = {
   'perk:lab_coat#neutralise_agent': (e) => ({ head: 'Neutralise agent', hint: e.text + ' Pick one, or none for the first identified here.', fields: [chipsF('choice', 'The agent', [...CHEM_OPTS, { id: 'toxic', label: 'Toxic hazard' }], 1, true)] }),
   // ---- Class Roster Revision 3 (engine classes/rev3.ts) ----
   // Command: the squadmate is the grid target (a click on their token); the walk's end is a second click (up to 2 tiles).
-  // Shove: the enemy is the grid target; push or knock down is a chip (the engine refuses a push into a wall: its reason shows on the chip).
-  'class:fighter.shove#class_shove': (e) => ({ head: 'Shove', hint: 'Click the enemy next to you, then push it back or knock it down.',
-    fields: [chipsF('choice', 'Push it back, or knock it down', [{ id: 'push', label: 'Push 1 tile', title: 'Straight away from you (a Body save holds it).' }, { id: 'prone', label: 'Knock Prone', title: 'Down on the floor (a Body save holds it).' }])] }),
   // Field Fix: the squadmate is the grid target; what to fix is a chip (none: the first that applies).
   'class:infiltrator.field_fix#field_fix': (e) => ({ head: 'Field Fix', hint: 'Click one of your side within reach, then what to fix (none: the first that applies).',
     fields: [chipsF('choice', 'What to fix', FIX_OPTS, 1, true)] }),

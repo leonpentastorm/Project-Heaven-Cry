@@ -135,7 +135,7 @@ describe("Guard 2.0 slice 1: the door's moves on the map (rules 1.56; skills.jso
     expect(guardMoveWord({ k: 'guard_move', move: 'retort' })).toBe('RETORT');
     expect(guardBeat({ k: 'guard_move', move: 'slam' })).toBe(GUARD_MOVE_MS.slam);
     expect(rowKey({ k: 'shove', unit: 'a', target: 'b', interpose: true })).toBe('interpose');
-    expect(rowKey({ k: 'shove', unit: 'a', target: 'b' })).toBe('move:fighter.shove');
+    expect(rowKey({ k: 'shove', unit: 'a', target: 'b' })).toBe('action:shove');
   });
 
   it("a real fight (the reducer): Slam, Challenge, then a foe's blow turned, answered by Retort: each event plays with its word", () => {
@@ -145,7 +145,7 @@ describe("Guard 2.0 slice 1: the door's moves on the map (rules 1.56; skills.jso
     f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1; f.turn(f.pc);
     const me = f.unit(f.pc.id); me.hp = me.maxHp; me.armour = 0; me.res!.guard = 5;
     f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'skill:durability.1', actionId: 'guard_slam' } as any);
-    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'skill:durability.1', actionId: 'guard_challenge' } as any);
+    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'skill:durability.1', actionId: 'guard_challenge', targetId: a.id } as any); // rules 1.60: Challenge names a foe
     const foe = f.unit(a.id); f.put(foe, 'D3'); f.turn(foe); rig({ die: 20 });
     f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(a.id), f.unit(f.pc.id), 'melee', null, { noAp: true })); rig(null);
     const evs = ((f.cb as any).fx as any[]).filter((e) => e.k === 'guard_move');

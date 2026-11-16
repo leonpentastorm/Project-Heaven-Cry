@@ -59,7 +59,7 @@ describe('the table: a row for every physical technique', () => {
   });
   it('every base-class move that makes a physical attack has a row', () => {
     const moves = physicalMoves();
-    expect(moves.length).toBeGreaterThanOrEqual(5);
+    expect(moves.length).toBeGreaterThanOrEqual(4); // rules 1.60: the Breaker's own Finisher and Shove left (Measured Blow, Wind-up)
     expect(moves.filter((k) => !TECH_FX[k])).toEqual([]);
   });
   it('every part a row names exists; every row has a result for a hit (an attack part is the technique\'s own, and optional)', () => {
@@ -82,7 +82,7 @@ describe('the table: a row for every physical technique', () => {
   it('no two rows are the same (each technique is recognisable), and the table is not padded with rows for nothing', () => {
     const sig = Object.values(TECH_FX).map((r) => JSON.stringify(r));
     expect(new Set(sig).size).toBe(sig.length);
-    const known = new Set([...(TECHNIQUES as any[]).map((t) => t.id), ...physicalMoves()]);
+    const known = new Set([...(TECHNIQUES as any[]).map((t) => t.id), ...physicalMoves(), 'action:shove']); // everyone's Shove (actions.json), the base action
     expect(Object.keys(TECH_FX).filter((k) => !known.has(k))).toEqual([]);
   });
   it('a crit adds to the hit on every strike that rolls', () => {
@@ -90,14 +90,14 @@ describe('the table: a row for every physical technique', () => {
   });
   it('which row an event plays: its technique, its class move, else Cut or Shot', () => {
     expect(rowKey({ k: 'melee', tech: 'sunder' })).toBe('sunder');
-    expect(rowKey({ k: 'melee', move: 'fighter.finisher' })).toBe('move:fighter.finisher');
+    expect(rowKey({ k: 'melee', move: 'fighter.lunge' })).toBe('move:fighter.lunge');
     expect(rowKey({ k: 'melee' })).toBe('cut');
     expect(rowKey({ k: 'shot', mode: 'burst' })).toBe('burst');
     expect(rowKey({ k: 'shot' })).toBe('shot');
     expect(rowKey({ k: 'shot', thrown: true })).toBe('throw');
     expect(rowKey({ k: 'technique', id: 'guard' })).toBe('guard');
     expect(rowKey({ k: 'technique', id: 'sunder' })).toBeNull(); // a strike row plays on its strikes
-    expect(rowKey({ k: 'shove', unit: 'u', ok: true })).toBe('move:fighter.shove');
+    expect(rowKey({ k: 'shove', unit: 'u', ok: true })).toBe('action:shove'); // everyone's Shove (rules 1.60: the Breaker's own left)
     expect(rowKey({ k: 'shove', unit: 'u', ok: true, _tech: 'shove' })).toBeNull();
   });
   it('the ink is the weapon\'s attribute: Dexterity guns and blades Agility, Raw Power weapons Strength', () => {

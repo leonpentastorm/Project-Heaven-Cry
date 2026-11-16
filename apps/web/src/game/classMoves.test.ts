@@ -34,13 +34,9 @@ describe('pickers for the new moves (buttons only)', () => {
     expect(buildArgs(P, { npc: ['n1'], what: ['ward'] }, x)).toEqual({ text: 'Brother Ash: a ward', npc: 'Brother Ash' });
   });
   // (the Guardian's Command left in rules 1.31: an order is Authority's Call)
-  it('Shove: push or knock down, as chips with words; Field Fix: three jobs, none meaning the first that applies', () => {
+  it('Field Fix: three jobs, none meaning the first that applies (the Breaker\'s Shove picker left with the move, rules 1.60 R3)', () => {
     const f = fightWith([cls('fighter', 3)], [{}]);
-    const u = f.turn(f.pc), e = entries(f, u).find((x) => x.actionId === 'class_shove')!;
-    const P = pickerFor(e, ctx(f, u))!;
-    expect(P.fields[0].kind).toBe('chips'); expect((P.fields[0] as any).options.map((o: any) => o.label)).toEqual(['Push 1 tile', 'Knock Prone']);
-    expect(buildArgs(P, {}, ctx(f, u))).toMatch(/^Pick push it back/);
-    expect(buildArgs(P, { choice: ['prone'] }, ctx(f, u))).toEqual({ choice: 'prone' });
+    const u = f.turn(f.pc); expect(entries(f, u).some((x) => x.actionId === 'class_shove')).toBe(false);
     const g = fightWith([cls('trickster', 5), {}], [{}]); // rules 1.34: Field Fix is the Rigger's
     const w = g.turn(g.pcs[0]), ff = entries(g, w).find((x) => x.actionId === 'field_fix')!;
     const F = pickerFor(ff, ctx(g, w))!;
@@ -216,7 +212,7 @@ describe('fx: every new event draws and sounds', () => {
     const f = fightWith([cls('fighter', 8), cls('guardian', 3, { skills: { authority: 1 } })], [{}]);
     const [fi, gu] = f.pcs; at(f, fi, '4,2'); at(f, gu, '4,4'); const foe = at(f, f.foe, '5,2'); foe.sv = { body: -50, brain: -50, heart: -50 }; f.turn(fi);
     f.act({ type: 'combat/perk', unitId: fi.id, id: 'class:fighter.unstoppable' } as any);
-    f.act({ type: 'combat/perk', unitId: fi.id, id: 'class:fighter.shove', targetId: foe.id, choice: 'prone' } as any);
+    f.act({ type: 'combat/shove', unitId: fi.id, targetId: foe.id } as any); // rules 1.60 (R3): the Breaker's own Shove became Wind-up; everyone's Shove stays
     void gu; // (Command left in rules 1.31)
     evs.push(...(f.cb.fx || []));
     const t = fightWith([cls('trickster', 8, MIND), {}], [{}]);

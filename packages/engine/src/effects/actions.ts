@@ -20,11 +20,11 @@ import { handlerOf, holdersOf, genericOf, boundGame, ifFails, runOwnEffects, isI
 import feelingsJ from '../../../../data/feelings.json';
 const FEEL_NAME: Record<string, string> = Object.fromEntries(((feelingsJ as any).items || []).map((f: any) => [f.id, f.name])); // (the data, not feelings.ts: its load order)
 import { keyOf, rawItem } from './collect';
-import { SKILLS } from '../data';
+import { SKILLS, RULES } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling, actingAs } from './narrator';
 import { overworld } from '../kit';
-import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, type Priced } from './cost';
+import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, RESOURCES, type Priced } from './cost';
 import { isNumberBlock, numberOf } from './amounts';
 import { doorFeed } from './feed';
 
@@ -132,6 +132,25 @@ function stepTileWhy(h: Holder, reach: any, step: any, args: ActionArgs): Partia
 }
 const TARGET_OF_SIDE: Record<string, ActionDef['target']> ={ foe: 'enemy', ally: 'ally', side: 'ally', any: 'unit' };
 
+// ---------- the healing brake (rules 1.60 item 4640; Leon's ruling ii, 16 Nov 2026) ----------
+// A grant_action with `brake: true` (Tending's Mend, Touch and Shield, the Mender's Triage) costs its MP × (1 + step)
+// for every braked Tending the SAME giver has given the SAME target this round before it: one count per giver and
+// target (all the braked verbs share it), on the giver's own counters (uses, per round). The step is data
+// (rules.json mending.brake.step). Priced here, at the action's own cost site, so the preview, the refusal and the
+// payment read one number; nothing else prices a brake.
+const BRAKE_KEY = 'mending.brake';
+const brakeStep = (): number => { const v = (RULES as any).mending?.brake?.step; if (typeof v !== 'number') throw new Error('rules.json mending.brake.step is missing'); return v; };
+/** The giver's brake counter for one target (this round). */
+const brakeOf = (h: Holder, t: { id: string }) => uses({ key: BRAKE_KEY, u: h.u, c: h.c, cb: h.cb, g: h.g }).on(t);
+/** What a braked action costs this giver on this target now: its MP × (1 + step)^n, n the braked Tendings it already
+ * gave them this round (rounded to the nearest MP). Any other resource is as it was. */
+export function braked(h: Holder, args: ActionArgs | undefined, res: Record<string, number> | null | undefined): Record<string, number> {
+  const out = { ...(res || {}) }, t = args?.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) : null;
+  if (!t || !h.u || typeof out.mp !== 'number') return out;
+  const n = brakeOf(h, t).used('per_round'); if (n > 0) out.mp = Math.round(out.mp * Math.pow(1 + brakeStep(), n));
+  return out;
+}
+
 /** The default actions of an item, from its data. */
 export function defaultActions(info: ItemInfo): ActionDef[] {
   const grants = info.effects.filter((e) => e?.op === 'grant_action');
@@ -153,10 +172,12 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
         const t = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) || null : null;
         if (rest.length || (!mine.length && !acts)) defaultRun(h, rest, args, rng); // rules 1.33: a grant whose effects are all `when: acted` (lifted onto the item) is the engine's: no Narrator note
         if (mine.length && h.cb && h.u) runOwnEffects(h, mine, { u: h.u, t, action: id, tile: args.tile || null, toggles: [], mode: null, ...(args.choice != null ? { choice: args.choice } : {}) });
+        if (g.brake && t && h.cb && h.u) brakeOf(h, t).take('per_round', Infinity); // rules 1.60 item 4640: one more on the giver's count for this target
         return null;
       },
     };
     if (g.res) d.res = Object.values(g.res).some(isNumberBlock) ? (h) => Object.fromEntries(Object.entries(g.res).map(([k, v]) => [k, holderNumber(h, v as any) ?? 0])) : { ...g.res }; // rules 1.33: a number block (a ladder: Mend cheaper from Empathy 9)
+    if (g.brake && d.res) { const plain = d.res; d.res = (h, args) => braked(h, args, typeof plain === 'function' ? plain(h, args) : plain); } // rules 1.60 item 4640: the healing brake
     if (typeof reach?.tiles === 'number' && !reach.beyond) d.range = reach.tiles; // (reach.beyond: the reach decides, not a plain range)
     if (g.pick) { d.pick = g.pick; if (g.pick_label) d.pickLabel = g.pick_label; }
     if (typeof g.site === 'string') d.site = g.site;
@@ -389,6 +410,12 @@ export function previewPerkAction(x: Who, id: string, args: ActionArgs & { actio
   const out: ActionPreview = { ...base, ...p, lines: [...(p.lines || [])] };
   if (p.ap != null) out.ap = p.ap; if (p.ok === false) out.ok = false;
   if (!out.lines.length) out.lines.push(e.engine ? h.info.text : h.info.text + ' (the Narrator rules what the engine doesn\'t)');
+  // rules 1.60 item 4640: a price that depends on the target (the healing brake) is said for this target, from the one cost site
+  if (args.targetId && h.cb && typeof d.res === 'function') {
+    const now = costOf(h, d, args).res || {}, t = h.cb.units.find((u) => u.id === args.targetId);
+    const diff = Object.entries(now).filter(([k, n]) => (e.res?.[k] ?? n) !== n).map(([k, n]) => n + ' ' + (RESOURCES[k]?.name || k));
+    if (diff.length && t) out.lines.unshift('On ' + t.name + ' now: ' + diff.join(', ') + ' (the brake: you have tended them this round).');
+  }
   return out;
 }
 const distK = (a: string, b: string) => { const [ax, ay] = a.split(',').map(Number), [bx, by] = b.split(',').map(Number); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };

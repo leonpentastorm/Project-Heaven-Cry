@@ -1446,6 +1446,7 @@ An enemy has no skill points. A tier lists the Calls it has and one level that s
 | Shaken | Heart | −2 on Heart saves and social checks | 3 rounds, or the rest of the scene out of combat |
 | Grappled | Body | held by an adjacent enemy: you can't move; −2 to attacks against anyone but the grappler. Break free: 2 AP, d20 + the better of your Raw Power and Athletics modifiers against the grappler's | until you break free, or the grappler is down or not adjacent |
 | Suppressed | Body | −1 AP and no reactions (lighter than Pinned; item 83) *(Superseded by rules 1.28: no attacking or moving reactions; protective ones still work)* | 1 round |
+| Staggered | Body | no reaction of any kind; no AP lost (rules 1.60 item 4637: the Open Hand's Palm) | until your next turn starts |
 | Taunted | Heart | your attacks must go at the one who taunted you while you can see them | 1 round, or until you attack them |
 | Commanded | Heart | you obey one short order on your next turn. Against an enemy the engine runs the order from a menu: halt, hold (no attacks), drop (Disarmed), kneel (prone), flee; anything else goes to the Narrator *(the Sigil word COMMAND has its own four orders: halt, kneel, drop your weapon, or a move of up to 3 tiles (rules 1.4))* | 1 round |
 | Puppeted | Brain | the caster's player runs your next turn (your AP); you can't be made to harm yourself | 1 round |
