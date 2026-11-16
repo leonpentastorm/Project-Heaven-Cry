@@ -726,6 +726,10 @@ if isinstance(data.get("enemies"), dict):
             v = t.get(f)
             if not isinstance(v, (int, float)) or isinstance(v, bool) or v < 0 or v > 1:
                 errors.append(f"enemies:{t.get('id')}: {f} must be a number from 0 to 1 (rules 1.25)")
+        # Rules 1.61 (the opening volley): a technique's want for a target its side already attacked this round
+        v = t.get("technique_spread", 0)
+        if not isinstance(v, (int, float)) or isinstance(v, bool) or v < 0 or v > 1:
+            errors.append(f"enemies:{t.get('id')}: technique_spread must be a number from 0 to 1 (rules 1.61)")
         if t.get("doctrine") == "spread" and not t.get("fire_spread"):
             errors.append(f"enemies:{t.get('id')}: a spread doctrine needs fire_spread above 0")
         if t.get("doctrine") == "nearest" and not t.get("fire_near"):
@@ -1797,15 +1801,18 @@ if isinstance(tq, dict):
         for sc in (ph.get("scales_with") or []) + (ph.get("also_scales") or []):
             if sc not in skill_ids and sc not in attr_ids:
                 errors.append(f"{where}: phys scales with '{sc}', not a skill or an attribute")
-        # Rules 1.56 (Balance 2.0): phys.profile names the damage profile its Stat term reads (rules.json
-        # output.profiles; absent: `weapon`, no slope). Only a melee weapon reads one with a slope: a gun's damage is the
-        # gun's and the round's (Leon, 15 Nov 2026).
+        # Rules 1.56 (Balance 2.0) and 1.61 (0.30, G1): phys.profile names the damage profile its Stat term reads
+        # (rules.json output.profiles; absent: `weapon`, no slope). A melee blow (melee) and a gun shot (gun) grow with
+        # the weapon's Attribute; no profile a weapon reads has a skill slope (the skill buys the hit, rules 1.56 item 1),
+        # and a focus's weapon (category mana) reads none with a slope (Leon, 15 and 16 Nov 2026).
         if "profile" in ph:
             _prof = ((((data.get("rules") or {}).get("output") or {}).get("profiles") or {}).get(ph["profile"]))
             if not isinstance(_prof, dict):
                 errors.append(f"{where}: phys.profile '{ph['profile']}' is not a profile in rules.json output.profiles")
-            elif sysm != "melee" and (_prof.get("attr") or _prof.get("skill")):
-                errors.append(f"{where}: phys.profile '{ph['profile']}' has a slope, and only a melee weapon's damage grows with its user (rules 1.56)")
+            elif _prof.get("skill"):
+                errors.append(f"{where}: phys.profile '{ph['profile']}' has a skill slope, and a weapon's skill buys the hit only (rules 1.56)")
+            elif _prof.get("attr") and w.get("category") == "mana":
+                errors.append(f"{where}: phys.profile '{ph['profile']}' has a slope, and a focus's weapon gets nothing from its user (rules 1.56 item 4)")
             elif _prof.get("attr") and not any(sc in attr_ids for sc in ph.get("scales_with") or []):
                 errors.append(f"{where}: phys.profile '{ph['profile']}' reads an Attribute, and phys.scales_with names none")
         tch = ph.get("teaches")

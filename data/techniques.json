@@ -1531,7 +1531,8 @@
         "enemy_rolls": 3,
         "enemy_step": 1,
         "enemy_later_penalty": 2,
-        "enemy_heat_cool": 1
+        "enemy_heat_cool": 1,
+        "enemy_same": 1
       },
       "adjudication": "engine",
       "provisional": true,

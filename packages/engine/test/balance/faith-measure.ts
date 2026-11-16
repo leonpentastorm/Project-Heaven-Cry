@@ -13,7 +13,7 @@
 // that is the simulator's own count. What a prayer is worth when it is NOT damage (a heal, a shield, a lost enemy turn,
 // a bonus to an ally) is not something the simulator can count; `supportWorth` prices it by the rules written beside
 // it, in the same unit (percent of a plain rifle's turn), and every such figure is an ESTIMATE.
-import { runCell, runFight, MAP_ID, TIER_WEAPON } from './sim';
+import { runCell, runFight, MAP_ID, TIER_WEAPON, atYardPin, yardPc } from './sim';
 import { BUILD, BUILDS, buildCharacter } from './builds';
 import { prayerHarms } from './policies';
 import { RULES, FAITH_PATRONS, FAITH_PATRON, WHISPERS, MAPS, ENEMY, blessingPower, prayerCooldown, devotionNow, maxHp, bindGame, newGame } from '../../src';
@@ -69,7 +69,7 @@ export function faithSheet(patron: string, variant: string, level: number) {
 }
 
 export function rifleTurn(level: number, n: number, rounds = 8): number {
-  const c = runCell({ build: 'plain_gun', variant: 'normal', level }, 'sim_range_soldier', 'open', n, { maxRounds: rounds, tag: 'fm' + rounds });
+  const c = atYardPin(() => runCell(yardPc(level), 'sim_range_soldier', 'open', n, { maxRounds: rounds, tag: 'fm' + rounds })); // rules 1.61 R1: the yardstick at its pin
   return c.dmg / Math.max(1, c.turns);
 }
 export interface FRow { /** rules 1.22: a turn with a Hymn and a turn without one, damage and percent of the rifle */ hymnTurn: number; quietTurn: number; pctHymnTurn: number; pctQuietTurn: number; what: string; patron: string; level: number; variant: string; perTurn: number; prayerPerTurn: number; weaponPerTurn: number; pctRifle: number; pctPrayer: number; hymns: number; whispers: number; miracles: number; apPrayer: number; apWeapon: number; apUnspent: number; bigHit: number; bigWhat: string; peakTurn: number; saveFailPct: number | null; actions: Record<string, number>; errors: number }

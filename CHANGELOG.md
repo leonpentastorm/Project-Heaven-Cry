@@ -194,6 +194,50 @@ slice A. Decisions 116 to 120.
 - **Not run:** the browser suites (figments.mjs edited for the forks at 4 and 6; tank, levelup and skeleton screens show
   the new fork sections).
 
+### Lane 0.30-fit: guns by Agility, the party fit, the opening volley
+
+- **G1, gun damage from Agility (rules 1.61, Core Rules items 4700 to 4704):** a character's gun shot now grows with
+  the gun's Attribute, Agility, as a melee blow grows with its own (`rules.json output.profiles.gun`: k 1.15385 x
+  (1 + 0.05 x (Agility - 1)), no skill slope; Dexterity still buys the hit). The 26 gun rows of `weapons.json` (pistols,
+  revolvers, SMGs, rifles, shotguns, heavy weapons) name `phys.profile: gun`; bows, thrown charges and the foci's
+  weapons do not. Agility 7 deals what every gun dealt before; Agility 1 x0.77, Agility 10 x1.12. Enemies are not
+  touched. The weapon card's "Damage scales with" line shows Agility on every gun. The golden tables' character gun
+  rows and 22 of the replays were re-recorded on purpose (commit b721970a).
+- **G1, the lead's rulings R1 to R5 (Core Rules items 4720 to 4728):** the balance yardstick is pinned (the plain rifle
+  at a normal share, its shot at the gun profile's pin, Agility 7: `rules.json balance.yardsticks.rifle`, one function
+  in the simulator), so the enemy table's fit holds again (a Soldier is 4 hits). The gun profile's low end is softer:
+  k 1.275, +0.0294118 a point, so Agility 1 deals x0.85 of the old damage (was x0.77) and Agility 10 x1.075 (was
+  x1.12); Agility 7 unchanged. The gun ceiling's guard holds the guns at the pin and lets an all-in gunner above it
+  deal more; the Survival solo gunner's bar is 2 of 8 (measured 45% over 40 seeds). The weapon card's damage percent
+  is now against the pin (Agility or Strength 7 = +0%; a gun at Agility 1 reads -15%). The simulator's policies no
+  longer stall on a dry gun (reload, a weapon from the pack, a pile, the fists). Golden gun rows and 22 replays
+  re-recorded on purpose. **Not green (for the lead):** the Whisper row and the Chaplain row at level 20 and the
+  Mender's offence, each inside its band with every gun at the pin (item 4725). *(Settled in the opening-volley pass
+  below: the three rows are held at the pin, as the gun row is; item 4736.)*
+- **Survival's party fit (rules 1.61):** a party of two, three or four now faces 0.9 pressure a head (`pressure_per_char`
+  [1.3, 1.7, 1.3, 0.9] → [1.3, 0.9, 0.9, 0.9]), so playing together is no longer the harder way to play; a character
+  who died in a won fight, or was only Downed when the party leaves the field, stands up at 50 HP, not 1
+  (`run.dead_return_hp`, one copy for both). Measured in `docs/design/proposals/2026-11-party-fit.md`.
+- **The opening volley (rules 1.61, Core Rules items 4730 to 4739; Leon's playtest: "99% of the deaths was gun firing
+  enemies"):** a fix and four numbers, measured in `docs/design/proposals/2026-11-party-fit.md` sections 12 and 13.
+  - **Bug fixed: sight is the same both ways.** A foe the fog hid could shoot a character who could not see it back (a
+    straight line walked from one end is not the same tiles as from the other). A line of sight is now clear only when
+    it is clear from both ends; the Skin Map's own copy of the line is gone.
+  - **Enemies fire the characters' Burst** (two rolls, the second at −4; was three rolls with an Auto weapon:
+    `techniques.json burst.numbers.enemy_same` 1). A Gun drone deals 21 then 29 a turn on a level-1 character (was 30
+    then 46), what a Soldier's sabre deals once it is in reach. The tier damage factors were not raised.
+  - **At most two optional gun Soldiers a template** (eight templates' slot `max` 3 or 4 → 2), and **cover within one
+    tile of every start** (`layout.start_cover_reach` 3 → 1).
+  - **Soldiers spread their techniques** as they spread their plain fire: a new tier field `technique_spread` (Soldier
+    0.5, the rest 0) halves a technique's want for a target another Soldier already attacked this round; never against
+    a Taunt.
+  - Two gun Soldiers on one character in the open no longer take it from full HP to Downed in one round (26% → 0% on an
+    Agility-1 Mender, 3% → 0% on the yardstick); stage-1 clears hold or rise (the Chaplain alone 43 → 65%, quads up);
+    fights are as long as before (median 4.1 → 4.3 rounds). Not met, for the lead: one duo member still takes most of
+    the shots (66 to 88%), and a pillar beside you still gives no cover (each needs a new engine piece).
+  - The balance contract's Whisper, Chaplain and Mender offence rows are held at the gun profile's pin like the gun row
+    (the lead's call on item 4725). 22 of the 29 replays re-recorded on purpose; the golden tables did not move.
+
 ## 0.29.0 — Balance 2.0: the nine doors
 
 Rules revision 1.56 (every new number PROVISIONAL), built on top of live 0.28.3. Each of the nine skills that open a

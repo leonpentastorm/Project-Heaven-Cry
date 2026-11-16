@@ -24,6 +24,7 @@ import { join } from 'node:path';
 import * as E from '../../src';
 import { fightWith, withGame } from '../helpers/perkfight';
 import { physFight } from '../helpers/physfight';
+import { atYardPin } from './sim';
 
 const A: any = E as any;
 const R: any = A.RULES, TR: any = A.PHYS_RULES, CR: any = A.CALL_RULES, SOUL: any = A.SOUL_RULES;
@@ -134,7 +135,7 @@ const net = (p: any) => Math.max(0, Math.round(p.dmg.total - Math.max(0, p.dmg.a
 function yardstick() {
   const f = fightWith([{ weapon: YARD_GUN, level: 1, skills: { dexterity: K.REF }, attrs: { agility: K.REF } }], [{ tier: 'soldier', at: 'H6', weapon: YARD_GUN }]);
   const pc = f.pc, foe = f.foe; pc.pos = '3,5'; foe.pos = '7,5'; foe.ap = 6; // off its turn a unit has no AP, and the card would only say so
-  const out = withGame(f.g, () => A.previewAttack(f.cb, pc, foe, 'shot')), back = withGame(f.g, () => A.previewAttack(f.cb, foe, pc, 'shot'));
+  const out = atYardPin(() => withGame(f.g, () => A.previewAttack(f.cb, pc, foe, 'shot'))) /* rules 1.61 R1: the yardstick's shot at the gun profile's pin */, back = withGame(f.g, () => A.previewAttack(f.cb, foe, pc, 'shot'));
   return { hit: net(out), pct: out.pct, ap: out.ap, enemyHit: net(back), enemyPct: back.pct, foeHp: foe.maxHp, pcHp: pc.maxHp, pcArmour: pc.armour, foeArmour: foe.armour };
 }
 /** Numbers of the reference character: 4 points in each skill and attribute it uses (the engine's own formulas). */

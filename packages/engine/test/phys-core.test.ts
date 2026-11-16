@@ -174,11 +174,14 @@ describe('damage follows what the weapon is aimed with', () => {
     // rules 1.26 (the re-fit): the weapon profile is aimed (no slope: the pair buys accuracy), so the multiplier is its k for every weapon; the label still names the pair the roll reads
     // rules 1.56 (Balance 2.0, L6): a melee weapon's row names the melee profile: its damage reads the Attribute only (Agility 5, Strength 3 here)
     const { PROFILES } = await import('../src'); const k = PROFILES.weapon.k, m = PROFILES.melee;
-    expect(weaponMult(c, 'service_pistol')).toBe(k); expect(weaponMultLabel('service_pistol')).toBe('Agility and Dexterity');
+    // rules 1.61 (0.30, G1): a gun's row names the gun profile: its damage reads its Attribute (Agility 5 here), never the skill
+    const g = PROFILES.gun;
+    expect(weaponMult(c, 'service_pistol')).toBeCloseTo(g.k * (1 + g.attr * 4), 9); expect(weaponMultLabel('service_pistol')).toBe('Agility and Dexterity');
+    expect(weaponMult(c, 'recurve_bow')).toBe(k); // a bow names no profile
     expect(weaponMult(c, 'sabre')).toBeCloseTo(m.k * (1 + m.attr * 4), 9); expect(weaponMultLabel('sabre')).toBe('Agility and Dexterity'); // rules 1.12, item 953: light blades hit with the alpha
     expect(weaponMult(c, 'maul')).toBeCloseTo(m.k * (1 + m.attr * 2), 9); expect(weaponMultLabel('maul')).toBe('Strength and Raw Power');
     expect(weaponMult(c, 'fists')).toBeCloseTo(m.k * (1 + m.attr * 2), 9); expect(weaponMultLabel('fists')).toBe('Strength, Raw Power and Dexterity');
-    expect(weaponMultLabel('sabre', { live: true })).toBe('Agility'); expect(weaponMultLabel('service_pistol', { live: true })).toBe('');
+    expect(weaponMultLabel('sabre', { live: true })).toBe('Agility'); expect(weaponMultLabel('service_pistol', { live: true })).toBe('Agility'); expect(weaponMultLabel('recurve_bow', { live: true })).toBe('');
   });
 });
 

@@ -47,9 +47,9 @@ describe('rules 1.25: each tier has a fire doctrine, in the data', () => {
   });
   it('a unit with no tier (a companion, a character) has no doctrine numbers: the most hurt, as before', () => {
     const f = rig([{ tier: 'soldier' }]);
-    expect(doctrineOf(f.foe)).toEqual({ id: 'spread', spread: 1, near: 0.2 });
-    expect(doctrineOf(f.pcs[0])).toEqual({ id: 'focus', spread: 0, near: 0 });
-    expect(doctrineOf({ ...f.foe, tier: undefined } as any)).toEqual({ id: 'focus', spread: 0, near: 0 });
+    expect(doctrineOf(f.foe)).toEqual({ id: 'spread', spread: 1, near: 0.2, techSpread: 0.5 }); // techSpread: rules 1.61
+    expect(doctrineOf(f.pcs[0])).toEqual({ id: 'focus', spread: 0, near: 0, techSpread: 0 });
+    expect(doctrineOf({ ...f.foe, tier: undefined } as any)).toEqual({ id: 'focus', spread: 0, near: 0, techSpread: 0 });
   });
 });
 

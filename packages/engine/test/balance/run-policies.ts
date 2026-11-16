@@ -16,8 +16,8 @@
 //               the nearest foe and a Wall (else a Double) when the charge allows, swap a core when the charge is short,
 //               strike with the Figment (it walks to the foe first), then the pistol with the AP left.
 // Echo stays unplayed by every policy (survival-spec 13.9.6).
-import { SIGIL, previewAttack, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, formsOf, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit } from '../../src';
-import { POLICIES, sigil, sigilAfter, outburst, plain, gunner, optimised, type Policy, type Ctx, type Step } from './policies';
+import { SIGIL, previewAttack, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, formsOf, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit, isMelee, paths, apForTiles, objectsOf, isPile, entryPack, PICKUP_AP } from '../../src';
+import { POLICIES, sigil, sigilAfter, outburst, plain, gunner, optimised, fixOrMove, type Policy, type Ctx, type Step } from './policies';
 import { obHeal } from './heal-measure';
 
 const W = <T>(g: any, f: () => T): T => { const was = bindGame(g); try { return f(); } finally { bindGame(was); } };
@@ -146,4 +146,73 @@ export const tactical = (pol: Policy): Policy => (x) => {
   return x.banned.has(JSON.stringify(t.action)) ? s : t;
 };
 export const gunnerTac = tactical(gunner), optimisedTac = tactical(optimised);
-Object.assign(POLICIES, { sigilRun, outburstRun, healerRun, rigger, gunnerTac, optimisedTac });
+
+// ---------------------------------------------------------------------------------------------- the dry gun
+/** The fallback a player has when the gun runs dry (the 0.30 fit; the lead's ruling R4, 16 Nov 2026: the tank and Mender
+ * policies ran their revolver dry and ended the turn for 14 rounds and more). Asked only when the gun in the main hand
+ * is empty and the policy has nothing but a walk, a reload, a set-up or nothing to offer (its heals, Bonds, spells and
+ * door verbs still come first). In order, each through the reducer's own actions:
+ *   1. reload (tactical, else speed) if it has not been refused this turn; load a spare magazine from loose rounds;
+ *   2. draw a weapon from the pack that can fight now (a melee weapon, or a gun with rounds in it): combat/equip;
+ *   3. pick up from a pile it sees on its tile or next to it the entries that hold rounds or magazines for its gun or a
+ *      weapon that can fight (combat/pickup, those entries only); else walk to such a pile it reaches this turn with
+ *      the AP for the pick-up left;
+ *   4. the fists (combat/attack, mode melee: the engine's strikeWeapon swaps them in for a gun) on the weakest foe in
+ *      reach; else the walk to the nearest foe that brings one.
+ * So it never ends a turn with AP and a foe it can reach. */
+const emptyGun = (u: any): boolean => { const w: any = WEAPON[u.weapon]; return !!w && !isMelee(w) && w.magazine != null && (u.ammo ?? 0) <= 0; };
+const refused = (x: Ctx, a: any) => x.banned.has(JSON.stringify(a));
+/** A pack or pile item the character can fight with now: rounds or magazines for the gun in hand, a melee weapon, a gun with rounds in it. */
+function fightsWith(u: any, it: any): 'ammo' | 'weapon' | null {
+  const w: any = WEAPON[u.weapon];
+  if (it.mags && it.weapon === u.weapon && it.mags.some((n: number) => n > 0)) return 'ammo';
+  if (it.calibre && !it.mags && w?.ammo && it.calibre === w.ammo && (it.qty || 0) > 0) return 'ammo';
+  const iw: any = it.kind === 'weapon' ? WEAPON[it.weapon || it.id] : null;
+  if (iw && iw.category !== 'thrown' && iw.category !== 'mana' && (isMelee(iw) || (it.loaded ?? 0) > 0)) return 'weapon';
+  return null;
+}
+export const fallback = (pol: Policy): Policy => (x) => {
+  const s = pol(x), u = x.u;
+  if ((s && !['move', 'reload', 'setup'].includes(s.kind)) || !emptyGun(u) || !x.foes.length || u.ap < 1) return s;
+  // 1. the reloads, then a magazine filled from loose rounds
+  for (const a of [{ type: 'combat/reload', tactical: true }, { type: 'combat/reload' }] as any[]) if (!refused(x, a)) return { action: a, kind: 'reload', label: a.tactical ? 'tactical reload (gun dry)' : 'reload (gun dry)' };
+  if ((u.loose || 0) > 0 && !refused(x, { type: 'combat/load' })) return { action: { type: 'combat/load' }, kind: 'reload', label: 'load a magazine (gun dry)' };
+  // 2. a weapon in the pack that fights now
+  const pack: any[] = x.c?.pack || [];
+  for (let i = 0; i < pack.length; i++) if (fightsWith(u, pack[i]) === 'weapon') { const a = { type: 'combat/equip', item: i, to: 'main' }; if (!refused(x, a)) return { action: a, kind: 'setup', label: 'draw ' + (pack[i].name || pack[i].id) + ' (gun dry)' }; }
+  // 3. a pile it sees with something to fight with: picked up from beside it, else walked to
+  const piles = objectsOf(x.cb).filter((o: any) => isPile(o) && !o.hidden && (o.items || []).length)
+    .map((o: any) => ({ o, take: (o.items || []).map((e: any, i: number) => (entryPack(e).some((it: any) => fightsWith(u, it)) ? i : -1)).filter((i: number) => i >= 0) })).filter((p: any) => p.take.length);
+  for (const p of piles.filter((q: any) => dist(q.o.pos, u.pos) <= 1)) { const a = { type: 'combat/pickup', tile: p.o.pos, take: p.take }; if (!refused(x, a)) return { action: a, kind: 'setup', label: 'pick up (gun dry)' }; }
+  if (piles.length && x.memo.pileWalk !== x.cb.round) {
+    const P = W(x.g, () => paths(x.cb, u.pos, u.id)), taken = new Set(x.cb.units.filter((v: any) => !v.dead && v.id !== u.id).map((v: any) => v.pos));
+    const to = Object.entries(P.dist as Record<string, number>).filter(([k, n]) => n > 0 && !taken.has(k) && piles.some((p: any) => dist(k, p.o.pos) <= 1))
+      .map(([k, n]) => ({ k, ap: apForTiles(n, u.bank || 0, u.movement) })).filter((q) => q.ap + PICKUP_AP <= u.ap).sort((a, b) => a.ap - b.ap)[0];
+    if (to) { x.memo.pileWalk = x.cb.round; const a = { type: 'combat/move', to: to.k }; if (!refused(x, a)) return { action: a, kind: 'move', label: 'to a pile (gun dry)' }; }
+  }
+  // 4. the fists on the weakest foe in reach, else the walk to one
+  const inReach = x.foes.map((t) => ({ t, pv: W(x.g, () => previewAttack(x.cb, u, t, 'melee')) })).filter((q) => q.pv.ok && q.pv.ap <= u.ap).sort((a, b) => a.t.hp - b.t.hp);
+  for (const q of inReach) { const f = ok(x, { action: { type: 'combat/attack', targetId: q.t.id, mode: 'melee' }, kind: 'attack', label: 'the fists (gun dry)' }); if (f) return f; }
+  if (s && s.kind !== 'move') return s;
+  const test = (k: string, apLeft: number) => x.foes.some((t) => { const p0 = u.pos, a0 = u.ap; u.pos = k; u.ap = apLeft; try { return W(x.g, () => previewAttack(x.cb, u, t, 'melee')).ok; } finally { u.pos = p0; u.ap = a0; } });
+  return fixOrMove(x, [], test) || s;
+};
+/** A policy with the dry-gun fallback, keeping its plan hook (`after`). */
+export const withFallback = (pol: Policy): Policy => { const t = fallback(pol); (t as any).after = (pol as any).after; return t; };
+
+// ---------------------------------------------------------------------------------------------- the Sigilist keeps its range
+/** The lead's ruling R4 (16 Nov 2026: 60% of the Sigilist's damage taken was melee; it walked its Lines into the blades).
+ * The plain habit of a caster who draws on its own tile: when it plans a new Line while a foe with a melee weapon stands
+ * within KEEP tiles, it walks that Line straight away from its target (the Sigil policy's `along` Line: each step to the
+ * next glyph is a step back) instead of across the way to it. Measured on the solo Sigilist, 40 seeds (16 Nov 2026):
+ * stepping back first to the farthest tile (half its AP) cleared 0% (melee 67% of its damage taken); the Line walked
+ * away, KEEP 3 / 5 / always: 3% each, melee 58 / 57 / 55% (was 60%). Kept at 5. A Line under way is not broken off. */
+const KEEP = 5;
+export const keepRange = (pol: Policy): Policy => { const t: Policy = (x) => {
+  const melee = x.foes.filter((f) => isMelee(WEAPON[f.weapon]));
+  if (melee.length && !x.memo.plan && Math.min(...melee.map((f) => dist(x.u.pos, f.pos))) <= KEEP) return pol({ ...x, opts: { ...(x.opts || {}), along: true } });
+  return pol(x);
+}; (t as any).after = (pol as any).after; return t; };
+
+export const gunnerRun = withFallback(gunner);
+Object.assign(POLICIES, { sigilRun: withFallback(keepRange(sigilRun)), outburstRun: withFallback(outburstRun), healerRun: withFallback(healerRun), rigger: withFallback(rigger), gunnerTac: withFallback(gunnerTac), optimisedTac: withFallback(optimisedTac), gunnerRun });

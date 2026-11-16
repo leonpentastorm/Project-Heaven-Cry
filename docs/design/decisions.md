@@ -514,3 +514,32 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     marks the soak and Taunts once the blow is done. Drive's −2 and plate back read every Off Balance its holder forces,
     as the spec's carrier is written (no piece tells which action put a condition on): for the lead. A pick is kept for
     good, so it closes the level-up's take-back.
+
+123. **Survival: a party is cheaper a head than one character; the dead stand up at 50 HP** (16 Nov 2026, lane
+    0.30-fit; rules 1.61 party fit, Core Rules items 4710 to 4714; account `docs/design/proposals/2026-11-party-fit.md`).
+    - **Why:** every duo cleared stage 1 less often than its members alone (Breaker 73% alone, 3% as two). The duo's
+      pressure cap was 1.7 a head against the solo's 1.3, and the foes put three quarters of their shots on one member.
+      Leon's target is that playing together is the better way to play, and that a balance line is a reward for a
+      well-played build, not a wall.
+    - **What:** `pressure_per_char` [1.3, 0.9, 0.9, 0.9]: one number a head for any party, the quad's own (which already
+      worked). `run.dead_return_hp` 50. The solo, the bulk, `max_foes` and `share` are unchanged; no door's number moved.
+    - **Not fixed by data, for the lead:** the enemy AI's focus fire (a target-spread term), arcs that hit allies, the
+      opening volley, and the four doors that lose alone (Bulwark, Operative, Mender, Sigilist).
+124. **The opening volley: sight both ways, the enemy's two-roll Burst, fewer gun Soldiers, cover at the start, Soldiers
+    spread their techniques** (16 Nov 2026, lane 0.30-fit; rules 1.61 opening volley, Core Rules items 4730 to 4739;
+    account `docs/design/proposals/2026-11-party-fit.md` sections 12 and 13).
+    - **Why:** Leon's human playtest: nearly every death was gun foes "shooting the shit out of you before you can get
+      into a cover", some while behind cover; never the melee or caster foes. Measured: two gun Soldiers took an
+      Agility-1 character from full to Downed in one enemy round 26% of the time (three-roll Bursts, Suppress, cover
+      that breaks), and a foe the fog hid could fire (line of sight was not symmetric).
+    - **What:** a bug fix in the engine (one line of sight, clear from both ends); data: `burst.numbers.enemy_same` 1
+      (item 1079's refit, with the tier damage factors left as they were so a gun foe deals what a blade of its tier
+      does), the Soldier ranged slots at most 2, `start_cover_reach` 1; and the one AI term the lead approved,
+      `technique_spread` (Soldier 0.5): a technique's want for a target falls for each other foe of its side already on
+      it this round (never against a Taunt; 0 for Elites and Bosses, who focus by doctrine).
+    - **Called for Leon (No answer means yes; reverse here):** the tier damage factors not raised after the Burst refit
+      (item 4732); the balance contract's Whisper, Chaplain and Mender offence rows held at the gun profile's pin (item
+      4736).
+    - **Not fixed, needs a primitive (for the lead):** a pillar beside the target that the line misses counts nothing
+      (N2); focus that lasts past a round (N3: a duo's most-attacked member still takes 66 to 88% of the rolls); a
+      shooter in the fog shown (N4); a gun-only enemy number (N5).

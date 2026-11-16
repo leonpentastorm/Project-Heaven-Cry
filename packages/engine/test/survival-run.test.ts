@@ -126,6 +126,13 @@ describe('Survival, one stage (rules 1.41)', () => {
     expect(g.characters.c2.xp).toBe(g.characters.c1.xp); expect(g.run!.offers!.c2).toBeTruthy(); expect(g.run!.note!.back).toEqual(['c2']);
   });
 
+  it('rules 1.61 party fit item 2: a character only Downed when the party leaves the field stands at the same run.dead_return_hp as the dead (never better off dead)', () => {
+    const g0 = take(started(DUO), reachable(started(DUO).run!)[0], 2), x: GameState = JSON.parse(JSON.stringify(g0));
+    const u = x.combat!.units.find((v) => v.charId === 'c2')!; u.downed = true; u.hp = 0;
+    const g = leaveField(apply(x, { type: 'run/skip' }, 'host'));
+    expect(g.characters.c2.dead).toBe(false); expect(g.characters.c2.hp).toBe(Math.min(maxHp(g.characters.c2), SV.run.dead_return_hp));
+  });
+
   it('rule 4: the whole party down loses the run: it is over with its score and the room is back in its lobby', () => {
     const g0 = take(started(SOLO), reachable(started(SOLO).run!)[0], 1), x: GameState = JSON.parse(JSON.stringify(g0));
     for (const u of x.combat!.units) if (u.side === 'pc') { u.dead = true; u.hp = 0; }
@@ -191,7 +198,11 @@ describe('Survival, one stage (rules 1.41)', () => {
     // PHC-0003's squad now kills the Boss and stalls on its last Trooper with every gun of both sides empty, a stall of
     // the simulator's policies (no gun-butt strike when out of ammunition), not of the game; PHC-0007 plays the stage
     // through to the boon on the release, on the field branch and on the tank branch alike.
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0007', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0007', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
+    // PHC-0011 since rules 1.61 (the opening volley: the enemy's two-roll Burst, sight both ways, start cover 1): PHC-0007's
+    // gate fight became a slow fist-and-revolver duel with the Sergeant past the helper's 40 rounds (Sergeant at 72 of
+    // 417 HP on round 41, still trading blows), the length of a fight and not a stall of the game; PHC-0011 plays seven
+    // fights to the end of the run.
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0011', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0011', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
     const a = play(), b = play(), c = play([40]);
     expect(a.errors).toEqual([]);
     expect(a.done()).toEqual(b.done());

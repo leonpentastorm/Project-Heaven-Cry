@@ -47,10 +47,13 @@ describe('rules 1.18: the Burst', () => {
     expect(burstRolls(lmg.u, WEAPON.hellraiser_lmg)).toEqual([0, -4]);
     lmg.u.braced = true; expect(burstRolls(lmg.u, WEAPON.hellraiser_lmg)).toEqual([0, -1]);
   });
-  it('an enemy\'s Burst is the one the enemy table was fitted with: three rolls, each −1 more, and it cools 1', () => {
+  // Rules 1.61 (the opening volley, 16 Nov 2026; item 1079's refit): an enemy's Burst is the characters' Burst. OLD
+  // expectation (rules 1.18 to 1.56): an enemy kept three rolls at 0 / −1 / −2 with an Auto weapon, cooling 1.
+  it('an enemy\'s Burst is the characters\': two rolls, the second at −4, and it cools nothing (rules 1.61)', () => {
     const { f } = range('hellraiser_service_rifle'); const foe = f.unit(f.foe.id);
-    expect(burstRolls(foe, WEAPON.hellraiser_service_rifle)).toEqual([0, -1, -2]);
-    expect(burstCool(foe, true)).toBe(1); expect(burstCool(f.unit(f.pc.id), true)).toBe(0);
+    expect(burstRolls(foe, WEAPON.hellraiser_service_rifle)).toEqual([0, -4]);
+    expect(burstRolls(foe, WEAPON.hellraiser_service_rifle)).toEqual(burstRolls(f.unit(f.pc.id), WEAPON.hellraiser_service_rifle));
+    expect(burstCool(foe, true)).toBe(0); expect(burstCool(f.unit(f.pc.id), true)).toBe(0);
   });
   it('the card says so: the preview of a character\'s Burst lists two attacks', () => {
     const { f, u, t } = range('hellraiser_service_rifle');

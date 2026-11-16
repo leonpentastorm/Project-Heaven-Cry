@@ -10,7 +10,7 @@ import { WEAPON, ITEM, RULES, SKILL, ATTRS } from './data';
 import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, weaponMult, specialRoundName, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM, isShieldId } from './character';
 import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee, weaponVia, rollWithPick, rollWithWords, type RollWithOffer } from './combat';
 import { priced } from './effects/cost';
-import { PROFILES, pairOf } from './effects/output';
+import { PROFILES, pairOf, statTerm } from './effects/output';
 import { rngFor } from './rng';
 import { focusAccTerm } from './rolls';
 import { bindGame, holdersOf } from './effects/hooks';
@@ -63,9 +63,11 @@ function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
     // op roll_with (rules 1.55): the skill an item lets the attack roll with instead, when it would (the fight's own choice, combat.ts rollWithPick)
     ...rollWithLines(c, sk, mode),
     // only what moves the damage today: no line when every slope of the profile is 0 (lead's ruling, 15 Nov 2026)
-    // consolidation 0.29 (ruling i): with the percent the hit's own multiplier adds for this character (weaponMult, the
-    // Stat term of the damage line the attack deals): "Damage: Strength · +30%"
-    ...(sc ? [{ key: 'scales_with', label: 'Damage', value: sc + ' · ' + signed(Math.round((weaponMult(c, w.id) - 1) * 100)) + '%', num: null }] : []),
+    // consolidation 0.29 (ruling i): with the percent the hit's own multiplier (weaponMult, the Stat term of the damage
+    // line the attack deals) stands from the profile's pin (rules 1.61, the lead's ruling R5, 16 Nov 2026): the flat
+    // weapon profile's Stat (output.profiles.weapon, x1.5), where the melee and gun profiles meet it (Attribute 7), so an
+    // all-in Attribute 7 reads +0%, Agility 1 with a gun -15%, Strength 10 with a maul +8%: "Damage: Strength · -15%"
+    ...(sc ? [{ key: 'scales_with', label: 'Damage', value: sc + ' · ' + signed(Math.round((weaponMult(c, w.id) / statTerm('weapon', [], []) - 1) * 100)) + '%', num: null }] : []),
   ];
 }
 /** The character's roll_with offers (items whose effect is op roll_with on `attack`), read without a fight: the card

@@ -100,6 +100,9 @@ export const MEMBER_OLD: Record<string, Pc> = {
 };
 export const MEMBER: Record<string, Pc> = {
   ...MEMBER_OLD,
+  // the lead's ruling R4 (16 Nov 2026): the gunner with the dry-gun fallback (run-policies.ts fallback: reload, a weapon
+  // from the pack, a pile's rounds or weapon, the fists), as every run policy has it
+  gunner: { build: 'plain_gun', level: 1, policy: 'gunnerRun' },
   sigil: { build: 'sigil', level: 1, policy: 'sigilRun' },
   healer: { build: 'outburst', level: 1, policy: 'healerRun' },
   outburst: { build: 'outburst', level: 1, policy: 'outburstRun' },

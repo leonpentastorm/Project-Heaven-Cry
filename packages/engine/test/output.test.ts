@@ -72,7 +72,7 @@ describe('the Stat term: k x (1 + attr x (Attribute - 1) + skill x Skill), read 
       const p = PROFILES[ph.profile || 'weapon'], attrs = (ph.scales_with as string[]).map((x, i) => (ATTRS.some((a) => a.id === x) ? 4 + i * 3 : null)).filter((v) => v != null) as number[];
       expect(weaponMult(c, w.id), w.id).toBeCloseTo(p.k * (1 + attrs.reduce((t, a) => t + p.attr * (a - 1), 0)), 9);
       if (!ph.profile) expect(weaponMult(c, w.id), w.id).toBe(PROFILES.weapon.k);
-      else expect(ph.system, w.id + ': only a melee weapon names a profile').toBe('melee');
+      else expect({ melee: 'melee', ranged: 'gun' }[ph.system as string], w.id + ': a melee weapon names the melee profile, a gun the gun profile (rules 1.61)').toBe(ph.profile);
     }
     const c = withStats({ strength: 6 }, { raw_power: 4 }); expect(weaponMult(c, 'no_such_weapon')).toBe(physicalMult(c)); expect(weaponMult(c, null)).toBe(1.7);
   });

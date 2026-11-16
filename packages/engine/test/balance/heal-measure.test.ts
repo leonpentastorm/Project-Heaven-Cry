@@ -98,8 +98,11 @@ describe('a healer under fire (rules 1.20; still held under rules 1.36)', () => 
     expect(idle2.errors + heal2.errors + heal4.errors + both4.errors).toBe(0);
     expect(heal2.casts).toBeGreaterThan(1);
     expect(heal2.firstDown).toBeGreaterThan(idle2.firstDown);
-    expect(heal4.neverDown, 'a healer under four Soldiers: somebody goes Down').toBe(0);
-    expect(both4.neverDown, 'a healer and a shielder under four Soldiers: somebody goes Down').toBe(0);
+    expect(heal4.neverDown, 'a healer under four Soldiers: somebody goes Down: ' + fireLine(heal4)).toBe(0);
+    // Rules 1.61 (the opening volley: the enemy's Burst is the characters' two rolls, item 1079's refit, the damage factors
+    // left as they were on purpose): a healer AND a shielder now hold a pair up under four Soldiers for the 10 rounds.
+    // OLD expectation (rules 1.20 to 1.56): somebody goes Down there too (neverDown 0). Held now: the shield adds to the heal.
+    expect(both4.firstDown, 'a healer and a shielder under four Soldiers outlast a healer alone: ' + fireLine(both4) + ' / ' + fireLine(heal4)).toBeGreaterThan(heal4.firstDown);
   }, 240000);
 });
 

@@ -58,7 +58,7 @@ export function expected(pv: any, critChance = 0.05): number {
 const plainMode = (u: any) => (isMelee(WEAPON[u.weapon]) ? 'melee' : 'shot');
 
 interface Cand { step: Step; value: number; ap: number }
-function plainCands(x: Ctx): { cands: Cand[]; whys: string[] } {
+export function plainCands(x: Ctx): { cands: Cand[]; whys: string[] } {
   const mode = plainMode(x.u), cands: Cand[] = [], whys: string[] = [];
   for (const t of x.foes) {
     const pv = W(x.g, () => previewAttack(x.cb, x.u, t, mode));
@@ -67,7 +67,7 @@ function plainCands(x: Ctx): { cands: Cand[]; whys: string[] } {
   }
   return { cands, whys };
 }
-function techCands(x: Ctx): Cand[] {
+export function techCands(x: Ctx): Cand[] {
   const out: Cand[] = [];
   const pad = W(x.g, () => techniquePad(x.cb, x.u, 'main', x.g)).flatMap((g: any) => g.entries);
   for (const e of pad) {
@@ -88,14 +88,14 @@ function techCands(x: Ctx): Cand[] {
   }
   return out;
 }
-const best = (x: Ctx, cands: Cand[], score: (c: Cand) => number): Cand | null => {
+export const best = (x: Ctx, cands: Cand[], score: (c: Cand) => number): Cand | null => {
   let b: Cand | null = null;
   for (const c of cands) { if (x.banned.has(keyOf(c.step)) || c.ap > x.u.ap) continue; if (!b || score(c) > score(b) + 1e-9 || (Math.abs(score(c) - score(b)) < 1e-9 && c.value > b.value)) b = c; }
   return b;
 };
 
 /** When nothing can be attacked: fix the weapon, or walk. */
-function fixOrMove(x: Ctx, whys: string[], canFrom?: (k: string, apLeft: number) => boolean): Step | null {
+export function fixOrMove(x: Ctx, whys: string[], canFrom?: (k: string, apLeft: number) => boolean): Step | null {
   const u = x.u, w = whys.join(' | ');
   if (/Empty/i.test(w)) { const s = allowed(x, { action: { type: 'combat/reload' }, kind: 'reload', label: 'reload' }); if (s) return s; }
   if (/jammed/i.test(w)) { const s = allowed(x, { action: { type: 'combat/clear' }, kind: 'reload', label: 'clear a jam' }); if (s) return s; }

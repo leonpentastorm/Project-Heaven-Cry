@@ -355,7 +355,7 @@
       "critical": "min(2.0, 1.5 + 0.03*(perception-1) + 0.02*dexterity + perks, traits and gear) (rules 1.15; provisional). An enemy: 1.5",
       "ambush": "1.5 + 0.05*ingenuity",
       "blessing_power": "0.956 x (1 + 0.06*(virtue-1) + 0.06*faith) (rules 1.26: the landed profile; output.profiles.blessing)",
-      "weapon": "1.5 x Level.deal (rules 1.26: the aimed profile, the same for every weapon and sheet; output.profiles.weapon)"
+      "weapon": "1.5 x Level.deal (rules 1.26: the aimed profile, the same for every sheet, on bows, thrown charges and the foci's weapons; output.profiles.weapon). A melee blow reads output.profiles.melee (rules 1.56) and a gun shot output.profiles.gun (rules 1.61, R2): 1.275 x (1 + 0.0294118 x (the weapon's Attribute - 1)) x Level.deal"
     },
     "magic": {
       "sigil_max_words": "2 + floor((intelligence-1)/2)",
@@ -1632,7 +1632,10 @@
       "gun": {
         "allin": 145,
         "what": "the best gun, the best way (Masterwork)",
-        "dial": "each weapon's damage in weapons.json (rarity buys accuracy only since rules 1.26; the ceiling is measured at Masterwork)"
+        "dial": "each weapon's damage in weapons.json (rarity buys accuracy only since rules 1.26; the ceiling is measured at Masterwork)",
+        "at_pin": true,
+        "provisional": true,
+        "note": "rules 1.61 R3 (the lead's ruling, 16 Nov 2026; spec item 4722): the ceiling holds the guns' own numbers, measured with the shooter's gun profile read at the yardstick's pin (balance.yardsticks.rifle: Agility 7, x1.5), as every gun was before rules 1.61 G1. Played as it is, an all-in gunner above Agility 7 deals more on purpose (G1: the reward for the points), at most the gun profile's rise from the pin to the Attribute ceiling of its level (x1.075 at Agility 10): the live row is held under the ceiling's band times that rise. Old expectation: the live row in 145% +-12% (mean), 109 to 181% (a level)."
       },
       "melee": {
         "allin": 165,
@@ -1660,15 +1663,19 @@
         "dial": "soul_modules.json damage.base, then cycle.stage_mult"
       },
       "chaplain_turn": {
+        "at_pin": true,
+        "at_pin_note": "rules 1.61 (the opening volley pass, 16 Nov 2026; spec item 4735, the lead's call on item 4725, for Leon to reverse): held as the gun row is (item 4722): measured with every character's gun read at the yardstick's pin; the row as played is held only under the band times the gun profile's rise. OLD expectation: the row as played inside the band (it read Chaplain level 20 158% against its 156% top, from the gun in the turn: G1's own change)",
         "allin": 125,
         "provisional": true,
         "what": "the Chaplain's weapon turn (rules 1.31): Faith all in + Dexterity, a turn with only a Whisper and the weapon with the AP left, Smite riding the weapon's hit (Leon, 13 Nov 2026: the god in the gun never out-hits a gunner who put everything in the gun)",
         "dial": "classes.json guardian.smite amounts.smite.base (Rebuke's 20; 15 only if the measured all-in mean passes 140)"
       },
       "whisper_turn": {
+        "at_pin": true,
+        "at_pin_note": "rules 1.61 (the opening volley pass, 16 Nov 2026; spec item 4735, the lead's call on item 4725, for Leon to reverse): held as the gun row is (item 4722): measured with every character's gun read at the yardstick's pin; the row as played is held only under the band times the gun profile's rise. OLD expectation: the row as played inside the band (it read Whisper level 20 120% against its 114% top, from the gun in the turn: G1's own change)",
         "allin": 80,
         "level_hi": 1.42,
-        "what": "a turn with only a Whisper (and the rifle with the AP left: since rules 1.26 the rifle hits as hard in anyone's hands, and the Faith build's Dexterity sets the shape over the levels, hence the high end)",
+        "what": "a turn with only a Whisper (and the rifle with the AP left: since rules 1.61 the rifle's damage follows the shooter's Agility, and the Faith build's Dexterity and Agility set the shape over the levels, hence the high end)",
         "dial": "patrons.json the Whispers' values; rules.json output.profiles.blessing.k"
       },
       "hymn_turn": {
@@ -1713,6 +1720,8 @@
         "dial": "rules.json output.profiles.tend.k"
       },
       "mender_offence": {
+        "at_pin": true,
+        "at_pin_note": "rules 1.61 (the opening volley pass, 16 Nov 2026; spec item 4735, the lead's call on item 4725, for Leon to reverse): held as the gun row is (item 4722): measured with every character's gun read at the yardstick's pin; the row as played is held only under the band times the gun profile's rise. OLD expectation: the row as played inside the band (it read a mean of 59% against 70% +- 12%, from the gun in the turn: G1's own change)",
         "allin": 70,
         "what": "the Mender spending a whole turn on attacks against a Bonded enemy, steady, in percent of a rifle-turn (rules 1.33); the door 61",
         "dial": "tending.json bond.per_bond"
@@ -1734,6 +1743,14 @@
       }
     },
     "yardsticks": {
+      "rifle": {
+        "build": "plain_gun",
+        "variant": "normal",
+        "profile": "gun",
+        "pin": 7,
+        "provisional": true,
+        "note": "the balance yardstick (100%): the plain rifle at a normal share (test/balance/builds.ts plain_gun), its shot read at the gun profile's pin: the profile at Attribute `pin` (7, the creation ceiling, where output.profiles.gun equals the weapon profile's flat 1.5), whatever the build's own Agility. A fixed reference: since rules 1.61 G1 a gun's damage follows its shooter's Agility, and a yardstick that followed its build moved every system's percentage though nothing else changed. Every measure reads it through test/balance/sim.ts atYardPin; the enemy table (rules 1.15: a Soldier is 4 of its hits) is fitted to it. The lead's ruling R1, 16 Nov 2026 (spec item 4720)"
+      },
       "soldier_turn": {
         "1": 18.5,
         "3": 24.2,
@@ -1924,6 +1941,16 @@
         "shape": "struck",
         "provisional": true,
         "note": "rules 1.56 (Balance 2.0, Leon 15 Nov 2026: melee damage grows with Strength, finesse blades with Agility; the skill buys the hit only): the profile of a character's melee blow, named by the weapon (weapons.json phys.profile); its Attribute is the weapon's phys.scales_with. +attr a point of that Attribute over 1, no skill slope; k re-pins the all-in build (Attribute 7 at creation) to the weapon profile's 1.5 (k x (1 + attr x 6) = 1.5), so a lower Attribute deals less than before 1.56 and a higher one more. PROVISIONAL (spec item 1.56-L6)"
+      },
+      "gun": {
+        "k": 1.275,
+        "attr": 0.0294118,
+        "skill": 0,
+        "level": "deal",
+        "pair": "weapon",
+        "shape": "struck",
+        "provisional": true,
+        "note": "rules 1.61 (0.30, G1; Leon 16 Nov 2026: \"add damage per attribute like others, nerf the base dmg, not to a useless degree\"): the profile of a character's gun shot, named by the gun (weapons.json phys.profile: gun); its Attribute is the gun's phys.scales_with (Agility on every gun). +attr a point of that Attribute over 1, no skill slope (Dexterity buys the hit); k re-pins the all-in gunner (Agility 7 at creation, the profile's pin) to the weapon profile's 1.5 (k x (1 + attr x 6) = 1.5). The lead's ruling R2 (16 Nov 2026: the low end softer): k 1.275 so that Agility 1 deals x0.85 of what it dealt before 1.61 (G1 had k 1.15385, attr 0.05: x0.77), 3 x0.90, 5 x0.95, 7 x1.00, 10 x1.075. Its own dial, apart from the melee profile (not touched). An enemy's gun reads its tier and level, not this. PROVISIONAL (spec items 4700, 4721)"
       },
       "sigil": {
         "k": 1.7,
