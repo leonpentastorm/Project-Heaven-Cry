@@ -1815,6 +1815,7 @@
     {
       "id": "xp_grant",
       "tier": "bespoke",
+      "use_op": true,
       "summary": "Grant XP (value, tagged source) through the one XP door: run for a counted item's use (gear/use, rules 1.55 item 58; limit counted on the receiver); the Rival's is its trait's own.",
       "count": 2,
       "params": [
@@ -1843,6 +1844,7 @@
     {
       "id": "treat",
       "tier": "bespoke",
+      "use_op": true,
       "summary": "Treat n arm or leg injuries of the receiver through the one treatment (character.ts treatLimb): run for an item's use (gear/use; the field kit, rules 1.61 addendum item 4748). Refused when the receiver has none, and on the field.",
       "count": 1,
       "params": [

@@ -154,6 +154,16 @@ describe('rules 1.56 L3: the armourer fits to any gun carried', () => {
     const before = creditsOf(g.characters.c1), a = apply(g, o.action as any, 'host'), c = a.characters.c1;
     expect([...(c.weaponState?.mods || [])].sort()).toEqual(['mod_red_dot', 'mod_scope']); expect(creditsOf(c)).toBe(before - fee('mod_scope'));
   });
+  it("Overhaul's extra slot goes on the gun picked (rules 1.61 addendum item 4763): a pack gun's card fits the pack gun, the hand's untouched", () => {
+    let j = -1;
+    const g = visit('forge', 'PHC-0001', (x) => { const c = x.characters.c1; j = gunLine(x, 'service_pistol', { mods: ['mod_red_dot'] });
+      c.perks = [...(c.perks || []), { id: 'overhaul', tier: 'mastered' } as any]; c.weaponState = { ...(c.weaponState || {}), mods: ['mod_red_dot'] }; (c as any).state = { ...((c as any).state || {}), overhaulBench: true }; });
+    const i = give(g, 'mod_scope'), o = runOptions(g, 'c1').find((x) => x.key === 'mod:extra:' + i + ':' + j)!;
+    expect(o.why).toBeNull();
+    const a = apply(g, o.action as any, 'host'), c = a.characters.c1;
+    expect([...(packOf(c).find((x) => x.weapon === 'service_pistol')!.mods || [])].sort()).toEqual(['mod_red_dot', 'mod_scope']);
+    expect(c.weaponState?.mods).toEqual(['mod_red_dot']); expect((c as any).state.overhauled).toEqual({ service_pistol: true });
+  });
   it('the extra slot is the gun being fitted\'s (consolidation 0.29, ruling iv): Gun Nut doubles a slot on a pack gun, the hand\'s untouched', () => {
     let j = -1;
     const g = visit('forge', 'PHC-0001', (x) => { j = gunLine(x, 'service_pistol', { mods: ['mod_red_dot'] }); x.characters.c1.traits = [...(x.characters.c1.traits || []), 'gun_nut']; });

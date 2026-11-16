@@ -16221,7 +16221,7 @@
       "origin": "brief"
     },
     "weapon-bot_thread_banner": {
-      "label": "Bot-thread banner",
+      "label": "Mana-thread banner",
       "path": "art/icons/gear/weapon-bot_thread_banner.png",
       "sha256": "a921425cfa3302536816c3931140439d5081a176e05fac4804a1a6a42bdf0ac0",
       "width": 1024,

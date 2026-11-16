@@ -181,7 +181,7 @@ register({
       run: (h, a, rng) => { const t = h.cb!.units.find((x) => x.id === a.targetId)!; say(h.cb, h.u!.name + ' offers ' + t.name + ' an open hand' + offerMercy(h, t, rng) + '.'); },
     },
     {
-      id: 'mercy_setting', label: 'Open Hand: offer mercy…', pick: ['always', 'ask', 'never'], pickLabel: 'When to offer mercy', scope: ['combat', 'story'], target: 'none', ap: 0,
+      id: 'mercy_setting', label: 'Open Hand: offer mercy…', pick: ['always', 'ask', 'never'], pickLabel: 'When to offer mercy', scope: ['combat', 'story', 'run'], target: 'none', ap: 0,
       text: 'Choose when you offer mercy. Always: it is offered the moment an enemy drops to a quarter of its HP. Ask: you offer it yourself on your turn. Never: you don\'t offer it.',
       preview: (h, a) => ({ lines: ['Now: ' + mercyMode(h) + (a.choice ? ' → ' + a.choice : '') + '.'] }),
       run: (h, a) => {
@@ -425,7 +425,7 @@ register({
     session_start: (ctx, h) => { const s = ro(h.c); if (s.red_line_crossed && h.c) { delete h.c.state!.red_line; delete h.c.state!.red_line_crossed; } },
   },
   actions: [{
-    id: 'name_line', label: 'Name your line', scope: ['story'], target: 'text', ap: 0,
+    id: 'name_line', label: 'Name your line', scope: ['story', 'run'], target: 'text', ap: 0,
     text: 'Type the one line you won\'t cross. I: while it holds, you get +1 on Heart saves. II: you get +2, and your allies get +1.',
     available: (h) => (ro(h.c).red_line_crossed ? 'You crossed your line. You can name a new one next session.' : holds(h.c) ? 'Your line holds: "' + String(line(h.c)).slice(0, 60) + '".' : true),
     run: (h, a) => { cst(h.c).red_line = String(a.text || '').trim().slice(0, 140); postStory(h, 'names a line they won\'t cross: "' + cst(h.c).red_line + '".'); },
@@ -578,7 +578,7 @@ const lit = (h: Holder) => ro(h.c).lit_scene === sceneN(h) && h.g != null;
 register({
   id: 'chain_smoker', claims: [0, 3],
   actions: [{
-    id: 'light_up', label: 'Light Up', scope: ['combat', 'world', 'story'], target: 'none', ap: (h) => (h.cb ? 2 : 0),
+    id: 'light_up', label: 'Light Up', scope: ['combat', 'world', 'story', 'run'], target: 'none', ap: (h) => (h.cb ? 2 : 0),
     text: 'Light a cigarette: +2 Composure for the scene, and remove one Heart debuff from yourself.',
     run: (h) => {
       cst(h.c).lit_scene = sceneN(h);
@@ -626,7 +626,7 @@ register({
       },
     },
     {
-      id: 'verse_story', label: 'Verse', scope: ['story'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
+      id: 'verse_story', label: 'Verse', scope: ['story', 'run'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
       text: 'Once a scene: answer in metaphor (type it). The listener resists or is Confused. Allies here get +1 Composure for the scene.',
       available: (h) => (uses(h).left('per_scene', 1, h.key + '#verse') > 0 ? true : 'Used this scene.'),
       run: (h, a, rng) => {

@@ -4,7 +4,7 @@
 // actionGroups() is the one list of actions a unit has (the panel's tabs show it); the cut-in's four commands are a
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
-import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, SPELL_AP, ventAp, coreAp, stageMult, weaponActions, perkActionsFor, withGame, type PerkActionEntry,
+import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, SPELL_AP, ventAp, coreAp, stageMult, weaponActions, perkActionsFor, runItemWhy, withGame, type PerkActionEntry,
   FOCUS_IDS, NEEDS_EVOKER, carriesEvoker, PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText, faithView, doorTabsOf, DOOR_TABS, GROUP_ORDER } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { FAITH_INK } from './faithView';
@@ -50,7 +50,8 @@ export const isPerkInfo = (id: string | null | undefined) => !!id && id.startsWi
 /** A character's story-side perk, trait and class actions (the story panel's Perks strip). */
 export function storyPerkEntries(g: any, ch: any): PerkActionEntry[] {
   if (!ch || !g) return [];
-  try { return withGame(g, () => perkActionsFor({ c: ch, g }, 'story')); } catch { return []; }
+  // rules 1.61 addendum item 4761: in a Survival run the engine's refusal (runItemWhy) greys a story action without the 'run' scope
+  try { return withGame(g, () => perkActionsFor({ c: ch, g }, 'story').map((e) => { const no = e.why ? null : runItemWhy(g, ch, e.id, e.actionId); return no ? { ...e, why: no } : e; })); } catch { return []; }
 }
 /** "2 AP · 1/combat" */
 /** Vent and core swap as the engine prices them (magic.ts ventAp / coreAp: Bleed the Flux, Core Change). */

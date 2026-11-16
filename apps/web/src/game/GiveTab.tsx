@@ -26,7 +26,10 @@ export function GiveTab({ compact = false }: { compact?: boolean } = {}) {
   const v = g ? giveView(g as any, me) : null;
   const [to, setTo] = React.useState<string | null>(null), [sel, setSel] = React.useState<string>('credits'), [n, setN] = React.useState(1);
   if (!v || !v.from) return <p style={{ color: I.muted }}>You have no character here.</p>;
-  if (v.none) return <section data-phc-give="" data-phc-give-none=""><h2 style={{ margin: '6px 0 12px', fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>Give</h2><p style={{ fontSize: 16, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>{v.none}</p></section>;
+  if (v.none) return <section data-phc-give="" data-phc-give-none=""><h2 style={{ margin: '6px 0 12px', fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>Give</h2><p style={{ fontSize: 16, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>{v.none}</p>{v.rows.filter((r) => r.use).map((r) => { const no = r.use!.why[v.from!.id]; // rules 1.61 addendum item 4765: solo, a line's use on yourself still shows
+      return <div key={'solo-use-' + r.key} data-phc-give-solo-use={r.key} style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginTop: 8 }}><span style={{ fontSize: 14.5, fontWeight: 600 }}>{r.label}</span>
+        <button type="button" data-phc-give-use={v.from!.id} disabled={!!no} onClick={() => act({ ...(r.use!.action as any), targetId: v.from!.id })} style={{ minHeight: 40, padding: '0 16px', borderRadius: 12, border: '1px solid ' + I.line, background: no ? 'transparent' : I.raised, color: no ? I.muted : I.text, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: no ? 'default' : 'pointer' }}>{r.use!.label + ' yourself'}</button>
+        {no ? <span data-phc-give-use-why="" style={{ fontSize: 13, color: I.muted }}>{no}</span> : null}</div>; })}</section>;
   const who = to && v.to.find((t) => t.id === to) ? to : v.to[0].id, target = v.to.find((t) => t.id === who)!;
   const row = v.rows.find((r) => r.key === sel) || v.rows[0];
   const most = Math.max(0, row.qty), amount = Math.max(0, Math.min(n, most));
@@ -83,6 +86,7 @@ export function GiveTab({ compact = false }: { compact?: boolean } = {}) {
         {row.use ? [target.id, v.from!.id].map((id) => { const u = row.use!, no = u.why[id], name = id === v.from!.id ? 'yourself' : target.name; // rules 1.55 item 32: use it on the friend picked, or on yourself
           return <button key={'use-' + id} type="button" data-phc-give-use={id} disabled={!!no} aria-label={no ? u.label + ' ' + name + ': ' + no : undefined} onClick={() => act({ ...(u.action as any), targetId: id })}
             style={{ minHeight: 46, padding: '0 18px', borderRadius: 12, border: '1px solid ' + I.line, background: no ? 'transparent' : I.raised, color: no ? I.muted : I.text, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: no ? 'default' : 'pointer' }}>{u.label + ' ' + name}</button>; }) : null}
+        {row.use ? [...new Set([target.id, v.from!.id].map((id) => row.use!.why[id]).filter(Boolean))].map((no) => <span key={'use-why-' + no} data-phc-give-use-why="" style={{ fontSize: 13, color: I.muted }}>{no}</span>) : null}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <span style={kick}>WHAT</span>
@@ -106,7 +110,8 @@ export function GiveInline({ rowKey, charId }: { rowKey: string; charId: string 
   if (!v || !v.from || !row) return null;
   const open = v.to.filter((t) => !row.why[t.id]), most = Math.max(0, row.qty), amount = Math.max(0, Math.min(n, most));
   const uses = row.use ? Object.values((g as any).characters as Record<string, { id: string; name: string; dead?: boolean }>).filter((x) => !x.dead && !row.use!.why[x.id]) : [];
-  if (!open.length && !uses.length) return null;
+  const selfNo = row.use ? row.use.why[v.from.id] : null; // rules 1.61 addendum item 4765: a refused use says why, muted
+  if (!open.length && !uses.length && !row.use) return null;
   const why = open.length && most > 1 ? giveProblem(g as any, me, { ...(row.action as any), to: open[0].id, qty: amount }) : null;
   const give = (to: string) => { act({ ...(row.action as any), to, qty: amount }); setN(1); };
   const b: React.CSSProperties = { minHeight: 30, padding: '0 10px', borderRadius: 6, border: '1px solid ' + I.text, background: I.panel, color: I.text, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' };
@@ -117,6 +122,7 @@ export function GiveInline({ rowKey, charId }: { rowKey: string; charId: string 
         {open.map((t) => <button key={'g' + t.id} type="button" data-phc-give-inline-to={t.id} disabled={!!why} onClick={() => give(t.id)} style={b}>{'Give ' + (most > 1 ? amount + ' ' : '') + 'to ' + t.name}</button>)}
         {uses.map((x) => <button key={'u' + x.id} type="button" data-phc-give-use={x.id} onClick={() => act({ ...(row.use!.action as any), targetId: x.id })} style={b}>{row.use!.label + ' ' + (x.id === v.from!.id ? 'yourself' : x.name)}</button>)}
       </div>
+      {row.use && !uses.length && selfNo ? <span data-phc-give-use-why="" style={{ fontSize: 13, color: I.muted }}>{row.use.label + ': ' + selfNo}</span> : null}
     </div>
   );
 }

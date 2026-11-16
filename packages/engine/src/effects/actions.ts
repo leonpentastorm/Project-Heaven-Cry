@@ -58,7 +58,7 @@ export const REACH_FIELDS = ['tiles', 'sight', 'side', 'self', 'if', 'tied', 'ti
   // Classes 3.0 step 6, integration (rules 1.32: Shadow's Pick, Douse, Rig, Vault): what a picked tile must be
   'object', 'stand', 'over'];
 /** Rules 1.33: the surfaces a grant_action's `scope` may name (default: combat and the area map). */
-export const GRANT_SCOPES = ['combat', 'world', 'story'];
+export const GRANT_SCOPES = ['combat', 'world', 'story', 'run'];
 /** The prayers a grant_action may be. */
 export const PRAYER_KINDS = ['whisper', 'hymn'];
 /** faith.ts registers the prayer door here as it loads (this file can't import it: its load order places its hooks). */

@@ -3271,6 +3271,8 @@ for _tr in items("traits"):
 # rules 1.55 items 55 and 58: `sell` is false or left out; a usable counted item (counts_into) says how it is used (an ITEM's `use`: label,
 # via stim or effects) and what its user needs (`requires_to_use`: entries of holds, skill and min, or any_of, each
 # with its refusal `why`).
+# rules 1.61 addendum item 4766: the use ops (an item use runs them) are the effect_ops.json rows marked use_op
+_USE_OPS = {o.get("id") for o in data["effect_ops"]["items"] if o.get("use_op")}
 for _it in items("items"):
     _w = f"items:{_it.get('id')}"
     if "sell" in _it and _it["sell"] is not False: errors.append(f"{_w}: sell is false or left out (rules 1.55 item 55)")
@@ -3280,8 +3282,8 @@ for _it in items("items"):
             errors.append(f"{_w}: use is {{label, via: stim or effects}} (rules 1.55 item 58)")
         # rules 1.61 addendum item 4748: a pack item may have a use too (the field kit); `spend` is the pack units a use takes
         if isinstance(_u, dict) and "spend" in _u and not (isinstance(_u["spend"], int) and _u["spend"] >= 1): errors.append(f"{_w}: use.spend is a whole number >= 1 (rules 1.61 addendum)")
-        if isinstance(_u, dict) and _u.get("via") == "effects" and not any(isinstance(e, dict) and e.get("op") in ("xp_grant", "treat") for e in (_it.get("effects") or [])):
-            errors.append(f"{_w}: use via effects needs an effect the use runs (xp_grant or treat; rules 1.55 item 58, rules 1.61 addendum)")
+        if isinstance(_u, dict) and _u.get("via") == "effects" and not any(isinstance(e, dict) and e.get("op") in _USE_OPS for e in (_it.get("effects") or [])):
+            errors.append(f"{_w}: use via effects needs an effect the use runs (an effect_ops.json use_op: {sorted(_USE_OPS)}; rules 1.55 item 58, rules 1.61 addendum)")
     # rules 1.61 addendum item 4748: `serves_as` lists the items this one stands in for (the toolbox for a field kit)
     if "serves_as" in _it and not (isinstance(_it["serves_as"], list) and all(isinstance(x, str) and x in _rimap and x != _it.get("id") for x in _it["serves_as"])):
         errors.append(f"{_w}: serves_as is a list of other items.json ids (rules 1.61 addendum)")

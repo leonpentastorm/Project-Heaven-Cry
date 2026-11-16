@@ -234,7 +234,8 @@ export interface CheckMod { add: number; label: string }
 
 /** When a limit is fresh again (the table: effects/uses.ts SCOPES). 'cooldown' is taken with uses(h).cool(turns), not take(). */
 export type UseScope = 'at_will' | 'per_turn' | 'per_round' | 'per_combat' | 'per_scene' | 'per_session' | 'per_rest' | 'per_campaign' | 'reaction' | 'out_of_combat' | 'cooldown';
-export type ActionScope = 'combat' | 'world' | 'story';
+/** 'run' (rules 1.61 addendum item 4761): beside 'story', the action is usable in a Survival run outside a fight. */
+export type ActionScope = 'combat' | 'world' | 'story' | 'run';
 export type ActionTarget = 'none' | 'self' | 'ally' | 'enemy' | 'unit' | 'tile' | 'object' | 'npc' | 'check' | 'text';
 
 /** What a player sends with a perk action: a target unit, a tile, a choice, a line of text, an NPC, a check. */

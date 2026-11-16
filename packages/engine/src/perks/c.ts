@@ -223,11 +223,14 @@ register({
       } },
     { id: 'extra_slot', label: 'Overhaul: extra mod slot', pickLabel: 'The mod in your pack', scope: ['story', 'world'], ap: 0, target: 'none',
       text: 'After a long rest: your weapon gains a permanent second mod slot of a type it already has. Once per weapon. Pick the mod from your pack to fit there.',
-      available: (h) => { const c = h.c; if (!c || !WEAPON[c.weapon]) return false; if (cs(c).overhauled?.[c.weapon]) return 'This weapon already has its extra slot.'; return cs(c).overhaulBench ? true : 'Only after a long rest.'; },
-      preview: (h, args) => { const e = extraFitCheck(h.c!, args.choice, 1); return e ? { ok: false, why: e } : {}; },
-      run: (h, args) => {
-        const c = h.c!; (charState(c).overhauled ||= {})[c.weapon] = true; delete charState(c).overhaulBench;
-        return fitExtra(c, args.choice, 'Overhaul');
+      // rules 1.61 addendum item 4763: the gun at `where` (the main hand by default), as extra_mod's, the slot keyed by it
+      available: (h) => { const c = h.c; if (!c || !WEAPON[c.weapon]) return false; return cs(c).overhaulBench ? true : 'Only after a long rest.'; },
+      preview: (h, args: any) => { const w = args.where ?? 'main', gun = gunAt(h.c!, w); if (gun && cs(h.c).overhauled?.[gun.id]) return { ok: false, why: 'This weapon already has its extra slot.' }; const e = extraFitCheck(h.c!, args.choice, 1, w); return e ? { ok: false, why: e } : {}; },
+      run: (h, args: any) => {
+        const c = h.c!, w = args.where ?? 'main', gun = gunAt(c, w); if (!gun) return 'No weapon there.';
+        if (cs(c).overhauled?.[gun.id]) return 'This weapon already has its extra slot.';
+        (charState(c).overhauled ||= {})[gun.id] = true; delete charState(c).overhaulBench;
+        return fitExtra(c, args.choice, 'Overhaul', w);
       } },
   ],
   on: {
@@ -638,7 +641,7 @@ register({
 register({
   id: 'blade_recluse', claims: [0],
   actions: [
-    { id: 'name_blade', label: 'Name your weapon', scope: ['story', 'world'], ap: 0, target: 'none',
+    { id: 'name_blade', label: 'Name your weapon', scope: ['story', 'world', 'run'], ap: 0, target: 'none',
       text: 'The weapon in your hand becomes your One Blade: it can\'t be Disarmed, and it gains an extra mod slot.',
       available: (h) => { const c = h.c; if (!c || !WEAPON[c.weapon] || c.weapon === 'fists') return false; return cs(c).oneBlade?.weapon === c.weapon ? 'Already your One Blade.' : true; },
       run: (h) => { const c = h.c!, w: any = WEAPON[c.weapon]; charState(c).oneBlade = { weapon: c.weapon, fam: w.mastery_family || null }; const line = c.name + ' names the ' + w.name + ' the One Blade.'; if (h.cb) say(h.cb, line); else postStory(h, line); return null; } }, // a record, not a ruling (rules 1.61 addendum item 4742)

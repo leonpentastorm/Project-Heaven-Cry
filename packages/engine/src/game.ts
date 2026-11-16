@@ -969,15 +969,15 @@ function reduce(g: GameState, a: Action, by: string) {
         // A Sigil plate teaches a word; a Heart plate a tone, a school or a module (rules 1.5 section 5, spec 4.4 item 546).
         const lesson = a.word || a.tone || a.school || a.module;
         if (!lesson) fail('A plate teaches a Sigil word (a Sigil plate) or a tone, school or module (a Heart plate).');
+        if ([a.word, a.tone, a.school, a.module].filter(Boolean).length > 1) fail('One lesson at a time: a word, a tone, a school or a module.'); // rules 1.61 addendum item 4764
         // rules 1.61 addendum item 4758: a plate with no lesson written on it (one bought at a shop) teaches the one the
         // player chooses of what it can teach them now (plateChoices); a plate with its lesson is taken first
         const kind = a.word ? 'sigil_plate' : 'heart_plate', pack = packOf(c!), of = (x: PackItem) => (x.item || x.id) === kind && x.qty > 0;
         let i = pack.findIndex((x) => of(x) && plateLesson(x.note) === String(lesson).toLowerCase());
         if (i < 0) i = pack.findIndex((x) => of(x) && !plateLesson(x.note));
         if (i < 0) fail(a.word ? 'You carry no plate with that word.' : 'You carry no Heart plate with that lesson.');
-        // The lesson must be new, or the plate isn't used up.
-        { const k = c!.soulKnown; if (!a.word && ((a.tone && (k?.tones || []).includes(a.tone)) || (a.school && (k?.schools || []).includes(a.school)) || (a.module && (k?.modules || []).includes(a.module)))) fail(c!.name + ' knows that already.'); }
-        { const why = teachCheck(c!, a) || (a.module ? moduleGateError(c!, a.module) : null); if (why) fail(why); }
+        // The lesson must be new and learnable, or the plate isn't used up (plateLessonWhy: the one check, plateChoices' too).
+        { const why = plateLessonWhy(c!, a); if (why) fail(why); }
         pack[i] = { ...pack[i], qty: pack[i].qty - 1 }; c!.pack = pack.filter((x) => x.qty > 0 || x.mags);
       }
       const e = teach(g, c!, a, a.from === 'ally' ? 'taught by the squad' : a.word ? 'from a Sigil plate' : 'from a Heart plate'); if (e) fail(e);
@@ -1075,6 +1075,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (g.phase === 'lobby') fail('The session hasn\'t started.');
       if (g.phase === 'combat') fail('In a fight, use the Perks tab on your turn.');
       if (c!.dead) fail('The dead do nothing.');
+      { const no = runItemWhy(g, c!, a.id, a.actionId); if (no) fail(no); } // rules 1.61 addendum item 4761: only an action with the 'run' scope
       const had = new Set((g.story.rulings || []).map((r) => r.id));
       const err = runPerkAction({ c: c!, g }, a.id, a, g.rng, 'story'); if (err) fail(err);
       // rules 1.61 addendum item 4741: a run has no Narrator, so a use that leaves it a ruling is refused (nothing is spent)
@@ -2644,12 +2645,16 @@ export function plateLesson(note?: string): string { return String(note || '').t
 /** Rules 1.61 addendum item 4758: what a plate of this kind with no lesson written on it can teach `c` now (the
  * lessons magic/learn would take: teachCheck, not known, the module gates), each as magic/learn's own argument. */
 export function plateChoices(c: Character, kind: 'sigil_plate' | 'heart_plate'): { word?: string; tone?: string; school?: string; module?: string }[] {
-  if (kind === 'sigil_plate') return Object.keys(SIGIL).filter((w) => !teachCheck(c, { word: w })).map((word) => ({ word }));
-  const k = c.soulKnown, out: { tone?: string; school?: string; module?: string }[] = [];
-  for (const tone of Object.keys(TONE)) if (!teachCheck(c, { tone }) && !(k?.tones || []).includes(tone)) out.push({ tone });
-  for (const school of Object.keys(SCHOOL)) if (!teachCheck(c, { school }) && !(k?.schools || []).includes(school)) out.push({ school });
-  for (const module of Object.keys(MODULE)) if (!teachCheck(c, { module }) && !(k?.modules || []).includes(module) && !moduleGateError(c, module)) out.push({ module });
-  return out;
+  const all: { word?: string; tone?: string; school?: string; module?: string }[] = kind === 'sigil_plate' ? Object.keys(SIGIL).map((word) => ({ word }))
+    : [...Object.keys(TONE).map((tone) => ({ tone })), ...Object.keys(SCHOOL).map((school) => ({ school })), ...Object.keys(MODULE).map((module) => ({ module }))];
+  return all.filter((m) => !plateLessonWhy(c, m));
+}
+/** Why a plate can't teach `c` this lesson now, in words, or '' (rules 1.61 addendum item 4764): known already, not a
+ * real lesson or over the word cap (teachCheck), the module gates. The one check, for magic/learn and plateChoices. */
+export function plateLessonWhy(c: Character, m: { word?: string; tone?: string; school?: string; module?: string }): string {
+  const k = c.soulKnown;
+  if (!m.word && ((m.tone && (k?.tones || []).includes(m.tone)) || (m.school && (k?.schools || []).includes(m.school)) || (m.module && (k?.modules || []).includes(m.module)))) return c.name + ' knows that already.';
+  return teachCheck(c, m) || (m.module ? moduleGateError(c, m.module) || '' : '');
 }
 function teachCheck(c: Character, m: { word?: string; school?: string; module?: string; tone?: string }): string {
   if (m.word) { const w = m.word.trim().toLowerCase(); if (!SIGIL[w]) return 'No such word.'; if ((c.sigils || []).includes(w)) return c.name + ' already knows ' + SIGIL[w].word + '.'; if ((c.sigils || []).length >= wordsKnownCap(c)) return c.name + ' knows ' + (c.sigils || []).length + ' words, the most Brain Power allows (' + wordsKnownCap(c) + ').'; return ''; }
@@ -3244,18 +3249,35 @@ export type SandboxAction =
  * gear, magic and the fight's own actions are not here. */
 const RUN_REFUSED = /^(narrator\/|session\/|story\/|poi\/|world\/|voice\/|check\/|overreach\/|vote\/|campaign\/|award\/|memory\/|talk\/|rest$)/; // rules 1.54 item 1: the action's type is `rest` (it read `rest/`, which no action is)
 /** Rules 1.61 addendum item 4740 (0.30.1): an item's own out-of-fight action (story/perk: a trait's, a perk's, a class move's, a
- * door verb's registered action with the story scope) is the engine's, so a run takes it off the field, through the one
- * runner (runPerkAction, scope story: no AP, no unit, no story round). A use that would leave a ruling for the Narrator is
- * refused there (story/perk). The story's own acts (world/act, poi/, talk/…) stay in RUN_REFUSED. */
+ * door verb's registered action) reaches the story/perk case off the field; there a run takes only an action whose scope
+ * has 'run' (item 4761, runItemWhy), through the one runner (runPerkAction, scope story: no AP, no unit, no story
+ * round), and a use that would leave a ruling for the Narrator is refused (item 4741). The story's own acts (world/act,
+ * poi/, talk/…) stay in RUN_REFUSED. */
 const RUN_ITEM = /^story\/perk$/;
 /** Rules 1.54 item 1 (R6): at the camp (run state `loadout`) the gear is rebuilt from the loadout's picks after every
  * change, so every `gear/*` action is refused there, in words naming the character (gearLockWhy's camp words,
  * run/state.ts). Rules 1.55: in a run, a weapon mod is fitted, swapped or taken off only by the armourer at a Forge,
  * for a fee (run/fit_mod, run/unfit_mod), so the free fit (gear/mod, and its fight form combat/swap with a mod) is
  * refused; a quiver's enchantment keeps its free fit. Null when neither holds. */
+/** The action a story/perk will run (the runner's own resolution: its actionId, else the item's first action) is one of
+ * forge.fit.extra_actions (rules 1.61 addendum item 4762: tested on what runs, not on the field sent). */
+const storyFreeFit = (g: GameState, a: Extract<Action, { type: 'story/perk' }>): boolean => {
+  const c = g.characters[a.charId], aid = c ? perkActionId({ c, g }, a.id, a.actionId) : null;
+  return !!aid && ((survivalFieldJ as any).forge.fit.extra_actions as string[]).includes(aid);
+};
+/** Rules 1.61 addendum item 4761: why a run (off the field) does not take this item's own out-of-fight action, or null:
+ * the Forge's free-fit refusal (campGearProblem), else an action whose scope lacks 'run' "works in a story, not in a
+ * run". The reducer's story/perk and the sheet's story buttons (apps/web storyPerkEntries) read this one answer. */
+export function runItemWhy(g: GameState, c: Character, id: string, actionId?: string): string | null {
+  if (!g.run || g.run.state === 'over') return null;
+  const a = { type: 'story/perk', charId: c.id, id, ...(actionId != null ? { actionId } : {}) } as Extract<Action, { type: 'story/perk' }>;
+  const fit = campGearProblem(g, a); if (fit) return fit;
+  const h = holderOf({ c }, id), aid = perkActionId({ c, g }, id, actionId), d = h && aid ? actionDefs(h.info).find((x) => x.id === aid) : null;
+  return d && !d.scope.includes('run') ? h!.info.name + ' works in a story, not in a run.' : null;
+}
 const campGearProblem = (g: GameState, a: Action): string | null => {
   const freeFit = (a.type === 'gear/mod' && (a as { quiver?: number }).quiver == null) || (a.type === 'combat/swap' && (a as { mod?: unknown }).mod != null)
-    || (a.type === 'story/perk' && ((survivalFieldJ as any).forge.fit.extra_actions as string[]).includes(String(a.actionId))); // rules 1.61 addendum items 4743, 4751: the free fits of items (forge.fit.extra_actions; the Forge's run/fit_mod extra runs them, for the fee)
+    || (a.type === 'story/perk' && storyFreeFit(g, a)); // rules 1.61 addendum items 4743, 4757, 4762: the free fits of items (forge.fit.extra_actions; the Forge's run/fit_mod extra runs them, for the fee)
   if (g.run && g.run.state !== 'over' && g.run.state !== 'loadout' && freeFit) return 'In a Survival run, the armourer fits mods at a Forge, for a fee.';
   return g.run?.state === 'loadout' && a.type.startsWith('gear/') ? gearLockWhy(g, (a as { charId?: string }).charId) : null;
 };

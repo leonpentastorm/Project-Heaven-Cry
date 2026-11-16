@@ -349,7 +349,7 @@ register({
   id: 'lunarshine', kind: 'trait', claims: 'all',
   stat: (h, stat) => { const m = /^skill:(.+)$/.exec(stat); return m ? lunarMod(h.c, m[1]) : 0; },
   actions: [{
-    id: 'drink', label: 'Drink', scope: ['combat', 'world', 'story'], target: 'none', ap: (h) => (inFight(h) ? 1 : 0),
+    id: 'drink', label: 'Drink', scope: ['combat', 'world', 'story', 'run'], target: 'none', ap: (h) => (inFight(h) ? 1 : 0),
     text: 'Take a drink. In a fight it costs 1 AP. You are Tipsy at 1 drink, Drunk at 3 and Wasted at 5.',
     available: (h) => {
       const l: Lunar | undefined = ro(h.c).lunar, have = (l?.open || 0) > 0 || packOf(h.c!).some((x) => (x.item || x.id) === 'bottle_of_spirits' && x.qty > 0);

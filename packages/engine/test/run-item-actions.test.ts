@@ -3,7 +3,7 @@
 // that would leave the Narrator a ruling is refused in words. The case: Blade Recluse's "Name your weapon" was refused as
 // story at a shop. Field Surgery (the one injury treatment, with the field kit) works in a run the same way. Through the reducer.
 import { describe, expect, it } from 'vitest';
-import { type GameState, type RunNode, apply, RuleError, packOf, giveView, reachable, plateChoices, MODULE } from '../src';
+import { type GameState, type RunNode, apply, RuleError, packOf, giveView, reachable, plateChoices, MODULE, runItemWhy } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 
 const SEED = 'PHC-0001';
@@ -39,9 +39,23 @@ describe('a Survival run takes an item\'s own out-of-fight action (story/perk)',
     expect(refused(g, { type: 'world/act', charId: c.id, act: 'perk', id: 'trait:blade_recluse', actionId: 'name_blade' })).toMatch(/no Narrator and no story/);
     expect(refused(g, { type: 'story/move', charId: c.id, to: 'A1' })).toMatch(/no Narrator and no story/);
   });
-  it('a use that would leave the Narrator a ruling is refused, and nothing is spent', () => {
+  it("only an action with the 'run' scope: the rest work in a story, not in a run (item 4761), greyed on the sheet the same way", () => {
     const g = started(), c = Object.values(g.characters)[0]; c.perks = [...(c.perks || []), { id: 'bone_talk', tier: 'I' } as any];
-    expect(refused(g, { type: 'story/perk', charId: c.id, id: 'perk:bone_talk', actionId: 'bone_talk_story', text: 'the scar on your hand' })).toMatch(/no Narrator to rule Bone Talk/);
+    expect(refused(g, { type: 'story/perk', charId: c.id, id: 'perk:bone_talk', actionId: 'bone_talk_story', text: 'the scar on your hand' })).toBe('Bone Talk works in a story, not in a run.');
+    expect(runItemWhy(g, c, 'perk:bone_talk', 'bone_talk_story')).toBe('Bone Talk works in a story, not in a run.');
+    // the Mender's story Triage and Field Surgeon's Patch: free healing between nodes, unmeasured (left out)
+    const d = duo(); d.characters.c1.classId = 'bard'; d.characters.c2.hp = 10;
+    expect(runItemWhy(d, d.characters.c1, 'class:medic.triage', 'triage_story')).toMatch(/works in a story, not in a run/);
+  });
+  it('the ruling guard is the second net: a run action that would leave the Narrator a ruling is refused, and nothing is spent', () => {
+    const g = started(), c = Object.values(g.characters)[0]; c.traits = [...(c.traits || []), 'lunarshine'];
+    c.pack = packOf(c).filter((x) => (x.item || x.id) !== 'bottle_of_spirits'); const before = JSON.stringify(c);
+    expect(refused(g, { type: 'story/perk', charId: c.id, id: 'trait:lunarshine', actionId: 'drink' })).toMatch(/no Narrator to rule Lunarshine/);
+    expect(JSON.stringify(g.characters[c.id])).toBe(before);
+  });
+  it('the free fit is refused on what will run, not on the field sent: no actionId, or an empty one (item 4762)', () => {
+    const g = started(), c = Object.values(g.characters)[0]; c.traits = [...(c.traits || []), 'gun_nut'];
+    for (const extra of [{}, { actionId: '' }]) expect(refused(g, { type: 'story/perk', charId: c.id, id: 'trait:gun_nut', choice: '0', ...extra })).toBe('In a Survival run, the armourer fits mods at a Forge, for a fee.');
   });
   it("the One Blade's second mod is the Forge's in a run (rules 1.55): the free fit is refused, pointing to the Forge", () => {
     const g0 = started(), c = recluse(g0); const g = apply(g0, NAME(c.id) as any, 'host');

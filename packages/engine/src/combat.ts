@@ -1503,9 +1503,9 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
     if (fx.op === 'edge_word' && active(cb)?.id === att.id && att.mg?.evoker && !att.edgeWord && !(att.ps as any)?.['class:blade_scribe.sword_form']?.edge) { att.edgeWord = true; injury += ' · Edge Word: your next glyph this turn costs 0 AP'; }
     if (r.prevented) injury += ' · no damage';
     // Riders (rules 1.3): incendiary rounds and burning weapons set the target Burning (a hit's rider: no save);
-    // enhanced rounds and mana arms release bots (+1 on the meter); explosives splash; the flamer's cone.
+    // enhanced rounds and mana arms release mana (+1 on the meter); explosives splash; the flamer's cone.
     if (!tgt.dead && !tgt.surrendered && (AMMO_TYPES[ammoId(att.ammoType) || '']?.applies === 'burning' && (!melee || (w.magazine == null && useW === w)) || (useW.properties || []).includes('applies_burning'))) injury += applyCond(cb, rng, att, tgt, 'burning', undefined, 'body', { skipSave: true });
-    if ((!melee && (AMMO_TYPES[ammoId(att.ammoType) || '']?.meter_per_hit || useW.category === 'mana' || (useW.properties || []).includes('mana_meter_on_hit'))) || (melee && useW === w && useW.category === 'mana')) shiftMana(cb, 1, 'mana released by a hit'); // a mana arm releases bots on a melee technique's hit too
+    if ((!melee && (AMMO_TYPES[ammoId(att.ammoType) || '']?.meter_per_hit || useW.category === 'mana' || (useW.properties || []).includes('mana_meter_on_hit'))) || (melee && useW === w && useW.category === 'mana')) shiftMana(cb, 1, 'mana released by a hit'); // a mana arm releases mana on a melee technique's hit too
   }
   if (hit && radiusOf(useW) && useW.category !== 'thrown') injury += splash(cb, att, tgt, useW, damage);
   // Momentum (spec: Melee): +1 for a plain melee attack that hits (a swing with any melee weapon, fists included). A

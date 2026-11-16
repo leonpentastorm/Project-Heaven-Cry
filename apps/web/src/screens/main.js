@@ -19,7 +19,7 @@ import { openReport, openSpend } from '../game/report';
 import { derivedLines } from '../game/derived';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, reloadItems, reloadBothItems, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
-import { previewPerkAction, phys, sheetPack, gearLockWhy, gearPreview, plateChoices } from '@engine';
+import { previewPerkAction, phys, sheetPack, gearLockWhy, gearPreview, plateChoices, plateLesson, plateLessonWhy } from '@engine';
 import { SHEET_LINE_KEYS } from '../game/previewLines';
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
@@ -255,13 +255,13 @@ function magicVals(self, g, c) {
     title: t.kind === 'word' ? SIGIL[t.id].text : t.kind === 'school' ? SCHOOL[t.id].text : t.kind === 'tone' ? TONE[t.id].text || '' : MODULE[t.id].text,
     go: () => act({ type: 'magic/learn', charId: c.id, [t.kind]: t.id, from: 'ally' }),
     style: chipStyle(t.kind === 'word' ? SIG_CYAN : SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked ? '; opacity: 0.5; cursor: default' : '') }));
-  const blankPlate = (x) => !String(x.note || '').trim(); // rules 1.61 addendum item 4758: a plate with no lesson written on it
+  const blankPlate = (x) => !plateLesson(x.note); // rules 1.61 addendum item 4758: a plate with no lesson written on it (the engine's reading)
   const plates = packOf(c).filter((x) => (x.item || x.id) === 'sigil_plate' && !blankPlate(x)).map((x, i) => { const w = (x.note || '').toLowerCase(), def = SIGIL[w];
     return { key: 'p' + i + w, title: def ? def.text || '' : 'The word is too worn to read.', label: 'Read the plate: ' + (def ? def.word : (x.note || 'an unknown word')), sub: '×' + x.qty + (def && words.includes(w) ? ' · known already' : ''), img: def ? glyphUri(w, SIGIL_INK) : scratchUri(), locked: learnLocked || !def,
       go: () => act({ type: 'magic/learn', charId: c.id, word: w, from: 'plate' }), style: chipStyle(SIG_CYAN, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked || !def ? '; opacity: 0.5; cursor: default' : '') }; });
   // Heart plates (rules 1.5 section 5): one Outburst lesson each, a tone, a school or a module (the pack note).
   const heartPlates = packOf(c).filter((x) => (x.item || x.id) === 'heart_plate' && !blankPlate(x)).map((x, i) => {
-    const id = String(x.note || '').toLowerCase().replace(/^(tone|school|module)\s*:\s*/, '').replace(/\s+(tone|school|module)$/, '').trim().replace(/\s+/g, '_');
+    const id = plateLesson(x.note);
     const kind = TONE[id] && id !== 'raw' ? 'tone' : SCHOOL[id] ? 'school' : MODULE[id] ? 'module' : '';
     const def = kind === 'tone' ? TONE[id] : kind === 'school' ? SCHOOL[id] : kind === 'module' ? MODULE[id] : null;
     const have = kind === 'tone' ? (known.tones || []).includes(id) : kind === 'school' ? known.schools.includes(id) : kind === 'module' ? known.modules.includes(id) : false;
@@ -270,11 +270,21 @@ function magicVals(self, g, c) {
       title: def ? def.text || '' : 'The lesson is too worn to read.',
       go: () => { if (!off) act({ type: 'magic/learn', charId: c.id, [kind]: id, from: 'plate' }); }, style: chipStyle(SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (off ? '; opacity: 0.5; cursor: default' : '') }; });
   plates.push(...heartPlates);
-  // a blank plate (one bought at a shop): one chip for each lesson it can teach this character now (the engine's plateChoices)
+  // a blank plate (one bought at a shop; rules 1.61 addendum items 4758, 4764): the lessons it can teach this character now
+  // (the engine's plateChoices): the Sigil plate's words grouped as the tab's word lists are, under their own heading; the
+  // Heart plate's as chips; none: one locked chip with the engine's reason
+  let blank = { groups: [] }, hasBlank = false;
   for (const kind of ['sigil_plate', 'heart_plate']) { const p = packOf(c).find((x) => (x.item || x.id) === kind && blankPlate(x)); if (!p) continue;
-    for (const m of plateChoices(c, kind)) { const k = Object.keys(m)[0], id = m[k], def = k === 'word' ? SIGIL[id] : k === 'tone' ? TONE[id] : k === 'school' ? SCHOOL[id] : MODULE[id]; if (!def) continue;
-      plates.push({ key: 'b' + k + id, label: (k === 'word' ? 'Choose from the Sigil plate: ' + def.word : 'Choose from the Heart plate: ' + def.name + ' ' + k), sub: '×' + p.qty, isWord: k === 'word', img: k === 'word' ? glyphUri(id, SIGIL_INK) : heartUri(1), locked: learnLocked,
-        title: def.text || '', go: () => { if (!learnLocked) act({ type: 'magic/learn', charId: c.id, [k]: id, from: 'plate' }); }, style: chipStyle(k === 'word' ? SIG_CYAN : SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked ? '; opacity: 0.5; cursor: default' : '') }); } }
+    const ch = plateChoices(c, kind), sig = kind === 'sigil_plate';
+    if (!ch.length) { const probe = sig ? { word: Object.keys(SIGIL).find((w) => !words.includes(w)) || '' } : {};
+      plates.push({ key: 'b-none-' + kind, label: (sig ? 'Blank Sigil plate' : 'Blank Heart plate') + ': nothing it can teach you now', sub: '×' + p.qty, isWord: sig, img: sig ? scratchUri() : heartUri(1), locked: true,
+        title: (sig && probe.word ? plateLessonWhy(c, probe) : '') || 'You know every lesson it could teach.', go: () => {}, style: chipStyle(sig ? SIG_CYAN : SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px; opacity: 0.5; cursor: default' }); continue; }
+    const go = (k, id) => () => { if (!learnLocked) act({ type: 'magic/learn', charId: c.id, [k]: id, from: 'plate' }); };
+    if (sig) { hasBlank = true; blank = groupedSection('magic.blank', sigilWordGroups(ch.map((m) => m.word), (x) => x).map((gr) => ({ ...gr, items: gr.items.map((id) => ({ key: id, word: SIGIL[id].word, img: glyphUri(id, SIGIL_INK), title: SIGIL[id].text || '', aria: 'Learn ' + SIGIL[id].word + ' from the blank plate',
+      pick: go('word', id), style: chipStyle(SIG_CYAN, false) + '; display: inline-flex; align-items: center; gap: 4px; min-height: 30px' + (learnLocked ? '; opacity: 0.5; cursor: default' : '') })) })), { ink: SIG_CYAN, rerender }); continue; }
+    for (const m of ch) { const k = Object.keys(m)[0], id = m[k], def = k === 'tone' ? TONE[id] : k === 'school' ? SCHOOL[id] : MODULE[id]; if (!def) continue;
+      plates.push({ key: 'b' + k + id, label: 'Choose from the Heart plate: ' + def.name + ' ' + k, sub: '×' + p.qty, isWord: false, img: heartUri(1), locked: learnLocked,
+        title: def.text || '', go: go(k, id), style: chipStyle(SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked ? '; opacity: 0.5; cursor: default' : '') }); } }
   // Rules 1.8 (Outburst 4.0): the codex, collapsible and grouped (feelings; modules by gate skill, the advanced classes'
   // locked), practice and its picks, and the starting templates as one-click designs.
   const pv = showSoul ? practiceView(c) : null, left = pv ? soulPicksLeft(c) : { practice: 0, mastered: [] };
@@ -321,7 +331,7 @@ function magicVals(self, g, c) {
       head: 'OUTBURSTS · SOUL · ' + designs.length + (designs.length === 1 ? ' DESIGN' : ' DESIGNS'), canNew, newDesign: () => self.setState({ mgDraft: { id: null, name: '', school: known.schools[0], school2: '', option2: '', tone: 'raw', modules: [], option: optValue((SCHOOL[known.schools[0]]?.options || [''])[0] || '') }, mgSaved: null }),
       newWhy: fight ? 'Design Outbursts after the fight.' : !known.schools.length ? 'Learn a school first (Will Power, or a teacher).' : designs.length >= readyDesigns(c) ? 'You keep ' + readyDesigns(c) + ' designs ready (' + SKILL.will_power.name + '): forget one to make room.' : '',
       knownText: 'Schools: ' + (known.schools.map((x) => SCHOOL[x]?.name || x).join(', ') || 'none') + ' · Tones: Raw' + (known.tones || []).map((x) => ', ' + (TONE[x]?.name || x)).join('') + ' · Modules: ' + (known.modules.map((x) => MODULE[x]?.name || x).join(', ') || 'none') },
-    codex, b, learn: { ally, plates, hasAlly: ally.length > 0, hasPlates: plates.length > 0, any: ally.length + plates.length > 0, locked: learnLocked,
+    codex, b, learn: { ally, plates, blank, hasBlank, hasAlly: ally.length > 0, hasPlates: plates.length > 0, any: ally.length + plates.length > 0 || hasBlank, locked: learnLocked,
       why: fight ? 'Learn after the fight.' : learnedNow ? 'One new thing a scene: it takes a rest to sink in.' : 'One new thing a scene. Words: ' + words.length + ' / ' + wordsKnownCap(c) + ' known.' },
   };
 }

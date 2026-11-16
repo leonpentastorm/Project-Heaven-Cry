@@ -54,7 +54,7 @@
       "weight_kg": 1.5,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Bandages, splints and a suture set. Out of a fight, anyone can use it to treat {=effects.0.n} arm or leg injury on themself or a squadmate, and {=use.spend} kit is used up. Field Surgery treats with it without using it up.",
+      "text": "Bandages, splints and a suture set. Out of a fight (not on the field after one), anyone can use it to treat {=effects.0.n} arm or leg injury on themself or a squadmate, and {=use.spend} kit is used up. Field Surgery treats with it without using it up.",
       "use": { "label": "Treat", "via": "effects", "spend": 1 },
       "effects": [
         { "op": "treat", "n": 1 }

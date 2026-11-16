@@ -204,7 +204,7 @@ register({
       },
     })),
     ...SPECIAL.map(([id, name]): ActionDef => ({
-      id: 'story_' + id, label: 'Load ' + name, scope: ['story'], target: 'none', ap: 0,
+      id: 'story_' + id, label: 'Load ' + name, scope: ['story', 'run'], target: 'none', ap: 0,
       available: (h) => { if (!h.c) return false; const e = ammoOk(h.c.weapon); if (e) return e; if (uses(h).left('per_rest', 1, h.key + '#' + id) <= 0) return 'Used up. It is restocked at your next rest.'; return true; },
       run: (h) => {
         const c = h.c!, w = WEAPON[c.weapon]!; uses(h).take('per_rest', 1, h.key + '#' + id);
@@ -471,7 +471,7 @@ register({
   id: 'tend.field_surgery', kind: 'verb', claims: 'all',
   actions: [
     {
-      id: 'injury', label: 'Field Surgery: treat an injury', scope: ['story', 'world'], target: 'none', ap: 'data',
+      id: 'injury', label: 'Field Surgery: treat an injury', scope: ['story', 'world', 'run'], target: 'none', ap: 'data',
       text: 'Out of a fight, with an Attuner in hand and a field kit: treat one arm or leg injury. Name the ally in what you say, or you treat yourself.',
       available: (h) => surgeryWhy(h),
       run: (h, args) => {
@@ -483,7 +483,7 @@ register({
       },
     },
     {
-      id: 'conditions', label: 'Field Surgery: clear Body conditions', scope: ['story', 'world'], target: 'none', ap: 'data',
+      id: 'conditions', label: 'Field Surgery: clear Body conditions', scope: ['story', 'world', 'run'], target: 'none', ap: 'data',
       text: 'Out of a fight, with an Attuner in hand and a field kit: clear every Body condition on one person. Name the ally in what you say, or you treat yourself.',
       available: (h) => surgeryWhy(h),
       run: (h, args) => {
