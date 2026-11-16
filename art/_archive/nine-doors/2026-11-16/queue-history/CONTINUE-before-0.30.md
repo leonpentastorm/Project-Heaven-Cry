@@ -1,0 +1,208 @@
+# Continue the Nine Doors artwork
+
+175/375 candidates delivered; 200 remain. Do not count the three nothing-to-paint rows. Read the original brief and the current style guide. The CUP over Wick in Mind Without Fog belongs ONLY to that trait, never to Wick anatomy. Wick is the ceramic pixel-screen automaton with capelet, lantern-heart and asymmetry; do not turn him into a literal flame head.
+
+See BLOCKERS.md for the exact image-generation quota response and the archived Last Turn repaint.
+
+Continue in the priority order below, one image per prompt. Source scripts and prompts are in this collection; current records must be preserved. The proposed paths/catalog IDs are exact. Every image remains review-candidate until Leon approves it. No new action-row UI is authorised by this art task.
+
+- P4 · #323 · Last Turn · `art/icons/conditions/last-turn.png` · white-ink sign · in game now · placeholder · no slot yet
+- P4 · #324 · Augment Offline · `art/icons/conditions/augment-offline.png` · white-ink sign · in game now · placeholder · no slot yet
+- P5 · #9 · Brace · `art/icons/moves/brace.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #10 · Draw Fire · `art/icons/moves/draw-fire.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #11 · Unbroken · `art/icons/moves/unbroken.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #12 · Shrug It Off (move) · `art/icons/moves/shrug-it-off-move.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #13 · Reactive Plate · `art/icons/moves/reactive-plate.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #14 · Anchor · `art/icons/moves/anchor.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #32 · Lunge · `art/icons/moves/lunge.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #33 · Shove · `art/icons/moves/shove.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #34 · Riposte · `art/icons/moves/riposte.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #35 · Lingering Dread · `art/icons/moves/lingering-dread.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #36 · Finisher · `art/icons/moves/finisher.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #37 · Unstoppable · `art/icons/moves/unstoppable.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #38 · Coup · `art/icons/techniques/coup.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #39 · Cleave · `art/icons/techniques/cleave.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #40 · Break · `art/icons/techniques/break.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #41 · Throw Down · `art/icons/techniques/throw-down.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #42 · Run Through · `art/icons/techniques/run-through.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #62 · Fire Discipline · `art/icons/moves/fire-discipline.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #63 · Speed Loader · `art/icons/moves/speed-loader.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #64 · Special Ammo · `art/icons/moves/special-ammo.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #65 · Duck and Roll · `art/icons/moves/duck-and-roll.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #66 · Killzone · `art/icons/moves/killzone.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #67 · Run and Gun · `art/icons/moves/run-and-gun.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #68 · Suppress · `art/icons/techniques/suppress.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #69 · Rake · `art/icons/techniques/rake.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #70 · Warning Shot · `art/icons/techniques/warning-shot.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #71 · Flush · `art/icons/techniques/flush.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #72 · Mag Dump · `art/icons/techniques/mag-dump.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #73 · Crossfire · `art/icons/techniques/crossfire.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #82 · Hide · `art/icons/moves/hide.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #84 · Ghost Kill · `art/icons/moves/ghost-kill.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #110 · Vanish · `art/icons/moves/vanish.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #111 · Toxin · `art/icons/moves/toxin.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #112 · Sabotage · `art/icons/moves/sabotage.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #113 · Execution · `art/icons/moves/execution.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #114 · Called Shot · `art/icons/moves/called-shot.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #127 · Barrage · `art/icons/moves/barrage.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #128 · Core Change · `art/icons/moves/core-change.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #129 · Overcharge · `art/icons/moves/overcharge.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #130 · Bleed the Flux · `art/icons/moves/bleed-the-flux.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #131 · Payload · `art/icons/moves/payload.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #132 · Stored Spell · `art/icons/moves/stored-spell.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #138 · Eye and Wall (fork) · `art/icons/moves/eye-and-wall.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #139 · Beast and Blade (fork) · `art/icons/moves/beast-and-blade.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #147 · Armoured · `art/icons/figments/trait-armoured.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #148 · Swift · `art/icons/figments/trait-swift.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #149 · Loud · `art/icons/figments/trait-loud.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #150 · Volatile · `art/icons/figments/trait-volatile.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #151 · Tethered · `art/icons/figments/trait-tethered.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #152 · Mirror · `art/icons/figments/trait-mirror.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #153 · Barbed · `art/icons/figments/trait-barbed.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #154 · Lasting · `art/icons/figments/trait-lasting.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #155 · Keen · `art/icons/figments/trait-keen.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #156 · Hollow · `art/icons/figments/trait-hollow.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #158 · Double · `art/icons/moves/double.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #159 · Field Fix · `art/icons/moves/field-fix.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #160 · Salvage · `art/icons/moves/salvage.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #161 · Overclock · `art/icons/moves/overclock.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #162 · Sleight · `art/icons/moves/sleight.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #163 · Scrap Turret · `art/icons/moves/scrap-turret.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #190 · Triage · `art/icons/moves/triage.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #191 · The Ledger · `art/icons/moves/the-ledger.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #192 · Inspire · `art/icons/moves/inspire.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #193 · Take the Weight · `art/icons/moves/take-the-weight.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #194 · Brimming · `art/icons/moves/brimming.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #195 · Rally (Mender) · `art/icons/moves/rally.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #212 · Shape · `art/icons/moves/shape.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #213 · Iron Heart · `art/icons/moves/iron-heart.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #214 · Storm Front · `art/icons/moves/storm-front.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #215 · Occult Library · `art/icons/moves/occult-library.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #216 · Heart Surge · `art/icons/moves/heart-surge.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #217 · Eye of the Storm · `art/icons/moves/eye-of-the-storm.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #229 · Ward · `art/icons/prayers/whisper-ward.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #230 · Smite · `art/icons/moves/smite.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #231 · Under the Eye · `art/icons/moves/under-the-eye.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #232 · Blessed Arms · `art/icons/moves/blessed-arms.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #233 · Sanctuary · `art/icons/prayers/hymn-sanctuary.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #234 · Verdict · `art/icons/moves/verdict.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #325 · Lunge (technique) · `art/icons/techniques/lunge.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #326 · Charge · `art/icons/techniques/charge.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #327 · Feint · `art/icons/techniques/feint.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #328 · Draw Cut · `art/icons/techniques/draw-cut.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #329 · Ambush · `art/icons/techniques/ambush.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #330 · Cut · `art/icons/techniques/cut.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #331 · Sweep · `art/icons/techniques/sweep.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #332 · Bash · `art/icons/techniques/bash.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #333 · Sunder · `art/icons/techniques/sunder.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #334 · Flurry · `art/icons/techniques/flurry.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #335 · Hamstring · `art/icons/techniques/hamstring.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #336 · Bind · `art/icons/techniques/bind.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #337 · Half-Sword · `art/icons/techniques/half-sword.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #338 · Throw · `art/icons/techniques/throw.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #339 · Pull Out · `art/icons/techniques/pull-out.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #340 · Sidestep · `art/icons/techniques/sidestep.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #341 · Guard (technique) · `art/icons/techniques/guard-tech.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #342 · Shove (technique) · `art/icons/techniques/shove-tech.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #343 · Trip · `art/icons/techniques/trip.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #344 · Drag · `art/icons/techniques/drag.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #345 · Parry · `art/icons/techniques/parry.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #346 · Riposte (technique) · `art/icons/techniques/riposte-tech.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #347 · Keep Back · `art/icons/techniques/keep-back.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #348 · Shot · `art/icons/techniques/shot.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #349 · Snap Shot · `art/icons/techniques/snap-shot.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #350 · Burst · `art/icons/techniques/burst.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #351 · Aimed Shot · `art/icons/techniques/aimed-shot.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #352 · Called Shot (technique) · `art/icons/techniques/called-shot-tech.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #353 · Walking Fire · `art/icons/techniques/walking-fire.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #354 · Punch Through · `art/icons/techniques/punch-through.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #355 · Lob · `art/icons/techniques/lob.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #356 · Heavy Bolt · `art/icons/techniques/heavy-bolt.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #357 · Bead · `art/icons/techniques/bead.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #358 · Spot · `art/icons/techniques/spot.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #359 · Brace (technique) · `art/icons/techniques/brace-tech.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #360 · Load Special · `art/icons/techniques/load-special.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #361 · Shift · `art/icons/techniques/shift.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #362 · Vent · `art/icons/techniques/vent.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #363 · Head Down · `art/icons/techniques/head-down.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #364 · Dead Centre · `art/icons/techniques/dead-centre.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #365 · Pin Down · `art/icons/techniques/pin-down.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #366 · Rout · `art/icons/techniques/rout.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #367 · Stopping Shot · `art/icons/techniques/stopping-shot.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #368 · Storm · `art/icons/techniques/storm.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #369 · Last Round · `art/icons/techniques/last-round.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #370 · Overwatch (technique) · `art/icons/techniques/overwatch-tech.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #371 · Deny · `art/icons/techniques/deny.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #372 · Cover Me · `art/icons/techniques/cover-me.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #373 · Dead to Rights · `art/icons/techniques/dead-to-rights.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #374 · Shield Bash · `art/icons/techniques/shield-bash.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #375 · Raise Shield · `art/icons/techniques/raise-shield.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #376 · Grapple · `art/icons/techniques/grapple.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #377 · Shield Wall · `art/icons/techniques/shield-wall.png` · Wick icon · in game now · placeholder · no slot yet
+- P5 · #378 · Interpose · `art/icons/techniques/interpose.png` · Wick icon · in game now · placeholder · no slot yet
+- P6 · #15 · Guard plate (door emblem) · `art/emblems/doors/guard.png` · door emblem · designed, not built
+- P6 · #16 · The Bulwark (class portrait) · `art/portraits/classes/defender.png` · class portrait · designed, not built
+- P6 · #43 · Momentum counter (door emblem) · `art/emblems/doors/momentum.png` · door emblem · designed, not built
+- P6 · #44 · The Breaker (class portrait) · `art/portraits/classes/fighter.png` · class portrait · designed, not built
+- P6 · #74 · Pressure pips (door emblem) · `art/emblems/doors/pressure.png` · door emblem · designed, not built
+- P6 · #75 · The Skirmisher (class portrait) · `art/portraits/classes/marksman.png` · class portrait · designed, not built
+- P6 · #115 · Shadow wisp (door emblem) · `art/emblems/doors/shadow.png` · door emblem · designed, not built
+- P6 · #116 · The Operative (class portrait) · `art/portraits/classes/infiltrator.png` · class portrait · designed, not built
+- P6 · #133 · Sigil chip (door emblem) · `art/emblems/doors/sigil.png` · door emblem · designed, not built
+- P6 · #134 · The Sigilist (class portrait) · `art/portraits/classes/mage.png` · class portrait · designed, not built
+- P6 · #165 · Figment (door emblem) · `art/emblems/doors/figment.png` · door emblem · designed, not built
+- P6 · #166 · The Rigger (class portrait) · `art/portraits/classes/trickster.png` · class portrait · designed, not built
+- P6 · #196 · Bond thread (door emblem) · `art/emblems/doors/bond.png` · door emblem · designed, not built
+- P6 · #197 · The Mender (class portrait) · `art/portraits/classes/bard.png` · class portrait · designed, not built
+- P6 · #218 · Outburst heart (door emblem) · `art/emblems/doors/outburst.png` · door emblem · designed, not built
+- P6 · #219 · The Channeler (class portrait) · `art/portraits/classes/channeler.png` · class portrait · designed, not built
+- P6 · #246 · Prayer mark (door emblem) · `art/emblems/doors/prayer.png` · door emblem · designed, not built
+- P6 · #247 · The Chaplain (class portrait) · `art/portraits/classes/guardian.png` · class portrait · designed, not built
+- P7 · #164 · Scrap Turret (portrait) · `art/portraits/figments/figment-scrap-turret.png` · Figment portrait · in game now (on its own stand-in)
+- P7 · #252 · Hand wraps · `art/icons/gear/weapon-hand_wraps.png` · painted gear icon · in game now (on its own stand-in)
+- P7 · #253 · Striking gloves · `art/icons/gear/weapon-striking_gloves.png` · painted gear icon · in game now (on its own stand-in)
+- P7 · #254 · Iron mitts · `art/icons/gear/weapon-iron_mitts.png` · painted gear icon · in game now (on its own stand-in)
+- P7 · #255 · Kemizuchi strikers · `art/icons/gear/weapon-kemizuchi_strikers.png` · painted gear icon · in game now (on its own stand-in)
+- P8 · #17 · Wall · `art/icons/moves/wall.png` · Wick icon · designed, not built
+- P8 · #18 · Hold the Gap · `art/icons/moves/hold-the-gap.png` · Wick icon · designed, not built
+- P8 · #19 · The Shield Follows · `art/icons/moves/the-shield-follows.png` · Wick icon · designed, not built
+- P8 · #20 · Weather the Volley · `art/icons/moves/weather-the-volley.png` · Wick icon · designed, not built
+- P8 · #21 · Bastion (path mark) · `art/icons/moves/bastion.png` · Wick icon · designed, not built
+- P8 · #22 · Bulwark's Edge (path mark) · `art/icons/moves/bulwarks-edge.png` · Wick icon · designed, not built
+- P8 · #45 · Bowl Over · `art/icons/moves/bowl-over.png` · Wick icon · designed, not built
+- P8 · #46 · Execute · `art/icons/moves/execute.png` · Wick icon · designed, not built
+- P8 · #47 · Into the Wall · `art/icons/moves/into-the-wall.png` · Wick icon · designed, not built
+- P8 · #48 · Hurl · `art/icons/moves/hurl.png` · Wick icon · designed, not built
+- P8 · #49 · Demolisher (path mark) · `art/icons/moves/demolisher.png` · Wick icon · designed, not built
+- P8 · #50 · Duelist (path mark) · `art/icons/moves/duelist.png` · Wick icon · designed, not built
+- P8 · #76 · Flush Out · `art/icons/moves/flush-out.png` · Wick icon · designed, not built
+- P8 · #77 · Open · `art/icons/moves/open.png` · Wick icon · designed, not built
+- P8 · #78 · Suppressor (path mark) · `art/icons/moves/suppressor.png` · Wick icon · designed, not built
+- P8 · #79 · Runner (path mark) · `art/icons/moves/runner.png` · Wick icon · designed, not built
+- P8 · #117 · Parting Cut · `art/icons/moves/parting-cut.png` · Wick icon · designed, not built
+- P8 · #118 · Case · `art/icons/moves/case.png` · Wick icon · designed, not built
+- P8 · #119 · Shade Step · `art/icons/moves/shade-step.png` · Wick icon · designed, not built
+- P8 · #120 · Ghost (Way) · `art/icons/moves/way-ghost.png` · Wick icon · designed, not built
+- P8 · #121 · Knife (Way) · `art/icons/moves/way-knife.png` · Wick icon · designed, not built
+- P8 · #122 · Hand (Way) · `art/icons/moves/way-hand.png` · Wick icon · designed, not built
+- P8 · #198 · Draw Taut · `art/icons/tending/draw-taut.png` · Wick icon · designed, not built
+- P8 · #199 · Take It On · `art/icons/tending/take-it-on.png` · Wick icon · designed, not built
+- P8 · #200 · Pass It On · `art/icons/tending/pass-it-on.png` · Wick icon · designed, not built
+- P8 · #201 · Forewarn · `art/icons/tending/forewarn.png` · Wick icon · designed, not built
+- P8 · #202 · Knot · `art/icons/tending/knot.png` · Wick icon · designed, not built
+- P8 · #203 · Steal the Mending · `art/icons/tending/steal-the-mending.png` · Wick icon · designed, not built
+- P8 · #204 · Pass the Thread · `art/icons/tending/pass-the-thread.png` · Wick icon · designed, not built
+- P8 · #205 · Weaver's Hands · `art/icons/tending/weavers-hands.png` · Wick icon · designed, not built
+- P8 · #206 · Spite (thread kind) · `art/icons/tending/kind-spite.png` · Wick icon · designed, not built
+- P8 · #207 · Leash (thread kind) · `art/icons/tending/kind-leash.png` · Wick icon · designed, not built
+- P8 · #248 · Hallow · `art/icons/moves/hallow.png` · Wick icon · designed, not built
+- P8 · #249 · Confessor (Office) · `art/icons/moves/confessor.png` · Wick icon · designed, not built
+- P8 · #250 · Crusader (Office) · `art/icons/moves/crusader.png` · Wick icon · designed, not built
+- P8 · #264 · Closing Strike · `art/icons/moves/closing-strike.png` · Wick icon · designed, not built
+- P8 · #265 · Flow · `art/icons/moves/flow.png` · Wick icon · designed, not built
+- P8 · #266 · Slip (unarmed) · `art/icons/moves/slip-unarmed.png` · Wick icon · designed, not built
+- P8 · #270 · Step 1: Your free weapon · `art/icons/survival/camp/step-weapon.png` · white-ink sign · designed, not built
+- P8 · #271 · Step 2: Your free focus · `art/icons/survival/camp/step-focus.png` · white-ink sign · designed, not built
+- P8 · #272 · Step 3: Spend your budget · `art/icons/survival/camp/step-budget.png` · white-ink sign · designed, not built
+- P8 · #273 · Step 4: Your starting boon · `art/icons/survival/camp/step-boon.png` · white-ink sign · designed, not built
+- P8 · #274 · Ready · `art/icons/survival/camp/step-ready.png` · white-ink sign · designed, not built
