@@ -81,7 +81,7 @@ describe('Shield Bash', () => {
     const f = fight({ guard: 2, m: 1 }); weak(f.foe); no20(f); rig({ hit: true, die: 12 });
     const pv = f.pv('shield_bash', { targetId: f.foe.id });
     expect(pv).toMatchObject({ ok: true, ap: phys.TECHNIQUE.shield_bash.ap.value, guard: { now: 2, after: 1 }, momentum: { now: 1, after: 1 } }); expect(pv.saves![0]).toMatchObject({ unit: f.foe.id, skills: ['body'] });
-    expect(pv.attacks[0].pv.dmg!.mults.some((m) => m.label === 'Shield Bash' && m.v === phys.TECHNIQUE.shield_bash.numbers.mult)).toBe(true);
+    { const mult = phys.TECHNIQUE.shield_bash.numbers.mult; expect(pv.attacks[0].pv.dmg!.mults.some((m) => m.label === 'Shield Bash' && m.v === mult)).toBe(mult !== 1); } // rules 1.60 item 4611: x1 of the shield's main-hand line (no term)
     expect([guard(f), f.momentum(f.pc), f.pc.ap, f.foe.pos]).toEqual([2, 1, 6, f.tile('D5')]); // the card changed nothing
     const hp = f.foe.hp;
     expect(f.tech('shield_bash', { targetId: f.foe.id })).toBeNull();

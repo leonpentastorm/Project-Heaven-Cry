@@ -43,11 +43,17 @@ for (const [k, v] of Object.entries({
   // second Buckler put in the main hand after the camp: survival-run.ts `hands`). Survival starts at level 1 and its
   // stage 1 ends near level 3, so a Bulwark is measured at rank I only (ranks II and III need levels 6 and 12)
   wall_2sh: { build: 'wall', variant: 'allin', level: 1, policy: 'tank', hands: { main: 'buckler' } },
+  // rules 1.60 (Doors 3.0 slice A): the same Living Wall with a one-handed sword and the Buckler (A2's yardstick), and
+  // Pain Threshold 1 against 7 (the beta feed of the plate soak)
+  wall_sword: { build: 'wall', variant: 'allin', level: 1, policy: 'tank', hands: { main: 'sabre' } },
+  wall_pt1: { build: 'wall', variant: 'allin', level: 1, policy: 'tank', skills: { pain_threshold: 1 } },
+  wall_pt7: { build: 'wall', variant: 'allin', level: 1, policy: 'tank', skills: { pain_threshold: 7 } },
 })) { (MEMBER as any)[k] = v; (MEMBER_OLD as any)[k] = v; }
 Object.assign(PARTIES, {
   solo_wall: ['wall'], solo_wall_noguard: ['wall_noguard'], wall_gunner: ['wall', 'gunner'], wall_noguard_gunner: ['wall_noguard', 'gunner'],
   solo_holdfast: ['holdfast'], holdfast_gunner: ['holdfast', 'gunner'], wall_healer: ['wall', 'healer'], gunner_gunner: ['gunner', 'gunner'],
   solo_wall_2sh: ['wall_2sh'], wall_2sh_gunner: ['wall_2sh', 'gunner'],
+  solo_wall_sword: ['wall_sword'], wall_sword_gunner: ['wall_sword', 'gunner'], solo_wall_pt1: ['wall_pt1'], solo_wall_pt7: ['wall_pt7'],
 });
 
 // ---------- the hook bus: what each unit took and dealt, in the real reducer's actions ----------

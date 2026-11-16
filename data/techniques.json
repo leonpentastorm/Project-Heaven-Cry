@@ -4,6 +4,7 @@
   "source": "docs/design/proposals/2026-11-melee-techniques.md and 2026-11-ranged-techniques.md (Physical 2.0, rules 1.12); every number is provisional",
   "rules": {
     "momentum": {
+      "door": "raw_power",
       "max": 3,
       "fighter_max": 5,
       "start": 1,
@@ -25,6 +26,7 @@
       }
     },
     "guard": {
+      "door": "durability",
       "max": 4,
       "per_durability": 1,
       "gain_base": 1,
@@ -2837,7 +2839,7 @@
       "home": [],
       "particular": false,
       "numbers": {
-        "mult": 2.5,
+        "mult": 1.0,
         "momentum_cost": 0,
         "guard_cost": 1,
         "momentum_on_hit": 1,

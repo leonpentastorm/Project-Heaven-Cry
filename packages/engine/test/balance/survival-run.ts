@@ -257,6 +257,9 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
   for (const id of ids) { const h = (pcs[ids.indexOf(id)] as any).hands as Record<string, string> | undefined; if (!h) continue;
     for (const to of ['main', 'off'] as const) { const wid = h[to]; if (!wid) continue; const c = C(id), e = gearEntry(wid); if (!e) continue;
       c.pack = [...packOf(c), e]; const no = equip(c, c.pack.length - 1, to); if (no) res.errors.push('hands ' + to + ' ' + wid + ': ' + no); } }
+  // rules 1.60 (the beta feeds, measured): a member's `skills` ({id: points}) are set on the sheet after the camp, outside
+  // the reducer (a measure, not a replay: Pain Threshold 1 against 7 on the same Living Wall)
+  for (const id of ids) { const s = (pcs[ids.indexOf(id)] as any).skills as Record<string, number> | undefined; if (s) C(id).skills = { ...C(id).skills, ...s }; }
   if (!L.has('start')) for (const id of ids) C(id).relics = (C(id).relics || []).filter((x: string) => !isStartBoon(x)); // the lever off: as if there were none (outside the reducer: a measure, not a replay)
   // survival-spec 13.7's forced cell: SIM_START_FORCE names the starting boon every character carries (a measure: so no
   // row dominates its line), put in place of the one picked, outside the reducer

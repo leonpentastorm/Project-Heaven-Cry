@@ -107,7 +107,7 @@ describe('never', () => {
   it('Shield Bash: 1 AP, the shield\'s line x its mult, no follow and no follow Guard', () => {
     const f = fight({ guard: 2 }); calm(f); rig({ hit: true });
     const ap0 = f.pc.ap, pv = f.pv('shield_bash', { targetId: f.foe.id });
-    expect(pv.ap).toBe(1); expect(pv.attacks).toHaveLength(1); expect(pv.attacks[0].pv.dmg!.mults.some((m: any) => m.v === phys.TECHNIQUE.shield_bash.numbers.mult)).toBe(true);
+    expect(pv.ap).toBe(1); expect(pv.attacks).toHaveLength(1); { const m = phys.TECHNIQUE.shield_bash.numbers.mult; expect(pv.attacks[0].pv.dmg!.mults.some((x: any) => x.v === m)).toBe(m !== 1); } // rules 1.60 item 4611: the shield's line is its main-hand blow, so Shield Bash is x1 of it (no term)
     expect(f.tech('shield_bash', { targetId: f.foe.id })).toBeNull();
     expect(f.pc.ap).toBe(ap0 - 1); expect(follows(f)).toHaveLength(0); expect(guard(f)).toBe(1); // its own cost, nothing back
   });
