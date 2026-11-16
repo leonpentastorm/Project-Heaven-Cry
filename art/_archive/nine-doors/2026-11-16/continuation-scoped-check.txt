@@ -1,1 +1,1 @@
-PASS: 178 records; catalog/master/source hashes, dimensions, alpha, pure-white ink, safe bounds, UI exports, preserved superseded sources. All delivered ink faint-alpha ratios below 0.15. New images inspected at actual UI sizes on #10151F.
+PASS: 180/375 candidates; catalog/master/native hashes, PNG dimensions/alpha/white ink and safe bounds, SVG rules, UI exports and preserved candidate hashes.

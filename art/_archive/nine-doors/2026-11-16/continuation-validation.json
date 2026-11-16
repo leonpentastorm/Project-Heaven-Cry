@@ -1,24 +1,16 @@
 {
-  "delivered": 178,
-  "new_candidate_ids": [
-    323,
-    324,
-    9
+  "delivered": 180,
+  "latest_candidate_ids": [
+    11,
+    12
   ],
   "scoped_delivery_checks_pass": true,
   "all_ink_alpha_audit_pass": true,
+  "changed_44px_repository_checks_pass": true,
   "full_library_exit": 1,
-  "full_library_limitation": "Pre-existing historical production manifest expects seven bulwark UI exports while the prior Nine Doors replacement has eight; bulwark is unchanged by this continuation. See continuation-full-library-check.txt.",
+  "full_library_limitation": "Pre-existing historical production manifest expects seven bulwark exports; the prior Nine Doors replacement uses eight. No bulwark changes in this continuation. See continuation-full-library-check.txt.",
   "asset_build_exit": 0,
-  "asset_build_result": "1948 web assets built successfully; generated app files are not included in this art-only commit.",
-  "approval": "review-candidate only; production_approved false and implementation_ready false",
-  "native_render_dimensions": [
-    1254,
-    1254
-  ],
-  "master_dimensions": [
-    1024,
-    1024
-  ],
+  "asset_build_result": "1948 assets -> apps/web/public/assets",
+  "approval": "review-candidate only; production_approved false; implementation_ready false",
   "upscaled": false
 }

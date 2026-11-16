@@ -1,5 +1,5 @@
 {
-  "method": "Faint alpha 9..119 / solid alpha >=250 must be below 0.15. Native source alpha is unchanged by technical exports.",
+  "method": "Faint alpha 9..119 / solid alpha >=250 must be below 0.15. Native alpha preserved by exports.",
   "passed": true,
   "records": [
     {
@@ -46,6 +46,16 @@
       "number": 9,
       "name": "Brace",
       "faint_alpha_to_solid_area_ratio": 0.05634
+    },
+    {
+      "number": 11,
+      "name": "Unbroken",
+      "faint_alpha_to_solid_area_ratio": 0.05972
+    },
+    {
+      "number": 12,
+      "name": "Shrug It Off (move)",
+      "faint_alpha_to_solid_area_ratio": 0.07481
     },
     {
       "number": 23,
@@ -864,5 +874,5 @@
     }
   ],
   "excluded": [],
-  "historical_rejection": "The first glowing #323 remains archived; the active replacement is a distinct native render."
+  "historical_rejection": "The original glowing #323 remains archived; its active replacement is a distinct native render."
 }

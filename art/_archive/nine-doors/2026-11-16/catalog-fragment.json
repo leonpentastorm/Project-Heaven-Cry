@@ -1165,6 +1165,76 @@
       },
       "ink": "#FFFFFF"
     },
+    "move-unbroken": {
+      "label": "Wick \u2014 Unbroken",
+      "path": "art/icons/moves/unbroken.png",
+      "sha256": "4d4edf905e6ef1b4fcc8d9572c268b1e8ac7d1b80a2aee615e97490e3a6c1b3c",
+      "format": "png",
+      "mode": "wick",
+      "tint": "endurance",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #11",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-unbroken/unbroken.svg",
+      "previous_sha256": "5572c852612fbc17fe12d27c11aec5d2c22cc940fe0bffe1ff4cafcc93282305",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/011-unbroken.png",
+      "upscaled": false,
+      "brief_number": 11,
+      "exports": {
+        "128": "art/icons/moves/exports/128/unbroken.png",
+        "64": "art/icons/moves/exports/64/unbroken.png",
+        "48": "art/icons/moves/exports/48/unbroken.png",
+        "44": "art/icons/moves/exports/44/unbroken.png",
+        "32": "art/icons/moves/exports/32/unbroken.png",
+        "24": "art/icons/moves/exports/24/unbroken.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-shrug-it-off-move": {
+      "label": "Wick \u2014 Shrug It Off (move)",
+      "path": "art/icons/moves/shrug-it-off-move.png",
+      "sha256": "f65c547c56b6b50a8c73acbc467b99f6c51259b93a18de0684825040646dab15",
+      "format": "png",
+      "mode": "wick",
+      "tint": "endurance",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #12",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-shrug-it-off-move/shrug-it-off-move.svg",
+      "previous_sha256": "3b934535027e33af794b2a46ccc2ba0b05ba578c0d849ea91fc346b10838d1e9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/012-shrug-it-off-move.png",
+      "upscaled": false,
+      "brief_number": 12,
+      "exports": {
+        "128": "art/icons/moves/exports/128/shrug-it-off-move.png",
+        "64": "art/icons/moves/exports/64/shrug-it-off-move.png",
+        "48": "art/icons/moves/exports/48/shrug-it-off-move.png",
+        "44": "art/icons/moves/exports/44/shrug-it-off-move.png",
+        "32": "art/icons/moves/exports/32/shrug-it-off-move.png",
+        "24": "art/icons/moves/exports/24/shrug-it-off-move.png"
+      },
+      "ink": "#FFFFFF"
+    },
     "move-follow-through": {
       "label": "Wick \u2014 Follow Through",
       "path": "art/icons/moves/follow-through.png",
