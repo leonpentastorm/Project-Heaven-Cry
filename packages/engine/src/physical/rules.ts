@@ -32,7 +32,7 @@ onHook('on_hit', (ctx: any, cb) => {
   // who hit whom this round and with what (Crossfire; drill credit on the kill)
   (tgt.hitRound ||= {})[att.id] = cb.round;
   if (ctx.dmg > 0) hitWith(tgt, att.id, ctx.mode === 'melee' && WEAPON[att.weapon] ? strikeWeapon(att, 'melee').id : att.weapon);
-  if (ctx.melee) { if (pressureOf(att)) lowerPressureOf(cb, att, P().melee_hit_sheds, 'fighting it out'); return; }
+  if (ctx.melee) { if (pressureOf(att) && !strikeNoPressure(att)) lowerPressureOf(cb, att, P().melee_hit_sheds, 'fighting it out'); return; } // a follow sheds none (rules 1.58, N4)
   // the first ranged hit on this target this turn (a technique that gives its own Pressure for the hit still uses it up)
   const stamp = turnStamp(cb), pt = att.pressedThis?.t === stamp ? att.pressedThis : (att.pressedThis = { t: stamp, ids: [] as string[] });
   if (pt.ids.includes(tgt.id)) return; pt.ids.push(tgt.id);

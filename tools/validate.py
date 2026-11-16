@@ -113,6 +113,8 @@ _SAME = {  # (skill, per_point.numbers key) -> (the engine's data value, where i
     ("durability", "guard_base"): (_tech_r.get("gain_base"), "techniques.json rules.guard.gain_base"),
     ("durability", "guard_per_point"): (_tech_r.get("gain_per_point"), "techniques.json rules.guard.gain_per_point"),
     ("durability", "brace"): (_tech_r.get("brace_gain"), "techniques.json rules.guard.brace_gain"),
+    ("durability", "shield"): (_tech_r.get("shield_gain"), "techniques.json rules.guard.shield_gain"),
+    ("durability", "two_shields"): (_tech_r.get("two_shield_mult"), "techniques.json rules.guard.two_shield_mult"),
     ("visualization", "range"): (_fig_r.get("per_point"), "figments.json visualizer.range.per_point"),
     ("faith", "hymn_cut"): (_hymn_r.get("per_faith"), "patrons.json prayer.hymn.cooldown_rule.per_faith"),
     ("faith", "hymn_floor"): (_hymn_r.get("floor"), "patrons.json prayer.hymn.cooldown_rule.floor"),
@@ -1607,9 +1609,10 @@ tq = data.get("techniques")
 if isinstance(tq, dict):
     MELEE_PROPS = {"edge", "point", "blunt", "hook", "reach", "heavy", "light", "bare", "thrown", "open_hand"}  # open_hand: the monk's glove family (rules 1.56)
     RANGED_PROPS = {"quick", "auto", "precise", "spread", "heavy", "blast", "arc", "silent", "loud", "drawn", "thrown"}
-    GROUPS = {"melee": {"opener", "strike", "link", "finisher", "answer"}, "ranged": {"fire", "press", "set", "take", "watch"}}
+    GROUPS = {"melee": {"opener", "strike", "link", "finisher", "answer", "follow"}, "ranged": {"fire", "press", "set", "take", "watch"}}
     AIMS = {"enemy", "tile", "ally", "self", "none", "enemy+tile"}
-    SHIELD_PROPS = {"shield"}  # carried by an off-hand item (items.json phys.props), never by a weapon
+    SHIELD_PROPS = {"shield"}  # rules 1.57 (A1): carried by a shield's weapon row (category shield, 1H melee), and only by one
+    FOLLOW_PROPS = {"follows"}  # rules 1.58 (5e item 4522): a follows item, only a shield or a melee row
     trules = tq.get("rules") or {}
     techs = {t.get("id"): t for t in items("techniques") if isinstance(t, dict)}
     if len(techs) != len(items("techniques")):
@@ -1679,7 +1682,7 @@ if isinstance(tq, dict):
                 errors.append(f"techniques: starting.{key} names '{tid}', not a {sysm} technique that can be picked")
     if st.get("default_melee") and not any(techs.get(tid, {}).get("group") == "opener" for tid in st.get("default_melee")):
         errors.append("techniques: starting.default_melee needs an Opener")
-    for pr in MELEE_PROPS | RANGED_PROPS | SHIELD_PROPS:
+    for pr in MELEE_PROPS | RANGED_PROPS | SHIELD_PROPS | FOLLOW_PROPS:
         if pr not in (trules.get("props") or {}):
             errors.append(f"techniques: rules.props has no text for '{pr}'")
     wtiers = {e.get("id") for e in items("enemies") if isinstance(e, dict)}
@@ -1698,24 +1701,32 @@ if isinstance(tq, dict):
     if not isinstance(gd, dict):
         errors.append("techniques: rules.guard is missing (rules 1.13: Durability's Guard)")
     else:
-        for k in ("max", "per_durability", "gain_base", "gain_per_point", "shield_gain", "soak", "pressure_per_point", "interpose_durability", "interpose_cost"):
+        for k in ("max", "per_durability", "gain_base", "gain_per_point", "shield_gain", "two_shield_mult", "soak", "pressure_per_point", "interpose_durability", "interpose_cost"):
             if not isinstance(gd.get(k), (int, float)) or isinstance(gd.get(k), bool) or gd.get(k) <= 0:
                 errors.append(f"techniques: rules.guard.{k} must be a positive number")
+    # rules 1.59 (T5): a class's resource row may raise that resource's cap by the class's rank (classes.json
+    # resource.max_by_rank, the Bulwark's Guard): ranks 1 to 3, each a whole number, never below the shared cap
+    for cl_ in ((_ld("classes").get("base") or []) if isinstance(_ld("classes").get("base"), list) else []):
+        mbr = ((cl_.get("resource") or {}).get("max_by_rank")) if isinstance(cl_, dict) else None
+        if mbr is None: continue
+        rid = (cl_.get("resource") or {}).get("id")
+        if rid not in (cl_.get("resources") or []): errors.append(f"classes:{cl_.get('id')}: resource.max_by_rank is for a resource the class brings ({rid} is not in its resources)")
+        if sorted(mbr.keys()) != ["1", "2", "3"] or any(not isinstance(v, int) or isinstance(v, bool) for v in mbr.values()):
+            errors.append(f"classes:{cl_.get('id')}: resource.max_by_rank holds ranks 1, 2 and 3, each a whole number")
+        elif rid == "guard" and gd and (min(mbr.values()) < gd.get("max", 0) or [mbr["1"], mbr["2"], mbr["3"]] != sorted(mbr.values())):
+            errors.append(f"classes:{cl_.get('id')}: resource.max_by_rank never falls below rules.guard.max and never shrinks with rank")
     hg = ((trules.get("gear_gates") or {}).get("heavy_armour") or {})
     if hg.get("skill") not in skill_ids:
         errors.append(f"techniques: rules.gear_gates.heavy_armour.skill '{hg.get('skill')}' is not a skill")
     for cls_, need in (hg.get("classes") or {}).items():
         if cls_ not in ("1", "2", "3", "4", "5") or not isinstance(need, int) or not 1 <= need <= 10:
             errors.append(f"techniques: rules.gear_gates.heavy_armour.classes: '{cls_}': {need} is not an armour class with a skill level")
-    shield_items = [i_ for i_ in items("items") if isinstance(i_, dict) and "shield" in ((i_.get("phys") or {}).get("props") or [])]
+    # rules 1.57 (A1): shields are weapons.json rows with the Shield property; an items.json row has no phys block, no
+    # either_hand (gone with the rows) and is never category shield
+    shield_items = [w_ for w_ in items("weapons") if isinstance(w_, dict) and "shield" in ((w_.get("phys") or {}).get("props") or [])]
     for i_ in items("items"):
-        ph = i_.get("phys") if isinstance(i_, dict) else None
-        if ph is None:
-            continue
-        if not isinstance(ph, dict) or set(ph.get("props") or []) - SHIELD_PROPS or not ph.get("props") or set(ph) - {"props"}:
-            errors.append(f"items:{i_.get('id')}: an item's phys block is {{props: [shield]}} and nothing else")
-        elif i_.get("slot") != "off_hand":
-            errors.append(f"items:{i_.get('id')}: the Shield property is for an off-hand item")
+        if isinstance(i_, dict) and ("phys" in i_ or "either_hand" in i_ or i_.get("category") == "shield"):
+            errors.append(f"items:{i_.get('id')}: a shield is a weapons.json row (rules 1.57): no phys, either_hand or category shield on an item")
     for tid, t in techs.items():
         nd, inn = t.get("needs") or {}, t.get("innate")
         if nd.get("shield") and ("shield" not in (t.get("comes_with") or []) or t.get("free")):
@@ -1733,6 +1744,13 @@ if isinstance(tq, dict):
         gc = (t.get("numbers") or {}).get("guard_cost")
         if gc is not None and (not isinstance(gc, int) or gc < 1):
             errors.append(f"techniques:{tid}: numbers.guard_cost must be a whole number of Guard")
+    # rules 1.58 (5e, item 4522): the follow group holds the engine's follow strike only: never free, learned, lent or given
+    for tid, t in techs.items():
+        if t.get("group") == "follow" and (t.get("free") or t.get("comes_with") or t.get("innate") or t.get("particular") or t.get("system") != "melee"):
+            errors.append(f"techniques:{tid}: a follow is the engine's (rules 1.58): a melee row, never free, given or particular")
+    for tid in ((st.get("default_melee") or []) + [x for e in items("enemies") if isinstance(e, dict) for x in ((e.get("techniques") or {}).get("melee") or [])]):
+        if techs.get(tid, {}).get("group") == "follow":
+            errors.append(f"techniques: '{tid}' is a follow: the engine makes it, nobody learns or lists it (rules 1.58)")
     # gear gates (proposal 13.3): what a weapon or an item asks is a skill and a level
     for kind_ in ("weapons", "items"):
         for g_ in items(kind_):
@@ -1755,8 +1773,12 @@ if isinstance(tq, dict):
             errors.append(f"{where}: phys.system must be melee or ranged")
             continue
         for pr in ph.get("props") or []:
-            if pr not in (MELEE_PROPS if sysm == "melee" else RANGED_PROPS):
+            if pr not in ((MELEE_PROPS | SHIELD_PROPS | FOLLOW_PROPS) if sysm == "melee" else RANGED_PROPS):
                 errors.append(f"{where}: phys.props names '{pr}', not a {sysm} property")
+        # rules 1.57 (A1, Leon, 16 Nov 2026): a shield is a weapon row: the Shield property, category shield, one-handed,
+        # melee; the one prop test (character.ts isShieldId) reads the property
+        if ("shield" in (ph.get("props") or [])) != (w.get("category") == "shield") or ("shield" in (ph.get("props") or []) and (w.get("hands") != "1H" or sysm != "melee")):
+            errors.append(f"{where}: the Shield property and category shield go together, on a one-handed melee row")
         if ph.get("hits_with") not in skill_ids:
             errors.append(f"{where}: phys.hits_with '{ph.get('hits_with')}' is not a skill")
         for sc in (ph.get("scales_with") or []) + (ph.get("also_scales") or []):
@@ -2082,6 +2104,14 @@ def check_pred(k, v, w):
     elif a == "limit" and not (isinstance(v, dict) and (v.get("per") in LIMIT_SCOPES or isinstance(v.get("cooldown"), (int, float))) and set(v) <= {"per", "n", "key", "each", "cooldown"}): errors.append(f"{w}: `if.{k}` is a limit ({{per, n?, key?, each?}} or {{cooldown}})")
     elif a in ("zone", "tie", "hold", "skill", "limit"): pass
     elif p.get("values") and not all(x in p["values"] for x in vals): errors.append(f"{w}: `if.{k}` takes only {p['values']}")
+# rules 1.57 (A2): the swell's condition slot (soul_modules.json cycle.swell.unless) is an `if` block of the item ops'
+# predicates, and its line is words
+_swell = ((data.get("soul_modules") or {}).get("cycle") or {}).get("swell")
+if _swell is not None:
+    if not isinstance(_swell, dict) or not isinstance(_swell.get("unless"), dict) or not _swell["unless"] or not isinstance(_swell.get("unless_text"), str) or not _swell["unless_text"].strip():
+        errors.append("soul_modules: cycle.swell is {unless: {predicates}, unless_text: words}")
+    else:
+        for k, v in _swell["unless"].items(): check_pred(k, v, "soul_modules:cycle.swell.unless")
 # Classes 3.0 P3: a number block {base, per: [{of, value}], min?, max?}; in an item op its `of` names a source
 # (effects/triggers.ts sourceOf): res:<id>, event:<field>, self:/actor:/target:<field>.
 SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill"]
@@ -2635,7 +2665,7 @@ if _sv is not None:
                 if _x not in _wid: errors.append(f"{_aw}.skip: {_x!r} is not a weapon")
         _covered = {(a.get("family"), a.get("category")) for a in _ar.get("list") or []}
         for _f in sorted(_fams, key=str):
-            if _f not in _covered and _f[0] not in (_ar.get("left_out") or {}): errors.append(f"{_w}.archetypes: the family {_f[0]!r} ({_f[1]!r}) is neither an archetype nor left_out with its reason")
+            if _f not in _covered and _f[0] not in (_ar.get("left_out") or {}) and _f[1] not in (_ar.get("left_out") or {}): errors.append(f"{_w}.archetypes: the family {_f[0]!r} ({_f[1]!r}) is neither an archetype nor left_out with its reason")
         _rec = _lo.get("recommended") or {}
         _ralpha = {s.get("id") for s in (data.get("skills") or {}).get("items", []) if s.get("slot") == "alpha"}
         for _rw in _rec.get("weapon") or []:

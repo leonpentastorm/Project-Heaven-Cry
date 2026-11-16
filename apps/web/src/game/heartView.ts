@@ -6,7 +6,7 @@
 // previewPump, outburstArea through the plan, designCost, designRange, heartReach, formSize, the cycle's own actions run
 // on a throwaway copy). The held heart and Strain are read through resources.ts heldOutburstOf(), the panel's adapter.
 import { inverseShield, outburstHeal, SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, SOUL_RULES, damageModeMult, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
-  previewOutburst, previewOutburstPlan, previewPump, pumpsMp, togglesFor, dryRun, fightWith, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
+  previewOutburst, previewOutburstPlan, previewPump, pumpsMp, togglesFor, swellBlockedWhy, dryRun, fightWith, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
   type OutburstPlan, type OutburstAffected } from '@engine';
 import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, markIconSrc, iconStyle, type FeelingBtn } from './feelingsView';
 import { hasPaintedArt, heartMarkKey } from './heartIcons';
@@ -134,7 +134,7 @@ export const noEmanatorText = (): string => 'No Emanator: +' + (SOUL_RULES as an
 const OVERDRAW = 'skill:will_power.3#overdraw';
 export function designCards(cb: any, u: any): DesignCard[] {
   const mg = u?.mg; if (!mg) return [];
-  const mana = cb?.mana ?? MANA_START;
+  const mana = cb?.mana ?? MANA_START, blocked = swellNote(cb, u);
   return (mg.designs || []).map((d: any) => {
     const info = designInfo(mg, d, mana), b = previewOutburst(cb, u, d.id, undefined, false), sn = previewOutburstPlan(cb, u, d.id, undefined);
     const snapWhy = sn.ok || /Pick a|direction/.test(sn.why || '') ? '' : sn.why || '';
@@ -149,9 +149,13 @@ export function designCards(cb: any, u: any): DesignCard[] {
         // rules 1.24: what a full heart of it comes to (the Begin and its four Pumps), when Pumps take MP
         + (fullMp > (b.cost || 0) ? ' · full heart ' + fullMp + ' MP' : '')
         // no Emanator in hand: the Begin draws on the air, and the heart pays for it in Strain (soul_modules.json cycle)
-        + (mg.emanator ? '' : ' · ' + noEmanatorText()), fullMp };
+        + (mg.emanator ? '' : ' · ' + noEmanatorText())
+        // rules 1.57 (A2): a shield in hand stops the swell; the engine's words (soul_modules.json cycle.swell.unless_text)
+        + (blocked ? ' · ' + blocked : ''), fullMp };
   });
 }
+/** Rules 1.57 (A2): the engine's line while the held heart will not swell on its own (a shield in hand), or ''. */
+export const swellNote = (cb: any, u: any): string => { try { return (cb && u ? swellBlockedWhy(cb, u) : null) || ''; } catch { return ''; } };
 
 // ---------- the HEART panel (holding) ----------
 export interface HeartBtn { id: string; label: string; cost: string; ok: boolean; why: string; title: string; free?: boolean }
@@ -194,7 +198,8 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
   const over = H.strain - H.limit;
   const SH: any = (SOUL_RULES as any).strain?.shock || {};
   const warn = m.shock ? String(SH.name || 'Mana Shock').toUpperCase() + ': ' + over + ' over the limit. ' + (SH.text || '') : plan.shortWarning ? 'MANA SHORT: ' + over + ' over the limit. You are Stunned and the held Outburst goes off wild.' : plan.burnWarning > 0 ? 'OVER THE LIMIT: the heart burns you for ' + plan.burnWarning + ' true damage at the end of your turn.' : over === 0 ? 'AT THE LIMIT: one more Strain and the heart starts to burn you.' : '';
-  const swell = h.steady ? 'Steadied: no swell next turn.' : stage >= maxStage ? 'At full stage: next turn only your Strain grows (+' + H.swell + ').' : 'Next turn it swells: +1 stage (×' + STAGE_MULT[Math.min(maxStage, stage + 1)] + ') and +' + H.swell + ' Strain.';
+  const noSwell = swellNote(cb, u);
+  const swell = h.steady ? 'Steadied: no swell next turn.' : noSwell ? noSwell + ' Next turn only your Strain grows (+' + H.swell + ').' : stage >= maxStage ? 'At full stage: next turn only your Strain grows (+' + H.swell + ').' : 'Next turn it swells: +1 stage (×' + STAGE_MULT[Math.min(maxStage, stage + 1)] + ') and +' + H.swell + ' Strain.';
   const relWhy = plan.ok || /Pick a|direction/.test(plan.why || '') ? '' : plan.why || '';
   const freeLeft = H.held?.freePumps ?? null;
   return {

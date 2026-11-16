@@ -38,7 +38,7 @@ import { storyForecastVals } from '../game/manaForecast';
 import { askConfirm, askText } from '../game/dialog';
 import { shellVals, narratorVals } from './shell';
 import { designInfo, reachWords, designCards, designVerdict, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, markChipStyle, markChipText, toneChips, toneInk, formIconUri, isShape, FORM_NAME } from '../game/heartView';
-import { oocOf, SECOND_SCHOOL, TONE } from '@engine';
+import { oocOf, SECOND_SCHOOL, TONE, isShieldId } from '@engine';
 import { faithTabVals, patronLineCard, faithEventCard } from './faithTab';
 import { armsTabVals } from './armsTab';
 import { figmentSectionVals } from './figmentsTab';
@@ -503,7 +503,7 @@ export class MainLogic extends DCLogic {
         [(typeof w.damage === 'number' ? w.damage + ' dmg' : 'damage varies') + (typeof w.range_tiles === 'number' ? ' · ' + w.range_tiles + ' tiles' : '') + (w.magazine ? ' · ' + loadedOf(c) + '/' + w.magazine + ' loaded' : ''), wear(wd, wmax),
           (ws.mods || []).map((m) => ITEM[m]?.name).filter(Boolean).join(', '), armsLine(c.weapon), skillLine(c, { id: c.weapon, rarity: ws.rarity, mods: ws.mods })].filter(Boolean).join(' · ')],
       outer: c.armourClass ? [(KITS[c.kit] && KITS[c.kit].armourClass === c.armourClass ? kitDef.armourName : (ARMOUR[c.armourClass]?.name || 'Body') + ' armour') + ' (Class ' + ROMAN[c.armourClass] + ')', 'Armour ' + (ARMOUR[c.armourClass]?.value || 0)] : null,
-      off: c.offHand ? [WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id, WEAPON[c.offHand.id] ? ['Paired attacks', armsLine(c.offHand.id), skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity })].filter(Boolean).join(' · ') : [skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity }), (ITEM[c.offHand.id]?.text || '').slice(0, 80)].filter(Boolean).join(' · ')] : null } : {};
+      off: c.offHand ? [WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id, WEAPON[c.offHand.id] && !isShieldId(c.offHand.id) ? ['Paired attacks', armsLine(c.offHand.id), skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity })].filter(Boolean).join(' · ') : [skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity }), ((WEAPON[c.offHand.id] || ITEM[c.offHand.id])?.text || '').slice(0, 80)].filter(Boolean).join(' · ')] : null } : {};
     if (c) for (const [slot, id] of Object.entries(c.worn || {})) if (WORN_SLOT[slot]) worn[WORN_SLOT[slot]] = [ITEM[id]?.name || id, (ITEM[id]?.text || '').replace(/^[^:]+: /, '')];
     const pack = c ? sheetPack(c) : []; // the engine's list: the counted things (a stim, an Essence) flagged `counted`, with their sell note
     worn.pack = c ? ['Pack', pack.length + (pack.length === 1 ? ' item' : ' items')] : null;
@@ -558,8 +558,8 @@ export class MainLogic extends DCLogic {
     // The item's picture (gearIcons.ts, the one resolver: the painted icon, large size, when there is one; else the monoline
     // icon); else a glyph.
     const artOf = (id) => gearIconUri(id, GEAR_INK, { large: true });
-    const glyphOf = (id) => { const wd = WEAPON[id], it = ITEM[id] || {}; if (wd) return ({ pistol: '⌐', revolver: '⌐', smg: '╤', rifle: '═', shotgun: '╦', heavy: '▬', bow: ')', light_melee: '†', heavy_melee: '⚒', unarmed: '✊', thrown: '●', mana: '✧' })[wd.category] || '⚔';
-      return it.category === 'shield' ? '⛉' : it.category === 'light' ? '✦' : it.category === 'armour' ? '▣' : it.category === 'mod' ? '⚙' : '▪'; };
+    const glyphOf = (id) => { const wd = WEAPON[id], it = ITEM[id] || {}; if (wd) return ({ pistol: '⌐', revolver: '⌐', smg: '╤', rifle: '═', shotgun: '╦', heavy: '▬', bow: ')', light_melee: '†', heavy_melee: '⚒', unarmed: '✊', thrown: '●', mana: '✧', shield: '⛉' })[wd.category] || '⚔';
+      return it.category === 'light' ? '✦' : it.category === 'armour' ? '▣' : it.category === 'mod' ? '⚙' : '▪'; };
     const tips = {};
     const colIds = c ? collectionOf(c) : []; // Gun Nut's collection (spec 14 item 369): tagged on its guns' tooltips
     const weaponTip = (id, st = {}) => { const wd = WEAPON[id]; if (!wd) return null; const r = st.rarity || 'standard', m = maxDurOf(id, r), d = st.dur ?? m;
@@ -903,7 +903,7 @@ export class MainLogic extends DCLogic {
       } else if (W === 'outburst') {
         // Rules 1.5 (game/heartView.ts): Begin (hold at stage 0) or Snap (Begin and Release at once, aimed). The overlay
         // is the engine's plan: reach ring, the tinted shape, everyone affected with their numbers.
-        wCards = designCards(cbx, u);
+        wCards = withGame(g, () => designCards(cbx, u)); // the game bound (rules 1.57: a shield stops the swell)
         const card = designSel ? wCards.find((x) => x.id === designSel.id) : null, snap = S.wObMode === 'snap';
         if (!designSel) mHint = 'You have no designs ready: make one on the MAGIC tab.';
         else if (u.mg && u.mg.held) mHint = 'You are holding an Outburst: Pump, Release or Let it go.';
@@ -916,14 +916,14 @@ export class MainLogic extends DCLogic {
           mHint = mReady ? designSel.name + (aura ? ' all around you. ' : ' at ' + refOf(S.wAim) + '. ') + (ov.summary.join(' ') || 'Nobody is there.') + (pl.affected || []).filter((x) => x.enemy).map((x) => ' ' + x.name + ' is a person on the map: this starts a fight.').slice(0, 1).join('')
             : !S.wAim && !aura ? 'Snap ' + designSel.name + ' (' + (card ? card.line : '') + '): hover to preview, click a tile to aim.' : designSel.name + ': ' + ((pl && pl.why) || 'not now.'); }
       } else if (W === 'release') {
-        wHp = MN.held ? heartPanel(cbx, u) : null;
+        wHp = MN.held ? withGame(g, () => heartPanel(cbx, u)) : null;
         if (!wHp) mHint = 'Nothing held.';
         else { const aura = wHp.form === 'aura', at = S.wAim || S.hoverTile || null, ov = aimOverlay(cbx, u, 'held', at), pl = aimOverlay(cbx, u, 'held', S.wAim).plan; mHz = ov;
           mReady = !!(pl && pl.ok && (S.wAim || aura)); mLabel = 'Release · ' + (pl && pl.ap ? pl.ap : 1) + ' AP';
           mHint = mReady ? 'Release ' + wHp.name + ' at stage ' + wHp.stage + ' (×' + wHp.mult + ')' + (aura ? ' all around you. ' : ' at ' + refOf(S.wAim) + '. ') + (ov.summary.join(' ') || 'Nobody is there.') + (pl.affected || []).filter((x) => x.enemy).map((x) => ' ' + x.name + ' is a person on the map: this starts a fight.').slice(0, 1).join('')
             : !S.wAim && !aura ? 'Click a tile to release ' + wHp.name + ' (' + wHp.shape + ', stage ' + wHp.stage + ').' : 'Release ' + wHp.name + ': ' + ((pl && pl.why) || 'not now.'); }
       } else if (HEART_W.includes(W)) {
-        wHp = heartPanel(cbx, u); mHz = idleOverlay(cbx, u);
+        wHp = withGame(g, () => heartPanel(cbx, u)); mHz = idleOverlay(cbx, u);
         const B = wHp ? { pump: wHp.pump, steady: wHp.steadyBtn, letgo: wHp.letgo, feed: wHp.feed, heartwatch: wHp.watchBtn }[W] : null;
         mReady = !!(B && B.ok); mLabel = (B ? B.label + ' · ' + B.cost : 'Confirm');
         mHint = !wHp ? 'You hold no Outburst.' : B.ok ? B.title : B.label + ': ' + B.why;

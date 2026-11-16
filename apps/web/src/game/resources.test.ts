@@ -1,7 +1,7 @@
 // The RESOURCES block (game/resources.ts): each class archetype sees its own rows, in words, with the warnings that
 // testers missed in the old 10 px line (RELOAD, RELOAD CORE, OVERLOAD SOON, OVER THE LIMIT…).
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, ADVANCED, CLASS_MOVE_POOL, type Sheet, newCharacter, startCombat, phys, SKILL, SOUL_RULES } from '@engine';
+import { ARCHETYPES, ADVANCED, CLASS_MOVE_POOL, type Sheet, newCharacter, startCombat, phys, SKILL, SOUL_RULES, CLASS } from '@engine';
 import { resourcesOf, urgentRows, heldOutburstOf, resView, classResInfo, guardRule, sigilChip, RES_INK } from './resources';
 import { beforeAll as beforeAllAdv, afterAll as afterAllAdv } from 'vitest';
 import { _setAdvancedLive } from '@engine';
@@ -174,7 +174,8 @@ describe('class resources, named from the data', () => {
   });
   it('a Bulwark (defender) sees Guard; a Mender (bard) has no Supplies (rules 1.33: they left the class)', () => {
     const d = fight((c) => { c.classId = 'defender'; });
-    expect(row(resourcesOf(d.u, d.c, d.g), 'res-guard')).toMatchObject({ label: 'Guard', value: ((CLASS_MOVE_POOL['defender.brace'].effects as any[]).find((e) => e.when === 'combat_start')?.value ?? 0) + ' / ' + phys.PHYS_RULES.guard.max }); // Classes 3.0: a fight starts with the Bulwark's Guard (the pool: rules.guard.max, 4 since rules 1.55 item 74)
+    expect(row(resourcesOf(d.u, d.c, d.g), 'res-guard')).toMatchObject({ label: 'Guard', value: ((CLASS_MOVE_POOL['defender.brace'].effects as any[]).find((e) => e.when === 'combat_start')?.value ?? 0) + ' / ' + (d.u.resMax?.guard ?? 0) }); // Classes 3.0: a fight starts with the Bulwark's Guard; the pool is the Bulwark's own by rank (rules 1.59 item 4541: classes.json resource.max_by_rank)
+    expect(d.u.resMax?.guard).toBe((CLASS as any).defender.resource.max_by_rank['1']); expect(d.u.resMax!.guard).toBeGreaterThan(phys.PHYS_RULES.guard.max);
     const m = fight((c) => { c.classId = 'bard'; });
     const story = resourcesOf(null, m.c, { phase: 'story', story: { magic: {} } });
     expect(row(story, 'res-supplies')).toBeUndefined();

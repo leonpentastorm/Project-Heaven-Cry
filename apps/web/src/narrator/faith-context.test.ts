@@ -82,6 +82,8 @@ describe('the Narrator and faith', () => {
     // 0.08k: the cap moves to 25.9k on purpose.
     // Rules 1.56 prayer 2.0: the doors' lines (Faith's door_line) and the Chaplain's Canticle in its class lines, a few
     // tokens: the cap moves to 26.0k on purpose.
-    expect(e.stable).toBeLessThan(26000);
+    // 0.30.0 (the tabs lane's Mana Shock and bare heart lines beside the shield lane's shields-as-weapons and follow
+    // lines, each under the cap alone, together 6 tokens over): the cap moves to 26.1k on purpose.
+    expect(e.stable).toBeLessThan(26100);
   });
 });

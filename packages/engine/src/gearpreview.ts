@@ -7,7 +7,7 @@
 // Nothing here changes the character: it is copied first; the scratch fight uses its own named stream (`rngFor`), never
 // the game's dice, and is thrown away.
 import { WEAPON, ITEM, RULES, SKILL, ATTRS } from './data';
-import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, weaponMult, specialRoundName, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM } from './character';
+import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, weaponMult, specialRoundName, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM, isShieldId } from './character';
 import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee, weaponVia, rollWithPick, rollWithWords, type RollWithOffer } from './combat';
 import { priced } from './effects/cost';
 import { PROFILES, pairOf } from './effects/output';
@@ -69,11 +69,13 @@ function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
   ];
 }
 /** The character's roll_with offers (items whose effect is op roll_with on `attack`), read without a fight: the card
- * names the skill each would roll with and when (its label), through the same choice the attack makes. */
+ * names the skill each would roll with and when (its label), through the same choice the attack makes. An offer
+ * for some attacks only is tested through the predicates' own tests (`mode`, `melee`): Durability's is melee only,
+ * never a gun or a throw (rules 1.59, T1). */
 function rollWithLines(c: Character, sk: string, mode: AttackMode): PreviewLine[] {
-  const offers: RollWithOffer[] = [];
-  // an offer for some modes only (its `if.mode`, the predicate's own test: Durability's is a weapon's attack, never a throw)
-  for (const h of holdersOf({ c })) for (const e of h.info.effects) if (e?.op === 'roll_with' && e.when === 'attack' && (!e.if?.mode || PREDICATES.mode.test({ ctx: { mode } } as any, e.if.mode))) offers.push({ skill: e.skill, ifHigher: !!e.if_higher, label: e.label || h.info.name });
+  const offers: RollWithOffer[] = [], ctx = { mode, melee: mode === 'melee' };
+  const fits = (e: any) => (['mode', 'melee'] as const).every((k) => e.if?.[k] == null || PREDICATES[k].test({ ctx } as any, e.if[k]));
+  for (const h of holdersOf({ c })) for (const e of h.info.effects) if (e?.op === 'roll_with' && e.when === 'attack' && fits(e)) offers.push({ skill: e.skill, ifHigher: !!e.if_higher, label: e.label || h.info.name });
   const p = rollWithPick(c, sk, offers);
   return p ? [{ key: 'hits_with_alt', label: 'Hits with', value: rollWithWords(p) + ' · ' + signed(p.mod), num: null }] : [];
 }
@@ -140,6 +142,8 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
     // rules 1.56 (the unarmed fighter): a carried modifier of the row (`variant_mods`) says its one card line (its `card.text`)
     for (const m of ((w as any)?.variant_mods || []) as string[]) { const mi: any = ITEM[m]; if (mi?.card?.text) lines.push({ key: 'carried:' + m, label: mi.name, value: String(mi.card.text), num: null }); }
     lines.push(...variantLines(w));
+    // rules 1.57 (A1): a shield's row gives what it holds (its own `effects`): the Defense with it in the off hand
+    if (isShieldId(id)) { const x = clone(c); x.offHand = { id } as any; const su = unitFromCharacter(x, '0,0', rngFor('gear-preview', c.id + '#' + id)); lines.push({ key: 'def', label: 'Defense (held)', value: String(su.def), num: su.def, better: 'higher' }); }
     { const full = maxDurOf(id, rarity); if (full) lines.push({ key: 'dur', label: 'Durability (full)', value: String(full), num: full, better: 'higher' }); } // rules 1.50: the wear it holds at its grade
     lines.push(...skillLines(c, u, w));
     const traits = [...(w.properties || []), ...((w.phys?.props as string[]) || [])].map((t) => cap(String(t).replace(/_/g, ' ')));
@@ -157,7 +161,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       ...variantLines(it),
     ] };
   }
-  if (it && (it.category === 'armour' || it.category === 'shield')) {
+  if (it && it.category === 'armour') { // (rules 1.57: a shield is a weapon row, above)
     const x = clone(c), slot = String(it.slot || '');
     if (slot === 'off_hand') x.offHand = { id } as any; else if (slot) x.worn = { ...(x.worn || {}), [slot]: id };
     const rng = rngFor('gear-preview', c.id + '#' + id), u = unitFromCharacter(x, '0,0', rng);
@@ -210,6 +214,9 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
  * of the same door), as an instance, and the slot's name; null when nothing compares. */
 export function heldAgainst(c: Character, inst: GearInstance): { inst: GearInstance; slot: string } | null {
   const w: any = WEAPON[inst.id], it: any = ITEM[inst.id];
+  // rules 1.57 (A1): a shield against the shield held (the off hand's first), else nothing
+  if (w && isShieldId(inst.id)) return c.offHand && isShieldId(c.offHand.id) ? { inst: { id: c.offHand.id, rarity: c.offHand.rarity, mods: c.offHand.mods }, slot: 'Off hand' }
+    : isShieldId(c.weapon) ? { inst: { id: c.weapon, rarity: c.weaponState?.rarity, mods: c.weaponState?.mods }, slot: 'Main hand' } : null;
   if (w && w.category !== 'thrown') return c.weapon && WEAPON[c.weapon] ? { inst: { id: c.weapon, rarity: c.weaponState?.rarity, mods: c.weaponState?.mods }, slot: 'Main hand' } : null;
   if (it?.focus) {
     const door = it.focus.door, inHand = c.offHand && (ITEM[c.offHand.id] as any)?.focus?.door === door ? c.offHand : null;

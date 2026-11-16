@@ -74,6 +74,7 @@ export const TECH_FX: Record<string, TechRow> = {
   ambush: row([p('thrust', { w: 0.09, len: 0.45, draw: 50 })], [p('cross', { n: 2, size: 0.2 }), p('brand', { shape: 'eye' })], [p('star', { n: 12 })]),
   // ----- melee: strikes -----
   cut: row([], [p('cross', { n: 1 })]),
+  follow: row([], [p('cross', { n: 1, size: 0.2 })]), // rules 1.58: the off hand's follow strike (its second swing: fx/follow.ts)
   sweep: row([p('sweep', { span: 150 })], [p('cross', { n: 1, size: 0.2 })], [p('star')], { once: true }),
   bash: row([p('jab', { count: 2 })], [p('chevrons', { n: 1 }), p('ring', { r: 0.35 })]),
   sunder: row([p('weapon', { move: 'chop' }), p('chop', { w: 0.1 })], [p('crack', { n: 3 })]),

@@ -68,8 +68,13 @@
       "tagline": "The body that doesn't fall.",
       "resource": {
         "id": "guard",
-        "max": 5,
-        "rule": "Guard is a pool of up to 5 points, and Brace fills it. While you hold Guard you Interpose: when an enemy's weapon attack hits an ally next to you, you spend 1 Guard and your reaction and take the hit yourself, with your own armour. Each point of Guard can also take 10 damage off a hit on you. Guard is lost when the fight ends."
+        "max_by_rank": {
+          "1": 5,
+          "2": 6,
+          "3": 7
+        },
+        "provisional": true,
+        "rule": "Guard is Durability's pool: a point for each point of Durability, up to the pool's cap, and Brace fills it. The Bulwark's own pool is larger, whatever its Durability: {=max_by_rank.1} at rank I, {=max_by_rank.2} at rank II, {=max_by_rank.3} at rank III (rules 1.59). While you hold Guard you Interpose: when an enemy's weapon attack hits an ally next to you, you spend Guard and your reaction and take the hit yourself, with your own armour. Each point of Guard can also take damage off a hit on you; the Guard row on the fight screen gives the pool's size and what a point takes off, from Guard's own numbers (techniques.json rules.guard). Guard is lost when the fight ends."
       },
       "resources": [
         "guard"

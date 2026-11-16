@@ -51,12 +51,14 @@
           "pool_max": 4,
           "guard_base": 1,
           "guard_per_point": 1,
-          "brace": 2
+          "brace": 2,
+          "shield": 1,
+          "two_shields": 2
         },
         "rows": [
           {
             "at": "each",
-            "text": "Your Guard pool holds {=per_point.numbers.pool} more ({=per_point.numbers.pool_max} at most)"
+            "text": "Your Guard pool holds {=per_point.numbers.pool} more ({=per_point.numbers.pool_max} at most; the Bulwark's own pool is larger, by its rank)"
           },
           {
             "at": "at 1",
@@ -65,6 +67,10 @@
           {
             "at": "at 1",
             "text": "Brace gives a flat {=per_point.numbers.brace} Guard, whatever your points"
+          },
+          {
+            "at": "from 1",
+            "text": "A shield in hand adds {=per_point.numbers.shield} to each Guard gain; a shield in each hand multiplies every Guard gain by {=per_point.numbers.two_shields} instead (the pool's cap is unchanged)"
           },
           {
             "at": "each from 2",
@@ -83,7 +89,7 @@
           "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your weapon attacks roll with Durability's modifier in place of the weapon's own skill when Durability's is higher (never added on top: the tank hits through its door). Set Against the Blow (Durability {=unlocks.1.effects.1.if.self_skill.durability}): while you hold Guard, a critical hit on you lands as an ordinary hit (its critical multiplier is taken out) and leaves no injury. Close Guard (an Answer): while you hold Guard, {=unlocks.1.effects.3.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it. Retort (Durability {=unlocks.1.effects.5.if.self_skill.durability}, an Answer): a foe hits you in melee while you hold Guard: {=unlocks.1.effects.5.and.0.value|abs} Guard and your reaction throw {=unlocks.1.amounts.retort.per.0.value|pct}% of the blow back at it (its armour applies). Challenge (Durability {=unlocks.1.effects.6.if.self_skill.durability}): {=unlocks.1.effects.6.ap} AP and {=unlocks.1.effects.6.res.guard} Guard: every foe you see within {=unlocks.1.effects.6.effects.0.targets.within} tiles makes a Heart save or is Taunted (a Boss too: it is never forced to attack you, but it is worse at hitting anyone else). Last Plate (Durability {=unlocks.1.effects.4.if.self_skill.durability}): once a fight, a blow that would drop you leaves you on {=unlocks.1.effects.4.value} HP and breaks every plate. Slam (Durability {=unlocks.1.effects.7.if.self_skill.durability}): {=unlocks.1.effects.7.ap} AP and {=unlocks.1.effects.7.res.guard} Guard: every foe next to you is pushed {=unlocks.1.effects.7.effects.1.tiles} tile (a Boss holds its ground) and makes a Body save or is Off Balance.",
+          "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your melee attacks (a shield's own strike and its follow included) roll with Durability's modifier in place of the weapon's own skill when Durability's is higher (never added on top: the tank hits through its door); a gun, a bow or a throw rolls with its own skill. The blow's damage still grows with the weapon's own attribute, never with Durability. Set Against the Blow (Durability {=unlocks.1.effects.1.if.self_skill.durability}): while you hold Guard, a critical hit on you lands as an ordinary hit (its critical multiplier is taken out) and leaves no injury. Close Guard (an Answer): while you hold Guard, {=unlocks.1.effects.3.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it. Retort (Durability {=unlocks.1.effects.5.if.self_skill.durability}, an Answer): a foe hits you in melee while you hold Guard: {=unlocks.1.effects.5.and.0.value|abs} Guard and your reaction throw {=unlocks.1.amounts.retort.per.0.value|pct}% of the blow back at it (its armour applies). Challenge (Durability {=unlocks.1.effects.6.if.self_skill.durability}): {=unlocks.1.effects.6.ap} AP and {=unlocks.1.effects.6.res.guard} Guard: every foe you see within {=unlocks.1.effects.6.effects.0.targets.within} tiles makes a Heart save or is Taunted (a Boss too: it is never forced to attack you, but it is worse at hitting anyone else). Last Plate (Durability {=unlocks.1.effects.4.if.self_skill.durability}): once a fight, a blow that would drop you leaves you on {=unlocks.1.effects.4.value} HP and breaks every plate. Slam (Durability {=unlocks.1.effects.7.if.self_skill.durability}): {=unlocks.1.effects.7.ap} AP and {=unlocks.1.effects.7.res.guard} Guard: every foe next to you is pushed {=unlocks.1.effects.7.effects.1.tiles} tile (a Boss holds its ground) and makes a Body save or is Off Balance.",
           "effects": [
             {
               "op": "roll_with",
@@ -92,14 +98,7 @@
                 "self_has_res": [
                   "guard"
                 ],
-                "mode": [
-                  "shot",
-                  "aimed",
-                  "burst",
-                  "auto",
-                  "melee",
-                  "paired"
-                ]
+                "melee": true
               },
               "label": "holding Guard",
               "skill": "durability",

@@ -17,6 +17,35 @@ The game shows its version in the corner of the title screen and in every "Repor
   Shown on the token and panels (MANA SHOCK, damage red), the Strain row, the held heart's warning, the Outbursts
   door line and the bare-handed warning. Data: `soul_modules.json strain.after_short` (`keep`) and `strain.shock`.
 
+## 0.30.0 (in progress) — the tank rulings
+
+Rules revision 1.59 (spec items 4537 to 4543; every new number PROVISIONAL), Leon's rulings for the Durability tank:
+a tank hits with Durability in melee only (a gun rolls with its own skill); a blow rolled with Durability keeps the
+weapon's own damage (confirmed by test); shields' blows scale with Endurance; a shield in each hand doubles every Guard
+gain (Brace, the Guard technique, the follow's plate); the Bulwark's Guard pool is 5 / 6 / 7 at ranks I / II / III
+(everyone else 4), drawn as up to 7 plates; the camp's Recommended tank kit is the Hand wraps and the Buckler.
+
+## Next (after 0.29.0) — follow strikes
+
+Rules revision 1.58 (hands 5e; spec items 4522 to 4536; every new number PROVISIONAL), on top of rules 1.57's shields as
+weapons. Design: `docs/design/proposals/2026-11-follow-strike.md`.
+
+- **The off hand follows.** A shield, Afterword, or a melee weapon carrying a mod that grafts `follows`, held in the off
+  hand, strikes once after each melee technique of your one-handed main weapon: its own roll at -2, its own damage, no
+  AP, at the foe your first blow really struck. It is a rider: no Momentum, no Pressure, no other item's once-a-turn
+  line, and a missed follow draws no Riposte. Never after a gun, a throw, a reaction, a shield technique, a paired attack
+  or a class or perk strike, and never with a two-handed weapon (Heavyworlder's one-handed greatsword included).
+- **A shield's follow gives Guard**: the first that lands each turn gives 1 Guard, however many shields you hold.
+- **Not a second weapon**: a follows item in the off hand asks no +2, opens no Both block, makes no paired attack and has
+  no attack of its own there. A main-hand shield with a sword in the off hand is still ordinary dual wielding.
+- **Shield Bash costs 1 AP** (was 2).
+- **Wear**: only the follow wears the off hand; a follows item worn to 0 makes no follow.
+- **New gear rows, in no shop or loot table yet**: Afterword (an off-hand knife, its follow at a quarter of its damage
+  and Bleeding once a turn; 700 credits) and the Trailing balance mod (grafts `follows` onto a melee weapon).
+- **Screens**: each melee row's preview shows the follow as a second line ("then Buckler · 47% · 4 damage"), the log
+  shows both rolls, and the follow is drawn as a second swing from the other hand (`fx/follow.ts`). The Both block and
+  the off-hand block come from the engine's own tests.
+
 ## 0.29.0 — Balance 2.0: the nine doors
 
 Rules revision 1.56 (every new number PROVISIONAL), built on top of live 0.28.3. Each of the nine skills that open a
@@ -97,6 +126,23 @@ the alpha perks were rewritten so each one helps its own door. The full account,
   Shadow and prayer; bare fists counting as the glove family; variants in shops.
 - **Numbers not yet fitted:** guns go above their line once perks are added; the solo tank; casters and duos in
   Survival. Every 1.56 number is PROVISIONAL.
+
+### After 0.29.0 (for the next release; the lead places it)
+
+- **A shield in either hand** (Leon, 16 Nov 2026; decision 117, spec items 4308 to 4313): a shield goes in the main
+  hand too, one to a hand, so a caster carries a shield with the focus, and two shields are legal (each shield's
+  Defense and Movement add; Brace and the Guard technique +1 Guard a shield under the pool's cap; Parry and the
+  shield's techniques once). The main hand holding one strikes with bare fists. The sheet, the camp, the fight's hand
+  change and the Proving Ground offer the main hand for a shield.
+- **Shields are weapons** (rules 1.57, the lead's rulings of 16 Nov 2026; spec items 4512 to 4520): the buckler, the
+  riot shield and the pavise are weapon rows with the Shield property. In the main hand a shield strikes with its own
+  line (buckler 6, riot shield 8, pavise 8; Durability, growing with Strength), wears and is graded as a weapon; in the
+  off hand it is not a second weapon. A shield in the main hand with a sword in the off hand is ordinary dual wielding,
+  and the shield's techniques come from whichever hand holds it. Shield Bash strikes with the shield (x2.5). The pavise
+  is a shield when carried. Old saves' shield lines are moved to weapon lines at load.
+- **No swell with a shield** (rules 1.57 item 10, Leon, 16 Nov 2026): while a shield is in either hand a held Outburst
+  keeps its stage at the turn start (the Strain of holding still comes); Pumps are untouched. The heart panel and the
+  Outbursts tab say so.
 
 ## 0.28.3 — the field is the fight, and the Durability tank
 

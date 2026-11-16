@@ -1228,7 +1228,8 @@
         "mana": "pistol",
         "light_melee": "blade",
         "heavy_melee": "blade",
-        "unarmed": "blade"
+        "unarmed": "blade",
+        "shield": "blade"
       }
     }
   },

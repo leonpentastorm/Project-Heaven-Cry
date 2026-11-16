@@ -17882,6 +17882,23 @@
       "width": 1024,
       "height": 1024,
       "background": "transparent"
+    },
+    "weapon-afterword": {
+      "label": "PLACEHOLDER: Afterword",
+      "path": "art/icons/gear/weapon-afterword.png",
+      "sha256": "d92182ad6b8db09f6aed7adc2cc2251b5762542c463b069412139cc5a5d9be47",
+      "placeholder": true,
+      "format": "png",
+      "mode": "gear",
+      "tint": "agility",
+      "wanted": "art/icons/gear/weapon-afterword.png",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #",
+      "slot": false,
+      "status": "placeholder",
+      "production_approved": false,
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent"
     }
   },
   "survival_art": {

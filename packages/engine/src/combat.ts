@@ -5,7 +5,7 @@ import { setLogMarker, remarkOpening, say, type LogMark, type LogSideMark } from
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
-import { type Character, type PackItem, plainRounds, gearEntry, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+import { type Character, type PackItem, plainRounds, gearEntry, isShieldId, followsId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
@@ -37,6 +37,7 @@ import { canStand, standBlocker, unitsIn, inBounds, work, tiedTo } from './kit';
 import { setBraced, setDowned, setNailed, stagger, clearStagger, rawDazed, rawBleed, setSideSees } from './unitstate';
 import { setProne, bleedTick, dazeSpent } from './magic';
 import { condMods, condDef } from './condtable';
+import { weaponSystem } from './physical/data';
 
 /** cover = half cover tiles, full = full cover tiles (spec: Cover). */
 /** Rules 1.26 (the re-fit): what a character's melee blow is multiplied by, melee's identity (data/rules.json output.factors.melee). */
@@ -173,6 +174,8 @@ export interface Unit {
   /** Set only while the off-hand weapon is swapped into u.weapon (a paired attack, an off-hand technique): the main hand's
    * weapon, so the Heat limit both guns pool is still main + off (Leon's ruling, 13 Nov 2026: the jam lands on the gun that fired). */
   swapMain?: string;
+  /** rules 1.58 (item 4528): the off hand's follows item's durability once a follow has worn it (written back to the
+   * character's off-hand GearState by unitToCharacter, then dropped) */ offDur?: number;
   /** A companion (drone, beast): the character who controls it (its owner's player gives its orders). */
   ctrl?: string; companion?: string; /** Classes 3.0 P9: an owned unit's own block (owned.ts: turn, eyes, upkeep, cover, lure); its owner is its `owned` tie's far end */ owned?: OwnedBlock;
   /** The only actions this unit has (action ids as the action list names them: 'move', 'shot'…), besides ending its
@@ -184,7 +187,7 @@ export interface Unit {
   infiniteAmmo?: boolean;
   /** Class resources (Momentum, Guard, Marks, Charges, Supplies…): current values, and maxima. */
   res?: Record<string, number>; resMax?: Record<string, number>;
-  /** Rules 1.13, Durability's Guard: what the off hand holds when it isn't a weapon (a shield, a torch, a focus; null:
+  /** Rules 1.13, Durability's Guard: what the off hand holds when it isn't a second weapon (a shield, rules 1.57: a weapon row that is not one; a torch, a focus; null:
    * nothing), and the unit's Durability points (a PC's come from its sheet; a stat block may give them). */
   offItem?: string | null; durability?: number;
   /** Physical 2.0 (rules 1.12; src/physical). Pressure 0–4 on this unit, how many of its pips its own side can't see (a
@@ -427,6 +430,15 @@ export function setStrikeTech(f: (att: Unit) => string | null): void { strikeTec
  * registers it), for the attack's events (`techAp`: the predicate `tech_ap_at_least` reads it, rules 1.30). */
 let strikeTechAp: (att: Unit) => number | null = () => null;
 export function setStrikeTechAp(f: (att: Unit) => number | null): void { strikeTechAp = f; }
+/** Rules 1.58 (hands 5e, N4): is the unit's strike right now a rider (a follow strike, physical/core.ts registers it)? A
+ * rider is not "a melee hit": the trigger runner skips its reacting lines and spends no other item's limited use, the
+ * melee Answers don't answer its miss, and its hit sheds no Pressure. The one reading. */
+let strikeRiderF: (att: Unit) => boolean = () => false;
+export function setStrikeRider(f: (att: Unit) => boolean): void { strikeRiderF = f; }
+export const strikeRider = (att: Unit | null | undefined): boolean => !!att && strikeRiderF(att);
+/** Rules 1.58 (hands 5e, 5b amended; F-d): two weapons of one system whose off-hand one is not a follows item. The one
+ * test of the Both block: the paired attack, the both-hands techniques (physical/core.ts) and the Attack tab read it. */
+export const pairs = (u: Unit): boolean => !!u.offWeapon && !!WEAPON[u.offWeapon] && weaponSystem(u.weapon) === weaponSystem(u.offWeapon) && !followsId(u.offWeapon);
 export const currentVolley = () => VOLLEY;
 /** Run attacks as one named volley (rules 1.12: a technique's Burst or Rake), so items that read ctx.volley and the
  * round's index (ctx.vi) see them as they see the engine's own burst and full auto. */
@@ -511,17 +523,19 @@ export const dist = (a: string, b: string) => { const [ax, ay] = xy(a), [bx, by]
 /** A character's Vision in tiles (spec: Vision): 12 + 2 per Perception above 1 + Vigilant + items. */
 export const visionOf = (c: Character) => 12 + 2 * ((c.attrs.perception || 1) - 1) + (c.skills.vigilant || 0) + statQuery({ c }, 'vision').add;
 export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
-  const w = WEAPON[c.weapon] || WEAPON.service_pistol;
+  // Rules 1.57 (A1): a shield is a weapon row, so a main-hand shield is the unit's weapon (its own strike line); an
+  // off-hand shield is not a second weapon: it is carried as `offItem` (the one prop test, isShieldId), never `offWeapon`.
+  const w = WEAPON[c.weapon] || WEAPON.service_pistol, ws = c.weaponState, offW = c.offHand && WEAPON[c.offHand.id] && !isShieldId(c.offHand.id) ? c.offHand : null;
   return {
     id: 'pc-' + c.id, side: 'pc', name: c.name, short: c.name.slice(0, 2).toUpperCase(), charId: c.id, img: c.portrait, level: clampEnemyLevel(c.level),
     pos, hp: c.hp, maxHp: maxHp(c), def: defense(c), armour: armourOf(c, gearBonus(c, 'armour_bonus') + statQuery({ c }, 'armor').add), // rules 1.36: × scale at the wearer's level
-    attack: mod(c.skills[w.skill] || 0) + RARITY[c.weaponState?.rarity || 'standard'].acc + skillRollMod({ c }, w.skill, { roll: 'attack', combat: true }).add + statQuery({ c }, 'attack').add, weapon: w.id,
-    movement: movement(c), init: rollD20(rng).die + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: Math.min(loadedOf(c), magazineSize(w.id, c.weaponState?.mods) ?? 0), heat: 0, jammed: false, shotsThisTurn: 0,
+    attack: mod(c.skills[w.skill] || 0) + RARITY[ws?.rarity || 'standard'].acc + skillRollMod({ c }, w.skill, { roll: 'attack', combat: true }).add + statQuery({ c }, 'attack').add, weapon: w.id,
+    movement: movement(c), init: rollD20(rng).die + initiativeBonus(c), agility: c.attrs.agility || 1, ap: 0, bank: 0, ammo: Math.min(loadedOf(c), magazineSize(w.id, ws?.mods) ?? 0), heat: 0, jammed: false, shotsThisTurn: 0,
     downed: c.hp <= 0, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
     injuries: (c.injuries || []).map((i) => ({ ...i })), bleed: 0, dazedNext: 0, injResist: injuryResistPct(c), hand: mainHandSide(c),
     vigilant: c.skills.vigilant || 0, overweight: overweightKg(c),
-    dmgMult: RARITY[c.weaponState?.rarity || 'standard'].dmg, dur: weaponDurOf(c), maxDur: maxDurOf(w.id, c.weaponState?.rarity), mods: [...(c.weaponState?.mods || [])],
-    offWeapon: c.offHand && WEAPON[c.offHand.id] ? c.offHand.id : null, ...(c.offHand && WEAPON[c.offHand.id] && c.offHand.mods?.length ? { offMods: [...c.offHand.mods] } : {}), offAmmo: c.offHand && WEAPON[c.offHand.id] ? Math.min(c.offHand.loaded ?? magazineSize(c.offHand.id, c.offHand.mods) ?? 0, magazineSize(c.offHand.id, c.offHand.mods) ?? 0) : 0, // its own rounds (item 688)
+    dmgMult: RARITY[ws?.rarity || 'standard'].dmg, dur: weaponDurOf(c), maxDur: maxDurOf(w.id, ws?.rarity), mods: [...(ws?.mods || [])],
+    offWeapon: offW ? offW.id : null, ...(offW && offW.mods?.length ? { offMods: [...offW.mods] } : {}), offAmmo: offW ? Math.min(offW.loaded ?? magazineSize(offW.id, offW.mods) ?? 0, magazineSize(offW.id, offW.mods) ?? 0) : 0, // its own rounds (item 688)
     light: gearBonus(c, 'light'), darkSight: gearHas(c, 'dark_sight'), hazardImmune: gearEffects(c).filter((e) => e.op === 'hazard_immune').map((e) => e.hazard || ''),
     ignoreDifficult: gearHas(c, 'ignore_difficult'), unarmedBonus: gearBonus(c, 'unarmed_damage_bonus'), proficiency: c.skills.proficiency || 0,
     parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: visionOf(c), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => plainRounds(x, w.ammo)).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
@@ -537,7 +551,7 @@ function pcExtras(c: Character, w: WeaponDef): Partial<Unit> {
   const thr: Record<string, number> = {};
   for (const it of packOf(c)) { const wid = it.weapon || it.id; if (WEAPON[wid]?.category === 'thrown' && it.qty > 0 && !it.mags) thr[wid] = (thr[wid] || 0) + it.qty; }
   const spare = packOf(c).find((x) => x.weapon === c.weapon && x.mags);
-  const offG = c.offHand && WEAPON[c.offHand.id] && c.offHand.id !== c.weapon ? WEAPON[c.offHand.id] : null;
+  const offG = c.offHand && WEAPON[c.offHand.id] && !isShieldId(c.offHand.id) && c.offHand.id !== c.weapon ? WEAPON[c.offHand.id] : null;
   const offW = offG ? packOf(c).find((x) => x.weapon === offG.id && x.mags) : null;
   const offLoose = offG && offG.reload === 'loose' && offG.ammo && offG.ammo !== w.ammo ? packOf(c).filter((x) => plainRounds(x, offG.ammo)).reduce((t, x) => t + x.qty, 0) : null;
   const kind = (c as any).kind || ((c.traits || []).includes('factory_made') ? 'machine' : 'human');
@@ -554,7 +568,7 @@ function pcExtras(c: Character, w: WeaponDef): Partial<Unit> {
     ...(offW?.mags && offW.magTypes ? { offMagTypes: typesFor(offW.magTypes, offW.mags.length) } : {}),
     ...(c.offHand?.ammoType && c.offHand.loaded ? { offAmmoType: c.offHand.ammoType } : {}),
     ...(offLoose != null ? { offLoose } : {}),
-    offItem: c.offHand && !WEAPON[c.offHand.id] && !twoHands(c, c.weapon) ? c.offHand.id : null, durability: c.skills.durability || 0,
+    offItem: c.offHand && (!WEAPON[c.offHand.id] || isShieldId(c.offHand.id)) && !twoHands(c, c.weapon) ? c.offHand.id : null, durability: c.skills.durability || 0,
     ...(res ? res : {}),
   };
   void w;
@@ -1150,7 +1164,7 @@ export function sideSees(cb: Combat, side: 'pc' | 'foe', tgt: Unit, by?: Unit | 
 }
 
 // ---------- attacks ----------
-export const isMelee = (w: WeaponDef) => /melee|unarmed/.test(w.category);
+export const isMelee = (w: WeaponDef) => /melee|unarmed|shield/.test(w.category); // rules 1.57 (A1): a shield's row strikes in melee
 /** A weapon a melee strike is made with: a melee weapon, or one whose rules 1.12 system is melee though its category isn't
  * (the Evoker blade, the Emanator gauntlet, the banner, the grand staff). Any other weapon strikes in melee as fists. */
 export const meleeArm = (w: WeaponDef) => isMelee(w) || (w as any).phys?.system === 'melee';
@@ -2280,6 +2294,7 @@ export function fieldRepair(cb: Combat, u: Unit, o: { target?: Unit | null; way?
 /** Paired attack (spec: Hands): both weapons in one action. AP = the higher cost + 1; main −1, off −3 (better by 1 per 3 skill points, to −1). */
 export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | null, who: Character | null): string | null {
   if (!u.offWeapon) return 'Nothing in your off hand to attack with.';
+  if (!pairs(u)) return followsId(u.offWeapon) ? 'The ' + (WEAPON[u.offWeapon]?.name || 'off-hand weapon').toLowerCase() + ' follows: it is not a second weapon.' : 'Needs two weapons of one kind.';
   const mw = WEAPON[u.weapon], ow = WEAPON[u.offWeapon];
   const base = Math.max(attackApCost(mw, isMelee(mw) ? 'melee' : 'shot'), attackApCost(ow, isMelee(ow) ? 'melee' : 'shot')) + 1, cost = volleyAp(cb, u, t, 'paired', base);
   { const no = whyNot(cb, u, cost); if (no) return no; }
@@ -2290,12 +2305,9 @@ export function pairedAttack(cb: Combat, rng: Rng, u: Unit, t: Unit, t2: Unit | 
   fxChain++; const wasV = VOLLEY, wasAp = VOLLEY_AP; VOLLEY = 'paired'; VOLLEY_AP = base;
   try {
   resolveAttack(cb, rng, u, t, mainMode, who, { extra: -1, noAp: true });
-  // swap the off-hand weapon in for its own swing or shot
-  const keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed };
+  // swap the off-hand weapon in for its own swing or shot (the one swap, withOffHand)
   const skillPts = u.dexterity || 0; // rules 1.12 (item 953): an off-hand gun or light blade hits with Dexterity
-  u.swapMain = u.weapon; u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = u.offMods || []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed; // the off-hand gun's own jam
-  if (!offTarget.dead) { const p2 = previewAttack(cb, u, offTarget, isMelee(ow) ? 'melee' : 'shot', { free: true }); if (p2.ok) resolveAttack(cb, rng, u, offTarget, isMelee(ow) ? 'melee' : 'shot', who, { extra: Math.min(-1, -3 + Math.floor(skillPts / 3)), noAp: true }); else say(cb, '(off hand: ' + p2.why + ')'); }
-  u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep); delete u.swapMain;
+  withOffHand(u, () => { if (!offTarget.dead) { const p2 = previewAttack(cb, u, offTarget, isMelee(ow) ? 'melee' : 'shot', { free: true }); if (p2.ok) resolveAttack(cb, rng, u, offTarget, isMelee(ow) ? 'melee' : 'shot', who, { extra: Math.min(-1, -3 + Math.floor(skillPts / 3)), noAp: true }); else say(cb, '(off hand: ' + p2.why + ')'); } });
   } finally { fxChain--; VOLLEY = wasV; VOLLEY_AP = wasAp; }
   emit(cb, 'volley_end', { u, mode: 'paired', target: t, cb, rng }); checkOver(cb); return null;
 }
@@ -2523,13 +2535,34 @@ export function loadMagazine(cb: Combat, u: Unit): string | null {
 }
 /** The off-hand gun's jam, kept on the unit only while it is jammed. */
 export const setOffJam = (u: Unit, jam: boolean) => { if (jam) u.offJammed = true; else delete u.offJammed; };
-/** Run fn with the off-hand weapon in the main hand's place (its rounds, its jam, its ammo type; no wear, no mods), as
- * a paired attack does; what fn spent is written back to the off hand and the main hand is put back as it was. */
-export function withOffHand<T>(u: Unit, fn: () => T): T {
-  const ow = u.offWeapon ? WEAPON[u.offWeapon] : null; if (!ow) return fn();
-  const keep = { weapon: u.weapon, ammo: u.ammo, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed };
-  u.swapMain = u.weapon; u.weapon = ow.id; u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.maxDur = 0; u.mods = u.offMods || []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed;
-  try { return fn(); } finally { u.offAmmo = u.ammo; setOffJam(u, u.jammed); Object.assign(u, keep); delete u.swapMain; }
+/** THE swap (rules 1.58, F-b: the one copy; the paired attack, the technique core's off hand and a follow all run
+ * through it): fn runs with the off hand's thing in the main hand's place, `swapMain` set, and the main hand is put back
+ * after. The off hand's weapon (`o.id` absent or u.offWeapon) brings its rounds, its jam, its ammo type and its own mods,
+ * and what fn spent of them is written back (not in a preview, where Heat is put back too); any other id (a shield the
+ * off hand works its techniques with) brings none of those, and its grade is the standard one. `attack`: the to-hit it
+ * strikes with (its own skill). Wear (rules 1.58 item 4528): only a follow (`wear`) wears the off hand: its durability
+ * comes in (u.offDur, else the off hand's GearState, else full) and goes back to u.offDur; every other off-hand strike
+ * wears nothing, as before. */
+export function withOffHand<T>(u: Unit, fn: () => T, o: { id?: string; attack?: number; preview?: boolean; wear?: boolean } = {}): T {
+  const id = o.id ?? u.offWeapon, ow = id ? WEAPON[id] : null; if (!ow) return fn();
+  const own = id === u.offWeapon, keep = { weapon: u.weapon, ammo: u.ammo, attack: u.attack, dur: u.dur, maxDur: u.maxDur, mods: u.mods, ammoType: u.ammoType, jammed: u.jammed, dmgMult: u.dmgMult, heat: u.heat };
+  u.swapMain = u.weapon; u.weapon = ow.id;
+  if (own) { u.ammo = u.offAmmo ?? (ow.magazine ?? 0); u.mods = u.offMods || []; u.ammoType = u.offAmmoType ?? null; u.jammed = !!u.offJammed; }
+  else { u.ammo = 0; u.mods = []; u.ammoType = null; u.jammed = false; u.dmgMult = 1; }
+  const worn = o.wear ? offWear(u, ow.id) : null;
+  if (worn) { u.maxDur = worn.max; u.dur = worn.dur; } else u.maxDur = 0;
+  if (typeof o.attack === 'number') u.attack = o.attack;
+  try { return fn(); } finally {
+    if (worn && !o.preview && u.dur !== worn.dur) u.offDur = u.dur;
+    if (own && !o.preview) { u.offAmmo = u.ammo; setOffJam(u, u.jammed); }
+    const heat = u.heat; Object.assign(u, keep); delete u.swapMain; if (!o.preview) u.heat = heat;
+  }
+}
+/** The off hand's follows item's durability now and in full (rules 1.58 item 4528): what a follow wore of it this fight
+ * (u.offDur), else its character's off-hand GearState, else full at its grade. */
+export function offWear(u: Unit, id: string): { dur: number; max: number } {
+  const st = charFor(u)?.offHand, mine = st && st.id === id ? st : null, max = maxDurOf(id, mine?.rarity);
+  return { dur: u.offDur ?? mine?.dur ?? max, max };
 }
 /** Attack an object with the off-hand weapon: its attack AP, rounds, range and damage (the main hand's rule). */
 export const coverOffAp = (u: Unit, cb?: Combat | null): number => { const w = u.offWeapon ? WEAPON[u.offWeapon] : null; return w ? Math.max(1, price({ cb, u }, 'break', attackApCost(w, isMelee(w) ? 'melee' : 'shot'), { hand: 'off' }).ap) : 2; };

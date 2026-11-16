@@ -12,7 +12,7 @@ later "Rules revision" moved the number and the table was not folded, in which c
 A cell is read by its FIRST number, so a note after it is free text. A cell with no number ("none") against a number in
 data is a difference, and so is a number in the spec for a field the weapon does not have. A row is matched by its exact
 name (or ALIAS), never by a near one; a column header that is neither compared nor in NOT_COMPARED is an error, and so
-is any count of weapon tables other than 12. What it cannot see: a number a later revision moved in PROSE while neither
+is any count of weapon tables other than 13. What it cannot see: a number a later revision moved in PROSE while neither
 the table nor the data followed, and tables it does not read (mods, armour, items, techniques, the Derived stats and
 skills tables, XP and levels, classes). What is compared:
 
@@ -119,7 +119,7 @@ def check_weapons():
                     if not same(n[0], dv): diff(key, ln, f"{w['name']}: {field} {cell!r} in the spec, {dv} in data")
                 elif dv is None and field in ("magazine", "heat_limit"):
                     diff(key, ln, f"{w['name']}: {field} {cell!r} in the spec, none in data")
-    if found != 12: diff("weapon:tables", lo, f"{found} weapon tables were read; 12 expected (the Starter table and 7.1 to 7.11): a header changed")
+    if found != 13: diff("weapon:tables", lo, f"{found} weapon tables were read; 13 expected (the Starter table, 7.1 to 7.11 and 7.11a, the shields of rules 1.57): a header changed")
     for w in weapons:
         if w["id"] not in seen: diff(f"weapon:{w['id']}:missing-in-spec", lo, f"{w['name']} ({w['id']}) is in weapons.json and in no weapon table of the spec")
 

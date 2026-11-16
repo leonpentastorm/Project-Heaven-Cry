@@ -7,7 +7,7 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import wpJ from '../../../data/world_play.json';
 import { WEAPON, ITEM } from './data';
-import { type Character, packOf, twoHands, isPlotItem, isAmmoEntry, AMMO_WHY } from './character';
+import { type Character, packOf, twoHands, isPlotItem, isAmmoEntry, AMMO_WHY, equip } from './character';
 import type { Combat, Unit } from './combat';
 import { holderOf, uses } from './effects';
 import { whyNot } from './effects/cost';
@@ -78,13 +78,14 @@ export function gearPlan(c: Character, op: GearOp, o: { disarmed?: boolean } = {
         return ok(GEAR.light_armour_ap * (on ? 2 : 1), 'puts on the ' + def.name + (on ? ' (the ' + nameOf(on) + ' comes off)' : ''), false, idx);
       }
       const wid = it.weapon && WEAPON[it.weapon] ? it.weapon : null;
+      // What a hand may hold is equip's one rule (a weapon, a shield among them (rules 1.57); a 1H weapon or an off-hand
+      // item): asked on a copy, so the plan and the change can never disagree.
+      if (op.to === 'off' && twoMain) return no('Your main-hand weapon needs both hands.');
+      { const why = equip({ ...c, pack: packOf(c) }, idx, op.to); if (why) return no(why); }
       if (op.to === 'main') {
-        if (!wid) return no('Only weapons go in the main hand.');
-        const two = twoHands(c, wid);
-        return ok(two ? GEAR.two_handed_draw_ap : GEAR.hand_ap, 'draws the ' + nameOf(wid) + (two ? ' (both hands)' : ''), true, idx);
+        const two = !!wid && twoHands(c, wid);
+        return ok(two ? GEAR.two_handed_draw_ap : GEAR.hand_ap, 'draws the ' + nameOf(wid || it.item || it.id) + (two ? ' (both hands)' : ''), true, idx);
       }
-      if (twoMain) return no('Your main-hand weapon needs both hands.');
-      if (wid ? (WEAPON[wid] as any).hands !== '1H' : (ITEM[it.item || it.id] as any)?.slot !== 'off_hand') return no('That doesn\'t go in the off hand.');
       return ok(GEAR.hand_ap, 'takes the ' + nameOf(wid || it.item || it.id) + ' in the off hand', true, idx);
     }
     case 'swap': {

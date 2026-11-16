@@ -22,6 +22,7 @@ import { wrapBreaker, breakerBeat, noteBreaker } from './breaker';
 import { wrapPressure, pressureBeat, resetPressure } from './pressure';
 import { wrapShadow, shadowBeat, resetShadow } from './shadow';
 import { wrapOpenHand, openHandBeat } from './openhand';
+import { wrapFollow } from './follow';
 import { wrapBonds, bondExtra, noteTies, resetBonds } from './bonds';
 import { cutInForFx, showSpotlight, cancelSpotlight, noteSlowed, dropCutIns, CUTIN_MS, CUTIN_TEMPO, CUTIN_SKIP_MS, cutInCap } from '../spotlight';
 import { closeCutIns } from '../cutIn';
@@ -1416,6 +1417,8 @@ wrapTechFx(H, { at, tokOf, posOf: (id) => unit(id)?.pos, play, sawThen, landsIn,
 // The Open Hand (fx/openhand.ts, rules 1.56): a fist's rings, a Flurry's afterimages, the forms named on the striker. Before
 // the Figments' wrapper, so a Figment's own claws play it after its command.
 wrapOpenHand(H, { at, tokOf, sawThen, play });
+// Follow strikes (fx/follow.ts, rules 1.58): the off hand's second swing, its lunge, a shield's rim, the target's tilt.
+wrapFollow(H, { at, tokOf, play });
 // The Momentum chain 2.0 (fx/breaker.ts): the counter's moments, the impact ring, the finishers' lines, Launch, the smash.
 wrapBreaker(H, { at, tokOf, posOf: (id) => unit(id)?.pos, maxOf: (id) => (unit(id) as any)?.resMax?.momentum ?? null, play });
 // Figments (fx/figments.ts): the summon (the caster, a thread, the forming), their orders and attacks, their unmaking.

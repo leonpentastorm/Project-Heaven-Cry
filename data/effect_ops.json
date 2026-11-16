@@ -3275,8 +3275,8 @@
       "count": 2,
       "params": [],
       "used_by": [
-        "items:buckler",
-        "items:riot_shield"
+        "weapons:buckler",
+        "weapons:riot_shield"
       ]
     },
     {
@@ -3286,9 +3286,9 @@
       "count": 3,
       "params": [],
       "used_by": [
-        "items:riot_shield",
         "items:armoured_greaves",
-        "items:runner_trousers"
+        "items:runner_trousers",
+        "weapons:riot_shield"
       ]
     },
     {
@@ -4908,6 +4908,7 @@
           "link",
           "finisher",
           "answer",
+          "follow",
           "fire",
           "press",
           "set",

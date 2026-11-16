@@ -108,6 +108,20 @@ describe('Guard on the fight map', () => {
       const t = m.match(/<text x="(-?[\d.]+)" y="(-?[\d.]+)"/)!; expect(+t[1]).toBeGreaterThan(half - 5 + 6); // the count starts past the HP bar's end
     }
   });
+  it('rules 1.59 (T5): up to the Bulwark\'s rank III pool (7) every plate is a readable arc of its own, none touching the next', () => {
+    const s = 48, c = { x: 0, y: 0 };
+    for (const max of [5, 6, 7]) {
+      const arcs = [...platesMarkup(c, s, max, max).matchAll(/data-plate="\d+" d="M(-?[\d.]+) (-?[\d.]+) A[\d.]+ [\d.]+ 0 0 1 (-?[\d.]+) (-?[\d.]+)"/g)].map((x) => [+x[1], +x[2], +x[3], +x[4]]);
+      expect(arcs.length).toBe(max);
+      for (const [x0, y0, x1, y1] of arcs) expect(Math.hypot(x1 - x0, y1 - y0), 'a plate of ' + max).toBeGreaterThanOrEqual(6); // at least 6 px on a 48 px tile
+      const ends = arcs.flatMap(([x0, y0, x1, y1]) => [[x0, y0], [x1, y1]]);
+      for (let i = 0; i < arcs.length; i++) for (let j = i + 1; j < arcs.length; j++) {
+        const [a, b] = [arcs[i], arcs[j]], gap = Math.min(Math.hypot(a[2] - b[0], a[3] - b[1]), Math.hypot(b[2] - a[0], b[3] - a[1]));
+        expect(gap, 'plates ' + i + ' and ' + j + ' of ' + max).toBeGreaterThan(1.5);
+      }
+      void ends;
+    }
+  });
 });
 
 describe("Guard 2.0 slice 1: the door's moves on the map (rules 1.56; skills.json durability.1, each op's fx)", () => {

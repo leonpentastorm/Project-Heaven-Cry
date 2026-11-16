@@ -431,3 +431,35 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     (reversible): the cost at the turn's end after stillness, no second Short while in it, a Down ends it, an enemy in it
     Begins nothing, the field neither charges nor calms it. Kept as one flag on the heart (MagicUnit.shock) rather than a
     condition row, so that no cleanse, debuff count or immunity can touch it.
+
+117. **A shield goes in either hand, one to a hand** (Leon, 16 Nov 2026: *"fix for that is just let the shield be
+    mainhand. So crazy ass double shield mofo is a thing"*; rules 1.56, spec items 4308 to 4313). A focus and a shield
+    both lived in the off hand, so a caster could never carry a shield. A shield row's `either_hand: true` lets equip put
+    it in the main hand (the field that holds a 1H weapon; no new slot); that hand strikes with bare fists. Two shields
+    stack each shield's own Defense and Movement and give Brace and the Guard technique +1 Guard each, under the pool's
+    cap; the Parry bonus and the shield's techniques come once. Why this over a new hand slot: one equip rule, old
+    saves unchanged, and the fight's gear plan now asks equip itself (one copy of the rule). Enemies and the
+    recommended kits are untouched.
+
+118. **The off hand follows: a property word, not a second weapon** (Leon, 16 Nov 2026: a sword-and-shield moveset where
+    the shield's blows are woven into the weapon's attacks, and *"this follow strike system could be a tag on the weapon
+    so it's universal and legendary just graft this tag onto your weapon"*; rules 1.58, spec items 4522 to 4536). A row
+    with the word `follows` (every shield, Afterword; the modifier graft was withdrawn in review, spec item 4535)
+    strikes once in the off hand after each melee technique of a one-handed main weapon. Why a rider at the technique's
+    tail and not a second attack: the engine has one place every own-turn melee technique ends (`useTechnique`), so the
+    follow needs no mark, no handler and no copy of the attack; its preview is the same function. Why per technique and
+    not once a turn: the lead's ruling on the draft's question 1 (the measure decides; once a turn is the fallback). Why
+    "not a melee hit": Momentum, Pressure and every once-a-turn line would otherwise pay twice for one action. Why the
+    Both test moved into the engine (`pairs`): the client had its own copy, and a follows weapon is the first off-hand
+    weapon that is not a second weapon.
+
+119. **The tank hits through its door in melee only, and its reward is staying power** (Leon, 16 Nov 2026: *"Tank with
+    guns need agility alpha skill or they don't hit"*, *"let them have double guard when doing a guard action, we
+    already have max guard to balance it"*, *"any class that give more max guard, can be fun for the dedicated
+    guarder"*; rules 1.59, spec items 4537 to 4543). Durability's `roll_with` takes the existing predicate `melee: true`
+    (no new primitive); a shield's blow scales with Endurance; two shields multiply every Guard gain by one data field
+    in one function (`guardMult`); the Bulwark's larger pool rides the carrier a class already uses to raise its door's
+    resource (`RES_RULES`, as the Operative's Shadow), read from its own resource row by rank. Why: Leon accepts a
+    tank that is unkillable and slow, not one that kills as fast as a damage dealer; the measure reports fight length in
+    rounds beside the clears so that trade is visible. Why the Hand wraps for the camp's tank: the cheapest one-handed
+    melee weapon of the rack, so the whole budget goes to the Buckler.

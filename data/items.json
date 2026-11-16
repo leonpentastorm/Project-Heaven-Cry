@@ -200,76 +200,6 @@
       "price_credits": 20
     },
     {
-      "id": "buckler",
-      "name": "Buckler",
-      "category": "shield",
-      "weight_kg": 2,
-      "price_credits": 200,
-      "adjudication": "engine",
-      "provisional": true,
-      "text": "+{=effects.0.value} Defense. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, +2 on a Parry roll, and Brace and the Guard technique give 1 more Guard.",
-      "slot": "off_hand",
-      "effects": [
-        {
-          "op": "defense_bonus",
-          "value": 1
-        }
-      ],
-      "durability": 150,
-      "phys": {
-        "props": [
-          "shield"
-        ]
-      }
-    },
-    {
-      "id": "riot_shield",
-      "name": "Legion riot shield",
-      "category": "shield",
-      "weight_kg": 7,
-      "price_credits": 700,
-      "adjudication": "engine",
-      "provisional": true,
-      "text": "+{=effects.0.value} Defense. {=effects.1.value} Movement. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, and Brace and the Guard technique give 1 more Guard.",
-      "slot": "off_hand",
-      "effects": [
-        {
-          "op": "defense_bonus",
-          "value": 2
-        },
-        {
-          "op": "movement_bonus",
-          "value": -0.5
-        }
-      ],
-      "durability": 150,
-      "phys": {
-        "props": [
-          "shield"
-        ]
-      }
-    },
-    {
-      "id": "pavise",
-      "name": "Pavise",
-      "category": "shield",
-      "weight_kg": 10,
-      "price_credits": 1200,
-      "adjudication": "narrator",
-      "provisional": true,
-      "text": "Carried, it does nothing. Plant it for 2 AP and it becomes a tile of full cover in front of you, with 80 HP. Picking it back up costs 2 AP.",
-      "slot": "off_hand",
-      "effects": [
-        {
-          "op": "narrator",
-          "note": "Plant: becomes a pillar-class object in front of you."
-        }
-      ],
-      "durability": 150,
-      "hp": 80,
-      "built": false
-    },
-    {
       "id": "torch",
       "name": "Torch",
       "category": "light",
@@ -1708,6 +1638,67 @@
       "card": {
         "text": "Open guard: only light gloves in hand, Light armour or none: blows at you are at {=effects.0.value|signed} to hit."
       }
+    },
+    {
+      "id": "mod_follow_guard",
+      "name": "Shield follow",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "A shield's follow strike that lands gives {=effects.0.value} Guard, under the pool's cap, once a turn however many shields you hold, doubled with a shield in each hand (rules 1.58 item 4532, rules 1.59 item 4540). Named in every shield's variant_mods; never fitted.",
+      "effects": [
+        {
+          "op": "resource",
+          "when": "hit",
+          "if": {
+            "with_this": true,
+            "mode": ["follow"]
+          },
+          "resource": "guard",
+          "value": 1,
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "mod_afterword",
+      "name": "Afterword's edge",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Afterword's follow strike does \u00d7{=effects.0.value} damage, and once a turn its follow that lands leaves Bleeding (a Body save) (rules 1.58 item 4534). Named in Afterword's variant_mods; never fitted.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "with_this": true,
+            "mode": ["follow"]
+          },
+          "value": 0.25
+        },
+        {
+          "op": "condition",
+          "when": "hit",
+          "if": {
+            "with_this": true,
+            "mode": ["follow"],
+            "target_alive": true
+          },
+          "target": "target",
+          "condition": "bleeding",
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          },
+          "say": "{target} is opened by Afterword{then}."
+        }
+      ]
     }
   ]
 }
