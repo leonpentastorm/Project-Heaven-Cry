@@ -3,7 +3,7 @@
 // that would leave the Narrator a ruling is refused in words. The case: Blade Recluse's "Name your weapon" was refused as
 // story at a shop. Field Surgery (the one injury treatment, with the field kit) works in a run the same way. Through the reducer.
 import { describe, expect, it } from 'vitest';
-import { type GameState, type RunNode, apply, RuleError, packOf, giveView, reachable } from '../src';
+import { type GameState, type RunNode, apply, RuleError, packOf, giveView, reachable, plateChoices, MODULE } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 
 const SEED = 'PHC-0001';
@@ -115,5 +115,27 @@ describe('the field kit treats a limb in a run (rules 1.61 addendum)', () => {
   it("Overhaul's extra slot is a free fit: refused in a run with the Forge's words", () => {
     const g = duo(), c = g.characters.c1; c.perks = [...(c.perks || []), { id: 'overhaul', tier: 'mastered' } as any];
     expect(refused(g, { type: 'story/perk', charId: 'c1', id: 'perk:overhaul', actionId: 'extra_slot', choice: '0' })).toBe('In a Survival run, the armourer fits mods at a Forge, for a fee.');
+  });
+});
+
+// Rules 1.61 addendum item 4758 (Leon: "you use it in your inventory and choose one"): a plate bought at a shop has no
+// lesson written on it; magic/learn from it takes the lesson the player chooses of plateChoices (what it can teach now).
+describe('a blank plate teaches the lesson the player chooses', () => {
+  const blank = (g: GameState, id: string, kind: string) => { const c = g.characters[id]; c.pack = [...packOf(c), { id: kind, item: kind, name: kind, qty: 1, kind: 'tool' } as any]; return c; };
+  it('a Sigil plate at a shop: a word of the choices is learned and the plate crumbles; a known word is refused', () => {
+    const g0 = walkTo(duo(), 'shop'), c = blank(g0, 'c2', 'sigil_plate');
+    const known = (c.sigils || [])[0], choices = plateChoices(c, 'sigil_plate').map((m) => m.word!);
+    expect(choices.length).toBeGreaterThan(0); if (known) expect(choices).not.toContain(known);
+    if (known) expect(refused(g0, { type: 'magic/learn', charId: 'c2', word: known, from: 'plate' }, 'p2')).toMatch(/already knows/);
+    const g = apply(g0, { type: 'magic/learn', charId: 'c2', word: choices[0], from: 'plate' } as any, 'p2');
+    expect(g.characters.c2.sigils).toContain(choices[0]); expect(kitCount(g, 'c2', 'sigil_plate')).toBe(0);
+  });
+  it('a Heart plate: a school of the choices is learned; a module the gates refuse is not offered and is refused', () => {
+    const g0 = walkTo(duo(), 'shop'), c = blank(g0, 'c1', 'heart_plate'), ch = plateChoices(c, 'heart_plate');
+    const school = ch.find((m) => m.school)!.school!;
+    const g = apply(g0, { type: 'magic/learn', charId: 'c1', school, from: 'plate' } as any, 'host');
+    expect(g.characters.c1.soulKnown?.schools).toContain(school); expect(kitCount(g, 'c1', 'heart_plate')).toBe(0);
+    const gated = Object.keys(MODULE).find((m) => !ch.some((x) => x.module === m) && !(c.soulKnown?.modules || []).includes(m));
+    if (gated) expect(() => apply(g0, { type: 'magic/learn', charId: 'c1', module: gated, from: 'plate' } as any, 'host')).toThrow();
   });
 });

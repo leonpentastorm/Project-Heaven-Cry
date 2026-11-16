@@ -53,7 +53,7 @@ const TRADE: Record<string, TradeRow> = Object.fromEntries(TRADES.items.map((t) 
 /** The Forge's stock size and the armour fitting's prices (survival.json forge, armour_fit). */
 const FORGE_SLOTS: number = SV.forge.slots, FIT: Record<string, number> = SV.armour_fit.price;
 /** Rules 1.55: the Forge's fee to fit, swap or take off a weapon mod (survival.json forge.fit): `rate` x the mod's price, at least `min`. */
-const MOD_FIT: { rate: number; min: number; extra_action: string } = SV.forge.fit;
+const MOD_FIT: { rate: number; min: number; extra_actions: string[] } = SV.forge.fit;
 const LADDER: Rarity[] = ['standard', 'fine', 'masterwork', 'relic'];
 const GRADE_WORD: Record<string, string> = { standard: 'Standard', fine: 'Fine', masterwork: 'Masterwork', relic: 'Relic', celestial: 'Celestial' };
 const nameOf = (id: string) => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id;
@@ -226,16 +226,24 @@ const gunWord = (c: Character, where: ModWhere) => { const n = nameOf(gunAt(c, w
 const whereOf = (a: { where?: 'off' | number }): ModWhere => a.where ?? 'main';
 /** The perk action that fits a second mod in a slot type the main weapon already fills (Gun Nut, Blade Recluse,
  * Overhaul: perks/c.ts `extra_mod`), as the character holds it, or null. Its own rules answer (the one copy). */
-const EXTRA_MOD = MOD_FIT.extra_action; // survival.json forge.fit.extra_action (consolidation 0.29 should-fix 5)
-const extraEntry = (g: GameState, c: Character) => { const l = perkActionsFor({ c, g } as any, 'story').filter((e) => e.actionId === EXTRA_MOD); return l.find((e) => !e.why) || l[0] || null; };
+const EXTRA_ACTIONS = MOD_FIT.extra_actions; // survival.json forge.fit.extra_actions (consolidation 0.29 should-fix 5; rules 1.61 addendum item 4757)
+const extraEntries = (g: GameState, c: Character) => perkActionsFor({ c, g } as any, 'story').filter((e) => EXTRA_ACTIONS.includes(e.actionId));
+const extraArgs = (e: { actionId: string }, idx: number, where: ModWhere) => ({ actionId: e.actionId, choice: String(idx), where } as any);
+/** The extra-slot action the armourer runs for this mod (the first held whose own preview takes it), or the first's
+ * refusal; null when the character holds none. */
+function extraFor(g: GameState, c: Character, idx: number, where: ModWhere): { e: ReturnType<typeof extraEntries>[number]; why: string | null } | null {
+  const l = extraEntries(g, c); if (!l.length) return null; let first: string | null = null;
+  for (const e of l) { const pv = previewPerkAction({ c, g } as any, e.id, extraArgs(e, idx, where), 'story'); if (pv.ok) return { e, why: null }; first ??= pv.why || 'Not now.'; }
+  return { e: l[0], why: first };
+}
 /** Why the armourer can't fit the mod at pack line `idx` now, in words, or null (rules 1.55, 1.56 L3: at a Forge; the
  * fit's own rules are fitMod's (the gun's slot, an equip ban) or, into an extra slot, the perk action's; then the fee). */
 function fitModProblem(g: GameState, c: Character, idx: number, where: ModWhere = 'main', extra = false): string | null {
   const h = here(g); if (!h || h.n.kind !== 'forge') return notHere('a Forge');
   if (!weaponModAt(c, idx)) return 'Pick a weapon mod from your pack.';
   if (extra) {
-    const e = extraEntry(g, c); if (!e) return c.name + ' has no extra mod slot.';
-    const pv = previewPerkAction({ c, g } as any, e.id, { actionId: EXTRA_MOD, choice: String(idx), where } as any, 'story'); if (!pv.ok) return pv.why || 'Not now.';
+    const x = extraFor(g, c, idx, where); if (!x) return c.name + ' has no extra mod slot.';
+    if (x.why) return x.why;
   } else { const no = fitMod({ ...c }, idx, where); if (no) return no; } // fitMod on a copy: it writes fresh pack and mod lists, so the character is untouched
   return cantPay(c, modFee(weaponModAt(c, idx)!));
 }
@@ -417,7 +425,7 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
     case 'run/fit_mod': {
       const where = whereOf(a), no = fitModProblem(g, c, a.idx, where, !!a.extra); if (no) return no;
       const mod = weaponModAt(c, a.idx)!, fee = modFee(mod), gun = gunWord(c, where), before = new Set(gunAt(c, where)?.mods || []);
-      if (a.extra) { const err = runPerkAction({ c, g } as any, extraEntry(g, c)!.id, { actionId: EXTRA_MOD, choice: String(a.idx), where } as any, g.rng, 'story'); if (err) return err; }
+      if (a.extra) { const x = extraFor(g, c, a.idx, where)!; const err = runPerkAction({ c, g } as any, x.e.id, extraArgs(x.e, a.idx, where), g.rng, 'story'); if (err) return err; }
       else { const err = fitMod(c, a.idx, where); if (err) return err; }
       payCredits(c, fee);
       const off = [...before].find((x) => !(gunAt(c, where)?.mods || []).includes(x));
@@ -511,12 +519,12 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
     (h.v.stock || []).forEach((s, i) => out.push({ group: 'forge', key: 'forge:' + i, label: nameOf(s.id), detail: String((ITEM[s.id] as any)?.text || ''), price: s.price, why: forgeProblem(g, c, i), action: { type: 'run/forge', charId, slot: i } }));
     // rules 1.55, 1.56 L3: the armourer fits each weapon mod in the pack to a carried gun with its slot (the main hand
     // first), into the main hand's extra slot (Gun Nut and the like), or takes one off a gun, for a fee
-    const guns = modWheres(c), extra = extraEntry(g, c), act = (w: ModWhere) => (w === 'main' ? {} : { where: w }), at = (w: ModWhere) => (w === 'main' ? '' : ':' + w);
+    const guns = modWheres(c), extra = extraEntries(g, c).length > 0, act = (w: ModWhere) => (w === 'main' ? {} : { where: w }), at = (w: ModWhere) => (w === 'main' ? '' : ':' + w);
     packOf(c).forEach((_, i) => { const m = weaponModAt(c, i); if (!m) return; const slot = (ITEM[m] as any).mod_slot;
       for (const w of guns) { const gn = gunAt(c, w)!; if (!(((WEAPON[gn.id] as any)?.mod_slots || []) as string[]).includes(slot)) continue;
         const old = gn.mods.find((x) => x !== m && (ITEM[x] as any)?.mod_slot === slot);
         out.push({ group: 'mod', key: 'mod:fit:' + i + at(w), label: nameOf(m) + ': fit to ' + gunWord(c, w), verb: 'Fit', detail: String((ITEM[m] as any).text || '') + (old ? ' Swaps out the ' + nameOf(old) + ' (it goes in your pack).' : ''), price: modFee(m), why: fitModProblem(g, c, i, w), action: { type: 'run/fit_mod', charId, idx: i, ...act(w) } });
-        if (extra && old) out.push({ group: 'mod', key: 'mod:extra:' + i + at(w), label: nameOf(m) + ': fit beside the ' + nameOf(old) + ' on ' + gunWord(c, w), verb: 'Fit', detail: String((ITEM[m] as any).text || '') + ' Into the extra ' + slot + ' slot (' + extra.label + ').', price: modFee(m), why: fitModProblem(g, c, i, w, true), action: { type: 'run/fit_mod', charId, idx: i, extra: true, ...act(w) } });
+        if (extra && old) out.push({ group: 'mod', key: 'mod:extra:' + i + at(w), label: nameOf(m) + ': fit beside the ' + nameOf(old) + ' on ' + gunWord(c, w), verb: 'Fit', detail: String((ITEM[m] as any).text || '') + ' Into the extra ' + slot + ' slot (' + (extraFor(g, c, i, w)?.e.label || '') + ').', price: modFee(m), why: fitModProblem(g, c, i, w, true), action: { type: 'run/fit_mod', charId, idx: i, extra: true, ...act(w) } });
       } });
     for (const w of guns) for (const m of gunAt(c, w)!.mods) out.push({ group: 'mod', key: 'mod:off:' + m + at(w), label: nameOf(m) + ': take off ' + gunWord(c, w), verb: 'Take off', detail: 'It goes in your pack.', price: modFee(m), why: unfitModProblem(g, c, m, w), action: { type: 'run/unfit_mod', charId, mod: m, ...act(w) } });
     const f = fitOf(g, c); if (f) out.push({ group: 'fit', key: 'fit', label: 'Armour class ' + c.armourClass + ' to ' + f.cls, detail: 'The armourer fits you for heavier armour.', price: f.price, why: f.why, action: { type: 'run/fit', charId } });

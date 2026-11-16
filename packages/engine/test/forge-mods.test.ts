@@ -137,6 +137,23 @@ describe('rules 1.56 L3: the armourer fits to any gun carried', () => {
     expect(runOptions(plain, 'c1').some((x) => x.key === 'mod:extra:' + pi)).toBe(false);
     expect(refused(plain, { type: 'run/fit_mod', charId: 'c1', idx: pi, extra: true })).toMatch(/no extra mod slot/);
   });
+  it("Overhaul's extra slot (rules 1.61 addendum item 4757, Leon: 'yes integrate it'): after a rest the armourer fits it for the fee; free, refused", () => {
+    const prep = (x: GameState) => { const c = x.characters.c1; c.perks = [...(c.perks || []), { id: 'overhaul', tier: 'mastered' } as any]; c.weaponState = { ...(c.weaponState || {}), mods: ['mod_red_dot'] }; };
+    // no rest yet: the perk's own reason
+    const cold = visit('forge', 'PHC-0001', prep), ci = give(cold, 'mod_scope');
+    expect(refused(cold, { type: 'run/fit_mod', charId: 'c1', idx: ci, extra: true })).toMatch(/long rest/);
+    // a rest (it sets the bench), then a Forge on the next node
+    const rested = clone(visit('rest', 'PHC-0001', prep)), r = rested.run!, next = r.nodes.find((n) => r.nodes.find((x) => x.id === r.at)!.links.includes(n.id))!;
+    next.kind = 'forge' as any; r.state = 'map';
+    let g = rested; for (let k = 0; k < DUO.length && g.run!.at !== next.id; k++) g = apply(g, { type: 'run/move', node: next.id }, ownerOf(k));
+    g = clone(g); expect(g.run!.at).toBe(next.id);
+    const i = give(g, 'mod_scope');
+    expect(refused(g, { type: 'story/perk', charId: 'c1', id: 'perk:overhaul', actionId: 'extra_slot', choice: String(i) })).toMatch(/Survival run/);
+    const o = runOptions(g, 'c1').find((x) => x.key === 'mod:extra:' + i)!;
+    expect(o.why).toBeNull(); expect(o.price).toBe(fee('mod_scope'));
+    const before = creditsOf(g.characters.c1), a = apply(g, o.action as any, 'host'), c = a.characters.c1;
+    expect([...(c.weaponState?.mods || [])].sort()).toEqual(['mod_red_dot', 'mod_scope']); expect(creditsOf(c)).toBe(before - fee('mod_scope'));
+  });
   it('the extra slot is the gun being fitted\'s (consolidation 0.29, ruling iv): Gun Nut doubles a slot on a pack gun, the hand\'s untouched', () => {
     let j = -1;
     const g = visit('forge', 'PHC-0001', (x) => { j = gunLine(x, 'service_pistol', { mods: ['mod_red_dot'] }); x.characters.c1.traits = [...(x.characters.c1.traits || []), 'gun_nut']; });

@@ -969,7 +969,11 @@ function reduce(g: GameState, a: Action, by: string) {
         // A Sigil plate teaches a word; a Heart plate a tone, a school or a module (rules 1.5 section 5, spec 4.4 item 546).
         const lesson = a.word || a.tone || a.school || a.module;
         if (!lesson) fail('A plate teaches a Sigil word (a Sigil plate) or a tone, school or module (a Heart plate).');
-        const kind = a.word ? 'sigil_plate' : 'heart_plate', pack = packOf(c!), i = pack.findIndex((x) => (x.item || x.id) === kind && plateLesson(x.note) === String(lesson).toLowerCase());
+        // rules 1.61 addendum item 4758: a plate with no lesson written on it (one bought at a shop) teaches the one the
+        // player chooses of what it can teach them now (plateChoices); a plate with its lesson is taken first
+        const kind = a.word ? 'sigil_plate' : 'heart_plate', pack = packOf(c!), of = (x: PackItem) => (x.item || x.id) === kind && x.qty > 0;
+        let i = pack.findIndex((x) => of(x) && plateLesson(x.note) === String(lesson).toLowerCase());
+        if (i < 0) i = pack.findIndex((x) => of(x) && !plateLesson(x.note));
         if (i < 0) fail(a.word ? 'You carry no plate with that word.' : 'You carry no Heart plate with that lesson.');
         // The lesson must be new, or the plate isn't used up.
         { const k = c!.soulKnown; if (!a.word && ((a.tone && (k?.tones || []).includes(a.tone)) || (a.school && (k?.schools || []).includes(a.school)) || (a.module && (k?.modules || []).includes(a.module)))) fail(c!.name + ' knows that already.'); }
@@ -2637,6 +2641,16 @@ function storyFx(g: GameState, cb: Combat) {
 /** A plate's pack note as its lesson id: "FIRE", "tone:fire" or "Fire tone" all read "fire". */
 export function plateLesson(note?: string): string { return String(note || '').toLowerCase().replace(/^(word|tone|school|module)\s*:\s*/, '').replace(/\s+(tone|school|module)$/, '').trim().replace(/\s+/g, '_'); }
 /** Whether a lesson names something real (so a plate is not used up on nothing). */
+/** Rules 1.61 addendum item 4758: what a plate of this kind with no lesson written on it can teach `c` now (the
+ * lessons magic/learn would take: teachCheck, not known, the module gates), each as magic/learn's own argument. */
+export function plateChoices(c: Character, kind: 'sigil_plate' | 'heart_plate'): { word?: string; tone?: string; school?: string; module?: string }[] {
+  if (kind === 'sigil_plate') return Object.keys(SIGIL).filter((w) => !teachCheck(c, { word: w })).map((word) => ({ word }));
+  const k = c.soulKnown, out: { tone?: string; school?: string; module?: string }[] = [];
+  for (const tone of Object.keys(TONE)) if (!teachCheck(c, { tone }) && !(k?.tones || []).includes(tone)) out.push({ tone });
+  for (const school of Object.keys(SCHOOL)) if (!teachCheck(c, { school }) && !(k?.schools || []).includes(school)) out.push({ school });
+  for (const module of Object.keys(MODULE)) if (!teachCheck(c, { module }) && !(k?.modules || []).includes(module) && !moduleGateError(c, module)) out.push({ module });
+  return out;
+}
 function teachCheck(c: Character, m: { word?: string; school?: string; module?: string; tone?: string }): string {
   if (m.word) { const w = m.word.trim().toLowerCase(); if (!SIGIL[w]) return 'No such word.'; if ((c.sigils || []).includes(w)) return c.name + ' already knows ' + SIGIL[w].word + '.'; if ((c.sigils || []).length >= wordsKnownCap(c)) return c.name + ' knows ' + (c.sigils || []).length + ' words, the most Brain Power allows (' + wordsKnownCap(c) + ').'; return ''; }
   if (m.school) return SCHOOL[m.school] ? '' : 'No such school.';
@@ -3241,7 +3255,7 @@ const RUN_ITEM = /^story\/perk$/;
  * refused; a quiver's enchantment keeps its free fit. Null when neither holds. */
 const campGearProblem = (g: GameState, a: Action): string | null => {
   const freeFit = (a.type === 'gear/mod' && (a as { quiver?: number }).quiver == null) || (a.type === 'combat/swap' && (a as { mod?: unknown }).mod != null)
-    || (a.type === 'story/perk' && ((survivalFieldJ as any).forge.fit.free_fits as string[]).includes(String(a.actionId))); // rules 1.61 addendum items 4743, 4751: the free fits of items (forge.fit.free_fits; the Forge's run/fit_mod extra runs its own, for the fee)
+    || (a.type === 'story/perk' && ((survivalFieldJ as any).forge.fit.extra_actions as string[]).includes(String(a.actionId))); // rules 1.61 addendum items 4743, 4751: the free fits of items (forge.fit.extra_actions; the Forge's run/fit_mod extra runs them, for the fee)
   if (g.run && g.run.state !== 'over' && g.run.state !== 'loadout' && freeFit) return 'In a Survival run, the armourer fits mods at a Forge, for a fee.';
   return g.run?.state === 'loadout' && a.type.startsWith('gear/') ? gearLockWhy(g, (a as { charId?: string }).charId) : null;
 };

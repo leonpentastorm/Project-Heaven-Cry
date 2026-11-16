@@ -117,8 +117,7 @@
       "name": "Sigil plate",
       "category": "consumable",
       "weight_kg": 0.3,
-      "text": "A slate with one Sigil word cut into it. Study it for a scene to learn the word; the plate crumbles. Its note in your pack says which word it holds.",
-      "stock": false,
+      "text": "A slate for one Sigil word. Out of a fight, read it on the Magic tab to learn the word cut into it (its note in your pack), or, on a blank plate (one bought at a shop), the word you choose of those you can learn now. The plate crumbles; one new thing a scene.",
       "adjudication": "engine",
       "provisional": true,
       "price_credits": 400
@@ -128,8 +127,7 @@
       "name": "Heart plate",
       "category": "consumable",
       "weight_kg": 0.3,
-      "text": "A violet-veined slate that holds one Outburst lesson: a tone (fire, storm, frost, stone, gale or acid), a school or a module. Study it for a scene to learn it; the plate crumbles. Its note in your pack says what it teaches.",
-      "stock": false,
+      "text": "A violet-veined slate for one Outburst lesson: a tone (fire, storm, frost, stone, gale or acid), a school or a module. Out of a fight, read it on the Magic tab to learn the lesson written on it (its note in your pack), or, on a blank plate (one bought at a shop), the lesson you choose of those you can learn now. The plate crumbles; one new thing a scene.",
       "adjudication": "engine",
       "provisional": true,
       "price_credits": 400

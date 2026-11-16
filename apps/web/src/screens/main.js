@@ -19,7 +19,7 @@ import { openReport, openSpend } from '../game/report';
 import { derivedLines } from '../game/derived';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, reloadItems, reloadBothItems, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
-import { previewPerkAction, phys, sheetPack, gearLockWhy, gearPreview } from '@engine';
+import { previewPerkAction, phys, sheetPack, gearLockWhy, gearPreview, plateChoices } from '@engine';
 import { SHEET_LINE_KEYS } from '../game/previewLines';
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
@@ -255,11 +255,12 @@ function magicVals(self, g, c) {
     title: t.kind === 'word' ? SIGIL[t.id].text : t.kind === 'school' ? SCHOOL[t.id].text : t.kind === 'tone' ? TONE[t.id].text || '' : MODULE[t.id].text,
     go: () => act({ type: 'magic/learn', charId: c.id, [t.kind]: t.id, from: 'ally' }),
     style: chipStyle(t.kind === 'word' ? SIG_CYAN : SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked ? '; opacity: 0.5; cursor: default' : '') }));
-  const plates = packOf(c).filter((x) => (x.item || x.id) === 'sigil_plate').map((x, i) => { const w = (x.note || '').toLowerCase(), def = SIGIL[w];
+  const blankPlate = (x) => !String(x.note || '').trim(); // rules 1.61 addendum item 4758: a plate with no lesson written on it
+  const plates = packOf(c).filter((x) => (x.item || x.id) === 'sigil_plate' && !blankPlate(x)).map((x, i) => { const w = (x.note || '').toLowerCase(), def = SIGIL[w];
     return { key: 'p' + i + w, title: def ? def.text || '' : 'The word is too worn to read.', label: 'Read the plate: ' + (def ? def.word : (x.note || 'an unknown word')), sub: '×' + x.qty + (def && words.includes(w) ? ' · known already' : ''), img: def ? glyphUri(w, SIGIL_INK) : scratchUri(), locked: learnLocked || !def,
       go: () => act({ type: 'magic/learn', charId: c.id, word: w, from: 'plate' }), style: chipStyle(SIG_CYAN, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked || !def ? '; opacity: 0.5; cursor: default' : '') }; });
   // Heart plates (rules 1.5 section 5): one Outburst lesson each, a tone, a school or a module (the pack note).
-  const heartPlates = packOf(c).filter((x) => (x.item || x.id) === 'heart_plate').map((x, i) => {
+  const heartPlates = packOf(c).filter((x) => (x.item || x.id) === 'heart_plate' && !blankPlate(x)).map((x, i) => {
     const id = String(x.note || '').toLowerCase().replace(/^(tone|school|module)\s*:\s*/, '').replace(/\s+(tone|school|module)$/, '').trim().replace(/\s+/g, '_');
     const kind = TONE[id] && id !== 'raw' ? 'tone' : SCHOOL[id] ? 'school' : MODULE[id] ? 'module' : '';
     const def = kind === 'tone' ? TONE[id] : kind === 'school' ? SCHOOL[id] : kind === 'module' ? MODULE[id] : null;
@@ -269,6 +270,11 @@ function magicVals(self, g, c) {
       title: def ? def.text || '' : 'The lesson is too worn to read.',
       go: () => { if (!off) act({ type: 'magic/learn', charId: c.id, [kind]: id, from: 'plate' }); }, style: chipStyle(SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (off ? '; opacity: 0.5; cursor: default' : '') }; });
   plates.push(...heartPlates);
+  // a blank plate (one bought at a shop): one chip for each lesson it can teach this character now (the engine's plateChoices)
+  for (const kind of ['sigil_plate', 'heart_plate']) { const p = packOf(c).find((x) => (x.item || x.id) === kind && blankPlate(x)); if (!p) continue;
+    for (const m of plateChoices(c, kind)) { const k = Object.keys(m)[0], id = m[k], def = k === 'word' ? SIGIL[id] : k === 'tone' ? TONE[id] : k === 'school' ? SCHOOL[id] : MODULE[id]; if (!def) continue;
+      plates.push({ key: 'b' + k + id, label: (k === 'word' ? 'Choose from the Sigil plate: ' + def.word : 'Choose from the Heart plate: ' + def.name + ' ' + k), sub: '×' + p.qty, isWord: k === 'word', img: k === 'word' ? glyphUri(id, SIGIL_INK) : heartUri(1), locked: learnLocked,
+        title: def.text || '', go: () => { if (!learnLocked) act({ type: 'magic/learn', charId: c.id, [k]: id, from: 'plate' }); }, style: chipStyle(k === 'word' ? SIG_CYAN : SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked ? '; opacity: 0.5; cursor: default' : '') }); } }
   // Rules 1.8 (Outburst 4.0): the codex, collapsible and grouped (feelings; modules by gate skill, the advanced classes'
   // locked), practice and its picks, and the starting templates as one-click designs.
   const pv = showSoul ? practiceView(c) : null, left = pv ? soulPicksLeft(c) : { practice: 0, mastered: [] };

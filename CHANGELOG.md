@@ -20,8 +20,8 @@ From Leon's playtest of live 0.30.0 (rules 1.61 addendum, Core Rules items 4740 
 - **The field kit treats a limb (round 2, items 4747 to 4753):** out of a fight, not on the field, anyone with a field kit uses it ("Treat", the Give view's Use on...) on themself or a squadmate to treat one arm or leg injury; the kit is used up. A new use op `treat` (pack items may have a `use` now) and one treatment, `treatLimb`, that Field Surgery and the Rest share. Field Surgery keeps its requirements and the kit.
 - **The toolbox counts as a field kit for Field Surgery only** (`serves_as`, read by `servesIndex`); it has no Treat and is never used up. Cigarettes (nothing reads them) are off the shelves too.
 - **A run's Rest treats every limb injury** (`survival.json rest.treat_injuries`).
-- **Overhaul's extra slot is refused in a run** like the other free fits (`forge.fit.free_fits`).
-- **The Sigil and Heart plates are off the shelf** (`stock: false`): one bought at a shop held no lesson.
+- **Overhaul's extra slot is the Forge's in a run:** the armourer fits it for the fee after the rest that sets its bench (`forge.fit.extra_actions`, read by the paid extra fit); the free fit stays refused.
+- **A blank plate teaches the lesson you choose:** a Sigil or Heart plate bought at a shop has no lesson written on it; on the Magic tab you pick one of what it can teach you now (`plateChoices`), through `magic/learn`. The plates stay on the shelves.
 - Tests: `test/run-item-actions.test.ts` (through the reducer).
 
 ## 0.30.0 — shields as weapons, the follow strike, the tank rulings, the bare heart and the shield display
