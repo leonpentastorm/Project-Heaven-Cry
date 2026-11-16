@@ -735,8 +735,10 @@ const MAGIC: ActionSystem = {
     // Syphon: the mp resource row's needs (data/actions.json: any MP focus in hand), asked through resGive; shown greyed
     // while an MP focus is only carried.
     const mpHeld = !Number.isNaN(safe(() => resGive(cb, u, 'mp', 0, { ask: true }), NaN)), sypShow = mpHeld || (!!c && carriesMpFocus(c));
-    if (!(words.length || designs.length || mg.evoker || mg.emanator || sypShow)) return [];
-    const out: ActionDescriptor[] = [], evoWhy = mg.evoker ? null : NEEDS_EVOKER, emaWhy = mg.emanator ? null : NEEDS_EMANATOR, sypWhy = mpHeld ? null : NEEDS_MP_FOCUS;
+    // Scuff (any character, no Evoker): on the Utility tab for everyone (Leon, 16 Nov 2026), after the other Utility rows of the physical and perk systems.
+    const scuffRow = D('scuff', 'utility', 'Scuff', SPELL_AP.scuff, apT(SPELL_AP.scuff), 'Wipe out the glyphs on the tile you stand on.', null, { preview: 'sigil' });
+    if (!(words.length || designs.length || mg.evoker || mg.emanator || sypShow)) return [scuffRow];
+    const out: ActionDescriptor[] = [scuffRow], evoWhy = mg.evoker ? null : NEEDS_EVOKER, emaWhy = mg.emanator ? null : NEEDS_EMANATOR, sypWhy = mpHeld ? null : NEEDS_MP_FOCUS;
     const apNote = (a: 'vent' | 'core', n: number) => { const base = SPELL_AP[a]; return n < base ? (a === 'vent' ? ' Bleed the Flux' : 'Core Change') + ' lowers the cost from ' + base + ' to ' + n + ' AP. ' : ''; };
     if (words.length || mg.evoker) {
       const gAp = glyphApOf(u), vAp = safe(() => ventAp(u, cb), SPELL_AP.vent), cAp = safe(() => coreAp(u, cb), SPELL_AP.core);
@@ -745,7 +747,6 @@ const MAGIC: ActionSystem = {
         { picks: [{ key: 'word', kind: 'option', renderer: 'glyph-keyboard', prompt: 'Pick a word.', options: wordOpts }, { key: 'stroke', kind: 'custom', renderer: 'stroke', prompt: 'Which stroke it goes into.', optional: true }, { key: 'tile', kind: 'tile', prompt: 'Click your own tile to draw.', choices: [u.pos], auto: true }], preview: 'sigil' }));
       out.push(D('evoke', 'sigils', 'Evoke', SPELL_AP.evoke, apT(SPELL_AP.evoke), 'Fire a Line of glyphs. It needs a Subject and at least one other word. Where you stand aims it: from an end, it fires along the Line; from the side, across it. Charge ' + mg.charge + '/' + coreChargeOf({ u, cb }) + '.', evoWhy,
         { picks: [{ key: 'evoke', kind: 'custom', renderer: 'evoke', prompt: 'Click a glyph of a Line to Evoke it.', choices: (x.seen.glyphs || []).map((gl: any) => gl.pos) }], preview: 'sigil', toggleOn: 'combat/evoke' }));
-      out.push(D('scuff', 'sigils', 'Scuff', SPELL_AP.scuff, apT(SPELL_AP.scuff), 'Wipe out the glyphs on the tile you stand on.', null, { preview: 'sigil' }));
       out.push(D('vent', 'sigils', 'Vent Flux · ' + mg.flux + '/' + fluxMaxOf(u, cb), vAp, apT(vAp), 'Pour all your Flux into the air. The mana meter rises by the same amount. If your Flux goes past ' + fluxMaxOf(u, cb) + ', the Evoker overloads.' + apNote('vent', vAp), evoWhy, { preview: 'sigil' }));
       out.push(D('core', 'sigils', 'Swap core', cAp, apT(cAp), apNote('core', cAp) + 'Load a fresh mana core with ' + coreChargeOf({ u, cb }) + ' charge. ' + mg.cores + (mg.cores === 1 ? ' spare core' : ' spare cores') + ' carried.', evoWhy, { preview: 'sigil' }));
     }
