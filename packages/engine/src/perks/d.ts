@@ -126,7 +126,7 @@ register({
 });
 
 // =====================================================================================================================
-// Rite in the Field (Lore Master): data rows since rules 1.63 (D6): `cost_mod` on the `cost` sites crystallise and steady
+// Rite in the Field (Lore Master): data rows since rules 1.63 (D6): `cost_mod` on the `cost` site crystallise
 // (perks.json rite_in_the_field). Nothing here.
 // =====================================================================================================================
 // Clean Draw (Mastered, Brain Power 10). Once per combat, 0 AP to arm: while armed, the glyphs you draw cost no charge

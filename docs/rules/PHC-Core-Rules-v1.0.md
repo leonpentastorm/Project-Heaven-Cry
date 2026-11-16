@@ -2584,7 +2584,7 @@ Up to 3 AP of the move is free; the rest is paid. The bank keeps the tiles bough
 - **"Still active" Sigil** (Parallel Thought): one of your placed spells stands: a field (STAY), a trap (WAIT) or a
   turret (WATCH) (rules 1.4). Unfired glyphs, Workings' smoke, light and walls don't count.
 - **Wards and rituals** (Rite in the Field): wards are drawing a WARD glyph, Begin on a Buff (Guarded) Outburst and the
-  Warden's Ward move; rituals are Pray and Crystallise. *(Superseded by rules 1.63, item 4813: Rite in the Field cuts Crystallise and Steady only.)*
+  Warden's Ward move; rituals are Pray and Crystallise. *(Superseded by rules 1.63, item 4813: Rite in the Field cuts Crystallise only (item 4820).)*
 - **Upper-realm beings** are enemies with `kind: upper_realm` (or the tag `upper_realm`) on the Narrator's start_fight
   enemies or the campaign's zone NPCs.
 - **Verse** is declared by the player: Say the line in the fight (free), then Begin with "In verse" (or Release a held
@@ -11611,6 +11611,7 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
 4805. **Flush Out's blade twin (D3):** row `flush_out_blade`: from Dexterity **5**, a hit in melee rolled with Dexterity
     on a foe at Pressure **2** or more (Pressed) makes it save (Heart, against your Dexterity) or be Afraid of you for
     **1** round, once a turn. A Pressed foe you cut saves or is Afraid. PROVISIONAL: 5, 2, 1, once a turn.
+    *(Superseded in part by item 4819: never on an Elite or a Boss.)*
 4806. **The alpha perks (D3):** Pressure Point (`both_hands`) and Keep Their Heads Down (`running_reload`), every tier:
     `melee: false` and `damage: ["ranged"]` become `rolled_with: ["dexterity"]`; the texts say "your hit rolled with
     Dexterity"; the tag `guns` is `dexterity`. Numbers unchanged (items 4614, 4615).
@@ -11658,6 +11659,7 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
     - Survival stage 1 (`party-fit.ts partyRun`, solo, 20 seeds): `dex_knife` 0 -> 2 cleared (mean depth 6.5 -> 7.2);
       `dex_monk` (the camp's Hand wraps, rolling with Dexterity through the Open Hand) 10 -> 18 cleared (12 -> 14.8).
     The knife and the gloves with both perks land at 88 to 146%, under the melee line (165%): the pip limit stays 2.
+    *(The review's reading of the stop rule and the pip limit 1 measured: item 4821. Stage 1 after the review: item 4819.)*
     **For the lead:** the sabre and the gladius were over the melee line before this revision in an all-in Dexterity
     build, and the perks now working at arm's length lift them 8 to 24 points more.
 4813. **Rite in the Field (D6):** Lore Master's gamma perk (Determination's, the Outburst side) cuts, in a fight, the AP
@@ -11667,6 +11669,7 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
     Crystallise button are deleted; the engine's own Crystallise shows the cut price; `rite_in_the_field` is out of the
     `lint-item-ops` baseline. On the field after a fight AP is free (rules 1.55), so no AP perk does anything there: the
     card says "In a fight". PROVISIONAL: 1, 2, 1. *(Supersedes item 166 and the "Wards and rituals" mapping.)*
+    *(Superseded in part by item 4820: Steady is dropped, the cut is Crystallise's only.)*
 4814. **Not built, for the lead (D6):** cutting Lore Master's own Call, **Name It** (to 0 AP at most), needs a price
     predicate on the Call's id: Calls are priced at the site `call` with `{ id }` on the context, and no predicate reads
     a priced action's id (`action` reads the site only; `cond` reads `ctx.id` but means a condition). Listed under
@@ -11680,4 +11683,35 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
 4816. **Unchanged on purpose:** the kill's spill (+1 to the enemies within 3 that saw it) stays a ranged kill's; the
     ranged hit's own pip stays rules.ts's for every unit. The name "Rite in the Field" is kept (a display rename is
     Leon's call).
-4817. **Items 4800 to 4817 are rules 1.63's.**
+4817. **Items 4800 to 4822 are rules 1.63's.**
+4818. **The throw's skill is decided once (review):** `combat.ts weaponVia` answers the throw's skill for mode `thrown`
+    from data (`rules.json combat.attack.skill_by_attack.thrown`, Dexterity), whatever the weapon thrown hits with, and
+    `physical/core.ts` aims the throw by that same answer (it had its own Dexterity override, and the attack's `via` read
+    the weapon's own skill: an ork machete thrown rolled with Dexterity but carried `raw_power`, so Pressure Point, Keep
+    Their Heads Down, Relocated, Fire and Move, the forks and Trick Shot never saw it). A throw's conditions are delivered
+    by Dexterity too (rules 1.13 already said so). Every throw, any weapon, now lays and reads Pressure as item 4800 says.
+    No number.
+4819. **Flush Out's blade twin spares Elites and Bosses (review):** the row `flush_out_blade` carries
+    `target_not_tier: ["elite", "boss"]`. Two Dexterity blows take any foe to Pressed (a Boss's cap is 2), and the
+    second's free Fear (a Heart save, no AP, once a turn) cost a solo Boss about half its turns (`npm run try`, a knife
+    at Dexterity 7 against a 5,000 HP Boss: it acted in 3 of 6 rounds, 6 of 6 at Dexterity 4). Frightening an Elite or a
+    Boss is the paid Flush's (item 4805's ranged half), which keeps them. Stage 1 after the change (20 seeds, solo,
+    `DEX-1..20`): `dex_knife` 1 cleared (mean depth 6.7), `dex_monk` 16 (13.8); before it 2 and 18. No new number.
+4820. **Rite in the Field drops Steady (review):** Steady costs 1 AP (`soul_modules.json steady_ap`) and the cut's
+    floor is 1 (the lead's D6), so the Steady clause cut nothing at either tier: it is gone from the rows and the card,
+    which now promise only what happens, Crystallise cheaper by 1 (II: 2), never below 1. The perk still does nothing
+    for a Lore Master with no Emanator until Name It can be priced (item 4814, listed for the lead). No new number.
+4821. **The pip limit stays 2 (review; the D7 stop rule):** the review read the rule as covering the sabre and the
+    gladius in the Dexterity build, which with both perks land 40 to 60 points over the melee line (165%). Measured at
+    limit 1 (`dex-melee-measure`, 30 fights a cell, levels 1 / 6 / 10), percent of the plain rifle:
+    - knife, both perks: 96 / 109 / 109 at 2 -> 89 / 101 / 101 at 1 (no perks 87 / 94 / 99 either way), and the target
+      never reaches Suppressed (Pressed in 0 to 97% of fights): the perks give back almost nothing, Leon's complaint;
+    - striking gloves, both perks: 88 / 127 / 121 -> 82 / 118 / 113;
+    - sabre, no perks 187 / 205 / 205 -> 186 / 203 / 203; both perks 200 / 227 / 217 -> 176 / 213 / 204; with the
+      forks 194 / 214 / 217 -> 193 / 211 / 216.
+    The sabre is over the line before any pip (no perks, 186 to 205%), and limit 1 leaves it 40 to 50 points over while
+    taking most of what the knife and the gloves were given. The excess is the sabre's and the gladius's own damage, not
+    the door's: limit 1 is not applied, and the D7 rule is read as the builds it named (the knife and the monk). **For
+    the lead:** a refit ticket for the sabre and the gladius in Dexterity hands (and a ruling on the reading).
+4822. **Moved on purpose (review):** see `CHANGELOG.md` 0.31.0 "Review fixes" for the golden and replay lines the
+    throw's skill and the Boss rule moved.

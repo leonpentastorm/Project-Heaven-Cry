@@ -4613,13 +4613,13 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: In a fight, the heart's rituals cost you {=tiers.I.effects.0.value|abs} AP less: Crystallise (a mana core from the air) and Steady (never below {=tiers.I.effects.0.min} AP). II: In a fight, the heart's rituals cost you {=tiers.II.effects.0.value|abs} AP less: Crystallise (a mana core from the air) and Steady (never below {=tiers.II.effects.0.min} AP).",
+      "text": "I: In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.I.effects.0.value|abs} AP less, never below {=tiers.I.effects.0.min} AP. II: In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.II.effects.0.value|abs} AP less, never below {=tiers.II.effects.0.min} AP.",
       "effects": [
         {
           "op": "cost_mod",
           "when": "cost",
           "if": {
-            "action": ["crystallise", "steady"]
+            "action": ["crystallise"]
           },
           "value": -1,
           "min": 1,
@@ -4635,13 +4635,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "In a fight, the heart's rituals cost you {=tiers.I.effects.0.value|abs} AP less: Crystallise (a mana core from the air) and Steady (never below {=tiers.I.effects.0.min} AP).",
+          "text": "In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.I.effects.0.value|abs} AP less, never below {=tiers.I.effects.0.min} AP.",
           "effects": [
             {
               "op": "cost_mod",
               "when": "cost",
               "if": {
-                "action": ["crystallise", "steady"]
+                "action": ["crystallise"]
               },
               "value": -1,
               "min": 1,
@@ -4657,13 +4657,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "In a fight, the heart's rituals cost you {=tiers.II.effects.0.value|abs} AP less: Crystallise (a mana core from the air) and Steady (never below {=tiers.II.effects.0.min} AP).",
+          "text": "In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.II.effects.0.value|abs} AP less, never below {=tiers.II.effects.0.min} AP.",
           "effects": [
             {
               "op": "cost_mod",
               "when": "cost",
               "if": {
-                "action": ["crystallise", "steady"]
+                "action": ["crystallise"]
               },
               "value": -2,
               "min": 1,

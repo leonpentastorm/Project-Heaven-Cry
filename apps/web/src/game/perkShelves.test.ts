@@ -96,7 +96,7 @@ describe('the three shelves', () => {
 });
 
 describe('a button that only shows at its moment (the audit\'s finding 8)', () => {
-  // (rules 1.63, D6: Rite in the Field has no button of its own any more: it prices the engine's own Crystallise and Steady)
+  // (rules 1.63, D6: Rite in the Field has no button of its own any more: it prices the engine's own Crystallise)
   const TEN: [string, string][] = [['perk', 'catch'], ['perk', 'jury_rig'], ['perk', 'clean_draw'], ['perk', 'case_closed'], ['perk', 'twin_discipline'],
     ['trait', 'oil_in_my_mind'], ['trait', 'oil_in_my_soul'], ['trait', 'old_school']];
   it('the eight (rules 1.56: Shadow Step is data now; rules 1.63: Rite in the Field is data) sit on Always on while the button is down, with "Its button appears when …"', () => {

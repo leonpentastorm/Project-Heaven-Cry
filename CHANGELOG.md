@@ -10,7 +10,7 @@ The game shows its version in the corner of the title screen and in every "Repor
 
 ## 0.31.0 — Pressure is Dexterity's (lane 0.31-dex)
 
-Rules revision 1.63, spec items 4800 to 4817, every new number PROVISIONAL. From Leon's live play of 0.30.0: a Dexterity
+Rules revision 1.63, spec items 4800 to 4822, every new number PROVISIONAL. From Leon's live play of 0.30.0: a Dexterity
 melee build got nothing from its door, the knife showed Pull Out with no Throw, and Rite in the Field boosted a glyph.
 The lead's rulings D1 to D7. One closed-list addition, approved: the predicate `rolled_with`.
 
@@ -43,7 +43,7 @@ The lead's rulings D1 to D7. One closed-list addition, approved: the predicate `
 
 ### Rite in the Field (item 4813)
 
-- In a fight it cuts the heart's rituals, **Crystallise and Steady**, by 1 AP (II: 2), never below 1. It no longer cuts
+- In a fight it cuts **Crystallise** by 1 AP (II: 2), never below 1 (Steady was dropped in review: item 4820). It no longer cuts
   the WARD glyph, prayers, Ward moves or a Guarded Begin. Data rows now; the hand-coded perk and its second Crystallise
   button are gone (the lint baseline shrinks). Cutting Name It waits on a price predicate on a Call's id (for the lead).
 
@@ -65,6 +65,26 @@ The lead's rulings D1 to D7. One closed-list addition, approved: the predicate `
   Field's rows. No gun line.
 - 16 of the 29 replays (REPLAY_FULL), re-recorded: Dexterity blows, the Skirmisher's moves on non-Dexterity rolls, and
   Rite in the Field in the magic games.
+
+### Review fixes (items 4818 to 4822)
+
+- **A throw rolls with Dexterity whatever is thrown** (item 4818): `combat.ts weaponVia` answers a throw's skill from
+  data (`rules.json combat.attack.skill_by_attack.thrown`) and the throw is aimed by that same answer. A Raw Power
+  weapon thrown (an ork machete) rolled with Dexterity but carried `raw_power`, so Pressure Point, Keep Their Heads
+  Down, the Skirmisher's moves, the forks and Trick Shot never saw it. New reducer test.
+- **Flush Out's blade twin never frightens an Elite or a Boss** (item 4819, `target_not_tier`): two Dexterity blows a
+  turn put a free Fear on a solo Boss about half its turns. The paid Flush still can. Stage 1 solo, 20 seeds:
+  `dex_knife` 1 cleared (was 2), `dex_monk` 16 (was 18).
+- **Rite in the Field drops Steady** (item 4820): Steady costs 1 AP and the floor is 1, so its clause cut nothing; the
+  card now promises only the Crystallise cut. The test proves the cut from the rows and that Steady is untouched.
+  Name It still waits on a price predicate on a Call's id (for the lead).
+- **The pip limit stays 2** (item 4821): measured at limit 1, the sabre stays 40 to 50 points over the melee line (it is
+  over before any pip) while the knife and the gloves lose most of what their perks gave. For the lead: a refit ticket
+  for the sabre and the gladius in Dexterity hands.
+- **Moved on purpose:** 39 golden technique lines, all a Dexterity blade (combat knife, Evoker blade, sabre) against an
+  Elite (the twin's use counter and its save are gone); 5 of the 29 replays (`cover-4v6-guns-blades`,
+  `open-4v6-guns-blades`, `open-4v3-level3`, `proving-4v12-guns`, `cover-4v7-blades-walk-away`), each moved first at a
+  Dexterity blade's blow on an Elite or a Boss (the save no longer drawn). No gun line moved.
 
 ## 0.30.0 — shields as weapons, the follow strike, the tank rulings, the bare heart and the shield display
 

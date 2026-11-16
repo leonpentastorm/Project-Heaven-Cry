@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   apply, emit, emitStory, applyCond, applyDamage, healUnit, grantShield, resolveAttack, previewOutburst, designCost, manaOf, passive, statQuery, skillRollMod,
-  d20, die, PATRONS, memoryOf, musicOf, unitSave, condOn, togglesFor, perkActionsFor, perkInfoFor, type Unit, type Combat, type GameState,
+  d20, die, PATRONS, memoryOf, musicOf, unitSave, condOn, togglesFor, PERK, perkActionsFor, perkInfoFor, type Unit, type Combat, type GameState,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
@@ -69,11 +69,13 @@ describe('Resonance, the perk (rules 1.14): what the rewrite kept', () => {
 });
 
 describe('Rite in the Field (rules 1.63, D6: the rituals of the heart)', () => {
-  it('I cuts Crystallise by 1 AP, II by 2 (never below 1); a prayer and a WARD glyph cost what they cost without it', () => {
+  it('I cuts Crystallise by its row value, II by its own (never below the floor); a prayer and a WARD glyph cost what they cost without it', () => {
     const cost = (tier?: string) => { const g = soulFight(tier ? { rite_in_the_field: tier } : {}); const a = g.pc.ap;
       g.act({ type: 'combat/crystallise', unitId: g.pc.id } as any); expect(logHas(g.cb, /crystallises/)).toBe(true); return a - g.pc.ap; };
     const plain = cost(); expect(plain).toBeGreaterThan(2);
-    expect(cost('I')).toBe(plain - 1); expect(cost('II')).toBe(Math.max(1, plain - 2));
+    const row = (t: string) => (PERK as any).rite_in_the_field.tiers[t].effects[0];
+    for (const t of ['I', 'II']) expect(cost(t), t).toBe(Math.max(row(t).min, plain + row(t).value));
+    expect(cost('II')).toBeLessThan(cost('I'));
     // the old Perks-tab copy of Crystallise is gone (one copy of the action: the engine's own, priced at its site)
     const g = soulFight({ rite_in_the_field: 'II' }); expect(() => g.act({ type: 'combat/perk', unitId: g.pc.id, id: 'rite_in_the_field', actionId: 'crystallise' } as any)).toThrow();
     // the Mind's and Faith's doors are not its: a Hymn and a WARD glyph cost the same with and without it
@@ -83,10 +85,12 @@ describe('Rite in the Field (rules 1.63, D6: the rituals of the heart)', () => {
       const a2 = f.pc.ap; draw(f, 'ward', '3,5'); return [ap - a2, Math.round((a2 - f.pc.ap) * 10) / 10]; };
     expect(other({ rite_in_the_field: 'II' })).toEqual(other({}));
   });
-  it('Steady is never cut below 1 AP', () => {
-    const g = soulFight({ rite_in_the_field: 'II' }); const d = g.pc.mg!.designs[0];
-    g.act({ type: 'combat/outburst', unitId: g.pc.id, design: d.id, hold: true } as any); const a = g.pc.ap;
-    g.act({ type: 'combat/steady', unitId: g.pc.id } as any); expect(a - g.pc.ap).toBe(1);
+  it('Steady is not its (review: at 1 AP and a floor of 1 a cut was never a cut): Steady costs the same with and without it', () => {
+    const steady = (perks: Record<string, string>) => { const g = soulFight(perks); const d = g.pc.mg!.designs[0];
+      g.act({ type: 'combat/outburst', unitId: g.pc.id, design: d.id, hold: true } as any); const a = g.pc.ap;
+      g.act({ type: 'combat/steady', unitId: g.pc.id } as any); return a - g.pc.ap; };
+    expect(steady({ rite_in_the_field: 'II' })).toBe(steady({}));
+    for (const t of ['I', 'II']) for (const e of (PERK as any).rite_in_the_field.tiers[t].effects) expect(e.if.action, t).toEqual(['crystallise']);
   });
 });
 

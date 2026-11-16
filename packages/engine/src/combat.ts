@@ -1400,9 +1400,12 @@ export type AttackOpts = { extra?: number; free?: boolean; noAp?: boolean; dmgMu
   /** the technique this attack is a strike of, when it isn't one of the plain attacks (physical/core.ts leaves the free ones out: Cut, Shot, Aimed Shot, Overwatch). A weapon's old on-hit grant fires only on a plain attack */ tech?: string;
   /** this hit gives the attacker no Momentum: a technique's strike that isn't the plain attack (the rework, 10 Nov 2026: only a plain melee attack's hit gives 1) */ noMomentum?: boolean;
   /** fields added to the shot's effects event (a technique's id and roll index: presentation only) */ fx?: Record<string, any> };
+/** The skill a throw is aimed with, whatever the weapon thrown hits with (data/rules.json combat.attack.skill_by_attack.thrown). */
+const THROW_SKILL: string = (() => { const s = (RULES as any).combat?.attack?.skill_by_attack?.thrown; if (typeof s !== 'string' || !SKILL[s]) throw new Error('data/rules.json combat.attack.skill_by_attack.thrown needs a skill id'); return s; })();
 /** The skill a weapon's conditions are delivered by (rules 1.13): the skill it hits with. Melee blows Raw Power; shots,
- * light blades and throws Dexterity. */
-export const weaponVia = (att: Unit, mode: string): string => strikeWeapon(att, mode)?.skill || 'raw_power';
+ * light blades and throws Dexterity. A throw is aimed with THROW_SKILL whatever the weapon (rules 1.63: the one place
+ * the throw's skill is decided; physical/core.ts aims the throw by it). */
+export const weaponVia = (att: Unit, mode: string): string => (mode === 'thrown' ? THROW_SKILL : strikeWeapon(att, mode)?.skill || 'raw_power');
 /** The attacks being resolved, innermost last (a serial each; never saved): what react()'s `event` names, so a unit
  * answers one attack once (rules 1.28, rule 3 of reactions-spec.md). */
 const ATTACKS: number[] = []; let ATTACK_N = 0;

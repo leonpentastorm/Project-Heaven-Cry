@@ -3,10 +3,14 @@
 import { describe, expect, it, afterEach } from 'vitest';
 import { physFight, rig } from './helpers/physfight';
 import { PREDICATES } from '../src/effects/triggers';
+import { onHook } from '../src/effects/hooks';
 import { phys, SKILL, PERK, WEAPON, previewAttack } from '../src';
 import forksJ from '../../../data/forks.json';
 
-afterEach(() => rig(null));
+// fail every Fear save while FAIL_FEAR is on (the rule under test is whether the blade twin asks for one at all)
+let FAIL_FEAR = false;
+onHook('save', (ctx: any) => { if (FAIL_FEAR && ctx.id === 'fear') ctx.fail = true; });
+afterEach(() => { rig(null); FAIL_FEAR = false; });
 const DOOR: any = (SKILL as any).dexterity.unlocks['1'];
 const PIP = DOOR.effects.find((e: any) => e.label === 'pressing_blade');
 const P: any = phys.PHYS_RULES.pressure;
@@ -76,6 +80,33 @@ describe('D3: the alpha perks and forks read Dexterity, not range', () => {
     for (const e of rows) expect(e.if?.melee, JSON.stringify(e)).not.toBe(false);
     expect(rows.filter((e: any) => e.if?.rolled_with).length).toBeGreaterThan(0);
   });
+});
+
+describe('D1: a throw rolls with Dexterity whatever the weapon thrown (combat.ts weaponVia, the one place)', () => {
+  it('a Raw Power weapon thrown with Throw readied is rolled with Dexterity: its preview says so and Pressure Point applies', () => {
+    const f = physFight([{ weapon: 'ork_machete', known: ['throw'], skills: { dexterity: 7, raw_power: 1 }, attrs: { agility: 7 }, level: 6, perks: { both_hands: 'II', running_reload: 'II' } }], [{ at: 'H5', tier: 'soldier', weapon: 'combat_knife' }]);
+    f.cb.objects = []; f.put(f.pc, 'E5'); f.put(f.foe, 'H5'); big(f, f.foe); f.unit(f.foe.id).conds = {};
+    const u = f.turn(f.pc); f.unit(u.id).ap = 9; rig({ hit: true });
+    expect(f.bound(() => previewAttack(f.cb, f.unit(u.id), f.unit(f.foe.id), 'thrown')).via).toBe('dexterity');
+    f.press(f.foe, P.pressed, f.pc);
+    expect(f.tech('throw', { targetId: f.foe.id })).toBeNull();
+    const steps = (PERK as any).both_hands.tiers.II.effects[0].value.steps;
+    // a ranged hit's own pip, then Pressure Point II's steps on a Pressed foe (capped by tier)
+    expect(f.pressure(f.foe)).toBe(Math.min(phys.pressureCap(f.unit(f.foe.id)), P.pressed + 1 + steps.reduce((n: number, s: any) => n + s.value, 0)));
+    expect(!!f.unit(f.foe.id).conds?.off_balance).toBe(true);
+  });
+});
+
+describe('review: the blade twin of Flush Out frightens no Elite or Boss (a free Fear every turn stopped a Boss)', () => {
+  const twin = (tier: string) => {
+    const f = physFight([{ weapon: 'combat_knife', skills: { dexterity: 7 }, attrs: { agility: 7 }, level: 6 }], [{ at: 'F5', tier, weapon: 'combat_knife' }]);
+    f.cb.objects = []; f.put(f.pc, 'E5'); f.put(f.foe, 'F5'); big(f, f.foe); f.unit(f.foe.id).conds = {};
+    const u = f.turn(f.pc); f.unit(u.id).ap = 9; rig({ hit: true }); FAIL_FEAR = true;
+    f.press(f.foe, DOOR.effects.find((e: any) => e.label === 'flush_out_blade').if.target_res.pressure.at_least, f.pc);
+    cut(f); return !!f.unit(f.foe.id).conds?.fear;
+  };
+  it('a Pressed Soldier cut with a Dexterity blow is Afraid on a failed save', () => { expect(twin('soldier')).toBe(true); });
+  it('a Pressed Elite or Boss is not asked to save at all', () => { expect(twin('elite')).toBe(false); expect(twin('boss')).toBe(false); });
 });
 
 describe('D4: a gun still presses as before (every gun rolls with Dexterity)', () => {
