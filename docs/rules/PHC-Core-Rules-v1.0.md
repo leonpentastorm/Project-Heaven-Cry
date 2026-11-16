@@ -11241,8 +11241,11 @@ make all the deceision right, the target is FUN and REWARD for the effort you pu
     door's fight tab (and the Guard and Momentum meters' cards) shows one line from the engine's `doorFeedView`: the
     number now, the beta that feeds it, what the next point buys (the row's `line` and `next`); each beta's skill card
     names the door it feeds. PROVISIONAL: 0.01 and every number below.
-4604. **Pain Threshold → the plate soak:** `guardSoak` × the feed (Durability's Guard; the Reactive Plate's own stat is
-    unchanged). A plate soaks 6 × the level scale at Pain Threshold 0, 12 at Durability 10 and Pain Threshold 10.
+4604. **Pain Threshold → the plate soak:** `guardSoak` × the feed (Durability's Guard), and the Reactive Plate's own stat
+    × the same feed (0.30.0 review: the plate's flat 10 left a rank III Bulwark nothing from its beta, while the Guard
+    meter and the door tab said the fed number; now the plate, the meter and the tab read one number, `physical/guard.ts
+    plateSoakOf`). A plate soaks 6 × the level scale at Pain Threshold 0, 12 at Durability 10 and Pain Threshold 10; a
+    Reactive Plate 10, 11 at Durability 10 and Pain Threshold 1, 20 at 10 and 10.
 4605. **Guts → the Momentum worn off:** a tile walked or a hit taken wears Momentum ÷ the feed (`physical/core.ts
     wearMomentum`), the kept part carried; a spend (Raise Shield's turn of Momentum into Guard) is not worn off. At 10/10 a
     2-tile walk costs 1.
@@ -11255,8 +11258,10 @@ make all the deceision right, the target is FUN and REWARD for the effort you pu
 4609. **Improvisation → the Figment body:** a Figment's HP × the feed (`figmentBlock`).
 4610. **Camaraderie → the heal back:** Tending (`how` tending) that lands on a Bonded ally (`tied` bond) heals the giver
     `feed_at_double` 0.3 × (feed − 1) of what it restored (3% / 15% / 30% at Empathy 10), healed by nobody: no heal given,
-    no Ledger, no echo, no patron's tag. It is a heal received, so Camaraderie's +10% a point of healing received applies
-    to it (the spec's row did not say; for the lead). The spec's carrier (one data row) cannot be written: a number block
+    no Ledger, no echo, no patron's tag, and not raised by the giver's own healing received (0.30.0 review: Camaraderie's
+    +10% a point of healing received multiplied it again, so at 10/10 the giver got 57% while the tab said 30%; the share
+    shown is now the share healed, `healUnit`'s `plain`; the other reading, the tab saying the larger number, is Leon's
+    call). The spec's carrier (one data row) cannot be written: a number block
     has no product of two sources, so it is the one listener in `tactics.ts` (`heal_given`), its numbers in data.
 4611. **Composure → the Strain limit:** round((3 + Will Power ÷ 2, down) × the feed), then what items add: 9 / 12 / 16
     at Will Power 10 (Leon's ruling i: doubled like every other beta). The Mana Short stays 3 over the limit.

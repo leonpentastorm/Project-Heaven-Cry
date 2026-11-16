@@ -24,7 +24,7 @@ import { TECHNIQUE, TECHNIQUES, PHYS_RULES, hitsWith, weaponPhys, weaponProps, w
 import { pressureOf, pressureState, pressureCap, addPressureTo, lowerPressureOf, isPressed, wasSuppressedAt, showPressure, hitPressure } from './pressure';
 import { setBraced, setNailed, bracedAs } from '../unitstate';
 import { condsAside } from '../magic';
-import { feedOf, feedCarry, showFeedNumber } from '../effects/feed';
+import { feedOf, feedCarry, showFeedNumber, feedRow, doorFeedView } from '../effects/feed';
 
 // ---------- the registry ----------
 const HANDLERS: Record<string, TechHandler> = {};
@@ -119,7 +119,10 @@ export const guardMax = (u: Unit) => u.resMax?.guard ?? 0;
  * plate soak's beta feed, rules 1.60 item 4604: Pain Threshold). The one place it is worked out: the soak (guard.ts),
  * the panel's words (physView) and the door tab's line (effects/feed.ts) read it. A unit, or a sheet ({level, skills}). */
 export const guardSoak = (u: Pick<Unit, 'level'> & { skills?: any }): number => Math.max(1, Math.round(GR().soak * scaleOf(u.level) * feedOf(u, 'plate_soak')));
-showFeedNumber('plate_soak', (x) => guardSoak(x));
+// What one plate soaks now, as the Guard meter and its hint say it: the door tab's plate_soak number (physical/guard.ts
+// registers it: a Reactive Plate holder's plate soaks the plate's own stat, fed; anyone else guardSoak), so the meter,
+// the tab and the damage path read one copy (rules 1.60 item 4604).
+const plateSoakNow = (u: any): number => doorFeedView(u, feedRow('plate_soak').door)?.now ?? guardSoak(u);
 /** Rules 1.59 (T4, Leon, 16 Nov 2026: "let them have double guard when doing a guard action, we already have max guard
  * to balance it"): what every Guard gain of this unit is multiplied by: rules.guard.two_shield_mult with a shield in
  * each hand, else 1. The one reader: guardGain (Brace, the Guard technique) and the follow strike's plate (follow). */
@@ -1085,7 +1088,7 @@ export const MOMENTUM_HINT: string = String(PHYS_RULES.momentum?.texts?.how || '
 /** Guard's rule in words, every number from rules.guard (its soak at this unit's level, rules 1.36). */
 export function guardHint(u: Pick<Unit, 'level'>): string {
   const g = GR(), brace = g.brace_gain, keep = g.keep_back;
-  return 'Brace gives ' + brace + ' Guard (' + (brace + g.brace_shield_gain) + ' with a shield); the Guard technique gives ' + g.gain_base + ', +' + g.gain_per_point + ' for each Durability point above 1, +' + g.shield_gain + ' with a shield; a shield in each hand multiplies every gain by ' + g.two_shield_mult + ' instead. Each point takes ' + guardSoak(u) + ' damage off a hit; ' + (keep === 1 ? 'the last point is' : 'the last ' + keep + ' points are') + ' kept for a reaction unless the hit would take you down. Pressure comes off Guard first. While you hold any, a hit costs you no Momentum.';
+  return 'Brace gives ' + brace + ' Guard (' + (brace + g.brace_shield_gain) + ' with a shield); the Guard technique gives ' + g.gain_base + ', +' + g.gain_per_point + ' for each Durability point above 1, +' + g.shield_gain + ' with a shield; a shield in each hand multiplies every gain by ' + g.two_shield_mult + ' instead. Each point takes ' + plateSoakNow(u) + ' damage off a hit; ' + (keep === 1 ? 'the last point is' : 'the last ' + keep + ' points are') + ' kept for a reaction unless the hit would take you down. Pressure comes off Guard first. While you hold any, a hit costs you no Momentum.';
 }
 /** A Pressure state's data row (rules.pressure.states: word, says, text, text_pc). */
 const PS = (state: string): any => PHYS_RULES.pressure?.states?.[state] || {};
@@ -1098,7 +1101,7 @@ function physViewOf(cb: Combat, u: Unit, viewerSide: 'pc' | 'foe') {
   return {
     momentum: max != null && holdsMelee(u) ? { now: momentumOf(u), max, hint: MOMENTUM_HINT } : null,
     // Durability's Guard (rules 1.13): the pool, what a Brace or the Guard technique would add now, and the rule
-    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back, soak: guardSoak(u), shield: !!shieldOf(u), hint: guardHint(u) } : null,
+    guard: u.resMax?.guard != null ? { now: guardOf(u), max: guardMax(u), gain: guardGain(u), braceGain: guardGain(u, 'brace'), keep: GR().keep_back, soak: plateSoakNow(u), shield: !!shieldOf(u), hint: guardHint(u) } : null,
     // Pressure 2.0 (rules 1.56): the state's word, its short line and its cost are data (techniques.json rules.pressure.states)
     pressure: { now, max: pressureCap(u), state, word: state ? PS(state).word || '' : now ? 'Under fire' : '', says: state ? PS(state).says || '' : '',
       cost: state ? (u.side === 'pc' && PS(state).text_pc) || PS(state).text || '' : '', by },
