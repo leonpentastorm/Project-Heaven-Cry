@@ -17641,6 +17641,81 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 342,
+    "family": "technique_icons",
+    "id": "tech-shove-tech",
+    "path": "art/icons/techniques/shove-tech.png",
+    "name": "Shove (technique)",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, link",
+    "paint": "A single palm pushing a partial figure back one step.",
+    "avoid": "the Palm form (two palms) \u00b7 a cliff",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Edit this exact Project Heaven Cry icon to correct its rejected draft. Show ONE cropped ceramic OPEN PALM pushing one cropped shoulder/torso to right, one partial boot sliding one step. The hand and torso must be distinct separated WHITE shapes with a BROAD GENUINELY TRANSPARENT GAP along wrist/arm/torso, touching ONLY at palm contact. Remove ALL opaque black/gray outlines. Do NOT draw a whole head or whole figure. A small transparent diamond in chest and clear transparent belt gap separate partial shapes. Flat pure white silhouettes, no black painted strokes. Preserve the composition and established ceramic-mitten/Wick graphic style. Center the complete subject inside generous transparent 15% margins and safe circular chip. Square icon; no text, gradients, grayscale shading, texture or extra props. ALL dark cuts must be TRANSPARENT HOLES, not black RGB paint.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/superseded/342-transparent-contact-fix/native.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/342-transparent-contact-fix/native.png",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "7208e5871eb9814b0b3462b037a354794db03d70bc3cf67d6e50fca7858d0523",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/342-shove-tech.png",
+    "source_sha256": "fd707bef134039b0469e3e4301b01c4604256edbd2eefb8668fdb9771ef9bced",
+    "export_crop": [
+      47,
+      172,
+      1202,
+      1212
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/shove-tech.png",
+      "64": "art/icons/techniques/exports/64/shove-tech.png",
+      "48": "art/icons/techniques/exports/48/shove-tech.png",
+      "44": "art/icons/techniques/exports/44/shove-tech.png",
+      "32": "art/icons/techniques/exports/32/shove-tech.png",
+      "24": "art/icons/techniques/exports/24/shove-tech.png"
+    },
+    "framing": {
+      "scale": 0.6665119531692588,
+      "offset": [
+        127,
+        165
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "04607fa31b4735c6ff737ca0f836f44e5b5586466e2cf566707a7dc2ca7c77a9",
+      "64": "71dd5bdc56c0971e74e0188161709e064e0602962648224aaeada3d68b101d03",
+      "48": "2a4c9d0058cc81fbeb6268aabd8560f87e5f21f2950954375270e3c151fce0da",
+      "44": "f6a3d95e5b082762b418b653a846d1bcd89ef89d4dd2c666832f924677409d86",
+      "32": "0dfa5f3347ee1ad9f608152133d8c0988645cd2808b4a5229a5f825029e9ea79",
+      "24": "ff30e8c07e60e9844b44a618e773d6a6e0b0f8738291fe424969641e8135593e"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 343,
     "family": "technique_icons",
     "id": "tech-trip",
@@ -17713,6 +17788,157 @@
       "44": "6218e419b0b462d26149c947a6a10f8d98189d0b4f84e8dcf3c0b3cc015d4fd9",
       "32": "f3a9f26d1fef2dfc74fae3fe8cf626484d9ddbbeaad5c74cbf26d8aae183d208",
       "24": "4ddc56b959b0f810cd8a2445319aa1b1cdf50eee85d67b9d6300993234de3220"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 344,
+    "family": "technique_icons",
+    "id": "tech-drag",
+    "path": "art/icons/techniques/drag.png",
+    "name": "Drag",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, link",
+    "paint": "A hand hauling a partial figure by the collar along the ground.",
+    "avoid": "a body bag \u00b7 blood",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Edit this exact Project Heaven Cry icon to correct its rejected draft. Keep the collar-drag action exactly legible: ONE cropped ceramic mitten gripping ONE coat collar attached to cropped shoulder/torso along short ground line. REMOVE every halo, glow, soft gray outline, blur and shadow. ONLY fully opaque #FFFFFF silhouettes separated by broad TRANSPARENT gaps at wrist, mitten, collar and coat. Native edge antialiasing only, no faint surrounding pigment. No whole head/figure, blood, text or new props. Preserve the composition and established ceramic-mitten/Wick graphic style. Center the complete subject inside generous transparent 15% margins and safe circular chip. Square icon; no text, gradients, grayscale shading, texture or extra props. ALL dark cuts must be TRANSPARENT HOLES, not black RGB paint.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/superseded/344-halo-fix/native.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/344-halo-fix/native.png",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "31ea5df523beb3b0f451a9e547544b808ecf7d2d1abd659fc117cc9f9b977196",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/344-drag.png",
+    "source_sha256": "ac9c40c9bae347c1560da1758da2ab1d4acde632e53ce772e0a8c4bd81c8909d",
+    "export_crop": [
+      0,
+      136,
+      1234,
+      1224
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/drag.png",
+      "64": "art/icons/techniques/exports/64/drag.png",
+      "48": "art/icons/techniques/exports/48/drag.png",
+      "44": "art/icons/techniques/exports/44/drag.png",
+      "32": "art/icons/techniques/exports/32/drag.png",
+      "24": "art/icons/techniques/exports/24/drag.png"
+    },
+    "framing": {
+      "scale": 0.5589256549526794,
+      "offset": [
+        167,
+        208
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "6a49ecf7a6ca4b84cff670af4dd8b62454ca135f19cd328eae940af57d652839",
+      "64": "e6596cca227edb522ae4d16509c93716a37c72aee80f85fca08afb9b2ca6d704",
+      "48": "11f4bbfadae322c4bf48d2b238d9516754f2047e049ecb181fec654fe556ae00",
+      "44": "f8034c9e2a2b916c354483f6cf1c839ab502acb4f0daa4874b559b5a78c0d52d",
+      "32": "f39b81a5c50d6c385aa5c5d4b83e27bd6c8ba124b22e30d384c92b6f0ce404dd",
+      "24": "b148a0d070a8bead88ccacaa5d6c6adb01db343d0513009684196a521d06d871"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 345,
+    "family": "technique_icons",
+    "id": "tech-parry",
+    "path": "art/icons/techniques/parry.png",
+    "name": "Parry",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, answer",
+    "paint": "Wick's blade turning another blade aside with a small spark tick.",
+    "avoid": "a shield \u00b7 crossed swords standing still",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Edit this exact Project Heaven Cry icon to correct its rejected draft. Keep ONE Wick actively parrying ONE cropped incoming blade aside at blade contact. REMOVE ALL GLOW, gray backdrop, soft wash, fuzzy aura and shadow; every gap outside and inside figure must be FULLY TRANSPARENT. Only fully opaque white silhouettes, transparent screen with white pixel face, broad transparent cuts at limbs, cape and chest. One TINY HARD WHITE IMPACT TICK at blade contact, never a burst/soft ray. One full Wick, no shield, no bowl or halo, no border or stars. Preserve the composition and established ceramic-mitten/Wick graphic style. Center the complete subject inside generous transparent 15% margins and safe circular chip. Square icon; no text, gradients, grayscale shading, texture or extra props. ALL dark cuts must be TRANSPARENT HOLES, not black RGB paint.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/superseded/345-halo-fix/native.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/345-halo-fix/native.png",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "37cf65be9c36f830e48b3bafa83b26e772df8b77db39c94e42ca30043c1288fa",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/345-parry.png",
+    "source_sha256": "ed93eb1c70ce789b9e473aa3d21f335232b5c12e773470e86d5a41d38aa64c61",
+    "export_crop": [
+      0,
+      53,
+      1220,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/parry.png",
+      "64": "art/icons/techniques/exports/64/parry.png",
+      "48": "art/icons/techniques/exports/48/parry.png",
+      "44": "art/icons/techniques/exports/44/parry.png",
+      "32": "art/icons/techniques/exports/32/parry.png",
+      "24": "art/icons/techniques/exports/24/parry.png"
+    },
+    "framing": {
+      "scale": 0.5957695311969029,
+      "offset": [
+        148,
+        154
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "faf883ea89948f94606c022b80ac7e958665957c2ee0d037bdc1501e0e653746",
+      "64": "366ce13d33ccefd2ae56680504907b7f77d001825aa89a0fa72ce34bb858f528",
+      "48": "8f7a0120103a9f99df3a0b9c2e5bff02536d4bc49b518204395380a7bb02614c",
+      "44": "14cf39097c642535113c1e601652b352eef745ce77f4a8a34038c46f97ed512f",
+      "32": "ca9d7aefb5bb0ad7539c2e051030e4f1527ceb91235fd0c52d5414875b935d01",
+      "24": "6e95ca33eba5c0bdc84ff982c547589ee47e317f0f056090c2dd36f475d65f7c"
     },
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },

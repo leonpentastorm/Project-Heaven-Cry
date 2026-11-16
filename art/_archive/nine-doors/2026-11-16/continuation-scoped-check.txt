@@ -1,1 +1,1 @@
-PASS: 270/375 candidates; catalog/master/native hashes, PNG dimensions/alpha/white ink and safe bounds, SVG rules, UI exports and preserved candidate hashes.
+PASS: 273/375 candidates; catalog/master/native hashes, PNG dimensions/alpha/white ink and safe bounds, SVG rules, UI exports and preserved candidate hashes.

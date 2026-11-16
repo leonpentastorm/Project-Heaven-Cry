@@ -1308,9 +1308,24 @@
       "faint_alpha_to_solid_area_ratio": 0.06131
     },
     {
+      "number": 342,
+      "name": "Shove (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.03119
+    },
+    {
       "number": 343,
       "name": "Trip",
       "faint_alpha_to_solid_area_ratio": 0.0344
+    },
+    {
+      "number": 344,
+      "name": "Drag",
+      "faint_alpha_to_solid_area_ratio": 0.03234
+    },
+    {
+      "number": 345,
+      "name": "Parry",
+      "faint_alpha_to_solid_area_ratio": 0.06854
     },
     {
       "number": 346,

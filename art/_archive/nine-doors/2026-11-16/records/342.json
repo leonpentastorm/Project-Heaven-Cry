@@ -1,0 +1,75 @@
+{
+  "number": 342,
+  "family": "technique_icons",
+  "id": "tech-shove-tech",
+  "path": "art/icons/techniques/shove-tech.png",
+  "name": "Shove (technique)",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, link",
+  "paint": "A single palm pushing a partial figure back one step.",
+  "avoid": "the Palm form (two palms) \u00b7 a cliff",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Edit this exact Project Heaven Cry icon to correct its rejected draft. Show ONE cropped ceramic OPEN PALM pushing one cropped shoulder/torso to right, one partial boot sliding one step. The hand and torso must be distinct separated WHITE shapes with a BROAD GENUINELY TRANSPARENT GAP along wrist/arm/torso, touching ONLY at palm contact. Remove ALL opaque black/gray outlines. Do NOT draw a whole head or whole figure. A small transparent diamond in chest and clear transparent belt gap separate partial shapes. Flat pure white silhouettes, no black painted strokes. Preserve the composition and established ceramic-mitten/Wick graphic style. Center the complete subject inside generous transparent 15% margins and safe circular chip. Square icon; no text, gradients, grayscale shading, texture or extra props. ALL dark cuts must be TRANSPARENT HOLES, not black RGB paint.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/superseded/342-transparent-contact-fix/native.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/342-transparent-contact-fix/native.png",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "7208e5871eb9814b0b3462b037a354794db03d70bc3cf67d6e50fca7858d0523",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/342-shove-tech.png",
+  "source_sha256": "fd707bef134039b0469e3e4301b01c4604256edbd2eefb8668fdb9771ef9bced",
+  "export_crop": [
+    47,
+    172,
+    1202,
+    1212
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/shove-tech.png",
+    "64": "art/icons/techniques/exports/64/shove-tech.png",
+    "48": "art/icons/techniques/exports/48/shove-tech.png",
+    "44": "art/icons/techniques/exports/44/shove-tech.png",
+    "32": "art/icons/techniques/exports/32/shove-tech.png",
+    "24": "art/icons/techniques/exports/24/shove-tech.png"
+  },
+  "framing": {
+    "scale": 0.6665119531692588,
+    "offset": [
+      127,
+      165
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "04607fa31b4735c6ff737ca0f836f44e5b5586466e2cf566707a7dc2ca7c77a9",
+    "64": "71dd5bdc56c0971e74e0188161709e064e0602962648224aaeada3d68b101d03",
+    "48": "2a4c9d0058cc81fbeb6268aabd8560f87e5f21f2950954375270e3c151fce0da",
+    "44": "f6a3d95e5b082762b418b653a846d1bcd89ef89d4dd2c666832f924677409d86",
+    "32": "0dfa5f3347ee1ad9f608152133d8c0988645cd2808b4a5229a5f825029e9ea79",
+    "24": "ff30e8c07e60e9844b44a618e773d6a6e0b0f8738291fe424969641e8135593e"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

@@ -1,6 +1,6 @@
 {
   "total": 375,
-  "completed_count": 270,
+  "completed_count": 273,
   "completed_ids": [
     1,
     2,
@@ -269,17 +269,20 @@
     339,
     340,
     341,
+    342,
     343,
+    344,
+    345,
     346,
     347
   ],
-  "remaining_count": 105,
+  "remaining_count": 102,
   "remaining_by_priority": {
     "1": 0,
     "2": 0,
     "3": 0,
     "4": 0,
-    "5": 39,
+    "5": 36,
     "6": 18,
     "7": 5,
     "8": 43

@@ -5358,6 +5358,41 @@
       },
       "ink": "#FFFFFF"
     },
+    "tech-shove-tech": {
+      "label": "Shove (technique)",
+      "path": "art/icons/techniques/shove-tech.png",
+      "sha256": "7208e5871eb9814b0b3462b037a354794db03d70bc3cf67d6e50fca7858d0523",
+      "format": "png",
+      "mode": "wick",
+      "tint": "white",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #342",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tech-shove-tech/shove-tech.svg",
+      "previous_sha256": "0cec4b2493078537c0d49db20f1a478b2eabc72204780993a6d276d4b8f8a54a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/342-shove-tech.png",
+      "upscaled": false,
+      "brief_number": 342,
+      "exports": {
+        "128": "art/icons/techniques/exports/128/shove-tech.png",
+        "64": "art/icons/techniques/exports/64/shove-tech.png",
+        "48": "art/icons/techniques/exports/48/shove-tech.png",
+        "44": "art/icons/techniques/exports/44/shove-tech.png",
+        "32": "art/icons/techniques/exports/32/shove-tech.png",
+        "24": "art/icons/techniques/exports/24/shove-tech.png"
+      },
+      "ink": "#FFFFFF"
+    },
     "tech-trip": {
       "label": "Trip",
       "path": "art/icons/techniques/trip.png",
@@ -5390,6 +5425,76 @@
         "44": "art/icons/techniques/exports/44/trip.png",
         "32": "art/icons/techniques/exports/32/trip.png",
         "24": "art/icons/techniques/exports/24/trip.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "tech-drag": {
+      "label": "Drag",
+      "path": "art/icons/techniques/drag.png",
+      "sha256": "31ea5df523beb3b0f451a9e547544b808ecf7d2d1abd659fc117cc9f9b977196",
+      "format": "png",
+      "mode": "wick",
+      "tint": "white",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #344",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tech-drag/drag.svg",
+      "previous_sha256": "95f2f71311c4257923a4f139aa02f7ca2bc5554f9b78d6e44e7d46c4dd620d26",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/344-drag.png",
+      "upscaled": false,
+      "brief_number": 344,
+      "exports": {
+        "128": "art/icons/techniques/exports/128/drag.png",
+        "64": "art/icons/techniques/exports/64/drag.png",
+        "48": "art/icons/techniques/exports/48/drag.png",
+        "44": "art/icons/techniques/exports/44/drag.png",
+        "32": "art/icons/techniques/exports/32/drag.png",
+        "24": "art/icons/techniques/exports/24/drag.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "tech-parry": {
+      "label": "Wick \u2014 Parry",
+      "path": "art/icons/techniques/parry.png",
+      "sha256": "37cf65be9c36f830e48b3bafa83b26e772df8b77db39c94e42ca30043c1288fa",
+      "format": "png",
+      "mode": "wick",
+      "tint": "white",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #345",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tech-parry/parry.svg",
+      "previous_sha256": "e6b793ebe3aa074d8e3d92d3791be42bce0eaea26a837582a2a825a6e7c14651",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/345-parry.png",
+      "upscaled": false,
+      "brief_number": 345,
+      "exports": {
+        "128": "art/icons/techniques/exports/128/parry.png",
+        "64": "art/icons/techniques/exports/64/parry.png",
+        "48": "art/icons/techniques/exports/48/parry.png",
+        "44": "art/icons/techniques/exports/44/parry.png",
+        "32": "art/icons/techniques/exports/32/parry.png",
+        "24": "art/icons/techniques/exports/24/parry.png"
       },
       "ink": "#FFFFFF"
     },
