@@ -8,64 +8,93 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
-## Unreleased (after 0.29.0) — the Mana Shock
+## 0.30.0 — shields as weapons, the follow strike, the tank rulings, the bare heart and the shield display
 
-- **Rules 1.56, the Mana Shock** (Leon, 16 Nov 2026; decision 116): a Mana Short (3 over the Strain limit) still Stuns
-  and throws a held Outburst wild, but Strain no longer falls to the limit: the caster is in **Mana Shock** until it
-  calms the heart back to the limit, and each of its turns that ends in it costs 25% of max HP (nothing soaks it; it
-  Downs, never kills; a Down ends it). No second Short while it lasts. For every Soul caster, characters and enemies.
-  Shown on the token and panels (MANA SHOCK, damage red), the Strain row, the held heart's warning, the Outbursts
-  door line and the bare-handed warning. Data: `soul_modules.json strain.after_short` (`keep`) and `strain.shock`.
+Rules revisions 1.56 (two late blocks: the bare heart and the Mana Shock; a shield in either hand), 1.57 (shields are
+weapon rows), 1.58 (follow strikes) and 1.59 (the tank rulings), every new number PROVISIONAL; spec items 4308 to 4317
+and 4500 to 4543. Built on top of live 0.29.0 from three lanes merged in order: the fight tabs and the bare heart, a
+shield in either hand and the tank, the shield display. Decisions 116 to 119.
 
-## 0.30.0 (in progress) — the tank rulings
+### The bare heart and the Mana Shock (rules 1.56; decision 116)
 
-Rules revision 1.59 (spec items 4537 to 4543; every new number PROVISIONAL), Leon's rulings for the Durability tank:
-a tank hits with Durability in melee only (a gun rolls with its own skill); a blow rolled with Durability keeps the
-weapon's own damage (confirmed by test); shields' blows scale with Endurance; a shield in each hand doubles every Guard
-gain (Brace, the Guard technique, the follow's plate); the Bulwark's Guard pool is 5 / 6 / 7 at ranks I / II / III
-(everyone else 4), drawn as up to 7 plates; the camp's Recommended tank kit is the Hand wraps and the Buckler.
+- **A Begin without an Emanator costs +4 Strain** (was +2), for the Begin and every move that begins an Outburst
+  bare-handed (the class Outburst moves, Gift, Inner Charge). One field: `soul_modules.json cycle.no_emanator_strain`.
+- **The Mana Shock.** A Mana Short (3 over the Strain limit) still Stuns and throws a held Outburst wild, but Strain no
+  longer falls to the limit: the caster is in **Mana Shock**, and every one of its turns from the turn after costs 25%
+  of max HP. Nothing softens or raises it (no armour, shield, Guard, redirect, floor or +% taken: the heart's own harm is
+  exactly its number); it Downs, never kills, and a Down ends it; no second Short while it lasts; it ends with the
+  fight and is never charged outside one. For every Soul caster, characters and enemies. Shown as MANA SHOCK (damage
+  red) on the token and panels, the Strain row, the held heart's warning and the Outbursts door line.
+- **The Outbursts tab warns a bare-handed caster** at its top ("Using magic without a focus causes great harm."), with
+  the numbers from data.
 
-## Next (after 0.29.0) — follow strikes
+### The fight tabs
 
-Rules revision 1.58 (hands 5e; spec items 4522 to 4536; every new number PROVISIONAL), on top of rules 1.57's shields as
-weapons. Design: `docs/design/proposals/2026-11-follow-strike.md`.
+- **Fight tabs per character** (kept by character, in any room): the action list's order until arranged, then a stable
+  order; the cog's Fight tabs panel (move up / down, hide, Reset; in a fight it numbers the tabs as the bar does and
+  marks the ones absent this fight); number keys follow the order shown.
+- **A focus door's tab** (the Sigils tab with no Evoker, and the like) is hidden only when the engine refuses every
+  action on it; the Outbursts tab never goes while an Outburst is held, and says to put the focus on when it is only in
+  the pack.
+- **Scuff is on the Utility tab for everyone**, with a mirror on the Sigils tab.
+
+### Shields (rules 1.56, 1.57; decision 117)
+
+- **A shield in either hand, one to a hand**: a caster carries a shield with the focus, and two shields are legal (each
+  shield's Defense and Movement add; Parry and the shield's techniques once). The sheet, the camp, the fight's hand
+  change and the Proving Ground offer the main hand for a shield.
+- **Shields are weapons**: the buckler, the riot shield and the pavise are weapon rows with the Shield property. In the
+  main hand a shield strikes with its own line (buckler 6, riot shield 8, pavise 8; Durability), wears and is graded
+  as a weapon; in the off hand it is not a second weapon. Shield Bash strikes with the shield (x2.5). Old saves' shield
+  lines are moved to weapon lines at load.
+- **No swell with a shield**: while a shield is in either hand a held Outburst keeps its stage at the turn start (the
+  Strain of holding still comes); Pumps are untouched. The heart panel and the design cards say so.
+
+### The follow strike (rules 1.58; decision 118; design `docs/design/proposals/2026-11-follow-strike.md`)
 
 - **The off hand follows.** A shield, Afterword, or a melee weapon carrying a mod that grafts `follows`, held in the off
   hand, strikes once after each melee technique of your one-handed main weapon: its own roll at -2, its own damage, no
   AP, at the foe your first blow really struck. It is a rider: no Momentum, no Pressure, no other item's once-a-turn
   line, and a missed follow draws no Riposte. Never after a gun, a throw, a reaction, a shield technique, a paired attack
-  or a class or perk strike, and never with a two-handed weapon (Heavyworlder's one-handed greatsword included).
+  or a class or perk strike, and never with a two-handed weapon.
 - **A shield's follow gives Guard**: the first that lands each turn gives 1 Guard, however many shields you hold.
-- **Not a second weapon**: a follows item in the off hand asks no +2, opens no Both block, makes no paired attack and has
-  no attack of its own there. A main-hand shield with a sword in the off hand is still ordinary dual wielding.
-- **Shield Bash costs 1 AP** (was 2).
-- **Wear**: only the follow wears the off hand; a follows item worn to 0 makes no follow.
+- **Not a second weapon**: a follows item in the off hand asks no +2, opens no Both block, makes no paired attack.
+- **Shield Bash costs 1 AP** (was 2). **Wear**: only the follow wears the off hand.
 - **New gear rows, in no shop or loot table yet**: Afterword (an off-hand knife, its follow at a quarter of its damage
-  and Bleeding once a turn; 700 credits) and the Trailing balance mod (grafts `follows` onto a melee weapon).
-- **Screens**: each melee row's preview shows the follow as a second line ("then Buckler · 47% · 4 damage"), the log
-  shows both rolls, and the follow is drawn as a second swing from the other hand (`fx/follow.ts`). The Both block and
-  the off-hand block come from the engine's own tests.
+  and Bleeding once a turn; 700 credits) and the Trailing balance mod.
+- **Screens**: each melee row's preview shows the follow as a second line, the log shows both rolls, and the follow is
+  drawn as a second swing from the other hand.
 
-## 0.30.0 (in progress) — lane: the shield display
+### The tank rulings (rules 1.59; decision 119)
 
-- **Shields on the token and the card** (Leon, 16 Nov 2026). The token's one pale bar became a strip of one segment a
-  shield, in its source's ink, in the order a blow meets them; every card (hover, target, your panel) has a SHIELDS
-  block: each shield's name, amount and how long it lasts, Guard on its own line, what stands before HP and how they
-  combine. A friend's card now shows its shields; a foe's reads by name with a size word, never a number. The engine's
-  new `shieldsView` says it all (`data/rules.json combat.shield_look`); the damage path and the view share one copy of
-  the spend order (`shieldOrder`). Fix: Guard no longer soaks the part of a blow a shield layer (the Ward) would take
-  (it subtracted only the base shield), so plates are spent after every shield, as written.
-- **The shield display, review fixes.** One copy of how Guard soaks: `physical/guard.ts guardSoakOf` (its phase, a
-  plate's worth, the plates kept back), read by Durability's soak, the Bulwark's Reactive Plate and `shieldsView`, so a
-  plate holder's card now says Guard is met first, 10 a plate, nothing kept (it said after the shields, by the general
-  soak, one kept). The headline is what an ordinary blow meets ("Absorbs up to X before HP", a plate kept back), with
-  the drop case on its own line; every word of the block, the chip and the target card's line is the view's, from
-  `combat.shield_look`. The "+N SHIELD" chip (ally rows, your status line, the character sheet in a fight) counts every
-  shield, not the base one alone; the turn strip shows the shields under HP; the fight Narrator is told them. Your own
-  panel says Guard once (its row); the rule line is on the target card and your panel only. The token strip stands clear
-  of the HP bar and the base shield is hatched (kinds differ by more than colour). The base shield's words now hold for
-  every base shield (a giver may end it sooner or add to it); a layer no class move gives reads by the base name, never
-  its id.
+- **A tank hits with Durability in melee only** (a gun or a throw rolls with its own skill); the blow keeps the
+  weapon's own damage.
+- **A shield's blows scale with Endurance.**
+- **A shield in each hand doubles every Guard gain** (Brace, the Guard technique, the follow's plate); the pool's cap
+  is unchanged.
+- **The Bulwark's Guard pool is 5 / 6 / 7** at ranks I / II / III (everyone else 4), drawn as up to 7 plates.
+- **The camp's Recommended tank kit** is the Hand wraps and the Buckler.
+
+### The shield display
+
+- **Shields on the token and the card.** The token's one pale bar became a strip of one segment a shield, in its
+  source's ink, in the order a blow meets them (the base shield hatched); every card (hover, target, your panel) has a
+  SHIELDS block: each shield's name, amount and how long it lasts, Guard on its own line, what stands before HP
+  ("Absorbs up to X before HP", the drop case on its own line). A friend's card shows its shields; a foe's reads by
+  name with a size word, never a number. The "+N SHIELD" chip counts every shield; the turn strip shows them under HP;
+  the fight Narrator is told them. Every word is the engine's `shieldsView`, from `data/rules.json combat.shield_look`.
+- **One copy of the spend order and of how Guard soaks** (`shieldOrder`, `physical/guard.ts guardSoakOf`), read by
+  the damage path, Durability's soak, the Bulwark's Reactive Plate and the view.
+
+### Fixes
+
+- **Guard no longer spends plates on damage a Ward takes**: Durability's Guard is met after every shield, the layers
+  too (it subtracted only the base shield).
+
+### Known and unfinished
+
+- **Numbers not yet fitted:** two shields' doubled Guard, the Bulwark's pool by rank, the follow's -2 and Afterword are
+  PROVISIONAL and measured only in the lanes' runs.
 
 ## 0.29.0 — Balance 2.0: the nine doors
 
@@ -132,7 +161,6 @@ the alpha perks were rewritten so each one helps its own door. The full account,
 - Text in the fight, run and camp screens is never smaller than 13 px.
 - One rule for Taunt, one for a Boss holding against forced moves, one health ladder.
 - Tug costs 12 MP (three times its first price, as 0.28.3 did for every Tending verb).
-- Fight tabs per character (kept by character, in any room): the action list's order until arranged, then a stable order (a new tab goes at the end); the cog's Fight tabs panel (in a fight and out of one: move up / down, hide, Reset; in a fight it numbers the tabs as the bar does and marks the ones absent this fight), number keys follow the order shown; a focus door's tab is hidden with no focus anywhere only when the engine refuses every action on it (never the Outbursts tab while an Outburst is held, which also shows when hidden), and says to put the focus on when it is only in the pack.
 
 ### Fixes
 
@@ -147,23 +175,6 @@ the alpha perks were rewritten so each one helps its own door. The full account,
   Shadow and prayer; bare fists counting as the glove family; variants in shops.
 - **Numbers not yet fitted:** guns go above their line once perks are added; the solo tank; casters and duos in
   Survival. Every 1.56 number is PROVISIONAL.
-
-### After 0.29.0 (for the next release; the lead places it)
-
-- **A shield in either hand** (Leon, 16 Nov 2026; decision 117, spec items 4308 to 4313): a shield goes in the main
-  hand too, one to a hand, so a caster carries a shield with the focus, and two shields are legal (each shield's
-  Defense and Movement add; Brace and the Guard technique +1 Guard a shield under the pool's cap; Parry and the
-  shield's techniques once). The main hand holding one strikes with bare fists. The sheet, the camp, the fight's hand
-  change and the Proving Ground offer the main hand for a shield.
-- **Shields are weapons** (rules 1.57, the lead's rulings of 16 Nov 2026; spec items 4512 to 4520): the buckler, the
-  riot shield and the pavise are weapon rows with the Shield property. In the main hand a shield strikes with its own
-  line (buckler 6, riot shield 8, pavise 8; Durability, growing with Strength), wears and is graded as a weapon; in the
-  off hand it is not a second weapon. A shield in the main hand with a sword in the off hand is ordinary dual wielding,
-  and the shield's techniques come from whichever hand holds it. Shield Bash strikes with the shield (x2.5). The pavise
-  is a shield when carried. Old saves' shield lines are moved to weapon lines at load.
-- **No swell with a shield** (rules 1.57 item 10, Leon, 16 Nov 2026): while a shield is in either hand a held Outburst
-  keeps its stage at the turn start (the Strain of holding still comes); Pumps are untouched. The heart panel and the
-  Outbursts tab say so.
 
 ## 0.28.3 — the field is the fight, and the Durability tank
 
