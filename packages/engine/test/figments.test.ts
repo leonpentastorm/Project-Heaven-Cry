@@ -27,12 +27,13 @@ describe('figments: the data', () => {
     expect(R.balance.ceilings.figments.allin).toBeGreaterThan(R.balance.ceilings.figments.door_allin);
     for (const t of (ENEMIESJ as any).items) expect('owned_weight' in t && 'double_save' in t).toBe(true);
   });
-  it('the ladder (rules 1.56): the Double and the Snare at Visualization 1, the Hand at 2, a fork at 3 and at 5, two held at 5, three at 7, every form at 10', () => {
+  it('the ladder (rules 1.56; rules 1.60 moves the forks to 4 and 6): the Double and the Snare at Visualization 1, the Hand at 2, a fork at 4 and at 6, two held at 5, three at 7, every form at 10', () => {
     expect(ladderAt(0)).toMatchObject({ held: 0, forms: [] });
     expect(ladderAt(1)).toMatchObject({ held: 1, forms: ['double', 'snare'], designs: 0, traits: 0 });
     expect(ladderAt(3).forms).toEqual(['double', 'snare', 'hand']); expect(ladderAt(3)).toMatchObject({ designs: 2, traits: 1 });
-    expect(ladderAt(3).forks.map((k) => k.of)).toEqual([F.ladder.find((r: any) => r.points === 3).fork.of]);
-    expect(ladderAt(5)).toMatchObject({ held: 2, designs: 3 }); expect(ladderAt(5).forks.length).toBe(2);
+    expect(ladderAt(3).forks).toEqual([]);
+    expect(ladderAt(4).forks.map((k) => k.of)).toEqual([F.ladder.find((r: any) => r.points === 4).fork.of]);
+    expect(ladderAt(5)).toMatchObject({ held: 2, designs: 3 }); expect(ladderAt(5).forks.length).toBe(1); expect(ladderAt(6).forks.length).toBe(2);
     expect(ladderAt(7)).toMatchObject({ held: 3, traits: 2 }); expect(ladderAt(9).noSnap).toBe(true); expect(ladderAt(10).designs).toBe(5);
     for (const f of F.forms) if (!f.opens.fork) expect(ladderAt(f.opens.min).forms).toContain(f.id); else expect(ladderAt(f.opens.min).forks.some((k) => k.of.includes(f.id))).toBe(true);
     for (const f of F.forms) expect(ladderAt(10).forms).toContain(f.id);

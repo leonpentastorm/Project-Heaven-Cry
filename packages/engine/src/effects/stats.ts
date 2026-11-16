@@ -80,10 +80,11 @@ export const STAT_FAMILIES = {
   'technique:': 'this technique id comes with a perk (>0; physical/core.ts)',
   'momentum_needed:': 'Momentum a finisher of this technique id needs (physical/core.ts finisherNeed)',
   // rules 1.60 (N23, approved by the lead 16 Nov 2026): Momentum's numbers as stats
+  'tech_num:': 'added to one of the numbers of a technique, `tech_num:<technique id>.<field>` (techniques.json numbers: the min_run of Charge; physical/core.ts Tech.num): rules 1.60, N23',
   'momentum_cost:': 'Momentum a Strike or an Opener costs, added to its price: a technique id or its group, strike or opener (physical/core.ts momentumCost; never below 0)',
 } as const;
 
-export type StatId = PlainStatId | `ap_cost:${CostSite}` | `skill:${string}` | `immune:${string}` | `save_${'body' | 'brain' | 'heart'}` | `passive:${string}` | `technique:${string}` | `momentum_needed:${string}` | `momentum_cost:${string}` | `ties_max:${string}` | `ties_keep:${string}`;
+export type StatId = PlainStatId | `ap_cost:${CostSite}` | `skill:${string}` | `immune:${string}` | `save_${'body' | 'brain' | 'heart'}` | `passive:${string}` | `technique:${string}` | `momentum_needed:${string}` | `momentum_cost:${string}` | `tech_num:${string}` | `ties_max:${string}` | `ties_keep:${string}`;
 
 /** Is this string a declared stat id? (For data and tests; code is checked by the type.) */
 export function isStatId(id: string): id is StatId {

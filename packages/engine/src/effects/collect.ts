@@ -8,6 +8,7 @@ import classesJ from '../../../../data/classes.json';
 import shadowJ from '../../../../data/shadow.json';
 import tendingJ from '../../../../data/tending.json';
 import pressureJ from '../../../../data/pressure.json';
+import forksJ from '../../../../data/forks.json';
 import type { ItemInfo, ItemKind, Tier, ActiveEffect } from './types';
 
 const TRAIT: Record<string, any> = Object.fromEntries(TRAITS.map((t) => [t.id, t]));
@@ -43,7 +44,9 @@ const FIGMENT_HELD = [
   ...((FIG.traits || []) as any[]).map((x) => ({ id: 'figtrait_' + x.id, name: x.name, kind: 'verb', requires: [{ owned: 'figment' }], text: x.text, ...(x.amounts ? { amounts: x.amounts } : {}), effects: x.effects || [], adjudication: 'engine', provisional: true })),
 ];
 // A system's verbs: Shadow's on its own tab (rules 1.32), Tending's (data/tending.json, rules 1.33), Figments' (rules 1.34).
-const DATA_VERBS: Record<string, any> = Object.fromEntries(([...systemVerbs(shadowJ), ...systemVerbs(tendingJ), ...systemVerbs(pressureJ), ...systemVerbs(FIG), ...FIGMENT_HELD] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x]));
+// rules 1.60 (N1): the forks' options (data/forks.json), each held only by a sheet that picked it; a shelved row is not built
+const FORK_VERBS: any[] = ((forksJ as any).items || []).filter((x: any) => !x.shelved);
+const DATA_VERBS: Record<string, any> = Object.fromEntries(([...systemVerbs(shadowJ), ...systemVerbs(tendingJ), ...systemVerbs(pressureJ), ...systemVerbs(FIG), ...FIGMENT_HELD, ...FORK_VERBS] as any[]).filter((x) => x?.kind === 'verb').map((x) => [x.id, x]));
 const verbData = (id: string): any => DATA_VERBS[id] || EXTRA.verb[id];
 const perkData = (id: string): any => (PERK as any)[id] || EXTRA.perk[id];
 const traitData = (id: string): any => TRAIT[id] || EXTRA.trait[id];
@@ -218,12 +221,16 @@ export const SKILL_ITEMS: string[] = (SKILLS as any[]).flatMap((s) => Object.ent
 // ---------- door verbs (Classes 3.0 P6) ----------
 /** Every door verb there is (the data's, then those added at run time). */
 export const allVerbs = (): any[] => [...Object.values(DATA_VERBS), ...Object.values(EXTRA.verb)];
-/** Does a sheet meet a verb's `requires` (every entry: `{skill, min}` points in a skill, or `{class, rank}`)? */
-export function meetsRequires(req: any[] | undefined, sheet: { skills?: Record<string, number> | null; cls?: string | null; rank?: number }): boolean {
-  return (req || []).every((r: any) => (r?.skill ? (sheet.skills?.[r.skill] || 0) >= (r.min ?? 1) : r?.class ? sheet.cls === r.class && (sheet.rank || 1) >= (r.rank ?? 1) : false));
+/** What a sheet is read for by a verb's `requires`: its skills, its class and rank, and (rules 1.60, N1) the fork options
+ * it picked at every door (Character.doorPicks, flat). */
+export interface Sheet { skills?: Record<string, number> | null; cls?: string | null; rank?: number; picks?: readonly string[] | null }
+/** Does a sheet meet a verb's `requires` (every entry: `{skill, min}` points in a skill, `{class, rank}`, or (rules 1.60,
+ * N1) `{door_pick: <fork option id>}`, an option the sheet picked)? */
+export function meetsRequires(req: any[] | undefined, sheet: Sheet): boolean {
+  return (req || []).every((r: any) => (r?.skill ? (sheet.skills?.[r.skill] || 0) >= (r.min ?? 1) : r?.class ? sheet.cls === r.class && (sheet.rank || 1) >= (r.rank ?? 1) : typeof r?.door_pick === 'string' ? !!sheet.picks?.includes(r.door_pick) : false));
 }
 /** The door verbs a sheet holds (their ids, in order). */
-export const verbsOf = (sheet: { skills?: Record<string, number> | null; cls?: string | null; rank?: number }): string[] => allVerbs().filter((v) => meetsRequires(v.requires, sheet)).map((v) => v.id);
+export const verbsOf = (sheet: Sheet): string[] => allVerbs().filter((v) => meetsRequires(v.requires, sheet)).map((v) => v.id);
 /** Rules 1.56, Shadow 2.0 (spec item 4330): a door verb file's tab, read from data (each system's file: `tab_also` the core
  * actions its tab lists too, as Hide on Shadow's). How the door works is its alpha skill's `door_line` (skills.json, the
  * one reader: apps/web doorView.ts), never a second line here. A file with none gives an empty list. */

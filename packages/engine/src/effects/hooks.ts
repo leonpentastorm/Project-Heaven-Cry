@@ -192,7 +192,7 @@ function buildIndex(held: Held): Record<string, Slot[]> {
 /** What a character holds (the compact form). Rank comes from the class rules; see character.ts classRank. */
 export function heldOfChar(c: Character | null | undefined): Held {
   if (!c) return { perks: [], traits: [] };
-  const sk = skillItemsOf(c.skills), rank = rankHook ? rankHook(c) : 1, vb = verbsOf({ skills: c.skills, cls: c.classId || null, rank }); // P6: the door verbs its sheet reaches
+  const sk = skillItemsOf(c.skills), rank = rankHook ? rankHook(c) : 1, vb = verbsOf({ skills: c.skills, cls: c.classId || null, rank, picks: Object.values(c.doorPicks || {}).flat() }); // P6: the door verbs its sheet reaches (rules 1.60, N1: and the fork options it picked)
   // rules 1.43 (item 11): the named property of each weapon or focus instance carried is held as a relic item (once a
   // property id); it acts only through the predicate `with_this` (the instance in a hand, the event made with it). The
   // same reading as character.ts gearProps (this file takes no runtime import of character.ts).

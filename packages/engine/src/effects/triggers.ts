@@ -41,6 +41,7 @@ import { loseAp, weaponOwnSite, resMaxOf } from './cost';
 import { resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
 import { gainEcho } from './echo';
 import { doorFeed } from './feed';
+import { pickedFork, forkIds } from '../doorpicks';
 import { deal, mend, amountOf, type AmountSpec } from './output';
 import { mendShown } from './core'; // (a cycle core ↔ triggers: used at run time only)
 import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amounts';
@@ -288,6 +289,12 @@ P('not_patron', 'words', 'the holder is not Faithful to any of these patrons (an
 P('answered', 'bool', 'a prayer of the holder\'s is (or is not) answered now (faith.ts prayerAnswered: the prayer door open, Faith and not Silenced; the Faithful always, an Atheist rolls the Whisper\'s TN; a preview rolls nothing). Put it last in `if`: it rolls', (ev, v) => (ANSWERED ? ANSWERED(ev.cb, ev.preview ? null : rngOf(ev.h, ev.ctx), ev.self, ev.preview) : false) === v);
 
 // Classes 3.0 steps 6 and 7 merged (the lead's ruling on rules 1.33: Share a Hit is an Answer with a switch like every other)
+// Rules 1.60 (N2, approved by the lead 16 Nov 2026): the pick is readable. A row a fork changes (Slam's push, Snap's end)
+// reads whether the holder's character picked that option (Character.doorPicks, any door); a list: any of them. A unit
+// with no character picked nothing.
+const pickedBy = (ev: Ev, id: string): boolean => pickedFork(ev.h.c || charOfUnit(ev.self), id);
+P('door_pick', 'words', 'the holder picked one of these fork options (data/forks.json ids, door/pick: rules 1.60, N2)', (ev, v) => list(v).some((id) => pickedBy(ev, String(id))), () => forkIds());
+P('no_door_pick', 'words', 'the holder picked none of these fork options (as door_pick)', (ev, v) => !list(v).some((id) => pickedBy(ev, String(id))), () => forkIds());
 P('answer_on', 'string', 'the holder keeps this item Answer switched on: the character\'s Answer list (phys.answers, set by phys/answers) names it, or it keeps none (every Answer on). Share a Hit (rules 1.33)', (ev, v) => { const o = (charOfUnit(ev.self) as any)?.phys?.answers; return !Array.isArray(o) || o.includes(v); });
 // ============================================================================================== amount sources (P3)
 const camel = (f: string) => f.replace(/_([a-z])/g, (_m, c) => c.toUpperCase());
@@ -313,10 +320,11 @@ export function sourceOf(ev: Ev, of: string): number {
   if (ns === 'ties') return tiesOfK(ev.cb, ev.self, f).length; // section 6: how many ties of a kind the holder has
   if (ns === 'skill') return skillPts(ev, f); // rules 1.33: the holder's points in a skill (Share a Hit's 5% a point of Camaraderie)
   if (ns === 'feed') return doorFeed(ev.self, f); // rules 1.60 (N3): the holder's beta feed of a door, 1 + per_product x alpha x beta (effects/feed.ts)
+  if (ns === 'pick') return pickedBy(ev, f) ? 1 : 0; // rules 1.60 (N2): 1 when the holder picked this fork option, else 0
   return 0;
 }
 /** The namespaces a number block's `of` may name in an item op. */
-export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill', 'feed'];
+export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill', 'feed', 'pick'];
 /** The numeric fields of an item op that may be number blocks. */
 const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds', 'pool', 'within', 'holders', 'share', 'count'];
 /** Rules 1.33: `{choice}` in a word field (a condition's id, a limit's key) is the action's pick (a felt feeling). */

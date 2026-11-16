@@ -45,6 +45,25 @@
       "slot": "alpha",
       "summary": "The tank.",
       "door_line": "Guard is your door: plates around you. The Guard technique (any weapon) and Brace raise them; each plate eats part of a blow, and Challenge and Slam spend them.",
+      "forks": [
+        {
+          "id": "a",
+          "at": 4,
+          "of": [
+            "fork.guard.provoke",
+            "fork.guard.cover_them"
+          ]
+        },
+        {
+          "id": "b",
+          "at": 6,
+          "of": [
+            "fork.guard.stand_fast",
+            "fork.guard.drive"
+          ]
+        }
+      ],
+      "fork_runs_on": "Guard (your plates)",
       "per_point": {
         "numbers": {
           "pool": 1,
@@ -321,7 +340,12 @@
                     "k": "guard_move",
                     "move": "slam"
                   },
-                  "say": "{self} slams the plates outward."
+                  "say": "{self} slams the plates outward.",
+                  "if": {
+                    "no_door_pick": [
+                      "fork.guard.stand_fast"
+                    ]
+                  }
                 },
                 {
                   "op": "displace",
@@ -332,6 +356,67 @@
                     "of": "self",
                     "within": 1,
                     "side": "foe"
+                  },
+                  "if": {
+                    "no_door_pick": [
+                      "fork.guard.stand_fast",
+                      "fork.guard.drive"
+                    ]
+                  }
+                },
+                {
+                  "op": "displace",
+                  "when": "acted",
+                  "how": "push",
+                  "tiles": 2,
+                  "targets": {
+                    "of": "self",
+                    "within": 1,
+                    "side": "foe"
+                  },
+                  "if": {
+                    "door_pick": [
+                      "fork.guard.drive"
+                    ]
+                  }
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "taunted",
+                  "skip_save": true,
+                  "rounds": 1,
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "foe"
+                  },
+                  "if": {
+                    "door_pick": [
+                      "fork.guard.stand_fast"
+                    ]
+                  },
+                  "fx": {
+                    "k": "guard_move",
+                    "move": "challenge",
+                    "within": 2
+                  },
+                  "say": "{self} slams the plates into the ground: a shockwave (Stand Fast)."
+                },
+                {
+                  "op": "condition",
+                  "when": "acted",
+                  "condition": "off_balance",
+                  "via": "durability",
+                  "targets": {
+                    "of": "self",
+                    "within": 2,
+                    "side": "foe"
+                  },
+                  "if": {
+                    "door_pick": [
+                      "fork.guard.stand_fast"
+                    ]
                   }
                 }
               ]
@@ -388,6 +473,16 @@
           ],
           "adjudication": "engine"
         },
+        "4": {
+          "name": "Fork: Provoke or Cover Them",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's first fork: choose Provoke or Cover Them, once, out of a fight, kept for good (data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+        },
         "5": {
           "name": "Second Wind",
           "category": "Active Skill",
@@ -402,6 +497,16 @@
             }
           ],
           "adjudication": "engine"
+        },
+        "6": {
+          "name": "Fork: Stand Fast or Drive",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork: choose Stand Fast or Drive, once, out of a fight, kept for good (data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "7": {
           "name": "Mastery 3",
@@ -816,6 +921,25 @@
       "slot": "alpha",
       "summary": "Hit harder, bend further, lift higher.",
       "door_line": "Momentum: land melee hits and Charge to build it (the number on your token), then spend it on a Finisher: Cleave a crowd, Break a guard, Coup the hurt, or (the Breaker) Launch a foe across the room.",
+      "forks": [
+        {
+          "id": "a",
+          "at": 4,
+          "of": [
+            "fork.momentum.rolling_start",
+            "fork.momentum.grindstone"
+          ]
+        },
+        {
+          "id": "b",
+          "at": 6,
+          "of": [
+            "fork.momentum.spill",
+            "fork.momentum.headlong"
+          ]
+        }
+      ],
+      "fork_runs_on": "Momentum (the chain)",
       "per_point": {
         "numbers": {
           "hit": 1,
@@ -867,6 +991,16 @@
           "provisional": true,
           "item": true
         },
+        "4": {
+          "name": "Fork: Rolling Start or Grindstone",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's first fork: choose Rolling Start or Grindstone, once, out of a fight, kept for good (data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+        },
         "5": {
           "name": "Follow Through",
           "category": "Combat Interaction",
@@ -883,6 +1017,16 @@
           "adjudication": "engine",
           "provisional": true,
           "item": true
+        },
+        "6": {
+          "name": "Fork: Spill or Headlong",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork, Spill or Headlong: not offered yet (Spill and Headlong are still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "7": {
           "name": "Mastery 3",
@@ -1325,6 +1469,25 @@
         "weapon:light_melee"
       ],
       "door_line": "Shoot to pin: every ranged hit adds Pressure (a gun, a bow, a thrown knife). Pressed foes aim worse, Suppressed ones lose AP, Broken ones lose more. Shoot, then move: Slide into cover, never stand still.",
+      "forks": [
+        {
+          "id": "a",
+          "at": 4,
+          "of": [
+            "fork.pressure.converging_fire",
+            "fork.pressure.walk_it_in"
+          ]
+        },
+        {
+          "id": "b",
+          "at": 6,
+          "of": [
+            "fork.pressure.through_the_gap",
+            "fork.pressure.lockdown"
+          ]
+        }
+      ],
+      "fork_runs_on": "Pressure (the pips)",
       "unlocks": {
         "1": {
           "name": "Pressure",
@@ -1418,6 +1581,16 @@
           ],
           "adjudication": "engine"
         },
+        "4": {
+          "name": "Fork: Converging Fire or Walk It In",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's first fork: choose Converging Fire or Walk It In, once, out of a fight, kept for good (data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+        },
         "5": {
           "name": "Quick Draw",
           "category": "AP Mod",
@@ -1435,6 +1608,16 @@
           "adjudication": "engine",
           "provisional": true,
           "item": true
+        },
+        "6": {
+          "name": "Fork: Through the Gap or Lockdown",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork: choose Through the Gap or Lockdown, once, out of a fight, kept for good (data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "7": {
           "name": "Mastery 3",
@@ -1842,6 +2025,25 @@
       "slot": "alpha",
       "summary": "Stealth, sleight of hand, sticky fingers.",
       "door_line": "Hidden: enemies can't target you, and your first attack from it is an ambush. Get there: Hide where no enemy's eyes reach you (behind a wall, in smoke, out of their sight). Holding Shadow, switch Break on that attack. Hidden ends when you attack, take a hit, or a foe ends its turn next to you.",
+      "forks": [
+        {
+          "id": "a",
+          "at": 4,
+          "of": [
+            "fork.shadow.light_fingers",
+            "fork.shadow.lend_the_dark"
+          ]
+        },
+        {
+          "id": "b",
+          "at": 6,
+          "of": [
+            "fork.shadow.lightkiller",
+            "fork.shadow.spotter"
+          ]
+        }
+      ],
+      "fork_runs_on": "Shadow",
       "door_tab": "shadow",
       "door_title": "SHADOW · UNSEEN",
       "per_point": {
@@ -2190,6 +2392,16 @@
           "item": true,
           "provisional": true
         },
+        "4": {
+          "name": "Fork: Light Fingers or Lend the Dark",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's first fork, Light Fingers or Lend the Dark: not offered yet (Light Fingers and Lend the Dark are still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+        },
         "5": {
           "name": "Mastery 2",
           "category": "Active Skill",
@@ -2210,6 +2422,16 @@
           ],
           "adjudication": "engine",
           "item": true
+        },
+        "6": {
+          "name": "Fork: Lightkiller or Spotter",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork, Lightkiller or Spotter: not offered yet (Lightkiller is still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "7": {
           "name": "Mastery 3",
@@ -2677,6 +2899,25 @@
       "slot": "alpha",
       "summary": "Raw processing speed for Sigils. Attack skill for Sigils that strike.",
       "door_line": "Draw words on your own tile in a straight row of {=door_numbers.line_min} to {=door_numbers.line_max}, then Evoke from an end or the side.",
+      "forks": [
+        {
+          "id": "a",
+          "at": 4,
+          "of": [
+            "fork.sigil.overflux",
+            "fork.sigil.clean_vent"
+          ]
+        },
+        {
+          "id": "b",
+          "at": 6,
+          "of": [
+            "fork.sigil.written_in_advance",
+            "fork.sigil.running_script"
+          ]
+        }
+      ],
+      "fork_runs_on": "Flux (and the glyphs on the ground)",
       "door_focus_line": "Your Evoker is in your pack, not in a hand: open the Backpack and draw it to draw glyphs.",
       "door_numbers": {
         "line_min": 2,
@@ -2747,6 +2988,16 @@
           "adjudication": "engine",
           "item": true
         },
+        "4": {
+          "name": "Fork: Overflux or Clean Vent",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's first fork, Overflux or Clean Vent: not offered yet (Overflux and Clean Vent are still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+        },
         "5": {
           "name": "Twin Draw",
           "category": "Combat Interaction",
@@ -2762,6 +3013,16 @@
           ],
           "adjudication": "engine",
           "item": true
+        },
+        "6": {
+          "name": "Fork: Written in Advance or Running Script",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork, Written in Advance or Running Script: not offered yet (Written in Advance and Running Script are still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "7": {
           "name": "Mastery 3",
@@ -3183,6 +3444,7 @@
       "slot": "alpha",
       "summary": "Shapes thought into images; pictures the Figments the bots build.",
       "door_line": "In a fight, Picture offers your ready designs first, then every bare form you have opened (the Visualizer in hand).",
+      "fork_runs_on": "Visualizer charge (the held count)",
       "door_focus_line": "Your Visualizer is in your pack, not in a hand: open the Backpack and draw it to Picture.",
       "door_tab": "figments",
       "door_title": "FIGMENTS · PICTURED",
@@ -3218,10 +3480,10 @@
           "source": "rules 1.34 (figments-spec.md section 4)"
         },
         "3": {
-          "name": "Eye and Wall",
+          "name": "Mastery 1",
           "category": "Active Skill",
           "mastery": 1,
-          "text": "Picture the Eye and the Wall; two ready designs, one trait each (figments.json ladder).",
+          "text": "A perk step in this skill; two ready designs, one trait each (figments.json ladder).",
           "effects": [
             {
               "op": "perk_choice",
@@ -3232,15 +3494,35 @@
           "adjudication": "engine",
           "provisional": true
         },
+        "4": {
+          "name": "Fork: the Eye, the Wall or the Ward",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's first fork: choose one of the Eye, the Wall or the Ward, out of a fight, kept for good (figments.json ladder).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+        },
         "5": {
-          "name": "Beast and Blade",
+          "name": "Two held",
           "category": "Active Skill",
           "mastery": 2,
-          "text": "Two Figments held; picture the Beast and the Blade; three ready designs (figments.json ladder).",
+          "text": "Two Figments held; three ready designs (figments.json ladder).",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
           "source": "rules 1.34: replaces Paint the Field (nine doors 15.5: replace when Figments are built)"
+        },
+        "6": {
+          "name": "Fork: the Beast, the Blade, the Husk or the Sentinel",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork: choose one of the Beast, the Blade, the Husk or the Sentinel, out of a fight, kept for good (figments.json ladder).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "7": {
           "name": "Mastery 3",
@@ -3665,6 +3947,25 @@
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
       "door_line": "A Bond does not heal by itself: Tend a Bonded ally to heal it (Mend or Shield at any range you see, Touch beside you).",
+      "forks": [
+        {
+          "id": "a",
+          "at": 4,
+          "of": [
+            "fork.tend.keep_the_thread",
+            "fork.tend.short_thread"
+          ]
+        },
+        {
+          "id": "b",
+          "at": 6,
+          "of": [
+            "fork.tend.shared_pulse",
+            "fork.tend.long_thread"
+          ]
+        }
+      ],
+      "fork_runs_on": "MP through a Bond (the thread)",
       "door_focus_line": "Your Attuner is in your pack, not in a hand: open the Backpack and draw it to Bond and Tend.",
       "door_tab": "tend",
       "door_title": "TEND · BONDS AND CARE",
@@ -3707,6 +4008,16 @@
           ],
           "adjudication": "engine"
         },
+        "4": {
+          "name": "Fork: Keep the Thread or Short Thread",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's first fork: choose Keep the Thread or Short Thread, once, out of a fight, kept for good (data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+        },
         "5": {
           "name": "Mercy",
           "category": "Active Skill",
@@ -3721,6 +4032,16 @@
             }
           ],
           "adjudication": "engine"
+        },
+        "6": {
+          "name": "Fork: Shared Pulse or Long Thread",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork, Shared Pulse or Long Thread: not offered yet (Long Thread is still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "7": {
           "name": "Mastery 3",
@@ -4213,6 +4534,25 @@
       "slot": "alpha",
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
       "door_line": "Begin a design, Pump it up to its top stage, then Release. Strain is the cost, and MP pays. {=door_numbers.short_at_over} past your Strain limit is Mana Shock: from your next turn, {=door_numbers.shock_hp_share|pct}% of your max HP every turn until you calm the heart or the fight ends.",
+      "forks": [
+        {
+          "id": "a",
+          "at": 4,
+          "of": [
+            "fork.soul.ride_the_edge",
+            "fork.soul.slow_burn"
+          ]
+        },
+        {
+          "id": "b",
+          "at": 6,
+          "of": [
+            "fork.soul.blood_price",
+            "fork.soul.clean_break"
+          ]
+        }
+      ],
+      "fork_runs_on": "Strain (and the stage)",
       "door_focus_line": "Your Emanator is in your pack, not in a hand: open the Backpack and draw it, so your Outbursts are paid in MP instead of drawing on the air.",
       "door_bare_headline": "Using magic without a focus causes great harm.",
       "door_bare_line": "Every Outburst you Begin draws on the air at +{=door_numbers.no_emanator_strain} Strain. Past your limit Strain burns you, and {=door_numbers.short_at_over} past it is Mana Shock: from your next turn, {=door_numbers.shock_hp_share|pct}% of your max HP every turn until you calm the heart back to the limit or the fight ends.",
@@ -4290,6 +4630,16 @@
           "provisional": true,
           "item": true
         },
+        "4": {
+          "name": "Fork: Ride the Edge or Slow Burn",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's first fork, Ride the Edge or Slow Burn: not offered yet (Ride the Edge and Slow Burn are still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+        },
         "5": {
           "name": "Pure Heart",
           "category": "Combat Interaction",
@@ -4306,6 +4656,16 @@
           "adjudication": "engine",
           "provisional": true,
           "item": true
+        },
+        "6": {
+          "name": "Fork: Blood Price or Clean Break",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork, Blood Price or Clean Break: not offered yet (Blood Price and Clean Break are still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "7": {
           "name": "Mastery 3",
@@ -4728,6 +5088,25 @@
       "slot": "alpha",
       "summary": "The saints judge. You deliver.",
       "door_line": "Pray to your patron. A Whisper is quick and comes once a turn; a Hymn is strong and then must wait. Your patron watches what you do: each thing it likes raises your Devotion, each thing it hates lowers it.",
+      "forks": [
+        {
+          "id": "a",
+          "at": 4,
+          "of": [
+            "fork.prayer.round_of_blessings",
+            "fork.prayer.steadfast"
+          ]
+        },
+        {
+          "id": "b",
+          "at": 6,
+          "of": [
+            "fork.prayer.benediction",
+            "fork.prayer.held_breath"
+          ]
+        }
+      ],
+      "fork_runs_on": "The prayer slots (the turn's Whisper and the Hymn's wait)",
       "door_tab": "faith",
       "per_point": {
         "numbers": {
@@ -4774,6 +5153,16 @@
           ],
           "adjudication": "engine"
         },
+        "4": {
+          "name": "Fork: Round of Blessings or Steadfast",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's first fork, Round of Blessings or Steadfast: not offered yet (Round of Blessings and Steadfast are still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+        },
         "5": {
           "name": "Deliver the Sinner",
           "category": "Combat Interaction",
@@ -4800,6 +5189,16 @@
           "provisional": true,
           "item": true,
           "adjudication": "engine"
+        },
+        "6": {
+          "name": "Fork: Benediction or Held Breath",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork, Benediction or Held Breath: not offered yet (Benediction and Held Breath are still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "7": {
           "name": "Mastery 3",

@@ -3577,6 +3577,48 @@
       "adjudication": "engine",
       "provisional": true,
       "source": "Prayer 2.0 review fix (16 Nov 2026): the second verse is felt (a part of Crescendo: its +1 to hit, within 1 tile of the singer instead of 3)"
+    },
+    {
+      "id": "ground",
+      "name": "Ground",
+      "label": "Ground (a Grindstone's mark)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "A Grindstone fighter's last foe: their next plain melee hit on you builds them one more Momentum. Lasts {=duration.rounds} rounds.",
+      "effects": [],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.60 slice C: the Momentum fork Grindstone (its mark)"
+    },
+    {
+      "id": "in_your_sights",
+      "name": "In Their Sights",
+      "label": "In their sights (Converging Fire's mark)",
+      "kind": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "A Converging Fire gunner hit you this round: the next ranged hit from one of their allies adds one more Pressure. Lasts {=duration.rounds} round.",
+      "effects": [],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.60 slice C: the Pressure fork Converging Fire (its mark)"
     }
   ],
   "families": {

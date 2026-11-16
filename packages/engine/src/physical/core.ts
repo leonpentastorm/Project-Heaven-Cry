@@ -199,6 +199,13 @@ function momentumCostMod(u: Unit, def: TechDef): number {
   for (const id of ['momentum_cost:' + def.id, 'momentum_cost:' + def.group] as StatId[]) if (statHeard(cb, id)) n += statQuery({ u, cb }, id).add;
   return n;
 }
+/** Rules 1.60 (N23, approved 16 Nov 2026; Rolling Start's shorter run): what a unit's items add to one of a technique's
+ * own numbers (techniques.json `numbers`), the stat family `tech_num:<technique id>.<field>`, read in the one place a
+ * technique reads its numbers (Tech.num). Asked only while something in the fight answers it (statHeard). */
+function techNumMod(cb: Combat, u: Unit, def: TechDef, k: string): number {
+  const id = ('tech_num:' + def.id + '.' + k) as StatId;
+  return statHeard(cb, id) ? statQuery({ u, cb }, id).add : 0;
+}
 /** Rules 1.60 (N23; the Breaker's Wind-up, R3): the Momentum a unit starts a fight with: the door's own start
  * (techniques.json rules.momentum.start) and what its items add (stat `momentum_start`). The one reader is the fight's
  * start (physical/rules.ts), within the unit's pool. */
@@ -260,7 +267,7 @@ function buildTech(cb: Combat, u: Unit, def: TechDef, args: TechArgs, rng: Rng, 
     has: (p) => !off && props.includes(p) && applying.some((l) => l.props.includes(p)),
     holds: (p) => props.includes(p),
     line: (...ps) => (off ? null : ps.find((p) => applying.some((l) => l.props.includes(p)) && props.includes(p)) || null),
-    num: (k, fb = 0) => (typeof def.numbers?.[k] === 'number' ? def.numbers[k] : fb),
+    num: (k, fb = 0) => (typeof def.numbers?.[k] === 'number' ? def.numbers[k] : fb) + techNumMod(cb, u, def, k),
     note: (text) => { pv.notes.push(text); },
     state: () => (preview ? { ...techStateOf(u, def.id) } : techState(u, def.id)), // a preview gets a copy: nothing it writes is kept
   };

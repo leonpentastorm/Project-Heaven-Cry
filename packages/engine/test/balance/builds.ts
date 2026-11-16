@@ -19,7 +19,7 @@ import {
   stepsEarned, stepsTaken, movement, overweightKg,
 } from '../../src';
 import { addStudy, learnStudied, thresholdN, growthOf } from '../../src/sigilgrowth';
-import { allPendingDoorPicks } from '../../src/doorpicks';
+import { allPendingDoorPicks, forkRow } from '../../src/doorpicks';
 import { addDrill, takePick, ensurePhys } from '../../src/physical/data';
 
 export const LEVELS = [1, 3, 6, 9, 12, 20];
@@ -194,12 +194,14 @@ export function spendLevel(def: BuildDef, variant: Variant, C: () => any, act: (
 }
 /** Rules 1.56 (Balance 2.0; Leon, 15 Nov 2026): perk steps sit ON TOP of a class's damage line. The balance contract
  * measures the line, so it builds with no perk steps (`STEPS.perks = false`); every other measure takes them. */
-export const STEPS = { perks: true };
-/** Rules 1.56: a door's open choices (the Figment forks, door/pick): the build's preferred option first, else the first. */
+export const STEPS: { perks: boolean; forks: string[] } = { perks: true, forks: [] };
+/** Rules 1.56: a door's open choices (the Figment forks, door/pick): the build's preferred option first, else the first.
+ * Rules 1.60 (the data forks, data/forks.json): a fork is a reward on top of the line, as a perk step is, so they are
+ * taken only with the perk steps (STEPS.perks); STEPS.forks names options a measure wants picked (else the first). */
 export function takeForks(def: BuildDef, C: () => any, act: (a: any) => void) {
   for (let guard = 0; guard < 10; guard++) {
-    const open = allPendingDoorPicks(C()); if (!open.length) break;
-    const p = open[0], pref = (((def as any).forms || []) as string[]).find((f) => p.options.some((o) => o.id === f)) || p.options[0].id;
+    const open = allPendingDoorPicks(C()).filter((p) => STEPS.perks || !p.options.some((o) => forkRow(o.id))); if (!open.length) break;
+    const p = open[0], pref = [...STEPS.forks, ...(((def as any).forms || []) as string[])].find((f) => p.options.some((o) => o.id === f)) || p.options[0].id;
     act({ type: 'door/pick', door: p.door, option: pref });
   }
 }
@@ -218,7 +220,7 @@ const CACHE = new Map<string, string>();
 
 /** Build one reference character through the reducer. The result is a plain Character (a copy each call). */
 export function buildCharacter(id: string, variant: Variant, level: number): Built {
-  const def = BUILD[id], k = id + '|' + variant + '|' + level + (STEPS.perks ? '' : '|no-perks'), hit = CACHE.get(k);
+  const def = BUILD[id], k = id + '|' + variant + '|' + level + (STEPS.perks ? '' : '|no-perks') + (STEPS.forks.length ? '|forks:' + STEPS.forks.join(',') : ''), hit = CACHE.get(k);
   if (hit) return { ...JSON.parse(hit), def };
   const notes: string[] = [];
   let g = newGame('BUILD-' + k, { id: 'host', name: 'Host' });

@@ -27,6 +27,7 @@ import { overworld } from '../kit';
 import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, RESOURCES, type Priced } from './cost';
 import { isNumberBlock, numberOf } from './amounts';
 import { doorFeed } from './feed';
+import { pickedFork } from '../doorpicks';
 
 /** Data AP strings: "soul_cast_ap" (the Soul cast AP), "sigil_ap+soul_cast_ap" (Glyph AP + Soul cast AP). */
 export function apFromData(ap: any, u?: Unit | null): number {
@@ -70,7 +71,7 @@ export function holderNumber(h: Holder, x: unknown): number | null {
   if (typeof x === 'number') return x;
   if (!isNumberBlock(x)) return null;
   const c = h.c || charOfUnit(h.u);
-  return numberOf(x, (of) => { const i = of.indexOf(':'), ns = of.slice(0, i), f = of.slice(i + 1); return ns === 'skill' ? Number((c as any)?.skills?.[f] || 0) : ns === 'res' && h.u ? resLeft(h.u, f, c) : ns === 'feed' ? doorFeed(h.u || c, f) : 0; }); // feed: rules 1.60 (N3), the holder's beta feed of a door
+  return numberOf(x, (of) => { const i = of.indexOf(':'), ns = of.slice(0, i), f = of.slice(i + 1); return ns === 'skill' ? Number((c as any)?.skills?.[f] || 0) : ns === 'res' && h.u ? resLeft(h.u, f, c) : ns === 'feed' ? doorFeed(h.u || c, f) : ns === 'pick' ? (pickedFork(c, f) ? 1 : 0) : 0; }); // feed: rules 1.60 (N3), the holder's beta feed of a door; pick: rules 1.60 (N2), 1 when the holder picked that fork option
 }
 /** Why this holder can't aim its action at this unit by its `reach` (null: it can). */
 export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): string | null {

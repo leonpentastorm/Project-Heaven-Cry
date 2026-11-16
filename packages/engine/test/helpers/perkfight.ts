@@ -7,7 +7,7 @@
 //   act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'shot' });
 //   withGame(g, () => …)                           // call engine functions directly with the game bound (h.c, h.g)
 import {
-  ARCHETYPES, PERK, FIGHT_TOOLS, apply, newGame, beginTurn, bindGame, _snapshotRegistry, _restoreRegistry, _unregisterAll, register, setGrade,
+  ARCHETYPES, PERK, FIGHT_TOOLS, apply, newGame, beginTurn, bindGame, _snapshotRegistry, _restoreRegistry, _unregisterAll, register, setGrade, forkRow,
   type Action, type Character, type Combat, type GameState, type ItemHandler, type Sheet, type Unit,
 } from '../../src';
 import './yard16';
@@ -23,6 +23,12 @@ export interface CharSpec {
   /** Rules 1.56 (Figments 2.0): the Figment forms chosen at the forks (door/pick's record). Not given, a character with
    * Visualization set here is a pre-forks one (no figRev stamp): the save migration gives it the old ladder's forms. */
   forms?: string[];
+  /** Rules 1.60 (the forks, N1): fork options to pick (data/forks.json ids), each sent as a real door/pick through the
+   * reducer before the session starts (the skills must already reach the step). */
+  picks?: string[];
+  /** Rules 1.60: door picks as a save carries them (Character.doorPicks), set with no door/pick: an option built but in a
+   * step not offered yet (no door/pick reaches it) is tested so. */
+  doorPicks?: Record<string, string[]>;
   /** Relics carried (items added at run time with addItems('relic', …); engine foundations 3). */
   relics?: string[];
   classId?: string | null; advancedClass?: string | null;
@@ -48,6 +54,7 @@ export function equipSpec(c: Character, spec: CharSpec) {
   if (spec.relics) c.relics = [...spec.relics];
   if (spec.skills) Object.assign(c.skills, spec.skills);
   if (spec.forms) c.doorPicks = { ...(c.doorPicks || {}), visualization: [...spec.forms] }; else if (spec.skills?.visualization) delete c.figRev;
+  if (spec.doorPicks) c.doorPicks = { ...(c.doorPicks || {}), ...spec.doorPicks };
   if (spec.attrs) Object.assign(c.attrs, spec.attrs);
   if (spec.classId !== undefined) c.classId = spec.classId;
   if (spec.advancedClass !== undefined) c.advancedClass = spec.advancedClass;
@@ -66,6 +73,7 @@ export function storyWith(specs: CharSpec[] = [{}], seed = 'PERKS1'): { g: GameS
   specs.forEach((s, i) => { g = apply(g, { type: 'char/add', sheet: sheetOf({ ...s, name: s.name || 'Tester ' + (i + 1) }) }, s.owner || (i < 2 ? 'host' : 'p' + i)); });
   const ids = Object.keys(g.characters);
   ids.forEach((id, i) => equipSpec(g.characters[id], specs[i] || {}));
+  ids.forEach((id, i) => { for (const o of specs[i]?.picks || []) g = apply(g, { type: 'door/pick', charId: id, door: forkRow(o)?.door || '', option: o } as Action, g.characters[id].owner); });
   g = apply(g, { type: 'session/start' }, 'host');
   g = apply(g, { type: 'narrator/turn', turn: { narration: 'The test begins.', sceneTitle: 'Test scene' } }, 'host');
   const box = { g };

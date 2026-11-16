@@ -1008,7 +1008,8 @@ function reduce(g: GameState, a: Action, by: string) {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       if (g.phase === 'combat' && g.combat && !g.combat.over) fail('Choose after the fight.');
       const why = takeDoorPick(c!, a.door, a.option); if (why) fail(why);
-      push(g, { kind: 'system', text: c!.name + ' chooses the ' + (doorOption(a.door, a.option)?.label || a.option) + '.' });
+      delete (c as any).lvlUndo; // rules 1.60: a pick is kept for good, so the level-up that opened it can no longer be taken back
+      push(g, { kind: 'system', text: c!.name + ' chooses the ' + (doorOption(a.door, a.option)?.label || a.option) + ' (kept for good).' });
       return;
     }
     case 'sigil/learn': {

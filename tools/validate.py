@@ -2128,7 +2128,7 @@ if _swell is not None:
         for k, v in _swell["unless"].items(): check_pred(k, v, "soul_modules:cycle.swell.unless")
 # Classes 3.0 P3: a number block {base, per: [{of, value}], min?, max?}; in an item op its `of` names a source
 # (effects/triggers.ts sourceOf): res:<id>, event:<field>, self:/actor:/target:<field>.
-SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill", "feed"]  # feed: rules 1.60 (N3), a door's beta feed
+SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill", "feed", "pick"]  # feed: rules 1.60 (N3), a door's beta feed; pick: rules 1.60 (N2), 1 when the holder picked that fork option
 # Rules 1.60 (Doors 3.0, N3): a beta's `feed` names the carrier of its alpha door's number (effects/feed.ts); its step is
 # per_point.numbers.feed (> 0), each carrier is fed by one beta only, and a `feed:<door>` source names an alpha skill fed so.
 FEED_DOORS = set()
@@ -2390,8 +2390,9 @@ if TRIG:
             w = f"{_fn}:{_x.get('id')}"
             req = _x.get("requires")
             if not (isinstance(req, list) and req): errors.append(f"{w}: a verb names what it requires ([{{skill, min}}] or [{{class, rank}}])")
+            _fork_ids = {x.get("id") for x in (data.get("forks") or {}).get("items") or [] if isinstance(x, dict)}  # rules 1.60 (N1): a fork option, once picked
             for q in req or []:
-                if not (isinstance(q, dict) and ((q.get("skill") in _SK and isinstance(q.get("min", 1), int)) or (q.get("class") in _CL and q.get("rank", 1) in (1, 2, 3)))): errors.append(f"{w}: a verb's requires entry is {{skill, min}} or {{class, rank}}")
+                if not (isinstance(q, dict) and ((q.get("skill") in _SK and isinstance(q.get("min", 1), int)) or (q.get("class") in _CL and q.get("rank", 1) in (1, 2, 3)) or (set(q) == {"door_pick"} and q.get("door_pick") in _fork_ids))): errors.append(f"{w}: a verb's requires entry is {{skill, min}}, {{class, rank}} or {{door_pick: <a forks.json id>}}")
             if sum(1 for e in _x.get("effects") or [] if isinstance(e, dict) and e.get("op") == "grant_action") > 1: errors.append(f"{w}: a verb has one grant_action (a passive verb none)")
             _walk_grant(_x, w); walk_triggers(_x, w); _check_toggles(_x, w); check_amounts(_x, w); check_numbers(_x, w)
             for _g in [e for e in _x.get("effects") or [] if isinstance(e, dict) and e.get("op") == "grant_action"]:
@@ -3446,6 +3447,93 @@ def _pressure_steps_check():
             want = [named.get("pressed"), named.get("suppressed")][:len(ats)]
             if ats and ats != want: errors.append(f"perks:both_hands{('@' + tier) if tier else ''}: Pressure Point steps at {ats}, but techniques.json rules.pressure's pressed / suppressed are {want}")
 _pressure_steps_check()
+
+# ---------- rules 1.60 slice C (Doors 3.0, the forks: N1, N2) ----------
+# data/forks.json: one row per fork option, a door verb held only by a sheet that picked it (`requires: [{door_pick:
+# <its own id>}]`). Each alpha skill names its two steps in skills.json `forks` ([{id, at, of: [two option ids]}]) at 4
+# and 6 points, and `fork_runs_on` (the door's own resource, words). A shelved row is not built: no effects, `waits_for`
+# (the primitives it waits on; may be empty when it waits on its step's other option) and `why`. A number a fork changes
+# in another row (Slam's reach, Snap's price) is bound here, so the fork's text and the row it changes say one number.
+_FK = data.get("forks") if isinstance(data.get("forks"), dict) else None
+if _FK is not None:
+    _rows = {x.get("id"): x for x in _FK.get("items") or [] if isinstance(x, dict)}
+    _alpha = {s.get("id"): s for s in items("skills") if s.get("slot") == "alpha"}
+    _named = {}
+    for _sid, _s in _alpha.items():
+        _fs = _s.get("forks")
+        if _fs is None: continue
+        _w = f"skills:{_sid}.forks"
+        if not (isinstance(_fs, list) and [f.get("at") for f in _fs if isinstance(f, dict)] == [4, 6]): errors.append(f"{_w}: two steps, at 4 and 6 ({{id, at, of}}: rules 1.60)"); continue
+        if not isinstance(_s.get("fork_runs_on"), str) or not _s["fork_runs_on"]: errors.append(f"skills:{_sid}: fork_runs_on names the door's own resource (words)")
+        for _f in _fs:
+            if not (isinstance(_f.get("of"), list) and len(_f["of"]) == 2): errors.append(f"{_w}.{_f.get('id')}: two options"); continue
+            for _o in _f["of"]:
+                _r = _rows.get(_o)
+                if not _r: errors.append(f"{_w}.{_f.get('id')}: '{_o}' is no forks.json row"); continue
+                if _o in _named: errors.append(f"{_w}: '{_o}' is in two steps")
+                _named[_o] = (_sid, _f.get("at"))
+                if _r.get("door") != _sid or _r.get("step") != _f.get("at"): errors.append(f"forks:{_o}: its door and step are {_sid} and {_f.get('at')} (skills.json forks)")
+            if str(_f.get("at")) not in (_s.get("unlocks") or {}): errors.append(f"skills:{_sid}.unlocks: a row at {_f.get('at')} says the fork (its text is the choice)")
+    for _id, _r in _rows.items():
+        _w = f"forks:{_id}"
+        if _id not in _named: errors.append(f"{_w}: no alpha skill's `forks` names it")
+        if _r.get("requires") != [{"door_pick": _id}]: errors.append(f"{_w}: requires is [{{door_pick: '{_id}'}}] (held only once picked)")
+        if _r.get("adjudication") != "engine" or _r.get("provisional") is not True: errors.append(f"{_w}: adjudication engine, provisional true")
+        if _r.get("icon") != _id or not _id.startswith("fork."): errors.append(f"{_w}: its id and icon are fork.<door>.<name>, the same (art/briefs/ART-REQUESTS.md)")
+        if _r.get("shelved"):
+            if _r.get("effects"): errors.append(f"{_w}: a shelved row has no effects (it is not built)")
+            if not isinstance(_r.get("waits_for"), list) or not all(isinstance(x, str) and re.match(r"^N\d+b?$", x) for x in _r["waits_for"]): errors.append(f"{_w}: waits_for lists the primitives it waits on (N12…), or none")
+            if not isinstance(_r.get("why"), str) or not _r["why"]: errors.append(f"{_w}: a shelved row says why")
+    # every door_pick / no_door_pick names a fork option; a built option with no effects of its own is read somewhere
+    _picks_read = set()
+    def _walk_picks(o, w):
+        if isinstance(o, dict):
+            c = o.get("if") if isinstance(o.get("if"), dict) else {}
+            for k in ("door_pick", "no_door_pick"):
+                for v in ([c[k]] if isinstance(c.get(k), str) else c.get(k) or []):
+                    if v not in _rows: errors.append(f"{w}: `if.{k}` names '{v}', no forks.json row")
+                    elif _rows[v].get("shelved"): errors.append(f"{w}: `if.{k}` names '{v}', a shelved fork")
+                    _picks_read.add(v)
+                    # a row a fork changes says the fork's numbers: within, rounds, tiles (one number, two places)
+                    if k == "door_pick":
+                        _n = _rows.get(v, {}).get("numbers") or {}
+                        for f, have in (("within", (o.get("targets") or {}).get("within")), ("rounds", o.get("rounds")), ("tiles", o.get("tiles"))):
+                            if f in _n and have is not None and have != _n[f]: errors.append(f"{w}: its {f} is {have}, but forks:{v} numbers.{f} is {_n[f]}")
+            for x in o.values(): _walk_picks(x, w)
+        elif isinstance(o, list):
+            for x in o: _walk_picks(x, w)
+    for _fn, _blk in data.items():
+        if _fn in ("effect_ops",): continue
+        _walk_picks(_blk, _fn)
+    for _id, _r in _rows.items():
+        if not _r.get("shelved") and not _r.get("effects") and _id not in _picks_read: errors.append(f"forks:{_id}: a built option with no effects of its own must be read by a row (door_pick)")
+    # numbers a fork shares with the row it changes (one copy: held equal)
+    def _fe(i, n=0):
+        return ((_rows.get(i) or {}).get("effects") or [{}] * (n + 1))[n] if len((_rows.get(i) or {}).get("effects") or []) > n else {}
+    _tend = {x.get("id"): x for x in (data.get("tending") or {}).get("items") or []}
+    _tug = ((((_tend.get("tend.tug") or {}).get("effects") or [{}])[0]).get("res") or {}).get("mp")
+    if "tend.keep_the_thread" in _rows and not _rows["tend.keep_the_thread"].get("shelved") and _fe("tend.keep_the_thread").get("value") != _tug: errors.append(f"forks:tend.keep_the_thread: the kept Snap's MP is Tug's price ({_tug}), one number")
+    _st = _rows.get("tend.short_thread") or {}
+    if _st and not _st.get("shelved"):
+        _thr = ((data.get("tending") or {}).get("bond") or {}).get("through")
+        _nn = _st.get("numbers") or {}
+        if _nn.get("through") != _thr: errors.append(f"forks:tend.short_thread: numbers.through is tending.json bond.through ({_thr})")
+        for _e in _st.get("effects") or []:
+            if _e.get("op") == "mend_mult" and abs(_e.get("value", 0) - round(_nn.get("near", 0) / (_thr or 1), 4)) > 1e-9: errors.append(f"forks:tend.short_thread: a mend_mult is near / through ({round(_nn.get('near', 0) / (_thr or 1), 4)})")
+    _sp = _rows.get("tend.shared_pulse") or {}
+    if _sp and not _sp.get("shelved"):
+        _hb = (((_tend.get("tend.mend") or {}).get("amounts") or {}).get("heal") or {}).get("base")
+        _pb = ((_sp.get("amounts") or {}).get("pulse") or {}).get("base")
+        if _hb is None or _pb is None or abs(_pb - _hb * (_sp.get("numbers") or {}).get("share", 0)) > 1e-9: errors.append(f"forks:tend.shared_pulse: amounts.pulse.base is Mend's heal base × numbers.share ({_hb} × {(_sp.get('numbers') or {}).get('share')})")
+    _sp = _rows.get("shadow.spotter") or {}
+    if _sp and not _sp.get("shelved"):
+        _ab = ((data.get("rules") or {}).get("shadow") or {}).get("ambush_bonus")
+        if _ab is None or abs(_fe("shadow.spotter").get("value", 0) - (1 + _ab)) > 1e-9: errors.append(f"forks:shadow.spotter: the ambush is 1 + rules.json shadow.ambush_bonus ({_ab})")
+    _ct = _rows.get("guard.cover_them") or {}
+    if _ct and not _ct.get("shelved"):
+        _ic = (((data.get("techniques") or {}).get("rules") or {}).get("guard") or {}).get("interpose_cost")
+        if ((_fe("guard.cover_them").get("and") or [{}])[0]).get("value") != -(_ic or 0): errors.append(f"forks:guard.cover_them: its Guard is techniques.json rules.guard.interpose_cost ({_ic})")
+
 
 # The text-number guard (tools/text_numbers.py): a number in a player-facing text must be a number in the item's own fields.
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))

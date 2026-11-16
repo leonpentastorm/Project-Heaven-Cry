@@ -178,12 +178,14 @@ describe('the new forms (slice 3)', () => {
 });
 
 describe('the forks (door/pick) and the save migration', () => {
-  it('a new character at Visualization 3 has a fork open, chooses one form out of a fight, and the rest stay locked', () => {
-    const s = storyWith([{ skills: { visualization: 3 }, attrs: { expression: 3 }, forms: [] }]); const id = s.chars[0].id;
+  it('a new character at Visualization 4 has a fork open (rules 1.60: at 4, not 3), chooses one form out of a fight, and the rest stay locked', () => {
+    const s = storyWith([{ skills: { visualization: 3 }, attrs: { expression: 4 }, forms: [] }]); const id = s.chars[0].id;
     let c = s.g.characters[id];
-    expect(formsOf(c)).toEqual(ladderAt(3).forms);
+    expect(pendingDoorPicks(c, F.visualizer.door)).toEqual([]); // rules 1.60: nothing opens at 3 any more
+    c.skills.visualization = 4;
+    expect(formsOf(c)).toEqual(ladderAt(4).forms);
     const open = pendingDoorPicks(c, F.visualizer.door); expect(open.length).toBe(1);
-    expect(open[0].options.map((o) => o.id)).toEqual(F.ladder.find((r: any) => r.points === 3).fork.of);
+    expect(open[0].options.map((o) => o.id)).toEqual(F.ladder.find((r: any) => r.points === 4).fork.of);
     expect(() => s.act({ type: 'door/pick', charId: id, door: F.visualizer.door, option: 'beast' } as any)).toThrow(/Not one of the open choices/);
     s.act({ type: 'door/pick', charId: id, door: F.visualizer.door, option: 'ward' } as any); c = s.g.characters[id];
     expect(formsOf(c)).toContain('ward'); expect(formsOf(c)).not.toContain('eye');
@@ -195,9 +197,9 @@ describe('the forks (door/pick) and the save migration', () => {
     expect(pendingDoorPicks(c, F.visualizer.door).some((p) => p.options.some((o) => o.id === 'eye'))).toBe(true);
   });
   it('a pick is refused in a fight, and for another door', () => {
-    const f = figFight([{ skills: { visualization: 3 }, weapon: 'service_pistol', forms: [] }]); const id = f.pc.charId!;
+    const f = figFight([{ skills: { visualization: 4 }, weapon: 'service_pistol', forms: [] }]); const id = f.pc.charId!;
     expect(() => f.act({ type: 'door/pick', charId: id, door: F.visualizer.door, option: 'eye' } as any)).toThrow(/after the fight/);
-    const s = storyWith([{ skills: { visualization: 3 }, forms: [] }]);
+    const s = storyWith([{ skills: { visualization: 4 }, forms: [] }]);
     expect(() => s.act({ type: 'door/pick', charId: s.chars[0].id, door: 'no_such_door', option: 'eye' } as any)).toThrow(/Nothing to choose/);
   });
   it('the migration: a character made before the forks keeps every form the old ladder gave it; each fork it passed counts as taken', () => {
@@ -208,8 +210,12 @@ describe('the forks (door/pick) and the save migration', () => {
     expect(c.figRev).toBe(FIG_REV); // migrated at the load
     for (const r of F.migration.legacy) for (const fm of r.forms) expect(formsOf(c)).toContain(fm);
     expect(pendingDoorPicks(c, F.visualizer.door)).toEqual([]);
-    c.skills.visualization = 7; // the "one more" of fork A opens; the Ward is still to be had
-    expect(pendingDoorPicks(c, F.visualizer.door).flatMap((p) => p.options.map((o) => o.id))).toEqual(['ward']);
+    // rules 1.60 (spec 2.9): fork b moved to 6, so at 6 it offers the Husk or the Sentinel (a gift to an unstamped save);
+    // the "one more" of fork A at 7 offers the Ward
+    c.skills.visualization = 6;
+    expect(pendingDoorPicks(c, F.visualizer.door).flatMap((p) => p.options.map((o) => o.id))).toEqual(['husk', 'sentinel']);
+    c.skills.visualization = 7;
+    expect(pendingDoorPicks(c, F.visualizer.door).flatMap((p) => p.options.map((o) => o.id))).toEqual(['husk', 'sentinel', 'ward']);
     c.skills.visualization = 5; const once = JSON.stringify(g); expect(JSON.stringify(migrateLoaded(JSON.parse(once)))).toBe(once); // once: a second load changes nothing
   });
 });
