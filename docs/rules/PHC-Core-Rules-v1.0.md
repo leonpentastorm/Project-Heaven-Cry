@@ -11281,8 +11281,11 @@ make all the deceision right, the target is FUN and REWARD for the effort you pu
     door's fight tab (and the Guard and Momentum meters' cards) shows one line from the engine's `doorFeedView`: the
     number now, the beta that feeds it, what the next point buys (the row's `line` and `next`); each beta's skill card
     names the door it feeds. PROVISIONAL: 0.01 and every number below.
-4604. **Pain Threshold → the plate soak:** `guardSoak` × the feed (Durability's Guard; the Reactive Plate's own stat is
-    unchanged). A plate soaks 6 × the level scale at Pain Threshold 0, 12 at Durability 10 and Pain Threshold 10.
+4604. **Pain Threshold → the plate soak:** `guardSoak` × the feed (Durability's Guard), and the Reactive Plate's own stat
+    × the same feed (0.30.0 review: the plate's flat 10 left a rank III Bulwark nothing from its beta, while the Guard
+    meter and the door tab said the fed number; now the plate, the meter and the tab read one number, `physical/guard.ts
+    plateSoakOf`). A plate soaks 6 × the level scale at Pain Threshold 0, 12 at Durability 10 and Pain Threshold 10; a
+    Reactive Plate 10, 11 at Durability 10 and Pain Threshold 1, 20 at 10 and 10.
 4605. **Guts → the Momentum worn off:** a tile walked or a hit taken wears Momentum ÷ the feed (`physical/core.ts
     wearMomentum`), the kept part carried; a spend (Raise Shield's turn of Momentum into Guard) is not worn off. At 10/10 a
     2-tile walk costs 1.
@@ -11295,8 +11298,10 @@ make all the deceision right, the target is FUN and REWARD for the effort you pu
 4609. **Improvisation → the Figment body:** a Figment's HP × the feed (`figmentBlock`).
 4610. **Camaraderie → the heal back:** Tending (`how` tending) that lands on a Bonded ally (`tied` bond) heals the giver
     `feed_at_double` 0.3 × (feed − 1) of what it restored (3% / 15% / 30% at Empathy 10), healed by nobody: no heal given,
-    no Ledger, no echo, no patron's tag. It is a heal received, so Camaraderie's +10% a point of healing received applies
-    to it (the spec's row did not say; for the lead). The spec's carrier (one data row) cannot be written: a number block
+    no Ledger, no echo, no patron's tag, and not raised by the giver's own healing received (0.30.0 review: Camaraderie's
+    +10% a point of healing received multiplied it again, so at 10/10 the giver got 57% while the tab said 30%; the share
+    shown is now the share healed, `healUnit`'s `plain`; the other reading, the tab saying the larger number, is Leon's
+    call). The spec's carrier (one data row) cannot be written: a number block
     has no product of two sources, so it is the one listener in `tactics.ts` (`heal_given`), its numbers in data.
 4611. **Composure → the Strain limit:** round((3 + Will Power ÷ 2, down) × the feed), then what items add: 9 / 12 / 16
     at Will Power 10 (Leon's ruling i: doubled like every other beta). The Mana Short stays 3 over the limit.
@@ -11385,7 +11390,7 @@ stats); nothing here adds a trigger, predicate or op.
 4630. **Triage (R12):** re-worded as the Mender's Touch (an ally next to you or a Bonded ally in sight, Touch's heal, and it
     also stops Bleeding; once an ally a turn); the action, its cost site `triage`, its 2 AP and 18 MP (a Touch's is 24),
     the out-of-fight Triage and the items answering `ap_cost:triage` are kept. **Not changed:** the spec's "costs N AP"
-    names no new number; 2 AP is kept (the medic measure divides by it). The brake counts it (item 4640). No number.
+    names no new number; 2 AP is kept (the medic measure divides by it). (The brake, item 4640, is not built.) No number.
 4631. **The Rigger's Double (R13; `trickster.false_image`):** no charge (was 1) and one round longer (until your turn
     starts 3 rounds on; was 2). Without the door it still projects its Double, as before. The door's pictured Double is
     unchanged (its charge is the Picture's). PROVISIONAL: 0, 3.
@@ -11412,13 +11417,13 @@ stats); nothing here adds a trigger, predicate or op.
 4638. **Tending's Shield on a Bonded ally only (R20):** `tend.shield`'s reach is the Bond (`reach tied: bond`, anywhere
     you see); no reach in tiles. No number.
 4639. **The Ward on up to 4 allies (R22; Leon's ruling i):** `holders` 4 (was 2): the squad. PROVISIONAL: 4.
-4640. **The healing brake, per giver (Leon's ruling ii):** each Mend, Touch or Shield (and the Mender's Triage) a giver
-    gives the same target in the same round costs its MP × 1.5 for every one that giver already gave that target this
-    round (24, 36, 54 MP for three Mends; a Mend after a Shield on the same ally is ×1.5 of the Mend's own price). One
-    count per giver and target, shared by the braked verbs, on the giver's own counters (`effects/uses.ts`, per round);
-    priced at each action's own cost site (`effects/actions.ts braked`, a grant_action field `brake: true`), so the
-    preview, the refusal and the payment read one number. Two healers on one body each meet their own brake (the
-    ruling). `rules.json mending.brake.step` 0.5. PROVISIONAL.
+4640. **The healing brake, per giver (Leon's ruling ii): not built in 0.30.0, deferred.** The rule stands as ruled
+    (each Mend, Touch or Shield, and the Mender's Triage, a giver gives the same target in the same round costs its MP ×
+    1.5 for every one that giver already gave that target this round). It needs the price to see its target, and the
+    piece first built for it (a grant_action field `brake: true` read at the cost site, and an exported `braked`) was not
+    among the primitives approved for this release (item 4602), so the 0.30.0 review removed it with the rule. It waits
+    on the lead's approval of a target-aware price (the spec's N20, or that field as one general piece). No number in
+    force.
 4641. **`designsMax` reads the ladder (owed fix):** the designs a character keeps ready start at the ladder's first row
     that gives designs (`figments.json ladder`), not at a typed 3. No change in play. No number.
 4642. **The layering shield is Prayer's (owed check):** `tools/validate.py` refuses a `mend` op that names a `layer`
@@ -11483,13 +11488,17 @@ only when both of its options are built**: a step with one option is not offered
     tile shorter (2; N23 `tech_num:charge.min_run`), a Charge costs no Momentum (N23 `momentum_cost:charge`, never below
     0) and builds 1 if it hits. **Grindstone**: a plain melee hit (the free technique: Cut, or a plain swing) on the foe
     you hit last builds 1 more (2 in all); "the foe you hit last" is the content condition `ground`, put by your melee hit
-    for 2 rounds (to the end of your next turn). A Strike or an Opener builds nothing, as before. PROVISIONAL: 1, 1, 1, 2.
+    for 2 rounds (to the end of your next turn). A Strike or an Opener builds nothing, as before. As built the mark goes on
+    every foe you hit in melee and does not say whose it is, so a foe hit by you (or by another Grindstone holder) within 2
+    rounds pays, not only the last one; the text says so (0.30.0 review; a check of the mark's source, or 1 round, is the
+    lead's call). PROVISIONAL: 1, 1, 1, 2.
 4652. **Momentum, the second fork: not offered.** **Spill** waits on N21 (a kill carries no overkill); its cheaper
     wording needs the Momentum a Finisher spent as a number (no source carries it, item 4623). **Headlong** needs only
     approved pieces (N10, N23) but is not built while its step is not offered.
 4653. **Pressure, the first fork (Dexterity 4; runs on the pips):** **Converging Fire**: each ally's ranged hit on a foe
     you have hit this round adds 1 more Pressure, once a round for each foe (your mark: the content condition
-    `in_your_sights`, 1 round). **Walk It In**: your ranged attack that misses a foe still lays 1 Pressure on it, once a
+    `in_your_sights`, 1 round; the mark does not say whose it is, so with two holders either's mark pays: the text says
+    so, 0.30.0 review). **Walk It In**: your ranged attack that misses a foe still lays 1 Pressure on it, once a
     turn for each foe. PROVISIONAL: 1, 1.
 4654. **Pressure, the second fork (Dexterity 6):** both keyed to **the foe's own cap** (N10 `target_res {pressure: {at:
     max}}`, `pressureCap`: a Soldier Broken, an Elite Suppressed, a Boss Pressed), read **after** the attack (on
@@ -11502,15 +11511,16 @@ only when both of its options are built**: a step with one option is not offered
     zone op may not lay smoke). **Spotter** is built (while you are Hidden, the first weapon hit each round an ally lands
     on a Marked foe counts as an ambush, ×(1 + `rules.json shadow.ambush_bonus`), `replaces: "ambush"`, and costs you 1
     Shadow); **Lend the Dark** needs only existing pieces and is not built while its step is not offered.
-4656. **Bonds, the first fork (Empathy 4; runs on MP through the thread):** **Keep the Thread**: your Snap keeps the Bond
-    and gives no Daze, and costs Tug's MP (12, one copy; a Boss's Bond still ends on its own clock). **Short Thread**:
+4656. **Bonds, the first fork (Empathy 4; runs on MP through the thread):** **Keep the Thread**: your Snap on a Bonded enemy
+    keeps the Bond and gives no Daze, and a Snap costs Tug's MP (12, one copy; a Boss's Bond still ends on its own clock).
+    A Snap on a Bonded ally still ends the Bond (0.30.0 review: kept, it was a 1 AP heal repeated every turn; the spec
+    meant the fork for a foe; the MP is on every Snap, as a price cannot see its target, N20). **Short Thread**:
     Tending you give a Bonded ally within 2 tiles is ×1.4 (in place of the Bond's ×1.2: a `mend_mult` of 1.4 ÷ 1.2), and
     your Touch reaches 2 tiles (Touch's reach reads `pick:`). PROVISIONAL: 12, 2, 1.4, 2.
 4657. **Bonds, the second fork: not offered.** **Long Thread** waits on N20 (a price cannot see its target, so "once per
     Bonded ally a round" cannot be counted); the spec's cheaper wording (uncapped) is the one it rejects. **Shared Pulse**
     is built (your Mend on a Bonded ally also sends 25% of its heal base down every Bond you hold to an ally, the target
-    included: `forks.json amounts.pulse`, Mend's heal base × 0.25, held equal by the validator). The brake (item 4640)
-    prices every Mend; no fork makes one free.
+    included: `forks.json amounts.pulse`, Mend's heal base × 0.25, held equal by the validator). The brake (item 4640) is not built; no fork makes a Mend free.
 4658. **Prayer: no step offered.** Round of Blessings and Held Breath wait on N7 (the prayer slots as numbers), Steadfast
     on N6 (a prayer as a reaction), Benediction on N5 and N7. The cheaper wordings need what no approved piece gives: the
     next Hymn's ×1.25 needs a predicate that tells a Hymn's heal from a Whisper's (both are kind `blessing`); the held

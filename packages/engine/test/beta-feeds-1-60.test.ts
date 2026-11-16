@@ -3,9 +3,10 @@
 // door's number x (1 + per_point.numbers.feed x alpha x beta), in the door's one function, through the fight's real path
 // (a foe's blow, a walk, a turn's end, the spot roll, a heal landing) where the rule fires there.
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, SKILL, FEEDS, doorFeed, feedOf, doorFeedView, resolveAttack, strainLimit, fluxMaxOf, FLUX_MAX, figmentBlock, grantShield, healUnit, shieldsView, spotHidden, tie, scaleOf, condOn, WEAPON, ITEM, TECHNIQUE, PERK, type Unit } from '../src';
+import { phys, SKILL, FEEDS, doorFeed, feedOf, doorFeedView, resolveAttack, strainLimit, fluxMaxOf, FLUX_MAX, figmentBlock, grantShield, healUnit, shieldsView, spotHidden, tie, scaleOf, condOn, WEAPON, ITEM, TECHNIQUE, PERK, CLASS_MOVE_POOL, physView, type Unit, type Action } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
+import { fightWith } from './helpers/perkfight';
 
 beforeEach(() => rig(null));
 /** The spot roll's TN, read on the spot hook (the Hidden one's items have had their say). */
@@ -47,6 +48,28 @@ describe('Pain Threshold feeds the plate soak (item 4604)', () => {
     rig({ hit: true, die: 12 }); f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), u, 'shot', null, { noAp: true }));
     const took = hp - u.hp; expect(raw - took).toBeLessThanOrEqual(2 * want); expect(raw - took).toBeGreaterThan(0);
     expect(doorFeedView(f.char(f.pc), 'durability')!.line).toContain(String(want)); // the door tab's line, from the sheet
+  });
+});
+
+describe('Pain Threshold feeds the Reactive Plate too (item 4604): a rank III Bulwark\'s plate soaks its own stat x the feed', () => {
+  const PLATE = 'class:defender.reactive_plate';
+  const stat = (): number => (Object.values(CLASS_MOVE_POOL) as any[]).find((m) => m.id === 'reactive_plate' && m.origin === 'defender').effects.find((e: any) => e.op === 'stat_mod').value;
+  for (const b of [1, 10]) it('level 12, Durability 10, Pain Threshold ' + b + ': a foe\'s real attack spends plates at the fed soak; the Guard meter and the door tab say the same number', () => {
+    const f = physFight([{ weapon: 'sabre', classId: 'defender', level: 12, known: [], attrs: { endurance: 10 }, skills: { durability: ALPHA, pain_threshold: b } } as any], [{ tier: 'elite', weapon: 'service_pistol' }]);
+    f.cb.objects = []; f.put(f.pc, 'C5'); const foe = f.put(f.foe, 'D5');
+    const u = f.unit(f.pc.id); expect(f.bound(() => phys.holds(u, PLATE))).toBe(true);
+    const want = Math.max(1, Math.round(stat() * feedAt('pain_threshold', b)));
+    u.hp = u.maxHp; u.armour = 0; u.shield = 0; u.res = { ...(u.res || {}), guard: 1 };
+    f.cb.order = [foe.id, ...f.cb.order.filter((id) => id !== foe.id)]; f.cb.round = 1; f.turn(foe);
+    rig({ hit: true, die: 12 }); const hp = u.hp;
+    f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(foe.id), f.unit(u.id), 'shot', null, { noAp: true })); rig(null); // the foe's attack: the path the enemy's turn takes
+    const raw = (() => { const g = physFight([{ weapon: 'sabre', classId: 'defender', level: 12, known: [], attrs: { endurance: 10 }, skills: { durability: ALPHA, pain_threshold: b } } as any], [{ tier: 'elite', weapon: 'service_pistol' }]);
+      g.cb.objects = []; g.put(g.pc, 'C5'); const fo = g.put(g.foe, 'D5'); const v = g.unit(g.pc.id); v.hp = v.maxHp; v.armour = 0; v.shield = 0; v.res = { ...(v.res || {}), guard: 0 };
+      g.cb.order = [fo.id, ...g.cb.order.filter((id) => id !== fo.id)]; g.cb.round = 1; g.turn(fo); rig({ hit: true, die: 12 }); const h0 = v.hp;
+      g.bound(() => resolveAttack(g.cb, g.g.rng, g.unit(fo.id), g.unit(g.pc.id), 'shot', null, { noAp: true })); rig(null); return h0 - g.unit(g.pc.id).hp; })();
+    expect(raw - (hp - f.unit(u.id).hp)).toBe(Math.min(raw, want)); // one plate took the fed soak off
+    expect(physView(f.cb, f.unit(u.id), 'pc', f.g).guard!.soak).toBe(want); // the Guard meter says it
+    expect(doorFeedView(f.char(f.pc), 'durability')!.line).toContain(String(want)); // the door tab says the plate's number
   });
 });
 
@@ -92,15 +115,24 @@ describe('Rumination feeds the Flux limit (item 4608); Composure the Strain limi
   });
 });
 
-describe('Camaraderie feeds the heal back down a Bond (item 4610); Conscience the prayers\' shields (item 4612)', () => {
-  for (const b of [1, 10]) it('alpha 10, beta ' + b + ': a Tending landing on a Bonded ally heals the giver feed_at_double x (feed - 1) of it, as no heal given', () => {
-    const f = physFight([{ weapon: 'sabre', known: [], skills: { empathy: ALPHA, camaraderie: b, faith: ALPHA, conscience: b } } as any, { weapon: 'sabre', known: [] } as any], [{ tier: 'elite' }]);
-    const me = f.unit(f.pcs[0].id), ally = f.unit(f.pcs[1].id); me.hp = 1; ally.hp = 1;
-    f.bound(() => tie(f.cb, me, ally, 'bond'));
-    const r = f.bound(() => healUnit(f.cb, ally, 100, me, 'tending'));
-    const want = Math.floor(r.restored * (SKILL as any).camaraderie.per_point.numbers.feed_at_double * (feedAt('camaraderie', b) - 1));
-    expect(me.hp - 1).toBe(Math.floor(want * (me.healRecv || 1)));
-    // a prayer's shield (kind blessing) given by the Faith 10 / Conscience b character, through the shield hook
+describe("Camaraderie feeds the heal back down a Bond (item 4610); Conscience the prayers' shields (item 4612)", () => {
+  for (const b of [1, 10]) it('Empathy 10, Camaraderie ' + b + ': a real Mend (verb:tend.mend) on a Bonded ally heals the giver feed_at_double x (feed - 1) of it, as no heal given (the giver own healing received does not multiply it), and the tab says that share', () => {
+    const f = fightWith([{ name: 'Giver', skills: { empathy: ALPHA, camaraderie: b }, attrs: { insight: 10 }, weapon: 'service_pistol', offHand: 'attuner', level: 5 }, { name: 'Ally' }], [{ at: 'P11' }]);
+    const [me, ally] = f.pcs; f.unit(me.id).pos = '3,5'; f.unit(ally.id).pos = '3,6';
+    f.turn(me);
+    const g0 = f.unit(me.id); g0.ap = 9; if (g0.mg) g0.mg.mp = 900;
+    f.act({ type: 'combat/perk', unitId: me.id, id: 'verb:tend.bond', targetId: ally.id } as Action, 'host');
+    const g = f.unit(me.id); g.ap = 9; g.hp = 1; f.unit(ally.id).hp = 1;
+    expect(g.healRecv || 1).toBeGreaterThan(1); // Camaraderie's own +10% a point is there, and must not reach the heal back
+    f.act({ type: 'combat/perk', unitId: me.id, id: 'verb:tend.mend', targetId: ally.id } as Action, 'host');
+    const restored = f.unit(ally.id).hp - 1; expect(restored).toBeGreaterThan(0);
+    const share = (SKILL as any).camaraderie.per_point.numbers.feed_at_double * (feedAt('camaraderie', b) - 1);
+    expect(f.unit(me.id).hp - 1).toBe(Math.floor(restored * share));
+    expect(doorFeedView(Object.values(f.g.characters).find((c) => c.name === 'Giver'), 'empathy')!.line).toContain(String(Math.round(share * 100))); // the tab's number is the share healed
+  });
+  for (const b of [1, 10]) it('Faith 10, Conscience ' + b + ': a prayer shield (kind blessing) is the shield x the feed', () => {
+    const f = physFight([{ weapon: 'sabre', known: [], skills: { faith: ALPHA, conscience: b } } as any, { weapon: 'sabre', known: [] } as any], [{ tier: 'elite' }]);
+    const me = f.unit(f.pcs[0].id), ally = f.unit(f.pcs[1].id);
     const before = ally.shield || 0; f.bound(() => grantShield(f.cb, ally, 40, me, { kind: 'blessing' }));
     expect(ally.shield).toBe(Math.max(before, Math.floor(Math.floor(40 * (ally.shieldRecv || 1)) * feedAt('conscience', b))));
   });

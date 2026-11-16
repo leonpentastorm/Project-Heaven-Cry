@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import './helpers/yard16';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { physFight, rig } from './helpers/physfight';
-import { SKILLS, SKILL, apply, applyCond, condOn, resolveAttack, migrateLoaded, pendingDoorPicks, doorForkView, doorForkViews, forkRow, forkBuilt, formsOf, FIG_REV, beginTurn, viewFor, heldOfChar, RULES, type Unit, type Action } from '../src';
+import { SKILLS, SKILL, apply, applyCond, condOn, resolveAttack, migrateLoaded, pendingDoorPicks, doorForkView, doorForkViews, forkRow, forkBuilt, formsOf, FIG_REV, beginTurn, viewFor, heldOfChar, type Unit, type Action } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { tiesOf } from '../src/kit';
 import { pressureOf, pressureCap } from '../src/physical/pressure';
@@ -102,7 +102,7 @@ describe('Figments\' forks move to 4 and 6 (spec 2.9): old saves', () => {
     const g = migrateLoaded(JSON.parse(JSON.stringify(s.g))); const c = g.characters[id];
     expect(c.figRev).toBe(FIG_REV);
     expect(formsOf(c)).toEqual(expect.arrayContaining(['wall', 'beast']));
-    for (const p of [5, 6]) { c.skills.visualization = p; expect(pendingDoorPicks(c, 'visualization'), 'at ' + p).toEqual([]); }
+    for (const p of [4, 5, 6]) { c.skills.visualization = p; expect(pendingDoorPicks(c, 'visualization'), 'at ' + p).toEqual([]); }
   });
   it('a 0.29.0 character at Visualization 5 that picked only at 3: the second fork waits for 6 (it was open at 5)', () => {
     const s = storyWith([{ skills: { visualization: 5 }, forms: ['eye'] }]), id = s.chars[0].id;
@@ -301,6 +301,12 @@ describe('Bonds, the first fork: Keep the Thread and Short Thread', () => {
       expect(tiesOf(r.cb(), r.U(r.me.id), 'bond', 'from').some((k: any) => k.to === r.foe.id), picks[0]).toBe(kept);
     }
   });
+  it('Keep the Thread is for a foe: a Snap on a Bonded ALLY still heals and ends the Bond (it cannot repeat every turn)', () => {
+    const r = bondRig(['fork.tend.keep_the_thread']); r.bond(r.al); r.U(r.al.id).hp = 1;
+    expect(r.act('verb:tend.snap', r.U(r.al.id))).toBeNull();
+    expect(r.U(r.al.id).hp).toBeGreaterThan(1);
+    expect(tiesOf(r.cb(), r.U(r.me.id), 'bond', 'from').some((k: any) => k.to === r.al.id)).toBe(false);
+  });
   it('Short Thread: Touch reaches a Bonded ally 2 tiles away, and the Tending is ×near/through; Keep the Thread\'s holder is refused', () => {
     const healed: number[] = [];
     for (const picks of [['fork.tend.short_thread'], ['fork.tend.keep_the_thread']]) {
@@ -311,12 +317,22 @@ describe('Bonds, the first fork: Keep the Thread and Short Thread', () => {
     }
     expect(healed[0]).toBeGreaterThan(0);
   });
-  it('no fork makes a Mend free: with Short Thread the second Mend on one ally in a round still pays the brake (×1.5)', () => {
+  it('Short Thread: a Mend on a Bonded ally within 2 tiles is x near (1.4), beyond 2 the Bond x through (1.2), as data', () => {
+    const FS: any = FK['fork.tend.short_thread'], near = FS.numbers.near, through = FS.numbers.through, within = FS.effects[0].if.target_within;
+    const mend = (picks: string[], pos: string) => { const r = bondRig(picks); r.bond(r.al); r.U(r.al.id).pos = pos; r.U(r.al.id).hp = 1; r.U(r.me.id).ap = 12;
+      expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull(); return r.U(r.al.id).hp - 1; };
+    const nearPos = '3,' + (5 + within), farPos = '3,' + (5 + within + 3);
+    const sNear = mend(['fork.tend.short_thread'], nearPos), sFar = mend(['fork.tend.short_thread'], farPos), kNear = mend(['fork.tend.keep_the_thread'], nearPos);
+    expect(sFar).toBe(kNear); // beyond 2 tiles Short Thread adds nothing: the Bond's own x through, as for anyone
+    expect(Math.abs(sNear - kNear * near / through)).toBeLessThanOrEqual(1); // within 2: x near in place of x through (whole HP)
+    expect(sNear).toBeGreaterThan(kNear);
+  });
+  it('no fork makes a Mend free: with Short Thread the second Mend on one ally in a round costs its MP again', () => {
     const r = bondRig(['fork.tend.short_thread']); r.bond(r.al); r.U(r.al.id).hp = 1;
     const mp0 = r.U(r.me.id).mg.mp; expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull();
     const first = mp0 - r.U(r.me.id).mg.mp; r.U(r.me.id).ap = 12; r.U(r.al.id).hp = 1;
     const mp1 = r.U(r.me.id).mg.mp; expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull();
-    expect(first).toBeGreaterThan(0); expect(mp1 - r.U(r.me.id).mg.mp).toBe(Math.round(first * (1 + RULES.mending.brake.step)));
+    expect(first).toBeGreaterThan(0); expect(mp1 - r.U(r.me.id).mg.mp).toBe(first); // (the healing brake, item 4640, is not built: it waits on a primitive)
   });
 });
 

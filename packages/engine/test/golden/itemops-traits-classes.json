@@ -50,7 +50,7 @@
 "class/defender@III/move-far": "P1 ap:9>5 bank:0>2 pos:3,6>11,6 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, F2 pos:7,6>12,6",
 "class/defender@III/start": "order=pc-c3,pc-c1,foe-0,foe-1,foe-2; round=1; turn=1; over=; u:pc-c1=hp474/789 sh0 ap9 bank0 pos3,6 conds mv2.5 res{\"guard\":1,\"shadow\":0} inj0; u:pc-c3=hp126/315 sh0 ap6 bank0 pos2,6 conds mv2.5 res{\"guard\":0,\"shadow\":0} inj0; u:foe-0=hp259/259 sh0 ap0 bank0 pos4,6 conds mv1.5 res{} inj0; u:foe-1=hp259/259 sh0 ap0 bank0 pos7,6 conds mv1.5 res{} inj0; u:foe-2=hp444/444 sh0 ap0 bank0 pos7,9 conds mv2 res{} inj0; echo=1",
 "class/defender@III/taken": "turn:1>3, P1 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, F2 ap:0>7",
-"class/defender@III/taken-blast": "P1 hp:474/789>468/789 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}",
+"class/defender@III/taken-blast": "P1 hp:474/789>471/789 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}",
 "class/defender@III/taken-bloodied": "turn:1>3, P1 hp:474/789>237/789 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, F2 ap:0>7",
 "class/defender@III/taken-blow": "turn:1>2, P1 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, F1 ap:0>7",
 "class/defender@III/taken-crit": "turn:1>3, P1 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, F2 ap:0>7",

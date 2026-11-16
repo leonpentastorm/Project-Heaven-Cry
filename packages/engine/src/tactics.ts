@@ -266,13 +266,13 @@ export function hideAction(cb: Combat, u: Unit): string | null {
 export const ambushReady = (u: Unit) => !!u.hidden && (u.ambushUsed || 0) < (u.hideEntry || 1);
 // ---------- Camaraderie's carrier (rules 1.60 item 4610): the heal back down a thread ----------
 // Tending (`how`) a unit tied to you (`tied`) heals you a share of what it restored: at_double x (feed - 1). It is
-// healed by nobody (no giver), so it is never a heal given: no Ledger, no echo, no brake, no patron's tag.
+// healed by nobody (no giver), so it is never a heal given: no Ledger, no echo, no patron's tag.
 onHook('heal_given', (ctx: any, cb: Combat) => {
   const by: Unit | null = ctx.by, t: Unit | null = ctx.t;
   if (!by || !t || by === t || by.side !== t.side || !(ctx.n > 0) || by.dead || by.downed) return;
   const f = FEED_BY_CARRIER.heal_back; if (!f || ctx.kind !== f.row.how || !tiedTo(cb, by, t, f.row.tied)) return;
   const n = Math.floor(ctx.n * f.atDouble * (feedOf(by, 'heal_back') - 1)); if (n < 1) return;
-  const r = healUnit(cb, by, n, null, 'heal_back'); if (r.restored > 0) say(cb, by.name + ' heals ' + r.restored + ' back down the thread from ' + t.name + '.');
+  const r = healUnit(cb, by, n, null, 'heal_back', { plain: true }); // the share shown is the share healed: Camaraderie's own healing received does not multiply it again if (r.restored > 0) say(cb, by.name + ' heals ' + r.restored + ' back down the thread from ' + t.name + '.');
 });
 /** The door tab's number for Camaraderie's feed: the share healed back, in percent. */
 showFeedNumber('heal_back', (x) => Math.round(FEED_BY_CARRIER.heal_back.atDouble * (feedOf(x, 'heal_back') - 1) * 100));

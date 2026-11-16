@@ -50,7 +50,7 @@
 "class/defender@III/move-far": "Soldier takes an opportunity attack. / Tester 1's plate hardens: 1 Guard, 1 damage stopped. / Soldier strikes Tester 1: d20 10 −3 = 7 vs 14 · hit, 0 damage · no damage / Tester 1 moves to L7 (8 tiles, 4 AP).",
 "class/defender@III/start": "",
 "class/defender@III/taken": "Tester 1's plate hardens: 1 Guard, 4 damage stopped. / Far soldier fires at Tester 1: d20 10 −3 = 7 vs 14 · hit, 0 damage · no damage",
-"class/defender@III/taken-blast": "Tester 1's plate hardens: 1 Guard, 10 damage stopped. / Tester 1 has felt Spite (hurt by Soldier): it can be poured in now.",
+"class/defender@III/taken-blast": "Tester 1's plate hardens: 1 Guard, 13 damage stopped. / Tester 1 has felt Spite (hurt by Soldier): it can be poured in now.",
 "class/defender@III/taken-bloodied": "Tester 1's plate hardens: 1 Guard, 4 damage stopped. / Far soldier fires at Tester 1: d20 10 −3 = 7 vs 14 · hit, 0 damage · no damage",
 "class/defender@III/taken-blow": "Tester 1's plate hardens: 1 Guard, 1 damage stopped. / Soldier strikes Tester 1: d20 10 −3 = 7 vs 14 · hit, 0 damage · no damage",
 "class/defender@III/taken-crit": "Tester 1 sets against the blow: the critical lands as an ordinary hit (Set Against the Blow). / Tester 1's plate hardens: 1 Guard, 4 damage stopped. / Far soldier fires at Tester 1: d20 20 −3 = 17 vs 14 · CRITICAL, 0 damage · injury resisted (d100 28 ≤ 80%) · no damage",

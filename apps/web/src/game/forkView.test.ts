@@ -31,10 +31,10 @@ describe('the fork card (game/forkView.ts)', () => {
     expect(lu.steps.map((s) => s.head)).toEqual(['DURABILITY 4 · CHOOSE ONE · STILL TO DO', 'DURABILITY 6 · CHOOSE ONE · STILL TO DO']);
     expect(lu.steps[0].opts[0].label).toBe('After the fight');
   });
-  it('a step not offered yet says what is still to be built, and offers no button', () => {
+  it('a step not offered yet says it comes in a later version (a player line), and offers no button', () => {
     const card = forkCard(ch({ ingenuity: 10 }), 'ingenuity')!;
     expect(card.steps.every((s) => /NOT OFFERED YET/.test(s.head) && s.opts.every((o) => !o.canPick))).toBe(true);
-    expect(card.steps[0].why).toMatch(/Light Fingers and Lend the Dark are still to be built/);
+    expect(card.steps[0].why).toBe('Not offered yet: this choice comes in a later version.');
   });
   it('the sheet lists the doors reached, the ones with a pick to make first; an option\'s icon falls back to its door\'s skill', () => {
     const cards = forkCards(ch({ durability: 6, dexterity: 4, visualization: 4 }, { durability: ['fork.guard.provoke', 'fork.guard.drive'] }));

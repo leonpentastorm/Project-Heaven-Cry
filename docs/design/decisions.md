@@ -485,10 +485,9 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     Challenge is the one taunt verb, aimed for everyone, and the Bulwark's Called Out is two rows on it (no class
     predicate, no second taunt). The Breaker's Wind-up and Keep Swinging ride the one approved Momentum piece (N23): the
     stat `momentum_start` read at the fight's start, and the stat family `momentum_cost:<technique or group>` read in the
-    one Momentum price; Keep Swinging's free Strike is a content condition answering it. The healing brake is per giver
-    (ruling ii) and priced at each verb's own cost site (a grant_action's `brake: true`, the step in `rules.json
-    mending.brake`): the `cost` trigger has no target (N20, not approved), and the price function already sees the
-    target, so the brake is one function, `braked`, read by the preview and the payment alike. What was not built and
+    one Momentum price; Keep Swinging's free Strike is a content condition answering it. The healing brake (ruling ii) was
+    built here on a grant_action field `brake: true` and an exported `braked`, and removed by the review (decision 123):
+    neither was among the approved primitives. What was not built and
     why: Last Rites' "never stands an ally up" (it contradicts the one heal: a ruling), the exact "half the Momentum
     spent" of Measured Blow (no source carries the spent count; a flat 1). Two fits hold the contract (item 4644): the
     long rifle 48 → 47 (Hold the Lane took the reload and swap discount, and the contract's optimised gun then reloaded
@@ -514,8 +513,20 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     marks the soak and Taunts once the blow is done. Drive's −2 and plate back read every Off Balance its holder forces,
     as the spec's carrier is written (no piece tells which action put a condition on): for the lead. A pick is kept for
     good, so it closes the level-up's take-back.
+123. **The Doors 3.0 review: an unapproved primitive goes with its rule, and every number a screen shows is the number
+    the fight uses** (the lead's review of 0.30.0, 16 Nov 2026; rules 1.60 items 4604, 4610, 4640, 4651, 4653, 4656).
+    The healing brake (Leon's ruling ii) needed a price that sees its target; the piece built for it (the grant_action
+    field `brake` and the export `braked`) was outside the approved N1, N2, N3, N10, N3b and N23, so it was removed with
+    the rule, which waits for the lead's approval of a target-aware price (N20, or that field as one general piece). With
+    it gone, Keep the Thread's ally case is fixed in its own rows (a second Bond-clearing row on `door_pick` and `target:
+    ally`), not by a brake. Camaraderie's heal back skips the receiver's healing-received bonus (`healUnit`'s `plain`), so
+    the tab's share is the share healed; the other reading, the tab saying the larger number, is Leon's call. The Reactive
+    Plate's soak is its stat × Pain Threshold's feed, in one function (`physical/guard.ts plateSoakOf`) that the soak, the
+    Guard meter (through the door tab's `plate_soak` number, to keep `physical/core.ts` free of an import cycle) and the
+    door tab read. Two forks' marks (Grindstone's `ground`, Converging Fire's `in_your_sights`) carry no source; their
+    texts now say so, and a source check or a 1-round mark is the lead's call.
 
-123. **Survival: a party is cheaper a head than one character; the dead stand up at 50 HP** (16 Nov 2026, lane
+124. **Survival: a party is cheaper a head than one character; the dead stand up at 50 HP** (16 Nov 2026, lane
     0.30-fit; rules 1.61 party fit, Core Rules items 4710 to 4714; account `docs/design/proposals/2026-11-party-fit.md`).
     - **Why:** every duo cleared stage 1 less often than its members alone (Breaker 73% alone, 3% as two). The duo's
       pressure cap was 1.7 a head against the solo's 1.3, and the foes put three quarters of their shots on one member.
@@ -525,7 +536,7 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
       worked). `run.dead_return_hp` 50. The solo, the bulk, `max_foes` and `share` are unchanged; no door's number moved.
     - **Not fixed by data, for the lead:** the enemy AI's focus fire (a target-spread term), arcs that hit allies, the
       opening volley, and the four doors that lose alone (Bulwark, Operative, Mender, Sigilist).
-124. **The opening volley: sight both ways, the enemy's two-roll Burst, fewer gun Soldiers, cover at the start, Soldiers
+125. **The opening volley: sight both ways, the enemy's two-roll Burst, fewer gun Soldiers, cover at the start, Soldiers
     spread their techniques** (16 Nov 2026, lane 0.30-fit; rules 1.61 opening volley, Core Rules items 4730 to 4739;
     account `docs/design/proposals/2026-11-party-fit.md` sections 12 and 13).
     - **Why:** Leon's human playtest: nearly every death was gun foes "shooting the shit out of you before you can get

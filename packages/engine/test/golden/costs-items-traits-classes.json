@@ -99,7 +99,7 @@
 "item/class/defender@III/taken-blow": "P1 res.guard7>6; F1 ap0>7",
 "item/class/defender@III/taken-crit": "P1 res.guard7>5; F2 ammo24>23 ap0>7 heat0>1",
 "item/class/defender@III/taken-fire": "P1 res.guard7>6",
-"item/class/defender@III/taken-hazard": "P1 res.guard7>3; air mana15>17",
+"item/class/defender@III/taken-hazard": "P1 res.guard7>4; air mana15>17",
 "item/class/defender@III/taken-low": "P1 res.guard7>5; F2 ammo24>23 ap0>7 heat0>1",
 "item/class/defender@III/taken-soul": "P1 res.guard7>4; air mana15>17",
 "item/class/defender@III/taken-true": "P1 res.guard7>4; air mana15>17",

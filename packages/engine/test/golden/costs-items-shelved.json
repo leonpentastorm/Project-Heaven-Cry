@@ -414,7 +414,7 @@
 "shelved/rev2/defender/taken-blow": "P1 res.guard7>6; F1 ap0>7",
 "shelved/rev2/defender/taken-crit": "P1 res.guard7>5; F2 ammo24>23 ap0>7 heat0>1",
 "shelved/rev2/defender/taken-fire": "P1 res.guard7>6",
-"shelved/rev2/defender/taken-hazard": "P1 res.guard7>3; air mana15>17",
+"shelved/rev2/defender/taken-hazard": "P1 res.guard7>4; air mana15>17",
 "shelved/rev2/defender/taken-low": "P1 res.guard7>5; F2 ammo24>23 ap0>7 heat0>1",
 "shelved/rev2/defender/taken-soul": "P1 res.guard7>4; air mana15>17",
 "shelved/rev2/defender/taken-true": "P1 res.guard7>4; air mana15>17",

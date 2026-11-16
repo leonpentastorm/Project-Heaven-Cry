@@ -16,6 +16,7 @@ import { say, type Combat, type Unit, alive, dist, emitFx, fxFell, attackDamage,
 import { onHook, emit, charOfUnit, statQuery, holdersOf } from '../effects/hooks';
 import { stateOf } from '../effects/index';
 import { effNum } from '../effects/num';
+import { feedOf, showFeedNumber } from '../effects/feed';
 import { applyDamage, shieldTotal } from '../effects/damage';
 import { landed } from '../effects/output';
 import { PHYS_RULES } from './data';
@@ -50,6 +51,12 @@ export interface GuardSoakPlan {
   /** the plates a blow of `reach` damage spends on a unit holding `have` plates and `hp` HP, and the damage they take off */
   spend(reach: number, have: number, hp: number): { k: number; cut: number };
 }
+/** A Reactive Plate's soak a plate: its own stat x Pain Threshold's feed (rules 1.60 item 4604: the feed reaches every
+ *  plate, the Bulwark's too). The one copy: the soak below, the Guard meter (core.ts physView, through guardSoakOf) and
+ *  the door tab (the plate_soak number, below) read it. `x` a unit or a character (the tab reads a sheet). */
+const plateSoakOf = (plate: any, x: any): number => Math.max(1, Math.round(effNum(plate, 'stat_mod') * feedOf(x, 'plate_soak')));
+/** The door tab's number for Pain Threshold's feed: what one plate soaks now (the plate's, for a Reactive Plate holder). */
+showFeedNumber('plate_soak', (x) => { const plate = x ? holdersOf(x.pos !== undefined ? { u: x } : { c: x }).find((h) => h.key === DEF_PLATE) : null; return plate ? plateSoakOf(plate, x) : guardSoak(x); });
 /** How this unit's Guard soaks a blow; null when it has no pool or its soak is switched off (the plate's policy 'off'). */
 export function guardSoakOf(u: Unit): GuardSoakPlan | null {
   if (u.resMax?.guard == null) return null;
@@ -58,7 +65,7 @@ export function guardSoakOf(u: Unit): GuardSoakPlan | null {
   if (plate) {
     // the plate's own number (its stat_mod) and its policy (set for the fight by its 0-AP actions; default: spend what it takes)
     const pol = stateOf(plate).policy || 'auto'; if (pol === 'off') return null;
-    per = effNum(plate, 'stat_mod'); keep = pol === 'keep1' ? 1 : 0; keepUnlessDrop = false;
+    per = plateSoakOf(plate, u); keep = pol === 'keep1' ? 1 : 0; keepUnlessDrop = false;
   } else { per = guardSoak(u); keep = G().keep_back; keepUnlessDrop = true; }
   return { phase: plate ? 'before' : 'after', per, keep, keepUnlessDrop, meets: plate ? 'all' : 'hits',
     spend(reach, have, hp) {

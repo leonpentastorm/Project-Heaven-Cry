@@ -11,7 +11,7 @@ import {
 } from '../src';
 import { fightWith, storyWith, withGame, rng, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
-import { CLASS_MOVE_POOL, REV2_CLASSES, mendFactor, grantShield } from '../src';
+import { CLASS_MOVE_POOL, REV2_CLASSES, mendFactor, grantShield, doorFeed } from '../src';
 import CONDJ from '../../../data/conditions.json';
 /** Taunted's penalty to hit anyone but its giver (conditions.json taunted: attack_mod not_vs_source). */
 const TAUNT_OTHERS = (CONDJ as any).items.find((c: any) => c.id === 'taunted').effects.find((e: any) => e.context === 'not_vs_source').value;
@@ -155,13 +155,16 @@ describe('Defender', () => {
   });
   // (Draw Fire became Called Out, data on Challenge: rules 1.60 item 4619; its Taunt, no save, and a Boss never forced
   // are tested through the reducer in doors3-reshape.test.ts)
-  it('Reactive Plate: each Guard cuts 10 damage; 3 Guard lost raise the meter by 2', () => {
+  it('Reactive Plate: each Guard cuts its 10 x the Pain Threshold feed (rules 1.60 item 4604); 3 Guard lost raise the meter by 2', () => {
     const f = fightWith([cls('defender', 3)], [{}]);
-    const u = f.unit(f.pc.id); u.res!.guard = 4; const hp = u.hp, m0 = manaOf(f.cb);
-    withGame(f.g, () => applyDamage(f.cb, u, 25, { by: f.unit(f.foe.id), type: 'weapon', shield: true }));
+    const u = f.unit(f.pc.id), c = Object.values(f.g.characters)[0];
+    const stat = (Object.values(CLASS_MOVE_POOL) as any[]).find((m) => m.id === 'reactive_plate' && m.origin === 'defender').effects.find((e: any) => e.op === 'stat_mod').value;
+    const per = Math.max(1, Math.round(stat * doorFeed(c, 'durability'))); expect(per).toBeGreaterThan(stat); // this tank has Pain Threshold points
+    u.res!.guard = 4; const hp = u.hp, m0 = manaOf(f.cb);
+    withGame(f.g, () => applyDamage(f.cb, u, 3 * per - 1, { by: f.unit(f.foe.id), type: 'weapon', shield: true }));
     expect(u.hp).toBe(hp); expect(u.res!.guard).toBe(1); expect(manaOf(f.cb)).toBe(m0 + 2);
     withGame(f.g, () => applyDamage(f.cb, u, 25, { by: f.unit(f.foe.id), type: 'weapon', shield: true }));
-    expect(u.hp).toBe(hp - 15); expect(u.res!.guard).toBe(0);
+    expect(u.hp).toBe(hp - (25 - per)); expect(u.res!.guard).toBe(0);
   });
 });
 
