@@ -38,7 +38,13 @@ if '--zip' in sys.argv:
 env=dict(os.environ,GIT_DIR=G,GIT_WORK_TREE=str(O),GIT_INDEX_FILE=str(R/'publish.index'),GIT_NO_LAZY_FETCH='1')
 def git(*args):return subprocess.run(['git',*args],env=env,capture_output=True,text=True,check=True).stdout.strip()
 ref='refs/heads/'+BRANCH;old=subprocess.run(['git','--git-dir='+G,'rev-parse','--verify',ref],capture_output=True,text=True).stdout.strip();parent=old or (R/'base-commit.txt').read_text().strip();git('read-tree',parent)
-paths=sorted(p.relative_to(O).as_posix() for p in (O/'art').rglob('*') if p.is_file());(R/'publish-paths.nul').write_bytes(b'\0'.join(p.encode() for p in paths)+b'\0');git('add','--pathspec-from-file='+str(R/'publish-paths.nul'),'--pathspec-file-nul');staged={line.split('\t',1)[1]:line.split()[1] for line in git('ls-files','--stage').splitlines()}
+paths=sorted(p.relative_to(O).as_posix() for p in (O/'art').rglob('*') if p.is_file());before={line.split('\t',1)[1]:line.split()[1] for line in git('ls-files','--stage').splitlines()};changed=[]
+for p in paths:
+ b=(O/p).read_bytes();oid=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+ if before.get(p)!=oid:changed.append(p)
+if changed:
+ (R/'publish-paths.nul').write_bytes(b'\0'.join(p.encode() for p in changed)+b'\0');git('add','--pathspec-from-file='+str(R/'publish-paths.nul'),'--pathspec-file-nul')
+staged={line.split('\t',1)[1]:line.split()[1] for line in git('ls-files','--stage').splitlines()}
 for p in paths:
  b=(O/p).read_bytes();assert staged[p]==hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest(),p
 tree=git('write-tree','--missing-ok');message=R/'commit-message.txt';message.write_text(f'Deliver {len(rows)} Nine Doors artwork candidates\n\nPaint the requested actions in Heavenprint/Wick, preserve replaced masters and exports, clarify that the Still Water cup is perk-specific, and add review sheets, prompts, native sources, catalog bindings, hashes and scoped validation. Record {375-len(rows)} remaining rows and full-repository check limits.\n');commit=git('commit-tree',tree,'-p',parent,'-F',str(message));git('update-ref',ref,commit,old or '0'*40);state={'commit':commit,'branch':BRANCH,'delivered':len(rows),'remaining':375-len(rows),'zip':str(zip_path) if zip_path else None,'zip_MiB':round(zip_path.stat().st_size/1048576,1) if zip_path else None,'validation':validation};(R/'latest-checkpoint.json').write_text(json.dumps(state,indent=2)+'\n');print(json.dumps(state,indent=2))

@@ -1,11 +1,9 @@
 # Continue the Nine Doors artwork
 
-20/375 candidates delivered; 355 remain. Do not count the three nothing-to-paint rows. Read the original brief and the current style guide. The CUP over Wick in Mind Without Fog belongs ONLY to that trait, never to Wick anatomy. Wick is the ceramic pixel-screen automaton with capelet, lantern-heart and asymmetry; do not turn him into a literal flame head.
+26/375 candidates delivered; 349 remain. Do not count the three nothing-to-paint rows. Read the original brief and the current style guide. The CUP over Wick in Mind Without Fog belongs ONLY to that trait, never to Wick anatomy. Wick is the ceramic pixel-screen automaton with capelet, lantern-heart and asymmetry; do not turn him into a literal flame head.
 
 Continue in the priority order below, one image per prompt. Source scripts and prompts are in this collection; current records must be preserved. The proposed paths/catalog IDs are exact. Every image remains review-candidate until Leon approves it. No new action-row UI is authorised by this art task.
 
-- P3 · #3 · Close Guard · `art/icons/moves/close-guard.png` · Wick icon · in game now · placeholder · no slot yet
-- P3 · #5 · Retort · `art/icons/moves/retort.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #25 · Follow Through · `art/icons/moves/follow-through.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #26 · Heavy Hands · `art/icons/moves/heavy-hands.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #27 · The Charge Carries · `art/icons/moves/the-charge-carries.png` · Wick icon · in game now · placeholder · no slot yet
@@ -21,6 +19,7 @@ Continue in the priority order below, one image per prompt. Source scripts and p
 - P3 · #58 · Fire and Move · `art/icons/moves/fire-and-move.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #59 · Relocated · `art/icons/moves/relocated.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #60 · Break Them · `art/icons/moves/break-them.png` · Wick icon · in game now · placeholder · no slot yet
+- P3 · #61 · Slide · `art/icons/moves/slide.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #83 · First Shade · `art/icons/moves/first-shade.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #85 · Go to Ground · `art/icons/moves/go-to-ground.png` · Wick icon · in game now · placeholder · no slot yet
 - P3 · #86 · Close Quarters · `art/icons/moves/close-quarters.png` · Wick icon · in game now · placeholder · no slot yet
@@ -152,10 +151,6 @@ Continue in the priority order below, one image per prompt. Source scripts and p
 - P4 · #322 · Smitten · `art/icons/conditions/smitten.png` · white-ink sign · in game now · placeholder · no slot yet
 - P4 · #323 · Last Turn · `art/icons/conditions/last-turn.png` · white-ink sign · in game now · placeholder · no slot yet
 - P4 · #324 · Augment Offline · `art/icons/conditions/augment-offline.png` · white-ink sign · in game now · placeholder · no slot yet
-- P5 · #4 · Last Plate · `art/icons/moves/last-plate.png` · Wick icon · in game now · placeholder · no slot yet
-- P5 · #6 · Challenge · `art/icons/moves/challenge.png` · Wick icon · in game now · placeholder · no slot yet
-- P5 · #7 · Slam · `art/icons/moves/slam.png` · Wick icon · in game now · placeholder · no slot yet
-- P5 · #8 · Set Against the Blow · `art/icons/moves/set-against-the-blow.png` · Wick icon · in game now · placeholder · no slot yet
 - P5 · #9 · Brace · `art/icons/moves/brace.png` · Wick icon · in game now · placeholder · no slot yet
 - P5 · #10 · Draw Fire · `art/icons/moves/draw-fire.png` · Wick icon · in game now · placeholder · no slot yet
 - P5 · #11 · Unbroken · `art/icons/moves/unbroken.png` · Wick icon · in game now · placeholder · no slot yet
@@ -173,7 +168,6 @@ Continue in the priority order below, one image per prompt. Source scripts and p
 - P5 · #40 · Break · `art/icons/techniques/break.png` · Wick icon · in game now · placeholder · no slot yet
 - P5 · #41 · Throw Down · `art/icons/techniques/throw-down.png` · Wick icon · in game now · placeholder · no slot yet
 - P5 · #42 · Run Through · `art/icons/techniques/run-through.png` · Wick icon · in game now · placeholder · no slot yet
-- P5 · #61 · Slide · `art/icons/moves/slide.png` · Wick icon · in game now · placeholder · no slot yet
 - P5 · #62 · Fire Discipline · `art/icons/moves/fire-discipline.png` · Wick icon · in game now · placeholder · no slot yet
 - P5 · #63 · Speed Loader · `art/icons/moves/speed-loader.png` · Wick icon · in game now · placeholder · no slot yet
 - P5 · #64 · Special Ammo · `art/icons/moves/special-ammo.png` · Wick icon · in game now · placeholder · no slot yet

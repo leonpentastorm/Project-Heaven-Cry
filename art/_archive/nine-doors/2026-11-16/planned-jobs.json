@@ -93,7 +93,7 @@
     ],
     "transparent": true,
     "status": "pending",
-    "priority": 5
+    "priority": 3
   },
   {
     "number": 5,
@@ -141,7 +141,7 @@
     ],
     "transparent": true,
     "status": "pending",
-    "priority": 5
+    "priority": 3
   },
   {
     "number": 7,
@@ -165,7 +165,7 @@
     ],
     "transparent": true,
     "status": "pending",
-    "priority": 5
+    "priority": 3
   },
   {
     "number": 8,
@@ -189,7 +189,7 @@
     ],
     "transparent": true,
     "status": "pending",
-    "priority": 5
+    "priority": 3
   },
   {
     "number": 9,
@@ -1441,7 +1441,7 @@
     ],
     "transparent": true,
     "status": "pending",
-    "priority": 5
+    "priority": 3
   },
   {
     "number": 62,
