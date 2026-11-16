@@ -3278,9 +3278,13 @@ for _it in items("items"):
     if _u is not None:
         if not (isinstance(_u, dict) and isinstance(_u.get("label"), str) and _u["label"].strip() and _u.get("via") in ("stim", "effects")):
             errors.append(f"{_w}: use is {{label, via: stim or effects}} (rules 1.55 item 58)")
-        if not _it.get("counts_into"): errors.append(f"{_w}: an item's use is for a counted item (counts_into; rules 1.55 item 58)")
-        if isinstance(_u, dict) and _u.get("via") == "effects" and not any(isinstance(e, dict) and e.get("op") == "xp_grant" for e in (_it.get("effects") or [])):
-            errors.append(f"{_w}: use via effects needs an effect the use runs (xp_grant; rules 1.55 item 58)")
+        # rules 1.61 addendum item 4748: a pack item may have a use too (the field kit); `spend` is the pack units a use takes
+        if isinstance(_u, dict) and "spend" in _u and not (isinstance(_u["spend"], int) and _u["spend"] >= 1): errors.append(f"{_w}: use.spend is a whole number >= 1 (rules 1.61 addendum)")
+        if isinstance(_u, dict) and _u.get("via") == "effects" and not any(isinstance(e, dict) and e.get("op") in ("xp_grant", "treat") for e in (_it.get("effects") or [])):
+            errors.append(f"{_w}: use via effects needs an effect the use runs (xp_grant or treat; rules 1.55 item 58, rules 1.61 addendum)")
+    # rules 1.61 addendum item 4748: `serves_as` lists the items this one stands in for (the toolbox for a field kit)
+    if "serves_as" in _it and not (isinstance(_it["serves_as"], list) and all(isinstance(x, str) and x in _rimap and x != _it.get("id") for x in _it["serves_as"])):
+        errors.append(f"{_w}: serves_as is a list of other items.json ids (rules 1.61 addendum)")
     for _e in (_it.get("effects") or []):
         if isinstance(_e, dict) and _e.get("op") == "xp_grant" and _u is not None and isinstance(_e.get("limit"), dict):
             if _e["limit"].get("per") not in ("per_scene", "per_session", "per_rest", "per_campaign") or not (isinstance(_e["limit"].get("n"), int) and _e["limit"]["n"] >= 1):

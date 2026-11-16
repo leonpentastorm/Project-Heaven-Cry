@@ -44,7 +44,7 @@ import { condSkillMod, STORY_CARRY, CORE_ITEM } from './magic';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
-import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy, packKindOf, shieldLineNow, isShieldId } from './character';
+import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy, packKindOf, shieldLineNow, isShieldId, treatLimb } from './character';
 import { type MissionState, oocOf, askOoc, startMissions, missionTurn, placeBoardNpc } from './missions';
 import { type FaithAction, faithReloaded, faithReduce, bindFaith, bindFaithSight, combatPray, faithFightEnd, makePact, grantPiece, narratorDevotion, narratorRite, apostasy, patronOf, devotionNow, beliefOf, migrateCharacterFaith, encoreUsed, clearPrayerLimits, FAITH_PATRON, VOW } from './faith';
 import './perks';
@@ -3241,7 +3241,7 @@ const RUN_ITEM = /^story\/perk$/;
  * refused; a quiver's enchantment keeps its free fit. Null when neither holds. */
 const campGearProblem = (g: GameState, a: Action): string | null => {
   const freeFit = (a.type === 'gear/mod' && (a as { quiver?: number }).quiver == null) || (a.type === 'combat/swap' && (a as { mod?: unknown }).mod != null)
-    || (a.type === 'story/perk' && a.actionId === (survivalFieldJ as any).forge.fit.extra_action); // rules 1.61 addendum item 4743: the extra slot's own fit (the Forge's run/fit_mod extra runs it, for the fee)
+    || (a.type === 'story/perk' && ((survivalFieldJ as any).forge.fit.free_fits as string[]).includes(String(a.actionId))); // rules 1.61 addendum items 4743, 4751: the free fits of items (forge.fit.free_fits; the Forge's run/fit_mod extra runs its own, for the fee)
   if (g.run && g.run.state !== 'over' && g.run.state !== 'loadout' && freeFit) return 'In a Survival run, the armourer fits mods at a Forge, for a fee.';
   return g.run?.state === 'loadout' && a.type.startsWith('gear/') ? gearLockWhy(g, (a as { charId?: string }).charId) : null;
 };
@@ -3455,6 +3455,8 @@ function runEnter(g: GameState, id: string) {
   r.visit = openVisit(g, n); // rules 1.43: what is done at a safe node, and what it rolled on entry (run/progress.ts)
   if (n.kind === 'rest') { // rule 24: the long rest and a new session; the small training is run/train
     applyRest(g, 'long'); beginSession(g);
+    // rules 1.61 addendum item 4749 (survival.json rest.treat_injuries): who rests has every limb injury treated (treatLimb)
+    if ((survivalFieldJ as any).rest?.treat_injuries) for (const c of Object.values(g.characters)) { if (c.dead) continue; let n = 0; while (treatLimb(c)) n++; if (n) push(g, { kind: 'system', text: c.name + '’s ' + (n === 1 ? 'injury is' : n + ' injuries are') + ' treated at the rest.', charId: c.id }); }
     for (const c of Object.values(g.characters)) { if (carriesEvoker(c)) c.evoCharge = coreChargeOf({ c }); if (carriesVisualizer(c)) c.visCharge = VIS_CHARGE; } // rules 1.51 (spec rule 52 d): the loaded cores full
   }
   if (n.kind === 'cache') { const k: PayKind = 'cache', xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), ammo: Record<string, string[]> = {};
@@ -3966,6 +3968,10 @@ setUseDoor((g, me, from, item) => {
   return { label: u.label, action, why: Object.fromEntries(Object.values(g.characters).map((t) => [t.id, one(t)])) };
 });
 // rules 1.55 item 59: a used item's XP (the Essence) through the one XP door, its value and its source from the row
+// rules 1.61 addendum item 4748: the field kit's use: one arm or leg injury treated, through the one treatment (treatLimb).
+// On the field the fighters keep their own injuries through the sheets' rebuild (SB_KEEP), so it waits until the field is left.
+registerUseOp('treat', (g, user, on, e) => { for (let k = 0; k < Math.max(1, Math.round(Number(e.n) || 1)); k++) { const inj = treatLimb(on); if (inj) push(g, { kind: 'system', text: user.name + ' treats ' + (user === on ? 'their own ' : on.name + '’s ') + (inj.side ? inj.side + ' ' : '') + inj.loc + '.', charId: on.id }); } },
+  (g, _user, on) => (fieldFight(g) ? 'Not on the field: treat it once the squad leaves.' : (on.injuries || []).some((x) => x.loc === 'arm' || x.loc === 'leg') ? null : on.name + ' has no arm or leg injury.'));
 registerUseOp('xp_grant', (g, _user, on, e, item) => giveXp(g, on, String(e.source || item), Number(e.value) || 0, (ITEM[item] as any)?.name || item));
 /** Rules 1.55 item 66: a field saved by 0.28.2 (on the area map, no running fight) is left as 0.28.2 left it: what a
  * fight's end clears is cleared (magicOut on the area map, Flux), its counters go, the area map is the run's own again.

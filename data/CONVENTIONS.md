@@ -103,11 +103,11 @@ Every rule-bearing item carries both:
   "never bought"; a sale reads `priceOf`'s sale mode, which ignores it.
 - `sell: false` (items.json; rules 1.55 item 55): no shop buys the item (a sale is refused in words). An item a
   trait grants carries it too (the validator checks it). A row with no price is never sold either.
-- `use` on an ITEM row (items.json, counted items only, `counts_into`; rules 1.55 item 58; not the data verb's `use`
+- `use` on an ITEM row (items.json, a counted item (`counts_into`; rules 1.55 item 58) or, rules 1.61 addendum item 4748, a pack item (the field kit), of which a use takes `spend` (default 1) off the pack line; `serves_as` on a row lists the items it stands in for (the toolbox for a field kit; character.ts servesIndex); not the data verb's `use`
   below, which names an actions.json row): how `gear/use` uses one: `label` (the button's
   words, "Crack for", "Stim") and `via`: `stim` (the stim's own rule, combat.ts `useStim`, as the `world/act` stim) or
   `effects` (the row's `effects` run by the use ops: `xp_grant` {value, source, limit {per, n}}, the limit counted on
-  the receiver). `requires_to_use`: what the user needs, every entry holding: `holds` (a `HoldSpec`: `slot` hand or
+  the receiver; `treat` {n}: n arm or leg injuries treated, character.ts treatLimb). `requires_to_use`: what the user needs, every entry holding: `holds` (a `HoldSpec`: `slot` hand or
   person, `door` (a skill, a focus kind or `any`) or `item`), `skill` and `min`, or `any_of`; each with its refusal
   `why`. Never name a usable item's id in code.
 - `recipes.json`: one row a recipe, `{id, name, needs: [{item, n}], tool: {item} or {focus: "any"}, does, gives: [{item

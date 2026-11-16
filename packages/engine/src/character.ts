@@ -650,6 +650,19 @@ export const packOf = (c: Character): PackItem[] => (c.pack ?? (KITS[c.kit || ''
   if (!it.item && ITEM[it.id]) return { ...it, item: it.id };
   return it;
 });
+/** Rules 1.61 addendum item 4748: the pack line that stands for item `id`: a line of `id` itself, else of an item whose
+ * row lists `id` in `serves_as` (the toolbox serves as a field kit), with some left; -1 when none. The one answer to
+ * "does this character carry a field kit" (Field Surgery, the kit's own use). */
+export function servesIndex(c: Character, id: string): number {
+  const pack = packOf(c), is = (x: PackItem) => x.qty > 0 && !x.mags && ((x.item || x.id) === id || ((ITEM[x.item || x.id] as any)?.serves_as || []).includes(id));
+  const own = pack.findIndex((x) => x.qty > 0 && !x.mags && (x.item || x.id) === id); return own >= 0 ? own : pack.findIndex(is);
+}
+/** Rules 1.61 addendum item 4747: the one treatment of a limb: the first arm or leg injury comes off `t`. Returns it, or
+ * null when `t` has none. Field Surgery, the field kit's use (`treat`) and a run's Rest all treat through this. */
+export function treatLimb(t: Character): Injury | null {
+  const i = (t.injuries || []).findIndex((x) => x.loc === 'arm' || x.loc === 'leg'); if (i < 0) return null;
+  const list = [...t.injuries!], [inj] = list.splice(i, 1); t.injuries = list; return inj;
+}
 /** Out of combat, loading is free (spec: Loading): fill every part-empty magazine from matching loose rounds. Returns rounds loaded. */
 export function loadAll(c: Character): number {
   const pack = packOf(c).map((it) => ({ ...it, ...(it.mags ? { mags: [...it.mags] } : {}) }));

@@ -11,7 +11,7 @@
 import './datatext';
 import svJ from '../../../data/survival.json';
 import { WEAPON, ITEM } from './data';
-import { type Character, type PackItem, type HoldSpec, packOf, packKindOf, holds } from './character';
+import { type Character, type PackItem, type HoldSpec, packOf, packKindOf, holds, servesIndex } from './character';
 import { packAdd, itemLabel, COUNTED, intoCounts } from './containers';
 import { creditsOf, payCredits, earnCredits } from './credits';
 import { relicRow, worthOf, runWorth, BOON_CAP } from './run/power';
@@ -110,7 +110,20 @@ export function giveNow(g: GameState, by: string, a: GiveAction): { ok: string; 
  * The item's row says how (`use`: `label`, `via`: `stim` or `effects`) and what its user needs (`requires_to_use`). */
 export interface UseAction { type: 'gear/use'; charId: string; item: string; targetId?: string }
 /** An item row's `use` (items.json), or null when it has none. */
-export const useOf = (id: string): { label: string; via: 'stim' | 'effects' } | null => ((ITEM[id] as any)?.use || null);
+export const useOf = (id: string): { label: string; via: 'stim' | 'effects'; spend?: number } | null => ((ITEM[id] as any)?.use || null);
+/** Rules 1.61 addendum item 4748: the item a pack line is used as: its own id when its row has a `use`, else the first
+ * id of its `serves_as` that has one (the toolbox is used as a field kit); null when neither. */
+export const usedAs = (id: string): string | null => (useOf(id) ? id : (((ITEM[id] as any)?.serves_as || []) as string[]).find((x) => useOf(x)) || null);
+/** How many of `id` the character has to use: a counted item's count (containers COUNTED), else whether a pack line
+ * stands for it (character.ts servesIndex: 1 or 0). */
+const haveOf = (c: Character, id: string): number => { const f = COUNTED[id]; return f ? c[f] || 0 : servesIndex(c, id) >= 0 ? 1 : 0; };
+/** Spend one use of `id`: one off a counted item's count, else `use.spend` (PROVISIONAL, 1) off the pack line that
+ * stands for it (servesIndex), the line gone at 0. */
+function spendOne(c: Character, id: string) {
+  const f = COUNTED[id]; if (f) { c[f] = (c[f] || 0) - 1; return; }
+  const i = servesIndex(c, id), pack = packOf(c).map((x) => ({ ...x })); if (i < 0) return;
+  pack[i].qty -= Math.max(1, Math.round(Number(useOf(id)?.spend) || 1)); c.pack = pack.filter((x) => x.qty > 0 || x.mags);
+}
 /** One entry of `requires_to_use` (items.json; data/CONVENTIONS.md): a hold, a skill minimum, or any of several. */
 interface UseNeed { holds?: HoldSpec; skill?: string; min?: number; any_of?: UseNeed[]; why?: string }
 const needMet = (c: Character, r: UseNeed): boolean => (r.any_of ? r.any_of.some((x) => needMet(c, x)) : r.holds ? holds(c, r.holds) : !!r.skill && (c.skills[r.skill] || 0) >= Number(r.min || 0));
@@ -122,8 +135,11 @@ export function needsProblem(c: Character, id: string): string | null {
 /** What an effect of a used item does (game.ts registers them: xp_grant through giveXp). `user` uses it, `on` receives. */
 export type UseOp = (g: GameState, user: Character, on: Character, e: Record<string, any>, item: string) => void;
 const USE_OPS: Record<string, UseOp> = {};
-/** game.ts's door for an op a used item runs (this file can't import game.ts). */
-export const registerUseOp = (op: string, run: UseOp) => { USE_OPS[op] = run; };
+/** Why a use op can't run on `on` now, in words, or null (rules 1.61 addendum: the kit's `treat` needs a limb injury). */
+export type UseWhy = (g: GameState, user: Character, on: Character, e: Record<string, any>) => string | null;
+const USE_WHY: Record<string, UseWhy> = {};
+/** game.ts's door for an op a used item runs (this file can't import game.ts), with its refusal if it has one. */
+export const registerUseOp = (op: string, run: UseOp, why?: UseWhy) => { USE_OPS[op] = run; if (why) USE_WHY[op] = why; };
 /** A used item's effect's limit as a counter on the receiver (effects/uses.ts: `limit` {per, n}), or null. */
 const limitOf = (e: any): { per: ReturnType<typeof scopeOf>; n: number } | null => (e?.limit && typeof e.limit === 'object' ? { per: scopeOf(e.limit.per), n: Math.max(1, Math.round(Number(e.limit.n) || 1)) } : null);
 const useKey = (id: string, k: number) => 'use:' + id + '#' + k;
@@ -131,16 +147,17 @@ const useKey = (id: string, k: number) => 'use:' + id + '#' + k;
  * own rule (game.ts). */
 export function useProblem(g: GameState, by: string, a: UseAction): string | null {
   if ((g.phase === 'combat' && g.combat && !g.combat.over && !g.combat.field) || g.run?.state === 'fight') return 'Not in a fight: use it after the fight.'; // rules 1.55 item 45: the field is no fight
-  const u = useOf(a.item), f = COUNTED[a.item]; if (!u || !f) return "That can't be used here.";
+  const u = useOf(a.item); if (!u) return "That can't be used here.";
   const c = g.characters[a.charId]; if (!c || c.owner !== by) return 'Not your character.';
   if (c.dead) return 'The dead give nothing.';
-  if ((c[f] || 0) < 1) return c.name + ' has no ' + nameOfId(a.item) + '.';
+  if (haveOf(c, a.item) < 1) return c.name + ' has no ' + nameOfId(a.item) + '.';
   const t = g.characters[String(a.targetId || '')]; if (!t) return 'Use it on whom?';
   if (t.dead) return t.name + ' is dead.';
   const need = needsProblem(c, a.item); if (need) return need;
   const fx: any[] = (ITEM[a.item] as any)?.effects || [];
   for (const [k, e] of fx.entries()) {
     if (!USE_OPS[e?.op]) return nameOfId(a.item) + ' needs the Narrator: ' + ((ITEM[a.item] as any)?.text || '');
+    const w = USE_WHY[e.op]?.(g, c, t, e); if (w) return w;
     const l = limitOf(e); if (l && uses({ key: useKey(a.item, k), c: t, g }).left(l.per, l.n) < 1) return t.name + ' has had ' + (l.n === 1 ? 'one' : l.n) + ' this ' + (SCOPES[l.per]?.label || 'window') + '.';
   }
   return null;
@@ -149,8 +166,8 @@ export function useProblem(g: GameState, by: string, a: UseAction): string | nul
  * (`say`), then each effect run by its use op. Returns null, or the refusal in words (nothing changes). */
 export function useNow(g: GameState, by: string, a: UseAction, say: (line: string, c: Character) => void): string | null {
   const no = useProblem(g, by, a); if (no) return no;
-  const c = g.characters[a.charId], t = g.characters[a.targetId!], f = COUNTED[a.item], fx: any[] = (ITEM[a.item] as any)?.effects || [];
-  c[f] = (c[f] || 0) - 1;
+  const c = g.characters[a.charId], t = g.characters[a.targetId!], fx: any[] = (ITEM[a.item] as any)?.effects || [];
+  spendOne(c, a.item);
   for (const [k, e] of fx.entries()) { const l = limitOf(e); if (l) uses({ key: useKey(a.item, k), c: t, g }).take(l.per, l.n); }
   say(c.name + ' uses ' + nameOfId(a.item) + (t === c ? '.' : ' on ' + t.name + '.'), t);
   for (const e of fx) USE_OPS[e.op](g, c, t, e, a.item);
@@ -188,7 +205,9 @@ export function giveView(g: GameState, me: string, charId?: string | null): Give
   const cr = { type: 'gear/give' as const, charId: c.id, credits: 1 };
   rows.push({ key: 'credits', kind: 'credits', label: 'Credits', id: 'credits', rarity: 'standard', qty: creditsOf(c), why: whys(cr), action: cr });
   packOf(c).forEach((it, idx) => { const a = { type: 'gear/give' as const, charId: c.id, idx };
-    rows.push({ key: 'pack:' + idx, kind: 'pack', label: itemLabel(it) + (it.prop ? ' · ' + (relicRow(it.prop)?.name || it.prop) : ''), id: it.weapon || it.item || it.id, rarity: it.rarity || 'standard', qty: it.mags ? it.mags.length : it.qty, idx, why: whys(a), action: a }); });
+    // rules 1.61 addendum item 4748: a pack line with a use (the field kit; the toolbox used as one) has its "Use on..." too
+    const as = !it.mags && !it.weapon ? usedAs(it.item || it.id) : null, use = as && USE_DOOR ? USE_DOOR(g, me, c.id, as) : null;
+    rows.push({ key: 'pack:' + idx, kind: 'pack', label: itemLabel(it) + (it.prop ? ' · ' + (relicRow(it.prop)?.name || it.prop) : ''), id: it.weapon || it.item || it.id, rarity: it.rarity || 'standard', qty: it.mags ? it.mags.length : it.qty, idx, why: whys(a), action: a, ...(use ? { use } : {}) }); });
   // rules 1.55 item 31: the counted items (a stim, an Essence) as lines of their own, with their use on a friend (item 32)
   for (const [id, f] of Object.entries(COUNTED)) { const n = c[f] || 0; if (n < 1) continue; const a = { type: 'gear/give' as const, charId: c.id, count: id }, use = USE_DOOR ? USE_DOOR(g, me, c.id, id) : null;
     rows.push({ key: 'count:' + id, kind: 'count', label: nameOfId(id), id, rarity: 'standard', qty: n, why: whys(a), action: a, ...(use ? { use } : {}) }); }

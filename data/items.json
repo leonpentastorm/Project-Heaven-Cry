@@ -52,9 +52,13 @@
       "name": "Field kit",
       "category": "tool",
       "weight_kg": 1.5,
-      "adjudication": "narrator",
+      "adjudication": "engine",
       "provisional": true,
-      "text": "Bandages, splints and a suture set. What a Mender treats injuries with.",
+      "text": "Bandages, splints and a suture set. Out of a fight, anyone can use it to treat {=effects.0.n} arm or leg injury on themself or a squadmate, and {=use.spend} kit is used up. Field Surgery treats with it without using it up.",
+      "use": { "label": "Treat", "via": "effects", "spend": 1 },
+      "effects": [
+        { "op": "treat", "n": 1 }
+      ],
       "price_credits": 120
     },
     {
@@ -114,6 +118,7 @@
       "category": "consumable",
       "weight_kg": 0.3,
       "text": "A slate with one Sigil word cut into it. Study it for a scene to learn the word; the plate crumbles. Its note in your pack says which word it holds.",
+      "stock": false,
       "adjudication": "engine",
       "provisional": true,
       "price_credits": 400
@@ -124,6 +129,7 @@
       "category": "consumable",
       "weight_kg": 0.3,
       "text": "A violet-veined slate that holds one Outburst lesson: a tone (fire, storm, frost, stone, gale or acid), a school or a module. Study it for a scene to learn it; the plate crumbles. Its note in your pack says what it teaches.",
+      "stock": false,
       "adjudication": "engine",
       "provisional": true,
       "price_credits": 400
@@ -1044,6 +1050,7 @@
       "effects": [],
       "adjudication": "engine",
       "text": "Spanners, a crimper, wire. It counts as spare parts and as a field kit for any job that needs a toolbox.",
+      "serves_as": ["field_kit"],
       "provisional": true
     },
     {

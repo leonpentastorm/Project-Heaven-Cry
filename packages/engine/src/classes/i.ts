@@ -22,7 +22,7 @@ import {
 } from '../combat';
 import {
   type Character, mod, healingMult, maxHp, evoChargeNow, mpNow, hasEvoker, hasEmanator, hasAttuner, packOf, maxSigilWords, sigilCoreSaving, sigilMult, elementalMult, strengthOf,
-  classResources, migrateDesign, quiversOf, setQuivers, quiverHolds, magazineSize,
+  classResources, migrateDesign, quiversOf, setQuivers, quiverHolds, magazineSize, servesIndex, treatLimb,
 } from '../character';
 import { WEAPON, SIGIL, SCHOOL, SOUL_REV, SOUL_RULES, CLASS_MOVE_POOL } from '../data';
 import { mendFactorOf, mendFactor, TRIAGE_HEAL, TRIAGE_REST_MULT, STIM_HEAL, kitHeal } from '../effects/mending';
@@ -465,7 +465,7 @@ register({
 // (choose one, PROVISIONAL), once an ally a scene. Robot medics repairing machines: the Narrator rules which.
 const surgeryTarget = (h: Holder, args: ActionArgs) => charNamed(h, args) || h.c || null;
 const surgeryMp = (): number => Number(rawItem('verb:tend.field_surgery')?.effects?.[0]?.res?.mp ?? 0);
-const surgeryWhy = (h: Holder): string | true => (!h.c ? 'No one to do it.' : !hasAttuner(h.c) ? 'Needs an Attuner in hand.' : !packOf(h.c).some((x) => (x.item || x.id) === 'field_kit' && x.qty > 0) ? 'Needs a field kit.' : mpNow(h.c) < surgeryMp() ? needs(surgeryMp(), 'MP', undefined, Math.floor(mpNow(h.c))) : true);
+const surgeryWhy = (h: Holder): string | true => (!h.c ? 'No one to do it.' : !hasAttuner(h.c) ? 'Needs an Attuner in hand.' : servesIndex(h.c, 'field_kit') < 0 ? 'Needs a field kit.' : mpNow(h.c) < surgeryMp() ? needs(surgeryMp(), 'MP', undefined, Math.floor(mpNow(h.c))) : true);
 const surgeryPay = (h: Holder, t: Character): string | null => { if (!uses(h).take('per_scene', 1, h.key + '#' + t.id)) return t.name + ' was already treated this scene.'; h.c!.mp = mpNow(h.c!) - surgeryMp(); return null; };
 register({
   id: 'tend.field_surgery', kind: 'verb', claims: 'all',
@@ -476,9 +476,9 @@ register({
       available: (h) => surgeryWhy(h),
       run: (h, args) => {
         const t = surgeryTarget(h, args); if (!t) return 'Name who you treat.';
-        const i = (t.injuries || []).findIndex((x) => x.loc === 'arm' || x.loc === 'leg'); if (i < 0) return t.name + ' has no arm or leg injury.';
+        if (!(t.injuries || []).some((x) => x.loc === 'arm' || x.loc === 'leg')) return t.name + ' has no arm or leg injury.';
         const no = surgeryPay(h, t); if (no) return no;
-        const [inj] = t.injuries!.splice(i, 1);
+        const inj = treatLimb(t)!; // the one treatment (rules 1.61 addendum item 4747); the kit is not spent
         postStory(h, h.c!.name + ' performs field surgery on ' + t.name + ': the ' + (inj.side ? inj.side + ' ' : '') + inj.loc + ' is treated.');
       },
     },

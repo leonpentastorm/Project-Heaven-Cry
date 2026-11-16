@@ -1841,6 +1841,22 @@
       }
     },
     {
+      "id": "treat",
+      "tier": "bespoke",
+      "summary": "Treat n arm or leg injuries of the receiver through the one treatment (character.ts treatLimb): run for an item's use (gear/use; the field kit, rules 1.61 addendum item 4748). Refused when the receiver has none, and on the field.",
+      "count": 1,
+      "params": [
+        "n"
+      ],
+      "used_by": [
+        "items:field_kit"
+      ],
+      "example": {
+        "op": "treat",
+        "n": 1
+      }
+    },
+    {
       "id": "ammo_mult",
       "tier": "bespoke",
       "summary": "",
