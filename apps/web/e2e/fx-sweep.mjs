@@ -449,7 +449,7 @@ async function fogPart() {
     if (!e1 && !e2) { aim2 = t; break; }
   }
   await p.evaluate(() => window.__sweep.idle(300, 8000));
-  ok('fog: two hostiles stand in plain sight beside ' + aim2, !!aim2 && (await tiles()).filter((l) => /Plain sight/.test(l)).length === 2);
+  ok('fog: two hostiles stand in plain sight beside ' + aim2, !!aim2 && (await tiles()).filter((l) => /· Plain sight \(hostile\)/.test(l)).length === 2);
   // the real screen: Attack tab, the weapon's techniques, Lob, its Blast line, then the tile
   const tools = p.locator('aside[aria-label="Proving Ground tools"]').first();
   if (await tools.count()) await tools.getByRole('button', { name: /^Close the tools/ }).first().click().catch(() => {});
