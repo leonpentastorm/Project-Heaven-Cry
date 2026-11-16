@@ -1381,3 +1381,40 @@ open-4v7-magic-boss, proving-4v10-boss, proving-4v12-guns, proving-4v12-magic, p
 proving-doors-hiding-watches-wave6, proving-waves, proving-waves-long, proving-waves-low, story-fight-story,
 story-fight-story-high, story-fight-story-magic (the arc, full cover's term, the reveal and the memory change the AI's
 turn in every fight with cover or a gun). The golden damage tables did not move.
+
+### 14.7 The final numbers (after `sideSees` reads the reveal; these supersede 14.2 to 14.4 where they differ)
+
+The measure above ran with the reveal read by the fog (`visibility`, `sideSeesUnit`) but not yet by `sideSees`, which the
+enemy AI and the attack checks use: a revealed character was drawn on the foes' side yet the AI did not act on it. Fixed
+before the commit (`combat.ts sideSees`; proof `test/ai-perceives.test.ts`); the same cells, the same 20 seeds, again:
+
+| Cell | Clear before → after | Downs a fight | Most-shot member before → after |
+|---|---|---|---|
+| solo_rigger | 25% → 40% | 0.13 → 0.08 | - |
+| solo_channeler | 75% → 70% | 0.03 → 0.04 | - |
+| **solo_chaplain** | **65% → 35%** | 0.05 → 0.11 | - |
+| other solos | equal | equal | - |
+| duo_bulwark | 5% → 15% | 0.75 → 0.60 | 74% → 70% |
+| duo_skirmisher | 100% → 95% | 0.03 → 0.04 | 88% → 86% |
+| duo_rigger | 70% → 75% | 0.22 → 0.14 | 88% → 85% |
+| duo_chaplain | 70% → 65% | 0.18 → 0.20 | 82% → 81% |
+| other duos | within a seed | within 0.03 | 63 to 86% (was 66 to 88%) |
+| trio_skirmisher | 95% → 100% | 0.09 → 0.10 | 76% → **68%** |
+| trio_channeler | 90% → 95% | 0.26 → 0.29 | 73% → 70% |
+| trio_breaker | 40% → 35% | 0.68 → 0.67 | 64% → 61% |
+| mix_trio | 100% → 100% | 0.09 → 0.06 | 68% → **64%** |
+| mix_four_b | 90% → 90% | 0.36 → 0.34 | 63% → **57%** |
+| quad_skirmisher | 100% → 100% | 0.12 → 0.08 | 67% → **56%** |
+| quad_channeler | 95% → 100% | 0.50 → 0.55 | 63% → 60% |
+
+Opening-volley cells: gun rolls from a shooter the screen did not draw **77 of 7,493, every one from a Hidden ambusher**
+(0 from a shooter that was not Hidden); hit % behind full cover beside 0 to 19%, behind half cover 14 to 34%; from-full
+Downs 0 in every cell.
+
+**Most-shot member, final:** duos 63 to 86%, trios 61 to 70%, fours 56 to 60%. The fours now reach the "about half"
+line and the trios come near it; the duos do not (14.4: a third of their rolls have one target in reach).
+
+**For the lead: the solo Chaplain 65 → 35%** (20 seeds; section 13 had 65% at 40). The faith build's rifle at Agility 1
+fires from beyond the foes' sight and is now seen and shot back until its next turn: P2 works both ways, as the brief
+asks ("any unit"). The rule's `until` is a data field (`"off"` restores the old sight); a players-only reveal would be a
+new rule for the lead, not a number.
