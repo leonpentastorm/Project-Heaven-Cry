@@ -10,7 +10,7 @@ import {
 } from './character';
 import { setFigmentDesign, dropFigmentDesign, FIG_DESIGN_IN_FIGHT, migrateCharacterFigments } from './figments';
 import { takeDoorPick, doorOption } from './doorpicks';
-import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV } from './magic';
+import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV, shockClear } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, given, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
 import { objectAtLevel, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange, layoutMap } from './combat';
@@ -3498,6 +3498,7 @@ function runFightOver(g: GameState) {
   }
   // rules 1.55 item 61: the field: the same fight, still running, with no enemies left
   cb.over = null; cb.field = true; delete cb.window;
+  for (const u of cb.units) if (!u.dead) shockClear(cb, u, 'fight over'); // rules 1.56 item 4508: the Mana Shock ends with the fight, the field included
   const xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), offers: Record<string, RunOffer> = {};
   sbChange(g, chars, () => { // the XP may bring a level (its HP): the sheets take it, and the fighters with them
     for (const c of chars) {
@@ -3605,7 +3606,7 @@ const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed'
 /** What a fighter's heart keeps when it is rebuilt (SB_KEEP's part for u.mg): Flux, Strain, a held Outburst, and the
  * fight's own counters (rules 1.55 item 61: a give on the field must not hand back the free first Pump, this turn's free
  * stages or the Strain owed). */
-const SB_KEEP_MG = ['flux', 'strain', 'held', 'cast', 'lockRound', 'firstUsed', 'freeUsed', 'freePumps', 'pumps', 'debt', 'calmFight', 'calmTend', 'shock'] as const;
+const SB_KEEP_MG = ['flux', 'strain', 'held', 'cast', 'lockRound', 'firstUsed', 'freeUsed', 'freePumps', 'pumps', 'debt', 'calmFight', 'calmTend', 'shock', 'shockOwn'] as const;
 /** Rebuild a character's fighter after the tools changed the character. mode 'keep' carries the fight's state (HP,
  * AP, stance, conditions, Flux, Strain, a held Outburst); 'refill' starts it fresh where it stands (AP full on its turn). */
 function sbRebuild(g: GameState, c: Character, mode: 'keep' | 'refill') {
@@ -3852,6 +3853,7 @@ function sandboxOver(g: GameState) {
   const sb = sbOf(g), cb = g.combat!, won = cb.over === 'win';
   noteDeaths(cb, g.rng); // a death on the enemies' own turn is swept (and drops) before the field becomes the map again
   faithFightEnd(g, cb); // rules 1.6: vows kept or broken, mercy, flight
+  for (const u of cb.units) if (!u.dead) shockClear(cb, u, 'fight over'); // rules 1.56 item 4508: the Mana Shock ends with the wave
   if (sb.mode === 'teams') { sbTeamsOver(g); return; }
   if (won) sbNoteBest(g, sb.wave);
   if (won) { sb.state = 'cleared'; sb.best = Math.max(sb.best, sb.wave); say(cb, 'WAVE ' + sb.wave + ' CLEARED in ' + cb.round + ' round' + (cb.round === 1 ? '' : 's') + '.'); }

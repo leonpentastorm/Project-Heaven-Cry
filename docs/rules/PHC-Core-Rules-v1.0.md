@@ -6925,7 +6925,7 @@ mage too". In force:
    one field, `soul_modules.json cycle.no_emanator_strain`, which the warning's text copies (`skills.json will_power
    door_numbers`, held equal by the validator).
 2. **The Mana Shock** (Leon, 16 Nov 2026, choosing the first of three readings put to him: "for the out burst
-   decision, use 1"; items 4501 to 4509; it reverses item 500). For every Soul caster, with or without an Emanator,
+   decision, use 1"; items 4501 to 4511; it reverses item 500). For every Soul caster, with or without an Emanator,
    characters and enemies alike:
    1. **The Mana Short** keeps its name and its trigger (3 over the limit, `soul_modules.json strain.short_at_over`):
       Stunned 1 round, a held Outburst goes off wild, its element's stage-1 rider on the caster's own tile, as before.
@@ -6935,12 +6935,18 @@ mage too". In force:
    2. **Mana Shock lasts until Strain is at or under the limit**, by the ways that already lower it: the turn start's
       −1, a still turn, fighting it out, tending, Let go, Steady, Relief, Revert. While it lasts, more Strain brings
       **no second Short** (no Stun, no wild release). Leaving it and reaching 3 over again is a new Short.
-   3. **The cost:** at the end of each of the caster's own turns that ends in Mana Shock, **25% of Max HP** (the row's
-      `strain.shock.hp_share`: max_hp × 0.25, rounded down), after the burn of 8 a point over (which stays as it was) and after a
-      still turn's −1. A turn that brings Strain back to the limit pays nothing. The turn lost to the Short's own Stun
-      pays (it can't calm). It is true damage of the self-harm kind (`strain`): no armour, no shield, no Guard plate,
-      no Close Guard or Interpose, no redirect or share, no drop-to-0 saver (Last Plate, Lifeline, a prayer's floor
-      included), no multiplier (item 4505: the damage chokepoint lets no listener touch it).
+   3. **The cost** (Leon, 16 Nov 2026: "do all 4. 25% after that turn is already debilitating enough"; items 4503 and
+      4510): **25% of Max HP** (the row's `strain.shock.hp_share`: max_hp × 0.25, rounded down) at the end of each of
+      the caster's own turns that ends in Mana Shock, **from the turn after the one it began in**: the Short's own turn
+      pays the burn of 8 a point over only (which stays as it was), never the share. The rule is **never charged in the
+      turn the state was entered**: a Short on the caster's own turn makes its next own turn (the Stunned one, which
+      can't calm) the first that pays; a Short off its turn (another unit's action, an enemy's turn, a reaction) makes
+      its very next own turn the first that pays. The share comes after the burn and after a still turn's −1, so a
+      turn that brings Strain back to the limit pays nothing. It is true damage of the self-harm kind (`strain`): no
+      armour, no shield, no Guard plate, no Close Guard or Interpose, no redirect or share, no drop-to-0 saver (Last
+      Plate, Lifeline, a prayer's floor included), and **nothing raises it either** (Pain Eater's Fresh +50% taken, a
+      +% damage taken of any kind): the heart's own harm, the burn and the share alike, is exactly its own number
+      (item 4505: the damage chokepoint lets no listener touch it).
    4. **It Downs, never kills** (a foe is subdued), as every burn of the heart. **A Downed caster leaves Mana Shock and
       its Strain is set to the limit**, so a raised caster is not shocked.
    5. **Pure Heart** still turns away the first Short of a fight (no Mana Shock from it); **Hollow Heart** still refuses
@@ -6948,8 +6954,14 @@ mage too". In force:
    6. **Enemies:** an enemy caster's own choices never reach 3 over (its cap is the limit, or the limit + 2 when
       desperate); pushed there from outside, it is in Mana Shock like anyone, and with nothing held it Begins nothing
       until the Shock ends (it walks and shoots: the first attack of a turn calms).
-   7. **The field** (rules 1.55: no turns) costs nothing and calms nothing; Strain and every condition are cleared when the
-      party leaves it, as after every fight.
+   7. **Mana Shock ends with the fight** (Leon, 16 Nov 2026; item 4508): when a fight ends (won, lost, fled, a Proving
+      Ground wave cleared or fallen) and when a won Survival fight becomes its field (rules 1.55), Mana Shock is
+      cleared and a Strain above the limit is set to the limit. It is **never charged outside a fight**: the area map's
+      round (which runs the heart's turn end) takes the burn a point over as it always has (rules 1.5), never the
+      share. The field has no turns, so nothing is charged or calmed there.
+   8. **Outside causes stay** (Leon, 16 Nov 2026): what adds Strain from outside (a Gift's Begin, a linked ally
+      falling, the twin, a Blessing's tug) can still bring a Short and Mana Shock; such a Short is off the caster's
+      turn, so item 3's rule makes its next own turn the first that pays.
 
 ## Maps (rules 1.16)
 
@@ -10780,9 +10792,11 @@ Items 4240 to 4247.
     a Down; its name and text are `soul_modules.json strain.shock.name` and `.text`). Leon, 16 Nov 2026 ("use 1").
 4502. **Mana Shock's cost:** 25% of Max HP (`soul_modules.json strain.shock.hp_share`, max_hp × 0.25, rounded down, an
     amount block's `per max_hp` part on the heart's one harm path, `magic.ts` `magicTurnEnd`) at the end of each
-    of the caster's own turns that ends in it. Leon's number. PROVISIONAL.
-4503. **When it is paid** (the lead's call for Leon, reversible): at the end of the caster's own turn, after the burn and
-    after a still turn's −1, so a turn that brings Strain to the limit pays nothing; the Stunned turn pays. PROVISIONAL.
+    of the caster's own turns that ends in it, from the turn after the one it began in (item 4510). Leon's number.
+    PROVISIONAL.
+4503. **When it is paid** (Leon, 16 Nov 2026, settling the lead's call): at the end of the caster's own turn, after the
+    burn and after a still turn's −1, so a turn that brings Strain to the limit pays nothing; the Stunned turn pays;
+    the Short's own turn does not (item 4510). PROVISIONAL.
 4504. **No second Short while in Mana Shock** (the lead's call): further Strain burns as before but does not Stun again
     or throw a held Outburst wild.
 4505. **Nothing softens it** (Leon: "no negociation"): the heart's own harm (the burn a point over and the Mana Shock's
@@ -10793,12 +10807,27 @@ Items 4240 to 4247.
     Matchmaker, Tending's threads) or holds a Down at 1 HP (Lifeline, Last Plate, Not Yet, Unbroken, Take the Weight,
     Hold the Gate, the Toll-Keeper). Its `after` phase and the Down still speak: Hollow Heart's stable Down applies
     (it acts after the Down). Fixed 16 Nov 2026 (the review found the share cut by Walking Wounded and moved by
-    Soulmate).
+    Soulmate). **Nothing raises it either** (Leon, 16 Nov 2026: "do all 4"): the same gate keeps every `damage_in`
+    listener off it, increases included (Pain Eater's Fresh +50% taken; the context-gated +% taken of Glass Runner,
+    Rabbit's Foot, Factory Made and One Shot never match the `strain` type), and the derived reductions before the
+    listeners (Elemental and Ambush damage taken, Read Them) sit behind the same gate; the burn a point over and the
+    share are both exactly their own number.
 4506. **It Downs, never kills; a Down ends it** (the lead's call): the caster's Strain is set to the limit and Mana Shock
     ends when it is Downed, so being raised is not a death loop. A Down while not in Mana Shock leaves Strain as before.
 4507. **Enemies** (the lead's call): an enemy caster in Mana Shock with nothing held Begins nothing (it walks and shoots
     until the Shock ends); holding, it releases, Steadies or lets go as before.
-4508. **The field** (rules 1.55): no turns, so no cost and no calming; the party leaving clears Strain and conditions as
-    every fight's end does. Open for the lead: whether entering the field should clear Mana Shock at once.
+4508. **It ends with the fight** (Leon, 16 Nov 2026, closing the lead's open question): every fight's end (`combat_over`,
+    heard in `magic.ts`: won, lost, fled), a Proving Ground wave's end (`sandboxOver`) and the field's start
+    (`runFightOver`, rules 1.55) clear Mana Shock and set a Strain above the limit to the limit (`magic.ts`
+    `shockClear`, the one copy the Down also uses). Never charged outside a fight: the area map's round
+    (`storyMagicRound`) keeps the burn a point over (rules 1.5, older than the Shock) and takes no share. The field
+    has no turns: nothing is charged or calmed there. Settled.
 4509. **Pure Heart and Hollow Heart** keep their texts: Pure Heart's refusal still sets Strain to the limit (no Shock);
     Hollow Heart refuses the Stun only.
+4510. **Never charged in the turn it began** (Leon, 16 Nov 2026: "25% after that turn is already debilitating
+    enough"): the Short's own turn pays the burn only; `MagicUnit.shockOwn` marks a Shock entered on the caster's own
+    turn (`cb.order[cb.turn]` is the caster, in a fight), and that turn's end takes no share. A Shock entered off its
+    turn (another unit's action, an enemy's turn, a reaction window) carries no mark, so the caster's next own turn is
+    the first charged. Outside causes (a Gift, a link, the twin, a Blessing) keep their power to Short (item 4511).
+4511. **Outside causes stay** (Leon, 16 Nov 2026): no change to what adds Strain from outside; item 4510 carries their
+    off-turn Short.

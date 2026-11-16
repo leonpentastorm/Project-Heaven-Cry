@@ -158,7 +158,7 @@ export function strainRows(hh: HeldHeart): ResRow[] {
   const nextTxt = held ? holdTxt : 'Your next Begin adds ' + b + ' Strain' + why;
   const peakTxt = ' → ' + peak + ' / ' + L + (peak > L ? ', ' + (peak - L) + ' over' : '');
   const row: ResRow = { key: 'strain', label: 'Strain', value: s + ' / ' + L, now: s, max: L, kind: 'pips', colour: RES_INK.soul,
-    hint: 'A Begin adds ' + b + ' Strain' + why + '. A held Outburst swells at your turn start (+' + hh.swell + ' after the turn start\'s −1, so an idle held turn nets ' + sgn(hh.swell - 1) + '). Over ' + L + ', every point burns ' + burn + ' at your turn end; ' + shortAt + ' over is a Mana Short, and then ' + (SOUL().strain?.shock?.name || 'Mana Shock') + ' until Strain is back at the limit: it costs part of your max HP at each of your turn ends in it. ' + calm };
+    hint: 'A Begin adds ' + b + ' Strain' + why + '. A held Outburst swells at your turn start (+' + hh.swell + ' after the turn start\'s −1, so an idle held turn nets ' + sgn(hh.swell - 1) + '). Over ' + L + ', every point burns ' + burn + ' at your turn end; ' + shortAt + ' over is a Mana Short, and then ' + (SOUL().strain?.shock?.name || 'Mana Shock') + ' until Strain is back at the limit or the fight ends: from your next turn, it costs ' + Math.round((SOUL().strain?.shock?.hp_share || 0) * 100) + '% of your max HP at each of your turn ends in it. ' + calm };
   const SH = SOUL().strain?.shock || {};
   // Rules 1.56: in Mana Shock the row says so first (the share of max HP a turn, until Strain is back at the limit).
   if (hh.shock) Object.assign(row, { warn: 'MANA SHOCK', level: 'alert', hint: (SH.name || 'Mana Shock') + ': ' + (s - L) + ' over the limit. ' + (SH.text || '') + ' ' + calm });

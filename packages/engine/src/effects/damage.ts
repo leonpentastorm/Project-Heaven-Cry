@@ -60,11 +60,12 @@ export const hostileSrc = (t: Unit, src: DamageSrc) => !!src.by && src.by.side !
 export const PAST_SHIELDS = new Set(['true', 'bleed', 'burn', 'burning', 'corrode', 'corroded', 'poison', 'strain', 'dot']);
 /** Does this source go past shields (pastShields: true damage and damage over time)? */
 export const pastShields = (src: { type?: string; dmgType?: string }): boolean => PAST_SHIELDS.has(src.type || '') || src.dmgType === 'true';
-/** The damage nothing softens (rules 1.56, the Mana Shock; spec item 4505): the heart's own harm, source type 'strain'
- * (magic.ts heartHarm: the burn a point over the limit and the Mana Shock's share). It meets no 'reduce', 'shield' or
- * 'would_drop_to_0' listener, so no item, perk, trait, condition, boon, prayer, intervention, ward or Guard reduces,
- * redirects, shares or floors it; 'after', on_damaged and on_downed still speak (Hollow Heart, the Down that ends the
- * Shock). One gate here, for every listener there is and every one to come. */
+/** The damage nothing changes (rules 1.56, the Mana Shock; spec item 4505): the heart's own harm, source type 'strain'
+ * (magic.ts heartHarm: the burn a point over the limit and the Mana Shock's share). It meets no derived reduction and no
+ * 'reduce', 'shield' or 'would_drop_to_0' listener, so no item, perk, trait, condition, boon, prayer, intervention, ward
+ * or Guard reduces, raises (Pain Eater's +50% taken: Leon, 16 Nov 2026, "do all 4"), redirects, shares or floors it;
+ * 'after', on_damaged and on_downed still speak (Hollow Heart, the Down that ends the Shock). One gate here, for every
+ * listener there is and every one to come, lowering or raising. */
 const UNSOFTENED = new Set(['strain']);
 /** Take damage (already past armour) off a unit's HP. */
 export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: DamageSrc): DamageResult {
@@ -74,15 +75,17 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
   if (src.shield !== false && pastShields(src)) src = { ...src, shield: false };
   const ctx: any = { t, src, dmg: Math.max(0, Math.floor(dmg)), phase: 'reduce', hostile: hostileSrc(t, src), self: src.by === t, cb,
     /** the Guard points the unit had as the hit arrived, before any soak spends them (physical/rules.ts: a guard keeps Momentum) */ guard0: t.res?.guard || 0 };
-  // Derived reductions (spec: Derived stats): Elemental damage taken (−10% × Pain Threshold) and Ambush damage taken
-  // (−10% × Reaction Speed), each capped at 60%, before items.
-  if (ELEMENTAL_TYPES.has(src.dmgType || '') && t.elemTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.elemTaken));
-  if (src.ambush && t.ambushTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.ambushTaken));
-  // Read Them (Acuity 5, rules 1.13; was Weak Point): an enemy the squad has analysed deals 15% less damage to it. The
-  // mark is Unit.weakPoint (Analyze at 5 points, Case Closed, Detective's Eye), whichever side holds it.
-  if (src.by && src.by.weakPoint && src.by.side !== t.side) ctx.dmg = ctx.dmg * (1 - READ_THEM);
-  const soft = !UNSOFTENED.has(src.type);
-  if (cb && soft) { emit(cb, 'damage_in', ctx); }
+  const soft = !UNSOFTENED.has(src.type); // the one gate (UNSOFTENED): below it, nothing lowers or raises the heart's own harm
+  if (soft) {
+    // Derived reductions (spec: Derived stats): Elemental damage taken (−10% × Pain Threshold) and Ambush damage taken
+    // (−10% × Reaction Speed), each capped at 60%, before items.
+    if (ELEMENTAL_TYPES.has(src.dmgType || '') && t.elemTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.elemTaken));
+    if (src.ambush && t.ambushTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.ambushTaken));
+    // Read Them (Acuity 5, rules 1.13; was Weak Point): an enemy the squad has analysed deals 15% less damage to it. The
+    // mark is Unit.weakPoint (Analyze at 5 points, Case Closed, Detective's Eye), whichever side holds it.
+    if (src.by && src.by.weakPoint && src.by.side !== t.side) ctx.dmg = ctx.dmg * (1 - READ_THEM);
+    if (cb) emit(cb, 'damage_in', ctx);
+  }
   ctx.dmg = Math.max(0, Math.floor(ctx.dmg));
   if (ctx.dmg <= 0 && dmg > 0) { res.prevented = true; return res; }
   if (src.shield !== false && !t.downed) {

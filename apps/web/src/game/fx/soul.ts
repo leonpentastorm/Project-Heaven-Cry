@@ -412,8 +412,9 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
       const p = at(e.at); play('soul_crack', p, { gain: 0.8, rate: 1.05 });
       if (!p) return;
       cracks(p, HP, 900); flash(tokOf(e.unit, e.at), 'hurt'); screenTint('red', 380);
-      // Rules 1.56: entering Mana Shock (shock 'on') and each turn it burns (shock 'burn'): the word, in the damage colour.
-      if (e.shock) floatText(e.shock === 'on' ? MANA_SHOCK.name.toUpperCase() : MANA_SHOCK.name.toUpperCase() + ' −' + (e.dmg || 0), p, HP, { small: e.shock !== 'on', delay: e.shock === 'on' ? 1500 : 0 });
+      // Rules 1.56: each turn the Mana Shock burns (shock 'burn'): the word and the HP, in the damage colour. Entering it
+      // is the 'cond' fx (its id strain.shock.id): the state's word, with no crack and no hurt flash (fx/play.ts cond).
+      if (e.shock === 'burn') floatText(MANA_SHOCK.name.toUpperCase() + ' −' + (e.dmg || 0), p, HP, { small: true });
     },
     // The Mana Short: the heartbeat stops, the screen goes grey and quiet, then a crack.
     short(e) {
