@@ -10,7 +10,7 @@ for i,r in enumerate(rows):
  x=(i%cols)*350;y=(i//cols)*390
  sm=im.resize((256,256),Image.Resampling.LANCZOS);out.paste(sm,(x+47,y+5),sm)
  d.text((x+15,y+272),f'{r["number"]:03d} {r["name"]}',fill='white',font=font)
- sizes=[24,48,64] if r['kind']=='sign' else [32,44,64]
+ sizes=[20,24,48] if r['family']=='door_emblems' else [24,48,64] if r['kind']=='sign' else [32,44,64]
  for k,size in enumerate(sizes):
   sm=im.resize((size,size),Image.Resampling.LANCZOS);out.paste(sm,(x+30+k*95,y+310+(64-size)//2),sm);d.text((x+30+k*95,y+375),str(size),fill='white',font=font)
  print(r['number'],'faint-alpha',round(ratio,5))

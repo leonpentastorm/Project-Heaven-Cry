@@ -19851,5 +19851,619 @@
       "24": "f5220fa4319dcd27fdc48b597824c364b38647e6079ba37aea6cc62dea0c1d3b"
     },
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 371,
+    "family": "technique_icons",
+    "id": "tech-deny",
+    "path": "art/icons/techniques/deny.png",
+    "name": "Deny",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, watch",
+    "paint": "A bullet line cutting across a doorway gap.",
+    "avoid": "a no-entry road sign \u00b7 a wall",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A bullet line cutting across a doorway gap.\nAvoid: a no-entry road sign \u00b7 a wall\nEXACT STAGING: Deny: ONE short straight horizontal WHITE MOTION LINE cuts RIGHT ACROSS AN OPEN DOORWAY GAP. Doorway is TWO SMALL VERTICAL POSTS with a short top lintel, no solid wall. Clear empty space inside, single line traverses between posts at waist height. No no-entry road sign, stop sign, letters, gun, person, target, injury, explosion or extra lines. Flat pure white architecture marks and fully transparent gap.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "601ba5c5e0f7330cfa2b25ae98ffbb4dd5f5fd71a0e9b76c48d513ad7db17372",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/371-deny.png",
+    "source_sha256": "49a0076b6d931fd04b40f55d1f1832648eda04fc12fee03cd74f86c24fbeb62f",
+    "export_crop": [
+      0,
+      0,
+      1253,
+      1206
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/deny.png",
+      "64": "art/icons/techniques/exports/64/deny.png",
+      "48": "art/icons/techniques/exports/48/deny.png",
+      "44": "art/icons/techniques/exports/44/deny.png",
+      "32": "art/icons/techniques/exports/32/deny.png",
+      "24": "art/icons/techniques/exports/24/deny.png"
+    },
+    "framing": {
+      "scale": 0.5064225895711072,
+      "offset": [
+        194,
+        206
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "1f15d71c1bc5e207be24bdaae18d7900f7d4c3b2e923a4c2862b6cd974452908",
+      "64": "e736edcaba6c0ac6b4ead269c1239b92df9ac7d98bae5287c4556b7a55c19796",
+      "48": "29d04ddfbff800bde43188a0326664bfa95832d86c7c41ec2e42c03232434ab8",
+      "44": "5b19b226edbec358f954f921d55449ba3a364d3dcab3e90551c1fd49429643d6",
+      "32": "aaf852806c08cb6fd13a4f3931ea4853addac33682c5054d37593fac58096789",
+      "24": "3956afcb73bc8f2671d69d12388c9b5cf8de577a06e6cbb8c30e88167c41d8a7"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 372,
+    "family": "technique_icons",
+    "id": "tech-cover-me",
+    "path": "art/icons/techniques/cover-me.png",
+    "name": "Cover Me",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, watch",
+    "paint": "Wick firing past a partial ally who runs across.",
+    "avoid": "a blanket \u00b7 a shield",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick firing past a partial ally who runs across.\nAvoid: a blanket \u00b7 a shield\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Cover Me: ONE Wick at left braces a compact invented training blaster level toward right. ONE cropped ALLY SHOULDER AND BENT RUNNING LEG at right passes IN FRONT AND BELOW Wick's level line of fire, visibly crossing safely beneath it. One short straight white trajectory goes safely PAST the ally into empty upper-right. No whole second figure, blanket, shield, wound, blood, muzzle flames, bowl or halo. Protective covering action, not attacking ally. Keep broad transparent spacing at overlaps.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "00eb345cc134b51ae9eb9d69a203bbe98f72b3ee4b696adc28cecb20d0c0d1f3",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/372-cover-me.png",
+    "source_sha256": "7b69626037af293ecae1b943358f55864200822589cc13a398bb3afd9781fe8f",
+    "export_crop": [
+      25,
+      23,
+      1228,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/cover-me.png",
+      "64": "art/icons/techniques/exports/64/cover-me.png",
+      "48": "art/icons/techniques/exports/48/cover-me.png",
+      "44": "art/icons/techniques/exports/44/cover-me.png",
+      "32": "art/icons/techniques/exports/32/cover-me.png",
+      "24": "art/icons/techniques/exports/24/cover-me.png"
+    },
+    "framing": {
+      "scale": 0.5529689461902156,
+      "offset": [
+        179,
+        171
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "d080d82d806c28de629e2d1d2e4d3bf1a2d9f0446c37c28a6c4d420f9e16bff7",
+      "64": "3ced4e320e28e8884f6f305ed833dea7d1855a48a10dd529c2a01660ed6ff136",
+      "48": "45b9d989b6515c172453dc13b86fb867aaf7b3deb13c56caa372e161ed841c77",
+      "44": "7ab3a34c55c7886dea9fb7d6148ff1884b01a4cf9beb2ebfd4b96d038df29715",
+      "32": "77ca6e0e4ac95318d62e8904d19f2751c5264493967561dfc1d37490ed44003a",
+      "24": "215488373f343c89c191278ff229597f13fddfac6fa7c65e8c88e0e079f9e988"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 373,
+    "family": "technique_icons",
+    "id": "tech-dead-to-rights",
+    "path": "art/icons/techniques/dead-to-rights.png",
+    "name": "Dead to Rights",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, watch",
+    "paint": "A sight-line pinning a silhouette caught in the open.",
+    "avoid": "handcuffs \u00b7 a skull",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A sight-line pinning a silhouette caught in the open.\nAvoid: handcuffs \u00b7 a skull\nEXACT STAGING: Dead to Rights: ONE LONG STRAIGHT WHITE SIGHT-LINE from left ENDS AT THE CHEST of ONE CROPPED FEATURELESS STANDING TORSO in open empty space at right. One thin open square bracket under torso indicates it is exposed, no cover wall. Quiet locked aim, no bullet contact, wound, blood, gun body, face, full person, handcuffs, skull, text or crosshair on head. Broad transparent gaps preserve clean partial silhouette.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "0d0ba7c8fd4ef01c2e33ed521e4609f22e64a08518cf764aae634e583b3ca380",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/373-dead-to-rights.png",
+    "source_sha256": "c679d6a9bcbe8c450cf150eaf27059a2e8d7193e14ffff61f49c6ef264357183",
+    "export_crop": [
+      0,
+      39,
+      1222,
+      1196
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/dead-to-rights.png",
+      "64": "art/icons/techniques/exports/64/dead-to-rights.png",
+      "48": "art/icons/techniques/exports/48/dead-to-rights.png",
+      "44": "art/icons/techniques/exports/44/dead-to-rights.png",
+      "32": "art/icons/techniques/exports/32/dead-to-rights.png",
+      "24": "art/icons/techniques/exports/24/dead-to-rights.png"
+    },
+    "framing": {
+      "scale": 0.5399141848665413,
+      "offset": [
+        182,
+        199
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "dd6ed03b8980844255293b5a8e1eaca391659f579566831ce618cb684fe62c94",
+      "64": "ba735c8cf79e355ef6b34936f05d59640912116631bfb8843454800b19b44d98",
+      "48": "2f75cb2b21fb2fb876de7c85f33f1f6a4edc039f9953c7f98daea54537084eb5",
+      "44": "05ac6329a273e8668d7a0d202fd65883d7790518daa5ac258f327849d5581433",
+      "32": "30eec2892a51d3e3bbba9f9d044f7bfb7025a08a60f169426e54b4e675e6f412",
+      "24": "6fbdab3d5866c40bb3fbd2a05aa37e53eacc92761ef248605736ee850b712125"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 374,
+    "family": "technique_icons",
+    "id": "tech-shield-bash",
+    "path": "art/icons/techniques/shield-bash.png",
+    "name": "Shield Bash",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, strike (shield)",
+    "paint": "A round shield driven forward into a partial figure.",
+    "avoid": "a heater shield \u00b7 blood",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A round shield driven forward into a partial figure.\nAvoid: a heater shield \u00b7 blood\nEXACT STAGING: Shield Bash: ONE BOLD ROUND SHIELD with small central boss drives RIGHT into ONE CROPPED FEATURELESS SHOULDER/TORSO PARTIAL leaning back. A cropped ceramic mitten behind shield grips its handle; one short forward motion stroke and two hard impact ticks at shield edge. No full figure, heater shield, blood, injury, explosion, wall, insignia, text or stars. The round shield silhouette must dominate, broad transparent cuts distinguish contact.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "1dfc33a464126bdb219ff4b431464f12d7f8cb65dde18f724f4ffe4c7ab2ec55",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/374-shield-bash.png",
+    "source_sha256": "87e4b5f781e80cc075a34e31e896a689c7cb11ceb6c83d7e5ad6d7ba85ec2c04",
+    "export_crop": [
+      0,
+      31,
+      1182,
+      1166
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/shield-bash.png",
+      "64": "art/icons/techniques/exports/64/shield-bash.png",
+      "48": "art/icons/techniques/exports/48/shield-bash.png",
+      "44": "art/icons/techniques/exports/44/shield-bash.png",
+      "32": "art/icons/techniques/exports/32/shield-bash.png",
+      "24": "art/icons/techniques/exports/24/shield-bash.png"
+    },
+    "framing": {
+      "scale": 0.6403692979094923,
+      "offset": [
+        133,
+        148
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "fd39c8374bfeffbfe9e579d47a4b88a037c4ed7b5ae376baacdadefa47cfa05a",
+      "64": "bf9149e1e749cd3418597eb2420e4d819b1fdcaae733b3dec3986eeacf86cbaa",
+      "48": "54b3dbb97768d976ec6c0b55134953e9ad976661996e41aacfbd5f4201325f7b",
+      "44": "fb7dbb3431e9a9a42f67d4fcf0af7d4a2ce55e1cd35686de89bd83e25af973c4",
+      "32": "0fb829d96701c08750bded413651c3f829fe3eae11ce32f8bfc845263079f06c",
+      "24": "187cde206f7551e1b3404989835c237022162a4835637397c3393f7c8823289a"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 375,
+    "family": "technique_icons",
+    "id": "tech-raise-shield",
+    "path": "art/icons/techniques/raise-shield.png",
+    "name": "Raise Shield",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, link (shield)",
+    "paint": "Wick lifting a round shield to his eye line.",
+    "avoid": "a riot shield with text \u00b7 a heater shield",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick lifting a round shield to his eye line.\nAvoid: a riot shield with text \u00b7 a heater shield\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Raise Shield: ONE Wick in a braced upright stance LIFTS ONE ROUND BUCKLER up to HIS EYE LINE, shield upper edge level with screen eyes, visibly partly covering lower face. One mitten grips rear handle, other arm back for balance. Round shield with simple boss, not tall riot panel or pointed heater shield. No text, arrows, motion flurry, other figure, bowl or halo. Keep ears, fasteners, boots and circular shield complete in frame.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "ce058bd92b14807cc71c9f8fc1fb4faf977e52a32f7ab57caee3788fc144ebd1",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/375-raise-shield.png",
+    "source_sha256": "0e53057f967d5604d98ffaef8f58d8b16aa55797f4a27a64526946449f1acddd",
+    "export_crop": [
+      57,
+      19,
+      1184,
+      1238
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/raise-shield.png",
+      "64": "art/icons/techniques/exports/64/raise-shield.png",
+      "48": "art/icons/techniques/exports/48/raise-shield.png",
+      "44": "art/icons/techniques/exports/44/raise-shield.png",
+      "32": "art/icons/techniques/exports/32/raise-shield.png",
+      "24": "art/icons/techniques/exports/24/raise-shield.png"
+    },
+    "framing": {
+      "scale": 0.5390562248118862,
+      "offset": [
+        208,
+        183
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "4a840dd70e7ed10c187d4efaeee26c12a7f57920e28652435bc660e88e0e337a",
+      "64": "aa2206c2a3fc6689a41de1d923e216fab540e3ba8f9381afdead1be06968a365",
+      "48": "2ef446a29d461a198a10a26147c1f4573f61d6a8c3efd9b1fa6191a8f66ffc77",
+      "44": "bb82a049d62b5201d171513c7b1b8f5bec2698ae26473b86f320880ecd51fad2",
+      "32": "aa4df856f1607b9930f255b697617a9efcf8ab8b9de9b1f3e1cfc6af57af0fcc",
+      "24": "3e075532976d4be5fcc42a44537675ec67347a7100c15276c031880b053ef31c"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 376,
+    "family": "technique_icons",
+    "id": "tech-grapple",
+    "path": "art/icons/techniques/grapple.png",
+    "name": "Grapple",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, link",
+    "paint": "Two arms locking round a partial figure.",
+    "avoid": "a wrestling ring \u00b7 the old Grapple perk icon pose (show the lock from behind)",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Two arms locking round a partial figure.\nAvoid: a wrestling ring \u00b7 the old Grapple perk icon pose (show the lock from behind)\nEXACT STAGING: Grapple: ONLY TWO CROPPED CERAMIC FOREARMS from BEHIND wrap and LOCK around ONE CROPPED FEATURELESS TORSO at center. One mitten grips the opposite wrist at front to form unmistakable CLOSED ARM LOCK. View from behind/three-quarter rear, no whole head or whole figures, no wrestling ring, blood, injury or floor scene. Broad transparent channels separate both arms, wrist grip and torso, no black paint. The closed wrist lock is decisive.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "53180611e3278056d7e555958b220f28815f5f0fbd716b6d99e73e21400bda6c",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/376-grapple.png",
+    "source_sha256": "61c03614f10554a7d87946de5b691f5fe863c5439ebde2a82c678828c7411da7",
+    "export_crop": [
+      0,
+      69,
+      1184,
+      1238
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/grapple.png",
+      "64": "art/icons/techniques/exports/64/grapple.png",
+      "48": "art/icons/techniques/exports/48/grapple.png",
+      "44": "art/icons/techniques/exports/44/grapple.png",
+      "32": "art/icons/techniques/exports/32/grapple.png",
+      "24": "art/icons/techniques/exports/24/grapple.png"
+    },
+    "framing": {
+      "scale": 0.6925675675675675,
+      "offset": [
+        102,
+        107
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "4287a123d0468081e81fcee1df94a7c2cffc23cfb5dd8ba3d830bb452d3f7a6c",
+      "64": "1cfee5610cf7594785ff06d7d5290643bcc89e41e47c7145bc12bec962c58b49",
+      "48": "e2d5d71ed993efaf85274667d6523ecc610f7d857880ae57f193102d7dfa9a5d",
+      "44": "24bd208cb0d8d5be45309d6651c1190a358305ebb11d10b3e90fdffc7659e1c2",
+      "32": "d3e498f26c25a50871fbe1284544abbd93978d856622fd2f18e2e478f719ac3f",
+      "24": "7fd8a4df067852e1abef15792f51c689851e17e6dd88e8669d103898a1fb79b7"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 377,
+    "family": "technique_icons",
+    "id": "tech-shield-wall",
+    "path": "art/icons/techniques/shield-wall.png",
+    "name": "Shield Wall",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, answer (shield)",
+    "paint": "Two round shields overlapping edge to edge.",
+    "avoid": "a castle wall \u00b7 a phalanx from a known film",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Two round shields overlapping edge to edge.\nAvoid: a castle wall \u00b7 a phalanx from a known film\nEXACT STAGING: Shield Wall: exactly TWO LARGE ROUND SHIELDS OVERLAP EDGE TO EDGE across center, offset slightly diagonal. Both are round bucklers with one simple central circular boss each, one behind the other. A broad truly TRANSPARENT CURVED CHANNEL separates overlapping edges, not black outline. No people, arms, castle wall, phalanx, film insignia, third shield, pointed heater shield, border or text. Strong paired discs readable at 32px.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+    ],
+    "composition_scope": "object/partial-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "1db1d9e9f0b72783881286d8a020ad7e238a58d7b4d2bb41ebe9fab81f2e7a65",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/377-shield-wall.png",
+    "source_sha256": "c8ed79bfa572219cbc611188c9d2ce001e817c4d755ff5add59f818120fe2c6d",
+    "export_crop": [
+      0,
+      29,
+      1253,
+      1238
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/shield-wall.png",
+      "64": "art/icons/techniques/exports/64/shield-wall.png",
+      "48": "art/icons/techniques/exports/48/shield-wall.png",
+      "44": "art/icons/techniques/exports/44/shield-wall.png",
+      "32": "art/icons/techniques/exports/32/shield-wall.png",
+      "24": "art/icons/techniques/exports/24/shield-wall.png"
+    },
+    "framing": {
+      "scale": 0.528444376045652,
+      "offset": [
+        181,
+        192
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "83e0b2a5dbf4f6aef2d954130e7efe452dd18849b2577fd11c72ec1916ea93d8",
+      "64": "2320eb9273766de6e23733d624dc7bae54181e9d3da29713834941ff8c421bfc",
+      "48": "a845b5df51c91cea6f4408c91476ec36d4a1f535445d4e3ba2c6e9da6382eecf",
+      "44": "36abcda19df6193f6e14469ef542e46ab8f2119aa5c242868f3d27e7e994fe6a",
+      "32": "9f467caf35431cbaf02ad53c63e4c089a0aa17798eeae59c6da9c8ae18860a8f",
+      "24": "f9cfebdfbc66b400ca8e55061643851acf6fdde0db363d206f833cd0b9cfe1e7"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 378,
+    "family": "technique_icons",
+    "id": "tech-interpose",
+    "path": "art/icons/techniques/interpose.png",
+    "name": "Interpose",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+    "use": "Technique, answer (shield)",
+    "paint": "Wick stepping between a dart and a partial ally, shield up.",
+    "avoid": "a heater shield \u00b7 wings",
+    "section": "Shared: the weapon techniques",
+    "kind": "wick",
+    "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick stepping between a dart and a partial ally, shield up.\nAvoid: a heater shield \u00b7 wings\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Interpose: ONE Wick STEPS INTO THE GAP BETWEEN one incoming DART from left and ONE CROPPED ALLY SHOULDER AND HEAD PARTIAL behind him at right. Wick raises ONE ROUND BUCKLER LEFT into dart's path, protecting ally; his body firmly stands between dart and partial. Dart stops just before shield edge, one tiny hard tick only. No second full figure, wings, heater shield, blood, injury, bowl, halo, stars or extra arrows. Complete central action circle-safe with clear transparent gaps.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 5,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "composition_scope": "one full Wick at most",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "99f11ad1bf65685dde869f61d85b066102c6eb2f219ff57163c65994cabb40c6",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/378-interpose.png",
+    "source_sha256": "456eaa8aa017b0d9794ece7cab81254ed54b785262dc16bf08be6154be33f7e7",
+    "export_crop": [
+      0,
+      18,
+      1254,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/interpose.png",
+      "64": "art/icons/techniques/exports/64/interpose.png",
+      "48": "art/icons/techniques/exports/48/interpose.png",
+      "44": "art/icons/techniques/exports/44/interpose.png",
+      "32": "art/icons/techniques/exports/32/interpose.png",
+      "24": "art/icons/techniques/exports/24/interpose.png"
+    },
+    "framing": {
+      "scale": 0.5212946326297232,
+      "offset": [
+        185,
+        190
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "170368e0434f3c83581d4e484a41f5fc327b256945423d6b0726dfd1bba54893",
+      "64": "8633a545b230e96f49ba1667020a2d8520a4581adab6497640cf687bf80aa434",
+      "48": "5a7dfdce8ae359dabeca609d7d7ce3ed279749fd555e1bc153f44d0d5f1acd88",
+      "44": "b6f09d53543cca5e85155136bb8ef10c6c57b932c465233ec7c024628e67c093",
+      "32": "0b66802d79c44eb4c5ff321b42002c9b5753a069332caa1c14db974c3557cec9",
+      "24": "2fc814381ac90549dac24fd4212435a76316bf004a614c89cbb0430a827ac536"
+    },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   }
 ]

@@ -1,0 +1,76 @@
+{
+  "number": 374,
+  "family": "technique_icons",
+  "id": "tech-shield-bash",
+  "path": "art/icons/techniques/shield-bash.png",
+  "name": "Shield Bash",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, strike (shield)",
+  "paint": "A round shield driven forward into a partial figure.",
+  "avoid": "a heater shield \u00b7 blood",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A round shield driven forward into a partial figure.\nAvoid: a heater shield \u00b7 blood\nEXACT STAGING: Shield Bash: ONE BOLD ROUND SHIELD with small central boss drives RIGHT into ONE CROPPED FEATURELESS SHOULDER/TORSO PARTIAL leaning back. A cropped ceramic mitten behind shield grips its handle; one short forward motion stroke and two hard impact ticks at shield edge. No full figure, heater shield, blood, injury, explosion, wall, insignia, text or stars. The round shield silhouette must dominate, broad transparent cuts distinguish contact.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "1dfc33a464126bdb219ff4b431464f12d7f8cb65dde18f724f4ffe4c7ab2ec55",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/374-shield-bash.png",
+  "source_sha256": "87e4b5f781e80cc075a34e31e896a689c7cb11ceb6c83d7e5ad6d7ba85ec2c04",
+  "export_crop": [
+    0,
+    31,
+    1182,
+    1166
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/shield-bash.png",
+    "64": "art/icons/techniques/exports/64/shield-bash.png",
+    "48": "art/icons/techniques/exports/48/shield-bash.png",
+    "44": "art/icons/techniques/exports/44/shield-bash.png",
+    "32": "art/icons/techniques/exports/32/shield-bash.png",
+    "24": "art/icons/techniques/exports/24/shield-bash.png"
+  },
+  "framing": {
+    "scale": 0.6403692979094923,
+    "offset": [
+      133,
+      148
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "fd39c8374bfeffbfe9e579d47a4b88a037c4ed7b5ae376baacdadefa47cfa05a",
+    "64": "bf9149e1e749cd3418597eb2420e4d819b1fdcaae733b3dec3986eeacf86cbaa",
+    "48": "54b3dbb97768d976ec6c0b55134953e9ad976661996e41aacfbd5f4201325f7b",
+    "44": "fb7dbb3431e9a9a42f67d4fcf0af7d4a2ce55e1cd35686de89bd83e25af973c4",
+    "32": "0fb829d96701c08750bded413651c3f829fe3eae11ce32f8bfc845263079f06c",
+    "24": "187cde206f7551e1b3404989835c237022162a4835637397c3393f7c8823289a"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

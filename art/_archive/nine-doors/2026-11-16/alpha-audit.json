@@ -1451,6 +1451,46 @@
       "number": 370,
       "name": "Overwatch (technique)",
       "faint_alpha_to_solid_area_ratio": 0.07819
+    },
+    {
+      "number": 371,
+      "name": "Deny",
+      "faint_alpha_to_solid_area_ratio": 0.03794
+    },
+    {
+      "number": 372,
+      "name": "Cover Me",
+      "faint_alpha_to_solid_area_ratio": 0.07223
+    },
+    {
+      "number": 373,
+      "name": "Dead to Rights",
+      "faint_alpha_to_solid_area_ratio": 0.06199
+    },
+    {
+      "number": 374,
+      "name": "Shield Bash",
+      "faint_alpha_to_solid_area_ratio": 0.02844
+    },
+    {
+      "number": 375,
+      "name": "Raise Shield",
+      "faint_alpha_to_solid_area_ratio": 0.05767
+    },
+    {
+      "number": 376,
+      "name": "Grapple",
+      "faint_alpha_to_solid_area_ratio": 0.02287
+    },
+    {
+      "number": 377,
+      "name": "Shield Wall",
+      "faint_alpha_to_solid_area_ratio": 0.01265
+    },
+    {
+      "number": 378,
+      "name": "Interpose",
+      "faint_alpha_to_solid_area_ratio": 0.07408
     }
   ],
   "excluded": [],

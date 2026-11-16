@@ -20,7 +20,7 @@ if j['kind'] in ['wick','sign','gear']:
 else:im=im.convert('RGB').resize((800,1000),Image.Resampling.LANCZOS)
 tmp=dest.with_suffix('.tmp.png');im.save(tmp,optimize=True);os.replace(tmp,dest)
 if j['kind'] in ['wick','sign','gear']:
- sizes=[256,128,64,56,48,44,40,32] if j['family']=='perks' else [256,128,64,32] if j['kind']=='gear' else [128,64,48,44,32,24]
+ sizes=[256,128,64,56,48,44,40,32] if j['family']=='perks' else [256,128,64,32] if j['kind']=='gear' else [128,64,48,44,32,24,20] if j['family']=='door_emblems' else [128,64,48,44,32,24]
  for size in sizes:
   out=dest.parent/'exports'/str(size)/dest.name;out.parent.mkdir(parents=True,exist_ok=True);small=im.resize((size,size),Image.Resampling.LANCZOS)
   if j['kind'] in ['wick','sign']:
