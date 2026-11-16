@@ -1156,7 +1156,7 @@ AP "weapon" is the weapon's attack cost (2 AP; 3 for a heavy melee weapon).
 
 | # | Technique | AP | What it does | With the right weapon |
 |---|---|---|---|---|
-| 6 | **Cut** (free) | weapon | One strike. Everyone knows it; it never takes a ready slot. | **Edge:** a critical leaves Bleeding. **Point:** +1 to hit. **Blunt:** a critical leaves Dazed. |
+| 6 | **Hit** (free; id `cut`; 0.31.0: its name with every weapon, gloves and bare hands too) | weapon | One strike. Everyone knows it; it never takes a ready slot. | **Edge:** a critical leaves Bleeding. **Point:** +1 to hit. **Blunt:** a critical leaves Dazed. |
 | 7 | **Sweep** † | weapon +1 | Strike up to 3 enemies in an arc in front of you, each at ×0.7, one roll each. | **Reach:** the arc is 2 tiles out. **Heavy:** all adjacent enemies, not just the arc. **Edge:** each one hit bleeds on a critical. Friendly fire applies. |
 | 8 | **Bash** | weapon | Strike at ×0.5 with the pommel, haft or fist. The target makes a Body save or is Dazed. | **Blunt:** full damage. **Heavy:** on a failed save it is pushed 2 tiles instead of Dazed, your choice. **Bare:** costs 1 AP less. |
 | 9 | **Sunder** | weapon | Strike at ×0.7. On a hit the target's armour is 5 lower for the rest of the fight (once per target per attacker). | **Blunt or Hook:** 10 lower. **Edge:** if the target has no armour left, Bleeding instead. |

@@ -14,7 +14,7 @@ vi.mock('../game/store', () => ({ getState: () => snap || (snap = view()), subsc
   go: () => {}, toast: () => {}, polishText: async () => '', retryNarrator: () => {}, saveNow: () => {}, poke: () => {} }));
 vi.mock('../game/report', () => ({ openReport: () => {}, PlaytestTools: () => null }));
 const { CombatLogic } = await import('./combat.js');
-const { shieldStrip, shieldBlock, inkOf, GLYPH } = await import('../game/shieldLook');
+const { shieldStrip, shieldBlock, inkOf, GLYPH, hpShieldBar } = await import('../game/shieldLook');
 const L: any = (RULES as any).combat.shield_look;
 
 const sheetFrom = (archId: string, name: string): Sheet => { const a = ARCHETYPES.find((x) => x.id === archId) || ARCHETYPES[0];
@@ -40,22 +40,27 @@ function screen() { const l: any = new CombatLogic({}); l.setState = (s: any) =>
 const tileOf = (v: any, x: any) => v.tiles.find((t: any) => t.key === x.pos);
 
 describe('shields on the token and the card', () => {
-  it('your own unit with two shields: two segments on the strip, two lines on your card and your panel, in the order a blow meets them', () => {
+  it('your own unit with two shields: one segment at the end of the HP fill (0.31.0), two lines on your card and your panel, in the order a blow meets them', () => {
     const { u, f } = fight(); twoShields(u, f.id);
     const v = screen().renderVals(), t = tileOf(v, u);
-    expect(t.hasShield).toBe(true); expect(t.shieldSegs.map((s: any) => s.kind)).toEqual(['layer', 'base']);
-    expect(t.shieldSegs[0].ink).toBe('#D36A90'); // the Ward is the Chaplain's: Virtue's ink, read from the class's attribute
-    expect(t.shieldSegs[1].ink).not.toBe(t.shieldSegs[0].ink);
+    // 0.31.0 (U3): no strip of its own: the pale segment rides the token's HP bar, the bar rescaled (200 HP + 80 shield)
+    expect(t.hasShield).toBeUndefined(); expect(t.hasHpSh).toBe(true);
+    const hb = hpShieldBar(u.hp, u.maxHp, shieldsView(G.combat as any, u));
+    expect(hb.amount).toBe(80); expect(hb.rescaled).toBe(true); expect(hb.hpW).toBeCloseTo(200 / 280 * 100); expect(hb.shW).toBeCloseTo(80 / 280 * 100);
+    expect(t.hpSeg).toBe(hb.segStyle); expect(t.hpFill).toContain('width: ' + hb.hpW + '%');
     expect(t.t.sh.lines.map((l: any) => [l.glyph, l.name, l.amount])).toEqual([[GLYPH.layer, 'Ward', '30'], [GLYPH.base, L.base.name, '50']]);
     expect(t.t.sh.absorb).toBe('Absorbs up to 80 before HP'); expect(t.t.sh.head).toBe(L.head);
     // the rule line is your panel's and the target card's, never every hover card (it ran the card off the screen)
-    expect(t.t.sh.hasRule).toBe(false); expect(v.me.sh.hasRule).toBe(true); expect(v.me.sh.rule).toBe(L.rule);
+    // (0.31.0: on your panel the rule is behind the Shields fold's "?", never a paragraph)
+    expect(t.t.sh.hasRule).toBe(false); expect(v.me.sh.hasRule).toBe(false); expect(v.me.hasShRule).toBe(true); expect(v.me.shRule).toBe(L.rule);
+    expect(v.me.hb.hasSh).toBe(true); expect(v.me.hb.plus).toBe('+80'); expect(v.me.hb.shTip).toContain('Ward 30'); expect(v.me.shHead).toContain('80');
     expect(v.me.sh.lines).toHaveLength(2); expect(v.me.sh.absorb).toBe('Absorbs up to 80 before HP');
     expect(t.label).toContain(L.head + ': '); expect(t.label).toContain('Ward 30');
     // the chip and the status read every shield, never the base one alone (a friend's row once said +50 with 80 in front)
-    expect(v.me.fx.find((c: any) => c.key === 'shield')).toBeUndefined(); expect(v.me.miniLine).toContain('+80 SHIELD');
-    // the turn strip shows them too, under the HP bar
-    const card = v.initiative.find((i: any) => i.key === u.id); expect(card.hasSh).toBe(true); expect(card.shSegs.map((s: any) => s.kind)).toEqual(['layer', 'base']);
+    // (0.31.0: never a chip of the status strip, never in the one-line summary: the HP bar's segment and its "+80" say it)
+    expect(v.me.st.groups.flatMap((g: any) => g.chips).find((c: any) => /shield/i.test(c.key))).toBeUndefined(); expect(v.me.miniLine).not.toContain('SHIELD');
+    // the turn strip shows it too, as the same segment on its HP bar
+    const card = v.initiative.find((i: any) => i.key === u.id); expect(card.hasSh).toBe(true); expect(card.shSeg).toBe(hb.segStyle); expect(card.shTip).toContain('+80');
   });
   it("a friend's card shows its shields exactly (it used to show only HP)", () => {
     const { u, f } = fight('ROOM-F'); twoShields(f, u.id);
@@ -72,7 +77,8 @@ describe('shields on the token and the card', () => {
     expect(t.t.sh.lines.map((l: any) => [l.name, l.amount])).toEqual([[L.base.name, 'STRONG']]);
     expect(t.t.sh.absorb).toBe('Absorbs ' + sv.allWord + ' before HP'); expect(t.t.sh.absorb).not.toMatch(/\d/);
     expect(t.label).not.toContain('60');
-    expect(t.shieldSegs[0].width).toBeCloseTo(L.size.find((r: any) => r.word === 'strong').bar * 100);
+    // its HP is not known: the bar holds only the segment, at the word's share of max HP
+    expect(t.hasHp).toBe(true); expect(t.hpSeg).toContain('width: ' + (L.size.find((r: any) => r.word === 'strong').bar * 100).toFixed(2) + '%');
     // the target card: the same block, and the line that says the attack's damage is shown before the shields
     const l = screen(); l.setState({ target: e.id, action: 'shot' }); const tv = l.renderVals().target;
     expect(tv.sh.lines).toHaveLength(1); expect(tv.sh.hasRule).toBe(true); void u;
@@ -80,7 +86,7 @@ describe('shields on the token and the card', () => {
   it('Guard is listed apart, "Guard N plates, each soaks S", and is never a segment of the strip; your own panel says it once (its row)', () => {
     const { u } = fight('ROOM-G'); u.resMax = { ...(u.resMax || {}), guard: 5 }; u.res = { ...(u.res || {}), guard: 3 }; u.shield = 20; snap = view();
     const v = screen().renderVals(), t = tileOf(v, u), sv = shieldsView(G.combat as any, u);
-    expect(t.shieldSegs.map((s: any) => s.kind)).toEqual(['base']); expect(t.hasGuard).toBe(true);
+    expect(t.hasHpSh).toBe(true); expect(t.hpSeg).not.toContain('NaN'); expect(t.hasGuard).toBe(true);
     expect(t.t.sh.hasGuard).toBe(true); expect(t.t.sh.hasGuardLast).toBe(true); expect(t.t.sh.guardLine).toBe('Guard 3 plates, each soaks ' + sv.guard!.soak);
     // the headline is what an ordinary blow meets (a plate is kept back); the drop case is its own line
     expect(t.t.sh.absorb).toBe('Absorbs up to ' + (20 + 2 * sv.guard!.soak) + ' before HP');

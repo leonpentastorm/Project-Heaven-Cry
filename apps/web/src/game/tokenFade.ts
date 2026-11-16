@@ -51,4 +51,4 @@ export function wispsUri(n: number, max: number): string {
 /** Where the wisps sit: above the token's top-left corner, wholly over the tile's top edge, so they never touch the
  *  Pressure pips and state word (top centre), the Momentum chip (left edge), the Sigil chip (right edge), the kind badge
  *  (centre) or the health word (bottom edge). */
-export const wispStyle = (max: number): string => 'position: absolute; left: 2px; top: -13px; z-index: 4; height: 12px; width: ' + (max * 10 + 4) + 'px; pointer-events: none; filter: drop-shadow(0 0 2px rgba(5, 7, 11, 0.9))';
+export const wispStyle = (max: number): string => 'position: absolute; left: 2px; top: -13px; z-index: 4; height: 12px; width: ' + (max * 10 + 4) + 'px; pointer-events: auto; cursor: help; filter: drop-shadow(0 0 2px rgba(5, 7, 11, 0.9))';

@@ -199,8 +199,9 @@ describe('two guns: Heat once, each jam on its own gun', () => {
   });
   it('a condition on your unit is said once in your panel', async () => {
     const { u } = fight(false); (u as any).conds = { ...(u.conds || {}), slowed: 2 }; snap = view(); const { el, root } = await mount();
-    const res = el.querySelector('[aria-label="Your resources"]')!;
-    expect(count(res.parentElement!.textContent || '', /SLOWED/gi)).toBe(1);
+    // (0.31.0: in the status strip under HP, in the HURTING group; nowhere else on the panel)
+    const aside = el.querySelector('.phc-cb-aside')!, strip = el.querySelector('[data-status-strip]')!;
+    expect(count(aside.textContent || '', /SLOWED/gi)).toBe(1); expect(strip.querySelector('[data-status-group="hurts"]')!.textContent).toMatch(/SLOWED/);
     await React.act(async () => root.unmount()); el.remove();
   });
 });

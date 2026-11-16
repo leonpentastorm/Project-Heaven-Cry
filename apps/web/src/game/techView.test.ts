@@ -24,7 +24,7 @@ describe('the Attack tab as weapon blocks (part 2)', () => {
     f.put(f.pc, 'C5'); f.turn(f.pc);
     const B = f.bound(() => weaponBlocks(f.g, f.cb, f.unit(f.pc.id)));
     expect(B.map((b) => [b.hand, b.weaponId, b.system])).toEqual([['main', 'combat_knife', 'melee'], ['off', 'service_pistol', 'ranged']]);
-    expect(B[0].plain).toMatchObject({ id: 'cut', name: 'Cut' }); expect(B[1].plain).toMatchObject({ id: 'shot', name: 'Shot' });
+    expect(B[0].plain).toMatchObject({ id: 'cut', name: 'Hit' }); expect(B[1].plain).toMatchObject({ id: 'shot', name: 'Shot' });
     // the pads hold the rest, by group; Cut and Shot are rows, never chips; Watches are in Hold a shot, not the pad
     expect(B[0].groups.flatMap((gr) => gr.chips.map((c) => c.id))).toContain('lunge');
     expect(B[0].groups.flatMap((gr) => gr.chips.map((c) => c.id))).not.toContain('cut');

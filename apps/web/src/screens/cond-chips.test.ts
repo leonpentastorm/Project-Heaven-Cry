@@ -13,9 +13,10 @@ describe('condition chips', () => {
     withGame(f.g, () => applyCond(f.cb, f.g.rng, f.unit(f.pc.id), t, 'off_balance', undefined, undefined, { skipSave: true } as any));
     const ob = condChips(t, f.g).find((c: any) => c.key === 'c-off_balance')!;
     expect(ob).toBeTruthy();
-    expect(ob.k).toBe('OFF BALANCE'); expect(ob.t).not.toMatch(/99|rounds left/); expect(ob.t).toMatch(/Until used at your next turn start\./);
+    // (0.31.0: its row's side, conditions.json, with its glyph)
+    expect(ob.k).toBe('▼ OFF BALANCE'); expect(ob.side).toBe('hurts'); expect(ob.word).toBe('OFF BALANCE'); expect(ob.t).not.toMatch(/99|rounds left/); expect(ob.t).toMatch(/Until used at your next turn start\./);
     withGame(f.g, () => applyCond(f.cb, f.g.rng, f.unit(f.pc.id), t, 'guarded', 2, undefined, { skipSave: true } as any));
     const gd = condChips(t, f.g).find((c: any) => c.key === 'c-guarded')!;
-    expect(gd.k).toMatch(/· 2$/); expect(gd.t).toMatch(/2 rounds left\./);
+    expect(gd.k).toMatch(/· 2$/); expect(gd.side).toBe('helps'); expect(gd.k).toMatch(/^▲ /); expect(gd.t).toMatch(/2 rounds left\./);
   });
 });

@@ -297,20 +297,21 @@ export function bodyFigure({ worn = [], injuries = [], hot = [], mainSide = 'rig
 }
 
 // ---------- status effects, in words (combat panel, hover cards) ----------
-/** own: the unit panel of your own fighter, where the resource rows already say Heat and each gun's jam (one fact, one
+/** Each entry: [label, words, its conditions.json row id when it is one (the status strip reads that row's `side`)].
+ *  own: the unit panel of your own fighter, where the resource rows already say Heat and each gun's jam (one fact, one
  *  place: Leon, live 0.24.0); elsewhere (an ally's line, a target's line) the chips say them. */
 export function effectsOf(u, own = false) {
   const fx = [];
-  if (u.dead) fx.push(['DEAD', 'Out of the fight for good.']);
-  else if (u.downed) fx.push(['DOWNED', 'Death saves ' + (u.saves ? u.saves.ok + ' ✓ / ' + u.saves.fail + ' ✕' : '') + '. A stim stabilises.']);
-  if (u.hidden) fx.push(['HIDDEN', 'Enemies can\'t see you or aim at you, and your next attack is an ambush. Attacking, being hit, or an enemy ending its move next to you gives you away.']);
-  if (u.bleed) fx.push(['BLEEDING', '5 damage at the start of each turn, ' + u.bleed + (u.bleed === 1 ? ' round' : ' rounds') + ' left. A stim stops it.']);
-  if (u.dazedNext) fx.push(['DAZED', '−2 AP next turn.']);
-  if (u.stunnedNext) fx.push(['OFF BALANCE', '−1 AP next turn (fumbled a strike).']);
+  if (u.dead) fx.push(['DEAD', 'Out of the fight for good.', 'downed']);
+  else if (u.downed) fx.push(['DOWNED', 'Death saves ' + (u.saves ? u.saves.ok + ' ✓ / ' + u.saves.fail + ' ✕' : '') + '. A stim stabilises.', 'downed']);
+  if (u.hidden) fx.push(['HIDDEN', 'Enemies can\'t see you or aim at you, and your next attack is an ambush. Attacking, being hit, or an enemy ending its move next to you gives you away.', 'hidden']);
+  if (u.bleed) fx.push(['BLEEDING', '5 damage at the start of each turn, ' + u.bleed + (u.bleed === 1 ? ' round' : ' rounds') + ' left. A stim stops it.', 'bleeding']);
+  if (u.dazedNext) fx.push(['DAZED', '−2 AP next turn.', 'dazed']);
+  if (u.stunnedNext) fx.push(['OFF BALANCE', '−1 AP next turn (fumbled a strike).', 'off_balance']);
   if (!own && (u.jammed || u.offJammed)) fx.push(['JAMMED', (u.jammed && u.offJammed ? 'Both guns are' : u.offJammed ? 'The off-hand gun is' : 'The gun is') + ' jammed: it won\'t fire until cleared.']);
   if (u.heat && !own) fx.push(['HEAT ' + u.heat, '−' + Math.floor(u.heat / 2) + ' to hit; drops by 2 each turn.']);
-  (u.injuries || []).forEach((i) => fx.push([((i.side ? i.side + ' ' : '') + i.loc).toUpperCase(), i.loc === 'arm' ? '−2 to attacks with that arm, until treated.' : i.loc === 'leg' ? 'Half Movement, until treated.' : 'Injured.']));
-  if (u.weakPoint) fx.push(['READ', 'It deals 15% less damage to the squad.']);
+  (u.injuries || []).forEach((i) => fx.push([((i.side ? i.side + ' ' : '') + i.loc).toUpperCase(), i.loc === 'arm' ? '−2 to attacks with that arm, until treated.' : i.loc === 'leg' ? 'Half Movement, until treated.' : 'Injured.', 'injured']));
+  if (u.weakPoint) fx.push(['READ', 'It deals 15% less damage to the squad.', 'read']);
   if (u.overweight > 0) fx.push(['OVERBURDENED', u.overweight + ' kg over the carry limit: −' + Math.ceil(u.overweight / 5) + ' Movement, no Sprint.']);
   return fx;
 }
