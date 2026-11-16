@@ -11602,7 +11602,9 @@ every number here is PROVISIONAL.
     AP the unit has (`moveOptions` reads the one cost site, `apFor`), never a second AP sum.
 4742. **AP at contact (F3):** a fight joined is round 1 and every character's first turn begins on its full turn AP
     (`beginTurn`); AP spent before the fight is never taken out of it. A Survival fight is joined as its node is
-    entered (there is no time before contact in a run: the BATTLE START banner of item 4740 says so as it opens).
+    entered (there is no time before contact in a run): when a hostile of the fight is out of the party's sight as it
+    opens, the BATTLE START banner of item 4740 says so in its line (`rules.json combat.cards.joined.fog`, "Hostiles
+    in the fog: every step costs AP"). A true time before contact is item 4748, for the lead.
     On the area map an ambush from hiding opens on the attacker's turn on its full turn AP, and the opening strike
     is paid from that turn (it was the AP left of the area map's round); a Silent Kill that opens no fight takes the
     strike's cost from the area map's AP as before. An attack in the open is unchanged (paid from the area map's AP;

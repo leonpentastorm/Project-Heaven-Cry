@@ -97,7 +97,7 @@ type CardKind = 'turn' | 'round' | 'fight' | 'victory' | 'defeat' | 'field';
 /** The fight's big banners (BATTLE START, VICTORY, DEFEAT, FREE ROAM): drawn in the middle of the screen. */
 const BIG: CardKind[] = ['fight', 'victory', 'defeat', 'field'];
 /** Rules 1.62 item 4740: the fight's banners' words and the least time each is fully on screen (data). */
-const CARDS: { hold_ms: number; joined: { name: string }; won: { name: string }; lost: { name: string } } = (RULES as any).combat.cards;
+const CARDS: { hold_ms: number; joined: { name: string; fog?: string }; won: { name: string }; lost: { name: string } } = (RULES as any).combat.cards;
 /** A turn's round in words: on a run fight's field its round of its rounds (rules 1.62 item 4746), else ROUND n. */
 const roundWords = (cb: any, round: number): string => { const f = cb && cb.field && typeof cb.field === 'object' ? cb.field : null;
   return f && round >= f.from ? roundLabel({ round: round - f.from + 1, of: f.of }).toUpperCase() : 'ROUND ' + round; };
@@ -140,7 +140,10 @@ function fightCard(g: GameState, cb: any, meId: string): Banner {
   const b = cb.order.length ? bannerFor(g, cb, cb.order[0], meId, 1) : null;
   const who = !b ? '' : b.mine ? 'You go first' : b.foe ? 'The hostiles go first' : b.name + ' goes first';
   const setting = g.run ? SETTING[runSetting(g.run)]?.name || '' : '';
-  return { id: 'f' + Date.now(), kind: 'fight', kicker: cb.name, kickerColor: '#FFFFFF', name: CARDS.joined.name, sub: [setting, who].filter(Boolean).join(' · '),
+  // Rules 1.62 item 4742: the fight is joined now, hostiles out of sight included; the party's walk costs AP from here.
+  // The player's view is the engine's fog (fogFight): a hostile out of sight is an unseen id in the turn order.
+  const fog = (cb.order as string[]).some((id) => isUnseenId(id));
+  return { id: 'f' + Date.now(), kind: 'fight', kicker: cb.name, kickerColor: '#FFFFFF', name: CARDS.joined.name, sub: [setting, who, fog ? CARDS.joined.fog || '' : ''].filter(Boolean).join(' · '),
     stripe: '#F65157', slab: '#F65157', mark: '', glyph: '!', glyphArt: ART('banner-fight-start'), img: b && !b.unseen ? b.img : '', mine: false, foe: false, hold: CARDS.hold_ms };
 }
 /** VICTORY or DEFEAT: the fight's name and, in a Survival run, the line of what follows (data/survival.json run.after_fight). */
@@ -236,6 +239,9 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     if (cutInActive()) { const f = () => { removeEventListener(EV_CUTIN_END, f); later(() => showCombatTurn(unitId, round), 60); }; addEventListener(EV_CUTIN_END, f); later(() => removeEventListener(EV_CUTIN_END, f), (CUTIN_MAX_MS + 400) * fightPace()); return; }
     // A fight card holds the slot (FIGHT before the first turn): the turn's banner follows it.
     const busy = slotUntil.current - Date.now(); if (busy > 0) { later(() => showCombatTurn(unitId, round), busy + 30); return; }
+    // The fight's end is known and its cards are still to come (VICTORY or DEFEAT, then FREE ROAM): the field's first
+    // turn banner waits for them (rules 1.62 item 4740), even before they are on screen (they wait for the last effect).
+    if (endPending.current) { later(() => showCombatTurn(unitId, round), 120); return; }
     const { game: g, meId: me, screen: sc } = live.current, cb = g?.combat;
     if (!g || !cb || g.phase !== 'combat' || sc !== 'combat' || cb.over || document.hidden) return;
     const b0 = bannerFor(g, cb, unitId, me, round); if (!b0) return;
@@ -261,11 +267,15 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   // A fight's banner: in the turn banners' slot (they wait for it); a second one queues after the first (VICTORY,
   // then FREE ROAM). Its hold is the data's, never shortened by the combat speed (rules 1.62 item 4740).
   const slotUntil = React.useRef(0);
-  const showCard = (b0: Banner) => {
+  /** A fight's end is known and its cards are not yet queued: the turn banners and their cut-ins hold. */
+  const endPending = React.useRef(false);
+  const showCard = (b0: Banner, reserved = false) => {
     if (document.hidden) return;
-    const busy = slotUntil.current - Date.now(); if (busy > 0) { later(() => showCard(b0), busy + 30); return; }
     const k = fightPace(), b = { ...b0, k }, total = BIG.includes(b.kind) ? bigTotal(b, reducedMotion()) : ((reducedMotion() ? 300 : 520) + b.hold) * k;
-    setBanner(b); slotUntil.current = Date.now() + total;
+    // A card behind another reserves its place in the slot at once (VICTORY then FREE ROAM): nothing slips between them.
+    const busy = slotUntil.current - Date.now();
+    if (!reserved && busy > 0) { slotUntil.current += total + 30; later(() => showCard(b0, true), busy + 30); return; }
+    setBanner(b); slotUntil.current = Math.max(slotUntil.current, Date.now() + total);
     if (b.kind !== 'fight') cue(b.kind === 'defeat' ? 'banner_foe' : 'banner_mine'); // BATTLE START: the combat-in's own sting plays
     later(() => setBanner((x) => (x && x.id === b.id ? null : x)), total);
   };
@@ -298,7 +308,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const liveFights = React.useRef(new Set<string>());
   React.useEffect(() => {
     if (!cb || screen !== 'combat') {
-      if (!cb) { seen.current = null; clearAll(); setBanner(null); setCut(null); }
+      if (!cb) { seen.current = null; clearAll(); setBanner(null); setCut(null); endPending.current = false; }
       // Away on another screen (level up, the sheet): what happened meanwhile isn't announced late.
       else if (seen.current && seen.current.fight === fightId) seen.current = { fight: fightId, n: lastN, key: turnKey };
       return;
@@ -376,18 +386,19 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     if (!overKey || !game || !anyCb) return;
     const stream = combatStreamKey(game)!, won = endOf(anyCb) === 'win';
     if ((!won && anyCb.over !== 'loss') || !carded(game, anyCb) || !liveFights.current.has(stream) || endShown.current === overKey) return; // an Extraction is neither
-    endShown.current = overKey;
+    endShown.current = overKey; endPending.current = true;
     const efx = (anyCb.fx || []) as any[], lastFx = anyCb.fxSeq || (efx.length ? efx[efx.length - 1].n : 0), clock = fxClock.current;
     const until = Date.now() + 20000 * fightPace(); // a safety net only: the card waits for the fight's last effect
     const still = () => { const { game: g2, screen: sc } = live.current; return !!endOf(g2?.combat) && sc === 'combat' && combatStreamKey(g2) === stream; };
     const tryShow = () => {
-      if (!still()) return;
+      if (!still()) { endPending.current = false; return; }
       const waitFx = (clock.on || hasLayer()) && clock.at < lastFx;
       // Its last effect has started: the card waits for it (and anything queued with it) to finish, and for a cut-in.
       const rest = waitFx ? 100 : cutInActive() ? 120 : fxBusyUntil() - performance.now();
       if (rest > 20 && Date.now() < until) { later(tryShow, Math.min(rest, 400) + 20); return; }
       const g2 = live.current.game!; showCard(endCard(g2, g2.combat, won));
       if (g2.combat?.field && !g2.combat.over) showCard(fieldCard(g2.combat)); // a run's field: FREE ROAM, queued after VICTORY
+      endPending.current = false; // the slot now holds both cards: the field's first turn banner follows them
     };
     tryShow();
   }, [overKey]);
