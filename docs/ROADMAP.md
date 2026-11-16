@@ -1,6 +1,6 @@
 # Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept current)
 
-> **0.28.2 is live (15 Nov 2026; rules 1.55).** **Next: 0.29 "Balance 2.0"** (on `feature/0.29`; lanes merged, a fix wave running, then 0.28.2 merged in, then the alpha-perk revamp, Figments 2.0 and Bonds 2.0, then number fitting and Leon's word before any deploy; details in `docs/design/handoffs/START-HERE.md`). Balance 2.0 (Leon, 14 Nov 2026): every weapon measured against the plain rifle, outliers refitted, and the open class lines; see `docs/design/handoffs/SURVIVAL-PICKUP.md`.
+> **0.29.0 "Balance 2.0" is live (16 Nov 2026; rules 1.56).** **Next:** merge and ship together the fight-tab settings (`origin/wip/lane-0.29-tabs`), a shield in either hand (`origin/wip/lane-shield-either-hand`) and the follow-strike design (`origin/wip/design-follow-strike`, a draft); Leon's rulings, the known faults, the consolidation pass and the number-fitting pass are listed in `docs/design/handoffs/START-HERE.md`. Balance 2.0 (Leon, 14 Nov 2026): every weapon measured against the plain rifle, outliers refitted, and the open class lines; see `docs/design/handoffs/SURVIVAL-PICKUP.md`.
 
 This is a list of leads, not a spec. Each item says where its design lives. Before building anything, read
 `CLAUDE.md` and `docs/HANDOFF.md`. Leon decides the order; the top section is the suggested one.

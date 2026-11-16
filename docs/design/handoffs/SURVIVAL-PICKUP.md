@@ -1,5 +1,18 @@
 # Survival: the pick-up (14 Nov 2026, at the close of build steps 9 and 10)
 
+> **16 Nov 2026 (newest): 0.29.0 IS LIVE.** https://project-heaven-cry.leonpentastorm.workers.dev serves 0.29.0 (`assets/index-CS0sQSbu.js`); `main` = `develop` = 98772514; `backup/live-0.29.0` pushed. What shipped: `CHANGELOG.md` 0.29.0 (rules 1.56, "Balance 2.0": the nine doors, mods as data and as rewards, special rounds by calibre, variants as data, the melee profile). 0.28.3 was the version before. Where anything below says 0.29.0 is not deployed or live is 0.28.x, it is older.
+>
+> **Live check of 0.29.0 (`--no-build --jobs 2`): 5 of 8 suites passed.** Passed: creation-points 97 checks, survival 189, room 27, shadow 18, tending 28. Failed even alone: old-save (1 check, `page.reload` timed out at 30 s waiting for the load event), fight-cards (14 checks, same), figments (0 checks, `page.goto` timed out at 30 s). Locally all three pass (old-save 4, fight-cards 22, figments 17; figments also failed beside the others with the same `page.goto` timeout and passed alone, so it is flaky under parallel load). Cause not confirmed: all three are 30 s waits for the load event, not assertion failures; the live app does not appear faulty. A guess: the load event stays slow because of the roughly 147 resources fetched. Title shows 0.29.0; the root HTML took 0.76 s and the JS bundle 0.69 s by curl; in the browser DOMContentLoaded was at about 1.63 s with the title text rendered, loadEventEnd still 0 after 1.5 s.
+>
+> **Backups kept:** `backup/live-0.29.0` and `backup/live-0.28.3`, plus `backup/live-0.22.0` and `backup/live-0.23.0` for good (`backup/live-0.28.2` deleted as the third).
+>
+> **Open / what comes next:**
+> (a) Built and green on their own branches, NOT merged, to ship together as the next version: the fight-tab settings, Scuff on Utility with a mirror on the Sigils tab, and the bare-handed Outburst warning (`origin/wip/lane-0.29-tabs`, head 00aff2c3); a shield in either hand (`origin/wip/lane-shield-either-hand`, in review); the follow-strike design (a tag on an off-hand item that rides each main-hand melee attack; `origin/wip/design-follow-strike`, a draft).
+> (b) Rulings waiting on Leon: a held Outburst does not swell on a turn in which you gained Guard (lead's proposal, not built); bare-handed Outbursts made truly harmful (+2 Strain per stage, no free swell; lead's proposal, not built; today the only cost is +2 Strain per Begin, `data/soul_modules.json` `cycle.no_emanator_strain`); rows inside a fight tab can still shift when a verb unlocks (needs one row-order rule in the engine's list).
+> (c) Known faults live in 0.29.0 from the playtests: the Open guard -2 is shown only on the glove's card, not in the fight; a stim used on a full-HP ally through the Hand's Hand over is spent for +0 HP (the stim rule counts it as tending: needs a ruling); a Chaplain can get two door tips in one fight (a fight has no id to key by); the SHADOW meter row is clipped at 1600x900; an Operative opens its first Survival turn on ATTACK because Hide is refused while seen (`doorView.ts:58`); the fight log still says "uses Cut" for gloves (the menu says Strike); not verified in a browser: Set Against the Blow, Retort, Near Miss, Flush Out, Charge, fitting a mod at the Forge.
+> (d) The consolidation pass before the next system and the number-fitting pass (party budget per head, gun and solo tank outclassing, forks for five doors via `door/pick`) are owed: see `docs/design/proposals/2026-11-nine-doors-report.md`.
+
+
 
 > **15 Nov 2026 (latest): 0.28.2 IS LIVE; this block is newest, where anything below says otherwise it is older.**
 >
