@@ -7018,7 +7018,7 @@ its own revision 1.57; when it is built it takes the next number.)
 1. **A shield is a weapon** (item 4512). The buckler, the riot shield and the pavise are `weapons.json` rows: category
    `shield`, one-handed, melee (`phys.system`), the Shield property (`phys.props: [shield]`), mastery family Unarmed,
    their own strike line: buckler 6, riot shield 8, pavise 8, hitting with Durability and growing with Strength (the
-   melee profile), 2 AP a blow, as any light weapon. Their Defense and Movement are the rows' own `effects`, held in
+   melee profile) *(superseded by rules 1.59 item 4539: shields scale with Endurance)*, 2 AP a blow, as any light weapon. Their Defense and Movement are the rows' own `effects`, held in
    either hand; price, weight and durability are unchanged. `either_hand` is gone: a shield goes in either hand because
    it is a one-handed weapon.
 2. **One test** (item 4513). "Is a shield held" is one test, the Shield property of the row in a hand (`isShieldId`):
@@ -11039,7 +11039,8 @@ Items 4240 to 4247.
 4309. **Two shields (item 2):** `gearEffects` reads a non-weapon main hand too, so each shield's `defense_bonus` and
     `movement_bonus` add (buckler + buckler +2 Defense; buckler + riot shield +3 Defense, −0.5 Movement; riot + riot +4
     Defense, −1 Movement). `guardGain` adds `shield_gain` / `brace_shield_gain` per shield held: Brace gives 2 + 1 a
-    shield (4 with two), never past the pool (`guardMax`, 4 at most). Parry's `shield_bonus` once (`holds`, the
+    shield (4 with two), never past the pool (`guardMax`, 4 at most). *(Superseded by rules 1.59: item 4540, two shields
+    multiply every gain by `two_shield_mult` in place of the +1 a shield; item 4541, the Bulwark's pool is 5 / 6 / 7.)* Parry's `shield_bonus` once (`holds`, the
     Shield property). Eyes in the Back's −5 reads a shield in either hand by the Shield property (the code no longer
     names the pavise). Intended change: a carried pavise (no Shield property) no longer adds Parry's +2, which it did by
     its category (item 4317). PROVISIONAL: the stack is the lead's to judge.
@@ -11092,7 +11093,8 @@ Items 4240 to 4247.
 4516. **The hand pairs (A1 item 5):** `physical/core.ts shieldHand`: the off hand while it holds no weapon and a shield is
     held, else the main hand when it holds a shield and the off hand a weapon; `inShieldHand` routes a shield technique
     to that hand. A sabre beside a main-hand shield asks its +2 and opens the Both block. No number.
-4517. **Two shields (A1 item 6):** as item 4309 (the stacks measured there hold). PROVISIONAL.
+4517. **Two shields (A1 item 6):** as item 4309 (the stacks measured there hold). PROVISIONAL. *(Superseded by rules 1.59
+    items 4540 and 4541: two shields double every Guard gain; the Bulwark's pool is 5 / 6 / 7.)*
 4518. **Shield Bash (A1 item 7):** `techniques.json shield_bash.numbers.mult` 1.5 -> 2.5, struck with the shield's row
     (`inHand` swaps the shield in, `swapMain` set). Moves: the replays with the tank (riot shield) and the golden
     tables' new rows (each shield's weapon lines; Raise Shield's pad and technique lines, which the harness now plays

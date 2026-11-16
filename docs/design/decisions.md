@@ -423,7 +423,7 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
 116. **The Mana Shock: a Mana Short no longer empties the heart** (Leon, 16 Nov 2026: "Keep everything as now, +4 strain
     on the begin, going into manashock eat 25% your max HP per turn no negociation. find a way to reduce strain or say bye
     bye, for normal soul mage too"; of the three readings put to him, "for the out burst decision, use 1"). Rules 1.56,
-    the Mana Shock; spec items 4501 to 4509; it reverses item 500 (Leon's own 8 Nov ruling that Strain falls to the limit
+    the Mana Shock; spec items 4500 to 4511; it reverses item 500 (Leon's own 8 Nov ruling that Strain falls to the limit
     after a Short). The Short keeps its Stun and its wild release; Strain stays; the caster is in Mana Shock until it
     calms the heart back to the limit, and every one of its turns that ends in it costs 25% of max HP (true, self-harm,
     nothing soaks it, it Downs and never kills; a Down ends it). Why: drawing on the air bare-handed (+4 Strain) has to

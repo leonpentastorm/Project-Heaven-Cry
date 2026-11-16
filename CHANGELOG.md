@@ -45,8 +45,9 @@ shield in either hand and the tank, the shield display. Decisions 116 to 119.
   change and the Proving Ground offer the main hand for a shield.
 - **Shields are weapons**: the buckler, the riot shield and the pavise are weapon rows with the Shield property. In the
   main hand a shield strikes with its own line (buckler 6, riot shield 8, pavise 8; Durability), wears and is graded
-  as a weapon; in the off hand it is not a second weapon. Shield Bash strikes with the shield (x2.5). Old saves' shield
-  lines are moved to weapon lines at load.
+  as a weapon; in the off hand it is not a second weapon. A main-hand shield with a sword in the off hand is still
+  ordinary dual wielding, and the shield's techniques come from whichever hand holds it. Shield Bash strikes with the
+  shield (x2.5). The pavise is a shield when carried. Old saves' shield lines are moved to weapon lines at load.
 - **No swell with a shield**: while a shield is in either hand a held Outburst keeps its stage at the turn start (the
   Strain of holding still comes); Pumps are untouched. The heart panel and the design cards say so.
 
@@ -56,12 +57,14 @@ shield in either hand and the tank, the shield display. Decisions 116 to 119.
   hand, strikes once after each melee technique of your one-handed main weapon: its own roll at -2, its own damage, no
   AP, at the foe your first blow really struck. It is a rider: no Momentum, no Pressure, no other item's once-a-turn
   line, and a missed follow draws no Riposte. Never after a gun, a throw, a reaction, a shield technique, a paired attack
-  or a class or perk strike, and never with a two-handed weapon.
+  or a class or perk strike, and never with a two-handed weapon (Heavyworlder's one-handed greatsword included).
 - **A shield's follow gives Guard**: the first that lands each turn gives 1 Guard, however many shields you hold.
-- **Not a second weapon**: a follows item in the off hand asks no +2, opens no Both block, makes no paired attack.
-- **Shield Bash costs 1 AP** (was 2). **Wear**: only the follow wears the off hand.
+- **Not a second weapon**: a follows item in the off hand asks no +2, opens no Both block, makes no paired attack and
+  has no attack of its own there. A main-hand shield with a sword in the off hand is still ordinary dual wielding.
+- **Shield Bash costs 1 AP** (was 2). **Wear**: only the follow wears the off hand; a follows item worn to 0 makes no
+  follow.
 - **New gear rows, in no shop or loot table yet**: Afterword (an off-hand knife, its follow at a quarter of its damage
-  and Bleeding once a turn; 700 credits) and the Trailing balance mod.
+  and Bleeding once a turn; 700 credits) and the Trailing balance mod (grafts `follows` onto a melee weapon).
 - **Screens**: each melee row's preview shows the follow as a second line, the log shows both rolls, and the follow is
   drawn as a second swing from the other hand.
 
@@ -84,12 +87,15 @@ shield in either hand and the tank, the shield display. Decisions 116 to 119.
   name with a size word, never a number. The "+N SHIELD" chip counts every shield; the turn strip shows them under HP;
   the fight Narrator is told them. Every word is the engine's `shieldsView`, from `data/rules.json combat.shield_look`.
 - **One copy of the spend order and of how Guard soaks** (`shieldOrder`, `physical/guard.ts guardSoakOf`), read by
-  the damage path, Durability's soak, the Bulwark's Reactive Plate and the view.
+  the damage path, Durability's soak, the Bulwark's Reactive Plate and the view, so a plate holder's card says Guard
+  is met first, 10 a plate, nothing kept (it said after the shields, by the general soak, one kept).
 
 ### Fixes
 
 - **Guard no longer spends plates on damage a Ward takes**: Durability's Guard is met after every shield, the layers
-  too (it subtracted only the base shield).
+  too (it subtracted only the base shield). A Reactive Plate holder's plates are still met first, before every shield.
+- **The Reactive Plate's card line no longer claims it soaks your own harm**: it soaks every blow and true damage, but
+  never the heart's burn or the Mana Shock (nothing softens the heart's own harm).
 
 ### Known and unfinished
 

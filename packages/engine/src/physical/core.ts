@@ -1054,7 +1054,7 @@ export const MOMENTUM_HINT: string = String(PHYS_RULES.momentum?.texts?.how || '
 /** Guard's rule in words, every number from rules.guard (its soak at this unit's level, rules 1.36). */
 export function guardHint(u: Pick<Unit, 'level'>): string {
   const g = GR(), brace = g.brace_gain, keep = g.keep_back;
-  return 'Brace gives ' + brace + ' Guard (' + (brace + g.brace_shield_gain) + ' with a shield); the Guard technique gives ' + g.gain_base + ', +' + g.gain_per_point + ' for each Durability point above 1, +' + g.shield_gain + ' with a shield. Each point takes ' + guardSoak(u) + ' damage off a hit; ' + (keep === 1 ? 'the last point is' : 'the last ' + keep + ' points are') + ' kept for a reaction unless the hit would take you down. Pressure comes off Guard first. While you hold any, a hit costs you no Momentum.';
+  return 'Brace gives ' + brace + ' Guard (' + (brace + g.brace_shield_gain) + ' with a shield); the Guard technique gives ' + g.gain_base + ', +' + g.gain_per_point + ' for each Durability point above 1, +' + g.shield_gain + ' with a shield; a shield in each hand multiplies every gain by ' + g.two_shield_mult + ' instead. Each point takes ' + guardSoak(u) + ' damage off a hit; ' + (keep === 1 ? 'the last point is' : 'the last ' + keep + ' points are') + ' kept for a reaction unless the hit would take you down. Pressure comes off Guard first. While you hold any, a hit costs you no Momentum.';
 }
 /** A Pressure state's data row (rules.pressure.states: word, says, text, text_pc). */
 const PS = (state: string): any => PHYS_RULES.pressure?.states?.[state] || {};

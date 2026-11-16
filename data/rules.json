@@ -884,7 +884,7 @@
         "line": "{name} {plates} {plate_word}, each soaks {per}",
         "line_off": "{name} {plates} {plate_word}, soaking nothing",
         "after": "met after the shields: it soaks what they leave, and true damage and hazards too, but never harm you do yourself or a condition's tick",
-        "before": "met first, before every shield: it soaks every blow, true damage and your own harm too",
+        "before": "met first, before every shield: it soaks every blow and true damage too, but never the heart's own harm (its burn, the Mana Shock)",
         "off": "its soak is switched off for this fight",
         "keep_unless_drop": "{keep} kept back for a reaction, unless the blow would drop the unit",
         "keep_always": "{keep} always kept back"
