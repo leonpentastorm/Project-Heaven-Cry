@@ -23,6 +23,7 @@ From Leon's playtest of live 0.30.0 (rules 1.61 addendum, Core Rules items 4740 
 - **Overhaul's extra slot is the Forge's in a run:** the armourer fits it for the fee after the rest that sets its bench (`forge.fit.extra_actions`, read by the paid extra fit); the free fit stays refused.
 - **A blank plate teaches the lesson you choose:** a Sigil or Heart plate bought at a shop has no lesson written on it; on the Magic tab you pick one of what it can teach you now (`plateChoices`), through `magic/learn`. The plates stay on the shelves.
 - Tests: `test/run-item-actions.test.ts` (through the reducer).
+- **Also in 0.30.1 (merged from int/0.30):** two browser suites brought to the 0.30 rules (the Relic step beside the camp Buckler; classes-moves), CLAUDE.md's picking-UI rule, no player-facing "bots" for mana, the banner renamed the Mana-thread banner (its id kept), and one icon resolver for the shop, camp, sell and give rows.
 
 ## 0.30.0 — shields as weapons, the follow strike, the tank rulings, the bare heart and the shield display
 
