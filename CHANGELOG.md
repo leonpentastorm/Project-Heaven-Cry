@@ -160,6 +160,36 @@ slice A. Decisions 116 to 120.
   spent count). Keep Swinging's free Strike lasts to the end of the next turn (a Finisher ends this turn's chain).
 - **Not run:** the browser suites whose truth changed (tank, tending, classes, figments): the browser gate comes later.
 
+### Doors 3.0, slice C: the forks (rules 1.60 items 4645-4662; decision 122)
+
+- **Forks.** Each door's alpha skill opens two forks, at 4 and 6 points: two options each, chosen once out of a fight
+  and kept for good. The level-up card shows the fork its points reach (both options side by side, their rule, what they
+  run on: Choose, then Confirm); the sheet's SKILLS tab lists every door's forks, a choice still to make in white; the
+  door's fight tab and the Guard, Momentum and Pressure meters list the forks held. Every option runs on its door's own
+  resource. Placeholder icons for all 32.
+- **Guard (Durability):** at 4, **Provoke** (the first foe a round whose blow lands on your plates is Taunted, no save)
+  or **Cover Them** (an Answer: the first ranged hit a round on an ally within 2 lands on you, for a Guard and your
+  reaction); at 6, **Stand Fast** (Slam Taunts every foe within 2, no save, and pushes nobody) or **Drive** (Slam pushes
+  2, its Off Balance save at −2, a plate back for each foe knocked Off Balance, at most 2 a turn).
+- **Momentum (Raw Power) at 4:** **Rolling Start** (Charge from a 2-tile run, no Momentum, +1 on a hit) or
+  **Grindstone** (a plain hit on the foe you hit last builds 2).
+- **Pressure (Dexterity):** at 4, **Converging Fire** (an ally's ranged hit on a foe you hit this round adds a pip) or
+  **Walk It In** (a ranged miss still lays a pip); at 6, keyed to the foe's own Pressure cap, **Through the Gap** (your
+  next move is 1 AP cheaper and draws no opportunity attack) or **Lockdown** (the foe is Slowed, no save).
+- **Bonds (Empathy) at 4:** **Keep the Thread** (Snap keeps the Bond, gives no Daze, costs Tug's 12 MP) or **Short
+  Thread** (Tending a Bonded ally within 2 is ×1.4, Touch reaches 2).
+- **Figments:** the two forks move from Visualization 3 and 5 to 4 and 6; a form already chosen is kept.
+
+### Known and unfinished (slice C)
+
+- **Not offered yet** (a step is offered only when both options are built): Momentum 6 (Spill waits on N21), Bonds 6
+  (Long Thread on N20), every Shadow, Prayer, Sigil and Outburst step (N5, N6, N7, N9, N12, N14, N15, N18, N22). Built
+  and waiting for their pair: Spotter, Shared Pulse. Buildable, not built: Lend the Dark, Headlong, Ride the Edge, Clean
+  Break (and with them N3b and N10's `at: "limit"`).
+- **For the lead:** Drive's −2 and plate back read every Off Balance its holder forces, not only Slam's.
+- **Not run:** the browser suites (figments.mjs edited for the forks at 4 and 6; tank, levelup and skeleton screens show
+  the new fork sections).
+
 ## 0.29.0 — Balance 2.0: the nine doors
 
 Rules revision 1.56 (every new number PROVISIONAL), built on top of live 0.28.3. Each of the nine skills that open a

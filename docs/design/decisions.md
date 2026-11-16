@@ -494,3 +494,23 @@ Why PHC is the way it is. Newest last. Each entry: what was decided, why, and wh
     long rifle 48 → 47 (Hold the Lane took the reload and swap discount, and the contract's optimised gun then reloaded
     where it had swapped: 161.75% → 163.0% of a 162.4% band) and Measured Blow at 1 (2 put the heavy blade's level-20
     line at 211% against 206%). Both are for the lead to keep, or to answer with the band.
+122. **The forks are data verbs held by their pick, and a step is offered only when both of its options are built**
+    (Leon's rulings of 16 Nov 2026 on the Doors 3.0 spec; the lead's approval of N1, N2, N10, N3b and N23 and no other
+    primitive; rules 1.60 items 4645 to 4662). An option is a row of `data/forks.json` of kind `verb` whose `requires` is
+    `{door_pick: <its id>}`: once picked it is held like any door verb and its rows run on the generic runners, so a
+    fork that only adds rules is data alone, and a fork that changes another row (Slam, Snap, Touch) is a pair of rows
+    there that read the pick (`door_pick` / `no_door_pick`, the source `pick:`), never a copy of the row. Every alpha
+    skill registers its steps from `skills.json forks` (no door named in code), Figments keeps its ladder's forks (forms),
+    and one engine view (`doorForkView`) feeds the level-up card, the sheet and the fight tab. An option whose rule needs a
+    primitive that was not approved is a `shelved` row with its text and what it waits for, and its step is not offered:
+    a choice of one is not a fork, and offering the built half alone would make the later option a second-class
+    latecomer. Built and offered: Guard 4 and 6, Momentum 4, Pressure 4 and 6, Bonds 4, Figments 4 and 6. Built but not
+    offered yet (their pair waits): Spotter, Shared Pulse. Not built though buildable (their pair waits, so they would be
+    rows nobody can reach): Lend the Dark, Headlong, Ride the Edge, Clean Break; and so N3b and N10's `at: "limit"`,
+    whose only users are those two, are not built either (an approved piece with no user is not added: the lead's call).
+    Two readings the carriers forced: a line on `hit` runs before the hit's own Pressure is laid (item ops before the
+    engine's own listeners), so the two cap forks read the foe's Pressure after the attack (`acted`, for a target the
+    attack hit); and a Taunt put on during a blow ends with that blow (the attack on its source ends a Taunt), so Provoke
+    marks the soak and Taunts once the blow is done. Drive's −2 and plate back read every Off Balance its holder forces,
+    as the spec's carrier is written (no piece tells which action put a condition on): for the lead. A pick is kept for
+    good, so it closes the level-up's take-back.

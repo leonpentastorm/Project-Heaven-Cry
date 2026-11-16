@@ -196,12 +196,14 @@ export function spendLevel(def: BuildDef, variant: Variant, C: () => any, act: (
  * measures the line, so it builds with no perk steps (`STEPS.perks = false`); every other measure takes them. */
 export const STEPS: { perks: boolean; forks: string[] } = { perks: true, forks: [] };
 /** Rules 1.56: a door's open choices (the Figment forks, door/pick): the build's preferred option first, else the first.
- * Rules 1.60 (the data forks, data/forks.json): a fork is a reward on top of the line, as a perk step is, so they are
- * taken only with the perk steps (STEPS.perks); STEPS.forks names options a measure wants picked (else the first). */
+ * Rules 1.60 (the data forks, data/forks.json): a fork is a reward on top of the line and a style the build chooses, so
+ * a data fork is taken only when it is named: by the build (`forks`) or by a measure (STEPS.forks); never by default
+ * (the replays and the contract play the doors with no fork). */
 export function takeForks(def: BuildDef, C: () => any, act: (a: any) => void) {
   for (let guard = 0; guard < 10; guard++) {
-    const open = allPendingDoorPicks(C()).filter((p) => STEPS.perks || !p.options.some((o) => forkRow(o.id))); if (!open.length) break;
-    const p = open[0], pref = [...STEPS.forks, ...(((def as any).forms || []) as string[])].find((f) => p.options.some((o) => o.id === f)) || p.options[0].id;
+    const want = [...STEPS.forks, ...(((def as any).forks || []) as string[])];
+    const open = allPendingDoorPicks(C()).filter((p) => !p.options.some((o) => forkRow(o.id)) || p.options.some((o) => want.includes(o.id))); if (!open.length) break;
+    const p = open[0], pref = [...want, ...(((def as any).forms || []) as string[])].find((f) => p.options.some((o) => o.id === f)) || p.options[0].id;
     act({ type: 'door/pick', door: p.door, option: pref });
   }
 }

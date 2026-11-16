@@ -12,7 +12,7 @@
 import * as E from '@engine';
 import { unitQuiverCards, quiverCards } from '@engine';
 import { doorLineOf, feedLineOf } from './doorView';
-import { forkChipsLine } from './forkView';
+import { forkChipsLine } from './forkLine';
 import { enchantMark } from './quiverView';
 import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
   coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam, wearState } from '@engine';

@@ -9,6 +9,8 @@ import { doorForkView, doorForkViews, SKILL } from '@engine';
 import ASSETS from './assets.json';
 import { act, toast } from './store';
 import { ATTR_INK } from './classView';
+import { forkChipsLine } from './forkLine';
+export { forkChipsLine };
 
 const A = ASSETS as Record<string, string>;
 const MUTED = '#7F8BA1', TEXT = '#E7EBF3', WHITE = '#FFFFFF';
@@ -61,15 +63,6 @@ export function forkCards(c: any, o: { inFight?: boolean; rerender?: () => void 
   if (!c) return [];
   const out = doorForkViews(c).filter((v) => v.steps.some((s) => s.open || s.picked)).map((v) => forkCard(c, v.door, o)).filter((x): x is ForkCardView => !!x);
   return [...out.filter((x) => x.pending), ...out.filter((x) => !x.pending)];
-}
-
-/** The forks a character holds at a door, as one line of chips' words for a tab header or a meter card: "Forks:
- *  Provoke · Stand Fast", with "1 fork still to do" when a pick is open; '' when it holds none and none is open. */
-export function forkChipsLine(c: any, door: string): string {
-  const v = c ? doorForkView(c, door) : null; if (!v) return '';
-  const held = v.picked.map((p) => p.name), open = v.pending;
-  if (!held.length && !open) return '';
-  return (held.length ? 'Forks: ' + held.join(' · ') : '') + (open ? (held.length ? ' · ' : '') + open + ' fork' + (open > 1 ? 's' : '') + ' still to do (out of a fight)' : '');
 }
 
 /** The level-up skill card's fork block: the steps of this skill's door at these points (a step just reached, to choose

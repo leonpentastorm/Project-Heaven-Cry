@@ -71,7 +71,7 @@ import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../game/figmentIcons';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
 import { firstTurnTab, tabDoorLine, focusFilter, tabFocusLine, tabMirrors, tabBareWarning, feedLineOf } from '../game/doorView';
-import { forkChipsLine } from '../game/forkView';
+import { forkChipsLine } from '../game/forkLine';
 import { noteTabs, noteLive, tabKey, shownTabs, firstUsable, NO_PREFS, EV_TABS_CHANGED } from '../game/tabPrefs';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';

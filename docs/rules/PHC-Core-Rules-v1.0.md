@@ -11482,6 +11482,7 @@ only when both of its options are built**: a step with one option is not offered
     primitive with no user is not added (the lead's call to reverse).
 4661. **Placeholders and art:** each option's icon id is its own id (`fork.<door>.<name>`); 32 Wick placeholders
     (`art/icons/forks/placeholders/`, catalog `fork_icons`) until drawn (ART-REQUESTS.md). No number.
-4662. **The simulator takes the forks** with the perk steps (a fork is a reward on top of the line, as a perk step is):
-    the balance contract, which measures the line with no perk steps, takes none; a measure may name the options it
-    wants (`test/balance/builds.ts STEPS.forks`). No number.
+4662. **The simulator takes a data fork only when it is named** (by a build's `forks` or a measure's
+    `test/balance/builds.ts STEPS.forks`): a fork is a style the player chooses, a reward on top of the line, so the
+    balance contract and the recorded replays play the doors with none (Figments' forms, always taken, are unchanged). No
+    number.
