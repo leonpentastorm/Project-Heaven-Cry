@@ -408,9 +408,7 @@
     },
     {
       "id": "cut",
-      "name": "Cut",
-      "names": {"open_hand": "Strike", "bare": "Strike"},
-      "names_text": "The name a weapon's property gives it in the pad (a glove or a bare hand strikes, it does not cut).",
+      "name": "Hit",
       "system": "melee",
       "group": "strike",
       "number": 6,

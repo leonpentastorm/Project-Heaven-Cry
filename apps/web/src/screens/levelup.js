@@ -20,6 +20,7 @@ import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, adv
 import { figmentLadderView } from '@engine';
 import { figmentIconUri, FIG_LINE } from '../game/figmentIcons';
 import { forkLevelUp } from '../game/forkView';
+import { foldVals } from '../game/fold';
 
 const PERK_ICON = {};
 D.skills.forEach((s) => { s.ep.perks.forEach((p) => { PERK_ICON[p.id] = p.icon; }); if (s.ep.mastered) PERK_ICON[s.ep.mastered.id] = s.ep.mastered.icon; });
@@ -137,7 +138,7 @@ export class LevelUpLogic extends DCLogic {
         canRaise: !!c.unspent.skill, blocked: !!why, why: nice(why), raise: () => act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: s.id }), raiseStyle: raiseStyle(!why, ink), raiseLabel: 'Raise ' + s.name,
         hasWhy: !!(why && c.unspent.skill && p < 10), hasNext: !!nxt, next: 'Next point (' + np + '): ' + nxt, nextAt: np, fig: figLevelUp(s.id, p),
         // rules 1.60 (the forks): this skill's door's fork steps reached and the next (game/forkView.ts, the engine's doorForkView)
-        ...(() => { const fk = forkLevelUp(c, s.id, p, g.phase === 'combat', () => this.setState({ forkArm: Date.now() })); return { hasFork: !!fk, fork: fk || { steps: [], head: '', headStyle: '', runsOn: '' } }; })(),
+        ...(() => { const fk = forkLevelUp(c, s.id, p, g.phase === 'combat', () => this.setState({ forkArm: Date.now() })); return { hasFork: !!fk, fork: fk ? { ...fk, fold: foldVals('levelup:fork:' + s.id, { redraw: () => this.setState({ foldTick: Date.now() }) }) } : { steps: [], head: '', headStyle: '', runsOn: '', fold: foldVals('levelup:fork:none') } }; })(), // 0.31.0: the fork card closes (the shared fold), under its skill
         marks: steps.map((t) => ({ key: t.n, label: t.step === 'mastered' ? '★' : t.step, title: (t.step === 'mastered' ? 'Mastered: ' + t.perks.map((q) => q.name).join('') : t.step + ': a perk step, ' + t.perks.map((q) => q.name).join(' or ')) + ' at ' + t.n + ' points',
           style: 'flex: 1; text-align: center; padding: 1px 0; border-radius: 4px; font-size: 13px; font-weight: 700; letter-spacing: 0.04em; ' + (p >= t.n ? 'background: ' + ink + '; color: #0A0D13' : t === reach ? 'border: 1px solid ' + ink + '; color: ' + ink : 'border: 1px solid #2E3A50; color: ' + LOCKED) })),
         hasReach: !!reach, reachAt: reach ? reach.n : 0, reach: reach ? (reach.step === 'mastered' ? '★ at ' + reach.n + ': ' : reach.step + ' at ' + reach.n + ': ') + reach.perks.map((q) => q.name).join(reach.step === 'mastered' ? '' : ' or ') : '',

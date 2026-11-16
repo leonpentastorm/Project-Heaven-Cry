@@ -103,7 +103,7 @@ export const spriteStyle = (o) => { const b = o.spriteBox || { w: 1, h: 1, dx: 0
  *  <!--SHIELDS:path-->, wherever a template shows a unit's HP (the target card, your own panel). */
 const SHIELDS_TPL = '<sc-if value="{{Y.has}}"><span data-shields-block style="display: flex; flex-direction: column; gap: 2px"><span style="{{Y.headStyle}}">{{Y.head}}</span><sc-if value="{{Y.hasGuardFirst}}"><span data-shield-guard="first" tip="{{Y.guardTitle}}" style="{{Y.lineStyle}}"><span aria-hidden="true" style="flex: none; width: 10px; text-align: center; font-size: 11px; color: #E7EBF3">{{Y.guardGlyph}}</span><span>{{Y.guardLine}}</span></span></sc-if><sc-for list="{{Y.lines}}" as="shl"><span data-shield-line="{{shl.kind}}" style="{{Y.lineStyle}}"><span aria-hidden="true" style="{{shl.pipStyle}}">{{shl.glyph}}</span><span style="{{shl.nameStyle}}">{{shl.name}}</span><span style="font-weight: 700; font-variant-numeric: tabular-nums">{{shl.amount}}</span><span style="font-size: 12px; color: #A3AEC2">· {{shl.lasts}}</span></span></sc-for><sc-if value="{{Y.hasGuardLast}}"><span data-shield-guard="last" tip="{{Y.guardTitle}}" style="{{Y.lineStyle}}"><span aria-hidden="true" style="flex: none; width: 10px; text-align: center; font-size: 11px; color: #E7EBF3">{{Y.guardGlyph}}</span><span>{{Y.guardLine}}</span></span></sc-if><span data-shield-absorb style="font-size: 13px; font-weight: 700; color: #FFFFFF">{{Y.absorb}}</span><sc-if value="{{Y.hasAbsorbDrop}}"><span data-shield-absorb-drop style="{{Y.subStyle}}">{{Y.absorbDrop}}</span></sc-if><sc-if value="{{Y.hasRule}}"><span data-shield-rule style="{{Y.subStyle}}">{{Y.rule}}</span><sc-if value="{{Y.hasGuard}}"><span data-shield-guard-how style="{{Y.subStyle}}">{{Y.guardName}}: {{Y.guardTitle}}</span></sc-if></sc-if></span></sc-if>';
 /** Expand the shared template pieces exactly as design/canvas-build/build.py does. */
-const popTpl = '<span class="phc-pop" role="tooltip" style="{{X.popStyle}}">\n<span style="display: flex; gap: 8px; align-items: center"><sc-if value="{{X.hasImg}}"><img src="{{X.img}}" alt="" style="width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #000; flex: none"></sc-if><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{X.name}}</span><span style="{{X.subStyle}}">{{X.sub}}</span></span></span>\n<sc-if value="{{X.known}}"><span style="display: flex; justify-content: space-between; font-size: 13px"><span style="font-weight: 700; color: #F65157">{{X.hp}}</span><span style="{{X.stateStyle}}">{{X.state}}</span></span><span style="display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="display: block; {{X.hpFill}}"></span></span><sc-if value="{{X.hasAp}}"><span style="font-size: 13px; color: #A3AEC2">{{X.ap}}</span></sc-if><sc-if value="{{X.hasInj}}"><span style="font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #F65157">⚠ {{X.inj}}</span></sc-if></sc-if>\n<sc-if value="{{X.unknown}}"><span style="{{X.stateStyle}}">{{X.state}}</span><span style="font-size: 13px; color: #A3AEC2">{{X.hint}}</span></sc-if>\n' + SHIELDS_TPL.replace(/Y\./g, 'X.sh.') + '\n';
+const popTpl = '<span class="phc-pop" role="tooltip" style="{{X.popStyle}}">\n<span style="display: flex; gap: 8px; align-items: center"><sc-if value="{{X.hasImg}}"><img src="{{X.img}}" alt="" style="width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #000; flex: none"></sc-if><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{X.name}}</span><span style="{{X.subStyle}}">{{X.sub}}</span></span></span>\n<sc-if value="{{X.known}}"><span style="display: flex; justify-content: space-between; font-size: 13px"><span style="font-weight: 700; color: #F65157">{{X.hp}}</span><span style="{{X.stateStyle}}">{{X.state}}</span></span><span style="display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="display: block; {{X.hpFill}}"></span></span><sc-if value="{{X.hasAp}}"><span style="font-size: 13px; color: #A3AEC2">{{X.ap}}</span></sc-if><sc-if value="{{X.hasInj}}"><span style="font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #F65157">⚠ {{X.inj}}</span></sc-if><sc-if value="{{X.hasSt}}"><span data-token-status="" style="display: flex; flex-wrap: wrap; gap: 3px 8px"><sc-for list="{{X.st}}" as="sg"><span data-status-group="{{sg.side}}" style="display: inline-flex; flex-wrap: wrap; gap: 3px"><sc-for list="{{sg.chips}}" as="sc"><span data-status="{{sc.key}}" style="{{sc.style}}"><span aria-hidden="true">{{sc.glyph}}</span><span>{{sc.word}}</span></span></sc-for><sc-if value="{{sg.hasMore}}"><span style="{{sg.moreStyle}}">{{sg.moreText}}</span></sc-if></span></sc-for></span></sc-if></sc-if>\n<sc-if value="{{X.unknown}}"><span style="{{X.stateStyle}}">{{X.state}}</span><span style="font-size: 13px; color: #A3AEC2">{{X.hint}}</span></sc-if>\n' + SHIELDS_TPL.replace(/Y\./g, 'X.sh.') + '\n';
 export function expand(tpl) {
   let t = tpl.replace('<!--EPCCG-->', epTpl).replace('<!--LIGHTBOX-->', lbTpl).replace('<!--SHELL-->', shellTpl);
   t = t.replace(/<!--MASTERED:([\w.]+)-->/g, (_, p) => mastTpl.replace(/X\./g, p + '.'));
@@ -297,20 +297,21 @@ export function bodyFigure({ worn = [], injuries = [], hot = [], mainSide = 'rig
 }
 
 // ---------- status effects, in words (combat panel, hover cards) ----------
-/** own: the unit panel of your own fighter, where the resource rows already say Heat and each gun's jam (one fact, one
+/** Each entry: [label, words, its conditions.json row id when it is one (the status strip reads that row's `side`)].
+ *  own: the unit panel of your own fighter, where the resource rows already say Heat and each gun's jam (one fact, one
  *  place: Leon, live 0.24.0); elsewhere (an ally's line, a target's line) the chips say them. */
 export function effectsOf(u, own = false) {
   const fx = [];
-  if (u.dead) fx.push(['DEAD', 'Out of the fight for good.']);
-  else if (u.downed) fx.push(['DOWNED', 'Death saves ' + (u.saves ? u.saves.ok + ' ✓ / ' + u.saves.fail + ' ✕' : '') + '. A stim stabilises.']);
-  if (u.hidden) fx.push(['HIDDEN', 'Enemies can\'t see you or aim at you, and your next attack is an ambush. Attacking, being hit, or an enemy ending its move next to you gives you away.']);
-  if (u.bleed) fx.push(['BLEEDING', '5 damage at the start of each turn, ' + u.bleed + (u.bleed === 1 ? ' round' : ' rounds') + ' left. A stim stops it.']);
-  if (u.dazedNext) fx.push(['DAZED', '−2 AP next turn.']);
-  if (u.stunnedNext) fx.push(['OFF BALANCE', '−1 AP next turn (fumbled a strike).']);
+  if (u.dead) fx.push(['DEAD', 'Out of the fight for good.', 'downed']);
+  else if (u.downed) fx.push(['DOWNED', 'Death saves ' + (u.saves ? u.saves.ok + ' ✓ / ' + u.saves.fail + ' ✕' : '') + '. A stim stabilises.', 'downed']);
+  if (u.hidden) fx.push(['HIDDEN', 'Enemies can\'t see you or aim at you, and your next attack is an ambush. Attacking, being hit, or an enemy ending its move next to you gives you away.', 'hidden']);
+  if (u.bleed) fx.push(['BLEEDING', '5 damage at the start of each turn, ' + u.bleed + (u.bleed === 1 ? ' round' : ' rounds') + ' left. A stim stops it.', 'bleeding']);
+  if (u.dazedNext) fx.push(['DAZED', '−2 AP next turn.', 'dazed']);
+  if (u.stunnedNext) fx.push(['OFF BALANCE', '−1 AP next turn (fumbled a strike).', 'off_balance']);
   if (!own && (u.jammed || u.offJammed)) fx.push(['JAMMED', (u.jammed && u.offJammed ? 'Both guns are' : u.offJammed ? 'The off-hand gun is' : 'The gun is') + ' jammed: it won\'t fire until cleared.']);
   if (u.heat && !own) fx.push(['HEAT ' + u.heat, '−' + Math.floor(u.heat / 2) + ' to hit; drops by 2 each turn.']);
-  (u.injuries || []).forEach((i) => fx.push([((i.side ? i.side + ' ' : '') + i.loc).toUpperCase(), i.loc === 'arm' ? '−2 to attacks with that arm, until treated.' : i.loc === 'leg' ? 'Half Movement, until treated.' : 'Injured.']));
-  if (u.weakPoint) fx.push(['READ', 'It deals 15% less damage to the squad.']);
+  (u.injuries || []).forEach((i) => fx.push([((i.side ? i.side + ' ' : '') + i.loc).toUpperCase(), i.loc === 'arm' ? '−2 to attacks with that arm, until treated.' : i.loc === 'leg' ? 'Half Movement, until treated.' : 'Injured.', 'injured']));
+  if (u.weakPoint) fx.push(['READ', 'It deals 15% less damage to the squad.', 'read']);
   if (u.overweight > 0) fx.push(['OVERBURDENED', u.overweight + ' kg over the carry limit: −' + Math.ceil(u.overweight / 5) + ' Movement, no Sprint.']);
   return fx;
 }
@@ -327,7 +328,10 @@ export function tokenVals(u, opt) {
     stateStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: ' + (u.downed || u.dead ? '#F65157' : '#A3AEC2'),
     ap: opt.inFight && opt.ally ? 'AP ' + u.ap + ' · Movement ' + u.movement : !opt.ally && known ? 'Defense ' + u.def + ' · Armour ' + u.armour : '', hasAp: !!(opt.inFight && opt.ally) || (!opt.ally && known),
     // opt.extra: lines anyone may read (Physical 2.0: Pressure and its state, Stopped once, a held Watch).
-    inj: [...fx.map((f) => f[0]), ...(opt.extra || [])].join(' · '), hasInj: fx.length + (opt.extra || []).length > 0, hint: opt.ally ? '' : 'Analyze to see its HP and status.',
+    // 0.31.0 (U4): given the unit's status groups (game/statusStrip.ts, the fight screen), the card shows the strip, small;
+    // the old red line stays only where no groups are given (the map outside a fight)
+    st: opt.status || [], hasSt: !!(opt.status && opt.status.length),
+    inj: [...fx.map((f) => f[0]), ...(opt.extra || [])].join(' · '), hasInj: !opt.status && fx.length + (opt.extra || []).length > 0, hint: opt.ally ? '' : 'Analyze to see its HP and status.',
     // 0.30.0: the SHIELDS block (the engine's shieldsView: exact for the squad and an Analyzed foe, size words for any
     // other; game/shieldLook.ts draws it), on every card: yours, a friend's, a foe's. opt.sv: the view the screen already
     // worked out for this unit this render. No rule line here: it is the target card's and your own panel's.

@@ -45,7 +45,7 @@ describe('weapon-granted actions in the action list', () => {
     expect(ids(gr, 'utility')).not.toContain('reload');
     // Physical 2.0 (rules 1.12): a melee weapon's block is its plain Cut and its Techniques; it holds no strike (melee
     // Answers fire on their triggers), and Hold a shot is for ranged weapons only.
-    expect(labels(gr, 'attack')).toContain('Cut'); expect(ids(gr, 'attack')).toContain('tpad:main'); expect(ids(gr, 'attack')).not.toContain('twatch');
+    expect(labels(gr, 'attack')).toContain('Hit'); expect(ids(gr, 'attack')).toContain('tpad:main'); expect(ids(gr, 'attack')).not.toContain('twatch');
   });
   it('a disabled weapon action carries the engine\'s reason', () => {
     const { cb, u, g } = fight(charWith()); u.weapon = 'service_pistol'; u.jammed = false;

@@ -91,7 +91,7 @@ for (let i = 0; i < 6000; i++) {
   if (Date.now() - lastChange > 45000) { log('FAIL the fight stood still for 45 s at', key); log('host', JSON.stringify(await books(host))); log('guest', JSON.stringify(await books(guest))); process.exitCode = 1; break; }
   for (const [k, p] of [[0, host], [1, guest]]) {
     if (states[k] !== 'mine') continue;
-    if (!(await p.locator('text=ACTION POINTS').count())) { await pause(p, 200); continue; }
+    if (!(await p.locator('.phc-yt-pips').count())) { await pause(p, 200); continue; }
     // As a player: the action panel is greyed out while the other turns still play on screen, and takes no click.
     if (await p.evaluate(() => !!(document.querySelector('.phc-cb-dock') || { getAttribute: () => 'none' }).getAttribute('data-lock'))) continue;
     await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});

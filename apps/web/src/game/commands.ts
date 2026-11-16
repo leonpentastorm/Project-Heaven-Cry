@@ -248,13 +248,13 @@ export function smartCommands(u: any): Command[] {
     cmds.push({ action: 'pump', label: 'Pump', sub: full ? 'The heart is full (stage 4)' : 'Stage ' + st + ' → ' + (st + 1) + ' · ' + (free ? 'FREE' : SPELL_AP.pump + ' AP'), key: '1', off: full || (!free && (u.ap ?? 0) < SPELL_AP.pump) });
     cmds.push({ action: 'release', label: 'Release', sub: 'Stage ' + st + ' · ' + heartMp(mg) + ' · ' + SPELL_AP.release + ' AP', key: '2', off: (u.ap ?? 0) < SPELL_AP.release });
     cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '3', off: !!u.prone });
-    if (melee) cmds.push({ action: plainAction(u), label: legacy ? 'Strike' : 'Cut', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '4' });
+    if (melee) cmds.push({ action: plainAction(u), label: 'Hit', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '4' });
     else cmds.push({ action: plainAction(u), label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '4', off: u.ammo <= 0 || !!u.jammed });
     if (Array.isArray(u.allowedActions)) return cmds.filter((c) => u.allowedActions.includes(c.action)).map((c, i) => ({ ...c, key: String(i + 1) }));
     return cmds;
   }
   if (u.jammed) cmds.push({ action: 'clear', label: 'Clear jam', sub: 'The gun is jammed', key: '1' });
-  else if (melee) cmds.push({ action: plainAction(u), label: legacy ? 'Strike' : 'Cut', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '1' });
+  else if (melee) cmds.push({ action: plainAction(u), label: 'Hit', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '1' });
   else cmds.push({ action: plainAction(u), label: 'Shoot', sub: u.ammo <= 0 ? 'Empty: reload first' : attackApCost(w, 'shot') + ' AP · ' + w.name, key: '1', off: u.ammo <= 0 });
   cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '2', off: !!u.prone });
   const rl = weaponActions(u).find((x: any) => x.id === 'reload'); // only a weapon that reloads offers it, by its own name

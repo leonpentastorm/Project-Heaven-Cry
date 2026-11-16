@@ -136,7 +136,7 @@ async function browsers() {
         if (Date.now() - lastChange > 45000) { stalled = true; log('STALL at loop', i, lastKey, 'after', acts, 'actions'); log('HOST', JSON.stringify(await books(host))); log('GUEST', JSON.stringify(await books(guest))); break; }
         for (const [k, p] of [[0, host], [1, guest]]) {
           if (states[k] !== 'mine') continue;
-          if (!(await p.locator('text=ACTION POINTS').count())) { await settle(p, 200); continue; }
+          if (!(await p.locator('.phc-yt-pips').count())) { await settle(p, 200); continue; }
           // As a player: the action panel greys out while the other turns play, and takes no click until it is back.
           if (await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'); return d ? d.getAttribute('data-lock') || '' : 'none'; })) continue;
           await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});

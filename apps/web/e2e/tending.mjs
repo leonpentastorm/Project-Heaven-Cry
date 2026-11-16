@@ -85,7 +85,9 @@ await snap('01-start');
 {
   const rows = await tendRows();
   ok('Empathy 6: Shield and Raise have come (' + rows.filter((t) => /^(Shield|Raise)/.test(t)).length + ')', rows.some((t) => /^Shield/.test(t)) && rows.some((t) => /^Raise/.test(t)));
-  const mp = (await host.locator('.phc-res-row:not(.phc-res-mini)[data-res="mp"]').first().textContent().catch(() => '')) || '';
+  // (0.31.0: a mini meter; the focus line is its hover card now: both are read)
+  const mpEl = host.locator('.phc-res-row:not(.phc-res-mini)[data-res="mp"]').first();
+  const mp = ((await mpEl.textContent().catch(() => '')) || '') + ' ' + ((await mpEl.getAttribute('data-tip-text').catch(() => '')) || '');
   ok('the MP row names the Attuner as the door\'s focus (' + mp.replace(/\s+/g, ' ').slice(0, 50) + ')', /Attuner · off hand/.test(mp));
   const rx = await host.locator('[data-reactions]').first().getAttribute('data-reactions').catch(() => null);
   ok('the reaction pips beside AP read the engine (' + rx + ')', rx === '1 / 1');

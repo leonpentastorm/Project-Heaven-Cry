@@ -188,7 +188,7 @@ ok('Confirm reads "Snap · AP"', await letGo.count() > 0);
 await snap('06b-area-outburst-aim');
 await letGo.click();
 await host.waitForFunction(() => window.__phc.getState().game.phase === 'combat', null, { timeout: 30000 });
-await host.waitForSelector('text=ACTION POINTS', { timeout: 30000 });
+await host.waitForSelector('.phc-yt-pips' /* 0.31.0: the AP pips in the YOUR TURN strip (the ACTION POINTS row is gone) */, { timeout: 30000 });
 ok('the screen goes to combat', true);
 const opener = await host.evaluate(() => window.__phc.getState().game.combat.log.slice(0, 6).join(' | '));
 console.log('  combat opens:', opener);

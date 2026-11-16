@@ -27,7 +27,10 @@ Leon, 14 Nov 2026 (rules 1.54 item 11; a standing rule): *"Make a rule that ever
 2. **The right panel is data:** `data/modes.json` items carry `panels`, a list of panel ids, read by one panel registry (an id to what it draws). The modules keep their grips and their drag order (a per-browser preference, never game state).
 3. **Excepted today, as not a mode's screens:** the fight screen (no side panels in any mode, the Proving Ground included) and the full-screen level-up and creation flows. Nothing else is full screen. A new full-screen screen is a ruling for Leon, not a builder's choice.
 4. **A brief for any mode's screen that does not carry this rule is not sent** (`CLAUDE.md`, "Every mode keeps the side panels").
-5. **What the sheet offers follows the mode:** a Survival run never shows Ask (voices) or Rest; at Survival's camp the GEAR tab is read-only (the camp builds the gear).
+5. **The fight's turn panel (0.31.0, every mode's fight):** still no side panels (excepted above), but every information
+   box of its column folds (one fold, `game/fold.ts`, kept per box in this browser) and the action list keeps at least
+   four rows: the blocks above it scroll or fold first. See "The fight panel (0.31.0)" below.
+6. **What the sheet offers follows the mode:** a Survival run never shows Ask (voices) or Rest; at Survival's camp the GEAR tab is read-only (the camp builds the gear).
 
 | Mode | Left | Middle | Right panel (`panels`, in order) |
 | --- | --- | --- | --- |
@@ -121,6 +124,36 @@ Leon, 14 Nov 2026 (rules 1.54 item 11; a standing rule): *"Make a rule that ever
   - **The cards** (the hover card of every token, yours, a friend's and a foe's; the target card; your own panel under HP): a **SHIELDS** block, one line a shield (its glyph, ◆ a layer, ■ the shield, in its ink; its name; the amount; how long it lasts; who gave a layer), then "Guard N plates, each soaks S" (before the shields when it soaks first; its tip says which blows it meets), then "Absorbs up to X before HP" (what an ordinary blow meets: a kept plate is left out) and, when more, what a blow that would drop it meets. The one line on how they combine is on the target card and your own panel only (on every hover card it ran the card off the screen). Your own panel leaves out the Guard line: Guard is its resource row, said once. A friend's card shows all of it (it used to show only HP). The "+N SHIELD" chip, the turn strip (a strip under each HP bar) and the fight Narrator read the same view. Every word is the view's.
   - **A foe** (not Analyzed) reads as its health does: its shields by name with a size word (faint, light, strong, massive: a share of its max HP), never a number; its strip draws each at the word's width. An Analyzed foe reads exactly.
   - **The attack preview** gives damage before the target's armour and shields; when the target holds any, the target card says the damage shown is before them and what they take first (the engine's total, never a sum the screen works out).
+
+### The fight panel (0.31.0; Leon, 16 Nov 2026)
+
+*"i have ONE (1) singular line to scroll my attack option"*; *"all boxes of all kind that display info is collapsable and
+save their collapse state"*. The column, top to bottom (it supersedes the shields bullets above where they differ: the
+token's strip is gone):
+
+1. **The bar:** on short windows You in one line (portrait, name, AP), Backpack, the layout grip, Customise, Hide panel.
+2. **Pinned, never scrolled away:** HP with the shield as a pale hatched segment at the end of the fill (no track of its
+   own; past max HP the bar rescales; "410 / 410 +30"; the layers on hover, the engine's `shieldsView`), and directly
+   under it the **status strip**: HELPING (#6FEA77, ▲), HURTING (#F65157, ▼), states (white, ◆), glyph and short word,
+   the card on hover, "+N" past six. The group is `conditions.json` `side`. On short windows (820 px tall or less) the
+   meters follow as minis: the three most urgent open ones and one "+N" chip for the rest (the zero ones folded and the
+   other open ones; a click opens them all, "‹" goes back to three), at most two lines, scrolling inside past that.
+3. **The You card** (folds): portrait, class, Echo, AP / Movement / Stims and the reaction pip, the folded "Shields N"
+   row with its "?" (the rule), then the **meters**: one row of minis, the zero ones folded into "+N"; then Bonds (one
+   line at 0 Bonds). The squad list folds too.
+4. **The turn box:** YOUR TURN with the AP pips in the same strip; the vow as one line; the tab row with a cog at its
+   end (the Fight tabs settings); the action list (at least four rows under a head line: `listMinPx`, 200 px, and on
+   short windows `listMinShortPx`, 188 px for 32 px rows); one box for the chosen action and its target (the action and
+   its AP, the target's face and name, the roll line and the damage line, the breakdown on hover, the action's text);
+   Confirm and End turn. No Say box where the mode has no Narrator. When the column is short, the open vow gives up its
+   room first (down to its head line, scrolling inside; on short windows it is one line: its head, the vows in a row
+   that scrolls sideways, Fight unsworn) and the foot (the chosen action, Confirm, End turn) sticks to the bottom edge,
+   so neither the four rows nor Confirm is ever scrolled away. Checked at 1280x720 with the Say box (a Narrator room)
+   and without (`e2e/fight-panel.mjs`).
+5. **The map:** a hovered tile is outlined under the tile effects and is never raised over its neighbours; a token's
+   card opens on pointer hover only and closes when the pointer leaves; it carries the same status strip, small.
+
+The plain melee blow is called **Hit** everywhere (menu, preview, log, hover), whatever the weapon.
 
 ### Fight tabs: order, hiding, the focus rule (Leon, 16 Nov 2026)
 

@@ -114,3 +114,38 @@ export const noteLive = (key: string, present: string[], shown: string[]): void 
 export const liveTabs = (key: string): LiveTabs | null => live[key] || null;
 /** Tests: forget the cache (a test that swaps localStorage). */
 export const _resetTabPrefsCache = () => { cache = null; for (const k of Object.keys(live)) delete live[k]; };
+
+// ---------- 0.31.0: the folds (Leon, 16 Nov 2026: "all boxes of all kind that display info is collapsable and save
+// their collapse state") ----------
+// One fold for every information box of the fight panel and the sheet's fight blocks (game/fold.ts draws it). A box
+// folds to its one-line header and opens again from it. The state is a display preference of this browser (the
+// player), kept beside the tab prefs in localStorage 'phc.folds', keyed by the box's id; never in the engine, the save
+// or the relay. A box may start folded by a rule (a meter at zero, a vow already sworn); a state the player set by
+// hand wins over the rule until the player sets it again.
+const FOLD_KEY = 'phc.folds';
+/** Fired on window when a fold changes (every screen that shows the box draws again). */
+export const EV_FOLDS_CHANGED = 'phc:folds';
+let foldCache: Record<string, boolean> | null = null;
+function folds(): Record<string, boolean> {
+  if (foldCache) return foldCache;
+  try { const v = JSON.parse((typeof localStorage !== 'undefined' && localStorage.getItem(FOLD_KEY)) || '{}'); foldCache = v && typeof v === 'object' && !Array.isArray(v) ? v : {}; } catch { foldCache = {}; }
+  return foldCache!;
+}
+/** Is a box folded: the player's own choice when there is one, else the rule's (byRule; open when omitted). */
+export const isFolded = (id: string, byRule = false): boolean => { const f = folds()[id]; return typeof f === 'boolean' ? f : byRule; };
+/** Did the player set this box by hand (the rule no longer decides it)? */
+export const foldSetByHand = (id: string): boolean => typeof folds()[id] === 'boolean';
+/** Keep a box folded or open (by hand), and tell the screens. */
+export function setFolded(id: string, folded: boolean): void {
+  const f = folds(); f[id] = !!folded;
+  try { localStorage.setItem(FOLD_KEY, JSON.stringify(f)); } catch { /* full or private mode */ }
+  try { window.dispatchEvent(new Event(EV_FOLDS_CHANGED)); } catch { /* no window (tests) */ }
+}
+/** Forget a box's hand-set state (the rule decides it again). */
+export function clearFold(id: string): void {
+  const f = folds(); if (!(id in f)) return; delete f[id];
+  try { localStorage.setItem(FOLD_KEY, JSON.stringify(f)); } catch { /* */ }
+  try { window.dispatchEvent(new Event(EV_FOLDS_CHANGED)); } catch { /* */ }
+}
+/** Tests: forget the fold cache. */
+export const _resetFoldCache = () => { foldCache = null; };

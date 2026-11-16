@@ -5,12 +5,18 @@ import { faithView, beliefOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, HYMN_COOLDOW
 import { faithPanel, FAITH_INK, FAITH_GOLD } from '../game/faithView';
 import { accentOf, patronFace, patronMarkUri, vowIconUri } from '../game/faithArt';
 import { patronOfLog, FACE_BOX } from './faithTab';
+import { foldVals } from '../game/fold';
 
 // ---------- the vow prompt (round 1, a Faithful character's first turn; skippable) ----------
 const SKIPPED = new Set();
 /** The quiet prompt: the 6 vows as buttons; "Shield" asks for the ally (a chip or a click on the grid). */
 export function vowPromptVals(sc, g, cb, cur, mineTurn, act) {
-  const no = { show: false, vows: [], allies: [], hasAllies: false };
+  const no = { show: false, vows: [], allies: [], hasAllies: false, held: false, heldLine: '', heldTip: '' };
+  // 0.31.0 (Leon: "in combat it just show your vow"): a vow held is one line, its name and its words (the engine's view)
+  if (cur && cur.charId && cur.vow && cur.vow.id && !cb.over) {
+    const c = g.characters[cur.charId], v = c ? faithView(g, c.id) : null, x = v ? v.vows.find((y) => y.id === cur.vow.id) : null;
+    return x ? { ...no, held: true, heldLine: 'Vow: ' + x.name + ' · ' + x.words + (cur.vow.state && cur.vow.state !== 'sworn' ? ' · ' + String(cur.vow.state).toUpperCase() : ''), heldTip: (x.fulfilledWhen ? 'Fulfilled when: ' + x.fulfilledWhen + '. ' : '') + 'Broken when: ' + x.brokenWhen } : no;
+  }
   if (!mineTurn || !cur || !cur.charId || cb.round !== 1 || cur.vow || cb.over) return no;
   const c = g.characters[cur.charId]; if (!c || beliefOf(c).kind !== 'faithful' || (c.skills?.faith || 0) < FAITH_MIN) return no;
   const key = (g.code || '') + ':' + (cb.id || cb.name) + ':' + cur.id; if (SKIPPED.has(key)) return no;
@@ -19,8 +25,9 @@ export function vowPromptVals(sc, g, cb, cur, mineTurn, act) {
   const swear = (id, allyId) => { act({ type: 'faith/vow', unitId: cur.id, id, ...(allyId ? { allyId } : {}) }); sc.setState({ vowShield: null }); };
   const allies = shield ? cb.units.filter((u) => u.side === cur.side && u.id !== cur.id && !u.dead).map((u) => ({ key: u.id, label: u.name, pick: () => swear('shield', u.id) })) : [];
   return {
-    show: true, key, shield, allies, hasAllies: allies.length > 0, noAllies: shield && !allies.length,
-    head: 'SWEAR A VOW · ' + (v.patron ? v.patron.name.toUpperCase() : 'YOUR PATRON'),
+    // 0.31.0: one line, "Swear a vow ▸", that opens the choices (the shared fold, game/fold.ts; it starts folded)
+    show: true, fold: foldVals('fight:vow', { byRule: !shield, redraw: () => sc.setState({ foldTick: Date.now() }) }), key, shield, allies, hasAllies: allies.length > 0, noAllies: shield && !allies.length,
+    head: 'SWEAR A VOW · ' + (v.patron ? v.patron.name.toUpperCase() : 'YOUR PATRON'), patron: 'to ' + (v.patron ? v.patron.name : 'your patron'),
     sub: 'Fulfilled in the fight: your next Hymn comes ' + HYMN_COOLDOWN.vowCut + ' round sooner (once for each Hymn). Kept to the end of the fight: +' + DEVOTION_XP.vowKept + ' Devotion XP. Broken: −' + DEVOTION_XP.vowBroken + ', and your patron says so. Or fight unsworn.',
     vows: v.vows.map((x) => ({ key: x.id, icon: vowIconUri(x.id), name: x.name, words: x.words, title: (x.fulfilledWhen ? 'Fulfilled when: ' + x.fulfilledWhen + '. ' : '') + 'Broken when: ' + x.brokenWhen, pressed: shield && x.id === 'shield' ? 'true' : 'false',
       pick: () => (x.needsAlly ? sc.setState({ vowShield: shield ? null : key }) : swear(x.id)),

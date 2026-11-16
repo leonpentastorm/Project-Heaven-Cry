@@ -265,7 +265,8 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
         hint: 'Figments you hold now, of the most you can. Each costs 1 Visualizer charge at your turn start' + (fm.held < fm.max ? '; you can picture ' + (fm.max - fm.held) + ' more.' : '; let one go to picture another.') });
       // the door's focus, named where the Attuner's and the Emanator's are (the engine's focusHand: a hand, or the pack)
       const vHand = c ? E.focusHand(c, 'visualizer') : null;
-      const vr: ResRow = { key: 'vcharge', label: 'Visualizer', value: fm.charge > 0 ? fm.charge + '/' + fm.chargeMax : 'EMPTY', now: fm.charge, max: fm.chargeMax, kind: 'bar', colour: RES_INK.expression,
+      // 0.31.0: the value is the charge (a number, never a word); its one state word is the chip: STOWED, else EMPTY
+      const vr: ResRow = { key: 'vcharge', label: 'Visualizer', value: fm.charge + '/' + fm.chargeMax, now: fm.charge, max: fm.chargeMax, kind: 'bar', colour: RES_INK.expression,
         ...(vHand ? { sub: 'Visualizer · ' + (vHand === 'off' ? 'off hand' : vHand === 'main' ? 'main hand' : 'in the pack') } : {}),
         hint: 'The core in your Visualizer: Picture and upkeep spend its charge. Load the Visualizer (a spare core) refills it.' };
       if (!mg.visualizer) Object.assign(vr, { warn: 'STOWED', level: 'caution', hint: 'Your Visualizer is in the pack: your Figments stay, but you can\'t picture or act through them until it is in hand.' });

@@ -2037,6 +2037,9 @@ for c in items("conditions"):
         if c.get(k) in (None, ""): errors.append(f"{w}: needs `{k}`")
     if c.get("engine") not in ("table", "flag", "state"): errors.append(f"{w}: engine must be table, flag or state (how the engine keeps it)")
     if c.get("kind") not in ("debuff", "state"): errors.append(f"{w}: kind must be debuff or state")
+    # 0.31.0 (the fight panel's status strip): which group its chip sits in, HELPING, HURTING or a neutral state
+    if c.get("side") not in ("helps", "hurts", "state"): errors.append(f"{w}: side must be helps, hurts or state (the status strip's group)")
+    if c.get("kind") == "debuff" and c.get("side") != "hurts": errors.append(f"{w}: a debuff's side is hurts")
     if not isinstance(c.get("save"), bool): errors.append(f"{w}: save must be true or false (the family says which save)")
     fam = c.get("family")
     if fam not in (None, "body", "brain", "heart"): errors.append(f"{w}: family must be body, brain, heart or null")

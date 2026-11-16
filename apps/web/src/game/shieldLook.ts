@@ -74,3 +74,27 @@ export function shieldBlock(sv: ShieldsViewV | null, o: { guard?: boolean; rule?
     /** the block as one line of words (an aria-label, a tile's label) */
     words: [...(first ? [guardLine] : []), ...lines.map((l) => l.text), ...(first ? [] : [guardLine]), absorb, absorbDrop].filter(Boolean).join(' · ') };
 }
+
+// ---------- 0.31.0: the shield on the HP bar (Leon, 16 Nov 2026: "the empty bar above the health bar STILL trick some
+// people into spamming shield as a mender onto one tank. make the shield a full bar that goes down and you hover it to
+// know the number") ----------
+// No shield track of its own anywhere: the shield is a pale hatched segment joined to the end of the HP fill, inside the
+// same bar, and it drains first. When HP and shield together pass max HP the bar rescales (its whole width is HP +
+// shield) so the segment always fits. Its amount is the engine's (shieldsView total; for a foe whose amounts are not
+// known, each entry's share of max HP, the view's `bar`); nothing here is a rule.
+/** The segment's fill: pale and hatched, so it never reads as the HP bar's white damage chip or as HP. */
+export const SHIELD_SEG_FILL = 'repeating-linear-gradient(135deg, #E7EBF3 0 2px, #7F8BA1 2px 4px)';
+export function hpShieldBar(hp: number, maxHp: number, sv: ShieldsViewV | null) {
+  const es = sv ? sv.entries : [], max = Math.max(1, maxHp || 0), h = Math.max(0, hp || 0);
+  const amount = sv && sv.total != null ? sv.total : es.reduce((a, e) => a + (e.amount != null ? e.amount : (e.bar || 0) * max), 0);
+  const sh = Math.max(0, amount || 0), whole = Math.max(max, h + sh);
+  const clamp = (x: number) => Math.max(0, Math.min(100, x));
+  const hpW = clamp(h / whole * 100), shW = clamp(sh / whole * 100);
+  const known = !sv || sv.known !== false;
+  return { has: sh > 0, hpW, shW, rescaled: h + sh > max, amount: sh, known,
+    /** "+30" (a foe's unknown amount: its size word, the view's chip) */
+    plus: sh > 0 ? (known ? '+' + fmtNum(sh) : (sv && sv.chip) || '+') : '',
+    segStyle: 'position: absolute; top: 0; bottom: 0; left: ' + hpW.toFixed(2) + '%; width: ' + shW.toFixed(2) + '%; background: ' + SHIELD_SEG_FILL + '; box-shadow: inset 1px 0 0 #0A0D13; transition: left .16s ease-out, width .16s ease-out',
+    /** each layer on a line: what it is, how much, who gave it and when it ends (the view's words), then what a blow meets */
+    detail: sv ? [...shieldBlock(sv, { guard: false }).lines.map((l) => l.text), sv.absorb || ''].filter(Boolean).join('\n') : '' };
+}
