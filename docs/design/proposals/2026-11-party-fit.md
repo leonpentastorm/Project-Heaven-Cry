@@ -204,8 +204,9 @@ arcs hit its partner. Gun-led and caster-led quads spread the shots and win.
 
 ## 5. The opening volley (the lead's note): what this pass measured
 
-Not finished: the gun-drone rows, the cover-against-roll arithmetic and the "hit behind cover" reproduction (items 5 to
-7 of the note) are **not done** in this pass. What the instrument does show (every cell is in the appendix):
+*(Finished in section 12, "The opening volley": the gun rows, cover against the roll, the reproduced cases, the
+opening and focus fire.)* ~~Not finished: the gun-drone rows, the cover-against-roll arithmetic and the "hit behind cover" reproduction (items 5 to
+7 of the note) are **not done** in this pass.~~ What the instrument does show (every cell is in the appendix):
 
 * Guns deal **73 to 90%** of all the damage the party takes (melee 4 to 21%, casters 3 to 16%). The one exception is the
   Sigilist, who walks its Lines into melee range: 60% of its damage comes from melee foes (14 melee attacks a fight).
@@ -870,3 +871,238 @@ solo loss is its sheet and door (a Line takes turns to walk at Agility 1), not a
 by Breaker 73, Monk 65 and missed by Skirmisher 85 and Channeler 80 (a little over; Leon's rule: not worth chasing) and
 by Bulwark 8, Operative 0, Sigilist 3, Rigger 35, Mender 25 and Chaplain 43% (under). Party cells were not re-measured
 in this pass.
+
+## 12. The opening volley (16 Nov 2026, lane 0.30-fit on cc024929; measured, no game number changed)
+
+The lead note's items 1, 5, 6 and 7, and focus fire. Instrument: `packages/engine/test/balance/opening-volley.ts` (opt-in
+`opening-volley.test.ts`: `OV_ROWS=1` the rows, `OPENING=1` the runs, `OV_CASE=` one case's log, `OV_REPORT=` the
+tables). Every number below went through the reducer: the rows are a fight opened in the story's way with the units
+placed (as `sim.ts plainPreview` places them) and `combat/end-turn` sent, so the enemy AI plays its real turn; the runs
+are `simRun` (stage 1, the gear route, PF-1 to PF-40, the doors' policies) with every enemy attack roll on a character
+recorded on the hook bus (`attack_roll`, `on_hit`, `damage_in`, `on_downed`, `turn_start`, `round_start`,
+`combat_start`). Levers change data in memory for one run only.
+
+### 12.1 The gun foes, one enemy turn against a level-1 character
+
+**What the Survival tables field at stage 1.** The first setting is `ahoc` (human 5, robot 3, drone 2). A "drone" is a
+name only (`survival.json names.drone`): a Combat drone is a Minion, a **Gun drone a Soldier**, a Hunter drone an
+Elite, a Mother drone the Boss, each with its tier's numbers and a weapon from `pools` (Minion ranged: service
+pistol, DECRKM SMG, Legion PDW, DECRKM autopistol; Soldier ranged: Hellraiser service rifle, Legion bullpup, lever
+carbine, magistrate pistol; Elite ranged: Adamantile battle rifle, CCEC marksman, Brigade auto shotgun, Whisper SMG; the
+Boss the Hellraiser LMG). **Drones do not fly and ignore nothing**: no code reads the kind for movement, sight or cover
+(`run/encounter.ts armed`, `combat.ts enemyCloseTile`).
+
+**How an enemy shoots.** Attack bonus is the tier's (`enemies.json items`: Minion +1, Soldier +3, Elite +5, Boss +6;
+the LMG unbraced −2). Initiative is d20 + attack bonus for a foe (`combat.ts:579`) against d20 + (Agility − 1) +
+Reaction Speed's modifier for a character (`character.ts:716`): a Soldier goes before an Agility-1 character about 4
+times in 5. A Minion fires plain single shots (2 AP each, about 2.9 a turn; no technique list). A Soldier, Elite and
+Boss take the technique its AI scores best (`physical/ai.ts aiTechnique`): **Suppress** (one roll at +2, half damage,
+2 Pressure), then the **Burst with three rolls** at 0 / −1 / −2 (`combat.ts:1935 burstRolls`, techniques.json `burst`
+`numbers.enemy_rolls` 3, `enemy_step` 1; rules 1.18's refit to two rolls is the data key `enemy_same: 1`, read by the
+code and absent from the data today), a weapon's own technique (the battle rifle teaches **Punch Through**: half cover
+counts −2 not −5 and the cover takes the damage; `weapons.json` `phys.teaches`) and Dead Centre on a Pressed target
+(+50%; its cover does not count when Suppressed). No enemy ever holds Overwatch (`enemyTurn` has no such step).
+
+**What cover does to an enemy's roll** (rules: Core Rules "Cover", item 57; code `combat.ts:973-990 coverTileFor`,
+`:1271` the term, `:1495` the stopped shot): **half cover** is −5 when a half-cover object stands on one of the 8 tiles
+round the target and nearer the shooter (Chebyshev) than the target is; a miss by the 5 hits the crate instead (HP 30).
+**Full cover** gives no term at all: it only blocks sight, so it protects only when the shot's straight line
+(`lineOfSight`, Bresenham) passes through its tile; `coverTileFor` skips every `full` object (`e.kind === 'half'`). The
+−5 is a number typed in the code (`coverBonus`, `cover = coverTile ? 5 : 0`), not a data field.
+
+Target: the yardstick at level 1 (HP 145, Defense 11) in the camp's armour (5, as every Survival character in the runs
+wears); the foe 6 tiles off; 200 seeds a row; turn 1 / turn 2 (the character stands and ends its turns).
+
+| Row (stage 1) | Preview hit: open / half cover | Rolls a turn | Measured hit, open | Damage a turn, open (share of 145 HP) | Damage a turn behind half cover |
+|---|---|---|---|---|---|
+| Combat drone (Minion), service pistol | 55% / 30% | 2.9 | 47% | 21 / 22 (15%) | 11 / 14 |
+| Minion, SMG / PDW / autopistol | 55% / 30% | 2.9 | 46-51% | 19-23 (13-16%) | 10-13 |
+| **Gun drone (Soldier), Hellraiser rifle** | 65% / 40% | 3.7 / 4.7 | 56% / 52% | **30 / 46 (21% / 32%)** | 22 / 41 |
+| Soldier, bullpup / lever carbine / magistrate pistol | 65% / 40% | 3.7 / 2.0 / 2.0 | 56-66% | 27-42 / 17-28 / 7-12 | 17-28 / 12-20 / 6-8 |
+| **Hunter drone (Elite), battle rifle** | 75% / 50% | 2.0 | 81% | **47 (33%)** | 39 / 49 (Punch Through) |
+| Elite, marksman / auto shotgun / Whisper SMG | 75% / 50% | 2.0 / 2.2 / 2.1 | 70-81% | 44 / 26 / 15 | 30 / 19 / 12 |
+| Boss, Hellraiser LMG | 70% / 45% | 2.0 / 3.6 | 87% / 73% | 30 / 72 (21% / 50%) | 22 / 50 |
+| *Reference, melee:* Soldier sabre / gladius | - | 1 then 2.9 | 62-74% | 10 then 30 (7%, 21%) | - |
+| *Reference, melee:* Elite katana / greatsword | - | 1 then 2-3 | 72-88% | 18-35 then 55-61 (38-42%) | - |
+| *Reference, melee:* Minion hatchet | - | 1 then 2.9 | 52-56% | 9 then 29 (20%) | - |
+| *Reference, casters:* Sigil adept / Sigil novice / Heart adept | - | - | - | 12-13 / 6-11 / 0 then 24 (9% / 8% / 16%) | - |
+
+One Gun drone is not the problem: it deals what a Soldier blade deals a turn. **Two or three on one character are**, and
+the gun foes stack where blades and casters do not (they all reach the same character from turn 1, and Suppress makes
+the target Pressed for the next). Two and three of a row on one character, one enemy round (200 seeds each):
+
+| Foes on one character | Yardstick (145 HP, Def 11): HP lost in the round, open / half cover | Downed from full in that round, open / half | Agility-1 Mender sheet (115 HP, Def 10): HP lost, open / half | Downed from full, open / half |
+|---|---|---|---|---|
+| 2 Gun drones (rifles) | 59% / 50% | 3% / 1% | **80% / 70%** | **26% / 18%** |
+| 2 Soldiers, bullpups | 54% / 39% | 1% / 0 | 74% / 57% | 19% / 3% |
+| 2 Hunter drones (battle rifles) | 48% / 55% | 0 / 0 | 61% / 70% | 0 / 9% |
+| 2 Combat drones (PDWs) | 31% / 18% | 0 / 0 | 43% / 27% | 0 / 0 |
+| 3 Gun drones (rifles) | 85% / 79% | **46% / 30%** | 94% / 90% | **76% / 64%** |
+| 3 Hunter drones | 85% / 85% | 20% / 46% | 94% / 93% | 79% / 76% |
+| 3 Combat drones (PDWs) | 45% / 29% | 0 / 0 | 66% / 46% | 12% / 1% |
+| *2 / 3 Soldiers with sabres (they walk in on turn 1)* | 14% then 44% / 23% then 63% | 0 / 0 | 21% then 59% / 30% then 66% | 0 / 0 |
+| *2 / 3 Sigil adepts* | 13% / 15% | 0 / 0 | 18% / 20% | 0 / 0 |
+| *2 / 3 Heart adepts (an Outburst takes a turn to fill)* | 0 then 32% / 0 then 49% | 0 / 0 | 0 then 44% / 0 then 69% | 0 / 0 |
+
+So the playtest's "a gun drone or two shooting and hit every shot" is real at the row level: a pair of Gun drones takes
+an Agility-1 character from full to Downed in one enemy round one time in four, and half cover barely changes it (26% to
+18%). The melee and caster foes of the same tier never Down a character from full in their first round, because they
+spend it walking or filling (Leon's testers never complained about them). Elites ("hit every shot") roll at 75-87%
+against Defense 10-11.
+
+### 12.2 Cover that does not protect: the reproduced cases
+
+Each is a staged case played through the reducer (`OV_CASE=<tier>:<weapon>:<stance>`; the log is the fight's own).
+
+1. **The pillar beside you counts for nothing** (a rule gap the screen hides).
+   `OV_CASE=soldier:hellraiser_service_rifle:full_beside`, seed OV-soldier-hellraiser_service_rifle-1: pillar at 11,11,
+   character at 10,12, Gun drone at 16,12. The pillar is beside the character and nearer the shooter, but the straight
+   line runs along row 12: `coverTileFor` null, preview 65%, the same as bare ground; across 200 seeds every number of
+   the `full_beside` stance equals `open` exactly. The client draws the tile as "Full cover (blocks sight; 80 HP)"
+   (`combat.template.html` legend; `combat.js:1163` tooltip) and shows no cover state on the character, so a player
+   standing beside a pillar reads "behind full cover" and is shot at the open odds. In the runs, up to 4% of a cell's
+   gun rolls are of this kind, hitting at about the open rate, e.g. duo_skirmisher PF-1, fight 3 (the Elite), round 1:
+   Elite Whisper SMG 14,8 to 4,10, d20 20.
+2. **The line of sight is not symmetric: a shooter the fog hides can fire** (a BUG). `lineOfSight(a, b)` walks
+   Bresenham from a to b and is not the same line as from b to a: with one blocker, 72 of 3,551 tile pairs (2%) see one
+   way only. The client's fog is the squad's lines OUT (`fog.ts fightSight`, `combat.ts visibility` / `unitSees`); the
+   enemy's shot uses its line IN. Reproduced: `OV_CASE=soldier:hellraiser_service_rifle:asym`, seed
+   OV-soldier-hellraiser_service_rifle-1: pillar at 8,10, character at 10,12, Gun drone at 6,9: line foe to character
+   **true**, character to foe **false**, `fightSight` shows the foe's tile **false**; the drone Suppresses and Bursts the
+   character, who cannot see it or shoot back. In the runs, **4% of all gun rolls** have a blocked line back, and 3%
+   come from a tile no character sees for that reason (duo_skirmisher PF-6, fight 1, round 1: Combat drone 13,8 to 5,4,
+   d20 16, hit for 15).
+3. **Half cover gets shot away.** A stopped shot hits the crate (HP 30, `objects.json crate`); one stopped Soldier or
+   Elite round breaks it, and the battle rifle's **Punch Through** (−2 not −5, the crate takes the damage) breaks it
+   while hitting. `OV_CASE=elite:adamantile_battle_rifle:half`, seed OV-elite-adamantile_battle_rifle-1: "The round
+   punches through the crate · the crate breaks into rubble", then Suppress, then Dead Centre for 47. That is why the
+   Gun drone's hit behind half cover rises from 39% on turn 1 to 47% on turn 2 and the Hunter drone's from 68% to 77%,
+   and why half cover takes only 5 to 15 points off two or three gun foes' round (table above).
+4. **Flanking: only around full cover on the line.** With the pillar on the line (`full_line`) the foe has no shot; it
+   walks to the nearest tile with one (`enemyCloseTile`: any tile with a line is as good as any other), here 9 tiles to
+   H11 past the character (6 AP, an opportunity attack taken), and fires at the open odds the next turn. Behind half
+   cover the foe never moves (0 of 200 seeds): it does not seek an angle.
+5. **Not the cause:** no foe property reduces cover beyond Punch Through and Dead Centre on a Suppressed target; there
+   is no elevation rule; a natural 20 is 5% of rolls (about 1 in 5 of the hits behind half cover); and cover counts
+   the same for both sides (one function, `previewAttack`).
+6. **Shots from beyond sight.** 11% of the runs' gun rolls come from a tile no character sees (0% solo, 3-5% duo, 15-18%
+   quad): 71% of those from more than 12 tiles (an enemy fires at the range of its gun when a side member sees the
+   target; the characters' vision is 12) and 27% the asymmetric line above. By the rules, not a bug, but the screen
+   shows a hit from nowhere.
+
+### 12.3 The opening (stage 1, 40 seeds a cell)
+
+| Cell | Gun foes a fight (a head) | Gun foes ahead of a character in initiative | Tiles to the nearest gun at the start | Characters that start where no gun can shoot them without cover | AP to such a tile, Agility 1 / 3 / 5 | Gun rolls on a character before its first turn (hit) | Damage before its first turn | Damage in rounds 1 / 2 / 3+ |
+|---|---|---|---|---|---|---|---|---|
+| solo_skirmisher | 0.69 (0.69) | 0.36 | 12.9 | 74% | 0.4 / 0.3 / 0.3 | 0.07 (12%) | 0% of HP | 14 / 53 / 33% |
+| solo_mender (Agility 1) | 0.59 | 0.45 | 12.9 | 77% | 0.3 / 0.2 / 0.2 | 0.01 | 0% | 1 / 11 / 88% |
+| duo_skirmisher | 1.04 (0.52) | 0.46 | 12.6 | 67% | 0.5 / 0.4 / 0.3 | 0.09 (39%) | 0% | 24 / 49 / 27% |
+| duo_breaker | 1.02 (0.51) | 0.66 | 12.6 | 68% | 0.5 / 0.3 / 0.3 | 0.17 (60%) | 1% | 21 / 44 / 35% |
+| quad_skirmisher | 2.84 (0.71) | 1.18 | 13.7 | 55% | 0.7 / 0.5 / 0.4 | 0.28 (33%) | 1% | 41 / 39 / 21% |
+| quad_breaker | 2.68 (0.67) | 1.71 | 14.0 | 60% | 0.6 / 0.4 / 0.4 | 0.39 (51%) | 2% | 21 / 36 / 43% |
+| mix_four_b | 2.80 (0.70) | 1.66 | 13.7 | 55% | 0.7 / 0.5 / 0.5 | 0.46 (40%) | 2% | 30 / 38 / 31% |
+
+By party size: gun foes 0.67 a fight solo, 1.02 duo, 2.77 quad (a head 0.67 / 0.51 / 0.69); Gun-drone-class Soldiers a
+head 0.22 / 0.18 / **0.46** (a quad fields 1.84 a fight). **The volley before the first turn is small in the
+simulator**: guns start 12.6 to 14 tiles off, most characters start out of every gun's line, and fewer than half a gun
+roll lands on a character before it acts. The damage comes in rounds 1 and 2 (67 to 80% of a gun- or caster-led
+party's damage), **after the party has walked forward into the open**: the policies do not value cover (policies.ts
+`NOT_PLAYED`).
+
+**The cover policy (lever `cover`, what a careful human does): walk first, every turn, to the nearest tile no visible gun
+foe can shoot without cover.** Gunner alone 85% to 75%, duo 92 to 98%, quad 100 to 98%; the gunner is hit on 43% of
+rolls, not 50%; blades and Menders collapse (duo Breaker 65% to 0, Mender alone 25% to 2%: the walk costs the turn's AP
+and the blades never reach anyone). Taking cover as the game stands buys little: one cover tile protects against one
+direction, half cover breaks, and two gun foes still take 50 to 70% of a character's HP from behind it.
+
+**Downs from full HP between two of the victim's own turns, in the runs:** 2 in about 4,000 stage-1 fights (both in
+quads, both two Gun drones); a character losing half its max HP or more between two of its turns: 0.01 to 0.05 a fight
+a head for gun, blade and caster parties, 0.10 to 0.19 for Mender parties. Stages 2 and 3 (duo and quad gunners,
+mix_four_b, `OV_STAGES=3`): 0 and 4 from-full Downs. The simulator's parties rarely let two or three gun foes on one
+character in the open; the rows show what happens when they do.
+
+### 12.4 Focus fire: why one member of a duo takes 71 to 87% of the rolls
+
+`combat.ts enemyRank` (rules 1.25) sorts the targets an attack reaches by: its Taunter, standing before Downed, then the
+key `hurtShare` (HP share in tenths) + `fire_spread` x (other units of its side that attacked this target THIS round) +
+`fire_near` x (tiles beyond the nearest target), then the likeliest hit. A technique (`physical/ai.ts aiTechnique`)
+takes that order only to break ties between targets its own score (`aiScore`) rates equal.
+
+| Cell | Rolls where the foe could also hit another standing character | Of those, on the nearest | Minion / Vermin on the nearest | Soldier on the nearest (nearest but not the most hurt) | Elite / Boss on the nearest |
+|---|---|---|---|---|---|
+| duo_skirmisher | 57% | 91% | 100% | 85% (22%) | 88% / 93% |
+| duo_breaker | 62% | 94% | 100% | 88% (22%) | 87% / 98% |
+| duo_mender | 66% | 93% | 100% | 83% (26%) | 94% / 84% |
+| mix_gun_heal | 59% | 89% | 100% | 84% (25%) | 80% / 92% |
+
+The cause, in order: (1) **one target only**: in 34 to 43% of a duo's rolls the foe could reach no one else (line,
+range); (2) **the nearest**: Minions and Vermin (`doctrine: nearest`, `fire_near` 1) take the nearest every time;
+(3) **the first-hit loop**: the nearest is hit first, so it becomes the most hurt, and the "most hurt" term every tier
+reads keeps it first (Elites and Bosses: their target was the most hurt in 70 to 93% of their rolls);
+`fire_spread` counts only units that already attacked it this round, and a Soldier's three-roll Burst is one unit;
+(4) **techniques**: Soldiers, Elites and Bosses shoot with techniques, whose own score (expected damage: fewer range
+bands, no cover, a Pressed target) picks the nearer, Suppressed character, and the doctrine only breaks ties. **Data
+cannot move it**: Minions spreading like Soldiers (`fire_near` 0.2, `fire_spread` 1), and every tier spreading harder
+(`fire_spread` 2, `fire_near` 0.1), moved the duos' focus share by 0 to 3 points. What a human party does that changes
+it: the hurt member steps out of every line (the foe then has no choice but another: cause 1), and the front is
+rotated, so the nearest is not the most hurt.
+
+### 12.5 Levers measured (in memory, 40 seeds a cell; clear · damage taken a fight a head · Downs a fight)
+
+| Cell | none | `cover` (policy) | enemy Burst as the characters' (`techniques.json burst.numbers.enemy_same` 1) | crate HP 30 to 60 | `layout.start_cover_reach` 3 to 1 | Minions spread + enemy Burst + start cover 1 |
+|---|---|---|---|---|---|---|
+| solo_skirmisher | 85% · 17 · 0.02 | 75% · 20 · 0.03 | 88% · 15 · 0.01 | 88% · 17 · 0.01 | 90% · 16 · 0.01 | - |
+| duo_skirmisher | 92% · 13 · 0.06 | 98% · 13 · 0.06 | 92% · 11 · 0.05 | 92% · 13 · 0.07 | 98% · 10 · 0.03 | 95% · Downs 0.03 |
+| quad_skirmisher | 100% · 13 · 0.12 | 98% · 14 · 0.20 | 98% · 12 · 0.15 | 98% · 12 · 0.14 | 100% · 12 · 0.10 | - |
+| duo_breaker | 65% · 26 · 0.28 | 0% · 50 · 0.84 | 65% · 25 · 0.28 | 65% · 26 · 0.28 | 62% · 25 · 0.30 | 65% · Downs 0.26 |
+| mix_gun_heal | 98% · 25 · 0.03 | 92% · 29 · 0.05 | 95% · 24 · 0.02 | 100% · 25 · 0.03 | 100% · 23 · 0.01 | 98% · Downs 0.02 |
+| mix_four_b | 88% · 21 · 0.53 | 70% · 26 · 0.85 | 92% · 20 · 0.40 | 88% · 22 · 0.56 | 90% · 21 · 0.57 | **95% · Downs 0.33** |
+| quad_breaker | 15% · Downs 1.46 | - | - | - | - | 25% · Downs 1.39 |
+| solo_mender | 25% · 143 · 0.09 | 2% · 162 · 0.16 | 32% · 146 · 0.05 | 25% · 143 · 0.09 | 15% · 151 · 0.12 | 30% · Downs 0.03 |
+
+(A clear-rate difference under about 20 points is inside the noise; Downs a fight and damage are steadier.)
+
+### 12.6 Fits, ranked by measured effect (proposals; nothing changed)
+
+1. **The enemy Burst at the characters' two rolls** (rules 1.18's refit, approved if data carries it): add
+   `"enemy_same": 1` to `techniques.json burst.numbers` (the code reads it, `combat.ts:1935`). Measured: Downs a fight
+   0.53 to 0.40 in the mixed four, 0.09 to 0.05 for the Mender alone, damage a head down 1 to 2 a fight; clear rates
+   within noise. Its effect on two or three Gun drones on one character (12.1's second table) is the next row to
+   measure: it cuts a Soldier's Burst from three rolls to two (the second at −4).
+2. **Cover beside the start**: `survival.json layout.start_cover_reach` 3 to **1**: duo gunners' damage 13 to 10 and
+   Downs 0.06 to 0.03, the gunner alone +5 points; the Mender alone −10 (inside the noise). With 1 and Minions
+   spreading: the mixed four's Downs 0.53 to **0.33** and clear 88 to 95%, four Breakers 15 to 25%.
+3. **Fewer Gun drones on one party** (the from-full Downs of 12.1 need two or three on one character; a quad fields 1.84
+   a fight): the templates' Soldier ranged slots' `max` (`firing_line` 3, `elite_pack` 4, `vault_watch` 4, `champion`
+   3, `healer_line` 4, `caster_guards` 4, `machines` 3) to **2**, the budget spent by the generator on what is left.
+   Not measured: the in-memory lever does not reach those rows yet; the next measure to make.
+4. **Cover that lasts**: `objects.json crate.hp` 30 to 60: no effect in the runs; in the rows the crate still breaks to
+   Punch Through. Not worth it alone.
+5. **The doctrine numbers** (`enemies.json fire_spread`, `fire_near`): 0 to 3 points of focus share (12.4). Not a fit.
+6. Not a gun-only lever: the tier's `attack_bonus` is shared with the tier's blades and its initiative, and a gun row's
+   damage is its weapon's (`weapons.json`), shared with the characters. A gun-only number needs N5 below.
+
+### 12.7 Needs a new primitive (not built)
+
+* **N1, a bug: symmetric line of sight.** `lineOfSight(a, b)` and `(b, a)` differ for 2% of tile pairs with one
+  blocker; the fog (lines out) and the enemy's shot (line in) disagree, so a shooter the screen hides fires (4% of gun
+  rolls have a blocked line back). Fix: one line both ways (clear only if both directions are clear, or a symmetric
+  supercover walk). Cost: one function; sight changes everywhere, so replays and goldens that cross such a pair
+  re-record, and the sight tests are swept. Highest priority: it is the screen showing safety the engine does not give.
+* **N2, full cover beside a target.** A full-cover object on one of the 8 tiles round the target, nearer the shooter,
+  that the line misses, counts as half cover (−5) at least. Cost: `coverTileFor` reads `full` as well as `half` (one
+  condition), a spec line, and the −5 moved into data (`rules.json`; it is a typed number today at `combat.ts:990` and
+  `:1271`). This is the playtest's "behind full cover and hit".
+* **N3, focus that lasts past a round.** `fire_spread` counts this round's other attackers only, and a technique's
+  score outranks the doctrine. A term "the share of its side's rolls this target took last round" in `enemyRank`,
+  read by `aiTechnique` as a weight on its score, from an `enemies.json` field. Cost: one AI term and its data field.
+* **N4, a shooter in the fog is shown.** A foe that fires at the squad from a tile no character sees stays drawn until
+  its next turn (a reveal on the shot, as an attack from Hidden reveals). Cost: one rule in the fog view.
+* **N5, a gun-only number for enemies.** No data field scales an enemy's ranged attacks alone. If the rows of 12.1 are to
+  be refitted without touching blades or the shared weapon table: an `enemies.json` tier field (`ranged_hit` or
+  `ranged_damage`) read where the tier's attack bonus is read. Cost: one stat term.
+
+**One cause or two?** The party-budget fit (sections 4 and 9) and the opening volley are **two causes**: the budget
+fit moved the duo's clear rate; the opening volley is a spike on one character (two or three gun foes, Suppress, a
+three-roll Burst, cover that breaks or does not count, a shooter the fog hides) that the run tables average away and
+the rows show. Focus fire is the bridge: it is what puts the spike on one character.
