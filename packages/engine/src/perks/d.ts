@@ -601,7 +601,7 @@ register({
 // Hollow is re-derived: when your own heart Downs you (the burn, 'strain' damage; an old save's Short), you fall
 // unconscious, Downed but stable (no death saves fail, hits don't add failures; plan 6a, provisional), and stand at 1 HP
 // after the fight or when healed; and a Mana Short doesn't Stun you (the hollow heart keeps beating: the wild release,
-// the backlash and Strain falling to the limit still happen). +10% Outburst damage (Soul damage you deal, and an
+// the backlash and, since rules 1.56, the Mana Shock still happen). +10% Outburst damage (Soul damage you deal, and an
 // elemental Outburst's). Echo Chamber: every Outburst you cast is loud: you are revealed and can't hide on a turn you
 // cast; the Narrator hears that every enemy within 10 tiles knows where you are. Story: casting on the area map ends
 // your sneak.
@@ -612,7 +612,7 @@ register({
   on: {
     on_downed: (ctx, h) => { if (me(h, ctx.victim) && !ctx.victim.dead && (ctx.src?.type === 'short' || ctx.src?.type === 'strain')) { stateOf(h).stable = true; log(ctx.cb, h.u!.name + ' falls unconscious, hollow and stable (Hollow Heart).'); } },
     // The automatic Short follows the Strain that reaches 3 over the limit (magic.ts addStrain): its Stun is refused.
-    strain_change: (ctx, h) => { if (!me(h, ctx.u)) return; const s = stateOf(h); if (ctx.why === 'short') s.shorting = false; else if (ctx.to - (ctx.limit ?? 0) >= SHORT_AT_OVER && ctx.to > ctx.from) s.shorting = true; },
+    strain_change: (ctx, h) => { if (!me(h, ctx.u)) return; const s = stateOf(h); if (ctx.why === 'short') s.shorting = false; else if (ctx.to - (ctx.limit ?? 0) >= SHORT_AT_OVER && ctx.to > ctx.from && !ctx.u?.mg?.shock) s.shorting = true; }, // rules 1.56: in Mana Shock no second Short comes
     cond_apply: (ctx, h) => { const s = stateOf(h); if (!me(h, ctx.t) || ctx.id !== 'stunned' || ctx.by || !s.shorting) return; s.shorting = false; ctx.cancel = true; ctx.why = 'Hollow Heart: the heart keeps beating'; },
     turn_start_pre: (ctx, h) => { if (!me(h, ctx.u)) return; const s = stateOf(h); if (!h.u!.downed) s.stable = false; else if (s.stable) h.u!.saves.ok = 0; },
     damage_in: (ctx, h) => {

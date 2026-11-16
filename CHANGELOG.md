@@ -8,6 +8,15 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## Unreleased (after 0.29.0) — the Mana Shock
+
+- **Rules 1.56, the Mana Shock** (Leon, 16 Nov 2026; decision 116): a Mana Short (3 over the Strain limit) still Stuns
+  and throws a held Outburst wild, but Strain no longer falls to the limit: the caster is in **Mana Shock** until it
+  calms the heart back to the limit, and each of its turns that ends in it costs 25% of max HP (nothing soaks it; it
+  Downs, never kills; a Down ends it). No second Short while it lasts. For every Soul caster, characters and enemies.
+  Shown on the token and panels (MANA SHOCK, damage red), the Strain row, the held heart's warning, the Outbursts
+  door line and the bare-handed warning. Data: `soul_modules.json strain.after_short` (`keep`) and `strain.shock`.
+
 ## 0.29.0 — Balance 2.0: the nine doors
 
 Rules revision 1.56 (every new number PROVISIONAL), built on top of live 0.28.3. Each of the nine skills that open a
@@ -73,6 +82,7 @@ the alpha perks were rewritten so each one helps its own door. The full account,
 - Text in the fight, run and camp screens is never smaller than 13 px.
 - One rule for Taunt, one for a Boss holding against forced moves, one health ladder.
 - Tug costs 12 MP (three times its first price, as 0.28.3 did for every Tending verb).
+- Fight tabs per character (kept by character, in any room): the action list's order until arranged, then a stable order (a new tab goes at the end); the cog's Fight tabs panel (in a fight and out of one: move up / down, hide, Reset; in a fight it numbers the tabs as the bar does and marks the ones absent this fight), number keys follow the order shown; a focus door's tab is hidden with no focus anywhere only when the engine refuses every action on it (never the Outbursts tab while an Outburst is held, which also shows when hidden), and says to put the focus on when it is only in the pack.
 
 ### Fixes
 

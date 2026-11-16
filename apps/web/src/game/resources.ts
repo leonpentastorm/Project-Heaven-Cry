@@ -17,7 +17,7 @@ import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, clas
   coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam, wearState } from '@engine';
 
 export type ResKind = 'bar' | 'pips' | 'text';
-export type ResWarn = 'EMPTY' | 'RELOAD' | 'LOW' | 'JAMMED' | 'JAM SOON' | 'RELOAD CORE' | 'LOCKED' | 'OVERLOAD SOON' | 'OVERLOAD NEXT' | 'NEAR THE LIMIT' | 'AT THE LIMIT' | 'OVER THE LIMIT' | 'MANA SHORT NEXT' | 'BROKEN' | 'WORN' | 'DOWN' | 'FULL' | 'READY' | 'STOWED';
+export type ResWarn = 'EMPTY' | 'RELOAD' | 'LOW' | 'JAMMED' | 'JAM SOON' | 'RELOAD CORE' | 'LOCKED' | 'OVERLOAD SOON' | 'OVERLOAD NEXT' | 'NEAR THE LIMIT' | 'AT THE LIMIT' | 'OVER THE LIMIT' | 'MANA SHORT NEXT' | 'MANA SHOCK' | 'BROKEN' | 'WORN' | 'DOWN' | 'FULL' | 'READY' | 'STOWED';
 export interface ResRow {
   key: string; label: string; value: string; now?: number; max?: number; kind: ResKind; colour: string;
   warn?: ResWarn; /** alert: act now (red chip); caution: soon (white chip); ready: something good to spend (green). */ level?: 'alert' | 'caution' | 'ready';
@@ -38,6 +38,7 @@ export interface HeldHeart {
    *  that −1 (0 when steadied); holdNet: the net of one idle held turn (turn start −1, then the swell); onTurn: it is
    *  this caster's turn now (the next turn start's −1 has not come yet when false); flooded; emanator. */
   beginStrain: number; turnCalm: number; swell: number; holdNet: number; onTurn: boolean; flooded: boolean; emanator: boolean;
+  /** Rules 1.56: the heart is in Mana Shock (soul_modules.json strain.shock), from the unit's magic or the story's. */ shock?: boolean;
 }
 const SOUL: any = () => (E as any).SOUL_RULES || {};
 const toneName = (id: string) => (E as any).TONE?.[id]?.name || (id ? id[0].toUpperCase() + id.slice(1) : 'Raw');
@@ -60,7 +61,7 @@ export function heldOutburstOf(m: any, designs?: any[], limit?: number, ctx: Hea
   let flooded = false; try { flooded = mana != null && (E as any).manaBand?.(mana)?.id === 'flooded'; } catch { /* no band */ }
   const emanator = m?.emanator ?? m?.heart?.emanator ?? true;
   const debt = Number(m?.debt ?? m?.heart?.debt ?? 0) || 0;
-  let begin = (flooded ? cyc.flooded_strain ?? 2 : cyc.begin_strain ?? 1) + (emanator ? 0 : cyc.no_emanator_strain ?? 2);
+  let begin = (flooded ? cyc.flooded_strain ?? 2 : cyc.begin_strain ?? 1) + (emanator ? 0 : cyc.no_emanator_strain);
   // The engine's own price for a Begin (items can change it): only when nothing is held, and only when the preview got
   // as far as pricing (its AP is set past the 'outburst_cost' hook).
   const ds0 = designs || m?.designs || [];
@@ -73,7 +74,7 @@ export function heldOutburstOf(m: any, designs?: any[], limit?: number, ctx: Hea
   const h = m?.held || m?.heart?.held || null;
   const swellBase = flooded ? cyc.flooded_strain ?? 2 : cyc.swell_strain ?? 1;
   const swell = h?.steady ? 0 : swellBase;
-  const base = { strain, limit: lim, beginStrain: begin, turnCalm, swell, holdNet: (strain > 0 ? -turnCalm : 0) + swell, onTurn, flooded, emanator: !!emanator };
+  const base = { strain, limit: lim, beginStrain: begin, turnCalm, swell, holdNet: (strain > 0 ? -turnCalm : 0) + swell, onTurn, flooded, emanator: !!emanator, shock: !!(m?.shock ?? m?.heart?.shock) };
   if (!h) return { ...base, swell: swellBase, holdNet: (strain > 0 ? -turnCalm : 0) + swellBase, held: null };
   const id = h.design ?? h.designId ?? '', ds = ds0;
   const d = ds.find((x: any) => x.id === id) || h.designDef || null;
@@ -147,7 +148,7 @@ export function strainRows(hh: HeldHeart): ResRow[] {
   const held = !!hh.held, steady = !!hh.held?.steady, b = hh.beginStrain;
   const calm = 'Falls by 1 at the start of each of your turns, and more by calming the heart on top of that −1: a still turn with nothing held, your first weapon attack of the turn, tending an ally, letting go (by its stage, at most what its swells cost) or Steady (1 AP).';
   const sgn = (n: number) => (n > 0 ? '+' + n : n < 0 ? '−' + -n : '±0');
-  const why = (hh.flooded ? ' (Flooded)' : '') + (hh.emanator ? '' : ' (+' + (Number(SOUL().cycle?.no_emanator_strain) || 2) + ' from the air: no Emanator)');
+  const why = (hh.flooded ? ' (Flooded)' : '') + (hh.emanator ? '' : ' (+' + Number(SOUL().cycle?.no_emanator_strain) + ' from the air: no Emanator)');
   // Where Strain stands when your next turn starts (its −1 first; then a held Outburst swells), and the next step:
   // holding → that turn start; not holding → your next Begin.
   const atTurn = hh.onTurn ? s : Math.max(0, s - hh.turnCalm);
@@ -157,8 +158,11 @@ export function strainRows(hh: HeldHeart): ResRow[] {
   const nextTxt = held ? holdTxt : 'Your next Begin adds ' + b + ' Strain' + why;
   const peakTxt = ' → ' + peak + ' / ' + L + (peak > L ? ', ' + (peak - L) + ' over' : '');
   const row: ResRow = { key: 'strain', label: 'Strain', value: s + ' / ' + L, now: s, max: L, kind: 'pips', colour: RES_INK.soul,
-    hint: 'A Begin adds ' + b + ' Strain' + why + '. A held Outburst swells at your turn start (+' + hh.swell + ' after the turn start\'s −1, so an idle held turn nets ' + sgn(hh.swell - 1) + '). Over ' + L + ', every point burns ' + burn + ' at your turn end; ' + shortAt + ' over is a Mana Short. ' + calm };
-  if (peak - L >= shortAt) Object.assign(row, { warn: 'MANA SHORT NEXT', level: 'alert', hint: nextTxt + peakTxt + ': your heart shorts out (Stunned; a held Outburst goes off wild). ' + (held ? 'Release it, Steady (1 AP) or let it go this turn.' : 'Don\'t Begin until the heart calms.') + ' ' + calm });
+    hint: 'A Begin adds ' + b + ' Strain' + why + '. A held Outburst swells at your turn start (+' + hh.swell + ' after the turn start\'s −1, so an idle held turn nets ' + sgn(hh.swell - 1) + '). Over ' + L + ', every point burns ' + burn + ' at your turn end; ' + shortAt + ' over is a Mana Short, and then ' + (SOUL().strain?.shock?.name || 'Mana Shock') + ' until Strain is back at the limit or the fight ends: from your next turn, it costs ' + Math.round((SOUL().strain?.shock?.hp_share || 0) * 100) + '% of your max HP at each of your turn ends in it. ' + calm };
+  const SH = SOUL().strain?.shock || {};
+  // Rules 1.56: in Mana Shock the row says so first (the share of max HP a turn, until Strain is back at the limit).
+  if (hh.shock) Object.assign(row, { warn: 'MANA SHOCK', level: 'alert', hint: (SH.name || 'Mana Shock') + ': ' + (s - L) + ' over the limit. ' + (SH.text || '') + ' ' + calm });
+  else if (peak - L >= shortAt) Object.assign(row, { warn: 'MANA SHORT NEXT', level: 'alert', hint: nextTxt + peakTxt + ': your heart shorts out (Stunned; a held Outburst goes off wild). ' + (held ? 'Release it, Steady (1 AP) or let it go this turn.' : 'Don\'t Begin until the heart calms.') + ' ' + calm });
   else if (s > L) {
     const dmg = burn * Math.max(0, burnOver);
     Object.assign(row, { warn: 'OVER THE LIMIT', level: 'alert', hint: (s - L) + ' over the limit: ' + (dmg > 0 ? dmg + ' damage to you at your ' + (hh.onTurn ? '' : 'next ') + 'turn end' + (!hh.onTurn && burnOver < s - L ? ' (after the turn start\'s −1)' : '') : 'your turn start\'s −1 brings it back to the limit, so no burn unless you add more') + '. ' + nextTxt + peakTxt + '. ' + calm });
@@ -301,7 +305,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     const row: ResRow = { key: 'mp', label: 'MP', value: mp + ' / ' + mpMax, now: mp, max: mpMax, kind: 'bar', colour: RES_INK.mp,
       ...(!emanator ? { sub: 'Attuner · ' + (attHeld ? (attHand === 'off' ? 'off hand' : 'main hand') : 'in the pack') } : {}),
       hint: emanator ? 'Your Emanator\'s mana: a Begin spends it, and so does every Pump. Syphon (1 AP) draws more from the air.' : 'Your Attuner\'s mana (Insight\'s door): Tending spends it (Mend, Touch, Shield, Raise, Settle, Soothe, Guide), and Syphon (1 AP) draws more from the air. Bonds need the Attuner in hand.' };
-    if (!held) Object.assign(row, emanator ? { warn: 'STOWED', level: 'caution', hint: NEEDS_EMANATOR + ' Your Emanator is in the pack: it keeps its MP, but Outbursts draw on the air (+2 Strain) and Syphon waits until you hold it.' }
+    if (!held) Object.assign(row, emanator ? { warn: 'STOWED', level: 'caution', hint: NEEDS_EMANATOR + ' Your Emanator is in the pack: it keeps its MP, but Outbursts draw on the air (+' + Number(SOUL().cycle?.no_emanator_strain) + ' Strain) and Syphon waits until you hold it.' }
       : { warn: 'STOWED', level: 'caution', hint: 'Your Attuner is in the pack: it keeps its MP and your Bonds hold, but the threads are quiet and Tending and Syphon wait until you hold it.' });
     else if (mp <= 0) Object.assign(row, { warn: 'EMPTY', level: 'alert', hint: emanator ? 'No MP: Syphon (1 AP) from the air, or your Outbursts draw on your heart.' : 'No MP: Syphon (1 AP) from the air to Tend again.' });
     else if (mp < mpMax * 0.25) Object.assign(row, { warn: 'LOW', level: 'caution', hint: 'Low MP: Syphon (1 AP) draws mana from the air.' });

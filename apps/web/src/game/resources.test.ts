@@ -1,7 +1,7 @@
 // The RESOURCES block (game/resources.ts): each class archetype sees its own rows, in words, with the warnings that
 // testers missed in the old 10 px line (RELOAD, RELOAD CORE, OVERLOAD SOON, OVER THE LIMIT…).
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, ADVANCED, CLASS_MOVE_POOL, type Sheet, newCharacter, startCombat, phys, SKILL } from '@engine';
+import { ARCHETYPES, ADVANCED, CLASS_MOVE_POOL, type Sheet, newCharacter, startCombat, phys, SKILL, SOUL_RULES } from '@engine';
 import { resourcesOf, urgentRows, heldOutburstOf, resView, classResInfo, guardRule, sigilChip, RES_INK } from './resources';
 import { beforeAll as beforeAllAdv, afterAll as afterAllAdv } from 'vitest';
 import { _setAdvancedLive } from '@engine';
@@ -256,15 +256,16 @@ describe('resource panel fixes', () => {
     u.dur = Math.floor(u.maxDur * 0.2); r = row(resourcesOf(u, c, g), 'dur');
     expect(r.warn).toBe('WORN'); expect(r.hint).toMatch(/90% damage/); expect(r.hint).not.toMatch(/jam/);
   });
-  it('Strain warnings use the Begin\'s real Strain: no Emanator (+3) at the limit is a Mana Short next', () => {
+  it('Strain warnings use the Begin\'s real Strain: no Emanator (begin_strain + no_emanator_strain) at the limit is a Mana Short next', () => {
+    const bare = (SOUL_RULES as any).cycle.begin_strain + (SOUL_RULES as any).cycle.no_emanator_strain;
     const { u, c, g, cb } = fight((c) => { c.weapon = 'fists'; });
     onTurn(cb, u);
     u.mg = soul({ emanator: false, strain: 4 });
     const h = heldOutburstOf(u.mg, undefined, undefined, { cb, u });
-    expect(h.beginStrain).toBe(3);
+    expect(h.beginStrain).toBe(bare);
     const r = row(resourcesOf(u, c, g), 'strain');
     expect(r).toMatchObject({ warn: 'MANA SHORT NEXT', level: 'alert' });
-    expect(r.hint).toMatch(/next Begin adds 3 Strain/);
+    expect(r.hint).toContain('next Begin adds ' + bare + ' Strain');
   });
   it('Flooded: a Begin adds 2, so 1 over the limit is a Mana Short next', () => {
     const { u, c, g, cb } = fight((c) => { c.weapon = 'fists'; });

@@ -5,6 +5,7 @@
 //   Voice   the Narrator's voice engine and voices (game/voiceSettings.tsx; moved here from the Music panel)
 //   Combat  combat speed (game/combatSpeed.ts), cut-ins
 //   Display the Music and Memory buttons' opacity and fading, reduce motion, show tips again
+//   Fight tabs  a character's fight tabs: order and hiding (game/fightTabsPanel.tsx; in a fight and out of one)
 import React from 'react';
 import { uiPrefs, setUiPrefs, onUiPrefs, sfx, preloadCombatSfx, type UiPrefs, type CutinPref } from './sfx';
 import { voicePrefs, setVoicePrefs, onVoice } from './voice';
@@ -12,9 +13,10 @@ import { VoiceSettings } from './voiceSettings';
 import { getCombatSpeed, setCombatSpeed, COMBAT_SPEED_EVENT, type CombatSpeed } from './combatSpeed';
 import { resetTips } from './tips';
 import { usePresence, presenceCls } from './presence';
+import { FightTabsPanel } from './fightTabsPanel';
 
-export type SettingsTab = 'audio' | 'voice' | 'combat' | 'display';
-export const SETTINGS_TABS: [SettingsTab, string][] = [['audio', 'Audio'], ['voice', 'Voice'], ['combat', 'Combat'], ['display', 'Display']];
+export type SettingsTab = 'audio' | 'voice' | 'combat' | 'tabs' | 'display';
+export const SETTINGS_TABS: [SettingsTab, string][] = [['audio', 'Audio'], ['voice', 'Voice'], ['combat', 'Combat'], ['tabs', 'Fight tabs'], ['display', 'Display']];
 
 // ---------- open from anywhere (the header's ⚙, the Music panel's link) ----------
 let open: SettingsTab | null = null;
@@ -137,6 +139,7 @@ export function SettingsBody({ tab: initial = 'audio', compact: compactProp = fa
         {tab === 'audio' && <AudioTab />}
         {tab === 'voice' && <VoiceSettings />}
         {tab === 'combat' && <CombatTab />}
+        {tab === 'tabs' && <FightTabsPanel />}
         {tab === 'display' && <DisplayTab />}
       </div>
     </div>

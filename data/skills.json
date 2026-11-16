@@ -2631,12 +2631,14 @@
       "slot": "alpha",
       "summary": "Raw processing speed for Sigils. Attack skill for Sigils that strike.",
       "door_line": "Draw words on your own tile in a straight row of {=door_numbers.line_min} to {=door_numbers.line_max}, then Evoke from an end or the side.",
+      "door_focus_line": "Your Evoker is in your pack, not in a hand: open the Backpack and draw it to draw glyphs.",
       "door_numbers": {
         "line_min": 2,
         "line_max": 4,
         "about": "The Sigil grammar's Line lengths (sigils.json grammar.min_glyphs / max_glyphs), for the door line's placeholders; tools/validate.py holds them equal."
       },
       "door_tab": "sigils",
+      "door_mirror": ["scuff"],
       "per_point": {
         "numbers": {
           "sigil": 0.1,
@@ -3123,6 +3125,7 @@
       "slot": "alpha",
       "summary": "Shapes thought into images; pictures the Figments the bots build.",
       "door_line": "In a fight, Picture offers your ready designs first, then every bare form you have opened (the Visualizer in hand).",
+      "door_focus_line": "Your Visualizer is in your pack, not in a hand: open the Backpack and draw it to Picture.",
       "door_tab": "figments",
       "door_title": "FIGMENTS · PICTURED",
       "per_point": {
@@ -3592,6 +3595,7 @@
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
       "door_line": "A Bond does not heal by itself: Tend a Bonded ally to heal it (Mend or Shield at any range you see, Touch beside you).",
+      "door_focus_line": "Your Attuner is in your pack, not in a hand: open the Backpack and draw it to Bond and Tend.",
       "door_tab": "tend",
       "door_title": "TEND · BONDS AND CARE",
       "per_point": {
@@ -4123,7 +4127,16 @@
       "core": "soul",
       "slot": "alpha",
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
-      "door_line": "Begin a design, Pump it up to its top stage, then Release. Strain is the cost, and MP pays.",
+      "door_line": "Begin a design, Pump it up to its top stage, then Release. Strain is the cost, and MP pays. {=door_numbers.short_at_over} past your Strain limit is Mana Shock: from your next turn, {=door_numbers.shock_hp_share|pct}% of your max HP every turn until you calm the heart or the fight ends.",
+      "door_focus_line": "Your Emanator is in your pack, not in a hand: open the Backpack and draw it, so your Outbursts are paid in MP instead of drawing on the air.",
+      "door_bare_headline": "Using magic without a focus causes great harm.",
+      "door_bare_line": "Every Outburst you Begin draws on the air at +{=door_numbers.no_emanator_strain} Strain. Past your limit Strain burns you, and {=door_numbers.short_at_over} past it is Mana Shock: from your next turn, {=door_numbers.shock_hp_share|pct}% of your max HP every turn until you calm the heart back to the limit or the fight ends.",
+      "door_numbers": {
+        "no_emanator_strain": 4,
+        "short_at_over": 3,
+        "shock_hp_share": 0.25,
+        "about": "soul_modules.json cycle.no_emanator_strain and strain.short_at_over, and strain.shock.hp_share, copied for the door line's and the bare-handed warning's placeholders; tools/validate.py holds them equal."
+      },
       "door_tab": "outbursts",
       "per_point": {
         "numbers": {

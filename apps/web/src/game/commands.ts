@@ -5,7 +5,7 @@
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
 import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, SPELL_AP, ventAp, coreAp, stageMult, weaponActions, perkActionsFor, withGame, type PerkActionEntry,
-  FOCUS_IDS, NEEDS_EVOKER, carriesEvoker, PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText, faithView, doorTabsOf, DOOR_TABS } from '@engine';
+  FOCUS_IDS, NEEDS_EVOKER, carriesEvoker, PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText, faithView, doorTabsOf, DOOR_TABS, GROUP_ORDER } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
 import { FAITH_INK } from './faithView';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
@@ -25,6 +25,10 @@ export type ActionItem = [string, string, string, string, (string | null)?, Acti
 /** [group title, items, family ink (or null), tab id] */
 export type ActionGroup = [string, ActionItem[], string | null, string];
 export const TAB_NAME: Record<string, string> = { move: 'Move', attack: 'Attack', utility: 'Utility', perks: 'Perks', class: 'Class', shadow: 'Shadow', tend: 'Tend', figments: 'Figments', sigils: 'Sigils', outbursts: 'Outbursts', faith: 'Faith', calls: 'Calls' };
+/** Every fight tab id there is, in the action list's own order (the engine's GROUP_ORDER, then any door tab its
+ *  DOOR_TABS adds from data), with the ids given (tabs present now) after: the tab prefs' known list and Reset's
+ *  natural order (game/tabPrefs.ts). A kept id outside it is a tab that no longer exists, and is dropped. */
+export const tabIdsKnown = (present: string[] = []): string[] => [...new Set([...(GROUP_ORDER as string[]), ...Object.values(DOOR_TABS).map((d) => d.tab), ...present])];
 
 // ---------- prayers (Blessing 2.0, rules 1.6; the engine's faithView and previewPrayer) ----------
 /** A prayer's id in the action list: "pr:<kind>:<id>" (the engine's descriptor id). */

@@ -5,7 +5,7 @@ import { DCLogic } from '../dc/runtime';
 import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure, ensureStyle, ensureMotionCss, tabNavIndex } from './shared';
 import { reducedMotion, sfx } from '../game/sfx';
 import { fightPace } from '../game/combatSpeed';
-import { WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, fightSight, isUnseenId, litAt,
+import { MANA_SHOCK, WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, fightSight, isUnseenId, litAt,
   SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, condDef, CONDITION_ROWS, condId, condIsBoon, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
@@ -62,14 +62,15 @@ import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, w
 import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
-import { mapLegacy, isLegacyUnit, plainAction, actionGroups, hideHelp, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
+import { mapLegacy, isLegacyUnit, plainAction, actionGroups, hideHelp, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, tabIdsKnown, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView, pickToggle } from '../game/actionFlow';
 import { tipAttrs, mountActionTips } from '../game/actionTip';
 import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../game/figmentIcons';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
-import { firstTurnTab, tabDoorLine } from '../game/doorView';
+import { firstTurnTab, tabDoorLine, focusFilter, tabFocusLine, tabMirrors, tabBareWarning } from '../game/doorView';
+import { noteTabs, noteLive, tabKey, shownTabs, firstUsable, NO_PREFS, EV_TABS_CHANGED } from '../game/tabPrefs';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS, sigilChip, sigilChipStyle } from '../game/resources';
@@ -280,6 +281,8 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
     e.preventDefault(); const now = Date.now(); if (now - (LIVE._wheelAt || 0) < 90) return; LIVE._wheelAt = now; LIVE.zoomBy(e.deltaY < 0 ? 'in' : 'out'); }, { passive: false });
   // The turn card's commands were customised (game/commandsDialog.tsx): the mini-bar's quick commands follow.
   window.addEventListener(EV_CMDS_CHANGED, () => { if (LIVE && onScreen()) LIVE.setState({}); });
+  // A character's fight tabs were reordered or hidden (the cog's Fight tabs panel, game/tabPrefs.ts): the bar follows.
+  window.addEventListener(EV_TABS_CHANGED, () => { if (LIVE && onScreen()) LIVE.setState({}); });
   // The enemies' turns started playing: grey the action panel out now (Leon: no acting until it's really your turn).
   window.addEventListener('phc-fx-hold', () => { if (LIVE && onScreen()) LIVE.setState({}); });
   // Crossing the narrow (1000 px wide) or very short (620 px high) line changes where panels go: render again then.
@@ -440,6 +443,7 @@ export const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([id
   ? { key: 'c-' + id, k: '◉ WITNESSED', t: witnessedTitle(u, g), style: WITNESSED_CHIP }
   : { key: 'c-' + id, k: condName(id).replace(/ \(.*\)$/, '').toUpperCase() + (untilCond(id) ? '' : ' · ' + n), t: condName(id) + ': ' + (condText(id) ? condText(id).replace(/\.?$/, '. ') : '') + (untilCond(id) ? untilWords(id) : n + (n === 1 ? ' round' : ' rounds') + ' left.'),
     style: COND_CHIP + 'border: 1px solid ' + (BOONS.includes(id) || condIsBoon(id) ? '#6FEA77; color: #6FEA77' : '#F65157; color: #F65157') }),
+  ...(u.mg && u.mg.shock ? [{ key: 'c-mana_shock', k: MANA_SHOCK.name.toUpperCase(), t: MANA_SHOCK.name + ': ' + MANA_SHOCK.text, style: COND_CHIP + 'border: 1px solid #F65157; color: #F65157' }] : []),
   ...(u.shield > 0 ? [{ key: 'shield', k: '+' + fmtNum(u.shield) + ' SHIELD', t: 'A shield of ' + fmtNum(u.shield) + ': damage takes it first.', style: 'padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : [])];
 
 /** Rules 1.14: the wait for the Narrator's answer to an attempt, as the fight screen shows it. Everyone sees who spoke
@@ -919,7 +923,7 @@ export class CombatLogic extends DCLogic {
     const sk = w && w.grants, skFx = (sk && sk.effect) || {}, skRuns = ['multi_shot', 'sweep'].includes(skFx.op);
     // ---------- magic: what this unit can cast, previews and refusals straight from the engine ----------
     const mg = cur && cur.mg, words = mg ? mg.words : [], designs = mg ? mg.designs : [];
-    const hasMagic = !!(mg && (words.length || designs.length || mg.evoker || mg.emanator)), isMagic = MAGIC.includes(S.action) && hasMagic;
+    const hasMagic = !!(mg && (words.length || designs.length || mg.evoker || mg.emanator || S.action === "scuff")), isMagic = MAGIC.includes(S.action) && hasMagic;
     const mana = cb.mana ?? MANA_START, band = manaBand(mana), pcb = cb.mana == null ? { ...cb, mana } : cb;
     // Draw (rules 1.4: on your own tile only): each word as the engine would draw it now, with its cost and whether it
     // starts or extends a Line, and the stroke it goes into (rules 1.10: the picker; spec: Mana, Sigils 9.1; game/sigilView.ts).
@@ -1278,7 +1282,7 @@ export class CombatLogic extends DCLogic {
     const pkSince = cur ? turnMark(cb, cur) : 0;
     const ITEMS = actionGroups(cb, cur, ch, { noNarrator: !!(g.sandbox || g.run), g, since: pkSince }); // the Proving Ground has no Narrator to rule on anything
     let pkShelfMemo = null; const pkShelves = () => pkShelfMemo || (pkShelfMemo = perkShelves(g, cb, cur, ch, { since: pkSince }));
-    const groups = ITEMS.map(([name, items, ink, gid]) => ({ id: gid, ink, name, nameStyle: 'font-size: 13px; letter-spacing: 0.16em; color: ' + (ink === SIGIL_GLOW ? SIGIL_INK : ink || '#A3AEC2'), items: areaOrder(gid, items).map(([id, label, costText, text, why, meta]) => ({
+    let groups = ITEMS.map(([name, items, ink, gid]) => ({ id: gid, ink, name, nameStyle: 'font-size: 13px; letter-spacing: 0.16em; color: ' + (ink === SIGIL_GLOW ? SIGIL_INK : ink || '#A3AEC2'), items: areaOrder(gid, items).map(([id, label, costText, text, why, meta]) => ({
       // A move that can't be used now still opens (its footer says why); its reason is on the button too.
       // Its hover card (game/actionTip.ts): the name and cost, a line per sentence, the weapon's line and traits, the refusal.
       ...tipAttrs({ name: label, cost: costText, ...(meta && meta.parts ? { needs: meta.parts.needs, text: meta.parts.text, line: meta.parts.line, traits: meta.parts.traits } : { text }), why }),
@@ -1547,6 +1551,24 @@ export class CombatLogic extends DCLogic {
     wait.doSkip = () => { if (cur) act({ type: 'combat/end-turn', unitId: cur.id }); };
     // ---------- the action tabs (Move · Attack · Utility · Sigils · Outbursts): one family at a time, each scrolling on its
     // own inside the pinned column, so the grid (and every effect on it) stays in view whatever you pick ----------
+    // The fight tabs (Leon, 16 Nov 2026): the focus rule first (game/doorView.ts focusFilter: a focus door's tab with no
+    // focus of that door anywhere on the character and every action on it refused by the engine, is not shown), then the character's own order and hidden tabs
+    // (game/tabPrefs.ts: a display preference kept in this browser, never game state). A tab new to the character is
+    // placed in the action list's own order until the player arranges the tabs, then appended at the end, so no tab
+    // the player placed moves on its own; key N is the Nth tab shown.
+    const tabChar = cur && cur.charId ? g.characters[cur.charId] : null, tabMine = !!tabChar && tabChar.owner === me;
+    // A tab goes only when every one of its action rows is refused; the Outbursts tab never while an Outburst is held
+    // (the heart: Release, Let it go, Steady, Pump with a feeling).
+    const heldNow = !!(cur && cur.mg && cur.mg.held);
+    // A door's mirrored actions (skills.json door_mirror): the action's own row, listed again at the END of the door's tab, flagged
+    // mirror (the same key, so it is the same action, rule and price). The focus rule below ignores a mirror: it never keeps a tab alive.
+    groups = groups.map((gr) => { const ms = tabMirrors(gr.id); if (!ms.length) return gr; const copies = ms.flatMap((k) => { const row = groups.filter((o) => o !== gr).flatMap((o) => o.items).find((x) => x.key === k); return row ? [{ ...row, mirror: true }] : []; }); return copies.length ? { ...gr, items: [...gr.items, ...copies] } : gr; });
+    groups = focusFilter(tabMine ? tabChar : null, groups, (gr) => gr.id, (gr) => { if (gr.id === 'outbursts' && heldNow) return false; const rows = gr.items.filter((x) => !x.mirror && !isPerkInfo(x.key)); return !!rows.length && rows.every((x) => !!x.why); });
+    const tabK = tabMine ? tabKey(cur.charId) : null, tabP = tabK ? noteTabs(tabK, groups.map((gr) => gr.id), tabIdsKnown(groups.map((gr) => gr.id))) : NO_PREFS;
+    // A hidden Outbursts tab shows while an Outburst is held: hiding a tab never hides the heart.
+    { const all = groups, tabShow = heldNow ? { ...tabP, hidden: tabP.hidden.filter((x) => x !== 'outbursts') } : tabP;
+      groups = shownTabs(tabShow, all.map((gr) => gr.id)).map((id) => all.find((gr) => gr.id === id)).filter(Boolean);
+      if (tabK) noteLive(tabK, all.map((gr) => gr.id), groups.map((gr) => gr.id)); }
     const tabOf = {}; groups.forEach((gr) => gr.items.forEach((a) => { tabOf[a.key] = gr.id; }));
     if (rowSel !== S.action && tabOf[rowSel]) tabOf[S.action] = tabOf[rowSel]; // a technique picked from a pad lives in its row's tab
     // The Attack tab in areas (Leon, live 0.23.0): each weapon's own actions under its header (its shots and techniques,
@@ -1581,7 +1603,11 @@ export class CombatLogic extends DCLogic {
       // Holding an Outburst (rules 1.5): the turn opens on the heart (the swell has just landed; Pump or Release).
       // A character's first turn of a fight (0.29, the doors; game/doorView.ts): its top door's tab, when that tab has an
       // action it can use now (a Sigilist with an Evoker in hand opens on Sigils); after that the tab used last wins.
-      S.tab = cur.mg && cur.mg.held && tabIds.includes('outbursts') ? 'outbursts' : firstTurnTab(cb, ch, ITEMS, isPerkInfo) || tabMem(cur.charId) || (seenHostile && tabIds.includes('attack') ? 'attack' : 'move');
+      // A player who arranged the tabs (game/tabPrefs.ts): the first shown tab with something usable now (a row with no
+      // refusal; the read-only perk rows don't count). Every pick must be a tab shown now.
+      const shownOk = (t) => (t && tabIds.includes(t) ? t : null);
+      const usable = (id) => { const gr = groups.find((x) => x.id === id); return !!gr && gr.items.some((a) => !a.why && !isPerkInfo(a.key)); };
+      S.tab = cur.mg && cur.mg.held && tabIds.includes('outbursts') ? 'outbursts' : (tabP.custom ? firstUsable(tabIds, usable) : null) || shownOk(firstTurnTab(cb, ch, ITEMS, isPerkInfo)) || shownOk(tabMem(cur.charId)) || (seenHostile && tabIds.includes('attack') ? 'attack' : shownOk('move') || tabIds[0]);
       this._tabAction = S.action; this._tabShown = S.tab; this._tabCls = '';
     }
     // The tab follows the action: picked on the turn card, or implied by a tile click (a hostile → Attack).
@@ -1645,7 +1671,9 @@ export class CombatLogic extends DCLogic {
     const tabG = groups.find((gr) => gr.id === S.tab) || groups[0];
     const tabDoor = tabG ? tabDoorLine(tabG.id) : null; // the door's one line under the tab's name (skills.json door_line)
     const tabPanel = tabG ? [{ key: 'tp-' + tabG.id, tab: 'phc-tab-' + tabG.id, name: tabG.name, nameStyle: tabG.nameStyle, cls: 'phc-cb-tabpanel', innerCls: this._tabCls,
-      hasDoor: !!tabDoor, doorSkill: tabDoor ? tabDoor.skill : '', doorLine: tabDoor ? tabDoor.line : '', doorStyle: 'font-size: 13px; line-height: 1.45; color: #C9D3E3; padding: 0 2px 2px',
+      hasDoor: !!tabDoor, doorSkill: tabDoor ? tabDoor.skill : '', doorLine: tabDoor ? tabDoor.line : '',
+      // the focus rule: the door's focus only in the pack, one line on top says to put it on (skills.json door_focus_line)
+      ...(() => { const fl = tabFocusLine(tabMine ? tabChar : null, tabG.id); return { hasFocusLine: !!fl, focusLine: fl, focusStyle: 'font-size: 13px; line-height: 1.45; color: #FFFFFF; padding: 0 2px 2px' }; })(), ...(() => { const bw = tabBareWarning(tabG.id), on = !!bw && !!tabMine && !!cur && !!cur.mg && !cur.mg.emanator; return { hasBare: on, bareHeadline: on ? bw.headline : '', bareLine: on ? bw.line : '', bareStyle: 'display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 8px; border: 2px solid #F65157; background: rgba(246, 81, 87, 0.12); color: #F65157', bareHeadStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.04em' }; })(), doorStyle: 'font-size: 13px; line-height: 1.45; color: #C9D3E3; padding: 0 2px 2px',
       heart: tabG.id === 'outbursts' && !!heartV.show, hv: heartV,
       // Faith 2.2 (spec 2.4): the FAITH tab's header, your patron's portrait beside the Devotion meter.
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),

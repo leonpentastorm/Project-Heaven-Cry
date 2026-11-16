@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, newGame, newCharacter, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, focusHand, packOf, positionsOf, migrateCharacterFocus,
-  ARCHETYPES, KITS, refOf, type Action, type Character, type GameState, type Unit,
+  ARCHETYPES, KITS, refOf, SOUL_RULES, type Action, type Character, type GameState, type Unit,
 } from '../src';
 import { storyWith, sheetOf } from './helpers/perkfight';
 
@@ -76,13 +76,13 @@ describe('a focus counts only in a hand', () => {
     const mp0 = u.mg!.mp, d = f.char(f.soul).outbursts![0];
     f.act({ type: 'combat/outburst', unitId: u.id, design: d.id, hold: true }); u = f.unit(f.soul);
     expect(u.mg!.held).toBeTruthy(); expect(u.mg!.mp).toBeLessThan(mp0);
-    // In the pack: Syphon refused; Begin costs no MP and +2 Strain more (item 631).
+    // In the pack: Syphon refused; Begin costs no MP and cycle.no_emanator_strain more Strain (item 631; rules 1.56, the bare heart: 4).
     const p = fight((_, b) => { b.offHand = null; b.pack = [...packOf(b), tool('emanator')]; b.mp = 100; });
     let v = p.turn(p.soul); expect(v.mg!.emanator).toBe(false); expect(carriesEmanator(p.char(p.soul))).toBe(true);
     expect(refused(p.g, { type: 'combat/syphon', unitId: v.id })).toBe('Needs an MP focus in hand (an Emanator or an Attuner).');
     const mp1 = v.mg!.mp, st0 = v.mg!.strain;
     p.act({ type: 'combat/outburst', unitId: v.id, design: p.char(p.soul).outbursts![0].id, hold: true }); v = p.unit(p.soul);
-    expect(v.mg!.held).toBeTruthy(); expect(v.mg!.mp).toBe(mp1); expect(v.mg!.strain).toBeGreaterThanOrEqual(st0 + 3);
+    expect(v.mg!.held).toBeTruthy(); expect(v.mg!.mp).toBe(mp1); expect(v.mg!.strain).toBeGreaterThanOrEqual(st0 + SOUL_RULES.cycle.begin_strain + SOUL_RULES.cycle.no_emanator_strain);
   });
   it('the Emanator katana (rules 1.38, data alone): in hand MP pays the Outburst; without any Emanator it draws on the air', () => {
     const f = fight((_, b) => { b.weapon = 'emanator_katana'; b.loaded = 0; b.offHand = null; b.pack = packOf(b).filter((x) => (x.item || x.id) !== 'emanator'); b.mp = 100; });

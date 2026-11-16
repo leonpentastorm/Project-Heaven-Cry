@@ -33,7 +33,7 @@ describe('the Outbursts door', () => {
   it('its line is the data\'s (skills.json door_line) and heads the Outbursts tab', () => {
     const d = DOORS.find((x) => x.skill === 'will_power')!;
     expect(d.line).toBe((SKILL.will_power as any).door_line);
-    expect(d.line).toMatch(/^Begin a design, Pump it up .*then Release\. Strain is the cost, and MP pays\.$/);
+    expect(d.line).toMatch(/^Begin a design, Pump it up .*then Release\. Strain is the cost, and MP pays\. \d+ past your Strain limit is Mana Shock: from your next turn, \d+% of your max HP every turn until you calm the heart or the fight ends\.$/); // rules 1.56, the Mana Shock
     expect(tabDoorLine('outbursts')).toBe(d);
     expect(tabDoorLine('move')).toBeNull();
   });

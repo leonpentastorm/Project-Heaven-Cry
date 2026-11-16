@@ -1932,6 +1932,21 @@ def check_doors(D, errors):
     dn = (sk.get("brain_power") or {}).get("door_numbers") or {}
     if dn.get("line_min") != g.get("min_glyphs") or dn.get("line_max") != g.get("max_glyphs"):
         errors.append(f"skills:brain_power door_numbers {dn.get('line_min')}..{dn.get('line_max')} differ from sigils.json grammar {g.get('min_glyphs')}..{g.get('max_glyphs')}")
+    wp = ((sk.get("will_power") or {}).get("door_numbers") or {}).get("no_emanator_strain")
+    if wp != D["soul_modules"]["cycle"].get("no_emanator_strain"):
+        errors.append(f"skills:will_power door_numbers.no_emanator_strain {wp} differs from soul_modules cycle.no_emanator_strain")
+    wdn = (sk.get("will_power") or {}).get("door_numbers") or {}
+    if wdn.get("short_at_over") != (D["soul_modules"].get("strain") or {}).get("short_at_over"):
+        errors.append(f"skills:will_power door_numbers.short_at_over {wdn.get('short_at_over')} differs from soul_modules strain.short_at_over")
+    _share = ((D["soul_modules"].get("strain") or {}).get("shock") or {}).get("hp_share")
+    if not isinstance(_share, (int, float)) or not 0 < _share <= 1: errors.append(f"soul_modules: strain.shock.hp_share must be a share of max HP (0 to 1), not {_share!r} (rules 1.56, the Mana Shock)")
+    if (D["soul_modules"].get("strain") or {}).get("after_short") not in ("keep", "limit"): errors.append("soul_modules: strain.after_short is keep or limit (magic.ts manaShort)")
+    _ms = ((((D["rules"].get("mana") or {}).get("soul") or {}).get("strain") or {}).get("mana_short") or {}) if isinstance(D.get("rules"), dict) else {}
+    if not _ms: errors.append("rules.json mana.soul.strain.mana_short is missing (the Mana Short row)")
+    if _ms and _ms.get("shock_hp_share") != _share:
+        errors.append(f"rules.json mana.soul.strain.mana_short.shock_hp_share {_ms.get('shock_hp_share')} differs from soul_modules strain.shock.hp_share {_share}")
+    if wdn.get("shock_hp_share") != _share:
+        errors.append(f"skills:will_power door_numbers.shock_hp_share {wdn.get('shock_hp_share')} differs from soul_modules strain.shock.hp_share {_share}")
     for f in ("shadow", "tending", "figments"):
         tab = D[f].get("tab")
         if tab and not any(s.get("door_tab") == tab and isinstance(s.get("door_title"), str) and s["door_title"] for s in sk.values()):

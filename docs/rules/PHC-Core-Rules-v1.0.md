@@ -671,7 +671,7 @@ Same icon, a different border and name. Rarity is shown as a **word plus ornamen
 #### 3. Hands, off hands and dual wielding
 
 1. **Hands.** A 2H weapon fills both hands. The off hand takes a 1H weapon, a shield, a torch or a focus.
-2. **Focuses must be held** (item 630 retires item 77's "carried counts"). A focus counts only in the main or the off hand; one in the pack or on the belt does nothing until it is drawn. Sigils need an Evoker in a hand ("Needs an Evoker in hand."); Soul magic pays MP only from an Emanator in a hand (without one, an Outburst draws on the air at +2 Strain, as in Soul magic; Syphon, Crystallise and moves that spend MP need it: "Needs an Emanator in hand."). The Evoker blade, the spellslinger's pistol and the Grand staff count as an Evoker, the Emanator gauntlet as an Emanator, so a spellsword can hold a blade-focus and a shield. A 2H weapon fills both hands: no focus with it unless the weapon is one (the Grand staff). A focus put away mid-fight stops new casts at once; an Outburst already held stays held. Carried, a focus keeps what it stores (the Evoker's core charge, the Emanator's MP). Changing what a hand holds in a fight costs **1 AP a hand** (rules 1.9, World Play: Gear in a fight): drawing from the pack into one hand 1, a two-handed weapon 2, swapping main and off hand 1, putting away 1 a hand, dropping 0 (it lands in the pile on your tile). A focus drawn from the pack counts at once. Out of a fight gear changes are free.
+2. **Focuses must be held** (item 630 retires item 77's "carried counts"). A focus counts only in the main or the off hand; one in the pack or on the belt does nothing until it is drawn. Sigils need an Evoker in a hand ("Needs an Evoker in hand."); Soul magic pays MP only from an Emanator in a hand (without one, an Outburst draws on the air at +2 Strain *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)*, as in Soul magic; Syphon, Crystallise and moves that spend MP need it: "Needs an Emanator in hand."). The Evoker blade, the spellslinger's pistol and the Grand staff count as an Evoker, the Emanator gauntlet as an Emanator, so a spellsword can hold a blade-focus and a shield. A 2H weapon fills both hands: no focus with it unless the weapon is one (the Grand staff). A focus put away mid-fight stops new casts at once; an Outburst already held stays held. Carried, a focus keeps what it stores (the Evoker's core charge, the Emanator's MP). Changing what a hand holds in a fight costs **1 AP a hand** (rules 1.9, World Play: Gear in a fight): drawing from the pack into one hand 1, a two-handed weapon 2, swapping main and off hand 1, putting away 1 a hand, dropping 0 (it lands in the pile on your tile). A focus drawn from the pack counts at once. Out of a fight gear changes are free.
 3. **Single attacks.** With a weapon in each hand, attack with either one at its normal cost and modifiers.
 4. **Paired attack.** One action with both weapons. **AP = the higher attack cost + 1.** The main hand attacks at −1 and the off hand at −3, at the same target or two targets, each with its own roll. The off-hand penalty drops by 1 for every 3 points in its attack skill (Dexterity, for guns and light blades alike: rules 1.12, item 953), to a minimum of −1.
 5. **Two guns.** Each gun tracks its own ammo. **Heat is one pool for the pair** (item 956): its limit is the two guns' limits added, either gun's shot adds to it, and it cools 4 at your turn start; at the limit the gun that fires jams. Reloading one gun is 2 AP; reloading both is 3 AP (a tactical reload of both, 4; item 679).
@@ -1662,7 +1662,7 @@ Every word answers one question:
 4. **So you walk a spell:** draw, step, draw. A 4-word spell is a Line of 4 tiles: 3 steps, 4 glyphs, then Evoke. At Agility 1 and Expression 1 that's 3 + 4 + 1 = 8 AP, more than one turn's 6, so you finish it next turn. A Line can't cross a tile you can't stand on (walls, cover, deep water), and walking it can draw Overwatch.
 5. **Glyphs last** 2 rounds + your Sigil duration bonus (rounded down); out of combat, the same number of overworld rounds. They fade when the spell is Evoked (Keystones excepted).
 6. **Everyone sees a glyph glowing.** Reading it needs you to know that word, or an Analysis check against TN 12 (no AP, once per glyph).
-7. **Scuff** (1 AP): anyone standing on a glyph's tile can wipe it out. Enemies scuff glyphs that threaten them when they have AP to spare.
+7. **Scuff** (1 AP): anyone standing on a glyph's tile can wipe it out. Scuff is on the Utility tab (Leon, 16 Nov 2026). Enemies scuff glyphs that threaten them when they have AP to spare.
 8. **Co-op.** Two Sigil users can build one Line together, each drawing their own glyphs: the second extends the first one's stroke by picking it on the draw step (rule 3.6). Whoever Evokes pays the firing charge, rolls, and needs Max Sigil words of at least the Line's length. **Enemy Sigil users** can Evoke any Line they can read, yours included, and the other way round.
 9. **Skill unlocks that change drawing and Evoking** (engine-run, items 482–485): **Brain Power · Overclock** (Mastery 1): your next glyph may make a spell one word longer than your Max Sigil words (never past 4), for 2 charge more. **Brain Power · Twin Draw** (Mastery 2): once per combat, the glyphs of two spells cost the Glyph AP of the longer spell only (steps still cost Movement). (**Rumination · Proven Formula** is no longer a Sigil unlock: since rules 1.13 it is +3 on saves against a condition that has already hit you this combat.) **Visualization · Paint the Field** (Mastery 2): once per Evoke, a spell with no Burst word gets a free SPREAD or PUSH (no glyph, no charge, not counted toward 4).
 
@@ -1763,7 +1763,7 @@ Non-element Subjects keep plain Sigil visuals (cyan, square) with a glyph per ki
 
 > **Rules revision 1.5 (Soul magic: Outburst 2.0, accepted 8 Nov 2026; decision 99).** It replaces the 1.2 Soul rules (items 68–76 where they name 1.2 numbers): Begin, Pump and Release with stage multipliers, the swell, Strain that burns and shorts with no roll, calming the heart (no vent), a second school as a half-strength rider, tones (the Sigil 1.4 elements in the Soul style), shapes, and holding as gameplay (the aura, Heart Overwatch, Resonance, Feeding). Sigil magic owns space; Outburst owns time and the body. **Every number is provisional** (items 492–521) until the damage balance pass. The design is in `docs/design/outburst-2.0-proposal.md`; the data in `soul_modules.json` (`cycle`, `strain`, `tones`, shapes as `form` modules, `retired`).
 
-An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hands 2, item 630): without one in hand, every Begin pays straight from the air at +2 Strain (the MP stays in the carried Emanator). You hold an Outburst in the heart, fill it over turns and choose the moment to let it go.
+An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hands 2, item 630): without one in hand, every Begin pays straight from the air at +2 Strain (the MP stays in the carried Emanator). *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)* You hold an Outburst in the heart, fill it over turns and choose the moment to let it go.
 
 #### 1. The heart cycle: Begin, Pump, Release
 
@@ -1786,10 +1786,10 @@ An Emanator stores bots as MP, up to your Max MP. It pays only from a hand (Hand
 
 #### 3. Strain, the burn, the Mana Short and calming the heart
 
-1. **Strain limit:** 3 + floor(Will Power ÷ 2). **+1 per Begin** and **+1 per held turn** (the swell), each +2 in Flooded air; +2 a Begin without an Emanator.
+1. **Strain limit:** 3 + floor(Will Power ÷ 2). **+1 per Begin** and **+1 per held turn** (the swell), each +2 in Flooded air; +2 a Begin without an Emanator. *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)*
 2. **Every turn start: −1 Strain, always** (whatever you did), before the swell.
 3. **Over the limit, no roll:** each point over **burns your heart for 8 true damage at the end of your turn**. It Downs, never kills (a foe is subdued).
-4. **The Mana Short is automatic at 3 over the limit** (checked whenever Strain rises, and again at the end of your turn, for a limit that fell: item 544): you are **Stunned** (you lose your next turn), a held Outburst **goes off wild** (at a random creature within its reach, or into the air), and its element's **stage-1 rider lands on your own tile** (you take Frost's Slowed, Acid's Corroded). Then Strain falls to the limit. Will Power raises the limit; it no longer rolls you out of trouble.
+4. **The Mana Short is automatic at 3 over the limit** (checked whenever Strain rises, and again at the end of your turn, for a limit that fell: item 544): you are **Stunned** (you lose your next turn), a held Outburst **goes off wild** (at a random creature within its reach, or into the air), and its element's **stage-1 rider lands on your own tile** (you take Frost's Slowed, Acid's Corroded). Then Strain falls to the limit. *(Superseded by rules 1.56, the Mana Shock: Strain no longer falls; the caster is in Mana Shock until it is back at the limit.)* Will Power raises the limit; it no longer rolls you out of trouble.
 5. **No vent** (Leon: "feels like ripping off Sigil"). Strain falls by **calming the heart**, through what the body does, so fighting mages and support mages each have their own way. All five add to the turn-start −1:
    1. **A turn of stillness:** end a turn in which you didn't Begin, Pump or Feed **and hold no Outburst**: −1 more. Holding is not stillness (Leon, 8 Nov 2026): a held heart that only waits nets 0 a turn (+1 swell, −1 turn start); Steady the heart nets −2 at the cost of growth.
    2. **Fighting it out:** your first weapon attack each turn (melee or shot): −1. Only the first counts, even one made at Strain 0.
@@ -1900,7 +1900,7 @@ Every Soul move that read 1.2 behaviour is re-derived on the heart cycle (items 
 | **Heart Surge** (Channeler III) | Once a turn, a toggle on a Release or a snap: it fires **one stage higher** (a held one's stage really rises, rider too; past stage 4 ×2.6; a snap ×1) *(Superseded by rules 1.19: past stage 4 is one more step of the table, ×1.8)*. Double Strain: the Begin's Strain again (1, Flooded 2) once the release has landed. |
 | **Sanctuary** (Guardian III) | Halves all damage to allies inside but your own heart's burn. |
 | **Drink It In** (Guardian II) | An elemental Outburst feeds its MP price like a Raw one (it is told from a Sigil by the MP it carries). |
-| **Gift** (Bard III) | The ally pays 3 AP (Begin and Release); it goes off at **stage 1** on the Bard's MP (the design's full price) and a Begin's Strain (+2 without an Emanator). |
+| **Gift** (Bard III) | The ally pays 3 AP (Begin and Release); it goes off at **stage 1** on the Bard's MP (the design's full price) and a Begin's Strain (+2 without an Emanator). *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)* |
 | **Fed** (Heartfed) | −10% MP a point of the key gauge at Begin. **Feed a feeling** (0 AP, 2 a turn): spend 1 point for a Pump that costs no AP. Release empties the gauge. No damage bonus. |
 | **Overflow** (Heartfed) | The keyed Begin is held at stage 2 at once (no Strain on it). |
 | **Through** (Heartbinder) | Snap-cast or Release from a linked ally's tile: range, sight and the shape (cone, line, aura) run from there. |
@@ -2791,7 +2791,7 @@ Shove and Break are techniques everyone can learn (the Shove Link, the Break Fin
 - **Soul class casts** (Will Shield, Sanctuary, Puppet) cost:
   - the Soul cast AP;
   - the school base cost × the air × (1 − saving), +20% under a Right Brain Debuff, priced through `outburst_cost`;
-  - 1 Strain (2 in Flooded air, +2 without an Emanator), plus any extra the move adds;
+  - 1 Strain (2 in Flooded air, +2 without an Emanator), plus any extra the move adds; *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)*
   - the meter drops MP ÷ 10.
   They release at once and are never held.
 - **Evoker class moves** (Ward, Seal, Rewrite, Quicken, Inscribe) need a ready Evoker: not locked and not Silenced.
@@ -3990,7 +3990,7 @@ Built on 12 Nov 2026 from Leon's words of that day: "MANA. Pumps should cost you
 7. **If you can't pay, you can't Pump.** The Pump is refused with the reason ("A Pump to stage 3 needs 9 MP (4): Syphon first, or Release what you hold."). Nothing turns into Strain and nothing shorts. You can still Release what you hold, Syphon, or wait for the swell.
 8. **Revert Pump gives the MP back.** Let it go gives nothing back.
 9. **A Pump's MP does not move the mana meter.** (A Begin still lowers it by its MP ÷ 10.)
-10. **Who pays.** A character's own heart, with an Emanator in a hand. A heart that draws on the air (no Emanator in hand) pays no MP for a Pump: the Begin's +2 Strain is its price. A Twin's Pumps and an enemy caster's Pumps cost no MP, as before (their numbers were fitted without it; item 1345).
+10. **Who pays.** A character's own heart, with an Emanator in a hand. A heart that draws on the air (no Emanator in hand) pays no MP for a Pump: the Begin's +2 Strain is its price. *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)* A Twin's Pumps and an enemy caster's Pumps cost no MP, as before (their numbers were fitted without it; item 1345).
 11. **Drink It In** drinks the spell's whole price: the Begin and its Pumps.
 
 ### 3. What it comes to
@@ -6914,6 +6914,56 @@ Not in slice 1 (each needs a piece the engine lacks; the draft lists them): Weat
 round are not on the damage), the shield's own swing and its follow-up (P9, P11), cover behind the tank (P10), the
 growth paths (P8), Hold the Gap (P9).
 
+## Rules 1.56 (Balance 2.0), the bare heart (Leon, 16 Nov 2026)
+
+Leon, 16 Nov 2026, on the Outbursts tab's bare-handed warning: "Keep everything as now, +4 strain on the begin, going
+into manashock eat 25% your max HP per turn no negociation. find a way to reduce strain or say bye bye, for normal soul
+mage too". In force:
+
+1. **A Begin without an Emanator in a hand costs +4 Strain** (was +2; item 4500). Everything else about drawing on the
+   air stands: no MP, the MP stays in a carried Emanator, the Begin's own Strain and the Flooded step as before. The
+   same +4 is what every move that begins an Outburst bare-handed adds (the class Outburst moves, Gift, Inner Charge):
+   one field, `soul_modules.json cycle.no_emanator_strain`, which the warning's text copies (`skills.json will_power
+   door_numbers`, held equal by the validator).
+2. **The Mana Shock** (Leon, 16 Nov 2026, choosing the first of three readings put to him: "for the out burst
+   decision, use 1"; items 4501 to 4511; it reverses item 500). For every Soul caster, with or without an Emanator,
+   characters and enemies alike:
+   1. **The Mana Short** keeps its name and its trigger (3 over the limit, `soul_modules.json strain.short_at_over`):
+      Stunned 1 round, a held Outburst goes off wild, its element's stage-1 rider on the caster's own tile, as before.
+      **Strain is no longer set back to the limit** (`strain.after_short`: `keep`), and the caster enters **Mana Shock**
+      (a state of the caster's heart, `MagicUnit.shock` in a fight and the story's magic `shock`; its name, text and
+      cost are `soul_modules.json strain.shock`: `name`, `text`, `hp_share`; it is not a conditions row).
+   2. **Mana Shock lasts until Strain is at or under the limit**, by the ways that already lower it: the turn start's
+      −1, a still turn, fighting it out, tending, Let go, Steady, Relief, Revert. While it lasts, more Strain brings
+      **no second Short** (no Stun, no wild release). Leaving it and reaching 3 over again is a new Short.
+   3. **The cost** (Leon, 16 Nov 2026: "do all 4. 25% after that turn is already debilitating enough"; items 4503 and
+      4510): **25% of Max HP** (the row's `strain.shock.hp_share`: max_hp × 0.25, rounded down) at the end of each of
+      the caster's own turns that ends in Mana Shock, **from the turn after the one it began in**: the Short's own turn
+      pays the burn of 8 a point over only (which stays as it was), never the share. The rule is **never charged in the
+      turn the state was entered**: a Short on the caster's own turn makes its next own turn (the Stunned one, which
+      can't calm) the first that pays; a Short off its turn (another unit's action, an enemy's turn, a reaction) makes
+      its very next own turn the first that pays. The share comes after the burn and after a still turn's −1, so a
+      turn that brings Strain back to the limit pays nothing. It is true damage of the self-harm kind (`strain`): no
+      armour, no shield, no Guard plate, no Close Guard or Interpose, no redirect or share, no drop-to-0 saver (Last
+      Plate, Lifeline, a prayer's floor included), and **nothing raises it either** (Pain Eater's Fresh +50% taken, a
+      +% damage taken of any kind): the heart's own harm, the burn and the share alike, is exactly its own number
+      (item 4505: the damage chokepoint lets no listener touch it).
+   4. **It Downs, never kills** (a foe is subdued), as every burn of the heart. **A Downed caster leaves Mana Shock and
+      its Strain is set to the limit**, so a raised caster is not shocked.
+   5. **Pure Heart** still turns away the first Short of a fight (no Mana Shock from it); **Hollow Heart** still refuses
+      the Short's Stun (not the Mana Shock) and keeps a heart-Downed caster stable.
+   6. **Enemies:** an enemy caster's own choices never reach 3 over (its cap is the limit, or the limit + 2 when
+      desperate); pushed there from outside, it is in Mana Shock like anyone, and with nothing held it Begins nothing
+      until the Shock ends (it walks and shoots: the first attack of a turn calms).
+   7. **Mana Shock ends with the fight** (Leon, 16 Nov 2026; item 4508): when a fight ends (won, lost, fled, a Proving
+      Ground wave cleared or fallen) and when a won Survival fight becomes its field (rules 1.55), Mana Shock is
+      cleared and a Strain above the limit is set to the limit. It is **never charged outside a fight**: the area map's
+      round (which runs the heart's turn end) takes the burn a point over as it always has (rules 1.5), never the
+      share. The field has no turns, so nothing is charged or calmed there.
+   8. **Outside causes stay** (Leon, 16 Nov 2026): what adds Strain from outside (a Gift's Begin, a linked ally
+      falling, the twin, a Blessing's tug) can still bring a Short and Mana Shock; such a Short is off the caster's
+      turn, so item 3's rule makes its next own turn the first that pays.
+
 ## Maps (rules 1.16)
 
 Leon, 11 Nov 2026: fights were crowded on 16 × 11 tiles. A squad had no room to manoeuvre, every weapon was in range from the first turn, and a melee fighter had no approach to make. Maps grow so that range bands, Sprint and cover on the way in matter (`docs/design/proposals/2026-11-combat-roles.md`). Numbers are in `data/maps.json`.
@@ -8978,7 +9028,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 497. **Shape damage:** Bolt ×1, Lance ×0.8, Wave ×0.7, Burst ×0.7, Aura ×0.6; Bolt and Lance roll Will Power against Defense, the areas don't roll. Not in the proposal: added so an unrolled area isn't a full-damage Bolt on everyone. *Settled by Leon (8 Nov 2026): the shape and roll rules confirmed; the multipliers stay provisional for the balance pass.*
 498. **Strain falls by 1 at the start of every one of your turns, always** (Leon), and the five calming ways add to it.
 499. **The burn:** 8 true damage a point over the limit at the end of your turn; it Downs, never kills (a foe is subdued).
-500. **The automatic Mana Short at 3 over:** Stunned 1 turn, a held Outburst wild, its element's stage-1 rider on your own tile (conditions only), then **Strain falls to the limit** (not in the proposal: otherwise the Short would repeat on every point). *Settled by Leon (8 Nov 2026).*
+500. **The automatic Mana Short at 3 over:** Stunned 1 turn, a held Outburst wild, its element's stage-1 rider on your own tile (conditions only), then **Strain falls to the limit** (not in the proposal: otherwise the Short would repeat on every point). *Settled by Leon (8 Nov 2026).* *(Superseded by rules 1.56, the Mana Shock: Strain no longer falls; the caster is in Mana Shock until it is back at the limit.)* (Leon, 16 Nov 2026, reversing this item; items 4501 to 4509.)
 501. **Stillness:** a turn with no Begin, Pump or Feed (class casts count as a Begin) **and no Outburst held**. *Settled by Leon (8 Nov 2026): holding does not count as stillness*, so a held heart that only waits nets 0 Strain a turn (+1 swell, −1 turn start), and Steady the heart nets −2 at the cost of growth (the first draft let the held heart net −1, which made holding still too cheap). The −1 stays provisional for the balance pass.
 502. **Fighting it out and Tending others** are once each per turn, on your own turn only (reaction shots and heals out of turn don't calm). Tending counts a heal or shield that lands, a stim, and each CLEANSE that ends a condition.
 503. **Let it go:** free, on your own turn; Strain −stage (0 at stage 0), at most the Strain the swells cost (item 541); the meter +1.
@@ -9028,7 +9078,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 541. **Let it go gives back only what the swells cost.** As written ("Strain falls by its stage"), stage bought with AP or free Pumps (Empathy, Shape, Fed, Overdraw, Overflow, Love Made Manifest's stage 4) turned into Strain removal 1:1 with no cap: Begin (+1), Pump ×4, let go (−4) netted −3 in one turn, a vent by another name, and Love Made Manifest was −3 for 2 AP. Now the fall is the stage **capped at the Strain the hold's swells have cost** (Flooded swells count 2; a Twin Pays hold, whose swells cost nothing, gives nothing back). A hold that only swelled behaves as before. *Accepted by Leon, 8 Nov 2026 ("do yours"). The same day he called two side effects intended: the Proving Ground's Refill also resets Strain and Charges, and Pure Heart (Will Power M2) turns away the first Mana Short of each fight.*
 542. **The second school works on the primary's side.** Buff and Inverse Damage on allies; Damage, Control and Status on foes. A cross-side pairing is refused by `magic/design` (and Beloved Spells, the Twinbound twin, the Proving Ground); an old design that has one keeps its primary and drops the rider. The section 4.2 example "Buff (heal) + Status (Inspired)" was impossible as written (Inspired is a Buff option, and a Status rider would have Shaken the healed ally); it is now "Damage + Status (Shaken)" and "Buff (heal) + Damage with Inverse".
 543. **"Landed" means took effect.** The primary lands when its roll hits, its push moves the target (a Body save that holds, or an immunity, is not a landing) or its condition takes hold (a resisted or cancelled one is not). Only then do the second school and the tone's riders ride, and only then does the creature count as hit for `outburst_after` (Storm Front, Twin Souls).
-544. **The Short is a state, checked at the end of your turn too.** A limit that falls without a Strain gain (Heart's Own's +2 ending when the Beloved spell is released) is checked before the burn: 3 over shorts then (and Strain falls to the limit, so it doesn't also burn).
+544. **The Short is a state, checked at the end of your turn too.** A limit that falls without a Strain gain (Heart's Own's +2 ending when the Beloved spell is released) is checked before the burn: 3 over shorts then (and Strain falls to the limit, so it doesn't also burn). *(Superseded by rules 1.56, the Mana Shock: Strain stays, so the burn and the Mana Shock's share follow at that turn end; a caster already in Mana Shock does not short again.)*
 
 **Rules 1.5: gaps closed after the review (8 Nov 2026). PROVISIONAL.**
 
@@ -9103,7 +9153,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 590. **The Sigil ceiling:** 350 a hit, 500 on a critical, per creature per spell, before armour (balance-targets.md). With items 587–589 a maxed caster's strongest single-target Line (STONE · FIRE · SHOCK · CONDENSE) is about 346 (was about 1,144; 2,288 on a critical), so the ceiling only trims the extreme cases. *Rules 1.17: removed. 350 and 500 are targets, not a limit; the full Line is the Mage's peak and may pass them (item 1052).*
 591. **Weapons exceed the ceilings too** (not changed here; for the damage simulator): the breacher tube at about 290 a hit for a maxed build with a masterwork, and about 990 on a critical (Critical multiplier up to 3.4).
 630. **A focus counts only in a hand** (Leon, 8 Nov 2026; retires item 77's "the Evoker and Emanator count when carried"; closes item 354's open note). The main or the off hand; a 2H weapon fills both, so an off-hand focus doesn't count beside one (and equipping one stows it). Evokers: the Evoker, the Evoker blade, the spellslinger's pistol, the Grand staff (2H). Emanators: the Emanator, the Emanator gauntlet. The refusals read "Needs an Evoker in hand." and "Needs an Emanator in hand." Carried, a focus keeps its store (core charge, MP; rests and refills still reach it), but nothing is cast or spent from it. Enemy casters hold theirs.
-631. **No Emanator in hand: Outbursts draw on the air** (Leon, 8 Nov 2026, choosing between Hands 2's "Soul spells need an Emanator in a hand" and Soul magic's "without one, every Begin pays from the air"). Begin costs no MP and +2 Strain; the MP stays in the carried Emanator. Syphon, Crystallise and every move that spends or fills MP need the Emanator in hand.
+631. **No Emanator in hand: Outbursts draw on the air** (Leon, 8 Nov 2026, choosing between Hands 2's "Soul spells need an Emanator in a hand" and Soul magic's "without one, every Begin pays from the air"). Begin costs no MP and +2 Strain *(Superseded by rules 1.56, the bare heart: +4 Strain without an Emanator.)*; the MP stays in the carried Emanator. Syphon, Crystallise and every move that spends or fills MP need the Emanator in hand.
 632. **Putting a focus away mid-fight** (swapping a 2H weapon into the main hand, or something else into the off hand) stops new casts at once: drawing, Evoking, swapping a core, Venting, Syphon, Crystallise and MP. Glyphs already drawn stay on the ground (Evoking them needs an Evoker again). An Outburst already held stays held: it swells, can be Pumped, Fed, Steadied, let go and Released (the spec gives no rule that ends it). Disarmed leaves a focus weapon in reach: it still counts (the condition stops attacks, not casting).
 633. ~~**Swapping a focus in a fight:** a focus from the pack into the off hand is 1 AP (one hand), like any swap; a 2H weapon into the main hand is 1 AP and stows the off hand with it (one motion).~~ *(Superseded by rules 1.9: item 684. A focus into one hand is still 1 AP; a 2H weapon into the main hand is now 2 AP, one a hand, and still stows the off hand with it.)* Story and area-map casting read the same hands.
 634. **The Grand staff** (mana arms, 2H, 24 physical, reach 1, 2.5 kg, 2,400 credits, Brain Power 3, counts as an Evoker; item 353's data delta). PROVISIONAL: every number; the Grand Sigilist (shelved) doesn't need it to plant its Grand form yet.
@@ -10733,3 +10783,52 @@ Items 4240 to 4247.
     through `braceHook.gain`); the second copy of the formula in combat.ts is gone. `skills.json durability.door_line`
     is the Guard row's line. No number.
 
+### Rules 1.56 (Balance 2.0), the bare heart
+
+4500. **A bare-handed Begin (rules 1.56, the bare heart, item 1; `soul_modules.json cycle.no_emanator_strain`):** +4
+    Strain (was +2, item 631). Leon's number, 16 Nov 2026. PROVISIONAL.
+4501. **The Mana Shock (rules 1.56, the Mana Shock):** the Mana Short leaves Strain where it is (`soul_modules.json
+    strain.after_short` `keep`; item 500's fall to the limit is retired) and puts the caster in Mana Shock
+    (`MagicUnit.shock`, the story's magic `shock`: set by the Short, cleared wherever Strain falls to the limit and on
+    a Down; its name and text are `soul_modules.json strain.shock.name` and `.text`). Leon, 16 Nov 2026 ("use 1").
+4502. **Mana Shock's cost:** 25% of Max HP (`soul_modules.json strain.shock.hp_share`, max_hp × 0.25, rounded down, an
+    amount block's `per max_hp` part on the heart's one harm path, `magic.ts` `magicTurnEnd`) at the end of each
+    of the caster's own turns that ends in it, from the turn after the one it began in (item 4510). Leon's number.
+    PROVISIONAL.
+4503. **When it is paid** (Leon, 16 Nov 2026, settling the lead's call): at the end of the caster's own turn, after the
+    burn and after a still turn's −1, so a turn that brings Strain to the limit pays nothing; the Stunned turn pays;
+    the Short's own turn does not (item 4510). PROVISIONAL.
+4504. **No second Short while in Mana Shock** (the lead's call): further Strain burns as before but does not Stun again
+    or throw a held Outburst wild.
+4505. **Nothing softens it** (Leon: "no negociation"): the heart's own harm (the burn a point over and the Mana Shock's
+    share) is the self-harm type `strain`, true damage past shields and armour, and the damage chokepoint
+    (`effects/damage.ts` `applyDamage`) sends it to no `reduce` or `would_drop_to_0` listener: no item, perk, trait,
+    condition, boon, prayer, intervention, ward or Guard reduces it (Hardened, Thick Hide, Held Close, Walking Wounded,
+    Rally Cry, the Sanctuary, Nerukhan's Canticle, Reactive Plate), moves or shares it (Soulmate, Red Thread, the
+    Matchmaker, Tending's threads) or holds a Down at 1 HP (Lifeline, Last Plate, Not Yet, Unbroken, Take the Weight,
+    Hold the Gate, the Toll-Keeper). Its `after` phase and the Down still speak: Hollow Heart's stable Down applies
+    (it acts after the Down). Fixed 16 Nov 2026 (the review found the share cut by Walking Wounded and moved by
+    Soulmate). **Nothing raises it either** (Leon, 16 Nov 2026: "do all 4"): the same gate keeps every `damage_in`
+    listener off it, increases included (Pain Eater's Fresh +50% taken; the context-gated +% taken of Glass Runner,
+    Rabbit's Foot, Factory Made and One Shot never match the `strain` type), and the derived reductions before the
+    listeners (Elemental and Ambush damage taken, Read Them) sit behind the same gate; the burn a point over and the
+    share are both exactly their own number.
+4506. **It Downs, never kills; a Down ends it** (the lead's call): the caster's Strain is set to the limit and Mana Shock
+    ends when it is Downed, so being raised is not a death loop. A Down while not in Mana Shock leaves Strain as before.
+4507. **Enemies** (the lead's call): an enemy caster in Mana Shock with nothing held Begins nothing (it walks and shoots
+    until the Shock ends); holding, it releases, Steadies or lets go as before.
+4508. **It ends with the fight** (Leon, 16 Nov 2026, closing the lead's open question): every fight's end (`combat_over`,
+    heard in `magic.ts`: won, lost, fled), a Proving Ground wave's end (`sandboxOver`) and the field's start
+    (`runFightOver`, rules 1.55) clear Mana Shock and set a Strain above the limit to the limit (`magic.ts`
+    `shockClear`, the one copy the Down also uses). Never charged outside a fight: the area map's round
+    (`storyMagicRound`) keeps the burn a point over (rules 1.5, older than the Shock) and takes no share. The field
+    has no turns: nothing is charged or calmed there. Settled.
+4509. **Pure Heart and Hollow Heart** keep their texts: Pure Heart's refusal still sets Strain to the limit (no Shock);
+    Hollow Heart refuses the Stun only.
+4510. **Never charged in the turn it began** (Leon, 16 Nov 2026: "25% after that turn is already debilitating
+    enough"): the Short's own turn pays the burn only; `MagicUnit.shockOwn` marks a Shock entered on the caster's own
+    turn (`cb.order[cb.turn]` is the caster, in a fight), and that turn's end takes no share. A Shock entered off its
+    turn (another unit's action, an enemy's turn, a reaction window) carries no mark, so the caster's next own turn is
+    the first charged. Outside causes (a Gift, a link, the twin, a Blessing) keep their power to Short (item 4511).
+4511. **Outside causes stay** (Leon, 16 Nov 2026): no change to what adds Strain from outside; item 4510 carries their
+    off-turn Short.

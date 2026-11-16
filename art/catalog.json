@@ -32051,6 +32051,20 @@
     }
   },
   "condition_icons": {
+    "cond-mana-shock": {
+      "label": "PLACEHOLDER: Mana Shock",
+      "path": "art/icons/conditions/mana-shock.svg",
+      "sha256": "00ac60ea096229d2a581d5b1ba38e25a5d87aded62ad1f8b6e6e0aebc5c2c23c",
+      "placeholder": true,
+      "format": "svg",
+      "mode": "sign",
+      "tint": "endurance",
+      "wanted": "art/icons/conditions/mana-shock.png",
+      "brief": "art/briefs/ART-REQUESTS.md",
+      "slot": false,
+      "status": "placeholder",
+      "production_approved": false
+    },
     "cond-canticle-nerukhan": {
       "label": "PLACEHOLDER: Shelter of the Saints (verse)",
       "path": "art/icons/conditions/canticle-nerukhan.svg",

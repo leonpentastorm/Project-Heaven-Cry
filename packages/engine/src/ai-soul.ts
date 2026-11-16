@@ -7,7 +7,8 @@
 //
 // What a Soul caster (FoeSpec.caster naming an enemies.json `soul_casters` entry) does, in the enemy turn (combat.ts
 // enemyTurn, one call a step):
-//  · strain first: over its limit it releases if anything is worth it, else Steadies (stage 2+) or lets go; it never
+//  · strain first: over its limit it releases if anything is worth it, else Steadies (stage 2+) or lets go (in Mana
+//    Shock with nothing held it Begins nothing: rules 1.56); it never
 //    Begins or holds into the burn, and never into a Mana Short (3 over), unless desperate (30% HP or less: the burn
 //    is allowed, the Short still isn't, since a Short throws the held heart wild);
 //  · release: it weighs every ready design (or the held one) at every aim it can see, from where it stands or from one
@@ -217,6 +218,9 @@ export function aiSoulStep(cb: Combat, rng: Rng, u: Unit): boolean {
     if (m.held.stage >= 2 && !m.held.steady && canPay(cb, u, SOUL_AP.steady) && m.strain - 1 <= strainCap(u)) return !steadyHeart(cb, u);
     return !letGo(cb, u);
   }
+  // 1b. Rules 1.56 (the Mana Shock): nothing held and still over the limit, the heart adds no Strain (no Begin): the
+  //     weapon code acts (walk or shoot; a hit calms the heart) and a turn with no Begin is a still turn.
+  if (!m.held && m.shock) return false;
   // 2. The best release this turn (from here, or one walk away).
   const c = heartBestRelease(cb, u, { move: !st.moved });
   const cd = c ? m.designs.find((x) => x.id === c.design) : undefined;

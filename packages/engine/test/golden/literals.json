@@ -11,10 +11,12 @@
 "literal/flux-overload/2-over/shield": "i:P1:overload/true:20 => P1 hp228>208 sh0>12",
 "literal/flux-overload/4-over": "i:P1:overload/true:40 => P1 hp228>188",
 "literal/flux-overload/4-over/shield": "i:P1:overload/true:40 => P1 hp228>188 sh0>12",
-"literal/strain-burn/1-over": "i:P1:strain/true:11 => P1 hp168>157",
-"literal/strain-burn/1-over/shield": "i:P1:strain/true:11 => P1 hp168>157 sh0>12",
-"literal/strain-burn/2-over": "i:P1:strain/true:22 => P1 hp168>146",
-"literal/strain-burn/2-over/shield": "i:P1:strain/true:22 => P1 hp168>146 sh0>12",
-"literal/strain-burn/3-over/shield": "=> P1 sh0>12",
-"literal/strain-burn/5-over/shield": "=> P1 sh0>12"
+"literal/strain-burn/1-over": "=> P1 hp168>157",
+"literal/strain-burn/1-over/shield": "=> P1 hp168>157 sh0>12",
+"literal/strain-burn/2-over": "=> P1 hp168>146",
+"literal/strain-burn/2-over/shield": "=> P1 hp168>146 sh0>12",
+"literal/strain-burn/3-over": "=> P1 hp168>135",
+"literal/strain-burn/3-over/shield": "=> P1 hp168>135 sh0>12",
+"literal/strain-burn/5-over": "=> P1 hp168>113",
+"literal/strain-burn/5-over/shield": "=> P1 hp168>113 sh0>12"
 }

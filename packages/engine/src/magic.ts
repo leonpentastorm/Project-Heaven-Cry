@@ -81,6 +81,8 @@ export interface MagicUnit {
   cast: boolean;
   /** Free Pumps left this round and per round (Empathy 3: 1; rules 1.19: no second from Empathy 7); the calming ways used this turn; Strain owed on the next Begin. */
   freePumps?: number; freePumpsMax?: number; calmFight?: boolean; calmTend?: boolean; debt?: number;
+  /** Rules 1.56: the heart is in Mana Shock (entered at a Mana Short; ends when Strain is back at the limit, on a Down, or with the fight). */ shock?: boolean;
+  /** Rules 1.56 (item 4510): the Shock began on this caster's own turn, so that turn's end takes no share (never charged in the turn it was entered). */ shockOwn?: boolean;
   /** Rules 1.19: the free stages taken this turn (a character takes FREE_PER_TURN at most, whatever gives them); from
    * Empathy 7 a swell adds no Strain. */
   freeUsed?: number; swellFree?: boolean;
@@ -703,6 +705,13 @@ export const STRAIN_BURN: number = SR.strain?.burn_per_point ?? 8;
 /** Rules 1.36 (the level scale): Strain's burn a point over the limit, in HP: × scale at the caster's level. */
 export const strainBurn = (u: Unit | null | undefined): number => Math.round(STRAIN_BURN * scaleOf(u?.level));
 export const SHORT_AT_OVER: number = SR.strain?.short_at_over ?? 3;
+/** Rules 1.56 (the Mana Shock): what the Mana Short leaves of the Strain (soul_modules.json strain.after_short):
+ * 'keep' (it stays, and the caster is in Mana Shock until it is back at the limit) or 'limit' (it falls to the limit:
+ * rules 1.5, item 500, retired). */
+const AFTER_SHORT: string = SR.strain?.after_short ?? 'keep';
+/** Rules 1.56: the Mana Shock's own numbers and words (soul_modules.json strain.shock): its name, its text, its share
+ * of max HP a turn. */
+export const MANA_SHOCK: { id: string; name: string; text: string; hp_share: number } = SR.strain?.shock || { id: 'mana_shock', name: 'Mana Shock', text: '', hp_share: 0 };
 export const AURA_TICK: number = SR.aura?.tick_damage ?? 5;
 export const RESONANCE_BONUS: number = SR.resonance?.bonus ?? 0.2;
 /** Resonance's ceiling per release (Leon 8 Nov 2026): +0.4 in total, however many allies released before you. */
@@ -906,7 +915,7 @@ export function addStrain(cb: Combat, rng: Rng, u: Unit, n: number, why: string)
   const limit = sc.limit ?? m.strainLimit;
   emit(cb, 'strain_change', { u, from: was, to: m.strain, why, limit, cb });
   emitFx(cb, 'strain', { unit: u.id, at: u.pos, strain: m.strain, limit, by: n, why, over: Math.max(0, m.strain - limit) });
-  if (m.strain - limit >= SHORT_AT_OVER && !u.dead && !u.downed) return manaShort(cb, rng, u, limit);
+  if (m.strain - limit >= SHORT_AT_OVER && !u.dead && !u.downed && !m.shock) return manaShort(cb, rng, u, limit); // rules 1.56: no second Short while the Shock lasts
   return '';
 }
 /** Strain from the held Outburst itself (rules 1.8: the Begin, the swell, a feeling): Quiet halves the hold's total,
@@ -925,7 +934,25 @@ function easeStrain(cb: Combat, u: Unit, n: number, way: string): number {
   const m = heart(u); if (!m || n <= 0 || m.strain <= 0) return 0;
   const was = m.strain; m.strain = Math.max(0, m.strain - n);
   emit(cb, 'strain_change', { u, from: was, to: m.strain, why: way, limit: m.strainLimit, cb });
+  shockEnds(cb, u);
   return was - m.strain;
+}
+/** Rules 1.56 (the Mana Shock): it lasts while Strain is over the limit (MagicUnit.shock); asked wherever Strain falls
+ * and at the turn's end (a limit that rose). */
+function shockEnds(cb: Combat, u: Unit): boolean {
+  const m = heart(u); if (!m || !m.shock || m.strain > m.strainLimit) return false;
+  delete m.shock; delete m.shockOwn;
+  say(cb, u.name + "'s heart is back at its limit: the " + MANA_SHOCK.name + ' ends (Strain ' + m.strain + '/' + m.strainLimit + ').');
+  return true;
+}
+/** The heart's own harm (the burn a point over the limit, the Mana Shock's share): true damage, no shield, no credit,
+ * the self-harm type 'strain' (NOT_A_HIT, self_harm; effects/damage.ts sends it to no 'reduce' or 'would_drop_to_0'
+ * listener, so nothing reduces, redirects, shares or floors it: spec item 4505), it Downs, never kills. */
+function heartHarm(cb: Combat, u: Unit, n: number, line: string, fx: Record<string, unknown>) {
+  const r = applyDamage(cb, u, n, { type: 'strain', dmgType: 'true', shield: false, credit: 'none', nonlethal: true } as any);
+  emitFx(cb, 'burn', { unit: u.id, at: u.pos, ...fx, dmg: r.dealt });
+  emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: r.dealt, why: 'strain', killed: false }); if (u.hp === 0) fxFell(cb, u);
+  say(cb, line.replace('{dmg}', String(r.dealt)) + (u.hp === 0 ? ', ' + (u.side === 'foe' ? 'out of the fight' : 'Downed') : '') + '.');
 }
 /** Calming the heart (rules 1.5, section 3): way 'turn' (every turn start), 'still', 'fight', 'tend', 'letgo', 'steady'.
  * fx 'calm' {unit, at, way, by, strain}. */
@@ -960,8 +987,17 @@ export function manaShort(cb: Combat, rng: Rng, u: Unit, limit?: number): string
     // Its element's stage-1 rider on your own tile (conditions only: a push from your own tile has no way to go).
     for (const r of toneRiders(tone, 1).riders) if (r.rider === 'cond' && r.condition && !u.dead) say(cb, u.name + ' takes the backlash' + applyCond(cb, rng, null, u, r.condition, r.rounds, undefined, { skipSave: !r.save }));
   }
-  const was = m.strain; m.strain = Math.min(m.strain, lim); m.pumps = [];
-  if (was !== m.strain) emit(cb, 'strain_change', { u, from: was, to: m.strain, why: 'short', limit: lim, cb });
+  m.pumps = [];
+  if (AFTER_SHORT === 'limit') { const was = m.strain; m.strain = Math.min(m.strain, lim); if (was !== m.strain) emit(cb, 'strain_change', { u, from: was, to: m.strain, why: 'short', limit: lim, cb }); }
+  else if (!u.dead && !u.downed && m.strain > lim) {
+    // Rules 1.56 (the Mana Shock): Strain stays; the caster is in Mana Shock until it is back at the limit.
+    m.shock = true;
+    // Item 4510: never charged in the turn it was entered. On the caster's own turn in a fight, that turn's end takes
+    // no share; entered off its turn (another unit's action, an enemy's turn), its next own turn is the first charged.
+    if (!cb.overworld && cb.order?.[cb.turn] === u.id) m.shockOwn = true;
+    emitFx(cb, 'cond', { target: u.id, at: u.pos, id: MANA_SHOCK.id }); // the state's word on the token, no hurt flash (fx/play.ts cond)
+    say(cb, u.name + ' is in ' + MANA_SHOCK.name + ' (Strain ' + m.strain + '/' + lim + '): ' + MANA_SHOCK.text);
+  }
   return ' · MANA SHORT';
 }
 /** The end of a caster's turn (rules 1.5): each point over the limit burns 8 true (it Downs, never kills: a foe is
@@ -970,16 +1006,29 @@ export function manaShort(cb: Combat, rng: Rng, u: Unit, limit?: number): string
 export function magicTurnEnd(cb: Combat, rng: Rng | null, u: Unit) {
   const m = heart(u); if (!m || u.dead) return;
   // The Short is a state (rules 1.5: automatic at 3 over): a limit that fell this turn (Heart's Own) is checked here.
-  if (rng && m.strain - m.strainLimit >= SHORT_AT_OVER && !u.downed) say(cb, u.name + "'s heart is 3 over its limit" + manaShort(cb, rng, u) + '.');
+  if (rng && m.strain - m.strainLimit >= SHORT_AT_OVER && !u.downed && !m.shock) say(cb, u.name + "'s heart is " + SHORT_AT_OVER + ' over its limit' + manaShort(cb, rng, u) + '.');
   const over = m.strain - m.strainLimit;
-  if (over > 0 && !u.downed) {
-    const r = applyDamage(cb, u, strainBurn(u) * over, { type: 'strain', dmgType: 'true', shield: false, credit: 'none', nonlethal: true } as any);
-    emitFx(cb, 'burn', { unit: u.id, at: u.pos, over, dmg: r.dealt });
-    emitFx(cb, 'hurt', { target: u.id, at: u.pos, dmg: r.dealt, why: 'strain', killed: false }); if (u.hp === 0) fxFell(cb, u);
-    say(cb, u.name + "'s heart burns: " + r.dealt + ' damage (' + over + ' over the Strain limit)' + (u.hp === 0 ? ', ' + (u.side === 'foe' ? 'out of the fight' : 'Downed') : '') + '.');
-  }
+  if (over > 0 && !u.downed) heartHarm(cb, u, strainBurn(u) * over, u.name + "'s heart burns: {dmg} damage (" + over + ' over the Strain limit)', { over });
   if (!m.cast && !m.held && m.strain > 0) calm(cb, u, 1, 'still');
+  // Rules 1.56 (the Mana Shock): a turn that ends still over the limit costs its share of max HP (soul_modules.json
+  // strain.shock.hp_share, as an amount block's per max_hp part), after the burn and stillness; a turn that brought
+  // Strain back to the limit pays nothing. Item 4510: the turn the Shock began in pays no share (shockOwn), and item
+  // 4508: it is never charged outside a fight (the area map's round, the field: no turns there anyway).
+  const own = !!m.shockOwn; delete m.shockOwn;
+  if (m.shock && !shockEnds(cb, u) && !own && !cb.overworld && !cb.field && !u.downed && !u.dead)
+    heartHarm(cb, u, amountOf({ kind: 'damage', base: 0, per: [{ of: 'max_hp', value: MANA_SHOCK.hp_share }], profile: 'flat' }, null, { level: null, counts: { max_hp: u.maxHp } }).amount, u.name + "'s heart is in " + MANA_SHOCK.name + ': {dmg} damage (Strain ' + m.strain + '/' + m.strainLimit + ')', { shock: 'burn', over: m.strain - m.strainLimit });
 }
+/** Rules 1.56 (the Mana Shock): out of the Shock, its Strain set to the limit if above it. The one copy, for a Down
+ * (so being raised is not a death loop: item 4506) and the fight's end (item 4508: combat_over below, a Proving Ground
+ * wave's end and the field's start in game.ts). A heart not in the Shock is left as it is. */
+export function shockClear(cb: Combat, u: Unit, why: string) {
+  const m = heart(u); if (!m || !m.shock) return;
+  if (m.strain > m.strainLimit) { const was = m.strain; m.strain = m.strainLimit; emit(cb, 'strain_change', { u, from: was, to: m.strain, why, limit: m.strainLimit, cb }); }
+  shockEnds(cb, u);
+}
+onHook('on_downed', (ctx: any, cb: Combat) => { const u: Unit = ctx.victim; if (u && !u.dead) shockClear(cb, u, 'downed'); });
+/** Item 4508: every fight's end (won, lost, fled) clears it, before the fighters are written back. */
+onHook('combat_over', (_ctx: any, cb: Combat) => { for (const u of cb.units) if (!u.dead) shockClear(cb, u, 'fight over'); });
 
 // ----- the cycle -----
 export interface OutburstPreview { ok: boolean; why?: string; cost: number; ap: number; range: number; strain: number; stage: number; hp?: number;
@@ -995,7 +1044,7 @@ export function previewOutburst(cb: Combat, u: Unit, designId: string, aim?: str
   const d = findDesign(m, designId); if (!d) return no('No such design.');
   // 'outburst_cost' {u, design, mp, ap, range, strain, hp, release, preview} (mutable): items change the Begin's price
   // (pay HP instead of MP, a free cast, more reach). ap is the Begin's; a snap cast adds the Release (1 AP).
-  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)) * (condOn(u, 'rdebuff') ? condMods('rdebuff').soulCostMult ?? 1 : 1), ap: designAp(m, d), range: designRange(m, d), strain: (flooded(cb) ? CYC.flooded_strain ?? 2 : CYC.begin_strain ?? 1) + (m.emanator ? 0 : CYC.no_emanator_strain ?? 2), hp: 0, release, preview: true, fail: '', relMult: 1, relAll: 1, relNotes: [] as string[], cb });
+  const oc: any = emit(cb, 'outburst_cost', { u, design: d, mp: designCost(m, d, manaOf(cb)) * (condOn(u, 'rdebuff') ? condMods('rdebuff').soulCostMult ?? 1 : 1), ap: designAp(m, d), range: designRange(m, d), strain: (flooded(cb) ? CYC.flooded_strain ?? 2 : CYC.begin_strain ?? 1) + (m.emanator ? 0 : CYC.no_emanator_strain), hp: 0, release, preview: true, fail: '', relMult: 1, relAll: 1, relNotes: [] as string[], cb });
   if (oc.fail) return no(oc.fail);
   const cost = Math.max(0, Math.round(oc.mp)), ap = priced({ cb, u }, 'begin', Math.max(0, oc.ap), undefined, { design: d.id }).ap + (release ? SOUL_AP.release : 0), range = oc.range, strain = Math.max(0, oc.strain), hp = Math.max(0, Math.round(oc.hp || 0));
   if (hp && u.hp <= hp) return { ok: false, why: 'Paying ' + hp + ' HP would drop you.', cost, ap, range, strain, stage: 0, hp };
