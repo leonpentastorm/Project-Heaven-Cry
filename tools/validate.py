@@ -1932,6 +1932,9 @@ def check_doors(D, errors):
     dn = (sk.get("brain_power") or {}).get("door_numbers") or {}
     if dn.get("line_min") != g.get("min_glyphs") or dn.get("line_max") != g.get("max_glyphs"):
         errors.append(f"skills:brain_power door_numbers {dn.get('line_min')}..{dn.get('line_max')} differ from sigils.json grammar {g.get('min_glyphs')}..{g.get('max_glyphs')}")
+    wp = ((sk.get("will_power") or {}).get("door_numbers") or {}).get("no_emanator_strain")
+    if wp != D["soul_modules"]["cycle"].get("no_emanator_strain"):
+        errors.append(f"skills:will_power door_numbers.no_emanator_strain {wp} differs from soul_modules cycle.no_emanator_strain")
     for f in ("shadow", "tending", "figments"):
         tab = D[f].get("tab")
         if tab and not any(s.get("door_tab") == tab and isinstance(s.get("door_title"), str) and s["door_title"] for s in sk.values()):

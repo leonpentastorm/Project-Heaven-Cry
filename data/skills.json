@@ -2630,6 +2630,7 @@
         "about": "The Sigil grammar's Line lengths (sigils.json grammar.min_glyphs / max_glyphs), for the door line's placeholders; tools/validate.py holds them equal."
       },
       "door_tab": "sigils",
+      "door_mirror": ["scuff"],
       "per_point": {
         "numbers": {
           "sigil": 0.1,
@@ -4120,6 +4121,12 @@
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
       "door_line": "Begin a design, Pump it up to its top stage, then Release. Strain is the cost, and MP pays.",
       "door_focus_line": "Your Emanator is in your pack, not in a hand: open the Backpack and draw it, so your Outbursts are paid in MP instead of drawing on the air.",
+      "door_bare_headline": "Using magic without a focus causes great harm.",
+      "door_bare_line": "Every Outburst you Begin draws on the air at +{=door_numbers.no_emanator_strain} Strain, and Strain past your limit burns your health.",
+      "door_numbers": {
+        "no_emanator_strain": 2,
+        "about": "soul_modules.json cycle.no_emanator_strain, copied for the bare-handed warning's placeholder; tools/validate.py holds them equal."
+      },
       "door_tab": "outbursts",
       "per_point": {
         "numbers": {

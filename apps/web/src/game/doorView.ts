@@ -10,11 +10,11 @@ import type { ActionGroup } from './commands';
 
 /** A door: its skill, its line, the fight tab it opens, and (a door system's own tab) the tab's header and ink: the
  *  row's door_title, in its attribute's ink. */
-export interface Door { skill: string; name: string; attribute: string; line: string; tab: string | null; title: string | null; ink: string | null; /** the line a tab shows while its focus is only in the pack (skills.json door_focus_line; '' none) */ focusLine: string }
+export interface Door { skill: string; name: string; attribute: string; line: string; tab: string | null; title: string | null; ink: string | null; /** the line a tab shows while its focus is only in the pack (skills.json door_focus_line; '' none) */ focusLine: string; /** the action keys this door's tab also lists (skills.json door_mirror: a second listing of an action whose home is another tab) */ mirror: string[]; /** the bare-handed warning (skills.json door_bare_headline / door_bare_line): shown on the tab while no focus is in a hand */ bareHeadline: string; bareLine: string }
 
 /** Every door the data describes, in the data's order (an alpha skill with a `door_line`). */
 export const DOORS: Door[] = (SKILLS as any[]).filter((s) => s.slot === 'alpha' && typeof s.door_line === 'string' && s.door_line)
-  .map((s) => ({ skill: s.id, name: s.name, attribute: s.attribute, line: s.door_line, tab: s.door_tab || null, title: s.door_title || null, ink: ATTR_INK[s.attribute] || null, focusLine: typeof s.door_focus_line === 'string' ? s.door_focus_line : '' }));
+  .map((s) => ({ skill: s.id, name: s.name, attribute: s.attribute, line: s.door_line, tab: s.door_tab || null, title: s.door_title || null, ink: ATTR_INK[s.attribute] || null, focusLine: typeof s.door_focus_line === 'string' ? s.door_focus_line : '', mirror: Array.isArray(s.door_mirror) ? s.door_mirror.map(String) : [], bareHeadline: typeof s.door_bare_headline === 'string' ? s.door_bare_headline : '', bareLine: typeof s.door_bare_line === 'string' ? s.door_bare_line : '' }));
 
 const pointsOf = (ch: any, skill: string): number => Number(ch?.skills?.[skill]) || 0;
 
@@ -47,7 +47,7 @@ export const tabDoorLine = (tab: string | null | undefined): Door | null => DOOR
 
 /** The tab a character's first turn of a fight opens on (round 1): its top door's tab, when that tab is offered and its
  *  first action (the door's own verb: Draw, Begin, a prayer; a read-only row, isInfo, is skipped) is one the engine allows
- *  now (a row with no refusal: a Sigilist with the Evoker only in the pack does not open on Sigils for its Scuff). Null
+ *  now (a row with no refusal: a Sigilist with the Evoker only in the pack does not open on Sigils). Null
  *  otherwise (and after the first round), so the screen's usual rule runs (the tab used last, Attack with a hostile in
  *  sight, Move). */
 export function firstTurnTab(cb: any, ch: any, groups: ActionGroup[], isInfo: (key: string) => boolean = () => false): string | null {
@@ -75,9 +75,14 @@ export function tabFocus(ch: any, tab: string | null | undefined): TabFocus | nu
 export const tabFocusLine = (ch: any, tab: string | null | undefined): string => (tabFocus(ch, tab) === 'pack' ? DOORS.find((x) => x.tab === tab)?.focusLine || '' : '');
 /** The tabs a character is shown under the focus rule: a focus door's tab with no focus of its door anywhere is left
  *  out only when the engine refuses every action on it (no Draw, no Picture, no Tend verb, nothing held to order or to
- *  release). A tab with any row the engine allows keeps its place (Scuff on the Sigils tab, a held Figment's orders,
+ *  release). A tab with any row the engine allows keeps its place (a held Figment's orders,
  *  an Outburst Begun with no Emanator, which draws on the air): the client never takes away an action the engine
  *  offers. allRefused: whether every action row of the tab carries the engine's refusal (the caller also keeps a tab
  *  whose held work needs it, the heart of a held Outburst). */
 export const focusFilter = <T>(ch: any, items: T[], tabOf: (x: T) => string, allRefused: (x: T) => boolean): T[] =>
   items.filter((x) => !(tabFocus(ch, tabOf(x)) === 'none' && allRefused(x)));
+
+/** The action keys a tab also lists as a second listing (skills.json door_mirror of the door that opens it): the same action, the same rule, shown again at the end of the tab. */
+export const tabMirrors = (tab: string | null | undefined): string[] => (tab ? DOORS.find((x) => x.tab === tab)?.mirror || [] : []);
+/** The bare-handed warning of a tab's door ({headline, line}), or null when the door has none. */
+export const tabBareWarning = (tab: string | null | undefined): { headline: string; line: string } | null => { const d = tab ? DOORS.find((x) => x.tab === tab) : null; return d && d.bareHeadline ? { headline: d.bareHeadline, line: d.bareLine } : null; };

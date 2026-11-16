@@ -108,14 +108,23 @@ describe('the focus rule on a focus door\'s tab (the Sigils tab and the Evoker)'
     expect(TP(v)).toMatchObject({ key: 'tp-sigils', hasFocusLine: true, focusLine: (SKILL.brain_power as any).door_focus_line });
     expect(String((SKILL.brain_power as any).door_focus_line)).toMatch(/Evoker/);
   });
+  it('the Evoker in hand: Scuff is on Utility and mirrored at the end of Sigils, the same action from either', () => {
+    _resetTabPrefsCache(); fight('TABS-M');
+    const l = screen(), v0 = l.renderVals(), ids = tabsOf(v0);
+    expect(l._tabItems[ids.indexOf('utility')]).toContain('scuff');
+    const sg = l._tabItems[ids.indexOf('sigils')]; expect(sg.indexOf('scuff')).toBe(sg.length - 1);
+    const picked: string[] = [];
+    for (const t of ['utility', 'sigils']) { l.setTab(t); const row = TP(l.renderVals()).items.find((r: any) => r.key === 'scuff'); expect(row).toBeTruthy(); l.state.action = null; row.pick(); picked.push(l.state.action); }
+    expect(picked).toEqual(['scuff', 'scuff']);
+  });
   it('none anywhere (a real drop: the Evoker onto the tile): the tab goes only when the engine refuses every row on it', () => {
     _resetTabPrefsCache(); const { u } = fight('TABS-F');
     doAct({ type: 'combat/drop', unitId: u.id, slot: evokerAt() });
     const c: any = (G.characters as any)[pc().charId];
     expect(evokerAt()).toBeNull(); expect(packOf(c).some((it: any) => FOCUS_IDS.evoker.includes(it.weapon || it.item || it.id))).toBe(false);
-    // Draw, Evoke, Vent and Swap core are refused, but the engine still offers Scuff: the tab stays, Scuff usable on it
+    // Draw, Evoke, Vent and Swap core are refused and Scuff now sits on Utility: the Sigils tab goes; Scuff is on Utility
     const l = screen(), v = l.renderVals(), ids = tabsOf(v);
-    expect(ids).toContain('sigils'); expect(l._tabItems[ids.indexOf('sigils')]).toContain('scuff');
+    expect(ids).not.toContain('sigils'); expect(l._tabItems[ids.indexOf('utility')]).toContain('scuff');
     // every row refused (the rule itself, on this character): the tab is left out; any one usable row keeps it
     const R = (why: string | null) => ({ key: 'r' + Math.random(), why });
     const gs = [{ id: 'sigils', items: [R('No.'), R('No.')] }, { id: 'attack', items: [R('No.')] }];
@@ -146,6 +155,15 @@ describe('the focus rule never strands held work (the Outbursts tab with no Eman
     expect(tabsOf(v)).toContain('outbursts'); expect(TP(v).key).toBe('tp-outbursts'); // the turn opens on the heart
     const keys = l._tabItems[tabsOf(v).indexOf('outbursts')];
     expect(keys).toContain('release'); expect(keys).toContain('letgo');
+  });
+  it('no Emanator in a hand: the big warning is on top of the Outbursts tab, from data; an Emanator in hand: gone', () => {
+    _resetTabPrefsCache(); const u = soulNoFocus('TABS-W'); const c: any = (G.characters as any)[u.charId];
+    const l = screen(); l.renderVals(); l.setTab('outbursts'); const v = l.renderVals();
+    expect(TP(v)).toMatchObject({ key: 'tp-outbursts', hasBare: true, bareHeadline: (SKILL.will_power as any).door_bare_headline });
+    expect(TP(v).bareLine).toMatch(/\+2 Strain/); expect(TP(v).bareLine).not.toMatch(/\{=/);
+    c.offHand = { id: FOCUS_IDS.emanator[0] }; (G.combat as any).units.find((x: any) => x.id === u.id).mg = magicOf(c); snap = view();
+    expect((G.combat as any).units.find((x: any) => x.id === u.id).mg.emanator).toBe(true);
+    expect(TP(screen().renderVals()).hasBare).toBe(false);
   });
   it('a hidden Outbursts tab shows while an Outburst is held', () => {
     _resetTabPrefsCache(); const u = soulNoFocus('TABS-H2');

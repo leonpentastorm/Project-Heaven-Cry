@@ -69,7 +69,7 @@ import { tipAttrs, mountActionTips } from '../game/actionTip';
 import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../game/figmentIcons';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
-import { firstTurnTab, tabDoorLine, focusFilter, tabFocusLine } from '../game/doorView';
+import { firstTurnTab, tabDoorLine, focusFilter, tabFocusLine, tabMirrors, tabBareWarning } from '../game/doorView';
 import { noteTabs, noteLive, tabKey, shownTabs, firstUsable, NO_PREFS, EV_TABS_CHANGED } from '../game/tabPrefs';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
@@ -918,7 +918,7 @@ export class CombatLogic extends DCLogic {
     const sk = w && w.grants, skFx = (sk && sk.effect) || {}, skRuns = ['multi_shot', 'sweep'].includes(skFx.op);
     // ---------- magic: what this unit can cast, previews and refusals straight from the engine ----------
     const mg = cur && cur.mg, words = mg ? mg.words : [], designs = mg ? mg.designs : [];
-    const hasMagic = !!(mg && (words.length || designs.length || mg.evoker || mg.emanator)), isMagic = MAGIC.includes(S.action) && hasMagic;
+    const hasMagic = !!(mg && (words.length || designs.length || mg.evoker || mg.emanator || S.action === "scuff")), isMagic = MAGIC.includes(S.action) && hasMagic;
     const mana = cb.mana ?? MANA_START, band = manaBand(mana), pcb = cb.mana == null ? { ...cb, mana } : cb;
     // Draw (rules 1.4: on your own tile only): each word as the engine would draw it now, with its cost and whether it
     // starts or extends a Line, and the stroke it goes into (rules 1.10: the picker; spec: Mana, Sigils 9.1; game/sigilView.ts).
@@ -1555,7 +1555,10 @@ export class CombatLogic extends DCLogic {
     // A tab goes only when every one of its action rows is refused; the Outbursts tab never while an Outburst is held
     // (the heart: Release, Let it go, Steady, Pump with a feeling).
     const heldNow = !!(cur && cur.mg && cur.mg.held);
-    groups = focusFilter(tabMine ? tabChar : null, groups, (gr) => gr.id, (gr) => { if (gr.id === 'outbursts' && heldNow) return false; const rows = gr.items.filter((x) => !isPerkInfo(x.key)); return !!rows.length && rows.every((x) => !!x.why); });
+    // A door's mirrored actions (skills.json door_mirror): the action's own row, listed again at the END of the door's tab, flagged
+    // mirror (the same key, so it is the same action, rule and price). The focus rule below ignores a mirror: it never keeps a tab alive.
+    groups = groups.map((gr) => { const ms = tabMirrors(gr.id); if (!ms.length) return gr; const copies = ms.flatMap((k) => { const row = groups.filter((o) => o !== gr).flatMap((o) => o.items).find((x) => x.key === k); return row ? [{ ...row, mirror: true }] : []; }); return copies.length ? { ...gr, items: [...gr.items, ...copies] } : gr; });
+    groups = focusFilter(tabMine ? tabChar : null, groups, (gr) => gr.id, (gr) => { if (gr.id === 'outbursts' && heldNow) return false; const rows = gr.items.filter((x) => !x.mirror && !isPerkInfo(x.key)); return !!rows.length && rows.every((x) => !!x.why); });
     const tabK = tabMine ? tabKey(cur.charId) : null, tabP = tabK ? noteTabs(tabK, groups.map((gr) => gr.id), tabIdsKnown(groups.map((gr) => gr.id))) : NO_PREFS;
     // A hidden Outbursts tab shows while an Outburst is held: hiding a tab never hides the heart.
     { const all = groups, tabShow = heldNow ? { ...tabP, hidden: tabP.hidden.filter((x) => x !== 'outbursts') } : tabP;
@@ -1665,7 +1668,7 @@ export class CombatLogic extends DCLogic {
     const tabPanel = tabG ? [{ key: 'tp-' + tabG.id, tab: 'phc-tab-' + tabG.id, name: tabG.name, nameStyle: tabG.nameStyle, cls: 'phc-cb-tabpanel', innerCls: this._tabCls,
       hasDoor: !!tabDoor, doorSkill: tabDoor ? tabDoor.skill : '', doorLine: tabDoor ? tabDoor.line : '',
       // the focus rule: the door's focus only in the pack, one line on top says to put it on (skills.json door_focus_line)
-      ...(() => { const fl = tabFocusLine(tabMine ? tabChar : null, tabG.id); return { hasFocusLine: !!fl, focusLine: fl, focusStyle: 'font-size: 13px; line-height: 1.45; color: #FFFFFF; padding: 0 2px 2px' }; })(), doorStyle: 'font-size: 13px; line-height: 1.45; color: #C9D3E3; padding: 0 2px 2px',
+      ...(() => { const fl = tabFocusLine(tabMine ? tabChar : null, tabG.id); return { hasFocusLine: !!fl, focusLine: fl, focusStyle: 'font-size: 13px; line-height: 1.45; color: #FFFFFF; padding: 0 2px 2px' }; })(), ...(() => { const bw = tabBareWarning(tabG.id), on = !!bw && !!tabMine && !!cur && !!cur.mg && !cur.mg.emanator; return { hasBare: on, bareHeadline: on ? bw.headline : '', bareLine: on ? bw.line : '', bareStyle: 'display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 8px; border: 2px solid #F65157; background: rgba(246, 81, 87, 0.12); color: #F65157', bareHeadStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.04em' }; })(), doorStyle: 'font-size: 13px; line-height: 1.45; color: #C9D3E3; padding: 0 2px 2px',
       heart: tabG.id === 'outbursts' && !!heartV.show, hv: heartV,
       // Faith 2.2 (spec 2.4): the FAITH tab's header, your patron's portrait beside the Devotion meter.
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),

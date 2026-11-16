@@ -66,7 +66,7 @@ describe('the Sigils door on the combat screen', () => {
     // a new turn's first pick: not Sigils (its first action can't be used), so the usual rule: Attack, a hostile in sight
     const l = screen(); expect(TP(l.renderVals())[0].key).toBe('tp-attack');
     l.setTab('sigils'); const v = l.renderVals();
-    const rows = TP(v)[0].items; expect(TP(v)[0].key).toBe('tp-sigils'); expect(rows.filter((r: any) => r.why === 'Needs an Evoker in hand.').length).toBe(1); expect(rows.some((r: any) => r.key === 'scuff')).toBe(true);
+    const rows = TP(v)[0].items; expect(TP(v)[0].key).toBe('tp-sigils'); expect(rows.filter((r: any) => r.why === 'Needs an Evoker in hand.').length).toBe(1); expect(rows[rows.length - 1].key).toBe('scuff'); // the mirror, at the end of the tab
     const c = ch(), i = packOf(c).findIndex((it: any) => FOCUS_IDS.evoker.includes(it.weapon || it.item || it.id)); expect(i).toBeGreaterThanOrEqual(0);
     const it: any = packOf(c)[i], isWeapon = !!it.weapon, cost = gearCost(G.combat as any, pc(), c, { op: 'draw', item: i, to: isWeapon ? 'main' : 'off' } as any);
     expect(rows[0]).toMatchObject({ key: PACK_EVOKER, name: 'Needs an Evoker in hand: draw it from the pack' });
