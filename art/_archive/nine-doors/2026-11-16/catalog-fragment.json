@@ -2164,6 +2164,41 @@
       },
       "ink": "#FFFFFF"
     },
+    "move-hide": {
+      "label": "Wick \u2014 Hide",
+      "path": "art/icons/moves/hide.png",
+      "sha256": "f6153791e42aafba7aa2587e83d40b0d24f2bfb581aba359ace7d596a46a0307",
+      "format": "png",
+      "mode": "wick",
+      "tint": "perception",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #82",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-hide/hide.svg",
+      "previous_sha256": "c77f5b44f67a706ba160f3be9a56c91cef8d2d0497a54e93dd123ea27e421083",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/082-hide.png",
+      "upscaled": false,
+      "brief_number": 82,
+      "exports": {
+        "128": "art/icons/moves/exports/128/hide.png",
+        "64": "art/icons/moves/exports/64/hide.png",
+        "48": "art/icons/moves/exports/48/hide.png",
+        "44": "art/icons/moves/exports/44/hide.png",
+        "32": "art/icons/moves/exports/32/hide.png",
+        "24": "art/icons/moves/exports/24/hide.png"
+      },
+      "ink": "#FFFFFF"
+    },
     "move-first-shade": {
       "label": "Wick \u2014 First Shade",
       "path": "art/icons/moves/first-shade.png",
@@ -2197,6 +2232,41 @@
         "24": "art/icons/moves/exports/24/first-shade.png"
       },
       "previous_path": "art/icons/moves/first-shade.svg"
+    },
+    "move-ghost-kill": {
+      "label": "Wick \u2014 Ghost Kill",
+      "path": "art/icons/moves/ghost-kill.png",
+      "sha256": "caa85161e23880a217f886613cfb4073cc9a628137eed764eb68d98065461af5",
+      "format": "png",
+      "mode": "wick",
+      "tint": "perception",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #84",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-ghost-kill/ghost-kill.svg",
+      "previous_sha256": "d121b7b752f9e9317f4a2ebe5d86a81b5e1ed891ee9f727dadedd6426af63088",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/084-ghost-kill.png",
+      "upscaled": false,
+      "brief_number": 84,
+      "exports": {
+        "128": "art/icons/moves/exports/128/ghost-kill.png",
+        "64": "art/icons/moves/exports/64/ghost-kill.png",
+        "48": "art/icons/moves/exports/48/ghost-kill.png",
+        "44": "art/icons/moves/exports/44/ghost-kill.png",
+        "32": "art/icons/moves/exports/32/ghost-kill.png",
+        "24": "art/icons/moves/exports/24/ghost-kill.png"
+      },
+      "ink": "#FFFFFF"
     },
     "move-go-to-ground": {
       "label": "Wick \u2014 Go to Ground",
@@ -2367,6 +2437,76 @@
         "24": "art/icons/moves/exports/24/tradecraft.png"
       },
       "previous_path": "art/icons/moves/tradecraft.svg"
+    },
+    "move-vanish": {
+      "label": "Wick \u2014 Vanish",
+      "path": "art/icons/moves/vanish.png",
+      "sha256": "d38a85afafd8a04d708545329b64d5959816151f65692212abb098401a0652fb",
+      "format": "png",
+      "mode": "wick",
+      "tint": "perception",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #110",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-vanish/vanish.svg",
+      "previous_sha256": "495a84949b42727b338a37e3ee7583d654b9fcccd213fecc02d4a66901a9173e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/110-vanish.png",
+      "upscaled": false,
+      "brief_number": 110,
+      "exports": {
+        "128": "art/icons/moves/exports/128/vanish.png",
+        "64": "art/icons/moves/exports/64/vanish.png",
+        "48": "art/icons/moves/exports/48/vanish.png",
+        "44": "art/icons/moves/exports/44/vanish.png",
+        "32": "art/icons/moves/exports/32/vanish.png",
+        "24": "art/icons/moves/exports/24/vanish.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-toxin": {
+      "label": "Toxin",
+      "path": "art/icons/moves/toxin.png",
+      "sha256": "666995ec6f951f4bf03a1991393a4fcf4b6f803c5a7ed4b4887c61c8d099ee6c",
+      "format": "png",
+      "mode": "wick",
+      "tint": "perception",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #111",
+      "slot": false,
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-toxin/toxin.svg",
+      "previous_sha256": "9bc40e317b7c33ce762810e1237d1ff05b0fca32bf62a7f7b498ce0a606dc8b2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/111-toxin.png",
+      "upscaled": false,
+      "brief_number": 111,
+      "exports": {
+        "128": "art/icons/moves/exports/128/toxin.png",
+        "64": "art/icons/moves/exports/64/toxin.png",
+        "48": "art/icons/moves/exports/48/toxin.png",
+        "44": "art/icons/moves/exports/44/toxin.png",
+        "32": "art/icons/moves/exports/32/toxin.png",
+        "24": "art/icons/moves/exports/24/toxin.png"
+      },
+      "ink": "#FFFFFF"
     },
     "move-overclock-sigil": {
       "label": "Wick \u2014 Overclock (Brain Power step)",

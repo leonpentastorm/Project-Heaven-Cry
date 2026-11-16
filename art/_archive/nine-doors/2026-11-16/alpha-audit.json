@@ -278,9 +278,19 @@
       "faint_alpha_to_solid_area_ratio": 0.04782
     },
     {
+      "number": 82,
+      "name": "Hide",
+      "faint_alpha_to_solid_area_ratio": 0.0483
+    },
+    {
       "number": 83,
       "name": "First Shade",
       "faint_alpha_to_solid_area_ratio": 0.04145
+    },
+    {
+      "number": 84,
+      "name": "Ghost Kill",
+      "faint_alpha_to_solid_area_ratio": 0.06163
     },
     {
       "number": 85,
@@ -406,6 +416,16 @@
       "number": 109,
       "name": "Tradecraft",
       "faint_alpha_to_solid_area_ratio": 0.05241
+    },
+    {
+      "number": 110,
+      "name": "Vanish",
+      "faint_alpha_to_solid_area_ratio": 0.04805
+    },
+    {
+      "number": 111,
+      "name": "Toxin",
+      "faint_alpha_to_solid_area_ratio": 0.04386
     },
     {
       "number": 123,
