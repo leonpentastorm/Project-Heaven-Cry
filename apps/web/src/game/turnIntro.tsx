@@ -301,13 +301,14 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     let done = false;
     const close = () => {
       if (done) return; done = true; if (endClose.current === close) endClose.current = null;
-      setBanner((x) => (x && x.id === b.id ? null : x)); slotUntil.current = Date.now(); setEndFlag(false);
+      // (the flag goes with the panel, in the same paint: EndPanel's unmount clears it; a timer is only a safety net)
+      setBanner((x) => (x && x.id === b.id ? null : x)); slotUntil.current = Date.now(); setTimeout(() => { if (!endClose.current) setEndFlag(false); }, 1500);
       const g2 = live.current.game, cb2 = g2?.combat;
       if (cb2 && cb2.field && !cb2.over && live.current.screen === 'combat' && !document.hidden) showCard(fieldCard(cb2)); // a run's field: FREE ROAM, after the panel
       endPending.current = false; // the field's first turn banner follows
     };
     endClose.current = close;
-    if (document.hidden) { close(); return; }
+    if (document.hidden) { close(); setEndFlag(false); return; }
     setBanner(b); slotUntil.current = Date.now() + total; dismiss(); // a your-turn card under it goes (harmless with none)
     const S = (won ? CARDS.end.won : CARDS.end.lost).sounds || [];
     S.forEach((n, i) => later(() => { try { sfx(n as Sfx); } catch { /* sound never breaks the game */ } }, i * (CARDS.end.sound_gap_ms || 0)));
@@ -565,6 +566,7 @@ function BigBanner({ b, rm, inline }: { b: Banner; rm: boolean; inline?: boolean
 function EndPanel({ b, rm, onClose }: { b: Banner; rm: boolean; onClose: () => void }) {
   ensureCss();
   const k = b.k || 1, inMs = Math.round((rm ? 150 : BIG_IN) * k), outMs = Math.round((rm ? 150 : BIG_OUT) * k), total = bigTotal(b, rm), armAt = React.useRef(Date.now() + inMs + 250);
+  React.useLayoutEffect(() => () => setEndFlag(false), []); // gone: the field's bar may show (the same paint, never beside it)
   const name = 'phcEndVeil' + b.id.replace(/[^a-z0-9]/gi, ''), p1 = ((inMs / total) * 100).toFixed(2), p2 = (((total - outMs) / total) * 100).toFixed(2);
   return (
     <div role="dialog" aria-modal="false" aria-label={b.name} aria-live="polite" data-phc-card={b.kind} data-phc-big="" data-phc-end="" data-phc-card-id={b.id} data-phc-card-hold={b.hold} data-phc-card-after={b.after || undefined}
