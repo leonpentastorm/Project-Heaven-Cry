@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.momentum.rolling_start",
+  "name": "Rolling Start",
+  "icon_id": "fork.momentum.rolling_start",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Rolling Start** (`momentum.rolling_start`). The lead's version (\"3+ tiles in a straight line into a melee hit: +1\nMomentum\") **is the Charge's own trigger** (`techniques.json charge`: after 3 straight tiles) and stacks on the\nBreaker's Charge Carries. Re-pointed: *\"Your Charge needs {=numbers.tiles} tiles in a straight line, not 3, and a\nCharge costs no Momentum and, if it hits, builds {=numbers.build}. A Charge paid by Headlong builds nothing.\"*\n- Fields: `tiles: 2`, `build: 1`. Why: a Charge in a corridor or a cramped room, and the opener that feeds the chain\n  instead of eating it.\n- Carrier: the Charge's 3 tiles is `t.num('min_run', 3)` (`physical/melee/openers.ts:86`), a plain number off the\n  technique's `numbers` (`core.ts:239`), not reached by `sourceOf` or `holderNumber`: **N23** (a stat family\n  `tech_num:<tech>.<field>` added in `t.num`, after the `momentum_needed:<id>` precedent, `core.ts:333`). The cost:\n  N23's `momentum_cost:charge` at \u22121, floored at 0 by `momentumCost` (so the first Opener of a fight, already free,\n  `core.ts:187`, is not over-paid, which a flat \"+2 refund and build\" did). The build: trigger `hit`, `if {mode:\n  [charge], door_pick, self_lacks: [headlong_paid]}`, op `resource momentum +1`.\n- Breaker: Charge Carries (+2) adds on top: a Breaker's Charge is +3. Measured in section 8 (with Wind-up: the turn-1\n  Finisher). Peak: no.\n- Excite: two tiles of space between you and the gunner is enough; you hit at x2 and keep climbing.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-momentum-rolling-start",
+  "path": "art/icons/forks/momentum-rolling-start.png",
+  "paint": "Wick springs from a deep crouch into a very SHORT forward bound, a compact weapon held back and ONE short straight dash below his leading boot. Wide determined screen eyes, bent knees and tucked capelet: a Charge starts quickly.",
+  "avoid": "No wheel, engine, full-length running trail, target being pushed or numeral.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick springs from a deep crouch into a very SHORT forward bound, a compact weapon held back and ONE short straight dash below his leading boot. Wide determined screen eyes, bent knees and tucked capelet: a Charge starts quickly.\nAVOID: No wheel, engine, full-length running trail, target being pushed or numeral.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 16,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "0f3ffe3184be9fbbc63f1446b2a40952cddabcdb194cc8598d49fb282284c2d9",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-momentum-rolling-start-v1.png",
+  "source_sha256": "11af9500bbb6ba8de07f3d33db1e1ecc1ba9e7f6614b88f192993f8d8f975446",
+  "export_crop": [
+    39,
+    0,
+    1174,
+    1197
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/momentum-rolling-start.png",
+    "64": "art/icons/forks/exports/64/momentum-rolling-start.png",
+    "48": "art/icons/forks/exports/48/momentum-rolling-start.png",
+    "44": "art/icons/forks/exports/44/momentum-rolling-start.png",
+    "32": "art/icons/forks/exports/32/momentum-rolling-start.png",
+    "24": "art/icons/forks/exports/24/momentum-rolling-start.png"
+  },
+  "export_sha256": {
+    "128": "c0c53f8991900078253c00b72cd8874f23fac9f018759e8bee3373542e584fc7",
+    "64": "a4673bc2474652410f6920b66f58d87d8c0fed9a14aefd1bbcd34da2835a861d",
+    "48": "b7199fb953d3c537b8f87535a3ce0e103835c75da80ea8c4364e54d4d8f6ca55",
+    "44": "6af22617a597c8cbc01861e24cf0f05b6843a4b4f18d94a1f15b24da2bdb8575",
+    "32": "ed6638b651a64fe351ec140964b916f771a139d813751d9087387f891c5f2e60",
+    "24": "82735c0de83c0acc5fa468d318d8809f6e6c2f4fcabd1279fc4cd86376c79d5a"
+  },
+  "framing": {
+    "scale": 0.5361955616342383,
+    "offset": [
+      207,
+      191
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

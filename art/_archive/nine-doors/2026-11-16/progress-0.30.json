@@ -1,11 +1,19 @@
 {
   "total": 41,
-  "completed_count": 12,
+  "completed_count": 20,
   "completed_keys": [
     "0.30/fork.guard.cover_them",
     "0.30/fork.guard.drive",
     "0.30/fork.guard.provoke",
     "0.30/fork.guard.stand_fast",
+    "0.30/fork.momentum.grindstone",
+    "0.30/fork.momentum.headlong",
+    "0.30/fork.momentum.rolling_start",
+    "0.30/fork.momentum.spill",
+    "0.30/fork.prayer.benediction",
+    "0.30/fork.prayer.held_breath",
+    "0.30/fork.prayer.round_of_blessings",
+    "0.30/fork.prayer.steadfast",
     "0.30/fork.shadow.lend_the_dark",
     "0.30/fork.shadow.light_fingers",
     "0.30/fork.shadow.lightkiller",
@@ -15,6 +23,6 @@
     "0.30/fork.tend.shared_pulse",
     "0.30/fork.tend.short_thread"
   ],
-  "remaining_count": 29,
+  "remaining_count": 21,
   "scope": "0.30 additions only; original legacy denominator and held recipes are unchanged"
 }

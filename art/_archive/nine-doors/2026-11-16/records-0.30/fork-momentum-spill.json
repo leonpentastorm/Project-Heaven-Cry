@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.momentum.spill",
+  "name": "Spill",
+  "icon_id": "fork.momentum.spill",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Spill** (`momentum.spill`). *\"When a Finisher of yours drops a foe, the damage past its last HP strikes the nearest\nother foe next to it (no roll; its armour applies). Spill's own damage never Spills.\"*\n- Fields: `share: 1`. Why: the whole overkill, once; Cleave's extra strikes stay Cleave's.\n- Carrier: trigger `kill`, `if {tech_group: [finisher]}`, op `deal` with `targets {of: target, within: 1, side: foe,\n  max: 1}` (existing: `selectUnits` takes `of: target`, `triggers.ts:581`; no N5). The overkill is not in the event:\n  `on_kill` carries `{victim, by, src, ownTurn}` (`effects/damage.ts:122`) and `event:amount` reads 0 there, so Spill\n  needs **N21** (`on_kill` carries `over`, the damage past the last HP, worked out once in `applyDamage`). The stop is\n  by construction: Spill's `deal` is no technique, so its kill fails `tech_group: [finisher]`.\n- Collision: Cleave (one more adjacent strike a Momentum) makes several blows; Spill moves one overkill. Not a copy.\n  Peak: no (no Momentum is kept).\n- Excite: a Coup at x5 on a foe with 10 HP left; 60 damage goes on into the one behind it.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-momentum-spill",
+  "path": "art/icons/forks/momentum-spill.png",
+  "paint": "Wick completes ONE broad sweeping finisher with a short continuous blade; the stroke breaks past a cropped empty armour plate and continues as ONE hard white arc into a second cropped plate beside it. Fierce but playful pixel effort.",
+  "avoid": "No dead full body, gore, disconnected weapon, literal liquid or cup spilling.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick completes ONE broad sweeping finisher with a short continuous blade; the stroke breaks past a cropped empty armour plate and continues as ONE hard white arc into a second cropped plate beside it. Fierce but playful pixel effort.\nAVOID: No dead full body, gore, disconnected weapon, literal liquid or cup spilling.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 18,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "35621f7c902bd1b3b7bf944306f28d70109825b707921fda010b909dcc84b9ee",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-momentum-spill-v1.png",
+  "source_sha256": "d317b80d5d0035330ad6675f9f97d8d683965b62a9f064c1ca49b551b53caf80",
+  "export_crop": [
+    49,
+    17,
+    1240,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/momentum-spill.png",
+    "64": "art/icons/forks/exports/64/momentum-spill.png",
+    "48": "art/icons/forks/exports/48/momentum-spill.png",
+    "44": "art/icons/forks/exports/44/momentum-spill.png",
+    "32": "art/icons/forks/exports/32/momentum-spill.png",
+    "24": "art/icons/forks/exports/24/momentum-spill.png"
+  },
+  "export_sha256": {
+    "128": "5006a2bec2832c55a3154dc1918bce07729baa7a7a21a6e4368a50114da960ee",
+    "64": "522fad645bac63ae5fde542e51a19c5fd730ef971ee1f1afe0314f53c114f631",
+    "48": "486c86b2d66dcd77dffab12b17ceeafb4c98f57a3f050b489f553f22411dcd53",
+    "44": "c7f596c225829d44d441e5d0d48462f0255348185b33282112e09e59cdde44df",
+    "32": "ecaedd0a453d86ab66f154aa033eb265c16cf4604c64f1ad1cf33770b14aed06",
+    "24": "3dcccaab1775e58f659cf4a7a4cc444134b08f0a312877aff042182f7a7eb281"
+  },
+  "framing": {
+    "scale": 0.5643061925731876,
+    "offset": [
+      176,
+      163
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

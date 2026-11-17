@@ -110,6 +110,222 @@
       "implementation_ready": false
     },
     {
+      "request_key": "0.30/fork.momentum.grindstone",
+      "name": "Grindstone",
+      "icon_id": "fork.momentum.grindstone",
+      "path": "art/icons/forks/momentum-grindstone.png",
+      "sha256": "5442ad14e4f7fc4aabdc8861ec9590d0f421adf533396a40ae7695302548271d",
+      "exports": {
+        "128": "art/icons/forks/exports/128/momentum-grindstone.png",
+        "64": "art/icons/forks/exports/64/momentum-grindstone.png",
+        "48": "art/icons/forks/exports/48/momentum-grindstone.png",
+        "44": "art/icons/forks/exports/44/momentum-grindstone.png",
+        "32": "art/icons/forks/exports/32/momentum-grindstone.png",
+        "24": "art/icons/forks/exports/24/momentum-grindstone.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.momentum.headlong",
+      "name": "Headlong",
+      "icon_id": "fork.momentum.headlong",
+      "path": "art/icons/forks/momentum-headlong.png",
+      "sha256": "b6f4891dad40eda24e8b1552abcdb0b5287f2188844f889be4cf9ab5e1145689",
+      "exports": {
+        "128": "art/icons/forks/exports/128/momentum-headlong.png",
+        "64": "art/icons/forks/exports/64/momentum-headlong.png",
+        "48": "art/icons/forks/exports/48/momentum-headlong.png",
+        "44": "art/icons/forks/exports/44/momentum-headlong.png",
+        "32": "art/icons/forks/exports/32/momentum-headlong.png",
+        "24": "art/icons/forks/exports/24/momentum-headlong.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.momentum.rolling_start",
+      "name": "Rolling Start",
+      "icon_id": "fork.momentum.rolling_start",
+      "path": "art/icons/forks/momentum-rolling-start.png",
+      "sha256": "0f3ffe3184be9fbbc63f1446b2a40952cddabcdb194cc8598d49fb282284c2d9",
+      "exports": {
+        "128": "art/icons/forks/exports/128/momentum-rolling-start.png",
+        "64": "art/icons/forks/exports/64/momentum-rolling-start.png",
+        "48": "art/icons/forks/exports/48/momentum-rolling-start.png",
+        "44": "art/icons/forks/exports/44/momentum-rolling-start.png",
+        "32": "art/icons/forks/exports/32/momentum-rolling-start.png",
+        "24": "art/icons/forks/exports/24/momentum-rolling-start.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.momentum.spill",
+      "name": "Spill",
+      "icon_id": "fork.momentum.spill",
+      "path": "art/icons/forks/momentum-spill.png",
+      "sha256": "35621f7c902bd1b3b7bf944306f28d70109825b707921fda010b909dcc84b9ee",
+      "exports": {
+        "128": "art/icons/forks/exports/128/momentum-spill.png",
+        "64": "art/icons/forks/exports/64/momentum-spill.png",
+        "48": "art/icons/forks/exports/48/momentum-spill.png",
+        "44": "art/icons/forks/exports/44/momentum-spill.png",
+        "32": "art/icons/forks/exports/32/momentum-spill.png",
+        "24": "art/icons/forks/exports/24/momentum-spill.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.prayer.benediction",
+      "name": "Benediction",
+      "icon_id": "fork.prayer.benediction",
+      "path": "art/icons/forks/prayer-benediction.png",
+      "sha256": "273394fe61923747f67563b9a33773814cc1a5e5efe73ac5348b6ba3c70b212f",
+      "exports": {
+        "128": "art/icons/forks/exports/128/prayer-benediction.png",
+        "64": "art/icons/forks/exports/64/prayer-benediction.png",
+        "48": "art/icons/forks/exports/48/prayer-benediction.png",
+        "44": "art/icons/forks/exports/44/prayer-benediction.png",
+        "32": "art/icons/forks/exports/32/prayer-benediction.png",
+        "24": "art/icons/forks/exports/24/prayer-benediction.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.prayer.held_breath",
+      "name": "Held Breath",
+      "icon_id": "fork.prayer.held_breath",
+      "path": "art/icons/forks/prayer-held-breath.png",
+      "sha256": "f7384ceef75e7b85ffa834583c16538bef529febcb9204aeceaa5567192ede41",
+      "exports": {
+        "128": "art/icons/forks/exports/128/prayer-held-breath.png",
+        "64": "art/icons/forks/exports/64/prayer-held-breath.png",
+        "48": "art/icons/forks/exports/48/prayer-held-breath.png",
+        "44": "art/icons/forks/exports/44/prayer-held-breath.png",
+        "32": "art/icons/forks/exports/32/prayer-held-breath.png",
+        "24": "art/icons/forks/exports/24/prayer-held-breath.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.prayer.round_of_blessings",
+      "name": "Round of Blessings",
+      "icon_id": "fork.prayer.round_of_blessings",
+      "path": "art/icons/forks/prayer-round-of-blessings.png",
+      "sha256": "31c59b220419f28413700d522f075308c73389500d0262ab9d7e37fc593f4c15",
+      "exports": {
+        "128": "art/icons/forks/exports/128/prayer-round-of-blessings.png",
+        "64": "art/icons/forks/exports/64/prayer-round-of-blessings.png",
+        "48": "art/icons/forks/exports/48/prayer-round-of-blessings.png",
+        "44": "art/icons/forks/exports/44/prayer-round-of-blessings.png",
+        "32": "art/icons/forks/exports/32/prayer-round-of-blessings.png",
+        "24": "art/icons/forks/exports/24/prayer-round-of-blessings.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.prayer.steadfast",
+      "name": "Steadfast",
+      "icon_id": "fork.prayer.steadfast",
+      "path": "art/icons/forks/prayer-steadfast.png",
+      "sha256": "d7f7777324395de6b5f8aff1f27a6ef633c72366298bc5a1f4bd9157a186efb8",
+      "exports": {
+        "128": "art/icons/forks/exports/128/prayer-steadfast.png",
+        "64": "art/icons/forks/exports/64/prayer-steadfast.png",
+        "48": "art/icons/forks/exports/48/prayer-steadfast.png",
+        "44": "art/icons/forks/exports/44/prayer-steadfast.png",
+        "32": "art/icons/forks/exports/32/prayer-steadfast.png",
+        "24": "art/icons/forks/exports/24/prayer-steadfast.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
       "request_key": "0.30/fork.shadow.lend_the_dark",
       "name": "Lend the Dark",
       "icon_id": "fork.shadow.lend_the_dark",

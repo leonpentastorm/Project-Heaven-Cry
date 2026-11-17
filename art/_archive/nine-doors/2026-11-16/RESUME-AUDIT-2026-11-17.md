@@ -1,5 +1,5 @@
 <!-- current-completion -->
-> **Current: Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **12/41 candidates**, **29 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.  Camp signs #271–274 are completed. Pinned revision-2 art proposals for the eight source-question forks were explicitly authorized by Leon. Read CURRENT-CHECKPOINT.md, CONTINUE.md and current-run-validation.json. Earlier quota and 344-item sections below are historical.**
+> **Current: Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **20/41 candidates**, **21 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.  Camp signs #271–274 are completed. Pinned revision-2 art proposals for the eight source-question forks were explicitly authorized by Leon. Read CURRENT-CHECKPOINT.md, CONTINUE.md and current-run-validation.json. Earlier quota and 344-item sections below are historical.**
 <!-- /current-completion -->
 
 # Resume after actual image limit — 17 November 2026

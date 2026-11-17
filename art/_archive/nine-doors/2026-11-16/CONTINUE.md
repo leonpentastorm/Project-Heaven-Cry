@@ -1,19 +1,11 @@
 # Continue the Nine Doors artwork
 
-Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **12/41 candidates**, **29 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
+Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **20/41 candidates**, **21 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
 
 Leon authorized the pinned revision-2 visual basis for Cover Them, Drive, Lightkiller, Keep the Thread, Benediction, Held Breath, Walk It In and Lockdown. Their gameplay questions remain open; this is approval to paint draft proposals only. See user-direction-2026-11-17.json.
 
 ## Remaining 0.30 requests
 
-- `0.30/fork.prayer.round_of_blessings` · Round of Blessings
-- `0.30/fork.prayer.steadfast` · Steadfast
-- `0.30/fork.prayer.benediction` · Benediction · pinned revision-2 art basis authorized
-- `0.30/fork.prayer.held_breath` · Held Breath · pinned revision-2 art basis authorized
-- `0.30/fork.momentum.rolling_start` · Rolling Start
-- `0.30/fork.momentum.grindstone` · Grindstone
-- `0.30/fork.momentum.spill` · Spill
-- `0.30/fork.momentum.headlong` · Headlong
 - `0.30/fork.pressure.converging_fire` · Converging Fire
 - `0.30/fork.pressure.walk_it_in` · Walk It In · pinned revision-2 art basis authorized
 - `0.30/fork.pressure.through_the_gap` · Through the Gap

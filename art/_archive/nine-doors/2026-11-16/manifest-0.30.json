@@ -392,6 +392,772 @@
   {
     "production_approved": false,
     "implementation_ready": false,
+    "request_key": "0.30/fork.momentum.grindstone",
+    "name": "Grindstone",
+    "icon_id": "fork.momentum.grindstone",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Grindstone** (`momentum.grindstone`). *\"A melee hit on the foe you hit last builds {=numbers.build} Momentum, not 1.\"*\n- Fields: `build: 2`. Why: two hits on one foe reach x3 (Launch, a big Finisher) a hit sooner.\n- Carrier: a conditions row `ground` (content: put by your hit on its target, 1 round), trigger `hit`, `if {target_has:\n  [ground], melee: true}`, op `resource momentum +1`; the mark row after the check row in the option, or the first hit\n  counts itself. (Another Grindstone user's mark counts too: accepted.)\n- Breaker: Charge Carries opens, Grindstone climbs: a fit. Keep Swinging, Iron Grip: none. Peak: no.\n- Excite: you lock onto the Elite: x1, x3, and the third blow is a Launch through its own line.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-momentum-grindstone",
+    "path": "art/icons/forks/momentum-grindstone.png",
+    "paint": "Wick braces close to a cropped enemy armour shoulder and makes a compact repeated melee stroke with ONE short straight blade. TWO short parallel impact cuts mark the SAME contact point. Screen jaw set, feet close and grounded.",
+    "avoid": "No literal grinding wheel, smithy, multiple full figures, blood or extra weapons.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick braces close to a cropped enemy armour shoulder and makes a compact repeated melee stroke with ONE short straight blade. TWO short parallel impact cuts mark the SAME contact point. Screen jaw set, feet close and grounded.\nAVOID: No literal grinding wheel, smithy, multiple full figures, blood or extra weapons.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 17,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "5442ad14e4f7fc4aabdc8861ec9590d0f421adf533396a40ae7695302548271d",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-momentum-grindstone-v1.png",
+    "source_sha256": "e0e60616d0ec0c69015b280bf248d583c944dab2a79d5a37ac620226d4c79cf7",
+    "export_crop": [
+      0,
+      17,
+      1244,
+      1212
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/momentum-grindstone.png",
+      "64": "art/icons/forks/exports/64/momentum-grindstone.png",
+      "48": "art/icons/forks/exports/48/momentum-grindstone.png",
+      "44": "art/icons/forks/exports/44/momentum-grindstone.png",
+      "32": "art/icons/forks/exports/32/momentum-grindstone.png",
+      "24": "art/icons/forks/exports/24/momentum-grindstone.png"
+    },
+    "export_sha256": {
+      "128": "6d98c84fffb6e4b1471098ac942d64377248e51a637f9d06a2e0f09e8d032add",
+      "64": "8b5d92abc4010aaa768fbe8981ae87168de8a2cf24e298428544cba968622866",
+      "48": "4964914fee2134fc55e9eb41b4f0090d7c59263121850ad887a24a5f1f535747",
+      "44": "59c34ea5b1d309b0f29124f9571ca8465f7ad44b575a6e409f3b9719a9f8af8c",
+      "32": "7cd27bdc2d74ad35c5054c093735520110de4e0ec31a9aa3c617a350213b3e92",
+      "24": "f6db8f9ed8f6c54274b797f958a8cc1179ff8752c1c15b2717a89f278fc4d5b5"
+    },
+    "framing": {
+      "scale": 0.5386661615276405,
+      "offset": [
+        177,
+        190
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.momentum.headlong",
+    "name": "Headlong",
+    "icon_id": "fork.momentum.headlong",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 6,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Headlong** (`momentum.headlong`). Renamed: \"Spend to Move\" moves nothing. *\"Once a turn, your Charge may be paid\nwith {=numbers.momentum} Momentum instead of its AP. A Charge so paid builds no Momentum (no Rolling Start, no Charge\nCarries).\"*\n- Fields: `momentum: 2`. Why: the price of Launch's minimum; the walk into the Charge still costs its AP.\n- Carrier: `cost_mod` on `attack`, `if {mode: [charge], door_pick, self_res: {momentum: {at_least: 2}}}` (N10:\n  `self_has_res` tests at least 1), `set 0`; the 2 Momentum through **N23**'s stat family `momentum_cost:<tech>` +2,\n  read by `momentumCost` (`core.ts:182-188`; a Charge's Momentum price is code on no hook, and `cost_mod`'s `res` only\n  writes `ctx.res` on the `cost` hook, `triggers.ts:358`, so on `attack` nothing would pay it); and `condition\n  headlong_paid` on self to the turn's end (content), which Rolling Start's cut and build rows and Charge Carries' row\n  read with `self_lacks` (so with Rolling Start held the price stays 2; the condition is put at the price, before\n  `momentumCost` is read: the builder checks that order in a reducer test).\n- Breaker: a Headlong Charge is a free swing for 2 Momentum, no more: without the \"builds nothing\" line, Rolling Start\n  and Charge Carries made it free in AP and +1 Momentum every turn, which the 15.7 rule (no AP given inside a turn) was\n  meant to stop. Peak: no.\n- Excite: x4 after a kill, two foes left: Charge the first for Momentum, walk, Charge the second.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-momentum-headlong",
+    "path": "art/icons/forks/momentum-headlong.png",
+    "paint": "Wick lunges headlong almost horizontally, leading shoulder and ONE low held weapon forward, boots driving back and capelet streaming. A bold swoosh runs from his lantern toward his leading foot: committing stored momentum to a charge.",
+    "avoid": "No vehicle, horse, extra figure, flame jet or multiple exposure poses.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick lunges headlong almost horizontally, leading shoulder and ONE low held weapon forward, boots driving back and capelet streaming. A bold swoosh runs from his lantern toward his leading foot: committing stored momentum to a charge.\nAVOID: No vehicle, horse, extra figure, flame jet or multiple exposure poses.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 19,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "b6f4891dad40eda24e8b1552abcdb0b5287f2188844f889be4cf9ab5e1145689",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-momentum-headlong-v1.png",
+    "source_sha256": "01e062bf8786856193e13a45e627e2dd6b8686ab7f222dd6abed06b31b8a0dc1",
+    "export_crop": [
+      21,
+      21,
+      1218,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/momentum-headlong.png",
+      "64": "art/icons/forks/exports/64/momentum-headlong.png",
+      "48": "art/icons/forks/exports/48/momentum-headlong.png",
+      "44": "art/icons/forks/exports/44/momentum-headlong.png",
+      "32": "art/icons/forks/exports/32/momentum-headlong.png",
+      "24": "art/icons/forks/exports/24/momentum-headlong.png"
+    },
+    "export_sha256": {
+      "128": "98157fbf1da370420c368cf7dbecd759135e3ad69afa38f0fb1a714fee75efac",
+      "64": "3fd65aa28f6c661bedf0bd477c1a0888510bff5612f85a8f16d3b2d8bfaae12e",
+      "48": "efd1763c58ca4cf2faa67a4ff3e351c15b067f746e41845226ae34c68184d922",
+      "44": "6526bb23a54d7c8ff192f3a083be6dd0bcd813b7f3eefa7d3a1ae8b4da2e9b5b",
+      "32": "9ac06acdcd4d8ce841e111c2e921241b42d63394f86906f01da1216dd2787453",
+      "24": "4d67b1b033778f15d189f81f2ffe1bbf08aa259cd509c14c502c5f74f55e2efc"
+    },
+    "framing": {
+      "scale": 0.5488178845336303,
+      "offset": [
+        183,
+        173
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.momentum.rolling_start",
+    "name": "Rolling Start",
+    "icon_id": "fork.momentum.rolling_start",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Rolling Start** (`momentum.rolling_start`). The lead's version (\"3+ tiles in a straight line into a melee hit: +1\nMomentum\") **is the Charge's own trigger** (`techniques.json charge`: after 3 straight tiles) and stacks on the\nBreaker's Charge Carries. Re-pointed: *\"Your Charge needs {=numbers.tiles} tiles in a straight line, not 3, and a\nCharge costs no Momentum and, if it hits, builds {=numbers.build}. A Charge paid by Headlong builds nothing.\"*\n- Fields: `tiles: 2`, `build: 1`. Why: a Charge in a corridor or a cramped room, and the opener that feeds the chain\n  instead of eating it.\n- Carrier: the Charge's 3 tiles is `t.num('min_run', 3)` (`physical/melee/openers.ts:86`), a plain number off the\n  technique's `numbers` (`core.ts:239`), not reached by `sourceOf` or `holderNumber`: **N23** (a stat family\n  `tech_num:<tech>.<field>` added in `t.num`, after the `momentum_needed:<id>` precedent, `core.ts:333`). The cost:\n  N23's `momentum_cost:charge` at \u22121, floored at 0 by `momentumCost` (so the first Opener of a fight, already free,\n  `core.ts:187`, is not over-paid, which a flat \"+2 refund and build\" did). The build: trigger `hit`, `if {mode:\n  [charge], door_pick, self_lacks: [headlong_paid]}`, op `resource momentum +1`.\n- Breaker: Charge Carries (+2) adds on top: a Breaker's Charge is +3. Measured in section 8 (with Wind-up: the turn-1\n  Finisher). Peak: no.\n- Excite: two tiles of space between you and the gunner is enough; you hit at x2 and keep climbing.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-momentum-rolling-start",
+    "path": "art/icons/forks/momentum-rolling-start.png",
+    "paint": "Wick springs from a deep crouch into a very SHORT forward bound, a compact weapon held back and ONE short straight dash below his leading boot. Wide determined screen eyes, bent knees and tucked capelet: a Charge starts quickly.",
+    "avoid": "No wheel, engine, full-length running trail, target being pushed or numeral.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick springs from a deep crouch into a very SHORT forward bound, a compact weapon held back and ONE short straight dash below his leading boot. Wide determined screen eyes, bent knees and tucked capelet: a Charge starts quickly.\nAVOID: No wheel, engine, full-length running trail, target being pushed or numeral.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 16,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "0f3ffe3184be9fbbc63f1446b2a40952cddabcdb194cc8598d49fb282284c2d9",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-momentum-rolling-start-v1.png",
+    "source_sha256": "11af9500bbb6ba8de07f3d33db1e1ecc1ba9e7f6614b88f192993f8d8f975446",
+    "export_crop": [
+      39,
+      0,
+      1174,
+      1197
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/momentum-rolling-start.png",
+      "64": "art/icons/forks/exports/64/momentum-rolling-start.png",
+      "48": "art/icons/forks/exports/48/momentum-rolling-start.png",
+      "44": "art/icons/forks/exports/44/momentum-rolling-start.png",
+      "32": "art/icons/forks/exports/32/momentum-rolling-start.png",
+      "24": "art/icons/forks/exports/24/momentum-rolling-start.png"
+    },
+    "export_sha256": {
+      "128": "c0c53f8991900078253c00b72cd8874f23fac9f018759e8bee3373542e584fc7",
+      "64": "a4673bc2474652410f6920b66f58d87d8c0fed9a14aefd1bbcd34da2835a861d",
+      "48": "b7199fb953d3c537b8f87535a3ce0e103835c75da80ea8c4364e54d4d8f6ca55",
+      "44": "6af22617a597c8cbc01861e24cf0f05b6843a4b4f18d94a1f15b24da2bdb8575",
+      "32": "ed6638b651a64fe351ec140964b916f771a139d813751d9087387f891c5f2e60",
+      "24": "82735c0de83c0acc5fa468d318d8809f6e6c2f4fcabd1279fc4cd86376c79d5a"
+    },
+    "framing": {
+      "scale": 0.5361955616342383,
+      "offset": [
+        207,
+        191
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.momentum.spill",
+    "name": "Spill",
+    "icon_id": "fork.momentum.spill",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 6,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Spill** (`momentum.spill`). *\"When a Finisher of yours drops a foe, the damage past its last HP strikes the nearest\nother foe next to it (no roll; its armour applies). Spill's own damage never Spills.\"*\n- Fields: `share: 1`. Why: the whole overkill, once; Cleave's extra strikes stay Cleave's.\n- Carrier: trigger `kill`, `if {tech_group: [finisher]}`, op `deal` with `targets {of: target, within: 1, side: foe,\n  max: 1}` (existing: `selectUnits` takes `of: target`, `triggers.ts:581`; no N5). The overkill is not in the event:\n  `on_kill` carries `{victim, by, src, ownTurn}` (`effects/damage.ts:122`) and `event:amount` reads 0 there, so Spill\n  needs **N21** (`on_kill` carries `over`, the damage past the last HP, worked out once in `applyDamage`). The stop is\n  by construction: Spill's `deal` is no technique, so its kill fails `tech_group: [finisher]`.\n- Collision: Cleave (one more adjacent strike a Momentum) makes several blows; Spill moves one overkill. Not a copy.\n  Peak: no (no Momentum is kept).\n- Excite: a Coup at x5 on a foe with 10 HP left; 60 damage goes on into the one behind it.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-momentum-spill",
+    "path": "art/icons/forks/momentum-spill.png",
+    "paint": "Wick completes ONE broad sweeping finisher with a short continuous blade; the stroke breaks past a cropped empty armour plate and continues as ONE hard white arc into a second cropped plate beside it. Fierce but playful pixel effort.",
+    "avoid": "No dead full body, gore, disconnected weapon, literal liquid or cup spilling.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick completes ONE broad sweeping finisher with a short continuous blade; the stroke breaks past a cropped empty armour plate and continues as ONE hard white arc into a second cropped plate beside it. Fierce but playful pixel effort.\nAVOID: No dead full body, gore, disconnected weapon, literal liquid or cup spilling.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 18,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "35621f7c902bd1b3b7bf944306f28d70109825b707921fda010b909dcc84b9ee",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-momentum-spill-v1.png",
+    "source_sha256": "d317b80d5d0035330ad6675f9f97d8d683965b62a9f064c1ca49b551b53caf80",
+    "export_crop": [
+      49,
+      17,
+      1240,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/momentum-spill.png",
+      "64": "art/icons/forks/exports/64/momentum-spill.png",
+      "48": "art/icons/forks/exports/48/momentum-spill.png",
+      "44": "art/icons/forks/exports/44/momentum-spill.png",
+      "32": "art/icons/forks/exports/32/momentum-spill.png",
+      "24": "art/icons/forks/exports/24/momentum-spill.png"
+    },
+    "export_sha256": {
+      "128": "5006a2bec2832c55a3154dc1918bce07729baa7a7a21a6e4368a50114da960ee",
+      "64": "522fad645bac63ae5fde542e51a19c5fd730ef971ee1f1afe0314f53c114f631",
+      "48": "486c86b2d66dcd77dffab12b17ceeafb4c98f57a3f050b489f553f22411dcd53",
+      "44": "c7f596c225829d44d441e5d0d48462f0255348185b33282112e09e59cdde44df",
+      "32": "ecaedd0a453d86ab66f154aa033eb265c16cf4604c64f1ad1cf33770b14aed06",
+      "24": "3dcccaab1775e58f659cf4a7a4cc444134b08f0a312877aff042182f7a7eb281"
+    },
+    "framing": {
+      "scale": 0.5643061925731876,
+      "offset": [
+        176,
+        163
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.prayer.benediction",
+    "name": "Benediction",
+    "icon_id": "fork.prayer.benediction",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 6,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Benediction** (`prayer.benediction`). *\"Your Whisper on an ally may be said wide, for {=numbers.ap} AP more: it also\nreaches every ally within {=numbers.within} tile of its target, at {=numbers.share|pct}% (Luck, Health, Protection\nand Courage; Guidance reveals {=numbers.radius} tiles further; Safe Passage also covers every ally within\n{=numbers.within} tile of you). A wide Whisper adds {=numbers.wait} round to your Hymn's wait; with no Hymn of yours,\nyou may say one once a fight. Not Rebuke, not the Ward.\"*\n- Fields: `ap: 1`, `within: 1`, `share: 0.7`, `radius: 2`, `wait: 1`, limit `per_combat` 1 (no Hymn only). Why the\n  wait: it is paid in **the door's own resource** (the prayer slots), so a Faithful chooses each round between a wide\n  Whisper and an earlier Hymn; with no price it was a 3\u00d73 heal or shield every turn, the Protection refreshed each turn\n  (the larger stands) and doubled by Conscience. Why no Rebuke: said wide it was armour-ignoring, no-roll area damage\n  every turn for every Faithful, another door's outcome (the burst, Payload). Why 0.7: a 3\u00d73 of four allies at 70% is\n  about three Whispers for 2 AP; not standing, so not the Canticle's aura.\n- Carrier: the Whisper's effects are run by `blessing()` from `patrons.json whispers` (`tactics.ts:409-418`), which\n  reads no `targets` and no `if`: **N5** (restated: the blessing runner reads `targets` and `if`). The wait through N7\n  (`hymnCut` as a count an op adds; a wide Whisper adds \u22121).\n- Chaplain: the Canticle stays the squad's standing aura; Ward is excluded so the layering shield stays one target.\n- Excite: your squad is stacked in the doorway; one wide Protection shields all three, and you know the Hymn comes a\n  round late.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [
+      3
+    ],
+    "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+    "file_key": "fork-prayer-benediction",
+    "path": "art/icons/forks/prayer-benediction.png",
+    "paint": "Wick opens BOTH arms wide from a low stable stance; ONE broad blessing fan from his hands spreads to a central cropped hand and two smaller cropped hands beside it. Open kind screen face, chest lantern clearly visible.",
+    "avoid": "No full group, actual saint, Ward shield, cross or glow gradient.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick opens BOTH arms wide from a low stable stance; ONE broad blessing fan from his hands spreads to a central cropped hand and two smaller cropped hands beside it. Open kind screen face, chest lantern clearly visible.\nAVOID: No full group, actual saint, Ward shield, cross or glow gradient.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "visual_basis_resolution": {
+      "authority": "Leon explicit answer 17 November 2026",
+      "quote": "Use pinned revision-2 rules for these eight proposals",
+      "gameplay_questions_remain_open": true
+    },
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 14,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "273394fe61923747f67563b9a33773814cc1a5e5efe73ac5348b6ba3c70b212f",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-prayer-benediction-v1.png",
+    "source_sha256": "76a25af6f86e786bd5c1e2ecc529dd9fef0c3b5643e5ad8de2518ee04223dbf8",
+    "export_crop": [
+      0,
+      31,
+      1248,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/prayer-benediction.png",
+      "64": "art/icons/forks/exports/64/prayer-benediction.png",
+      "48": "art/icons/forks/exports/48/prayer-benediction.png",
+      "44": "art/icons/forks/exports/44/prayer-benediction.png",
+      "32": "art/icons/forks/exports/32/prayer-benediction.png",
+      "24": "art/icons/forks/exports/24/prayer-benediction.png"
+    },
+    "export_sha256": {
+      "128": "c97e600fcbb2f8c19817dd018aaa7de7357911e8b9843cfaf945143c25968c60",
+      "64": "a80a7690588d27c1492feeed252251ef6d290e2fa9b6d17ddc4e210c60fbde0c",
+      "48": "71123d2759834cac032fe08c357ab6cbe12f67cbd8ef8d0609b76b79aaa0c199",
+      "44": "303761e2188181a2e0ea02b7b0c7b994b2d61bc04fbf3baa9d74e8ca42fec6ed",
+      "32": "c17bf6325c87a93bdd41d32b5e0e260c65d375b616bb21aa9b03638e632a4acb",
+      "24": "61bab0092001db0de564ee248f6290ba29f3a27070fd8f52fc834becf8268d16"
+    },
+    "framing": {
+      "scale": 0.5662673178987597,
+      "offset": [
+        158,
+        165
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.prayer.held_breath",
+    "name": "Held Breath",
+    "icon_id": "fork.prayer.held_breath",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 6,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Held Breath** (`prayer.held_breath`). *\"If your turn ends with no Whisper said, it is held (one at most). On a later\nturn of this fight you may say it as well as that turn's Whisper. A turn whose Whisper was spent by Steadfast holds\nnothing.\"*\n- Fields: `held: 1`. Why one: two Whispers a turn at most, once per turn not said. The Steadfast sentence closes the\n  loop where both are held (Steadfast at 4, Held Breath at 6): spending each Whisper off-turn would otherwise bank one\n  every turn, two Whispers a round for good.\n- Carrier: N7 (prayer slots as numbers): a stat `whispers_per_turn` read where the limit is a literal today\n  (`lim.left('per_turn', 1, WHISPER_KEY)`, `faith.ts:299, :1021`, taken at `:970`; `extra_use` never reaches it); the\n  held Whisper is a content condition `held_breath` (put on `turn_end` when the Whisper key has a use left, and not\n  after a Steadfast Whisper) that adds 1 to the stat until spent.\n- Chaplain: a held Whisper may be a Ward (two Ward layers in one turn, the `holders` cap stands). Peak: no.\n- Excite: the Boss steps in next round; you hold this turn's Whisper and open the next with Protection on both\n  front-liners.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [
+      3
+    ],
+    "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+    "file_key": "fork-prayer-held-breath",
+    "path": "art/icons/forks/prayer-held-breath.png",
+    "paint": "Wick stands very still, one mitten just in front of his closed pixel mouth and the other protecting ONE small curved prayer-ray token against his lantern chest. Eyes gently shut: one unused Whisper is being kept.",
+    "avoid": "No face cheeks on ceramic, breath smoke, bowl/cup, hourglass or multiple stored tokens.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick stands very still, one mitten just in front of his closed pixel mouth and the other protecting ONE small curved prayer-ray token against his lantern chest. Eyes gently shut: one unused Whisper is being kept.\nAVOID: No face cheeks on ceramic, breath smoke, bowl/cup, hourglass or multiple stored tokens.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "visual_basis_resolution": {
+      "authority": "Leon explicit answer 17 November 2026",
+      "quote": "Use pinned revision-2 rules for these eight proposals",
+      "gameplay_questions_remain_open": true
+    },
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 15,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "f7384ceef75e7b85ffa834583c16538bef529febcb9204aeceaa5567192ede41",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-prayer-held-breath-v1.png",
+    "source_sha256": "b1afb4a8dfd7e47a2b3e9f278735dab9ee49b73b9f1d45b1f906af62e299c09b",
+    "export_crop": [
+      0,
+      15,
+      1190,
+      1244
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/prayer-held-breath.png",
+      "64": "art/icons/forks/exports/64/prayer-held-breath.png",
+      "48": "art/icons/forks/exports/48/prayer-held-breath.png",
+      "44": "art/icons/forks/exports/44/prayer-held-breath.png",
+      "32": "art/icons/forks/exports/32/prayer-held-breath.png",
+      "24": "art/icons/forks/exports/24/prayer-held-breath.png"
+    },
+    "export_sha256": {
+      "128": "52488ccd4c2b7bef2fe36fdd0550c0a65cf1ec6d128d5e2008288291fdf623e6",
+      "64": "2be570a47e784bcbfe91f31d2c76471fa4e1e271ca9267c83e06b8ca5ebff75a",
+      "48": "8e35aef005855da0a7f6357fe397f15a0061cd818e661acee8cb1b6ef77a287b",
+      "44": "00760f22a79f40115ca4c8bdca86293aa127e8bf75898fc00e98e6e79bf80734",
+      "32": "6ce0d2cf43bd3ce638f45ad5ad6d641f48a4eef002ddc28094f75f5483be3ed5",
+      "24": "b1b4d905f140c09d6057f6bfe411316f6a8e78b87798f50214faef2ecb58fec4"
+    },
+    "framing": {
+      "scale": 0.5997544328651492,
+      "offset": [
+        155,
+        143
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.prayer.round_of_blessings",
+    "name": "Round of Blessings",
+    "icon_id": "fork.prayer.round_of_blessings",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Round of Blessings** (`prayer.round_of_blessings`). Renamed: the Faith perk `litany` is *Unbroken Litany*. *\"Each\nWhisper you say on an ally who was not blessed in the last round takes {=numbers.cut} round off your Hymn's wait (never\nunder its floor). With no Hymn of yours waiting, your next prayer roll is {=numbers.roll|signed} instead (an Atheist's\ndice, a Faithful's overreach).\"*\n- Fields: `cut: 1`, `roll: 2`; the floor is `prayer.hymn.cooldown_rule.floor` (one copy). Why: rotating your Whispers\n  through the squad buys a Hymn about every third round at Faith 6 (wait 5); +2 is about a tenth more answered\n  Whispers for an Atheist at TN 12.\n- Carrier: trigger `acted`, `if {action: [whisper], target: ally, target_lacks: [last_blessed]}`, op `condition\n  last_blessed rounds: 1` (a new conditions row, content, put by the Whisper; it runs out, nothing lifts it: ops reach\n  only self, actor or target, so \"lifted from the previous ally\" is not buildable), and the Hymn wait cut through N7\n  (the vow's `u.faith.hymnCut`, `faith.ts:140-147`, already cuts the running wait because `hymnLeft` re-reads\n  `hymnWait`; N7 makes it a count an op adds). Any prayer user's `last_blessed` counts: two Faithful who rotate on one\n  ally cut each other: accepted. The roll as `roll_mod` on the prayer roll (part of N7: the prayer roll is not on\n  `to_hit`).\n- Chaplain: Unbroken Litany II also cuts the wait by 1: they add, the floor binds. Canticle untouched. Peak: no.\n- Works for: every patron (Luck, Health, Protection, Courage are ally Whispers for all), every Atheist.\n- Excite: Health on the Bulwark, Luck on the sniper, Courage on the Breaker: and the Hymn is back a round early.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-prayer-round-of-blessings",
+    "path": "art/icons/forks/prayer-round-of-blessings.png",
+    "paint": "Wick turns in a lively circular gesture, one hand on his lantern, the other sending a small blessing ray around THREE cropped ally hands arranged at different heights. ONE broad curved sweep shows he rotates attention to a new recipient.",
+    "avoid": "No choir, extra full figures, repeated prayer book, halo over head or real religious icon.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick turns in a lively circular gesture, one hand on his lantern, the other sending a small blessing ray around THREE cropped ally hands arranged at different heights. ONE broad curved sweep shows he rotates attention to a new recipient.\nAVOID: No choir, extra full figures, repeated prayer book, halo over head or real religious icon.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 12,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "31c59b220419f28413700d522f075308c73389500d0262ab9d7e37fc593f4c15",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-prayer-round-of-blessings-v1.png",
+    "source_sha256": "2d4d4e82d80f37c57a4d55f5b3a179c2667c0eabbf4172b51b7a63734fc3f74a",
+    "export_crop": [
+      27,
+      0,
+      1236,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/prayer-round-of-blessings.png",
+      "64": "art/icons/forks/exports/64/prayer-round-of-blessings.png",
+      "48": "art/icons/forks/exports/48/prayer-round-of-blessings.png",
+      "44": "art/icons/forks/exports/44/prayer-round-of-blessings.png",
+      "32": "art/icons/forks/exports/32/prayer-round-of-blessings.png",
+      "24": "art/icons/forks/exports/24/prayer-round-of-blessings.png"
+    },
+    "export_sha256": {
+      "128": "31c5aee4d76041365adf6c10fdaffa9e46c9f504d73090b31cd07d89827e00ef",
+      "64": "dfaaf167de48c765de296d7822dbb65d878a522f2bcc82a0277bd364d210df44",
+      "48": "7c8eed0f6655a8b413594353f5c52167a3d09a5e3169cd2a51009fe34907fd5e",
+      "44": "0206ccb216a1d89b3e9a3d6089acdab2dcfdaea02bc6bad436b6ed9e15f8fc62",
+      "32": "821ce7ae3c77ea053d9aa83531164d4e942429adc35bd5e244b404038b4ffd85",
+      "24": "3bcf5a6c7c4944d364a9864f109239455ab1350c32aa9bc73d08d6f6da53837c"
+    },
+    "framing": {
+      "scale": 0.5286238800169649,
+      "offset": [
+        192,
+        180
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.prayer.steadfast",
+    "name": "Steadfast",
+    "icon_id": "fork.prayer.steadfast",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Steadfast** (`prayer.steadfast`). *\"Once a round, off your turn, you may say a Whisper as your reaction when a foe\nattacks an ally you see. A Whisper said so counts as said on your next turn; that turn holds nothing (Held\nBreath).\"*\n- Fields: limit `per_round` 1. Why: the Whisper you would have said anyway, said when it matters; no extra prayer.\n- Carrier: a prayer as a reaction (N6). Cheaper with no primitive: *\"your Health or Protection may be laid on an ally\n  as a held blessing: it lands the first time that ally is hit before your next turn\"* (a conditions row with a\n  `taking` trigger and a `mend` op; it works only for the two Whispers that heal or shield).\n- Chaplain: Ward is also a Whisper: a Steadfast Ward is legal (the Ward's own `holders` cap stands). Peak: no.\n- Excite: the Elite swings at your Sigilist; Protection lands before the blow does.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-prayer-steadfast",
+    "path": "art/icons/forks/prayer-steadfast.png",
+    "paint": "Wick abruptly pivots side-on, one boot lifted, and extends ONE protective white prayer arc from his palm over a cropped ally shoulder as a small incoming dart nears. His free hand braces his own lantern heart, screen resolute.",
+    "avoid": "No rifle or shield prop; no full patient, church, religious symbol or multiple attack scenes.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick abruptly pivots side-on, one boot lifted, and extends ONE protective white prayer arc from his palm over a cropped ally shoulder as a small incoming dart nears. His free hand braces his own lantern heart, screen resolute.\nAVOID: No rifle or shield prop; no full patient, church, religious symbol or multiple attack scenes.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 13,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "d7f7777324395de6b5f8aff1f27a6ef633c72366298bc5a1f4bd9157a186efb8",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-prayer-steadfast-v1.png",
+    "source_sha256": "47f90aa54472d8028ac9ff719a599957955650eb0730301fd65e96cec3c1fbe5",
+    "export_crop": [
+      25,
+      73,
+      1240,
+      1214
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/prayer-steadfast.png",
+      "64": "art/icons/forks/exports/64/prayer-steadfast.png",
+      "48": "art/icons/forks/exports/48/prayer-steadfast.png",
+      "44": "art/icons/forks/exports/44/prayer-steadfast.png",
+      "32": "art/icons/forks/exports/32/prayer-steadfast.png",
+      "24": "art/icons/forks/exports/24/prayer-steadfast.png"
+    },
+    "export_sha256": {
+      "128": "faaaa89ca6f7885926e0dd16e736bfcb1e626c660d473f6b43f3d38a7298f053",
+      "64": "274a7906366b5253f391a455e61740477e44a38628d566f4e01253e8704789af",
+      "48": "75a8dcda7a2e8a716b8d11a3b4a3a83cefc7a7c8edf0c38b6184296e99f3a0a4",
+      "44": "9675520588e84972f9cb07ebada29266cc7d6b7bf530aaa17de092d541b4d669",
+      "32": "416b134c8fb75ecc99f2ea022fe90b2820094a256f453988b6647f14f1622056",
+      "24": "c73b2933253bb5822cf34bd6e5a584326f33386e415673ba80536aa95ae269bc"
+    },
+    "framing": {
+      "scale": 0.5629577335031082,
+      "offset": [
+        170,
+        191
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
     "request_key": "0.30/fork.shadow.lend_the_dark",
     "name": "Lend the Dark",
     "icon_id": "fork.shadow.lend_the_dark",
