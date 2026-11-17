@@ -27,6 +27,62 @@
       "mode": "white-ink sign",
       "production_approved": false,
       "implementation_ready": false
+    },
+    "icon-hazard-minefield": {
+      "path": "art/icons/world/hazard-minefield.png",
+      "sha256": "b40533d1842c2b8f0d6fa37733140b80e7847a2e8ed7fbd535712e04509dfcb4",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-hazard-fire": {
+      "path": "art/icons/world/hazard-fire.png",
+      "sha256": "a4173c9396d134ac2630c513c7d415139feef504e32bca6b4ece71bae22703b7",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-hazard-radiation": {
+      "path": "art/icons/world/hazard-radiation.png",
+      "sha256": "7998cb09160ef74e4cc9cd88e9b115c0834acdb6e58afcf9026ac6d42b71c683",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-hazard-gas": {
+      "path": "art/icons/world/hazard-gas.png",
+      "sha256": "fbc7809d263d2111d46c30164639bbcc99d6296eaa57000d42bb69908c883834",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-hazard-collapse": {
+      "path": "art/icons/world/hazard-collapse.png",
+      "sha256": "15e4b3db2388022adac98def15c040a1a73f97faab399e8bd7235c0844dd90a5",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-zone-field": {
+      "path": "art/icons/world/zone-field.png",
+      "sha256": "d04d54233953de71aa90141292b70cad3add03622bf6f98c9a2abb767e1bebbb",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-zone-trap": {
+      "path": "art/icons/world/zone-trap.png",
+      "sha256": "bcc67685734ebb8e00bc99e30b37f3c314d8aaee8ee0b1eb7863c47cfd060360",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-zone-turret": {
+      "path": "art/icons/world/zone-turret.png",
+      "sha256": "2419c0a5dbd9d00dbac8a2fa0130034776b2e74677d39ecbaab2305091adcf3c",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
     }
   },
   "condition_icons": {

@@ -1,0 +1,81 @@
+{
+  "number": 16,
+  "section": 3,
+  "family": "interface_icons",
+  "id": "icon-hazard-gas",
+  "path": "art/icons/world/hazard-gas.png",
+  "name": "Gas (hazard mark)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph, three waves)",
+  "use": "Hazard tile: a drifting gas cloud",
+  "paint": "Three wavy lines rising from a low, bulbous cloud edge.",
+  "avoid": "a gas mask \u00b7 a skull \u00b7 a steam kettle",
+  "file_key": "16-hazard-gas",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Three wavy lines rising from a low, bulbous cloud edge.\nAVOID: a gas mask \u00b7 a skull \u00b7 a steam kettle",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-3-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/16-hazard-gas-v1.png",
+  "source_sha256": "c6cb3d7ce02cf455cc7db1f9213c612a815ba7574f425863500681a62409cb86",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    0,
+    1190,
+    1232
+  ],
+  "scale": 0.6655844155844156,
+  "offset": [
+    116,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "fbc7809d263d2111d46c30164639bbcc99d6296eaa57000d42bb69908c883834",
+  "exports": {
+    "256": "art/icons/world/exports/256/hazard-gas.png",
+    "128": "art/icons/world/exports/128/hazard-gas.png",
+    "64": "art/icons/world/exports/64/hazard-gas.png",
+    "48": "art/icons/world/exports/48/hazard-gas.png",
+    "44": "art/icons/world/exports/44/hazard-gas.png",
+    "32": "art/icons/world/exports/32/hazard-gas.png",
+    "24": "art/icons/world/exports/24/hazard-gas.png",
+    "16": "art/icons/world/exports/16/hazard-gas.png"
+  },
+  "export_sha256": {
+    "256": "1e708827f42485483974efff87ec5d11fa01869e18e32fa331caf1684e9c9856",
+    "128": "10435e18645814b19046fd51084ceed4cdc87cef6526858cc8a59d42b15d2a72",
+    "64": "f13502051503b5073a1886fb84506e3314e05e33051b36b76884c823dcd712c2",
+    "48": "c9677b8737d5adc797aafb566663c7c5bf38397da72a77784e09182c6083bfdf",
+    "44": "1969632c32ab921b5132233c72c78c195456f047cc8610189e647a274e494b58",
+    "32": "a1fc01b0582194d541a49980985704381c24dc1acb8c6d8f7877a034c1b27cbd",
+    "24": "a25916def369873ea02c2d8a0716d6cc311085817a6b7b2257dd9a21d845f1e9",
+    "16": "bf88406a791da0d3063dd084fcc43a6ebf3015a41b3f52541cccaad36ab79592"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

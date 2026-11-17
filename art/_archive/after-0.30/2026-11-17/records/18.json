@@ -1,0 +1,81 @@
+{
+  "number": 18,
+  "section": 3,
+  "family": "interface_icons",
+  "id": "icon-zone-field",
+  "path": "art/icons/world/zone-field.png",
+  "name": "Sigil field (zone mark)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text badge, a boxed grid)",
+  "use": "A Sigil that laid a field on the ground (a region that acts on whoever stands in it)",
+  "paint": "A square marked by four corner ticks with one single diagonal stroke across it, the stroke ending in a small dot.",
+  "avoid": "a letter or rune \u00b7 a checkerboard \u00b7 a crosshair",
+  "file_key": "18-zone-field",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A square marked by four corner ticks with one single diagonal stroke across it, the stroke ending in a small dot.\nAVOID: a letter or rune \u00b7 a checkerboard \u00b7 a crosshair",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-3-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/18-zone-field-v1.png",
+  "source_sha256": "90667ed1812615b51333c1485e3fc00fa7a9aec2cc703785e32dc257d73fe705",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    23,
+    1222,
+    1229
+  ],
+  "scale": 0.6710310965630114,
+  "offset": [
+    102,
+    107
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "d04d54233953de71aa90141292b70cad3add03622bf6f98c9a2abb767e1bebbb",
+  "exports": {
+    "256": "art/icons/world/exports/256/zone-field.png",
+    "128": "art/icons/world/exports/128/zone-field.png",
+    "64": "art/icons/world/exports/64/zone-field.png",
+    "48": "art/icons/world/exports/48/zone-field.png",
+    "44": "art/icons/world/exports/44/zone-field.png",
+    "32": "art/icons/world/exports/32/zone-field.png",
+    "24": "art/icons/world/exports/24/zone-field.png",
+    "16": "art/icons/world/exports/16/zone-field.png"
+  },
+  "export_sha256": {
+    "256": "2bd3133ba6adb4e0ace7d1d3fe7032f5e68ff4a75da2ca16cf8498f750b27cf8",
+    "128": "7a7eddeff7b3dc3197b6daeaaba56e032053e5b252efe8538f921b787a90e73d",
+    "64": "bf006efd6e18e71bdbe7b8b2b7414d4ee7f02e0f65088fb5a801602a4a77cb28",
+    "48": "1ae7c76ceffe2015472fdcfef6fbf68ed0c7e1aa84045c0c546ba3d78e64b5c3",
+    "44": "77abf204dfa88706a5a8fcbeade755ab9bf2b0101baccefce20a1ad26fe69eff",
+    "32": "f16ccce414641c188b130428a9ee058c28f2f40d11a83157de46dbdb3efaf827",
+    "24": "8062d6d6615441745175504c599b0ba2ed97bd3d9a2d3dfad3c29bed8aa39fbd",
+    "16": "e4e3ab93264a448ffddaa233da79d62d6eeedf9a828f9051016be871ed28231d"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

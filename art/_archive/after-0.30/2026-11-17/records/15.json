@@ -1,0 +1,81 @@
+{
+  "number": 15,
+  "section": 3,
+  "family": "interface_icons",
+  "id": "icon-hazard-radiation",
+  "path": "art/icons/world/hazard-radiation.png",
+  "name": "Radiation (hazard mark)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph, a trefoil-like symbol)",
+  "use": "Hazard tile: a poisoned patch that harms over time",
+  "paint": "A small pulsing core: two concentric rings, the outer one broken in three places, short rays between the gaps, on a ground line.",
+  "avoid": "the three-bladed radiation trefoil or any real-world warning insignia \u00b7 a biohazard mark \u00b7 a skull",
+  "file_key": "15-hazard-radiation",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small pulsing core: two concentric rings, the outer one broken in three places, short rays between the gaps, on a ground line.\nAVOID: the three-bladed radiation trefoil or any real-world warning insignia \u00b7 a biohazard mark \u00b7 a skull",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-3-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/15-hazard-radiation-v1.png",
+  "source_sha256": "f7b5db4585d65c882601620e5f038b90f8d266dcc366dce7ad2ba827be6d797e",
+  "generation_attempt": 1,
+  "export_crop": [
+    113,
+    22,
+    1238,
+    1254
+  ],
+  "scale": 0.6655844155844156,
+  "offset": [
+    137,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "7998cb09160ef74e4cc9cd88e9b115c0834acdb6e58afcf9026ac6d42b71c683",
+  "exports": {
+    "256": "art/icons/world/exports/256/hazard-radiation.png",
+    "128": "art/icons/world/exports/128/hazard-radiation.png",
+    "64": "art/icons/world/exports/64/hazard-radiation.png",
+    "48": "art/icons/world/exports/48/hazard-radiation.png",
+    "44": "art/icons/world/exports/44/hazard-radiation.png",
+    "32": "art/icons/world/exports/32/hazard-radiation.png",
+    "24": "art/icons/world/exports/24/hazard-radiation.png",
+    "16": "art/icons/world/exports/16/hazard-radiation.png"
+  },
+  "export_sha256": {
+    "256": "190fee315779df7a68aaa87b6292f9001a478a6d858d151f318e96878fd1f831",
+    "128": "eede2a460597ca423d010804ae0f3fff1a820b0981d506018e8da9a920e69f8d",
+    "64": "fd78847baf8094fa52a23f47fbb88d91cf8b6147b2e2ed22228abe7a2c864717",
+    "48": "160d238f2d5312943325d657919fb729e1109ea27fb6feee0ea85f7763d9bac2",
+    "44": "230d0e424aebbac411c0a3960d7de950bb2f903c05eae3448ec2d1b66a816dcc",
+    "32": "01b2212b2eca503d665a8f05303247f51df75e41ade5419fb0ad4b54e2964cfd",
+    "24": "493909677477c402febe0793b561e88bc4ceebbc3290fec8c030268aca65f3c3",
+    "16": "c5d9525b3106abedec8ec77cd0616db67ba39b0990c6720ef2cae6575408aa26"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

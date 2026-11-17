@@ -1,7 +1,7 @@
 {
   "total": 54,
-  "completed": 12,
-  "remaining": 42,
+  "completed": 20,
+  "remaining": 34,
   "completed_numbers": [
     1,
     2,
@@ -14,9 +14,7 @@
     9,
     10,
     11,
-    12
-  ],
-  "pending_numbers": [
+    12,
     13,
     14,
     15,
@@ -24,7 +22,9 @@
     17,
     18,
     19,
-    20,
+    20
+  ],
+  "pending_numbers": [
     21,
     22,
     23,

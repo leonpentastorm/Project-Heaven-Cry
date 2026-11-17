@@ -1,0 +1,81 @@
+{
+  "number": 17,
+  "section": 3,
+  "family": "interface_icons",
+  "id": "icon-hazard-collapse",
+  "path": "art/icons/world/hazard-collapse.png",
+  "name": "Collapse (hazard mark)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph, a down triangle)",
+  "use": "Hazard tile: unstable ground that gives way",
+  "paint": "A ledge breaking along a jagged crack, three small blocks dropping away beneath it.",
+  "avoid": "a building falling \u00b7 dust clouds \u00b7 a skull",
+  "file_key": "17-hazard-collapse",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A ledge breaking along a jagged crack, three small blocks dropping away beneath it.\nAVOID: a building falling \u00b7 dust clouds \u00b7 a skull",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-3-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/17-hazard-collapse-v1.png",
+  "source_sha256": "d9e625b814e09ca7203ab1b1c681478ae96733b5f6149681516a349c0185390a",
+  "generation_attempt": 1,
+  "export_crop": [
+    41,
+    119,
+    1178,
+    1166
+  ],
+  "scale": 0.7211961301671064,
+  "offset": [
+    102,
+    134
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "15e4b3db2388022adac98def15c040a1a73f97faab399e8bd7235c0844dd90a5",
+  "exports": {
+    "256": "art/icons/world/exports/256/hazard-collapse.png",
+    "128": "art/icons/world/exports/128/hazard-collapse.png",
+    "64": "art/icons/world/exports/64/hazard-collapse.png",
+    "48": "art/icons/world/exports/48/hazard-collapse.png",
+    "44": "art/icons/world/exports/44/hazard-collapse.png",
+    "32": "art/icons/world/exports/32/hazard-collapse.png",
+    "24": "art/icons/world/exports/24/hazard-collapse.png",
+    "16": "art/icons/world/exports/16/hazard-collapse.png"
+  },
+  "export_sha256": {
+    "256": "16fe9af2374719756791f2b1c72237a92684dffeb82978d240ecbffadfc0e2c5",
+    "128": "5edc6c78877ca55de63f56f2f44494c33608a4c75e08ba457a5f408025cf5cd9",
+    "64": "8586546a816aff3f586e7d3a896ed36ef6e4c1ff6af2473ff2cc670a23fc67e4",
+    "48": "abca0d74bdf25ba0cb879f17ae68a244639b9064a786901a40d29f51bd8e83e2",
+    "44": "867288fe9117a32c267eb676472f67676f51231fea7ccb2025ed8e69c0d4c22c",
+    "32": "f9e9c5d3ae34f9df33b55511b1aecc0532dc1c0bb9f15d4e43dd56075c0192da",
+    "24": "e1a68becf498f9960a3545f909cdd2a2cb9e385cadd74980f647013378aad8b1",
+    "16": "69aab9754c159e56205c01ae0be586d6fd69d003c81e0f22a105de49ad421cea"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

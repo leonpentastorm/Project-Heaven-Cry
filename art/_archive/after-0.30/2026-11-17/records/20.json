@@ -1,0 +1,81 @@
+{
+  "number": 20,
+  "section": 3,
+  "family": "interface_icons",
+  "id": "icon-zone-turret",
+  "path": "art/icons/world/zone-turret.png",
+  "name": "Sigil turret (zone mark)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text badge, a triangle)",
+  "use": "A Sigil turret: a standing mount that fires a set number of rounds",
+  "paint": "A short pillar with a single forward wedge on its head, three small rounds in a row beneath it.",
+  "avoid": "a gun tower \u00b7 a tank \u00b7 a real turret make",
+  "file_key": "20-zone-turret",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A short pillar with a single forward wedge on its head, three small rounds in a row beneath it.\nAVOID: a gun tower \u00b7 a tank \u00b7 a real turret make",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-3-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/20-zone-turret-v1.png",
+  "source_sha256": "021494790f743f4f5584601792ac43f5543b0ed34bd6899671826b4132b9be1f",
+  "generation_attempt": 1,
+  "export_crop": [
+    49,
+    19,
+    1194,
+    1254
+  ],
+  "scale": 0.6639676113360324,
+  "offset": [
+    132,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "2419c0a5dbd9d00dbac8a2fa0130034776b2e74677d39ecbaab2305091adcf3c",
+  "exports": {
+    "256": "art/icons/world/exports/256/zone-turret.png",
+    "128": "art/icons/world/exports/128/zone-turret.png",
+    "64": "art/icons/world/exports/64/zone-turret.png",
+    "48": "art/icons/world/exports/48/zone-turret.png",
+    "44": "art/icons/world/exports/44/zone-turret.png",
+    "32": "art/icons/world/exports/32/zone-turret.png",
+    "24": "art/icons/world/exports/24/zone-turret.png",
+    "16": "art/icons/world/exports/16/zone-turret.png"
+  },
+  "export_sha256": {
+    "256": "d359f2061eb51bca7958550dde13f389bdbdb0039b86e6bd35b9a1b7c39088e7",
+    "128": "e65a67c75114b93a6a219d70b5c3867253b4d9b956de39f3017108d59f375d0f",
+    "64": "cab6be86b092d1e2df8a120f06085f389a80ebf08d3303246d471ff2c96e97e9",
+    "48": "08a57924d1997e22f029185e4b92aee7480b676c3f30274066f790e80f4e4044",
+    "44": "14ca69bb18c59d58ea913135521a26b46e597f8ad2f48206e352f052345532a2",
+    "32": "d910773d3ce3ca4f47bf496927db5a136dcbb507738ccd1bd7478c8038869ca2",
+    "24": "be732defcfcfff981f3569c366cebdd5e928492e5a6ef9ea18b5f59594a27a7e",
+    "16": "39035a361ccf166d6f867d2adbda9ffe641c913b4679bd68b34d206f94409e41"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}
