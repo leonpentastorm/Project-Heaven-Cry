@@ -53,8 +53,8 @@ ab739e1842e6dbab4ae6e9d9e35b159fa5f48f912412726b1ae60a64707de138  art/_archive/n
 46ab24b695ce10d9aa5690c129c33f80421609be6642c75ecbaed836c9ba4b04  art/_archive/nine-doors/2026-11-16/current-scoped-check.txt
 09603d48ff79c6e1c7bfff05cc47b31016eca41c8240cd67b55879659657e762  art/_archive/nine-doors/2026-11-16/deliveries/PHC-Camp-4-to-348-2026-11-17.zip
 5c5bbcc779fe2a0d307559e3fde52de1e54615ef6e1d740ea8778c55bdcf1687  art/_archive/nine-doors/2026-11-16/deliveries/PHC-Camp-4-to-348-2026-11-17.zip.sha256
-b30eff51a2a81d4aa0577580841b50546fcc4daba1eb710038a1f64c9b2ebb58  art/_archive/nine-doors/2026-11-16/deliveries/PHC-Nine-Doors-45-New-Candidates-2026-11-17.zip
-2399baf23e2c595069523c22bdcb8f29b3640238a884db8bbebf39f4fcdf4e70  art/_archive/nine-doors/2026-11-16/deliveries/PHC-Nine-Doors-45-New-Candidates-2026-11-17.zip.sha256
+fd6344b58a36e7465ffcf052159089b9a29d08bf5300d0ad9d011422525af9a7  art/_archive/nine-doors/2026-11-16/deliveries/PHC-Nine-Doors-45-New-Candidates-2026-11-17.zip
+04963eda72fd7b02a9a44d094996ce11048bc92bfc16303251753e3deb36c2d6  art/_archive/nine-doors/2026-11-16/deliveries/PHC-Nine-Doors-45-New-Candidates-2026-11-17.zip.sha256
 247c4304a0c6a43afdbd2397cc3e558eb287aaf389889520306c5f877a31dec3  art/_archive/nine-doors/2026-11-16/deliveries/continuation-178-candidates-increment.zip
 13895f0c2bf6d67f633f0a1736089f30e766560f10afa915e02c191a6afcdbd1  art/_archive/nine-doors/2026-11-16/deliveries/continuation-178-candidates-increment.zip.sha256
 6d18c91988da150b25f8acba54c1b8dd63df284f64c6a256057604179659c336  art/_archive/nine-doors/2026-11-16/deliveries/continuation-250-candidates-increment.zip
@@ -1071,7 +1071,7 @@ d2a7cd19a10adc73b8ba0bcb5d01278b4dd59313252c980cb38b4887cce760cf  art/_archive/n
 b4288f326c0a63433b61c7d3b97dd13a20483df574eaac8e12bd81bba03bab0f  art/_archive/nine-doors/2026-11-16/review/v030-16-17-18-19.jpg
 6292bf85f6a39b2461c74f423c76d13914590f1992696642bc4d80b78877535f  art/_archive/nine-doors/2026-11-16/review/v030-20-21-22-23.jpg
 e27c014368449c287c6545b7e7e56e47e90ee1fe910ced1550d27faab22caf4d  art/_archive/nine-doors/2026-11-16/review/v030-20-22-24-25.jpg
-020596c277f9a384c722f1bd83ce0cf6f48fbe8a5e76d838c1d583c482f625f2  art/_archive/nine-doors/2026-11-16/review/v030-21-22-23.jpg
+f64dbd3923dbc9144f76ba73d6c0bf9f3c98e1f8eec24075185344d71dc6ee1f  art/_archive/nine-doors/2026-11-16/review/v030-21-22-23.jpg
 ad465bb87c055ae3b18c45d3ade92859e93ee2812d7375400f33a5a54a4691ac  art/_archive/nine-doors/2026-11-16/review/v030-22.jpg
 ab5660967067580736f1314db70a4856296a560da9cb9a111d47bd3a1b3b9a44  art/_archive/nine-doors/2026-11-16/review/v030-26-27-28-29.jpg
 05649423673ed434844ea86200c5a85a1cbc6d608d9d81aeb7e489f8b5a99618  art/_archive/nine-doors/2026-11-16/review/v030-30-31-32-33.jpg
