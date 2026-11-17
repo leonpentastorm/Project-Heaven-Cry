@@ -64,11 +64,20 @@ const way = await route();
 ok('the map has two fights in a row from the first row (' + (way || []).join(' then ') + ')', !!way);
 const [n1, n2] = way || [];
 await p.locator('[data-phc-node="' + n1 + '"]').click();
-ok('BATTLE START comes up as the fight begins', await waitCard('fight'));
+// rules 1.64 (0.31.2): a fight whose foes have not seen the squad is not joined yet: no BATTLE START until contact.
+await p.waitForFunction(() => window.__phc?.getState().screen === 'combat', null, { timeout: 90000 });
+let turnSkip = 0; // the approach's own turn banners come before the join: the first turn of the joined fight is the one after them
+if ((await G()).combat?.approach) {
+  await pause(p, 1200);
+  ok('the approach: no BATTLE START before contact', (await cards('fight')).length === 0);
+  for (let i = 0; i < 12 && (await G()).combat?.approach; i++) { const cb = (await G()).combat; turnSkip = await p.evaluate(() => window.__turnT.length); await act({ type: 'combat/end-turn', unitId: cb.order[cb.turn] }); await pause(p, 250); }
+  ok('the approach ends (idle passes join the fight)', !(await G()).combat?.approach);
+}
+ok('BATTLE START comes up as the fight is joined', await waitCard('fight'));
 await pause(p, 260); await p.screenshot({ path: SHOTS + '/card-fight.png' });
-await p.waitForFunction(() => window.__turnT.length > 0, null, { timeout: 60000 }).catch(() => {});
+await p.waitForFunction((n) => window.__turnT.length > n, turnSkip, { timeout: 60000 }).catch(() => {});
 let g = await G();
-{ const f = (await cards('fight'))[0], turn0 = (await p.evaluate(() => window.__turnT[0])) || null;
+{ const f = (await cards('fight'))[0], turn0 = (await p.evaluate((n) => window.__turnT[n] || window.__turnT[window.__turnT.length - 1], turnSkip)) || null;
   ok('… with the fight\'s name from the engine (' + g.combat.name + ') and who goes first', !!f && f.text.toUpperCase().includes(g.combat.name.toUpperCase()) && /GO(ES)? FIRST/i.test(f.text));
   ok('… before the first turn\'s banner (FIGHT at ' + Math.round(f?.t) + ' ms, the first turn at ' + Math.round(turn0?.t) + ' ms)', !!f && !!turn0 && f.t < turn0.t);
   ok('… big, in the middle, its own slide (' + f?.anim + '), the data\'s words (' + CARDS.joined.name + ')', !!f && f.big && /^phcBig\w/.test(f.anim) && !/^phcBigFade/.test(f.anim) && f.text.includes(CARDS.joined.name));
