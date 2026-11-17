@@ -1,0 +1,93 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.pressure.through_the_gap",
+  "name": "Through the Gap",
+  "icon_id": "fork.pressure.through_the_gap",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Through the Gap** (`pressure.through_the_gap`). Renamed: Break and Enter sits beside the Skirmisher's Break Them.\n*\"Once a turn, when your hit takes a foe to its Pressure cap, you may move at once up to your Movement for 0 AP, drawing\nno opportunity attack. It is not the turn's one free move.\"*\n- Fields: limit `per_turn` 1. Why: at the cap you have earned the line breaking (a Soldier Broken, an Elite Suppressed,\n  a Boss Pressed).\n- Carrier: trigger `hit`, `if {target_res: {pressure: {at: \"max\"}}}` (N10; `max` for `pressure` reads `pressureCap`),\n  then Fire and Move's own shape (`classes.json marksman.gain fire_and_move`: a flag and a `cost_mod set 0` on the next\n  move) with its own flag.\n- Skirmisher: Fire and Move and Run and Gun share one free move; this one is apart, so the Skirmisher is not left with\n  a dead option. Peak: no.\n- Excite: the Elite is pinned at Suppressed; you walk through the hole it leaves and take the flank before anyone turns.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "draft-pending-visual-review",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-pressure-through-the-gap",
+  "path": "art/icons/forks/pressure-through-the-gap.png",
+  "paint": "Wick slips sideways through ONE clear gap between two cropped cover edges, holding his rifle close to his chest. Front knee raised and back boot already through, looking toward the flank; ONE low motion arc.",
+  "avoid": "No teleport portal, vault jump, full other figures, gap filled by a wall or overly long cape.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick slips sideways through ONE clear gap between two cropped cover edges, holding his rifle close to his chest. Front knee raised and back boot already through, looking toward the flank; ONE low motion arc.\nAVOID: No teleport portal, vault jump, full other figures, gap filled by a wall or overly long cape.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 22,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "99b40b48a02a2216a61da37c4ca928173c2773e5687484c757805af0c56124bf",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-pressure-through-the-gap-v1.png",
+  "source_sha256": "f84567f6e6ccb52b91784f82d93379659b96abeb0b0950a95dd28a7d0a14d299",
+  "export_crop": [
+    0,
+    31,
+    1254,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/pressure-through-the-gap.png",
+    "64": "art/icons/forks/exports/64/pressure-through-the-gap.png",
+    "48": "art/icons/forks/exports/48/pressure-through-the-gap.png",
+    "44": "art/icons/forks/exports/44/pressure-through-the-gap.png",
+    "32": "art/icons/forks/exports/32/pressure-through-the-gap.png",
+    "24": "art/icons/forks/exports/24/pressure-through-the-gap.png"
+  },
+  "export_sha256": {
+    "128": "fabe60919b53562319737ac70a9311d938a38276fdb6d7ffb3e1330565419473",
+    "64": "521e40025edd0b0a14f95888e66f1267cad67698ef9876b8b0e0076c530d09fa",
+    "48": "79e3d86e1e8df03d6448df4eb6820f9242e8530e7065bed9d3ac2eb26ba8c24f",
+    "44": "5909702ba2d7f9eb0b1f28911362543f1f191a30b6ef47e45be59136cc734aba",
+    "32": "0f036f44e7bb648c4d78dd5e9f49e25d39c556c405a06410b4d7d56ddb9cfc25",
+    "24": "c222633bcd4c1d0af408c53c834e274a085eceeddf4a9012e2855b42aa009cae"
+  },
+  "framing": {
+    "scale": 0.5027920508915815,
+    "offset": [
+      196,
+      204
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes."
+}

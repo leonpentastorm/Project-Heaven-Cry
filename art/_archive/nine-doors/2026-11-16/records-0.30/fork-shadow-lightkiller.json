@@ -1,0 +1,101 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.shadow.lightkiller",
+  "name": "Lightkiller",
+  "icon_id": "fork.shadow.lightkiller",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Lightkiller** (`shadow.lightkiller`). *\"Once a fight, {=ap} AP and {=numbers.shadow} Shadow: you and the tiles next to\nyou go dark for {=numbers.rounds} rounds. A dark tile blocks sight through it as smoke does: from the middle you see\nno one outside and no one outside sees you; a unit next to you always sees you. Hide works there.\"*\n- Sight, one copy: the dark is a VEIL smoke zone (`veilTiles`, read by `sightBlockers`, `combat.ts:750`;\n  `lineOfSight` never tests the start or end tile), so the same sentence holds for both, including VEIL's: the centre\n  of a 3\u00d73 is blind both ways; an edge tile sees out and is seen.\n- Fields: `ap: 1`, `shadow: 2`, `within: 1`, `rounds: 2`, limit `per_combat` 1. Why: a 3\u00d73 for 2 rounds is one Hide and\n  one Break for you or a lent ally. **The lead's version (2 Shadow, no limit) is \"shade where you want it, at will\": the\n  Per\u00b2 peak**; once a fight is below it (question 2).\n- Carrier: op `zone` with kind `veil` (N9: the `zone` op may lay the smoke kind; today `DATA_ZONE_KINDS` is\n  `['sanctuary']`, `magic.ts:58`). Cheaper: none without darkness; Douse needs a lamp.\n- Operative: Vanish (re-pointed, section 4) makes Fade cheaper; Lightkiller makes shade: no overlap. Peak: below.\n- Excite: you are seen by three; one action and the ring goes black, you Hide in its middle, and the first one who\n  steps in after you is Broken from the dark.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [
+    2
+  ],
+  "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+  "file_key": "fork-shadow-lightkiller",
+  "path": "art/icons/forks/shadow-lightkiller.png",
+  "paint": "Wick spreads both hands low, opening ONE dome of transparent negative space edged by THREE broken white arcs around his knees; an eye-shaped sight ray at its edge is blocked. Screen eyes narrowed inside the dark.",
+  "avoid": "No lamp or Douse action, no full scenery, opaque black or gray fill, smoke gradients or real halo.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick spreads both hands low, opening ONE dome of transparent negative space edged by THREE broken white arcs around his knees; an eye-shaped sight ray at its edge is blocked. Screen eyes narrowed inside the dark.\nAVOID: No lamp or Douse action, no full scenery, opaque black or gray fill, smoke gradients or real halo.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "visual_basis_resolution": {
+    "authority": "Leon explicit answer 17 November 2026",
+    "quote": "Use pinned revision-2 rules for these eight proposals",
+    "gameplay_questions_remain_open": true
+  },
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 6,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "59fa4f5ae5a782ab22f4b7d7d27e88da2271403c3809ccc181745fd62eb08931",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-shadow-lightkiller-v1.png",
+  "source_sha256": "b30bb9d2a90db673cc2067bdc4a5132b11705f8221cbb18b7d91b0e550cd9a8b",
+  "export_crop": [
+    0,
+    17,
+    1234,
+    1218
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/shadow-lightkiller.png",
+    "64": "art/icons/forks/exports/64/shadow-lightkiller.png",
+    "48": "art/icons/forks/exports/48/shadow-lightkiller.png",
+    "44": "art/icons/forks/exports/44/shadow-lightkiller.png",
+    "32": "art/icons/forks/exports/32/shadow-lightkiller.png",
+    "24": "art/icons/forks/exports/24/shadow-lightkiller.png"
+  },
+  "export_sha256": {
+    "128": "5e191140ca7ed5d7448fd988cd58cde48abb9c2ba92da90ff69fb633c20ac7bc",
+    "64": "0024c2b0ee37fb7d4ae21874070d29caca802cedc71876854e8f9e0eb49fc4c7",
+    "48": "d17dffa78c7e089ef7efb0e7560a7a548486a0d764520bf17f6c0ac6ee4d8e9a",
+    "44": "1f3240d96a06354b9e1f97c2997f618e424a345f20dba9735328e135687fc20d",
+    "32": "7b0c3ca389b1c96ba536738d23b37dfbfb24ad6efa7e5c6c6787c0b85a296fd9",
+    "24": "c08c892e31e72031bda7ae261d045e7d931b6a10b667a5ff30757419e60252c7"
+  },
+  "framing": {
+    "scale": 0.5714419444252912,
+    "offset": [
+      159,
+      169
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

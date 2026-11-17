@@ -1,0 +1,82 @@
+{
+  "number": 37,
+  "section": 5,
+  "family": "prayers",
+  "id": "vow-unarmed-faith",
+  "path": "art/icons/prayers/vow-unarmed-faith.png",
+  "name": "Vow: No Magic but Theirs",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "state": "in game now (a code line mark)",
+  "use": "The vow of the same name: no Sigils or Outbursts, only prayer",
+  "paint": "Wick with both open hands raised, a small glyph and a small heart-knot lying cast aside at his feet, one thin ray falling on his palms.",
+  "avoid": "a crossed-out spell circle \u00b7 a wand",
+  "file_key": "37-vow-unarmed-faith",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick with both open hands raised, a small glyph and a small heart-knot lying cast aside at his feet, one thin ray falling on his palms.\nAVOID: a crossed-out spell circle \u00b7 a wand",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/37-vow-unarmed-faith-v1.png",
+  "source_sha256": "b9d350be5d5f4a5088bc615a284527a91429b614b03a922c83351a0918c00cd0",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    20,
+    1212,
+    1254
+  ],
+  "scale": 0.5091888367625738,
+  "offset": [
+    203,
+    198
+  ],
+  "upscaled": false,
+  "status": "draft-pending-visual-review",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "5e8f785541fc3ef856923debb35e8bc2ff18d92f11ae53d6a60119152e1e9476",
+  "exports": {
+    "256": "art/icons/prayers/exports/256/vow-unarmed-faith.png",
+    "128": "art/icons/prayers/exports/128/vow-unarmed-faith.png",
+    "64": "art/icons/prayers/exports/64/vow-unarmed-faith.png",
+    "48": "art/icons/prayers/exports/48/vow-unarmed-faith.png",
+    "44": "art/icons/prayers/exports/44/vow-unarmed-faith.png",
+    "32": "art/icons/prayers/exports/32/vow-unarmed-faith.png",
+    "24": "art/icons/prayers/exports/24/vow-unarmed-faith.png",
+    "16": "art/icons/prayers/exports/16/vow-unarmed-faith.png"
+  },
+  "export_sha256": {
+    "256": "8ad7f44a560235369d80f5c2b0549d212d47d006accb0bbb0c717d5fa981ac14",
+    "128": "710f8fc9c6765deb00cd4a69fa25ae8d8deb3f1a5184f80b9a544221d0fb562c",
+    "64": "61b7358faed994315e6d83ccfe78441842f8072b9dd62b1202aa8887c844285e",
+    "48": "ac7f8a6023ce30358a341e1d7146a7ca734e5c0a449a66aeae0a377c63d7d06c",
+    "44": "5e9c6309d7d3013ede29f8ef5e2d085654bd960e4e8af7bd6c760ed93163aa1b",
+    "32": "6ff5a6c42a881d31ce975a6a06e2050924ba5d9b58c27caaea7bdeb6a54b92fb",
+    "24": "67384f0ddcbc780ff94a50e16354288c1ee523495de7db72cc4d36f5b7f81e04",
+    "16": "9671bc147bce6b30c1c0ba97775f86e316914c38dedaed3b079a5b4572e28637"
+  },
+  "rejection_reason": "Held wand-like prop contradicts empty raised palms and source vow."
+}

@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.tend.short_thread",
+  "name": "Short Thread",
+  "icon_id": "fork.tend.short_thread",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Short Thread** (`tend.short_thread`). *\"Tending a Bonded ally within {=numbers.within} tiles is \u00d7{=numbers.near} (not\n\u00d71.2), and your Touch reaches {=numbers.touch} tiles.\"*\n- Fields: `within: 2`, `near: 1.4`, `touch: 2`. Why 1.4: the front-line medic takes the hits; this pays for standing\n  there. Touch at 2 is what makes it a style, not only a number.\n- Carrier: `mend_mult` on `heal` and `shield`, `if {actor: self, target_tied: bond, target_within, how: [tending],\n  door_pick}` (`actor: self` is required: both triggers are `self: target`, `triggers.ts:81, :83`, so without it the\n  row fires only when the healer is the one healed),\n  value `near / through` (1.4 / 1.2: bound by placeholder, no typed number); Touch's `reach.tiles` as a number block\n  reading the pick (N2).\n- Mender: Triage (re-pointed to a better Touch, section 4) and Short Thread meet in the front line: a fit, not a copy.\n- Excite: you stand in the melee between the Bulwark and the Breaker and every Mend lands 40% above anyone else's.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-tend-short-thread",
+  "path": "art/icons/forks/tend-short-thread.png",
+  "paint": "Wick kneels very close beside a cropped ally arm, touching it with one broad mitten. A SHORT heart-knotted thread runs directly from his lantern chest to that arm, with one large white healing ray at their contact. Tender pixel eyes.",
+  "avoid": "No long slack line, full patient, hospital bed or physical wound.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick kneels very close beside a cropped ally arm, touching it with one broad mitten. A SHORT heart-knotted thread runs directly from his lantern chest to that arm, with one large white healing ray at their contact. Tender pixel eyes.\nAVOID: No long slack line, full patient, hospital bed or physical wound.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 9,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "90b0506ac6b7ac4471c7358eda253c55f9d369266433e5021c32c116c33a8543",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-tend-short-thread-v1.png",
+  "source_sha256": "409ec8415b615964c0b2da7506cccb68639a49c573a859d6074615eec925d0db",
+  "export_crop": [
+    0,
+    23,
+    1242,
+    1183
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/tend-short-thread.png",
+    "64": "art/icons/forks/exports/64/tend-short-thread.png",
+    "48": "art/icons/forks/exports/48/tend-short-thread.png",
+    "44": "art/icons/forks/exports/44/tend-short-thread.png",
+    "32": "art/icons/forks/exports/32/tend-short-thread.png",
+    "24": "art/icons/forks/exports/24/tend-short-thread.png"
+  },
+  "export_sha256": {
+    "128": "d0dc5d7016b92792d2aecda6ee9071c26795e783f2e90c3eb1620e05b96e3881",
+    "64": "fa240038b79ee22ce995b8be0f8db69b130fdf9352e9670e2f5e849fe9a6cbad",
+    "48": "4f0d9eced5a99ad40f06218dc89369b9e52df09e308930a12077734d27e36653",
+    "44": "6cc6e966d5eecba2a08c9527e298e285ea77ea2e36bcfdefdccad86ec49ee028",
+    "32": "a35b3fe6888ed53497a94a214edde9ce0352bfb1450f46b4be646e86641468ca",
+    "24": "d2fd54dad592c3c396c8a1a473301a559bee24f9fcbe19f9a1525bb67563d57f"
+  },
+  "framing": {
+    "scale": 0.5396825389801924,
+    "offset": [
+      177,
+      199
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

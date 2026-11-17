@@ -1,0 +1,1080 @@
+[
+  {
+    "name": "Step 2: Your free focus",
+    "key": 271,
+    "master": "art/icons/survival/camp/step-focus.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders/271-step-focus.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/survival/camp/exports/128/step-focus.png",
+      "64": "art/icons/survival/camp/exports/64/step-focus.png",
+      "48": "art/icons/survival/camp/exports/48/step-focus.png",
+      "44": "art/icons/survival/camp/exports/44/step-focus.png",
+      "32": "art/icons/survival/camp/exports/32/step-focus.png",
+      "24": "art/icons/survival/camp/exports/24/step-focus.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records/271.json",
+    "production_approved": false
+  },
+  {
+    "name": "Step 3: Spend your budget",
+    "key": 272,
+    "master": "art/icons/survival/camp/step-budget.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders/272-step-budget.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/survival/camp/exports/128/step-budget.png",
+      "64": "art/icons/survival/camp/exports/64/step-budget.png",
+      "48": "art/icons/survival/camp/exports/48/step-budget.png",
+      "44": "art/icons/survival/camp/exports/44/step-budget.png",
+      "32": "art/icons/survival/camp/exports/32/step-budget.png",
+      "24": "art/icons/survival/camp/exports/24/step-budget.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records/272.json",
+    "production_approved": false
+  },
+  {
+    "name": "Step 4: Your starting boon",
+    "key": 273,
+    "master": "art/icons/survival/camp/step-boon.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders/273-step-boon.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/survival/camp/exports/128/step-boon.png",
+      "64": "art/icons/survival/camp/exports/64/step-boon.png",
+      "48": "art/icons/survival/camp/exports/48/step-boon.png",
+      "44": "art/icons/survival/camp/exports/44/step-boon.png",
+      "32": "art/icons/survival/camp/exports/32/step-boon.png",
+      "24": "art/icons/survival/camp/exports/24/step-boon.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records/273.json",
+    "production_approved": false
+  },
+  {
+    "name": "Ready",
+    "key": 274,
+    "master": "art/icons/survival/camp/step-ready.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders/274-step-ready.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/survival/camp/exports/128/step-ready.png",
+      "64": "art/icons/survival/camp/exports/64/step-ready.png",
+      "48": "art/icons/survival/camp/exports/48/step-ready.png",
+      "44": "art/icons/survival/camp/exports/44/step-ready.png",
+      "32": "art/icons/survival/camp/exports/32/step-ready.png",
+      "24": "art/icons/survival/camp/exports/24/step-ready.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records/274.json",
+    "production_approved": false
+  },
+  {
+    "name": "Provoke",
+    "key": "0.30/fork.guard.provoke",
+    "master": "art/icons/forks/guard-provoke.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-guard-provoke-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/guard-provoke.png",
+      "64": "art/icons/forks/exports/64/guard-provoke.png",
+      "48": "art/icons/forks/exports/48/guard-provoke.png",
+      "44": "art/icons/forks/exports/44/guard-provoke.png",
+      "32": "art/icons/forks/exports/32/guard-provoke.png",
+      "24": "art/icons/forks/exports/24/guard-provoke.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-guard-provoke.json",
+    "production_approved": false
+  },
+  {
+    "name": "Cover Them",
+    "key": "0.30/fork.guard.cover_them",
+    "master": "art/icons/forks/guard-cover-them.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-guard-cover-them-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/guard-cover-them.png",
+      "64": "art/icons/forks/exports/64/guard-cover-them.png",
+      "48": "art/icons/forks/exports/48/guard-cover-them.png",
+      "44": "art/icons/forks/exports/44/guard-cover-them.png",
+      "32": "art/icons/forks/exports/32/guard-cover-them.png",
+      "24": "art/icons/forks/exports/24/guard-cover-them.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-guard-cover-them.json",
+    "production_approved": false
+  },
+  {
+    "name": "Stand Fast",
+    "key": "0.30/fork.guard.stand_fast",
+    "master": "art/icons/forks/guard-stand-fast.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-guard-stand-fast-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/guard-stand-fast.png",
+      "64": "art/icons/forks/exports/64/guard-stand-fast.png",
+      "48": "art/icons/forks/exports/48/guard-stand-fast.png",
+      "44": "art/icons/forks/exports/44/guard-stand-fast.png",
+      "32": "art/icons/forks/exports/32/guard-stand-fast.png",
+      "24": "art/icons/forks/exports/24/guard-stand-fast.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-guard-stand-fast.json",
+    "production_approved": false
+  },
+  {
+    "name": "Drive",
+    "key": "0.30/fork.guard.drive",
+    "master": "art/icons/forks/guard-drive.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-guard-drive-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/guard-drive.png",
+      "64": "art/icons/forks/exports/64/guard-drive.png",
+      "48": "art/icons/forks/exports/48/guard-drive.png",
+      "44": "art/icons/forks/exports/44/guard-drive.png",
+      "32": "art/icons/forks/exports/32/guard-drive.png",
+      "24": "art/icons/forks/exports/24/guard-drive.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-guard-drive.json",
+    "production_approved": false
+  },
+  {
+    "name": "Light Fingers",
+    "key": "0.30/fork.shadow.light_fingers",
+    "master": "art/icons/forks/shadow-light-fingers.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-shadow-light-fingers-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/shadow-light-fingers.png",
+      "64": "art/icons/forks/exports/64/shadow-light-fingers.png",
+      "48": "art/icons/forks/exports/48/shadow-light-fingers.png",
+      "44": "art/icons/forks/exports/44/shadow-light-fingers.png",
+      "32": "art/icons/forks/exports/32/shadow-light-fingers.png",
+      "24": "art/icons/forks/exports/24/shadow-light-fingers.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-shadow-light-fingers.json",
+    "production_approved": false
+  },
+  {
+    "name": "Lend the Dark",
+    "key": "0.30/fork.shadow.lend_the_dark",
+    "master": "art/icons/forks/shadow-lend-the-dark.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-shadow-lend-the-dark-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/shadow-lend-the-dark.png",
+      "64": "art/icons/forks/exports/64/shadow-lend-the-dark.png",
+      "48": "art/icons/forks/exports/48/shadow-lend-the-dark.png",
+      "44": "art/icons/forks/exports/44/shadow-lend-the-dark.png",
+      "32": "art/icons/forks/exports/32/shadow-lend-the-dark.png",
+      "24": "art/icons/forks/exports/24/shadow-lend-the-dark.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-shadow-lend-the-dark.json",
+    "production_approved": false
+  },
+  {
+    "name": "Lightkiller",
+    "key": "0.30/fork.shadow.lightkiller",
+    "master": "art/icons/forks/shadow-lightkiller.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-shadow-lightkiller-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/shadow-lightkiller.png",
+      "64": "art/icons/forks/exports/64/shadow-lightkiller.png",
+      "48": "art/icons/forks/exports/48/shadow-lightkiller.png",
+      "44": "art/icons/forks/exports/44/shadow-lightkiller.png",
+      "32": "art/icons/forks/exports/32/shadow-lightkiller.png",
+      "24": "art/icons/forks/exports/24/shadow-lightkiller.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-shadow-lightkiller.json",
+    "production_approved": false
+  },
+  {
+    "name": "Spotter",
+    "key": "0.30/fork.shadow.spotter",
+    "master": "art/icons/forks/shadow-spotter.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-shadow-spotter-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/shadow-spotter.png",
+      "64": "art/icons/forks/exports/64/shadow-spotter.png",
+      "48": "art/icons/forks/exports/48/shadow-spotter.png",
+      "44": "art/icons/forks/exports/44/shadow-spotter.png",
+      "32": "art/icons/forks/exports/32/shadow-spotter.png",
+      "24": "art/icons/forks/exports/24/shadow-spotter.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-shadow-spotter.json",
+    "production_approved": false
+  },
+  {
+    "name": "Keep the Thread",
+    "key": "0.30/fork.tend.keep_the_thread",
+    "master": "art/icons/forks/tend-keep-the-thread.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-tend-keep-the-thread-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/tend-keep-the-thread.png",
+      "64": "art/icons/forks/exports/64/tend-keep-the-thread.png",
+      "48": "art/icons/forks/exports/48/tend-keep-the-thread.png",
+      "44": "art/icons/forks/exports/44/tend-keep-the-thread.png",
+      "32": "art/icons/forks/exports/32/tend-keep-the-thread.png",
+      "24": "art/icons/forks/exports/24/tend-keep-the-thread.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-tend-keep-the-thread.json",
+    "production_approved": false
+  },
+  {
+    "name": "Short Thread",
+    "key": "0.30/fork.tend.short_thread",
+    "master": "art/icons/forks/tend-short-thread.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-tend-short-thread-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/tend-short-thread.png",
+      "64": "art/icons/forks/exports/64/tend-short-thread.png",
+      "48": "art/icons/forks/exports/48/tend-short-thread.png",
+      "44": "art/icons/forks/exports/44/tend-short-thread.png",
+      "32": "art/icons/forks/exports/32/tend-short-thread.png",
+      "24": "art/icons/forks/exports/24/tend-short-thread.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-tend-short-thread.json",
+    "production_approved": false
+  },
+  {
+    "name": "Shared Pulse",
+    "key": "0.30/fork.tend.shared_pulse",
+    "master": "art/icons/forks/tend-shared-pulse.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-tend-shared-pulse-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/tend-shared-pulse.png",
+      "64": "art/icons/forks/exports/64/tend-shared-pulse.png",
+      "48": "art/icons/forks/exports/48/tend-shared-pulse.png",
+      "44": "art/icons/forks/exports/44/tend-shared-pulse.png",
+      "32": "art/icons/forks/exports/32/tend-shared-pulse.png",
+      "24": "art/icons/forks/exports/24/tend-shared-pulse.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-tend-shared-pulse.json",
+    "production_approved": false
+  },
+  {
+    "name": "Long Thread",
+    "key": "0.30/fork.tend.long_thread",
+    "master": "art/icons/forks/tend-long-thread.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-tend-long-thread-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/tend-long-thread.png",
+      "64": "art/icons/forks/exports/64/tend-long-thread.png",
+      "48": "art/icons/forks/exports/48/tend-long-thread.png",
+      "44": "art/icons/forks/exports/44/tend-long-thread.png",
+      "32": "art/icons/forks/exports/32/tend-long-thread.png",
+      "24": "art/icons/forks/exports/24/tend-long-thread.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-tend-long-thread.json",
+    "production_approved": false
+  },
+  {
+    "name": "Round of Blessings",
+    "key": "0.30/fork.prayer.round_of_blessings",
+    "master": "art/icons/forks/prayer-round-of-blessings.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-prayer-round-of-blessings-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/prayer-round-of-blessings.png",
+      "64": "art/icons/forks/exports/64/prayer-round-of-blessings.png",
+      "48": "art/icons/forks/exports/48/prayer-round-of-blessings.png",
+      "44": "art/icons/forks/exports/44/prayer-round-of-blessings.png",
+      "32": "art/icons/forks/exports/32/prayer-round-of-blessings.png",
+      "24": "art/icons/forks/exports/24/prayer-round-of-blessings.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-prayer-round-of-blessings.json",
+    "production_approved": false
+  },
+  {
+    "name": "Steadfast",
+    "key": "0.30/fork.prayer.steadfast",
+    "master": "art/icons/forks/prayer-steadfast.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-prayer-steadfast-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/prayer-steadfast.png",
+      "64": "art/icons/forks/exports/64/prayer-steadfast.png",
+      "48": "art/icons/forks/exports/48/prayer-steadfast.png",
+      "44": "art/icons/forks/exports/44/prayer-steadfast.png",
+      "32": "art/icons/forks/exports/32/prayer-steadfast.png",
+      "24": "art/icons/forks/exports/24/prayer-steadfast.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-prayer-steadfast.json",
+    "production_approved": false
+  },
+  {
+    "name": "Benediction",
+    "key": "0.30/fork.prayer.benediction",
+    "master": "art/icons/forks/prayer-benediction.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-prayer-benediction-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/prayer-benediction.png",
+      "64": "art/icons/forks/exports/64/prayer-benediction.png",
+      "48": "art/icons/forks/exports/48/prayer-benediction.png",
+      "44": "art/icons/forks/exports/44/prayer-benediction.png",
+      "32": "art/icons/forks/exports/32/prayer-benediction.png",
+      "24": "art/icons/forks/exports/24/prayer-benediction.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-prayer-benediction.json",
+    "production_approved": false
+  },
+  {
+    "name": "Held Breath",
+    "key": "0.30/fork.prayer.held_breath",
+    "master": "art/icons/forks/prayer-held-breath.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-prayer-held-breath-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/prayer-held-breath.png",
+      "64": "art/icons/forks/exports/64/prayer-held-breath.png",
+      "48": "art/icons/forks/exports/48/prayer-held-breath.png",
+      "44": "art/icons/forks/exports/44/prayer-held-breath.png",
+      "32": "art/icons/forks/exports/32/prayer-held-breath.png",
+      "24": "art/icons/forks/exports/24/prayer-held-breath.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-prayer-held-breath.json",
+    "production_approved": false
+  },
+  {
+    "name": "Rolling Start",
+    "key": "0.30/fork.momentum.rolling_start",
+    "master": "art/icons/forks/momentum-rolling-start.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-momentum-rolling-start-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/momentum-rolling-start.png",
+      "64": "art/icons/forks/exports/64/momentum-rolling-start.png",
+      "48": "art/icons/forks/exports/48/momentum-rolling-start.png",
+      "44": "art/icons/forks/exports/44/momentum-rolling-start.png",
+      "32": "art/icons/forks/exports/32/momentum-rolling-start.png",
+      "24": "art/icons/forks/exports/24/momentum-rolling-start.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-momentum-rolling-start.json",
+    "production_approved": false
+  },
+  {
+    "name": "Grindstone",
+    "key": "0.30/fork.momentum.grindstone",
+    "master": "art/icons/forks/momentum-grindstone.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-momentum-grindstone-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/momentum-grindstone.png",
+      "64": "art/icons/forks/exports/64/momentum-grindstone.png",
+      "48": "art/icons/forks/exports/48/momentum-grindstone.png",
+      "44": "art/icons/forks/exports/44/momentum-grindstone.png",
+      "32": "art/icons/forks/exports/32/momentum-grindstone.png",
+      "24": "art/icons/forks/exports/24/momentum-grindstone.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-momentum-grindstone.json",
+    "production_approved": false
+  },
+  {
+    "name": "Spill",
+    "key": "0.30/fork.momentum.spill",
+    "master": "art/icons/forks/momentum-spill.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-momentum-spill-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/momentum-spill.png",
+      "64": "art/icons/forks/exports/64/momentum-spill.png",
+      "48": "art/icons/forks/exports/48/momentum-spill.png",
+      "44": "art/icons/forks/exports/44/momentum-spill.png",
+      "32": "art/icons/forks/exports/32/momentum-spill.png",
+      "24": "art/icons/forks/exports/24/momentum-spill.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-momentum-spill.json",
+    "production_approved": false
+  },
+  {
+    "name": "Headlong",
+    "key": "0.30/fork.momentum.headlong",
+    "master": "art/icons/forks/momentum-headlong.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-momentum-headlong-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/momentum-headlong.png",
+      "64": "art/icons/forks/exports/64/momentum-headlong.png",
+      "48": "art/icons/forks/exports/48/momentum-headlong.png",
+      "44": "art/icons/forks/exports/44/momentum-headlong.png",
+      "32": "art/icons/forks/exports/32/momentum-headlong.png",
+      "24": "art/icons/forks/exports/24/momentum-headlong.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-momentum-headlong.json",
+    "production_approved": false
+  },
+  {
+    "name": "Converging Fire",
+    "key": "0.30/fork.pressure.converging_fire",
+    "master": "art/icons/forks/pressure-converging-fire.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-pressure-converging-fire-v2.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/pressure-converging-fire.png",
+      "64": "art/icons/forks/exports/64/pressure-converging-fire.png",
+      "48": "art/icons/forks/exports/48/pressure-converging-fire.png",
+      "44": "art/icons/forks/exports/44/pressure-converging-fire.png",
+      "32": "art/icons/forks/exports/32/pressure-converging-fire.png",
+      "24": "art/icons/forks/exports/24/pressure-converging-fire.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-pressure-converging-fire.json",
+    "production_approved": false
+  },
+  {
+    "name": "Walk It In",
+    "key": "0.30/fork.pressure.walk_it_in",
+    "master": "art/icons/forks/pressure-walk-it-in.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-pressure-walk-it-in-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/pressure-walk-it-in.png",
+      "64": "art/icons/forks/exports/64/pressure-walk-it-in.png",
+      "48": "art/icons/forks/exports/48/pressure-walk-it-in.png",
+      "44": "art/icons/forks/exports/44/pressure-walk-it-in.png",
+      "32": "art/icons/forks/exports/32/pressure-walk-it-in.png",
+      "24": "art/icons/forks/exports/24/pressure-walk-it-in.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-pressure-walk-it-in.json",
+    "production_approved": false
+  },
+  {
+    "name": "Through the Gap",
+    "key": "0.30/fork.pressure.through_the_gap",
+    "master": "art/icons/forks/pressure-through-the-gap.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-pressure-through-the-gap-v2.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/pressure-through-the-gap.png",
+      "64": "art/icons/forks/exports/64/pressure-through-the-gap.png",
+      "48": "art/icons/forks/exports/48/pressure-through-the-gap.png",
+      "44": "art/icons/forks/exports/44/pressure-through-the-gap.png",
+      "32": "art/icons/forks/exports/32/pressure-through-the-gap.png",
+      "24": "art/icons/forks/exports/24/pressure-through-the-gap.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-pressure-through-the-gap.json",
+    "production_approved": false
+  },
+  {
+    "name": "Lockdown",
+    "key": "0.30/fork.pressure.lockdown",
+    "master": "art/icons/forks/pressure-lockdown.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-pressure-lockdown-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/pressure-lockdown.png",
+      "64": "art/icons/forks/exports/64/pressure-lockdown.png",
+      "48": "art/icons/forks/exports/48/pressure-lockdown.png",
+      "44": "art/icons/forks/exports/44/pressure-lockdown.png",
+      "32": "art/icons/forks/exports/32/pressure-lockdown.png",
+      "24": "art/icons/forks/exports/24/pressure-lockdown.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-pressure-lockdown.json",
+    "production_approved": false
+  },
+  {
+    "name": "Overflux",
+    "key": "0.30/fork.sigil.overflux",
+    "master": "art/icons/forks/sigil-overflux.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-sigil-overflux-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/sigil-overflux.png",
+      "64": "art/icons/forks/exports/64/sigil-overflux.png",
+      "48": "art/icons/forks/exports/48/sigil-overflux.png",
+      "44": "art/icons/forks/exports/44/sigil-overflux.png",
+      "32": "art/icons/forks/exports/32/sigil-overflux.png",
+      "24": "art/icons/forks/exports/24/sigil-overflux.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-sigil-overflux.json",
+    "production_approved": false
+  },
+  {
+    "name": "Clean Vent",
+    "key": "0.30/fork.sigil.clean_vent",
+    "master": "art/icons/forks/sigil-clean-vent.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-sigil-clean-vent-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/sigil-clean-vent.png",
+      "64": "art/icons/forks/exports/64/sigil-clean-vent.png",
+      "48": "art/icons/forks/exports/48/sigil-clean-vent.png",
+      "44": "art/icons/forks/exports/44/sigil-clean-vent.png",
+      "32": "art/icons/forks/exports/32/sigil-clean-vent.png",
+      "24": "art/icons/forks/exports/24/sigil-clean-vent.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-sigil-clean-vent.json",
+    "production_approved": false
+  },
+  {
+    "name": "Written in Advance",
+    "key": "0.30/fork.sigil.written_in_advance",
+    "master": "art/icons/forks/sigil-written-in-advance.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-sigil-written-in-advance-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/sigil-written-in-advance.png",
+      "64": "art/icons/forks/exports/64/sigil-written-in-advance.png",
+      "48": "art/icons/forks/exports/48/sigil-written-in-advance.png",
+      "44": "art/icons/forks/exports/44/sigil-written-in-advance.png",
+      "32": "art/icons/forks/exports/32/sigil-written-in-advance.png",
+      "24": "art/icons/forks/exports/24/sigil-written-in-advance.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-sigil-written-in-advance.json",
+    "production_approved": false
+  },
+  {
+    "name": "Running Script",
+    "key": "0.30/fork.sigil.running_script",
+    "master": "art/icons/forks/sigil-running-script.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-sigil-running-script-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/sigil-running-script.png",
+      "64": "art/icons/forks/exports/64/sigil-running-script.png",
+      "48": "art/icons/forks/exports/48/sigil-running-script.png",
+      "44": "art/icons/forks/exports/44/sigil-running-script.png",
+      "32": "art/icons/forks/exports/32/sigil-running-script.png",
+      "24": "art/icons/forks/exports/24/sigil-running-script.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-sigil-running-script.json",
+    "production_approved": false
+  },
+  {
+    "name": "Ride the Edge",
+    "key": "0.30/fork.soul.ride_the_edge",
+    "master": "art/icons/forks/soul-ride-the-edge.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-soul-ride-the-edge-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/soul-ride-the-edge.png",
+      "64": "art/icons/forks/exports/64/soul-ride-the-edge.png",
+      "48": "art/icons/forks/exports/48/soul-ride-the-edge.png",
+      "44": "art/icons/forks/exports/44/soul-ride-the-edge.png",
+      "32": "art/icons/forks/exports/32/soul-ride-the-edge.png",
+      "24": "art/icons/forks/exports/24/soul-ride-the-edge.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-soul-ride-the-edge.json",
+    "production_approved": false
+  },
+  {
+    "name": "Slow Burn",
+    "key": "0.30/fork.soul.slow_burn",
+    "master": "art/icons/forks/soul-slow-burn.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-soul-slow-burn-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/soul-slow-burn.png",
+      "64": "art/icons/forks/exports/64/soul-slow-burn.png",
+      "48": "art/icons/forks/exports/48/soul-slow-burn.png",
+      "44": "art/icons/forks/exports/44/soul-slow-burn.png",
+      "32": "art/icons/forks/exports/32/soul-slow-burn.png",
+      "24": "art/icons/forks/exports/24/soul-slow-burn.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-soul-slow-burn.json",
+    "production_approved": false
+  },
+  {
+    "name": "Blood Price",
+    "key": "0.30/fork.soul.blood_price",
+    "master": "art/icons/forks/soul-blood-price.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-soul-blood-price-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/soul-blood-price.png",
+      "64": "art/icons/forks/exports/64/soul-blood-price.png",
+      "48": "art/icons/forks/exports/48/soul-blood-price.png",
+      "44": "art/icons/forks/exports/44/soul-blood-price.png",
+      "32": "art/icons/forks/exports/32/soul-blood-price.png",
+      "24": "art/icons/forks/exports/24/soul-blood-price.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-soul-blood-price.json",
+    "production_approved": false
+  },
+  {
+    "name": "Clean Break",
+    "key": "0.30/fork.soul.clean_break",
+    "master": "art/icons/forks/soul-clean-break.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-soul-clean-break-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/soul-clean-break.png",
+      "64": "art/icons/forks/exports/64/soul-clean-break.png",
+      "48": "art/icons/forks/exports/48/soul-clean-break.png",
+      "44": "art/icons/forks/exports/44/soul-clean-break.png",
+      "32": "art/icons/forks/exports/32/soul-clean-break.png",
+      "24": "art/icons/forks/exports/24/soul-clean-break.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/fork-soul-clean-break.json",
+    "production_approved": false
+  },
+  {
+    "name": "Stand Behind Me",
+    "key": "0.30/class/stand-behind-me",
+    "master": "art/icons/moves/stand-behind-me.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/class-stand-behind-me-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/stand-behind-me.png",
+      "64": "art/icons/moves/exports/64/stand-behind-me.png",
+      "48": "art/icons/moves/exports/48/stand-behind-me.png",
+      "44": "art/icons/moves/exports/44/stand-behind-me.png",
+      "32": "art/icons/moves/exports/32/stand-behind-me.png",
+      "24": "art/icons/moves/exports/24/stand-behind-me.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/class-stand-behind-me.json",
+    "production_approved": false
+  },
+  {
+    "name": "Wind-up",
+    "key": "0.30/replacement/33",
+    "master": "art/icons/moves/shove.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/replacement-33-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/shove.png",
+      "64": "art/icons/moves/exports/64/shove.png",
+      "48": "art/icons/moves/exports/48/shove.png",
+      "44": "art/icons/moves/exports/44/shove.png",
+      "32": "art/icons/moves/exports/32/shove.png",
+      "24": "art/icons/moves/exports/24/shove.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/replacement-33.json",
+    "production_approved": false
+  },
+  {
+    "name": "Read the Swing",
+    "key": "0.30/replacement/35",
+    "master": "art/icons/moves/lingering-dread.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/replacement-35-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/lingering-dread.png",
+      "64": "art/icons/moves/exports/64/lingering-dread.png",
+      "48": "art/icons/moves/exports/48/lingering-dread.png",
+      "44": "art/icons/moves/exports/44/lingering-dread.png",
+      "32": "art/icons/moves/exports/32/lingering-dread.png",
+      "24": "art/icons/moves/exports/24/lingering-dread.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/replacement-35.json",
+    "production_approved": false
+  },
+  {
+    "name": "Hold the Lane",
+    "key": "0.30/replacement/63",
+    "master": "art/icons/moves/speed-loader.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/replacement-63-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/speed-loader.png",
+      "64": "art/icons/moves/exports/64/speed-loader.png",
+      "48": "art/icons/moves/exports/48/speed-loader.png",
+      "44": "art/icons/moves/exports/44/speed-loader.png",
+      "32": "art/icons/moves/exports/32/speed-loader.png",
+      "24": "art/icons/moves/exports/24/speed-loader.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/replacement-63.json",
+    "production_approved": false
+  },
+  {
+    "name": "Scrap Sentinel",
+    "key": "0.30/replacement/163",
+    "master": "art/icons/moves/scrap-turret.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/replacement-163-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/moves/exports/128/scrap-turret.png",
+      "64": "art/icons/moves/exports/64/scrap-turret.png",
+      "48": "art/icons/moves/exports/48/scrap-turret.png",
+      "44": "art/icons/moves/exports/44/scrap-turret.png",
+      "32": "art/icons/moves/exports/32/scrap-turret.png",
+      "24": "art/icons/moves/exports/24/scrap-turret.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/replacement-163.json",
+    "production_approved": false
+  },
+  {
+    "name": "Follow",
+    "key": "0.30/shared/follow",
+    "master": "art/icons/techniques/follow.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/shared-follow-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/techniques/exports/128/follow.png",
+      "64": "art/icons/techniques/exports/64/follow.png",
+      "48": "art/icons/techniques/exports/48/follow.png",
+      "44": "art/icons/techniques/exports/44/follow.png",
+      "32": "art/icons/techniques/exports/32/follow.png",
+      "24": "art/icons/techniques/exports/24/follow.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/shared-follow.json",
+    "production_approved": false
+  },
+  {
+    "name": "Afterword",
+    "key": "0.30/shared/afterword",
+    "master": "art/icons/gear/weapon-afterword.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/shared-afterword-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-afterword.png",
+      "128": "art/icons/gear/exports/128/weapon-afterword.png",
+      "64": "art/icons/gear/exports/64/weapon-afterword.png",
+      "32": "art/icons/gear/exports/32/weapon-afterword.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/shared-afterword.json",
+    "production_approved": false
+  },
+  {
+    "name": "Mana Shock",
+    "key": "0.30/shared/mana-shock",
+    "master": "art/icons/conditions/mana-shock.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/shared-mana-shock-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/conditions/exports/128/mana-shock.png",
+      "64": "art/icons/conditions/exports/64/mana-shock.png",
+      "48": "art/icons/conditions/exports/48/mana-shock.png",
+      "44": "art/icons/conditions/exports/44/mana-shock.png",
+      "32": "art/icons/conditions/exports/32/mana-shock.png",
+      "24": "art/icons/conditions/exports/24/mana-shock.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/shared-mana-shock.json",
+    "production_approved": false
+  },
+  {
+    "name": "Staggered",
+    "key": "0.30/shared/staggered",
+    "master": "art/icons/conditions/staggered.png",
+    "native_source": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/shared-staggered-v1.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "exports": {
+      "128": "art/icons/conditions/exports/128/staggered.png",
+      "64": "art/icons/conditions/exports/64/staggered.png",
+      "48": "art/icons/conditions/exports/48/staggered.png",
+      "44": "art/icons/conditions/exports/44/staggered.png",
+      "32": "art/icons/conditions/exports/32/staggered.png",
+      "24": "art/icons/conditions/exports/24/staggered.png"
+    },
+    "record": "art/_archive/nine-doors/2026-11-16/records-0.30/shared-staggered.json",
+    "production_approved": false
+  }
+]

@@ -1,0 +1,81 @@
+{
+  "number": 46,
+  "section": 7,
+  "family": "interface_icons",
+  "id": "icon-resource-xp",
+  "path": "art/icons/resources/xp.png",
+  "name": "Experience",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (the word XP)",
+  "use": "XP gained, on the reward and tally cards",
+  "paint": "A small flame-shaped seed splitting into a sprout of two short leaves.",
+  "avoid": "a star \u00b7 a level arrow \u00b7 letters",
+  "file_key": "46-xp",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small flame-shaped seed splitting into a sprout of two short leaves.\nAVOID: a star \u00b7 a level arrow \u00b7 letters",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/46-xp-v1.png",
+  "source_sha256": "9d606ae1eb9f740da44c505f4014de5b0144cd93cec4c236d17b9d84c5f2b919",
+  "generation_attempt": 1,
+  "export_crop": [
+    81,
+    23,
+    1210,
+    1210
+  ],
+  "scale": 0.6908171861836563,
+  "offset": [
+    122,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "4b1ec8a1415a0da8d42085e72927d94d3c16b467db288831c726cef658120b9e",
+  "exports": {
+    "256": "art/icons/resources/exports/256/xp.png",
+    "128": "art/icons/resources/exports/128/xp.png",
+    "64": "art/icons/resources/exports/64/xp.png",
+    "48": "art/icons/resources/exports/48/xp.png",
+    "44": "art/icons/resources/exports/44/xp.png",
+    "32": "art/icons/resources/exports/32/xp.png",
+    "24": "art/icons/resources/exports/24/xp.png",
+    "16": "art/icons/resources/exports/16/xp.png"
+  },
+  "export_sha256": {
+    "256": "7ee0825051593d8c52d579af155c4ac97ef4a94ee59b736226a00261baae8f66",
+    "128": "eef6add0e9d59112a09c81bcdc1bc2921e073ca5c9bea4b636d48fe5f6afda1f",
+    "64": "a21684836c2d49651aef5e67cbf169ed6ddb00d06ece31c69ae2de8576ac21fd",
+    "48": "5ca706ccd223940b644f9424e728a8134b8c40a64b0816a576080b22c38941f5",
+    "44": "59c9c132be0c6d88baeb2323a13bee8d4b7212e6dc8323b11a71b8429b7d4f5e",
+    "32": "70ab1fc58fd168423245bc5ea06849e9f6b2e83d92c3a6cb4e35e0373e67085b",
+    "24": "e8aa36a2bf22f4e7e9547251256cd62cb50a08a6c0ef19fb41f26cb4c9d31511",
+    "16": "bce338bb382f2ea6df42119ea2f6345c02d35e2e775ef5f4735cc710706d3c1d"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

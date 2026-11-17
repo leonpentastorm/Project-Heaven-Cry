@@ -1,0 +1,81 @@
+{
+  "number": 32,
+  "section": 4,
+  "family": "place_icons",
+  "id": "place-trade-salvage",
+  "path": "art/icons/places/trade-salvage.png",
+  "name": "A salvage buyer (trade card)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a card with no picture)",
+  "use": "Crossroads trade: sell one weapon or item from your pack at a share of its price",
+  "paint": "A small pair of scales, one coin on one pan, a broken gun part on the other, the scales level.",
+  "avoid": "a real currency symbol \u00b7 a pawn shop sign \u00b7 a skeleton",
+  "file_key": "32-trade-salvage",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small pair of scales, one coin on one pan, a broken gun part on the other, the scales level.\nAVOID: a real currency symbol \u00b7 a pawn shop sign \u00b7 a skeleton",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/survival/markers/boss.png",
+    "art/icons/survival/markers/cache.png",
+    "art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/32-trade-salvage-v1.png",
+  "source_sha256": "89aaf04b1231e73d305e339e82fff79c95d450db0c3987a1bbdda5b8adb6463d",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    96,
+    1242,
+    1228
+  ],
+  "scale": 0.6602254428341385,
+  "offset": [
+    102,
+    138
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "0ccc8be5d5553d3aa92e56c5327509cbfaeded580c72b15032ef97ce5f24be31",
+  "exports": {
+    "256": "art/icons/places/exports/256/trade-salvage.png",
+    "128": "art/icons/places/exports/128/trade-salvage.png",
+    "64": "art/icons/places/exports/64/trade-salvage.png",
+    "48": "art/icons/places/exports/48/trade-salvage.png",
+    "44": "art/icons/places/exports/44/trade-salvage.png",
+    "32": "art/icons/places/exports/32/trade-salvage.png",
+    "24": "art/icons/places/exports/24/trade-salvage.png",
+    "16": "art/icons/places/exports/16/trade-salvage.png"
+  },
+  "export_sha256": {
+    "256": "103b1aeb56276766b1197f70934f9b885f920cb71afbafe22780f5b83796187b",
+    "128": "17fa735058909defdcb4d79682dae57e76cb3091c3c18abd057c471fa8775dcb",
+    "64": "9a369d1c7ebefbd12916a75483194191fc6c7ad4a6cbf21e710f7489d0c46021",
+    "48": "e69f13879e1d5be7bde36c4cf75f11c48b101b41db14b40c85500271ee147b91",
+    "44": "c81921df84a4a8ce62f1cbf6b5eed97da82aab28eedf95a0ad2fd9c6b22a0899",
+    "32": "368781c885d03daa3955debc48627b381b51ad0867d070b6b8c6a353534dc96b",
+    "24": "e86caef764dacae204a55342c81e452c5bd39d2c2894a957c88ea72258846529",
+    "16": "347582a63385c69c0f05ae792cd515d62ff9f4a0569c7bc6f935cfd472065a4b"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

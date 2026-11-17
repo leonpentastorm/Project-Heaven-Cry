@@ -1,0 +1,97 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/replacement/63",
+  "name": "Hold the Lane",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "legacy_replaced_job": 63,
+  "id": "move-speed-loader",
+  "family": "move_icons",
+  "path": "art/icons/moves/speed-loader.png",
+  "binding_note": "Preserve the old icon id/path per spec section 7. This NEW recipe supersedes the held old depiction; the old recipe remains blocked.",
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "4.1 R8"
+  },
+  "rule_excerpt": "| R8 | `speed_loader` (Skirmisher I, classes.json:981) | Repeats Speed Load (Dexterity 3) | **Hold the Lane** *(Suggested)*: *\"Your held shots (Overwatch, Deny, Cover Me, Dead to Rights) cost {=effects.0.value|abs} AP less (at least 1).\"* `cost_mod` on `attack`, `tech_group: [watch]` | the Skirmisher's text; **both** `save-develop-cb40e92` fixtures (`old-save.test`: never regenerated; they must load and play on with the new move); `skirmisher.test`; `lint-item-ops.test`; costs golden (re-recorded on purpose) |",
+  "status": "review-candidate",
+  "name_status": "suggested",
+  "open_source_questions": [],
+  "generation_gate": "derive the image from the new rule, never the held 0.29 paint recipe",
+  "file_key": "replacement-63",
+  "paint": "Wick sits low behind a braced rifle aimed along ONE straight clear firing lane framed by two short cover edges. ONE broad watching eye-line above the rifle marks a held shot, screen alert and patient.",
+  "avoid": "No reloading, magazine or cylinder, ammunition falling into a gun, numeral or running pose.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick sits low behind a braced rifle aimed along ONE straight clear firing lane framed by two short cover edges. ONE broad watching eye-line above the rifle marks a held shot, screen alert and patient.\nAVOID: No reloading, magazine or cylinder, ammunition falling into a gun, numeral or running pose.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": {
+    "family": "move_icons",
+    "id": "move-speed-loader"
+  },
+  "binding_status": "confirmed existing legacy binding reused for NEW 0.30 depiction",
+  "filename_status": "source path retained",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 35,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "146e43fefaa7daaf8faf0a9ab81d8ef7d8a36f04c57fec471dbd5d2d5c6c7195",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/replacement-63-v1.png",
+  "source_sha256": "57fc4683ae4389744b2e9d77e95ab93b00cf5e4785685b741fd306cc85cb23a1",
+  "export_crop": [
+    0,
+    53,
+    1234,
+    1230
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/speed-loader.png",
+    "64": "art/icons/moves/exports/64/speed-loader.png",
+    "48": "art/icons/moves/exports/48/speed-loader.png",
+    "44": "art/icons/moves/exports/44/speed-loader.png",
+    "32": "art/icons/moves/exports/32/speed-loader.png",
+    "24": "art/icons/moves/exports/24/speed-loader.png"
+  },
+  "export_sha256": {
+    "128": "6406365429583e106f0fe1debc3139748545a99a2fa339ef74dcd8bbfd086005",
+    "64": "20acf0dfffceb79b0e030f80e8d94c328517d7f5fdb6bd38078ca1f0e301b5e5",
+    "48": "01580f051386f600b9ba3367117a239d686d43b1a90e09f3fbacd25d1711052f",
+    "44": "b6a8395447c2274790d2950befcb3feb770ed290b426bb07df33aa98e9b8b4ad",
+    "32": "8f0ba1f18393d81e78240312c6fc8519a015bcbead584014e7135f7d5f984794",
+    "24": "db39ea25c308dfc10d59248d82296c3db7e447017a805c3bd731725536a171fe"
+  },
+  "framing": {
+    "scale": 0.5394424743568285,
+    "offset": [
+      179,
+      194
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

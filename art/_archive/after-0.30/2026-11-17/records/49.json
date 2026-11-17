@@ -1,0 +1,81 @@
+{
+  "number": 49,
+  "section": 7,
+  "family": "interface_icons",
+  "id": "icon-tone-fire",
+  "path": "art/icons/tones/fire.png",
+  "name": "Tone: Fire",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph on a quiver tag)",
+  "use": "The Fire tone: an Outburst design, an enchanted quiver",
+  "paint": "Three flame tongues seated in a small ring.",
+  "avoid": "a campfire \u00b7 a match",
+  "file_key": "49-fire",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Three flame tongues seated in a small ring.\nAVOID: a campfire \u00b7 a match",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/49-fire-v1.png",
+  "source_sha256": "65f6c055fc6f5b7c759654953e4ee43e3e51fec432f048dd28f50f01a6ba9927",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    81,
+    1168,
+    1254
+  ],
+  "scale": 0.6990622335890878,
+  "offset": [
+    103,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "7b0fb09c4a72c1139ad1d54cd024fe69da4e4a4f09eba4b640f0b038af232091",
+  "exports": {
+    "256": "art/icons/tones/exports/256/fire.png",
+    "128": "art/icons/tones/exports/128/fire.png",
+    "64": "art/icons/tones/exports/64/fire.png",
+    "48": "art/icons/tones/exports/48/fire.png",
+    "44": "art/icons/tones/exports/44/fire.png",
+    "32": "art/icons/tones/exports/32/fire.png",
+    "24": "art/icons/tones/exports/24/fire.png",
+    "16": "art/icons/tones/exports/16/fire.png"
+  },
+  "export_sha256": {
+    "256": "aadfabf2dea774a827336b3b3efbad71f342ccb6fe56a66a07b2fa821464113b",
+    "128": "d35ae047b05f014f5fcaa10d73101521f2a0c289ae15020d7887ece933104978",
+    "64": "4c9524b3d0e3774613c9b25aa9d3f57d14e1adaac68b81fb9dd35d006c114905",
+    "48": "7dc4dcfc8ab28cca24ceff659335899ff15a3a6b52cce1286cb9c68418b5d86e",
+    "44": "e14c0024133e59bc1f8603350fb401c945300a8b41dbd862c353cee5413f4618",
+    "32": "6661fdfef3a6503e58694340c515f216452a968dc72449d87d5c14e7a519abff",
+    "24": "b2d0a75a9988b5fe471df11446298ed4b4855e5b1542737b2c5a9feb0613a1ae",
+    "16": "4a11596d6113556e4d21f54056644852ad7ea72161e0de6a07f1e27c14b59812"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

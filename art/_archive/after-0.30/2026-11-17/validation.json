@@ -1,0 +1,9 @@
+{
+  "checked_candidates": 54,
+  "source_hashes_master_ui_sizes_alpha_white_rgb_and_safe_bounds_pass": true,
+  "brain_pair_exact_pixel_mirror": true,
+  "native_resolution": "1254x1254 generated sources; right brain shares left native with explicit mirror export",
+  "master_resolution": "1024x1024; no upscaling",
+  "approval": "review candidates; production_approved false",
+  "catalog_intake": "Deferred to Claude by source brief; supplied family/id fragment, no game code or catalog modification."
+}

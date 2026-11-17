@@ -1,0 +1,81 @@
+{
+  "number": 28,
+  "section": 4,
+  "family": "place_icons",
+  "id": "place-trade-sparring",
+  "path": "art/icons/places/trade-sparring.png",
+  "name": "A hard sparring (trade card)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a card with no picture)",
+  "use": "Crossroads trade: drill with a weapon you carry, at a cost in HP",
+  "paint": "A padded training post with one fist-sized dent in it, two short impact lines at the dent.",
+  "avoid": "a boxing ring \u00b7 blood \u00b7 a punching bag with a face",
+  "file_key": "28-trade-sparring",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A padded training post with one fist-sized dent in it, two short impact lines at the dent.\nAVOID: a boxing ring \u00b7 blood \u00b7 a punching bag with a face",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/survival/markers/boss.png",
+    "art/icons/survival/markers/cache.png",
+    "art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/28-trade-sparring-v1.png",
+  "source_sha256": "3c5d7d9075f294fe3e6419d68b6c0895fd8ca7849dd7e5122cd070a2ee4edca8",
+  "generation_attempt": 1,
+  "export_crop": [
+    53,
+    37,
+    1119,
+    1222
+  ],
+  "scale": 0.6919831223628692,
+  "offset": [
+    143,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "2adc2f60d41ce38756daadc8302baafae5002b67fb0d29d23b539f76c8876b41",
+  "exports": {
+    "256": "art/icons/places/exports/256/trade-sparring.png",
+    "128": "art/icons/places/exports/128/trade-sparring.png",
+    "64": "art/icons/places/exports/64/trade-sparring.png",
+    "48": "art/icons/places/exports/48/trade-sparring.png",
+    "44": "art/icons/places/exports/44/trade-sparring.png",
+    "32": "art/icons/places/exports/32/trade-sparring.png",
+    "24": "art/icons/places/exports/24/trade-sparring.png",
+    "16": "art/icons/places/exports/16/trade-sparring.png"
+  },
+  "export_sha256": {
+    "256": "685a3a6e02f19c5f32fc433d43f98173d429b2ac2b8df64ef3348392b2e61524",
+    "128": "e32890dee927d902fe65033cb7d911d67468ad7c39ae7de79069619b060113e3",
+    "64": "b7ac63c7f414ec9683ed557f012929dbfeb0c7ba4e424c191c937aefad700013",
+    "48": "53c219bee3712ba628ebcd8670a40d82703f9a07b7feb3fabd12dfbbbb75f782",
+    "44": "a8ea72697aaa9146e709a97ae60ecab2c0487013de5c8b1c92305654a8a1484b",
+    "32": "1cd49b0470185cde21f9003d2091f55ac3ac11bdee3a8e09deff421e359c8c77",
+    "24": "5a8de9419a2b362eb0318a268026fd30fc56ad4ce5abc67ae206a45c5bea6689",
+    "16": "fb0325006a15cead3e4485d6d90e5d2ff8a3ac78ba0804b3a8663fa951cd1ea2"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.pressure.converging_fire",
+  "name": "Converging Fire",
+  "icon_id": "fork.pressure.converging_fire",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Converging Fire** (`pressure.converging_fire`). Renamed: **Crossfire** is a press technique. *\"Each ally's ranged hit\non a foe you have hit this round adds {=numbers.pips} more Pressure (once a round for each foe).\"*\n- Fields: `pips: 1`. Why: one more pip per foe per round takes a foe to its cap with the squad's help.\n- Carrier: a conditions row `in_your_sights` (content, put by your ranged hit, 1 round), trigger `hit`, `if {actor:\n  ally, damage: [ranged], target_has: [in_your_sights]}`, op `resource pressure +1 target: target` (the `pressure` row's\n  `setter` goes through the one add, Guard's filter included), limit `per_round` `each: target`; the mark row after the\n  check row.\n- Skirmisher: Relocated and Keep Their Heads Down are your own hits; this is the squad's. Peak: no (one target a shot).\n- Excite: you tag the Elite once; the squad's two shots pin it at Suppressed before its turn.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-pressure-converging-fire",
+  "path": "art/icons/forks/pressure-converging-fire.png",
+  "paint": "Wick kneels aiming ONE simple rifle at a small DIAMOND TRAINING MARKER on a plain cover panel. A second rifle barrel and mitten enter only as a cropped ally fragment from above-left. TWO clean aiming sight lines meet at the same marker. Coordinated aim, no person at the target and no impact or injury.",
+  "avoid": "No full second soldier, crossed guns as emblem, explosions or real gun brand.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick kneels aiming ONE simple rifle at a small DIAMOND TRAINING MARKER on a plain cover panel. A second rifle barrel and mitten enter only as a cropped ally fragment from above-left. TWO clean aiming sight lines meet at the same marker. Coordinated aim, no person at the target and no impact or injury.\nAVOID: Full second figure, humanoid target, injury, explosions, actual firing effects, brand or text. Focus on TWO clearly convergent aim lines.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 20,
+  "generation_attempt": 2,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "cf5bd97cf68425918f990a45f51e75233047fc55a93949a1275628ad7fb9260e",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-pressure-converging-fire-v2.png",
+  "source_sha256": "a173643b513655be133e1522bc40e711707dc086c17a02259d092c96f790f32a",
+  "export_crop": [
+    0,
+    19,
+    1248,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/pressure-converging-fire.png",
+    "64": "art/icons/forks/exports/64/pressure-converging-fire.png",
+    "48": "art/icons/forks/exports/48/pressure-converging-fire.png",
+    "44": "art/icons/forks/exports/44/pressure-converging-fire.png",
+    "32": "art/icons/forks/exports/32/pressure-converging-fire.png",
+    "24": "art/icons/forks/exports/24/pressure-converging-fire.png"
+  },
+  "export_sha256": {
+    "128": "105f11d162818b3e45e2d9cccee3e76e20fd5699925e49a7490b818e85ffa7b9",
+    "64": "1faa30369374588c6e762dca654622bce89a53d32b7df767a98ff45ffe12fdcf",
+    "48": "c6d34562168a11bc2922779196181fe557aea3a1938622f05e78b995ecf83205",
+    "44": "c099d5420f1c3170222ad4465a1f808a58f3b7024266fafd85e9f6ce3e137977",
+    "32": "feab3962ebb8a0a07d384fa43c170873be87ad5bd175f23e0fb71662012512db",
+    "24": "5ea69084bbcf6463f8b4416055c63b3219b64d60dff033112ca5e1d8cf338beb"
+  },
+  "framing": {
+    "scale": 0.5349635012722431,
+    "offset": [
+      178,
+      181
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

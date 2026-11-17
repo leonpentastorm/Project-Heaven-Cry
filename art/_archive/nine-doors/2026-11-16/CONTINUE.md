@@ -1,52 +1,11 @@
 # Continue the Nine Doors artwork
 
-Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **0/41 candidates**, **41 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
+Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **41/41 candidates**, **0 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
 
 Leon authorized the pinned revision-2 visual basis for Cover Them, Drive, Lightkiller, Keep the Thread, Benediction, Held Breath, Walk It In and Lockdown. Their gameplay questions remain open; this is approval to paint draft proposals only. See user-direction-2026-11-17.json.
 
 ## Remaining 0.30 requests
 
-- `0.30/fork.guard.provoke` · Provoke
-- `0.30/fork.guard.cover_them` · Cover Them · pinned revision-2 art basis authorized
-- `0.30/fork.guard.stand_fast` · Stand Fast
-- `0.30/fork.guard.drive` · Drive · pinned revision-2 art basis authorized
-- `0.30/fork.shadow.light_fingers` · Light Fingers
-- `0.30/fork.shadow.lend_the_dark` · Lend the Dark
-- `0.30/fork.shadow.lightkiller` · Lightkiller · pinned revision-2 art basis authorized
-- `0.30/fork.shadow.spotter` · Spotter
-- `0.30/fork.tend.keep_the_thread` · Keep the Thread · pinned revision-2 art basis authorized
-- `0.30/fork.tend.short_thread` · Short Thread
-- `0.30/fork.tend.shared_pulse` · Shared Pulse
-- `0.30/fork.tend.long_thread` · Long Thread
-- `0.30/fork.prayer.round_of_blessings` · Round of Blessings
-- `0.30/fork.prayer.steadfast` · Steadfast
-- `0.30/fork.prayer.benediction` · Benediction · pinned revision-2 art basis authorized
-- `0.30/fork.prayer.held_breath` · Held Breath · pinned revision-2 art basis authorized
-- `0.30/fork.momentum.rolling_start` · Rolling Start
-- `0.30/fork.momentum.grindstone` · Grindstone
-- `0.30/fork.momentum.spill` · Spill
-- `0.30/fork.momentum.headlong` · Headlong
-- `0.30/fork.pressure.converging_fire` · Converging Fire
-- `0.30/fork.pressure.walk_it_in` · Walk It In · pinned revision-2 art basis authorized
-- `0.30/fork.pressure.through_the_gap` · Through the Gap
-- `0.30/fork.pressure.lockdown` · Lockdown · pinned revision-2 art basis authorized
-- `0.30/fork.sigil.overflux` · Overflux
-- `0.30/fork.sigil.clean_vent` · Clean Vent
-- `0.30/fork.sigil.written_in_advance` · Written in Advance
-- `0.30/fork.sigil.running_script` · Running Script
-- `0.30/fork.soul.ride_the_edge` · Ride the Edge
-- `0.30/fork.soul.slow_burn` · Slow Burn
-- `0.30/fork.soul.blood_price` · Blood Price
-- `0.30/fork.soul.clean_break` · Clean Break
-- `0.30/class/stand-behind-me` · Stand Behind Me
-- `0.30/replacement/33` · Wind-up
-- `0.30/replacement/35` · Read the Swing
-- `0.30/replacement/63` · Hold the Lane
-- `0.30/replacement/163` · Scrap Sentinel
-- `0.30/shared/follow` · Follow
-- `0.30/shared/afterword` · Afterword
-- `0.30/shared/mana-shock` · Mana Shock
-- `0.30/shared/staggered` · Staggered
 
 ## Held old recipes — never revive
 

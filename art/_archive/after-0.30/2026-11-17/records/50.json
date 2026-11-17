@@ -1,0 +1,81 @@
+{
+  "number": 50,
+  "section": 7,
+  "family": "interface_icons",
+  "id": "icon-tone-storm",
+  "path": "art/icons/tones/storm.png",
+  "name": "Tone: Storm",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph on a quiver tag)",
+  "use": "The Storm tone (the Sigil element Shock)",
+  "paint": "One long jagged bolt dropping from a small flat cloud line.",
+  "avoid": "a lightning-bolt logo from a known brand \u00b7 a power symbol",
+  "file_key": "50-storm",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: One long jagged bolt dropping from a small flat cloud line.\nAVOID: a lightning-bolt logo from a known brand \u00b7 a power symbol",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/50-storm-v1.png",
+  "source_sha256": "5f0eb31f3c446f7fc4d6a70469b4ae8ed9a3c057879b97846143ab7c5c652866",
+  "generation_attempt": 1,
+  "export_crop": [
+    95,
+    27,
+    1222,
+    1166
+  ],
+  "scale": 0.7199297629499561,
+  "offset": [
+    106,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "3795e662c412944194116e94f1d82f7861efd3e3ed1ab31d5ce3c6efcbe3710c",
+  "exports": {
+    "256": "art/icons/tones/exports/256/storm.png",
+    "128": "art/icons/tones/exports/128/storm.png",
+    "64": "art/icons/tones/exports/64/storm.png",
+    "48": "art/icons/tones/exports/48/storm.png",
+    "44": "art/icons/tones/exports/44/storm.png",
+    "32": "art/icons/tones/exports/32/storm.png",
+    "24": "art/icons/tones/exports/24/storm.png",
+    "16": "art/icons/tones/exports/16/storm.png"
+  },
+  "export_sha256": {
+    "256": "323f41d0cb42901626825f6667fb44f30a14cefe51286a00d8b8fc3c9421ae7b",
+    "128": "7614c8f1b96def514287b93c31e8a742aaa141972869ea9528e23b42a1060cc3",
+    "64": "040d913f949993933f89ad10da4c523023cfbc990fe0b809b283ddd33293d238",
+    "48": "eb17eddc94f26357938faf036c77dcb07559f41714129774d40fd8e667f5cf62",
+    "44": "7e9c7e0bfa4a155532e79967764bfc4e6c82aec5a13a3491e053bb4ea0160950",
+    "32": "473ec10b1fa47ba20bc58f3423f887aa1e94bedbc2efeddd4aab0cac5ccd09b7",
+    "24": "7e502f7a325e6b9585ab10e09a1003fb74ae7e68270dd229fc1da36c88f7af97",
+    "16": "aef897bc5373e9b7f7275006cccacf45cd6b6ae4da553ac459f594c5938708df"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

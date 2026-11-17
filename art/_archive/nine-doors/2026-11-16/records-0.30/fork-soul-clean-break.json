@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.soul.clean_break",
+  "name": "Clean Break",
+  "icon_id": "fork.soul.clean_break",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Clean Break** (`soul.clean_break`). *\"A Release at stage 4 lowers your Strain by {=numbers.calm} once it lands.\"*\n- Fields: `calm: 2`. Why: a stage-4 Release costs its whole climb in Strain; this gives back the swell's part.\n- Carrier: trigger `acted` on the Release, op `resource strain` with a number block `{base: 0, steps: [{of:\n  \"event:stage\", at: 4, value: -2}]}` (N3b).\n- Channeler: Eye of the Storm (a Release that adds no Strain, once a scene) and Clean Break stack: by design, the\n  Channeler is the best user. Heart Surge is capped at stage 4 (section 4), so no stage 5 lands. Mana Shock: the way\n  out after a big one. Peak: no.\n- Excite: you go all-in on stage 4 at 2 over the limit; the Release drops you to the limit and out of danger.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-soul-clean-break",
+  "path": "art/icons/forks/soul-clean-break.png",
+  "paint": "Wick throws ONE large Outburst forward from an open palm; TWO broad strain bands spring cleanly away from his intact lantern chest and fall behind him. He stands newly relaxed after the release, screen relieved.",
+  "avoid": "No broken robot body, severed limbs, literal snapped bone, tiny particles or five-stage labels.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick throws ONE large Outburst forward from an open palm; TWO broad strain bands spring cleanly away from his intact lantern chest and fall behind him. He stands newly relaxed after the release, screen relieved.\nAVOID: No broken robot body, severed limbs, literal snapped bone, tiny particles or five-stage labels.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 31,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "a690dfa8fe0ff5083d0b75dd208dc6f336972c1a3425eb0ca0e0ea83350ad4de",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-soul-clean-break-v1.png",
+  "source_sha256": "74591f0643b7e806b89e4a1ca18837c62b22b5c799077583d1b982301251d133",
+  "export_crop": [
+    0,
+    35,
+    1224,
+    1230
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/soul-clean-break.png",
+    "64": "art/icons/forks/exports/64/soul-clean-break.png",
+    "48": "art/icons/forks/exports/48/soul-clean-break.png",
+    "44": "art/icons/forks/exports/44/soul-clean-break.png",
+    "32": "art/icons/forks/exports/32/soul-clean-break.png",
+    "24": "art/icons/forks/exports/24/soul-clean-break.png"
+  },
+  "export_sha256": {
+    "128": "383dcd609e5924730c36ef7db5d3b28c07725fea8748f96a1c162c7c516a7227",
+    "64": "c8917e05dceae7ead3234b024481b5d744f4ffcf2152befbe1f0f7062150bede",
+    "48": "d181c390f70e0f60be6b13103695ad0555fa88446f2743b160bafa32944930e3",
+    "44": "fca8992938957a4a8f960865aea27fe8586bcf10db916fa073ad33a508a243e7",
+    "32": "50995883b51579ca5f3fd12f138db916251f397d14b9c605e08a00a82a1767df",
+    "24": "f850721993214083fe3aa3b470fb8b421b0e87634c124f48a8522ab60ea33530"
+  },
+  "framing": {
+    "scale": 0.6609690092480691,
+    "offset": [
+      107,
+      117
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

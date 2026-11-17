@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.prayer.steadfast",
+  "name": "Steadfast",
+  "icon_id": "fork.prayer.steadfast",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Steadfast** (`prayer.steadfast`). *\"Once a round, off your turn, you may say a Whisper as your reaction when a foe\nattacks an ally you see. A Whisper said so counts as said on your next turn; that turn holds nothing (Held\nBreath).\"*\n- Fields: limit `per_round` 1. Why: the Whisper you would have said anyway, said when it matters; no extra prayer.\n- Carrier: a prayer as a reaction (N6). Cheaper with no primitive: *\"your Health or Protection may be laid on an ally\n  as a held blessing: it lands the first time that ally is hit before your next turn\"* (a conditions row with a\n  `taking` trigger and a `mend` op; it works only for the two Whispers that heal or shield).\n- Chaplain: Ward is also a Whisper: a Steadfast Ward is legal (the Ward's own `holders` cap stands). Peak: no.\n- Excite: the Elite swings at your Sigilist; Protection lands before the blow does.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-prayer-steadfast",
+  "path": "art/icons/forks/prayer-steadfast.png",
+  "paint": "Wick abruptly pivots side-on, one boot lifted, and extends ONE protective white prayer arc from his palm over a cropped ally shoulder as a small incoming dart nears. His free hand braces his own lantern heart, screen resolute.",
+  "avoid": "No rifle or shield prop; no full patient, church, religious symbol or multiple attack scenes.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick abruptly pivots side-on, one boot lifted, and extends ONE protective white prayer arc from his palm over a cropped ally shoulder as a small incoming dart nears. His free hand braces his own lantern heart, screen resolute.\nAVOID: No rifle or shield prop; no full patient, church, religious symbol or multiple attack scenes.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 13,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "d7f7777324395de6b5f8aff1f27a6ef633c72366298bc5a1f4bd9157a186efb8",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-prayer-steadfast-v1.png",
+  "source_sha256": "47f90aa54472d8028ac9ff719a599957955650eb0730301fd65e96cec3c1fbe5",
+  "export_crop": [
+    25,
+    73,
+    1240,
+    1214
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/prayer-steadfast.png",
+    "64": "art/icons/forks/exports/64/prayer-steadfast.png",
+    "48": "art/icons/forks/exports/48/prayer-steadfast.png",
+    "44": "art/icons/forks/exports/44/prayer-steadfast.png",
+    "32": "art/icons/forks/exports/32/prayer-steadfast.png",
+    "24": "art/icons/forks/exports/24/prayer-steadfast.png"
+  },
+  "export_sha256": {
+    "128": "faaaa89ca6f7885926e0dd16e736bfcb1e626c660d473f6b43f3d38a7298f053",
+    "64": "274a7906366b5253f391a455e61740477e44a38628d566f4e01253e8704789af",
+    "48": "75a8dcda7a2e8a716b8d11a3b4a3a83cefc7a7c8edf0c38b6184296e99f3a0a4",
+    "44": "9675520588e84972f9cb07ebada29266cc7d6b7bf530aaa17de092d541b4d669",
+    "32": "416b134c8fb75ecc99f2ea022fe90b2820094a256f453988b6647f14f1622056",
+    "24": "c73b2933253bb5822cf34bd6e5a584326f33386e415673ba80536aa95ae269bc"
+  },
+  "framing": {
+    "scale": 0.5629577335031082,
+    "offset": [
+      170,
+      191
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

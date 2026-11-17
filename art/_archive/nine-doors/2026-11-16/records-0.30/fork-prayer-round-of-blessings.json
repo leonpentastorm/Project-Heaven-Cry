@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.prayer.round_of_blessings",
+  "name": "Round of Blessings",
+  "icon_id": "fork.prayer.round_of_blessings",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Round of Blessings** (`prayer.round_of_blessings`). Renamed: the Faith perk `litany` is *Unbroken Litany*. *\"Each\nWhisper you say on an ally who was not blessed in the last round takes {=numbers.cut} round off your Hymn's wait (never\nunder its floor). With no Hymn of yours waiting, your next prayer roll is {=numbers.roll|signed} instead (an Atheist's\ndice, a Faithful's overreach).\"*\n- Fields: `cut: 1`, `roll: 2`; the floor is `prayer.hymn.cooldown_rule.floor` (one copy). Why: rotating your Whispers\n  through the squad buys a Hymn about every third round at Faith 6 (wait 5); +2 is about a tenth more answered\n  Whispers for an Atheist at TN 12.\n- Carrier: trigger `acted`, `if {action: [whisper], target: ally, target_lacks: [last_blessed]}`, op `condition\n  last_blessed rounds: 1` (a new conditions row, content, put by the Whisper; it runs out, nothing lifts it: ops reach\n  only self, actor or target, so \"lifted from the previous ally\" is not buildable), and the Hymn wait cut through N7\n  (the vow's `u.faith.hymnCut`, `faith.ts:140-147`, already cuts the running wait because `hymnLeft` re-reads\n  `hymnWait`; N7 makes it a count an op adds). Any prayer user's `last_blessed` counts: two Faithful who rotate on one\n  ally cut each other: accepted. The roll as `roll_mod` on the prayer roll (part of N7: the prayer roll is not on\n  `to_hit`).\n- Chaplain: Unbroken Litany II also cuts the wait by 1: they add, the floor binds. Canticle untouched. Peak: no.\n- Works for: every patron (Luck, Health, Protection, Courage are ally Whispers for all), every Atheist.\n- Excite: Health on the Bulwark, Luck on the sniper, Courage on the Breaker: and the Hymn is back a round early.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-prayer-round-of-blessings",
+  "path": "art/icons/forks/prayer-round-of-blessings.png",
+  "paint": "Wick turns in a lively circular gesture, one hand on his lantern, the other sending a small blessing ray around THREE cropped ally hands arranged at different heights. ONE broad curved sweep shows he rotates attention to a new recipient.",
+  "avoid": "No choir, extra full figures, repeated prayer book, halo over head or real religious icon.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick turns in a lively circular gesture, one hand on his lantern, the other sending a small blessing ray around THREE cropped ally hands arranged at different heights. ONE broad curved sweep shows he rotates attention to a new recipient.\nAVOID: No choir, extra full figures, repeated prayer book, halo over head or real religious icon.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 12,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "31c59b220419f28413700d522f075308c73389500d0262ab9d7e37fc593f4c15",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-prayer-round-of-blessings-v1.png",
+  "source_sha256": "2d4d4e82d80f37c57a4d55f5b3a179c2667c0eabbf4172b51b7a63734fc3f74a",
+  "export_crop": [
+    27,
+    0,
+    1236,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/prayer-round-of-blessings.png",
+    "64": "art/icons/forks/exports/64/prayer-round-of-blessings.png",
+    "48": "art/icons/forks/exports/48/prayer-round-of-blessings.png",
+    "44": "art/icons/forks/exports/44/prayer-round-of-blessings.png",
+    "32": "art/icons/forks/exports/32/prayer-round-of-blessings.png",
+    "24": "art/icons/forks/exports/24/prayer-round-of-blessings.png"
+  },
+  "export_sha256": {
+    "128": "31c5aee4d76041365adf6c10fdaffa9e46c9f504d73090b31cd07d89827e00ef",
+    "64": "dfaaf167de48c765de296d7822dbb65d878a522f2bcc82a0277bd364d210df44",
+    "48": "7c8eed0f6655a8b413594353f5c52167a3d09a5e3169cd2a51009fe34907fd5e",
+    "44": "0206ccb216a1d89b3e9a3d6089acdab2dcfdaea02bc6bad436b6ed9e15f8fc62",
+    "32": "821ce7ae3c77ea053d9aa83531164d4e942429adc35bd5e244b404038b4ffd85",
+    "24": "3bcf5a6c7c4944d364a9864f109239455ab1350c32aa9bc73d08d6f6da53837c"
+  },
+  "framing": {
+    "scale": 0.5286238800169649,
+    "offset": [
+      192,
+      180
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

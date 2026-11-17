@@ -1,0 +1,81 @@
+{
+  "number": 19,
+  "section": 3,
+  "family": "interface_icons",
+  "id": "icon-zone-trap",
+  "path": "art/icons/world/zone-trap.png",
+  "name": "Sigil trap (zone mark)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text badge, an hourglass)",
+  "use": "A Sigil that set a trap on a tile (it springs when someone steps on it)",
+  "paint": "Two short pegs with a taut line between them and one small snap-arc at the line's middle.",
+  "avoid": "a bear trap with teeth \u00b7 a mousetrap \u00b7 an hourglass",
+  "file_key": "19-zone-trap",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Two short pegs with a taut line between them and one small snap-arc at the line's middle.\nAVOID: a bear trap with teeth \u00b7 a mousetrap \u00b7 an hourglass",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-3-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/survival/markers/boss.png",
+    "art/icons/survival/markers/cache.png",
+    "art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/19-zone-trap-v1.png",
+  "source_sha256": "fce77f4f86373047d869cb2a74ae46f70dfe00e4c7c0455ecba5678bdb3fa7fb",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    23,
+    1254,
+    1222
+  ],
+  "scale": 0.6539074960127592,
+  "offset": [
+    102,
+    120
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "bcc67685734ebb8e00bc99e30b37f3c314d8aaee8ee0b1eb7863c47cfd060360",
+  "exports": {
+    "256": "art/icons/world/exports/256/zone-trap.png",
+    "128": "art/icons/world/exports/128/zone-trap.png",
+    "64": "art/icons/world/exports/64/zone-trap.png",
+    "48": "art/icons/world/exports/48/zone-trap.png",
+    "44": "art/icons/world/exports/44/zone-trap.png",
+    "32": "art/icons/world/exports/32/zone-trap.png",
+    "24": "art/icons/world/exports/24/zone-trap.png",
+    "16": "art/icons/world/exports/16/zone-trap.png"
+  },
+  "export_sha256": {
+    "256": "e98532abe2f53ee81fa4806d97d01b272d1bc5cae690f08fb1ef60c1a23eb3ee",
+    "128": "76185f762beb084a5b7a1fa53d370b444ad1c9034d003a3a346e2193e7d42560",
+    "64": "50b319dd2ab9dbf8f8b02e5e7d7b3b0461b464dcb09f1af05df641ce77fcd92e",
+    "48": "15be8de6b4857129983ef511d4d9cd306163c05fe277d82c0ca5b0f5aac0779d",
+    "44": "2374bdb6e9887dd53391ee2d1f97d0f955883d9a97a8c288376becf552e205f4",
+    "32": "91ead29178a0475ce793dd471ec11b1ae1270d2a8707d6d7814378e6009c8cf0",
+    "24": "7d1673fe7b56620101bf02cdb3ab9ffd3e7b3acc02680ea5d573fb534ecd5903",
+    "16": "00f558135bbee085ff4d0891add925bbdb0df5b3a6950a892d1715f9436502fe"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

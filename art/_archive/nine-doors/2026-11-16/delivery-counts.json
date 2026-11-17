@@ -2,8 +2,12 @@
   "legacy_delivered": 348,
   "legacy_held_pending": 27,
   "legacy_eligible_pending": 0,
-  "new_030_delivered": 0,
-  "new_030_pending": 41,
-  "combined_outstanding_requests": 41,
-  "new_030_by_kind": {}
+  "new_030_delivered": 41,
+  "new_030_pending": 0,
+  "combined_outstanding_requests": 0,
+  "new_030_by_kind": {
+    "wick": 38,
+    "gear": 1,
+    "sign": 2
+  }
 }

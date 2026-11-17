@@ -1,0 +1,81 @@
+{
+  "number": 13,
+  "section": 3,
+  "family": "interface_icons",
+  "id": "icon-hazard-minefield",
+  "path": "art/icons/world/hazard-minefield.png",
+  "name": "Minefield (hazard mark)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph, an asterisk)",
+  "use": "Hazard tile: a buried minefield; stepping on it can set one off",
+  "paint": "Three half-buried round pressure plates in a row, each with one small stud.",
+  "avoid": "a skull and crossbones \u00b7 a real-world warning triangle \u00b7 a cartoon bomb",
+  "file_key": "13-hazard-minefield",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Three half-buried round pressure plates in a row, each with one small stud.\nAVOID: a skull and crossbones \u00b7 a real-world warning triangle \u00b7 a cartoon bomb",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-3-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/survival/markers/boss.png",
+    "art/icons/survival/markers/cache.png",
+    "art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/13-hazard-minefield-v1.png",
+  "source_sha256": "b0be5d983c5dcd5dfbf504bcf30142fcdaa17418aa42b3098ca7e34a1e25287f",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    61,
+    1254,
+    1109
+  ],
+  "scale": 0.6539074960127592,
+  "offset": [
+    102,
+    169
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "b40533d1842c2b8f0d6fa37733140b80e7847a2e8ed7fbd535712e04509dfcb4",
+  "exports": {
+    "256": "art/icons/world/exports/256/hazard-minefield.png",
+    "128": "art/icons/world/exports/128/hazard-minefield.png",
+    "64": "art/icons/world/exports/64/hazard-minefield.png",
+    "48": "art/icons/world/exports/48/hazard-minefield.png",
+    "44": "art/icons/world/exports/44/hazard-minefield.png",
+    "32": "art/icons/world/exports/32/hazard-minefield.png",
+    "24": "art/icons/world/exports/24/hazard-minefield.png",
+    "16": "art/icons/world/exports/16/hazard-minefield.png"
+  },
+  "export_sha256": {
+    "256": "ed5135bb0913a02d2e5f7de59a90f97d3534698c6083a807f365564e8a98ce95",
+    "128": "2f4fc67afaed51b886bbb68755897e1ad3576b5dec8a11474a4ffbd2598e275b",
+    "64": "fa93eae935a0cb1331d11a668fd97177f77c4ce645e8bdd6a400eeca64a7f8ed",
+    "48": "6a9403cf5f6d020ce688c7c9db826cb9a247a18069db09df1a5a554c2198fb66",
+    "44": "8ef596b97d55828f6e14be64b43d1aafbc43840a9af9996cf06313d2603f3617",
+    "32": "35e8bb3300faf58afa48481c8a4f8603c686f94224fe24ed1d31027312bd19a8",
+    "24": "46989ac56c3f8226e4be8778cee78e3f669a77efafeb65a4c835417dd786fcc4",
+    "16": "be6bc9034d4af6d76b3a1d5c6fccdcbabcafebf85f8b42af4579dd3aa176504e"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

@@ -1,0 +1,81 @@
+{
+  "number": 22,
+  "section": 4,
+  "family": "place_icons",
+  "id": "place-practice",
+  "path": "art/icons/places/practice.png",
+  "name": "Practice (training card)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a card with no picture)",
+  "use": "Training ground and rest: \"Practice +N\", progress toward the next Outburst module",
+  "paint": "A small heart-knot held in an open palm, one ripple ring leaving it.",
+  "avoid": "a boxing glove \u00b7 a medical heart \u00b7 a stopwatch",
+  "file_key": "22-practice",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small heart-knot held in an open palm, one ripple ring leaving it.\nAVOID: a boxing glove \u00b7 a medical heart \u00b7 a stopwatch",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/survival/markers/boss.png",
+    "art/icons/survival/markers/cache.png",
+    "art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/22-practice-v1.png",
+  "source_sha256": "aad6e18c157d33c6bb8f3feb2c542a7afc3002f3d53e54aaf91c58577f51f549",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    11,
+    1232,
+    1210
+  ],
+  "scale": 0.6655844155844156,
+  "offset": [
+    102,
+    113
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "03343f314e27c112b879085b9bbbb8167277de33a43621062acebdc4b7aa368e",
+  "exports": {
+    "256": "art/icons/places/exports/256/practice.png",
+    "128": "art/icons/places/exports/128/practice.png",
+    "64": "art/icons/places/exports/64/practice.png",
+    "48": "art/icons/places/exports/48/practice.png",
+    "44": "art/icons/places/exports/44/practice.png",
+    "32": "art/icons/places/exports/32/practice.png",
+    "24": "art/icons/places/exports/24/practice.png",
+    "16": "art/icons/places/exports/16/practice.png"
+  },
+  "export_sha256": {
+    "256": "8aed9d75cb5ec224a7d45c89a10d63142261fb6591ca671c0c4937bf5845a913",
+    "128": "80d95b878016a57e520300ca4205332b5eb8ae3b333b6c9ded68d69aa70ca64b",
+    "64": "98bc5b275f9d56f88f9520455217fe34934e8521c671d5bdea868e1817cef5c0",
+    "48": "b2ea1855ed5066e3987fa651c92c2f496f87a2c678ad1f60cfd12d16165bb422",
+    "44": "0ef3f1a86959cc0997c6e0842a4d0e0436ec62eff87e34d832678ef774027cf0",
+    "32": "a2628969ec45a7dd05952bb9897ea6e050c864486802a91f5f3c98459003b080",
+    "24": "0cbe17a9f477a20510bd458cd0fd509ed5d8d5d9b70bb12f75fda2f353e940c6",
+    "16": "1f748219847c25556c35e471a409135a646decf45d2aeae56c2d154ddd804a6a"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

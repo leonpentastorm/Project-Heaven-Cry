@@ -1,0 +1,81 @@
+{
+  "number": 31,
+  "section": 4,
+  "family": "place_icons",
+  "id": "place-trade-graft",
+  "path": "art/icons/places/trade-graft.png",
+  "name": "A back-room graft (trade card)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a card with no picture)",
+  "use": "Crossroads trade: a small blessing for the rest of the run, paid for in max HP",
+  "paint": "A thin needle drawing a thread through a small glowing bead set in a flat plate.",
+  "avoid": "a syringe \u00b7 a medical cross \u00b7 gore",
+  "file_key": "31-trade-graft",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A thin needle drawing a thread through a small glowing bead set in a flat plate.\nAVOID: a syringe \u00b7 a medical cross \u00b7 gore",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/survival/markers/boss.png",
+    "art/icons/survival/markers/cache.png",
+    "art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/31-trade-graft-v1.png",
+  "source_sha256": "b6db1f680235da1f0a4ee9279d9d0d63c041fc9a01ca1c216693c0ceec328cad",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    29,
+    1200,
+    1254
+  ],
+  "scale": 0.6693877551020408,
+  "offset": [
+    110,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "4be21022b8de5901110ad075aa465bfe04dfa00c096545e703c259afa3a4cdea",
+  "exports": {
+    "256": "art/icons/places/exports/256/trade-graft.png",
+    "128": "art/icons/places/exports/128/trade-graft.png",
+    "64": "art/icons/places/exports/64/trade-graft.png",
+    "48": "art/icons/places/exports/48/trade-graft.png",
+    "44": "art/icons/places/exports/44/trade-graft.png",
+    "32": "art/icons/places/exports/32/trade-graft.png",
+    "24": "art/icons/places/exports/24/trade-graft.png",
+    "16": "art/icons/places/exports/16/trade-graft.png"
+  },
+  "export_sha256": {
+    "256": "ef9d5dffa4cf42bcf6c9a7f6e59d2ea76578a1cf15eda9476ac8c03a39c6359d",
+    "128": "1af6855498a550dd6dc9f4f3134e558e4f5a512781b5edfaa37842eaa02e188e",
+    "64": "8eac5a1b6a71e66c3435e371206c0e4db21d9143434f2a0c79286cbec1827e83",
+    "48": "d86e4eb8686cb569d97612a12595818822ae66abdce1a30656cb743fb3ad36b0",
+    "44": "9aacabf5bee49f50f61ee3bdbe99543e954ab73bb8f1da1ba97da7a5f77bb1e9",
+    "32": "3fa9a581363766c2e99931e2e6f002f6233c90f34aec1076a44b64003fb23542",
+    "24": "661d382f47f99580cc209de4ee6a83bb91b860e78f65435ee9c92be18fb26cec",
+    "16": "69ff8faa6753bd7e5e8a970917c1b85c7062e21011bf81621d0824e8d5a68730"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

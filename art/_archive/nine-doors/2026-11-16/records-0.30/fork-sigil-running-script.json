@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.sigil.running_script",
+  "name": "Running Script",
+  "icon_id": "fork.sigil.running_script",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Running Script** (`sigil.running_script`). *\"When you Evoke, the glyph you Evoke from stays drawn; your next Line may\nstart from it.\"*\n- Fields: `keep: 1`. Why: one glyph saved is one glyph's charge, AP and Flux.\n- Carrier: an Evoke that leaves a glyph (N14's same piece in `sigil.ts`).\n- Sigilist: Barrage (cheap damage words) chains with it. Peak: no (the kept glyph is on a tile you drew it on; the\n  next Line is still 2 to 4).\n- Excite: FIRE\u00b7SEEK, Evoke; SEEK stays; next turn SEEK\u00b7FREEZE is one glyph away.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-sigil-running-script",
+  "path": "art/icons/forks/sigil-running-script.png",
+  "paint": "Wick extends a NEW line from ONE large intact square glyph left on a ground tile while a spent chain breaks away into three small fragments behind it. His Evoker points at the surviving start glyph. Active angled kneel, eager focused screen.",
+  "avoid": "The anchor glyph MUST remain intact. No running Wick, scroll of text, all glyphs disappearing or smoky magic.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick extends a NEW line from ONE large intact square glyph left on a ground tile while a spent chain breaks away into three small fragments behind it. His Evoker points at the surviving start glyph. Active angled kneel, eager focused screen.\nAVOID: The anchor glyph MUST remain intact. No running Wick, scroll of text, all glyphs disappearing or smoky magic.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 27,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-sigil-running-script-v1.png",
+  "source_sha256": "38bfb719ca507aaf54d9066bad4a72ac0f6e84e8b557704449bc56f5602e1c23",
+  "export_crop": [
+    0,
+    0,
+    1234,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/sigil-running-script.png",
+    "64": "art/icons/forks/exports/64/sigil-running-script.png",
+    "48": "art/icons/forks/exports/48/sigil-running-script.png",
+    "44": "art/icons/forks/exports/44/sigil-running-script.png",
+    "32": "art/icons/forks/exports/32/sigil-running-script.png",
+    "24": "art/icons/forks/exports/24/sigil-running-script.png"
+  },
+  "export_sha256": {
+    "128": "2982b425c4e398c2b0117fd35cf2f4046b849d6aa8d2d41c86848243b2bc066b",
+    "64": "f583c78c386af6834dc93f623b690f62b8460975e4bb63dc633a4f67e1a6ae6d",
+    "48": "8561456dbf0415900121034819d321c7a876ee505f0ceb9920d3b203f72190cd",
+    "44": "633f2773017d54ee3b11af122ee24d3d3581efa227f2dc8cc5e829cd27347211",
+    "32": "b1cb80f4a3228599baf05c67bde664ad1c7a49041a00bad368747f11a6f4a6e8",
+    "24": "c4c120cd62a83b6b89d0fe3d018343584ef97795b9c2d327f86018043b0888ce"
+  },
+  "framing": {
+    "scale": 0.5414981678840104,
+    "offset": [
+      178,
+      172
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

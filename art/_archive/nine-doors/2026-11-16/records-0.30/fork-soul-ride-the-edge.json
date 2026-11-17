@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.soul.ride_the_edge",
+  "name": "Ride the Edge",
+  "icon_id": "fork.soul.ride_the_edge",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Ride the Edge** (`soul.ride_the_edge`). *\"A Release made while your Strain is exactly at your limit is\n\u00d7{=numbers.mult}.\"*\n- Fields: `mult: 1.15`. Why: three quarters of a plain Pump step (0.2), for living one point from three over.\n- Carrier: trigger `dealing`, `if {damage: [outburst], self_res: {strain: {at: \"limit\"}}}` (N10: `limit` reads the\n  stat `strain_limit` separately; Strain's resource row has **no `max`**, because Strain may stand above the limit, the\n  Short coming at 3 over, and a `max` would clamp it and break the Mana Shock).\n- Mana Shock: at the limit is safe (the Short is at 3 over); the reward is for standing on the line, not over it. The\n  bare heart's +4 gets you there in one Begin: a known risk, measured. Peak: no.\n- Excite: you Pump to the limit on purpose and Release at +15%, one swell away from the Short.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-soul-ride-the-edge",
+  "path": "art/icons/forks/soul-ride-the-edge.png",
+  "paint": "Wick balances on a short narrow edge line, knees flexed, and releases ONE large round Outburst from his outstretched mitten. A simple strain arc touches exactly one bold limit tick beside his lantern, screen thrilled and wary.",
+  "avoid": "No falling off a cliff, injury, extra gauge labels, weapon or strain spilling beyond the marker.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick balances on a short narrow edge line, knees flexed, and releases ONE large round Outburst from his outstretched mitten. A simple strain arc touches exactly one bold limit tick beside his lantern, screen thrilled and wary.\nAVOID: No falling off a cliff, injury, extra gauge labels, weapon or strain spilling beyond the marker.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 28,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "978a350aef31ba440d7a1eaf6f620e9b86ead933db8e90837368561678ba0155",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-soul-ride-the-edge-v1.png",
+  "source_sha256": "67c151980d66b84b64aee70865175676dfb5a174a48570dca80c877b9e2c6b69",
+  "export_crop": [
+    25,
+    49,
+    1242,
+    1240
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/soul-ride-the-edge.png",
+    "64": "art/icons/forks/exports/64/soul-ride-the-edge.png",
+    "48": "art/icons/forks/exports/48/soul-ride-the-edge.png",
+    "44": "art/icons/forks/exports/44/soul-ride-the-edge.png",
+    "32": "art/icons/forks/exports/32/soul-ride-the-edge.png",
+    "24": "art/icons/forks/exports/24/soul-ride-the-edge.png"
+  },
+  "export_sha256": {
+    "128": "0e4806945d32f57c3363da2f782d85399c6fa52b6ee12d7f3e4dc94251c7cf4f",
+    "64": "a2cf2a016fa551239094beb5294f27be7202a00c13fd4b9625acf51f5d51a884",
+    "48": "78b09c5ba40ac3e6d2b054392677ee99e9d8651d0ec02ee41a40ef73249d48db",
+    "44": "30aa1da4dbcd335f65d4a391fbde56353459eae063751180d2582b9cc08944fa",
+    "32": "911544e5f002847ae53d7d394224c4250203112198d363b05f25a21e0a6104bc",
+    "24": "e088276903c0f0394c89ff1f4de79f8c6f26dd1ca9fb2941c9a4bc906bbe0609"
+  },
+  "framing": {
+    "scale": 0.5713452222008277,
+    "offset": [
+      164,
+      172
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

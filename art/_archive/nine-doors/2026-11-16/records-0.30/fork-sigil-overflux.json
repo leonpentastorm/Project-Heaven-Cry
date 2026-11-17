@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.sigil.overflux",
+  "name": "Overflux",
+  "icon_id": "fork.sigil.overflux",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Overflux** (`sigil.overflux`). *\"Drawing past your Flux limit no longer Overloads you: your Evoker does not lock and\nnothing is vented. Each glyph you draw while over costs you the Overload's damage for each Flux over (self-harm). A\nVent still empties it.\"*\n- Fields: none new; the damage is `mana.sigil.flux.overload.damage_per_flux_over` (10, one copy). Why: the Line you\n  need now, paid in blood.\n- Carrier: the Overload's lock and vent as a stat the option answers (N15, `overload_lock`, 0 with the pick).\n- Sigilist: Bleed the Flux (cheap Vent) is the clean way; Overflux the dirty one: both live. Running Hand II (no Flux\n  on the first glyph): fine. Peak: no (the Line is still 2 to 4, on your tile).\n- Excite: at 6 Flux, one glyph short of the Line that kills the Boss: you draw it, take 10, and Evoke.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-sigil-overflux",
+  "path": "art/icons/forks/sigil-overflux.png",
+  "paint": "Wick keeps drawing ONE simple angular glyph with an Evoker despite its chamber being visibly overfull: a few hard square ticks push beyond the chamber rim. His shoulders tense and pixel eyes grimace; the tool stays OPEN and working.",
+  "avoid": "No real injury, blood, broken robot body, locked padlock, vent cloud or computer chip.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick keeps drawing ONE simple angular glyph with an Evoker despite its chamber being visibly overfull: a few hard square ticks push beyond the chamber rim. His shoulders tense and pixel eyes grimace; the tool stays OPEN and working.\nAVOID: No real injury, blood, broken robot body, locked padlock, vent cloud or computer chip.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 24,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "a04d3abcf8344c21e2d95432ff061ee458d5046f3776f06095588035ef6d129a",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-sigil-overflux-v1.png",
+  "source_sha256": "a7678fe097bb41fc6009035e4579bfa81b6ba5dabe6263e23b92429fa3ee0955",
+  "export_crop": [
+    31,
+    19,
+    1218,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/sigil-overflux.png",
+    "64": "art/icons/forks/exports/64/sigil-overflux.png",
+    "48": "art/icons/forks/exports/48/sigil-overflux.png",
+    "44": "art/icons/forks/exports/44/sigil-overflux.png",
+    "32": "art/icons/forks/exports/32/sigil-overflux.png",
+    "24": "art/icons/forks/exports/24/sigil-overflux.png"
+  },
+  "export_sha256": {
+    "128": "3e855a0a930215eb5ea63e721bcfa42a2387897e4ff691d7f9c41868c88d1ffb",
+    "64": "beaac7167ade6c43d928ea70a6cab9141d1510fe99b0a09ce362d23613576aab",
+    "48": "3f9161ae235cc518088d4ccfa91ee89ea751248b53cf7eee504b8cf89dc3a20c",
+    "44": "abdb84785ca3526ee37f1037f207f9a8e7c81d144002e94d4af32043735174a1",
+    "32": "6005eacf7aeabfbc3379860bb12530cc85ef2bdf60940f792569af174f91f055",
+    "24": "7fff49ab3f2ffb3fb34cff19a98c32fbc6624d36b2132de6f0c12eae93336d67"
+  },
+  "framing": {
+    "scale": 0.5712277280366803,
+    "offset": [
+      173,
+      159
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

@@ -1,0 +1,101 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.tend.keep_the_thread",
+  "name": "Keep the Thread",
+  "icon_id": "fork.tend.keep_the_thread",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Keep the Thread** (`tend.keep_the_thread`). *\"Your Snap keeps the Bond: it costs {=numbers.mp} MP and gives no\nDaze; the Bond holds. (Let Go still ends a Bond, free. A Boss's Bond still ends after {=bond.boss_rounds} rounds.)\"*\n- The Boss limit (`tending.json bond.boss_rounds` 3, `boss_gap` 4) is read, never overridden: a kept Snap does not\n  restart it. Without that line a Bond on a Boss lasts the fight (a Snap a turn at 3.0 \u00d7 Healing given, 20% of your\n  damage redirected to it, +3 to hit it).\n- Fields: `mp: 12` (Tug's price, `tend.tug res.mp`: read, one copy). Why no Daze: the lead's version kept Snap's Daze,\n  and a Snap once a turn that never ends the Bond is **a \u22122 AP Daze every turn on one foe**: AP taken from a foe is\n  Pressure's best form.\n- Carrier: Snap's row (`tend.snap`): its `tie clear` and Daze ops carry `if {no_door_pick}` (N2); the option adds a\n  `cost_mod res {mp}` row on Snap's price (`cost` trigger). The foe's Heart save to break free is a conditions row\n  `fraying` (content) put by the kept Snap with its save; a passed save (`cond_resisted` is a hook, not a trigger)\n  would need a trigger, so **as specced the save is dropped**: the Bond's own ends (unseen a round, Down, the fight's\n  end) still free the foe. If the lead wants the save, it is one line on N2's list (a `resisted` trigger).\n- Mender: the Ledger empties into a Snap; a kept Snap empties it every turn: the Mender's damage line. Collision with\n  Taut Thread (hits on a Bonded foe) and Bitter Balm: none. Peak: no.\n- Excite: Bond the Elite once, then Snap it every turn for 3.0 \u00d7 Healing given, and it still cannot walk out of your\n  Threads.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [
+    7
+  ],
+  "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+  "file_key": "fork-tend-keep-the-thread",
+  "path": "art/icons/forks/tend-keep-the-thread.png",
+  "paint": "Wick flicks a short tense thread between BOTH mittens; a single white impact tick sits on the side while the thread and its HEART KNOT remain visibly continuous to a cropped hand. A stubborn determined screen face.",
+  "avoid": "The thread must NOT be broken or parted; no daze stars, needles or rope diagram.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick flicks a short tense thread between BOTH mittens; a single white impact tick sits on the side while the thread and its HEART KNOT remain visibly continuous to a cropped hand. A stubborn determined screen face.\nAVOID: The thread must NOT be broken or parted; no daze stars, needles or rope diagram.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "visual_basis_resolution": {
+    "authority": "Leon explicit answer 17 November 2026",
+    "quote": "Use pinned revision-2 rules for these eight proposals",
+    "gameplay_questions_remain_open": true
+  },
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 8,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "eec67a0cc3fe6fcc62daac4481db4405c98a608ef3989e3cad3e38415c06fc5f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-tend-keep-the-thread-v1.png",
+  "source_sha256": "b119ec02f7f1f10a77017c149e9eb7b3d5612b65b6ae35c8c5ab393af172bcb5",
+  "export_crop": [
+    0,
+    49,
+    1200,
+    1202
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/tend-keep-the-thread.png",
+    "64": "art/icons/forks/exports/64/tend-keep-the-thread.png",
+    "48": "art/icons/forks/exports/48/tend-keep-the-thread.png",
+    "44": "art/icons/forks/exports/44/tend-keep-the-thread.png",
+    "32": "art/icons/forks/exports/32/tend-keep-the-thread.png",
+    "24": "art/icons/forks/exports/24/tend-keep-the-thread.png"
+  },
+  "export_sha256": {
+    "128": "1e3e6d799c43fba87ef6e188e7899dc51768e2bf14c4ad4a2f22ebb1e5140155",
+    "64": "8504d10cdd74f91be489a69da4c26a785cae32eac7edb280563951d8c56ce9ec",
+    "48": "4c6aca49c0b1646c631abdce9ec4b0365bcc0c2f2c1178afcab11dba3996421c",
+    "44": "a5b095e9d30e9163c2fda8e9c230a94cd6f43458f042dd8732dda026787180e3",
+    "32": "837f3fab174f23f0f23102b424846067580f39b00e9bd9c09ad37b9e49455e27",
+    "24": "45b7923cfbaae2cbc60d5ee34775ba8d7d823faefb108c6450b3bf705673e309"
+  },
+  "framing": {
+    "scale": 0.5475987183115697,
+    "offset": [
+      183,
+      196
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

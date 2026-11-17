@@ -1,0 +1,91 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/shared/mana-shock",
+  "name": "Mana Shock",
+  "kind": "sign",
+  "mode": "condition sign",
+  "family": "condition_icons",
+  "id": "cond-mana-shock",
+  "path": "art/icons/conditions/mana-shock.png",
+  "source": {
+    "branch": "wip/lane-0.29-tabs",
+    "commit": "f2739b98aff4391a918a6eb25360ffe87109a0f7",
+    "path": "art/briefs/ART-REQUESTS.md",
+    "blob_sha": "ec56908fbafa09365629e2b975556f9ae14f8ed4",
+    "section": "F3"
+  },
+  "rule_excerpt": "| F3 | **The Mana Shock sign** (rules 1.56, the Mana Shock, 16 Nov 2026): the state a Soul caster is in after a Mana Short until its Strain is back at the limit (it costs a share of max HP each turn) | Wanted. A placeholder sign is in (`art/icons/conditions/mana-shock.svg`, catalog `cond-mana-shock`); the game shows the word MANA SHOCK in the damage colour on the token and the Strain row | A cracked violet heart with a red fracture through it, still glowing past its edge (a heart that won't cool), readable at 32 px | The condition-sign family (`mode: sign`), damage ink `#F65157` over the Soul violet; no Wick | `art/icons/conditions/mana-shock.png` |",
+  "paint": "ONE clean heart-shaped sign with a bold jagged TRANSPARENT fracture and THREE short hard white heat ticks above it: a magical heart-charge that has not cooled.",
+  "style_resolution": "F3's old violet/red glow conflicts with the later Nine Doors handoff. Apply the later pure-white flat-sign treatment: represent the fracture with a transparent cut and any heat cue with a hard white tick, without bloom, tint or halo.",
+  "name_status": "settled",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare the condition-sign recipe using the later no-glow flat-white requirement",
+  "file_key": "shared-mana-shock",
+  "avoid": "No Wick, human body, anatomical heart, red, violet, gray, glow, bloom, halo or blood.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). NO full Wick, screen face, mascot capelet or lantern chest; only the specified object/construct/sign. \nPAINT: ONE clean heart-shaped sign with a bold jagged TRANSPARENT fracture and THREE short hard white heat ticks above it: a magical heart-charge that has not cooled.\nAVOID: No Wick, human body, anatomical heart, red, violet, gray, glow, bloom, halo or blood.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "active_binding": {
+    "family": "condition_icons",
+    "id": "cond-mana-shock"
+  },
+  "binding_status": "Source explicitly specifies this catalog family/id; new registration on this art branch, no UI code.",
+  "filename_status": "source path retained",
+  "composition_scope": "object/sign-only",
+  "recipe_index": 39,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "8999c27dcee1c3ceb18b58a4d55de4833f4fae4dae986f07f749c684a3281923",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/shared-mana-shock-v1.png",
+  "source_sha256": "e17faef2481ad1ccf506a2e0cdfc450d7558c17cd075c8969e80f5095da8160f",
+  "export_crop": [
+    21,
+    37,
+    1206,
+    1212
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/mana-shock.png",
+    "64": "art/icons/conditions/exports/64/mana-shock.png",
+    "48": "art/icons/conditions/exports/48/mana-shock.png",
+    "44": "art/icons/conditions/exports/44/mana-shock.png",
+    "32": "art/icons/conditions/exports/32/mana-shock.png",
+    "24": "art/icons/conditions/exports/24/mana-shock.png"
+  },
+  "export_sha256": {
+    "128": "3196df3222897e7535ed6e41a9dbb8ec2a7829d0bf85032055ce52d42282bb50",
+    "64": "5c5fd4ca85689d9d5b7e8f4ffab5a203814c0782eeaf64e040cbf5d79e490067",
+    "48": "b7c49de8159afd0b715db14c99456a1a74b68a964bd92b443d45d8906bade631",
+    "44": "30ecfd3a0e1858b76eb376145623c5c581ca14209d90bbf783ffca9f8f0b2aad",
+    "32": "598ef2b71e7d964c2a9c93c1076f38270e6b1a0c5cc7ca2ee8e6cbbd2bf31e82",
+    "24": "e3804cf3cc057e68962f26f47f3f3904ff537ec238d7662bcb56f94053769526"
+  },
+  "framing": {
+    "scale": 0.6919831223628692,
+    "offset": [
+      102,
+      105
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

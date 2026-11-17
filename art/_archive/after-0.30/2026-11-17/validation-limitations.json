@@ -1,0 +1,15 @@
+{
+  "partial_checkout": true,
+  "attempted_repository_checks": {
+    "full-library": {
+      "exit_code": 1,
+      "log": "full-library-check.txt"
+    },
+    "asset-build": {
+      "exit_code": 1,
+      "log": "asset-build-check.txt"
+    }
+  },
+  "catalog_and_ui_intake_deferred_by_brief": true,
+  "not_claimed": "Complete repository validation/build pass; visual production approval."
+}

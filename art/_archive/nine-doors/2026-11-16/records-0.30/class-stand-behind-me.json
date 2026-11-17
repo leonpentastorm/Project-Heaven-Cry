@@ -1,0 +1,91 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/class/stand-behind-me",
+  "name": "Stand Behind Me",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2.1 Cover Them and ceiling comparison"
+  },
+  "rule_excerpt": "The Bulwark rank III move covers the one ally directly behind the holder: every ranged hit lands on the holder's plates, without a reaction.",
+  "source_excerpt": "  adjacent, Stand behind me is the one tile behind; 2 reaches the back line one step away without the peak's ring. Why\n  every ally, standing\"), and it would make the Bulwark's Stand behind me (rank III, 0.30) dead. Question 1.\n  not a stack. Stand behind me (one tile, every ranged attack, no reaction) stays the ceiling. Shield Wall (half cover",
+  "name_status": "settled",
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "inspect the current class binding and prepare its visual recipe",
+  "file_key": "class-stand-behind-me",
+  "path": "art/icons/moves/stand-behind-me.png",
+  "paint": "Wick plants ONE tall round shield squarely in front of himself; a cropped ally arm and shoulder are directly BEHIND his back. A clean incoming dart ends on his guard plate. Upright steadfast posture, head turned slightly to check the ally.",
+  "avoid": "No full second figure, wide-area rescue dome, church, full city or multiple shields.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick plants ONE tall round shield squarely in front of himself; a cropped ally arm and shoulder are directly BEHIND his back. A clean incoming dart ends on his guard plate. Upright steadfast posture, head turned slightly to check the ally.\nAVOID: No full second figure, wide-area rescue dome, church, full city or multiple shields.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 32,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "71000dd97c8f7f362c1e0ef9716393b49b6e6d85409103f02907fa08bcebdeb9",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/class-stand-behind-me-v1.png",
+  "source_sha256": "88459c8e6e6e8a465e6ef7f185643fcb5bf70f9c60a732763a08d336111fa6a6",
+  "export_crop": [
+    27,
+    20,
+    1198,
+    1214
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/stand-behind-me.png",
+    "64": "art/icons/moves/exports/64/stand-behind-me.png",
+    "48": "art/icons/moves/exports/48/stand-behind-me.png",
+    "44": "art/icons/moves/exports/44/stand-behind-me.png",
+    "32": "art/icons/moves/exports/32/stand-behind-me.png",
+    "24": "art/icons/moves/exports/24/stand-behind-me.png"
+  },
+  "export_sha256": {
+    "128": "6dcaabe2bfb0cb5fba0907dec45675b2c9200cb21ecb03c9fd790715d665f7b0",
+    "64": "8bc36edaaa7fb6864b161ba84a79f519eb9eda85a69580521fea3fb8a2cebf80",
+    "48": "9e6d38147b9f63757e84ba94afc969b13e02f3558c697d68b74e86b8958a935c",
+    "44": "7d12d3ef9b68d1a14025f48cdedabd1f079cd9f83ae5b3a52b572fb2caa5cfed",
+    "32": "9d0c9d33ab8ff1ae5fe0060f06922647a73e5c0db202df3818f908a31a8d1a35",
+    "24": "ab910cf6da3ac7b1c45b0a42808604a2dab2e388c5eff3cb5bf89b57c38fef8c"
+  },
+  "framing": {
+    "scale": 0.6056871052342048,
+    "offset": [
+      157,
+      150
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

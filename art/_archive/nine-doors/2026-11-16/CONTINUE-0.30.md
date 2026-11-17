@@ -5,7 +5,7 @@ The user authorized adding the 0.30 proposals already present in the supplied ho
 - Original delivery ledger: **348/375 delivered**.
 - Original unfinished rows: **0 eligible + 27 held**. Palm #258 was already delivered and is now held for review; preserve it.
 - Additional 0.30 queue: **41 requests, 0 delivered**: 32 forks, Stand Behind Me, four replacement depictions, and four shared requests.
-- Combined remaining queue: **41 request records**. Four replacements reuse existing icon bindings and Follow may reuse #19's artwork.
+- Combined remaining queue: **0 request records**. Four replacements reuse existing icon bindings and Follow may reuse #19's artwork.
 
 Read `art-hold-list-0.30.md`, `holds-0.30.json`, and `planned-jobs-0.30.json` before using the older handoff. The updated `CONTINUE.md` excludes every held old recipe. `planned-jobs.json` is retained as the historical 0.29 recipe source; its pending flags are not the queue.
 

@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.shadow.lend_the_dark",
+  "name": "Lend the Dark",
+  "icon_id": "fork.shadow.lend_the_dark",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Lend the Dark** (`shadow.lend_the_dark`). *\"{=ap} AP and {=numbers.shadow} Shadow, from Hidden, once a turn: an ally\nwithin {=numbers.reach} tiles that no enemy can see becomes Hidden (a new entry: its next attack is an ambush).\"*\n- Fields: `ap: 1`, `shadow: 1`, `reach: 4`. Why 4: half of Tag's 8; close enough that you are working together.\n- Carrier: `grant_action` with `reach`, `if {target_sight: [unseen]}`, `res {shadow}`, op `condition hidden target:\n  target` (the op Ghost Kill uses; the Silent Partner perk already makes an ally Hidden, `perks/b.ts:602`: check the\n  condition op puts Hidden on another unit; if not, N13).\n- Collision: Silent Partner (an achieved perk, Ingenuity and Camaraderie: an ally next to you hides when you do) is\n  the same fantasy at no price; Lend the Dark is at range, for Shadow, without your own Hide. Kept, both.\n- Operative: Tradecraft's start Shadow feeds it. Peak: no (the ally must be unseen: never Hidden in view).\n- Excite: your Breaker is behind the wall out of every foe's eyes; you lend it the dark, and its Charge lands as an\n  ambush.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-shadow-lend-the-dark",
+  "path": "art/icons/forks/shadow-lend-the-dark.png",
+  "paint": "Wick, in a low secretive stance, stretches a short dark-cloak-shaped WHITE canopy over a cropped ally shoulder with one open palm; broad transparent cutouts hide that partial underneath. A quiet pixel shushing expression.",
+  "avoid": "No second full figure, ghost sheet, portal or star particles.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick, in a low secretive stance, stretches a short dark-cloak-shaped WHITE canopy over a cropped ally shoulder with one open palm; broad transparent cutouts hide that partial underneath. A quiet pixel shushing expression.\nAVOID: No second full figure, ghost sheet, portal or star particles.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 5,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "e47e114274b51b062acb653c1bac4ac71fa707abee024c8ef105018aa2345291",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-shadow-lend-the-dark-v1.png",
+  "source_sha256": "181b837c83baaa7d9fee9d3bf8f5ff5242019a447d53f36f8905b7f48da73d4e",
+  "export_crop": [
+    0,
+    19,
+    1236,
+    1206
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/shadow-lend-the-dark.png",
+    "64": "art/icons/forks/exports/64/shadow-lend-the-dark.png",
+    "48": "art/icons/forks/exports/48/shadow-lend-the-dark.png",
+    "44": "art/icons/forks/exports/44/shadow-lend-the-dark.png",
+    "32": "art/icons/forks/exports/32/shadow-lend-the-dark.png",
+    "24": "art/icons/forks/exports/24/shadow-lend-the-dark.png"
+  },
+  "export_sha256": {
+    "128": "f7401059b618226d0dc1e1e04dae355b3f0b50e1a1cc6a9832be4cba6927616e",
+    "64": "ef13fe5a81969ebe70737e748b808bbfa3601e1e9f2de5c06bc8672dfc3675a6",
+    "48": "4c3e12a88ddca1d30ba1a665a63dcdfa043d7143909faa67f750fb6c7eace089",
+    "44": "de22c686f0fd99ba7377fcd93f375d787055bb956ed941f9ba1823ec3d104016",
+    "32": "46b0f955cbada8c97761a4ed01d468b455f1aca3f63c4c705188fb18f2d31bf0",
+    "24": "af14fa1f9b4df08124f6f2c7c1da41b8b915dab6cd29670ba8698febdd24f056"
+  },
+  "framing": {
+    "scale": 0.5311193419311538,
+    "offset": [
+      184,
+      197
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}
