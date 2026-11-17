@@ -460,7 +460,8 @@ async function fogPart() {
   const blast = p.locator('.phc-cb-dock').getByRole('button', { name: /blast/i }).first();
   if (await blast.count()) { await blast.click(); await pause(p, 200); }
   const shown = () => p.evaluate(() => {
-    const marks = [...document.querySelectorAll('button.phc-tok [data-tip-text$=": affected"]')].map((m) => m.closest('button.phc-tok').getAttribute('aria-label').split(' ')[0] + ' ' + m.getAttribute('data-tip-text'));
+    // rules 1.65: the one pick overlay rings whom the aim touches with a badge "<name>: <the engine's word>" (pickOverlay.ts)
+    const marks = [...document.querySelectorAll('button.phc-tok .phc-plan[data-tip-text]')].filter((m) => (m.textContent || '').trim() && (m.getAttribute('data-tip-text') || '').endsWith(': ' + (m.textContent || '').trim())).map((m) => m.closest('button.phc-tok').getAttribute('aria-label').split(' ')[0] + ' ' + m.getAttribute('data-tip-text'));
     const dock = (document.querySelector('.phc-cb-dock') || document.body).innerText || '';
     const attrs = [...document.querySelectorAll('button.phc-tok, button.phc-tok *')].map((e) => (e.getAttribute('data-tip-text') || '') + ' ' + (e.getAttribute('aria-label') || '')).join(' ');
     return { marks, card: (dock.match(/Fog lurker/g) || []).length, plain: (dock.match(/Plain sight/g) || []).length, onTiles: /Fog lurker/.test(attrs), covered: document.querySelectorAll('button.phc-tok[aria-label*="it covers this tile"]').length };

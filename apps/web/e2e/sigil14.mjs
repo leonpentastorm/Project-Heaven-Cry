@@ -275,7 +275,10 @@ r = await confirmAndCatch('09-trap-set', [150, 450]);
 s = await st();
 ok('a trap waits at ' + ref(w1.pos) + ': ' + r.log.join(' ').slice(0, 160), (s.cb.zones || []).some((z) => z.kind === 'trap' && z.tiles.includes(w1.pos)));
 const trapLegend = await p.locator('text=/Your trap/').count();
-ok('the trap shows on our grid and legend', trapLegend > 0 || /⧗/.test((await tok(w1.pos).textContent()) || ''));
+// 0.31.5 art: the trap's badge is its delivered zone mark (img[data-zone-mark]) where it was the ⧗ glyph; the tile's name
+// still says it is a trap (the colour rule: a word beside the mark)
+const trapTile = { glyph: /⧗/.test((await tok(w1.pos).textContent()) || ''), mark: await tok(w1.pos).locator('img[data-zone-mark]').count(), named: /trap/i.test((await tok(w1.pos).getAttribute('aria-label')) || '') };
+ok('the trap shows on our grid and legend (legend ' + trapLegend + ', glyph ' + trapTile.glyph + ', mark ' + trapTile.mark + ', named ' + trapTile.named + ')', trapLegend > 0 || trapTile.glyph || (trapTile.mark > 0 && trapTile.named));
 await snap('10-trap-on-grid');
 const hpW = (await unitAt(w1.pos)).hp, n0 = await fxSeq();
 await newRound();

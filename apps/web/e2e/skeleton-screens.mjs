@@ -255,8 +255,14 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     const th = chips.find((c) => c.id === 'call.threaten');
     ok(at + 'Threaten is 1 AP at 5 points and shows its save: ' + th.meta + ' · ' + th.save, /^1 AP/.test(th.meta) && /^Heart save, TN \d+$/.test(th.save));
     await panel().locator('button[data-call="call.threaten"]').click(); await settle(p, 300);
-    const reach = await p.evaluate(() => [...document.querySelectorAll('.phc-plan')].length);
-    ok(at + 'the grid shows the Call\'s reach (' + reach + ' tiles marked)', reach > 20);
+    // Rules 1.65: the one pick overlay draws the reach as a tile layer and says it in the tile's name ("in reach", or
+    // "you can pick" for a choice); every tile the engine's preview sent is marked, and no other.
+    const reach = await p.evaluate(() => {
+      const pk = window.__phc.pick || { reach: [], choice: [] }, want = new Set([...pk.reach, ...pk.choice]);
+      const marked = [...document.querySelectorAll('button.phc-tok')].filter((b) => /in reach|you can pick/.test(b.getAttribute('aria-label') || '')).map((b) => (b.getAttribute('aria-label') || '').split(' ')[0]);
+      return { n: marked.length, want: want.size };
+    });
+    ok(at + 'the grid shows the Call\'s reach (' + reach.n + ' tiles marked, the engine sent ' + reach.want + ')', reach.n > 20 && reach.n === reach.want);
     await p.locator('button.phc-tok[aria-label^="' + ref(rook) + ' ·"]').first().click(); await settle(p, 350);
     const foot = (await p.locator('.phc-cb-foot').first().innerText()).replace(/\s+/g, ' ');
     ok(at + 'the card: the Call, its target and the save with its TN', /Threaten · 1 AP · within \d+ tiles/.test(foot) && /To Rook\./.test(foot) && /Rook rolls a Heart save against TN \d+/.test(foot));

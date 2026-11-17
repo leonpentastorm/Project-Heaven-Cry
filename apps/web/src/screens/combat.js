@@ -1165,6 +1165,8 @@ export class CombatLogic extends DCLogic {
     const hovUnit = S.hover && at[S.hover] ? at[S.hover].id : null, hovPk = flow && S.hover ? flow.hoverAt(S.hover, hovUnit) : null;
     const pkInk = !flow ? null : flow.d.preview === 'prayer' ? FAITH_INK : flow.d.group !== 'attack' && TAB_INK[flow.d.group] ? TAB_INK[flow.d.group] : '#E7EBF3';
     const pkOn = !!flow && !evOn && flow.d.preview !== 'sigil' && flow.d.preview !== 'outburst';
+    // Test hook (the browser suites): the marks the engine's preview sent for the open pick, to check the grid against.
+    if (globalThis.__phc) globalThis.__phc.pick = pkOn ? { reach: [...(flow.d.preview === 'technique' ? [] : flow.marks.reach)], choice: [...flow.marks.choice], area: [...flow.marks.area], targets: flow.marks.targets.map((x) => x.id) } : null;
     const pkTiles = pkOn ? pickTiles(cb, { ...flow.marks, reach: flow.d.preview === 'technique' ? [] : flow.marks.reach, area: hovPk && hovPk.area.length ? hovPk.area : flow.marks.area, targets: hovPk && hovPk.targets.length ? hovPk.targets : flow.marks.targets }, cur.side, pkInk) : null;
     const sgTiles = evOn ? mergeTiles(placed.tiles, evV.tiles) : pkTiles ? mergeTiles(pkTiles, placed.tiles) : placed.tiles, sgDim = evOn && evV.stage !== 'stand' && evV.stage !== 'none' && evV.area.size > 0;
     const markStyle = (k, u) => {
