@@ -17,7 +17,9 @@ import type { LoadoutPick } from './loadout';
 
 /** The run's start numbers (data/survival.json `run`: start_credits, dead_return_hp, first_setting; rules 1.41); its
  *  after_fight lines are the fight cards' words for what follows a fight (the client's turnIntro.tsx). */
-export const survivalRun: { start_credits: number; dead_return_hp: number; first_setting: string; after_fight: { won: string; lost: string; /** rules 1.62 items 4900 and 4906: the FREE ROAM banner and the field's round, in words */ field: { name: string; sub: string; round: string } } } = (survivalJ as any).run;
+export const survivalRun: { start_credits: number; dead_return_hp: number; first_setting: string; after_fight: { won: string; lost: string; /** rules 1.62 items 4900 and 4906: the FREE ROAM banner and the field's round, in words */ field: { name: string; sub: string; round: string } };
+  /** rules 1.64: the reward panel's words (the client's RewardPanel.tsx) and the refusal that names who is still choosing ({names}) */
+  reward_panel: Record<string, string> & { say_ms: number } } = (survivalJ as any).run;
 
 /** A mode a room can play (data/modes.json ids). */
 export type PlayMode = 'survival' | 'roguelike' | 'campaign';
@@ -86,7 +88,10 @@ export interface RunFight { node: string; stage: number; depth: number; kind: st
   /** rules 1.51: each character's spare cores as the fight began (coresCarried), for the supply pack's cores */ cores?: Record<string, number>;
   /** rules 1.55 item 65: each character's cores burnt in the fight, counted as it was won (the supply pack comes at the leave; cores made on the field do not lower it) */ burnt?: Record<string, number>;
   /** an older build's record (the charge held); not read */ charge?: Record<string, number>;
-  outcome?: 'win' | 'loss'; rounds?: number; /** rules 1.44: the foes dropped (dead, Downed or given up) */ kills?: number; /** rules 1.47: what each character did (run/tally.ts) */ tally?: FightTally }
+  outcome?: 'win' | 'loss'; rounds?: number; /** rules 1.44: the foes dropped (dead, Downed or given up) */ kills?: number; /** rules 1.47: what each character did (run/tally.ts) */ tally?: FightTally;
+  /** Rules 1.64: what each character was paid as the fight was won, by character id: the XP it took (after its items'
+   * changes) and the credits (after Tithe). Written where the pay is given (game.ts runFightOver), read by the reward panel. */
+  paid?: Record<string, { xp: number; credits: number }> }
 /** One line of a node's rolled stock (rules 1.43: the Forge's mods and worn pieces): the item, its price, who took it. */
 export interface RunStock { id: string; price: number; sold?: string }
 /** The safe node the party stands on (rules 1.43, build step 4a): what each character did there this visit and what the
@@ -168,13 +173,13 @@ export function reachable(r: RunState): RunNode[] {
   return here ? here.links.map((l) => runNode(r, l)).filter((n): n is RunNode => !!n) : r.nodes.filter((n) => n.depth === 1);
 }
 /** Why a player can't mark or take this node now, in words, or null (rules 8 and 11). */
-export function runMoveProblem(g: { run?: RunState | null; players: Who[] }, by: string, nodeId: string): string | null {
+export function runMoveProblem(g: { run?: RunState | null; players: Who[]; characters?: Record<string, { name: string; owner: string }> }, by: string, nodeId: string): string | null {
   const r = g.run; if (!r) return 'No run is under way.';
   if (!g.players.some((p) => p.id === by)) return 'Only a player in the room picks the way.';
   if (r.state === 'loadout') return 'Finish your loadout at the camp first: everyone marks Ready, or the host starts the run.';
   if (r.state === 'fight') return 'The fight is on.';
   if (r.state === 'field') return 'Leave the field first: everyone marks Leave, or the host closes it.';
-  if (r.state === 'reward') return 'Take your pick first. The squad moves on when everyone has.';
+  if (r.state === 'reward') return rewardWaitWhy(g, by);
   if (r.state === 'shop') return 'Leave the shop first: everyone marks ready, or the host closes it.';
   if (r.state === 'boon') return 'Pick your boon first. The next tile comes after.';
   if (r.state === 'tile') return 'Pick the next tile first.';
@@ -182,6 +187,14 @@ export function runMoveProblem(g: { run?: RunState | null; players: Who[] }, by:
   const n = runNode(r, nodeId); if (!n) return 'There is no such stop on this map.';
   if (!reachable(r).some((x) => x.id === nodeId)) return 'You can\'t reach that ' + String((MAP_DATA.words as any)[n.kind] || 'stop').toLowerCase() + ' from here. Pick a lit stop.';
   return null;
+}
+/** Rules 1.64: why the map waits on the rewards, for this player: its own pick first (a character of its own with a pick
+ * or a pick of kit waiting), else who is still choosing, by name (`run.reward_panel.waiting_for`). */
+function rewardWaitWhy(g: { run?: RunState | null; characters?: Record<string, { name: string; owner: string }> }, by: string): string {
+  const r = g.run, chars = g.characters || {}, owed = [...new Set([...Object.keys(r?.offers || {}), ...Object.keys(r?.lasting || {})])];
+  if (!owed.length || owed.some((id) => chars[id]?.owner === by) || !Object.keys(chars).length) return 'Take your pick first. The squad moves on when everyone has.';
+  const names = owed.map((id) => chars[id]?.name || id), list = names.length < 2 ? names.join('') : names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+  return survivalRun.reward_panel.waiting_for.replace('{names}', list);
 }
 /** The node the squad goes to (rule 11), or null while it waits: every connected player has leaned, the node with most
  * leans wins and a tie goes to the host's lean (else the first in map order). `now`: the host goes at once. */

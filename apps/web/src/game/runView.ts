@@ -30,6 +30,8 @@ export interface RunViewV {
   nodes: RunNodeV[]; links: RunLinkV[]; party: PartyV[];
   /** "Waiting for 1 player" while the leans are not all in; null when nobody has leaned or it is solo. */
   waiting: string | null; canGo: boolean; isHost: boolean; solo: boolean;
+  /** rules 1.64: why the map takes no stop now (the run waits on the rewards, a shop…), in the engine's words; null on the map */
+  blocked: string | null;
   /** the stop's note; `picks`: what each took from the pick, in the engine's words (also among `lines`) */
   note: { kicker: string; title: string; text: string; lines: string[]; picks: string[] } | null;
   offers: OfferV[]; pending: string[];
@@ -66,7 +68,7 @@ export function runView(g: GameState, me: string): RunViewV | null {
     state: n.id === here ? 'here' : walked.has(n.id) ? 'walked' : can.has(n.id) ? 'reachable' : n.depth <= depth ? 'passed' : 'ahead',
     tip: nodeTip(g, n),
     leans: Object.entries(r.leans).filter(([, id]) => id === n.id).map(([pid]) => ({ initials: pl(pid)?.initials || '?', color: pl(pid)?.color || '#A3AEC2', name: pl(pid)?.name || '?' })),
-    why: can.has(n.id) ? null : r.state === 'map' ? runMoveProblem(g, me, n.id) : null,
+    why: can.has(n.id) ? null : runMoveProblem(g, me, n.id), // rules 1.64: in every state, so a refused click says why (the engine's words)
   }));
   const links: RunLinkV[] = r.nodes.flatMap((n) => n.links.map((to) => ({ from: n.id, to, walked: walked.has(n.id) && walked.has(to) && r.path.indexOf(to) === r.path.indexOf(n.id) + 1, lit: n.id === here && can.has(to), back: n.spur === 'chest' })));
   const party: PartyV[] = Object.values(g.characters).map((c) => {
@@ -114,7 +116,7 @@ export function runView(g: GameState, me: string): RunViewV | null {
     stage: r.stage, depth, rows: MAP_DATA.rows, setting, settingId: runSetting(r), seed: r.seed, state: r.state,
     lanes: r.nodes.filter((n) => n.depth === 1).length, atStart: !here,
     title: r.state === 'boon' ? 'STAGE ' + r.stage + ' CLEARED' : r.state === 'reward' ? 'Rewards' : r.state === 'over' ? 'The run is over' : depth ? 'Choose your next stop' : 'Choose your first stop',
-    nodes, links, party, waiting, canGo: isHost && !solo && leaned > 0 && r.state === 'map', isHost, solo, note,
+    nodes, links, party, waiting, blocked: r.state !== 'map' ? runMoveProblem(g, me, '') : null, canGo: isHost && !solo && leaned > 0 && r.state === 'map', isHost, solo, note,
     offers, pending: [...offers.map((o) => o.name), ...kits.map((k) => k.name)], choices, kits,
     cleared: r.state === 'boon', canRetire: !runRetireProblem(g, me), over: r.state === 'over',
   };

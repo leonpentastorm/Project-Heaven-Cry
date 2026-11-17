@@ -323,6 +323,43 @@ await p.mouse.move(2, 2);
 await shot('survival-reward-pick');
 if (TOP) copyFileSync(OUT + 'survival-reward-pick.png', TOP + 'top-lootcards.png');
 await sidePanels(p, 'the rewards');
+// ---------- rules 1.64: the reward panel (Leon: players zoomed into the map never saw the rewards above it) ----------
+{
+  const rp = await run(), f = rp.stats.fights[rp.stats.fights.length - 1], paid = f.paid?.[c.id];
+  const inView = () => p.evaluate(() => { const pn = document.querySelector('[data-phc-reward-panel]'); if (!pn) return { err: 'no panel' };
+    const b = pn.getBoundingClientRect(), m = pn.querySelector('[data-phc-pick-materials], [data-phc-pick]'), mb = m?.getBoundingClientRect(), mid = document.querySelector('[data-phc-centre]').getBoundingClientRect();
+    const hit = mb ? document.elementFromPoint(mb.left + mb.width / 2, mb.top + Math.min(mb.height / 2, 60)) : null;
+    return { top: Math.round(b.top), bottom: Math.round(b.bottom), left: Math.round(b.left), right: Math.round(b.right), h: innerHeight, inMid: b.left >= mid.left - 1 && b.right <= mid.right + 1, card: !!mb && mb.top >= 0 && mb.top < innerHeight - 60 && !!hit && m.contains(hit) }; });
+  const bad = [], fine = (x) => !x.err && x.top >= 0 && x.bottom <= x.h && x.card && x.inMid;
+  for (const [w, hh] of [[1280, 720], [1600, 900]]) { await p.setViewportSize({ width: w, height: hh }); await settle(p, 500); const r1 = await inView(); if (!fine(r1)) bad.push(w + ': ' + JSON.stringify(r1)); await p.mouse.move(2, 2); await settle(p, 200); await p.screenshot({ path: OUT + 'reward-panel-' + w + '.png' }); }
+  await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
+  // where a zoomed-in player is: the middle scrolled down to the map
+  await p.evaluate(() => { const s = document.querySelector('[data-phc-centre]'); s.scrollTop = s.scrollHeight; window.scrollTo(0, document.documentElement.scrollHeight); }); await settle(p, 500);
+  const r2 = await inView(); if (!fine(r2)) bad.push('scrolled to the map: ' + JSON.stringify(r2));
+  await p.mouse.move(2, 2); await settle(p, 200); await p.screenshot({ path: OUT + 'reward-panel-scrolled.png' });
+  ok('rules 1.64: the reward panel opens by itself over the middle, in view at 1280 x 720 and 1600 x 900 and with the middle scrolled down to the map' + (bad.length ? ' (' + bad.join('; ') + ')' : ''), !bad.length);
+  await sidePanels(p, 'the reward panel open');
+  const pay = p.locator('[data-phc-reward-pay="' + c.id + '"]'), num = async (k) => Number(await pay.locator('[data-phc-reward-' + k + ']').getAttribute('data-phc-reward-' + k));
+  const xpS = await num('xp'), crS = await num('credits'), xpT = await num('xp-total'), crT = await num('credits-total'), payText = await pay.textContent();
+  ok('… it shows the XP and credits the engine recorded on the fight (+' + xpS + ' XP of ' + paid?.xp + ', +' + crS + ' credits of ' + paid?.credits + ') and the totals now (' + xpT + ' XP, ' + crT + ' credits)', !!paid && xpS === paid.xp && crS === paid.credits
+    && xpT === c.xp && crT === c.credits && payText.includes('+' + paid.xp) && payText.includes('+' + paid.credits) && (await p.locator('[data-phc-reward-kicker]').textContent()).trim() === (g.combat?.name || '').toUpperCase());
+  // its sections fold and remember
+  await p.locator('[data-phc-reward-fold="reward:pay"] > button').click(); await settle(p, 200);
+  const shut = await pay.count(), exp = await p.locator('[data-phc-reward-fold="reward:pay"] > button').getAttribute('aria-expanded');
+  await p.locator('[data-phc-reward-close]').click(); await settle(p, 300);
+  // closed early: the pinned bar; a click on the map reopens the panel (it never eats the click)
+  const barShown = await p.locator('[data-phc-reward-bar]').isVisible().catch(() => false), gone = await p.locator('[data-phc-reward-panel]').count() === 0;
+  await p.mouse.move(2, 2); await settle(p, 200); await p.screenshot({ path: OUT + 'reward-bar.png' });
+  const far = p.locator('[data-phc-node][data-phc-state="ahead"]').first(); await far.scrollIntoViewIfNeeded(); await far.click(); await settle(p, 400);
+  const reopened = await p.locator('[data-phc-reward-panel]').count() === 1, still = await pay.count();
+  await p.locator('[data-phc-reward-fold="reward:pay"] > button').click(); await settle(p, 200);
+  ok('… the pay section folds (' + exp + ') and stays folded when the panel opens again (' + still + ')', shut === 0 && exp === 'false' && still === 0 && await pay.count() === 1);
+  ok('… closed early, the pinned bar "' + SVD.run.reward_panel.bar + '" shows; a click on a map stop while the pick is owed reopens the panel', barShown && gone && reopened);
+  await p.locator('[data-phc-reward-close]').click(); await settle(p, 200);
+  await p.locator('[data-phc-reward-bar]').click(); await settle(p, 300);
+  ok('… and the pinned bar reopens it', await p.locator('[data-phc-reward-panel]').count() === 1);
+  await p.evaluate(() => { const s = document.querySelector('[data-phc-centre]'); s.scrollTop = 0; window.scrollTo(0, 0); }); await settle(p, 200);
+}
 // ---------- rules 1.47 (build step 6): the fight's tally on the reward screen ----------
 {
   const t = r.stats.fights[0].tally, row = p.locator('[data-phc-tally="fight"] [data-phc-tally-row="' + c.id + '"]');
@@ -330,9 +367,11 @@ await sidePanels(p, 'the rewards');
   ok('the reward screen shows the fight\'s tally: a row for the character with the engine\'s damage dealt (' + t.chars[c.id].dealt + '), taken and kills', await p.locator('[data-phc-tally="fight"]').count() === 1 && t.chars[c.id].dealt > 0
     && await cell('dealt') === t.chars[c.id].dealt && await cell('taken') === t.chars[c.id].taken && await cell('kills') === t.chars[c.id].kills && /of \d+/.test(await row.locator('[data-phc-tally-cell="aim"]').textContent()));
 }
-await p.locator('[data-phc-pick-materials]').click();
+await p.locator('[data-phc-reward-panel] [data-phc-pick-materials]').click(); // rules 1.64: picked inside the panel
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'map', null, { timeout: 30000 });
 g = await G();
+await settle(p, 300);
+ok('rules 1.64: the pick made inside the panel closes it (the picks are all made) and the pinned bar is gone', await p.locator('[data-phc-reward-panel]').count() === 0 && await p.locator('[data-phc-reward-bar]').count() === 0);
 { const c1 = Object.values(g.characters)[0];
   ok('the Materials card taken: gunpowder, casings and mana residue arrive in the pack (' + o1.materials.map((m) => m.item + ' ' + held(c, m.item) + ' → ' + held(c1, m.item)).join(', ') + ')', o1.materials.every((m) => held(c1, m.item) === held(c, m.item) + m.n));
   ok('… and the run board says what was taken, in words', /takes the materials/.test(await p.locator('[data-phc-board-pick]').first().textContent().catch(() => '')));
@@ -350,6 +389,14 @@ const equipCheck = async (want) => {
 };
 let equipped = false;
 ok('… and the map lights the node\'s links', JSON.stringify((await p.locator('[data-phc-node][data-phc-state="reachable"]').evaluateAll((b) => b.map((x) => x.getAttribute('data-phc-node')))).sort()) === JSON.stringify([...g.run.nodes.find((n) => n.id === g.run.at).links].sort()));
+{ // rules 1.64: a map click the engine refuses says its reason on the say line (the stop's hover card still opens)
+  const far = p.locator('[data-phc-node][data-phc-state="ahead"]').first(); await far.scrollIntoViewIfNeeded();
+  const tip = (await far.getAttribute('data-tip-text')) || ''; await far.click();
+  const say = await until(p, () => document.querySelector('[data-phc-map-say]')?.textContent || null, null, 5000).catch(() => '');
+  ok('a click on a stop out of reach says the engine\'s reason by the map ("' + say + '")', !!say && tip.endsWith(say));
+  await p.mouse.move(2, 2); await settle(p, 200); await p.screenshot({ path: OUT + 'map-say.png' });
+  await p.evaluate(() => { const s = document.querySelector('[data-phc-centre]'); s.scrollTop = 0; window.scrollTo(0, 0); });
+}
 
 // ---------- the rest of the stage, fights won by run/skip ----------
 await act({ type: 'run/skip' }); // a refused action comes back as the player's toast, in the engine's words
@@ -892,6 +939,7 @@ let hr = (await HG()).run;
 // the way to the first shop: a path through the links from the first row
 const byId = Object.fromEntries(hr.nodes.map((n) => [n.id, n])), shopN = hr.nodes.filter((n) => n.kind === 'shop').sort((a, b) => a.depth - b.depth)[0];
 const way = (() => { const back = (id) => { const n = byId[id]; if (n.depth === 1) return [id]; const prev = hr.nodes.find((x) => x.links.includes(id) && back(x.id)); return prev ? [...back(prev.id), id] : null; }; return back(shopN.id) || []; })();
+let coopReward = false;
 for (let i = 0; i < 80; i++) {
   hr = (await HG()).run; if (hr.state === 'shop' || hr.state === 'over') break;
   let e = null;
@@ -899,6 +947,29 @@ for (let i = 0; i < 80; i++) {
   if (hr.state === 'map') { const next = way[hr.path.length], at = hr.nodes.find((n) => n.id === hr.at), forks = !at || at.links.length >= 2; e = await actOn(h, { type: 'run/move', node: next }); if (!e && forks) { await settle(h, 150); e = await actOn(gu, { type: 'run/move', node: next }); } }
   else if (hr.state === 'fight') e = await actOn(h, { type: 'run/skip' });
   else if (hr.state === 'field') e = await actOn(h, { type: 'run/leave', close: true }); // rules 1.55: the host closes the field
+  else if (hr.state === 'reward' && !coopReward && Object.keys(hr.offers || {}).length === 2) { // rules 1.64: each player's own reward panel
+    coopReward = true;
+    const G0 = await HG(), kId = Object.values(G0.characters).find((x) => x.owner === G0.hostId).id, hId = Object.keys(G0.characters).find((id) => id !== kId);
+    await gu.waitForSelector('[data-phc-reward-panel]', { timeout: 30000 }).catch(() => {}); await h.waitForSelector('[data-phc-reward-panel]', { timeout: 30000 }).catch(() => {});
+    const guOffers = await gu.locator('[data-phc-reward-panel] [data-phc-offer]').evaluateAll((l) => l.map((x) => x.getAttribute('data-phc-offer')));
+    const stillG = (await gu.locator('[data-phc-reward-still]').textContent().catch(() => '')) || '';
+    await gu.mouse.move(2, 2); await settle(gu, 300); await gu.screenshot({ path: OUT + 'reward-panel-guest.png' });
+    ok('C: the guest\'s reward panel holds its own pick only (' + guOffers.join() + ') and says who is still choosing ("' + stillG + '")', guOffers.length === 1 && guOffers[0] === hId && stillG.includes(G0.characters[kId].name));
+    await h.locator('[data-phc-reward-panel] [data-phc-pick-materials], [data-phc-reward-panel] [data-phc-pick="0"]').first().click();
+    await h.waitForFunction((id) => !window.__phc.getState().game.run.offers?.[id], kId, { timeout: 30000 }).catch(() => {});
+    await settle(h, 400);
+    if (!(await h.locator('[data-phc-reward-panel]').count()) && (await HG()).run.state === 'reward') {
+      const want = SVD.run.reward_panel.waiting_for.replace('{names}', G0.characters[hId].name);
+      const foot = (await h.locator('[data-phc-waiting]').textContent().catch(() => '')) || '';
+      const node = h.locator('[data-phc-node]').first(); await node.scrollIntoViewIfNeeded(); await node.click();
+      const say = await until(h, () => document.querySelector('[data-phc-map-say]')?.textContent || null, null, 5000).catch(() => '');
+      await h.mouse.move(2, 2); await settle(h, 200); await h.screenshot({ path: OUT + 'reward-host-waits.png' });
+      ok('C: the host, picked, clicks the map: the engine says who it waits for ("' + say + '"), and the header says it too', say === want && foot === want);
+    } else ok('C: the host\'s panel closed after its pick (a pick of kit still open: ' + await h.locator('[data-phc-reward-panel]').count() + ')', false);
+    await gu.locator('[data-phc-reward-panel] [data-phc-pick-materials], [data-phc-reward-panel] [data-phc-pick="0"]').first().click();
+    await gu.waitForFunction((id) => !window.__phc.getState().game.run.offers?.[id], hId, { timeout: 30000 }).catch(() => {});
+    ok('C: the guest\'s pick, made inside its panel, is applied', !(await HG()).run.offers?.[hId]);
+  }
   else if (hr.state === 'reward') { for (const [id, o] of Object.entries(hr.offers || {})) e = e || await actOn(h, { type: 'run/pick', charId: id, choice: pickOf(o) }); for (const id of Object.keys(hr.lasting || {})) e = e || await actOn(h, { type: 'run/take', charId: id, choice: 'none' }); }
   if (e) { ok('C: walked to the shop: ' + e, false); break; }
   await settle(h, 120);

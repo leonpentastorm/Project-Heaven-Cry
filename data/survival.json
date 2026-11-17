@@ -14,6 +14,25 @@
       "lost": "The run is over",
       "field": { "about": "Rules 1.62 items 4900 and 4906: the FREE ROAM banner as a won fight's field opens ({rounds}: its rounds, field.rounds), and the field's round as the field bar, the turn banner and the turn box say it ({round} of {rounds}).", "name": "FREE ROAM", "sub": "{rounds} rounds on the field, then the squad moves on", "round": "Round {round} of {rounds}" }
     },
+    "reward_panel": {
+      "about": "Rules 1.64 (0.31.2, Leon: the rewards were a section above the map that players zoomed into the map never saw): after a won fight's field, the reward panel opens over the middle by itself, with each viewer's pay (the fight record's paid, the supply pack) and the pick; closed early, a pinned bar reopens it. A click on the map that the engine refuses says the engine's reason on the say line for say_ms. {names}: the characters still choosing, in a list.",
+      "title": "Rewards",
+      "pay": "YOUR PAY",
+      "pick": "YOUR PICK",
+      "kit": "PICK OF KIT",
+      "xp": "XP",
+      "xp_total": "now {xp} XP",
+      "credits": "Credits",
+      "credits_total": "now {credits}",
+      "supply": "Supply pack",
+      "back": "Back on their feet",
+      "level_up": "Level up waiting: open Level up on your sheet",
+      "still": "Still choosing: {names}",
+      "close": "Close the rewards",
+      "bar": "Rewards waiting: choose yours",
+      "waiting_for": "Waiting for {names} to choose their reward.",
+      "say_ms": 5000
+    },
     "provisional": true
   },
   "loadout": {

@@ -1410,18 +1410,20 @@ function awardAutomatic(g: GameState, c: Character) {
   }
 }
 
-function giveXp(g: GameState, c: Character, source: string, amount: number, reason?: string) {
-  if (amount <= 0) return;
+/** Gives XP through the items' changes and the 'xp_grant' hook; returns the XP given (0 when none). */
+function giveXp(g: GameState, c: Character, source: string, amount: number, reason?: string): number {
+  if (amount <= 0) return 0;
   // Items change XP (xp_mod), then 'xp_grant' {c, source, amount} (mutable amount).
   const after = xpAfter(c, source, amount); amount = after.amount;
   const xg: any = emitStory(g, 'xp_grant', { c, source, amount, g }); amount = Math.max(0, Math.round(xg.amount));
   if (after.labels.length) reason = (reason ? reason + '; ' : '') + after.labels.join(', ');
-  if (amount <= 0) return;
+  if (amount <= 0) return 0;
   c.xp += amount; c.xpBySource[source] = (c.xpBySource[source] || 0) + amount;
   push(g, { kind: 'xp', charId: c.id, text: c.name + ' +' + amount + ' XP (' + source + (reason ? ': ' + reason : '') + ')' });
   const before = c.level, rankBefore = c.classId ? classRank(c) : 0, gained = applyLevels(c);
   if (gained) push(g, { kind: 'system', text: c.name + ' reaches level ' + c.level + (c.level >= 3 && before < 3 ? ' and can earn a class.' : '.') });
   if (gained) rankReached(g, c, rankBefore); // rules 1.11: a rank can come with the level (6, 12)
+  return amount;
 }
 
 /** A new scene begins (the Narrator's scene title, a Survival node): per-scene uses come back. 'scene_change' {g, n, title}. */
@@ -3567,14 +3569,16 @@ function runFightOver(g: GameState) {
   // rules 1.55 item 61: the field: the same fight, still running, with no enemies left
   cb.over = null; delete cb.window; cb.field = { from: cb.round + 1, of: FIELD.rounds, round: 1 }; // rules 1.62 item 4906: the field's rounds
   for (const u of cb.units) if (!u.dead) shockClear(cb, u, 'fight over'); // rules 1.56 item 4508: the Mana Shock ends with the fight, the field included
-  const xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), offers: Record<string, RunOffer> = {};
+  const xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), offers: Record<string, RunOffer> = {}, paid: Record<string, { xp: number; credits: number }> = {};
   sbChange(g, chars, () => { // the XP may bring a level (its HP): the sheets take it, and the fighters with them
     for (const c of chars) {
-      giveXp(g, c, 'combat', xp, 'Survival, ' + (n.gate ? 'the gate' : n.kind));
+      const took = giveXp(g, c, 'combat', xp, 'Survival, ' + (n.gate ? 'the gate' : n.kind));
       const got = creditsFor(c, cr); earnCredits(c, got); lg.credits += got; // rules 1.44: Tithe (the stat run_credits)
+      paid[c.id] = { xp: took, credits: got }; // rules 1.64: the fight record keeps what each was paid (the reward panel)
       offers[c.id] = weaponOffer(c, n, k, r.stage, r.seed);
     }
   });
+  r.stats = { ...r.stats, fights: r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, paid } : f)) };
   { const before = r.stats.fights[r.stats.fights.length - 1]?.cores || {}, burnt = Object.fromEntries(chars.map((c) => [c.id, before[c.id] != null ? coresBurnt(before[c.id], coresCarried(c)) : 0])); // the sheets are the fight's now (sbChange)
     r.stats = { ...r.stats, fights: r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, burnt } : f)) }; }
   push(g, { kind: 'system', head: 'REWARDS', text: 'Each of you: ' + xp + ' XP, ' + cr + ' credits' + (packCount(k).mags > 0 ? ', the supply pack,' : '') + ' and a pick: the materials' + (Object.values(offers).some((o) => o.weapons.length) ? ' or a weapon' : '') + '. The field lasts ' + counted(FIELD.rounds, 'round') + ' of turns; vote to leave sooner.' });

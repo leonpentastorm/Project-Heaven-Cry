@@ -8,6 +8,28 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.2 — the reward panel (hotfix)
+
+Leon on live 0.31.1: players zoomed into the path map never saw the rewards above it, and the map ignored their clicks
+until they had picked. Rules 1.64 (item 4971); new words and timings PROVISIONAL.
+
+- **The rewards are a panel.** After a won fight's field (and at the vault's chest) a panel opens by itself over the
+  middle column, in view wherever the middle is scrolled: the fight's name, your pay (XP and your total now, a "Level up
+  waiting" line, credits and your purse now, the supply pack, standing up) and your pick (the same Materials and weapon
+  cards, and the pick of kit after an Elite). Its sections fold and remember. It closes when you have picked; closed
+  early, a large bar at the bottom of the middle, "Rewards waiting: choose yours", reopens it. In co-op it says who is
+  still choosing. The side panels stay.
+- **The map never eats a click.** While you owe a pick, a click on the map reopens the panel; otherwise a refused click
+  says the engine's reason on a line at the bottom of the middle ("Waiting for Ana to choose their reward.", "You can't
+  reach that shop from here. Pick a lit stop.").
+- **The pay is the engine's record:** each won run fight keeps what each character was paid (`paid`: the XP after its
+  items, the credits after Tithe); the panel reads it.
+- **Strain's warning chip reads the engine's real margin:** NEAR THE LIMIT no longer shows at 0 Strain on a character
+  who cannot Begin an Outburst (no design the engine can price, e.g. an Emanator carried with no design): a Begin's
+  Strain counts only when the engine prices one.
+- Browser suites: survival (the panel in view at 1280 x 720 and 1600 x 900 and scrolled to the map, its numbers the
+  record's, a pick in it, a map click reopening it, then the squad moves), coop-stall (a guest's own pick and who waits).
+
 ## 0.31.1 — the fight panel put back, and a real VICTORY (hotfix)
 
 Leon on live 0.31.0, with a screenshot of the fight panel. No rules change; new numbers PROVISIONAL.
