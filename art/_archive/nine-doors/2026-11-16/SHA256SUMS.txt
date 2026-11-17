@@ -6,13 +6,14 @@
 6149c3cb2827f2800152cccd934066c99db91aa82807f292295c24116451678f  art/_archive/nine-doors/2026-11-16/README.md
 541433b84c2073bc1a6a0f9dd3797075dfb4bb6d17a24d01702789baebdb6157  art/_archive/nine-doors/2026-11-16/RESUME-AUDIT-2026-11-16.md
 9572e53b9c56f45ba2a68dbea2eb1f258ee363c410b65b5c1f7190146ee4d702  art/_archive/nine-doors/2026-11-16/RESUME-PROMPT.md
+36820248c606fa41117837e034620826ecd43893d8547bc68abaec58ff0caaf7  art/_archive/nine-doors/2026-11-16/USER-CORRECTIONS.md
 682a51d70b0600e2975f6fb1aeee885235c18f070b20c6a4f4b75a9796d9ecb4  art/_archive/nine-doors/2026-11-16/WORK-STATE.md
 0107961ba11628d68ad3efc924f7c3630fa671d7c64fe8cfd831c0f48c8f4d9a  art/_archive/nine-doors/2026-11-16/alpha-audit.json
 746c1a64ed878c8aa3e75cc768ce40a3b58cc075fbacd6c0bb28b06efcfa17e0  art/_archive/nine-doors/2026-11-16/art-hold-list-0.30.md
 f14b2343af4174a8c6b30162f4985e4fc0b7814d999d0be58a722a9e849913e6  art/_archive/nine-doors/2026-11-16/asset-build-check.txt
 270eefa8dde3440f51107021325e0b6e06df6c2c1b3cc1868ca3536b2a7400b2  art/_archive/nine-doors/2026-11-16/batch-runner.js
 d12bf4b29e175134f2da7eca3d195b8e6f79bb948de264bc1b12b2f51a8255ea  art/_archive/nine-doors/2026-11-16/blockers.json
-4c5406e61e95eb7c5781d90b56c1e44f039b7e913c478d97c685c56776a2c526  art/_archive/nine-doors/2026-11-16/catalog-fragment.json
+d843f56324dbd2e666d7175e6ba9296e252bf652d39c662312577ecf986dbdf2  art/_archive/nine-doors/2026-11-16/catalog-fragment.json
 c21fe83efcb4cd49c3ec3928de9ed84ad82178263d6defffeee9bf8c1199194b  art/_archive/nine-doors/2026-11-16/checkpoint.py
 8fe47c2aa548d162fb459f1281e5c43c96c9b478a7ede798429c82599481e123  art/_archive/nine-doors/2026-11-16/continuation-asset-build-check.txt
 f827c2ffcd7eae0674689da61e23b8dd97b54d0fec0b252296fb40d51d83b679  art/_archive/nine-doors/2026-11-16/continuation-attempts/2026-11-16-0630/README.md
@@ -50,7 +51,7 @@ cafa62f410d2ccd7facf3c2a445b6080d75f3fac46b7743936ce7cd7264fc9bf  art/_archive/n
 d72ee72fb7a9ffa89eb9748d81255f930f5f616e0983fcbba9fb837e3ff2d594  art/_archive/nine-doors/2026-11-16/glimmer-render.txt
 bd59ec3311aae0d3ff06c90eed92d1d8acd0a52cc13e5cb2ec306b1a762ac3dd  art/_archive/nine-doors/2026-11-16/holds-0.30.json
 32e67011cc4159155c0ab9bafb3349db082111e1e8eef29c10750ae483420155  art/_archive/nine-doors/2026-11-16/inventory-audit.json
-9a7658e6c699af3ab5423499ba514ab5fff159f62a78392f11017a9d6c506808  art/_archive/nine-doors/2026-11-16/manifest.json
+33e866a601aac129a017f63cf520dbc30dad20810ee28afb6331c33fa26725db  art/_archive/nine-doors/2026-11-16/manifest.json
 f25bd59d2f852851de7b2866aefdcf13cbc195b562848690bd59a51c20929c81  art/_archive/nine-doors/2026-11-16/native-renders/001-bulwark.png
 5b5444dbaff5e6a6727b99c1122f618fc9067efd3c509a28355b690707eea905  art/_archive/nine-doors/2026-11-16/native-renders/002-shrug-it-off.png
 fada0a004f1771ebec93f0cca3b299fe94e50ae23da42764b66b076f2325dcff  art/_archive/nine-doors/2026-11-16/native-renders/003-close-guard.png
@@ -85,7 +86,7 @@ b3844a0dcc0d9a130da98c498545c537437a3981fbff14e4c9d2725168fd2cf6  art/_archive/n
 18befe7a6f5a94ff7544b59e9a22029629837f1173a98b218f456e5c405633f9  art/_archive/nine-doors/2026-11-16/native-renders/041-throw-down.png
 625d94de59eca9508e5984194bf810d2231a5e041dfb107a7cd385c64112d4ed  art/_archive/nine-doors/2026-11-16/native-renders/042-run-through.png
 490403ae62c537934035fb9db16eff9979dffa8e6b599ac70c9eed7ab5615af5  art/_archive/nine-doors/2026-11-16/native-renders/043-momentum.png
-5fcf459ce140f582ec72e23bf4a03766e1c20f120d627d423bef8e6b3f20a573  art/_archive/nine-doors/2026-11-16/native-renders/044-fighter.png
+14ec10a28228c341425cc7404e83b2aa2a4eb02896424970bc5674c229840104  art/_archive/nine-doors/2026-11-16/native-renders/044-fighter.png
 792b05c3b3acf50296599dab20079c172d46d74a6c4d1bf884f286379b72d5e3  art/_archive/nine-doors/2026-11-16/native-renders/051-both-hands.png
 e6e8d44330f1807939a48384b3c24fd875c30e3aeb3c2ae2d55b4c9014dfedcd  art/_archive/nine-doors/2026-11-16/native-renders/052-running-reload.png
 66f2b377487b6e882a8178f717dc8853bbf135e536e0c61b2ec5fc73fee2e7a7  art/_archive/nine-doors/2026-11-16/native-renders/053-quick-draw.png
@@ -413,7 +414,7 @@ d6fe055e5f2fd9f3773f5e67b178c9376210f3c14b64a59ffa0b7a521c8621a7  art/_archive/n
 702d6e907b406b2857a3ec976c769faa89cade502166fc282676455d137762d6  art/_archive/nine-doors/2026-11-16/records/041.json
 3c79641423acfb504cf957d64c5fe445265f8898dbeb426b5a931e77a9e88fe5  art/_archive/nine-doors/2026-11-16/records/042.json
 93ecffd6f19ffc470696188c35fe91ad0e6b1bc99c864ce88f82535997635341  art/_archive/nine-doors/2026-11-16/records/043.json
-dd04066d0e44d63953af1c75cb1a01b5e022368c182b67a1df6f0d636f4de511  art/_archive/nine-doors/2026-11-16/records/044.json
+45bd93f2e725b69b4293e222c681d8a0f60c542a8b6312217373ce5006218b9f  art/_archive/nine-doors/2026-11-16/records/044.json
 af96ac5ad4ce194f7e5a73271da606c0546b19aed23dfed9ab801d25148ef0fd  art/_archive/nine-doors/2026-11-16/records/051.json
 54ff3693c4876d1ff35b6085826cb9315a38ba02a0ce86cde74a64ae9a8fa21a  art/_archive/nine-doors/2026-11-16/records/052.json
 d1a68cdfcb962b70c615d7efcb4dbc683566bcadce0a9466e14e668416f2aa87  art/_archive/nine-doors/2026-11-16/records/053.json
@@ -802,7 +803,7 @@ fc6ff94046b21da74f39dd05c4f2c3c200a81d6ca6e78166174ab26b663441c5  art/_archive/n
 5bab0d3e54d45d64825fbdacf20d5b410085681bec10119d92a123c79044fdb5  art/_archive/nine-doors/2026-11-16/review/continuation-70-71-72-73.jpg
 d15909daceed395e975065ca6a362360dfe7af9b03c7fe70280f7cf325c530fe  art/_archive/nine-doors/2026-11-16/review/continuation-82-84-110-111.jpg
 bfd1ef26810ffb7d6dde1d5acdb0ffb7f9315a2049a2dbfae341ecfb225669bf  art/_archive/nine-doors/2026-11-16/review/continuation-overview-250.jpg
-352d99ae8fe8df9cdec5bc951dbb20d96ea2bc11525b4a1674a22b7f89942349  art/_archive/nine-doors/2026-11-16/review/continuation-painted-16-44-75.jpg
+f95afddf276a1bfa993354c2e9c6d586cb718d5a4b752ed8e9a7f6e8e5a10b8b  art/_archive/nine-doors/2026-11-16/review/continuation-painted-16-44-75.jpg
 0769a68fb70525204f5f0d0ca2cfdf51f83d2f91fc43988d23c43e88d26b83c3  art/_archive/nine-doors/2026-11-16/review/continuation-signs-323-324.jpg
 5e79019283febd4b7db9219aa1699c56f515c17f17d6265d8e86a7dcdbd2e63a  art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png
 79c0413063055821d1da395e5a85bd5c632d8ff004f379a8665744e281b28329  art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png
@@ -886,6 +887,11 @@ dbb2ec8f64eac6f36349a1ac2ba0e5f3f8e6c12e8c9f0086706e29c2e5bdc360  art/_archive/n
 0321ec16fe420bc49589fce1ecc0dd1ee63d83ec743868f19295b12fa33d9273  art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/native.png
 a57ca626a8d9ce13d1065c4b9a2f77972cd39679cd71d61872649c135e38c955  art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/old-review.jpg
 cf62338ce02d9c081b6b7fed0723381dc8a7bfe83342bb060bff3255b1b231db  art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/record.json
+82174bd5ef4dd8f7c1d2aa90d4bdf65f798a23bd9f225543e78c5720920f1a53  art/_archive/nine-doors/2026-11-16/superseded/044-rejected-axe-correction/REJECTION.md
+5a8023a8a346667838e568a6e9b082f2260661cf1b9238dd3535d6cf9da7a352  art/_archive/nine-doors/2026-11-16/superseded/044-rejected-axe-correction/master.png
+5fcf459ce140f582ec72e23bf4a03766e1c20f120d627d423bef8e6b3f20a573  art/_archive/nine-doors/2026-11-16/superseded/044-rejected-axe-correction/native.png
+352d99ae8fe8df9cdec5bc951dbb20d96ea2bc11525b4a1674a22b7f89942349  art/_archive/nine-doors/2026-11-16/superseded/044-rejected-axe-correction/old-review.jpg
+dd04066d0e44d63953af1c75cb1a01b5e022368c182b67a1df6f0d636f4de511  art/_archive/nine-doors/2026-11-16/superseded/044-rejected-axe-correction/record.json
 daded8558b1617567704a1cb600e23ce87f83a3fb150c1eb7df7e38da8739e5a  art/_archive/nine-doors/2026-11-16/superseded/073-crossfire-direction-fix/REVIEW.md
 c57ef209309e239241fabe8dd5a11c42927c4be2c7b4a3b964fbeb99c466d2a4  art/_archive/nine-doors/2026-11-16/superseded/073-crossfire-direction-fix/native.png
 2acef4b3b349cfc2618236063c2c265ba6cf727a85291ecfbcbff0305e4441d6  art/_archive/nine-doors/2026-11-16/superseded/073-crossfire-direction-fix/prompt.json

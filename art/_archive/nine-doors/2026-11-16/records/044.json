@@ -7,30 +7,21 @@
   "mode": "class portrait",
   "state": "designed, not built",
   "use": "Class card portrait",
-  "paint": "A heavy-shouldered fighter mid-stride with a war axe resting on one shoulder, dust kicked up, grinning at the next wall to go through.",
+  "paint": "A heavy-shouldered fighter mid-stride, holding one conventional single-bit axe upright beside the body, grinning toward the next obstacle.",
   "avoid": "a barbarian from a known work \u00b7 bare-chested pin-up pose",
   "section": "Raw Power: the Momentum chain, and the Breaker",
   "kind": "class",
-  "prompt": "Edit this exact Heavenprint Breaker portrait to FIX THE AXE GEOMETRY ONLY. The user points out that the current axe looks like an X. REPLACE THE WHOLE AXE HEAD AND ITS JUNCTION WITH A NORMAL SINGLE-BIT WAR AXE: ONE broad wedge-shaped metal blade on the UPPER-LEFT SIDE of one central rectangular SOCKET; on the OPPOSITE SIDE only a SHORT FLAT RECTANGULAR POLL, no second blade, crescent, spikes or crossed metal arms. ONE continuous straight wooden HAFT runs from the fighter's gripping hand directly INTO that socket and ends just a little above it. Blade, socket and haft are physically connected and share one coherent orientation. Strong readable single-headed L/T silhouette, absolutely NO X-shaped head, double axe, crossed blades, detached shaft or second handle. Keep the axe resting naturally on the shoulder with the exact same hand gripping the single haft. Give the entire corrected head enough breathing room within the upper-left of frame; slightly shrink it if needed. Preserve this same fighter's face, grin, copper hair, clothing, forward stride, orange accent, dusty doorway and Heavenprint opaque gouache/ink treatment. Painterly metal, wood and scuffed materials with directional brush blocks and charcoal edges; no photographic/3D finish. No text, watermark, new symbols, frame or unrelated changes. Vertical4:5 opaque painting.",
+  "prompt": "Create a COMPLETELY NEW original Project Heaven Cry BREAKER class portrait FROM SCRATCH. New person, new pose, new layout. Vertical 4:5 full-bleed opaque painted illustration, waist-up. A broad heavy-shouldered fighter in a worn charcoal-and-olive padded work coat strides toward the viewer-right with a confident crooked grin. Mature medium-brown face, strong square jaw, short cropped black hair, short dark beard, believable human proportions. One small burnt-orange cloth accent. Dusty workshop archway and broken plaster in the quiet background, warm daylight on one side.\nSIMPLE PHYSICALLY CLEAR EQUIPMENT POSE: he holds ONE ORDINARY SINGLE-BIT AXE UPRIGHT BESIDE HIS BODY on the viewer-LEFT. It is NOT on his shoulder. The straight wooden haft is nearly VERTICAL and stays OUTSIDE the body silhouette. His RIGHT HAND, down near waist height, clearly wraps around the same ONE shaft with a natural straight wrist. The haft continues uninterrupted UP from that hand into the EYE/SOCKET of ONE compact iron axe head, well above the hand and entirely visible. The axe head has ONE broad cutting blade extending LEFT of the vertical shaft and only a short blunt flat poll to the RIGHT. A small wood wedge secures the top of the shaft in the eye. Mechanically conventional simple axe, no double head, X, crossed bars, second shaft, floating blade or elaborate fantasy cutouts. Entire head and grip stay away from the face and coat, with clear empty background between axe and torso. His other arm swings naturally as he walks. Nobody is being attacked; no injury or combat scene.\nHEAVENPRINT rendering: traditional-looking opaque GOUACHE AND INK, angular directional brush blocks, broken ink contours, selective dry-brush scumbling, warm ivory edge accents, deep charcoal lost edges, matte iron and visible wood grain. Lived-in science-fantasy workwear, restrained believable face stylization, expressive eyes, quiet low-detail background. Not photography, photoreal skin, 3D render, glossy concept art, flat vector art or exaggerated anime. Eye line about22% from top; face and decisive gripping hand clearly in the central80%. Chest/waist framing with enough room for the complete axe head, single continuous shaft and grip. No text, lettering, labels, logos, real uniform/faith insignia, graphic emblems, frame, border or watermark.",
   "refs": [],
   "transparent": false,
   "status": "review-candidate",
   "priority": 6,
-  "generation_references": [
-    "art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/native.png"
-  ],
-  "portrait_cast": {
-    "number": 44,
-    "motif": "fighter",
-    "color": "one restrained hot-orange #F68A38 sash edge",
-    "acting": "A heavy-shouldered fighter strides toward the next obstacle with an axe on one shoulder, and feels delighted determination.",
-    "notes": "Breaker: stocky 35-year-old man with medium tan skin, freckles, a bent broad nose, short wiry copper hair and dark stubble, an unguarded crooked GRIN. Waist-up in strong forward three-quarter stride, plain war AXE resting across ONE shoulder, hand gripping haft at collar height. Fully clothed in worn charcoal padded work jacket with patched leather shoulder guard, not bare chest. Dust rises at lower frame and a broken plaster doorway behind hints at the next wall; no visible victim or attack. Natural iron, ocher cloth, ivory hard accents, broad directional brushwork. Face stays high at22%, axehead fully visible, no branded or recognizable axe."
-  },
-  "composition_scope": "one original waist-up Heavenprint character",
-  "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/native.png",
-  "replaces_path": "art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/master.png",
-  "replaces_sha256": "9099dea80a3039842ed11414eab9755bbe35ca5e6fc9131a80869ac41ce4287b",
-  "user_revision": "Correct the X-shaped axe head to one single-bit head on a continuous haft.",
+  "brief_paint_original": "A heavy-shouldered fighter mid-stride with a war axe resting on one shoulder, dust kicked up, grinning at the next wall to go through.",
+  "generation_references": [],
+  "composition_scope": "new original waist-up Heavenprint portrait; no previous portrait used",
+  "replaces_path": "art/_archive/nine-doors/2026-11-16/superseded/044-rejected-axe-correction/master.png",
+  "replaces_sha256": "5a8023a8a346667838e568a6e9b082f2260661cf1b9238dd3535d6cf9da7a352",
+  "user_revision": "Remake the whole image from scratch; choose a physically clear upright axe carry instead of the rejected shoulder pose.",
   "production_approved": false,
   "implementation_ready": false,
   "native_dimensions": [
@@ -41,9 +32,9 @@
     800,
     1000
   ],
-  "sha256": "5a8023a8a346667838e568a6e9b082f2260661cf1b9238dd3535d6cf9da7a352",
+  "sha256": "282e08f3983fe78d2f4211680ef6df877007bc91165b3870fe1899dfa7a7942f",
   "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/044-fighter.png",
-  "source_sha256": "5fcf459ce140f582ec72e23bf4a03766e1c20f120d627d423bef8e6b3f20a573",
+  "source_sha256": "14ec10a28228c341425cc7404e83b2aa2a4eb02896424970bc5674c229840104",
   "export_crop": [
     0,
     0,
@@ -58,6 +49,11 @@
   },
   "upscaled": false,
   "export_processing": "Centered aspect-preserving 4:5 crop and Lanczos downsample to RGB portrait",
+  "mechanical_review": "Fresh composition: one upright continuous wooden haft visibly passes through a single axe-head socket and the gripping hand; one cutting bit, no crossed head/haft, no shoulder support claim.",
+  "user_rejection_history": [
+    "superseded/044-axe-head-geometry-fix",
+    "superseded/044-rejected-axe-correction"
+  ],
   "export_sha256": {},
   "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
 }

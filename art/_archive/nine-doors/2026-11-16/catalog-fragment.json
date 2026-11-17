@@ -4684,7 +4684,7 @@
     "class-fighter": {
       "label": "The Breaker (class portrait)",
       "path": "art/portraits/classes/fighter.png",
-      "sha256": "5a8023a8a346667838e568a6e9b082f2260661cf1b9238dd3535d6cf9da7a352",
+      "sha256": "282e08f3983fe78d2f4211680ef6df877007bc91165b3870fe1899dfa7a7942f",
       "width": 800,
       "height": 1000,
       "background": "opaque",
@@ -4702,8 +4702,8 @@
       "mode": "class",
       "brief_number": 44,
       "exports": {},
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/master.png",
-      "previous_sha256": "9099dea80a3039842ed11414eab9755bbe35ca5e6fc9131a80869ac41ce4287b"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/044-rejected-axe-correction/master.png",
+      "previous_sha256": "5a8023a8a346667838e568a6e9b082f2260661cf1b9238dd3535d6cf9da7a352"
     },
     "class-marksman": {
       "label": "The Skirmisher (class portrait)",
