@@ -1124,13 +1124,13 @@ a89c7da0f6c1f5e15b7940287288c9094942026a7b016436b2fabf032ae11072  art/_archive/m
 5ede844881571001a8dc69203aaaf245dd95b141b4213391be58f708bedd07fe  art/_archive/mascot/wick-anim/sources/v1/stop-sheet.prompt.txt
 6467ac07d160187795d22716900f24c16cc0e462f3f67757c4ca50cb3b1445d1  art/_archive/nine-doors/2026-11-16/BLOCKERS.md
 9201a1df38e127c1336e102352ada45585f81a3340223f10146aa95d00469788  art/_archive/nine-doors/2026-11-16/CONTINUATION-DELIVERY-250.md
-20f59668b31d2b401324d3bbeaa052524bd12374e1c0f5d89aff9d586fffdbd5  art/_archive/nine-doors/2026-11-16/CONTINUE-0.30.md
-238bf4507ba8e7b833f4ea480c4484de69a1f401f9dcc90371e85b4766309780  art/_archive/nine-doors/2026-11-16/CONTINUE.md
-0227e8a90b9e1dc3c0616d2dbfab7bf38704a388d1ba134a24a8bb9d465efcb2  art/_archive/nine-doors/2026-11-16/CURRENT-CHECKPOINT.md
+4f007204b8ff34475c7406d0a2a8bdde7cfbb88cbd02e34a753a30ed848b5155  art/_archive/nine-doors/2026-11-16/CONTINUE-0.30.md
+f1f351afe12b916ed7a4e173a6ed8cb5409f2e5233938d75e120f6e062412b95  art/_archive/nine-doors/2026-11-16/CONTINUE.md
+b0232b10f529f0756938d3cb6fa2374bb5d464c88b03826ba761accff062cbb0  art/_archive/nine-doors/2026-11-16/CURRENT-CHECKPOINT.md
 6149c3cb2827f2800152cccd934066c99db91aa82807f292295c24116451678f  art/_archive/nine-doors/2026-11-16/README.md
 541433b84c2073bc1a6a0f9dd3797075dfb4bb6d17a24d01702789baebdb6157  art/_archive/nine-doors/2026-11-16/RESUME-AUDIT-2026-11-16.md
-9572e53b9c56f45ba2a68dbea2eb1f258ee363c410b65b5c1f7190146ee4d702  art/_archive/nine-doors/2026-11-16/RESUME-PROMPT.md
-28f7274c08d83cb90ee032b1cf4623a38c4d16c86d88fd2621cab72db77e900f  art/_archive/nine-doors/2026-11-16/SHA256SUMS.txt
+2dfb59e457043933f5e4cfbbe22ffacb438a1483c5ce433d40708aa9ad9a5300  art/_archive/nine-doors/2026-11-16/RESUME-PROMPT.md
+e2d559fc5fabaffe1dfa4928778102eba3072f779444e49fb5a9ed0d20615399  art/_archive/nine-doors/2026-11-16/SHA256SUMS.txt
 36820248c606fa41117837e034620826ecd43893d8547bc68abaec58ff0caaf7  art/_archive/nine-doors/2026-11-16/USER-CORRECTIONS.md
 682a51d70b0600e2975f6fb1aeee885235c18f070b20c6a4f4b75a9796d9ecb4  art/_archive/nine-doors/2026-11-16/WORK-STATE.md
 0107961ba11628d68ad3efc924f7c3630fa671d7c64fe8cfd831c0f48c8f4d9a  art/_archive/nine-doors/2026-11-16/alpha-audit.json
@@ -1138,7 +1138,7 @@ a89c7da0f6c1f5e15b7940287288c9094942026a7b016436b2fabf032ae11072  art/_archive/m
 f14b2343af4174a8c6b30162f4985e4fc0b7814d999d0be58a722a9e849913e6  art/_archive/nine-doors/2026-11-16/asset-build-check.txt
 270eefa8dde3440f51107021325e0b6e06df6c2c1b3cc1868ca3536b2a7400b2  art/_archive/nine-doors/2026-11-16/batch-runner.js
 d12bf4b29e175134f2da7eca3d195b8e6f79bb948de264bc1b12b2f51a8255ea  art/_archive/nine-doors/2026-11-16/blockers.json
-d843f56324dbd2e666d7175e6ba9296e252bf652d39c662312577ecf986dbdf2  art/_archive/nine-doors/2026-11-16/catalog-fragment.json
+9a52e399c6075e2b029a93562a88678b3d3192344fc635be0d0ae446f3e21b10  art/_archive/nine-doors/2026-11-16/catalog-fragment.json
 c21fe83efcb4cd49c3ec3928de9ed84ad82178263d6defffeee9bf8c1199194b  art/_archive/nine-doors/2026-11-16/checkpoint.py
 8fe47c2aa548d162fb459f1281e5c43c96c9b478a7ede798429c82599481e123  art/_archive/nine-doors/2026-11-16/continuation-asset-build-check.txt
 f827c2ffcd7eae0674689da61e23b8dd97b54d0fec0b252296fb40d51d83b679  art/_archive/nine-doors/2026-11-16/continuation-attempts/2026-11-16-0630/README.md
@@ -1148,7 +1148,7 @@ dbca8d4ddab95c75d9f6e992eee8190c9406fbd8688667ff5dc1b0ee1c62f200  art/_archive/n
 acf4efcc97d342d72922c93ceb1f7cb8248dd4e04248dd01cdfc1bb9bd8f5abe  art/_archive/nine-doors/2026-11-16/continuation-full-library-check.txt
 c873150c75284d438d2255768846e0a0c85059e4fe4cfacbaa63f8cb4db09ff5  art/_archive/nine-doors/2026-11-16/continuation-preservation-check.json
 4958591c29896082f9b82b8b2c09fe56f0898264935dde76816ce93993baa142  art/_archive/nine-doors/2026-11-16/continuation-run2-start.json
-50dbab59f3b9dd3a22756269a6f6e311547c8428cb2a2b9d3d20819c95e20edd  art/_archive/nine-doors/2026-11-16/continuation-scoped-check.txt
+0277470800e40d55ae8a037897f6853403fd83536b5c97460a5140c6e3e346fe  art/_archive/nine-doors/2026-11-16/continuation-scoped-check.txt
 3186e9a48a9d1af3c40358671708d034f4658dffdd4dd06ced0c815d2e093e70  art/_archive/nine-doors/2026-11-16/continuation-start.json
 c33a765a234361d05b2df465d6deb86f50c9be2bc411dceba31d369c8db4fef8  art/_archive/nine-doors/2026-11-16/continuation-tools/README.md
 cdae5230bd3baa0f6faf82a52c4f87d70c5c076e2859e99c9d033d21c1c8a5cf  art/_archive/nine-doors/2026-11-16/continuation-tools/archive_draft.py
@@ -1159,12 +1159,12 @@ cdb8b652a6172186c43c233af45b3240887c0f9c3b9bb533ca88d64381a51293  art/_archive/n
 25055e5e729c2476a42c76d5bd661bbe94f4d884d7d2d48ccd728184f91cdf5f  art/_archive/nine-doors/2026-11-16/continuation-tools/review_painted.py
 5823bbf84ed530a469d01f0de574e2bbd28b3eb90d287393e2a418991e721bfb  art/_archive/nine-doors/2026-11-16/continuation-tools/seal_batch.py
 075df28f0da4c425f9275ea25c10d7808f83c5a615e06ee5c0021a9813746913  art/_archive/nine-doors/2026-11-16/continuation-tools/update_state.py
-6f49a1528431fc94b792cb904074bdeb702b84f24fffaa467627f360b2a976b8  art/_archive/nine-doors/2026-11-16/continuation-validation.json
+ea40a327844fba4c536daf67edbf37c03c5dadb27cb554797057581cf6515248  art/_archive/nine-doors/2026-11-16/continuation-validation.json
 247c4304a0c6a43afdbd2397cc3e558eb287aaf389889520306c5f877a31dec3  art/_archive/nine-doors/2026-11-16/deliveries/continuation-178-candidates-increment.zip
 13895f0c2bf6d67f633f0a1736089f30e766560f10afa915e02c191a6afcdbd1  art/_archive/nine-doors/2026-11-16/deliveries/continuation-178-candidates-increment.zip.sha256
 6d18c91988da150b25f8acba54c1b8dd63df284f64c6a256057604179659c336  art/_archive/nine-doors/2026-11-16/deliveries/continuation-250-candidates-increment.zip
 55215eaf71b236b49f4889ffedbbd3e6cd9606ae93856066f416de1e1bb8f1e8  art/_archive/nine-doors/2026-11-16/deliveries/continuation-250-candidates-increment.zip.sha256
-2daadc074b4fc1166c0029ecc50d5d2328ead497f1596c761ea1d99ba0202c00  art/_archive/nine-doors/2026-11-16/delivery-counts.json
+1ca1238c9922dd01008cfd442b0799ccb14a128a176d52721f4c90d0fe56a484  art/_archive/nine-doors/2026-11-16/delivery-counts.json
 6cd48ea7218deffc20e306eb49a67e755de883119422b7a48181497e769acb98  art/_archive/nine-doors/2026-11-16/draw-line-icons.py
 e1e6e222945192978fbca2ee97831474718a3f5b84b2b24272a231badde95fb9  art/_archive/nine-doors/2026-11-16/export-one.py
 9584de4ec2a92802a2354150dc1f36682e719b1ea01943651caddec8cf0f2e9e  art/_archive/nine-doors/2026-11-16/finalize-review.py
@@ -1174,9 +1174,9 @@ cc69190b3493207852bfe3d699eb9671a040392562fd960e5254df8419504271  art/_archive/n
 64f9bc1a8d6102a81c6c5865dc5903495ee368adee36947ee314141f3adc8b3c  art/_archive/nine-doors/2026-11-16/generation-failures/75-1794873708645.json
 cafa62f410d2ccd7facf3c2a445b6080d75f3fac46b7743936ce7cd7264fc9bf  art/_archive/nine-doors/2026-11-16/generation-worker.js
 d72ee72fb7a9ffa89eb9748d81255f930f5f616e0983fcbba9fb837e3ff2d594  art/_archive/nine-doors/2026-11-16/glimmer-render.txt
-bd59ec3311aae0d3ff06c90eed92d1d8acd0a52cc13e5cb2ec306b1a762ac3dd  art/_archive/nine-doors/2026-11-16/holds-0.30.json
+e6bc1d08e25dd5209e806bdb35c94fd44bc4481c6ba4ccbdbddab0037ad4d252  art/_archive/nine-doors/2026-11-16/holds-0.30.json
 32e67011cc4159155c0ab9bafb3349db082111e1e8eef29c10750ae483420155  art/_archive/nine-doors/2026-11-16/inventory-audit.json
-33e866a601aac129a017f63cf520dbc30dad20810ee28afb6331c33fa26725db  art/_archive/nine-doors/2026-11-16/manifest.json
+8e120969c3a7b79e7017669672d289b0fdd8f128e473b03624559e66e508def7  art/_archive/nine-doors/2026-11-16/manifest.json
 f25bd59d2f852851de7b2866aefdcf13cbc195b562848690bd59a51c20929c81  art/_archive/nine-doors/2026-11-16/native-renders/001-bulwark.png
 5b5444dbaff5e6a6727b99c1122f618fc9067efd3c509a28355b690707eea905  art/_archive/nine-doors/2026-11-16/native-renders/002-shrug-it-off.png
 fada0a004f1771ebec93f0cca3b299fe94e50ae23da42764b66b076f2325dcff  art/_archive/nine-doors/2026-11-16/native-renders/003-close-guard.png
@@ -1272,6 +1272,7 @@ e07ece78df3b30e1421321dff898ec3f7fd6f43c9006a18d54bace610ec6487d  art/_archive/n
 27ccf1869451d6f59171080ac3b5c602d22436729146ee2acad4ec0713473067  art/_archive/nine-doors/2026-11-16/native-renders/113-execution.png
 e45341239732c1ff8a0d5222d6b5a7d193342041a7dbe52779f411257c8fe527  art/_archive/nine-doors/2026-11-16/native-renders/114-called-shot.png
 f54e8580cf257b447384a240ec1f8969d86b5e3c3e6fdb7bc119a6e799f3fe2b  art/_archive/nine-doors/2026-11-16/native-renders/115-shadow.png
+3461e91a27da1110eb2f44181998ae9220c3bb6fcbdb21d9dc63f6761dd44121  art/_archive/nine-doors/2026-11-16/native-renders/116-infiltrator.png
 3677c5834366091680fd70f80ce190a4ef084227ec1a5b58369f87b4d4bf3273  art/_archive/nine-doors/2026-11-16/native-renders/123-hold-the-stroke.png
 aa75c7982f64e884b6f66aed13337e134bae0cbe0ba7191a037ae02cc5946f11  art/_archive/nine-doors/2026-11-16/native-renders/124-parallel-thought.png
 c7990cbc5f257568588d6b6c4a7fe37304d9edb72b7cb235854ec5a99f378932  art/_archive/nine-doors/2026-11-16/native-renders/125-overclock-sigil.png
@@ -1283,6 +1284,7 @@ ecfd2de0efa94068c623da4ad6bd6b34e74a22bbc4e9f2049fa34a84541c284d  art/_archive/n
 bd6ab9769b89dd638eef00a1223a7441d8967c5a33454aca60b7276e89c445ba  art/_archive/nine-doors/2026-11-16/native-renders/131-payload.png
 f75b5e7ef65f6fd3bff1ab83c83f6ba4f55f796a8f3bc6e069777a092604ef66  art/_archive/nine-doors/2026-11-16/native-renders/132-stored-spell.png
 deb1378005d39557749b7f8e639dfde9f2abaf4aa02497eb6e996bc81a9a48d9  art/_archive/nine-doors/2026-11-16/native-renders/133-sigil.png
+bb63c7f6b08e68139080569317f7bcab6ed138ec75f2b9a06b97af625743d343  art/_archive/nine-doors/2026-11-16/native-renders/134-mage.png
 7caa67452393e167dcaf8f151810ae17371d54e7a3d4092fc0237b4307bd60ed  art/_archive/nine-doors/2026-11-16/native-renders/135-mirage.png
 8d353f5f5b37b2f9271c2991a92833cb452ae61bddbbc5b1dc4d91a5ee594470  art/_archive/nine-doors/2026-11-16/native-renders/136-blueprint.png
 f6d2135f82c72a41421c647dab49132ef03987804e1d5665907bb23cca8b2715  art/_archive/nine-doors/2026-11-16/native-renders/138-eye-and-wall.png
@@ -1311,6 +1313,7 @@ c874b1c3e130e926938ebd0973382f7665ff3abc59ac2f54b5d62022aaa25843  art/_archive/n
 0d23e3e3f800d81e2312055fd1eebbde3e7d0f9fbae05e6ba1210d318b150bcf  art/_archive/nine-doors/2026-11-16/native-renders/161-overclock.png
 2b54ab8458a94ddb5270c0af3531ae13ee352928fc49aecaadf784ebc369ade4  art/_archive/nine-doors/2026-11-16/native-renders/162-sleight.png
 4040d1155d5149a58f4aa0e22ba866afc4ef4f59e7a55e5384f2e73ecd602fd0  art/_archive/nine-doors/2026-11-16/native-renders/165-figment.png
+b04b8f66bfb454747e0fa2f79e0ee47c2d0a0dd2ecc3b1dc940428da00aa6786  art/_archive/nine-doors/2026-11-16/native-renders/166-trickster.png
 ced1837aeb3e3edb9b5b82195aa4bfb308ad0caaf7e4e42d1c8d22ed8ace9b50  art/_archive/nine-doors/2026-11-16/native-renders/171-shared-breath.png
 4c1077394971ffd1b4b75ae88967ebb088a63aee009c33d7674b30aa704c7379  art/_archive/nine-doors/2026-11-16/native-renders/172-lay-down-arms.png
 cbcb4b905cdfdfcba9839574d1cf40314b47fcf2892da22dd74458e142c58692  art/_archive/nine-doors/2026-11-16/native-renders/173-feel-their-pain.png
@@ -1337,6 +1340,7 @@ d519742a8dc920ca41b147650792c44c6d8ee0118ba6779c826780e18ab60a44  art/_archive/n
 54cc12425d9cc58f9b33a07e49cf80a509dbcc4c931b08cffb72bcf57ebedbd7  art/_archive/nine-doors/2026-11-16/native-renders/194-brimming.png
 2b0305c94c9692b435acc95446ea44794fe8dbaef8800844ee393cfa20f8587b  art/_archive/nine-doors/2026-11-16/native-renders/195-rally.png
 91eae1d048bd9363559dc525c1be07ae19fe499f0e48afb63ec85a2e4ed37720  art/_archive/nine-doors/2026-11-16/native-renders/196-bond.png
+8d073789c62238def4178ab050b95bb977b318c3a8de322587a8cf747dee4b33  art/_archive/nine-doors/2026-11-16/native-renders/197-bard.png
 e7dcf80a93f97aaedc3cdf1262c304b1f564ab088c22dc8aec9d4f8985c82c42  art/_archive/nine-doors/2026-11-16/native-renders/208-heart-overload.png
 2db1a5176a48730c7add43e1b4c79bf9207802baab117abf34700e596c3d1f9f  art/_archive/nine-doors/2026-11-16/native-renders/209-resonance.png
 dd0dc0e2f62f40d4000faeb10d3d39778f539e795d84d4bc3f5adf1af017b145  art/_archive/nine-doors/2026-11-16/native-renders/210-overdraw.png
@@ -1348,6 +1352,7 @@ c24d201598079237b46896db06b5d35a12fb2d3672af5481bfab271a9c8eaa1e  art/_archive/n
 7de469d6fa25103312c5afdc3bb4c6d12aed99400d3ad6756ee8ee4df07aa079  art/_archive/nine-doors/2026-11-16/native-renders/216-heart-surge.png
 6a7c56254cd6dbb8826deff55d869c6dadb62ceb87a5f192a42dfd31c47c8737  art/_archive/nine-doors/2026-11-16/native-renders/217-eye-of-the-storm.png
 bc5546183627095775eccff8589c2d9d2e45845cf3792e1fd0d25d3fbf08d48e  art/_archive/nine-doors/2026-11-16/native-renders/218-outburst.png
+c18b06014744e04d56bcaef325d21ab0588849002621eca692fb874bf63a6b04  art/_archive/nine-doors/2026-11-16/native-renders/219-channeler.png
 5152bc3c07dbce8434f681c4e20e022dfa20cae790b91d6411229d3cf1fa54cc  art/_archive/nine-doors/2026-11-16/native-renders/220-litany.png
 0d56889821d427d10bf1a4f904ca869f37d4e97a1aac80e5cfe47516d7812566  art/_archive/nine-doors/2026-11-16/native-renders/221-holy-ordnance.png
 430a14760a89e0e2152b19d8759cc332ba7becb667823a705389d10f70f1565a  art/_archive/nine-doors/2026-11-16/native-renders/222-answered-prayer.png
@@ -1375,6 +1380,7 @@ ac142b2a68ea36104ba93f2ca99e63657f02bf7db15ee4df3ce589c5a885fd98  art/_archive/n
 f745d60cd190fbcfb3e3a2e97c2c1e135c1bed58b8dfa113568b6da2961f97ed  art/_archive/nine-doors/2026-11-16/native-renders/244-canticle-crescendo.png
 c069702f895f234ecce6d8e1dd571313149e1a5f23ae6373a41fe89d5e04f993  art/_archive/nine-doors/2026-11-16/native-renders/245-canticle-rising.png
 4f98c2c8e48c4ae681fae7af729050a909c69e9024657b1951b9d06341d52f7f  art/_archive/nine-doors/2026-11-16/native-renders/246-prayer.png
+7f3f3602e5fdc75332236fae1f669c01f027e6fa0a71ed5a5e180385b0cba01d  art/_archive/nine-doors/2026-11-16/native-renders/247-guardian.png
 bb8a7a32a94c8eeec4f0c9744b8dc98772d321eb441f6f14fa4acc7ae9b50a23  art/_archive/nine-doors/2026-11-16/native-renders/251-mod-open_hand.png
 7ae528d513e83e392e1ac498c539fee2db61f8736582b512775f7f721c16e7d1  art/_archive/nine-doors/2026-11-16/native-renders/256-open-guard.png
 94695f9643caa5a377312fd475643702b7b69f77582caae3191ad0c625633c13  art/_archive/nine-doors/2026-11-16/native-renders/257-jab.png
@@ -1502,7 +1508,7 @@ cd31f737186949ec1d6eb93af27188af256d1e989f3d198f4d14f45fdf83d5cb  art/_archive/n
 c0bef87fac8b1abfecb5e786119c1f68b22ef4470acd8af49b0c7ef5f60baddb  art/_archive/nine-doors/2026-11-16/previews/169-figment-breaker.png
 cbc16fea12876479b66753d57ece803fe5748ed3c60114146f6b9c87d5588e2e  art/_archive/nine-doors/2026-11-16/previews/170-figment-hush.png
 b2579e67ea35d1cdfad110b6800ff42af38a1fec63c4670f0ccf4e8a043ad565  art/_archive/nine-doors/2026-11-16/progress-0.30.json
-a77c7c36de322a74a025551ebece3f806412de477da98f809d9fb47d0cb9c402  art/_archive/nine-doors/2026-11-16/progress.json
+6d60f282ed8ba07e42686a33bccd6dc0ad6e40ca89be29427790c7fb15e4b0b8  art/_archive/nine-doors/2026-11-16/progress.json
 cc5e90a233013d0181173b8bbb549791f217f7299f368993798171a59e78561e  art/_archive/nine-doors/2026-11-16/queue-history/CONTINUE-before-0.30.md
 e0147e39983d0349f328c123f6cb347ece161451442aac894f82cb33481a5244  art/_archive/nine-doors/2026-11-16/record-glimmer.py
 7f0ff86753d6a5a6034a077756d33020e02b99ee27074064abc380887ead652d  art/_archive/nine-doors/2026-11-16/records/001.json
@@ -1600,6 +1606,7 @@ fd3a200cf735d0a737b5352c3c1fb11418fb8d4c3d642fa879f46993aad9b9ca  art/_archive/n
 3f50638dbcfe77c7365014460ebc2536a6c56ea7c317ab95de7977630ac2b7bd  art/_archive/nine-doors/2026-11-16/records/113.json
 1da1a7ba47188a13544103ad06e2ffd69a6007688cab0ac4c1e8cbbf3d8b9f8e  art/_archive/nine-doors/2026-11-16/records/114.json
 49a7002481a24db749c8354de8b027ee334f5b308644f6494c5dfc12f79e1dd6  art/_archive/nine-doors/2026-11-16/records/115.json
+4b62615cbe7138f206c9fbab8372ca58f2cef3bf1fe45b8eaf55cf6be889e772  art/_archive/nine-doors/2026-11-16/records/116.json
 d3bba96358a278b8cdef0db1800d8841d95e8bcfb28c2f108165335052bad690  art/_archive/nine-doors/2026-11-16/records/123.json
 e241a17bf1f28d2f30af2c979cffaba68081859d76fd4e75b07147169624cbd9  art/_archive/nine-doors/2026-11-16/records/124.json
 c9d1da30fe48b2c4834cfc4f962e5c3bacdcbab903056fdd5e95c17eede7f93e  art/_archive/nine-doors/2026-11-16/records/125.json
@@ -1611,6 +1618,7 @@ eefee28f1b71eff71a6b9042b73802acd71929a98df7f347649759e90c5061c9  art/_archive/n
 5c9521556645e6e32e047cfe5cd1b2d1f2da49c65ceb8a909ef7c336a739b158  art/_archive/nine-doors/2026-11-16/records/131.json
 f870882681540fb02a2155224d0790a551dbb557f37f6d04eb2cf8319adfcfdd  art/_archive/nine-doors/2026-11-16/records/132.json
 de81a08d34a5a121a3b5f7b2af77f8c360ffa81056dc1df290e537ff6428978d  art/_archive/nine-doors/2026-11-16/records/133.json
+e0b75caea505fcba3a7097fd349f70a0511c360731bf3e635ec50b1b4e427ba9  art/_archive/nine-doors/2026-11-16/records/134.json
 0236a8535854abf550563b45629a6403e55e55bcaa554569447ce68d9adda9be  art/_archive/nine-doors/2026-11-16/records/135.json
 938e784d3969a797bff598ee90f841f3fcec54f1338fd7cef54cc5c7e4bb3371  art/_archive/nine-doors/2026-11-16/records/136.json
 671d53271bd35460fa8fae625f39b8633a9a5762826fdcac2a1116daf6cb9da7  art/_archive/nine-doors/2026-11-16/records/137.json
@@ -1640,6 +1648,7 @@ ed86bec44345af4f19a7265e0b1c6da33852a513b37b8c56d192b39faeac6978  art/_archive/n
 104e0b11c30efb434ea0a74bdcd1636fed633776a2da7b6c3c1639f1a746e9ea  art/_archive/nine-doors/2026-11-16/records/161.json
 5cbc11c8aaf3301325614641f7436be2cd48a6dba5d616492ee1fc59377816ea  art/_archive/nine-doors/2026-11-16/records/162.json
 a240701b451afe94f49ee2ac7e162b3a76dea8abe21badbc8486ea29fb322958  art/_archive/nine-doors/2026-11-16/records/165.json
+eaa8121b0620fcc184240dd984bb2179d7b6b107f67fec82692a82fb99300bef  art/_archive/nine-doors/2026-11-16/records/166.json
 88de6375d01e92b2286780fac0425e2c0a6b799297dd8cbb7fc382604806ee2b  art/_archive/nine-doors/2026-11-16/records/167.json
 2dddd7510eb8b9785bf0508a83ec8c61d1dee84b3345273c0fe3c488e637fe6a  art/_archive/nine-doors/2026-11-16/records/168.json
 de03e66236b4f603c4db2fb57f1605340b6e9eaf11903e5e3f2c71ee7504da44  art/_archive/nine-doors/2026-11-16/records/169.json
@@ -1670,6 +1679,7 @@ fa1da05ef49c11cd1d7696135386a504721a4aa3b6184d8a0d2c283f3be05125  art/_archive/n
 60ee1bf567f782d2f6e0613206f7cc444187d0da93b7e3c88ede188cd64d296b  art/_archive/nine-doors/2026-11-16/records/194.json
 5862d658f818a4671c26b960e26d3501a5bb178ce6107b42cdd98b4f8c2448f9  art/_archive/nine-doors/2026-11-16/records/195.json
 263dcea1ac38eafa8d3b3bf291a204a667ce486b667054ee6585ba00f70c1b4f  art/_archive/nine-doors/2026-11-16/records/196.json
+cf1a71116194382075d356215de7a366fd4f94fa39863edace9825c3de80963b  art/_archive/nine-doors/2026-11-16/records/197.json
 197dc9ccb237e30f27836793e3aeb76d14377a8f7d4badecfa0a0614fcbb3b0e  art/_archive/nine-doors/2026-11-16/records/208.json
 f77875e2f0a86afed9167eb9304da32f9f7d4341c773deea2cfbd165b2711706  art/_archive/nine-doors/2026-11-16/records/209.json
 3bbd6d879aa49b9e57a5cd41ca3a4a68ae10e096c6e465035ec0c3d13b85f109  art/_archive/nine-doors/2026-11-16/records/210.json
@@ -1681,6 +1691,7 @@ c304e6c80a0ad310e590282cb4f15c3a4686a362d3518970bb4a509bcf04b8d9  art/_archive/n
 855c6375c31261be07853eecdde64c24736747baad3ba70ad6602e7189b14342  art/_archive/nine-doors/2026-11-16/records/216.json
 b5a129b2104f6de4291885e6493c487ffc09e008fd9aaf3067abaae0811164c9  art/_archive/nine-doors/2026-11-16/records/217.json
 0e839e3fcbe73caab0fcdff260ef3d26aa537fc5089287b83f463646bde76812  art/_archive/nine-doors/2026-11-16/records/218.json
+26ecc1040a757b75e11f65bd77aa35e127a359ed15a3172059a3f01b4def8370  art/_archive/nine-doors/2026-11-16/records/219.json
 4dd8372a2f57662c4befab3d3c704e8fe750c2739a7aec8beb4b37600b9f2297  art/_archive/nine-doors/2026-11-16/records/220.json
 219bf932d929d813d4767b72d64325aa9ffd282e3c4d60a37c8f36cc599a610b  art/_archive/nine-doors/2026-11-16/records/221.json
 5c1bbc834e358c568a009a8219628e06aa0f6e070fd65d18f1dd644df5287f6f  art/_archive/nine-doors/2026-11-16/records/222.json
@@ -1708,6 +1719,7 @@ d05daf90a89ec233b368ff7b0b1ee500590af86c436dc5ce4796dbf1e07c778e  art/_archive/n
 b99668dc701465a5834f3c8b3ce5237e96d3c46ecfcdba147f72ffaa858c1641  art/_archive/nine-doors/2026-11-16/records/244.json
 927dfe66dbcfe6eee09d4abc94204675577e0477ad26c23a40d5b002601fa1c8  art/_archive/nine-doors/2026-11-16/records/245.json
 92ed00256f96d3b43ff30e5dca056830716e96e6217485e0110530f7e840bd37  art/_archive/nine-doors/2026-11-16/records/246.json
+55b002ace915c173390a680849bed2556f4e2cc61a5132d8f5dfd97fb840f5c4  art/_archive/nine-doors/2026-11-16/records/247.json
 c2cc17d719eadf2119e630e783b5d164010eb2b2fd67d21f3625848ff616ce89  art/_archive/nine-doors/2026-11-16/records/251.json
 a8e05b50ac93c665304ba7142e0f7cd8301fe6b45c6b25f4f1afcc49f3a95627  art/_archive/nine-doors/2026-11-16/records/256.json
 9f86e7708f9914835e6140042088f08314c851fb154b02e8cd2c6cfcee96962e  art/_archive/nine-doors/2026-11-16/records/257.json
@@ -1935,6 +1947,7 @@ fc6ff94046b21da74f39dd05c4f2c3c200a81d6ca6e78166174ab26b663441c5  art/_archive/n
 5bab0d3e54d45d64825fbdacf20d5b410085681bec10119d92a123c79044fdb5  art/_archive/nine-doors/2026-11-16/review/continuation-70-71-72-73.jpg
 d15909daceed395e975065ca6a362360dfe7af9b03c7fe70280f7cf325c530fe  art/_archive/nine-doors/2026-11-16/review/continuation-82-84-110-111.jpg
 bfd1ef26810ffb7d6dde1d5acdb0ffb7f9315a2049a2dbfae341ecfb225669bf  art/_archive/nine-doors/2026-11-16/review/continuation-overview-250.jpg
+8df7906ff94448193097609d05cb25b53e7985814e97cafcce6c4eecb21bc121  art/_archive/nine-doors/2026-11-16/review/continuation-painted-16-44-75-116-134-166-197-219-247.jpg
 f95afddf276a1bfa993354c2e9c6d586cb718d5a4b752ed8e9a7f6e8e5a10b8b  art/_archive/nine-doors/2026-11-16/review/continuation-painted-16-44-75.jpg
 0769a68fb70525204f5f0d0ca2cfdf51f83d2f91fc43988d23c43e88d26b83c3  art/_archive/nine-doors/2026-11-16/review/continuation-signs-323-324.jpg
 5e79019283febd4b7db9219aa1699c56f515c17f17d6265d8e86a7dcdbd2e63a  art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png
@@ -1962,6 +1975,7 @@ bbbd595bbc32eab12c4aeeb6dc9038f11fbee5a8ff5f7be91d65ee352d2bdc93  art/_archive/n
 884061398cfe5fcd1a27f8ad134746f028d78e4e18938cdbe385f906628acbe4  art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png
 2d3c919e60c83c2ce0a1b48667052e66b0b86b536d159109d011a86c4b6569e9  art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-149.png
 5f00527af94c96f279ab157d0274a0a00533a70e9dceaa47b0d2e95631db04e0  art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png
+cdeadb619e5ae84cadb5de38d07a5f31f59045950556fd3dc907baa30395ecf9  art/_archive/nine-doors/2026-11-16/review/reference-previews/gear-anchors.jpg
 9ff80b4eaa71dd1a6e8eda7811da97d63f475bfb1fd2eabeacb2073156a587a9  art/_archive/nine-doors/2026-11-16/review/reference-previews/heavenprint-authority-panels.jpg
 5a05bab5aba510c25d0793a3c1613d61950daf7859e236355d6704d6e0abc43b  art/_archive/nine-doors/2026-11-16/review/reference-previews/mind-without-fog.png
 c1f067a86f5dc88d8388a2b11cad11bff0087e9446364230ffa5054f24524809  art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png
@@ -3821,7 +3835,7 @@ ebf3997460b615c4c9fa5c72481a7810b0048f09b13f04b52a45930489953fa7  art/briefs/GPT
 037a15e219ff6d9acf925fc9b626f7550a86be052b8d86199593a422f5c4659a  art/briefs/GPT-PROMPTS-2026-11-15-everything-missing.md
 c6d81b29b4cf1e77c4c25df521c47735abd5f561fe40e717c11c238fd39fde44  art/briefs/GPT-PROMPTS-2026-11-15-figments.md
 ba5d7c646d34195c777e5e23200a0953fe0910dbd40984a30ddfd5e9d64319dc  art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md
-128ffc1e6e88f40ee0229dd163f1f71d0335f2facb5047466d8f1337fa8acb99  art/briefs/NINE-DOORS-ART-HANDOFF-2026-11-16.md
+1fd49c62a953b8326ae42f69aee19159d463a61a3c9be7a7798647d71b473643  art/briefs/NINE-DOORS-ART-HANDOFF-2026-11-16.md
 74862e11059029851b0152176699f3a057789d839b0d5926d75bd81980701040  art/briefs/archetype-portraits.md
 ca90bd7e555afdd1bad775f64454bf410cf6d1856070e566cc181ddbfe784138  art/briefs/first-patch-revival-redo.md
 821628bf1325a4023d390dbe8b0908751f860aab17ab4b138997f785aade81db  art/briefs/m813-mpat.md
@@ -3838,7 +3852,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-3a59e02419646015b01b6f8ba2fdd45d34ce173661835611fd6afbbec7d4f0ec  art/catalog.json
+852cb061517376064ee5d691cfcc1f418fd9623cf7937a3f34c6dbac37831d4e  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -9857,9 +9871,15 @@ b625da87cfb7105382893f5421e5c7f1b395429118cfa9455e14ba5568393ef1  art/portraits/
 e435ead159873435d901e05556acd1cf090354f42f1772b700aa44b8f981f388  art/portraits/archetypes/witch.png
 17daf780c89917dec10603a3b526fc78d4a8e04ee3aa76f7f0d08ed0380a75c9  art/portraits/archetypes/wrecking-ball.png
 236f9dab99080b1ec702c9522adc010e63b52c4892d0eb5f891af23df8b00cc4  art/portraits/archetypes/zealot.png
+42b17b74d30a2f7a86754fd0a0a5ead8f7cd735bcd5951c42475eec67a023cf2  art/portraits/classes/bard.png
+9ecd0c794016930148d8ac289e57c18b2fe328f1b3e1b64b8d7be1f84af240a1  art/portraits/classes/channeler.png
 61ab44732d0ad93cdbda6d07c23477f8530e72e041910fbcf35ead057161a36a  art/portraits/classes/defender.png
 282e08f3983fe78d2f4211680ef6df877007bc91165b3870fe1899dfa7a7942f  art/portraits/classes/fighter.png
+4a79968c65f38cdd6f793b18447ac65e9b81590be83ec440ddd7f36415051aab  art/portraits/classes/guardian.png
+8d2e638cdf45e2b7964c60c0fdb4c3a022a3fa06b292d9d57ff3eb101d7ca310  art/portraits/classes/infiltrator.png
+d24b701e37e2f8f82956fa8b25a97c90d86abb95f0fb4e676765a3322dc37388  art/portraits/classes/mage.png
 ccdba7c23654f10a709891f55823da815ca2de99dae436478e0b6b763f900bbb  art/portraits/classes/marksman.png
+620758a805ae357f517a43cb96ba1c1b9c41f6f07caa7988edacb3ea601899df  art/portraits/classes/trickster.png
 1ced059572bc00dbfbf581cdba7b9ee0405ae1862ab19d18cd7f0d21fee1c2d4  art/portraits/epccg/analysis.png
 86f536e05bfe96388161588b803b0968b8ef49347bcb86b7620ca027f77ab85d  art/portraits/epccg/athletics.png
 a97b085d44298ef8b19fc953fc55d4172aca5108219568ac7a096e91a8302c07  art/portraits/epccg/authority.png

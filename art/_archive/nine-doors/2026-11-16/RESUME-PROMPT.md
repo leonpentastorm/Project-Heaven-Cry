@@ -1,6 +1,6 @@
 # Resume the Nine Doors artwork
 
-Continue art/nine-doors-2026-11-16 from its latest remote head. Read CURRENT-CHECKPOINT.md, CONTINUE.md, holds-0.30.json and the current style guide. Legacy delivered 316/375; 32 eligible old jobs and 27 held. New 0.30 requests remaining 41/41. Combined outstanding request records 73.
+Continue art/nine-doors-2026-11-16 from its latest remote head. Read CURRENT-CHECKPOINT.md, CONTINUE.md, holds-0.30.json and the current style guide. Legacy delivered 322/375; 26 eligible old jobs and 27 held. New 0.30 requests remaining 41/41. Combined outstanding request records 67.
 
 Use records/progress as completion ledgers, not recipe pending fields. All 28 old hold recipes remain blocked, including Palm #258 already delivered. The four separately authorized replacement depictions use the new 0.30 rules, not old Paint instructions. Follow must check reuse; eight fork proposals retain source questions. Never invent approval or completion.
 

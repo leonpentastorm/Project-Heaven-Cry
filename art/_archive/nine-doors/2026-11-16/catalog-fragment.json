@@ -4726,6 +4726,138 @@
       "mode": "class",
       "brief_number": 75,
       "exports": {}
+    },
+    "class-infiltrator": {
+      "label": "The Operative (class portrait)",
+      "path": "art/portraits/classes/infiltrator.png",
+      "sha256": "8d2e638cdf45e2b7964c60c0fdb4c3a022a3fa06b292d9d57ff3eb101d7ca310",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/116-infiltrator.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "class",
+      "brief_number": 116,
+      "exports": {}
+    },
+    "class-mage": {
+      "label": "The Sigilist (class portrait)",
+      "path": "art/portraits/classes/mage.png",
+      "sha256": "d24b701e37e2f8f82956fa8b25a97c90d86abb95f0fb4e676765a3322dc37388",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/134-mage.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "class",
+      "brief_number": 134,
+      "exports": {}
+    },
+    "class-trickster": {
+      "label": "The Rigger (class portrait)",
+      "path": "art/portraits/classes/trickster.png",
+      "sha256": "620758a805ae357f517a43cb96ba1c1b9c41f6f07caa7988edacb3ea601899df",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/166-trickster.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "class",
+      "brief_number": 166,
+      "exports": {}
+    },
+    "class-bard": {
+      "label": "The Mender (class portrait)",
+      "path": "art/portraits/classes/bard.png",
+      "sha256": "42b17b74d30a2f7a86754fd0a0a5ead8f7cd735bcd5951c42475eec67a023cf2",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/197-bard.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "class",
+      "brief_number": 197,
+      "exports": {}
+    },
+    "class-channeler": {
+      "label": "The Channeler (class portrait)",
+      "path": "art/portraits/classes/channeler.png",
+      "sha256": "9ecd0c794016930148d8ac289e57c18b2fe328f1b3e1b64b8d7be1f84af240a1",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/219-channeler.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "class",
+      "brief_number": 219,
+      "exports": {}
+    },
+    "class-guardian": {
+      "label": "The Chaplain (class portrait)",
+      "path": "art/portraits/classes/guardian.png",
+      "sha256": "4a79968c65f38cdd6f793b18447ac65e9b81590be83ec440ddd7f36415051aab",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/247-guardian.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "class",
+      "brief_number": 247,
+      "exports": {}
     }
   },
   "technique_icons": {
