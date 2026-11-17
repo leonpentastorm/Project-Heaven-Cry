@@ -29,7 +29,7 @@ Leon, 14 Nov 2026 (rules 1.54 item 11; a standing rule): *"Make a rule that ever
 4. **A brief for any mode's screen that does not carry this rule is not sent** (`CLAUDE.md`, "Every mode keeps the side panels").
 5. **The fight's turn panel (0.31.0, every mode's fight):** still no side panels (excepted above), but every information
    box of its column folds (one fold, `game/fold.ts`, kept per box in this browser) and the action list keeps at least
-   four rows: the blocks above it scroll or fold first. See "The fight panel (0.31.0)" below.
+   four rows: the blocks above it scroll or fold first. See "The fight panel (0.31.0, 0.31.1)" below.
 6. **What the sheet offers follows the mode:** a Survival run never shows Ask (voices) or Rest; at Survival's camp the GEAR tab is read-only (the camp builds the gear).
 
 | Mode | Left | Middle | Right panel (`panels`, in order) |
@@ -125,25 +125,31 @@ Leon, 14 Nov 2026 (rules 1.54 item 11; a standing rule): *"Make a rule that ever
   - **A foe** (not Analyzed) reads as its health does: its shields by name with a size word (faint, light, strong, massive: a share of its max HP), never a number; its strip draws each at the word's width. An Analyzed foe reads exactly.
   - **The attack preview** gives damage before the target's armour and shields; when the target holds any, the target card says the damage shown is before them and what they take first (the engine's total, never a sum the screen works out).
 
-### The fight panel (0.31.0; Leon, 16 Nov 2026)
+### The fight panel (0.31.0, 0.31.1; Leon, 16 and 17 Nov 2026)
 
 *"i have ONE (1) singular line to scroll my attack option"*; *"all boxes of all kind that display info is collapsable and
 save their collapse state"*. The column, top to bottom (it supersedes the shields bullets above where they differ: the
 token's strip is gone):
 
 1. **The bar:** on short windows You in one line (portrait, name, AP), Backpack, the layout grip, Customise, Hide panel.
-2. **Pinned, never scrolled away:** HP with the shield as a pale hatched segment at the end of the fill (no track of its
-   own; past max HP the bar rescales; "410 / 410 +30"; the layers on hover, the engine's `shieldsView`), and directly
-   under it the **status strip**: HELPING (#6FEA77, ▲), HURTING (#F65157, ▼), states (white, ◆), glyph and short word,
-   the card on hover, "+N" past six. The group is `conditions.json` `side`. On short windows (820 px tall or less) the
-   meters follow as minis: the three most urgent open ones and one "+N" chip for the rest (the zero ones folded and the
-   other open ones; a click opens them all, "‹" goes back to three), at most two lines, scrolling inside past that.
-3. **The You card** (folds): portrait, class, Echo, AP / Movement / Stims and the reaction pip, the folded "Shields N"
-   row with its "?" (the rule), then the **meters**: one row of minis, the zero ones folded into "+N" (never one with a
-   warning: an empty Evoker's RELOAD CORE stays on the row); a mini grows on hover into its card (`look: 'meter'`: the
-   name at 13 px, the whole value and warning at 15 px, the focus line, the hint); then Bonds (one
-   line at 0 Bonds). The squad list folds too.
-4. **The turn box:** YOUR TURN with the AP pips in the same strip; the vow as one line; the tab row with a cog at its
+2. **The You card** (folds; 0.31.1, Leon on live 0.31.0: *"HP back above the mp bar below the picture"*): portrait,
+   class, Echo, AP / Movement / Stims and the reaction pip, and at the card's right the **Backpack button beside the
+   limbs figure** (as in 0.30.0). Under that head, full card width and **never folded away** (folded = the head line, HP
+   and the strip): **HP** with the shield as a pale hatched segment at the end of the fill (no track of its own; past
+   max HP the bar rescales; "410 / 410 +30"; the layers on hover, the engine's `shieldsView`), and directly under it the
+   **status strip**: HELPING (#6FEA77, ▲), HURTING (#F65157, ▼), states (white, ◆), glyph and short word, the card on
+   hover, "+N" past six (the group is `conditions.json` `side`). HP and the strip stay in sight (sticky) while the card's
+   rest scrolls under them. Then the folded "Shields N" row with its "?" (the rule), then the **meters**: one row of
+   minis, the zero ones folded into "+N" (never one with a warning: an empty Evoker's RELOAD CORE stays on the row); a
+   mini grows on hover into its card (`look: 'meter'`: the name at 13 px, the whole value and warning at 15 px, the
+   focus line, the hint); then Bonds (one line at 0 Bonds). The squad list folds too. On short windows (820 px tall or
+   less) the card shrinks to HP and the strip, under the bar's small portrait, and the meters follow as minis: the three
+   most urgent open ones and one "+N" chip for the rest (the zero ones folded and the other open ones; a click opens
+   them all, "‹" goes back to three), at most two lines, scrolling inside past that.
+3. **The turn box:** the YOUR TURN strip ("ROUND n · n AP", no dots), and directly under it the **ACTION POINTS row**
+   (0.31.1, Leon: *"bring back the AP bar. 6 little dots there is barely seeable"*): the word, one segment per max AP
+   (the chosen action's cost dimmed and pulsing), and "N / M after this" on the right, on one line; then the vow as one
+   line; the tab row with a cog at its
    end (the Fight tabs settings); the action list (at least four rows under a head line: `listMinPx`, 200 px, and on
    short windows `listMinShortPx`, 188 px for 32 px rows); one box for the chosen action and its target (the action and
    its AP, the target's face and name, the roll line and the damage line, the breakdown on hover, the action's text);
@@ -151,7 +157,17 @@ token's strip is gone):
    room first (down to its head line, scrolling inside; on short windows it is one line: its head, the vows in a row
    that scrolls sideways, Fight unsworn) and the foot (the chosen action, Confirm, End turn) sticks to the bottom edge,
    so neither the four rows nor Confirm is ever scrolled away. Checked at 1280x720 with the Say box (a Narrator room)
-   and without (`e2e/fight-panel.mjs`).
+   and without, and at 1600x900 (`e2e/fight-panel.mjs`).
+4. **The end of a fight** (0.31.1, Leon on live 0.31.0: *"There is still no victory ui ... that panel need to appear
+   before the click to leave menu and have to have a victory celebration sound"*): once the killing blow's effects have
+   played, a **VICTORY** (or **DEFEAT**) panel in the middle of the screen over a dim veil: the big banner (the fight's
+   name, the word, the run's line of what follows), the lines the engine holds then (foes felled, rounds: the run's
+   fight record), "Click to continue"; on screen `rules.json combat.cards.end.hold_ms` (3 s, PROVISIONAL) or until
+   clicked, never longer (a co-op guest is never held); its sounds are `combat.cards.end.won.sounds` /
+   `lost.sounds` (the game's own: a bright sting and the choir; a low pump and a sigh; a dedicated fanfare is still to
+   be sourced). From the moment the fight ends until the panel closes, the field's bar (its leave vote) and the
+   fight-over dialog are hidden; then FREE ROAM, then the field's bar. Checked in `e2e/fight-cards.mjs` (every frame:
+   the panel first, never beside the leave control).
 5. **The map:** a hovered tile is outlined under the tile effects and is never raised over its neighbours; a token's
    card opens on pointer hover only and closes when the pointer leaves; it carries the same status strip, small.
 

@@ -8,6 +8,27 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.1 — the fight panel put back, and a real VICTORY (hotfix)
+
+Leon on live 0.31.0, with a screenshot of the fight panel. No rules change; new numbers PROVISIONAL.
+
+- **HP is back in the You card**, under the portrait and directly above the meters, with the status strip under it,
+  full card width; folding the card never hides them, and they stay in sight while the card scrolls. Nothing sits above
+  the You card any more. On short windows the card shrinks to HP and the strip, under the bar's small portrait.
+- **The ACTION POINTS row is back** under the YOUR TURN strip: one segment per max AP, the chosen action's cost dimmed,
+  "N / M after this" on the right, on one line; the strip's six dots are gone (it keeps "ROUND n · n AP"). The action
+  list still shows four rows at 1280x720 and 1600x900 (the short-window spacing tightened to make the room).
+- **The Backpack button sits beside the limbs figure** at the card's right, as in 0.30.0.
+- **VICTORY and DEFEAT are a panel**: after the killing blow's effects, in the middle of the screen over a dim veil,
+  with the fight's name, the run's line of what follows, foes felled and rounds (what the engine holds then), on screen
+  `rules.json combat.cards.end.hold_ms` (3 s) or until clicked, with a sound named in data (won: the Miracle sting and
+  the choir; lost: a low pump and a sigh). Until it closes the field's bar, its leave vote and the fight-over dialog are
+  hidden (they used to show the moment the last foe fell, with VICTORY behind them); then FREE ROAM. Still to source: a
+  dedicated victory fanfare (CC0 / CC BY).
+- Browser suites: fight-panel (HP in the card above the meters, the AP row with a segment per max AP, Backpack beside
+  the figure), fight-cards (the panel before the leave control, never beside it, every frame); the suites that waited
+  for the strip's dots wait for the ACTION POINTS row again.
+
 ## 0.31.0 — the field is turns, the fight's big banners, and the playtest's faults
 
 Rules revision 1.62 (spec items 4900 to 4909), every new number PROVISIONAL. Leon's playtest of live 0.29.0, seven
