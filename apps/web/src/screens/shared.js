@@ -12,6 +12,7 @@ import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_O
 import { shieldBlock } from '../game/shieldLook';
 import { kitSprite } from '../game/kitMap';
 import { figmentFaceOf } from '../game/figmentIcons';
+import { bigOf } from '../game/doorArt';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 
 export const D = PD;
@@ -114,21 +115,40 @@ export function expand(tpl) {
 
 // ---------- lightbox ----------
 const LB_BIG = D.big || {};
-const LB_KIND = { portrait: 'CHARACTER PORTRAIT', patron: 'PATRON · CELESTIAL PORTRAIT', skill: 'SKILL PORTRAIT', icon: 'WICK ICON', perk: 'WICK PERK ICON', world: 'WORLD ILLUSTRATION' };
-export function zoomer(self, img, caption, kind) { return () => {
+const LB_KIND = { portrait: 'CHARACTER PORTRAIT', patron: 'PATRON · CELESTIAL PORTRAIT', skill: 'SKILL PORTRAIT', icon: 'ICON', perk: 'WICK PERK ICON', world: 'WORLD ILLUSTRATION' };
+export function zoomer(self, img, caption, kind, text) { return () => {
   if (!img) return;
-  self.setState({ lb: { img: LB_BIG[img] || img, caption: caption || '', kind: kind || 'portrait' } });
+  self.setState({ lb: { img: LB_BIG[img] || bigOf(img), caption: caption || '', kind: kind || 'portrait', text: text || '' } });
   // Your own uploaded portrait: show the full size this browser keeps, if it has it.
   if (/^data:image\//.test(img)) bigPortrait(img).then((big) => { if (big !== img && self.state.lb && self.state.lb.img === img) self.setState({ lb: { ...self.state.lb, img: big } }); });
 }; }
+// Click to enlarge, everywhere (the owner, 17 Nov 2026: "make these icons click enlargeable too"): any <img> carrying
+// data-zoom opens THIS lightbox (the one enlarge view; the screen that last rendered lightboxVals hosts it) with the
+// picture's large copy (its assets.json key + '-lg', the 512 px build; else the same picture), the name (data-zoom, else
+// the alt) and the thing's text (data-zoom-text) under it. Clicking the icon enlarges only: the row or card it sits in
+// is not picked (the click stops here, in the capture phase, before React sees it).
+let LB_HOST = null;
+/** The enlarge request an icon slot carries: its name, its text (the slot's data-zoom / data-zoom-text attributes). */
+export function zoomAttrs(name, text) { return { 'data-zoom': name || '', 'data-zoom-text': text || '' }; }
+if (typeof document !== 'undefined' && !globalThis.__phcZoom) {
+  globalThis.__phcZoom = true;
+  document.addEventListener('click', (e) => {
+    const img = e.target && e.target.closest ? e.target.closest('img[data-zoom]') : null;
+    if (!img || !LB_HOST || !img.getAttribute('src')) return;
+    e.preventDefault(); e.stopPropagation();
+    LB_HOST.setState({ lb: { img: bigOf(img.getAttribute('src')), caption: img.getAttribute('data-zoom') || img.getAttribute('alt') || '', kind: 'icon', text: img.getAttribute('data-zoom-text') || '' } });
+  }, true);
+  const st = document.createElement('style'); st.textContent = 'img[data-zoom]{cursor:zoom-in}'; document.head.appendChild(st);
+}
 export const zoomBtn = 'display: block; flex: none; padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: inherit';
 export function lightboxVals(self) {
+  LB_HOST = self;
   // Closing plays the modal's out animation first (closeAnim, below; hoisted), then drops the picture.
   const L = self.state.lb, closeLb = () => closeAnim(self, 'lb', () => self.setState({ lb: null }));
-  if (!L) return { lbOpen: false, closeLb, lbCls: 'phc-m-backdrop', lb: { img: '', caption: '', kind: '', imgStyle: '' }, zoomBtn };
+  if (!L) return { lbOpen: false, closeLb, lbCls: 'phc-m-backdrop', lb: { img: '', caption: '', kind: '', imgStyle: '', text: '', hasText: false }, zoomBtn };
   const icon = L.kind === 'icon' || L.kind === 'perk';
-  return { lbOpen: true, closeLb, lbCls: modalCls(self, 'lb'), zoomBtn, lb: { img: L.img, caption: L.caption, kind: LB_KIND[L.kind] || '',
-    imgStyle: 'display: block; max-width: min(92vw, ' + (icon ? '512px' : '800px') + '); max-height: 80vh; object-fit: contain; border-radius: ' + (icon ? '16px; background: #10151F; padding: 24px' : '10px; background: #000') } };
+  return { lbOpen: true, closeLb, lbCls: modalCls(self, 'lb'), zoomBtn, lb: { img: L.img, caption: L.caption, kind: LB_KIND[L.kind] || '', text: L.text || '', hasText: !!L.text,
+    imgStyle: 'display: block; width: ' + (icon ? 'min(80vw, 512px)' : 'auto') + '; max-width: min(92vw, ' + (icon ? '512px' : '800px') + '); max-height: 80vh; object-fit: contain; border-radius: ' + (icon ? '16px; background: #10151F; padding: 24px' : '10px; background: #000') } };
 }
 
 // ---------- EPCCG "?" pop-up (ported verbatim from epccg.logic.js) ----------

@@ -23,7 +23,7 @@ export function UpgradeCard({ s, onFocus, choice }: { s: UpgradeCardData; onFocu
       style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 236, padding: 18, borderRadius: 16, background: 'linear-gradient(180deg, rgba(28,37,54,0.96), rgba(16,21,31,0.96))', border: '1px solid ' + (s.why ? I.line : '#7A879E'), opacity: s.why ? 0.82 : 1 }}>
       <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
         <div style={{ flexShrink: 0, width: 80, height: 80, display: 'grid', placeItems: 'center', borderRadius: 12, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}>
-          {icon ? <img src={icon} alt="" width={72} height={72} style={{ objectFit: 'contain' }} /> : <span style={{ fontSize: 26, color: I.muted }}>▲</span>}
+          {icon ? <img data-zoom={s.title} data-zoom-text={s.note || ''} src={icon} alt="" width={72} height={72} style={{ objectFit: 'contain' }} /> : <span style={{ fontSize: 26, color: I.muted }}>▲</span>}
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 20, fontWeight: 600, lineHeight: 1.2 }}>{s.title.split(': ')[0]}</span>

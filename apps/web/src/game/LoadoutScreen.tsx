@@ -61,9 +61,9 @@ const head = (title: string, note?: string) => (
     <span aria-hidden="true" style={{ flex: 1, height: 1, background: I.line, alignSelf: 'center' }} />
   </div>
 );
-const Icon = ({ src, size = 48 }: { src: string; size?: number }) => (
+const Icon = ({ src, size = 48, name = '', text = '' }: { src: string; size?: number; name?: string; text?: string }) => (
   <span style={{ flexShrink: 0, width: size + 6, height: size + 6, display: 'grid', placeItems: 'center', borderRadius: 10, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}>
-    {src ? <img src={src} alt="" width={size} height={size} style={{ objectFit: 'contain' }} /> : <span style={{ color: I.muted }}>+</span>}
+    {src ? <img data-zoom={name} data-zoom-text={text} src={src} alt="" width={size} height={size} style={{ objectFit: 'contain' }} /> : <span style={{ color: I.muted }}>+</span>}
   </span>
 );
 const label = (s: string) => s.replace(/ \(.*\)$/, '');
@@ -94,7 +94,7 @@ function PickCard({ c, slot, charId, v }: { c: LoadoutCardV; slot: 'weapon' | 'f
         {...tipProps(c.why || (c.picked ? 'Yours, free. Press again to put it back.' : (c.text || c.name)))}
         style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10, padding: 14, minWidth: 0, textAlign: 'left', fontFamily: 'inherit', color: I.text, cursor: 'pointer', background: 'transparent', border: 0, borderRadius: 14, opacity: off ? 0.6 : 1 }}>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0, width: '100%' }}>
-          <Icon src={iconOf(c.id)} />
+          <Icon src={iconOf(c.id)} name={c.name} text={c.text || ''} />
           <span style={{ display: 'flex', flexDirection: 'column', gap: 3, ...wrap }}>
             <span data-phc-camp-name="" style={{ fontFamily: "'Spectral', serif", fontSize: 18, fontWeight: 600, lineHeight: 1.15, ...wrap }}>{label(c.name)}</span>
             <span data-phc-camp-freetag="" style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.12em', color: I.ok }}>{c.picked ? '✓ YOURS · FREE' : 'FREE'}</span>
@@ -115,7 +115,7 @@ function ShelfCard({ c, charId, tag, compare }: { c: LoadoutCardV; charId: strin
   return (
     <article data-phc-camp-card={c.key} {...tipProps(c.text ? c.name + '. ' + c.text : c.name)} style={{ ...cardBox(false), border: '1px solid ' + (c.taken ? '#7A879E' : I.line) }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0 }}>
-        <Icon src={iconOf(c.id)} size={46} />
+        <Icon src={iconOf(c.id)} size={46} name={c.name} text={c.text || ''} />
         <span style={{ display: 'flex', flexDirection: 'column', gap: 3, ...wrap }}>
           <span data-phc-camp-name="" style={{ fontFamily: "'Spectral', serif", fontSize: 17, fontWeight: 600, lineHeight: 1.15, ...wrap }}>{c.name}</span>
           {tag ? <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>{tag}</span> : null}

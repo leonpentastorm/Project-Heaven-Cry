@@ -37,7 +37,7 @@ const PULSE = '@keyframes phcNodePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,2
 function MaterialIcon({ item, name }: { item: string; name: string }) {
   const src = gearIconUri(item, undefined, { large: true });
   return <span aria-hidden="true" style={{ flex: 'none', display: 'grid', placeItems: 'center', width: ICON.material, height: ICON.material, borderRadius: 10, background: ink.panel, border: '1px solid ' + ink.line, overflow: 'hidden', fontSize: 16, fontWeight: 700, color: ink.muted }}>
-    {src ? <img src={src} alt="" width={ICON.material} height={ICON.material} style={{ objectFit: 'contain' }} /> : (name.replace(/[^A-Za-z]/g, '').slice(0, 2) || '·')}
+    {src ? <img data-zoom={name} src={src} alt="" width={ICON.material} height={ICON.material} style={{ objectFit: 'contain' }} /> : (name.replace(/[^A-Za-z]/g, '').slice(0, 2) || '·')}
   </span>;
 }
 const bigCard = (on: boolean): React.CSSProperties => ({ display: 'flex', flexDirection: 'column', gap: 8, padding: '16px 14px', minHeight: 300, borderRadius: 14, border: '1px solid ' + (on ? ink.text : ink.line), background: 'linear-gradient(180deg, rgba(28,37,54,0.96), rgba(16,21,31,0.96))', color: ink.text, fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left' });
@@ -68,7 +68,7 @@ function Offer({ o }: { o: OfferV }) {
             <button key={c.i} type="button" data-phc-pick={c.i} {...tipProps(c.tip)} onClick={() => act({ type: 'run/pick', charId: o.charId, choice: c.i })}
               style={{ ...bigCard(c.rarity !== 'standard'), alignItems: 'center', textAlign: 'center', minHeight: m ? 300 : 240 }}>
               {m ? <span style={{ ...kick, alignSelf: 'flex-start' }}>{c.kick}</span> : null}
-              <img src={gearIconUri(c.id, undefined, { large: true })} alt="" width={ICON.reward} height={ICON.reward} style={{ display: 'block', objectFit: 'contain' }} />
+              <img data-zoom={c.name} data-zoom-text={c.tip || ''} src={gearIconUri(c.id, undefined, { large: true })} alt="" width={ICON.reward} height={ICON.reward} style={{ display: 'block', objectFit: 'contain' }} />
               <span style={{ fontFamily: "'Spectral', serif", fontSize: 18, fontWeight: 600, lineHeight: 1.2 }}>{c.name}</span>
               <span style={{ fontSize: 13, letterSpacing: '0.1em', color: c.rarity === 'standard' ? ink.muted : ink.white }}>{c.rarityWord.toUpperCase()} {marks(c.marks)}</span>
               <span style={{ fontSize: 13, color: ink.muted }}>{c.category}</span>

@@ -10,6 +10,22 @@ The game shows its version in the corner of the title screen and in every "Repor
 
 ## 0.31.x art
 
+- **The 0.30 and after-0.30 art is in** (the artist's `art/after-0.30-2026-11-17` at `d2e5eb1a`, containing the 0.30
+  delivery `1317c61d`; only `art/` changed). 41 + 54 pictures, all catalogued: the 32 fork icons (on the fork cards in
+  level up and on the sheet), Stand Behind Me, Wind-up (Shove), Read the Swing, Hold the Lane, Scrap Sentinel, Follow,
+  Afterword, the Mana Shock and Staggered signs; the status strip's helps / hurts / state marks (a chip with no sign of its
+  own shows its group's mark, not the text triangle), the FREE ROAM banner's mark, eight new condition signs, the hazard
+  tiles' marks and the Sigil field / trap / turret badges on the fight map, the Survival place cards (Study, Practice,
+  Devotion, the shrine's rite, lore and token, the six Crossroads trades; catalog `place_icons`, by the option's key or
+  trade id), the six vows and Witnessed. 38 placeholders retired to the archive; one left (Draw Fire, not delivered).
+  Catalogued with no place to draw them yet: the Tending passives (5), the resource marks (credits, XP, Devotion), the
+  seven tone marks.
+- **Click to enlarge, everywhere.** Any icon slot carrying `data-zoom` opens the one lightbox (`screens/shared.js`) with
+  the picture's 512 px copy (built for every white-ink family, `-lg`, fetched only when opened), its name and its text:
+  the GEAR tab and backpack rows, the Give list, shop, Sell, Forge and upgrade cards, reward and material cards, the camp's
+  stock, the place cards, the fight's action-row icons and weapon heads (clicking the icon enlarges; the rest of the row
+  still picks), status chips, vows, the tab icons, fork cards, ARMS techniques, the sheet's moves and level up's perks.
+
 - **The nine doors' art is in** (the artist's branch `art/nine-doors-2026-11-16` at `5406ede0`, merged whole: it changed
   only `art/`). 348 of the 375 pictures of the 0.29 list, all review candidates: 300 replace their placeholders by catalog
   id, 48 are for designed-not-built rows; 27 are held for 0.30 and the 0.30 list (41) is not started. Shown in the game

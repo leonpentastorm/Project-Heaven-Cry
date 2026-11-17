@@ -62,7 +62,7 @@ import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, w
 import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
-import { actionIconOf } from '../game/doorArt';
+import { actionIconOf, uiMarkOf } from '../game/doorArt';
 import { mapLegacy, isLegacyUnit, plainAction, actionGroups, hideHelp, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, tabIdsKnown, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView, pickToggle, verdictOf } from '../game/actionFlow';
@@ -481,7 +481,7 @@ export const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([id
     // 0.31.0: the chip's colour is its row's side (conditions.json `side`: helps green, hurts red, a state white), with its glyph
     style: COND_CHIP + 'border: 1px solid ' + SIDE_INK[side] + '; color: ' + SIDE_INK[side] }))(sideOf(id, CONDITION_ROWS, condId))),
   // Mana Shock is the heart shorting out (rules 1.5): no conditions.json row, always a harm
-  ...(u.mg && u.mg.shock ? [{ key: 'c-mana_shock', id: null, side: 'hurts', word: shortWord(MANA_SHOCK.name), n: null, k: SIDE_GLYPH.hurts + ' ' + MANA_SHOCK.name.toUpperCase(), t: MANA_SHOCK.name + ': ' + MANA_SHOCK.text, style: COND_CHIP + 'border: 1px solid #F65157; color: #F65157' }] : []),
+  ...(u.mg && u.mg.shock ? [{ key: 'c-mana_shock', id: null, sign: 'mana_shock', side: 'hurts', word: shortWord(MANA_SHOCK.name), n: null, k: SIDE_GLYPH.hurts + ' ' + MANA_SHOCK.name.toUpperCase(), t: MANA_SHOCK.name + ': ' + MANA_SHOCK.text, style: COND_CHIP + 'border: 1px solid #F65157; color: #F65157' }] : []),
   // 0.30.0: every shield it holds (the layers and the base), from the engine's shieldsView, never u.shield alone
   ...((sv) => (sv.chip ? [{ key: 'shield', id: null, side: 'state', word: sv.chip, n: null, k: sv.chip, t: sv.words + (sv.absorb ? '. ' + sv.absorb + '.' : ''), style: 'padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : []))(shieldsView((g && g.combat) || null, u, null, fmtNum))];
 
@@ -490,7 +490,7 @@ export const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([id
  *  shields are on the HP bar, never a chip. own: your own panel (Witnessed is its Devotion row there). */
 export const statusOf = (u, g, phys, refOf, own) => [
   ...effectsOf(u, own).map(([k, t, id]) => ({ key: 'fx-' + k, cond: id || null, side: id ? sideOf(id, CONDITION_ROWS, condId) : 'hurts', word: shortWord(k), tip: k.charAt(0) + k.slice(1).toLowerCase() + ': ' + t })),
-  ...(own ? ownConds(u, g) : condChips(u, g).filter((c) => c.key !== 'shield')).map((c) => ({ key: c.key, cond: c.id || null, side: c.side || 'state', word: c.word || shortWord(c.k), n: c.n, tip: c.t })),
+  ...(own ? ownConds(u, g) : condChips(u, g).filter((c) => c.key !== 'shield')).map((c) => ({ key: c.key, cond: c.id || c.sign || null, side: c.side || 'state', word: c.word || shortWord(c.k), n: c.n, tip: c.t })),
   // a Physical line: Pressure on you is a harm (its view's own key), a held Watch or a weapon stuck in someone a state
   // (a thrown weapon's chip keeps where it is, "STUCK IN <target>": its first word alone was the weapon's, and said nothing)
   ...physChips(phys, refOf, '').map((c) => { const m = /^(.*) STUCK IN (.*)$/.exec(c.k);
@@ -1226,7 +1226,7 @@ export class CombatLogic extends DCLogic {
         hasPileTip: !!wc.pile && S.hover === k, pileTip: wc.pile ? wc.pile.tip : '', pileRows: wc.pile ? wc.pile.tipRows : [], pileTipStyle: wc.pile ? pileTipStyle(wc.pile, vxOf(x), vyOf(y), vW, !!u) : '',
         hasCross: crossAt.has(k), crossStyle: CROSS_STYLE, crossChipStyle: CROSS_CHIP_STYLE,
         unseen: !vis.tiles.has(k), sensed: !!sensedAt[k], dark: !!cb.map.dark && !litAt(cb, k),
-        hasHzd: !!wc.hz, hzdLayer: wc.hz ? wc.hz.layer : '', hzdGlyph: wc.hz ? wc.hz.glyph : '', hzdGlyphStyle: wc.hz ? wc.hz.glyphStyle : '', hzdKind: wc.hz ? wc.hz.kind + (wc.hz.safe ? ' safe' : '') : '',
+        hasHzd: !!wc.hz, hzdLayer: wc.hz ? wc.hz.layer : '', hzdGlyph: wc.hz ? wc.hz.glyph : '', ...((m) => ({ hzdMark: m, hzdNoMark: !m, hzdMarkStyle: 'position: absolute; left: 2px; top: 2px; z-index: 2; width: 12px; height: 12px; pointer-events: none; opacity: ' + (wc.hz && (wc.hz.safe || wc.hz.spent) ? 0.55 : 1) }))(wc.hz ? uiMarkOf('hazard', wc.hz.kind) : ''), hzdGlyphStyle: wc.hz ? wc.hz.glyphStyle : '', hzdKind: wc.hz ? wc.hz.kind + (wc.hz.safe ? ' safe' : '') : '',
         hasCache: !!wc.cache && !u, hasCacheGlyph: !!wc.cache && !u && !spr, cacheGlyph: wc.cache ? wc.cache.glyph : '', cacheStyle: wc.cache ? wc.cache.style : '', cacheChip: wc.cache ? wc.cache.chip : '', cacheChipStyle: wc.cache ? wc.cache.chipStyle : '',
         hasKind: !!(kb && kb.has) && !isHeld, kindText: kb ? kb.text : '', kindStyle: kb ? kb.style + TOKEN_KIND_POS : '', kindTitle: kb ? kb.title : '',
         hasDrop: !!dr, dropText: dr ? '▾ ' + dr.npc.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase() : '', dropTitle: dr ? dr.npc.name + ' lies here (dropped when the carrier went down; back on the map after the fight)' : '',

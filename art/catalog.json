@@ -43095,7 +43095,10 @@
         "32": "art/icons/places/exports/32/study.png",
         "24": "art/icons/places/exports/24/study.png",
         "16": "art/icons/places/exports/16/study.png"
-      }
+      },
+      "data_ids": [
+        "study"
+      ]
     },
     "place-practice": {
       "label": "Practice (training card)",
@@ -43123,7 +43126,10 @@
         "32": "art/icons/places/exports/32/practice.png",
         "24": "art/icons/places/exports/24/practice.png",
         "16": "art/icons/places/exports/16/practice.png"
-      }
+      },
+      "data_ids": [
+        "practice"
+      ]
     },
     "place-devotion": {
       "label": "Devotion (training card)",
@@ -43151,7 +43157,10 @@
         "32": "art/icons/places/exports/32/devotion.png",
         "24": "art/icons/places/exports/24/devotion.png",
         "16": "art/icons/places/exports/16/devotion.png"
-      }
+      },
+      "data_ids": [
+        "devotion"
+      ]
     },
     "place-rite": {
       "label": "Keep a rite (shrine card)",
@@ -43179,7 +43188,10 @@
         "32": "art/icons/places/exports/32/rite.png",
         "24": "art/icons/places/exports/24/rite.png",
         "16": "art/icons/places/exports/16/rite.png"
-      }
+      },
+      "data_ids": [
+        "rite"
+      ]
     },
     "place-lore": {
       "label": "A piece of lore (shrine card)",
@@ -43207,7 +43219,10 @@
         "32": "art/icons/places/exports/32/lore.png",
         "24": "art/icons/places/exports/24/lore.png",
         "16": "art/icons/places/exports/16/lore.png"
-      }
+      },
+      "data_ids": [
+        "piece"
+      ]
     },
     "place-token": {
       "label": "The token (shrine card)",
@@ -43235,7 +43250,10 @@
         "32": "art/icons/places/exports/32/token.png",
         "24": "art/icons/places/exports/24/token.png",
         "16": "art/icons/places/exports/16/token.png"
-      }
+      },
+      "data_ids": [
+        "token"
+      ]
     },
     "place-trade-offbooks": {
       "label": "The off-books armourer (trade card)",
@@ -43263,7 +43281,10 @@
         "32": "art/icons/places/exports/32/trade-offbooks.png",
         "24": "art/icons/places/exports/24/trade-offbooks.png",
         "16": "art/icons/places/exports/16/trade-offbooks.png"
-      }
+      },
+      "data_ids": [
+        "ev.offbooks"
+      ]
     },
     "place-trade-sparring": {
       "label": "A hard sparring (trade card)",
@@ -43291,7 +43312,10 @@
         "32": "art/icons/places/exports/32/trade-sparring.png",
         "24": "art/icons/places/exports/24/trade-sparring.png",
         "16": "art/icons/places/exports/16/trade-sparring.png"
-      }
+      },
+      "data_ids": [
+        "ev.drill_yard"
+      ]
     },
     "place-trade-crate": {
       "label": "A sealed crate (trade card)",
@@ -43319,7 +43343,10 @@
         "32": "art/icons/places/exports/32/trade-crate.png",
         "24": "art/icons/places/exports/24/trade-crate.png",
         "16": "art/icons/places/exports/16/trade-crate.png"
-      }
+      },
+      "data_ids": [
+        "ev.sealed_crate"
+      ]
     },
     "place-trade-wayside": {
       "label": "A wayside shrine (trade card)",
@@ -43347,7 +43374,10 @@
         "32": "art/icons/places/exports/32/trade-wayside.png",
         "24": "art/icons/places/exports/24/trade-wayside.png",
         "16": "art/icons/places/exports/16/trade-wayside.png"
-      }
+      },
+      "data_ids": [
+        "ev.wayside"
+      ]
     },
     "place-trade-graft": {
       "label": "A back-room graft (trade card)",
@@ -43375,7 +43405,10 @@
         "32": "art/icons/places/exports/32/trade-graft.png",
         "24": "art/icons/places/exports/24/trade-graft.png",
         "16": "art/icons/places/exports/16/trade-graft.png"
-      }
+      },
+      "data_ids": [
+        "ev.graft"
+      ]
     },
     "place-trade-salvage": {
       "label": "A salvage buyer (trade card)",
@@ -43403,7 +43436,10 @@
         "32": "art/icons/places/exports/32/trade-salvage.png",
         "24": "art/icons/places/exports/24/trade-salvage.png",
         "16": "art/icons/places/exports/16/trade-salvage.png"
-      }
+      },
+      "data_ids": [
+        "ev.salvage"
+      ]
     }
   }
 }

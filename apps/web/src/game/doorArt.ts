@@ -13,6 +13,11 @@ export function setDoorArt(map: Record<string, string> | null): void { A = map |
 const own = (k: string): string => (Object.prototype.hasOwnProperty.call(A, k) ? A[k] : '');
 const by = (prefix: string) => (id: string | null | undefined, large = false): string => (!id ? '' : (large && own(prefix + id + '-lg')) || own(prefix + id));
 
+/** The large copy of a built picture (the enlarged view): its assets.json key's '-lg' twin, else the picture itself. */
+export function bigOf(src: string): string {
+  for (const k in A) if (A[k] === src) return (!k.endsWith('-lg') && own(k + '-lg')) || src;
+  return src;
+}
 /** A technique's icon, by its data/techniques.json id ('cleave', 'run_through'). */
 export const techIconOf = by('tech-');
 /** A condition's icon, by its data/conditions.json id ('bleeding', 'off_balance'). */
@@ -21,6 +26,17 @@ export const condIconOf = by('cond-');
 export const doorEmblemOf = by('door-');
 /** A class's portrait (4:5), by its data/classes.json id ('defender'); large: the 800 x 1000 copy. */
 export const classPortraitOf = by('class-');
+/** A Survival place card's picture (place_icons, the after-0.30 delivery), by its option's key ('study', 'rite') or,
+ *  for a Crossroads trade, the trade's id before the option's own part ('ev.offbooks:2' -> 'ev.offbooks'). */
+export function placeIconOf(optionKey: string | null | undefined, large = false): string {
+  if (!optionKey) return '';
+  return by('place-')(optionKey, large) || by('place-')(optionKey.split(':')[0], large);
+}
+/** A mark of the interface (interface_icons icon-<group>-<word>): the status strip's groups ('status', 'helps'), a map
+ *  hazard ('hazard', 'fire'), a Sigil zone ('zone', 'trap'), a resource, a tone. '' when not delivered. */
+export function uiMarkOf(group: string, word: string | null | undefined, large = false): string {
+  return word ? by('icon-' + group + '-')(word, large) : '';
+}
 /** A camp step's sign, by the checklist's key ('weapon', 'focus', 'budget', 'boon', 'ready'). */
 export const campStepIconOf = by('camp-step-');
 

@@ -161,7 +161,7 @@ describe('placed magic (spec 9.9)', () => {
     expect(evoke(cb, rng, u, '2,5', '4,5')).toBeNull();
     let p = placedView(cb, 'pc');
     expect(p.rows[0].kind).toBe('field'); expect(p.rows[0].label).toBe('FIRE field'); expect(p.tiles['4,5'].layer).toMatch(/246, 138, 56/);
-    expect(p.tiles['4,5'].marks[0].text).toMatch(/^▦\d/);
+    expect(p.tiles['4,5'].marks[0].text).toMatch(/^\d/); expect(p.tiles['4,5'].marks[0].mark).toMatch(/icon-zone-field/); // the delivered zone mark in place of the glyph
     expect(placedLegend(p.kinds, true).map((l) => l.key)).toContain('zf');
     // an enemy trap, hidden from you
     cb.zones = [...(cb.zones || []), { id: 'zx', kind: 'trap', tiles: ['12,12'], words: ['fire', 'wait'], by: es[0].id, side: 'foe', left: 3, mult: 1, who: 'Foe 1', hidden: true, spotted: [], triggers: 1 } as any];

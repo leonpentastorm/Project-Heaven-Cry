@@ -87,7 +87,7 @@ describe('combat screen: Sigils (rules 1.4)', () => {
     l.state.action = 'evoke'; l.renderVals(); l.magicClick('2,5', pc()); l.renderVals(); l.magicClick('4,5', pc());
     l.renderVals(); l.confirm(); l.state.action = 'move'; const v = l.renderVals();
     expect(tileOf(v, '4,5').zoneStyle).toMatch(/246, 138, 56/);
-    expect(tileOf(v, '4,5').sg[0].text).toMatch(/^▦\d/);
+    expect(tileOf(v, '4,5').sg[0].text).toMatch(/^\d/); expect(tileOf(v, '4,5').sg[0].mark).toMatch(/icon-zone-field/);
     expect(tileOf(v, '4,5').label).toMatch(/FIRE · STAY field \(yours\)/);
     expect(v.magicLegend.some((x: any) => /Field/.test(x.name))).toBe(true);
   });

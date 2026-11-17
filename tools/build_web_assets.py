@@ -252,6 +252,8 @@ for fam, prefix in DOOR_ART:
             emit(cid, ROOT / a["path"], (320, 400), (800, 1000), versioned=True)
         else:
             emit(cid, ROOT / a.get("exports", {}).get("64", a["path"]), (64, 64), None, 90, versioned=True)
+            # -lg: the enlarged view's copy (512 px from the delivered 1024 master; fetched only when a picture is opened)
+            emit(cid, ROOT / a["path"], None, (512, 512), 90, versioned=True)
         for did in door_art_ids(cid, a, prefix):
             for suffix in ("", "-lg"):
                 if cid + suffix not in assets:
@@ -259,6 +261,20 @@ for fam, prefix in DOOR_ART:
                 key = prefix + did + suffix
                 assert assets.get(key, assets[cid + suffix]) == assets[cid + suffix], f"{fam}: {key} is already another picture"
                 assets[key] = assets[cid + suffix]
+# The after-0.30 delivery (17 Nov 2026; art/briefs/GPT-PROMPTS-2026-11-17-after-0.30.md): white-ink signs at 64 px and
+# 512 px (-lg, the enlarged view), under their catalog id: place_icons place-<stem> (the Survival place cards, by the
+# offer's kind), interface_icons icon-<group>-<stem> (status-helps/hurts/state, hazard-<kind>, zone-<kind>,
+# resource-<name>, tone-<tone>). game/doorArt.ts asks by the data's own word (placeIconOf, uiMarkOf).
+for fam, pre in (("place_icons", "place-"), ("interface_icons", "icon-")):
+    for cid, a in C.get(fam, {}).items():
+        if a.get("placeholder") or not cid.startswith(pre) or cid.startswith("icon-panel-"):
+            continue
+        emit(cid, ROOT / a.get("exports", {}).get("64", a["path"]), (64, 64), None, 90, versioned=True)
+        emit(cid, ROOT / a["path"], None, (512, 512), 90, versioned=True)
+        for did in a.get("data_ids", []):  # a place card asks by its option's key or trade id (catalog data_ids)
+            for suffix in ("", "-lg"):
+                assert assets.get(pre + did + suffix, assets[cid + suffix]) == assets[cid + suffix], f"{fam}: {pre + did} is another picture"
+                assets[pre + did + suffix] = assets[cid + suffix]
 # Title screen (art/briefs/title-screen.md, docs/design/title-screen.md §8). The painted layers are 4096 x 2304 with
 # overscan (the central safe rect is art/ui/title-screen/technical-review.json); they are exported whole, at three
 # widths, and the title picks one by viewport (srcset): <layer> 1600 w, <layer>-lg 2560 w, <layer>-xl 3840 w.
