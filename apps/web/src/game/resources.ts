@@ -177,7 +177,9 @@ export function strainRows(hh: HeldHeart): ResRow[] {
     Object.assign(row, { warn: 'OVER THE LIMIT', level: 'alert', hint: (s - L) + ' over the limit: ' + (dmg > 0 ? dmg + ' damage to you at your ' + (hh.onTurn ? '' : 'next ') + 'turn end' + (!hh.onTurn && burnOver < s - L ? ' (after the turn start\'s −1)' : '') : 'your turn start\'s −1 brings it back to the limit, so no burn unless you add more') + '. ' + nextTxt + peakTxt + '. ' + calm });
   } else if (peak > L) Object.assign(row, { warn: s === L ? 'AT THE LIMIT' : 'NEAR THE LIMIT', level: 'caution', hint: (s === L ? 'At your limit. ' : 'Close to your limit. ') + nextTxt + peakTxt + ' (' + burn + ' damage a point at your turn end). ' + calm });
   else if (s === L && s > 0) Object.assign(row, { warn: 'AT THE LIMIT', level: 'caution', hint: 'At your limit. ' + nextTxt + peakTxt + ': no burn. ' + calm });
-  else if (s === L - 1 && s > 0 && peak >= L) Object.assign(row, { warn: 'NEAR THE LIMIT', level: 'caution', hint: 'One below your limit. ' + nextTxt + peakTxt + '. ' + calm });
+  // one below: holding, a Pump with a feeling that adds Strain (Rage, Abandon) reaches the limit; not holding, only when
+  // there is a Begin to make (peak counts it)
+  else if (s === L - 1 && s > 0 && (held || peak >= L)) Object.assign(row, { warn: 'NEAR THE LIMIT', level: 'caution', hint: 'One below your limit. ' + nextTxt + peakTxt + '. ' + calm });
   out.push(row);
   if (hh.held) {
     const h = hh.held, mult = (SOUL().cycle?.stage_mult || [])[h.stage];
