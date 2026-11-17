@@ -1,0 +1,81 @@
+{
+  "number": 11,
+  "section": 2,
+  "family": "condition_icons",
+  "id": "cond-given-mark",
+  "path": "art/icons/conditions/given-mark.png",
+  "name": "Felt (a feeling was given to you)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (no sign, no slot yet)",
+  "use": "A state, 1 round: a feeling was given to you through a Bond this round, so no other can be given until it ends",
+  "paint": "A small solid heart-knot (the Outburst family mark, as on the feeling glyphs) with one short curved arrow arriving at it from outside the frame.",
+  "avoid": "a heart emoji \u00b7 a medical plus \u00b7 a gift box",
+  "file_key": "11-given-mark",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small solid heart-knot (the Outburst family mark, as on the feeling glyphs) with one short curved arrow arriving at it from outside the frame.\nAVOID: a heart emoji \u00b7 a medical plus \u00b7 a gift box",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/11-given-mark-v1.png",
+  "source_sha256": "5e41370a2c0f72b6952170a1eecbafd0d28f44ef3ddd240228b931aae753584f",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    19,
+    1178,
+    1254
+  ],
+  "scale": 0.6639676113360324,
+  "offset": [
+    121,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "41c53452349a1190b28ab498b35219d6ac1db3cc5425ae24215c17a590cdea19",
+  "exports": {
+    "256": "art/icons/conditions/exports/256/given-mark.png",
+    "128": "art/icons/conditions/exports/128/given-mark.png",
+    "64": "art/icons/conditions/exports/64/given-mark.png",
+    "48": "art/icons/conditions/exports/48/given-mark.png",
+    "44": "art/icons/conditions/exports/44/given-mark.png",
+    "32": "art/icons/conditions/exports/32/given-mark.png",
+    "24": "art/icons/conditions/exports/24/given-mark.png",
+    "16": "art/icons/conditions/exports/16/given-mark.png"
+  },
+  "export_sha256": {
+    "256": "43a39034c7f708137b9b58999a16acd93451eb511fcefe70622589009cb34b93",
+    "128": "48565252364a849842d6ec3698b1a712cc1f45255bb5e8e58d621d544acfb704",
+    "64": "793b738680157867caeb72a77423ca4c298ec84a54e0b87dd834043365c90281",
+    "48": "0069af075c74839c8da74d81eddd2820024d2c979fed11927d0a3452fc82b94e",
+    "44": "daafa65321256b88f30129d47ecd7dc60bab5b513d1a3f82e2162d63450b0288",
+    "32": "ed60a5d7c74555e8cb8b93a8ac38f8d81456f449efb13e9860700c3486c80bce",
+    "24": "51997bbda6add593145ca073024061bda59970187f739f3870ccfab9bc9216ab",
+    "16": "619b5351adc1ed81faebd3f9e8c966123a675eaeb82d4c1e41dcfbbd160954f0"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

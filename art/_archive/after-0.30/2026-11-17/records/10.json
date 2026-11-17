@@ -1,0 +1,81 @@
+{
+  "number": 10,
+  "section": 2,
+  "family": "condition_icons",
+  "id": "cond-free-move-spent",
+  "path": "art/icons/conditions/free-move-spent.png",
+  "name": "Free move spent",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (no sign, no slot yet)",
+  "use": "A state, until the turn ends: this turn's Fire and Move step has been taken",
+  "paint": "One footprint with a short flat bar laid across its toe, like a step already counted.",
+  "avoid": "a forbidden sign \u00b7 a lock \u00b7 a tick mark",
+  "file_key": "10-free-move-spent",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: One footprint with a short flat bar laid across its toe, like a step already counted.\nAVOID: a forbidden sign \u00b7 a lock \u00b7 a tick mark",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/10-free-move-spent-v1.png",
+  "source_sha256": "46b76dec85a8585bfa8589de4824ada59869e0b8e5a69e7236a9e1b268ea61c6",
+  "generation_attempt": 1,
+  "export_crop": [
+    57,
+    17,
+    1184,
+    1254
+  ],
+  "scale": 0.6628940986257074,
+  "offset": [
+    138,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "80ffaad1df6da051b8b8bb2d997593777922c04cf34ad0afaa81f5503c9ad176",
+  "exports": {
+    "256": "art/icons/conditions/exports/256/free-move-spent.png",
+    "128": "art/icons/conditions/exports/128/free-move-spent.png",
+    "64": "art/icons/conditions/exports/64/free-move-spent.png",
+    "48": "art/icons/conditions/exports/48/free-move-spent.png",
+    "44": "art/icons/conditions/exports/44/free-move-spent.png",
+    "32": "art/icons/conditions/exports/32/free-move-spent.png",
+    "24": "art/icons/conditions/exports/24/free-move-spent.png",
+    "16": "art/icons/conditions/exports/16/free-move-spent.png"
+  },
+  "export_sha256": {
+    "256": "43965805ea8c1f441726c66e4edfd6546a67277b0e1357c8baae52cdf99b6bcd",
+    "128": "cac8d950c2c0b12bbcc856e003a58ed375acfddc3d68327558d2b2199b301c28",
+    "64": "f25dfce250192d2cd3ab2c84061cb104eb50f0222331512d8daf7d5b1a660070",
+    "48": "96956db058bc2f9fa3e279685a60a12a97a761b26f8129b494f3b2b9beb3e80f",
+    "44": "1815c187854f506508134578a0c52850b73cb6306c9869e38613f5fdc9da2071",
+    "32": "dfc286ebf7850bd16e529c706a987b8b35170303786bc1b2c7f40f58484adcb9",
+    "24": "46d6866a7c4a5fd7c63279b05e3d4878a2e171a09863c61e63a31170ca2aed9a",
+    "16": "11a13c3f40d3e1839f1476da568a61d1d677cfd37c0c4f8b4040165260156aff"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

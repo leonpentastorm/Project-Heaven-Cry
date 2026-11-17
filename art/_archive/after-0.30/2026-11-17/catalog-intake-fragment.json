@@ -1,0 +1,90 @@
+{
+  "interface_icons": {
+    "icon-status-helps": {
+      "path": "art/icons/status/helps.png",
+      "sha256": "ab3954fe46c2959c9cea7013fbd9567232d46c79b326b9f0ea964db0565d54c6",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-status-hurts": {
+      "path": "art/icons/status/hurts.png",
+      "sha256": "04dc7d0be37c08113f9fb56747bd23094eaaff4b6f846abf283641a4e4f9164d",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-status-state": {
+      "path": "art/icons/status/state.png",
+      "sha256": "8bbeedc5d7cca56c77e482fcbf1d11a053d96cac1c21ef004befa2684feeda46",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "banner-fight-field": {
+      "path": "art/icons/banners/fight-field.png",
+      "sha256": "7b659f09f0c1da7ad6224524ce99d703e68a3297bad8ff8fa6049d8c5b4ba085",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    }
+  },
+  "condition_icons": {
+    "cond-left-brain-debuff": {
+      "path": "art/icons/conditions/left-brain-debuff.png",
+      "sha256": "037d8a4c47796b4af43402f66661aadf585e442569410367f5b03a751b4545b4",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-right-brain-debuff": {
+      "path": "art/icons/conditions/right-brain-debuff.png",
+      "sha256": "c4498de5d820cb7f68f39c256b71a6e88b8dedc57bdc50b3c199e73d19f87cd6",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-swinging": {
+      "path": "art/icons/conditions/swinging.png",
+      "sha256": "4f1084801ac73f787df4116e7e3a5642296f3b83614eff9cee6a0132b819e4f4",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-ground": {
+      "path": "art/icons/conditions/ground.png",
+      "sha256": "d274b8053cf75bc65fe53f9c7525e467bc0a9a1e85f384e90454a294d5931dcd",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-in-your-sights": {
+      "path": "art/icons/conditions/in-your-sights.png",
+      "sha256": "6eb56ace02432b554e8f4c375addb3d03abc7c8da1cbd87513fb94ad308fcfa3",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-free-move-spent": {
+      "path": "art/icons/conditions/free-move-spent.png",
+      "sha256": "80ffaad1df6da051b8b8bb2d997593777922c04cf34ad0afaa81f5503c9ad176",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-given-mark": {
+      "path": "art/icons/conditions/given-mark.png",
+      "sha256": "41c53452349a1190b28ab498b35219d6ac1db3cc5425ae24215c17a590cdea19",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-given-edge": {
+      "path": "art/icons/conditions/given-edge.png",
+      "sha256": "691e7d0d477a0231cb063ccef39ef0b1c78e37d62ddaeac6e3e89c847883b86b",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    }
+  }
+}

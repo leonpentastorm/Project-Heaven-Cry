@@ -1,0 +1,81 @@
+{
+  "number": 5,
+  "section": 2,
+  "family": "condition_icons",
+  "id": "cond-left-brain-debuff",
+  "path": "art/icons/conditions/left-brain-debuff.png",
+  "name": "Left Brain Debuff",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (no sign, no slot yet)",
+  "use": "A debuff of the brain family, 2 rounds: a penalty on Mind checks, and drawing a glyph or Evoking costs more AP",
+  "paint": "A brain in profile with its left half cut away by a single clean slash.",
+  "avoid": "a lightning bolt \u00b7 a skull \u00b7 a head with a gear in it",
+  "file_key": "05-left-brain-debuff",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A brain in profile with its left half cut away by a single clean slash.\nAVOID: a lightning bolt \u00b7 a skull \u00b7 a head with a gear in it",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/05-left-brain-debuff-v1.png",
+  "source_sha256": "33b92426807a0c7f88176a1e98191a1b4f253162f0e5050de9853169bef2e530",
+  "generation_attempt": 1,
+  "export_crop": [
+    79,
+    20,
+    1224,
+    1238
+  ],
+  "scale": 0.6732348111658456,
+  "offset": [
+    126,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "037d8a4c47796b4af43402f66661aadf585e442569410367f5b03a751b4545b4",
+  "exports": {
+    "256": "art/icons/conditions/exports/256/left-brain-debuff.png",
+    "128": "art/icons/conditions/exports/128/left-brain-debuff.png",
+    "64": "art/icons/conditions/exports/64/left-brain-debuff.png",
+    "48": "art/icons/conditions/exports/48/left-brain-debuff.png",
+    "44": "art/icons/conditions/exports/44/left-brain-debuff.png",
+    "32": "art/icons/conditions/exports/32/left-brain-debuff.png",
+    "24": "art/icons/conditions/exports/24/left-brain-debuff.png",
+    "16": "art/icons/conditions/exports/16/left-brain-debuff.png"
+  },
+  "export_sha256": {
+    "256": "32830f4e90395c4342f7bdfdc7a4b82e7acaa39ae5d46760860475be7678e9df",
+    "128": "5edd5245ac886db16710e0fd1b23cd6048d1b5008f968d855e71ce63e3eedcef",
+    "64": "03d281ef06ad0999db7938ac75e7f21e0dd3327391e03b90da6ddccb0f0bbe80",
+    "48": "95dfbf16d58d7ebd8cd0241cc0498127b2d099d9cf298a5af378acc1790afc2d",
+    "44": "a0446b7c6a2a623c7b766fdb7a4d131f2ea27570bdf294f135766af18f08401e",
+    "32": "43f7fe5998faaadf02b0e8fa34b0dd4420885ccfedcc9fe91c30db6a59f6e07f",
+    "24": "6e6596af1e2f9d8bb4d5025b2072883adc6c2ef766b210e3e8a71cc9a1f46562",
+    "16": "19ad2edf1197693ed87822d3e71e9add70036be839430c28db6b7552a8546683"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

@@ -1,0 +1,81 @@
+{
+  "number": 7,
+  "section": 2,
+  "family": "condition_icons",
+  "id": "cond-swinging",
+  "path": "art/icons/conditions/swinging.png",
+  "name": "Swinging",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (no sign, no slot yet)",
+  "use": "A state that helps, 2 rounds: after a Finisher drops its foe, the next Strike or Opener is cheaper in Momentum (Keep Swinging, rules 1.60 R7)",
+  "paint": "A blade still travelling on a long follow-through arc, the arc running round to meet its own start.",
+  "avoid": "a pendulum \u00b7 a clock \u00b7 a swing set",
+  "file_key": "07-swinging",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: ONE unmistakable SHORT SWORD with a sharply POINTED triangular single-edged metal blade, clear crossguard and small grip, cutting diagonally across ONE broad circular follow-through swoosh. Blade is solid white with a hard tip, hilt held by NO hand. The swoosh nearly joins its own starting end.\nAVOID: paintbrush, bristles, blunt brush head, wand, clock, pendulum, swing set.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/07-swinging-v2.png",
+  "source_sha256": "0f2f7eb1b253e047853e15ae63905c901caa4bef88f61f9bc0f701f06b03c5d7",
+  "generation_attempt": 2,
+  "export_crop": [
+    0,
+    39,
+    1253,
+    1238
+  ],
+  "scale": 0.6544293695131684,
+  "offset": [
+    102,
+    119
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "4f1084801ac73f787df4116e7e3a5642296f3b83614eff9cee6a0132b819e4f4",
+  "exports": {
+    "256": "art/icons/conditions/exports/256/swinging.png",
+    "128": "art/icons/conditions/exports/128/swinging.png",
+    "64": "art/icons/conditions/exports/64/swinging.png",
+    "48": "art/icons/conditions/exports/48/swinging.png",
+    "44": "art/icons/conditions/exports/44/swinging.png",
+    "32": "art/icons/conditions/exports/32/swinging.png",
+    "24": "art/icons/conditions/exports/24/swinging.png",
+    "16": "art/icons/conditions/exports/16/swinging.png"
+  },
+  "export_sha256": {
+    "256": "61b0c961d32b4f5ea336aa63f1abc296c7e31b538c9aa1c7b931709559f0e8d2",
+    "128": "04755540f89d212908d8e6cee29cde10058b931cc5dc945f393e6f5e978da7bb",
+    "64": "7987fc8ce5eb4701bc148d4c652a24529e2a43fdb93ce88e6cbbb9f949717f96",
+    "48": "9baf2e931524e5061a88d2a319aacc4c4a4fd178dc801f5cfed9b56e57247322",
+    "44": "fee841fa6c75f73272c99d4019381c76d684db8836dc6c705e133a538fcb3e7e",
+    "32": "0f2bbe638b73501767fe329eea1c98969153e2bfb901b38310ba914c03ff8a40",
+    "24": "debe683e09b5a7454761221c73e7e9e7c3c0988f1aeb3e284babfc03aa548c9c",
+    "16": "e89dc6fd26c74573644b11326fe3b98e7aa0655266239fcbfdf64af80a589700"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

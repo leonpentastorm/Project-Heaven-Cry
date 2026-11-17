@@ -1,0 +1,83 @@
+{
+  "number": 6,
+  "section": 2,
+  "family": "condition_icons",
+  "id": "cond-right-brain-debuff",
+  "path": "art/icons/conditions/right-brain-debuff.png",
+  "name": "Right Brain Debuff",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (no sign, no slot yet)",
+  "use": "The mirror debuff, 2 rounds: a penalty on Expression and Soul checks, and Soul spells cost more MP",
+  "paint": "The same brain in profile with its right half cut away.",
+  "avoid": "a different brain (it must be the exact mirror of the left one) \u00b7 a heart",
+  "file_key": "06-right-brain-debuff",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: The same brain in profile with its right half cut away.\nAVOID: a different brain (it must be the exact mirror of the left one) \u00b7 a heart",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/05-left-brain-debuff-v1.png",
+  "source_sha256": "33b92426807a0c7f88176a1e98191a1b4f253162f0e5050de9853169bef2e530",
+  "generation_attempt": 1,
+  "export_crop": [
+    79,
+    20,
+    1224,
+    1238
+  ],
+  "scale": 0.6732348111658456,
+  "offset": [
+    126,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Explicit brief-requested exact horizontal mirror of left master, then Lanczos UI export.",
+  "sha256": "c4498de5d820cb7f68f39c256b71a6e88b8dedc57bdc50b3c199e73d19f87cd6",
+  "exports": {
+    "256": "art/icons/conditions/exports/256/right-brain-debuff.png",
+    "128": "art/icons/conditions/exports/128/right-brain-debuff.png",
+    "64": "art/icons/conditions/exports/64/right-brain-debuff.png",
+    "48": "art/icons/conditions/exports/48/right-brain-debuff.png",
+    "44": "art/icons/conditions/exports/44/right-brain-debuff.png",
+    "32": "art/icons/conditions/exports/32/right-brain-debuff.png",
+    "24": "art/icons/conditions/exports/24/right-brain-debuff.png",
+    "16": "art/icons/conditions/exports/16/right-brain-debuff.png"
+  },
+  "export_sha256": {
+    "256": "678f8edbc20827ae0dc0603943a60cc0a33118a62954fd160f3ce806ee930540",
+    "128": "5c85012c0c1ee95fc9b1e5df3c59e0d8ab42585786ecebc92c51d7a8d67f2817",
+    "64": "a08515537864b94f0b3fbe0c8037c6bd294d285363c797d18fd894ca07776632",
+    "48": "412c267efe7f486cc38a0ad865478a687163f0a4c2a59b07399609e364db6373",
+    "44": "c4011fd2539587019ffa09a2f01458e883bd6bfa3e577b66c97fa113dd7b9733",
+    "32": "3c740a055fd2744e1f5389b82a532cabc3f6fde3ff67898d402492cba34ec1f4",
+    "24": "b1612d896733d5833ed0df589c31ceea0c0949caa8b907034863a489d66d149d",
+    "16": "66e586ec3f3a3f8eaae49e6fdf6592bbd7db793c52e8cb48bf7eee97af2efa0a"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending.",
+  "derived_exact_mirror_of": 5,
+  "render_type": "Exact horizontal mirror export of generated left-brain master; no independent native render"
+}

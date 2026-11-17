@@ -1,0 +1,81 @@
+{
+  "number": 7,
+  "section": 2,
+  "family": "condition_icons",
+  "id": "cond-swinging",
+  "path": "art/icons/conditions/swinging.png",
+  "name": "Swinging",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (no sign, no slot yet)",
+  "use": "A state that helps, 2 rounds: after a Finisher drops its foe, the next Strike or Opener is cheaper in Momentum (Keep Swinging, rules 1.60 R7)",
+  "paint": "A blade still travelling on a long follow-through arc, the arc running round to meet its own start.",
+  "avoid": "a pendulum \u00b7 a clock \u00b7 a swing set",
+  "file_key": "07-swinging",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A blade still travelling on a long follow-through arc, the arc running round to meet its own start.\nAVOID: a pendulum \u00b7 a clock \u00b7 a swing set",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/07-swinging-v1.png",
+  "source_sha256": "b8cd63f903c75d353c71d51219c667dd0ea14f6801ee439301e326f671dd3914",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    21,
+    1234,
+    1254
+  ],
+  "scale": 0.6645056726094003,
+  "offset": [
+    102,
+    102
+  ],
+  "upscaled": false,
+  "status": "draft-pending-visual-review",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "782b0f08759ca50df8d4ad79c0ef3a88a859014931b0bfefe1c98c3c06e44873",
+  "exports": {
+    "256": "art/icons/conditions/exports/256/swinging.png",
+    "128": "art/icons/conditions/exports/128/swinging.png",
+    "64": "art/icons/conditions/exports/64/swinging.png",
+    "48": "art/icons/conditions/exports/48/swinging.png",
+    "44": "art/icons/conditions/exports/44/swinging.png",
+    "32": "art/icons/conditions/exports/32/swinging.png",
+    "24": "art/icons/conditions/exports/24/swinging.png",
+    "16": "art/icons/conditions/exports/16/swinging.png"
+  },
+  "export_sha256": {
+    "256": "fc4f6df524f53c68c2ddfe010cf3a1e13ac523991a6feb2c19f1a7edad6d0509",
+    "128": "bc431b7a893cfe36596fdefd5cb5c34c9d80a1cb2d018ed1e01bfa47678dafa0",
+    "64": "dd40435675f81811170b9c6f769aa087ce0aaaa95832cde2386b254c6d99250e",
+    "48": "bbf4c74f457b251f1eedc0a16910702a0719df908dd6917ccbe70a33ef7b1cca",
+    "44": "775ab9a752a768274643b0805ba3be2e22c58b75264b48d3d97e96f69c0b112b",
+    "32": "3513ab7eb10c82f9861c3ca82afdb692c8128ddbc4c8dd31b89cd6717b2ceafc",
+    "24": "8ffe5318b6efd23f0eded6c05670b8c5e3c90dec1b7a292854dcae6f0084444f",
+    "16": "fd251d0756b9c6e0e00e1715727912290f24cbbb3d8921b0d4c471cc4421c308"
+  },
+  "rejection_reason": "Sword reads as paintbrush"
+}

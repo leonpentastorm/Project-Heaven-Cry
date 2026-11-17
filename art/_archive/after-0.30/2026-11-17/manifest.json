@@ -1,0 +1,976 @@
+[
+  {
+    "number": 1,
+    "section": 1,
+    "family": "interface_icons",
+    "id": "icon-status-helps",
+    "path": "art/icons/status/helps.png",
+    "name": "Status: helping",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a text glyph, triangle up)",
+    "use": "The group mark of every condition that helps you, on the status strip under HP, the token hover card and the log chip",
+    "paint": "A short wedge pointing up, standing on a flat bar; the wedge solid, the bar a little wider than its base.",
+    "avoid": "an arrow with a plus sign (a medical mark is a plain plus only) \u00b7 a laurel \u00b7 a medal",
+    "file_key": "01-helps",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A short wedge pointing up, standing on a flat bar; the wedge solid, the bar a little wider than its base.\nAVOID: an arrow with a plus sign (a medical mark is a plain plus only) \u00b7 a laurel \u00b7 a medal",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-1-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-start.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-won.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-lost.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/01-helps-v1.png",
+    "source_sha256": "f080f913c8ba8b28f69c95bcf7601b42733c378cf2b19cbbb069d3352a2e6df3",
+    "generation_attempt": 1,
+    "export_crop": [
+      136,
+      212,
+      1152,
+      1166
+    ],
+    "scale": 0.8070866141732284,
+    "offset": [
+      102,
+      127
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "ab3954fe46c2959c9cea7013fbd9567232d46c79b326b9f0ea964db0565d54c6",
+    "exports": {
+      "256": "art/icons/status/exports/256/helps.png",
+      "128": "art/icons/status/exports/128/helps.png",
+      "64": "art/icons/status/exports/64/helps.png",
+      "48": "art/icons/status/exports/48/helps.png",
+      "44": "art/icons/status/exports/44/helps.png",
+      "32": "art/icons/status/exports/32/helps.png",
+      "24": "art/icons/status/exports/24/helps.png",
+      "16": "art/icons/status/exports/16/helps.png"
+    },
+    "export_sha256": {
+      "256": "2f99f32c6b7d2e570cefcfb599589f526a139178039a461b7ec3385b4d365834",
+      "128": "4e8c044da4a221d48c8ee310aaa4ca73a311860e7eb85a283fa599add13efe2a",
+      "64": "a6b80188603a4bc9045719f62d6b47527df109032a45b78d226dcdfc2de4e698",
+      "48": "c2df6f1736994de58cc3a93c0cf71b024262132cf5b15d1ed5c5c72356e972a6",
+      "44": "5e97eef8340e42cb1c7c19c9d8bb9b225cd550f13cd74238d1ce4f8e4b8c0b37",
+      "32": "398a72f091eac3e2472c473711e07281cba17eba27d08cdc9ec862cd282747de",
+      "24": "8a1d3efad06999cadba06fdacc841babac47e9c0f42913b0fe22a0c3345a4267",
+      "16": "048897b8992ccd3b82b63b80091b2a1b9387a06ca7364af38f2980041736b16a"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 2,
+    "section": 1,
+    "family": "interface_icons",
+    "id": "icon-status-hurts",
+    "path": "art/icons/status/hurts.png",
+    "name": "Status: hurting",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a text glyph, triangle down)",
+    "use": "The group mark of every condition that hurts you",
+    "paint": "A short wedge pointing down with its tip chipped, hanging from a flat bar; the same size and weight as the helping mark, so the pair reads as a mirror.",
+    "avoid": "a skull \u00b7 a drip of blood \u00b7 an arrow with a minus sign",
+    "file_key": "02-hurts",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Exactly ONE downward triangle wedge with ONE chipped tip, suspended directly below ONE wide flat horizontal bar. ONE symbol only, large and centered; no second wedge, no comparison samples or multiple variants. A few pixels of open space separate bar and triangle.\nAVOID: duplicates, two triangles, skull, blood, minus sign.",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-1-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-start.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-won.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-lost.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/02-hurts-v2.png",
+    "source_sha256": "814efa3d24ed664921340e312f8cab76b1e7731d5033e1f78f70e82ae88a2e24",
+    "generation_attempt": 2,
+    "export_crop": [
+      57,
+      119,
+      1226,
+      1131
+    ],
+    "scale": 0.7014542343883661,
+    "offset": [
+      102,
+      157
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "04dc7d0be37c08113f9fb56747bd23094eaaff4b6f846abf283641a4e4f9164d",
+    "exports": {
+      "256": "art/icons/status/exports/256/hurts.png",
+      "128": "art/icons/status/exports/128/hurts.png",
+      "64": "art/icons/status/exports/64/hurts.png",
+      "48": "art/icons/status/exports/48/hurts.png",
+      "44": "art/icons/status/exports/44/hurts.png",
+      "32": "art/icons/status/exports/32/hurts.png",
+      "24": "art/icons/status/exports/24/hurts.png",
+      "16": "art/icons/status/exports/16/hurts.png"
+    },
+    "export_sha256": {
+      "256": "efef3caadeac80a234e3293b95f0e54c30aca3b2f184adda436b664e10dd20e7",
+      "128": "cc914e7fb03a38d7d57782f052b56acf6f730a200744b58d6fa01611981dc424",
+      "64": "af550d079b35f6ac4afd9727bf6cf3f032ec43d58a29d9ef63af49e43f21de5c",
+      "48": "8a713557bcf2da1daca0a3c09455313139c337c04c750d49b94775a826bc2f22",
+      "44": "88ae8472371e476da3abeadae67d1cf8031999c06510688a3a7c70b431785115",
+      "32": "a8483699e0fb90095abc2a9d15be66d8d4955670275334b3802dde78b01dfe6d",
+      "24": "c5808e5e9b3b0a36b1a798a30df8222cd4ed34db56d1102190081fd1a1163896",
+      "16": "d121e710c421da4dc19cfd8b345e39927d0c6baf11a5a82f0f708862fd2d7bf1"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 3,
+    "section": 1,
+    "family": "interface_icons",
+    "id": "icon-status-state",
+    "path": "art/icons/status/state.png",
+    "name": "Status: a state",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a text glyph, diamond)",
+    "use": "The group mark of the neutral states (Felt, Free move spent and the like)",
+    "paint": "A solid diamond with one small round hole at its centre, a hair of space round it.",
+    "avoid": "a gem with facets \u00b7 a question mark",
+    "file_key": "03-state",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A solid diamond with one small round hole at its centre, a hair of space round it.\nAVOID: a gem with facets \u00b7 a question mark",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-1-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-start.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-won.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-lost.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/03-state-v1.png",
+    "source_sha256": "3347f4d75b76afb685fd7ccaf3c594c17d27fca08fa12e0e5e0d83f3f1b9b057",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      85,
+      1232,
+      1160
+    ],
+    "scale": 0.6655844155844156,
+    "offset": [
+      102,
+      154
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "8bbeedc5d7cca56c77e482fcbf1d11a053d96cac1c21ef004befa2684feeda46",
+    "exports": {
+      "256": "art/icons/status/exports/256/state.png",
+      "128": "art/icons/status/exports/128/state.png",
+      "64": "art/icons/status/exports/64/state.png",
+      "48": "art/icons/status/exports/48/state.png",
+      "44": "art/icons/status/exports/44/state.png",
+      "32": "art/icons/status/exports/32/state.png",
+      "24": "art/icons/status/exports/24/state.png",
+      "16": "art/icons/status/exports/16/state.png"
+    },
+    "export_sha256": {
+      "256": "2338a9781fa784e4a49400eb8a86369fa15e09dc6acf4af5f385607213e133a6",
+      "128": "40e74b28b7ca67a1c254cb74776b91843a57c0b0990fc66d7102da4800e5cb56",
+      "64": "56c075ac19bc680c025efad3fd085a0e546a339ca92de47c073b642c791d0f10",
+      "48": "2e652ce58d368e7702979cf294555fb8e5ff8e82cbb2a463c58cbcb8fe7100b7",
+      "44": "2b7542fd00ce965b19d2e9c20a07b3432ffa4cc26a7f2bff7a5f511101bf505d",
+      "32": "2dac2b38e64eb60d5c1a04dc2a6f309142338ecd6ab1c8e5c8f230a01fd30e9b",
+      "24": "05fe660002d65814fef3f8bb6d15024fbb8a4491770daaff03dd36d90fe62e85",
+      "16": "39c5012e862c3e99bebd35d319e4f17b7bb8cac6967532152386af6f683c2762"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 4,
+    "section": 1,
+    "family": "interface_icons",
+    "id": "banner-fight-field",
+    "path": "art/icons/banners/fight-field.png",
+    "name": "Free roam (flash mark)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a text glyph, a looping arrow)",
+    "use": "The FREE ROAM banner after a won Survival fight, when the party has three free rounds on the cleared field",
+    "paint": "An open ring (the cleared field) with two small footprints crossing it and one short curved arrow looping back to the first print; the three flash marks of the family (start, won, lost) are the references.",
+    "avoid": "a compass \u00b7 a map pin \u00b7 a flag \u00b7 any text",
+    "file_key": "04-fight-field",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: An open ring (the cleared field) with two small footprints crossing it and one short curved arrow looping back to the first print; the three flash marks of the family (start, won, lost) are the references.\nAVOID: a compass \u00b7 a map pin \u00b7 a flag \u00b7 any text",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-1-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-start.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-won.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-lost.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/04-fight-field-v1.png",
+    "source_sha256": "84aa4d4989d980a755783350a543e7bf70e627df65544ccd5dbdf558fd8cae77",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      27,
+      1240,
+      1230
+    ],
+    "scale": 0.6612903225806451,
+    "offset": [
+      102,
+      114
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "7b659f09f0c1da7ad6224524ce99d703e68a3297bad8ff8fa6049d8c5b4ba085",
+    "exports": {
+      "256": "art/icons/banners/exports/256/fight-field.png",
+      "128": "art/icons/banners/exports/128/fight-field.png",
+      "64": "art/icons/banners/exports/64/fight-field.png",
+      "48": "art/icons/banners/exports/48/fight-field.png",
+      "44": "art/icons/banners/exports/44/fight-field.png",
+      "32": "art/icons/banners/exports/32/fight-field.png",
+      "24": "art/icons/banners/exports/24/fight-field.png",
+      "16": "art/icons/banners/exports/16/fight-field.png"
+    },
+    "export_sha256": {
+      "256": "9815dbe5ba42bc6eb1ba7f18708516c86383412431ca1f7131fada1016b44879",
+      "128": "836271c452076ae2252a19afb64864a8d6438c941ef46449784b1aa577f79865",
+      "64": "fcafb85a3650f0cbf9e6240f79ec15fb8dae0cc35ef852dfc941e9ebe913183a",
+      "48": "f4296a16ba5f6ae6ac9ee124e4ab586f3c1df68571c807dd65a15db50b93b73b",
+      "44": "cc1a14044c1783b7076f7bd4a8d8cd0a37a00d9444e373386f7dff33e217ce28",
+      "32": "c881deac767a28542dc928ea774f1614749ba0b63d674a44537c33a9deb5eb91",
+      "24": "98f83221ad34a350ea6475b90376281283cb9f2ddeb75df203899bcd3e5f764c",
+      "16": "a7ebdf234f7e0b4574c92aa3ce687096fa1021963385d22e267ddb238fef0e8e"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 5,
+    "section": 2,
+    "family": "condition_icons",
+    "id": "cond-left-brain-debuff",
+    "path": "art/icons/conditions/left-brain-debuff.png",
+    "name": "Left Brain Debuff",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (no sign, no slot yet)",
+    "use": "A debuff of the brain family, 2 rounds: a penalty on Mind checks, and drawing a glyph or Evoking costs more AP",
+    "paint": "A brain in profile with its left half cut away by a single clean slash.",
+    "avoid": "a lightning bolt \u00b7 a skull \u00b7 a head with a gear in it",
+    "file_key": "05-left-brain-debuff",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A brain in profile with its left half cut away by a single clean slash.\nAVOID: a lightning bolt \u00b7 a skull \u00b7 a head with a gear in it",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/05-left-brain-debuff-v1.png",
+    "source_sha256": "33b92426807a0c7f88176a1e98191a1b4f253162f0e5050de9853169bef2e530",
+    "generation_attempt": 1,
+    "export_crop": [
+      79,
+      20,
+      1224,
+      1238
+    ],
+    "scale": 0.6732348111658456,
+    "offset": [
+      126,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "037d8a4c47796b4af43402f66661aadf585e442569410367f5b03a751b4545b4",
+    "exports": {
+      "256": "art/icons/conditions/exports/256/left-brain-debuff.png",
+      "128": "art/icons/conditions/exports/128/left-brain-debuff.png",
+      "64": "art/icons/conditions/exports/64/left-brain-debuff.png",
+      "48": "art/icons/conditions/exports/48/left-brain-debuff.png",
+      "44": "art/icons/conditions/exports/44/left-brain-debuff.png",
+      "32": "art/icons/conditions/exports/32/left-brain-debuff.png",
+      "24": "art/icons/conditions/exports/24/left-brain-debuff.png",
+      "16": "art/icons/conditions/exports/16/left-brain-debuff.png"
+    },
+    "export_sha256": {
+      "256": "32830f4e90395c4342f7bdfdc7a4b82e7acaa39ae5d46760860475be7678e9df",
+      "128": "5edd5245ac886db16710e0fd1b23cd6048d1b5008f968d855e71ce63e3eedcef",
+      "64": "03d281ef06ad0999db7938ac75e7f21e0dd3327391e03b90da6ddccb0f0bbe80",
+      "48": "95dfbf16d58d7ebd8cd0241cc0498127b2d099d9cf298a5af378acc1790afc2d",
+      "44": "a0446b7c6a2a623c7b766fdb7a4d131f2ea27570bdf294f135766af18f08401e",
+      "32": "43f7fe5998faaadf02b0e8fa34b0dd4420885ccfedcc9fe91c30db6a59f6e07f",
+      "24": "6e6596af1e2f9d8bb4d5025b2072883adc6c2ef766b210e3e8a71cc9a1f46562",
+      "16": "19ad2edf1197693ed87822d3e71e9add70036be839430c28db6b7552a8546683"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 6,
+    "section": 2,
+    "family": "condition_icons",
+    "id": "cond-right-brain-debuff",
+    "path": "art/icons/conditions/right-brain-debuff.png",
+    "name": "Right Brain Debuff",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (no sign, no slot yet)",
+    "use": "The mirror debuff, 2 rounds: a penalty on Expression and Soul checks, and Soul spells cost more MP",
+    "paint": "The same brain in profile with its right half cut away.",
+    "avoid": "a different brain (it must be the exact mirror of the left one) \u00b7 a heart",
+    "file_key": "06-right-brain-debuff",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: The same brain in profile with its right half cut away.\nAVOID: a different brain (it must be the exact mirror of the left one) \u00b7 a heart",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/05-left-brain-debuff-v1.png",
+    "source_sha256": "33b92426807a0c7f88176a1e98191a1b4f253162f0e5050de9853169bef2e530",
+    "generation_attempt": 1,
+    "export_crop": [
+      79,
+      20,
+      1224,
+      1238
+    ],
+    "scale": 0.6732348111658456,
+    "offset": [
+      126,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Explicit brief-requested exact horizontal mirror of left master, then Lanczos UI export.",
+    "sha256": "c4498de5d820cb7f68f39c256b71a6e88b8dedc57bdc50b3c199e73d19f87cd6",
+    "exports": {
+      "256": "art/icons/conditions/exports/256/right-brain-debuff.png",
+      "128": "art/icons/conditions/exports/128/right-brain-debuff.png",
+      "64": "art/icons/conditions/exports/64/right-brain-debuff.png",
+      "48": "art/icons/conditions/exports/48/right-brain-debuff.png",
+      "44": "art/icons/conditions/exports/44/right-brain-debuff.png",
+      "32": "art/icons/conditions/exports/32/right-brain-debuff.png",
+      "24": "art/icons/conditions/exports/24/right-brain-debuff.png",
+      "16": "art/icons/conditions/exports/16/right-brain-debuff.png"
+    },
+    "export_sha256": {
+      "256": "678f8edbc20827ae0dc0603943a60cc0a33118a62954fd160f3ce806ee930540",
+      "128": "5c85012c0c1ee95fc9b1e5df3c59e0d8ab42585786ecebc92c51d7a8d67f2817",
+      "64": "a08515537864b94f0b3fbe0c8037c6bd294d285363c797d18fd894ca07776632",
+      "48": "412c267efe7f486cc38a0ad865478a687163f0a4c2a59b07399609e364db6373",
+      "44": "c4011fd2539587019ffa09a2f01458e883bd6bfa3e577b66c97fa113dd7b9733",
+      "32": "3c740a055fd2744e1f5389b82a532cabc3f6fde3ff67898d402492cba34ec1f4",
+      "24": "b1612d896733d5833ed0df589c31ceea0c0949caa8b907034863a489d66d149d",
+      "16": "66e586ec3f3a3f8eaae49e6fdf6592bbd7db793c52e8cb48bf7eee97af2efa0a"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending.",
+    "derived_exact_mirror_of": 5,
+    "render_type": "Exact horizontal mirror export of generated left-brain master; no independent native render"
+  },
+  {
+    "number": 7,
+    "section": 2,
+    "family": "condition_icons",
+    "id": "cond-swinging",
+    "path": "art/icons/conditions/swinging.png",
+    "name": "Swinging",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (no sign, no slot yet)",
+    "use": "A state that helps, 2 rounds: after a Finisher drops its foe, the next Strike or Opener is cheaper in Momentum (Keep Swinging, rules 1.60 R7)",
+    "paint": "A blade still travelling on a long follow-through arc, the arc running round to meet its own start.",
+    "avoid": "a pendulum \u00b7 a clock \u00b7 a swing set",
+    "file_key": "07-swinging",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: ONE unmistakable SHORT SWORD with a sharply POINTED triangular single-edged metal blade, clear crossguard and small grip, cutting diagonally across ONE broad circular follow-through swoosh. Blade is solid white with a hard tip, hilt held by NO hand. The swoosh nearly joins its own starting end.\nAVOID: paintbrush, bristles, blunt brush head, wand, clock, pendulum, swing set.",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/07-swinging-v2.png",
+    "source_sha256": "0f2f7eb1b253e047853e15ae63905c901caa4bef88f61f9bc0f701f06b03c5d7",
+    "generation_attempt": 2,
+    "export_crop": [
+      0,
+      39,
+      1253,
+      1238
+    ],
+    "scale": 0.6544293695131684,
+    "offset": [
+      102,
+      119
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "4f1084801ac73f787df4116e7e3a5642296f3b83614eff9cee6a0132b819e4f4",
+    "exports": {
+      "256": "art/icons/conditions/exports/256/swinging.png",
+      "128": "art/icons/conditions/exports/128/swinging.png",
+      "64": "art/icons/conditions/exports/64/swinging.png",
+      "48": "art/icons/conditions/exports/48/swinging.png",
+      "44": "art/icons/conditions/exports/44/swinging.png",
+      "32": "art/icons/conditions/exports/32/swinging.png",
+      "24": "art/icons/conditions/exports/24/swinging.png",
+      "16": "art/icons/conditions/exports/16/swinging.png"
+    },
+    "export_sha256": {
+      "256": "61b0c961d32b4f5ea336aa63f1abc296c7e31b538c9aa1c7b931709559f0e8d2",
+      "128": "04755540f89d212908d8e6cee29cde10058b931cc5dc945f393e6f5e978da7bb",
+      "64": "7987fc8ce5eb4701bc148d4c652a24529e2a43fdb93ce88e6cbbb9f949717f96",
+      "48": "9baf2e931524e5061a88d2a319aacc4c4a4fd178dc801f5cfed9b56e57247322",
+      "44": "fee841fa6c75f73272c99d4019381c76d684db8836dc6c705e133a538fcb3e7e",
+      "32": "0f2bbe638b73501767fe329eea1c98969153e2bfb901b38310ba914c03ff8a40",
+      "24": "debe683e09b5a7454761221c73e7e9e7c3c0988f1aeb3e284babfc03aa548c9c",
+      "16": "e89dc6fd26c74573644b11326fe3b98e7aa0655266239fcbfdf64af80a589700"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 8,
+    "section": 2,
+    "family": "condition_icons",
+    "id": "cond-ground",
+    "path": "art/icons/conditions/ground.png",
+    "name": "Ground",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (no sign, no slot yet)",
+    "use": "A debuff, 2 rounds: a Grindstone fighter ground it down; its next plain melee hit on the fighter builds them one more Momentum",
+    "paint": "A heavy round grindstone half sunk into a ground line, one short crack across its face.",
+    "avoid": "a gear (that is machinery) \u00b7 flying sparks \u00b7 a mill building",
+    "file_key": "08-ground",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A heavy round grindstone half sunk into a ground line, one short crack across its face.\nAVOID: a gear (that is machinery) \u00b7 flying sparks \u00b7 a mill building",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/08-ground-v1.png",
+    "source_sha256": "c5a93345ed93950557d825b3737cf07530f4b193df3f126fe155064acb75f35d",
+    "generation_attempt": 1,
+    "export_crop": [
+      57,
+      341,
+      1236,
+      1198
+    ],
+    "scale": 0.6955046649703138,
+    "offset": [
+      102,
+      214
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "d274b8053cf75bc65fe53f9c7525e467bc0a9a1e85f384e90454a294d5931dcd",
+    "exports": {
+      "256": "art/icons/conditions/exports/256/ground.png",
+      "128": "art/icons/conditions/exports/128/ground.png",
+      "64": "art/icons/conditions/exports/64/ground.png",
+      "48": "art/icons/conditions/exports/48/ground.png",
+      "44": "art/icons/conditions/exports/44/ground.png",
+      "32": "art/icons/conditions/exports/32/ground.png",
+      "24": "art/icons/conditions/exports/24/ground.png",
+      "16": "art/icons/conditions/exports/16/ground.png"
+    },
+    "export_sha256": {
+      "256": "7abf7600e423d7196952c3fb0b80522562726322596df854fb7b9d3dba8d50e3",
+      "128": "459f7cebe07b702f5c02842559db5c394316096095eb0eba3e836cac3adccb98",
+      "64": "39d6055c6b4a68d7a32d1d23540cc496367a73fe1e71161df08ec92ba21431d0",
+      "48": "21c0f93dbd37bf379b65b5a449138ae82b215838ac027283e4695f0ec1e0150f",
+      "44": "77c5116e57ade05c27b2e3b6b85023198fa8611d9a910b5a538e79d23edc0e67",
+      "32": "1021ca3e5c28f4b8a78746a8a1b1eb5bdfd02894d2489bc94f78e372c125b891",
+      "24": "14fb626febc4a24ef7df5b612ab06d651d5acb775f1fe2cd9504045b21a71f80",
+      "16": "964c624b09cc4f5fda13ee2bd0d6e841b68aa369928b8ba7e70cd783b5d16672"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 9,
+    "section": 2,
+    "family": "condition_icons",
+    "id": "cond-in-your-sights",
+    "path": "art/icons/conditions/in-your-sights.png",
+    "name": "In Their Sights",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (no sign, no slot yet)",
+    "use": "A debuff on you, 1 round: a Converging Fire gunner hit you, so the next ranged hit on you from one of their allies adds a Pressure",
+    "paint": "A round sight ring open at its top, one thin line entering the gap from the upper right.",
+    "avoid": "a full crosshair over a head \u00b7 a scope glint \u00b7 a bullseye",
+    "file_key": "09-in-your-sights",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A round sight ring open at its top, one thin line entering the gap from the upper right.\nAVOID: a full crosshair over a head \u00b7 a scope glint \u00b7 a bullseye",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/09-in-your-sights-v1.png",
+    "source_sha256": "671e5fcaea7675e0dbdbec87fd16d3eaf982bbd0386e29ac54c98168858c84dc",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      61,
+      1202,
+      1236
+    ],
+    "scale": 0.6821963394342762,
+    "offset": [
+      102,
+      111
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "6eb56ace02432b554e8f4c375addb3d03abc7c8da1cbd87513fb94ad308fcfa3",
+    "exports": {
+      "256": "art/icons/conditions/exports/256/in-your-sights.png",
+      "128": "art/icons/conditions/exports/128/in-your-sights.png",
+      "64": "art/icons/conditions/exports/64/in-your-sights.png",
+      "48": "art/icons/conditions/exports/48/in-your-sights.png",
+      "44": "art/icons/conditions/exports/44/in-your-sights.png",
+      "32": "art/icons/conditions/exports/32/in-your-sights.png",
+      "24": "art/icons/conditions/exports/24/in-your-sights.png",
+      "16": "art/icons/conditions/exports/16/in-your-sights.png"
+    },
+    "export_sha256": {
+      "256": "3c0ce3fbf3b530066d64661811440baac6170d93db67ac4df6b60eedd6ecf46d",
+      "128": "24f58172d2d2c1021ff563f186e64e441b7aa64c8419c6294bb32875c3fbd2b1",
+      "64": "ef7769f44ff713ae368a16f1202a843f144e896203fee7bf986799313004fa0c",
+      "48": "c5464c322778706e8b57bfcf4d84a832c0dda1dd80256a8a9fd0ff37b35dff07",
+      "44": "72edb9599d8942cfdbe617085d8957735a247efb3332ff3270dcd46255e3475c",
+      "32": "72aa4640933ff677e02b35207064811a1b00d1d66708ef422629f3dc79b185fb",
+      "24": "a1548a0e919a811c8443c15cb08b98ac5051066505c77c28a1bca00a7cc400a7",
+      "16": "99b216fcba5365606d15001b636957481021adb4fa8c3356449586e38c9664dd"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 10,
+    "section": 2,
+    "family": "condition_icons",
+    "id": "cond-free-move-spent",
+    "path": "art/icons/conditions/free-move-spent.png",
+    "name": "Free move spent",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (no sign, no slot yet)",
+    "use": "A state, until the turn ends: this turn's Fire and Move step has been taken",
+    "paint": "One footprint with a short flat bar laid across its toe, like a step already counted.",
+    "avoid": "a forbidden sign \u00b7 a lock \u00b7 a tick mark",
+    "file_key": "10-free-move-spent",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: One footprint with a short flat bar laid across its toe, like a step already counted.\nAVOID: a forbidden sign \u00b7 a lock \u00b7 a tick mark",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/10-free-move-spent-v1.png",
+    "source_sha256": "46b76dec85a8585bfa8589de4824ada59869e0b8e5a69e7236a9e1b268ea61c6",
+    "generation_attempt": 1,
+    "export_crop": [
+      57,
+      17,
+      1184,
+      1254
+    ],
+    "scale": 0.6628940986257074,
+    "offset": [
+      138,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "80ffaad1df6da051b8b8bb2d997593777922c04cf34ad0afaa81f5503c9ad176",
+    "exports": {
+      "256": "art/icons/conditions/exports/256/free-move-spent.png",
+      "128": "art/icons/conditions/exports/128/free-move-spent.png",
+      "64": "art/icons/conditions/exports/64/free-move-spent.png",
+      "48": "art/icons/conditions/exports/48/free-move-spent.png",
+      "44": "art/icons/conditions/exports/44/free-move-spent.png",
+      "32": "art/icons/conditions/exports/32/free-move-spent.png",
+      "24": "art/icons/conditions/exports/24/free-move-spent.png",
+      "16": "art/icons/conditions/exports/16/free-move-spent.png"
+    },
+    "export_sha256": {
+      "256": "43965805ea8c1f441726c66e4edfd6546a67277b0e1357c8baae52cdf99b6bcd",
+      "128": "cac8d950c2c0b12bbcc856e003a58ed375acfddc3d68327558d2b2199b301c28",
+      "64": "f25dfce250192d2cd3ab2c84061cb104eb50f0222331512d8daf7d5b1a660070",
+      "48": "96956db058bc2f9fa3e279685a60a12a97a761b26f8129b494f3b2b9beb3e80f",
+      "44": "1815c187854f506508134578a0c52850b73cb6306c9869e38613f5fdc9da2071",
+      "32": "dfc286ebf7850bd16e529c706a987b8b35170303786bc1b2c7f40f58484adcb9",
+      "24": "46d6866a7c4a5fd7c63279b05e3d4878a2e171a09863c61e63a31170ca2aed9a",
+      "16": "11a13c3f40d3e1839f1476da568a61d1d677cfd37c0c4f8b4040165260156aff"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 11,
+    "section": 2,
+    "family": "condition_icons",
+    "id": "cond-given-mark",
+    "path": "art/icons/conditions/given-mark.png",
+    "name": "Felt (a feeling was given to you)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (no sign, no slot yet)",
+    "use": "A state, 1 round: a feeling was given to you through a Bond this round, so no other can be given until it ends",
+    "paint": "A small solid heart-knot (the Outburst family mark, as on the feeling glyphs) with one short curved arrow arriving at it from outside the frame.",
+    "avoid": "a heart emoji \u00b7 a medical plus \u00b7 a gift box",
+    "file_key": "11-given-mark",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small solid heart-knot (the Outburst family mark, as on the feeling glyphs) with one short curved arrow arriving at it from outside the frame.\nAVOID: a heart emoji \u00b7 a medical plus \u00b7 a gift box",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/11-given-mark-v1.png",
+    "source_sha256": "5e41370a2c0f72b6952170a1eecbafd0d28f44ef3ddd240228b931aae753584f",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      19,
+      1178,
+      1254
+    ],
+    "scale": 0.6639676113360324,
+    "offset": [
+      121,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "41c53452349a1190b28ab498b35219d6ac1db3cc5425ae24215c17a590cdea19",
+    "exports": {
+      "256": "art/icons/conditions/exports/256/given-mark.png",
+      "128": "art/icons/conditions/exports/128/given-mark.png",
+      "64": "art/icons/conditions/exports/64/given-mark.png",
+      "48": "art/icons/conditions/exports/48/given-mark.png",
+      "44": "art/icons/conditions/exports/44/given-mark.png",
+      "32": "art/icons/conditions/exports/32/given-mark.png",
+      "24": "art/icons/conditions/exports/24/given-mark.png",
+      "16": "art/icons/conditions/exports/16/given-mark.png"
+    },
+    "export_sha256": {
+      "256": "43a39034c7f708137b9b58999a16acd93451eb511fcefe70622589009cb34b93",
+      "128": "48565252364a849842d6ec3698b1a712cc1f45255bb5e8e58d621d544acfb704",
+      "64": "793b738680157867caeb72a77423ca4c298ec84a54e0b87dd834043365c90281",
+      "48": "0069af075c74839c8da74d81eddd2820024d2c979fed11927d0a3452fc82b94e",
+      "44": "daafa65321256b88f30129d47ecd7dc60bab5b513d1a3f82e2162d63450b0288",
+      "32": "ed60a5d7c74555e8cb8b93a8ac38f8d81456f449efb13e9860700c3486c80bce",
+      "24": "51997bbda6add593145ca073024061bda59970187f739f3870ccfab9bc9216ab",
+      "16": "619b5351adc1ed81faebd3f9e8c966123a675eaeb82d4c1e41dcfbbd160954f0"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 12,
+    "section": 2,
+    "family": "condition_icons",
+    "id": "cond-given-edge",
+    "path": "art/icons/conditions/given-edge.png",
+    "name": "Given Edge",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (no sign, no slot yet)",
+    "use": "A state that helps, until your next roll to hit lands: a bonus on it (a Bond hands it over)",
+    "paint": "One blade edge drawn as a single bright line, a short thread of three dots leading into its hilt from outside the frame.",
+    "avoid": "crossed swords \u00b7 a whetstone \u00b7 sparkle effects",
+    "file_key": "12-given-edge",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: One blade edge drawn as a single bright line, a short thread of three dots leading into its hilt from outside the frame.\nAVOID: crossed swords \u00b7 a whetstone \u00b7 sparkle effects",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/12-given-edge-v1.png",
+    "source_sha256": "08617d73bcf69116c7f90d711272570f59140b682ddef106701dab92372ac5d9",
+    "generation_attempt": 1,
+    "export_crop": [
+      31,
+      134,
+      1253,
+      1101
+    ],
+    "scale": 0.6710310965630114,
+    "offset": [
+      102,
+      187
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "691e7d0d477a0231cb063ccef39ef0b1c78e37d62ddaeac6e3e89c847883b86b",
+    "exports": {
+      "256": "art/icons/conditions/exports/256/given-edge.png",
+      "128": "art/icons/conditions/exports/128/given-edge.png",
+      "64": "art/icons/conditions/exports/64/given-edge.png",
+      "48": "art/icons/conditions/exports/48/given-edge.png",
+      "44": "art/icons/conditions/exports/44/given-edge.png",
+      "32": "art/icons/conditions/exports/32/given-edge.png",
+      "24": "art/icons/conditions/exports/24/given-edge.png",
+      "16": "art/icons/conditions/exports/16/given-edge.png"
+    },
+    "export_sha256": {
+      "256": "90ed6772d0e5210652b6c90b87110901f00f86b69780c8321168f10ad2dca4f6",
+      "128": "31ac7e59126aa2f78fc002a7f5c037057552672e8ed1e951cbf028fdfc2f4f6d",
+      "64": "7229ed934c52320650d0e1bc179558037361514064a605325361e7670adaa3b5",
+      "48": "e5e7f8b931ea044ddb382b4e43c8ab897ebd41f752e89eca889ff68fe18ebb8f",
+      "44": "4a15dd01a072862671d741d5d6cb90cd7afa63ba3dd0c3a5ffaac0b4bc70e5f6",
+      "32": "3463b05b47cae024aa12898845ee6e74cc9c033efd897acd56d09d9c0f96d21d",
+      "24": "0e788221515b63da97beab54d1a16716d8d8fe50a0fcbdf5da749124cdc60dfe",
+      "16": "f8c3ea2c8257d96f813d6601be4a50d450bd64b4f9c328ae2722d346f9f1f3a8"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  }
+]

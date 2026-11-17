@@ -1,0 +1,81 @@
+{
+  "number": 3,
+  "section": 1,
+  "family": "interface_icons",
+  "id": "icon-status-state",
+  "path": "art/icons/status/state.png",
+  "name": "Status: a state",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph, diamond)",
+  "use": "The group mark of the neutral states (Felt, Free move spent and the like)",
+  "paint": "A solid diamond with one small round hole at its centre, a hair of space round it.",
+  "avoid": "a gem with facets \u00b7 a question mark",
+  "file_key": "03-state",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A solid diamond with one small round hole at its centre, a hair of space round it.\nAVOID: a gem with facets \u00b7 a question mark",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-1-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-start.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-won.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-lost.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/03-state-v1.png",
+  "source_sha256": "3347f4d75b76afb685fd7ccaf3c594c17d27fca08fa12e0e5e0d83f3f1b9b057",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    85,
+    1232,
+    1160
+  ],
+  "scale": 0.6655844155844156,
+  "offset": [
+    102,
+    154
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "8bbeedc5d7cca56c77e482fcbf1d11a053d96cac1c21ef004befa2684feeda46",
+  "exports": {
+    "256": "art/icons/status/exports/256/state.png",
+    "128": "art/icons/status/exports/128/state.png",
+    "64": "art/icons/status/exports/64/state.png",
+    "48": "art/icons/status/exports/48/state.png",
+    "44": "art/icons/status/exports/44/state.png",
+    "32": "art/icons/status/exports/32/state.png",
+    "24": "art/icons/status/exports/24/state.png",
+    "16": "art/icons/status/exports/16/state.png"
+  },
+  "export_sha256": {
+    "256": "2338a9781fa784e4a49400eb8a86369fa15e09dc6acf4af5f385607213e133a6",
+    "128": "40e74b28b7ca67a1c254cb74776b91843a57c0b0990fc66d7102da4800e5cb56",
+    "64": "56c075ac19bc680c025efad3fd085a0e546a339ca92de47c073b642c791d0f10",
+    "48": "2e652ce58d368e7702979cf294555fb8e5ff8e82cbb2a463c58cbcb8fe7100b7",
+    "44": "2b7542fd00ce965b19d2e9c20a07b3432ffa4cc26a7f2bff7a5f511101bf505d",
+    "32": "2dac2b38e64eb60d5c1a04dc2a6f309142338ecd6ab1c8e5c8f230a01fd30e9b",
+    "24": "05fe660002d65814fef3f8bb6d15024fbb8a4491770daaff03dd36d90fe62e85",
+    "16": "39c5012e862c3e99bebd35d319e4f17b7bb8cac6967532152386af6f683c2762"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}
