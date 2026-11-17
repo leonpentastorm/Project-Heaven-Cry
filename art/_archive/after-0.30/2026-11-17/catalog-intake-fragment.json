@@ -142,5 +142,63 @@
       "production_approved": false,
       "implementation_ready": false
     }
+  },
+  "place_icons": {
+    "place-study": {
+      "path": "art/icons/places/study.png",
+      "sha256": "68f9cafd0478eda02f3602036c83685efb3db512f5c7c1829590123e464fc9e5",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-practice": {
+      "path": "art/icons/places/practice.png",
+      "sha256": "03343f314e27c112b879085b9bbbb8167277de33a43621062acebdc4b7aa368e",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-devotion": {
+      "path": "art/icons/places/devotion.png",
+      "sha256": "9e0711ee9f167d774df02bc4bedb5288ef5bb14f1f7f2084a8d2f7c53ef90be5",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-rite": {
+      "path": "art/icons/places/rite.png",
+      "sha256": "5749d7edb9905f578ca47d7d545f79240df2b117d83c0dd51dfb06327c2e5994",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-lore": {
+      "path": "art/icons/places/lore.png",
+      "sha256": "242c2b7feb1abdbaace7b9728e13e6d0af58d7ca282a32cce9fe11b517b8ac9c",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-token": {
+      "path": "art/icons/places/token.png",
+      "sha256": "179ce2ae5f1686c940a69b702fe55f856fcd8b7fa8d676898178d0d35d832101",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-trade-offbooks": {
+      "path": "art/icons/places/trade-offbooks.png",
+      "sha256": "fbb0f453db11fb0dcd62c7d4d6f240acdebda47a7e74ebf05c468a4fa1410427",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-trade-sparring": {
+      "path": "art/icons/places/trade-sparring.png",
+      "sha256": "2adc2f60d41ce38756daadc8302baafae5002b67fb0d29d23b539f76c8876b41",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    }
   }
 }

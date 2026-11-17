@@ -1,0 +1,81 @@
+{
+  "number": 25,
+  "section": 4,
+  "family": "place_icons",
+  "id": "place-lore",
+  "path": "art/icons/places/lore.png",
+  "name": "A piece of lore (shrine card)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a card with no picture)",
+  "use": "Shrine, for an Atheist: learn the next of the patron's Hymns, prayed by dice",
+  "paint": "A torn fragment of a clay tablet with one engraved ring on it and a broken edge on two sides.",
+  "avoid": "a scroll with writing \u00b7 an hourglass \u00b7 letters",
+  "file_key": "25-lore",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A torn fragment of a clay tablet with one engraved ring on it and a broken edge on two sides.\nAVOID: a scroll with writing \u00b7 an hourglass \u00b7 letters",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/25-lore-v1.png",
+  "source_sha256": "9860865b540b4875777c04594ccf255c4532276da24c15068f3f682820536d73",
+  "generation_attempt": 1,
+  "export_crop": [
+    25,
+    71,
+    1224,
+    1198
+  ],
+  "scale": 0.6839032527105922,
+  "offset": [
+    102,
+    126
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "242c2b7feb1abdbaace7b9728e13e6d0af58d7ca282a32cce9fe11b517b8ac9c",
+  "exports": {
+    "256": "art/icons/places/exports/256/lore.png",
+    "128": "art/icons/places/exports/128/lore.png",
+    "64": "art/icons/places/exports/64/lore.png",
+    "48": "art/icons/places/exports/48/lore.png",
+    "44": "art/icons/places/exports/44/lore.png",
+    "32": "art/icons/places/exports/32/lore.png",
+    "24": "art/icons/places/exports/24/lore.png",
+    "16": "art/icons/places/exports/16/lore.png"
+  },
+  "export_sha256": {
+    "256": "7b4b13043577fad7ea6df88c3fa3fd6d44d1901e04ee5420105abd018fd84350",
+    "128": "45929f002edb610da019442cec27270de053b0141d820f29b878c8b0b37d05cc",
+    "64": "b9a49e409df527ec8441d27b49086fe7e2d21746f7d8470d938d9e5ec4e44a9e",
+    "48": "070edf6ba2ce0720f8c9f30e5308bba2d4b0e52ca2363b3fe2310e5591f10a7a",
+    "44": "c4780ecf499292cc09c7d78d5ed4e5866cc92adcf9128a58413d554a8cfcde45",
+    "32": "b031949163a1a21faca0da5304df119e5b75547b004660a5706947bc2172a22f",
+    "24": "5c58d5c5054706f253a6ea806a79dbf7c5d6a4af0593afd4586c6873fca28f00",
+    "16": "0d88cac1d216d280b7d07b68f253e34ee2a04973dbae9de2fb96e6aea2d973ee"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

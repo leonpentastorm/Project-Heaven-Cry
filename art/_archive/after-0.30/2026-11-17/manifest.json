@@ -1620,5 +1620,653 @@
       "16": "39035a361ccf166d6f867d2adbda9ffe641c913b4679bd68b34d206f94409e41"
     },
     "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 21,
+    "section": 4,
+    "family": "place_icons",
+    "id": "place-study",
+    "path": "art/icons/places/study.png",
+    "name": "Study (training card)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a card with no picture)",
+    "use": "Training ground and rest: \"Study +N\", progress toward the next Sigil word",
+    "paint": "A flat slate tile with one line of three short strokes scratched across it, a small lamp flame above its corner.",
+    "avoid": "an open book with text \u00b7 a graduation cap \u00b7 letters",
+    "file_key": "21-study",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A flat slate tile with one line of three short strokes scratched across it, a small lamp flame above its corner.\nAVOID: an open book with text \u00b7 a graduation cap \u00b7 letters",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/21-study-v1.png",
+    "source_sha256": "854ea87e38be8b1d9d3b0ba6660a67b0169c3cc71f8eb9eaea714e989d16ad7b",
+    "generation_attempt": 1,
+    "export_crop": [
+      33,
+      69,
+      1208,
+      1230
+    ],
+    "scale": 0.6978723404255319,
+    "offset": [
+      102,
+      107
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "68f9cafd0478eda02f3602036c83685efb3db512f5c7c1829590123e464fc9e5",
+    "exports": {
+      "256": "art/icons/places/exports/256/study.png",
+      "128": "art/icons/places/exports/128/study.png",
+      "64": "art/icons/places/exports/64/study.png",
+      "48": "art/icons/places/exports/48/study.png",
+      "44": "art/icons/places/exports/44/study.png",
+      "32": "art/icons/places/exports/32/study.png",
+      "24": "art/icons/places/exports/24/study.png",
+      "16": "art/icons/places/exports/16/study.png"
+    },
+    "export_sha256": {
+      "256": "9ce4f0b39b7e4291d66ed64a7fd431649091f7f26abdf04f9e6e0d329433e15d",
+      "128": "7977281f8dd557bbd6c13c161924f896b65f871ba753e5520ac862842fdf1ebf",
+      "64": "29f149c49d6f350d93e2f9ae9693c35eb7becee14ed6beb2875df029527e9274",
+      "48": "85a7551147f1ad2e62407cc879bc865b02bb5939adaf403cd9abed9344efe87c",
+      "44": "e048f86b37ee4051e44892804e08ffb5859780b68f1ce0248084376d75b2ef69",
+      "32": "aff4854604ef63f9d612a5e884ec74c53719e701f3d964df1023ca11bf56bfc1",
+      "24": "86d27645c58dd6fdb3522608b8b59ed2c60a09a20602988bfa721d56027fa348",
+      "16": "fb907d16087e729a770d51e1c9fa45ee0e4748dad1c8962ac3775abbc6faa572"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 22,
+    "section": 4,
+    "family": "place_icons",
+    "id": "place-practice",
+    "path": "art/icons/places/practice.png",
+    "name": "Practice (training card)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a card with no picture)",
+    "use": "Training ground and rest: \"Practice +N\", progress toward the next Outburst module",
+    "paint": "A small heart-knot held in an open palm, one ripple ring leaving it.",
+    "avoid": "a boxing glove \u00b7 a medical heart \u00b7 a stopwatch",
+    "file_key": "22-practice",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small heart-knot held in an open palm, one ripple ring leaving it.\nAVOID: a boxing glove \u00b7 a medical heart \u00b7 a stopwatch",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/22-practice-v1.png",
+    "source_sha256": "aad6e18c157d33c6bb8f3feb2c542a7afc3002f3d53e54aaf91c58577f51f549",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      11,
+      1232,
+      1210
+    ],
+    "scale": 0.6655844155844156,
+    "offset": [
+      102,
+      113
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "03343f314e27c112b879085b9bbbb8167277de33a43621062acebdc4b7aa368e",
+    "exports": {
+      "256": "art/icons/places/exports/256/practice.png",
+      "128": "art/icons/places/exports/128/practice.png",
+      "64": "art/icons/places/exports/64/practice.png",
+      "48": "art/icons/places/exports/48/practice.png",
+      "44": "art/icons/places/exports/44/practice.png",
+      "32": "art/icons/places/exports/32/practice.png",
+      "24": "art/icons/places/exports/24/practice.png",
+      "16": "art/icons/places/exports/16/practice.png"
+    },
+    "export_sha256": {
+      "256": "8aed9d75cb5ec224a7d45c89a10d63142261fb6591ca671c0c4937bf5845a913",
+      "128": "80d95b878016a57e520300ca4205332b5eb8ae3b333b6c9ded68d69aa70ca64b",
+      "64": "98bc5b275f9d56f88f9520455217fe34934e8521c671d5bdea868e1817cef5c0",
+      "48": "b2ea1855ed5066e3987fa651c92c2f496f87a2c678ad1f60cfd12d16165bb422",
+      "44": "0ef3f1a86959cc0997c6e0842a4d0e0436ec62eff87e34d832678ef774027cf0",
+      "32": "a2628969ec45a7dd05952bb9897ea6e050c864486802a91f5f3c98459003b080",
+      "24": "0cbe17a9f477a20510bd458cd0fd509ed5d8d5d9b70bb12f75fda2f353e940c6",
+      "16": "1f748219847c25556c35e471a409135a646decf45d2aeae56c2d154ddd804a6a"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 23,
+    "section": 4,
+    "family": "place_icons",
+    "id": "place-devotion",
+    "path": "art/icons/places/devotion.png",
+    "name": "Devotion (training card)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a card with no picture)",
+    "use": "Rest: \"Devotion +N XP\", prayer by the fire",
+    "paint": "Two cupped hands round one small flame, a thread of smoke rising.",
+    "avoid": "a cross, crescent, star or wheel of any real faith \u00b7 praying hands with a halo",
+    "file_key": "23-devotion",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Two cupped hands round one small flame, a thread of smoke rising.\nAVOID: a cross, crescent, star or wheel of any real faith \u00b7 praying hands with a halo",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/23-devotion-v1.png",
+    "source_sha256": "67a3057be370f0cab609a13f4ac25a5be58153ddd7a888f9d131a9ef14d929f7",
+    "generation_attempt": 1,
+    "export_crop": [
+      41,
+      21,
+      1232,
+      1254
+    ],
+    "scale": 0.6650446066504461,
+    "offset": [
+      116,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "9e0711ee9f167d774df02bc4bedb5288ef5bb14f1f7f2084a8d2f7c53ef90be5",
+    "exports": {
+      "256": "art/icons/places/exports/256/devotion.png",
+      "128": "art/icons/places/exports/128/devotion.png",
+      "64": "art/icons/places/exports/64/devotion.png",
+      "48": "art/icons/places/exports/48/devotion.png",
+      "44": "art/icons/places/exports/44/devotion.png",
+      "32": "art/icons/places/exports/32/devotion.png",
+      "24": "art/icons/places/exports/24/devotion.png",
+      "16": "art/icons/places/exports/16/devotion.png"
+    },
+    "export_sha256": {
+      "256": "9d66b10b6ae6b3ef22453fbf754590504d29e14521a66dfb5f4f575e7ee931cd",
+      "128": "43fd839967d43bdee9c0f9cb261b9c3cd661de96117f6f7d75bec73f792ff281",
+      "64": "5abf6d0f20ec9f04d0f9d2b4ad6bae8be5274fac9c64fecd06ca9deb3b55c923",
+      "48": "e994bc15cc9cb336310672ef5f5179c33d215dc288305b2da21929e8c183a38b",
+      "44": "3bd3e26f5f137b6bcf2a8d6e0045ba4f9d242a5ff543f524429509159cace56e",
+      "32": "312493eed9aea0024ba32902707c6c6f055e218b5f8b76762130fd2539ec48a9",
+      "24": "679c36c297597f013e2fcda5b0f44428796cdcbbc8bfc34ec07e786b04abfa65",
+      "16": "13eb402c30206e443006de2f7eaee861541a2b3bcb8022d6abb51841d7e09565"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 24,
+    "section": 4,
+    "family": "place_icons",
+    "id": "place-rite",
+    "path": "art/icons/places/rite.png",
+    "name": "Keep a rite (shrine card)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a card with no picture)",
+    "use": "Shrine: keep a rite for the patron, Devotion XP (free)",
+    "paint": "A small bowl on a stone ledge with three short incense lines rising and a ring of seven dots round the bowl.",
+    "avoid": "an altar with a cross \u00b7 a temple \u00b7 a skull",
+    "file_key": "24-rite",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small bowl on a stone ledge with three short incense lines rising and a ring of seven dots round the bowl.\nAVOID: an altar with a cross \u00b7 a temple \u00b7 a skull",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/24-rite-v1.png",
+    "source_sha256": "6c6f4002272d503bbcf3a8bee4eea2aa614c110806a11ff8600295f281c74cfc",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      9,
+      1253,
+      1231
+    ],
+    "scale": 0.6544293695131684,
+    "offset": [
+      102,
+      112
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "5749d7edb9905f578ca47d7d545f79240df2b117d83c0dd51dfb06327c2e5994",
+    "exports": {
+      "256": "art/icons/places/exports/256/rite.png",
+      "128": "art/icons/places/exports/128/rite.png",
+      "64": "art/icons/places/exports/64/rite.png",
+      "48": "art/icons/places/exports/48/rite.png",
+      "44": "art/icons/places/exports/44/rite.png",
+      "32": "art/icons/places/exports/32/rite.png",
+      "24": "art/icons/places/exports/24/rite.png",
+      "16": "art/icons/places/exports/16/rite.png"
+    },
+    "export_sha256": {
+      "256": "678610dece007386cc20ea9b6c8b1d52d9a7c162860c3e2c6a9ceebcfe69dab5",
+      "128": "5501009ef181866e4610fadeed7a7dc49b25e0c7a0a63adb2f12f57117172449",
+      "64": "f6441c3559a0ce77e8d1584864d5c7221834b9167dcee60994293a631063c47f",
+      "48": "5ff1415a020d8de2690212d2b3df6adcd0dd7731ac9e85f347fb938f52a279f1",
+      "44": "6da4a117c9d380f5ed730d2b61de36364764d02c9fcfb23a8c3d01f7b98535b5",
+      "32": "8f9c00222c2d87ffa1e3b37e6721a149b9b3c0b4b26b4e27c0dbfd2662cb70e9",
+      "24": "0574d8a7bb7737f9bbb6dae821b77c8b5898ba09031b55ca7f9ef149f7335180",
+      "16": "a57ca5929357231cd71c02713f15bb9c90fb9d3a7f74fd39164730712713025c"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 25,
+    "section": 4,
+    "family": "place_icons",
+    "id": "place-lore",
+    "path": "art/icons/places/lore.png",
+    "name": "A piece of lore (shrine card)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a card with no picture)",
+    "use": "Shrine, for an Atheist: learn the next of the patron's Hymns, prayed by dice",
+    "paint": "A torn fragment of a clay tablet with one engraved ring on it and a broken edge on two sides.",
+    "avoid": "a scroll with writing \u00b7 an hourglass \u00b7 letters",
+    "file_key": "25-lore",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A torn fragment of a clay tablet with one engraved ring on it and a broken edge on two sides.\nAVOID: a scroll with writing \u00b7 an hourglass \u00b7 letters",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/25-lore-v1.png",
+    "source_sha256": "9860865b540b4875777c04594ccf255c4532276da24c15068f3f682820536d73",
+    "generation_attempt": 1,
+    "export_crop": [
+      25,
+      71,
+      1224,
+      1198
+    ],
+    "scale": 0.6839032527105922,
+    "offset": [
+      102,
+      126
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "242c2b7feb1abdbaace7b9728e13e6d0af58d7ca282a32cce9fe11b517b8ac9c",
+    "exports": {
+      "256": "art/icons/places/exports/256/lore.png",
+      "128": "art/icons/places/exports/128/lore.png",
+      "64": "art/icons/places/exports/64/lore.png",
+      "48": "art/icons/places/exports/48/lore.png",
+      "44": "art/icons/places/exports/44/lore.png",
+      "32": "art/icons/places/exports/32/lore.png",
+      "24": "art/icons/places/exports/24/lore.png",
+      "16": "art/icons/places/exports/16/lore.png"
+    },
+    "export_sha256": {
+      "256": "7b4b13043577fad7ea6df88c3fa3fd6d44d1901e04ee5420105abd018fd84350",
+      "128": "45929f002edb610da019442cec27270de053b0141d820f29b878c8b0b37d05cc",
+      "64": "b9a49e409df527ec8441d27b49086fe7e2d21746f7d8470d938d9e5ec4e44a9e",
+      "48": "070edf6ba2ce0720f8c9f30e5308bba2d4b0e52ca2363b3fe2310e5591f10a7a",
+      "44": "c4780ecf499292cc09c7d78d5ed4e5866cc92adcf9128a58413d554a8cfcde45",
+      "32": "b031949163a1a21faca0da5304df119e5b75547b004660a5706947bc2172a22f",
+      "24": "5c58d5c5054706f253a6ea806a79dbf7c5d6a4af0593afd4586c6873fca28f00",
+      "16": "0d88cac1d216d280b7d07b68f253e34ee2a04973dbae9de2fb96e6aea2d973ee"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 26,
+    "section": 4,
+    "family": "place_icons",
+    "id": "place-token",
+    "path": "art/icons/places/token.png",
+    "name": "The token (shrine card)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a card with no picture)",
+    "use": "Shrine: a small token that is a boon (it uses boon room)",
+    "paint": "A small round token with a hole through its centre, hung on a short loop of thread.",
+    "avoid": "a coin with a face \u00b7 a medal \u00b7 a ring of keys",
+    "file_key": "26-token",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small round token with a hole through its centre, hung on a short loop of thread.\nAVOID: a coin with a face \u00b7 a medal \u00b7 a ring of keys",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/26-token-v1.png",
+    "source_sha256": "1adbb9a4886d934c9dbcf7fdefb5feeeb409cdc7b27e27090371e963497fd878",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      20,
+      1055,
+      1202
+    ],
+    "scale": 0.6937394247038917,
+    "offset": [
+      146,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "179ce2ae5f1686c940a69b702fe55f856fcd8b7fa8d676898178d0d35d832101",
+    "exports": {
+      "256": "art/icons/places/exports/256/token.png",
+      "128": "art/icons/places/exports/128/token.png",
+      "64": "art/icons/places/exports/64/token.png",
+      "48": "art/icons/places/exports/48/token.png",
+      "44": "art/icons/places/exports/44/token.png",
+      "32": "art/icons/places/exports/32/token.png",
+      "24": "art/icons/places/exports/24/token.png",
+      "16": "art/icons/places/exports/16/token.png"
+    },
+    "export_sha256": {
+      "256": "5cdb514d6628cbb315dede72d4384e126bef7510bfe691b3cc51cb4c7f5e72be",
+      "128": "cd266dde706597ce3d8cbc6714cb5192556cad9b97ec9ac12d5e343853b7650a",
+      "64": "5d7cc15f703985ce2740bdd7409ea79cfcc15967f94a2b17bf7309074e35c141",
+      "48": "d9be32ef1091bc286cf40b96430dd85a2d6cd51998dab85bb0f4ecaba9e53abf",
+      "44": "282855b4e33a8f837b13265f83448667d48c7cdf4bf01db46afeff225431dc99",
+      "32": "dc62de7756131d0d6aa59ea79e95584b8630868f6a16efb117edbd59a6b08f8b",
+      "24": "f29dc1c1204a17f23fd3d04752356661ab6996463c8e8752e7fabba2d0a1929b",
+      "16": "2eef110fa434ae7fa5ceae4dce1440661caf64f344210779d53927278f73986d"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 27,
+    "section": 4,
+    "family": "place_icons",
+    "id": "place-trade-offbooks",
+    "path": "art/icons/places/trade-offbooks.png",
+    "name": "The off-books armourer (trade card)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a card with no picture)",
+    "use": "Crossroads trade: upgrade a weapon to Fine or Masterwork at a cut rate, for some of its durability",
+    "paint": "A hammer leaning on a plate, one small coin tucked under the plate's lower edge.",
+    "avoid": "an anvil (that is the Forge) \u00b7 a price tag \u00b7 a dollar sign",
+    "file_key": "27-trade-offbooks",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A hammer leaning on a plate, one small coin tucked under the plate's lower edge.\nAVOID: an anvil (that is the Forge) \u00b7 a price tag \u00b7 a dollar sign",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/27-trade-offbooks-v1.png",
+    "source_sha256": "0dc299523e21e6e1db94ed5bca3f6d0c2e2c62b2e9afe1a52833c2ad59b02e2e",
+    "generation_attempt": 1,
+    "export_crop": [
+      31,
+      55,
+      1216,
+      1230
+    ],
+    "scale": 0.6919831223628692,
+    "offset": [
+      102,
+      105
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "fbb0f453db11fb0dcd62c7d4d6f240acdebda47a7e74ebf05c468a4fa1410427",
+    "exports": {
+      "256": "art/icons/places/exports/256/trade-offbooks.png",
+      "128": "art/icons/places/exports/128/trade-offbooks.png",
+      "64": "art/icons/places/exports/64/trade-offbooks.png",
+      "48": "art/icons/places/exports/48/trade-offbooks.png",
+      "44": "art/icons/places/exports/44/trade-offbooks.png",
+      "32": "art/icons/places/exports/32/trade-offbooks.png",
+      "24": "art/icons/places/exports/24/trade-offbooks.png",
+      "16": "art/icons/places/exports/16/trade-offbooks.png"
+    },
+    "export_sha256": {
+      "256": "d1de277423b2261f6b97af71986854f6b92d0b46f8b8025a58dfdca433b5269c",
+      "128": "a518298d90fd71ee8ff487433bcb1b1d5f8c02fc08922296a298ce64dec54977",
+      "64": "b59ac12c394a92163cb421881700c08ba9149f3f7a21b55c92727e22dc5cd6da",
+      "48": "87f91ef96745580371b7b23b3daeb22e09bc1b9a8bdbc4f49295ba1ae1435850",
+      "44": "d1ee45cb7ef6535dc1dd71fa44f64db750fc7a4de4dda55af94efb175a143335",
+      "32": "4c0c9adb457c98bdd99a4439c17274a0503917047a57bffad1ca125861fb0734",
+      "24": "d89a1c23a3ef99be513c4a8e5c1131827b5cbda84f05312fa22bd9d12202e932",
+      "16": "33b287d9bac6124666d66517d22ff08e74685bc8f13739e9ec82a98b5980cecc"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 28,
+    "section": 4,
+    "family": "place_icons",
+    "id": "place-trade-sparring",
+    "path": "art/icons/places/trade-sparring.png",
+    "name": "A hard sparring (trade card)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a card with no picture)",
+    "use": "Crossroads trade: drill with a weapon you carry, at a cost in HP",
+    "paint": "A padded training post with one fist-sized dent in it, two short impact lines at the dent.",
+    "avoid": "a boxing ring \u00b7 blood \u00b7 a punching bag with a face",
+    "file_key": "28-trade-sparring",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A padded training post with one fist-sized dent in it, two short impact lines at the dent.\nAVOID: a boxing ring \u00b7 blood \u00b7 a punching bag with a face",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/28-trade-sparring-v1.png",
+    "source_sha256": "3c5d7d9075f294fe3e6419d68b6c0895fd8ca7849dd7e5122cd070a2ee4edca8",
+    "generation_attempt": 1,
+    "export_crop": [
+      53,
+      37,
+      1119,
+      1222
+    ],
+    "scale": 0.6919831223628692,
+    "offset": [
+      143,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "2adc2f60d41ce38756daadc8302baafae5002b67fb0d29d23b539f76c8876b41",
+    "exports": {
+      "256": "art/icons/places/exports/256/trade-sparring.png",
+      "128": "art/icons/places/exports/128/trade-sparring.png",
+      "64": "art/icons/places/exports/64/trade-sparring.png",
+      "48": "art/icons/places/exports/48/trade-sparring.png",
+      "44": "art/icons/places/exports/44/trade-sparring.png",
+      "32": "art/icons/places/exports/32/trade-sparring.png",
+      "24": "art/icons/places/exports/24/trade-sparring.png",
+      "16": "art/icons/places/exports/16/trade-sparring.png"
+    },
+    "export_sha256": {
+      "256": "685a3a6e02f19c5f32fc433d43f98173d429b2ac2b8df64ef3348392b2e61524",
+      "128": "e32890dee927d902fe65033cb7d911d67468ad7c39ae7de79069619b060113e3",
+      "64": "b7ac63c7f414ec9683ed557f012929dbfeb0c7ba4e424c191c937aefad700013",
+      "48": "53c219bee3712ba628ebcd8670a40d82703f9a07b7feb3fabd12dfbbbb75f782",
+      "44": "a8ea72697aaa9146e709a97ae60ecab2c0487013de5c8b1c92305654a8a1484b",
+      "32": "1cd49b0470185cde21f9003d2091f55ac3ac11bdee3a8e09deff421e359c8c77",
+      "24": "5a8de9419a2b362eb0318a268026fd30fc56ad4ce5abc67ae206a45c5bea6689",
+      "16": "fb0325006a15cead3e4485d6d90e5d2ff8a3ac78ba0804b3a8663fa951cd1ea2"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
   }
 ]

@@ -1,18 +1,10 @@
 # After-0.30 art checkpoint
 
-20/54 review candidates complete; 34 remain. Source brief pinned at45bb92679410814489d3bb5704a51e2754f04c97 on wip/lane-0.31-art. Branch starts at1317c61, preserving all prior41 version0.30 candidates.
+28/54 review candidates complete; 26 remain. Source brief pinned at45bb92679410814489d3bb5704a51e2754f04c97 on wip/lane-0.31-art. Branch starts at1317c61, preserving all prior41 version0.30 candidates.
 
 Read source-brief.md and planned-jobs.json. New candidates are in records/; master, native and all eight UI export hashes are recorded. No catalog entries or screen slots added: the brief assigns intake to Claude. Use catalog-intake-fragment.json. The old27 holds and all prior art remain untouched. Wick has the ceramic pixel screen/cape/lantern, no flame head/default cup.
 
 Remaining:
-- 21 Study (training card) — art/icons/places/study.png
-- 22 Practice (training card) — art/icons/places/practice.png
-- 23 Devotion (training card) — art/icons/places/devotion.png
-- 24 Keep a rite (shrine card) — art/icons/places/rite.png
-- 25 A piece of lore (shrine card) — art/icons/places/lore.png
-- 26 The token (shrine card) — art/icons/places/token.png
-- 27 The off-books armourer (trade card) — art/icons/places/trade-offbooks.png
-- 28 A hard sparring (trade card) — art/icons/places/trade-sparring.png
 - 29 A sealed crate (trade card) — art/icons/places/trade-crate.png
 - 30 A wayside shrine (trade card) — art/icons/places/trade-wayside.png
 - 31 A back-room graft (trade card) — art/icons/places/trade-graft.png

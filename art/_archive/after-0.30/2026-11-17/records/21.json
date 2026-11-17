@@ -1,0 +1,81 @@
+{
+  "number": 21,
+  "section": 4,
+  "family": "place_icons",
+  "id": "place-study",
+  "path": "art/icons/places/study.png",
+  "name": "Study (training card)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a card with no picture)",
+  "use": "Training ground and rest: \"Study +N\", progress toward the next Sigil word",
+  "paint": "A flat slate tile with one line of three short strokes scratched across it, a small lamp flame above its corner.",
+  "avoid": "an open book with text \u00b7 a graduation cap \u00b7 letters",
+  "file_key": "21-study",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A flat slate tile with one line of three short strokes scratched across it, a small lamp flame above its corner.\nAVOID: an open book with text \u00b7 a graduation cap \u00b7 letters",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/21-study-v1.png",
+  "source_sha256": "854ea87e38be8b1d9d3b0ba6660a67b0169c3cc71f8eb9eaea714e989d16ad7b",
+  "generation_attempt": 1,
+  "export_crop": [
+    33,
+    69,
+    1208,
+    1230
+  ],
+  "scale": 0.6978723404255319,
+  "offset": [
+    102,
+    107
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "68f9cafd0478eda02f3602036c83685efb3db512f5c7c1829590123e464fc9e5",
+  "exports": {
+    "256": "art/icons/places/exports/256/study.png",
+    "128": "art/icons/places/exports/128/study.png",
+    "64": "art/icons/places/exports/64/study.png",
+    "48": "art/icons/places/exports/48/study.png",
+    "44": "art/icons/places/exports/44/study.png",
+    "32": "art/icons/places/exports/32/study.png",
+    "24": "art/icons/places/exports/24/study.png",
+    "16": "art/icons/places/exports/16/study.png"
+  },
+  "export_sha256": {
+    "256": "9ce4f0b39b7e4291d66ed64a7fd431649091f7f26abdf04f9e6e0d329433e15d",
+    "128": "7977281f8dd557bbd6c13c161924f896b65f871ba753e5520ac862842fdf1ebf",
+    "64": "29f149c49d6f350d93e2f9ae9693c35eb7becee14ed6beb2875df029527e9274",
+    "48": "85a7551147f1ad2e62407cc879bc865b02bb5939adaf403cd9abed9344efe87c",
+    "44": "e048f86b37ee4051e44892804e08ffb5859780b68f1ce0248084376d75b2ef69",
+    "32": "aff4854604ef63f9d612a5e884ec74c53719e701f3d964df1023ca11bf56bfc1",
+    "24": "86d27645c58dd6fdb3522608b8b59ed2c60a09a20602988bfa721d56027fa348",
+    "16": "fb907d16087e729a770d51e1c9fa45ee0e4748dad1c8962ac3775abbc6faa572"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}
