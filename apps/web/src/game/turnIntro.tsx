@@ -97,13 +97,18 @@ type CardKind = 'turn' | 'round' | 'fight' | 'victory' | 'defeat' | 'field';
 /** The fight's big banners (BATTLE START, VICTORY, DEFEAT, FREE ROAM): drawn in the middle of the screen. */
 const BIG: CardKind[] = ['fight', 'victory', 'defeat', 'field'];
 /** Rules 1.62 item 4900: the fight's banners' words and the least time each is fully on screen (data). */
-const CARDS: { hold_ms: number; joined: { name: string; fog?: string }; won: { name: string }; lost: { name: string } } = (RULES as any).combat.cards;
+const CARDS: { hold_ms: number; joined: { name: string; fog?: string }; won: { name: string }; lost: { name: string };
+  end: { hold_ms: number; sound_gap_ms: number; won: { sounds: string[] }; lost: { sounds: string[] }; felled: string; rounds: string; close: string } } = (RULES as any).combat.cards;
+/** 0.31.1: the end panel (VICTORY or DEFEAT) holds the screen; while it is pending or up, a run's field (its bar, its leave
+ *  vote) and the fight-over dialog are hidden (html[data-phc-end-card], the CSS below), so nothing comes before it. */
+const END_FLAG = 'data-phc-end-card';
+const setEndFlag = (on: boolean) => { if (typeof document === 'undefined') return; ensureCss(); if (on) document.documentElement.setAttribute(END_FLAG, ''); else document.documentElement.removeAttribute(END_FLAG); };
 /** A turn's round in words: on a run fight's field its round of its rounds (rules 1.62 item 4906), else ROUND n. */
 const roundWords = (cb: any, round: number): string => { const f = cb && cb.field && typeof cb.field === 'object' ? cb.field : null;
   return f && round >= f.from ? roundLabel({ round: round - f.from + 1, of: f.of }).toUpperCase() : 'ROUND ' + round; };
 interface Banner { id: string; kind: CardKind; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number; k?: number;
   /** the slab behind (default: red for a hostile, else white), the mark before the kicker, the sign drawn with no picture */
-  slab?: string; mark?: string; glyph?: string; /** the artist's white-ink sign for the glyph (banner-fight-*, catalog interface_icons), drawn in the stripe colour; '' keeps the glyph */ glyphArt?: string; /** an end card's line of what follows (data) */ after?: string }
+  slab?: string; mark?: string; glyph?: string; /** the end panel's lines (what the engine holds: foes felled, rounds) */ stats?: { label: string; value: string }[]; /** the artist's white-ink sign for the glyph (banner-fight-*, catalog interface_icons), drawn in the stripe colour; '' keeps the glyph */ glyphArt?: string; /** an end card's line of what follows (data) */ after?: string }
 interface Cut { k?: number; id: string; unitId: string; charId: string; name: string; line: string; clsIcon?: string; img: string; color: string; kicker: string;
   hp: [number, number]; ap: number; weapon: string; /** What this unit spends, below HP (game/resources.ts): every row, in the You card's order. */ res: ResRow[]; cmds: Command[]; at?: string; right?: boolean }
 
@@ -146,11 +151,19 @@ function fightCard(g: GameState, cb: any, meId: string): Banner {
   return { id: 'f' + Date.now(), kind: 'fight', kicker: cb.name, kickerColor: '#FFFFFF', name: CARDS.joined.name, sub: [setting, who, fog ? CARDS.joined.fog || '' : ''].filter(Boolean).join(' · '),
     stripe: '#F65157', slab: '#F65157', mark: '', glyph: '!', glyphArt: ART('banner-fight-start'), img: b && !b.unseen ? b.img : '', mine: false, foe: false, hold: CARDS.hold_ms };
 }
-/** VICTORY or DEFEAT: the fight's name and, in a Survival run, the line of what follows (data/survival.json run.after_fight). */
+/** VICTORY or DEFEAT: the fight's name and, in a Survival run, the line of what follows (data/survival.json run.after_fight);
+ *  its lines read what the engine holds now: a run's fight record (rules 1.44 kills, rounds), else the fight's own units
+ *  and round. XP and credits are not in the state when the fight ends (a run pays them at the leave): not shown. */
 function endCard(g: GameState, cb: any, won: boolean): Banner {
   const color = won ? '#6FEA77' : '#F65157', after = g.run ? survivalRun.after_fight?.[won ? 'won' : 'lost'] || '' : '';
+  const fights: any[] = (g.run as any)?.stats?.fights || [], last = fights.length ? fights[fights.length - 1] : null, rec = last && last.outcome ? last : null;
+  const f = cb && typeof cb.field === 'object' ? cb.field : null;
+  const felled = rec && typeof rec.kills === 'number' ? rec.kills : (cb?.units || []).filter((u: any) => u.side === 'foe' && (u.dead || u.downed)).length;
+  const rounds = rec && typeof rec.rounds === 'number' ? rec.rounds : f ? f.from - 1 : cb?.round || 0;
+  const stats = [{ label: CARDS.end.felled, value: String(felled) }, { label: CARDS.end.rounds, value: String(rounds) }].filter((x) => x.label === CARDS.end.felled || x.value !== '0');
   return { id: 'e' + Date.now(), kind: won ? 'victory' : 'defeat', kicker: cb.name, kickerColor: color, name: won ? CARDS.won.name : CARDS.lost.name, sub: after, after,
-    stripe: color, slab: won ? '#FFFFFF' : '#F65157', mark: '', glyph: won ? '✓' : '✕', glyphArt: ART(won ? 'banner-fight-won' : 'banner-fight-lost'), img: '', mine: false, foe: !won, hold: CARDS.hold_ms };
+    stripe: color, slab: won ? '#FFFFFF' : '#F65157', mark: '', glyph: won ? '✓' : '✕', glyphArt: ART(won ? 'banner-fight-won' : 'banner-fight-lost'), img: '', mine: false, foe: !won,
+    hold: Math.max(CARDS.hold_ms, CARDS.end.hold_ms), stats };
 }
 /** FREE ROAM (rules 1.62 items 4900 and 4906): a won run fight's field opens; its rounds (the engine's count, Combat.field;
  * the words survival.json run.after_fight.field). */
@@ -216,7 +229,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const timers = React.useRef(new Set<ReturnType<typeof setTimeout>>());
   const later = (f: () => void, ms: number) => { const t = setTimeout(() => { timers.current.delete(t); f(); }, Math.max(0, ms)); timers.current.add(t); return t; };
   const clearAll = () => { for (const t of timers.current) clearTimeout(t); timers.current.clear(); };
-  React.useEffect(() => () => clearAll(), []);
+  React.useEffect(() => () => { clearAll(); setEndFlag(false); }, []);
 
   // The effects layer's clock, if it announces one.
   // It counts only the fight on screen (the area map's numbering and an earlier fight's are other clocks), and starts
@@ -279,6 +292,27 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     if (b.kind !== 'fight') cue(b.kind === 'defeat' ? 'banner_foe' : 'banner_mine'); // BATTLE START: the combat-in's own sting plays
     later(() => setBanner((x) => (x && x.id === b.id ? null : x)), total);
   };
+  /** The end panel's close (null when none is up): at its time, or on a click; then a run's field opens (FREE ROAM). */
+  const endClose = React.useRef<(() => void) | null>(null);
+  const showEnd = (b0: Banner, won: boolean) => {
+    const busy = slotUntil.current - Date.now();
+    if (busy > 0) { later(() => showEnd(b0, won), busy + 30); return; }
+    const k = fightPace(), b = { ...b0, k }, total = bigTotal(b, reducedMotion());
+    let done = false;
+    const close = () => {
+      if (done) return; done = true; if (endClose.current === close) endClose.current = null;
+      setBanner((x) => (x && x.id === b.id ? null : x)); slotUntil.current = Date.now(); setEndFlag(false);
+      const g2 = live.current.game, cb2 = g2?.combat;
+      if (cb2 && cb2.field && !cb2.over && live.current.screen === 'combat' && !document.hidden) showCard(fieldCard(cb2)); // a run's field: FREE ROAM, after the panel
+      endPending.current = false; // the field's first turn banner follows
+    };
+    endClose.current = close;
+    if (document.hidden) { close(); return; }
+    setBanner(b); slotUntil.current = Date.now() + total; dismiss(); // a your-turn card under it goes (harmless with none)
+    const S = (won ? CARDS.end.won : CARDS.end.lost).sounds || [];
+    S.forEach((n, i) => later(() => { try { sfx(n as Sfx); } catch { /* sound never breaks the game */ } }, i * (CARDS.end.sound_gap_ms || 0)));
+    later(close, total); // never held past its time (a co-op guest included)
+  };
   const showRound = (round: number, mineToo: boolean) => {
     if (document.hidden) return;
     const b: Banner = { id: 'r' + round + ':' + Date.now(), kind: 'round', kicker: 'AREA MAP', kickerColor: '#A3AEC2', name: 'ROUND ' + round + (mineToo ? ' · YOUR MOVE' : ' · THE SQUAD MOVES'), sub: 'Say one thing · spend your AP · end your turn',
@@ -308,7 +342,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const liveFights = React.useRef(new Set<string>());
   React.useEffect(() => {
     if (!cb || screen !== 'combat') {
-      if (!cb) { seen.current = null; clearAll(); setBanner(null); setCut(null); endPending.current = false; }
+      if (!cb) { seen.current = null; clearAll(); setBanner(null); setCut(null); endPending.current = false; if (endClose.current) { endClose.current = null; setEndFlag(false); } }
       // Away on another screen (level up, the sheet): what happened meanwhile isn't announced late.
       else if (seen.current && seen.current.fight === fightId) seen.current = { fight: fightId, n: lastN, key: turnKey };
       return;
@@ -382,23 +416,26 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   /** The end this page has shown (once per fight's end: a fight live again, with no end, clears it). */
   const endShown = React.useRef<string | null>(null);
   React.useEffect(() => { if (!endKey) endShown.current = null; }, [endKey]);
+  /** This fight's end gets the panel (the page watched the fight; not an Extraction, the Proving Ground or the area map). */
+  const endDue = () => { if (!overKey || !game || !anyCb) return false; const won = endOf(anyCb) === 'win';
+    return (won || anyCb.over === 'loss') && carded(game, anyCb) && liveFights.current.has(combatStreamKey(game)!) && endShown.current !== overKey; };
+  // The field's bar is hidden in the same paint the field opens in (a layout effect), never a frame before the panel; a
+  // safety net outside the timers (which a phase change clears) lets it back if no panel ever comes.
+  React.useLayoutEffect(() => { if (!endDue()) return; setEndFlag(true); setTimeout(() => { if (!endClose.current && !endPending.current) setEndFlag(false); }, 20000 * fightPace() + 2 * CARDS.end.hold_ms + 2000); }, [overKey]);
   React.useEffect(() => {
-    if (!overKey || !game || !anyCb) return;
-    const stream = combatStreamKey(game)!, won = endOf(anyCb) === 'win';
-    if ((!won && anyCb.over !== 'loss') || !carded(game, anyCb) || !liveFights.current.has(stream) || endShown.current === overKey) return; // an Extraction is neither
-    endShown.current = overKey; endPending.current = true;
-    const efx = (anyCb.fx || []) as any[], lastFx = anyCb.fxSeq || (efx.length ? efx[efx.length - 1].n : 0), clock = fxClock.current;
+    if (!endDue()) return; // (after the fight effect above: a phase change's clearAll never cancels this one's wait)
+    const cbE = anyCb!, stream = combatStreamKey(game)!, won = endOf(cbE) === 'win';
+    endShown.current = overKey; endPending.current = true; setEndFlag(true);
+    const efx = (cbE.fx || []) as any[], lastFx = cbE.fxSeq || (efx.length ? efx[efx.length - 1].n : 0), clock = fxClock.current;
     const until = Date.now() + 20000 * fightPace(); // a safety net only: the card waits for the fight's last effect
     const still = () => { const { game: g2, screen: sc } = live.current; return !!endOf(g2?.combat) && sc === 'combat' && combatStreamKey(g2) === stream; };
     const tryShow = () => {
-      if (!still()) { endPending.current = false; return; }
+      if (!still()) { endPending.current = false; setEndFlag(false); return; }
       const waitFx = (clock.on || hasLayer()) && clock.at < lastFx;
       // Its last effect has started: the card waits for it (and anything queued with it) to finish, and for a cut-in.
       const rest = waitFx ? 100 : cutInActive() ? 120 : fxBusyUntil() - performance.now();
       if (rest > 20 && Date.now() < until) { later(tryShow, Math.min(rest, 400) + 20); return; }
-      const g2 = live.current.game!; showCard(endCard(g2, g2.combat, won));
-      if (g2.combat?.field && !g2.combat.over) showCard(fieldCard(g2.combat)); // a run's field: FREE ROAM, queued after VICTORY
-      endPending.current = false; // the slot now holds both cards: the field's first turn banner follows them
+      const g2 = live.current.game!; showEnd(endCard(g2, g2.combat, won), won); // the panel; FREE ROAM and the field after it closes
     };
     tryShow();
   }, [overKey]);
@@ -431,7 +468,8 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const rm = reducedMotion();
   return (
     <>
-      {banner && (BIG.includes(banner.kind) ? <BigBanner key={banner.id} b={banner} rm={rm} /> : <TurnBanner key={banner.id} b={banner} rm={rm} />)}
+      {banner && (banner.kind === 'victory' || banner.kind === 'defeat' ? <EndPanel key={banner.id} b={banner} rm={rm} onClose={() => endClose.current?.()} />
+        : BIG.includes(banner.kind) ? <BigBanner key={banner.id} b={banner} rm={rm} /> : <TurnBanner key={banner.id} b={banner} rm={rm} />)}
       {cut && <CutIn key={cut.id} c={cut} img={cutImg} out={cutOut} rm={rm} onPick={pick} onCustomise={customise} onHover={(h) => { hovering.current = h; }} />}
       {custom && <CommandsDialog key={custom} game={game} charId={custom} onClose={() => setCustom(null)} />}
     </>
@@ -453,6 +491,8 @@ const CSS = [
   '@keyframes phcCmdIn{from{transform:translateX(-24px);opacity:0}to{transform:none;opacity:1}}',
   '.phc-cut-cmd{transition:transform .12s ease,background .12s ease,border-color .12s ease}.phc-cut-cmd:hover:not(:disabled),.phc-cut-cmd:focus-visible{transform:translateX(6px);background:#FFFFFF!important;color:#0A0D13!important;border-color:#FFFFFF!important;outline:none}',
   '.phc-cut-cmd:hover:not(:disabled) .phc-cut-sub,.phc-cut-cmd:focus-visible .phc-cut-sub{color:#2E3A50!important}',
+  // 0.31.1: while the end panel is pending or up, the field's bar (its leave vote) and the fight-over dialog wait for it
+  'html[data-phc-end-card] [data-phc-field],html[data-phc-end-card] [role="dialog"][aria-label="The fight is over"]{visibility:hidden!important}',
 ].join('');
 let cssIn = false;
 const ensureCss = () => { if (cssIn || typeof document === 'undefined') return; cssIn = true; const s = document.createElement('style'); s.id = 'phc-turn-intro'; s.textContent = CSS; document.head.appendChild(s); };
@@ -488,15 +528,15 @@ function TurnBanner({ b, rm }: { b: Banner; rm: boolean }) {
 /** The fight's big banner (rules 1.62 item 4900): BATTLE START, VICTORY, DEFEAT, FREE ROAM, in the middle of the screen,
  * above the map and under the cut-in; it takes no click, and stops well above the action bar. Fully drawn for its hold
  * (data, never shortened by the combat speed); only the slide in and out follow the speed. */
-function BigBanner({ b, rm }: { b: Banner; rm: boolean }) {
+function BigBanner({ b, rm, inline }: { b: Banner; rm: boolean; inline?: boolean }) {
   ensureCss();
   const k = b.k || 1, inMs = Math.round((rm ? 150 : BIG_IN) * k), outMs = Math.round((rm ? 150 : BIG_OUT) * k), total = inMs + b.hold + outMs;
   const p1 = ((inMs / total) * 100).toFixed(2), p2 = (((inMs + b.hold) / total) * 100).toFixed(2), name = (rm ? 'phcBigFade' : 'phcBig') + b.id.replace(/[^a-z0-9]/gi, ''); // (the browser checks read Fade under reduced motion)
   const kf = rm ? '@keyframes ' + name + '{0%{opacity:0}' + p1 + '%{opacity:1}' + p2 + '%{opacity:1}100%{opacity:0}}'
     : '@keyframes ' + name + '{0%{opacity:0;transform:translateX(-18%) skewX(-12deg) scale(1.08)}' + p1 + '%{opacity:1;transform:none}' + p2 + '%{opacity:1;transform:none}100%{opacity:0;transform:translateX(14%) skewX(-12deg) scale(.96)}}';
   return (
-    <div aria-live="polite" role="status" data-phc-card={b.kind} data-phc-big="" data-phc-card-id={b.id} data-phc-card-hold={b.hold} data-phc-card-after={b.after || undefined}
-      style={{ position: 'fixed', left: 0, right: 0, top: '22vh', zIndex: 56, display: 'flex', justifyContent: 'center', pointerEvents: 'none', overflow: 'visible' }}>
+    <div aria-live={inline ? undefined : 'polite'} role={inline ? undefined : 'status'} data-phc-card={inline ? undefined : b.kind} data-phc-big={inline ? undefined : ''} data-phc-card-id={inline ? undefined : b.id} data-phc-card-hold={inline ? undefined : b.hold} data-phc-card-after={inline ? undefined : b.after || undefined}
+      style={inline ? { position: 'relative', display: 'flex', justifyContent: 'center', pointerEvents: 'none' } : { position: 'fixed', left: 0, right: 0, top: '22vh', zIndex: 56, display: 'flex', justifyContent: 'center', pointerEvents: 'none', overflow: 'visible' }}>
       <div style={{ position: 'relative', maxWidth: '94vw', animation: name + ' ' + total + 'ms cubic-bezier(.2,.8,.2,1) both' }}>
         <div aria-hidden="true" style={{ position: 'absolute', inset: 0, transform: 'translate(14px, 12px) skewX(-14deg)', background: b.slab || '#FFFFFF' }} />
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 22, padding: '18px 56px 18px 0', transform: 'skewX(-14deg)', background: '#0A0D13', borderBottom: '5px solid ' + b.stripe, boxShadow: '0 24px 70px rgba(0,0,0,.7)', overflow: 'hidden' }}>
@@ -515,6 +555,29 @@ function BigBanner({ b, rm }: { b: Banner; rm: boolean }) {
         </div>
       </div>
       <style>{kf}</style>
+    </div>
+  );
+}
+
+/** 0.31.1: VICTORY or DEFEAT as a panel in the middle of the screen (the big banner, its lines, "click to continue") over a
+ * dim veil; a click anywhere closes it once it has slid in, else its time does. While it is up the field's bar waits
+ * (END_FLAG). Carries data-phc-card like the banners. */
+function EndPanel({ b, rm, onClose }: { b: Banner; rm: boolean; onClose: () => void }) {
+  ensureCss();
+  const k = b.k || 1, inMs = Math.round((rm ? 150 : BIG_IN) * k), outMs = Math.round((rm ? 150 : BIG_OUT) * k), total = bigTotal(b, rm), armAt = React.useRef(Date.now() + inMs + 250);
+  const name = 'phcEndVeil' + b.id.replace(/[^a-z0-9]/gi, ''), p1 = ((inMs / total) * 100).toFixed(2), p2 = (((total - outMs) / total) * 100).toFixed(2);
+  return (
+    <div role="dialog" aria-modal="false" aria-label={b.name} aria-live="polite" data-phc-card={b.kind} data-phc-big="" data-phc-end="" data-phc-card-id={b.id} data-phc-card-hold={b.hold} data-phc-card-after={b.after || undefined}
+      onClick={() => { if (Date.now() >= armAt.current) onClose(); }}
+      style={{ position: 'fixed', inset: 0, zIndex: 59, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 22, background: 'rgba(5, 7, 11, 0.62)', cursor: 'pointer', animation: name + ' ' + total + 'ms linear both' }}>
+      <BigBanner b={b} rm={rm} inline />
+      {!!b.stats?.length && <div data-phc-end-stats="" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', fontFamily: "'Chakra Petch', sans-serif" }}>
+        {b.stats.map((x) => <span key={x.label} style={{ display: 'flex', alignItems: 'baseline', gap: 10, padding: '8px 18px', background: '#10151F', border: '1px solid #232D3F', borderTop: '3px solid ' + b.stripe }}>
+          <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2', textTransform: 'uppercase' }}>{x.label}</span>
+          <span style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', fontVariantNumeric: 'tabular-nums' }}>{x.value}</span></span>)}
+      </div>}
+      <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: '0.22em', color: '#A3AEC2', textTransform: 'uppercase' }}>{CARDS.end.close}</span>
+      <style>{'@keyframes ' + name + '{0%{opacity:0}' + p1 + '%{opacity:1}' + p2 + '%{opacity:1}100%{opacity:0}}'}</style>
     </div>
   );
 }

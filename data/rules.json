@@ -414,6 +414,17 @@
       "joined": { "name": "BATTLE START", "fog": "Hostiles in the fog: every step costs AP" },
       "won": { "name": "VICTORY" },
       "lost": { "name": "DEFEAT" },
+      "end": {
+        "about": "0.31.1 (Leon on live 0.31.0: \"There is still no victory ui ... that panel need to appear before the click to leave menu and have to have a victory celebration sound\"): VICTORY and DEFEAT are a panel in the middle of the screen, after the killing blow's effects; on screen `hold_ms` (or until clicked; never past it, so a co-op guest is never held), and only after it closes does a run's field (its FREE ROAM banner, its bar and its leave vote) show. `sounds`: the game's own sound names (apps/web/src/game/sfx.ts) the panel plays, the first at once and each next one `sound_gap_ms` later; a dedicated victory fanfare is still to be sourced (CC0 / CC BY). `felled` and `rounds`: the words of the panel's lines (what the engine already holds: the foes dropped and the fight's rounds).",
+        "hold_ms": 3000,
+        "sound_gap_ms": 180,
+        "won": { "sounds": ["miracle_sting", "soul_choir"] },
+        "lost": { "sounds": ["feel_pump_low", "soul_sigh"] },
+        "felled": "Foes felled",
+        "rounds": "Rounds",
+        "close": "Click to continue",
+        "provisional": true
+      },
       "provisional": true
     },
     "grid": {

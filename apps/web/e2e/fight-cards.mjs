@@ -29,6 +29,11 @@ await p.context().addInitScript(() => {
   new MutationObserver(look).observe(document, { childList: true, subtree: true });
   w.addEventListener('phc-fx', (e) => { const d = e.detail; if (d && d.n) w.__fxT.push({ t: performance.now(), n: d.n, k: d.k }); });
   w.addEventListener('phc:turn-shown', (e) => { w.__turnT.push({ t: performance.now(), mine: !!e.detail?.mine }); });
+  // 0.31.1: the leave control and the end panel, every frame (the panel comes first; the leave control is never seen with it)
+  w.__leave = []; const vis = (el) => !!el && getComputedStyle(el).visibility !== 'hidden' && el.getBoundingClientRect().height > 0;
+  const tick = () => { const lv = vis(document.querySelector('[data-phc-field-leave]')), pn = !!document.querySelector('[data-phc-end]');
+    const last = w.__leave[w.__leave.length - 1]; if (!last || last.lv !== lv || last.pn !== pn) w.__leave.push({ t: performance.now(), lv, pn }); requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
 });
 await p.setViewportSize({ width: 1280, height: 720 });
 const G = () => p.evaluate(() => window.__phc.getState().game);
@@ -78,13 +83,20 @@ ok('VICTORY comes up when it is won', await waitCard('victory'));
 await pause(p, 260); await p.screenshot({ path: SHOTS + '/card-victory.png' });
 { const v = (await cards('victory'))[0], lastFx = await p.evaluate(() => window.__fxT.at(-1)?.t || 0);
   ok('… with what follows, from data (' + v?.after + ')', v?.after === SVD.run.after_fight.won && v.text.includes(SVD.run.after_fight.won));
-  ok('… after the fight\'s last effect has played (' + Math.round(v?.t) + ' ≥ ' + Math.round(lastFx) + ')', !!v && v.t >= lastFx); }
+  ok('… after the fight\'s last effect has played (' + Math.round(v?.t) + ' ≥ ' + Math.round(lastFx) + ')', !!v && v.t >= lastFx);
+  const stats = (await p.locator('[data-phc-end-stats]').textContent().catch(() => '')) || '';
+  ok('… a panel with the fight\'s lines from the engine (' + stats + ')', stats.toUpperCase().includes(CARDS.end.felled.toUpperCase()) && (await p.locator('[data-phc-end]').count()) === 1);
+  ok('… the leave control is not visible while the panel is', !(await p.locator('[data-phc-field-leave]').isVisible().catch(() => false))); }
 void fx1;
 ok('FREE ROAM comes up after VICTORY as the field opens', await waitCard('field'));
 { const v = (await cards('victory'))[0], m = (await cards('field'))[0];
   ok('… after VICTORY has gone (VICTORY ' + Math.round(v?.t) + ' to ' + Math.round(v?.gone) + ' ms, FREE ROAM at ' + Math.round(m?.t) + ' ms)', !!v && !!m && !!v.gone && m.t >= v.gone - 50);
   ok('… with the field\'s words and its rounds, from data (' + m?.text + ')', !!m && m.text.includes(SVD.run.after_fight.field.name) && m.text.includes(String(SVD.field.rounds)));
-  ok('… VICTORY on screen at least the data\'s hold (' + Math.round((v?.gone || 0) - (v?.t || 0)) + ' ms)', !!v && v.gone - v.t >= CARDS.hold_ms); }
+  ok('… VICTORY on screen at least the data\'s hold (' + Math.round((v?.gone || 0) - (v?.t || 0)) + ' ms)', !!v && v.gone - v.t >= CARDS.hold_ms);
+  ok('… and at least the end panel\'s hold, 2.5 s or more (' + CARDS.end.hold_ms + ')', !!v && CARDS.end.hold_ms >= 2500 && v.gone - v.t >= CARDS.end.hold_ms);
+  const L = await p.evaluate(() => window.__leave), firstLeave = L.find((x) => x.lv), firstPanel = L.find((x) => x.pn);
+  ok('… the panel came before the leave control (panel at ' + Math.round(firstPanel?.t) + ', leave at ' + Math.round(firstLeave?.t) + ' ms) and never beside it', !!firstPanel && !!firstLeave && firstPanel.t < firstLeave.t && !L.some((x) => x.lv && x.pn));
+  ok('… its sounds are named in data (' + CARDS.end.won.sounds.join(' ') + ' / ' + CARDS.end.lost.sounds.join(' ') + ')', CARDS.end.won.sounds.length > 0 && CARDS.end.lost.sounds.length > 0); }
 await pause(p, 2500);
 ok('one BATTLE START, one VICTORY and one FREE ROAM for the fight, no DEFEAT', (await cards('fight')).length === 1 && (await cards('victory')).length === 1 && (await cards('field')).length === 1 && !(await cards('defeat')).length);
 
