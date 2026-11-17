@@ -19,7 +19,7 @@ The game shows its version in the corner of the title screen and in every "Repor
 - The 298 placeholder files are retired to `art/_archive/nine-doors/2026-11-16/superseded/placeholders/`; the catalog was
   merged entry by entry (every 0.31.1 entry kept); checksums regenerated; the old delivery manifests of the replaced perks
   name their archived copies (`validate_art.py` OK).
-- `art/briefs/ART-REQUESTS.md` 0b: three signs asked for beyond the 0.30 list (Left and Right Brain Debuff, Swinging).
+- **The art request list beyond the 0.30 list:** `art/briefs/GPT-PROMPTS-2026-11-17-after-0.30.md`, 54 pictures for what a player's screen shows as a text glyph or a blank (the status strip's marks, the FREE ROAM banner, eight conditions, hazards and Sigil zones, twelve Survival place cards, six vows and Witnessed, five Tending passives, credits, XP and tones), with what was left off on purpose and what the builder must wire. `ART-REQUESTS.md` 0b points at it.
 
 ## 0.31.1 — the fight panel put back, and a real VICTORY (hotfix)
 

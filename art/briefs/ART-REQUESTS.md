@@ -35,7 +35,7 @@ needs a catalog entry in [`art/catalog.json`](../catalog.json); Claude adds it a
 
 ## Open requests
 
-**The 0.29 revamp (16 Nov 2026): section 0 below, one file for everything.** **Ready-to-paste prompts for an image generator** (12 Nov 2026): [`GPT-PROMPTS-2026-11-12.md`](GPT-PROMPTS-2026-11-12.md) covers W1 to W3, F1, F2 and the two maps whose layouts are set (M1, M6).
+**The 0.29 revamp (16 Nov 2026): section 0 below, one file for everything; what is wanted beyond the 0.30 list: section 0b.** **Ready-to-paste prompts for an image generator** (12 Nov 2026): [`GPT-PROMPTS-2026-11-12.md`](GPT-PROMPTS-2026-11-12.md) covers W1 to W3, F1, F2 and the two maps whose layouts are set (M1, M6).
 
 ### 1. Wick icons (white flat ink, 1024 × 1024, transparent; the STYLE-LOCK applies)
 
@@ -69,22 +69,24 @@ Behind Me, Wind-up, Read the Swing, Hold the Lane, Scrap Sentinel, Follow, After
 `fork_icons`, `move-draw-fire`, `move-shove`, `move-lingering-dread`, `move-speed-loader`, `move-scrap-turret`,
 `cond-mana-shock` and `weapon-afterword` (all on the 0.30 list or held).
 
-### 0b. Missing art beyond the 0.30 list (requested 17 Nov 2026, 0.31.1)
+### 0b. Everything else without art, beyond the 0.30 list: ONE file (requested 17 Nov 2026, 0.31.1)
 
-A sweep of 0.31.1's data against the catalog for anything in the game with no picture that neither the 0.29 list nor the
-0.30 list asks for. Same family rules as the nine-doors file (the condition-sign family: pure white flat ink on
-transparency, 1024 x 1024, no glow, at most two interior cuts, readable at 24 px and 48 px; no Wick).
+**Everything the game shows without finished art that neither the 0.29 list nor the 0.30 list asks for is in
+[`GPT-PROMPTS-2026-11-17-after-0.30.md`](GPT-PROMPTS-2026-11-17-after-0.30.md)**: **54 images**, all in the game now
+(Leon, 17 Nov: "request anything without art beyond the 0.30 in mention"): 44 white-ink signs and 10 Wick icons, in seven
+groups, most-seen first: the fight screen's marks (the status strip's helping, hurting and state marks, and the FREE ROAM
+banner mark), eight conditions (Left and Right Brain Debuff, Swinging, Ground, In Their Sights, Free move spent, Felt,
+Given Edge), the map's hazards and Sigil zones, twelve Survival place cards that show no picture (training, shrine and the
+six Crossroads trades), the six vows and Witnessed, five Tending passives, and (optional) credits, XP, Devotion XP and the
+seven tones. The first three rows of the old table here (G1 Left Brain Debuff, G2 Right Brain Debuff, G3 Swinging) are rows of
+that file now. The same file lists what was left off on purpose (the 46 feeling states, the basic action icons, never-fitted
+mods) and what the builder must wire. **The 0.30 list stays where it is** (`CONTINUE-0.30.md`, 41 pictures, 0 done).
 
-| # | For | Status | What it must show | Direction | Goes to |
-| --- | --- | --- | --- | --- | --- |
-| G1 | **Left Brain Debuff** (`data/conditions.json` `left_brain_debuff`, a debuff of the brain family, 2 rounds) | Wanted; no sign and no placeholder | A brain in profile with its left half cut away by a single slash | Condition sign; must pair with G2 (mirror images, so the two read apart at 24 px) | `art/icons/conditions/left-brain-debuff.png` (catalog `condition_icons`, id `cond-left-brain-debuff`) |
-| G2 | **Right Brain Debuff** (`right_brain_debuff`) | Wanted; no sign and no placeholder | The same brain with its right half cut away | As G1 | `art/icons/conditions/right-brain-debuff.png` (`cond-right-brain-debuff`) |
-| G3 | **Swinging** (rules 1.60 R7, Keep Swinging: "the next Strike or Opener is free", a state that helps, 2 rounds) | Wanted; no sign and no placeholder | A blade still moving on a long follow-through arc, the arc running back round to its start | Condition sign | `art/icons/conditions/swinging.png` (`cond-swinging`) |
-
-Not requested, for the lead to rule on: the 46 `given_*` / `foe_*` feeling states (Felt Rage and the rest, rules 1.33) could
-show their feeling's glyph (`feeling-<id>`) rather than new signs; `free_move_spent`, `ground` and `in_your_sights` are
-bookkeeping or marks the 0.30 spec asks no sign for; `figment_claws` / `figment_edge` (a Figment's own weapons) and
-`mod_follow_guard` / `mod_afterword` (named in variant_mods, never fitted) never reach a shelf or pack.
+Checked and **nothing missing** (so nobody asks again): every weapon, item, mod, armour piece, calibre of rounds and magazine
+(19 of 19 magazine guns), all six gloves, every perk, trait, Call, feeling, module, boon and boon line, every Survival node
+kind, foe face, shopkeeper and Boss, every patron, Whisper, Hymn and Miracle, every Figment form, order and trait, every
+Shadow verb, the three fight banners (start, won, lost) and the class and door art (delivered, waiting for a screen).
+Row S7 below (the Ork warlord and upper-realm patch portraits) is **done**: both are in the catalog and used.
 
 ### 2. Outburst feelings and modules
 
