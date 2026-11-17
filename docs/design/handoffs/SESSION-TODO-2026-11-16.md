@@ -410,3 +410,9 @@ for Leon BEFORE it ships; (4) carried from 0.31.7: the prayer reach boundary, th
 repro), the LEVEL UP banner, duelling blade and strikers to the line, the Throw row's browser check, e2e.py on a
 per-lane port, token-card chips enlarge. Then 0.32 starts with the 18 shelved forks, the Strain ruling (Composure
 only, base 3, steps at 1 / 2 / 4 / 6 / 8), Rite in the Field and the Call ladder's step 10 (both await Leon's yes).
+- **Text audit, a named case (Leon, screenshot of the rest's Training card):** "Drill +200 with the Combat knife ·
+  Toward the Combat knife's next mark · 211 now · +200 · ✓ Reaches it · Mark I at 300: the Combat knife's signature
+  move, Coup · Free · One training per rest. Izacarl has had it." He cannot tell what "Reaches it" means, and the
+  card still predicts after the training is spent. Card style: "+200 Combat knife mastery" / bar "211 / 300" /
+  "Unlocks Coup" only when this drill gets there / when spent: the card greyed with "Training used this rest" and no
+  prediction. Audit every Survival card (training, shrine, shop, Forge, rest, Crossroads, boons) the same way.
