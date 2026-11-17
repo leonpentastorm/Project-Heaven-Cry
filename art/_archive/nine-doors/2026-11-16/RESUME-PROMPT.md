@@ -7,3 +7,6 @@ Use records/progress as completion ledgers, not recipe pending fields. All 28 ol
 Wick is the approved ceramic pixel-screen automaton with capelet, lantern heart, chunky limbs and asymmetry. No default bowl, cup, halo or copied arrows. Sign and object-only rows must not gain a full Wick. Pure-white ink, transparency and no glow. Inspect source composites on charcoal; raw transparent chat thumbnails can misrepresent faint alpha. Preserve all native renders and replaced files. Use image generation for creative painting and edits; technical exports preserve source alpha.
 
 Continue priority order from CONTINUE.md. Export exact UI sizes and review them, update catalog/records/manifests/queue/checksums, validate scoped assets and the full library/build where available. Check actual tools rather than trusting historical quota/environment blockers. Push reviewable completed work to the art branch, with preview/ZIP/checksum and a truthful fresh handoff. No game/UI changes and no automatic resume promise.
+
+
+**Current image-generation blocker:** actual HTTP 429 usage limit on 17 November 2026; reset reported at 13:28:30 Bangkok. Read [the fresh resumption handoff](RESUME-AUDIT-2026-11-17.md) and [service details](generation-limit-2026-11-17.json). Next legacy jobs: #271–274. Added 0.30 requests: 0/41 delivered.

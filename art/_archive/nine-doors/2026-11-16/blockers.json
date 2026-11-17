@@ -1,20 +1,23 @@
 {
-  "code": "usage_limit_reached",
-  "http_status": 429,
-  "failed_row": 324,
-  "reset_epoch": 1794873475,
-  "reset_utc": "2026-11-16T23:57:55Z",
-  "reset_bangkok": "2026-11-17T06:57:55+07:00",
-  "delivered_candidates": 175,
-  "remaining_rows": 200,
-  "pending_repaint_rows": [
-    323
+  "observed_at_utc": "2026-11-17T00:46:00Z",
+  "observed_at_bangkok": "2026-11-17T07:46:00+07:00",
+  "blocker": "actual image-generation HTTP429 usage_limit_reached",
+  "resets_at_epoch": 1794896910,
+  "resets_at_bangkok": "2026-11-17T13:28:30+07:00",
+  "failed_ids": [
+    271,
+    272,
+    273,
+    274
   ],
-  "description": "Image generation stopped at its usage limit; no substitute painted assets were manufactured. Four explicitly permitted original SVGs were completed afterward. Last Turn is archived for glow correction, not counted as delivered and not activated in catalog.",
-  "resolved_service_rejections": [
-    104,
-    144,
-    300,
-    316
-  ]
+  "completed_legacy": 344,
+  "eligible_legacy_remaining": 4,
+  "held_legacy_pending": 27,
+  "added_030_completed": 0,
+  "added_030_remaining": 41,
+  "combined_outstanding_request_records": 45,
+  "error": "image generation failed: http 429 Too Many Requests: Some(\"{\\\"error\\\":{\\\"type\\\":\\\"usage_limit_reached\\\",\\\"message\\\":\\\"The usage limit has been reached\\\",\\\"plan_type\\\":\\\"plus\\\",\\\"resets_at\\\":1794896910,\\\"eligible_promo\\\":null,\\\"limit_window_minutes\\\":null,\\\"resets_in_seconds\\\":20526}}\")",
+  "no_automatic_resume": true,
+  "historical_initial_blocker": "blockers-initial-175.json",
+  "fresh_handoff": "RESUME-AUDIT-2026-11-17.md"
 }

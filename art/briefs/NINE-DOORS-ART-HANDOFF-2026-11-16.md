@@ -2,6 +2,7 @@
 
 <!-- current-continuation -->
 > **Latest delivery:** 344/375 legacy candidates; 4 eligible old jobs + 27 held; 41/41 added 0.30 requests remain. Read [CURRENT-CHECKPOINT.md](../_archive/nine-doors/2026-11-16/CURRENT-CHECKPOINT.md) and the filtered CONTINUE.md. Earlier counts/tables below are historical.
+> **Current blocker:** actual image quota, 17 Nov; reset reported 13:28:30 Bangkok. [Fresh resumption handoff](../_archive/nine-doors/2026-11-16/RESUME-AUDIT-2026-11-17.md).
 <!-- /current-continuation -->
 
 > **0.30 scope override — 16 November 2026:** Read [CONTINUE-0.30.md](../_archive/nine-doors/2026-11-16/CONTINUE-0.30.md), [the hold list](../_archive/nine-doors/2026-11-16/art-hold-list-0.30.md) and [the filtered queue](../_archive/nine-doors/2026-11-16/CONTINUE.md) first. All 28 old HOLD recipes stay blocked. The original 200 unfinished rows are now 173 eligible + 27 held; 41 source-backed 0.30 requests are added separately. No additional art has been delivered by this queue update. The tables below remain the historical 0.29 recipes and must not override these holds or new replacement rules.

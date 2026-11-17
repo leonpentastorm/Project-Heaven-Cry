@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "baseline_commit": "27bb94309f1c5f8343d8c2844b637819503eb503",
+  "preserved_candidate_count": 175,
+  "checked_files": 1404,
+  "held_palm_258_preserved": true,
+  "method": "Fresh SHA-256 comparison at 344 checkpoint: original baseline masters, native sources and every UI export match baseline bytes."
+}

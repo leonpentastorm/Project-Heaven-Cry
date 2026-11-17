@@ -90,3 +90,6 @@ Use planned-jobs-0.30.json for exact source excerpts, provisional names, source 
 - #250 · Crusader (Office)
 
 Already delivered and held for review: #258. Preserve these files.
+
+
+**Current image-generation blocker:** actual HTTP 429 usage limit on 17 November 2026; reset reported at 13:28:30 Bangkok. Read [the fresh resumption handoff](RESUME-AUDIT-2026-11-17.md) and [service details](generation-limit-2026-11-17.json). Next legacy jobs: #271–274. Added 0.30 requests: 0/41 delivered.

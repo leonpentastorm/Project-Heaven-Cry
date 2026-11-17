@@ -2,10 +2,10 @@
 
 The user authorized adding the 0.30 proposals already present in the supplied hold list and project design sources. This addendum adds **41 source-backed request records**, while preserving every old HOLD.
 
-- Original delivery ledger: **344/375 delivered**, unchanged.
+- Original delivery ledger: **344/375 delivered**.
 - Original unfinished rows: **4 eligible + 27 held**. Palm #258 was already delivered and is now held for review; preserve it.
 - Additional 0.30 queue: **41 requests, 0 delivered**: 32 forks, Stand Behind Me, four replacement depictions, and four shared requests.
-- Combined remaining queue: **45 request records**, not a promise of 214 unique new paintings. Four replacements reuse existing icon bindings and Follow may reuse #19's artwork.
+- Combined remaining queue: **45 request records**. Four replacements reuse existing icon bindings and Follow may reuse #19's artwork.
 
 Read `art-hold-list-0.30.md`, `holds-0.30.json`, and `planned-jobs-0.30.json` before using the older handoff. The updated `CONTINUE.md` excludes every held old recipe. `planned-jobs.json` is retained as the historical 0.29 recipe source; its pending flags are not the queue.
 
@@ -65,4 +65,4 @@ For Mana Shock, the earlier F3 colour/glow request yields to the later Nine Door
 | Mana Shock | cond-mana-shock | queued |
 | Staggered | verify binding from source | queued-proposal |
 
-All future paintings remain review candidates until approved. Follow the existing mode references, safe bounds, alpha and UI export checks. See the archived continuation attempt for the previous native renders of #323 and #324; neither is delivered.
+All future paintings remain review candidates until approved. Follow the existing mode references, safe bounds, alpha and UI export checks. Last Turn #323 and Augment Offline #324 are delivered, reviewed candidates. Preserve their active records; the historical rejected glowing Last Turn source remains archived.
