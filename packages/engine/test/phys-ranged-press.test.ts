@@ -330,10 +330,10 @@ describe('Mag Dump', () => {
     const f = fight('recurve_bow'); expect(f.tech('mag_dump', { targetId: f.foe.id })).toBe('Not available with a drawn weapon.');
     const g = fight('service_pistol'); g.pc.ammo = 0; expect(g.tech('mag_dump', { targetId: g.foe.id })).toBe('Empty: reload first.');
   });
-  it('a target that falls mid-dump takes no more rolls, and the rest of the magazine still goes', () => {
+  it('a target that falls mid-dump takes no more rolls, and only the rolls made spend rounds (rules 1.66 item 5204)', () => {
     const f = fight('service_pistol'); f.foe.hp = 1; rig({ hit: true, die: 20 }); const at = f.cb.log.length;
     f.tech('mag_dump', { targetId: f.foe.id }); expect(f.foe.dead).toBe(true);
-    expect(rolledToHit(f, at, f.pc).length).toBe(1); expect(f.pc.ammo).toBe(0);
+    expect(rolledToHit(f, at, f.pc).length).toBe(1); expect(f.pc.ammo).toBe(12 - (TECHNIQUE.mag_dump.numbers as any).rounds_per_roll);
   });
   it('the preview\'s rolls are the action\'s, roll by roll; a preview changes nothing', () => {
     const f = fight('service_pistol', [{ at: 'G5' }], { pc: { skills: { dexterity: 0 } } }); f.foe.hp = 999; f.foe.maxHp = 999;

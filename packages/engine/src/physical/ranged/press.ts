@@ -292,7 +292,7 @@ technique({
   check(t) { return t.tgt ? null : 'Pick a target.'; },
   run(t) {
     const tgt = t.tgt!, p = t.line('auto', 'quick', 'spread'), u = t.u, ammo0 = loaded(t), press = t.num('pressure', 1), heat0 = u.heat;
-    let fired = 0, total = 0;
+    let fired = 0, total = 0, cut = false;
     if (p === 'spread') {
       const close = dist(u.pos, tgt.pos) <= t.num('spread_range', 4);
       total = dumpRounds(t, 1); // before the barrels fire: what is loaded now
@@ -320,12 +320,15 @@ technique({
         return undefined;
       });
       if (out !== undefined) return out;
+      // rules 1.66 item 5204: the rounds go with the rolls made (rounds_per_roll each): a target that falls to the first
+      // roll ends the dump, and the rounds of the rolls not made stay in the gun (before: all 12 went, one roll logged)
+      if (!t.preview && fired < rolls) { total = Math.min(total, fired * t.num('rounds_per_roll', 4)); cut = true; }
       if (t.preview) t.note(rolls + (rolls === 1 ? ' roll' : ' rolls') + (step && rolls > 1 ? ', each at −' + step + ' more than the last' : '') + '; +' + press + ' Pressure per ' + (p === 'auto' ? 'roll, hit or miss' : 'hit') + '.');
     }
     burnRest(t, Number.isFinite(ammo0) ? total : 0, fired, ammo0); // the rest of its rounds go too (never more than its cap)
     // Heat goes to one under the limit (a jam the shots caused stays). The core adds a Press's +1 Heat after the run (the
     // base: so the rolls match the card), so the run leaves it one lower.
-    if (heatsUp(t)) {
+    if (heatsUp(t) && !cut) { // a dump cut short (item 5204) leaves the Heat its rolls made
       const to = heatLimit(u, t.w) - t.num('heat_under', 1);
       if (t.preview) t.note('Heat goes to ' + to + '.');
       else {

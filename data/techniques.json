@@ -2015,7 +2015,7 @@
       },
       "rounds": "up_to",
       "needs": {},
-      "text": "At one target: one roll for every {=numbers.per_roll} rounds left (at most {=numbers.max_rolls} rolls), each at −{=numbers.step} more than the last; each roll spends {=numbers.rounds_per_roll} rounds, never more than are left, so never the whole of a big magazine. +{=numbers.pressure} Pressure per hit. Heat goes to one under the limit.",
+      "text": "At one target: one roll for every {=numbers.per_roll} rounds left (at most {=numbers.max_rolls} rolls), each at −{=numbers.step} more than the last; each roll spends {=numbers.rounds_per_roll} rounds, never more than are left, so never the whole of a big magazine; if the target falls, the dump stops there and the rounds of the rolls not made stay in the gun. +{=numbers.pressure} Pressure per hit. Heat goes to one under the limit.",
       "lines": [
         {
           "props": [

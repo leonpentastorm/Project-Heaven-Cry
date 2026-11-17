@@ -6,6 +6,9 @@ import { fightWith, withGame } from './helpers/perkfight';
 import { canYield } from '../src/yielding';
 import { togglesFor } from '../src/effects/actions';
 import { previewDescriptor } from '../src/descriptors';
+import { physFight, rig } from './helpers/physfight';
+import { calm } from './helpers/physfight-ranged';
+import { TECHNIQUE } from '../src';
 
 type F = ReturnType<typeof fightWith>;
 const open = (cb: any) => { cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] }; cb.objects = []; };
@@ -65,5 +68,24 @@ describe('D: the preview price (item 5203)', () => {
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.cost).toBe('2 AP');
     const before = f.unit(f.pc.id).ap; f.act({ unitId: f.pc.id, ...pv.action } as any);
     expect(f.unit(f.foe.id).dead).toBe(true); expect(f.unit(f.pc.id).ap).toBe(before - 2 + 2); // charged 2, then the kill's +2
+  });
+});
+
+describe('B: Mag Dump (item 5204)', () => {
+  const dump = (weapon: string, hp: number) => {
+    const f = physFight([{ weapon, known: ['mag_dump'], skills: { dexterity: 6 } }], [{ at: 'H5', tier: 'soldier' }]);
+    f.put(f.pc, 'C5'); f.put(f.foes[0], 'G5'); calm(f); f.turn(f.pc); f.pc.heat = 0;
+    f.unit(f.foe.id).hp = hp; f.unit(f.foe.id).maxHp = Math.max(hp, f.unit(f.foe.id).maxHp); rig({ hit: true });
+    const a0 = f.unit(f.pc.id).ammo!, n0 = f.cb.log.length;
+    try { expect(f.tech('mag_dump', { targetId: f.foe.id })).toBeNull(); } finally { rig(null); }
+    const rolls = f.g.combat!.log.slice(n0).filter((l) => /fires at .*d20/.test(l)).length;
+    return { f, rolls, spent: a0 - f.unit(f.pc.id).ammo!, heat: f.unit(f.pc.id).heat };
+  };
+  const N = TECHNIQUE.mag_dump.numbers as any;
+  it('a full magazine: max_rolls rolls, each logged with its own to-hit, rounds_per_roll rounds each', () => {
+    const r = dump('decrkm_smg', 999); expect(r.rolls).toBe(N.max_rolls); expect(r.spent).toBe(N.max_rolls * N.rounds_per_roll);
+  });
+  it('the target falls to the first roll: one roll, rounds_per_roll rounds spent, the rest stay in the gun, no Heat to the limit', () => {
+    const r = dump('decrkm_smg', 10); expect(r.rolls).toBe(1); expect(r.spent).toBe(N.rounds_per_roll); expect(r.heat).toBeLessThan(5);
   });
 });

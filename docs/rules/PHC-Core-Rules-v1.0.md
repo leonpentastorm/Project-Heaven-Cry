@@ -12126,3 +12126,10 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     action lost, and the kill's +2 AP back cancelled the price. The preview's AP is now the price function's: the row's
     price (`priceOf`) before a target is picked, the system's own preview for the aimed action after; the trial run's
     loss stands in only where no system priced the action and it is higher. No number changed.
+5204. **Mag Dump spends the rounds of the rolls it makes (B).** Reproduced through `combat/technique`: with a full
+    magazine and a target that stands, the dump makes `max_rolls` **3** rolls, each logged with its own to-hit, and
+    spends 3 x `rounds_per_roll` **4** = 12 rounds (correct). With a target that falls to the first roll, it logged one
+    roll and still spent all 12 rounds and set Heat to one under the limit (the reviewer's "uses all the ammo and heat
+    but logs one d20 roll"). Now the dump stops with the target: rounds spent = rolls made x `rounds_per_roll` (never
+    more than are left), and a dump cut short leaves the Heat its rolls made (no jump to the limit). The Spread line
+    (one roll) is unchanged. Supersedes the old test "the rest of the magazine still goes". PROVISIONAL.
