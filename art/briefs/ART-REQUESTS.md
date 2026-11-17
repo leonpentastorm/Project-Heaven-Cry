@@ -73,7 +73,7 @@ Behind Me, Wind-up, Read the Swing, Hold the Lane, Scrap Sentinel, Follow, After
 
 **Everything the game shows without finished art that neither the 0.29 list nor the 0.30 list asks for is in
 [`GPT-PROMPTS-2026-11-17-after-0.30.md`](GPT-PROMPTS-2026-11-17-after-0.30.md)**: **54 images**, all in the game now
-(Leon, 17 Nov: "request anything without art beyond the 0.30 in mention"): 44 white-ink signs and 10 Wick icons, in seven
+(Leon, 17 Nov: "request anything without art beyond the 0.30 in mention"): 43 white-ink signs and 11 Wick icons, in seven
 groups, most-seen first: the fight screen's marks (the status strip's helping, hurting and state marks, and the FREE ROAM
 banner mark), eight conditions (Left and Right Brain Debuff, Swinging, Ground, In Their Sights, Free move spent, Felt,
 Given Edge), the map's hazards and Sigil zones, twelve Survival place cards that show no picture (training, shrine and the
