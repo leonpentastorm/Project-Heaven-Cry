@@ -8,6 +8,23 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.5 — the picking contract (rules 1.65)
+
+- **Every aimed action shows its picking (Leon: "Picking UI for every aimed action is important"):** the engine's
+  action preview now sends, for every system, the reach (where it could be aimed from here), the legal choices of the
+  open pick, the area the aim covers and whom it touches with a word; the choices are worked out by the same check
+  the reducer gates on (perks, class moves and door verbs, prayers, Figment and owned orders, Calls, techniques, basic
+  actions), fogged to what the side sees. Shadow's Vault, Pick, Douse, Decoy, Rig and Sabotage now show their legal
+  tiles; prayers show their reach and area (The Sky Answers' 5×5, Covering Fire's 3×3, Thunderclap's radius), read
+  from the prayer's data (the typed radii and Switcheroo's 6 are gone; Together's "next to each other" is the row's
+  `pair_within`); every Miracle's event carries its area.
+- **The net gain of a mend:** a heal's or a shield's target says what it gets ("30 → 32 (+2)", "no gain: already at
+  full HP"), from the engine's own run on a copy.
+- **One overlay on the fight screen:** reach shaded, choices outlined, the area under the pointer, the touched units
+  ringed with their word, for every action; a click on a tile or unit the pick can't take says why by the action box.
+- **The guard:** `packages/engine/test/picking.test.ts` (every pick step of every offered action, nine classes, eight
+  patrons, items: its choices are what the reducer takes); `apps/web/e2e/picking.mjs` in the browser.
+
 ## 0.31.2 — the known faults of 0.31.0 (rules 1.64)
 
 - **K5, healing between stops (rules 1.64 items 5000 to 5002):** Field Surgeon's Patch works in a Survival run; a

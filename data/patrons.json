@@ -1907,6 +1907,7 @@
           "tier": 3,
           "text": "Two allies standing next to each other each get +{=effects.1.value} to hit and +{=effects.1.value} Defense until your next turn.",
           "target": "two_allies",
+          "pair_within": 1,
           "effects": [
             {
               "op": "attack_mod",

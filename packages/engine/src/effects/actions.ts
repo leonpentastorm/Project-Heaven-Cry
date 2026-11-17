@@ -373,24 +373,31 @@ export function previewPerkAction(x: Who, id: string, args: ActionArgs & { actio
   const { h, d } = r, e = entryOf(h, d, scope);
   if (!e) return { ok: false, why: d.scope.includes(scope) ? 'Not now.' : 'Not here.', ap: 0, lines: [] };
   const base: ActionPreview = { ok: !e.why, why: e.why || undefined, ap: e.ap, lines: [] };
-  if (base.ok && (d.target === 'unit' || d.target === 'enemy' || d.target === 'ally') && !args.targetId && !d.arm) { base.ok = false; base.why = 'Pick a target.'; }
-  // a pick the list greys (an unfelt feeling: pickOptions' `off`) is refused with its why
-  if (base.ok && args.choice != null && e.options) { const o = e.options.find((x) => x.id === String(args.choice)); if (o?.off) { base.ok = false; base.why = o.off; } }
-  if (base.ok && args.targetId && h.cb) {
-    const t = h.cb.units.find((u) => u.id === args.targetId);
-    if (!t || t.dead) { base.ok = false; base.why = 'Pick a living target.'; }
-    else if (d.target === 'ally' && t.side !== h.u?.side) { base.ok = false; base.why = 'Pick an ally.'; }
-    else if (d.target === 'enemy' && t.side === h.u?.side) { base.ok = false; base.why = 'Pick an enemy.'; }
-    else if (d.range != null && h.u && distK(h.u.pos, t.pos) > d.range) { base.ok = false; base.why = 'Out of range (' + d.range + ' tiles).'; }
-    else if (d.reach) { const why = d.reach(h, t); if (why) { base.ok = false; base.why = why; } } // P6: a door verb's reach (side, sight, its `if`)
-  }
-  if (base.ok && d.target === 'tile' && !args.tile) { base.ok = false; base.why = 'Pick a tile.'; }
-  if (base.ok && d.target === 'text' && !String(args.text || '').trim()) { base.ok = false; base.why = 'Say what you do.'; }
+  if (base.ok) { const why = aimWhy(h, d, e, args); if (why) { base.ok = false; base.why = why; } }
   const p = d.preview ? d.preview(h, args) || {} : {};
   const out: ActionPreview = { ...base, ...p, lines: [...(p.lines || [])] };
   if (p.ap != null) out.ap = p.ap; if (p.ok === false) out.ok = false;
   if (!out.lines.length) out.lines.push(e.engine ? h.info.text : h.info.text + ' (the Narrator rules what the engine doesn\'t)');
   return out;
+}
+/** Why this action can't take these picks (its unit: alive, side, range, the door verb's reach; its tile and text given;
+ * a greyed choice), or null: previewPerkAction's target checks (the reducer's gate, through runPerkAction), which the
+ * picking contract (rules 1.65, descriptors.ts PERKS.choices) asks of each candidate. */
+function aimWhy(h: Holder, d: ActionDef, e: PerkActionEntry, args: ActionArgs): string | null {
+  if ((d.target === 'unit' || d.target === 'enemy' || d.target === 'ally') && !args.targetId && !d.arm) return 'Pick a target.';
+  // a pick the list greys (an unfelt feeling: pickOptions' `off`) is refused with its why
+  if (args.choice != null && e.options) { const o = e.options.find((x) => x.id === String(args.choice)); if (o?.off) return o.off; }
+  if (args.targetId && h.cb) {
+    const t = h.cb.units.find((u) => u.id === args.targetId);
+    if (!t || t.dead) return 'Pick a living target.';
+    if (d.target === 'ally' && t.side !== h.u?.side) return 'Pick an ally.';
+    if (d.target === 'enemy' && t.side === h.u?.side) return 'Pick an enemy.';
+    if (d.range != null && h.u && distK(h.u.pos, t.pos) > d.range) return 'Out of range (' + d.range + ' tiles).';
+    if (d.reach) { const why = d.reach(h, t); if (why) return why; } // P6: a door verb's reach (side, sight, its `if`)
+  }
+  if (d.target === 'tile' && !args.tile) return 'Pick a tile.';
+  if (d.target === 'text' && !String(args.text || '').trim()) return 'Say what you do.';
+  return null;
 }
 const distK = (a: string, b: string) => { const [ax, ay] = a.split(',').map(Number), [bx, by] = b.split(',').map(Number); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
 

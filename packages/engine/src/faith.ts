@@ -970,7 +970,7 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   const pv = previewPrayer(g, u.id, kind, id, a); if (!pv.ok) return pv.why || 'You can\'t pray that now.';
   const pe = prayerEntry(c, kind, id)!; const patron = pe.patron;
   // The target.
-  const t = pickTarget(cb, u, pv, a); if (typeof t === 'string') return t;
+  const t = pickTarget(cb, u, pv, a, pe.entry); if (typeof t === 'string') return t;
   pay(cb, u, pv.ap);
   const lim = prayed({ c, u, cb, g });
   if (kind === 'whisper') lim.take('per_turn', 1, WHISPER_KEY); else if (kind === 'hymn') { lim.uncool(HYMN_KEY); lim.cool(0, HYMN_KEY); const st = fs(u); if (st.vowBank) { st.hymnCut = st.vowBank; delete st.vowBank; } else delete st.hymnCut; if (ownCooldown(pe.entry)) { lim.uncool(ownKey(pe.entry.id)); lim.cool(0, ownKey(pe.entry.id)); } }
@@ -994,7 +994,7 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   // The Miracle's fx (item 746) goes on the list before its effects (the cut-in plays first); once they have run it is
   // given the grant line (item 745: picked after them, so the line never moves the Miracle's own dice) and the summary
   // of what they did: the web needs no engine call.
-  const mfx = kind === 'miracle' ? emitFx(cb, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: a.tile || u.pos, area: a.tile ? tilesAround(a.tile, pe.entry.id === 'the_sky_answers' ? 2 : 1) : null, unit: u.id, char: c.id, name: pe.entry.name || id, text: pe.entry.text || '', line: null as string | null, summary: '' }) : null;
+  const mfx = kind === 'miracle' ? emitFx(cb, FAITH_FX.miracle, { patron: patron.id, id: pe.entry.id, at: a.tile || u.pos, area: ((ar) => (ar.length ? ar : null))(prayerAim(g, u.id, kind, id, a).area), unit: u.id, char: c.id, name: pe.entry.name || id, text: pe.entry.text || '', line: null as string | null, summary: '' }) : null;
   // A Miracle is past the Elite and Boss guard (bug sweep, 12 Nov 2026: it may exceed the ceilings, once a session, for five levels of Devotion).
   const did = kind === 'miracle' ? unguarded(() => runEntry(cb, rng, u, kind, pe, t, a, power)) : runEntry(cb, rng, u, kind, pe, t, a, power);
   line += did;
@@ -1011,6 +1011,16 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
     emitFx(cb, FAITH_FX.witnessed, { unit: u.id, patron: patron.id, at: u.pos });
     speak(g, cb, rng, c, patron, 'witnessed');
   }
+  return null;
+}
+/** Rules 1.65 (the picking contract, E2): what a prayer does once answered, run on a fight the caller has copied (the
+ * descriptor's preview reads the net gain of a heal or a shield from it): the target as combatPray picks it, then the
+ * entry's own effects (runEntry). No roll, no price, no limit: what an answer would give, never whether it comes. */
+export function prayerAnswerOn(g: GameState, cb: Combat, rng: Rng, unitId: string, kind: PrayerKind, id: string, a: CombatPrayArgs): string | null {
+  const u = cb.units.find((x) => x.id === unitId), c = u ? unitChar(u) : null; if (!u || !c) return 'No one to pray.';
+  const pv = previewPrayer(g, u.id, kind, id, a), pe = prayerEntry(c, kind, id); if (!pe) return 'No such prayer.';
+  const t = pickTarget(cb, u, pv, a, pe.entry); if (typeof t === 'string') return t;
+  runEntry(cb, rng, u, kind, pe, t, a, u.blessPower || blessingPower(c));
   return null;
 }
 // ---------- a door verb that is a prayer (Classes 3.0 P6: grant_action `prayer: "whisper" | "hymn"`) ----------
@@ -1061,7 +1071,20 @@ export function verbPray(cb: Combat, rng: Rng, u: Unit, kind: 'whisper' | 'hymn'
 setPrayerDoor({ why: verbPrayerWhy, pray: verbPray });
 
 type Target = Unit | null | { units: Unit[] };
-function pickTarget(cb: Combat, u: Unit, pv: PrayerPreview, a: CombatPrayArgs): Target | string {
+/** Rules 1.65 (the picking contract): a prayer's area as a radius, from its data (an effect's `area` "N×N": (N − 1) / 2;
+ * else its `radius`; the largest when several), or null: no area. Covering Fire's 3×3 is 1, The Sky Answers' 5×5 is 2. */
+export function prayerRadius(entry: any): number | null {
+  let r: number | null = null;
+  for (const e of entry?.effects || []) { const m = typeof e?.area === 'string' ? /^(\d+)x(\d+)$/.exec(e.area) : null; const v = m ? (Number(m[1]) - 1) / 2 : typeof e?.radius === 'number' ? e.radius : null; if (v != null && (r == null || v > r)) r = v; }
+  return r;
+}
+/** Rules 1.65: how far from the caster a picked unit of a two-unit prayer may stand (Switcheroo's swap): its first
+ * effect's `range` (data), or null. */
+export const prayerPickRange = (entry: any): number | null => { const v = (entry?.effects || [])[0]?.range; return typeof v === 'number' ? v : null; };
+/** Why a prayer can't go at what is picked (a string; else the target). `partial`: a two-unit prayer's first pick alone.
+ * The one check: combatPray gates on it, and prayerChoices (rules 1.65) lists what it takes. The pick range and the
+ * pair's distance are the row's data (prayerPickRange, `pair_within`). */
+function pickTarget(cb: Combat, u: Unit, pv: PrayerPreview, a: CombatPrayArgs, entry: any = null, partial = false): Target | string {
   const byId = (id?: string) => (id ? cb.units.find((x) => x.id === id) || null : null);
   switch (pv.target) {
     case 'self': case 'none': return u;
@@ -1071,11 +1094,13 @@ function pickTarget(cb: Combat, u: Unit, pv: PrayerPreview, a: CombatPrayArgs): 
       return null;
     }
     case 'two_units': case 'two_allies': {
-      const x = byId(a.targetId), y = byId(a.targetId2);
-      if (!x || !y || x === y || !pv.targets.includes(x.id) || !pv.targets.includes(y.id)) return 'Pick two ' + (pv.target === 'two_allies' ? 'allies' : 'units') + ' in sight.';
-      if (pv.target === 'two_units' && (dist(x.pos, u.pos) > 6 || dist(y.pos, u.pos) > 6)) return 'Both must be within 6 tiles of you.';
-      if (pv.target === 'two_allies' && pv.name === 'Together' && dist(x.pos, y.pos) > 1) return 'Together: pick two allies next to each other.';
-      return { units: [x, y] };
+      const x = byId(a.targetId), y = byId(a.targetId2), range = prayerPickRange(entry), pair = entry?.pair_within;
+      const two = 'Pick two ' + (pv.target === 'two_allies' ? 'allies' : 'units') + ' in sight.';
+      const one = (v: Unit | null): string | null => (!v || !pv.targets.includes(v.id) ? two : range != null && dist(v.pos, u.pos) > range ? 'Both must be within ' + range + ' tiles of you.' : null);
+      if (partial && !y) return one(x) || null;
+      const no = one(x) || one(y) || (x === y ? two : null); if (no) return no;
+      if (typeof pair === 'number' && dist(x!.pos, y!.pos) > pair) return (pv.name || 'This') + ': pick two allies next to each other.';
+      return { units: [x!, y!] };
     }
     default: {
       const t = a.targetId ? byId(a.targetId) : pv.target === 'self_or_ally' || pv.target === 'ally' ? u : null;
@@ -1084,6 +1109,55 @@ function pickTarget(cb: Combat, u: Unit, pv: PrayerPreview, a: CombatPrayArgs): 
       return t;
     }
   }
+}
+/** Rules 1.65 (the picking contract): of these candidates (unit ids for `targetId` / `targetId2`, tile keys for `tile`),
+ * the ones this prayer takes now with the other picks as given: previewPrayer and pickTarget, the very gates
+ * combatPray asks (a two-unit prayer's first pick on its own). */
+export function prayerChoices(g: GameState, who: string, kind: PrayerKind, id: string, args: PrayerArgs, key: 'targetId' | 'targetId2' | 'tile', cands: string[]): string[] {
+  const { c, u, cb } = whoOf(g, who); if (!c || !u || !cb) return [];
+  const entry = prayerEntry(c, kind, id)?.entry; if (!entry) return [];
+  return cands.filter((k) => { const a = { ...args, [key]: k }; const pv = previewPrayer(g, u.id, kind, id, a); return pv.ok && typeof pickTarget(cb, u, pv, a, entry, key === 'targetId') !== 'string'; });
+}
+/** Which side a prayer's data says it touches (an effect's `scope`, `filter` or `target`, nested ones too): 'allies',
+ * 'enemies', or null. */
+function prayerSide(effs: any[]): 'allies' | 'enemies' | null {
+  for (const e of effs || []) {
+    for (const f of ['scope', 'filter', 'target']) { const v = String(e?.[f] || ''); if (/^allies|^squad/.test(v)) return 'allies'; if (/^enemies/.test(v)) return 'enemies'; }
+    const n = prayerSide(e?.effects || []); if (n) return n;
+  }
+  return null;
+}
+/** Rules 1.65 (the picking contract): where a prayer reaches and what it covers, from its data. reach: the tiles it may
+ * be aimed at (a tile prayer: every tile the caster sees, pickTarget's own test; a two-unit prayer: its pick range);
+ * area: the tiles the aim covers (a tile prayer's N×N on the picked tile, a self prayer's radius round the caster, an
+ * "in sight" prayer's units' tiles); units: whom it touches there (harm: enemies, help: allies). The Miracle's event
+ * area is this one's (combatPray). */
+export function prayerAim(g: GameState, who: string, kind: PrayerKind, id: string, args: PrayerArgs = {}): { reach: string[]; area: string[]; units: { id: string; tone: 'harm' | 'help' }[] } {
+  const out = { reach: [] as string[], area: [] as string[], units: [] as { id: string; tone: 'harm' | 'help' }[] };
+  const { c, u, cb } = whoOf(g, who); if (!c || !u || !cb) return out;
+  const pe = prayerEntry(c, kind, id); if (!pe) return out;
+  const entry = pe.entry, target = entry.target || (kind === 'hymn' ? 'self_or_ally' : 'none'), r = prayerRadius(entry), range = prayerPickRange(entry);
+  const all: string[] = []; for (let y = 0; y < cb.map.h; y++) for (let x = 0; x < cb.map.w; x++) all.push(x + ',' + y);
+  if (target === 'tile') out.reach = all.filter((k) => unitSees(cb, u, k));
+  else if ((target === 'two_units' || target === 'two_allies') && range != null) out.reach = all.filter((k) => dist(u.pos, k) <= range);
+  const side = prayerSide(entry.effects) || (target === 'tile' ? 'enemies' : null);
+  const onTiles = (tiles: string[]) => cb.units.filter((v) => !v.dead && tiles.includes(v.pos) && (side === 'allies' ? v.side === u.side : side === 'enemies' ? v.side !== u.side : true));
+  let touched: Unit[] = [];
+  if (target === 'tile') { if (args.tile) { out.area = tilesAround(args.tile, r ?? 0, cb); touched = onTiles(out.area); } }
+  else if ((target === 'self' || target === 'none') && r != null) { out.area = tilesAround(u.pos, r, cb); touched = side ? onTiles(out.area) : []; }
+  else if (target === 'none') {
+    // an "in sight" or "every ally" prayer (a Miracle): whom its data scope names, their tiles its area
+    const set = new Set<Unit>();
+    for (const e of entry.effects || []) {
+      const sc = String(e?.scope || e?.target || '');
+      if (/^enemies/.test(sc)) for (const v of enemiesInSight(cb, u)) set.add(v);
+      else if (sc === 'allies_fallen') for (const v of cb.units.filter((w) => w.side === u.side && (w.dead || w.downed) && !w.companion)) set.add(v);
+      else if (/^allies|^squad/.test(sc)) for (const v of cb.units.filter((w) => w.side === u.side && !w.dead && (sc !== 'allies_in_sight' || w === u || unitSees(cb, u, w.pos)))) set.add(v);
+    }
+    touched = [...set]; out.area = touched.map((v) => v.pos);
+  }
+  out.units = touched.map((v) => ({ id: v.id, tone: v.side === u.side ? 'help' as const : 'harm' as const }));
+  return out;
 }
 /** The square of tiles within r of a tile (r 1: 3×3; r 2: 5×5). */
 /** A Blessing lands on a unit: 'blessing_in' first (Blessed Shells may load it; Factory Made and The Old Blood change the
@@ -1198,7 +1272,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     // The Quartermaster
     case 'resupply': return land(cb, rng, u, one!, e, power, () => { const r = freeReload(cb, one!); if (one !== u) faithTag(cb, u, 'supply'); const res = (one!.res ||= {}); if (res.supplies != null) res.supplies = Math.min(res.supplies + 1, one!.resMax?.supplies ?? res.supplies + 1); return r + (res.supplies != null ? ' · +1 Supply' : ''); });
     case 'dig_in': return land(cb, rng, u, one!, e, power, () => { fs(one!).dugIn = one!.pos; setBraced(one!, true); return ' · ' + one!.name + ' digs in (half cover until they move) and is Braced'; });
-    case 'covering_fire': { let out = ''; for (const v of enemiesIn(cb, u, tilesAround(a.tile!, 1))) out += applyCond(cb, rng, u, v, 'pinned', 1, 'body'); return out || ' · nobody in the area'; }
+    case 'covering_fire': { let out = ''; for (const v of enemiesIn(cb, u, tilesAround(a.tile!, prayerRadius(e) ?? 0))) out += applyCond(cb, rng, u, v, 'pinned', 1, 'body'); return out || ' · nobody in the area'; }
     case 'requisition_approved': { // rules 1.6.2 (item 728): the whole squad (characters), restocked, repaired, cleared, +3 AP banked
       let out = ''; const squad = cb.units.filter((x) => x.side === u.side && x.charId && !x.companion && !x.dead);
       for (const v of squad) { out += ' · ' + v.name + restock(cb, v); bankAp(v, 3, 'Requisition Approved', cb, u); }
@@ -1247,7 +1321,7 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
     }
     // Mother Ember
     case 'warm_hands': return land(cb, rng, u, one!, e, power, (pw) => ' · ' + one!.name + healLine(cb, u, one!, prayerAmount('heal', effVal(e, 'heal'), pw, levelTerm(u)), 'hymn'));
-    case 'hearthlight': ((cb as any).faithZones ||= []).push({ by: u.id, side: u.side, tiles: tilesAround(a.tile!, 1), until: cb.round + 2, heal: Math.round(prayerAmount('heal', effVal(e, 'heal'), power, levelTerm(u))) }); return ' · a hearth glows at ' + refOf(a.tile!) + ' for 3 rounds';
+    case 'hearthlight': ((cb as any).faithZones ||= []).push({ by: u.id, side: u.side, tiles: tilesAround(a.tile!, prayerRadius(e) ?? 0), until: cb.round + 2, heal: Math.round(prayerAmount('heal', effVal(e, 'heal'), power, levelTerm(u))) }); return ' · a hearth glows at ' + refOf(a.tile!) + ' for 3 rounds';
     case 'feed_the_fire': return land(cb, rng, u, one!, e, power, () => { const n = Number(fxOf(e, 'stat_mod', (q) => q.stat === 'ap')?.value ?? 2), was = one!.ap; grantAp(cb, one!, n); const had = ['weakened', 'slowed'].filter((k) => condOn(one!, k)); for (const k of had) endCond(one!, k, cb); return ' · ' + one!.name + ' +' + (one!.ap - was) + ' AP' + (had.length ? ', ' + had.join(' and ') + ' ended' : ''); });
     case 'everyone_home': { // rules 1.6.2 (item 731): full HP, the Downed stand, every harmful condition ends, a 40 shield each
       let out = '';
@@ -1259,11 +1333,11 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
       return out;
     }
     // Old Overcast
-    case 'thunderclap': { let out = ''; const from = { pos: a.tile } as any as Unit; const dmg = prayerDamage(e); for (const v of cb.units.filter((x) => x.side !== u.side && !x.dead && !x.surrendered && dist(x.pos, a.tile!) <= 2)) { if (dmg > 0) out += harmLine(cb, u, v, prayerStrike(dmg, power, dealTerm(u)), 'elemental', 'lightning'); if (v.dead || v.downed) continue; out += pushAway(cb, from, v, 1) + applyCond(cb, rng, u, v, 'shaken', undefined, 'heart'); } return out || ' · nobody there'; } // item 1261: the thunder hurts
+    case 'thunderclap': { let out = ''; const from = { pos: a.tile } as any as Unit; const dmg = prayerDamage(e); for (const v of cb.units.filter((x) => x.side !== u.side && !x.dead && !x.surrendered && dist(x.pos, a.tile!) <= (prayerRadius(e) ?? 0))) { if (dmg > 0) out += harmLine(cb, u, v, prayerStrike(dmg, power, dealTerm(u)), 'elemental', 'lightning'); if (v.dead || v.downed) continue; out += pushAway(cb, from, v, 1) + applyCond(cb, rng, u, v, 'shaken', undefined, 'heart'); } return out || ' · nobody there'; } // item 1261: the thunder hurts
     case 'lightning_rod': return land(cb, rng, u, one!, e, power, (pw) => { let out = harmLine(cb, u, one!, prayerStrike(prayerDamage(e), pw, dealTerm(u)), 'elemental', 'lightning'); const n = cb.units.filter((x) => x.side !== u.side && alive(x) && x !== one && dist(x.pos, one!.pos) <= 2).sort((p, q) => dist(p.pos, one!.pos) - dist(q.pos, one!.pos))[0]; if (n) out += ' · it chains to ' + n.name + harmLine(cb, u, n, prayerStrike(Number(fxOf(e, 'chain_damage')?.value ?? 0), pw, dealTerm(u)), 'elemental', 'lightning'); return out; });
     case 'gather_the_clouds': ((cb as any).faithClouds ||= []).push({ by: u.id, side: u.side }); return ' · until your next turn, your side\'s Storm riders count a stage higher';
     case 'the_sky_answers': { // rules 1.6.2 (item 732): a 5×5 in sight; the sky picks: enemies only; 150 Storm, Stunned 1, Shaken
-      let out = ''; const tiles = tilesAround(a.tile!, 2);
+      let out = ''; const tiles = tilesAround(a.tile!, prayerRadius(e) ?? 0);
       for (const v of cb.units.filter((x) => x.side !== u.side && alive(x) && tiles.includes(x.pos))) out += harmLine(cb, u, v, prayerStrike(prayerDamage(e), power, dealTerm(u)), 'elemental', 'lightning') + applyCond(cb, rng, u, v, 'stunned', 1, undefined, { skipSave: true }) + applyCond(cb, rng, u, v, 'shaken', undefined, undefined, { skipSave: true });
       return out || ' · the sky strikes empty ground';
     }

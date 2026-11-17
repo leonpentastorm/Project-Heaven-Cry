@@ -11987,6 +11987,66 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
 4558. **Not met, for the lead (the measure, `docs/design/proposals/2026-11-party-fit.md` section 13):** behind half cover a Soldier's preview is still 40% (21 to 35% of the gun rolls behind half cover hit in the runs) and a pillar beside the target that the line misses still counts nothing; the duos' most-attacked member still takes 66 to 88% of the foes' rolls (one target in reach in a third of them, the nearest-first Minions, the first-hit loop across rounds). Each needs a primitive the lead has not approved.
 4559. **Items 4550 to 4559 are rules 1.57 opening volley's.**
 
+### Rules 1.65 (0.31.5), the picking contract
+
+Leon (17 Nov 2026): "Picking UI for every aimed action is important." His reports: Shadow's Vault had no selection or
+aiming UI ("you click on invisible tile then press confirm to vault"), and an effect like the Old Overcast's Miracle had
+no range indicator "when selecting the effect and when aiming it". The rule (CLAUDE.md, "Anything you pick gets its
+picking UI in the same change") is made a contract of the engine's action descriptors, filled for every system.
+
+5100. **The contract (E1):** every action descriptor's preview (`previewDescriptor`) returns its grid marks in four
+    kinds, the existing `GridMarks` filled (no new closed-list entry): **reach**, every tile the action could be aimed
+    at from where the unit stands; **choice**, the legal tiles (`tiles[].kind: 'choice'`) or units (`units[].tone:
+    'choice'`) of the pick step that is open; **area**, the tiles the current aim covers; **target**, the units it
+    would touch (tone harm, help or the picked target), each with a short word (`tag`). The open step is the first unit
+    or tile step still to pick (an optional panel before it left as it is), else the last one picked (a click re-aims
+    it) (`descriptors.ts aimStepOf`).
+5101. **One legality test (E1):** a step's choices are worked out by the very check the reducer gates on, each
+    candidate tried through it: a perk, class move or door verb (Shadow, Tending, Figments' Picture, Glimmer, the
+    Double) through `previewPerkAction` itself (`runPerkAction`'s gate: its target checks, now one function `aimWhy`,
+    and the action's own preview; with no form picked yet, the first open one stands in); a prayer through `prayerChoices` (`faith.ts`:
+    `previewPrayer` and `pickTarget`, what `combatPray` asks); a Figment's or any owned unit's order through
+    `ownedAimChoices` (`owned.ts`: `dataVerbAimWhy`, `runDataVerb`'s own gate; a Move's tiles from the Move preview on
+    the owner's AP; an attack's units from `previewAttack`); a Call through `previewCall` (`useCall`'s gate); a
+    technique through `previewTechnique`; a basic action (Shove, an attack, a stim, a thrown stim, Attack an object, a
+    door, Analyze, Pull free) through the reducer itself on a copy (`previewAction`). A step's choices are worked out
+    once per game state and question (a hover asks the same step with another pick). Moved out of the code into the
+    one check: the thrown stim's range filter in the descriptor (the reducer's own now), the two-unit prayers' typed
+    6 tiles and Together's name test (item 5103).
+5102. **The fog (E1):** choices are looked for only among the tiles and units the viewer's side sees (`fightSeenBy`,
+    `visibility`), so a mark never tells of a tile out of sight or an unseen unit; a reach is distance only.
+5103. **Prayer areas and ranges from data (E1):** `faith.ts prayerRadius(entry)` reads a prayer's area from its row
+    (an effect's `area` "N×N", radius (N − 1) / 2; else its `radius`): Covering Fire's 3×3, Hearthlight's 3×3,
+    Thunderclap's radius 2 and The Sky Answers' 5×5 are read there by both the effect and the preview (they were typed
+    in `runEntryInner`, and the Miracle's area by its id). `prayerPickRange(entry)`: a two-unit prayer's pick range is
+    its first effect's `range` (Switcheroo's 6). New data field `patrons.json` Together `pair_within: 1` (the two allies
+    next to each other; it was a test of the prayer's name). `prayerAim` gives a prayer's reach (a tile prayer: every
+    tile the caster sees; a two-unit prayer: its pick range), its area (the N×N on the aimed tile, a self prayer's
+    radius round the caster, an "in sight" prayer's units' tiles) and whom it touches (from the data's `scope`,
+    `filter` or `target`). The Miracle's event `area` is that area for all eight Miracles (it was set only for a
+    tile-aimed Miracle, its radius by the Miracle's id, and null for the seven others).
+5104. **The net gain of a mend (E2):** a heal's or a shield's preview carries, on its target's mark and as a line, the
+    engine's result for that target: "30 → 32 (+2)", "stands again at 14 HP", "shield 0 → 12 (+12)", and for a prayer
+    that heals or shields (its data ops) "no gain: already at full HP", "no gain: your shield is already on them" or
+    "no gain". A prayer's is read from its answer run on a copy of the fight (`faith.ts prayerAnswerOn`: `pickTarget`
+    then `runEntry`, no roll and no price: what an answer would give, never whether it comes); any other action's from
+    the reducer's own run on the copy that gives its verdict. No client arithmetic.
+5105. **One overlay (C1):** the fight screen reads the marks by kind for every preview kind (no gate by system): the
+    reach shaded when the action is selected, the choices outlined while a pick is open, the area filled under the
+    pointer (the engine's preview of the hovered aim) or the chosen aim, the touched units ringed with their word, in
+    the action's own ink (the door's, the patron's) and always with a glyph or word. A click on a tile or unit that is
+    not a choice of a required step says the engine's refusal by the action box; it never picks it.
+5106. **The guard (T1):** `packages/engine/test/picking.test.ts` walks every action offered in a prepared fight to
+    characters holding the nine base classes at rank III with their doors (the Operative Hidden with Shadow, the Rigger
+    with a Beast pictured, the Mender with an Attuner), a Faithful of each of the eight patrons at Devotion 10, and
+    stims and grenades; every unit or tile step must mark its choices when a legal one exists, every choice must go
+    through the reducer and three non-choices must be refused. Exempt: the Outburst's Release (any tile is a
+    direction; its own overlay draws reach, area and touched units). Sigils and Outbursts keep their own overlays (the
+    Evoke planner, the HEART panel and `aimOverlay`), which already draw reach, area and whom they touch.
+5107. **Needs a new primitive (listed, not built):** none for the contract. Seen while building: an enemy's sight
+    range drawn for Hide (the Shadow audit's item F) needs a sight view per enemy; not part of this contract.
+5108. **Items 5100 to 5108 are rules 1.65's.**
+
 ### Rules 1.61 (0.30), cover beside you, the shot that shows, focus memory
 
 4960. **Cover beside you (rules 1.61 cover beside you item 1):** `combat.ts coverFor` is the one cover rule (the attack preview, every shot that takes cover: a gun, a SEEK bolt, an Outburst, a soul bolt, a turret; the enemy AI; the screen's word). A cover object or a cover unit on one of the eight tiles round the target counts when the direction to it from the target is within `rules.json combat.attack.cover.facing.arc_deg` **45** degrees of the direction to the shooter and it is nearer the shooter (Chebyshev). Orthogonal: its own kind; diagonal: `facing.diagonal` **"half"** at most; the best counts. `cover.full.to_hit` **−10** (new field; before, full cover beside the target counted nothing unless the line crossed it); `cover.half.to_hit` −5 is now read by the code (it was a 5 typed in `combat.ts`, `classes/j.ts`, `classes/soul.ts`, `magic.ts`, `sigil.ts`). A weapon that ignores half cover still takes full cover's −10. A miss by the cover's own margin hits the cover. Before: any half-cover tile of the eight nearer the shooter counted (no arc), so a crate about 72 degrees off the line counted and now does not. PROVISIONAL.
