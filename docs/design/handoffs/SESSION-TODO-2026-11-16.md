@@ -282,3 +282,89 @@ Live commit = `main` = `develop` head at the deploy; `backup/live-0.31.5` and `b
 - **Housekeeping at the next release (the two-release rule):** worktrees known0312, pick0315, skill031, art031 and
   their wip/lane branches are merged and can go; rel030 is the release tree. About 25 non-git leftover folders beside
   the main checkout still wait for Leon's word.
+
+## P. Items 2.0: Leon's rulings on weapons (17 Nov 2026, evening). Still ask-first to BUILD; this is the design to start from
+
+Draft family table (lead's, for Leon to edit; bold = exists today): Service knives (**combat knife** D / trench knife H
+/ bolo S); Cavalry blades (**sabre** / cutlass / falchion); Legion blades (pugio / **gladius** / spatha); Eastern
+blades (wakizashi / **katana** / odachi); Kemizuchi duelling line (**duelling blade** / side-sword / sword-breaker);
+Axes (tomahawk / **hatchet** / **war axe**); Polearms (**lance** / **glaive** / poleaxe); Hammers (war pick / war
+hammer / **maul**); Great blades (estoc / longsword / **adamantile greatsword**); Ork cutters (skinner / **machete** /
+cleaver-glaive); Hand-to-hand (**striking gloves** / **hand wraps** / **knuckledusters**); Heavy fists (**strikers** /
+weighted gloves / **iron mitts**). One-offs with no forms: Afterword, rip-saw, servo-fist, throwing knives.
+Rulings:
+1. Forms must FEEL different: the form changes handling (AP, Light / Reach / Thrown, base damage), not only scaling.
+2. A reforge keeps grade, Relic property and the One Blade name; mods stay if the form has the slot, else to the pack.
+3. Reforging back is allowed, at full price each time.
+4. Shops keep rolling at random across forms: finding the family you want in the wrong form is a find (reforge it);
+   the right form at the right weight is better still.
+5. Guns get families too (30 guns today: 4 pistols, 2 revolvers, 4 SMGs, 6 rifles, 4 shotguns, 6 heavies, 4 bows).
+   All guns roll with Dexterity, so a gun family's three forms are another axis (lead's proposal: close / standard /
+   long of one maker's line), to be drafted like the melee table.
+6. Base form names are ordinary weapon words; the random modifier and the rarity modify the name (prefix / suffix
+   naming from data).
+7. "Real weapon variety, and progression in a line": every weapon form has FIVE pictures, one per grade: the game
+   has exactly five grades in data (standard, fine, masterwork, relic, celestial), so a weapon visibly grows as it is
+   upgraded; plus unique weapons sprinkled in (one-offs with their own picture and rule, like Afterword).
+   Size: 12 melee families x 3 forms x 5 grades = 180 paintings; guns about 10 families x 3 x 5 = 150; about 330 plus
+   uniques (the artist delivered 443 pictures in two days). Grade pictures of one form are variations of one base
+   (same silhouette, richer make), so they are cheap for an image generator: brief them as a set of five.
+8. **Uniques** (Leon): their own "Unique" tier with its own frame; about a Relic in raw stats, plus one unique
+   passive of their own. Outside the families; not reforged. One picture each.
+9. **Advanced-class weapons** (the faction weapons: the Evoker blade, emanator katana, grand staff and the like;
+   Leon): they are uniques that DO upgrade, through three tiers only (the first two grades are too weak by the time
+   a character holds an advanced class): three pictures each, starting at about Masterwork. They wait for the
+   advanced classes (shelved until they return as attribute pairs). Shields: not ruled; lead's pick: a family like
+   any other (buckler / riot / pavise already read as light / standard / heavy).
+10. **Shields** (Leon agreed to the lead's proposal, 17 Nov): three families by purpose, each light / standard /
+    heavy, five grade pictures each (45 pictures; buckler, riot shield, pavise exist): **Guard** shields (most
+    plates, best cover for allies: buckler / riot shield / pavise), **Strike** shields (a real follow strike and
+    Shield Bash, fewer plates: spiked buckler / boss shield / ram plate), **Ward** shields (high soak against ranged
+    and elemental hits, low against melee: deflector / bulwark screen / barrier wall). Built from existing pieces
+    (plates, the follow strike, Shield Bash, ally cover, damage-kind reduction). **Every shield is one-handed.** The
+    really big ones carry a **Heavy** property: it lowers movement (a data number, PROVISIONAL; two Heavy shields
+    stack), as a property word like Light or Thrown so a mod or a unique can add or remove it. Shield uniques are
+    where the strange ones live (throws back part of a spell, plants as lasting cover, stores soaked damage for a Slam).
+11. **Armour** (Leon, 17 Nov): "we have way too many equipment slots and like one thing to put in each, with no
+    modifier, nothing; Survival is stale even if you win." Armour grows in the same pattern as weapons: families,
+    forms (light / standard / heavy), five grades with a picture each, random modifiers, uniques; every equipment
+    slot on the rig gets real choices or is removed. Audit first: list every slot the sheet shows, what can go in it
+    today, and what each piece does (the lead has NOT verified the slot list).
+12. **Items that have an icon and do nothing get a use** (Leon): audit every item (the 0.30.1 hotfix found ration
+    pack, chalk and wax, prayer beads, cigarettes with no engine reader; flare and torch unverified) and give each an
+    engine use that fits its door or mode, or cut it.
+13. **Weapon Arts in this patch too** (Leon). Earlier rulings stand: melee's rare spike that charges across fights
+    from playing the door well and carries between fights; no headroom reserved ("let them have it"); guns get
+    control-only Arts or none, and more generous mods instead; measure with mods fitted.
+**The lead's staging (put to Leon, not yet ruled):** Items 2.0 is too big for one release. A: the engine and screens
+(one item card, families / forms / grades as data, the Forge reforge, Dexterity techniques on Pressure, hybrid, names
+from data, Heavy, armour and Defense readable) on existing art with placeholders. B: content (the full family tables
+for melee, guns, shields, armour; modifiers; uniques; dead items given uses) as art lands. C: Weapon Arts, on top of
+settled weapon numbers.
+
+## Q. THE ROADMAP (Leon agreed the order, 17 Nov 2026): banked fixes first, then Items 2.0 in three stages
+
+Live: 0.31.5. Building: 0.31.6 (the outside reviewer's fixes).
+1. **0.31.6** reviewer fixes (Clean Hands cap, Spare's yield check, Mag Dump, throwables, the 0 AP preview, the
+   Rewards bar, Stow, text faults, Main menu).
+2. **0.32 "class UI and effects"** (the banked work; audits with file and line exist for all of it):
+   a. prayer effects (numbers, elements, sounds; typed numbers to data);
+   b. Figment effects (live trace first; silent damage; Redraw / Interpose; the order link; unravel);
+   c. Shadow (dark maps in shrine, works, rim; Douse; Prone and `seen_range`; the detect view; Stalk; Silent);
+   d. the vow pop-up on entering a mode, changed at a rest; the level-up banner for the whole room;
+   e. sounds (victory fanfare, defeat, lightning, heal shimmer, level-up: CC0 / CC BY, credited);
+   f. small UI (icons too small, enlarged text order, the legend's trap line, prayer outlines too heavy, the camera
+      jump, token-card chips enlarge, tabs wrapping, the status strip on the token face);
+   g. balance leftovers (duelling blade and strikers over the line, the tank camp kit, the gunner's sustain, the
+      knife-and-pistol measure, healing brake, gamma reliefs, 18 shelved forks, the Figment rework);
+   h. housekeeping (e2e.py on a per-lane port; the consolidation pass on new primitives; leftover folders).
+   Ship in slices (0.32.0 effects, 0.32.1 Shadow, ...), each green and deployed.
+3. **Items 2.0 A (0.33): the system on today's art**: section P items 1 to 6, 10 (Heavy), section N item 2, the
+   one item card, families / forms / grades as data, the Forge reforge, Dexterity techniques on Pressure, hybrids.
+4. **Items 2.0 B (0.34.x): the content as art lands**: the family tables (melee, guns, shields, armour), modifiers,
+   uniques, the Unique tier and frame, dead items given uses, grade pictures (about 330 weapons + 45 shields +
+   armour).
+5. **Items 2.0 C (0.35): Weapon Arts.**
+6. **After:** the Faith artifact and chapel; advanced classes as attribute pairs with their three-tier weapons;
+   Roguelike and Campaign modes; the canvas brought back in line at 1.0.
+Items 2.0 is still ask-first to start; its first deliverable is a design document with the tables for Leon's edits.
