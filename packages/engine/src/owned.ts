@@ -150,9 +150,9 @@ export function ownedVerbs(u: Unit): string[] {
 const VERB_NAMES: Record<string, string> = { move: 'Move', shot: 'Shot', aimed: 'Aimed shot', melee: 'Strike' };
 /** A data verb's name, its AP for this owner now (its site, priced on the owner), and what it is aimed at: the
  * descriptors' row. null: one of OWNED_VERBS (the descriptors price those from the weapon). */
-export function ownedVerbInfo(cb: Combat, owner: Unit, u: Unit, verb: string): { name: string; ap: number; pick: 'tile' | 'enemy' | 'ally' | 'none'; text: string; icon: string } | null {
+export function ownedVerbInfo(cb: Combat, owner: Unit, u: Unit, verb: string): { name: string; ap: number; pick: 'tile' | 'enemy' | 'ally' | 'none'; text: string; icon: string; /** its reach in tiles from the owned unit (the row's reach.tiles, dataVerbAimWhy's own number) */ range: number | null } | null {
   const dv = OWNED_DATA_VERBS[verb]; if (!dv) return null;
-  return { name: dv.name || VERB_NAMES[verb] || verb, ap: verbPrice(cb, owner, u, dv).ap, pick: dv.reach?.tile ? 'tile' : dv.reach?.side === 'ally' ? 'ally' : dv.reach ? 'enemy' : 'none', text: dv.text || '', icon: dv.icon || '' };
+  return { name: dv.name || VERB_NAMES[verb] || verb, ap: verbPrice(cb, owner, u, dv).ap, pick: dv.reach?.tile ? 'tile' : dv.reach?.side === 'ally' ? 'ally' : dv.reach ? 'enemy' : 'none', text: dv.text || '', icon: dv.icon || '', range: dv.reach ? dv.reach.tiles ?? 1 : null };
 }
 /** A data verb's price, on its owner: its site's AP (data/actions.json costs; rules 1.56: the shared order site
  * `figment_order`), and the resources its row names (`res`: Redraw's charge), through the cost hook. */
@@ -199,30 +199,12 @@ export function runDataVerb(cb: Combat, rng: Rng, owner: Unit, me: Unit, dv: any
   const cost: Priced = o.free != null ? { ...pr, ap: 0 } : pr;
   { const no = whyNot(cb, owner, cost, { c }); if (no) return no; }
   if (dv.unmake) { pay(cb, me, cost, { payer: owner, c }); unmakeOwned(cb, me, { refund: true, share: dv.refund_share ?? 1, quiet: true }); say(cb, owner.name + ' lets ' + me.name + ' go.'); return null; }
-  let t: Unit | null = null;
-  if (dv.reach?.tile) {
-    // a tile order (rules 1.56: Redraw, Interpose): a free tile within reach of the owned unit; `beside: ally`, one
-    // next to a standing unit of its side
-    const k = tileOf(cb, o.tile), n = dv.reach.tiles ?? 1; if (!k) return 'Pick a tile.';
-    if (dist(me.pos, k) > n) return 'Out of reach (' + n + (n === 1 ? ' tile' : ' tiles') + ' from ' + me.name + ').';
-    if (!canStand(cb, k, me)) return 'That tile isn\'t free.';
-    if (dv.reach.beside === 'ally' && !cb.units.some((x) => x !== me && x.side === owner.side && alive(x) && dist(x.pos, k) <= 1)) return 'Pick a tile next to an ally.';
-  } else if (dv.reach) {
-    t = o.targetId ? cb.units.find((x) => x.id === o.targetId) || null : null;
-    if (!t || t.dead || t === me) return 'Pick a target.';
-    if (dv.reach.side === 'foe' && t.side === owner.side) return 'Pick an enemy.';
-    if (dv.reach.side === 'ally' && t.side !== owner.side) return 'Pick an ally.';
-    if (dist(me.pos, t.pos) > (dv.reach.tiles ?? 1)) { const n = dv.reach.tiles ?? 1; return 'Out of reach (' + n + (n === 1 ? ' tile' : ' tiles') + ' from ' + me.name + ').'; }
-    if (dv.reach.eyes ? !unitSees(cb, me, t.pos) : t.side !== owner.side && !sideSeesUnit(cb, owner.side, t)) return 'It can\'t see them.';
-  }
+  { const no = dataVerbAimWhy(cb, owner, me, dv, o); if (no) return no; }
+  const t: Unit | null = dv.reach && !dv.reach.tile ? cb.units.find((x) => x.id === o.targetId) || null : null;
   const holder: any = { key: 'verb:' + dv.id, itemId: dv.id, kind: 'verb', tier: 'I', info: { key: 'verb:' + dv.id, kind: 'verb', id: dv.id, name: dv.name, tier: 'I', effects: [], effTier: [], text: dv.text || '', adjudication: 'engine', active: false, bound: false, ap: null, uses: 'at_will' }, c, u: me, cb };
   if (dv.dash && t && dist(me.pos, t.pos) > 1) {
-    // a straight line (a row, a column or a diagonal) of free tiles, up to dash, to the tile next to the target
-    const [ax, ay] = me.pos.split(',').map(Number), [bx, by] = t.pos.split(',').map(Number), dx = Math.sign(bx - ax), dy = Math.sign(by - ay), n = Math.max(Math.abs(bx - ax), Math.abs(by - ay));
-    if (!(ax === bx || ay === by || Math.abs(bx - ax) === Math.abs(by - ay))) return 'Not in a straight line.';
-    if (n - 1 > dv.dash) return 'Too far to ' + String(dv.name).toLowerCase() + ' (' + dv.dash + ' tiles).';
-    let to = me.pos;
-    for (let i = 1; i < n; i++) { const k = (ax + dx * i) + ',' + (ay + dy * i); if (!canStand(cb, k, me)) return 'Something is in the way.'; to = k; }
+    // a straight line (a row, a column or a diagonal) of free tiles, up to dash, to the tile next to the target (dashTo: its checks)
+    const to = dashTo(cb, me, dv, t) as string;
     const err = withAp(me, 99, () => moveUnit(cb, me, to, rng, 'move')); if (err) return err;
     if (me.dead || me.downed || !cb.units.includes(me)) { pay(cb, me, cost, { payer: owner, c }); return null; }
   }
@@ -239,6 +221,53 @@ export function runDataVerb(cb: Combat, rng: Rng, owner: Unit, me: Unit, dv: any
   if (dv.effects?.length) runOwnEffects(holder, dv.effects, { u: me, t, action: dv.site, tile: tileOf(cb, o.tile) || null, toggles: [], mode: null });
   pay(cb, me, cost, { payer: owner, c });
   return null;
+}
+/** The tile a dash verb (Pounce) runs to before it strikes: the last free tile of the straight line to the target, or
+ * the refusal. */
+function dashTo(cb: Combat, me: Unit, dv: any, t: Unit): string | { why: string } {
+  const [ax, ay] = me.pos.split(',').map(Number), [bx, by] = t.pos.split(',').map(Number), dx = Math.sign(bx - ax), dy = Math.sign(by - ay), n = Math.max(Math.abs(bx - ax), Math.abs(by - ay));
+  if (!(ax === bx || ay === by || Math.abs(bx - ax) === Math.abs(by - ay))) return { why: 'Not in a straight line.' };
+  if (n - 1 > dv.dash) return { why: 'Too far to ' + String(dv.name).toLowerCase() + ' (' + dv.dash + ' tiles).' };
+  let to = me.pos;
+  for (let i = 1; i < n; i++) { const k = (ax + dx * i) + ',' + (ay + dy * i); if (!canStand(cb, k, me)) return { why: 'Something is in the way.' }; to = k; }
+  return to;
+}
+/** Why a data verb can't take this aim (its tile, or its unit: side, reach, sight, a dash's line), or null. The one copy:
+ * runDataVerb gates on it, and ownedAimChoices (rules 1.65, the picking contract) lists what it takes. */
+function dataVerbAimWhy(cb: Combat, owner: Unit, me: Unit, dv: any, o: { targetId?: string | null; tile?: string | null }): string | null {
+  if (dv.reach?.tile) {
+    // a tile order (rules 1.56: Redraw, Interpose): a free tile within reach of the owned unit; `beside: ally`, one
+    // next to a standing unit of its side
+    const k = tileOf(cb, o.tile), n = dv.reach.tiles ?? 1; if (!k) return 'Pick a tile.';
+    if (dist(me.pos, k) > n) return 'Out of reach (' + n + (n === 1 ? ' tile' : ' tiles') + ' from ' + me.name + ').';
+    if (!canStand(cb, k, me)) return 'That tile isn\'t free.';
+    if (dv.reach.beside === 'ally' && !cb.units.some((x) => x !== me && x.side === owner.side && alive(x) && dist(x.pos, k) <= 1)) return 'Pick a tile next to an ally.';
+  } else if (dv.reach) {
+    const t = o.targetId ? cb.units.find((x) => x.id === o.targetId) || null : null;
+    if (!t || t.dead || t === me) return 'Pick a target.';
+    if (dv.reach.side === 'foe' && t.side === owner.side) return 'Pick an enemy.';
+    if (dv.reach.side === 'ally' && t.side !== owner.side) return 'Pick an ally.';
+    if (dist(me.pos, t.pos) > (dv.reach.tiles ?? 1)) { const n = dv.reach.tiles ?? 1; return 'Out of reach (' + n + (n === 1 ? ' tile' : ' tiles') + ' from ' + me.name + ').'; }
+    if (dv.reach.eyes ? !unitSees(cb, me, t.pos) : t.side !== owner.side && !sideSeesUnit(cb, owner.side, t)) return 'It can\'t see them.';
+    if (dv.dash && dist(me.pos, t.pos) > 1) { const to = dashTo(cb, me, dv, t); if (typeof to !== 'string') return to.why; }
+  }
+  return null;
+}
+/** Rules 1.65 (the picking contract): of these candidates (unit ids for `targetId`, tile keys for `tile`), the ones this
+ * owned unit's verb takes now: a data verb's aim (dataVerbAimWhy, runDataVerb's own gate; an attack verb's own attack
+ * from where it stands, as runDataVerb makes it), a Move's tiles on its owner's AP (moveUnit's path, through the Move
+ * preview), a plain attack's units (previewAttack, as runOwned asks). */
+export function ownedAimChoices(g: any, cb: Combat, owner: Unit, u: Unit, verb: string, key: 'targetId' | 'tile', cands: string[], moveTiles: (cb: Combat, u: Unit) => string[]): string[] {
+  const dv = OWNED_DATA_VERBS[verb], avail = apFor(cb, owner);
+  if (dv) return cands.filter((k) => {
+    if (dataVerbAimWhy(cb, owner, u, dv, { [key]: k })) return false;
+    const t = key === 'targetId' ? cb.units.find((x) => x.id === k) : null;
+    // the strike itself, from where it stands (a dash's strike is asked once it has run: its line is its reach)
+    return !(dv.attack && t && !(dv.dash && dist(u.pos, t.pos) > 1)) || withAp(u, 99, () => previewAttack(cb, u, t, dv.attack as AttackMode).ok);
+  });
+  if (verb === 'move') { if (key !== 'tile') return []; const ok = new Set(withAp(u, avail, () => moveTiles(cb, u))); return cands.filter((k) => ok.has(k)); }
+  if (key !== 'targetId') return [];
+  return cands.filter((id) => { const t = cb.units.find((x) => x.id === id); return !!t && !t.dead && t !== u && withAp(u, avail, () => previewAttack(cb, u, t, verb as AttackMode).ok); });
 }
 /** Rules 1.34 (Overclock): an owned unit of either turn kind ATTACKS now, at no AP, at this target: a data verb with an
  * attack (free up to `maxAp`), else its weapon's plain attack (melee or shot). Returns the refusal, or null. */

@@ -18,24 +18,27 @@
 // player's saved turn-card picks and the two-key hotkeys keep working.
 import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON, SOUL_RULES } from './data';
-import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange, pairs } from './combat';
+import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange, analyzeRange, pairs } from './combat';
 import { kindOf } from './objects';
 import { apFor, canPay, RESOURCES, resGive } from './effects/cost';
 import { eyesOn, seenByFoes, HIDE_WHY } from './tactics';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
-import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun, fightWith } from './preview';
+import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun, fightWith, preview as previewOnCopy } from './preview';
 import type { Action, GameState } from './game';
 import { techniquePad, packPad, pairedPad, previewTechnique, shieldOf, physView, followOf } from './physical/core';
 import { TECHNIQUE, weaponSystem, propText } from './physical/data';
 import { callPad, previewCall } from './calls/core';
-import { faithView, previewPrayer, beliefOf, FAITH_MIN, DEVOTION_XP, MIRACLE_COST_LEVELS, GATE, MIRACLE_FAITH } from './faith';
+import { faithView, previewPrayer, beliefOf, FAITH_MIN, DEVOTION_XP, MIRACLE_COST_LEVELS, GATE, MIRACLE_FAITH, prayerChoices, prayerAim, prayerAnswerOn, prayerEntry } from './faith';
 import { perkActionsFor, previewPerkAction, togglesFor, PRAYER_SUB, type ToggleEntry } from './effects/actions';
 import type { PerkActionEntry } from './effects/actions';
 import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, fluxMaxOf, coreChargeOf, designAp, stageMult, manaBand, MANA_START, previewOutburst, previewOutburstPlan, previewPump,
   steadyHeart, letGo, feedOutburst, setHeartWatch, previewDraw, STAGE_MULT, MAX_STAGE, SYPHON_DRAW, AIR_SPENT } from './magic';
 import { focusHand, carriesMpFocus, NEEDS_EVOKER, NEEDS_EMANATOR, NEEDS_MP_FOCUS } from './character';
 import { PILE, isPile } from './containers';
-import { orderable, ownedVerbs, ownedWhy, ownedVerbInfo } from './owned';
+import { orderable, ownedVerbs, ownedWhy, ownedVerbInfo, ownedAimChoices } from './owned';
+import { shieldTotal } from './effects/damage';
+import { tilesAround } from './kit';
+import { onHook } from './effects/hooks';
 
 // ---------- the types ----------
 /** The tab an action sits on. */
@@ -120,9 +123,12 @@ export type Picks = Record<string, any>;
 export interface PreviewLine { k: 'odds' | 'note' | 'meter' | 'save' | 'cost' | 'ask'; text: string }
 /** What a preview paints on the grid (tiles, targets, an area, a path). */
 export interface GridMarks {
-  /** Units the action would touch (fogged: only units the viewer sees). tone: harm, help, spared, or the picked target. */
-  units: { id: string; tag: string; tone: 'harm' | 'help' | 'spared' | 'target' }[];
-  /** Tiles: the area it covers, the picked tile, the tiles that may be picked next. */
+  /** Units, fogged (only units the viewer sees). tone: harm, help, spared (it would touch them), the picked target, or
+   * (rules 1.65, the picking contract) a choice: a unit the open pick step takes. tag: a short word (odds, a net gain). */
+  units: { id: string; tag: string; tone: 'harm' | 'help' | 'spared' | 'target' | 'choice' }[];
+  /** Tiles (rules 1.65, the picking contract): reach, every tile the action could be aimed at from where the unit
+   * stands; choice, the tiles the open pick step takes (the reducer's own test); area, what the current aim covers;
+   * pick, the tile picked. Every system fills them; the screen draws them by kind, one overlay for all. */
   tiles: { tile: string; kind: 'area' | 'pick' | 'choice' | 'reach'; /** a reach's range band (0: no penalty) */ band?: number }[];
 }
 /** What an action would do with these picks: ok or why not, its AP, its lines and grid marks. */
@@ -194,6 +200,50 @@ const allyIds = (x: DescCtx, self = false) => x.seen.units.filter((v) => alive(v
 /** The engine's own pick list (a door verb's reach), kept to what this side sees (the fog). */
 const seenOf = (x: DescCtx, ids: string[]) => { const seen = new Set(x.seen.units.map((v) => v.id)); return ids.filter((id) => seen.has(id)); };
 const foeIds = (x: DescCtx) => x.seen.units.filter((v) => alive(v) && v.side !== x.u.side).map((v) => v.id);
+/** The kinds of pick a grid click makes (a unit, a tile). */
+const UNIT_KINDS: PickKind[] = ['enemy', 'ally', 'unit'];
+const aimKind = (st: PickStep | null | undefined): 'targetId' | 'tile' | null => (!st ? null : UNIT_KINDS.includes(st.kind) ? 'targetId' : st.kind === 'tile' ? 'tile' : null);
+const SEEN_TILES = new WeakMap<DescCtx, Set<string>>();
+/** The tiles this side sees (the fog): the only tiles a pick's choices are looked for on, so a choice never tells of a
+ * tile out of sight. */
+function seenTiles(x: DescCtx): Set<string> {
+  let t = SEEN_TILES.get(x);
+  if (!t) { t = safe(() => new Set<string>([...((((x.cb as any).fog && (x.cb as any).fog.tiles) || visibility(x.cb, x.side).tiles) as Iterable<string>)]), new Set<string>()); SEEN_TILES.set(x, t); }
+  return t;
+}
+/** Every unit this side sees (the dead too: a fallen ally is a prayer's pick), other than the actor unless `self`. */
+const seenUnits = (x: DescCtx, self = true) => x.seen.units.filter((v) => self || v.id !== x.u.id).map((v) => v.id);
+/** The tiles within n of the unit (a reach band with no penalty): the kit's square. */
+const reachWithin = (x: DescCtx, n: number): GridMarks['tiles'] => tilesAround(x.u.pos, n, x.cb).map((k) => ({ tile: k, kind: 'reach' as const }));
+/** Rules 1.65 (E2): a mend's net result on one unit, in words, from the engine's own run on a copy (before and after):
+ * "30 → 32 (+2)", "stands again at 14 HP", "shield 0 → 12 (+12)"; `mends` (the run gave this unit a heal or a shield,
+ * through the one mend: mendsIn): an unchanged unit reads "no gain" with why. null: nothing to say. */
+function mendWord(before: Unit | undefined, after: Unit | undefined, mends: { heal?: boolean; shield?: boolean } = {}, by: string | null = null): string | null {
+  if (!before || !after) return null;
+  const s0 = Math.round(shieldTotal(before)), s1 = Math.round(shieldTotal(after)), h0 = Math.round(before.hp), h1 = Math.round(after.hp), out: string[] = [];
+  if ((before.downed || before.dead) && !after.downed && !after.dead) out.push('stands again at ' + h1 + ' HP');
+  else if (h1 > h0) out.push(h0 + ' → ' + h1 + ' (+' + (h1 - h0) + ')' + (h1 >= after.maxHp ? ' · full' : ''));
+  if (s1 > s0) out.push('shield ' + s0 + ' → ' + s1 + ' (+' + (s1 - s0) + ')');
+  if (out.length) return out.join(' · ');
+  if (mends.shield && s0 > 0) {
+    // whose shield stands: the giver's own (the base shield's shieldBy, or a layer of theirs), else someone's as big
+    const mine = !!by && ((before as any).shieldBy === by || (before.shields || []).some((l) => l.by === by && l.n > 0));
+    return mine ? 'no gain: your shield is already on them' : 'no gain: a shield as big already stands (' + s0 + ')';
+  }
+  if (mends.heal && h0 >= before.maxHp) return 'no gain: already at full HP';
+  if (mends.heal || mends.shield) return 'no gain';
+  return null;
+}
+/** Rules 1.65 (E2): the units a run on a copy mended, as the one mend reports them (effects/damage.ts healUnit's
+ * 'heal_given', grantShield's 'shield_grant'): whether the action is a heal or a shield for that unit is the engine's own
+ * run, never a guess from the item. Only while a preview runs inside mendsIn; nothing is written. */
+let MENDS: { heal: Set<string>; shield: Set<string> } | null = null;
+onHook('heal_given', (ctx: any) => { if (MENDS && ctx?.t) MENDS.heal.add(ctx.t.id); });
+onHook('shield_grant', (ctx: any) => { if (MENDS && ctx?.t) MENDS.shield.add(ctx.t.id); });
+function mendsIn<T>(run: () => T): { out: T; mended: (id: string) => { heal: boolean; shield: boolean } } {
+  const was = MENDS, m = { heal: new Set<string>(), shield: new Set<string>() }; MENDS = m;
+  try { const out = run(); return { out, mended: (id) => ({ heal: m.heal.has(id), shield: m.shield.has(id) }) }; } finally { MENDS = was; }
+}
 const mx = (p: Picks) => (Array.isArray(p.mods) && p.mods.length ? { mods: p.mods as string[] } : {});
 const safe = <T>(f: () => T, d: T): T => { try { return f(); } catch { return d; } };
 /** A descriptor with defaults filled. */
@@ -377,7 +427,7 @@ function basicPicks(x: DescCtx, id: string): PickStep[] {
     case 'door': return [{ key: 'tile', kind: 'tile', prompt: 'Click an adjacent door.', choices: objectsOf(x.seen).filter((o: any) => kindOf(o).door && dist(x.u.pos, o.pos) <= 1).map((o: any) => o.pos) }];
     case 'pickup': return [{ key: 'tile', kind: 'tile', prompt: 'Click a pile next to you.', optional: true, choices: pileTiles(x) }, { key: 'take', kind: 'custom', renderer: 'pile', prompt: 'Untick what to leave on the ground.', optional: true }];
     case 'stim': return [{ key: 'targetId', kind: 'ally', prompt: 'Click an adjacent ally.', choices: allyIds(x, true) }];
-    case 'stim_throw': return [{ key: 'targetId', kind: 'ally', prompt: 'Click an ally you can see, within ' + stimThrowRange() + ' tiles.', choices: allyIds(x).filter((id) => { const v = x.seen.units.find((w: any) => w.id === id); return !!v && dist(x.u.pos, v.pos) <= stimThrowRange(); }) }];
+    case 'stim_throw': return [{ key: 'targetId', kind: 'ally', prompt: 'Click an ally you can see, within ' + stimThrowRange() + ' tiles.', choices: allyIds(x, true) }]; // (the range: the reducer's, through PHYSICAL.choices)
     case 'pullfree': return [{ key: 'targetId', kind: 'unit', prompt: 'Click whom to pull free.', optional: true, choices: pullFreeTargets(x.cb, x.u).map((v) => v.id) }];
     case 'analyze': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile, or a glyph or trace to read (dashed).', choices: foeIds(x) }];
     case 'paired': case 'shot': case 'aimed': case 'melee': case 'burst': case 'auto': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile to target it.', choices: others(x) }];
@@ -459,11 +509,44 @@ const PHYSICAL: ActionSystem = {
   },
   choices(x, d, step, p) {
     if (step.key === 'tile' && ['move', 'sprint', 'disengage'].includes(d.id)) return Object.keys(safe(() => moveOptions(x.g, x.cb, x.u.id, d.id as any, { mods: p.mods || null }), { tiles: {} } as any).tiles);
-    return undefined;
+    const key = aimKind(step); if (!key) return undefined;
+    // rules 1.65: a technique's units or tiles, each through previewTechnique (useTechnique's own gate)
+    const t = parseTechId(d.id);
+    if (t) {
+      const cands = key === 'targetId' ? seenUnits(x, step.kind === 'ally') : [...seenTiles(x)];
+      // on the side's view (the fog): a unit it doesn't see never makes a gap in the choices (rules 1.65 item 5108.1)
+      const fcb = p.mods?.length ? fightWith(x.seen, p.mods) : x.seen;
+      return cands.filter((k) => { const args = techArgs(t, { ...p, [step.key]: k }); return !!safe(() => previewTechnique(fcb, x.u, t.id, args, x.g), null as any)?.ok; });
+    }
+    // a basic action's units or tiles: the reducer itself on a copy (previewAction), of the engine's own list
+    const f = BASIC_SEND[d.id]; if (!f || !step.choices) return undefined;
+    return step.choices.filter((k) => { const a = safe(() => f(x, { ...p, [step.key]: k }), null); return !!a && !!safe(() => previewAction(x.g, a, x.by), null as any)?.ok; });
   },
   preview(x, d, p, action) {
     const t = parseTechId(d.id);
     if (t) return techPreviewOf(x, t, p);
+    // rules 1.65 item 5108.2: a basic action aimed at a unit shades where it reaches (its own range, the reducer's)
+    const out = basicPreview(x, d, p, action), reach = basicReach(x, d.id);
+    if (!reach.length) return out;
+    return { ...(out || {}), marks: { units: out?.marks?.units || [], tiles: [...(out?.marks?.tiles || []), ...reach] } };
+  },
+};
+/** Rules 1.65 item 5108.2: where a basic action aimed at a unit reaches from here, from the numbers its reducer checks: a
+ * stim and a Shove next to you (actions.json `pick` ..._adjacent; combat.ts stimOn, shove), a thrown stim within
+ * stimThrowRange you see, Analyze within analyzeRange you see, an attack its weapon's reach (reachTiles, as a technique's). */
+function basicReach(x: DescCtx, id: string): GridMarks['tiles'] {
+  const seen = (ts: GridMarks['tiles']) => { const s = seenTiles(x); return ts.filter((t) => s.has(t.tile)); };
+  if (['stim', 'shove', 'pullfree'].includes(id)) return reachWithin(x, 1);
+  if (id === 'stim_throw') return seen(reachWithin(x, stimThrowRange()));
+  if (id === 'analyze') return seen(reachWithin(x, analyzeRange(x.u)));
+  if (['melee', 'shot', 'aimed', 'burst', 'auto', 'paired', 'skill'].includes(id)) {
+    const mode: any = id === 'melee' ? 'melee' : id === 'aimed' ? 'aimed' : 'shot';
+    return [...safe(() => reachTiles(x.cb, x.u, mode), new Map<string, number>())].map(([k, band]) => ({ tile: k, kind: 'reach' as const, band }));
+  }
+  return [];
+}
+function basicPreview(x: DescCtx, d: ActionDescriptor, p: Picks, action: Action | null): ReturnType<NonNullable<ActionSystem['preview']>> {
+  {
     if (d.preview === 'attack' && p.targetId) {
       const tg = x.cb.units.find((v) => v.id === p.targetId); if (!tg || d.id === 'paired') return null;
       const pv: any = safe(() => withGame(x.g, () => previewAttack(x.cb, x.u, tg, (d.id === 'skill' ? 'shot' : d.id) as AttackMode)), null);
@@ -474,8 +557,8 @@ const PHYSICAL: ActionSystem = {
     { const say = basicSay(x, d, p); if (say) return { lines: [{ k: 'note', text: say }], marks: p.targetId ? { units: [{ id: p.targetId, tag: '', tone: 'target' }] } : {} }; }
     if (['move', 'sprint', 'disengage'].includes(d.id) && p.tile) { const mo: any = safe(() => moveOptions(x.g, x.cb, x.u.id, d.id as any, { mods: p.mods || null }), null); const tl = mo && mo.tiles[p.tile]; return tl ? { ap: tl.ap, lines: [{ k: 'cost', text: tl.ap + ' AP for ' + tl.tiles + (tl.tiles === 1 ? ' tile' : ' tiles') }] } : null; }
     void action; return null;
-  },
-};
+  }
+}
 /** Hide's row, with where to go (rules 1.56 Shadow 2.0 item 11): who sees you (`eyes`) and, when it is refused because
  * you are seen, the tiles this turn's Move reaches (moveOptions, the engine's own Move) from which Hide would work: out of
  * every enemy's eyes (seenByFoes, Hide's own test) with Hide's price still paid. Read on the viewer's fight (x.seen): an
@@ -569,9 +652,14 @@ function techRows(x: DescCtx): ActionDescriptor[] {
 }
 const PRESS_STATE: Record<string, string> = { pressed: 'Pressed', suppressed: 'Suppressed', broken: 'Broken', under_fire: 'Under fire', '': '' };
 /** A technique's preview: the verdict from the whole fight, the units it names and marks from what the side sees. */
-function techPreviewOf(x: DescCtx, t: { hand: string; id: string; item?: string | number }, p: Picks) {
+/** A technique's arguments from the picks (the preview's and the choices' one copy). */
+function techArgs(t: { hand: string; id: string; item?: string | number }, p: Picks): any {
   const args: any = { hand: t.hand, ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.tile ? { tile: p.tile } : {}), ...(p.allyId ? { allyId: p.allyId } : {}), ...(p.line ? { line: p.line } : {}), ...(t.item != null ? { item: t.item } : {}) };
   const o = techOpt(t.id, p.opt); if (o) args.opt = o;
+  return args;
+}
+function techPreviewOf(x: DescCtx, t: { hand: string; id: string; item?: string | number }, p: Picks) {
+  const args: any = techArgs(t, p);
   const run = (c: Combat) => safe(() => previewTechnique(c, x.u, t.id, args, x.g), { ok: false, why: 'Not now.', ap: 0, attacks: [], notes: [] } as any);
   // the chosen toggles (the Open Hand's forms) shape the preview's numbers as they shape the blow (preview.ts fightWith)
   const fcb = p.mods?.length ? fightWith(x.cb, p.mods) : x.cb;
@@ -617,7 +705,7 @@ const PERKS: ActionSystem = {
       // a door verb's reach (Classes 3.0 P6): the engine's own list of who it may go at
       if (e.target === 'ally') picks.push({ key: 'targetId', kind: 'ally', prompt: 'Click an ally.', choices: e.choices ? seenOf(x, e.choices) : allyIds(x, true) });
       else if (['unit', 'enemy', 'npc'].includes(e.target as string)) picks.push({ key: 'targetId', kind: e.target === 'enemy' ? 'enemy' : 'unit', prompt: 'Click a target.', choices: e.choices ? seenOf(x, e.choices) : others(x) });
-      else if (e.target === 'tile') picks.push({ key: 'tile', kind: 'tile', prompt: 'Click a tile.' });
+      else if (e.target === 'tile') picks.push({ key: 'tile', kind: 'tile', prompt: 'Click a tile.' }); // (its choices: PERKS.choices, when it comes up)
       if (e.thenTile) picks.push({ key: 'tile', kind: 'tile', prompt: 'Now click the tile they step to.' }); // 0.28.3: Guide's second pick (the engine's preview shades the legal tiles)
       if ((e.options && e.options.length) || e.pickLabel || e.target === 'text') picks.push({ key: 'form', kind: 'custom', renderer: 'perk-form', prompt: e.pickLabel || 'Choose.', ...(e.options ? { options: e.options.map((o) => ({ id: o.id, label: o.label, ...(o.off ? { why: o.off } : {}) })) } : {}), ...(e.pickMulti ? { max: e.pickMulti } : {}) });
       // an armed move (Eye of the Storm) can be confirmed again to stand it down: its state is said, the reducer rules
@@ -629,13 +717,31 @@ const PERKS: ActionSystem = {
     const e = perkEntriesOf(x).find((y) => y.id === k.id && y.actionId === k.actionId);
     return { type: 'combat/perk', unitId: x.u.id, id: k.id, actionId: k.actionId, ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.tile && (e?.target === 'tile' || e?.thenTile) ? { tile: p.tile } : {}), ...(p.form && typeof p.form === 'object' ? p.form : {}), ...(e?.arm ? { arm: true } : {}) } as any;
   },
+  choices(x, d, step, p) {
+    // rules 1.65: each candidate through previewPerkAction, runPerkAction's own gate (its use, AP and resources are the
+    // same for every candidate). With no choice picked yet for an action with a pick list, its first open choice stands
+    // in (where a Figment can stand does not hang on its form); a unit verb that then takes a tile (Guide), its tile
+    // still to pick, takes a unit when the preview has a tile for it to go to.
+    const k = parsePerkId(d.id), key = aimKind(step); if (!k || !key) return undefined;
+    const args: any = { actionId: k.actionId, ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.tile ? { tile: p.tile } : {}), ...(p.form && typeof p.form === 'object' ? p.form : {}) }; delete args[key];
+    const e = safe(() => perkEntriesOf(x).find((y) => y.id === k.id && y.actionId === k.actionId), undefined); if (!e) return undefined;
+    if (args.choice == null && e.options?.length) { const o = e.options.find((y) => !y.off); if (o) args.choice = o.id; }
+    const later = key === 'targetId' && !!e.thenTile && !args.tile, who = { u: x.u, c: x.c, cb: x.seen, g: x.g };
+    const cands = key === 'targetId' ? seenUnits(x) : [...seenTiles(x)];
+    return safe(() => withGame(x.g, () => cands.filter((c) => { const pv = previewPerkAction(who, k.id, { ...args, [key]: c }, 'combat'); return pv.ok || (later && !!pv.area?.length); })), undefined);
+  },
   preview(x, d, p) {
     const k = parsePerkId(d.id)!, args: any = { actionId: k.actionId, ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.tile ? { tile: p.tile } : {}), ...(p.form && typeof p.form === 'object' ? p.form : {}) };
     const pv: any = safe(() => withGame(x.g, () => previewPerkAction({ u: x.u, c: x.c, cb: x.cb, g: x.g }, k.id, args, 'combat')), null);
     if (!pv) return null;
     const seen = new Set(x.seen.units.map((v) => v.id));
+    // rules 1.65: the preview's `area` is where it may be aimed (reach), its `tiles` what the aim covers (area); with
+    // none, the entry's range round the unit is its reach
+    const e = safe(() => perkEntriesOf(x).find((y) => y.id === k.id && y.actionId === k.actionId), undefined);
+    const reach: GridMarks['tiles'] = (pv.area || []).map((k2: string) => ({ tile: k2, kind: 'reach' as const }));
+    if (!reach.length && e && typeof e.range === 'number') reach.push(...reachWithin(x, e.range));
     return { ok: pv.ok, why: pv.ok ? null : pv.why || 'Not now.', ap: pv.ap, lines: (pv.lines || []).map((t: string) => ({ k: 'note' as const, text: t })),
-      marks: { units: (pv.targets || []).filter((id: string) => seen.has(id)).map((id: string) => ({ id, tag: '', tone: 'target' as const })), tiles: [...(pv.area || []), ...(pv.tiles || [])].map((k2: string) => ({ tile: k2, kind: 'area' as const })) } };
+      marks: { units: (pv.targets || []).filter((id: string) => seen.has(id)).map((id: string) => ({ id, tag: '', tone: 'target' as const })), tiles: [...reach, ...(pv.tiles || []).map((k2: string) => ({ tile: k2, kind: 'area' as const }))] } };
   },
 };
 
@@ -664,6 +770,13 @@ const CALLS: ActionSystem = {
     const opt = Array.isArray(p.opt) ? p.opt.join('+') : p.opt || '';
     return { type: 'combat/call', unitId: x.u.id, id, targetId: tgt, ...(p.tile ? { tile: p.tile } : {}), ...(opt ? { opt } : {}) } as any;
   },
+  choices(x, d, step, p) {
+    // rules 1.65: each candidate through previewCall (useCall's own gate)
+    const key = aimKind(step); if (!key) return undefined;
+    const id = d.id.slice(3), opt = Array.isArray(p.opt) ? p.opt.join('+') : p.opt || '';
+    const cands = key === 'targetId' ? seenUnits(x) : [...seenTiles(x)];
+    return cands.filter((k) => { const args: any = { targetId: key === 'targetId' ? k : p.targetId || x.u.id, ...(key === 'tile' ? { tile: k } : p.tile ? { tile: p.tile } : {}), ...(opt ? { opt } : {}) }; return !!safe(() => previewCall(x.cb, x.u, id, args, x.g), null as any)?.ok; });
+  },
   preview(x, d, p) {
     const id = d.id.slice(3), opt = Array.isArray(p.opt) ? p.opt.join('+') : p.opt || '', tgt = p.targetId || x.u.id;
     const pv: any = safe(() => previewCall(x.cb, x.u, id, { targetId: tgt, ...(p.tile ? { tile: p.tile } : {}), ...(opt ? { opt } : {}) }, x.g), null);
@@ -691,15 +804,13 @@ const FAITH: ActionSystem = {
     if (!c || u.side !== 'pc' || u.companion) return [];
     if (beliefOf(c).kind !== 'faithful' && (c.skills?.faith || 0) < FAITH_MIN) return [];
     const v: any = safe(() => faithView(g, c.id), null); if (!v) return [];
-    // a place is aimed at a tile this side sees (the view's own sight when it is a player's view, else worked out)
-    const seenTiles = () => safe(() => [...(((x.cb as any).fog && (x.cb as any).fog.tiles) || visibility(x.cb, x.side).tiles)] as string[], undefined as any);
     const row = (kind: string, id: string, name: string, text: string, p: any, tier: number) => {
       const gate = kind === 'whisper' ? (p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? 12) : 'ANYONE') : kind === 'miracle' ? 'FAITH ' + MIRACLE_FAITH + ' · DEVOTION ' + (p.gate ?? GATE.miracle)
         : p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? '?') : 'HYMN ' + ['', 'I', 'II', 'III', 'IV'][tier] + ' · DEVOTION ' + (p.gate ?? '?');
       const odds = prayOdds(p), warn = p.mode === 'overreach' && p.overreach ? 'Overreach: TN ' + p.overreach.tn + ' · a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP'
         : kind === 'miracle' ? 'Lowers your Devotion by ' + MIRACLE_COST_LEVELS + ' levels (' + GATE.miracle + ' → ' + (GATE.miracle - MIRACLE_COST_LEVELS) + '), after it lands' : '';
       const label = (kind === 'miracle' ? '✦ ' : '') + name + (kind === 'whisper' ? '' : ' · ' + (kind === 'miracle' ? 'MIRACLE' : gate.replace(/ · DEVOTION \d+$/, '')));
-      return D(prayId(kind, id), 'faith', label, p.ap, p.ap + ' AP · ' + odds, gate + ' · ' + odds + '. ' + text + (warn ? ' ' + warn + '.' : ''), p.ok ? null : p.why || 'Not now.', { picks: prayPicks(p.target || 'none', p.targets || [], p.target === 'tile' ? seenTiles() : undefined), preview: 'prayer', sub: PRAYER_SUB[kind] });
+      return D(prayId(kind, id), 'faith', label, p.ap, p.ap + ' AP · ' + odds, gate + ' · ' + odds + '. ' + text + (warn ? ' ' + warn + '.' : ''), p.ok ? null : p.why || 'Not now.', { picks: prayPicks(p.target || 'none', p.targets || []), preview: 'prayer', sub: PRAYER_SUB[kind] });
     };
     return [...v.whispers.map((w: any) => row('whisper', w.id, w.name, w.text, w.preview, 0)), ...v.hymns.map((h: any) => row('hymn', h.key, h.name, h.text, h.preview, h.tier)), ...(v.miracle ? [row('miracle', v.miracle.id, v.miracle.name, v.miracle.text, v.miracle.preview, 4)] : [])];
   },
@@ -715,7 +826,27 @@ const FAITH: ActionSystem = {
     if (pv.mode === 'overreach' && pv.overreach) lines.push({ k: 'save', text: 'Overreach: you ask above your standing. TN ' + pv.overreach.tn + '; a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP.' });
     else if (pv.mode === 'dice' && pv.roll) lines.push({ k: 'save', text: 'By dice: d20 ' + (pv.roll.mod >= 0 ? '+ ' : '− ') + Math.abs(pv.roll.mod) + ' against TN ' + pv.roll.tn + '.' });
     else lines.push({ k: 'save', text: s.kind === 'miracle' ? 'By standing: no roll. After it lands, your Devotion falls ' + MIRACLE_COST_LEVELS + ' levels.' : 'By standing: no roll.' });
-    return { ok: pv.ok, why: pv.ok ? null : pv.why || 'Not now.', ap: pv.ap, lines, marks: { units: [p.targetId, p.targetId2].filter(Boolean).map((id: string) => ({ id, tag: '', tone: 'target' as const })), tiles: p.tile ? [{ tile: p.tile, kind: 'pick' }] : [] } };
+    // rules 1.65: where it reaches and what it covers, from its data (prayerAim); whom it touches, fogged
+    const aim = safe(() => prayerAim(x.g, x.u.id, s.kind, s.id, args), { reach: [], area: [], units: [] } as ReturnType<typeof prayerAim>);
+    const seen = new Set(x.seen.units.map((v) => v.id)), picked = [p.targetId, p.targetId2].filter(Boolean) as string[];
+    const units: GridMarks['units'] = [...aim.units.filter((m) => seen.has(m.id) && !picked.includes(m.id)).map((m) => ({ id: m.id, tag: '', tone: m.tone })), ...picked.map((id) => ({ id, tag: '', tone: 'target' as const }))];
+    // E2: a heal's or a shield's net gain on whom it goes to, from the answer itself run on a copy (no roll: what an
+    // answer gives, never whether it comes)
+    // (the mend's line first: the hover line reads the first notes)
+    if (pv.ok && picked.length && x.c) {
+      const run = mendsIn(() => safe(() => previewOnCopy(x.g, x.cb, (c, sg, rng) => (prayerAnswerOn(sg, c, rng, x.u.id, s.kind, s.id, args) ? null : c)), null)), after = run.out;
+      const gain: PreviewLine[] = [];
+      if (after) for (const m of units) { if (m.tone !== 'target') continue; const w = mendWord(x.cb.units.find((v) => v.id === m.id), after.units.find((v) => v.id === m.id), run.mended(m.id), x.u.id); if (w) { m.tag = w; gain.push({ k: 'note', text: (x.cb.units.find((v) => v.id === m.id)?.name || m.id) + ': ' + w }); } }
+      lines.unshift(...gain);
+    }
+    const tiles: GridMarks['tiles'] = [...aim.reach.map((k) => ({ tile: k, kind: 'reach' as const })), ...aim.area.map((k) => ({ tile: k, kind: 'area' as const }))];
+    return { ok: pv.ok, why: pv.ok ? null : pv.why || 'Not now.', ap: pv.ap, lines, marks: { units, tiles } };
+  },
+  choices(x, d, step, p) {
+    // rules 1.65: each candidate through prayerChoices (previewPrayer and pickTarget: combatPray's own gates)
+    const s = parsePrayId(d.id), key = step.key; if (!s || !aimKind(step) || !['targetId', 'targetId2', 'tile'].includes(key)) return undefined;
+    const args: any = { ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.targetId2 ? { targetId2: p.targetId2 } : {}), ...(p.tile ? { tile: p.tile } : {}) }; delete args[key];
+    return safe(() => prayerChoices(x.g, x.u.id, s.kind, s.id, args, key as any, key === 'tile' ? [...seenTiles(x)] : seenUnits(x)), undefined);
   },
 };
 
@@ -830,6 +961,25 @@ const OWNED: ActionSystem = {
     }
     return out;
   },
+  choices(x, d, step, p) {
+    // rules 1.65: each candidate through ownedAimChoices (runDataVerb's and runOwned's own gates)
+    const key = aimKind(step); if (!key) return undefined; void p;
+    // on the side's view (the fog): a hidden unit's tile reads as free, as it does for the unit's own Move; the reducer
+    // refuses it on the click (rules 1.65 item 5108.1)
+    const [, owned, verb] = d.id.split(':'), o = x.seen.units.find((v) => v.id === owned); if (!o) return undefined;
+    const cands = key === 'targetId' ? seenUnits(x, false).filter((id) => id !== owned) : [...seenTiles(x)];
+    return safe(() => withGame(x.g, () => ownedAimChoices(x.g, x.seen, x.u, o, verb, key, cands, (cb, v) => Object.keys(moveOptions(x.g, cb, v.id, 'move').tiles))), undefined);
+  },
+  preview(x, d, p) {
+    // rules 1.65 item 5108.2: where the owned unit's verb reaches from where IT stands (a data verb's reach.tiles round it;
+    // a plain attack its weapon's reach), and whom the aim goes at
+    const [, owned, verb] = d.id.split(':'), o = x.seen.units.find((v) => v.id === owned); if (!o) return null;
+    const dv = ownedVerbInfo(x.cb, x.u, o, verb), tiles: GridMarks['tiles'] = [];
+    if (dv && dv.pick !== 'none' && dv.pick !== 'tile' && dv.range != null) tiles.push(...tilesAround(o.pos, dv.range, x.cb).map((k) => ({ tile: k, kind: 'reach' as const })));
+    else if (!dv && verb !== 'move') for (const [k, band] of safe(() => reachTiles(x.cb, o, (verb === 'melee' ? 'melee' : verb === 'aimed' ? 'aimed' : 'shot') as any), new Map<string, number>())) tiles.push({ tile: k, kind: 'reach', band });
+    const units: GridMarks['units'] = p.targetId && x.seen.units.some((v) => v.id === p.targetId) ? [{ id: p.targetId, tag: '', tone: dv?.pick === 'ally' ? 'target' : 'harm' }] : [];
+    return { marks: { units, tiles } };
+  },
   send(x, d, p) {
     const [, owned, verb] = d.id.split(':');
     if (verb === 'move') return p.tile ? ({ type: 'combat/owned', unitId: x.u.id, owned, verb, tile: p.tile } as Action) : null;
@@ -841,6 +991,8 @@ const OWNED: ActionSystem = {
 };
 
 const BUILT_IN: ActionSystem[] = [PHYSICAL, PERKS, MAGIC, FAITH, CALLS, OWNED];
+/** The open step's choices, once per game state and question (a hover re-asks the same step with another pick). */
+const CHOICE_MEMO = new WeakMap<object, Map<string, string[] | undefined>>();
 const systems = () => [...BUILT_IN, ...SYSTEMS];
 const SYS_OF = new WeakMap<ActionDescriptor, ActionSystem>();
 
@@ -863,6 +1015,13 @@ const DESC_ALIAS: Record<string, string> = { 'clear-off': 'clear' };
 function find(x: DescCtx, id: string): { d: ActionDescriptor; s: ActionSystem } | null {
   for (const s of systems()) { if (s.owns && !s.owns(id)) continue; const d = safe(() => s.list(x), [] as ActionDescriptor[]).find((y) => y.id === id); if (d) return { d, s }; }
   return DESC_ALIAS[id] ? find(x, DESC_ALIAS[id]) : null;
+}
+/** Rules 1.65: the unit or tile step a grid click picks now: the first one still to pick (an optional panel before it
+ * left as it is; a required option first: none yet), else the last one picked (a click re-aims it). */
+function aimStepOf(d: ActionDescriptor, p: Picks): PickStep | null {
+  const empty = (st: PickStep) => p[st.key] == null || (Array.isArray(p[st.key]) && !p[st.key].length);
+  for (const st of d.picks) { if (!stepOn(st, p) || !empty(st)) continue; if (aimKind(st)) return st; if (!st.optional) break; }
+  return [...d.picks].reverse().find((st) => aimKind(st) && stepOn(st, p) && !empty(st)) || null;
 }
 /** Does this step apply with these picks? */
 export const stepOn = (st: PickStep, p: Picks) => {
@@ -901,7 +1060,19 @@ export function previewDescriptor(g: GameState, unitId: string, id: string, pick
   const { d, s } = f;
   const tm = withMods(x, d, picks), toggles = tm.toggles; picks = tm.picks;
   let next = nextStep(d, picks); const need = nextStep(d, picks, { required: true });
-  if (next) { const ch = s.choices ? safe(() => s.choices!(x, d, next!, picks), undefined) : undefined; if (ch) next = { ...next, choices: ch }; }
+  // rules 1.65 (the picking contract): the step a grid click picks now, the next one, else the last unit or tile step
+  // already picked (a click re-aims it); its choices are the system's, through the reducer's own test, once per state
+  const aim = aimStepOf(d, picks);
+  let aimChoices: string[] | undefined;
+  if (aim && d.available && !d.pad) {
+    const rest: Picks = { ...picks }; delete rest[aim.key];
+    const memoKey = unitId + '|' + (viewer || '') + '|' + id + '|' + aim.key + '|' + JSON.stringify(rest);
+    let m = CHOICE_MEMO.get(g as any); if (!m) CHOICE_MEMO.set(g as any, (m = new Map()));
+    if (!m.has(memoKey)) m.set(memoKey, (s.choices ? safe(() => s.choices!(x, d, aim, rest), undefined) : undefined) ?? aim.choices);
+    aimChoices = m.get(memoKey);
+  }
+  if (next && aim && next.key === aim.key && aimChoices) next = { ...next, choices: aimChoices };
+  else if (next && !aimKind(next)) { const ch = s.choices ? safe(() => s.choices!(x, d, next!, picks), undefined) : undefined; if (ch) next = { ...next, choices: ch }; }
   const out: DescriptorPreview = { id, ok: d.available, why: d.why, ask: need ? need.prompt : null, next, ap: d.cost.ap, cost: d.cost.text, lines: [], marks: { units: [], tiles: [] }, toggles, action: null };
   if (d.pad) return { ...out, ok: false, why: d.why, ask: 'Pick one in the pad.' };
   // a refused action asks for nothing: the refusal is the answer (a second Whisper says "One Whisper a turn.", not
@@ -910,11 +1081,32 @@ export function previewDescriptor(g: GameState, unitId: string, id: string, pick
   const action = need ? null : safe(() => s.send(x, d, picks), null);
   const extra = s.preview ? safe(() => s.preview!(x, d, picks, action), null) : null;
   if (extra) { if (extra.rolls) out.rolls = extra.rolls; if (extra.lines) out.lines.push(...extra.lines); if (extra.marks) out.marks = { units: extra.marks.units || [], tiles: extra.marks.tiles || [] }; if (typeof extra.ap === 'number') out.ap = extra.ap; if (extra.ok === false) { out.ok = false; out.why = extra.why || 'Not now.'; } }
-  if (next && next.choices) out.marks.tiles.push(...(next.kind === 'tile' ? next.choices.map((k) => ({ tile: k, kind: 'choice' as const })) : []));
+  // the open step's choices on the grid: tiles as 'choice', units with the tone 'choice'; with no reach of the system's
+  // own, a tile step's choices are its reach (where it could be aimed from here)
+  if (aim && aimChoices) {
+    if (aim.kind === 'tile') {
+      out.marks.tiles.push(...aimChoices.map((k) => ({ tile: k, kind: 'choice' as const })));
+      if (!out.marks.tiles.some((t) => t.kind === 'reach')) out.marks.tiles.push(...aimChoices.map((k) => ({ tile: k, kind: 'reach' as const })));
+    } else {
+      out.marks.units.push(...aimChoices.map((uid) => ({ id: uid, tag: '', tone: 'choice' as const })));
+      // rules 1.65 item 5108.2: a unit pick with no range of its own reaches as far as the side sees (a unit it can't see
+      // is never a choice)
+      if (!out.marks.tiles.some((t) => t.kind === 'reach')) out.marks.tiles.push(...[...seenTiles(x)].map((k) => ({ tile: k, kind: 'reach' as const })));
+    }
+  }
   if (picks.tile) out.marks.tiles.push({ tile: picks.tile, kind: 'pick' });
   if (action && out.ok) {
-    const vd = safe(() => previewAction(g, action, x.by), { ok: false, why: 'Not now.', ap: 0, g: null } as any);
+    const run = mendsIn(() => safe(() => previewAction(g, action, x.by), { ok: false, why: 'Not now.', ap: 0, g: null } as any)), vd = run.out;
     out.ok = vd.ok; out.why = vd.ok ? null : vd.why; if (vd.ok) out.ap = vd.ap; out.action = vd.ok ? action : null;
+    // E2: a heal's or a shield's gain on the picked unit, from the reducer's own run on the copy (a prayer says its own,
+    // from its answer: FAITH.preview)
+    // (the mend's line first: the hover line reads the first notes)
+    if (vd.ok && vd.g && d.preview !== 'prayer') for (const uid of [picks.targetId, picks.allyId].filter(Boolean) as string[]) {
+      if (!x.seen.units.some((v) => v.id === uid)) continue;
+      const w = mendWord(x.cb.units.find((v) => v.id === uid), vd.g.combat?.units.find((v: Unit) => v.id === uid), run.mended(uid), x.u.id); if (!w) continue;
+      const m = out.marks.units.find((v) => v.id === uid && v.tone !== 'choice'); if (m) m.tag = m.tag ? m.tag + ' · ' + w : w; else out.marks.units.push({ id: uid, tag: w, tone: 'target' });
+      out.lines.unshift({ k: 'note', text: (x.cb.units.find((v) => v.id === uid)?.name || uid) + ': ' + w });
+    }
   }
   if (!out.ok && !need && !out.why) out.why = 'Not now.';
   out.cost = out.ap === d.cost.ap ? d.cost.text : apT(out.ap);

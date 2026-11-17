@@ -40,6 +40,7 @@ function fight() {
 const screen = () => { const L = new CombatLogic({}) as any; L.setState = (p: any) => { Object.assign(L.state, p); }; return L; };
 const rowNamed = (r: any, name: string) => r.groups.flatMap((g: any) => g.items).find((i: any) => i.name === name);
 
+// (rules 1.65: the refusal is a line by the action box, S.pickWhy, no longer a toast)
 describe('0.28.3: a click on a unit while a unit pick is open is always that pick', () => {
   it('Bond: an enemy out of reach is refused in the engine\'s words and Bond stays picked (no Shot)', () => {
     const { c, near, far } = fight();
@@ -50,7 +51,7 @@ describe('0.28.3: a click on a unit while a unit pick is open is always that pic
     L.renderVals(); L.tileClick(far.pos);
     expect(L.state.action).toBe(bond); // it used to become 'shot'
     expect(sent).toEqual([]);
-    expect(toasts.at(-1)).toBe('✕ ' + far.name + ': Out of range (6 tiles).');
+    expect((L.state.pickWhy && '✕ ' + L.state.pickWhy.text)).toBe('✕ ' + far.name + ': Out of range (6 tiles).');
     expect(L.state.target).not.toBe(far.id);
     // an enemy in reach is picked, and Confirm Bonds it
     L.renderVals(); L.tileClick(near.pos);
@@ -65,13 +66,13 @@ describe('0.28.3: a click on a unit while a unit pick is open is always that pic
     const L = screen(); L.renderVals(); rowNamed(L.renderVals(), 'Mend').pick();
     const mend = L.state.action; L.renderVals(); L.tileClick(far.pos);
     expect(L.state.action).toBe(mend); expect(sent).toEqual([]);
-    expect(toasts.at(-1)).toMatch(new RegExp('^✕ ' + far.name + ': '));
+    expect((L.state.pickWhy && '✕ ' + L.state.pickWhy.text)).toMatch(new RegExp('^✕ ' + far.name + ': '));
   });
   it("Bond on a machine (0.29.0, seen on live 0.28.3: it said \"Click a target.\"): the data's own reason for that unit", () => {
     const { near } = fight(); near.kind = 'robot'; snap = null;
     const L = screen(); L.renderVals(); rowNamed(L.renderVals(), 'Bond').pick();
     const bond = L.state.action; L.renderVals(); L.tileClick(near.pos);
     expect(L.state.action).toBe(bond); expect(sent).toEqual([]);
-    expect(toasts.at(-1)).toBe('✕ ' + near.name + ': A machine has no heart to Bond.');
+    expect((L.state.pickWhy && '✕ ' + L.state.pickWhy.text)).toBe('✕ ' + near.name + ': A machine has no heart to Bond.');
   });
 });
