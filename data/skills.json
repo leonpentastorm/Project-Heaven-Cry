@@ -497,7 +497,7 @@
           "category": "Active Skill",
           "mastery": 2,
           "text": "{=unlocks.5.effects.0.ap} AP, once per combat: recover 25% of your max HP.",
-          "player": "{=.effects.0.ap} AP, once a fight: heal a quarter of your max HP.",
+          "player": "{=.effects.0.ap} AP, once a fight: heal {=.numbers.heal_share|pct}% of your max HP.",
           "effects": [
             {
               "op": "grant_action",
@@ -506,7 +506,10 @@
               "uses": "per_combat"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "numbers": {
+            "heal_share": 0.25
+          }
         },
         "6": {
           "name": "Fork: Stand Fast or Drive",
@@ -963,19 +966,19 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.hit} to hit with heavy melee weapons and bare hands"
+            "text": "+{=per_point.numbers.hit} to hit with heavy melee weapons and bare hands."
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.damage|pct}% physical damage"
+            "text": "+{=per_point.numbers.damage|pct}% physical damage."
           },
           {
             "at": "each",
-            "text": "Your melee techniques are harder to save against"
+            "text": "Your melee techniques are harder to save against."
           },
           {
             "at": "each from 2",
-            "text": "+{=per_point.numbers.counter} to your counter-attacks"
+            "text": "+{=per_point.numbers.counter} to your counter-attacks."
           }
         ]
       },
@@ -989,6 +992,7 @@
           "category": "Combat Interaction",
           "mastery": 1,
           "text": "A melee technique of yours that pushes its target moves it {=unlocks.3.effects.0.tiles} tile further.",
+          "player": "A melee technique of yours that pushes its target pushes it {=.effects.0.tiles} tile further.",
           "effects": [
             {
               "op": "knockback",
@@ -1020,6 +1024,7 @@
           "category": "Combat Interaction",
           "mastery": 2,
           "text": "When a Finisher of yours takes its target out, you are left with {=unlocks.5.effects.0.set} Momentum.",
+          "player": "When a Finisher (a strike that spends all your Momentum) takes its target out, you keep {=.effects.0.set} Momentum.",
           "effects": [
             {
               "op": "resource",
@@ -1152,11 +1157,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "Feeds Raw Power's Momentum: the Momentum a hit or a tile wears off is divided by {=per_point.numbers.feed|pct}% more for each Raw Power point times each Guts point"
+            "text": "your Momentum wears off slower when you walk or get hit, by {=per_point.numbers.feed|pct}% for every point here times every point in Raw Power."
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.save} on Body saves: poison, knock-downs, pushes and pins"
+            "text": "+{=per_point.numbers.save} on Body saves: against poison, knock-downs, pushes and pins."
           }
         ]
       },
@@ -1167,6 +1172,7 @@
           "category": "Passive",
           "mastery": 1,
           "text": "Fear can't stop you moving or acting; you only keep its −2 to hit.",
+          "player": "Fear can't stop you moving or acting; you keep only its penalty to hit.",
           "effects": [
             {
               "op": "stat_mod",
@@ -1186,6 +1192,7 @@
           "category": "Passive",
           "mastery": 2,
           "text": "Allies within {=unlocks.5.effects.0.value} tiles roll Fear saves with your Guts in place of their own.",
+          "player": "Allies within {=.effects.0.value} tiles of you roll their Fear saves with your Guts instead of their own.",
           "effects": [
             {
               "op": "stat_mod",
@@ -1303,15 +1310,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "Your Threaten Call reaches {=per_point.numbers.call_range} tile further"
+            "text": "Your Threaten reaches {=per_point.numbers.call_range} tile further."
           },
           {
             "at": "each",
-            "text": "Your Threaten is harder to shake off"
+            "text": "Your Threaten is harder to shake off."
           },
           {
             "at": "from 1",
-            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -1322,6 +1329,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "Even a failed threat leaves the target Shaken: −2 on their next roll against you.",
+          "player": "Even a failed threat leaves them Shaken: {=.numbers.next_roll} on their next roll against you.",
           "effects": [
             {
               "op": "condition",
@@ -1335,13 +1343,17 @@
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "numbers": {
+            "next_roll": -2
+          }
         },
         "5": {
           "name": "Stare Down",
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Before initiative, one enemy that can see you makes a Heart save against Fear or loses its first turn.",
+          "player": "Before the first turn, one enemy that can see you makes a Heart save against Fear or loses its first turn.",
           "effects": [
             {
               "op": "grant_action",

@@ -211,7 +211,7 @@ export function attrPageVals(self) {
   } };
 }
 const CALL_BLANK = { has: false, name: '', text: '', now: '', checks: '', ladder: [], boxStyle: '', inkStyle: '' }, FEED_BLANK = { has: false, head: '', top: '', now: '', hasNow: false, boxStyle: '' };
-const EP_BLANK = { zoom: () => {}, openAttr: () => {}, attrName: '', attrLabel: '', attrStyle: '', head: [], hasHead: false, steps: [], atLabel: '', fold: { open: false, expanded: 'false', chev: '▸', toggle: () => {}, headStyle: '', chevStyle: '', id: '' }, call: CALL_BLANK, feed: FEED_BLANK, ptsLine: '', headStyle: '', inkStyle: '', title: '', kicker: '', name: '', line: '', img: '', alt: '', pictured: '', caption: '', speaker: '', intro: '', quote: [], rows: [], perks: [], perkHead: '', perkNote: '', perkNameStyle: '', m: {}, combos: [], hasCombos: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
+const EP_BLANK = { zoom: () => {}, openAttr: () => {}, attrName: '', attrLabel: '', attrStyle: '', head: [], hasHead: false, steps: [], atLabel: '', fold: { open: false, expanded: 'false', chev: '▸', toggle: () => {}, headStyle: '', chevStyle: '', id: '' }, call: CALL_BLANK, feed: FEED_BLANK, door: { has: false, text: '' }, ptsLine: '', headStyle: '', inkStyle: '', title: '', kicker: '', name: '', line: '', img: '', alt: '', pictured: '', caption: '', speaker: '', intro: '', quote: [], rows: [], perks: [], perkHead: '', perkNote: '', perkNameStyle: '', m: {}, combos: [], hasCombos: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
 export const epBtnStyle = (ink, extra) => 'display: grid; place-items: center; width: 28px; height: 28px; flex: none; padding: 0; border-radius: 50%; border: 1px solid ' + ink + '; background: rgba(10, 13, 19, 0.85); color: ' + ink + '; font-family: inherit; font-size: 14px; font-weight: 700; line-height: 1; cursor: pointer' + (extra ? '; ' + extra : '');
 export const epRgba = (hex, a) => 'rgba(' + [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ') + ', ' + a + ')';
 export function masteredVals(self, m, ink, skillName, pts) {
@@ -276,6 +276,8 @@ export function epccgVals(self, ptsOf) {
         textStyle: 'font-size: 13px; line-height: 1.35; color: ' + (x.now ? '#FFFFFF; font-weight: 700' : x.owned ? '#E7EBF3' : '#A3AEC2'),
         style: 'display: flex; gap: 10px; align-items: center; padding: 2px 8px 2px 4px; border-radius: 8px; ' + (x.now ? 'background: ' + epRgba(ink, 0.16) + '; box-shadow: inset 0 0 0 1px ' + ink : '') })),
         boxStyle: 'display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 10px; background: ' + epRgba(ink, 0.08) + '; border: 1px solid ' + ink }; })(),
+    // an alpha skill's door, how it is used (skills.json door_line, the one line the fight tab's header reads too)
+    door: (() => { const t = ENGINE_SKILL[s.id] && ENGINE_SKILL[s.id].door_line; return t ? { has: true, text: t } : { has: false, text: '' }; })(),
     // a beta skill's door: what it multiplies on its attribute's alpha door (the engine's doorFeedView)
     feed: (() => { const fb = feedBlock(s.id, typeof ptsOf === 'function' ? ptsOf : null); if (!fb) return FEED_BLANK;
       return { has: true, head: fb.head, top: fb.top, now: fb.now, hasNow: !!fb.now, boxStyle: 'display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 10px; background: #10151F; border-left: 3px solid ' + ink }; })(),
