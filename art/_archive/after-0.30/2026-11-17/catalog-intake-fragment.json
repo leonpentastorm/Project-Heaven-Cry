@@ -83,6 +83,48 @@
       "mode": "white-ink sign",
       "production_approved": false,
       "implementation_ready": false
+    },
+    "icon-resource-credits": {
+      "path": "art/icons/resources/credits.png",
+      "sha256": "b02f6fd9b1ad5c76941356a7a8da29f2825259b17730a1846f27c92ff6d4ebf0",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-resource-xp": {
+      "path": "art/icons/resources/xp.png",
+      "sha256": "4b1ec8a1415a0da8d42085e72927d94d3c16b467db288831c726cef658120b9e",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-resource-devotion": {
+      "path": "art/icons/resources/devotion.png",
+      "sha256": "fd7b979c8e9caf923b66164e8e9fcb03655e46990f1a20287b1763931daae350",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-raw": {
+      "path": "art/icons/tones/raw.png",
+      "sha256": "4ffe597fd229b297add89ee1768ae59908d5ac8eb0976dea2e3a0de0014bdd52",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-fire": {
+      "path": "art/icons/tones/fire.png",
+      "sha256": "7b0fb09c4a72c1139ad1d54cd024fe69da4e4a4f09eba4b640f0b038af232091",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-storm": {
+      "path": "art/icons/tones/storm.png",
+      "sha256": "3795e662c412944194116e94f1d82f7861efd3e3ed1ab31d5ce3c6efcbe3710c",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
     }
   },
   "condition_icons": {
@@ -258,6 +300,13 @@
       "production_approved": false,
       "implementation_ready": false
     },
+    "vow-unarmed-faith": {
+      "path": "art/icons/prayers/vow-unarmed-faith.png",
+      "sha256": "eb8178fc1d39df1cc23f85bba004dcb48997b9add516133548c47ae4fe90b32e",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
     "vow-no-one-behind": {
       "path": "art/icons/prayers/vow-no-one-behind.png",
       "sha256": "27b85eda71709a34ea2cbbb590352a60f1f3f87cc9ec578c9440d38244f6d39a",
@@ -298,6 +347,13 @@
     "tend-bonds-8": {
       "path": "art/icons/tending/bonds-8.png",
       "sha256": "202c997f9b6e113a02859cce46a675b0bd224732196f3826d87a6df60aca48dd",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "tend-mender-bonds": {
+      "path": "art/icons/tending/mender-bonds.png",
+      "sha256": "552a742532cbac2e2155f714a93c1edb8b56cb906c9b11f9094f000498db5254",
       "mode": "Wick icon",
       "production_approved": false,
       "implementation_ready": false

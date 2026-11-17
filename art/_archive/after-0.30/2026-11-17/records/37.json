@@ -1,0 +1,82 @@
+{
+  "number": 37,
+  "section": 5,
+  "family": "prayers",
+  "id": "vow-unarmed-faith",
+  "path": "art/icons/prayers/vow-unarmed-faith.png",
+  "name": "Vow: No Magic but Theirs",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "state": "in game now (a code line mark)",
+  "use": "The vow of the same name: no Sigils or Outbursts, only prayer",
+  "paint": "Wick in a broad symmetrical receiving pose, BOTH EMPTY OPEN MITTEN HANDS raised at shoulder height, palm UP; palms visibly empty. At his boots lie one tiny angular glyph tile and one small discarded heart-knot. One SHORT separate white ray descends vertically from above BETWEEN his raised hands, never joining or touching a palm. Keep head ceramic with no headdress and lantern/cape visible.",
+  "avoid": "a crossed-out spell circle \u00b7 a wand",
+  "file_key": "37-vow-unarmed-faith",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick in a broad symmetrical receiving pose, BOTH EMPTY OPEN MITTEN HANDS raised at shoulder height, palm UP; palms visibly empty. At his boots lie one tiny angular glyph tile and one small discarded heart-knot. One SHORT separate white ray descends vertically from above BETWEEN his raised hands, never joining or touching a palm. Keep head ceramic with no headdress and lantern/cape visible.\nAVOID: any held object, wand, sword, spear, staff, long diagonal line, ray growing from fingers, flame head, crossed-out spell circle.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/37-vow-unarmed-faith-v2.png",
+  "source_sha256": "d57313d92e5fcc098c458edb385b65cb1874ecdf6b52060e34f5351d5ba0a703",
+  "generation_attempt": 2,
+  "export_crop": [
+    49,
+    27,
+    1234,
+    1254
+  ],
+  "scale": 0.6346187583834693,
+  "offset": [
+    136,
+    122
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "eb8178fc1d39df1cc23f85bba004dcb48997b9add516133548c47ae4fe90b32e",
+  "exports": {
+    "256": "art/icons/prayers/exports/256/vow-unarmed-faith.png",
+    "128": "art/icons/prayers/exports/128/vow-unarmed-faith.png",
+    "64": "art/icons/prayers/exports/64/vow-unarmed-faith.png",
+    "48": "art/icons/prayers/exports/48/vow-unarmed-faith.png",
+    "44": "art/icons/prayers/exports/44/vow-unarmed-faith.png",
+    "32": "art/icons/prayers/exports/32/vow-unarmed-faith.png",
+    "24": "art/icons/prayers/exports/24/vow-unarmed-faith.png",
+    "16": "art/icons/prayers/exports/16/vow-unarmed-faith.png"
+  },
+  "export_sha256": {
+    "256": "830ffa3a8f21f1d7492ea00d75d5b1fb4d5d1a7ee878dfee3ca6b35d91db55a4",
+    "128": "bf9934a524c33c54448889fc782dd2878c437fe265980c993b6a46b8614f234a",
+    "64": "bc50450d5ff7d07154d1008f2525d74fd8e1ffc611561706150cd37a0abd7903",
+    "48": "42c73096ca365e7a3dc94039b4a6a11329fe0d3c821fc492400aa7b6eefa4d68",
+    "44": "c3048b525f8ce3e76c8af5bc2b3d8cd8c4381d2f32305d9577b3e594ed0c2f2e",
+    "32": "e42e4bdb2b2fca3c47ce2eee0fa6fe5e6e0d9a96b037991d6c69f4c45ecc0256",
+    "24": "fc55d8eee47d36eb34c5c30ef93d316ba6571526469b015c3f9fb44949dbe434",
+    "16": "b4d7812d09345f321c0edf02b6ac630ef28699ea762a8285e1caa243f8ed4776"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

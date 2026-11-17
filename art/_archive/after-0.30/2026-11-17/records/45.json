@@ -1,0 +1,81 @@
+{
+  "number": 45,
+  "section": 7,
+  "family": "interface_icons",
+  "id": "icon-resource-credits",
+  "path": "art/icons/resources/credits.png",
+  "name": "Credits",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (the word CREDITS)",
+  "use": "Every place's header, the camp, the shops and the reward cards",
+  "paint": "A small stack of three flat round tokens, each with a single notch in its rim.",
+  "avoid": "a dollar, euro or pound sign \u00b7 a real currency \u00b7 a coin with a face",
+  "file_key": "45-credits",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small stack of three flat round tokens, each with a single notch in its rim.\nAVOID: a dollar, euro or pound sign \u00b7 a real currency \u00b7 a coin with a face",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/45-credits-v1.png",
+  "source_sha256": "2c6504bd0177a454aaa0627b3a44f1091b2b906ec251234b6fa15f0e032aa03c",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    8,
+    1242,
+    1254
+  ],
+  "scale": 0.6581059390048154,
+  "offset": [
+    103,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "b02f6fd9b1ad5c76941356a7a8da29f2825259b17730a1846f27c92ff6d4ebf0",
+  "exports": {
+    "256": "art/icons/resources/exports/256/credits.png",
+    "128": "art/icons/resources/exports/128/credits.png",
+    "64": "art/icons/resources/exports/64/credits.png",
+    "48": "art/icons/resources/exports/48/credits.png",
+    "44": "art/icons/resources/exports/44/credits.png",
+    "32": "art/icons/resources/exports/32/credits.png",
+    "24": "art/icons/resources/exports/24/credits.png",
+    "16": "art/icons/resources/exports/16/credits.png"
+  },
+  "export_sha256": {
+    "256": "a08d7be9a4008ab473627111110d09dc3dd0dd23d5c04cb01645bfd9556e50a8",
+    "128": "fcccaf77842e67842284988315b4e2480ea91b78ab7e7415acb9c8a1387a5790",
+    "64": "7661443fb21590cfb2c1e7ef309d457bca05e16313bf71a147633f2c4ba2e787",
+    "48": "9f8dcefa7c4720791d1d2b2d83460c64102e680e0ad6ccc774eaa21b0963e7b1",
+    "44": "e9a64861e571f7b1c21dd6ee09cf8cb74304f3a2aa5507e17a52f23435eee1ce",
+    "32": "2fcbc280184fd2ca8fed20951e0599c42c62bef7835acc23fedbe230db1b5f20",
+    "24": "2eb109c773cc47d099ed9632b7145122f9b13aee98b5f8fddf73d47f269c5b5b",
+    "16": "cdc7c32dcbc13468b783119b145097ac22d9c08ee310a6d2a76055d4dcb9e20d"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

@@ -2922,6 +2922,88 @@
     "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
   },
   {
+    "number": 37,
+    "section": 5,
+    "family": "prayers",
+    "id": "vow-unarmed-faith",
+    "path": "art/icons/prayers/vow-unarmed-faith.png",
+    "name": "Vow: No Magic but Theirs",
+    "kind": "wick",
+    "mode": "Wick icon",
+    "state": "in game now (a code line mark)",
+    "use": "The vow of the same name: no Sigils or Outbursts, only prayer",
+    "paint": "Wick in a broad symmetrical receiving pose, BOTH EMPTY OPEN MITTEN HANDS raised at shoulder height, palm UP; palms visibly empty. At his boots lie one tiny angular glyph tile and one small discarded heart-knot. One SHORT separate white ray descends vertically from above BETWEEN his raised hands, never joining or touching a palm. Keep head ceramic with no headdress and lantern/cape visible.",
+    "avoid": "a crossed-out spell circle \u00b7 a wand",
+    "file_key": "37-vow-unarmed-faith",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick in a broad symmetrical receiving pose, BOTH EMPTY OPEN MITTEN HANDS raised at shoulder height, palm UP; palms visibly empty. At his boots lie one tiny angular glyph tile and one small discarded heart-knot. One SHORT separate white ray descends vertically from above BETWEEN his raised hands, never joining or touching a palm. Keep head ceramic with no headdress and lantern/cape visible.\nAVOID: any held object, wand, sword, spear, staff, long diagonal line, ray growing from fingers, flame head, crossed-out spell circle.",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/37-vow-unarmed-faith-v2.png",
+    "source_sha256": "d57313d92e5fcc098c458edb385b65cb1874ecdf6b52060e34f5351d5ba0a703",
+    "generation_attempt": 2,
+    "export_crop": [
+      49,
+      27,
+      1234,
+      1254
+    ],
+    "scale": 0.6346187583834693,
+    "offset": [
+      136,
+      122
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "eb8178fc1d39df1cc23f85bba004dcb48997b9add516133548c47ae4fe90b32e",
+    "exports": {
+      "256": "art/icons/prayers/exports/256/vow-unarmed-faith.png",
+      "128": "art/icons/prayers/exports/128/vow-unarmed-faith.png",
+      "64": "art/icons/prayers/exports/64/vow-unarmed-faith.png",
+      "48": "art/icons/prayers/exports/48/vow-unarmed-faith.png",
+      "44": "art/icons/prayers/exports/44/vow-unarmed-faith.png",
+      "32": "art/icons/prayers/exports/32/vow-unarmed-faith.png",
+      "24": "art/icons/prayers/exports/24/vow-unarmed-faith.png",
+      "16": "art/icons/prayers/exports/16/vow-unarmed-faith.png"
+    },
+    "export_sha256": {
+      "256": "830ffa3a8f21f1d7492ea00d75d5b1fb4d5d1a7ee878dfee3ca6b35d91db55a4",
+      "128": "bf9934a524c33c54448889fc782dd2878c437fe265980c993b6a46b8614f234a",
+      "64": "bc50450d5ff7d07154d1008f2525d74fd8e1ffc611561706150cd37a0abd7903",
+      "48": "42c73096ca365e7a3dc94039b4a6a11329fe0d3c821fc492400aa7b6eefa4d68",
+      "44": "c3048b525f8ce3e76c8af5bc2b3d8cd8c4381d2f32305d9577b3e594ed0c2f2e",
+      "32": "e42e4bdb2b2fca3c47ce2eee0fa6fe5e6e0d9a96b037991d6c69f4c45ecc0256",
+      "24": "fc55d8eee47d36eb34c5c30ef93d316ba6571526469b015c3f9fb44949dbe434",
+      "16": "b4d7812d09345f321c0edf02b6ac630ef28699ea762a8285e1caa243f8ed4776"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
     "number": 38,
     "section": 5,
     "family": "prayers",
@@ -3409,6 +3491,574 @@
       "32": "99276c32c153b8a760a26d3d9d581ae8afcd70dc14dac0d7136abd345174a199",
       "24": "35a8b23a6487ea9f12d1b1732d3101f4e1f201b290c9e700e5b4eb00a287c72b",
       "16": "8c8da468cfc1f9886da4266f260438e942d17ddfca5f1fc3b50ef52fbd77ca2d"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 44,
+    "section": 6,
+    "family": "tending_icons",
+    "id": "tend-mender-bonds",
+    "path": "art/icons/tending/mender-bonds.png",
+    "name": "One More Bond",
+    "kind": "wick",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 no slot yet",
+    "use": "The Mender's class gain: holds one more Bond",
+    "paint": "Wick tying one extra short thread onto a bundle of threads already in his hand.",
+    "avoid": "a plus sign \u00b7 a knot with text",
+    "file_key": "44-mender-bonds",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick tying one extra short thread onto a bundle of threads already in his hand.\nAVOID: a plus sign \u00b7 a knot with text",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-6-wick-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/bond.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/tug.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/44-mender-bonds-v1.png",
+    "source_sha256": "cc90d8d2553afc2357c96e1df8347d63a490b291f7b2f8ab0f55857e75fe5769",
+    "generation_attempt": 1,
+    "export_crop": [
+      53,
+      31,
+      1212,
+      1238
+    ],
+    "scale": 0.6138734808714903,
+    "offset": [
+      156,
+      141
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "552a742532cbac2e2155f714a93c1edb8b56cb906c9b11f9094f000498db5254",
+    "exports": {
+      "256": "art/icons/tending/exports/256/mender-bonds.png",
+      "128": "art/icons/tending/exports/128/mender-bonds.png",
+      "64": "art/icons/tending/exports/64/mender-bonds.png",
+      "48": "art/icons/tending/exports/48/mender-bonds.png",
+      "44": "art/icons/tending/exports/44/mender-bonds.png",
+      "32": "art/icons/tending/exports/32/mender-bonds.png",
+      "24": "art/icons/tending/exports/24/mender-bonds.png",
+      "16": "art/icons/tending/exports/16/mender-bonds.png"
+    },
+    "export_sha256": {
+      "256": "20ac918eaca05827ee4541465e6ea229962adc8cab461f40ba6171ca7d2c56ea",
+      "128": "59f8f066627004bac49478fcd87034e6830e0e9cc499f07e47d65d365a981c14",
+      "64": "df7b36f94b88f5e4156fc6afffe2c375e3d9b77415fb1a2be9d073662e80a6ef",
+      "48": "abad23769e8d190031ac79333e4e2b687507c399bbded6460db22fabdcc77ca5",
+      "44": "29ec2e0e4f2307e1e0e6ef27e1650d17b9a375b77a15785e43e24aeee7eab6ce",
+      "32": "e24804ebb6bf94661c9e7f65e695ceaa47629d00f370b16aa74dfe58bc72670e",
+      "24": "349450de8c70cd0efed00a7a55629c11a390ad0cbb7ad73da2744c791f9e8cad",
+      "16": "a731e277d1cc263ba1d0061ac566c29164985855a38a40807a849bf170a74f34"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 45,
+    "section": 7,
+    "family": "interface_icons",
+    "id": "icon-resource-credits",
+    "path": "art/icons/resources/credits.png",
+    "name": "Credits",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (the word CREDITS)",
+    "use": "Every place's header, the camp, the shops and the reward cards",
+    "paint": "A small stack of three flat round tokens, each with a single notch in its rim.",
+    "avoid": "a dollar, euro or pound sign \u00b7 a real currency \u00b7 a coin with a face",
+    "file_key": "45-credits",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small stack of three flat round tokens, each with a single notch in its rim.\nAVOID: a dollar, euro or pound sign \u00b7 a real currency \u00b7 a coin with a face",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/45-credits-v1.png",
+    "source_sha256": "2c6504bd0177a454aaa0627b3a44f1091b2b906ec251234b6fa15f0e032aa03c",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      8,
+      1242,
+      1254
+    ],
+    "scale": 0.6581059390048154,
+    "offset": [
+      103,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "b02f6fd9b1ad5c76941356a7a8da29f2825259b17730a1846f27c92ff6d4ebf0",
+    "exports": {
+      "256": "art/icons/resources/exports/256/credits.png",
+      "128": "art/icons/resources/exports/128/credits.png",
+      "64": "art/icons/resources/exports/64/credits.png",
+      "48": "art/icons/resources/exports/48/credits.png",
+      "44": "art/icons/resources/exports/44/credits.png",
+      "32": "art/icons/resources/exports/32/credits.png",
+      "24": "art/icons/resources/exports/24/credits.png",
+      "16": "art/icons/resources/exports/16/credits.png"
+    },
+    "export_sha256": {
+      "256": "a08d7be9a4008ab473627111110d09dc3dd0dd23d5c04cb01645bfd9556e50a8",
+      "128": "fcccaf77842e67842284988315b4e2480ea91b78ab7e7415acb9c8a1387a5790",
+      "64": "7661443fb21590cfb2c1e7ef309d457bca05e16313bf71a147633f2c4ba2e787",
+      "48": "9f8dcefa7c4720791d1d2b2d83460c64102e680e0ad6ccc774eaa21b0963e7b1",
+      "44": "e9a64861e571f7b1c21dd6ee09cf8cb74304f3a2aa5507e17a52f23435eee1ce",
+      "32": "2fcbc280184fd2ca8fed20951e0599c42c62bef7835acc23fedbe230db1b5f20",
+      "24": "2eb109c773cc47d099ed9632b7145122f9b13aee98b5f8fddf73d47f269c5b5b",
+      "16": "cdc7c32dcbc13468b783119b145097ac22d9c08ee310a6d2a76055d4dcb9e20d"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 46,
+    "section": 7,
+    "family": "interface_icons",
+    "id": "icon-resource-xp",
+    "path": "art/icons/resources/xp.png",
+    "name": "Experience",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (the word XP)",
+    "use": "XP gained, on the reward and tally cards",
+    "paint": "A small flame-shaped seed splitting into a sprout of two short leaves.",
+    "avoid": "a star \u00b7 a level arrow \u00b7 letters",
+    "file_key": "46-xp",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small flame-shaped seed splitting into a sprout of two short leaves.\nAVOID: a star \u00b7 a level arrow \u00b7 letters",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/46-xp-v1.png",
+    "source_sha256": "9d606ae1eb9f740da44c505f4014de5b0144cd93cec4c236d17b9d84c5f2b919",
+    "generation_attempt": 1,
+    "export_crop": [
+      81,
+      23,
+      1210,
+      1210
+    ],
+    "scale": 0.6908171861836563,
+    "offset": [
+      122,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "4b1ec8a1415a0da8d42085e72927d94d3c16b467db288831c726cef658120b9e",
+    "exports": {
+      "256": "art/icons/resources/exports/256/xp.png",
+      "128": "art/icons/resources/exports/128/xp.png",
+      "64": "art/icons/resources/exports/64/xp.png",
+      "48": "art/icons/resources/exports/48/xp.png",
+      "44": "art/icons/resources/exports/44/xp.png",
+      "32": "art/icons/resources/exports/32/xp.png",
+      "24": "art/icons/resources/exports/24/xp.png",
+      "16": "art/icons/resources/exports/16/xp.png"
+    },
+    "export_sha256": {
+      "256": "7ee0825051593d8c52d579af155c4ac97ef4a94ee59b736226a00261baae8f66",
+      "128": "eef6add0e9d59112a09c81bcdc1bc2921e073ca5c9bea4b636d48fe5f6afda1f",
+      "64": "a21684836c2d49651aef5e67cbf169ed6ddb00d06ece31c69ae2de8576ac21fd",
+      "48": "5ca706ccd223940b644f9424e728a8134b8c40a64b0816a576080b22c38941f5",
+      "44": "59c9c132be0c6d88baeb2323a13bee8d4b7212e6dc8323b11a71b8429b7d4f5e",
+      "32": "70ab1fc58fd168423245bc5ea06849e9f6b2e83d92c3a6cb4e35e0373e67085b",
+      "24": "e8aa36a2bf22f4e7e9547251256cd62cb50a08a6c0ef19fb41f26cb4c9d31511",
+      "16": "bce338bb382f2ea6df42119ea2f6345c02d35e2e775ef5f4735cc710706d3c1d"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 47,
+    "section": 7,
+    "family": "interface_icons",
+    "id": "icon-resource-devotion",
+    "path": "art/icons/resources/devotion.png",
+    "name": "Devotion XP",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (the words DEVOTION XP)",
+    "use": "Devotion gains (rest, shrines, rites)",
+    "paint": "One small flame inside a thin ring that is open at the top.",
+    "avoid": "a halo over a head \u00b7 a cross \u00b7 a prayer-beads loop",
+    "file_key": "47-devotion",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: One small flame inside a thin ring that is open at the top.\nAVOID: a halo over a head \u00b7 a cross \u00b7 a prayer-beads loop",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/47-devotion-v1.png",
+    "source_sha256": "cd95b3a572d6fa5e31aec29d476c0b9aae9e6041530166bf9df9f27654f6b46f",
+    "generation_attempt": 1,
+    "export_crop": [
+      23,
+      25,
+      1240,
+      1222
+    ],
+    "scale": 0.6737880032867708,
+    "offset": [
+      102,
+      108
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "fd7b979c8e9caf923b66164e8e9fcb03655e46990f1a20287b1763931daae350",
+    "exports": {
+      "256": "art/icons/resources/exports/256/devotion.png",
+      "128": "art/icons/resources/exports/128/devotion.png",
+      "64": "art/icons/resources/exports/64/devotion.png",
+      "48": "art/icons/resources/exports/48/devotion.png",
+      "44": "art/icons/resources/exports/44/devotion.png",
+      "32": "art/icons/resources/exports/32/devotion.png",
+      "24": "art/icons/resources/exports/24/devotion.png",
+      "16": "art/icons/resources/exports/16/devotion.png"
+    },
+    "export_sha256": {
+      "256": "d5bcafd8a15b3881ba5d088e24cdcda2e5fb1482d8de525ec265154eb2a23288",
+      "128": "581813951f91e24f0526383c2593ce58616bb1cf697273b18953c6b480b0e635",
+      "64": "780784175460853fce86f3dfddad7e5ec2694338457e82e75815f85196ac8944",
+      "48": "ebc51aa511f6924dacbe745562dc8366da919f9839895ce01e952a49e8912c39",
+      "44": "441e5f24740d168cf168e5afc4ecdacb26b042bab3f7c5323431df5d0a40a40a",
+      "32": "5269f8c0f9d6a051c5f6b049f65fa83a90cbcfed0be123fb2d115ec2ce241d2a",
+      "24": "7bcee4d8f76a257664317f1e5405b7b9475c84bfec4f631db06054a2da4381f1",
+      "16": "5005734ed976d705b06c28ad6dcfbb5361bfceb7da93793e1ebd9b23e49e21e3"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 48,
+    "section": 7,
+    "family": "interface_icons",
+    "id": "icon-tone-raw",
+    "path": "art/icons/tones/raw.png",
+    "name": "Tone: Raw",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a coloured word)",
+    "use": "A Raw Outburst design, and the plain quiver",
+    "paint": "A plain heart-knot with no flourish, a clear ring of space round it.",
+    "avoid": "a medical heart \u00b7 colour",
+    "file_key": "48-raw",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A plain heart-knot with no flourish, a clear ring of space round it.\nAVOID: a medical heart \u00b7 colour",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/48-raw-v1.png",
+    "source_sha256": "429c94d47c0ab67d419ca4e776351ca7811ff26b481d13e779235964686ec1b2",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      79,
+      1136,
+      1236
+    ],
+    "scale": 0.7087294727744166,
+    "offset": [
+      109,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "4ffe597fd229b297add89ee1768ae59908d5ac8eb0976dea2e3a0de0014bdd52",
+    "exports": {
+      "256": "art/icons/tones/exports/256/raw.png",
+      "128": "art/icons/tones/exports/128/raw.png",
+      "64": "art/icons/tones/exports/64/raw.png",
+      "48": "art/icons/tones/exports/48/raw.png",
+      "44": "art/icons/tones/exports/44/raw.png",
+      "32": "art/icons/tones/exports/32/raw.png",
+      "24": "art/icons/tones/exports/24/raw.png",
+      "16": "art/icons/tones/exports/16/raw.png"
+    },
+    "export_sha256": {
+      "256": "8827e982b1cb82f097f0e1393a59362540a0f861183f7f64795d3eb56df5cc7a",
+      "128": "54f07226953158cdce3e2acc5d784c2e7faf5d87698054aed58b11b3430a4785",
+      "64": "6d3c316354195f67e61df2d94a822b64d61aec5571272e8daab665b7b70425d2",
+      "48": "29a502e382a972c8e274d25b257bde216a942d475236948df07e56f100b752f9",
+      "44": "dbab855e2ecfc93aa966d1e95ad687e39cd58d170211a0d744b0817b1298213e",
+      "32": "f4c807a09d5e18d1f4632cd3694100f99edb792d6af8c069122ceb416d03d686",
+      "24": "dffdc39add8d09d51cd38a29966ee6fc7d49c15fda0e7166fe99baf6cbec9556",
+      "16": "d66b7306349357dca4afcb0778bf291e6c6164ab9df01e060b9cf4f65cb86ab6"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 49,
+    "section": 7,
+    "family": "interface_icons",
+    "id": "icon-tone-fire",
+    "path": "art/icons/tones/fire.png",
+    "name": "Tone: Fire",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a text glyph on a quiver tag)",
+    "use": "The Fire tone: an Outburst design, an enchanted quiver",
+    "paint": "Three flame tongues seated in a small ring.",
+    "avoid": "a campfire \u00b7 a match",
+    "file_key": "49-fire",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Three flame tongues seated in a small ring.\nAVOID: a campfire \u00b7 a match",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/49-fire-v1.png",
+    "source_sha256": "65f6c055fc6f5b7c759654953e4ee43e3e51fec432f048dd28f50f01a6ba9927",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      81,
+      1168,
+      1254
+    ],
+    "scale": 0.6990622335890878,
+    "offset": [
+      103,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "7b0fb09c4a72c1139ad1d54cd024fe69da4e4a4f09eba4b640f0b038af232091",
+    "exports": {
+      "256": "art/icons/tones/exports/256/fire.png",
+      "128": "art/icons/tones/exports/128/fire.png",
+      "64": "art/icons/tones/exports/64/fire.png",
+      "48": "art/icons/tones/exports/48/fire.png",
+      "44": "art/icons/tones/exports/44/fire.png",
+      "32": "art/icons/tones/exports/32/fire.png",
+      "24": "art/icons/tones/exports/24/fire.png",
+      "16": "art/icons/tones/exports/16/fire.png"
+    },
+    "export_sha256": {
+      "256": "aadfabf2dea774a827336b3b3efbad71f342ccb6fe56a66a07b2fa821464113b",
+      "128": "d35ae047b05f014f5fcaa10d73101521f2a0c289ae15020d7887ece933104978",
+      "64": "4c9524b3d0e3774613c9b25aa9d3f57d14e1adaac68b81fb9dd35d006c114905",
+      "48": "7dc4dcfc8ab28cca24ceff659335899ff15a3a6b52cce1286cb9c68418b5d86e",
+      "44": "e14c0024133e59bc1f8603350fb401c945300a8b41dbd862c353cee5413f4618",
+      "32": "6661fdfef3a6503e58694340c515f216452a968dc72449d87d5c14e7a519abff",
+      "24": "b2d0a75a9988b5fe471df11446298ed4b4855e5b1542737b2c5a9feb0613a1ae",
+      "16": "4a11596d6113556e4d21f54056644852ad7ea72161e0de6a07f1e27c14b59812"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 50,
+    "section": 7,
+    "family": "interface_icons",
+    "id": "icon-tone-storm",
+    "path": "art/icons/tones/storm.png",
+    "name": "Tone: Storm",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a text glyph on a quiver tag)",
+    "use": "The Storm tone (the Sigil element Shock)",
+    "paint": "One long jagged bolt dropping from a small flat cloud line.",
+    "avoid": "a lightning-bolt logo from a known brand \u00b7 a power symbol",
+    "file_key": "50-storm",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: One long jagged bolt dropping from a small flat cloud line.\nAVOID: a lightning-bolt logo from a known brand \u00b7 a power symbol",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/50-storm-v1.png",
+    "source_sha256": "5f0eb31f3c446f7fc4d6a70469b4ae8ed9a3c057879b97846143ab7c5c652866",
+    "generation_attempt": 1,
+    "export_crop": [
+      95,
+      27,
+      1222,
+      1166
+    ],
+    "scale": 0.7199297629499561,
+    "offset": [
+      106,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "3795e662c412944194116e94f1d82f7861efd3e3ed1ab31d5ce3c6efcbe3710c",
+    "exports": {
+      "256": "art/icons/tones/exports/256/storm.png",
+      "128": "art/icons/tones/exports/128/storm.png",
+      "64": "art/icons/tones/exports/64/storm.png",
+      "48": "art/icons/tones/exports/48/storm.png",
+      "44": "art/icons/tones/exports/44/storm.png",
+      "32": "art/icons/tones/exports/32/storm.png",
+      "24": "art/icons/tones/exports/24/storm.png",
+      "16": "art/icons/tones/exports/16/storm.png"
+    },
+    "export_sha256": {
+      "256": "323f41d0cb42901626825f6667fb44f30a14cefe51286a00d8b8fc3c9421ae7b",
+      "128": "7614c8f1b96def514287b93c31e8a742aaa141972869ea9528e23b42a1060cc3",
+      "64": "040d913f949993933f89ad10da4c523023cfbc990fe0b809b283ddd33293d238",
+      "48": "eb17eddc94f26357938faf036c77dcb07559f41714129774d40fd8e667f5cf62",
+      "44": "7e9c7e0bfa4a155532e79967764bfc4e6c82aec5a13a3491e053bb4ea0160950",
+      "32": "473ec10b1fa47ba20bc58f3423f887aa1e94bedbc2efeddd4aab0cac5ccd09b7",
+      "24": "7e502f7a325e6b9585ab10e09a1003fb74ae7e68270dd229fc1da36c88f7af97",
+      "16": "aef897bc5373e9b7f7275006cccacf45cd6b6ae4da553ac459f594c5938708df"
     },
     "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
   }

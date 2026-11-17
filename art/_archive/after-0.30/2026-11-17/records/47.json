@@ -1,0 +1,81 @@
+{
+  "number": 47,
+  "section": 7,
+  "family": "interface_icons",
+  "id": "icon-resource-devotion",
+  "path": "art/icons/resources/devotion.png",
+  "name": "Devotion XP",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (the words DEVOTION XP)",
+  "use": "Devotion gains (rest, shrines, rites)",
+  "paint": "One small flame inside a thin ring that is open at the top.",
+  "avoid": "a halo over a head \u00b7 a cross \u00b7 a prayer-beads loop",
+  "file_key": "47-devotion",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: One small flame inside a thin ring that is open at the top.\nAVOID: a halo over a head \u00b7 a cross \u00b7 a prayer-beads loop",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/47-devotion-v1.png",
+  "source_sha256": "cd95b3a572d6fa5e31aec29d476c0b9aae9e6041530166bf9df9f27654f6b46f",
+  "generation_attempt": 1,
+  "export_crop": [
+    23,
+    25,
+    1240,
+    1222
+  ],
+  "scale": 0.6737880032867708,
+  "offset": [
+    102,
+    108
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "fd7b979c8e9caf923b66164e8e9fcb03655e46990f1a20287b1763931daae350",
+  "exports": {
+    "256": "art/icons/resources/exports/256/devotion.png",
+    "128": "art/icons/resources/exports/128/devotion.png",
+    "64": "art/icons/resources/exports/64/devotion.png",
+    "48": "art/icons/resources/exports/48/devotion.png",
+    "44": "art/icons/resources/exports/44/devotion.png",
+    "32": "art/icons/resources/exports/32/devotion.png",
+    "24": "art/icons/resources/exports/24/devotion.png",
+    "16": "art/icons/resources/exports/16/devotion.png"
+  },
+  "export_sha256": {
+    "256": "d5bcafd8a15b3881ba5d088e24cdcda2e5fb1482d8de525ec265154eb2a23288",
+    "128": "581813951f91e24f0526383c2593ce58616bb1cf697273b18953c6b480b0e635",
+    "64": "780784175460853fce86f3dfddad7e5ec2694338457e82e75815f85196ac8944",
+    "48": "ebc51aa511f6924dacbe745562dc8366da919f9839895ce01e952a49e8912c39",
+    "44": "441e5f24740d168cf168e5afc4ecdacb26b042bab3f7c5323431df5d0a40a40a",
+    "32": "5269f8c0f9d6a051c5f6b049f65fa83a90cbcfed0be123fb2d115ec2ce241d2a",
+    "24": "7bcee4d8f76a257664317f1e5405b7b9475c84bfec4f631db06054a2da4381f1",
+    "16": "5005734ed976d705b06c28ad6dcfbb5361bfceb7da93793e1ebd9b23e49e21e3"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}
