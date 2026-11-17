@@ -2,6 +2,33 @@
   "scope": "Art candidates; unbound proposals do not register active game lookups",
   "items": [
     {
+      "request_key": "0.30/class/stand-behind-me",
+      "name": "Stand Behind Me",
+      "icon_id": null,
+      "path": "art/icons/moves/stand-behind-me.png",
+      "sha256": "71000dd97c8f7f362c1e0ef9716393b49b6e6d85409103f02907fa08bcebdeb9",
+      "exports": {
+        "128": "art/icons/moves/exports/128/stand-behind-me.png",
+        "64": "art/icons/moves/exports/64/stand-behind-me.png",
+        "48": "art/icons/moves/exports/48/stand-behind-me.png",
+        "44": "art/icons/moves/exports/44/stand-behind-me.png",
+        "32": "art/icons/moves/exports/32/stand-behind-me.png",
+        "24": "art/icons/moves/exports/24/stand-behind-me.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2.1 Cover Them and ceiling comparison"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
       "request_key": "0.30/fork.guard.cover_them",
       "name": "Cover Them",
       "icon_id": "fork.guard.cover_them",
@@ -650,6 +677,60 @@
       "implementation_ready": false
     },
     {
+      "request_key": "0.30/fork.soul.blood_price",
+      "name": "Blood Price",
+      "icon_id": "fork.soul.blood_price",
+      "path": "art/icons/forks/soul-blood-price.png",
+      "sha256": "0c4dae6ac582284c0b6fd3df4cfb4dba50fb972f16f1a731154aeea9f2ee6e65",
+      "exports": {
+        "128": "art/icons/forks/exports/128/soul-blood-price.png",
+        "64": "art/icons/forks/exports/64/soul-blood-price.png",
+        "48": "art/icons/forks/exports/48/soul-blood-price.png",
+        "44": "art/icons/forks/exports/44/soul-blood-price.png",
+        "32": "art/icons/forks/exports/32/soul-blood-price.png",
+        "24": "art/icons/forks/exports/24/soul-blood-price.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.soul.clean_break",
+      "name": "Clean Break",
+      "icon_id": "fork.soul.clean_break",
+      "path": "art/icons/forks/soul-clean-break.png",
+      "sha256": "a690dfa8fe0ff5083d0b75dd208dc6f336972c1a3425eb0ca0e0ea83350ad4de",
+      "exports": {
+        "128": "art/icons/forks/exports/128/soul-clean-break.png",
+        "64": "art/icons/forks/exports/64/soul-clean-break.png",
+        "48": "art/icons/forks/exports/48/soul-clean-break.png",
+        "44": "art/icons/forks/exports/44/soul-clean-break.png",
+        "32": "art/icons/forks/exports/32/soul-clean-break.png",
+        "24": "art/icons/forks/exports/24/soul-clean-break.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
       "request_key": "0.30/fork.soul.ride_the_edge",
       "name": "Ride the Edge",
       "icon_id": "fork.soul.ride_the_edge",
@@ -807,6 +888,233 @@
         "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
         "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
         "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/replacement/163",
+      "name": "Scrap Sentinel",
+      "icon_id": null,
+      "path": "art/icons/moves/scrap-turret.png",
+      "sha256": "9418fc1d452bef794b38aafbed92d09d18358391e73a176d9b6558e4d873a7d5",
+      "exports": {
+        "128": "art/icons/moves/exports/128/scrap-turret.png",
+        "64": "art/icons/moves/exports/64/scrap-turret.png",
+        "48": "art/icons/moves/exports/48/scrap-turret.png",
+        "44": "art/icons/moves/exports/44/scrap-turret.png",
+        "32": "art/icons/moves/exports/32/scrap-turret.png",
+        "24": "art/icons/moves/exports/24/scrap-turret.png"
+      },
+      "active_binding": {
+        "family": "move_icons",
+        "id": "move-scrap-turret"
+      },
+      "binding_status": "confirmed existing legacy binding reused for NEW 0.30 depiction",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "4.1 R15"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/replacement/33",
+      "name": "Wind-up",
+      "icon_id": null,
+      "path": "art/icons/moves/shove.png",
+      "sha256": "014477343955f0f052c4e8990c70e4ba16d6770f9505ccadc6ebeaa9cddd0243",
+      "exports": {
+        "128": "art/icons/moves/exports/128/shove.png",
+        "64": "art/icons/moves/exports/64/shove.png",
+        "48": "art/icons/moves/exports/48/shove.png",
+        "44": "art/icons/moves/exports/44/shove.png",
+        "32": "art/icons/moves/exports/32/shove.png",
+        "24": "art/icons/moves/exports/24/shove.png"
+      },
+      "active_binding": {
+        "family": "move_icons",
+        "id": "move-shove"
+      },
+      "binding_status": "confirmed existing legacy binding reused for NEW 0.30 depiction",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "4.1 R3"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/replacement/35",
+      "name": "Read the Swing",
+      "icon_id": null,
+      "path": "art/icons/moves/lingering-dread.png",
+      "sha256": "99eb0e0aaa4964c16c21f1a14baa97255efb9532fde02cd85666ce9e17164057",
+      "exports": {
+        "128": "art/icons/moves/exports/128/lingering-dread.png",
+        "64": "art/icons/moves/exports/64/lingering-dread.png",
+        "48": "art/icons/moves/exports/48/lingering-dread.png",
+        "44": "art/icons/moves/exports/44/lingering-dread.png",
+        "32": "art/icons/moves/exports/32/lingering-dread.png",
+        "24": "art/icons/moves/exports/24/lingering-dread.png"
+      },
+      "active_binding": {
+        "family": "move_icons",
+        "id": "move-lingering-dread"
+      },
+      "binding_status": "confirmed existing legacy binding reused for NEW 0.30 depiction",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "4.1 R6"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/replacement/63",
+      "name": "Hold the Lane",
+      "icon_id": null,
+      "path": "art/icons/moves/speed-loader.png",
+      "sha256": "146e43fefaa7daaf8faf0a9ab81d8ef7d8a36f04c57fec471dbd5d2d5c6c7195",
+      "exports": {
+        "128": "art/icons/moves/exports/128/speed-loader.png",
+        "64": "art/icons/moves/exports/64/speed-loader.png",
+        "48": "art/icons/moves/exports/48/speed-loader.png",
+        "44": "art/icons/moves/exports/44/speed-loader.png",
+        "32": "art/icons/moves/exports/32/speed-loader.png",
+        "24": "art/icons/moves/exports/24/speed-loader.png"
+      },
+      "active_binding": {
+        "family": "move_icons",
+        "id": "move-speed-loader"
+      },
+      "binding_status": "confirmed existing legacy binding reused for NEW 0.30 depiction",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "4.1 R8"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/shared/afterword",
+      "name": "Afterword",
+      "icon_id": null,
+      "path": "art/icons/gear/weapon-afterword.png",
+      "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb",
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-afterword.png",
+        "128": "art/icons/gear/exports/128/weapon-afterword.png",
+        "64": "art/icons/gear/exports/64/weapon-afterword.png",
+        "32": "art/icons/gear/exports/32/weapon-afterword.png"
+      },
+      "active_binding": {
+        "family": "gear",
+        "id": "weapon-afterword"
+      },
+      "binding_status": "Source explicitly specifies this catalog family/id; new registration on this art branch, no UI code.",
+      "source": {
+        "branch": "wip/release-0.30",
+        "path": "art/briefs/ART-REQUESTS.md",
+        "blob_sha": "5b04ffed545d7e7086c3143479dd4f0318392ce8",
+        "section": "E2f"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/shared/follow",
+      "name": "Follow",
+      "icon_id": null,
+      "path": "art/icons/techniques/follow.png",
+      "sha256": "a635b26973cd24ad63e19ac86e650705d05b330366f5c608543824962352dfe6",
+      "exports": {
+        "128": "art/icons/techniques/exports/128/follow.png",
+        "64": "art/icons/techniques/exports/64/follow.png",
+        "48": "art/icons/techniques/exports/48/follow.png",
+        "44": "art/icons/techniques/exports/44/follow.png",
+        "32": "art/icons/techniques/exports/32/follow.png",
+        "24": "art/icons/techniques/exports/24/follow.png"
+      },
+      "active_binding": null,
+      "binding_status": "Confirmed source technique id follow; pinned lane catalog has no Follow icon binding. Filename is explicitly proposed, active catalog binding remains unregistered.",
+      "source": {
+        "branch": "wip/lane-shield-either-hand",
+        "commit": "a995b3ea8d385ae56bdb0085a9f37656aab0b955",
+        "path": "docs/design/proposals/2026-11-follow-strike.md",
+        "blob_sha": "0153225719def036c6bee60acbbcd2a648b15143"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/shared/mana-shock",
+      "name": "Mana Shock",
+      "icon_id": null,
+      "path": "art/icons/conditions/mana-shock.png",
+      "sha256": "8999c27dcee1c3ceb18b58a4d55de4833f4fae4dae986f07f749c684a3281923",
+      "exports": {
+        "128": "art/icons/conditions/exports/128/mana-shock.png",
+        "64": "art/icons/conditions/exports/64/mana-shock.png",
+        "48": "art/icons/conditions/exports/48/mana-shock.png",
+        "44": "art/icons/conditions/exports/44/mana-shock.png",
+        "32": "art/icons/conditions/exports/32/mana-shock.png",
+        "24": "art/icons/conditions/exports/24/mana-shock.png"
+      },
+      "active_binding": {
+        "family": "condition_icons",
+        "id": "cond-mana-shock"
+      },
+      "binding_status": "Source explicitly specifies this catalog family/id; new registration on this art branch, no UI code.",
+      "source": {
+        "branch": "wip/lane-0.29-tabs",
+        "commit": "f2739b98aff4391a918a6eb25360ffe87109a0f7",
+        "path": "art/briefs/ART-REQUESTS.md",
+        "blob_sha": "ec56908fbafa09365629e2b975556f9ae14f8ed4",
+        "section": "F3"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/shared/staggered",
+      "name": "Staggered",
+      "icon_id": null,
+      "path": "art/icons/conditions/staggered.png",
+      "sha256": "3bf3690c4db2fffd6f21f5d22a85e114630beff4e5834bd38f5f82a57f7d7cb4",
+      "exports": {
+        "128": "art/icons/conditions/exports/128/staggered.png",
+        "64": "art/icons/conditions/exports/64/staggered.png",
+        "48": "art/icons/conditions/exports/48/staggered.png",
+        "44": "art/icons/conditions/exports/44/staggered.png",
+        "32": "art/icons/conditions/exports/32/staggered.png",
+        "24": "art/icons/conditions/exports/24/staggered.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "4.1 R19"
       },
       "production_approved": false,
       "implementation_ready": false

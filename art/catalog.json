@@ -18350,6 +18350,33 @@
         "64": "art/icons/gear/exports/64/weapon-kemizuchi_strikers.png",
         "32": "art/icons/gear/exports/32/weapon-kemizuchi_strikers.png"
       }
+    },
+    "weapon-afterword": {
+      "label": "Afterword",
+      "path": "art/icons/gear/weapon-afterword.png",
+      "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-0.30",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/shared-afterword-v1.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "gear",
+      "request_key": "0.30/shared/afterword",
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-afterword.png",
+        "128": "art/icons/gear/exports/128/weapon-afterword.png",
+        "64": "art/icons/gear/exports/64/weapon-afterword.png",
+        "32": "art/icons/gear/exports/32/weapon-afterword.png"
+      }
     }
   },
   "survival_art": {
@@ -30757,18 +30784,42 @@
       "ink": "#FFFFFF"
     },
     "move-shove": {
-      "label": "PLACEHOLDER: Shove",
-      "path": "art/icons/moves/shove.svg",
-      "sha256": "47f240fe3adf745b4514420bc1d1cbd20a17ce201ead09b02cc757a7a1adbd1c",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Wind-up",
+      "path": "art/icons/moves/shove.png",
+      "sha256": "014477343955f0f052c4e8990c70e4ba16d6770f9505ccadc6ebeaa9cddd0243",
+      "format": "png",
       "mode": "wick",
       "tint": "strength",
-      "wanted": "art/icons/moves/shove.png",
-      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #33",
+      "brief": "art/_archive/nine-doors/2026-11-16/prepared-render-jobs-0.30.json \u2014 0.30/replacement/33",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/0.30/replacement-33/shove.svg",
+      "previous_sha256": "47f240fe3adf745b4514420bc1d1cbd20a17ce201ead09b02cc757a7a1adbd1c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-0.30",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/replacement-33-v1.png",
+      "upscaled": false,
+      "request_key": "0.30/replacement/33",
+      "exports": {
+        "128": "art/icons/moves/exports/128/shove.png",
+        "64": "art/icons/moves/exports/64/shove.png",
+        "48": "art/icons/moves/exports/48/shove.png",
+        "44": "art/icons/moves/exports/44/shove.png",
+        "32": "art/icons/moves/exports/32/shove.png",
+        "24": "art/icons/moves/exports/24/shove.png"
+      },
+      "legacy_binding_brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #33",
+      "replaces_held_legacy_recipe": 33,
+      "legacy_recipe_remains_held": true,
+      "ink": "#FFFFFF"
     },
     "move-riposte": {
       "label": "Wick \u2014 Riposte",
@@ -30806,18 +30857,42 @@
       "ink": "#FFFFFF"
     },
     "move-lingering-dread": {
-      "label": "PLACEHOLDER: Lingering Dread",
-      "path": "art/icons/moves/lingering-dread.svg",
-      "sha256": "599c52d9c558e67749248b6dbc45b2a0ffac53212f13f68409816a72dd476dca",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Read the Swing",
+      "path": "art/icons/moves/lingering-dread.png",
+      "sha256": "99eb0e0aaa4964c16c21f1a14baa97255efb9532fde02cd85666ce9e17164057",
+      "format": "png",
       "mode": "wick",
       "tint": "strength",
-      "wanted": "art/icons/moves/lingering-dread.png",
-      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #35",
+      "brief": "art/_archive/nine-doors/2026-11-16/prepared-render-jobs-0.30.json \u2014 0.30/replacement/35",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/0.30/replacement-35/lingering-dread.svg",
+      "previous_sha256": "599c52d9c558e67749248b6dbc45b2a0ffac53212f13f68409816a72dd476dca",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-0.30",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/replacement-35-v1.png",
+      "upscaled": false,
+      "request_key": "0.30/replacement/35",
+      "exports": {
+        "128": "art/icons/moves/exports/128/lingering-dread.png",
+        "64": "art/icons/moves/exports/64/lingering-dread.png",
+        "48": "art/icons/moves/exports/48/lingering-dread.png",
+        "44": "art/icons/moves/exports/44/lingering-dread.png",
+        "32": "art/icons/moves/exports/32/lingering-dread.png",
+        "24": "art/icons/moves/exports/24/lingering-dread.png"
+      },
+      "legacy_binding_brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #35",
+      "replaces_held_legacy_recipe": 35,
+      "legacy_recipe_remains_held": true,
+      "ink": "#FFFFFF"
     },
     "move-finisher": {
       "label": "Wick \u2014 Finisher",
@@ -31231,18 +31306,42 @@
       "ink": "#FFFFFF"
     },
     "move-speed-loader": {
-      "label": "PLACEHOLDER: Speed Loader",
-      "path": "art/icons/moves/speed-loader.svg",
-      "sha256": "03f38eca281289a50de265b63ff8331295e67cb9d9311f28e965e2998c67f63b",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Hold the Lane",
+      "path": "art/icons/moves/speed-loader.png",
+      "sha256": "146e43fefaa7daaf8faf0a9ab81d8ef7d8a36f04c57fec471dbd5d2d5c6c7195",
+      "format": "png",
       "mode": "wick",
       "tint": "agility",
-      "wanted": "art/icons/moves/speed-loader.png",
-      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #63",
+      "brief": "art/_archive/nine-doors/2026-11-16/prepared-render-jobs-0.30.json \u2014 0.30/replacement/63",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/0.30/replacement-63/speed-loader.svg",
+      "previous_sha256": "03f38eca281289a50de265b63ff8331295e67cb9d9311f28e965e2998c67f63b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-0.30",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/replacement-63-v1.png",
+      "upscaled": false,
+      "request_key": "0.30/replacement/63",
+      "exports": {
+        "128": "art/icons/moves/exports/128/speed-loader.png",
+        "64": "art/icons/moves/exports/64/speed-loader.png",
+        "48": "art/icons/moves/exports/48/speed-loader.png",
+        "44": "art/icons/moves/exports/44/speed-loader.png",
+        "32": "art/icons/moves/exports/32/speed-loader.png",
+        "24": "art/icons/moves/exports/24/speed-loader.png"
+      },
+      "legacy_binding_brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #63",
+      "replaces_held_legacy_recipe": 63,
+      "legacy_recipe_remains_held": true,
+      "ink": "#FFFFFF"
     },
     "move-special-ammo": {
       "label": "Special Ammo",
@@ -32391,18 +32490,42 @@
       "ink": "#FFFFFF"
     },
     "move-scrap-turret": {
-      "label": "PLACEHOLDER: Scrap Turret",
-      "path": "art/icons/moves/scrap-turret.svg",
-      "sha256": "984430a564519f5e8b355bbe0c6eacf98bda5fa953af110107a874b51f9c730c",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Scrap Sentinel",
+      "path": "art/icons/moves/scrap-turret.png",
+      "sha256": "9418fc1d452bef794b38aafbed92d09d18358391e73a176d9b6558e4d873a7d5",
+      "format": "png",
       "mode": "wick",
       "tint": "expression",
-      "wanted": "art/icons/moves/scrap-turret.png",
-      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #163",
+      "brief": "art/_archive/nine-doors/2026-11-16/prepared-render-jobs-0.30.json \u2014 0.30/replacement/163",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/0.30/replacement-163/scrap-turret.svg",
+      "previous_sha256": "984430a564519f5e8b355bbe0c6eacf98bda5fa953af110107a874b51f9c730c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "collection": "nine-doors-0.30",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/replacement-163-v1.png",
+      "upscaled": false,
+      "request_key": "0.30/replacement/163",
+      "exports": {
+        "128": "art/icons/moves/exports/128/scrap-turret.png",
+        "64": "art/icons/moves/exports/64/scrap-turret.png",
+        "48": "art/icons/moves/exports/48/scrap-turret.png",
+        "44": "art/icons/moves/exports/44/scrap-turret.png",
+        "32": "art/icons/moves/exports/32/scrap-turret.png",
+        "24": "art/icons/moves/exports/24/scrap-turret.png"
+      },
+      "legacy_binding_brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #163",
+      "replaces_held_legacy_recipe": 163,
+      "legacy_recipe_remains_held": true,
+      "ink": "#FFFFFF"
     },
     "move-feel-their-pain": {
       "label": "Wick \u2014 Feel Their Pain",
@@ -39666,6 +39789,36 @@
         "44": "art/icons/conditions/exports/44/augment-offline.png",
         "32": "art/icons/conditions/exports/32/augment-offline.png",
         "24": "art/icons/conditions/exports/24/augment-offline.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "cond-mana-shock": {
+      "label": "Mana Shock",
+      "path": "art/icons/conditions/mana-shock.png",
+      "sha256": "8999c27dcee1c3ceb18b58a4d55de4833f4fae4dae986f07f749c684a3281923",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-0.30",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/shared-mana-shock-v1.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "request_key": "0.30/shared/mana-shock",
+      "exports": {
+        "128": "art/icons/conditions/exports/128/mana-shock.png",
+        "64": "art/icons/conditions/exports/64/mana-shock.png",
+        "48": "art/icons/conditions/exports/48/mana-shock.png",
+        "44": "art/icons/conditions/exports/44/mana-shock.png",
+        "32": "art/icons/conditions/exports/32/mana-shock.png",
+        "24": "art/icons/conditions/exports/24/mana-shock.png"
       },
       "ink": "#FFFFFF"
     }

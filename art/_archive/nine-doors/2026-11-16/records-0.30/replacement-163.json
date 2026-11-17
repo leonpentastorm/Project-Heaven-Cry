@@ -1,0 +1,95 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/replacement/163",
+  "name": "Scrap Sentinel",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "legacy_replaced_job": 163,
+  "id": "move-scrap-turret",
+  "family": "move_icons",
+  "path": "art/icons/moves/scrap-turret.png",
+  "binding_note": "Preserve the old icon id/path per spec section 7. This NEW recipe supersedes the held old depiction; the old recipe remains blocked.",
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "4.1 R15"
+  },
+  "rule_excerpt": "| R15 | `scrap_turret` (Rigger III, classes.json:1830) | A non-Figment body that attacks by itself | **Scrap Sentinel** *(Suggested)*: *\"Once a scene, from a wreck, a pile with a weapon or a barricade next to you, a Sentinel (the Figment form) stands for no charge, outside your held count.\"* | `rev3.ts:570, :572` (retired); `figments.json:160` (Many-Eyed Dream's count); the Sentinel form row; `rigger.test`; `kit.ts`, `owned.ts`, `figmentIcons` |",
+  "status": "review-candidate",
+  "name_status": "suggested",
+  "open_source_questions": [],
+  "generation_gate": "derive the image from the new rule, never the held 0.29 paint recipe",
+  "file_key": "replacement-163",
+  "paint": "ONLY the PARTIAL Sentinel construct: a tall faceless angular chest and slab shoulders rising upright from a short pile of broken cover plates. Its lower edge is still forming from a few detached angular flecks, one broad forearm lifting free. Use the canonical Sentinel shape reference in flat white.",
+  "avoid": "No full Wick, pixel mascot face, three-legged turret, pipe gun barrel, new portrait or generic flesh person.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). NO full Wick, screen face, mascot capelet or lantern chest; only the specified object/construct/sign. \nPAINT: ONLY the PARTIAL Sentinel construct: a tall faceless angular chest and slab shoulders rising upright from a short pile of broken cover plates. Its lower edge is still forming from a few detached angular flecks, one broad forearm lifting free. Use the canonical Sentinel shape reference in flat white.\nAVOID: No full Wick, pixel mascot face, three-legged turret, pipe gun barrel, new portrait or generic flesh person.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/portraits/figments/figment-sentinel.png"
+  ],
+  "transparent": true,
+  "active_binding": {
+    "family": "move_icons",
+    "id": "move-scrap-turret"
+  },
+  "binding_status": "confirmed existing legacy binding reused for NEW 0.30 depiction",
+  "filename_status": "source path retained",
+  "composition_scope": "construct/partial-only",
+  "recipe_index": 36,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/portraits/figments/figment-sentinel.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "9418fc1d452bef794b38aafbed92d09d18358391e73a176d9b6558e4d873a7d5",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/replacement-163-v1.png",
+  "source_sha256": "2d828f6e915d6805965e27109114518a8fd6ef78028a472826022d36cb680168",
+  "export_crop": [
+    53,
+    11,
+    1224,
+    1228
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/scrap-turret.png",
+    "64": "art/icons/moves/exports/64/scrap-turret.png",
+    "48": "art/icons/moves/exports/48/scrap-turret.png",
+    "44": "art/icons/moves/exports/44/scrap-turret.png",
+    "32": "art/icons/moves/exports/32/scrap-turret.png",
+    "24": "art/icons/moves/exports/24/scrap-turret.png"
+  },
+  "export_sha256": {
+    "128": "c9ad22ce0c5dc1bf82a1406f5e0e4093b9a934e043ce9f11095846e34bd8adb9",
+    "64": "2a8da2675b786d183e9f08d23e8592cd3cbfe22f3078021be9110da8db0021dc",
+    "48": "1f3d383054b7e591690bf6b2327868db6959f3cbfe6f4aef87d75179bd0b9591",
+    "44": "6e0a48ee672a54653664e007157753adbcf904038ea0f6e349fb52cdfb3a2746",
+    "32": "f9d2a637067a489f8d8d2d17b214d92a768c33a8a213da6486026379b1ab9c60",
+    "24": "cd926c448823c8a4c4ae754bc6b34fd0cbc33ab5ba80d837e6055a342875556c"
+  },
+  "framing": {
+    "scale": 0.6228596815749267,
+    "offset": [
+      147,
+      133
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

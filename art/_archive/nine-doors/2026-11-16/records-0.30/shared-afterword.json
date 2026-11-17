@@ -1,0 +1,87 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/shared/afterword",
+  "name": "Afterword",
+  "kind": "gear",
+  "mode": "painted gear icon",
+  "family": "gear",
+  "id": "weapon-afterword",
+  "path": "art/icons/gear/weapon-afterword.png",
+  "source": {
+    "branch": "wip/release-0.30",
+    "path": "art/briefs/ART-REQUESTS.md",
+    "blob_sha": "5b04ffed545d7e7086c3143479dd4f0318392ce8",
+    "section": "E2f"
+  },
+  "rule_excerpt": "| E2f | **Afterword (rules 1.58, follow strikes, 16 Nov 2026):** a painted gear icon for the new weapon `afterword` (\"Afterword\": a Legion quartermaster's last-issue knife, made for the off hand: a short reversed-grip blade with a stamp notch on the spine). A placeholder stands in today (`art/icons/gear/weapon-afterword.png`, `placeholders-2026-11-16-follow.json`); its monoline icon is drawn (`art/icons/weapons/afterword.svg`, Claude). | requested | the knife alone, reversed grip, the notch readable at 32 px | Heavenprint gear-icon frame; the line icon as drawn | `art/icons/gear/weapon-afterword.png` |",
+  "paint": "The Afterword knife ALONE in a reverse-grip carrying orientation: short continuous blade pointing down-left, wrapped handle up-right, and ONE clearly readable stamp notch on the spine. Match the attached monoline silhouette, rendered in Heavenprint painted materials.",
+  "name_status": "settled",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "retrieve and inspect the existing Afterword monoline icon and painted gear references",
+  "file_key": "shared-afterword",
+  "avoid": "No hand or body, long sword, text, real makers mark, futuristic neon, deformed tang or notch on the sharp cutting edge.",
+  "prompt": "Paint ONE original Heavenprint gear inventory object on a fully transparent background. Painterly opaque gouache/oil with blocky directional brush strokes, dark iron, warm bone highlights, aged brass and worn leather, clear material edges matching the painted gear references. No photograph, glossy 3D rendering, flat white icon treatment, lens blur, vignette, text, borders, ground or extra props. Center full object in a 15% clear margin, square1024x1024 composition, readable at32px. \nPAINT: The Afterword knife ALONE in a reverse-grip carrying orientation: short continuous blade pointing down-left, wrapped handle up-right, and ONE clearly readable stamp notch on the spine. Match the attached monoline silhouette, rendered in Heavenprint painted materials.\nAVOID: No hand or body, long sword, text, real makers mark, futuristic neon, deformed tang or notch on the sharp cutting edge.",
+  "refs": [
+    "art/icons/gear/weapon-knuckledusters.png",
+    "art/icons/gear/weapon-hellraiser_servo_fist.png",
+    "art/_archive/nine-doors/2026-11-16/references-0.30/afterword-line.png"
+  ],
+  "transparent": true,
+  "active_binding": {
+    "family": "gear",
+    "id": "weapon-afterword"
+  },
+  "binding_status": "Source explicitly specifies this catalog family/id; new registration on this art branch, no UI code.",
+  "filename_status": "source path retained",
+  "composition_scope": "painted gear only",
+  "recipe_index": 38,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/gear/weapon-knuckledusters.png",
+    "art/icons/gear/weapon-hellraiser_servo_fist.png",
+    "art/_archive/nine-doors/2026-11-16/references-0.30/afterword-line.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/shared-afterword-v1.png",
+  "source_sha256": "78870ae5a36b2d1284a87cd805cab35f3a4d02ee957a2141980975dcde8790df",
+  "export_crop": [
+    0,
+    20,
+    1236,
+    1226
+  ],
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-afterword.png",
+    "128": "art/icons/gear/exports/128/weapon-afterword.png",
+    "64": "art/icons/gear/exports/64/weapon-afterword.png",
+    "32": "art/icons/gear/exports/32/weapon-afterword.png"
+  },
+  "export_sha256": {
+    "256": "e800a662ddb5698fcadc24bd7d87bacbdb688f8fad780ecfc2e85634a895bf9e",
+    "128": "f51e9ed518424c5ccd38d49338994bfdb065aea4bc3aa5761166eeef659329fd",
+    "64": "b028aa160b11f88357ada7664b58582490d5b3712c9d6f72b166941819d39488",
+    "32": "73f70d310877cec6ce915eeb213244fd54e226af894573149333884dbc448b6c"
+  },
+  "framing": {
+    "scale": 0.6634304207119741,
+    "offset": [
+      102,
+      112
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

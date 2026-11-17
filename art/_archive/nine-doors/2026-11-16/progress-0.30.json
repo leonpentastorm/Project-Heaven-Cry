@@ -1,7 +1,8 @@
 {
   "total": 41,
-  "completed_count": 30,
+  "completed_count": 41,
   "completed_keys": [
+    "0.30/class/stand-behind-me",
     "0.30/fork.guard.cover_them",
     "0.30/fork.guard.drive",
     "0.30/fork.guard.provoke",
@@ -26,13 +27,23 @@
     "0.30/fork.sigil.overflux",
     "0.30/fork.sigil.running_script",
     "0.30/fork.sigil.written_in_advance",
+    "0.30/fork.soul.blood_price",
+    "0.30/fork.soul.clean_break",
     "0.30/fork.soul.ride_the_edge",
     "0.30/fork.soul.slow_burn",
     "0.30/fork.tend.keep_the_thread",
     "0.30/fork.tend.long_thread",
     "0.30/fork.tend.shared_pulse",
-    "0.30/fork.tend.short_thread"
+    "0.30/fork.tend.short_thread",
+    "0.30/replacement/163",
+    "0.30/replacement/33",
+    "0.30/replacement/35",
+    "0.30/replacement/63",
+    "0.30/shared/afterword",
+    "0.30/shared/follow",
+    "0.30/shared/mana-shock",
+    "0.30/shared/staggered"
   ],
-  "remaining_count": 11,
+  "remaining_count": 0,
   "scope": "0.30 additions only; original legacy denominator and held recipes are unchanged"
 }

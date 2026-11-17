@@ -15,7 +15,7 @@ assert im.getchannel('A').getextrema()[0]==0;crop=im.getchannel('A').getbbox();a
 if j['kind'] in ['wick','sign']:
  a=im.getchannel('A');im=Image.new('RGBA',im.size,(255,255,255,0));im.putalpha(a)
 dest=O/j['path'];dest.parent.mkdir(parents=True,exist_ok=True);im.save(dest,optimize=True);exports={};hashes={}
-for s in ([256,128,64,32,44,48,24] if j['kind']=='gear' else [128,64,48,44,32,24]):
+for s in ([256,128,64,32] if j['kind']=='gear' else [128,64,48,44,32,24]):
  ex=im.resize((s,s),Image.Resampling.LANCZOS)
  if j['kind'] in ['wick','sign']:
   a=ex.getchannel('A');ex=Image.new('RGBA',ex.size,(255,255,255,0));ex.putalpha(a)

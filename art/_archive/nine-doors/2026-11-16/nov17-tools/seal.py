@@ -13,7 +13,7 @@ full=subprocess.run(['python3',str(O/'tools/validate_art.py')],cwd=O,capture_out
 build=subprocess.run(['npm','run','assets'],cwd=O,capture_output=True,text=True);(A/'current-asset-build-check.txt').write_text(build.stdout+build.stderr)
 progress=read(A/'progress-0.30.json');validation={'legacy_delivered':348,'new_030_delivered':progress['completed_count'],'new_scoped_validation_pass':True,'full_library_exit':full.returncode,'asset_build_exit':build.returncode,'limitation':'This runtime is a verified partial art checkout: historical inputs are not downloaded. Exact current logs are preserved; do not claim the complete repository validator/build passed. The preceding full 344 worktree had a historical Bulwark export-set mismatch.','native_render_dimensions_recorded_honestly':True,'approval':'unapproved review candidates'};(A/'current-run-validation.json').write_text(json.dumps(validation,indent=2)+'\n')
 tools=A/'nov17-tools';tools.mkdir(exist_ok=True)
-for name in ['update_state.py','verify_batch.py','seal.py','export-one.py','review_ids.py','prepare-camp.py','setup.py','git-metadata.py','prepare_new.py','export_new.py','review_new.py','accept_new.py','reject_new.py','generate_new.js']:
+for name in ['update_state.py','verify_batch.py','seal.py','export-one.py','review_ids.py','prepare-camp.py','setup.py','git-metadata.py','prepare_new.py','export_new.py','review_new.py','accept_new.py','reject_new.py','generate_new.js','package_final.py']:
  if (R/name).exists():shutil.copy2(R/name,tools/name)
 if '--zip-camp' in sys.argv:
  paths=set()
@@ -31,6 +31,7 @@ if '--zip-camp' in sys.argv:
   for path in paths:assert hashlib.sha256(z.read(path)).hexdigest()==sha(O/path)
  archive=A/'deliveries'/dest.name;archive.parent.mkdir(exist_ok=True);shutil.copy2(dest,archive);archive.with_suffix('.zip.sha256').write_text(sha(archive)+'  '+archive.name+'\n');dest.with_suffix('.zip.sha256').write_text(sha(dest)+'  '+dest.name+'\n')
  (A/'CONTINUATION-DELIVERY-348.md').write_text('# Four camp signs complete the eligible legacy queue\n\n348/375 legacy review candidates delivered; zero eligible original jobs remain and 27 original recipes are held. #271–274 have real native sources, masters and six UI exports. The separate 0.30 requests use their own ledger.\n\n[Preview](review/continuation-271-272-273-274.jpg) · [Four-candidate incremental ZIP](deliveries/'+dest.name+') · [Checksum](deliveries/'+dest.name+'.sha256)\n\nThe ZIP adds only these four to checkpoint 344, not a full 348-image library. Native sources are 1254×1254, exports 1024×1024; no upscaling. Current scoped checks passed. Complete validator/build are limited by missing historical inputs in this partial checkout; see current-run-validation.json. All art remains unapproved.\n')
+if '--zip-final' in sys.argv:subprocess.run(['python3',str(R/'package_final.py')],check=True)
 arc_sums=sums(R/'baselines/art/_archive/nine-doors/2026-11-16/SHA256SUMS.txt')
 for p in A.rglob('*'):
  if p.is_file() and p.name!='SHA256SUMS.txt':arc_sums[p.relative_to(O).as_posix()]=sha(p)

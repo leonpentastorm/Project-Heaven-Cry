@@ -1,22 +1,11 @@
 # Continue the Nine Doors artwork
 
-Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **30/41 candidates**, **11 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
+Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **41/41 candidates**, **0 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
 
 Leon authorized the pinned revision-2 visual basis for Cover Them, Drive, Lightkiller, Keep the Thread, Benediction, Held Breath, Walk It In and Lockdown. Their gameplay questions remain open; this is approval to paint draft proposals only. See user-direction-2026-11-17.json.
 
 ## Remaining 0.30 requests
 
-- `0.30/fork.soul.blood_price` · Blood Price
-- `0.30/fork.soul.clean_break` · Clean Break
-- `0.30/class/stand-behind-me` · Stand Behind Me
-- `0.30/replacement/33` · Wind-up
-- `0.30/replacement/35` · Read the Swing
-- `0.30/replacement/63` · Hold the Lane
-- `0.30/replacement/163` · Scrap Sentinel
-- `0.30/shared/follow` · Follow
-- `0.30/shared/afterword` · Afterword
-- `0.30/shared/mana-shock` · Mana Shock
-- `0.30/shared/staggered` · Staggered
 
 ## Held old recipes — never revive
 

@@ -1,0 +1,97 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/replacement/33",
+  "name": "Wind-up",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "legacy_replaced_job": 33,
+  "id": "move-shove",
+  "family": "move_icons",
+  "path": "art/icons/moves/shove.png",
+  "binding_note": "Preserve the old icon id/path per spec section 7. This NEW recipe supersedes the held old depiction; the old recipe remains blocked.",
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "4.1 R3"
+  },
+  "rule_excerpt": "| R3 | `fighter` rank I `shove` (classes.json:232) | Shove: 1 AP, push 1 or Prone, Body save | **Wind-up** *(Suggested)*: *\"You start each fight with {=numbers.start} Momentum (the door's start is 1).\"* `start: 3`. Carrier: a stat `momentum_start` (N23) read inside the one `combat_start` handler (`physical/rules.ts:48`, which sets Momentum to max(current, start)); a `resource +2` row would end on 2 or 3 by hook order | `rev3.ts:152-154` class_shove (retired); `apps/web/src/game/actionPickers.ts:276`; `classMoves.test.ts:39`; `golden/moves.ts`; `classes-rev3.test.ts`; goldens costs-credit, costs-items-shelved (+ .marks), costs-items-traits-classes (+ .marks), rules-items-traits-classes (+ .log) (**re-recorded on purpose**). The generic Shove action stays (actions.json:54; Dense, Heavyworlder traits, Siege Engine read it) |",
+  "status": "review-candidate",
+  "name_status": "suggested",
+  "open_source_questions": [],
+  "generation_gate": "derive the image from the new rule, never the held 0.29 paint recipe",
+  "file_key": "replacement-33",
+  "paint": "Wick coils into a low ready stance with ONE short club drawn back in both hands; THREE simple solid momentum ticks gather behind the weapon before the first swing. Eyes fiercely eager, feet already planted.",
+  "avoid": "No shove of a victim, pushed person, giant axe, winding key, clock or literal machine spring.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick coils into a low ready stance with ONE short club drawn back in both hands; THREE simple solid momentum ticks gather behind the weapon before the first swing. Eyes fiercely eager, feet already planted.\nAVOID: No shove of a victim, pushed person, giant axe, winding key, clock or literal machine spring.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": {
+    "family": "move_icons",
+    "id": "move-shove"
+  },
+  "binding_status": "confirmed existing legacy binding reused for NEW 0.30 depiction",
+  "filename_status": "source path retained",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 33,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "014477343955f0f052c4e8990c70e4ba16d6770f9505ccadc6ebeaa9cddd0243",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/replacement-33-v1.png",
+  "source_sha256": "38b24270ac2069023c731f701fabd847803622a6a2702370d84a2211f14aacc0",
+  "export_crop": [
+    29,
+    19,
+    1216,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/shove.png",
+    "64": "art/icons/moves/exports/64/shove.png",
+    "48": "art/icons/moves/exports/48/shove.png",
+    "44": "art/icons/moves/exports/44/shove.png",
+    "32": "art/icons/moves/exports/32/shove.png",
+    "24": "art/icons/moves/exports/24/shove.png"
+  },
+  "export_sha256": {
+    "128": "d64504db5d2ae60d836a765f63eea672c51ea550d48ef13ce364351170757b8f",
+    "64": "271d02c52cdd7a5145ffc7d2df9dbd04dc89822a5465bd3088f5c85f64d98887",
+    "48": "362c297320a396e0097b5aa3707cf41145aafa7836bcaba480faca2ffae055aa",
+    "44": "5862921a9b3d0c5ccf0e0479c583fbc32903bf48c0eeb964288fa55bb880af71",
+    "32": "eee33976c4c9fffbf414ab914acefd199b94b990fba6149474d4821cd3c2ee77",
+    "24": "858590f661a5befdd0be5ee520f13a962a76aebed9e160e160a4b61b0eed8229"
+  },
+  "framing": {
+    "scale": 0.5677301202036915,
+    "offset": [
+      175,
+      161
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}
