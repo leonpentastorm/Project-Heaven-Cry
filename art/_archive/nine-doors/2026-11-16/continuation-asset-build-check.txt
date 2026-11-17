@@ -2,4 +2,4 @@
 > project-heaven-cry@0.29.0 assets
 > python3 tools/build_web_assets.py
 
-1952 assets -> apps/web/public/assets
+1960 assets -> apps/web/public/assets

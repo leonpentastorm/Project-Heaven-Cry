@@ -11223,6 +11223,114 @@
         "32": "art/icons/gear/exports/32/mod-open_hand.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/mod-open_hand/mod-open_hand.png"
+    },
+    "weapon-hand_wraps": {
+      "label": "Hand wraps",
+      "path": "art/icons/gear/weapon-hand_wraps.png",
+      "sha256": "275174226eca2cc49f2db8a64a0d553d4d591dc244b2b053fcab2dcd11fce994",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/252-weapon-hand_wraps.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "gear",
+      "brief_number": 252,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hand_wraps.png",
+        "128": "art/icons/gear/exports/128/weapon-hand_wraps.png",
+        "64": "art/icons/gear/exports/64/weapon-hand_wraps.png",
+        "32": "art/icons/gear/exports/32/weapon-hand_wraps.png"
+      }
+    },
+    "weapon-striking_gloves": {
+      "label": "Striking gloves",
+      "path": "art/icons/gear/weapon-striking_gloves.png",
+      "sha256": "4e54720c6116953f5aa708040f4f083708ebaff75d8ee5ec794ffcb04c400576",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/253-weapon-striking_gloves.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "gear",
+      "brief_number": 253,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-striking_gloves.png",
+        "128": "art/icons/gear/exports/128/weapon-striking_gloves.png",
+        "64": "art/icons/gear/exports/64/weapon-striking_gloves.png",
+        "32": "art/icons/gear/exports/32/weapon-striking_gloves.png"
+      }
+    },
+    "weapon-iron_mitts": {
+      "label": "Iron mitts",
+      "path": "art/icons/gear/weapon-iron_mitts.png",
+      "sha256": "026003405fcfc8c519a886c370f5e6f0728ff8eb586cba7871225cd62e46b71a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/254-weapon-iron_mitts.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "gear",
+      "brief_number": 254,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-iron_mitts.png",
+        "128": "art/icons/gear/exports/128/weapon-iron_mitts.png",
+        "64": "art/icons/gear/exports/64/weapon-iron_mitts.png",
+        "32": "art/icons/gear/exports/32/weapon-iron_mitts.png"
+      }
+    },
+    "weapon-kemizuchi_strikers": {
+      "label": "Kemizuchi strikers",
+      "path": "art/icons/gear/weapon-kemizuchi_strikers.png",
+      "sha256": "d4e4963718ef806fee94a92b1ec4f59d5ed9fe34de8aec489caf0ec669c83512",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/255-weapon-kemizuchi_strikers.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "gear",
+      "brief_number": 255,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_strikers.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_strikers.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_strikers.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_strikers.png"
+      }
     }
   }
 }
