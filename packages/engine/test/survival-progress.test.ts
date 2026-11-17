@@ -154,6 +154,16 @@ describe('rules 1.43: the grade step (rules 37, 38, 43)', () => {
     const room = capRoom(full.characters.c1); expect(room).toBe(BOON_CAP - 45);
     for (const p of relicChoices(full, full.characters.c1, 'main')) expect(worthOf(p)).toBeLessThanOrEqual(room);
   });
+  // Rules 1.64 item 5003 (Leon: "all weapon should have those"): gloves, wraps and the unarmed family take the melee
+  // Relic properties; bare fists (no item) and a Figment's or a companion's own weapon take none
+  it('the Relic step on hand wraps: the melee properties; bare fists none', () => {
+    const wraps = (g: GameState) => { for (const c of Object.values(g.characters)) { c.weapon = 'hand_wraps'; delete c.weaponState; setGrade(c, 'main', 'masterwork'); } };
+    const g = visit('forge', { stage: 3, prep: wraps }), offer = relicChoices(g, g.characters.c1, 'main');
+    expect(offer.length).toBe(GRADE_UP.relic_offer); for (const p of offer) expect(propFits(p, 'hand_wraps')).toBe(true);
+    const r = apply(g, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge', prop: offer[0] }, 'host');
+    expect(r.characters.c1.weaponState).toMatchObject({ rarity: 'relic', prop: offer[0] });
+    for (const id of ['fists', 'figment_claws', 'beast_bite']) for (const p of ['prop.true', 'prop.biting', 'prop.balanced']) expect(propFits(p, id)).toBe(false);
+  });
   it('the armourer\'s chit pays one Fine or Masterwork step (the visit\'s limit holds)', () => {
     const g = visit('forge', { prep: (x) => { x.characters.c1.pack = [...packOf(x.characters.c1), { id: GRADE_UP.chit, item: GRADE_UP.chit, name: 'chit', qty: 1, kind: 'tool' }]; } });
     const a = apply(g, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge', chit: true }, 'host');

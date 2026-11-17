@@ -25,7 +25,7 @@ import { rngFor, die } from '../rng';
 import { type RunState, type RunVisit, type RunLasting, type RunStock, runNode, runSetting } from './state';
 import { SETTING } from './encounter';
 import { stageCeiling, weaponOffer, lastingFor } from './rewards';
-import { relicRow, rollProps, capRoom, capProblem, boonsFor, graftOf, worthOf, BOON_CAP, runWorth } from './power';
+import { relicRow, rollProps, propFits, RELIC_PROPS, capRoom, capProblem, boonsFor, graftOf, worthOf, BOON_CAP, runWorth } from './power';
 import { nextPools } from './stage';
 import type { GameState } from '../game';
 import { registerShopService, type ServiceCard } from './shop';
@@ -132,7 +132,7 @@ export function upgradeProblem(g: GameState, c: Character, a: { where: GearWhere
   if (to === 'relic' && !isQuiverItem(it.id)) { // rules 1.53: a quiver's Relic step is arrows held, no named property
     if (a.chit) return 'An armourer\'s chit pays for a Fine or Masterwork upgrade, not a Relic.';
     const offer = relicChoices(g, c, a.where);
-    if (!offer.length) return c.name + ' has too little boon room left (' + capRoom(c) + ') for any Relic property of the ' + nameOf(it.id) + '.';
+    if (!offer.length) return !RELIC_PROPS.some((p) => propFits(p.id, it.id)) ? 'No Relic property fits the ' + nameOf(it.id) + ': it can go no higher than Masterwork.' : c.name + ' has too little boon room left (' + capRoom(c) + ') for any Relic property of the ' + nameOf(it.id) + '.'; // rules 1.64 item 5003
     if (!a.prop) return 'Pick one of the three properties.';
     if (!offer.includes(a.prop)) return 'That property is not one of the three offered for the ' + nameOf(it.id) + '.';
   }

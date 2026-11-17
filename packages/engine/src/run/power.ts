@@ -55,7 +55,9 @@ export function capProblem(c: Character, id: string): string | null {
 
 const isFocus = (id: string) => Object.values(FOCUS_IDS).some((l) => l.includes(id));
 const gun = (w: any) => !!w && w.magazine != null && !!w.ammo && w.category !== 'thrown';
-const melee = (w: any) => !!w && w.category !== 'unarmed' && (/melee/.test(w.category) || w.phys?.system === 'melee');
+/** Rules 1.64 item 5003: gloves, wraps and the unarmed family are melee weapons for the Relic step; bare fists (type
+ * `fists`: no item) and a companion's or a Figment's own weapon (`companion_only`) are not. */
+const melee = (w: any) => !!w && w.type !== 'fists' && !w.companion_only && (/melee/.test(w.category) || w.category === 'unarmed' || w.phys?.system === 'melee');
 /** What a property's `fits` words name (rule 38): guns, guns with a magazine, melee weapons, foci (a mana arm is both). */
 const FITS: Record<string, (id: string) => boolean> = {
   guns: (id) => gun(WEAPON[id]), magazine_guns: (id) => gun(WEAPON[id]) && (WEAPON[id] as any).reload === 'magazine',

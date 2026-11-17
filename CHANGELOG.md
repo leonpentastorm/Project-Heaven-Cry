@@ -14,6 +14,10 @@ The game shows its version in the corner of the title screen and in every "Repor
   spare-parts charge costs 60 credits (was 16; repairs are dearer with it). The Mender's story Triage works in a run,
   once a stage map for each Mender (`numbers.run_per_stage`); the sheet's button says when it is spent. Measured with
   the run simulator's new `SIM_STORY_HEAL=1` (mix_trio, 20 seeds): within noise.
+- **K6, Relic properties for every weapon (items 5003, 5004):** gloves, wraps and the unarmed family take the
+  melee Relic properties (True, Biting, Balanced) at the Forge; bare fists and Figment or companion weapons do not;
+  a weapon nothing fits gets an honest refusal. Every category walked: only thrown items have none (and are not
+  upgradable).
 
 ## 0.31.0 — the field is turns, the fight's big banners, and the playtest's faults
 
