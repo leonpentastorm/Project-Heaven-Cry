@@ -249,7 +249,7 @@ export function masteredVals(self, m, ink, skillName, pts) {
   const corner = (v, h) => ({ style: 'position: absolute; ' + v + ': -5px; ' + h + ': 26px; width: 9px; height: 9px; transform: rotate(45deg); background: ' + ink + '; box-shadow: 0 0 0 3px #0C1018' });
   return {
     name: m.name, flavour: '“' + m.flavour + '”', text: m.text, meta: m.meta + ' · Automatic at 10 points',
-    icon: m.icon, has: !!m.icon, none: !m.icon, zoom: m.icon ? zoomer(self, m.icon, m.name, 'perk') : () => {}, alt: m.name + ' Mastered perk icon (Wick)',
+    icon: m.icon, has: !!m.icon, none: !m.icon, zoom: m.icon ? zoomer(self, m.icon, m.name, 'perk', m.text) : () => {}, alt: m.name + ' Mastered perk icon (Wick)',
     kicker: '◆  MASTERED PERK · ' + skillName.toUpperCase() + ' 10  ◆', locked, lockLabel: locked ? 'LOCKED · ' + skillName.toUpperCase() + ' ' + pts + ' / 10' : '',
     pips: Array.from({ length: 10 }, (_, i) => ({ style: 'width: 8px; height: 8px; transform: rotate(45deg); box-sizing: border-box; ' + (i < pts ? 'background: ' + ink : 'border: 1px solid ' + epRgba(ink, 0.45)) })),
     corners: [corner('top', 'left'), corner('top', 'right'), corner('bottom', 'left'), corner('bottom', 'right')],
@@ -274,7 +274,7 @@ export function roadTrack(self, id, pts, ink) {
     const state = !has ? 'ahead' : s.n === pts ? 'now' : s.n < pts ? 'owned' : 'ahead';
     return { key: s.n, n: s.n, state, step: s.step || 'none', hasPerks: s.perks.length > 0, empty: !s.lines.length,
       lines: s.lines.map((l) => ({ ...l, style: 'font-size: ' + (l.kind === 'row' ? 14 : 13) + 'px; line-height: 1.35; ' + (l.kind === 'mastered' ? 'font-weight: 700; color: ' + (state === 'ahead' ? '#C9A85A' : '#F2C46A') : l.kind === 'perk' || l.kind === 'unlock' || l.kind === 'fork' ? 'font-weight: 700; color: ' + (state === 'ahead' ? '#A3AEC2' : ink) : 'color: ' + (state === 'ahead' ? '#A3AEC2' : '#E7EBF3')) })),
-      perks: s.perks.map((p) => ({ ...p, key: p.id, has: !!p.icon, zoom: p.icon ? zoomer(self, p.icon, p.name, 'perk') : () => {}, alt: p.name + ' perk icon (Wick)',
+      perks: s.perks.map((p) => ({ ...p, key: p.id, has: !!p.icon, zoom: p.icon ? zoomer(self, p.icon, p.name, 'perk', p.text || p.t1 || '') : () => {}, alt: p.name + ' perk icon (Wick)',
         style: 'width: 28px; height: 28px; object-fit: contain; border-radius: 6px; background: #10151F; border: 1px solid ' + (s.step === 'mastered' ? '#F2C46A' : '#2E3A50') + (state === 'ahead' ? '; opacity: 0.6' : '') })),
       label: s.n + (s.n === 1 ? ' point' : ' points') + (state === 'now' ? ', yours now' : state === 'owned' ? ', yours' : ''),
       numStyle: 'flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; font-size: 14px; font-weight: 700; box-sizing: border-box; '
@@ -319,13 +319,13 @@ export function epccgVals(self, ptsOf, who) {
     quote: e.quote.map((t) => { const stage = /^\*.*\*$/.test(t); return { text: stage ? t.slice(1, -1) : t.replace(/\*/g, ''),
       style: 'margin: 0; font-family: \'Spectral\', serif; line-height: 1.55; ' + (stage ? 'font-size: 14px; color: #A3AEC2; letter-spacing: 0.04em' : 'font-size: 17px; font-style: italic; color: #E7EBF3') }; }),
     speaker: '— ' + e.speaker, intro: e.intro,
-    perks: e.perks.map((p) => ({ name: p.name, meta: p.meta, t1: p.t1, t2: p.t2, icon: p.icon, has: !!p.icon, none: !p.icon, zoom: p.icon ? zoomer(self, p.icon, p.name, 'perk') : () => {}, alt: p.name + ' perk icon (Wick)' })),
+    perks: e.perks.map((p) => ({ name: p.name, meta: p.meta, t1: p.t1, t2: p.t2, icon: p.icon, has: !!p.icon, none: !p.icon, zoom: p.icon ? zoomer(self, p.icon, p.name, 'perk', p.t1) : () => {}, alt: p.name + ' perk icon (Wick)' })),
     perkHead: 'PERKS · ONE STEP AT EACH MASTERY LEVEL',
     perkNote: 'At 3, 5, 7 and 9 points in ' + s.name + ', take one step: one of these perks at Tier I, or a Tier I you hold upgraded to Tier II. By 9 points both are at Tier II. At 10, the Mastered perk is yours.',
     m: masteredVals(self, e.mastered, ink, s.name),
     hasCombos: e.combos.length > 0,
     combos: e.combos.map((c) => ({ name: c.name, text: c.text, deed: c.deed, icon: c.icon, has: !!c.icon, none: !c.icon,
-      zoom: c.icon ? zoomer(self, c.icon, c.name, 'perk') : () => {}, alt: c.name + ' combo perk icon (Wick)',
+      zoom: c.icon ? zoomer(self, c.icon, c.name, 'perk', c.text) : () => {}, alt: c.name + ' combo perk icon (Wick)',
       segs: c.skills.map((k) => ({ style: 'flex: 1; height: 4px; background: ' + k.ink })),
       chips: c.skills.map((k, i) => ({ plus: i > 0, label: k.name + ' ' + k.min,
         style: 'padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; border: 1px solid ' + k.ink + '; color: ' + k.ink + (k.id === s.id ? '; background: ' + epRgba(k.ink, 0.16) : '') })) })),

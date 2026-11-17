@@ -434,7 +434,7 @@ export class CreateLogic extends DCLogic {
       resetAll: () => this.pointsDo(() => (der.spent || der.attrSpent ? { ok: true, skills: {}, aSet: {}, applied: null, what: 'everything reset', text: 'Everything reset: all ' + SKILL_PTS + ' Skill points and ' + attrTotal + ' Attribute points are yours to place.' } : no('Nothing is placed yet.'))),
     };
     const hv = SK[S.hover] || D.skills[0], hp = S.skills[hv.id] || 0;
-    const detail = { zoom: zoomer(this, hv.img, hv.name, 'skill'), img: hv.img, name: hv.name.toUpperCase(), attr: ATTR[hv.attr].name, mod: 'roll ' + fmt(checkMod(hv.id, hp)) + (hp === 0 ? ' untrained' : ''), quiet: hv.quiet,
+    const detail = { zoom: zoomer(this, hv.img, hv.name, 'skill', hv.quiet), img: hv.img, name: hv.name.toUpperCase(), attr: ATTR[hv.attr].name, mod: 'roll ' + fmt(checkMod(hv.id, hp)) + (hp === 0 ? ' untrained' : ''), quiet: hv.quiet,
       next: hp < ATTR_CAP ? 'Next point (' + (hp + 1) + '): ' + nextLine(hv.id, hp) : 'At ' + ATTR_CAP + ', the most at creation.', key: hv.id,
       nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + ATTR[hv.attr].ink,
       style: 'display: flex; align-items: center; gap: 14px; min-height: 100px; box-sizing: border-box; padding: 10px 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ATTR[hv.attr].ink };
@@ -454,7 +454,7 @@ export class CreateLogic extends DCLogic {
     const traitCards = D.traits.filter((t) => S.tcat === 'All' || t.cat === S.tcat).map((t) => {
       // One music trait per character (engine: Only one music trait.): once one is picked the others are shut.
       const on = picked.includes(t.id), music = !on && isMusicTrait(t.id) && picked.some(isMusicTrait), ex = (blocked.has(t.id) || music) && !on, full = picked.length >= 2 && !on;
-      return { key: t.id, zoom: zoomer(this, t.icon, t.name, 'icon'), name: t.name, icon: t.icon, cat: t.cat.toUpperCase(), flavour: t.flavour, up: t.up.map((x) => ({ text: x })), down: t.down.map((x) => ({ text: x })),
+      return { key: t.id, zoom: zoomer(this, t.icon, t.name, 'icon', t.up[0] || t.flavour), name: t.name, icon: t.icon, cat: t.cat.toUpperCase(), flavour: t.flavour, up: t.up.map((x) => ({ text: x })), down: t.down.map((x) => ({ text: x })),
         toggle: () => this.setState({ traits: on ? picked.filter((x) => x !== t.id) : [...picked, t.id] }), disabled: ex || full, pressed: on ? 'true' : 'false',
         btn: on ? 'Remove' : music ? 'Only one music trait' : ex ? 'Excluded by a pick' : full ? 'Two already picked' : 'Take this trait',
         btnStyle: 'flex: none; margin-top: auto; min-height: 42px; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; ' + (on ? 'border: 0; background: #E7EBF3; color: #0A0D13' : 'border: 1px solid #2E3A50; background: transparent; color: ' + (ex || full ? '#7F8BA1' : '#E7EBF3')),
@@ -561,7 +561,7 @@ export class CreateLogic extends DCLogic {
         skills: D.skills.filter((sk) => sk.attr === a.id).map((sk) => { const p = PT(sk.id), m = checkMod(sk.id, p);
           return { name: sk.name, pts: p, mod: fmt(m) + (p >= 10 ? ' · Mastered' : p >= 9 ? ' · M4' : p >= 7 ? ' · M3' : p >= 5 ? ' · M2' : p >= 3 ? ' · M1' : ''),
             style: 'display: flex; justify-content: space-between; gap: 6px; font-size: 13px; color: ' + (p ? '#E7EBF3' : '#7F8BA1') }; }) })) }));
-    const traitFull = picked.map((id) => D.traits.find((t) => t.id === id)).filter(Boolean).map((t) => ({ zoom: zoomer(this, t.icon, t.name, 'icon'), name: t.name, cat: t.cat.toUpperCase(), icon: t.icon, flavour: t.flavour,
+    const traitFull = picked.map((id) => D.traits.find((t) => t.id === id)).filter(Boolean).map((t) => ({ zoom: zoomer(this, t.icon, t.name, 'icon', t.up[0] || t.flavour), name: t.name, cat: t.cat.toUpperCase(), icon: t.icon, flavour: t.flavour,
       up: t.up.map((x) => ({ text: x })), down: t.down.map((x) => ({ text: x })) }));
     const voiceList = D.skills.filter((sk) => PT(sk.id) > 0).sort((a, b) => PT(b.id) - PT(a.id)).slice(0, 4).map((sk) => ({ name: sk.name.toUpperCase(), line: sk.quiet,
       nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: ' + ATTR[sk.attr].ink }));
@@ -628,7 +628,7 @@ export class CreateLogic extends DCLogic {
       // The art: the patron's portrait (click to view it large); until it is painted, their mark on the dark ground.
       const art = patronPortrait(p.id), big = patronPortrait(p.id, true) || art;
       return { key: p.id, name: p.name, archetype: p.archetype, costume: p.costume, mark: p.mark, portrait: art || p.mark, hasPortrait: !!art,
-        zoom: zoomer(this, big || p.mark, p.name + (p.archetype ? ' · ' + p.archetype : ''), art ? 'patron' : 'icon'),
+        zoom: zoomer(this, big || p.mark, p.name + (p.archetype ? ' · ' + p.archetype : ''), art ? 'patron' : 'icon', p.costume || ''),
         artStyle: 'width: 300px; border: 1px solid ' + (on ? '#FFFFFF' : '#232D3F'), imgStyle: art ? '' : 'object-fit: contain; padding: 48px; box-sizing: border-box',
         likes: p.likes.map((t) => ({ key: t, text: t })), taboos: p.taboos.map((t) => ({ key: t, text: t })), rule: p.ruleText, hymns: p.hymns.map((h, i) => ({ key: h, text: ['I', 'II', 'III'][i] + ' · ' + h })), miracle: p.miracle,
         pressed: on ? 'true' : 'false', pick: pick({ kind: 'faithful', patron: p.id }), btn: on ? '✓ Sworn to ' + p.name : 'Swear to ' + p.name,

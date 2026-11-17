@@ -485,7 +485,7 @@ export class MainLogic extends DCLogic {
       const p = P(s.id), m = checkMod(s.id, p), ink = ATTR[s.attr].ink, done = asked.includes(s.id), off = !c || p === 0 || g.phase !== 'story', silent = !done && !off && !voiced.includes(s.id);
       return { key: s.id, head, headName: ATTR[s.attr].name.toUpperCase(), headVal: c ? av : '', headNote: c ? 'its skills can reach ' + av : '',
         headStyle: 'display: flex; align-items: baseline; gap: 10px; margin-top: ' + (i ? 6 : 0) + 'px; padding: 4px 8px; border-left: 3px solid ' + ATTR[s.attr].ink + '; color: ' + ATTR[s.attr].ink,
-        zoom: zoomer(this, s.img, s.name, 'skill'), img: s.img, name: s.name, attr: ATTR[s.attr].name, ...((d) => ({ door: d, hasDoor: !!d }))(doorEmblemOf(s.id)), pts: p, mod: fmt(m), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
+        zoom: zoomer(this, s.img, s.name, 'skill', s.quiet), img: s.img, name: s.name, attr: ATTR[s.attr].name, ...((d) => ({ door: d, hasDoor: !!d }))(doorEmblemOf(s.id)), pts: p, mod: fmt(m), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
         ask: () => act({ type: 'voice/ask', charId: c.id, skill: s.id }), noAsk: done || off || silent, askLabel: done ? 'Asked' : silent || off ? 'Silent' : 'Ask',
         askTitle: done ? 'Asked once this scene.' : silent ? 'Nothing to say about this right now.' : off ? (p === 0 ? 'No points: no voice yet.' : g.phase !== 'story' ? 'Ask a skill out of combat.' : '') : 'It has something to say. Ask it (once this scene).',
         rowCls: 'phc-m-tab-' + (S.coreDir || 'r'),
@@ -513,10 +513,10 @@ export class MainLogic extends DCLogic {
     const badgeOf = (key, tier) => { const v = markFor(key, tier, g); return { badge: v.mark, badgeStyle: v.mark ? badgeStyleOf(v.verdict) : 'display: none' }; }; // rules 1.66 item 5212: one small mark, only in a narrated room
     // Uses left (game/classView.ts usesLine): this fight, scene, session or rest, from the engine's own counters.
     const usesOf = (key, tier) => { const u = c ? usesLine(g, c, key, tier) : ''; return { uses: u, hasUses: !!u }; };
-    const traits = c ? c.traits.map((id) => TRAIT[id]).filter(Boolean).map((t) => ({ key: t.id, name: t.name, icon: t.icon, text: t.up[0] || t.flavour, zoom: zoomer(this, t.icon, t.name, 'icon'), ...badgeOf('trait:' + t.id), ...usesOf('trait:' + t.id) })) : [];
+    const traits = c ? c.traits.map((id) => TRAIT[id]).filter(Boolean).map((t) => ({ key: t.id, name: t.name, icon: t.icon, text: t.up[0] || t.flavour, zoom: zoomer(this, t.icon, t.name, 'icon', t.up[0] || t.flavour), ...badgeOf('trait:' + t.id), ...usesOf('trait:' + t.id) })) : [];
     const perks = c ? c.perks.filter((x) => PERK[x.id]).map((x) => { const p = PERK[x.id], sk = p.skills[0], ink = sk ? ATTR[SK[sk].attr].ink : '#FFFFFF', icon = PERK_ICON[x.id] || IMG['wick-mind-without-fog'];
       const text = p.tiers ? (x.tier === 'II' ? p.tiers.II.text : p.tiers.I.text) : p.text;
-      return { key: x.id, zoom: zoomer(this, icon, p.name, 'perk'), name: p.name, icon, text: text.charAt(0).toUpperCase() + text.slice(1),
+      return { key: x.id, zoom: zoomer(this, icon, p.name, 'perk', text.charAt(0).toUpperCase() + text.slice(1)), name: p.name, icon, text: text.charAt(0).toUpperCase() + text.slice(1),
         tier: x.tier === 'I' || x.tier === 'II' ? 'TIER ' + x.tier : x.tier.toUpperCase(), chip: p.skills.map((s) => SKILL[s].name).join(' + ') || 'Ultimate',
         chipStyle: 'padding: 1px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink, ...badgeOf('perk:' + x.id, x.tier), ...usesOf('perk:' + x.id, x.tier) }; }) : [];
     // The class and its moves (spec: Classes; game/classView.ts): every rank's move, held or locked with what it takes,
@@ -527,7 +527,7 @@ export class MainLogic extends DCLogic {
     const classMoves = !c ? [] : [...(c.classId ? classMovesOf(g, c, c.classId) : []), ...(c.advancedClass ? advancedMoves(g, c, c.advancedClass) : [])].map(moveCard);
     const clsSig = c && c.classId ? attributeProgress(c, c.classId) : null;
     const clsPic = classPortraitOf(heldClassId(c)), clsBig = classPortraitOf(heldClassId(c), true);
-    const classHead = klass ? { name: classLabel(c).toUpperCase(), icon: klass.icon, ink: klass.ink, portrait: clsPic, hasPortrait: !!clsPic, zoomPortrait: zoomer(this, clsBig, klass.name, 'portrait'), sig: clsSig ? clsSig.attributeName + ' ' + clsSig.total + ' · ' + clsSig.nextLine : '',
+    const classHead = klass ? { name: classLabel(c).toUpperCase(), icon: klass.icon, zoomText: klass.tagline || '', ink: klass.ink, portrait: clsPic, hasPortrait: !!clsPic, zoomPortrait: zoomer(this, clsBig, klass.name, 'portrait'), sig: clsSig ? clsSig.attributeName + ' ' + clsSig.total + ' · ' + clsSig.nextLine : '',
       bar: clsSig ? 'height: 100%; border-radius: 99px; background: ' + klass.ink + '; width: ' + clsSig.pct + '%' : '' } : null;
     const top = c ? Object.entries(c.skills).filter(([, p]) => p > 0 && p < 10).sort((a, b) => b[1] - a[1])[0] : null;
     const mp = top ? masteredVals(this, SK[top[0]].ep.mastered, ATTR[SK[top[0]].attr].ink, SK[top[0]].name, top[1]) : {};
@@ -783,7 +783,7 @@ export class MainLogic extends DCLogic {
       }
       if (e.kind === 'voice' || e.kind === 'overreach') {
         const s = SK[e.skill] || D.skills[0], ink = ATTR[s.attr].ink, ch = charOf(e.charId);
-        return { ...base, ...readFor(e, coreVoice(SKILL[e.skill]?.core)), isVoice: true, img: s.img, zoom: zoomer(this, s.img, s.name, 'skill'), head: (mine.length > 1 && ch ? ch.name.toUpperCase() + ' · ' : '') + e.head, headStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + ink,
+        return { ...base, ...readFor(e, coreVoice(SKILL[e.skill]?.core)), isVoice: true, img: s.img, zoom: zoomer(this, s.img, s.name, 'skill', s.quiet), head: (mine.length > 1 && ch ? ch.name.toUpperCase() + ' · ' : '') + e.head, headStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + ink,
           style: 'display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ink };
       }
       if (e.kind === 'check') return { ...base, isCheck: true, headStyle: 'font-weight: 700; letter-spacing: 0.06em; color: ' + (e.ok ? '#6FEA77' : '#A3AEC2') };
@@ -795,7 +795,7 @@ export class MainLogic extends DCLogic {
     const busy = g.narrator.busy, err = g.narrator.error;
     const pushes = g.overreach.filter((o) => !o.choice && charOf(o.charId)?.owner === me).map((o) => {
       const s = SK[o.skill], ink = ATTR[s.attr].ink, cost = (charOf(o.charId).skills[o.skill] || 0) >= 10 ? 2 : 1, cons = SKILL[o.skill]?.overreach?.consequence;
-      return { key: o.id, img: s.img, zoom: zoomer(this, s.img, s.name, 'skill'), head: s.name.toUpperCase() + ' PUSHES · OVERREACH · ONLY YOU SEE THIS', headStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + ink,
+      return { key: o.id, img: s.img, zoom: zoomer(this, s.img, s.name, 'skill', o.push), head: s.name.toUpperCase() + ' PUSHES · OVERREACH · ONLY YOU SEE THIS', headStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + ink,
         text: o.push, consequence: cons ? 'If you indulge: ' + cons : '', indulge: () => act({ type: 'overreach/choose', id: o.id, choice: 'indulge' }), resist: () => act({ type: 'overreach/choose', id: o.id, choice: 'resist' }),
         cantResist: charOf(o.charId).echo < cost, resistLabel: 'Resist · −' + cost + ' Echo' };
     });
