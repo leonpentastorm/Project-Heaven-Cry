@@ -257,7 +257,7 @@ ok('a lit node is taken: the fight begins (' + r.stats.fights[0].template + ', '
 for (let i = 0; i < 400; i++) {
   const s = await p.evaluate(() => { const g = window.__phc.getState().game, cb = g.combat; if (!cb || cb.over || cb.field || g.phase !== 'combat') return 'over'; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.charId ? 'mine' : 'theirs'; });
   if (s === 'over') break;
-  if (s !== 'mine' || !(await p.locator('.phc-yt-pips').count()) || await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'); return d ? d.getAttribute('data-lock') || '' : 'none'; })) { await settle(p, 120); continue; }
+  if (s !== 'mine' || !(await p.locator('text=ACTION POINTS').count()) || await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'); return d ? d.getAttribute('data-lock') || '' : 'none'; })) { await settle(p, 120); continue; }
   await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});
   await p.evaluate((s) => { window.__phc.getState().game.rng.state = s; }, D18); // rules 1.46: node 1 cannot lose (every shot an 18)
   const conf = p.getByRole('button', { name: 'Confirm', exact: true });

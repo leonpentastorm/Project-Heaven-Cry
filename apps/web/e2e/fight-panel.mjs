@@ -83,7 +83,21 @@ for (const [vw, vh] of (process.env.FP_NARR ? [] : [[1280, 720], [1600, 900]])) 
   const rows = await listRoom(p);
   ok(tag + ' the action list shows at least four rows without scrolling the page (' + fmtRoom(rows) + ')', roomOk(rows));
   ok(tag + ' the Proving Ground keeps its Say box (Say and Attempt work there)', (await p.locator('input[placeholder^="Say something"]:visible').count()) === 1);
-  ok(tag + ' the AP pips ride in the YOUR TURN strip', (await p.locator('.phc-yt .phc-yt-pips > span').count()) >= 6);
+  // ---- 0.31.1 (Leon: "bring back the AP bar. 6 little dots there is barely seeable"): the ACTION POINTS row under the strip ----
+  { const segs = await p.locator('.phc-cb-ap .phc-pips > span').count(), max = Number(await p.locator('.phc-cb-ap').first().getAttribute('aria-valuemax').catch(() => '0'));
+    const below = await p.evaluate(() => { const yt = document.querySelector('.phc-yt'), ap = document.querySelector('.phc-cb-ap'); if (!yt || !ap) return null; return Math.round(ap.getBoundingClientRect().top - yt.getBoundingClientRect().bottom); });
+    ok(tag + ' the ACTION POINTS row is back under the YOUR TURN strip, one segment per max AP (' + segs + ' of ' + max + ', ' + below + ' px under)', segs >= 6 && segs === max && below != null && below >= 0 && below <= 60 && (await p.locator('text=ACTION POINTS').count()) >= 1);
+    ok(tag + ' no dots in the YOUR TURN strip', (await p.locator('.phc-yt .phc-pips, .phc-yt-pips').count()) === 0); }
+  // ---- 0.31.1 (Leon: "HP back above the mp bar below the picture"): HP and the strip inside the You card, above the meters ----
+  { const where = await p.evaluate(() => { const vis = (e) => !!e && e.getBoundingClientRect().height > 0; const hp = document.querySelector('[data-hp-row]'); if (!hp || !vis(hp)) return 'no visible HP';
+      if (!hp.closest('.phc-me-full')) return 'HP outside the You card';
+      const meters = Array.from(document.querySelectorAll('[data-meter-row], .phc-me-urgent')).filter(vis); if (!meters.length) return 'no meters';
+      const img = Array.from(document.querySelectorAll('.phc-me-full img, .phc-me-mini img')).filter(vis)[0]; const h = hp.getBoundingClientRect();
+      if (img && img.getBoundingClientRect().bottom > h.top + 1) return 'HP not below the portrait';
+      return meters.every((m) => m.getBoundingClientRect().top >= h.bottom - 1) ? 'ok' : 'a meter above HP'; });
+    ok(tag + ' HP sits in the You card, below the portrait and above the meters (' + where + ')', where === 'ok'); }
+  if (vh > 820) { const side = await p.evaluate(() => { const b = document.querySelector('[data-me-side] [data-backpack="card"]'), f = document.querySelector('[data-me-side] svg[aria-label="Your injuries"]'); if (!b || !f) return null; const r = b.getBoundingClientRect(), q = f.getBoundingClientRect(); return { gap: Math.round(q.left - r.right), top: Math.abs(Math.round(q.top - r.top)) }; });
+    ok(tag + ' the Backpack button sits beside the limbs figure (' + JSON.stringify(side) + ')', !!side && side.gap >= 0 && side.gap <= 16 && side.top <= 40); }
 
   // ---- U3: no shield track at 0 ----
   ok(tag + ' no shield segment or "+N" at shield 0', (await p.locator('[data-hp-shield-seg]').count()) === 0 && (await p.locator('[data-hp-shield]').count()) === 0 && (await p.locator('[data-shield-seg]').count()) === 0);
@@ -143,7 +157,7 @@ for (const [vw, vh] of (process.env.FP_NARR ? [] : [[1280, 720], [1600, 900]])) 
   const r = await act(p, { type: 'sandbox/meter', unitId: u.id, shield: 30 });
   await settle(p, 600);
   if (process.env.DEBUG_FP) console.log('debug shield', r, JSON.stringify(Object.fromEntries(Object.entries(await meU(p)).filter(([k]) => /shield|layer|ward/i.test(k)))), JSON.stringify((await G(p)).combat.log.slice(-3)));
-  const seg = await p.locator('[data-me-pin] [data-hp-shield-seg]').count(), plus = (await p.locator('[data-hp-shield]').first().textContent().catch(() => '')) || '';
+  const seg = await p.locator('.phc-me-full [data-hp-shield-seg]').count(), plus = (await p.locator('[data-hp-shield]').first().textContent().catch(() => '')) || '';
   ok(tag + ' a shield granted (' + (r || 'Shield') + '): a segment on the HP bar and "' + plus.trim() + '"', seg === 1 && /^\+\d+/.test(plus.trim()));
   ok(tag + ' no separate shield track over the token: the segment rides its HP bar', (await p.locator('[data-token-shield]').count()) === 0 && (await p.locator('[data-hp-shield-seg="token"]').count()) >= 1);
 
@@ -246,7 +260,7 @@ for (const [vw, vh] of (process.env.FP_NARR ? [] : [[1280, 720], [1600, 900]])) 
   const r2 = await listRoom(p);
   ok('narrated 1280x720, everything opened: still four rows (' + fmtRoom(r2) + ')', roomOk(r2));
   await p.screenshot({ path: shotsDir + 'narrated-1280x720-02-all-open.png' });
-  if (process.env.DEBUG_FP) console.log('debug chain', JSON.stringify(await p.evaluate(() => ['.phc-cb-aside', '.phc-cb-turnbox', '.phc-cb-turn', '.phc-cb-dock', '.phc-cb-tabpanel', '.phc-cb-foot', '.phc-cb-confirm', '.phc-me-urgent', '[data-me-pin]', 'form.phc-cb-say', '.phc-cb-tabs', '[data-phc-vow-prompt]'].map((q) => { const e = Array.from(document.querySelectorAll(q)).find((x) => x.offsetParent !== null); if (!e) return q + ' none'; const r = e.getBoundingClientRect(), cs = getComputedStyle(e); return q + ' top ' + Math.round(r.top) + ' h ' + Math.round(r.height) + ' sh ' + e.scrollHeight + ' st ' + e.scrollTop + ' flex ' + cs.flex + ' minh ' + cs.minHeight + ' ov ' + cs.overflowY; }))));
+  if (process.env.DEBUG_FP) console.log('debug chain', JSON.stringify(await p.evaluate(() => ['.phc-cb-aside', '.phc-cb-turnbox', '.phc-cb-turn', '.phc-cb-dock', '.phc-cb-tabpanel', '.phc-cb-foot', '.phc-cb-confirm', '.phc-me-urgent', '[data-me-hp]', 'form.phc-cb-say', '.phc-cb-tabs', '[data-phc-vow-prompt]'].map((q) => { const e = Array.from(document.querySelectorAll(q)).find((x) => x.offsetParent !== null); if (!e) return q + ' none'; const r = e.getBoundingClientRect(), cs = getComputedStyle(e); return q + ' top ' + Math.round(r.top) + ' h ' + Math.round(r.height) + ' sh ' + e.scrollHeight + ' st ' + e.scrollTop + ' flex ' + cs.flex + ' minh ' + cs.minHeight + ' ov ' + cs.overflowY; }))));
   ok('narrated: no page errors' + (p.errors.length ? ': ' + p.errors.slice(0, 2).join(' | ') : ''), !p.errors.length);
   await p.context().close(); }
 await browser.close();

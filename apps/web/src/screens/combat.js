@@ -190,12 +190,14 @@ const COMBAT_CSS = [
   '.phc-cb-tabpanel{scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}.phc-cb-tabpanel::-webkit-scrollbar{width:8px}.phc-cb-tabpanel::-webkit-scrollbar-thumb{background:#2E3A50;border-radius:4px}',
   '.phc-cb-tabs>[role=tab]:focus-visible,.phc-cb-tabpanel:focus-visible{outline:2px solid #FFFFFF;outline-offset:-2px}',
   // Short windows (1280×720): a slimmer header and initiative strip, so the grid keeps its size.
-  '@media (max-height:800px) and (min-width:1000px){.phc-cb-head{padding-top:6px!important;padding-bottom:6px!important}.phc-init{padding-top:5px!important;padding-bottom:5px!important}.phc-init [data-init]{padding-top:3px!important;padding-bottom:3px!important}.phc-init [data-init] img,.phc-init [data-init]>span:first-child{width:28px!important;height:28px!important}.phc-cb-row{padding-bottom:8px!important}.phc-cb-turn .phc-yt{padding-top:5px!important;padding-bottom:5px!important}.phc-cb-tabpanel .phc-cb-act[data-act]{min-height:34px!important}.phc-cb-tline{display:none!important}}',
+  '@media (max-height:800px) and (min-width:1000px){.phc-cb-head{padding-top:6px!important;padding-bottom:6px!important}.phc-init{padding-top:5px!important;padding-bottom:5px!important}.phc-init [data-init]{padding-top:3px!important;padding-bottom:3px!important}.phc-init [data-init] img,.phc-init [data-init]>span:first-child{width:28px!important;height:28px!important}.phc-cb-row{padding-bottom:8px!important}.phc-cb-turn .phc-yt{padding-top:3px!important;padding-bottom:3px!important}.phc-cb-turn .phc-yt>span:first-child{font-size:16px!important}.phc-cb-ap .phc-pips>span{height:10px!important}.phc-cb-tabpanel .phc-cb-act[data-act]{min-height:34px!important}.phc-cb-tline{display:none!important}}',
   // The column, top to bottom: a bar (You in one line on short windows · Customise · Hide panel), the You card and the
   // squad (capped on your turn, scrolling on their own), the Say row (pinned), then the turn box (YOUR TURN, AP, the tabs,
   // the tab panel that gives up the room, the footer). Nothing above the footer scrolls the Say row away.
   // The cap leaves the turn box what it needs (about 520 px: YOUR TURN, AP, tabs, a usable tab panel, the footer).
   '.phc-cb-aside.phc-mine>.phc-cb-top{max-height:min(38%, calc(100% - 600px))}.phc-cb-top:empty{display:none}',
+  // 0.31.1: HP and the status strip stay in sight while the card's meters scroll under them
+  '.phc-me-hp{position:sticky;top:0;z-index:2;padding:4px 0;background:#10151F}',
   // A tall footer (a target behind cover under two rows of tabs) used to push Confirm off the column's end and squeeze
   // the action list to nothing. Beside the map (1000 px and wider) the list keeps a usable height, the dock scrolls
   // inside itself when it must, and Confirm and End turn stay at its foot.
@@ -204,10 +206,11 @@ const COMBAT_CSS = [
   '.phc-cb-hide:focus-visible,.phc-cb-link:focus-visible,.phc-cb-show:focus-visible,.phc-cb-mini button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}',
   // Short windows (1280×720): You shrinks to one line in the bar, and on your turn the squad list steps aside (the
   // initiative strip and the grid still show everyone's HP), so the turn box keeps its room.
-  '@media (max-height:820px) and (min-width:1000px){.phc-me-full{display:none!important}.phc-me-mini{display:flex!important}.phc-me-urgent{display:grid!important}.phc-cb-aside.phc-mine>.phc-cb-top{display:none!important}}',
+  // 0.31.1: on a short window the You card shrinks to its HP and status strip (under the small portrait, above the urgent meters), never gone
+  '@media (max-height:820px) and (min-width:1000px){.phc-me-full{padding:0!important;border:0!important;background:transparent!important;gap:4px!important}.phc-me-full>:not(.phc-me-hp){display:none!important}.phc-me-mini{display:flex!important}.phc-me-urgent{display:grid!important}.phc-cb-aside.phc-mine>.phc-cb-top>:not(.phc-me-full){display:none!important}.phc-cb-aside.phc-mine>.phc-cb-top{max-height:none!important;overflow:visible!important}.phc-cb-aside{gap:5px!important}.phc-me-hp{position:static!important;background:transparent!important;padding:0!important}}',
   // Very short windows (1093×526): the squad list goes (the initiative strip and the grid still show it), one line of
   // action text, slimmer tabs, pips and buttons, no portrait on the target card. The tab panel keeps at least 44 px.
-  '@media (max-height:620px) and (min-width:1000px){.phc-cb-aside{gap:6px!important;padding-top:6px!important}.phc-cb-aside.phc-mine>.phc-cb-top{display:none!important}.phc-cb-turn,.phc-cb-dock{gap:6px!important}.phc-cb-aplabel{display:none!important}.phc-cb-turn .phc-pips>span{height:8px!important}.phc-cb-tabs>[role=tab]{min-height:30px!important}.phc-cb-aside .phc-cb-tabpanel{min-height:44px!important}.phc-cb-seltext{-webkit-line-clamp:1!important}.phc-cb-selextra{display:none!important}.phc-cb-tgtimg{display:none!important}.phc-cb-foot>div{padding-top:6px!important;padding-bottom:6px!important}.phc-cb-confirm>button{min-height:38px!important}.phc-cb-say input,.phc-cb-say button{min-height:34px!important}}',
+  '@media (max-height:620px) and (min-width:1000px){.phc-cb-aside{gap:6px!important;padding-top:6px!important}.phc-cb-turn,.phc-cb-dock{gap:6px!important}.phc-cb-aplabel{display:none!important}.phc-cb-turn .phc-pips>span{height:8px!important}.phc-cb-tabs>[role=tab]{min-height:30px!important}.phc-cb-aside .phc-cb-tabpanel{min-height:44px!important}.phc-cb-seltext{-webkit-line-clamp:1!important}.phc-cb-selextra{display:none!important}.phc-cb-tgtimg{display:none!important}.phc-cb-foot>div{padding-top:6px!important;padding-bottom:6px!important}.phc-cb-confirm>button{min-height:38px!important}.phc-cb-say input,.phc-cb-say button{min-height:34px!important}}',
   // Narrow windows: the column stacks under the grid; the tabs, the tab panel and Confirm dock at the bottom of the screen.
   '@media (max-width:999px){.phc-cb-head{flex-wrap:wrap!important}.phc-cb-root{height:auto!important;overflow:visible!important}.phc-cb-row{flex-wrap:wrap!important;min-height:auto!important}.phc-cb-left{flex:1 1 100%!important;overflow:visible!important;padding-right:0!important}.phc-cb-aside{flex:1 1 100%!important;overflow:visible!important;margin:0!important;padding:12px 0 0!important}.phc-cb-top{overflow:visible!important}',
   // The turn box lifts the docked actions over the grid, but stays under the dialogs (the fight's end is z 15, votes 14).
@@ -1796,7 +1799,7 @@ export class CombatLogic extends DCLogic {
     // The Backpack button sits in your unit card beside your name (Leon, 9 Nov 2026: one labelled button there, none by
     // the AP bar); on short windows, where the card folds into the one-line bar, the bar carries it. Lit while open.
     const bpBtn = (h) => 'display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: ' + h + 'px; padding: 0 10px 0 8px; border-radius: 7px; border: 1px solid ' + (S.bp ? '#FFFFFF' : '#3A4760') + '; background: ' + (S.bp ? '#1C2536' : 'transparent') + '; color: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer';
-    const bp = { can: canPack, open: () => this.setState({ bp: !S.bp }), pressed: S.bp ? 'true' : 'false', btnStyle: bpBtn(28) + '; margin-left: auto', miniStyle: bpBtn(26),
+    const bp = { can: canPack, open: () => this.setState({ bp: !S.bp }), pressed: S.bp ? 'true' : 'false', btnStyle: bpBtn(28), miniStyle: bpBtn(26),
       title: (S.bp ? 'Close your backpack' : 'Open your backpack: draw, put away, drop, light armour') + ' (key B)',
       show: !!bpV, who: bpV ? bpV.who.toUpperCase() : '', apText: bpV ? bpV.ap + ' AP' : '',
       rule: '1 AP a hand · a two-handed draw 2 · a drop 0 · light armour 1 a piece',
@@ -1812,9 +1815,9 @@ export class CombatLogic extends DCLogic {
     const T = {
       tabs, tabPanel, tabsCog: () => openSettings('tabs'), showWho: !mePanel, lock, lockMsg, vow: vowV, bp,
       mine: mineTurn, waiting: !mineTurn, wait, ytWord: 'YOUR TURN', ytInk: curInk, ytSub: (fv && fv.roundText ? fv.roundText.toUpperCase() : 'ROUND ' + cb.round) + ' · ' + ap + ' AP', // rules 1.62 item 4906: on the field, its round of its rounds
-      // 0.31.0 (U5): the AP pips ride in the YOUR TURN strip (dark on its white), no row of their own
-      ytPips: apPips.map((p) => ({ ...p, style: p.style.replace('height: 14px', 'height: 11px; width: 9px; flex: none').replace(/#E7EBF3/g, '#0A0D13').replace('#1C2536', 'rgba(10, 13, 19, 0.14); box-shadow: inset 0 0 0 1px rgba(10, 13, 19, 0.35)') })), apMax: maxAp, apNow: ap,
-      ytStyle: 'position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; margin: 0 6px; padding: 9px 18px; background: #FFFFFF; color: #0A0D13; box-shadow: -6px 0 0 ' + curInk + ', 0 6px 18px rgba(0, 0, 0, 0.45)',
+      // 0.31.1: the ACTION POINTS row is back under the strip (Leon: the strip's dots were barely seeable), one segment per max AP
+      apGrid: 'flex: 1 1 auto; min-width: 60px; display: grid; grid-template-columns: repeat(' + Math.max(1, maxAp) + ', minmax(0, 1fr)); gap: 4px', apMax: maxAp, apNow: ap,
+      ytStyle: 'flex: none; position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; margin: 0 6px; padding: 9px 18px; background: #FFFFFF; color: #0A0D13; box-shadow: -6px 0 0 ' + curInk + ', 0 6px 18px rgba(0, 0, 0, 0.45)',
       who, zoomPc: zoomer(this, who.img, who.name, 'portrait'), apText: apNow, apPips, groups, sel, pad,
       padTCls: 'phc-a-rise' + pt.cls, padT: pt.val || { groups: [] }, padWShow: pw.show, padWCls: 'phc-a-rise' + pw.cls, padW: pw.val || {}, padDShow: pd.show, padDCls: 'phc-a-rise' + pd.cls, padD: pd.val || {},
       tgtList: tp.show ? [{ ...tp.val, key: 'tgt-' + tp.val.id, cls: 'phc-a-right' + tp.cls }] : [],
