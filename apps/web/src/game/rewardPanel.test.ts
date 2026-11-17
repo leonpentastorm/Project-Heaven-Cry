@@ -46,3 +46,20 @@ describe('the reward panel', () => {
     } else throw new Error('the other character had no pick waiting');
   });
 });
+
+describe('the map never eats a click (rules 1.64 R2)', () => {
+  it('every stop the viewer cannot take carries the engine refusal, in every state the map is drawn in', () => {
+    const r = new Rec(survivalRoom('PHC-T001', DUO, { test: true }), DUO); r.must({ type: 'run/start', seed: 'PHC-T001', camp: 'recommended' });
+    const me = ownerOf(0), whyAll = () => { const v = runView(r.g, me)!; return v.nodes.filter((n) => n.state !== 'reachable').map((n) => n.why); };
+    // on the map: an unlit stop says it can't be reached (the engine's words)
+    expect(whyAll().every((w) => typeof w === 'string' && w.length > 0)).toBe(true);
+    const node = chooseNode(r.g)!; for (let i = 0; i < DUO.length; i++) r.must({ type: 'run/move', node: node.id }, ownerOf(i));
+    r.fight(40); expect(r.g.run.state).toBe('field');
+    // the field: every stop says to leave the field first, and the view's blocked line is the same refusal
+    const field = runMoveProblem(r.g, me, r.g.run.nodes[0].id);
+    expect(whyAll().every((w) => w === field)).toBe(true); expect(runView(r.g, me)!.blocked).toBe(field);
+    for (let i = 0; i < DUO.length && r.g.run.state === 'field'; i++) r.must({ type: 'run/leave' }, ownerOf(i));
+    // the rewards: the viewer still owes a pick, so the refusal says so (the panel reopens on the client)
+    expect(whyAll().every((w) => w === 'Take your pick first. The squad moves on when everyone has.')).toBe(true);
+  });
+});
