@@ -203,7 +203,7 @@ describe('the points step: what the next point gives', () => {
     expect(k.modTitle).toBe('Roll −2 now, +1 with the next point');
     press(l, 'durability', 2);
     k = skillOf(l.renderVals(), 'durability');
-    expect(k.nextAt).toBe(3); expect(k.line).toBe('Next point: ' + nextLine('durability', 2)); expect(k.line).toContain('Perk step: take');
+    expect(k.nextAt).toBe(3); expect(k.line).toBe('Next point: ' + nextLine('durability', 2)); expect(k.line).toContain('Perk: ');
     const fresh = screen().renderVals();
     for (const s of D.skills as any[]) {
       const line = skillOf(fresh, s.id).line;

@@ -42,7 +42,7 @@
 <span aria-hidden="true" style="{{t.numStyle}}">{{t.n}}</span>
 <span style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 0; min-width: 0">
 <sc-for list="{{t.lines}}" as="l" hint-placeholder-count="1"><span class="phc-ep-row" data-line="{{l.kind}}" data-at="{{l.at}}" style="{{l.style}}">{{l.text}}</span></sc-for>
-<sc-if value="{{t.empty}}" hint-placeholder-val="{{false}}"><span class="phc-ep-row" data-line="none" style="font-size: 13px; color: #7F8BA1">Only what every point gives</span></sc-if>
+<sc-if value="{{t.empty}}" hint-placeholder-val="{{false}}"><span class="phc-ep-row" data-line="none" style="font-size: 13px; color: #7F8BA1">—</span></sc-if>
 </span>
 <sc-if value="{{t.hasPerks}}" hint-placeholder-val="{{false}}"><span style="display: flex; gap: 4px; flex: none"><sc-for list="{{t.perks}}" as="pi" hint-placeholder-count="2"><sc-if value="{{pi.has}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{pi.zoom}}" aria-label="Enlarge {{pi.name}}" tip="{{pi.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{pi.icon}}" alt="{{pi.alt}}" style="{{pi.style}}"></button></sc-if></sc-for></span></sc-if>
 </li></sc-for>

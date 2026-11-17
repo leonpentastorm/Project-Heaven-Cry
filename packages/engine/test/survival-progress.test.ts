@@ -191,7 +191,7 @@ describe('rules 1.43: trainings (rules 39, 45)', () => {
     const g = visit('rest'), w = g.characters.c1.weapon, d0 = physOf(g.characters.c1).drill[w] || 0;
     const a = apply(g, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w }, 'host');
     expect(physOf(a.characters.c1).drill[w]).toBe(d0 + TRAIN.drill);
-    expect(refused(a, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w })).toBe('One training per rest. ' + a.characters.c1.name + ' has had it.');
+    expect(refused(a, { type: 'run/train', charId: 'c1', train: 'drill', weapon: w })).toBe('Training used this rest.');
     expect(refused(a, { type: 'run/train', charId: 'c2', train: 'practice' }, 'p2')).toMatch(/needs Will Power 1 to practise Outbursts/);
     const s = apply(a, { type: 'run/train', charId: 'c2', train: 'study' }, 'p2');
     expect((s.characters.c2 as any).sigilGrowth?.study ?? 0).toBeGreaterThanOrEqual(TRAIN.study);

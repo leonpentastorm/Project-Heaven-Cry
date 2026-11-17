@@ -57,15 +57,15 @@ describe('S1: each door\'s forks sit under its own skill and fold', () => {
 });
 
 describe('S2: what each point gives folds, per skill, remembered', () => {
-  it('opens by default (the page was opened for this skill); a click folds it and the fold is kept for that skill only', () => {
+  it('closed by default (Leon, 17 Nov 2026); a click opens it and the fold is kept for that skill only', () => {
     expect(EP_TPL).toMatch(/class="phc-fold-h phc-ep-fold" data-fold="\{\{ep\.fold\.id\}\}"/);
     expect(EP_TPL).toMatch(/<sc-if value="\{\{ep\.fold\.open\}\}"[^>]*>\s*<sc-if value="\{\{ep\.call\.has\}\}"/);
     const h = holder({ epccg: 'guts' });
-    expect(epccgVals(h).ep.fold.open).toBe(true);
-    epccgVals(h).ep.fold.toggle();
     expect(epccgVals(h).ep.fold.open).toBe(false);
-    expect(epccgVals(holder({ epccg: 'durability' })).ep.fold.open).toBe(true);
-    epccgVals(h).ep.fold.toggle(); expect(epccgVals(h).ep.fold.open).toBe(true);
+    epccgVals(h).ep.fold.toggle();
+    expect(epccgVals(h).ep.fold.open).toBe(true);
+    expect(epccgVals(holder({ epccg: 'durability' })).ep.fold.open).toBe(false);
+    epccgVals(h).ep.fold.toggle(); expect(epccgVals(h).ep.fold.open).toBe(false);
   });
 });
 
@@ -78,7 +78,7 @@ describe('S3: every skill\'s page has the same layout parts', () => {
       expect(v.hasHead || v.steps.some((t: any) => t.lines.length)).toBe(true);
       const at = (n: number) => v.steps[n - 1].lines.map((l: any) => l.kind);
       expect(at(10)).toContain('mastered');
-      if (s.slot === 'beta') { expect(v.feed.has).toBe(true); expect(v.feed.head).toMatch(/^Feeds [A-Z][\w ]+: \S/); expect(v.feed.top).toMatch(/×/); expect(v.feed.now).toMatch(/^You now: /); }
+      if (s.slot === 'beta') { expect(v.feed.has).toBe(true); expect(v.feed.head).toMatch(/^Feeds [A-Z][\w ]+$/); expect(v.feed.top).toBe(''); expect(v.feed.now).not.toMatch(/You now/); }
       else expect(v.feed.has).toBe(false);
       if (s.slot === 'alpha' && (SKILL as any)[s.id].forks?.length) { expect(at(4)).toContain('fork'); expect(at(6)).toContain('fork'); }
       if (s.slot === 'gamma') expect(v.call.has).toBe(true); else expect(v.call.has).toBe(false);
@@ -98,8 +98,8 @@ describe('S4: a gamma skill\'s page leads with its Call and how it grows', () =>
       expect(ns).toContain(CALL_RULES.cheap_at); expect(ns).toContain(CALL_RULES.free_at);
       expect(v.ladder.filter((x: any) => x.now).map((x: any) => x.n)).toEqual([CALL_RULES.cheap_at]);
       expect(v.ladder.find((x: any) => x.n === CALL_RULES.cheap_at)!.what).toMatch(new RegExp(CALL_RULES.cheap_ap + ' AP'));
-      expect(v.now).toMatch(new RegExp('^' + CALL_RULES.cheap_ap + ' AP now'));
-      expect(v.checks).toMatch(/^On checks and Asks you roll \+5/);
+      expect(v.now).toMatch(new RegExp('^' + CALL_RULES.cheap_ap + ' AP · reach '));
+      expect(v.checks).toBe('+5 on checks and Asks');
       for (const x of v.ladder) expect(x.what).not.toMatch(/\{=|undefined/);
       expect(callBlock(s.id, 2)!.ladder.filter((x: any) => x.now).map((x: any) => x.n)).toEqual([1]);
     });
@@ -116,11 +116,11 @@ describe('the Feeds box reads this character, not a sheet of its points', () => 
     const { c } = story({ durability: 3, pain_threshold: 3 }); c.level = 6;
     const pts = (id: string) => c.skills[id] || 0;
     const real = feedBlock('pain_threshold', pts, c)!, sheet = feedBlock('pain_threshold', pts)!;
-    expect(real.now).toBe('You now: ' + doorFeedView(c, 'durability')!.line + '.');
-    expect(real.now).toMatch(/each Guard plate takes \d+ damage off a hit/);
+    expect(real.now.toLowerCase()).toBe(doorFeedView(c, 'durability')!.line.replace(/^[^:]{1,40}: /, '').toLowerCase());
+    expect(real.now).toMatch(/Each Guard plate takes \d+ damage off a hit/);
     expect(real.now).not.toBe(sheet.now); // the level-1 sheet soaks less
     // the page passes the character it was opened for
     const { L } = story({ durability: 3, pain_threshold: 3 }); L.state.epccg = 'pain_threshold';
-    expect(L.renderVals().ep.feed.now).toMatch(/^You now: Pain Threshold 3: each Guard plate takes \d+ damage off a hit/);
+    expect(L.renderVals().ep.feed.now).toMatch(/^Each Guard plate takes \d+ damage off a hit/);
   });
 });

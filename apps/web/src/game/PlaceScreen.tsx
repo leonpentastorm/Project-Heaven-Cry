@@ -47,8 +47,8 @@ function TrainBarView({ b }: { b: NonNullable<PlaceCardV['bar']> }) {
         {b.to != null ? <span style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: 2, background: I.white }} /> : null}
       </span>
       <span aria-hidden="true" style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 13, color: I.muted, fontVariantNumeric: 'tabular-nums' }}>
-        <span>{b.now} now · <b style={{ color: I.white }}>+{b.add}</b></span>
-        {b.reaches ? <span style={{ color: I.ok, fontWeight: 700 }}>✓ Reaches it</span> : null}
+        <span>{b.now}{b.to != null ? ' / ' + b.to : ''} · <b style={{ color: I.white }}>+{b.add}</b></span>
+        
       </span>
       <span data-phc-trainbar-mark="" aria-hidden="true" style={{ fontSize: 13, lineHeight: 1.35, color: '#DCE2EC' }}>{b.mark}</span>
     </span>

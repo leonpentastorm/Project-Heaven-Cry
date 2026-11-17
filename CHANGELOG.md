@@ -8,6 +8,12 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.8 — the words, cut down (the lead's wording pass)
+
+- **The skill ladder says the core and stops** (Leon, 17 Nov 2026; CLAUDE.md "Say the core, once, and stop"): "Perk: X or Y", "Fork: A or B", "Mastered: <perk>"; no "Only what every point gives" row; the beta's box reads "Feeds <door>" and its number in one plain line (no formula, no "You now"); a Call reads "1 AP · reach 5" and "+5 on checks and Asks".
+- **What each point gives is closed by default** and opens on a click (remembered).
+- **The Training card:** "Drill: Combat knife", "211 / 300 · +200", "At 300: Coup"; no "Reaches it"; a spent training says "Training used this rest."
+
 ## 0.31.7 — small fixes (no rules change)
 
 - The fight's action-row icons are 24 px (were 18); the fork cards' option icons 40 px (were 24); a placed field's, trap's or turret's mark on its map badge 15 px (was 1em of a 9 px badge).

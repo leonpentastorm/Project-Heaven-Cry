@@ -306,7 +306,7 @@ function trainBar(c: Character, kind: string, n: number, weapon?: string): Train
 export function trainProblem(g: GameState, c: Character, a: { train: string; weapon?: string }): string | null {
   const h = here(g); if (!h || (h.n.kind !== 'rest' && h.n.kind !== 'training')) return notHere('a rest or a training ground');
   const done = h.v.did[c.id] || 0;
-  if (h.n.kind === 'rest' && done >= 1) return 'One training per rest. ' + c.name + ' has had it.';
+  if (h.n.kind === 'rest' && done >= 1) return 'Training used this rest.';
   if (h.n.kind === 'training') {
     if (a.train === 'devotion') return 'Devotion is raised at a shrine, not here.';
     if (done >= TRAINING.most) return c.name + ' has trained ' + TRAINING.most + ' times here, the most the yard allows.';
@@ -531,9 +531,9 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
   }
   if (k === 'rest' || k === 'training') {
     const am: any = k === 'training' ? TRAINING : TRAIN, price = trainPrice(g, c);
-    for (const w of carriedWeapons(c)) out.push({ group: 'train', key: 'drill:' + w, label: 'Drill +' + am.drill + ' with the ' + nameOf(w), detail: 'Toward the ' + nameOf(w) + '\'s next mark.', price, why: trainProblem(g, c, { train: 'drill', weapon: w }), action: { type: 'run/train', charId, train: 'drill', weapon: w }, bar: trainBar(c, 'drill', am.drill, w) });
-    out.push({ group: 'train', key: 'study', label: 'Study +' + am.study, detail: 'Toward the next Sigil word.', price, why: trainProblem(g, c, { train: 'study' }), action: { type: 'run/train', charId, train: 'study' }, bar: trainBar(c, 'study', am.study) });
-    out.push({ group: 'train', key: 'practice', label: 'Practice +' + am.practice, detail: 'Toward the next Outburst module.', price, why: trainProblem(g, c, { train: 'practice' }), action: { type: 'run/train', charId, train: 'practice' }, bar: trainBar(c, 'practice', am.practice) });
+    for (const w of carriedWeapons(c)) out.push({ group: 'train', key: 'drill:' + w, label: 'Drill: ' + nameOf(w), detail: '', price, why: trainProblem(g, c, { train: 'drill', weapon: w }), action: { type: 'run/train', charId, train: 'drill', weapon: w }, bar: trainBar(c, 'drill', am.drill, w) });
+    out.push({ group: 'train', key: 'study', label: 'Study: Sigil words', detail: '', price, why: trainProblem(g, c, { train: 'study' }), action: { type: 'run/train', charId, train: 'study' }, bar: trainBar(c, 'study', am.study) });
+    out.push({ group: 'train', key: 'practice', label: 'Practice: Outburst modules', detail: '', price, why: trainProblem(g, c, { train: 'practice' }), action: { type: 'run/train', charId, train: 'practice' }, bar: trainBar(c, 'practice', am.practice) });
     if (k === 'rest') out.push({ group: 'train', key: 'devotion', label: 'Devotion +' + am.devotion + ' XP', detail: 'Prayer by the fire.', price: 0, why: trainProblem(g, c, { train: 'devotion' }), action: { type: 'run/train', charId, train: 'devotion' }, bar: trainBar(c, 'devotion', am.devotion) });
   }
   if (k === 'shrine') {

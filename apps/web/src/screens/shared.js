@@ -66,8 +66,8 @@ export function roadMap(id) {
     rows.forEach((r, j) => { if (j !== fi && rowPoints(r.at, top).includes(n)) lines.push({ key: 'r' + j, kind: 'row', at: r.at, text: fromOf(r.at) ? r.text.replace(/\.$/, '') + ', and more each point from here.' : r.text }); });
     const u = un[n], m = u ? Number(u.mastery) || 0 : 0;
     const fs = u && u.category === 'Fork' && forks ? forks.steps.find((x) => x.at === n) : null;
-    if (fs) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + fs.options.map((o) => o.name).join(' or ') + (fs.offered ? '. Choose one, kept for good.' : '. Coming in a later version.') });
-    else if (u && u.category === 'Fork' && u.name) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: u.name + '. ' + (u.player || 'Choose one, kept for good.') });
+    if (fs) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + fs.options.map((o) => o.name).join(' or ') + (fs.offered ? '' : ' · sealed') });
+    else if (u && u.category === 'Fork' && u.name) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + u.name });
     // a named unlock: its name and player line (an unlock named only for its mastery step, or with no name of its own,
     // shows its player line alone)
     // (0.31.x: a player line of several sentences is one line a sentence, the first in the unlock's style, the rest
@@ -79,7 +79,7 @@ export function roadMap(id) {
     const step = m >= 1 && m <= 4 ? 'M' + m : m === 5 ? 'mastered' : '';
     const perks = step === 'mastered' ? (ep.mastered ? [ep.mastered] : []) : step ? ep.perks || [] : [];
     if (step) lines.push({ key: 'm', kind: step === 'mastered' ? 'mastered' : 'perk', at: 'at ' + n,
-      text: step === 'mastered' ? 'Mastered: ' + (ep.mastered ? ep.mastered.name : 'its Mastered perk') + ' is yours.' : 'Perk step: take ' + perks.map((p) => p.name).join(' or ') + (m > 1 ? ', or raise one you have to Tier II.' : '.') });
+      text: step === 'mastered' ? 'Mastered: ' + (ep.mastered ? ep.mastered.name : 'its Mastered perk') : 'Perk: ' + perks.map((p) => p.name).join(' or ') + (m > 1 ? ', or Tier II' : '') });
     return { n, lines, step, perks: perks.map((p) => ({ id: p.id, name: p.name, icon: p.icon || '' })) };
   });
   return { head, feed: fi >= 0 && rows[fi] ? rows[fi].text : '', top, steps };
@@ -100,8 +100,8 @@ export function callBlock(id, pts) {
   const cur = has ? merged.filter((x) => x.n <= p).map((x) => x.n).pop() : undefined;
   const cm = has ? checkModOf(id, p) : 0;
   return { name: def.name, text: def.text, kind: def.kind,
-    now: has && p > 0 ? C.callBaseAp(p) + ' AP now · reaches ' + callRangeAt(p) + ' tiles' : R.ap + ' AP · reaches ' + callRangeAt(1) + ' tiles at 1 point, one more each point',
-    checks: has && p > 0 ? 'On checks and Asks you roll ' + (cm >= 0 ? '+' : '') + cm + ': all your points count, one more than another skill gives.' : 'On checks and Asks all its points count, one more than another skill gives.',
+    now: has && p > 0 ? C.callBaseAp(p) + ' AP · reach ' + callRangeAt(p) : R.ap + ' AP · reach ' + callRangeAt(1) + ', +1 each point',
+    checks: has && p > 0 ? (cm >= 0 ? '+' : '') + cm + ' on checks and Asks' : 'Checks and Asks: +1 each point',
     ladder: merged.map((x) => ({ key: x.n, n: x.n, what: x.what.charAt(0).toUpperCase() + x.what.slice(1), now: x.n === cur, owned: has && x.n <= p })) };
 }
 /** A beta skill's door line on its page: what it multiplies on its alpha door, the top (both skills at the top, the
@@ -114,9 +114,9 @@ export function feedBlock(id, ptsOf, who) {
   const v = (sheet) => { try { return doorFeedView(sheet, door); } catch { return null; } };
   const at = v({ skills: { [door]: top, [id]: top } }), mult = at ? Math.round(at.mult * 100) / 100 : 0;
   const has = typeof ptsOf === 'function', now = has ? v(who && who.skills ? who : { skills: { [door]: ptsOf(door) || 0, [id]: ptsOf(id) || 0 } }) : null;
-  return { door, doorName: name, head: 'Feeds ' + name + ': ' + r.feed,
-    top: at ? 'With ' + name + ' and ' + mine + ' both at ' + top + ', it is ×' + mult + (mult === 2 ? ' (twice as strong).' : '.') : '',
-    now: now && has && (ptsOf(door) || 0) > 0 && (ptsOf(id) || 0) > 0 ? 'You now: ' + now.line + '.' : has ? 'You now: it needs points in both ' + name + ' and ' + mine + '.' : '' };
+  return { door, doorName: name, head: 'Feeds ' + name,
+    top: '',
+    now: now && has && (ptsOf(door) || 0) > 0 && (ptsOf(id) || 0) > 0 ? ((l) => l.charAt(0).toUpperCase() + l.slice(1))(now.line.replace(/^[^:]{1,40}: /, '')) : has ? 'Needs ' + name + ' and ' + mine : '' };
 }
 /** "Every point: ..." (empty when no row is for every point). */
 export const headLine = (id) => { const h = roadMap(id).head; return h.length ? 'Every point: ' + h.join(' · ') : ''; };
@@ -299,7 +299,7 @@ export function epccgVals(self, ptsOf, who) {
     head: track.head, hasHead: track.hasHead, steps: track.steps, atLabel: track.atLabel,
     // 0.31.x (Leon: "make the 'what each point gives' menu collapsable too"): the block folds (the shared fold, kept per
     // skill); it opens by default, as the page was opened for this skill
-    fold: foldVals('skill:points:' + s.id, { redraw: () => self.setState({ foldTick: Date.now() }) }),
+    fold: foldVals('skill:points:' + s.id, { byRule: true, redraw: () => self.setState({ foldTick: Date.now() }) }),
     // a gamma skill's Call, first and highlighted (rules 1.13; data/calls.json through the engine's ladder functions)
     call: (() => { const cb = callBlock(s.id, typeof pts === 'number' ? pts : null); if (!cb) return CALL_BLANK;
       return { has: true, ...cb, inkStyle: 'color: ' + ink, ladder: cb.ladder.map((x) => ({ ...x, label: x.n + (x.n === 1 ? ' point' : ' points') + (x.now ? ', yours now' : ''),
