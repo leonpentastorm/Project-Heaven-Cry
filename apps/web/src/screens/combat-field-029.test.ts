@@ -90,7 +90,7 @@ describe("0.29.0: the field's Backpack, the friend target card and the field's w
     const L: any = new CombatLogic({}); L.setState = (p: any) => { Object.assign(L.state, p); };
     const row = L.renderVals().groups.flatMap((g: any) => g.items).find((i: any) => i.name === 'Bond'); expect(row).toBeTruthy(); row.pick();
     L.renderVals(); L.tileClick(foe.pos);
-    expect(TOASTS.at(-1)).toBe('✕ ' + foe.name + ': A machine has no heart to Bond.');
+    expect(L.state.pickWhy && '✕ ' + L.state.pickWhy.text).toBe('✕ ' + foe.name + ': A machine has no heart to Bond.'); // (rules 1.65: by the action box)
     vi.useRealTimers();
   });
 });

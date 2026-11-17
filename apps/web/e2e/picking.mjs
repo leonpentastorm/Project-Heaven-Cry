@@ -1,0 +1,127 @@
+// Rules 1.65 (the picking contract, 0.31.5), in the Proving Ground: every aimed action shows its picking through the one
+// overlay (game/pickOverlay.ts), from the engine's own marks. For Vault, Decoy, Douse (Shadow), a Whisper (Health), a
+// Hymn with an area (Thunderclap), the Miracle The Sky Answers, Picture and a Figment's Move, a technique and a thrown
+// stim:
+//   · selected: its reach is shaded (tiles whose hover card says "in reach" or "you can pick this tile"), or its legal
+//     units ringed ("you can pick them");
+//   · the pointer on a legal tile or unit: the area it covers ("it covers this tile"), whom it touches, or the hover line;
+//   · a click on a tile or unit it can't take: the engine's refusal is a line by the action box ("✕ …"), nothing picked.
+// Screenshots: picking-*.png (KEEP_SHOTS=1 keeps them).
+import { chromium, player, settle, pickAction, openGround, OUT } from './lib.mjs';
+const browser = await chromium.launch();
+const p = await player(browser, 'host');
+const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
+const snap = (n) => p.screenshot({ path: OUT + 'picking-' + n + '.png' });
+const G = () => p.evaluate(() => window.__phc.getState().game);
+const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
+const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
+const tok = (k) => p.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"]').first();
+const dismissCut = async () => { for (let i = 0; i < 4; i++) { if (!(await p.locator('[data-phc-cutin]').count())) return; await p.keyboard.press('Escape'); await settle(p, 300); } };
+/** The tiles whose hover card carries this word (the overlay writes its kind into each tile's card). */
+const tilesWith = (word) => p.evaluate((w) => [...document.querySelectorAll('button.phc-tok')].filter((b) => (b.getAttribute('aria-label') || '').includes(w)).map((b) => (b.getAttribute('aria-label') || '').split(' · ')[0]), word);
+const keyOf = (r) => ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(r[0])) + ',' + (Number(r.slice(1)) - 1);
+/** The action box's words (the refusal line is there). */
+const dock = () => p.evaluate(() => (document.querySelector('.phc-cb-dock') || document.body).innerText || '');
+/** The hover chip over a tile (z-index 30 inside a tile button): the engine's hover line. */
+const chip = () => p.evaluate(() => { const s = [...document.querySelectorAll('button.phc-tok span')].find((e) => e.style.zIndex === '30' && (e.textContent || '').trim()); return s ? s.textContent.trim() : ''; });
+let charId;
+const me = async () => (await G()).combat.units.find((u) => u.charId === charId);
+async function toMe() {
+  for (let i = 0; i < 30; i++) {
+    const cb = (await G()).combat, cur = cb.units.find((u) => u.id === cb.order[cb.turn]);
+    if (cur && cur.charId === charId) { await dismissCut(); return true; }
+    if (cur) await act({ type: 'combat/end-turn', unitId: cur.id });
+    await settle(p, 250);
+  }
+  return false;
+}
+/** Walk to a tile through the reducer, a few tiles at a time, ending turns when the AP runs out. */
+async function walkTo(to) {
+  for (let i = 0; i < 40; i++) {
+    const u = await me(); if (u.pos === to) return true;
+    const [x, y] = u.pos.split(',').map(Number), [tx, ty] = to.split(',').map(Number);
+    let moved = false;
+    for (const n of [4, 3, 2, 1]) {
+      const nx = x + Math.sign(tx - x) * Math.min(n, Math.abs(tx - x)), ny = y + Math.sign(ty - y) * Math.min(n, Math.abs(ty - y));
+      for (const k of [nx + ',' + ny, nx + ',' + y, x + ',' + ny]) { if (k === u.pos) continue; if (!(await act({ type: 'combat/move', unitId: u.id, to: k, how: 'move' }))) { moved = true; break; } }
+      if (moved) break;
+    }
+    if (!moved) { await act({ type: 'combat/end-turn', unitId: u.id }); if (!(await toMe())) return false; }
+    await settle(p, 120);
+  }
+  return (await me()).pos === to;
+}
+/** One aimed action: select it, read its reach or choices, hover a legal pick, click an illegal one. */
+async function check(name, btn, o = {}) {
+  await dismissCut();
+  await p.keyboard.press('Escape').catch(() => {}); await settle(p, 100);
+  await pickAction(p, btn, { timeout: 15000 }).catch((e) => ok(name + ': its button (' + String(e.message || e).slice(0, 60) + ')', false));
+  await settle(p, 400);
+  const reach = await tilesWith('in reach'), choice = await tilesWith('you can pick this tile'), units = await tilesWith('you can pick them');
+  ok(name + ': selected, its reach or choices shown (reach ' + reach.length + ', tiles ' + choice.length + ', units ' + units.length + ')', reach.length + choice.length + units.length > 0);
+  await snap(o.shot + '-1-select');
+  // the pointer on a legal pick: the area it covers, whom it touches, or the engine's hover line
+  const pick = o.hoverUnit ? units[0] : choice[0] || units[0];
+  if (pick) {
+    await tok(keyOf(pick)).hover(); await settle(p, 500);
+    const cov = await tilesWith('it covers this tile'), line = await chip();
+    ok(name + ': on ' + pick + ', the area (' + cov.length + ' tiles) or the hover line ("' + line.slice(0, 50) + '")', cov.length > 0 || !!line);
+    if (o.area) ok(name + ': the area under the pointer is the data\'s ' + o.area + ' tiles or fewer at an edge (' + cov.length + ')', cov.length > 0 && cov.length <= o.area);
+    await snap(o.shot + '-2-hover');
+  } else ok(name + ': a legal pick to hover', false);
+  // a click on what it can't take: the refusal by the action box
+  if (o.bad) {
+    const bad = typeof o.bad === 'function' ? await o.bad({ reach, choice, units }) : o.bad;
+    if (!bad) { ok(name + ': an illegal tile to click (none on this map)', true); return; }
+    const before = (await G()).combat.log.length;
+    await p.mouse.move(5, 5); await tok(bad).click(); await settle(p, 400);
+    const d = await dock();
+    ok(name + ': a click on ' + ref(bad) + ' it can\'t take says why by the action box ("' + (d.match(/✕[^\n]*/) || [''])[0].slice(0, 70) + '")', /✕/.test(d));
+    ok(name + ': and nothing was done', (await G()).combat.log.length === before);
+    await snap(o.shot + '-3-refused');
+  }
+}
+
+// ---------- the Proving Ground: an Operative, Faithful of the Old Overcast, with the Visualizer and a pistol ----------
+await openGround(p);
+charId = Object.keys((await G()).characters)[0];
+await act({ type: 'sandbox/class', charId, classId: 'infiltrator', rank: 3 });
+await act({ type: 'sandbox/skill', charId, skill: 'ingenuity', points: 7 });
+await act({ type: 'sandbox/skill', charId, skill: 'visualization', points: 6 });
+await act({ type: 'sandbox/faith', charId, belief: 'faithful', patron: 'old_overcast', faith: 7, devotion: 10 });
+await act({ type: 'sandbox/give', charId, item: 'service_pistol', equip: true });
+await act({ type: 'sandbox/give', charId, item: 'visualizer', equip: true });
+await act({ type: 'sandbox/give', charId, item: 'standard_core', qty: 3 });
+await act({ type: 'door/pick', charId, door: 'visualization', option: 'wall' }); await act({ type: 'door/pick', charId, door: 'visualization', option: 'beast' });
+const c0 = (await G()).characters[charId];
+ok('set up: Ingenuity ' + c0.skills.ingenuity + ', Visualization ' + c0.skills.visualization + ', Faith ' + c0.skills.faith + ', Devotion ' + c0.devotion, c0.skills.ingenuity >= 7 && c0.skills.faith >= 7 && c0.devotion === 10);
+await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/auto', on: false });
+if ((await G()).phase !== 'combat') await act({ type: 'sandbox/fight' });
+await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
+await act({ type: 'sandbox/clear' });
+ok('my turn', await toMe());
+// Hidden (no foe on the map), then to the sandbags at I11 (the crate at 8,10: a Vault over it lands on 9,10)
+ok('Hidden', (await act({ type: 'combat/hide', unitId: (await me()).id })) === null && !!(await me()).hidden);
+ok('walked to H11, beside the sandbags', await walkTo('7,10'));
+await act({ type: 'combat/end-turn', unitId: (await me()).id }); await toMe();
+await check('Vault', /^Vault/, { shot: 'vault', bad: async ({ choice }) => ['7,12', '5,10', '7,8'].find((k) => !choice.includes(ref(k))) });
+await check('Decoy', /^Decoy/, { shot: 'decoy', bad: '20,20' });
+// a technique: a foe in sight; clicking yourself is refused in the engine's words
+await act({ type: 'sandbox/spawn', tier: 'soldier', weapon: 'combat_knife', at: ref('11,7'), name: 'Target' }); await settle(p, 400);
+await check('a technique (Shot)', /^Shot/, { shot: 'technique', hoverUnit: true, bad: async () => (await me()).pos });
+await check('a thrown stim', /^Throw a stim/, { shot: 'stim', hoverUnit: true });
+// the FAITH tab: a Whisper, a Hymn with an area, the Miracle
+await check('a Whisper (Health)', /^Health/, { shot: 'whisper', hoverUnit: true });
+await check('a Hymn with an area (Thunderclap, radius 2)', /^Thunderclap/, { shot: 'hymn', area: 25, bad: async ({ reach, choice }) => { const out = await p.evaluate(() => [...document.querySelectorAll('button.phc-tok')].map((b) => b.getAttribute('aria-label') || '').filter((l) => l.includes('out of sight')).map((l) => l.split(' · ')[0])); return out[0] ? keyOf(out[0]) : null; } });
+await check('the Miracle (The Sky Answers, 5×5)', /The Sky Answers/, { shot: 'miracle', area: 25 });
+// Figments: Picture, then a Beast's Move
+await check('Picture', /^Picture/, { shot: 'picture', bad: '25,25' });
+{ const u = await me(), [x, y] = u.pos.split(',').map(Number); let made = null;
+  for (const k of [(x + 1) + ',' + y, x + ',' + (y + 1), (x - 1) + ',' + y]) if (!(await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'beast', tile: k }))) { made = k; break; }
+  ok('a Beast pictured at ' + (made && ref(made)), !!made); await settle(p, 600); }
+await check('a Figment\'s Move', /: Move/, { shot: 'figment-move', bad: '12,2' });
+// Douse: to C2 (the lamp at M4 is 2 tiles off through the blockhouse wall)
+await act({ type: 'combat/end-turn', unitId: (await me()).id }); await toMe();
+ok('walked to M2, two tiles from the lamp', await walkTo('12,1'));
+await check('Douse', /^Douse/, { shot: 'douse', bad: '13,0' });
+await browser.close();

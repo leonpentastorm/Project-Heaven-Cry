@@ -11,6 +11,7 @@
 // legality check or a target list: a step's choices and the verdict are the engine's. A system whose actions are
 // descriptors needs NO code here (docs/design/handoffs/client-boundary-3-actions.md, "How to add an action").
 import { previewDescriptor, actionsFor, stepOn, type ActionDescriptor, type DescriptorPreview, type PickStep, type Picks } from '@engine';
+import type { PickMarks } from './pickOverlay';
 
 /** The descriptor previews that run on this flow. A system not listed keeps its own screen code (Sigils and Outbursts:
  *  the glyph keyboard and the HEART panel; a Move's hover route), until it moves here. */
@@ -44,8 +45,14 @@ export interface FlowView {
   sel: { name: string; text: string; extra: string };
   /** The option steps as chips under the action (Order's things, a technique's line and its options). */
   chips: FlowChip[];
-  /** Units to ring (a prayer's picks) and the preview's area and targets (a technique, a perk). */
+  /** Units to ring (a prayer's picks) and the preview's area and the units it touches (every kind: rules 1.65). */
   ring: Set<string>; area: string[]; targets: string[];
+  /** Rules 1.65 (the picking contract): the engine's marks by kind, for the one overlay (game/pickOverlay.ts): the
+   *  reach, the open pick's choices (tiles and units), the area and whom it touches with their words. */
+  marks: PickMarks;
+  /** The engine's preview of the open pick aimed at this tile or unit (the pointer over it): what it would cover and
+   *  touch, and the hover line (null: not a choice of the open pick, or nothing open). */
+  hoverAt: (k: string, unitId: string | null) => { area: string[]; targets: PickMarks['targets']; line: string; ok: boolean } | null;
   /** The tiles it reaches from the unit (a Call's range; a technique's red area, by range band), to shade. */
   reach: Map<string, number>;
   /** The engine's preview of the same picks against another unit (the hover chip over a unit). */
@@ -122,25 +129,33 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
       chips.push({ key: st.key + '-' + (o.id || 'plain'), label: o.label, title: (o.text || o.label) + (o.why ? ' · ' + o.why : ''), on, off: !!o.why, pick: { picks: { ...own, __id: d.id, [st.key]: next }, ...(st.key === 'opt' && d.preview === 'call' ? { tile: null } : {}) } });
     }
   }
-  const ring = new Set<string>(), area: string[] = [], targets: string[] = [];
+  const ring = new Set<string>();
   if (d.preview === 'prayer') for (const k of ['targetId', 'targetId2']) if (picks[k]) ring.add(picks[k]);
-  if (d.preview === 'perk' || d.preview === 'technique') {
-    area.push(...pv.marks.tiles.filter((t) => t.kind === 'area').map((t) => t.tile));
-    const ids = pv.marks.units.map((m) => m.id);
-    if (d.preview === 'perk' || ids.length > 1 || area.length) targets.push(...ids); // one target: the target card names it
-  }
+  // rules 1.65: the marks by kind, for every preview kind alike (no gate by system)
+  const byKind = (p: DescriptorPreview | null) => {
+    const ts = p ? p.marks.tiles : [], us = p ? p.marks.units : [];
+    const area = ts.filter((t) => t.kind === 'area').map((t) => t.tile), touched = us.filter((m) => m.tone !== 'choice');
+    // one target of an attack or a technique: the target card names it (its pips stay readable)
+    const targets = (d.preview === 'technique' || d.preview === 'attack') && touched.length <= 1 && !area.length && !touched.some((m) => m.tag && !/%/.test(m.tag)) ? [] : touched.map((m) => ({ id: m.id, tag: m.tag, tone: m.tone }));
+    return { area, targets, choice: new Set(ts.filter((t) => t.kind === 'choice').map((t) => t.tile)), choiceUnits: new Set(us.filter((m) => m.tone === 'choice').map((m) => m.id)) };
+  };
+  const bk = byKind(pv), area = bk.area, targets = bk.targets.map((m) => m.id);
   const action = pv.ok && !pv.ask ? pv.action : null;
+  // the open step's choices are the preview's marks (the engine's, through the reducer's own test: rules 1.65), else
+  // the step's own list
+  const tileOk = (st: PickStep, k: string) => (bk.choice.size ? bk.choice.has(k) : !st.choices || st.choices.includes(k));
+  const unitOk = (st: PickStep, id: string) => (bk.choiceUnits.size ? bk.choiceUnits.has(id) : !st.choices || st.choices.includes(id));
   const click = (u: { id: string; side: string } | null, k: string): Record<string, any> | null => {
     const steps = d.picks.filter((st) => stepOn(st, picks));
     if (u && u.id) {
-      const fits = steps.filter((st) => UNIT_KINDS.includes(st.kind) && (!st.choices || st.choices.includes(u.id)));
+      const fits = steps.filter((st) => UNIT_KINDS.includes(st.kind) && unitOk(st, u.id));
       if (!fits.length) {
-        const t = steps.find((st) => st.kind === 'tile' && (!st.choices || st.choices.includes(k))); if (t) return { tile: S.tile === k && t.optional ? null : k };
+        const t = steps.find((st) => st.kind === 'tile' && tileOk(st, k)); if (t) return { tile: S.tile === k && t.optional ? null : k };
         // 0.28.3 (Leon: "bond cannot select enemies"): while a unit pick is open, a click on a unit is ALWAYS that pick. One
         // that is not among its choices is refused in the engine's words for that unit (reachWhy: out of range, not in
         // sight, cannot be Bonded), and the action stays picked: it never falls through to the screen's plain attack.
         const us = steps.find((st) => UNIT_KINDS.includes(st.kind));
-        if (!us) return null;
+        if (!us) { const open = steps.find((st) => st.kind === 'tile' && !st.optional && (bk.choice.size || st.choices)); if (!open) return null; const pv3 = peekWith({ [open.key]: k }); return { refused: (pv3 && !pv3.ok && pv3.why) || open.prompt }; }
         const pv2 = peekWith({ [us.key]: u.id }), name = (cb.units.find((x: any) => x.id === u.id) || {}).name || '';
         return { refused: (name ? name + ': ' : '') + ((pv2 && !pv2.ok && pv2.why) || us.prompt) };
       }
@@ -149,13 +164,28 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
       if (two) { const now = [S.target, S.target2].filter((x) => x && x !== u.id && (!two.choices || two.choices.includes(x))); const sel = [S.target, S.target2].includes(u.id) ? now : [...now, u.id].slice(-2); return { target: sel[0] || null, target2: sel[1] || null }; }
       return { target: u.id, readTile: null };
     }
-    const tile = steps.find((st) => st.kind === 'tile' && (!st.choices || st.choices.includes(k)));
-    if (!tile) return null;
+    const tile = steps.find((st) => st.kind === 'tile' && tileOk(st, k));
+    if (!tile) {
+      // rules 1.65: a tile the open (required) tile pick can't take is refused in the engine's words, never picked
+      const open = steps.find((st) => st.kind === 'tile' && !st.optional && (bk.choice.size || st.choices));
+      if (!open) return null;
+      const pv2 = peekWith({ [open.key]: k });
+      return { refused: (pv2 && !pv2.ok && pv2.why) || open.prompt };
+    }
     return { tile: S.tile === k && tile.optional ? null : k };
   };
   const reach = new Map(pv.marks.tiles.filter((t) => t.kind === 'reach').map((t) => [t.tile, t.band || 0] as [string, number]));
   const peekWith = (more: Picks) => { const pk = { ...picks, ...more }; return cached(g, 'pv|' + cur.id + '|' + me + '|' + d.id + '|' + JSON.stringify(pk), () => { try { return previewDescriptor(g, cur.id, d.id, pk, me); } catch { return null; } }); };
+  // the hovered aim: the open step's key (a tile step for a tile, a unit step for a unit), asked of the engine
+  const hoverAt = (k: string, unitId: string | null) => {
+    const steps = d.picks.filter((st) => stepOn(st, picks));
+    const st = unitId && bk.choiceUnits.has(unitId) ? steps.find((x) => UNIT_KINDS.includes(x.kind)) : bk.choice.has(k) ? steps.find((x) => x.kind === 'tile') : null;
+    if (!st) return null;
+    const pv2 = peekWith({ [st.key]: unitId && UNIT_KINDS.includes(st.kind) ? unitId : k }); if (!pv2) return null;
+    const b2 = byKind(pv2), words = pv2.lines.filter((l) => l.k === 'odds' || l.k === 'note').map((l) => l.text);
+    return { area: b2.area, targets: b2.targets, ok: pv2.ok || !!pv2.ask, line: pv2.ok || pv2.ask ? words.slice(0, 2).join(' · ') : '✕ ' + (pv2.why || 'Not now.') };
+  };
   const peek = (unitId: string) => { const pk = { ...picks, targetId: unitId }; return cached(g, 'pv|' + cur.id + '|' + me + '|' + d.id + '|' + JSON.stringify(pk), () => { try { return previewDescriptor(g, cur.id, d.id, pk, me); } catch { return null; } }); };
-  return { d, pv, picks, cost: pv.ap, reach, peek, peekWith, sel: { name: (d.preview === 'prayer' ? (d.id.startsWith('pr:miracle:') ? '✦ MIRACLE · ' : d.id.startsWith('pr:hymn:') ? 'HYMN · ' : 'WHISPER · ') : '') + d.name.replace(/^✦ /, '').replace(/ · (MIRACLE|HYMN [IV]+|BY DICE · TN \d+)$/, '') + (pv.cost ? ' · ' + (d.preview === 'call' ? pv.cost.replace(/ · (\d+ tiles?)$/, ' · within $1') : pv.cost) : ''), text, extra: more.join(' · ') }, chips, ring, area, targets, ready: !!action, action, click,
+  return { d, pv, picks, cost: pv.ap, reach, peek, peekWith, sel: { name: (d.preview === 'prayer' ? (d.id.startsWith('pr:miracle:') ? '✦ MIRACLE · ' : d.id.startsWith('pr:hymn:') ? 'HYMN · ' : 'WHISPER · ') : '') + d.name.replace(/^✦ /, '').replace(/ · (MIRACLE|HYMN [IV]+|BY DICE · TN \d+)$/, '') + (pv.cost ? ' · ' + (d.preview === 'call' ? pv.cost.replace(/ · (\d+ tiles?)$/, ' · within $1') : pv.cost) : ''), text, extra: more.join(' · ') }, chips, ring, area, targets, marks: { reach: [...reach.keys()], choice: bk.choice, choiceUnits: bk.choiceUnits, area: bk.area, targets: bk.targets }, hoverAt, ready: !!action, action, click,
     after: { tile: null, picks: null, ...(d.preview === 'prayer' ? { target: null, target2: null } : {}) } };
 }

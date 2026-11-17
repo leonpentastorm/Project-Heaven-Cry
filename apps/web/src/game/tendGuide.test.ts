@@ -30,8 +30,9 @@ describe('0.28.3: Guide on the fight screen', () => {
     const fv = withGame(g, () => flowView(g, 'host', mu, { action: ID, target: al.id }))!;
     expect(fv.ready).toBe(false);
     expect(fv.sel.text).toMatch(/Now click the tile/);
-    expect(fv.area.length).toBeGreaterThan(0);
-    const to = fv.area[0];
+    // rules 1.65 (the picking contract): the legal tiles are the open pick's choices (the engine's), outlined
+    expect(fv.marks.choice.size).toBeGreaterThan(0);
+    const to = [...fv.marks.choice][0];
     expect(fv.click(null, to)).toEqual({ tile: to });
     const fv2 = withGame(g, () => flowView(g, 'host', mu, { action: ID, target: al.id, tile: to }))!;
     expect(fv2.ready).toBe(true);

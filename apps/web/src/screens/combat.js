@@ -78,6 +78,7 @@ import { foldVals, MeterMemory, meterFolds, foldMeter, listMinPx, listMinShortPx
 import { EV_FOLDS_CHANGED } from '../game/tabPrefs';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
+import { pickTiles } from '../game/pickOverlay';
 import { resourcesOf, resView, heldOutburstOf, RES_CSS, sigilChip, sigilChipStyle } from '../game/resources';
 import { bondStripVals, reactionPipsVals } from '../game/bondStrip';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
@@ -1147,9 +1148,16 @@ export class CombatLogic extends DCLogic {
     const placed0 = placedView(pcb, 'pc'), placed = { ...placed0, tiles: mergeTiles(placed0.tiles, classMarks(cb, 'pc', { imgOf: (x) => ART(x.img) || x.img || '' })) }, evOn = S.action === 'evoke' && isMagic && mineTurn && !!evV;
     // A class move or perk that casts (Payload, Seal, Survey, Fusion, Twin Discipline, Stitch, Stored Spell…) paints its
     // engine preview on the grid too: the area, the tiles it covers, who it affects (spec 9; item 489 c).
-    const pkTiles = flow && flow.d.preview === 'perk' && (flow.area.length || flow.targets.length) ? actionPreviewTiles(cb, { tiles: flow.area, targets: flow.targets }, cur.side) : null; // (the engine's marks: only the units this side sees)
-    const tTiles = tFlow && (tFlow.area.length || tFlow.targets.length) ? actionPreviewTiles(cb, { tiles: tFlow.area, targets: tFlow.targets }, cur.side) : null; // (one target: the target card names it; its pips stay readable)
-    const sgTiles = evOn ? mergeTiles(placed.tiles, evV.tiles) : pkTiles ? mergeTiles(placed.tiles, pkTiles) : tTiles ? mergeTiles(placed.tiles, tTiles) : placed.tiles, sgDim = evOn && evV.stage !== 'stand' && evV.stage !== 'none' && evV.area.size > 0;
+    // Rules 1.65 (the picking contract, game/pickOverlay.ts): the ONE overlay of every aimed action, by the engine's marks'
+    // kinds: its reach on select, the open pick's choices, the area under the pointer (the engine's preview of that aim)
+    // or the aim picked, whom it touches with the engine's word; in the action's own ink (a door's, the patron's), under
+    // the placed effects. Sigils and Outbursts keep their own (the Evoke planner, the HEART panel); a technique's reach
+    // stays its red bands (below).
+    const hovUnit = S.hover && at[S.hover] ? at[S.hover].id : null, hovPk = flow && S.hover ? flow.hoverAt(S.hover, hovUnit) : null;
+    const pkInk = !flow ? null : flow.d.preview === 'prayer' ? FAITH_INK : flow.d.group !== 'attack' && TAB_INK[flow.d.group] ? TAB_INK[flow.d.group] : '#E7EBF3';
+    const pkOn = !!flow && !evOn && flow.d.preview !== 'sigil' && flow.d.preview !== 'outburst';
+    const pkTiles = pkOn ? pickTiles(cb, { ...flow.marks, reach: flow.d.preview === 'technique' ? [] : flow.marks.reach, area: hovPk && hovPk.area.length ? hovPk.area : flow.marks.area, targets: hovPk && hovPk.targets.length ? hovPk.targets : flow.marks.targets }, cur.side, pkInk) : null;
+    const sgTiles = evOn ? mergeTiles(placed.tiles, evV.tiles) : pkTiles ? mergeTiles(pkTiles, placed.tiles) : placed.tiles, sgDim = evOn && evV.stage !== 'stand' && evV.stage !== 'none' && evV.area.size > 0;
     const markStyle = (k, u) => {
       if (hz.on) { if (u && hz.marks.has(u.id)) return overlayRingStyle({ ...hz, ink: hz.marks.get(u.id).ink }); const st = overlayTileStyle(hz, k); if (st) return st; }
       if (u && tgtSet.has(u.id)) return 'position: absolute; inset: -1px; z-index: 1; border-radius: 4px; pointer-events: none; border: 3px solid ' + famInk + '; box-shadow: 0 0 10px ' + famInk;
@@ -1189,7 +1197,8 @@ export class CombatLogic extends DCLogic {
       if ((flow && flow.picks.tile === k && (S.action === 'cover' || S.action === 'door')) || k === pickSel || (pickPile && k === pickPile.pos)) border = '2px solid #FFFFFF';
       if (ob && kindOf(ob).door && !ob.open && !kitObj) { bg = '#3A2E1A'; }
       if (diff.has(k) && !u && !(floor && ((KL.get(k) || {}).decal || kitObj))) { bg = '#161C28'; } // (a kit's rubble says it: no dark square)
-      const aTag = u ? atkTag(k, u) : null;
+      // the hover line of the open pick (rules 1.65): the engine's preview of that aim, its words or its refusal
+      const aTag = (u ? atkTag(k, u) : null) || (pkOn && hovPk && k === S.hover && hovPk.line ? { ok: hovPk.ok, text: hovPk.line, pick: true } : null);
       // The Chaplain's patron at its side while Witnessed (rules 1.31, chaplain-spec.md section 9): the engine's presenceOf
       // says it stands; the patron's portrait, a standing figure at 40% behind the token, in the patron's accent.
       const prs = u && !u.dead && u.side === 'pc' ? presenceVals(u, g, cb) : null;
@@ -1198,8 +1207,8 @@ export class CombatLogic extends DCLogic {
       const uPhys = u ? physOf(g, cb, u, 'pc') : null, pLook = pressureLook(uPhys), mLook = momentumLook(uPhys), pLines = physLines(uPhys), wT = WMk.tiles.get(k), wChip = u ? WMk.chips.get(u.id) : null;
       const wc = WLc.cells.get(k) || {}, kb = u && u.side === 'foe' ? kindBadge(u.kind, true) : null, dr = !u ? dropAt[k] : null;
       const pileHere = pileReach.some((o) => o.pos === k);
-      const cReach = flow && flow.d.preview === 'call' && flow.reach.size ? flow.reach : null, cTile = cReach ? flow.picks.tile || null : null;
-      const planStyle = spotSet.has(k) ? (k === spotNear ? SPOT_NEAR : SPOT_TILE) : inRange || pileHere ? 'background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3' : cReach ? (cReach.has(k) ? (cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : 'background: rgba(231, 235, 243, 0.07); border: 1px dashed rgba(231, 235, 243, 0.5)') : cTile === k ? 'background: rgba(231, 235, 243, 0.3); border: 2px solid #FFFFFF' : '') : red.has(k) ? ['background: rgba(246, 81, 87, 0.2); border: 1px dashed rgba(246, 81, 87, 0.9)', 'background: rgba(246, 81, 87, 0.11); border: 1px dashed rgba(246, 81, 87, 0.55)', 'background: rgba(246, 81, 87, 0.06); border: 1px dashed rgba(246, 81, 87, 0.35)', 'background: rgba(246, 81, 87, 0.04); border: 1px dashed rgba(246, 81, 87, 0.25)'][Math.min(3, red.get(k) || 0)] : '';
+      // (a Call's reach: the one overlay's, pkTiles, since rules 1.65; the picked tile: a white edge)
+      const planStyle = spotSet.has(k) ? (k === spotNear ? SPOT_NEAR : SPOT_TILE) : inRange || pileHere ? 'background: rgba(231, 235, 243, 0.12); border: 1px dashed #E7EBF3' : pkOn && flow.picks.tile === k ? 'border: 2px solid #FFFFFF' : red.has(k) ? ['background: rgba(246, 81, 87, 0.2); border: 1px dashed rgba(246, 81, 87, 0.9)', 'background: rgba(246, 81, 87, 0.11); border: 1px dashed rgba(246, 81, 87, 0.55)', 'background: rgba(246, 81, 87, 0.06); border: 1px dashed rgba(246, 81, 87, 0.35)', 'background: rgba(246, 81, 87, 0.04); border: 1px dashed rgba(246, 81, 87, 0.25)'][Math.min(3, red.get(k) || 0)] : '';
       const isHeld = !!(u && fxHeld.has(u.id));
       // a Sigil caster's charge and Flux on its token (game/resources.ts sigilChip: its own resource rows)
       const sgc = u && !isHeld && u.side === 'pc' && u.mg && u.charId && g.characters[u.charId] ? sigilChip(resourcesOf(u, g.characters[u.charId], g)) : null;
@@ -1232,7 +1241,7 @@ export class CombatLogic extends DCLogic {
           const right = (vW - 1 - vxOf(x)) * 48 + 23 + 6, left = vxOf(x) * 48 + 23 + 22, dx = Math.round(Math.max(0, half - left) - Math.max(0, half - right));
           return 'position: absolute; left: 50%; ' + (vyOf(y) === 0 ? 'top: calc(100% - 6px)' : 'bottom: calc(100% - 10px)') + '; transform: translateX(calc(-50% + ' + dx + 'px)); z-index: 30; padding: 2px 6px; border-radius: 6px; font-size: 13px; font-weight: 700; pointer-events: none; '
             + (wrap ? 'white-space: normal; width: max-content; max-width: 230px; text-align: center; line-height: 1.25; ' : 'white-space: nowrap; '); })()
-          + (aTag ? (aTag.ok ? 'background: #F65157; color: #0A0D13' : 'background: #1C2536; color: #F65157; border: 1px solid #F65157') : 'background: #FFFFFF; color: #0A0D13'),
+          + (aTag ? (aTag.ok ? (aTag.pick ? 'background: #FFFFFF; color: #0A0D13; border: 1px solid ' + (pkInk || '#FFFFFF') : 'background: #F65157; color: #0A0D13') : 'background: #1C2536; color: #F65157; border: 1px solid #F65157') : 'background: #FFFFFF; color: #0A0D13'),
         hasPlan: !!planStyle, planStyle: 'position: absolute; inset: 0; z-index: 1; border-radius: 4px; pointer-events: none; box-sizing: border-box; ' + planStyle,
         hasRing: !!isCur && !cb.over && !isHeld, ringCls: mineTurn ? 'phc-cur-ring' : '', ringStyle: 'position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; z-index: 3; pointer-events: none; box-sizing: border-box; border-radius: ' + (u && u.side === 'pc' ? '50%' : '6px') + '; border: 2px solid ' + (mineTurn ? '#FFFFFF' : u ? ring(u) : '#FFFFFF'),
         hasTgtRing: !!(u && redOn && u.id !== cur.id && red.has(k) && !u.downed) && !isHeld, tgtRingStyle: 'position: absolute; inset: 1px; z-index: 3; pointer-events: none; box-sizing: border-box; border-radius: 4px; border: 2px solid #F65157; box-shadow: 0 0 10px rgba(246, 81, 87, 0.6)',
@@ -1352,7 +1361,7 @@ export class CombatLogic extends DCLogic {
     const sel = { name: isMove ? actName + ' · ' + (hv ? moveAp + ' AP for ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') : '1 AP per ' + mv + (mv === 1 ? ' tile' : ' tiles')) : flow ? flow.sel.name : actName,
       text: !mineTurn ? (cb.over ? 'The fight is over.' : cur && cur.side === 'foe' ? cur.name + ' is acting…' : cur ? 'Waiting for ' + (playerOf(owner(cur))?.name || 'a player') + ' (' + cur.name + ').' : '') : isMove ? (MO && MO.why ? MO.why : 'Hover a highlighted tile to see the path and its AP cost; click to move.')
         : flow ? flow.sel.text : S.action === 'analyze' && readSel ? readText : S.action === 'pickup' ? '' : 'Click a hostile to target it.',
-      hasPick: false, pickFields: [], extra: flow ? flow.sel.extra : mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };
+      hasPick: false, pickFields: [], extra: flow ? (S.pickWhy && S.pickWhy.id === S.action ? '✕ ' + S.pickWhy.text + (flow.sel.extra ? ' · ' + flow.sel.extra : '') : flow.sel.extra) : mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };
     // Rules 1.9: the two reloads, the pick-up checklist and the path's hazards, in words (the costs are the engine's).
     sel.hasPile = false; sel.pileRows = [];
     if (mineTurn) {
@@ -1924,7 +1933,8 @@ export class CombatLogic extends DCLogic {
     if (S.action === 'analyze' && !(u && u.side === 'foe') && this._readHere && this._readHere(k).length) return this.setState({ readTile: k, target: null });
     // The flow (game/actionFlow.ts): the click is the descriptor's next pick (a unit, a tile), if it is one of its choices.
     // A unit the open pick can't take is refused in the engine's words; the action stays picked (never an attack instead).
-    if (this._flow && cur) { const patch = this._flow.click(u ? { id: u.id, side: u.side } : null, k); if (patch) return patch.refused ? toast('✕ ' + patch.refused) : this.setState(patch); }
+    // Rules 1.65: the refusal is a line by the action box (S.pickWhy, for this action), never a silent no-op.
+    if (this._flow && cur) { const patch = this._flow.click(u ? { id: u.id, side: u.side } : null, k); if (patch) return patch.refused ? this.setState({ pickWhy: { id: S.action, text: patch.refused } }) : this.setState({ ...patch, pickWhy: null }); }
     // With a pad open, a foe clicked is the target the technique will take (the pad stays open).
     if (padOf(S.action) && u && u.side === 'foe') return this.setState({ target: u.id });
     if (u && u.side === 'foe') { const a = [...ATTACK_MODES, 'shove', 'analyze', 'skill', 'paired'].includes(S.action) ? S.action : plainAction(cur); this.setState({ target: u.id, readTile: null, action: a, ...this.tabFor(a) }); return; }
