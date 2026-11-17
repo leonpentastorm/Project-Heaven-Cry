@@ -439,19 +439,29 @@ function mostHurt(h: Holder): Character | null {
 }
 /** Triage out of a fight: the move's own amount block (heal: tend profile, the giver's sheet and level) × rest_mult. */
 const triageStoryHeal = (h: Holder) => amountOf(amountSpecOf('class:medic.triage', 'heal'), null, { who: h.c || null, level: h.c?.level ?? null, mults: [term(num(h, 'rest_mult'), 'time to work')] }).raw;
+/** Rules 1.64 item 5001: in a Survival run Triage's story heal is once a stage map for each Mender (numbers.run_per_stage),
+ * counted by the one counter door (uses) in the per_campaign scope (never fresh: the run enters a new scene at every
+ * node and every stage, so a per_scene cell would come back at each stop) under a key that carries the run's seed and
+ * its stage: the next stage's key is a fresh cell, and a new run with the same character starts clean. Null: not in a run.
+ * (A true per-stage scope is listed as a need, item 5001.) */
+const runStage = (h: Holder): number | null => { const r = (h.g as any)?.run; return r && r.state !== 'over' ? r.stage : null; };
+const runTriageKey = (h: Holder) => h.key + '#run' + (h.g as any)?.run?.seed + '#stage' + runStage(h);
+const runTriageLeft = (h: Holder) => (runStage(h) == null ? Infinity : uses(h).left('per_campaign', num(h, 'run_per_stage'), runTriageKey(h)));
+const RUN_TRIAGE_SPENT = 'Spent on this stage map. It comes back on the next stage.';
 function storyHeal(h: Holder, t: Character, n: number): number { const was = t.hp; t.hp = Math.min(maxHp(t), t.hp + Math.floor(n)); return t.hp - was; }
 register({
   id: 'medic.triage', dataActions: true, // claims nothing: the data's ops are the engine's (only the story half is this lane's)
   actions: [
     {
-      id: 'triage_story', label: 'Triage', scope: ['story'], target: 'none', ap: 0,
-      get text() { return 'Out of a fight, with time to work: patch up an ally. Name the ally in what you say, or it goes to whoever is most hurt. Once per ally each scene.'; },
-      available: (h) => (mostHurt(h) ? true : 'Nobody is hurt.'),
+      id: 'triage_story', label: 'Triage', scope: ['story', 'run'], target: 'none', ap: 0,
+      get text() { return 'Out of a fight, with time to work: patch up an ally. Name the ally in what you say, or it goes to whoever is most hurt. Once per ally each scene; in a Survival run, ' + num({ key: 'class:medic.triage' }, 'run_per_stage') + ' a stage map for each Mender.'; },
+      available: (h) => (runTriageLeft(h) <= 0 ? RUN_TRIAGE_SPENT : mostHurt(h) ? true : 'Nobody is hurt.'),
       run: (h, args) => {
         const t = charNamed(h, args) || mostHurt(h); if (!t) return 'Nobody is hurt.';
         if (t.id === h.c?.id) return 'Triage an ally, not yourself.';
         if (t.hp <= 0) return t.name + ' is Downed. Use a stim on them, or the Narrator decides the treatment.';
-        if (!uses(h).take('per_scene', 1, h.key + '#' + t.id)) return t.name + ' was already treated this scene.';
+        if (runStage(h) != null) { if (!uses(h).take('per_campaign', num(h, 'run_per_stage'), runTriageKey(h))) return RUN_TRIAGE_SPENT; } // rules 1.64 item 5001
+        else if (!uses(h).take('per_scene', 1, h.key + '#' + t.id)) return t.name + ' was already treated this scene.';
         const n = storyHeal(h, t, triageStoryHeal(h)); postStory(h, h.c!.name + ' triages ' + t.name + ': +' + n + ' HP (' + t.hp + '/' + maxHp(t) + ').');
       },
     },

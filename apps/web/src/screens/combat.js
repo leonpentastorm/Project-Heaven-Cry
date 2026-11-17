@@ -10,7 +10,7 @@ import { MANA_SHOCK, WEAPON, musicTraitOf, songOf, active, paths, previewAttack,
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
-  attemptWhy, narratorOff, previewAction, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, shieldsView, survivalRun } from '@engine';
+  attemptWhy, narratorOff, previewAction, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, shieldsView, survivalRun, APPROACH } from '@engine';
 import { shieldStrip, shieldBlock, hpShieldBar } from '../game/shieldLook';
 import { patronPortrait, patronMarkUri, accentOf } from '../game/faithArt';
 import { act as actNow, getState, go, toast, homeScreen } from '../game/store';
@@ -1819,7 +1819,7 @@ export class CombatLogic extends DCLogic {
             style: 'min-height: 30px; padding: 0 10px; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; white-space: nowrap; ' + (a.off ? 'border: 1px solid #232D3F; background: transparent; color: #5B6577; cursor: default' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; cursor: pointer') })) })) })) : [] };
     const T = {
       tabs, tabPanel, tabsCog: () => openSettings('tabs'), showWho: !mePanel, lock, lockMsg, vow: vowV, bp,
-      mine: mineTurn, waiting: !mineTurn, wait, ytWord: 'YOUR TURN', ytInk: curInk, ytSub: (fv && fv.roundText ? fv.roundText.toUpperCase() : 'ROUND ' + cb.round) + ' · ' + ap + ' AP', // rules 1.62 item 4906: on the field, its round of its rounds
+      mine: mineTurn, waiting: !mineTurn, wait, ytWord: 'YOUR TURN', ytInk: curInk, ytSub: (cb.approach ? APPROACH.line.toUpperCase() : fv && fv.roundText ? fv.roundText.toUpperCase() : 'ROUND ' + cb.round) + ' · ' + ap + ' AP', // rules 1.62 item 4906: on the field, its round of its rounds
       // 0.31.1: the ACTION POINTS row is back under the strip (Leon: the strip's dots were barely seeable), one segment per max AP
       apGrid: 'flex: 1 1 auto; min-width: 60px; display: grid; grid-template-columns: repeat(' + Math.max(1, maxAp) + ', minmax(0, 1fr)); gap: 4px', apMax: maxAp, apNow: ap,
       ytStyle: 'flex: none; position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; margin: 0 6px; padding: 9px 18px; background: #FFFFFF; color: #0A0D13; box-shadow: -6px 0 0 ' + curInk + ', 0 6px 18px rgba(0, 0, 0, 0.45)',

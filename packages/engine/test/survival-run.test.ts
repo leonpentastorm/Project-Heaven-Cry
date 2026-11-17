@@ -209,7 +209,9 @@ describe('Survival, one stage (rules 1.41)', () => {
     // clears the stage: PHC-0007 (eight fights, to the boon, no errors). The guard plays a stage to its boon again.
     // PHC-0003 since the 0.31 merge (the hotfix, the field as turns, Pressure is Dexterity's and the cover pass together):
     // a seed scan of PHC-0001 to PHC-0020 on the merged build: 0002, 0003 and 0019 reach the boon; 0003 plays eight fights.
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0003', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0003', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
+    // PHC-0002 since rules 1.64 (0.31.2: the sabre's refit and a fight not yet joined, item 5008): PHC-0003 now loses its
+    // eighth fight; a seed scan of PHC-0001 to PHC-0020: 0002 and 0019 reach the boon; 0002 plays six fights.
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0002', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0002', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
     const a = play(), b = play(), c = play([40]);
     expect(a.errors).toEqual([]);
     expect(a.done()).toEqual(b.done());

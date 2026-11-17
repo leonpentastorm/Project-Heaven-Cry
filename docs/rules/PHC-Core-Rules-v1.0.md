@@ -626,7 +626,7 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 | Recurve bow | Bow | 20 + 5 × Raw Power | 14 | quiver of 40 | none | single | 1.5 kg |
 | Crossbow | Bow | 55 | 16 | 1 | none | single | 4 kg |
 | Combat knife | Light melee | 15 (thrown: 6 tiles) | 1 | none | none | none | 0.5 kg |
-| Sabre | Light melee | 28 | 1 | none | none | none | 1.5 kg |
+| Sabre | Light melee | 20 | 1 | none | none | none | 1.5 kg |
 | Ork machete | Heavy melee | 35 | 1 | none | none | none | 3 kg |
 | Maul | Heavy melee | 45 | 1 | none | none | none | 7 kg |
 | Lance | Heavy melee, polearm | 32 | 2 | none | none | none | 3 kg |
@@ -843,10 +843,10 @@ Weapon skills and lore:
 | ✓ Combat knife | 15 | 0.5 | 60 | thrown 6 tiles *(rules 1.12: every thrown weapon reaches your Throwing range, 6 + 0.5 × Dexterity; the per-weapon tiles here and on the next two rows are not used)* |
 | Throwing knives (set of 4) | 12 | 0.8 | 80 | thrown 6 tiles |
 | Hatchet | 22 | 1 | 120 | thrown 5 tiles |
-| Legion gladius | 26 | 1.3 | 300 | |
-| ✓ Sabre | 28 | 1.5 | 400 | |
+| Legion gladius | 19 | 1.3 | 300 | |
+| ✓ Sabre | 20 | 1.5 | 400 | |
 | Kemizuchi duelling blade | 24, +1 accuracy | 1.2 | 550 | |
-| Katana (rules 1.32) | 28 | 1.4 | 500 | lends Draw Cut; PROVISIONAL (items 1950 to 1952) |
+| Katana (rules 1.32) | 20 | 1.4 | 500 | lends Draw Cut; PROVISIONAL (items 1950 to 1952) |
 | Afterword (rules 1.58) | 15 | 0.4 | 700 | follows in the off hand (5e): its follow ×0.25 and Bleeding once a turn; rolls in shop gear and weapon picks from the 700 band; PROVISIONAL (item 4534) |
 
 - **Combat knife · Finish It:** +50% damage against a target that is Dazed, Stunned, Bleeding or Downed. *"Every kit has one. Every story ends with one."*
@@ -10246,7 +10246,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2136. **Scrap Turret (rules 1.34; `trickster.scrap_turret`; was Jury-Rig):** 3 AP, once a scene, one at a time; `figments.json turret` 40 HP, Defense 10, armour 5; 3 rounds; d20 + Improvisation modifier; the weapon profile at the owner's level. PROVISIONAL. *(Superseded by rules 1.60 item 4633.)*
 2137. **Leave the Rigger (rules 1.34):** Silver Tongue, Blind and Slow, Rewrite (shelved in the move pool); Read to the Operative. PROVISIONAL.
 2140. **The figments ceiling (rules 1.34; `rules.json balance.ceilings.figments`):** the Rigger all in 150, the door all in 130, door normal 104, Rigger normal 120 (Leon's budget reading). PROVISIONAL.
-2200. **The katana's family and damage (rules 1.35):** a light blade (Dexterity, 2 AP), 28 damage, the sabre's. Lead's numbers, Leon to confirm. PROVISIONAL.
+2200. **The katana's family and damage (rules 1.35):** a light blade (Dexterity, 2 AP), 28 damage, the sabre's. *(Superseded by item 5007: 23, with the sabre.)* Lead's numbers, Leon to confirm. PROVISIONAL.
 2201. **The katana's weight and price (rules 1.35):** 1.4 kg, 500 credits; durability 250, mod slots edge and grip, no requirement. Lead's numbers, Leon to confirm. PROVISIONAL.
 2202. **The katana lends Draw Cut (rules 1.35):** its `phys.teaches`; no weapon skill of its own; in no loot table (as the sabre). Lead's numbers, Leon to confirm. PROVISIONAL.
 2203. **The katana's rarity (rules 1.35):** as every weapon: none in data; a found or bought one rolls a rarity as any weapon does. PROVISIONAL.
@@ -11833,6 +11833,149 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
     the lead:** a refit ticket for the sabre and the gladius in Dexterity hands (and a ruling on the reading).
 4822. **Moved on purpose (review):** see `CHANGELOG.md` 0.31.0 "Review fixes" for the golden and replay lines the
     throw's skill and the Boss rule moved.
+
+### Rules 1.64 (0.31.2), the known faults of 0.31.0
+
+5000. **Field Surgeon's Patch in a Survival run (Leon, 16 Nov: "keep field surgeon, increase the price of the part"):**
+    the out-of-fight Patch (`perks/e.ts field_surgeon`, action `patch`) carries the `run` scope (rules 1.61 addendum item
+    4761), so it works on the path map, at a shop or a rest, for one spare-parts charge as in a story. The charge's
+    price `items.json spare_parts.price_credits` **60** (was **16**): every repair that spends a charge (Field Repair on
+    your own weapon) is dearer with it. PROVISIONAL.
+5001. **Triage's story heal in a Survival run (Leon: "triage is one per whole map of survival"):** the Mender's story
+    Triage (`classes/i.ts medic.triage`, action `triage_story`) carries the `run` scope; in a run it is
+    `classes.json medic.triage numbers.run_per_stage` **1** use a stage map **for each Mender** (any ally; in a story it
+    stays once an ally a scene). No uses scope is keyed to the run's stage, and a run enters a new scene at every node
+    and every stage (`runEnter`, `runTile`), so a `per_scene` count would come back at each stop: the count is kept in
+    the never-fresh `per_campaign` scope under a key that carries the run's seed and its stage
+    (`uses(h).take('per_campaign', n, key + '#run' + seed + '#stage' + stage)`), so it is fresh on the next stage's map
+    and in a new run, and nowhere else. The sheet's button reads "Spent on this stage map". A `per_stage` scope is
+    listed for the lead (item 5010). PROVISIONAL.
+5002. **Measured (items 5000, 5001):** `survival-run.ts` between stops, with `SIM_STORY_HEAL=1`, a member that has the
+    story Triage or the Patch uses it on the most hurt squadmate under 70% of max HP. The party-fit cell `mix_trio`
+    (Breaker, Skirmisher, Mender, all in, level 1), seeds PHC-0001 to PHC-0020: stage 1 cleared 19 of 20 with and
+    without; over three stages, 51 stages cleared without, 47 with (123 Triages used): within the seeds' noise. **That
+    count was wrong** (review): it was taken with the per_scene key, which came back at every stop (more than the 60
+    a single Mender can have in 20 seeds x 3 stages). Measured again with the per_campaign key (item 5001, and items
+    5007 and 5011 in): stage 1 cleared 18 of 20 with and without; over three stages 48 stages cleared without, 43
+    with, **47 Triages** used (at most 3 a seed), none refused: still no gain from it, within the seeds' noise. The
+    Patch was not measured in a run (Field Surgeon is an Achieved perk no simulated member holds).
+5003. **Relic properties for every weapon (Leon, 16 Nov: "all weapon should have those"):** the Relic step's `melee`
+    fit (`run/power.ts`, the `fits` word of `survival.json relic_props` True, Biting and Balanced) now takes the
+    unarmed family's items (knuckledusters, hand wraps, striking gloves, iron mitts, the strikers, the servo fist);
+    bare fists (weapon type `fists`, no item) and a companion's or a Figment's own weapon (`companion_only`) stay out.
+    When no property fits a weapon at all, the Forge says so ("No Relic property fits the X: it can go no higher than
+    Masterwork") instead of "too little boon room". No number.
+5004. **The walk of every weapon category (item 5003):** pistols, revolvers, SMGs, rifles, heavy guns and magazine
+    bows take Keen, True and Quick (a gun loaded round by round, a bow: Keen and True); light and heavy melee, the
+    unarmed items, shields, the Evoker blade and the gauntlets take True, Biting and Balanced; every focus (Evokers,
+    Emanators, Attuners, Visualizers, the Spellslinger, the grand staff) takes Deep and Gentle (a mana arm also its
+    gun or melee words). **None fits:** the six thrown items (grenades, satchel charge, the bot scrambler), which the
+    grade step already refuses ("Thrown weapons can't be upgraded"): a thrown property is a new design, listed for
+    the lead.
+5005. **A Pressed Boss and the blade's Flush Out (K3; checked, no change):** rules 1.63 item 4819 already holds:
+    `skills.json dexterity` row `flush_out_blade` carries `target_not_tier: ["elite", "boss"]`, so a Dexterity blow
+    on a Pressed Elite or Boss asks no save and gives no Fear; `test/rules163-dex.test.ts` proves it through a real
+    cut (a Soldier is Afraid on a failed save; an Elite and a Boss are not asked). A Boss can still be made Afraid
+    only by the paid Flush Out (the ranged half, item 4805), which costs AP and keeps its own limits. No new number.
+5006. **Rite in the Field cuts Name It (the lead's approved primitive):** a new price predicate **`action_id`**
+    (`effects/triggers.ts`, its row in `effect_ops.json` predicates): the priced action's own id is one of these
+    words, for any priced action that passes its id on its price's context (a Call does: `calls/core.ts callAp` prices
+    the site `call` with `{ id }`). `perks.json rite_in_the_field` adds a `cost_mod` row on `action: ["call"]`,
+    `action_id: ["call.name_it"]`: Lore Master's own Call costs **1** AP less at Tier I and **2** at Tier II, never
+    below **0** (at Lore Master 3 to 4, 2 AP becomes 1 or 0). Proof: `test/perks-d.test.ts` (the Call made through the
+    reducer: 2, 1 and 0 AP; Spot unchanged). Supersedes item 4814. PROVISIONAL: 1, 2, 0.
+5007. **The sabre and the gladius in Dexterity hands (K2; rules 1.63 items 4812, 4821's refit ticket):** `weapons.json`
+    `sabre.damage` **20** (was **28**; 23 in the first pass), `legion_gladius.damage` **19** (was **26**; 22 in the
+    first pass), `katana.damage` **20** (was **28**; it follows the sabre, below). All three rows carry `provisional`
+    (the gladius and the katana already did). PROVISIONAL. **Second pass (review):** at 23 / 22 the measure that
+    found the fault, `melee-measure`'s Dexterity twin of the optimised blade build (Masterwork, all in), still read
+    sabre 152 / 160 / 200, gladius 160 / 158 / 194, katana 163 / 148 / 206 at levels 1 / 5 / 10 (N 12). What grows to
+    level 10 there is not the weapon row or the shared melee profile: the same sabre on the All-in Deadeye sheet
+    (`dex-melee-measure`) is flat with level (142 / 144 / 140 with both perks at 20), so the rise is the twin's own kit
+    (twelve readied melee techniques and its perks, Masterwork), which the plain rifle does not have; the smallest data
+    step is on the rows. After (20 / 19 / 20): `melee-measure` all in, sabre 130 / 136 / **173**, gladius 135 / 135 /
+    **165**, katana 139 / 126 / **177** (normal share 83 / 99 / 124, 85 / 104 / 140, 97 / 108 / 144); knife 113 / 116 /
+    124 and striking gloves 98 / 124 / 142 unchanged. `dex-melee-measure` (DEX_N 20), sabre no perks 127 / 133 / 142,
+    both alpha perks 142 / 144 / **140**, forks 133 / 140 / **153**; gladius 113 / 110 / 117, perks 124 / 126 / 130,
+    forks 121 / 124 / 132; knife (perks 95 / 95 / 107, forks 96 / 105 / 111) and monk unchanged. Every Dexterity blade
+    is now at or under about 175% at level 10 on both measures. The first pass's numbers follow. **Why they were over
+    the line:** a light blade swings for 2 AP, so the all-in build lands about 2.6 blows a turn (a heavy blade at 3 AP:
+    1.3), and the two rows carried a heavy blade's damage (28 at 2 AP is 14 a point of AP; the Ork machete 35 at 3 AP
+    is 11.7; the knife 15 at 2 AP is 7.5); the melee profile and the Agility term are the same for every blade, so
+    nothing shared stacks: the excess was the rows' own damage, with the Dexterity build's 85 to 95% to hit on top. The
+    knife, the gloves, the shared melee profile and every other row are untouched. Measured (percent of the plain
+    rifle, levels 1 / 5 / 10, 20 fights a cell, before -> after):
+    - `dex-melee-measure` (the All-in Deadeye sheet, Dexterity 7): sabre, no perks 183 / 191 / 204 -> 148 / 154 / 165;
+      both alpha perks 206 / 208 / 201 -> **166 / 169 / 162**; with the forks -> 156 / 164 / 178. Gladius, no perks 160
+      / 156 / 166 -> 133 / 129 / 138; both perks 175 / 177 / 184 -> **147 / 147 / 153**; the forks -> 143 / 144 / 155.
+      The knife (both perks 95 / 95 / 107) and the striking gloves (90 / 117 / 122) did not move.
+    - `melee-measure` (the optimised blade build's Dexterity twin, Masterwork): sabre 199 / 198 / 246 -> 161 / 160 /
+      200; gladius 185 / 190 / 227 -> 156 / 158 / 189; knife 115 / 112 / 120 and gloves 98 / 121 / 146 unchanged.
+    The katana is "the sabre's damage" by rules 1.35 (item 2200; `katana.test.ts` holds it inside the family and
+    nearest the sabre), so `katana.damage` **23** (was **28**) with it (before: 198 / 185 / 251 in `melee-measure`).
+    **For the lead:** that twin still rises past the line at level 10 (the rifle's own level 10 is the pin), and the
+    Kemizuchi duelling blade (24: 170 / 189 / 208) and the strikers (130 / 157 / 181) were not asked for and are left. The test squad's tank carries a
+    sabre (balance builds), so its numbers move with it.
+    **Moved on purpose (both passes):** the golden damage tables (GOLDEN_RECORD: weapons, builds normal and all-in, techniques,
+    special, enemies, the costs pad, conditions.log; the second pass also the rules tables and their logs, costs-weapons
+    and costs-special.marks), `old-save.test.ts`'s seeded fight (it now ends within 14 rounds, was 12: the sabre
+    carriers hit softer) and 18 of the 29 replays (REPLAY_RECORD; the balance tank and the
+    blade builds carry a sabre): cover-4v6-guns-blades, open-4v7-magic-boss, proving-waves, story-fight-story,
+    proving-doors-hiding-watches, open-4v6-blades-walk-away, open-4v6-guns-blades, cover-4v7-magic-boss,
+    cover-4v7-level20-allin, cover-4v6-level3, open-4v3-level3, proving-4v12-guns, proving-4v12-magic,
+    proving-waves-long, proving-waves-low, story-fight-story-magic, proving-doors-hiding-watches-wave6,
+    cover-4v7-blades-walk-away.
+5008. **A fight not yet joined (K1; Leon: "you run into an enemy in the fog, combat start and you stood there like an
+    idiot with zero AP, giving them a full turn"; the lead's approved primitive; supersedes item 4908 and item 4902's
+    "every step costs AP"):** a Survival fight that opens with no foe seeing any character (`combat.ts openApproach`,
+    called by `game.ts runFight`) carries `Combat.approach` `{ passes }`. Until contact: the actions named in
+    `rules.json combat.approach.free` (**move, sprint**) cost no AP (`effects/cost.ts price`, the one price site); no
+    round passes (`endTurn` counts a pass of the order instead) and nothing that lasts ticks (`beginTurn` only sets the
+    turn's AP; `turn_end` and `closeTurn` do not run; a unit's eyes still look for the Hidden); no foe acts but a Hidden
+    one (`endTurn`, `runEnemies`); the YOUR TURN strip shows `combat.approach.line` in place of "ROUND 1"; BATTLE START
+    is not shown. **Contact** (`combat.ts contactCheck`, after every action and every foe's turn in `runEnemies`): a foe
+    sees a character, a character has attacked this turn or a foe is hurt, a (Hidden) foe has attacked, or
+    `combat.approach.passes_max` **3** full passes go by with no contact (an idle squad is noticed; it also stops a
+    stall). Then the fight is joined (`joinFight`): `combat.approach.joined_log` and the initiative order (rolled as
+    the fight began) in the log, round 1 from the top of the order, every unit's first turn through the full
+    `beginTurn` on full AP; the screen shows BATTLE START then (`apps/web turnIntro.tsx`). A fight that opens with a
+    foe seeing a character (an ambush's Hidden foes watch the party) is joined at once, as before; a field opened after
+    a win drops the state. The banner line `combat.cards.joined.fog` is now "Hostiles still in the fog". PROVISIONAL:
+    the free list and 3 passes. Proof: `test/rules164-approach.test.ts` (through the reducer: run/move into an unseen
+    fight; two moves, AP untouched, round 1; end turn twice, no foe acts and no round; the third pass joins; walking
+    into sight joins, round 1, full AP) and `apps/web turnIntro-banners.test.tsx` (no BATTLE START until contact).
+    **Moved on purpose:** the Survival replay guard plays PHC-0002 (PHC-0003 loses its eighth fight; of PHC-0001 to
+    0020, 0002 and 0019 reach the boon); `bond-heal-shown.test.ts` sets its hand-built fight as joined. The 29 replays
+    did not move (no run fight in them). New exports: `APPROACH`, `openApproach`, `contactCheck` (combat.ts), the parts
+    of the approved state.
+5009. **The mixed test squad (K7):** the "3 of 20" is the test helper's walker (`test/helpers/survival.ts playStage`,
+    the replay guard's player), not the run simulator: it buys nothing, makes no rounds or cores and takes no rest. Its
+    20 seeds (measured with the sabre at 24, before item 5008): 3 cleared; in the 17 losing fights the gunner's rifle
+    was empty in 14, the Sigil caster held no core (0 MP) and fought with its revolver, empty in 15, and the tank fought
+    with its camp Hand wraps; the Outburst caster went down in every loss with 159 to 373 MP unspent. The run simulator
+    (`survival-run.ts simRun`, which makes, buys and rests) plays the same squad (tank member added) to **8 of 20**
+    stage-1 clears on PHC-0001 to 0020 before item 5008 (sabre 23), losses at depth 6 to 12 with ammunition in hand (one dry fight in 12 losses), and **10 of 20** with item 5008 (the walker: 2 of 20). No
+    policy bug and no clear data fault was found: nothing is changed. **For the lead:** measure squads with the run
+    simulator, never with the walker; the squad's 8 of 20 is below the party-fit cells (mix_trio 19 of 20) because the
+    tank's camp kit (Hand wraps and a Buckler, rules 1.59) deals little and the casters run thin: the weak tank camp kit
+    (0.31.0 known item 8) is the lever, a balance call.
+5010. **Needs a new primitive (listed, not built):** (a) a uses scope keyed to a Survival run's stage (`per_stage`, for
+    item 5001, which keys `per_campaign` by the run and the stage instead); (b) a Relic property for thrown items (item 5004); (c) an fx
+    event for a fight joined (item 5008's banner reads the state, `Combat.approach` going away, as item 4908 noted).
+    Items 5000 to 5011 are rules 1.64's.
+5011. **No turns of actions before contact (item 5008, review fix):** before contact only the approach's own actions
+    are free of contact: the action types in `rules.json combat.approach.quiet` (**combat/move** whose site is in
+    `combat.approach.free`, **combat/end-turn**, **combat/decline**). Any other action (an attack, Hide, Overwatch, a
+    Begin or Pump, a glyph, Crystallise, a reload, a stim) is contact itself: `game.ts combatAction` joins the fight
+    first (`contactCheck(cb, rng, { acting: true })`), so the action is paid from that unit's round-1 turn on full AP
+    and nothing built before contact carries in; if after the initiative order is read out it is not that unit's turn,
+    the action is not made and the log says "<name> `combat.approach.acts_log`" (the foes ahead of it act, then its
+    turn comes on full AP). An action the reducer would refuse anyway is refused as before and joins nothing: it is
+    first tried on a copy of the game (the effects stream's taps held off for the try). Before, every pass of the approach refilled AP and only walking was free, so up to three
+    pre-contact turns of actions (a Pump to stage 4 with no Strain, a full Sigil Line, Hide, Overwatch) were free, and an
+    attack made on approach AP was followed by a full round-1 turn. Proof: `test/rules164-approach.test.ts` (Hide, Prone
+    and an attack before contact: the fight is joined, the action is either not made with the unit on full AP, or made
+    from its round-1 turn; first in the order, Prone is made from full AP less its price). PROVISIONAL: the quiet list.
 4550. **Sight both ways (rules 1.57 opening volley item 1; a bug):** `lineOfSight(a, b)` is clear only if the Bresenham walk a to b and the walk b to a are both clear (each skips its end tile). Before, it was the walk a to b only: with one blocker, 2% of tile pairs (72 of 3,551 on the proposal's ground) saw one way, and 4% of the stage-1 runs' enemy gun rolls had a blocked line back. `perks/b.ts losNoVeil` (Skin Map) was a second copy of the walk; it is now `lineOfSight(..., ignoreVeil)`. Proof: `test/rules157-volley.test.ts` (every pair on a 15 x 15 ground with a wall; the reproduced case, played).
 4551. **The enemy's Burst (item 2):** `techniques.json burst.numbers.enemy_same` 1 (was unset: an enemy with an Auto weapon rolled three at 0 / −1 / −2 and cooled 1; item 1079). Measured (one enemy turn on the yardstick, 200 seeds): a Gun drone (Soldier, service rifle) 21 then 29 damage on turns 1 and 2 (14% / 20% of 145 HP), was 30 / 46; a Soldier sabre 10 then 30. Supersedes item 1079's "keep the old Burst" and item 1316. PROVISIONAL.
 4552. **The tier damage factors after the refit (item 2):** Soldier 0.78, Elite 1.05, Boss 1.2, unchanged on purpose (item 1079 proposed Soldier 0.88 and Elite 1.08 to hold the rifleman's 3 rounds under two Soldiers; the lead's target for this pass is that a gun foe threatens what a melee foe of its tier does). Moved guards: the idle pair under two Soldiers at level 6 lasts 3.5 rounds (bound 3.2 → 4.2, `defence-measure.test.ts`); a healer and a shielder under four Soldiers at level 6 now hold for 10 rounds (`heal-measure.test.ts`: OLD "somebody goes Down", now "outlasts a healer alone"). PROVISIONAL.

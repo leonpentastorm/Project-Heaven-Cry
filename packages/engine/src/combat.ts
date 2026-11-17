@@ -232,6 +232,10 @@ export interface Combat { /** Rules 1.47: the effects a run's fight keeps for it
    * last has ended (game.ts leaveField). The fight does not end by a win check (checkOver): it ends when the party
    * leaves (game.ts run/leave) or its rounds run out. `true`: a field saved by 0.29 or 0.30 (game.ts fieldRounds). */
   field?: true | FieldRounds;
+  /** Rules 1.64 item 5008: a Survival fight not yet joined (rules.json combat.approach): no foe has seen a character and
+   * nobody has attacked. `passes`: full passes of the turn order gone by in it. Absent: the fight is joined (every fight
+   * but a run's that opened unseen; every save before 0.31.2). */
+  approach?: { passes: number };
   /** Retired in rules 1.9: what lay on the floor in old saves (apply() turns it into piles once; World Play 1.1). */
   floor?: { pos: string; text: string; weapon?: string; rounds?: number }[];
   /** Things said or done mid-fight that need the Narrator's judgement: they ride along in the end-of-fight call. */
@@ -1713,6 +1717,8 @@ export function beginTurn(cb: Combat, rng: Rng) {
   const u = active(cb);
   guardNextAction(); // the Elite and Boss guard: a new turn is a new action
   if (!u) return;
+  // rules 1.64 item 5008: before contact a turn is only its AP (nothing that lasts ticks; no death save, no hazard)
+  if (cb.approach) { setAp(u, turnAp(u, [], []).ap); u.moved = false; u.bank = 0; u.sprinted = false; emitFx(cb, 'turn', { unit: u.id, side: u.side, at: u.pos, round: cb.round }); return; }
   // AP (spec: Skills, traits and perks in play): 'turn_start_pre' {u, grants, penalties} collects perk AP ({n, why});
   // turnAp clamps 6 + perk AP (at most +3 a turn) − Stunned − Dazed to 2..9, then takes any debt.
   condSourcesCheck(cb, u); // a grapple whose grappler is gone ends, and so on
@@ -1788,6 +1794,38 @@ export function checkOver(cb: Combat) {
   return cb.over;
 }
 
+/** Rules 1.64 item 5008 (rules.json combat.approach): the words and numbers of the time before contact. */
+export const APPROACH: { free: string[]; quiet: string[]; acts_log: string; passes_max: number; line: string; joined_log: string } = (RULES as any).combat.approach;
+/** Rules 1.64 item 5008: open the time before contact on a fight that has just started, when no foe sees any character
+ * (a run's fight: game.ts runFight). True when it opened. */
+export function openApproach(cb: Combat): boolean {
+  const pcs = cb.units.filter((u) => u.side === 'pc' && alive(u));
+  if (!pcs.length || pcs.some((p) => sideSees(cb, 'foe', p))) return false;
+  cb.approach = { passes: 0 }; return true;
+}
+/** Rules 1.64 item 5008: is there contact now? A foe sees a character, a character has attacked (this turn) or a foe has
+ * been hurt, or a foe (a Hidden one: the only kind that acts before contact) has attacked. Then the fight is joined
+ * (joinFight) and true. A fight already joined: false. o.acting (rules 1.64 item 5011): a unit is about to make an
+ * action that is not the approach's (rules.json combat.approach.quiet / free): that is contact itself. */
+export function contactCheck(cb: Combat, rng: Rng, o: { acting?: boolean } = {}): boolean {
+  if (!cb.approach) return false;
+  if (o.acting) { joinFight(cb, rng); return true; }
+  const seen = cb.units.some((u) => u.side === 'pc' && alive(u) && sideSees(cb, 'foe', u));
+  const hit = cb.units.some((u) => (u.side === 'pc' && (u.attackedTurn || (u.shotsThisTurn || 0) > 0)) || (u.side === 'foe' && (u.attackedTurn || u.hp < u.maxHp)));
+  if (!seen && !hit) return false;
+  joinFight(cb, rng); return true;
+}
+/** Rules 1.64 item 5008: contact. The fight is joined: round 1 from the top of the initiative order (rolled as the fight
+ * began, read out now), every unit's first turn on full AP (beginTurn). */
+function joinFight(cb: Combat, rng: Rng) {
+  delete cb.approach; cb.round = 1;
+  say(cb, APPROACH.joined_log + ' Initiative: ' + cb.order.map((id) => { const u = cb.units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · '));
+  for (let i = 0; i < cb.order.length; i++) {
+    cb.turn = i; const u = active(cb)!;
+    if (u.dead || u.surrendered || (u.side === 'foe' && u.downed)) continue;
+    beginTurn(cb, rng); return;
+  }
+}
 /** Pass the turn to the next unit that can act; Downed PCs still get turns (death saves). o.newRound: the round ends with
  * this turn (rules 1.62 item 4906: a field opens on a new round). On a field (rules 1.62 item 4906) the round that would
  * pass its last marks it done and begins nobody's turn (game.ts leaveField). */
@@ -1795,18 +1833,22 @@ export function endTurn(cb: Combat, rng: Rng, o: { newRound?: boolean } = {}) {
   if (fieldRoundsOf(cb)?.done) return;
   if (cb.window) { windowStep(cb, true); return; } // ending a window's turn hands it on, not the round
   if (checkOver(cb)) return;
-  { const u0 = active(cb); if (u0) { emit(cb, 'turn_end', { u: u0, cb, rng }); closeTurn(cb, rng, u0); } } // 'turn_end' {u}: before the turn passes
+  { const u0 = active(cb); if (u0 && !cb.approach) { emit(cb, 'turn_end', { u: u0, cb, rng }); closeTurn(cb, rng, u0); } else if (u0) spotHidden(cb, rng, u0); } // 'turn_end' {u}: before the turn passes (rules 1.64 item 5008: before contact nothing ticks; eyes still look)
   if (checkOver(cb)) return;
   if (o.newRound) cb.turn = cb.order.length - 1;
   for (let guard = 0; guard < cb.units.length * 3; guard++) {
     cb.turn++;
+    if (cb.turn >= cb.order.length && cb.approach) { // rules 1.64 item 5008: no round passes before contact; a pass is counted
+      cb.turn = 0; cb.approach.passes++;
+      if (cb.approach.passes >= APPROACH.passes_max) { joinFight(cb, rng); return; }
+    }
     if (cb.turn >= cb.order.length) {
       cb.turn = 0; cb.round++;
       const f = fieldRoundsOf(cb); if (f) { f.round = cb.round - f.from + 1; if (f.round > f.of) { f.round = f.of; f.done = true; return; } }
       magicRoundTick(cb); emit(cb, 'round_start', { cb, round: cb.round, rng });
     }
     const u = active(cb)!;
-    if (u.dead || u.surrendered || (u.side === 'foe' && (u.downed || cb.field))) continue; // rules 1.62 item 4906: no foe has a turn on the field
+    if (u.dead || u.surrendered || (u.side === 'foe' && (u.downed || cb.field || (cb.approach && !u.hidden)))) continue; // rules 1.62 item 4906: no foe has a turn on the field; rules 1.64 item 5008: nor before contact, but a Hidden one
     if (u.waitRound && cb.round < u.waitRound) { say(cb, u.name + (u.tags?.includes('unaware') ? ' is caught unaware: no turn this round.' : ' is still reeling from striking in the open: no turn this round.')); continue; }
     beginTurn(cb, rng);
     if (u.dead || (u.downed && u.side === 'pc') || u.skipTurn) { closeTurn(cb, rng, u); checkOver(cb); if (cb.over) return; continue; }

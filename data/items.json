@@ -247,10 +247,10 @@
       "name": "Spare-parts charge",
       "category": "tool",
       "weight_kg": 0.16,
-      "price_credits": 16,
+      "price_credits": 60,
       "adjudication": "engine",
       "provisional": true,
-      "text": "One charge of parts for Field Repair. A kit of five weighs 0.8 kg and costs 80 credits.",
+      "text": "One charge of parts for Field Repair and Field Surgeon's Patch: {=price_credits} credits.",
       "effects": []
     },
     {

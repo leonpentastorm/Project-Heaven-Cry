@@ -19,6 +19,7 @@ function inFight(): GameState {
   const n = reachable(g.run!).find((x) => x.kind === 'fight')!;
   for (let i = 0; i < 2 && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
   expect(g.run!.state).toBe('fight');
+  delete g.combat!.approach; // rules 1.64 item 5011: the fight set up by hand as joined (the test is about the field after it)
   return g;
 }
 const piles = (g: GameState) => (g.combat!.objects || []).filter((o: any) => o.kind === 'pile' && (o.items || []).length);

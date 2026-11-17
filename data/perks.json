@@ -4613,7 +4613,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.I.effects.0.value|abs} AP less, never below {=tiers.I.effects.0.min} AP. II: In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.II.effects.0.value|abs} AP less, never below {=tiers.II.effects.0.min} AP.",
+      "text": "I: In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.I.effects.0.value|abs} AP less, never below {=tiers.I.effects.0.min} AP, and your Call Name It {=tiers.I.effects.1.value|abs} AP less, never below {=tiers.I.effects.1.min}. II: In a fight, Crystallise costs you {=tiers.II.effects.0.value|abs} AP less, never below {=tiers.II.effects.0.min} AP, and Name It {=tiers.II.effects.1.value|abs} AP less, never below {=tiers.II.effects.1.min}.",
       "effects": [
         {
           "op": "cost_mod",
@@ -4623,6 +4623,17 @@
           },
           "value": -1,
           "min": 1,
+          "label": "Rite in the Field"
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": ["call"],
+            "action_id": ["call.name_it"]
+          },
+          "value": -1,
+          "min": 0,
           "label": "Rite in the Field"
         }
       ],
@@ -4635,7 +4646,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.I.effects.0.value|abs} AP less, never below {=tiers.I.effects.0.min} AP.",
+          "text": "In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.I.effects.0.value|abs} AP less, never below {=tiers.I.effects.0.min} AP, and your Call Name It {=tiers.I.effects.1.value|abs} AP less, never below {=tiers.I.effects.1.min}.",
           "effects": [
             {
               "op": "cost_mod",
@@ -4645,6 +4656,17 @@
               },
               "value": -1,
               "min": 1,
+              "label": "Rite in the Field"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": ["call"],
+                "action_id": ["call.name_it"]
+              },
+              "value": -1,
+              "min": 0,
               "label": "Rite in the Field"
             }
           ]
@@ -4657,7 +4679,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.II.effects.0.value|abs} AP less, never below {=tiers.II.effects.0.min} AP.",
+          "text": "In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.II.effects.0.value|abs} AP less, never below {=tiers.II.effects.0.min} AP, and your Call Name It {=tiers.II.effects.1.value|abs} AP less, never below {=tiers.II.effects.1.min}.",
           "effects": [
             {
               "op": "cost_mod",
@@ -4667,6 +4689,17 @@
               },
               "value": -2,
               "min": 1,
+              "label": "Rite in the Field"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": ["call"],
+                "action_id": ["call.name_it"]
+              },
+              "value": -2,
+              "min": 0,
               "label": "Rite in the Field"
             }
           ],

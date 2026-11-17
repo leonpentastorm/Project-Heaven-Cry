@@ -619,7 +619,7 @@ register({
         say(cb, u.name + ' patches up ' + t.name + ' (Field Surgeon): ' + (r.revived ? 'back up at ' + t.hp + ' HP' : '+' + r.restored + ' HP') + '.');
         return null;
       } },
-    { id: 'patch', label: 'Patch up a squadmate', scope: ['world', 'story'], ap: 0, target: 'none',
+    { id: 'patch', label: 'Patch up a squadmate', scope: ['world', 'story', 'run'], ap: 0, target: 'none', // rules 1.64 item 5000: and in a Survival run
       text: 'Out of a fight: spend 10 minutes and one spare-parts charge to heal a squadmate you name for half their max HP. Needs Improvisation 3.',
       run: (h, args) => {
         const t = pickChar(h, args.choice || args.text || args.npc); if (typeof t === 'string') return t;

@@ -25,7 +25,7 @@ function survivalFight(duo: boolean) {
   const [x, y] = mu.pos.split(',').map(Number);
   if (al) { al.pos = x + ',' + (y + 1); al.hp = 40; }
   foe.pos = (x + 2) + ',' + y; foe.sv = { heart: -99 }; mu.hp = 40; // the foe fails its Heart save
-  cb.turn = cb.order.indexOf(mu.id); delete cb.window; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9;
+  cb.turn = cb.order.indexOf(mu.id); delete cb.window; delete cb.approach; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9; // rules 1.64 item 5008: the fight is set up by hand as joined
   const box = { g };
   const U = (id: string) => box.g.combat.units.find((u: any) => u.id === id);
   const act = (id: string, t: any = null) => { U(mu.id).ap = 9; const n = box.g.combat.log.length, f = (box.g.combat.fx || []).length; box.g = apply(box.g, { type: 'combat/perk', unitId: mu.id, id, ...(t ? { targetId: t.id } : {}) }, 'host'); return { log: box.g.combat.log.slice(n), fx: (box.g.combat.fx || []).slice(f) }; };

@@ -333,7 +333,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const turnKey = cb ? cb.round + ':' + cb.turn + ':' + (cb.order[cb.turn] || '') : '';
   // A fight that began while this page watched (the same game, its phase turned to combat): only it gets a FIGHT card.
   // A reload or a late join sees the game already in a fight, so it gets none.
-  const phaseSeen = React.useRef<{ code: string; phase: string } | null>(null), begun = React.useRef<string | null>(null);
+  const phaseSeen = React.useRef<{ code: string; phase: string } | null>(null), begun = React.useRef<string | null>(null), unjoined = React.useRef<string | null>(null); // unjoined: a fight opened not yet joined (rules 1.64 item 5008), its BATTLE START waiting for contact
   React.useEffect(() => {
     const was = phaseSeen.current;
     if (game && was && was.code === game.code && was.phase !== 'combat' && game.phase === 'combat') begun.current = combatStreamKey(game);
@@ -355,8 +355,10 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     if (stream && !cb.over) liveFights.current.add(stream);
     // FIGHT: at once (it plays over the combat-in), before the first turn's banner, which waits for it.
     if (newFight && stream && begun.current === stream && cb.round === 1 && carded(game!, cb)) {
-      begun.current = null; showCard(fightCard(game!, cb, meId));
+      begun.current = null; if (!cb.approach) showCard(fightCard(game!, cb, meId)); else unjoined.current = stream; // rules 1.64 item 5008: not yet joined: BATTLE START waits for contact
     }
+    // Rules 1.64 item 5008: contact joins the fight: BATTLE START now
+    if (stream && unjoined.current === stream && !cb.approach && carded(game!, cb)) { unjoined.current = null; showCard(fightCard(game!, cb, meId)); }
     // Joining or reloading in the middle of a fight: just the banner for whoever is up now.
     if (!prev) {
       seen.current = { fight: fightId, n: lastN, key: turnKey };

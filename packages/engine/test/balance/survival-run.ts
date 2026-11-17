@@ -58,6 +58,7 @@ import { apply, reachable, runNode, runOptions, lastingFor, creditsOf, packOf, g
   dist, standable, zoneMap, makeView, priceOf, ROUND_PRICE, RECIPES, coresCarried, loadoutLines, holds, gearEntry, equip } from '../../src';
 import { fxTaps } from '../../src/fxtap';
 import { allPendingDoorPicks } from '../../src/doorpicks';
+import { perkActionsFor } from '../../src';
 import svJ from '../../../../data/survival.json';
 import { RIG } from './run-policies';
 import { Rec, type Pc } from '../helpers/replay';
@@ -87,6 +88,8 @@ export type RoutePolicy = 'gear' | 'training' | 'safest' | 'fights';
  * after a fight and the charge at a Rest are the engine's and always on. (The review: the camp's free armour, the old
  * `issue` lever, is gone: armour is bought at the camp from the loadout's budget, rules 1.52.) */
 export const LEVERS = ['policies', 'supply', 'start', 'caster'];
+/** Rules 1.64 (the K5 measure): the story heals used between stops, and the refusals met, under SIM_STORY_HEAL=1. */
+export const STORY_HEALS = { n: 0, refused: [] as string[] };
 const leversOn = (): Set<string> => { const e = (globalThis as any).process?.env?.SIM_LEVERS; return new Set(e == null || e === '' ? LEVERS : e === 'none' ? [] : String(e).split(',')); };
 /** A member of a simulated party: a reference build at level 1, played by its fight policy (or the one named). With
  * the lever `policies` the casters play the run's policies (rules 1.51); without it, rules 1.49's. */
@@ -315,6 +318,17 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
       if (!act({ type: 'run/sell', charId: id, idx: i, qty: q }, by(id)) && MATS.includes(it)) st.soldMat![ids.indexOf(id)][it] = (st.soldMat![ids.indexOf(id)][it] || 0) + q;
     }
   };
+  // ---- rules 1.64 items 5000, 5001 (the measure of K5): between stops, a member with the Mender's story Triage or Field
+  // Surgeon's Patch uses it on the most hurt squadmate under STORY_HEAL_AT of max HP, through the reducer (story/perk)
+  const STORY_HEAL = env.SIM_STORY_HEAL === '1', STORY_HEAL_AT = 0.7;
+  const storyHeal = (id: string) => {
+    const c = C(id); if (!c || c.dead || c.hp <= 0) return;
+    for (const e of perkActionsFor({ c, g: r.g } as any, 'story').filter((q: any) => !q.why && (q.actionId === 'triage_story' || q.actionId === 'patch'))) {
+      const t = ids.filter((o) => o !== id && C(o) && !C(o).dead && C(o).hp > 0 && C(o).hp < STORY_HEAL_AT * maxHp(C(o))).sort((a, b) => C(a).hp / maxHp(C(a)) - C(b).hp / maxHp(C(b)))[0];
+      if (!t) return;
+      const no = act({ type: 'story/perk', charId: id, id: (e as any).id, actionId: (e as any).actionId, choice: t }, by(id)); if (!no) STORY_HEALS.n++; else STORY_HEALS.refused.push(no);
+    }
+  };
   // ---- P2: the field after a won fight: every pile walked to and picked up whole, then Leave
   const fieldWalk = () => {
     if (!PICKUP) return;
@@ -496,6 +510,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
       st.nodes.push(node.kind + (node.gate ? '*' : ''));
       const marks = reachable(run).length === 1 ? 1 : n;
       for (const id of ids) makeAll(id); // P2: whatever was got since, made before walking on
+      if (STORY_HEAL) for (const id of ids) storyHeal(id); // rules 1.64 items 5000 and 5001: the story heals between stops (SIM_STORY_HEAL=1)
       for (let i = 0; i < marks && r.g.run.state === 'map' && r.g.run.at !== node.id; i++) must({ type: 'run/move', node: node.id }, ownerOf(i));
       if (r.g.run?.at === node.id) res.stops!.push({ stage: r.g.run.stage, depth: node.depth, kind: node.gate ? 'gate' : node.kind, lvl: ids.map((id) => C(id)?.level ?? 0), hp: Math.round(hpShare(r.g) * 1000) / 1000,
         hpEach: ids.map((id) => (C(id) ? Math.round(1000 * Math.max(0, C(id).hp) / maxHp(C(id))) / 1000 : 0)), rounds: ids.map((id) => roundsFor(C(id))), cores: ids.map((id) => (C(id) ? coresCarried(C(id)) : 0)) });

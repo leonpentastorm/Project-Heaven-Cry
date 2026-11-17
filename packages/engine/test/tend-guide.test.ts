@@ -25,7 +25,7 @@ function survivalFight() {
   // a clear row to walk on: every unit but these two sent far off, and nothing standing on the row
   const [x, y] = mu.pos.split(',').map(Number);
   al.pos = x + ',' + (y + 1);
-  cb.turn = cb.order.indexOf(mu.id); delete cb.window; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9;
+  cb.turn = cb.order.indexOf(mu.id); delete cb.window; delete cb.approach; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9; // rules 1.64 item 5011: the fight set up by hand as joined
   return { g, mu, al, x, y };
 }
 const U = (g: any, id: string) => g.combat.units.find((u: any) => u.id === id);
