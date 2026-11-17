@@ -94,7 +94,9 @@ describe('Survival, one stage (rules 1.41)', () => {
     const p1 = apply(g, { type: 'run/pick', charId: 'c1', choice: 0 }, 'host');
     expect(p1.characters.c1.pack!.some((x) => (x.weapon || x.item || x.id) === w.id && (x.rarity || 'standard') === w.rarity)).toBe(true);
     expect(p1.run!.state).toBe('reward');
-    expect(refused(p1, { type: 'run/move', node: p1.run!.nodes[0].id })).toBe('Take your pick first. The squad moves on when everyone has.');
+    // rules 1.64: the host has picked, so its refusal names who the squad waits for; c2's player is told to pick first
+    expect(refused(p1, { type: 'run/move', node: p1.run!.nodes[0].id })).toBe(SV.run.reward_panel.waiting_for.replace('{names}', p1.characters.c2.name));
+    expect(refused(p1, { type: 'run/move', node: p1.run!.nodes[0].id }, 'p2')).toBe('Take your pick first. The squad moves on when everyone has.');
     const p2 = apply(p1, { type: 'run/pick', charId: 'c2', choice: 'materials' }, 'p2');
     for (const m of g.run!.offers!.c2.materials!) expect(p2.characters.c2.pack!.filter((x) => (x.item || x.id) === m.item).reduce((t, x) => t + x.qty, 0)).toBe(m.n);
     expect(p2.run!.state).toBe('map'); expect(p2.run!.offers).toBeNull();

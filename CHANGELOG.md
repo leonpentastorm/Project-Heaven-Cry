@@ -28,7 +28,7 @@ until they had picked. Rules 1.64 (item 4971); new words and timings PROVISIONAL
   who cannot Begin an Outburst (no design the engine can price, e.g. an Emanator carried with no design): a Begin's
   Strain counts only when the engine prices one.
 - Browser suites: survival (the panel in view at 1280 x 720 and 1600 x 900 and scrolled to the map, its numbers the
-  record's, a pick in it, a map click reopening it, then the squad moves), coop-stall (a guest's own pick and who waits).
+  record's, a pick in it, a map click reopening it, then the squad moves); its two-browser part: a guest sees its own pick and who is still choosing, and the host, picked, is told who it waits for.
 
 ## 0.31.1 — the fight panel put back, and a real VICTORY (hotfix)
 
