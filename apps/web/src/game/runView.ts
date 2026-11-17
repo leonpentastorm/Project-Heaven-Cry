@@ -60,7 +60,8 @@ export function nodeTip(g: GameState, n: RunNode): string {
 
 export function runView(g: GameState, me: string): RunViewV | null {
   const r = g.run; if (!r) return null;
-  const isHost = me === g.hostId, can = new Set(reachable(r).map((n) => n.id)), walked = new Set(r.path), here = r.at;
+  // rules 1.64: a stop is lit (goable) only while the run is on its map; in any other state nothing pulses and a click says the engine's reason
+  const isHost = me === g.hostId, can = new Set(r.state === 'map' ? reachable(r).map((n) => n.id) : []), walked = new Set(r.path), here = r.at;
   const hereNode = runNode(r, here), depth = hereNode?.depth || 0;
   const players = g.players, pl = (id: string) => players.find((p) => p.id === id);
   const nodes: RunNodeV[] = r.nodes.map((n) => ({

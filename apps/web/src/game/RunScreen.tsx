@@ -77,8 +77,8 @@ export function RunScreen() {
   // rules 1.64: the map never eats a click: a lit stop goes; else a pick still owed reopens the panel, and anything
   // else the engine refuses says its reason on the say line (and the stop's hover card opens, as before)
   const pick = (n: RunNodeV, el: HTMLElement) => {
-    if (n.state === 'reachable') { act({ type: 'run/move', node: n.id }); return; }
     if (rp?.owe) { reopen(); return; }
+    if (n.state === 'reachable' && v.state === 'map') { act({ type: 'run/move', node: n.id }); return; }
     if (n.why) setSay(n.why);
     openTipOn(el);
   };

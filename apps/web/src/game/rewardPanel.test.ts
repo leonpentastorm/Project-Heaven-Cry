@@ -61,5 +61,10 @@ describe('the map never eats a click (rules 1.64 R2)', () => {
     for (let i = 0; i < DUO.length && r.g.run.state === 'field'; i++) r.must({ type: 'run/leave' }, ownerOf(i));
     // the rewards: the viewer still owes a pick, so the refusal says so (the panel reopens on the client)
     expect(whyAll().every((w) => w === 'Take your pick first. The squad moves on when everyone has.')).toBe(true);
+    // ... and no stop is lit while the run waits on the rewards: the next stop (a link of here) says the refusal too, so a click on it never sends a move
+    const v = runView(r.g, me)!, next = r.g.run.nodes.find((n: any) => n.id === r.g.run.at).links;
+    expect(v.nodes.filter((n) => n.state === 'reachable')).toEqual([]);
+    expect(v.nodes.filter((n) => next.includes(n.id)).every((n) => n.why === 'Take your pick first. The squad moves on when everyone has.')).toBe(true);
+    expect(v.links.filter((l) => l.lit)).toEqual([]);
   });
 });

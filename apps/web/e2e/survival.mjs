@@ -350,6 +350,13 @@ await sidePanels(p, 'the rewards');
   // closed early: the pinned bar; a click on the map reopens the panel (it never eats the click)
   const barShown = await p.locator('[data-phc-reward-bar]').isVisible().catch(() => false), gone = await p.locator('[data-phc-reward-panel]').count() === 0;
   await p.mouse.move(2, 2); await settle(p, 200); await p.screenshot({ path: OUT + 'reward-bar.png' });
+  // the next stop (the one a zoomed-in player clicks): while a pick is owed nothing is lit, and a click on it reopens the panel
+  const litOwed = await p.locator('[data-phc-node][data-phc-state="reachable"]').count(), nextId = rp.nodes.find((n) => n.id === rp.at).links[0];
+  const nextStop = p.locator('[data-phc-node="' + nextId + '"]'); await nextStop.scrollIntoViewIfNeeded(); await nextStop.click(); await settle(p, 400);
+  const reopenedNext = await p.locator('[data-phc-reward-panel]').count() === 1, stillThere = (await run()).state === 'reward';
+  await p.mouse.move(2, 2); await settle(p, 200); await p.screenshot({ path: OUT + 'reward-next-stop.png' });
+  ok('… while a pick is owed no stop is lit (' + litOwed + '), and a click on the next stop (' + nextId + ') reopens the panel and moves nothing', litOwed === 0 && reopenedNext && stillThere);
+  await p.locator('[data-phc-reward-close]').click(); await settle(p, 300);
   const far = p.locator('[data-phc-node][data-phc-state="ahead"]').first(); await far.scrollIntoViewIfNeeded(); await far.click(); await settle(p, 400);
   const reopened = await p.locator('[data-phc-reward-panel]').count() === 1, still = await pay.count();
   await p.locator('[data-phc-reward-fold="reward:pay"] > button').click(); await settle(p, 200);
@@ -961,10 +968,11 @@ for (let i = 0; i < 80; i++) {
     if (!(await h.locator('[data-phc-reward-panel]').count()) && (await HG()).run.state === 'reward') {
       const want = SVD.run.reward_panel.waiting_for.replace('{names}', G0.characters[hId].name);
       const foot = (await h.locator('[data-phc-waiting]').textContent().catch(() => '')) || '';
-      const node = h.locator('[data-phc-node]').first(); await node.scrollIntoViewIfNeeded(); await node.click();
+      const H1 = await HG(), litH = await h.locator('[data-phc-node][data-phc-state="reachable"]').count();
+      const node = h.locator('[data-phc-node="' + H1.run.nodes.find((n) => n.id === H1.run.at).links[0] + '"]'); await node.scrollIntoViewIfNeeded(); await node.click();
       const say = await until(h, () => document.querySelector('[data-phc-map-say]')?.textContent || null, null, 5000).catch(() => '');
       await h.mouse.move(2, 2); await settle(h, 200); await h.screenshot({ path: OUT + 'reward-host-waits.png' });
-      ok('C: the host, picked, clicks the map: the engine says who it waits for ("' + say + '"), and the header says it too', say === want && foot === want);
+      ok('C: the host, picked, clicks the next stop (nothing lit: ' + litH + '): the engine says who it waits for ("' + say + '"), and the header says it too', say === want && foot === want && litH === 0 && (await HG()).run.state === 'reward');
     } else ok('C: the host\'s panel closed after its pick (a pick of kit still open: ' + await h.locator('[data-phc-reward-panel]').count() + ')', false);
     await gu.locator('[data-phc-reward-panel] [data-phc-pick-materials], [data-phc-reward-panel] [data-phc-pick="0"]').first().click();
     await gu.waitForFunction((id) => !window.__phc.getState().game.run.offers?.[id], hId, { timeout: 30000 }).catch(() => {});

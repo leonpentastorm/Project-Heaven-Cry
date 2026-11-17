@@ -19,7 +19,7 @@ until they had picked. Rules 1.64 (item 4971); new words and timings PROVISIONAL
   cards, and the pick of kit after an Elite). Its sections fold and remember. It closes when you have picked; closed
   early, a large bar at the bottom of the middle, "Rewards waiting: choose yours", reopens it. In co-op it says who is
   still choosing. The side panels stay.
-- **The map never eats a click.** While you owe a pick, a click on the map reopens the panel; otherwise a refused click
+- **The map never eats a click.** While the run waits on rewards (or anything else off the map) no stop is lit or pulses; while you owe a pick, a click on any stop, the next one included, reopens the panel; otherwise a refused click
   says the engine's reason on a line at the bottom of the middle ("Waiting for Ana to choose their reward.", "You can't
   reach that shop from here. Pick a lit stop.").
 - **The pay is the engine's record:** each won run fight keeps what each character was paid (`paid`: the XP after its
