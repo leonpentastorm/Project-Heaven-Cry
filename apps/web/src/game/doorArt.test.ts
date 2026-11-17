@@ -75,6 +75,11 @@ describe('the nine doors art is built and resolved by data id', () => {
     expect(actionIconOf(perkId({ id: 'skill:durability.1', actionId: 'guard_slam' }))).toBe(A['move-slam']);
     expect(actionIconOf(perkId({ id: 'class:defender.brace', actionId: 'interpose' }))).toBe(A['move-brace']);
     expect(actionIconOf('hide')).toBe(A['move-hide']);
+    // 0.31.7: four delivered move icons linked by data_ids (Stand Behind Me has no move in data yet).
+    expect(moveIconOf('class:fighter.wind_up', null)).toBe(A['move-shove']);
+    expect(moveIconOf('class:fighter.read_the_swing', null)).toBe(A['move-lingering-dread']);
+    expect(moveIconOf('class:marksman.speed_loader', null)).toBe(A['move-speed-loader']);
+    expect(moveIconOf('class:trickster.scrap_turret', null)).toBe(A['move-scrap-turret']);
     expect(actionIconOf('move')).toBe('');
     expect(actionIconOf(null)).toBe('');
   });

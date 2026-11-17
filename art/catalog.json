@@ -31735,7 +31735,10 @@
       "legacy_binding_brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #33",
       "replaces_held_legacy_recipe": 33,
       "legacy_recipe_remains_held": true,
-      "ink": "#FFFFFF"
+      "ink": "#FFFFFF",
+      "data_ids": [
+        "class:fighter.wind_up"
+      ]
     },
     "move-riposte": {
       "label": "Wick \u2014 Riposte",
@@ -31811,7 +31814,10 @@
       "legacy_binding_brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #35",
       "replaces_held_legacy_recipe": 35,
       "legacy_recipe_remains_held": true,
-      "ink": "#FFFFFF"
+      "ink": "#FFFFFF",
+      "data_ids": [
+        "class:fighter.read_the_swing"
+      ]
     },
     "move-finisher": {
       "label": "Wick \u2014 Finisher",
@@ -32287,7 +32293,10 @@
       "legacy_binding_brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #63",
       "replaces_held_legacy_recipe": 63,
       "legacy_recipe_remains_held": true,
-      "ink": "#FFFFFF"
+      "ink": "#FFFFFF",
+      "data_ids": [
+        "class:marksman.speed_loader"
+      ]
     },
     "move-special-ammo": {
       "label": "Special Ammo",
@@ -33546,7 +33555,10 @@
       "legacy_binding_brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #163",
       "replaces_held_legacy_recipe": 163,
       "legacy_recipe_remains_held": true,
-      "ink": "#FFFFFF"
+      "ink": "#FFFFFF",
+      "data_ids": [
+        "class:trickster.scrap_turret"
+      ]
     },
     "move-feel-their-pain": {
       "label": "Wick \u2014 Feel Their Pain",
