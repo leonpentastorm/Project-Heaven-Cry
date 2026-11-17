@@ -2494,7 +2494,7 @@
           "category": "Active Skill",
           "mastery": 2,
           "text": "Still Breath: spot rolls against you are {=unlocks.5.effects.0.value} while you stand next to cover. Your Shadow holds one more, and the Shadow verbs of this rung open: Fade, Vault, Open Seam, Foul the Action, Pick and Douse.",
-          "player": "Still Breath: spot rolls against you are {=.effects.0.value} while you stand next to cover. Your Shadow holds one more. New moves: Fade (slip back into Hidden by cover even when seen), Vault (hop a low barrier), Open Seam (lower a foe's Defense), Foul the Action (spoil a foe's weapon), Pick (open or lock a door) and Douse (put out a lamp).",
+          "player": "Still Breath: while you stand next to cover, foes roll {=.effects.0.value} to spot you. Your Shadow holds one more. New moves: Fade (slip back into Hidden by cover even when seen), Vault (hop a low barrier), Open Seam (lower a foe's Defense), Foul the Action (spoil a foe's weapon), Pick (open or lock a door) and Douse (put out a lamp).",
           "effects": [
             {
               "op": "roll_mod",
