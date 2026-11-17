@@ -5253,13 +5253,15 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Once per turn, when you spare an enemy or protect an innocent, you gain a shield worth 15% of your max HP. To spare an enemy, attack with Spare on: a blow that would take its last HP subdues it instead. Outside a fight, the Narrator decides what counts. II: Once per turn, when you spare an enemy or protect an innocent, you gain a shield worth 25% of your max HP. To spare an enemy, attack with Spare on: a blow that would take its last HP subdues it instead. Outside a fight, the Narrator decides what counts.",
+      "text": "I: Up to {=tiers.I.effects.0.per_fight} times a fight, when you spare an enemy or protect an innocent, you gain a shield worth 15% of your max HP; a new one does not add to a shield you hold (the larger stands). To spare an enemy, attack with Spare on: a blow that would take its last HP subdues it instead. Outside a fight, the Narrator decides what counts. II: Up to {=tiers.II.effects.0.per_fight} times a fight, when you spare an enemy or protect an innocent, you gain a shield worth 25% of your max HP; a new one does not add to a shield you hold (the larger stands). To spare an enemy, attack with Spare on: a blow that would take its last HP subdues it instead. Outside a fight, the Narrator decides what counts.",
       "effects": [
         {
           "op": "shield",
           "value": "15% of max HP",
           "target": "self",
-          "when": "you spare an enemy or protect an innocent"
+          "when": "you spare an enemy or protect an innocent",
+          "per_fight": 2,
+          "provisional": true
         }
       ],
       "tiers": {
@@ -5271,13 +5273,15 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per turn, when you spare an enemy or protect an innocent, you gain a shield worth 15% of your max HP. To spare an enemy, attack with Spare on: a blow that would take its last HP subdues it instead. Outside a fight, the Narrator decides what counts.",
+          "text": "Up to {=tiers.I.effects.0.per_fight} times a fight, when you spare an enemy or protect an innocent, you gain a shield worth 15% of your max HP; a new one does not add to a shield you hold (the larger stands). To spare an enemy, attack with Spare on: a blow that would take its last HP subdues it instead. Outside a fight, the Narrator decides what counts.",
           "effects": [
             {
               "op": "shield",
               "value": "15% of max HP",
               "target": "self",
-              "when": "you spare an enemy or protect an innocent"
+              "when": "you spare an enemy or protect an innocent",
+          "per_fight": 2,
+          "provisional": true
             }
           ]
         },
@@ -5289,13 +5293,15 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per turn, when you spare an enemy or protect an innocent, you gain a shield worth 25% of your max HP. To spare an enemy, attack with Spare on: a blow that would take its last HP subdues it instead. Outside a fight, the Narrator decides what counts.",
+          "text": "Up to {=tiers.II.effects.0.per_fight} times a fight, when you spare an enemy or protect an innocent, you gain a shield worth 25% of your max HP; a new one does not add to a shield you hold (the larger stands). To spare an enemy, attack with Spare on: a blow that would take its last HP subdues it instead. Outside a fight, the Narrator decides what counts.",
           "effects": [
             {
               "op": "shield",
               "value": "25% of max HP",
               "target": "self",
-              "when": "you spare an enemy or protect an innocent"
+              "when": "you spare an enemy or protect an innocent",
+          "per_fight": 2,
+          "provisional": true
             }
           ],
           "replaces_tier_I": true,

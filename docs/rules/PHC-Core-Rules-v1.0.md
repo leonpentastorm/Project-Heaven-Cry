@@ -12112,3 +12112,12 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     `combat.yield.disabled_text` ("Gun drone cannot yield: disabled, no mercy shown."), and the Spare toggle's preview
     on such a target is `combat.yield.spare_preview`. Before: a combat drone was "subdued" by Spare and fed Clean Hands
     and the Mercy vow. Proof: `test/rules166.test.ts`.
+5202. **Clean Hands at most twice a fight (A1).** `perks.json clean_hands` effects' `per_fight` **2** (was once a
+    turn, no fight cap): the shield is given at most that many times a fight (`uses per_combat`). It does not stack:
+    it is the base shield, where the larger stands (`effects/damage.ts grantShield`, the rule prayer shields already
+    use); no new layering rule. What fed the reviewer's "+24 to 29 shield for each enemy you spare" is Clean Hands
+    itself: 15% of max HP times Conscience's shields-received feed (1 + 0.1 x Conscience), about 24 to 29 at max HP
+    130 to 150 and Conscience 2 to 3; measured on this build with the test helper's sheet (not the reviewer's): level
+    5, Conscience 3, max HP 210: Clean Hands I 40, II 67, Saint's Shield 142 (Blessing power 1.24); level 7,
+    Conscience 5, max HP 254: 57 / 94 / 217; level 9, Faith 7: 69 / 115 / 314. Saint's Shield and Conscience's feed
+    are unchanged. PROVISIONAL.

@@ -6,6 +6,7 @@
 // Every item runs its tiers in combat and its story part (checks, story conditions, rest, session start) where it has
 // one; what the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit
 // (plan section 6) are marked PROVISIONAL here and listed in the spec (section 14, tags F…) and docs/design/perk-runtime.md.
+import { effNum } from '../effects/num';
 import { register, stateOf, uses, note, pendRuling, postStory, bankAp, pushAp, has, armedOf, disarm, modOn, charOfUnit, bindGame, restN, grantShield, type Holder } from '../effects';
 import { itemAmount, amountMult } from '../effects/amounts';
 import type { Combat, Unit } from '../combat';
@@ -196,7 +197,7 @@ register({
 
 // ---------- Clean Hands (Conscience β) ----------
 // Rules 1.13 (a beta gives no AP): after you spare an enemy or protect an innocent you gain a shield worth 15% of your
-// max HP (II: 25%), once a turn; shields received apply, and shields don't stack (the larger stands). Spare: the Spare
+// max HP (II: 25%), up to per_fight times a fight (rules 1.66); shields received apply, and shields don't stack (the larger stands). Spare: the Spare
 // toggle on an attack makes a blow that takes a foe's last HP subdue it instead (no kill credit); any surrender you
 // cause (talked down, mercy, the Name) counts. Protect: healing or shielding a civilian or neutral. Out of combat the
 // Narrator rules spared or protected moments: an accepted claim is a shield waiting when the next fight starts.
@@ -208,7 +209,8 @@ function cleanShield(h: Holder, why: string) {
     const st = stateOf(h); if (st.owed) return;
     st.owed = true; postStory(h, 'Clean Hands (' + why + '): a shield of ' + cleanPct(h) + '% of max HP when the next fight starts.', { kind: 'system' }); return;
   }
-  if (!h.u || !uses(h).take('per_turn', 1, h.key + '#shield')) return;
+  // rules 1.66 item 5202: at most the effect's per_fight a fight (was once a turn); the shield is the base shield (the larger stands)
+  if (!h.u || !uses(h).take('per_combat', effNum(h, 'shield', 'per_fight'), h.key + '#shield')) return;
   const n = grantShield(h.cb || null, h.u, Math.floor(h.u.maxHp * cleanPct(h) / 100), h.u);
   say(h.cb, h.u.name + ' keeps clean hands (' + why + '): a shield of ' + n + '.');
 }

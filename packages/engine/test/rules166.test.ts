@@ -41,3 +41,17 @@ describe('A2: can this enemy yield (item 5200, 5201)', () => {
   });
 });
 void d20;
+
+describe('A1: Clean Hands (item 5202)', () => {
+  it('at most per_fight (2) shields a fight, across turns; the shield is the base shield (the larger stands, no stacking)', () => {
+    const f = fight([{ perks: { clean_hands: 'I' } }], [{}, {}, {}, {}]); sure(f.pc);
+    const one = Math.floor(Math.floor(f.pc.maxHp * 15 / 100) * (f.pc.shieldRecv || 1));
+    for (let i = 0; i < 3; i++) {
+      const t = f.foes[i]; f.unit(t.id).hp = 1; f.turn(f.unit(f.pc.id)); f.unit(f.pc.id).ap = 9;
+      f.act({ unitId: f.pc.id, type: 'combat/attack', targetId: t.id, mode: 'shot', mods: ['spare'] } as any);
+      expect(f.unit(t.id).subdued).toBe(true);
+      expect(f.unit(f.pc.id).shield).toBe(one); // the second does not add to the first
+    }
+    expect(f.cb.log.filter((l) => /keeps clean hands/.test(l)).length).toBe(2);
+  });
+});
