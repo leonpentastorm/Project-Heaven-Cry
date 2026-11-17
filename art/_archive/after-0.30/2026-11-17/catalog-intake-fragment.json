@@ -250,6 +250,57 @@
       "mode": "Wick icon",
       "production_approved": false,
       "implementation_ready": false
+    },
+    "vow-bare": {
+      "path": "art/icons/prayers/vow-bare.png",
+      "sha256": "f7681864e7cafd70931af8c5dd22671f7f639e9b236d1c3be8d2c5296b44407f",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "vow-no-one-behind": {
+      "path": "art/icons/prayers/vow-no-one-behind.png",
+      "sha256": "27b85eda71709a34ea2cbbb590352a60f1f3f87cc9ec578c9440d38244f6d39a",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "witnessed": {
+      "path": "art/icons/prayers/witnessed.png",
+      "sha256": "03fc99ffc20af369e828413fb6a78d27fb95268f9067c941c5f223b797b9657b",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    }
+  },
+  "tending_icons": {
+    "tend-threads": {
+      "path": "art/icons/tending/threads.png",
+      "sha256": "d1d53731f35edc2bbd84b35360716a0126dc7ec2f055960a848219cbec7fed4b",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "tend-hold-down": {
+      "path": "art/icons/tending/hold-down.png",
+      "sha256": "905f4b502f999b53dc0fb8f98f5020cf49cad3f8a41c5493bd326b9dc8f9117f",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "tend-bonds-5": {
+      "path": "art/icons/tending/bonds-5.png",
+      "sha256": "1e1594f9f169f130412f9f8b6dedd0d8a93633d5515b28ca636577ea436ac6be",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "tend-bonds-8": {
+      "path": "art/icons/tending/bonds-8.png",
+      "sha256": "202c997f9b6e113a02859cce46a675b0bd224732196f3826d87a6df60aca48dd",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
     }
   }
 }

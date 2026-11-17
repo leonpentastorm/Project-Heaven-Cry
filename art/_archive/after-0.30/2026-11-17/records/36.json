@@ -1,0 +1,82 @@
+{
+  "number": 36,
+  "section": 5,
+  "family": "prayers",
+  "id": "vow-bare",
+  "path": "art/icons/prayers/vow-bare.png",
+  "name": "Vow: Bare Hands (\"By my own hands.\")",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "state": "in game now (a code line mark)",
+  "use": "The vow of the same name: no weapon",
+  "paint": "Wick with two bare CERAMIC MITTEN FISTS raised beside his pixel-screen cheeks. An unmistakable small sword with a sharp tapered triangular blade, crossguard and grip lies discarded horizontally behind his boots. Bare flat ceramic head top; no flame, no headdress or head prop. Cape wedge and lantern chest visible.",
+  "avoid": "boxing gloves \u00b7 a martial-art pose from any known work",
+  "file_key": "36-vow-bare",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick with two bare CERAMIC MITTEN FISTS raised beside his pixel-screen cheeks. An unmistakable small sword with a sharp tapered triangular blade, crossguard and grip lies discarded horizontally behind his boots. Bare flat ceramic head top; no flame, no headdress or head prop. Cape wedge and lantern chest visible.\nAVOID: literal flame anywhere, head crown, boxing gloves, duplicated arms, known martial-art pose.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/36-vow-bare-v2.png",
+  "source_sha256": "b3e062cf04d1d4162a49d3fadd34f3f4775d422955d03cbe2be913b9f6a70a84",
+  "generation_attempt": 2,
+  "export_crop": [
+    0,
+    21,
+    1234,
+    1254
+  ],
+  "scale": 0.5380379446617942,
+  "offset": [
+    180,
+    180
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "f7681864e7cafd70931af8c5dd22671f7f639e9b236d1c3be8d2c5296b44407f",
+  "exports": {
+    "256": "art/icons/prayers/exports/256/vow-bare.png",
+    "128": "art/icons/prayers/exports/128/vow-bare.png",
+    "64": "art/icons/prayers/exports/64/vow-bare.png",
+    "48": "art/icons/prayers/exports/48/vow-bare.png",
+    "44": "art/icons/prayers/exports/44/vow-bare.png",
+    "32": "art/icons/prayers/exports/32/vow-bare.png",
+    "24": "art/icons/prayers/exports/24/vow-bare.png",
+    "16": "art/icons/prayers/exports/16/vow-bare.png"
+  },
+  "export_sha256": {
+    "256": "9418183beb9df0be93fb3aae3bcfbe581a8797b47cfbdc746310de72f324de31",
+    "128": "a5bb97b60cbea2a4439cfe1c2bf13b250b52daf7ded2edbcd87ee2edac583fb1",
+    "64": "35dcf88d6a80c9b92c0102e3952eeed63dec7294ecce35bc78648b39c093b634",
+    "48": "7fb92f908658288096686b497637581967a6fc1f750cb2e7717c15dcba3545c6",
+    "44": "18b810aadba9eb02955c0b2aef25f473f8a8f3b37f6a5620ccfc344da6db6e1d",
+    "32": "2381381890757d13633ef83f60f38613f3ac6a06485a48cfd5ef7938d412330d",
+    "24": "8d6c74356bca0eed96845f0fd09a02493b8d72cc844cd0012ffdf30509230e81",
+    "16": "5929a5ac220158c5f7e7ba67fdb5837aba4bb17427f177ac1d4877d37301412c"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

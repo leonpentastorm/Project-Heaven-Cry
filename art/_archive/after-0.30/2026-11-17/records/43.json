@@ -1,0 +1,82 @@
+{
+  "number": 43,
+  "section": 6,
+  "family": "tending_icons",
+  "id": "tend-bonds-8",
+  "path": "art/icons/tending/bonds-8.png",
+  "name": "Three Bonds",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 no slot yet",
+  "use": "You can hold one more Bond (three in all)",
+  "paint": "Wick holding three threads fanning out to three small partial figures.",
+  "avoid": "the number 3 \u00b7 a web",
+  "file_key": "43-bonds-8",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick holding three threads fanning out to three small partial figures.\nAVOID: the number 3 \u00b7 a web",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-6-wick-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/bond.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/tug.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/43-bonds-8-v1.png",
+  "source_sha256": "a527794a47c461490ca8af137544cb413861fbd04ce5c62aa58f3a9c93ad366e",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    23,
+    1232,
+    1254
+  ],
+  "scale": 0.5417970469971847,
+  "offset": [
+    178,
+    178
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "202c997f9b6e113a02859cce46a675b0bd224732196f3826d87a6df60aca48dd",
+  "exports": {
+    "256": "art/icons/tending/exports/256/bonds-8.png",
+    "128": "art/icons/tending/exports/128/bonds-8.png",
+    "64": "art/icons/tending/exports/64/bonds-8.png",
+    "48": "art/icons/tending/exports/48/bonds-8.png",
+    "44": "art/icons/tending/exports/44/bonds-8.png",
+    "32": "art/icons/tending/exports/32/bonds-8.png",
+    "24": "art/icons/tending/exports/24/bonds-8.png",
+    "16": "art/icons/tending/exports/16/bonds-8.png"
+  },
+  "export_sha256": {
+    "256": "30831ce5109731bc2ff1894367bf3982706e00a3eb9d5dd7321e531aeff2bc46",
+    "128": "ea39c7b97f30d11d10950fe1aa7328348f7c4382cc72fdfc81e7a5e901b4a0f3",
+    "64": "13591e4f845ce26f5ea98a0bfd5f023cec4935bcc9c8ca35c7245f820fae678e",
+    "48": "dc23e198dcb703c6180a8c1e6ae481e92939af1465062a934714d29ad248a4f7",
+    "44": "8c098df6bc742a483f13930854678fd13597bcf2e7c7f41f96bd09ed50009ea8",
+    "32": "99276c32c153b8a760a26d3d9d581ae8afcd70dc14dac0d7136abd345174a199",
+    "24": "35a8b23a6487ea9f12d1b1732d3101f4e1f201b290c9e700e5b4eb00a287c72b",
+    "16": "8c8da468cfc1f9886da4266f260438e942d17ddfca5f1fc3b50ef52fbd77ca2d"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

@@ -1,18 +1,11 @@
 # After-0.30 art checkpoint
 
-35/54 review candidates complete; 19 remain. Source brief pinned at45bb92679410814489d3bb5704a51e2754f04c97 on wip/lane-0.31-art. Branch starts at1317c61, preserving all prior41 version0.30 candidates.
+42/54 review candidates complete; 12 remain. Source brief pinned at45bb92679410814489d3bb5704a51e2754f04c97 on wip/lane-0.31-art. Branch starts at1317c61, preserving all prior41 version0.30 candidates.
 
 Read source-brief.md and planned-jobs.json. New candidates are in records/; master, native and all eight UI export hashes are recorded. No catalog entries or screen slots added: the brief assigns intake to Claude. Use catalog-intake-fragment.json. The old27 holds and all prior art remain untouched. Wick has the ceramic pixel screen/cape/lantern, no flame head/default cup.
 
 Remaining:
-- 36 Vow: Bare Hands ("By my own hands.") — art/icons/prayers/vow-bare.png
 - 37 Vow: No Magic but Theirs — art/icons/prayers/vow-unarmed-faith.png
-- 38 Vow: Nobody Left Behind — art/icons/prayers/vow-no-one-behind.png
-- 39 Witnessed (state sign) — art/icons/prayers/witnessed.png
-- 40 Threads — art/icons/tending/threads.png
-- 41 Threads That Hold — art/icons/tending/hold-down.png
-- 42 Two Bonds — art/icons/tending/bonds-5.png
-- 43 Three Bonds — art/icons/tending/bonds-8.png
 - 44 One More Bond — art/icons/tending/mender-bonds.png
 - 45 Credits — art/icons/resources/credits.png
 - 46 Experience — art/icons/resources/xp.png

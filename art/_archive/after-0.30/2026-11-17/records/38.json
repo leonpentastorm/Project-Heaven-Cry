@@ -1,0 +1,82 @@
+{
+  "number": 38,
+  "section": 5,
+  "family": "prayers",
+  "id": "vow-no-one-behind",
+  "path": "art/icons/prayers/vow-no-one-behind.png",
+  "name": "Vow: Nobody Left Behind",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "state": "in game now (a code line mark)",
+  "use": "The vow of the same name",
+  "paint": "Wick turned back over his shoulder, one hand reaching down to pull a partial figure up off the ground line.",
+  "avoid": "a stretcher \u00b7 a medic cross \u00b7 a crowd",
+  "file_key": "38-vow-no-one-behind",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick turned back over his shoulder, one hand reaching down to pull a partial figure up off the ground line.\nAVOID: a stretcher \u00b7 a medic cross \u00b7 a crowd",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/38-vow-no-one-behind-v1.png",
+  "source_sha256": "afcb65310ac95026905d474f577498f4acc162041451c2aadad4dba3bd98cbc7",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    7,
+    1242,
+    1254
+  ],
+  "scale": 0.5615236453959471,
+  "offset": [
+    163,
+    162
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "27b85eda71709a34ea2cbbb590352a60f1f3f87cc9ec578c9440d38244f6d39a",
+  "exports": {
+    "256": "art/icons/prayers/exports/256/vow-no-one-behind.png",
+    "128": "art/icons/prayers/exports/128/vow-no-one-behind.png",
+    "64": "art/icons/prayers/exports/64/vow-no-one-behind.png",
+    "48": "art/icons/prayers/exports/48/vow-no-one-behind.png",
+    "44": "art/icons/prayers/exports/44/vow-no-one-behind.png",
+    "32": "art/icons/prayers/exports/32/vow-no-one-behind.png",
+    "24": "art/icons/prayers/exports/24/vow-no-one-behind.png",
+    "16": "art/icons/prayers/exports/16/vow-no-one-behind.png"
+  },
+  "export_sha256": {
+    "256": "c03191b77c0449dee844b864e41c51a15886901753f4b2c1b184d525a6c391f7",
+    "128": "e7efadfd4087c4b037a7c490b05fd6387ff28875701085425c3368ca99fbe813",
+    "64": "2963ea90ae4d66e769ab97c117c237df77b714e367cf901e77b959f86c8d0135",
+    "48": "ac41eedfd8046118f642a1d7ae771c6843c7255cae0279bbe0adc75b5a332ccf",
+    "44": "e850d0fe76e95b4dc78fbc023bac0b61c040adb3cbf3f89e0e97afa9ea3ed3a9",
+    "32": "92f20c1f279f4ae4599c55d18e649d5c265081768ce5b08290fe35bdfed13d4a",
+    "24": "8bb3cfa115c53f59667c9c76f8180c41cad8bf9a592ce093f3174ee34ecff400",
+    "16": "f8f1dfae79c61ebd1b8440fe3e3cfbca0f4c0177572d11a24769f2dedce23a12"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

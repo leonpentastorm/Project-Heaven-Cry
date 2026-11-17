@@ -2838,5 +2838,578 @@
       "16": "1e60e67acf1d656bc3d0a8a7168c5b6102f9f2c90720f48ee0ca4f4c48640792"
     },
     "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 36,
+    "section": 5,
+    "family": "prayers",
+    "id": "vow-bare",
+    "path": "art/icons/prayers/vow-bare.png",
+    "name": "Vow: Bare Hands (\"By my own hands.\")",
+    "kind": "wick",
+    "mode": "Wick icon",
+    "state": "in game now (a code line mark)",
+    "use": "The vow of the same name: no weapon",
+    "paint": "Wick with two bare CERAMIC MITTEN FISTS raised beside his pixel-screen cheeks. An unmistakable small sword with a sharp tapered triangular blade, crossguard and grip lies discarded horizontally behind his boots. Bare flat ceramic head top; no flame, no headdress or head prop. Cape wedge and lantern chest visible.",
+    "avoid": "boxing gloves \u00b7 a martial-art pose from any known work",
+    "file_key": "36-vow-bare",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick with two bare CERAMIC MITTEN FISTS raised beside his pixel-screen cheeks. An unmistakable small sword with a sharp tapered triangular blade, crossguard and grip lies discarded horizontally behind his boots. Bare flat ceramic head top; no flame, no headdress or head prop. Cape wedge and lantern chest visible.\nAVOID: literal flame anywhere, head crown, boxing gloves, duplicated arms, known martial-art pose.",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/36-vow-bare-v2.png",
+    "source_sha256": "b3e062cf04d1d4162a49d3fadd34f3f4775d422955d03cbe2be913b9f6a70a84",
+    "generation_attempt": 2,
+    "export_crop": [
+      0,
+      21,
+      1234,
+      1254
+    ],
+    "scale": 0.5380379446617942,
+    "offset": [
+      180,
+      180
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "f7681864e7cafd70931af8c5dd22671f7f639e9b236d1c3be8d2c5296b44407f",
+    "exports": {
+      "256": "art/icons/prayers/exports/256/vow-bare.png",
+      "128": "art/icons/prayers/exports/128/vow-bare.png",
+      "64": "art/icons/prayers/exports/64/vow-bare.png",
+      "48": "art/icons/prayers/exports/48/vow-bare.png",
+      "44": "art/icons/prayers/exports/44/vow-bare.png",
+      "32": "art/icons/prayers/exports/32/vow-bare.png",
+      "24": "art/icons/prayers/exports/24/vow-bare.png",
+      "16": "art/icons/prayers/exports/16/vow-bare.png"
+    },
+    "export_sha256": {
+      "256": "9418183beb9df0be93fb3aae3bcfbe581a8797b47cfbdc746310de72f324de31",
+      "128": "a5bb97b60cbea2a4439cfe1c2bf13b250b52daf7ded2edbcd87ee2edac583fb1",
+      "64": "35dcf88d6a80c9b92c0102e3952eeed63dec7294ecce35bc78648b39c093b634",
+      "48": "7fb92f908658288096686b497637581967a6fc1f750cb2e7717c15dcba3545c6",
+      "44": "18b810aadba9eb02955c0b2aef25f473f8a8f3b37f6a5620ccfc344da6db6e1d",
+      "32": "2381381890757d13633ef83f60f38613f3ac6a06485a48cfd5ef7938d412330d",
+      "24": "8d6c74356bca0eed96845f0fd09a02493b8d72cc844cd0012ffdf30509230e81",
+      "16": "5929a5ac220158c5f7e7ba67fdb5837aba4bb17427f177ac1d4877d37301412c"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 38,
+    "section": 5,
+    "family": "prayers",
+    "id": "vow-no-one-behind",
+    "path": "art/icons/prayers/vow-no-one-behind.png",
+    "name": "Vow: Nobody Left Behind",
+    "kind": "wick",
+    "mode": "Wick icon",
+    "state": "in game now (a code line mark)",
+    "use": "The vow of the same name",
+    "paint": "Wick turned back over his shoulder, one hand reaching down to pull a partial figure up off the ground line.",
+    "avoid": "a stretcher \u00b7 a medic cross \u00b7 a crowd",
+    "file_key": "38-vow-no-one-behind",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick turned back over his shoulder, one hand reaching down to pull a partial figure up off the ground line.\nAVOID: a stretcher \u00b7 a medic cross \u00b7 a crowd",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/38-vow-no-one-behind-v1.png",
+    "source_sha256": "afcb65310ac95026905d474f577498f4acc162041451c2aadad4dba3bd98cbc7",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      7,
+      1242,
+      1254
+    ],
+    "scale": 0.5615236453959471,
+    "offset": [
+      163,
+      162
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "27b85eda71709a34ea2cbbb590352a60f1f3f87cc9ec578c9440d38244f6d39a",
+    "exports": {
+      "256": "art/icons/prayers/exports/256/vow-no-one-behind.png",
+      "128": "art/icons/prayers/exports/128/vow-no-one-behind.png",
+      "64": "art/icons/prayers/exports/64/vow-no-one-behind.png",
+      "48": "art/icons/prayers/exports/48/vow-no-one-behind.png",
+      "44": "art/icons/prayers/exports/44/vow-no-one-behind.png",
+      "32": "art/icons/prayers/exports/32/vow-no-one-behind.png",
+      "24": "art/icons/prayers/exports/24/vow-no-one-behind.png",
+      "16": "art/icons/prayers/exports/16/vow-no-one-behind.png"
+    },
+    "export_sha256": {
+      "256": "c03191b77c0449dee844b864e41c51a15886901753f4b2c1b184d525a6c391f7",
+      "128": "e7efadfd4087c4b037a7c490b05fd6387ff28875701085425c3368ca99fbe813",
+      "64": "2963ea90ae4d66e769ab97c117c237df77b714e367cf901e77b959f86c8d0135",
+      "48": "ac41eedfd8046118f642a1d7ae771c6843c7255cae0279bbe0adc75b5a332ccf",
+      "44": "e850d0fe76e95b4dc78fbc023bac0b61c040adb3cbf3f89e0e97afa9ea3ed3a9",
+      "32": "92f20c1f279f4ae4599c55d18e649d5c265081768ce5b08290fe35bdfed13d4a",
+      "24": "8bb3cfa115c53f59667c9c76f8180c41cad8bf9a592ce093f3174ee34ecff400",
+      "16": "f8f1dfae79c61ebd1b8440fe3e3cfbca0f4c0177572d11a24769f2dedce23a12"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 39,
+    "section": 5,
+    "family": "prayers",
+    "id": "witnessed",
+    "path": "art/icons/prayers/witnessed.png",
+    "name": "Witnessed (state sign)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a code line mark)",
+    "use": "Faith 5: from a Hymn or Miracle until the fight ends or the patron intervenes; on the faith tab and the token",
+    "paint": "An open eye with a short ray above it and one on each side, the pupil a solid round dot.",
+    "avoid": "an all-seeing-eye triangle or any real-world religious or secret-society symbol \u00b7 a camera",
+    "file_key": "39-witnessed",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: An open eye with a short ray above it and one on each side, the pupil a solid round dot.\nAVOID: an all-seeing-eye triangle or any real-world religious or secret-society symbol \u00b7 a camera",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/prayers/whisper-courage.png",
+      "art/icons/prayers/whisper-guidance.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/39-witnessed-v1.png",
+    "source_sha256": "e325f0f278139499bc96c172f764ae614a233624990eb215cccf435386dfad58",
+    "generation_attempt": 1,
+    "export_crop": [
+      9,
+      119,
+      1250,
+      1254
+    ],
+    "scale": 0.660757453666398,
+    "offset": [
+      102,
+      137
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "03fc99ffc20af369e828413fb6a78d27fb95268f9067c941c5f223b797b9657b",
+    "exports": {
+      "256": "art/icons/prayers/exports/256/witnessed.png",
+      "128": "art/icons/prayers/exports/128/witnessed.png",
+      "64": "art/icons/prayers/exports/64/witnessed.png",
+      "48": "art/icons/prayers/exports/48/witnessed.png",
+      "44": "art/icons/prayers/exports/44/witnessed.png",
+      "32": "art/icons/prayers/exports/32/witnessed.png",
+      "24": "art/icons/prayers/exports/24/witnessed.png",
+      "16": "art/icons/prayers/exports/16/witnessed.png"
+    },
+    "export_sha256": {
+      "256": "3bac5017ba795112b44db28214846227ef34c5b87cd22f48a4d899350b793789",
+      "128": "ebf2821cab27c1903e55f764c169214163868cf2fcf6722280cb9ea2bec76db7",
+      "64": "6c2633642384cfe2d92cf5d8891517c35fa51961c6521562951a0103b19127ab",
+      "48": "15553bec974611452c3dc974bde0a2ef72bdc22d3a12e887b652da18f39a3ae2",
+      "44": "b0a264c3acfe801d9431d7456511edd25cdb71f71eacf4f93bd752532cd3d3d1",
+      "32": "b672a409f6f34c3a51007bbc16e24a477e0f3a56f39f3eae2c131a9b3f9ea858",
+      "24": "42f78184b8e28655b4b03256c9176d92d9aae5370b0764c6ce296555c02d9d53",
+      "16": "59068503b3ae6a912ab9c59b50fbddd8ebeb4c3565e1feac3f24309bac2cb3c8"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 40,
+    "section": 6,
+    "family": "tending_icons",
+    "id": "tend-threads",
+    "path": "art/icons/tending/threads.png",
+    "name": "Threads",
+    "kind": "wick",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 no slot yet",
+    "use": "With an Attuner in hand, a share of the damage you take goes to the enemies you are Bonded to",
+    "paint": "Wick with two fine threads running from his chest out to two partial figures, a small impact star at each far end.",
+    "avoid": "a spider web \u00b7 puppet strings",
+    "file_key": "40-threads",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick with two fine threads running from his chest out to two partial figures, a small impact star at each far end.\nAVOID: a spider web \u00b7 puppet strings",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-6-wick-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/bond.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/tug.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/40-threads-v1.png",
+    "source_sha256": "775a1ddc15c428555d153244028b406cf9753665ddfa6c11828f1d9166ccbe02",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      39,
+      1248,
+      1230
+    ],
+    "scale": 0.585367681127712,
+    "offset": [
+      146,
+      163
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "d1d53731f35edc2bbd84b35360716a0126dc7ec2f055960a848219cbec7fed4b",
+    "exports": {
+      "256": "art/icons/tending/exports/256/threads.png",
+      "128": "art/icons/tending/exports/128/threads.png",
+      "64": "art/icons/tending/exports/64/threads.png",
+      "48": "art/icons/tending/exports/48/threads.png",
+      "44": "art/icons/tending/exports/44/threads.png",
+      "32": "art/icons/tending/exports/32/threads.png",
+      "24": "art/icons/tending/exports/24/threads.png",
+      "16": "art/icons/tending/exports/16/threads.png"
+    },
+    "export_sha256": {
+      "256": "554967f06bbde74ecb1be2e14f17a078c4bd7b81949588dd88f145836eb4940f",
+      "128": "376cef0910b22e1d196e98412e2b42abe7240b9f159273aa44b74c99cbec395e",
+      "64": "30b16874b6b48867c658ba181a3f34cb83fd94efe4010a8b3146fcf548f30d67",
+      "48": "e372a6fa0062b0b0dbd8fff7ee212ec6d1f911bbd2e7cfaee7c136852cf2790c",
+      "44": "8c46de8ee75534d66e2f56014017b48234aa8036dc0570b50b62713fa21a5d8d",
+      "32": "a097ccfd2e9a3927712740e8aa70435c3b65b974ce995d39757bd89a94619a49",
+      "24": "4ebc956fe3a2fe0943517574ae70494da6a67c0e6d46568db266515100c75d5d",
+      "16": "5d8d719c7158243d9e16b8c989067ee444b75ce7cf410935ae7e88a22edb5066"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 41,
+    "section": 6,
+    "family": "tending_icons",
+    "id": "tend-hold-down",
+    "path": "art/icons/tending/hold-down.png",
+    "name": "Threads That Hold",
+    "kind": "wick",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 no slot yet",
+    "use": "Your Bonds to allies hold while you are Downed",
+    "paint": "Wick down on one knee, his threads still taut and rising from his chest to two allies.",
+    "avoid": "a fallen figure with no threads \u00b7 chains",
+    "file_key": "41-hold-down",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick down on one knee, his threads still taut and rising from his chest to two allies.\nAVOID: a fallen figure with no threads \u00b7 chains",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-6-wick-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/bond.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/tug.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/41-hold-down-v1.png",
+    "source_sha256": "348f10e41e7428a7bd8618b4db264c1d51411b663bcfe791479728bb27d68268",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      71,
+      1228,
+      1254
+    ],
+    "scale": 0.5165175849153262,
+    "offset": [
+      195,
+      206
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "905f4b502f999b53dc0fb8f98f5020cf49cad3f8a41c5493bd326b9dc8f9117f",
+    "exports": {
+      "256": "art/icons/tending/exports/256/hold-down.png",
+      "128": "art/icons/tending/exports/128/hold-down.png",
+      "64": "art/icons/tending/exports/64/hold-down.png",
+      "48": "art/icons/tending/exports/48/hold-down.png",
+      "44": "art/icons/tending/exports/44/hold-down.png",
+      "32": "art/icons/tending/exports/32/hold-down.png",
+      "24": "art/icons/tending/exports/24/hold-down.png",
+      "16": "art/icons/tending/exports/16/hold-down.png"
+    },
+    "export_sha256": {
+      "256": "20eb1179d335e19917e3e693210dbcef32a9aed5127e52a85382e8bea840f3b8",
+      "128": "0507cc04253e56956edc2df8a4af1fcd3fd5ef9b2558dcaf6c064a23a27c60c1",
+      "64": "0bf45c3f21abda31de2aded62e18f2083045d8bd666c1200a18a276037d4dfa4",
+      "48": "ed47d8b49ff4f07d1de5ff005ba09156d98a5de00460c4a54ef7c35194527a42",
+      "44": "f7eedf4b2ed5468f1e2b8f9bce9ef69747018d6e5bedfbed5e2b96ecbc00e466",
+      "32": "233296846b8e3a7b1c92504825bf31a3d6f5639a668718a743875c0a5e1c0dc8",
+      "24": "1ddbc74e3e7013fb89c27a738bd46069ad22a987d255e8375de399e3a27172f0",
+      "16": "34ab9ae5334cb4eebd7e73654aa1c8cf2c8172a3106d444587d94f32984b4d4d"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 42,
+    "section": 6,
+    "family": "tending_icons",
+    "id": "tend-bonds-5",
+    "path": "art/icons/tending/bonds-5.png",
+    "name": "Two Bonds",
+    "kind": "wick",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 no slot yet",
+    "use": "You can hold one more Bond (two in all)",
+    "paint": "Wick holding two threads, one to each side, each tied to a small partial figure.",
+    "avoid": "the number 2 \u00b7 two equal full figures",
+    "file_key": "42-bonds-5",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick holding two threads, one to each side, each tied to a small partial figure.\nAVOID: the number 2 \u00b7 two equal full figures",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-6-wick-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/bond.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/tug.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/42-bonds-5-v1.png",
+    "source_sha256": "eb548ee3f2d9e0eb90275f8600b3b0b1d454b93a981fccdb1dbcf86cbf3e11d1",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      31,
+      1214,
+      1254
+    ],
+    "scale": 0.6704824202780049,
+    "offset": [
+      105,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "1e1594f9f169f130412f9f8b6dedd0d8a93633d5515b28ca636577ea436ac6be",
+    "exports": {
+      "256": "art/icons/tending/exports/256/bonds-5.png",
+      "128": "art/icons/tending/exports/128/bonds-5.png",
+      "64": "art/icons/tending/exports/64/bonds-5.png",
+      "48": "art/icons/tending/exports/48/bonds-5.png",
+      "44": "art/icons/tending/exports/44/bonds-5.png",
+      "32": "art/icons/tending/exports/32/bonds-5.png",
+      "24": "art/icons/tending/exports/24/bonds-5.png",
+      "16": "art/icons/tending/exports/16/bonds-5.png"
+    },
+    "export_sha256": {
+      "256": "b67abfd939de50c1930b52e3549dca8a210d356f2cf442d3672884004913e12e",
+      "128": "b92bdb68df9a8490c037878d28b906f9c502a6980fc5c00095a369392adcbd02",
+      "64": "f3204e09e3f20404b215b7e76e7e56a4f87f2ae15272ff8570f4ae6821e9bff7",
+      "48": "771a7e3cc142c1f87195af761d37a0dcd71a3126b0560e2e67e40b12464cae26",
+      "44": "604d268e31c53cd610f68af5a57f4f1050745cf9cae721ed18b13db5c3879b29",
+      "32": "03ce4df055010d1e19c3749992f91580497eaf912e69685e8b227b96abd70938",
+      "24": "dc353e9c807039cc951bc37e4bd15e3405c82b3a1e84321b388b7fab950b903a",
+      "16": "b3790520496be0097f0c5c44146b21f7d1bf85ac73ba6f531bb5363512b32ea1"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 43,
+    "section": 6,
+    "family": "tending_icons",
+    "id": "tend-bonds-8",
+    "path": "art/icons/tending/bonds-8.png",
+    "name": "Three Bonds",
+    "kind": "wick",
+    "mode": "Wick icon",
+    "state": "in game now \u00b7 no slot yet",
+    "use": "You can hold one more Bond (three in all)",
+    "paint": "Wick holding three threads fanning out to three small partial figures.",
+    "avoid": "the number 3 \u00b7 a web",
+    "file_key": "43-bonds-8",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick holding three threads fanning out to three small partial figures.\nAVOID: the number 3 \u00b7 a web",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-6-wick-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/bond.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/tug.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/43-bonds-8-v1.png",
+    "source_sha256": "a527794a47c461490ca8af137544cb413861fbd04ce5c62aa58f3a9c93ad366e",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      23,
+      1232,
+      1254
+    ],
+    "scale": 0.5417970469971847,
+    "offset": [
+      178,
+      178
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "202c997f9b6e113a02859cce46a675b0bd224732196f3826d87a6df60aca48dd",
+    "exports": {
+      "256": "art/icons/tending/exports/256/bonds-8.png",
+      "128": "art/icons/tending/exports/128/bonds-8.png",
+      "64": "art/icons/tending/exports/64/bonds-8.png",
+      "48": "art/icons/tending/exports/48/bonds-8.png",
+      "44": "art/icons/tending/exports/44/bonds-8.png",
+      "32": "art/icons/tending/exports/32/bonds-8.png",
+      "24": "art/icons/tending/exports/24/bonds-8.png",
+      "16": "art/icons/tending/exports/16/bonds-8.png"
+    },
+    "export_sha256": {
+      "256": "30831ce5109731bc2ff1894367bf3982706e00a3eb9d5dd7321e531aeff2bc46",
+      "128": "ea39c7b97f30d11d10950fe1aa7328348f7c4382cc72fdfc81e7a5e901b4a0f3",
+      "64": "13591e4f845ce26f5ea98a0bfd5f023cec4935bcc9c8ca35c7245f820fae678e",
+      "48": "dc23e198dcb703c6180a8c1e6ae481e92939af1465062a934714d29ad248a4f7",
+      "44": "8c098df6bc742a483f13930854678fd13597bcf2e7c7f41f96bd09ed50009ea8",
+      "32": "99276c32c153b8a760a26d3d9d581ae8afcd70dc14dac0d7136abd345174a199",
+      "24": "35a8b23a6487ea9f12d1b1732d3101f4e1f201b290c9e700e5b4eb00a287c72b",
+      "16": "8c8da468cfc1f9886da4266f260438e942d17ddfca5f1fc3b50ef52fbd77ca2d"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
   }
 ]

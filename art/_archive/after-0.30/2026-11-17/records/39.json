@@ -1,0 +1,81 @@
+{
+  "number": 39,
+  "section": 5,
+  "family": "prayers",
+  "id": "witnessed",
+  "path": "art/icons/prayers/witnessed.png",
+  "name": "Witnessed (state sign)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a code line mark)",
+  "use": "Faith 5: from a Hymn or Miracle until the fight ends or the patron intervenes; on the faith tab and the token",
+  "paint": "An open eye with a short ray above it and one on each side, the pupil a solid round dot.",
+  "avoid": "an all-seeing-eye triangle or any real-world religious or secret-society symbol \u00b7 a camera",
+  "file_key": "39-witnessed",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: An open eye with a short ray above it and one on each side, the pupil a solid round dot.\nAVOID: an all-seeing-eye triangle or any real-world religious or secret-society symbol \u00b7 a camera",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/prayers/whisper-courage.png",
+    "art/icons/prayers/whisper-guidance.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/39-witnessed-v1.png",
+  "source_sha256": "e325f0f278139499bc96c172f764ae614a233624990eb215cccf435386dfad58",
+  "generation_attempt": 1,
+  "export_crop": [
+    9,
+    119,
+    1250,
+    1254
+  ],
+  "scale": 0.660757453666398,
+  "offset": [
+    102,
+    137
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "03fc99ffc20af369e828413fb6a78d27fb95268f9067c941c5f223b797b9657b",
+  "exports": {
+    "256": "art/icons/prayers/exports/256/witnessed.png",
+    "128": "art/icons/prayers/exports/128/witnessed.png",
+    "64": "art/icons/prayers/exports/64/witnessed.png",
+    "48": "art/icons/prayers/exports/48/witnessed.png",
+    "44": "art/icons/prayers/exports/44/witnessed.png",
+    "32": "art/icons/prayers/exports/32/witnessed.png",
+    "24": "art/icons/prayers/exports/24/witnessed.png",
+    "16": "art/icons/prayers/exports/16/witnessed.png"
+  },
+  "export_sha256": {
+    "256": "3bac5017ba795112b44db28214846227ef34c5b87cd22f48a4d899350b793789",
+    "128": "ebf2821cab27c1903e55f764c169214163868cf2fcf6722280cb9ea2bec76db7",
+    "64": "6c2633642384cfe2d92cf5d8891517c35fa51961c6521562951a0103b19127ab",
+    "48": "15553bec974611452c3dc974bde0a2ef72bdc22d3a12e887b652da18f39a3ae2",
+    "44": "b0a264c3acfe801d9431d7456511edd25cdb71f71eacf4f93bd752532cd3d3d1",
+    "32": "b672a409f6f34c3a51007bbc16e24a477e0f3a56f39f3eae2c131a9b3f9ea858",
+    "24": "42f78184b8e28655b4b03256c9176d92d9aae5370b0764c6ce296555c02d9d53",
+    "16": "59068503b3ae6a912ab9c59b50fbddd8ebeb4c3565e1feac3f24309bac2cb3c8"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}
