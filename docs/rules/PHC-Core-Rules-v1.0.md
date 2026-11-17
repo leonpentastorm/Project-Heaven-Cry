@@ -12123,9 +12123,13 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     are unchanged. PROVISIONAL.
 5203. **The preview shows the price (D).** Reproduced through `previewDescriptor`: a Shot at a 1-HP foe with Grim
     Reaper showed "0 AP" (and "Shot · 0 AP" on the screen) and charged 2: the preview took the AP the trial run of the
-    action lost, and the kill's +2 AP back cancelled the price. The preview's AP is now the price function's: the row's
-    price (`priceOf`) before a target is picked, the system's own preview for the aimed action after; the trial run's
-    loss stands in only where no system priced the action and it is higher. No number changed.
+    action lost, and the kill's +2 AP back cancelled the price. Before a target is picked the preview shows the row's
+    price (`priceOf`). Once the action is aimed it shows what the reducer's own trial run **charged**: what `pay()` took
+    from the unit, less what `refund()` gave back (`previewAction`, a meter on the copy only), never the AP the unit is
+    down afterwards, so AP given on top (Grim Reaper's kill, a Quicken) does not lower it, and a price the aimed action
+    really brings to 0 reads 0 (the Evoker blade's Edge Word, Twin Draw's free glyphs, a keystone's free glyph: a review
+    of the first fix found it showed the row's 1 AP there and charged 0). A system's aimed price of 0 is kept as 0. No
+    number changed.
 5204. **Mag Dump spends the rounds of the rolls it makes (B).** Reproduced through `combat/technique`: with a full
     magazine and a target that stands, the dump makes `max_rolls` **3** rolls, each logged with its own to-hit, and
     spends 3 x `rounds_per_roll` **4** = 12 rounds (correct). With a target that falls to the first roll, it logged one

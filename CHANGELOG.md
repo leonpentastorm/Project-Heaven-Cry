@@ -19,7 +19,7 @@ Survival to stop 10). Each lead reproduced through the real path, fixed at its c
   Spare toggle say so.
 - **Clean Hands** gives its shield at most twice a fight (`per_fight` 2, was once a turn); it is the base shield (the
   larger stands). The reviewer's "+24 to 29 per spare" was Clean Hands itself (15% of max HP x Conscience's feed).
-- **The preview's AP is the price**, not the AP a trial run lost (a kill's AP back made "Shot · 0 AP").
+- **The preview's AP is the price**, not the AP a trial run lost (a kill's AP back made "Shot · 0 AP"): the aimed action shows what the trial run charged (pay less refund), so a glyph an Edge Word or Twin Draw makes free reads 0 AP.
 - **Mag Dump** spends the rounds of the rolls it makes: a target that falls to the first roll keeps 8 of 12 rounds in the
   gun, and the Heat does not jump to the limit (golden costs-pad re-recorded on purpose: one line).
 - **Thrown items in the pack** (grenades, the flashbang, charges) are thrown from the Attack tab: one row each, a tile

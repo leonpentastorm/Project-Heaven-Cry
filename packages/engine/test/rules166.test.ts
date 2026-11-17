@@ -70,6 +70,32 @@ describe('D: the preview price (item 5203)', () => {
     const before = f.unit(f.pc.id).ap; f.act({ unitId: f.pc.id, ...pv.action } as any);
     expect(f.unit(f.foe.id).dead).toBe(true); expect(f.unit(f.pc.id).ap).toBe(before - 2 + 2); // charged 2, then the kill's +2
   });
+  // the review of D: a price the aimed action really brings to 0 reads 0, not the row's 1 (the preview is the charge)
+  const caster = (spec: any = {}) => {
+    const f = fightWith([{ archetype: 'sigilist', kit: 'sigil', ...spec }], [{ at: 'E6', tier: 'minion', name: 'Foe 1' }]);
+    open(f.cb); f.cb.mana = 15; f.pc.pos = '3,5'; f.foe.pos = '4,5';
+    for (const x of [f.pc, f.foe]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.hidden = false; }
+    f.turn(f.pc); f.pc.ap = 9; Object.assign(f.pc.mg!, { evoker: true, words: ['fire', 'seek', 'bind', 'condense'], charge: 999, glyphAp: 1, maxWords: 4, flux: -99 });
+    return f;
+  };
+  const drawn = (f: F, word: string, tile: string) => {
+    f.pc.pos = tile; const pv = previewDescriptor(f.g, f.pc.id, 'draw', { word, tile })!;
+    expect(pv.ok).toBe(true); const before = f.unit(f.pc.id).ap; f.act({ unitId: f.pc.id, ...pv.action } as any);
+    return { shown: pv.ap, paid: before - f.unit(f.pc.id).ap };
+  };
+  it("the Evoker blade's Edge Word: the glyph after a hit previews 0 AP and is charged 0", () => {
+    const f = caster({ weapon: 'evoker_blade' }); f.pc.weapon = 'evoker_blade'; sure(f.pc);
+    f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode: 'shot' } as any);
+    expect(f.unit(f.pc.id).edgeWord).toBeTruthy();
+    expect(drawn(f, 'fire', '3,5')).toEqual({ shown: 0, paid: 0 });
+    expect(drawn(f, 'seek', '3,6')).toEqual({ shown: 1, paid: 1 }); // only the one
+  });
+  it("Twin Draw: the second spell's free glyphs preview 0 AP, the paid one 1, each as charged", () => {
+    const f = caster({ skills: { brain_power: 5 } });
+    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'skill:brain_power.5', actionId: 'twin_draw' } as any);
+    expect([drawn(f, 'fire', '4,5'), drawn(f, 'seek', '3,5')]).toEqual([{ shown: 1, paid: 1 }, { shown: 1, paid: 1 }]);
+    expect([drawn(f, 'bind', '4,8'), drawn(f, 'seek', '5,8'), drawn(f, 'condense', '6,8')].map((d) => d.shown === d.paid && d.paid)).toEqual([0, 0, 1]);
+  });
 });
 
 describe('B: Mag Dump (item 5204)', () => {

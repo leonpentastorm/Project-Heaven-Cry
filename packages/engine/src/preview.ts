@@ -93,7 +93,15 @@ export interface ActionVerdict { ok: boolean; /** the reducer's refusal, in its 
  * the whole game, so ask it for the action a player has picked, not for every tile of a map. */
 export function previewAction(g: GameState, action: Action, by: string): ActionVerdict {
   const uid = (action as any).unitId, apOf = (x: GameState) => x.combat?.units.find((u) => u.id === uid)?.ap ?? 0;
-  try { const after = apply(g, action, by); return { ok: true, why: null, ap: Math.max(0, Math.round((apOf(g) - apOf(after)) * 100) / 100), g: after }; }
+  // rules 1.66 item 5203: the AP is what pay() took (less what refund() gave back) on the copy (cb.apPaid,
+  // effects/cost.ts), not the AP the unit is down afterwards: a kill's AP back (Grim Reaper) is not a lower price
+  const seed: GameState = g.combat ? ({ ...g, combat: { ...g.combat, apPaid: {} } } as any) : g;
+  try {
+    const after = apply(seed, action, by), paid = (after.combat as any)?.apPaid;
+    if (paid) delete (after.combat as any).apPaid;
+    const ap = paid ? paid[uid] || 0 : apOf(g) - apOf(after);
+    return { ok: true, why: null, ap: Math.max(0, Math.round(ap * 100) / 100), g: after };
+  }
   catch (e: any) { if (e instanceof RuleError) return { ok: false, why: e.message, ap: 0, g: null }; throw e; }
 }
 

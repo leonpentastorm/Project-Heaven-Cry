@@ -719,7 +719,7 @@ function techPreviewOf(x: DescCtx, t: { hand: string; id: string; item?: string 
   const units = [...new Set([...(pv.attacks || []).map((a: any) => a.target), ...(pv.pressure || []).map((q: any) => q.unit)])].map((id) => ({ id: id as string, tag: pct(id as string), tone: 'harm' as const }));
   const tiles: GridMarks['tiles'] = [...(pv.area || []), ...(pv.moves || []).map((m: any) => m.to)].map((k: string) => ({ tile: k, kind: 'area' as const }));
   for (const [k, band] of techReach(x, t)) tiles.push({ tile: k, kind: 'reach', band });
-  return { lines, ap: whole.ap || undefined, ok: !!whole.ok, why: whole.ok ? null : whole.why || 'Not now.', rolls: (pv.attacks || []).filter((a: any) => a.pv).map((a: any) => ({ unit: a.target, pv: a.pv })), marks: { units, tiles } };
+  return { lines, ap: whole.ok ? whole.ap ?? undefined : whole.ap || undefined, ok: !!whole.ok, why: whole.ok ? null : whole.why || 'Not now.', rolls: (pv.attacks || []).filter((a: any) => a.pv).map((a: any) => ({ unit: a.target, pv: a.pv })), marks: { units, tiles } };
 }
 /** Where a technique aimed at an enemy can strike from here (the red area): its weapon's reach, a shield's Bash next to
  * you, and a melee technique that moves first further (Lunge's step, Charge's run on the AP left after the strike). */
@@ -830,7 +830,7 @@ const CALLS: ActionSystem = {
     // the tiles it reaches from the speaker (its own tile too: a Call to yourself)
     const reach: GridMarks['tiles'] = [];
     if (e) for (let y = 0; y < x.cb.map.h; y++) for (let xx = 0; xx < x.cb.map.w; xx++) { const k = xx + ',' + y; if (dist(x.u.pos, k) <= e.range) reach.push({ tile: k, kind: 'reach' }); }
-    return { ok: pv.ok, why: pv.ok ? null : pv.why || 'Not now.', ap: pv.ap || undefined, lines, marks: { units: [{ id: tgt, tag: '', tone: 'target' }], tiles: reach } };
+    return { ok: pv.ok, why: pv.ok ? null : pv.why || 'Not now.', ap: pv.ok ? pv.ap ?? undefined : pv.ap || undefined, lines, marks: { units: [{ id: tgt, tag: '', tone: 'target' }], tiles: reach } };
   },
 };
 
@@ -1136,10 +1136,10 @@ export function previewDescriptor(g: GameState, unitId: string, id: string, pick
   if (action && out.ok) {
     const run = mendsIn(() => safe(() => previewAction(g, action, x.by), { ok: false, why: 'Not now.', ap: 0, g: null } as any)), vd = run.out;
     out.ok = vd.ok; out.why = vd.ok ? null : vd.why; out.action = vd.ok ? action : null;
-    // rules 1.66 item 5203: the price is the price function's (the row's, or the system's preview for the aimed action),
-    // never the AP the trial run lost: a kill's AP back (Grim Reaper), a refund or a free follow-up made a Shot read
-    // "0 AP" and then charge 2 on confirm. The run's loss stands in only where no system priced it and it is higher.
-    if (vd.ok && !(extra && typeof extra.ap === 'number')) out.ap = Math.max(out.ap, vd.ap);
+    // rules 1.66 item 5203: the price is what the reducer's own run charged (pay(), less refund(): previewAction),
+    // never the AP the unit is down after it: a kill's AP back (Grim Reaper) made a Shot read "0 AP" and then charge 2.
+    // A price the aimed action really brings to 0 (an Edge Word, Twin Draw's second spell) reads 0.
+    if (vd.ok) out.ap = vd.ap;
     // E2: a heal's or a shield's gain on the picked unit, from the reducer's own run on the copy (a prayer says its own,
     // from its answer: FAITH.preview)
     // (the mend's line first: the hover line reads the first notes)

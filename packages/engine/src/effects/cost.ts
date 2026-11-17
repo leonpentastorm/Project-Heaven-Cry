@@ -263,8 +263,17 @@ export function pay(cb: Combat | null | undefined, u: Unit, p: Priced | number, 
     const e = Math.min(cr.encore - cr.encoreUsed, due); cr.encoreUsed += e; due -= e;
   }
   if (due) (u as any).ap = r10(u.ap - due);
+  if (due) paidNote(cb, u, due);
   if (typeof p !== 'number') for (const [id, n] of Object.entries(p.res)) if (n) resAdd(u, id, -n, o.c);
   return due;
+}
+/** rules 1.66 item 5203 (the review): the price a dry run paid. previewAction opens cb.apPaid on its copy; pay() adds
+ * the AP it took from the unit, refund() takes back what it gave the unit. AP given on top (a kill's Grim Reaper, a
+ * Quicken) is not a refund and is not counted, so the preview reads what the action is charged. Inside freely() nothing
+ * is really taken (the AP is put back), so nothing is noted. A real game never carries cb.apPaid. */
+function paidNote(cb: Combat | null | undefined, u: Unit, n: number): void {
+  const m = (cb as any)?.apPaid; if (!m || FREE.has(u)) return;
+  m[u.id] = r10((m[u.id] || 0) + n);
 }
 /** Give a cost back, each resource to where it came from. The AP goes back where pay() took it: while the action that
  * paid is still running, first to its credit (Encore's part, then the Brief's: the reverse of pay), so a refunded
@@ -278,7 +287,7 @@ export function refund(cb: Combat | null | undefined, u: Unit, p: Priced | numbe
     const b = Math.min(cr.briefUsed, ap); cr.briefUsed = r10(cr.briefUsed - b); ap = r10(ap - b);
     cr.paid = r10(cr.paid - e - b - ap); // paid counts what the action cost in all (settleCredit)
   }
-  if (ap) (u as any).ap = r10(u.ap + ap);
+  if (ap) { (u as any).ap = r10(u.ap + ap); paidNote(cb, u, -ap); }
   if (typeof p !== 'number') for (const [id, n] of Object.entries(p.res)) if (n) resAdd(u, id, n, o.c);
 }
 /** A meter for what an action takes IN ALL: `const taken = apMeter(cb, u)` before it, `taken()` after it is the AP it
