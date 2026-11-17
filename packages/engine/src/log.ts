@@ -57,3 +57,6 @@ export function remarkOpening(cb: Combat) {
   const at = cb.log.findIndex((l, i) => i < 4 && l.startsWith('Initiative: ')); if (at < 0) return;
   putMark(cb, at, markOf(cb, cb.log[at]), false);
 }
+
+/** Rules 1.66 item 5213: a count of tiles in words, singular for one ("1 tile", "3 tiles"). */
+export const tilesN = (n: number | string | undefined): string => n + (Number(n) === 1 ? ' tile' : ' tiles');

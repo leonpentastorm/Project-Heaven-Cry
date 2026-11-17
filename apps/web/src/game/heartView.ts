@@ -5,6 +5,7 @@
 // Nothing here works a rule out: every cost, refusal, number and tile comes from the engine (previewOutburstPlan,
 // previewPump, outburstArea through the plan, designCost, designRange, heartReach, formSize, the cycle's own actions run
 // on a throwaway copy). The held heart and Strain are read through resources.ts heldOutburstOf(), the panel's adapter.
+import { tilesN } from '@engine';
 import { inverseShield, outburstHeal, SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, SOUL_RULES, damageModeMult, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
   previewOutburst, previewOutburstPlan, previewPump, pumpsMp, togglesFor, swellBlockedWhy, dryRun, fightWith, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
   type OutburstPlan, type OutburstAffected } from '@engine';
@@ -61,7 +62,7 @@ export function shapeText(d: any): string {
  * ('cone 3 from you', 'line 4 from you'); an Aura sits on you ('around you'). m: the caster's magic, or {soulRange}. */
 export function reachWords(m: any, d0: any): string {
   const d = migrateDesign(d0), f = formOf(d) as Form, mm = m || { costSave: 0, soulRange: 0 }, n = formSize(d);
-  return f === 'bolt' || f === 'burst' ? 'reach ' + designRange(mm, d) + ' tiles' : f === 'wave' ? 'cone ' + n + ' from you' : f === 'lance' ? 'line ' + n + ' from you' : 'radius ' + n + ' around you';
+  return f === 'bolt' || f === 'burst' ? 'reach ' + tilesN(designRange(mm, d)) : f === 'wave' ? 'cone ' + n + ' from you' : f === 'lance' ? 'line ' + n + ' from you' : 'radius ' + n + ' around you';
 }
 export interface DesignInfo { id: string; name: string; form: Form; formName: string; icon: string; tone: string; toneName: string; ink: string; reach: number; mp: number; line: string; schools: string; title: string; isArea: boolean }
 /** A design card's facts, all from the engine: "WAVE · cone 3 from you · Fire · 30 MP", "BOLT · one target · reach 4 ·

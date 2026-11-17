@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 35 triggers, 94 predicates, 29 ops, 101 effect ops, 125 hooks, 3 never emitted, 18 profiles, 42 cost sites, 15 resources, 64 stats, 25 condition fields, 671 primitive exports, 2145 other exports, 130 fx kinds, 11 data fx kinds, 18 op-written context fields, 178 Unit fields, 61 Combat fields, 41 guards.
+Counts: 35 triggers, 94 predicates, 29 ops, 101 effect ops, 125 hooks, 3 never emitted, 18 profiles, 42 cost sites, 15 resources, 64 stats, 25 condition fields, 672 primitive exports, 2145 other exports, 130 fx kinds, 11 data fx kinds, 18 op-written context fields, 178 Unit fields, 61 Combat fields, 41 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -318,76 +318,76 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 
 | hook | what for | payload fields | fired at | heard at (first) | item-op trigger |
 | --- | --- | --- | --- | --- | --- |
-| `combat_start` | the fight begins: items set up their state, initiative order is known | `order` | combat.ts:1708 | classes/i.ts:559 (+44) | `combat_start` |
-| `round_start` | a new round begins (after the last unit of the round acted) | `round` | combat.ts:1850 | calls/rules.ts:109 (+15) | `round_start` |
-| `turn_start_pre` | a unit's turn is about to begin: its AP are being counted (grants and penalties) | `u`, `grants`, `penalties` | combat.ts:1729 | calls/rules.ts:93 (+30) | `turn_ap` |
-| `turn_start` | a unit's turn has begun | `u` | combat.ts:1775 | classes/i.ts:253 (+54) | `turn_start` |
-| `turn_end` | a unit's turn ends, before the turn passes | `u` | combat.ts:1838 | calls/rules.ts:101 (+32) | `turn_end` |
-| `move_cost` | a walk is priced before it is paid (free steps, a cheaper or dearer move, no opportunity strikes) | `u`, `from`, `to`, `route`, `tiles`, `how`, `ap`, `skipOA`, `skipOW`, `free`, `mods`, `preview` | combat.ts:1955 | classes/i.ts:307 (+16) |  |
-| `move_step` | a walking unit enters a tile (a step may be stopped; held shots and traps read it) | `u`, `from`, `at`, `i`, `route`, `how`, `stop`, `skipOW`, `noWatch`, `flush`, `forced`, `technique` | combat.ts:1982 (+2) | classes/j.ts:237 (+11) |  |
-| `moved` | a unit finished a move of its own | `u`, `from`, `to`, `tiles`, `how`, `forced`, `route`, `stopped`, `part` | classes/rev3.ts:384 (+2) | classes/i.ts:361 (+23) | `moved` |
-| `forced_move` | a unit is about to be pushed, pulled, thrown or teleported (cancel, fewer tiles) | `u`, `by`, `tiles`, `how`, `kind`, `pull`, `cancel` | combat.ts:2208 | classes/i.ts:362 (+6) | `forced_move` |
-| `attack_preview` | an attack is being sized up: its to-hit terms, its AP, a refusal; also every preview | `att`, `tgt`, `mode`, `melee`, `ap`, `techAp`, `reach`, `ignoreCover`, `terms`, `fail`, `free`, `preview`, `volleyCost`, `mods`, `noRecoil`, `volley`, `tech`, `seeVeil`, `noLos`, `coverTile`, `coverWhy`, `ignoreTaunt`, `bandsLess` | combat.ts:465 (+2) | calls/rules.ts:20 (+45) | `attack` |
-| `attack_target` | a resolved attack picks its target: items may redirect it or answer it first (cancel) | `att`, `tgt`, `orig`, `mode`, `volley`, `vi`, `free`, `mods`, `locked`, `cancel`, `why` | combat.ts:1498 | calls/rules.ts:43 (+15) |  |
-| `attack_roll` | an attack's d20 is rolled: items may change the die or the result | `att`, `tgt`, `mode`, `die`, `toHit`, `need`, `critMin`, `noFumble`, `ambush`, `hit`, `volley`, `via`, `tech`, `techAp`, `mods` | combat.ts:1529 | classes/i.ts:162 (+35) | `attack_roll` |
-| `damage_out` | an amount of damage is being made (before armour): multipliers and target bonuses | `att`, `tgt`, `mode`, `melee`, `via`, `src`, `base`, `add`, `mults`, `vs`, `crit`, `preview`, `tech`, `mods`, `pierce`, `ignoreArmour`, `critBonus`, `volley`, `spec` | combat.ts:1438 (+1) | classes/i.ts:917 (+24) | `dealing` |
-| `on_hit` | an attack hit | `att`, `tgt`, `mode`, `dmg`, `crit`, `killed`, `melee`, `via`, `volley`, `tech`, `mods` | combat.ts:1605 | classes/i.ts:560 (+43) | `hit` |
-| `on_miss` | an attack missed | `att`, `tgt`, `mode`, `die`, `fumble`, `melee`, `via`, `volley`, `stopped`, `mods` | combat.ts:1606 | classes/i.ts:1115 (+29) | `miss` |
-| `damage_in` | damage is landing on a unit, in phases (reduce, shield, would_drop_to_0, after) | `t`, `src`, `dmg`, `phase`, `hostile`, `self`, `guard0` | effects/damage.ts:88 (+3) | classes/i.ts:366 (+33) | `taking`, `would_drop` |
+| `combat_start` | the fight begins: items set up their state, initiative order is known | `order` | combat.ts:1709 | classes/i.ts:560 (+44) | `combat_start` |
+| `round_start` | a new round begins (after the last unit of the round acted) | `round` | combat.ts:1851 | calls/rules.ts:109 (+15) | `round_start` |
+| `turn_start_pre` | a unit's turn is about to begin: its AP are being counted (grants and penalties) | `u`, `grants`, `penalties` | combat.ts:1730 | calls/rules.ts:93 (+30) | `turn_ap` |
+| `turn_start` | a unit's turn has begun | `u` | combat.ts:1776 | classes/i.ts:254 (+54) | `turn_start` |
+| `turn_end` | a unit's turn ends, before the turn passes | `u` | combat.ts:1839 | calls/rules.ts:101 (+32) | `turn_end` |
+| `move_cost` | a walk is priced before it is paid (free steps, a cheaper or dearer move, no opportunity strikes) | `u`, `from`, `to`, `route`, `tiles`, `how`, `ap`, `skipOA`, `skipOW`, `free`, `mods`, `preview` | combat.ts:1956 | classes/i.ts:308 (+16) |  |
+| `move_step` | a walking unit enters a tile (a step may be stopped; held shots and traps read it) | `u`, `from`, `at`, `i`, `route`, `how`, `stop`, `skipOW`, `noWatch`, `flush`, `forced`, `technique` | combat.ts:1983 (+2) | classes/j.ts:237 (+11) |  |
+| `moved` | a unit finished a move of its own | `u`, `from`, `to`, `tiles`, `how`, `forced`, `route`, `stopped`, `part` | classes/rev3.ts:384 (+2) | classes/i.ts:362 (+23) | `moved` |
+| `forced_move` | a unit is about to be pushed, pulled, thrown or teleported (cancel, fewer tiles) | `u`, `by`, `tiles`, `how`, `kind`, `pull`, `cancel` | combat.ts:2209 | classes/i.ts:363 (+6) | `forced_move` |
+| `attack_preview` | an attack is being sized up: its to-hit terms, its AP, a refusal; also every preview | `att`, `tgt`, `mode`, `melee`, `ap`, `techAp`, `reach`, `ignoreCover`, `terms`, `fail`, `free`, `preview`, `volleyCost`, `mods`, `noRecoil`, `volley`, `tech`, `seeVeil`, `noLos`, `coverTile`, `coverWhy`, `ignoreTaunt`, `bandsLess` | combat.ts:466 (+2) | calls/rules.ts:20 (+45) | `attack` |
+| `attack_target` | a resolved attack picks its target: items may redirect it or answer it first (cancel) | `att`, `tgt`, `orig`, `mode`, `volley`, `vi`, `free`, `mods`, `locked`, `cancel`, `why` | combat.ts:1499 | calls/rules.ts:43 (+15) |  |
+| `attack_roll` | an attack's d20 is rolled: items may change the die or the result | `att`, `tgt`, `mode`, `die`, `toHit`, `need`, `critMin`, `noFumble`, `ambush`, `hit`, `volley`, `via`, `tech`, `techAp`, `mods` | combat.ts:1530 | classes/i.ts:163 (+35) | `attack_roll` |
+| `damage_out` | an amount of damage is being made (before armour): multipliers and target bonuses | `att`, `tgt`, `mode`, `melee`, `via`, `src`, `base`, `add`, `mults`, `vs`, `crit`, `preview`, `tech`, `mods`, `pierce`, `ignoreArmour`, `critBonus`, `volley`, `spec` | combat.ts:1439 (+1) | classes/i.ts:918 (+24) | `dealing` |
+| `on_hit` | an attack hit | `att`, `tgt`, `mode`, `dmg`, `crit`, `killed`, `melee`, `via`, `volley`, `tech`, `mods` | combat.ts:1606 | classes/i.ts:561 (+43) | `hit` |
+| `on_miss` | an attack missed | `att`, `tgt`, `mode`, `die`, `fumble`, `melee`, `via`, `volley`, `stopped`, `mods` | combat.ts:1607 | classes/i.ts:1116 (+29) | `miss` |
+| `damage_in` | damage is landing on a unit, in phases (reduce, shield, would_drop_to_0, after) | `t`, `src`, `dmg`, `phase`, `hostile`, `self`, `guard0` | effects/damage.ts:88 (+3) | classes/i.ts:367 (+33) | `taking`, `would_drop` |
 | `on_damaged` | a unit lost HP | `t`, `src`, `dmg`, `prevHp` | effects/damage.ts:128 | classes/k.ts:1090 (+12) | `damaged` |
 | `on_downed` | a unit went down (Downed or dead) | `victim`, `by`, `src`, `ownTurn`, `dead` | effects/damage.ts:136 | classes/j.ts:819 (+18) | `downed` |
 | `on_kill` | a unit was dropped by an enemy (the killer gets the credit) | `victim`, `by`, `src`, `ownTurn` | effects/damage.ts:137 | classes/k.ts:112 (+6) | `kill` |
-| `cond_apply` | a condition is about to be put on a unit: its save, its rounds, a refusal | `by`, `t`, `id`, `fam`, `rounds`, `skipSave`, `cancel`, `why`, `tnAdd`, `saveAdd`, `arg`, `via`, `save` | magic.ts:350 (+3) | classes/i.ts:1042 (+25) | `cond_incoming` |
+| `cond_apply` | a condition is about to be put on a unit: its save, its rounds, a refusal | `by`, `t`, `id`, `fam`, `rounds`, `skipSave`, `cancel`, `why`, `tnAdd`, `saveAdd`, `arg`, `via`, `save` | magic.ts:351 (+3) | classes/i.ts:1043 (+25) | `cond_incoming` |
 | `save` | a save is rolled: items may add to it, change its TN, or pass or fail it outright | `by`, `t`, `id`, `fam`, `via`, `saveAdd`, `tnAdd`, `pass`, `fail`, `why` | rolls.ts:147 | none | `save` |
-| `cond_landed` | a condition landed on a unit | (a payload built elsewhere) | magic.ts:333 | classes/i.ts:363 (+12) | `cond_landed` |
-| `cond_end` | a condition ended on a unit | `u`, `id` | magic.ts:434 | classes/j.ts:191 (+2) | `cond_ended` |
-| `displaced` | a unit was moved by someone else, after it landed (where it ended, what stopped it) | `u`, `by`, `from`, `to`, `path`, `how`, `kind`, `stoppedBy`, `blockedAt` | combat.ts:2274 | none |  |
-| `heal_given` | a heal landed (who healed whom, how much) | `t`, `by`, `n`, `kind`, `revived`, `over` | combat.ts:2828 (+1) | classes/k.ts:1251 (+10) | `heal_given` |
+| `cond_landed` | a condition landed on a unit | (a payload built elsewhere) | magic.ts:334 | classes/i.ts:364 (+12) | `cond_landed` |
+| `cond_end` | a condition ended on a unit | `u`, `id` | magic.ts:435 | classes/j.ts:191 (+2) | `cond_ended` |
+| `displaced` | a unit was moved by someone else, after it landed (where it ended, what stopped it) | `u`, `by`, `from`, `to`, `path`, `how`, `kind`, `stoppedBy`, `blockedAt` | combat.ts:2275 | none |  |
+| `heal_given` | a heal landed (who healed whom, how much) | `t`, `by`, `n`, `kind`, `revived`, `over` | combat.ts:2829 (+1) | classes/k.ts:1251 (+10) | `heal_given` |
 | `heal_in` | a unit is about to be healed (the amount may change) | `t`, `by`, `n`, `kind` | effects/damage.ts:147 | classes/k.ts:1411 (+5) | `heal` |
-| `shield_grant` | a shield is about to be given (the amount may change) | `t`, `by`, `n`, `layer`, `kind` | effects/damage.ts:179 | classes/i.ts:1256 (+7) | `shield` |
-| `reaction_window` | a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it | `reactor`, `mover`, `kind`, `id`, `spend`, `cancel`, `at` | tactics.ts:148 | classes/i.ts:254 (+5) |  |
+| `shield_grant` | a shield is about to be given (the amount may change) | `t`, `by`, `n`, `layer`, `kind` | effects/damage.ts:179 | classes/i.ts:1257 (+7) | `shield` |
+| `reaction_window` | a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it | `reactor`, `mover`, `kind`, `id`, `spend`, `cancel`, `at` | tactics.ts:148 | classes/i.ts:255 (+5) |  |
 | `reaction` | a reaction is being made (tactics.ts react(), rules 1.28): {u, kind (attack, move, protect), event, payer}; it fires before the reaction resolves | `u`, `kind`, `event`, `payer` | tactics.ts:152 | none | `reaction` |
-| `enemy_action_start` | an enemy is about to act (an item may open a window or make it skip) | `u`, `step`, `skip` | combat.ts:2872 | calls/rules.ts:81 (+5) |  |
-| `sight_change` | after a move, the units each side stopped or started seeing (only computed while someone listens) | `side`, `lost`, `gained` | combat.ts:2034 | perks/c.ts:366 |  |
-| `sees` | a side's sight of a unit is decided: items may make it seen or unseen | `side`, `t`, `by`, `seen`, `sensed` | combat.ts:1113 | calls/rules.ts:85 (+4) |  |
+| `enemy_action_start` | an enemy is about to act (an item may open a window or make it skip) | `u`, `step`, `skip` | combat.ts:2873 | calls/rules.ts:81 (+5) |  |
+| `sight_change` | after a move, the units each side stopped or started seeing (only computed while someone listens) | `side`, `lost`, `gained` | combat.ts:2035 | perks/c.ts:367 |  |
+| `sees` | a side's sight of a unit is decided: items may make it seen or unseen | `side`, `t`, `by`, `seen`, `sensed` | combat.ts:1114 | calls/rules.ts:85 (+4) |  |
 | `object_destroyed` | an object on the grid was destroyed | `obj`, `by` | classes/k.ts:927 (+1) | deeds.ts:179 (+3) |  |
-| `reload` | a reload is made (its AP, the hand, tactical or speed) | `u`, `ap`, `special`, `quiver`, `both`, `tactical`, `hand` | classes/i.ts:201 (+3) | classes/i.ts:221 (+3) | `reload` |
-| `jam_clear` | a jam is being cleared (its AP, whether the heat is kept) | `u`, `ap`, `keepHeat`, `hand` | combat.ts:2783 (+2) | perks/c.ts:364 |  |
+| `reload` | a reload is made (its AP, the hand, tactical or speed) | `u`, `ap`, `special`, `quiver`, `both`, `tactical`, `hand` | classes/i.ts:202 (+3) | classes/i.ts:222 (+3) | `reload` |
+| `jam_clear` | a jam is being cleared (its AP, whether the heat is kept) | `u`, `ap`, `keepHeat`, `hand` | combat.ts:2784 (+2) | perks/c.ts:365 |  |
 | `swap` | a weapon swap is priced (declared; the item ops trigger `swap` listens here) | `u`, `c`, `from`, `mod`, `ap` | game.ts:2046 | classes/k.ts:1162 (+1) | `swap` |
-| `stood_up` | a prone unit stood up | `u` | combat.ts:2319 | none |  |
-| `glyph_cost` | a Sigil glyph is priced: its AP, charge and Flux; also every preview | `u`, `word`, `ap`, `charge`, `flux`, `preview`, `tile`, `fail` | sigil.ts:75 | classes/i.ts:628 (+11) | `glyph_cost` |
-| `evoke_cost` | an Evoke is priced: its AP and charge; also every preview | `u`, `pattern`, `ap`, `charge`, `preview`, `fail` | sigil.ts:623 | classes/i.ts:633 (+7) |  |
-| `outburst_cost` | an Outburst Begin is priced: its MP, AP, range and Strain | `u`, `design`, `mp`, `ap`, `range`, `strain`, `hp`, `release`, `preview`, `classMove`, `fail`, `relMult`, `relAll`, `relNotes` | classes/i.ts:120 (+1) | classes/i.ts:828 (+14) |  |
-| `outburst_begin` | an Outburst was begun (held at stage 0) | `u`, `design`, `hold`, `cost`, `hp`, `stage` | magic.ts:1068 | classes/i.ts:1181 (+10) |  |
-| `outburst_release` | an Outburst is being released: its multiplier may change | `u`, `design`, `stage`, `aim`, `wild`, `mult`, `form`, `tone`, `reaction`, `felt` | magic.ts:1479 | classes/i.ts:1234 (+11) |  |
-| `outburst_after` | an Outburst was released and resolved (its area, targets and hits) | `u`, `design`, `held`, `stage`, `aim`, `mult`, `riderStage`, `form`, `tone`, `area`, `targets`, `hits`, `wild`, `reaction`, `felt` | magic.ts:1577 | classes/i.ts:1197 (+2) |  |
-| `outburst_plan` | an Outburst's release is previewed (its stage, aim, area and targets) | `u`, `design`, `stage`, `mult`, `riderStage`, `aim`, `area`, `targets`, `affected`, `add`, `preview` | magic.ts:1899 | classes/i.ts:1185 |  |
-| `acted` | a unit's own action (or a verb inside it, as Analyze) succeeded: {u, t, action, tile, toggles, mode}; the item ops trigger `acted` listens here (Classes 3.0 P2) | `u`, `t`, `action`, `tile`, `toggles`, `mode`, `ap`, `choice` | combat.ts:2736 | classes/j.ts:303 (+3) | `acted` |
+| `stood_up` | a prone unit stood up | `u` | combat.ts:2320 | none |  |
+| `glyph_cost` | a Sigil glyph is priced: its AP, charge and Flux; also every preview | `u`, `word`, `ap`, `charge`, `flux`, `preview`, `tile`, `fail` | sigil.ts:75 | classes/i.ts:629 (+11) | `glyph_cost` |
+| `evoke_cost` | an Evoke is priced: its AP and charge; also every preview | `u`, `pattern`, `ap`, `charge`, `preview`, `fail` | sigil.ts:623 | classes/i.ts:634 (+7) |  |
+| `outburst_cost` | an Outburst Begin is priced: its MP, AP, range and Strain | `u`, `design`, `mp`, `ap`, `range`, `strain`, `hp`, `release`, `preview`, `classMove`, `fail`, `relMult`, `relAll`, `relNotes` | classes/i.ts:121 (+1) | classes/i.ts:829 (+14) |  |
+| `outburst_begin` | an Outburst was begun (held at stage 0) | `u`, `design`, `hold`, `cost`, `hp`, `stage` | magic.ts:1069 | classes/i.ts:1182 (+10) |  |
+| `outburst_release` | an Outburst is being released: its multiplier may change | `u`, `design`, `stage`, `aim`, `wild`, `mult`, `form`, `tone`, `reaction`, `felt` | magic.ts:1480 | classes/i.ts:1235 (+11) |  |
+| `outburst_after` | an Outburst was released and resolved (its area, targets and hits) | `u`, `design`, `held`, `stage`, `aim`, `mult`, `riderStage`, `form`, `tone`, `area`, `targets`, `hits`, `wild`, `reaction`, `felt` | magic.ts:1578 | classes/i.ts:1198 (+2) |  |
+| `outburst_plan` | an Outburst's release is previewed (its stage, aim, area and targets) | `u`, `design`, `stage`, `mult`, `riderStage`, `aim`, `area`, `targets`, `affected`, `add`, `preview` | magic.ts:1900 | classes/i.ts:1186 |  |
+| `acted` | a unit's own action (or a verb inside it, as Analyze) succeeded: {u, t, action, tile, toggles, mode}; the item ops trigger `acted` listens here (Classes 3.0 P2) | `u`, `t`, `action`, `tile`, `toggles`, `mode`, `ap`, `choice` | combat.ts:2737 | classes/j.ts:303 (+3) | `acted` |
 | `combat_end` | the fight ends, after the fighters are written back to their characters | `won` | game.ts:2169 | classes/j.ts:410 (+14) | `combat_end` |
-| `combat_over` | the fight is decided (won or lost), before the fighters are written back to their characters: {cb, won, g} (rules 1.44) | `won` | game.ts:2162 | magic.ts:1033 | `combat_over` |
-| `evoked` | a Sigil spell was Evoked (or fizzled), after it resolved | `u`, `pattern`, `spell`, `plan`, `targets`, `impact`, `fizzle`, `charge`, `ap`, `stay`, `zone`, `dealt` | sigil.ts:1015 (+1) | classes/i.ts:634 (+5) |  |
-| `release_cost` | an Outburst Release is priced: its AP and range | `u`, `design`, `ap`, `range`, `fail`, `preview`, `surge`, `mult`, `notes` | magic.ts:1191 (+2) | classes/i.ts:1227 (+3) |  |
-| `outburst_hold` | a held Outburst swells at turn start: the Strain it adds may change | `u`, `strain` | magic.ts:1749 | perks/d.ts:206 |  |
-| `outburst_pump` | an Outburst is Pumped (priced in preview, then done): its AP, free stages, the feeling | `u`, `design`, `stage`, `ap`, `free`, `capLeft`, `fail`, `preview`, `feeling`, `stages`, `note`, `mpMult`, `freeKind` | magic.ts:1107 (+2) | classes/i.ts:1149 (+2) |  |
+| `combat_over` | the fight is decided (won or lost), before the fighters are written back to their characters: {cb, won, g} (rules 1.44) | `won` | game.ts:2162 | magic.ts:1034 | `combat_over` |
+| `evoked` | a Sigil spell was Evoked (or fizzled), after it resolved | `u`, `pattern`, `spell`, `plan`, `targets`, `impact`, `fizzle`, `charge`, `ap`, `stay`, `zone`, `dealt` | sigil.ts:1015 (+1) | classes/i.ts:635 (+5) |  |
+| `release_cost` | an Outburst Release is priced: its AP and range | `u`, `design`, `ap`, `range`, `fail`, `preview`, `surge`, `mult`, `notes` | magic.ts:1192 (+2) | classes/i.ts:1228 (+3) |  |
+| `outburst_hold` | a held Outburst swells at turn start: the Strain it adds may change | `u`, `strain` | magic.ts:1750 | perks/d.ts:206 |  |
+| `outburst_pump` | an Outburst is Pumped (priced in preview, then done): its AP, free stages, the feeling | `u`, `design`, `stage`, `ap`, `free`, `capLeft`, `fail`, `preview`, `feeling`, `stages`, `note`, `mpMult`, `freeKind` | magic.ts:1108 (+2) | classes/i.ts:1150 (+2) |  |
 | `strain_change` | a unit's Strain changed (from, to, why) | `u`, `from`, `to`, `why`, `limit` | classes/k.ts:1430 (+5) | perks/d.ts:585 |  |
-| `held_turn_start` | a unit holding an Outburst starts its turn | `u`, `held` | magic.ts:1762 | none |  |
-| `strain` | Strain is about to be added to a unit (the amount may change) | `u`, `n`, `why`, `limit` | magic.ts:914 | classes/k.ts:536 (+5) |  |
-| `death_save` | a Downed unit rolls its death save: items may add to it | `u`, `add`, `die` | combat.ts:1748 | magic.ts:1962 (+1) |  |
-| `injury` | an injury is about to be rolled on a unit (cancel, no daze, no halving) | `t`, `by`, `d`, `loc`, `side`, `cancel`, `noDaze`, `noHalve`, `why`, `called` | combat.ts:1642 | classes/i.ts:387 (+4) | `injury` |
-| `unit_built` | a unit was built from its character (the area map rebuilds units every action) | `u`, `c`, `world` | game.ts:2717 | classes/i.ts:638 (+4) |  |
+| `held_turn_start` | a unit holding an Outburst starts its turn | `u`, `held` | magic.ts:1763 | none |  |
+| `strain` | Strain is about to be added to a unit (the amount may change) | `u`, `n`, `why`, `limit` | magic.ts:915 | classes/k.ts:536 (+5) |  |
+| `death_save` | a Downed unit rolls its death save: items may add to it | `u`, `add`, `die` | combat.ts:1749 | magic.ts:1963 (+1) |  |
+| `injury` | an injury is about to be rolled on a unit (cancel, no daze, no halving) | `t`, `by`, `d`, `loc`, `side`, `cancel`, `noDaze`, `noHalve`, `why`, `called` | combat.ts:1643 | classes/i.ts:388 (+4) | `injury` |
+| `unit_built` | a unit was built from its character (the area map rebuilds units every action) | `u`, `c`, `world` | game.ts:2717 | classes/i.ts:639 (+4) |  |
 | `action_done` | a reducer action finished (any action, any unit) | `u`, `a`, `world` | game.ts:1776 (+2) | calls/rules.ts:80 (+14) |  |
-| `stim_start` | a stim is about to be given (cancel with a reason) | `u`, `t`, `cancel`, `why` | combat.ts:2824 | perks/e.ts:780 |  |
-| `volley_end` | a weapon action's shots are all resolved (a burst, an auto volley, a paired attack, a skill shot) | `u`, `mode`, `target`, `hits` | combat.ts:2124 (+6) | classes/rev3.ts:237 (+2) |  |
+| `stim_start` | a stim is about to be given (cancel with a reason) | `u`, `t`, `cancel`, `why` | combat.ts:2825 | perks/e.ts:780 |  |
+| `volley_end` | a weapon action's shots are all resolved (a burst, an auto volley, a paired attack, a skill shot) | `u`, `mode`, `target`, `hits` | combat.ts:2125 (+6) | classes/rev3.ts:237 (+2) |  |
 | `weapon_actions` | a unit's weapon actions are listed (declared; nothing emits it yet) |  | **never emitted** | none |  |
-| `path_opts` | a walk's path options are opened by items (run, pass, jump, ignore difficult ground, known traps) | `u`, `runnable`, `pass`, `jump`, `ignoreDifficult` | combat.ts:850 | perks/a.ts:459 |  |
+| `path_opts` | a walk's path options are opened by items (run, pass, jump, ignore difficult ground, known traps) | `u`, `runnable`, `pass`, `jump`, `ignoreDifficult` | combat.ts:851 | perks/a.ts:459 |  |
 | `hide` | a unit became hidden | `u`, `why` | sigil.ts:51 (+1) | faith.ts:789 (+7) |  |
 | `spot` | a unit tries to spot a hidden one: the die, the modifier, the TN, cancel | `by`, `u`, `die`, `mod`, `tn`, `cancel`, `close`, `outright` | tactics.ts:294 (+1) | classes/k.ts:124 (+8) | `spot` |
-| `spotted` | a hidden unit was revealed | `u`, `why` | magic.ts:1508 (+2) | perks/b.ts:631 (+1) |  |
+| `spotted` | a hidden unit was revealed | `u`, `why` | magic.ts:1509 (+2) | perks/b.ts:631 (+1) |  |
 | `on_surrender` | a unit surrendered or was subdued | `t`, `by`, `why` | effects/damage.ts:123 (+2) | deeds.ts:193 (+5) |  |
 | `parley` | a parley in a fight is attempted (its TN, a refusal, the result) | `u`, `t`, `kind`, `text`, `tnAdd`, `via`, `cancel`, `result` | tactics.ts:351 | perks/g.ts:207 |  |
-| `throw` | a thrown item is about to land (its AP, radius, cancel, caught) | `u`, `item`, `tile`, `ap`, `radius`, `cancel`, `caughtBy`, `preview`, `technique` | physical/ranged/thrown.ts:86 (+1) | perks/c.ts:98 (+2) |  |
+| `throw` | a thrown item is about to land (its AP, radius, cancel, caught) | `u`, `item`, `tile`, `ap`, `radius`, `cancel`, `caughtBy`, `preview`, `technique` | physical/ranged/thrown.ts:86 (+1) | perks/c.ts:99 (+2) |  |
 | `blessing_in` | a blessing reaches a unit: an item may handle it itself | `u`, `t`, `blessing`, `power`, `handled`, `out` | faith.ts:1168 (+1) | classes/k.ts:203 (+6) |  |
-| `trap_sprung` | a trap was sprung on a unit | `u`, `obj` | combat.ts:2219 | classes/rev3.ts:305 |  |
+| `trap_sprung` | a trap was sprung on a unit | `u`, `obj` | combat.ts:2220 | classes/rev3.ts:305 |  |
 | `blast_landed` | a blast landed on a tile (who made it, the radius, who was in it) | `by`, `tile`, `item`, `radius`, `who` | tactics.ts:390 | physical/ranged/thrown.ts:163 |  |
 | `glyphs_per_tile` | how many glyphs a tile may hold for this caster | `u`, `tile`, `n` | sigil.ts:82 | classes/k.ts:360 |  |
 | `evoke_area` | a spell's area is being built (its depth may change) | `u`, `spell`, `pattern`, `depth` | sigil.ts:262 | none |  |
@@ -397,7 +397,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `sigil_placed` | a Sigil field, trap or turret was placed on the grid | `u`, `zone` | sigil.ts:1170 (+2) | none |  |
 | `sigil_trap_sprung` | a Sigil trap was sprung by a unit | `u`, `trap`, `owner` | sigil.ts:1241 | none |  |
 | `turret_shot` | a Sigil turret fired at a unit | `turret`, `owner`, `target` | sigil.ts:1267 | none |  |
-| `spell_shape` | a spell is compiled from its words (items may change its shape) | `u`, `pattern`, `spell`, `opts` | sigil.ts:616 | classes/i.ts:711 |  |
+| `spell_shape` | a spell is compiled from its words (items may change its shape) | `u`, `pattern`, `spell`, `opts` | sigil.ts:616 | classes/i.ts:712 |  |
 | `ground_cap` | how many Sigil words a caster may keep on the ground at once | `u`, `n` | sigil.ts:87 | none |  |
 | `check_build` | a story check is being built (items add tags or flags) | `c`, `ck` | game.ts:1482 | perks/a.ts:90 (+9) |  |
 | `check_mod` | a story check's modifiers and TN are gathered | `c`, `ck`, `tags`, `add`, `tn` | game.ts:1215 | classes/k.ts:235 (+17) |  |
@@ -414,12 +414,12 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `xp_grant` | XP is about to be granted (the amount may change) | `c`, `source`, `amount` | game.ts:1419 | perks/e.ts:770 (+1) |  |
 | `notice` | an NPC on the area map may notice a character (its range) | `c`, `npc`, `range`, `dark`, `ignore` | game.ts:2731 | perks/a.ts:311 (+5) |  |
 | `stay_hidden` | a character tries to stay hidden from an NPC: modifier and TN | `c`, `npc`, `mod`, `tn` | game.ts:2742 | perks/a.ts:312 (+5) |  |
-| `world_move_cost` | a move on the area map is priced (sneaking costs extra) | `c`, `u`, `tiles`, `how`, `extra`, `preview` | actions.ts:218 (+1) | perks/c.ts:486 |  |
+| `world_move_cost` | a move on the area map is priced (sneaking costs extra) | `c`, `u`, `tiles`, `how`, `extra`, `preview` | actions.ts:218 (+1) | perks/c.ts:487 |  |
 | `karma_award` | Karma is about to be awarded (its multiplier) | `c`, `amount`, `unlawful`, `mult`, `why` | game.ts:1282 | perks/f.ts:717 (+3) |  |
 | `action_refuse` | an item may refuse an action before it is done (a shove, an Overwatch) | `u`, `a`, `fail` | game.ts:2923 | perks/e.ts:911 (+1) |  |
 | `evoke_reach` | how far from its Line a caster may Evoke | `u`, `pattern`, `reach` | sigil.ts:590 (+1) | classes/k.ts:793 |  |
-| `spell_roll` | a spell's to-hit d20 was rolled: items may add to it | `u`, `t`, `die`, `add`, `kind` | magic.ts:1362 (+1) | feelings.ts:178 (+1) |  |
-| `tie_end` | a tie between two units ended (kit.ts untie, Classes 3.0 P8) {cb, tie, unmake}: unmake when its kind says the far end is unmade (owned.ts) | `tie`, `unmake` | kit.ts:221 | owned.ts:289 |  |
+| `spell_roll` | a spell's to-hit d20 was rolled: items may add to it | `u`, `t`, `die`, `add`, `kind` | magic.ts:1363 (+1) | feelings.ts:178 (+1) |  |
+| `tie_end` | a tie between two units ended (kit.ts untie, Classes 3.0 P8) {cb, tie, unmake}: unmake when its kind says the far end is unmade (owned.ts) | `tie`, `unmake` | kit.ts:221 | owned.ts:290 |  |
 | `to_hit` | THE hook of every roll to hit a target (rolls.ts toHitTerms): a weapon attack, a Sigil, an Outburst {att, tgt, type, mode, terms, preview}: a listener adds to-hit terms | `att`, `tgt`, `type`, `door`, `mode`, `via`, `terms`, `preview` | rolls.ts:178 | none | `to_hit` |
 | `session_heal` | the heal at a session's start: HP and MP multipliers | `mult` | game.ts:1319 | perks/h.ts:415 |  |
 | `story_blessing` | a prayer is answered outside a fight (lines to add) | `c`, `lines` | faith.ts:1648 | perks/d.ts:484 |  |
@@ -430,18 +430,18 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `story_harm` | a character takes damage outside a fight (the amount may change) | `c`, `dmg`, `type` | game.ts:2221 | none |  |
 | `stay_hidden_result` | staying hidden was rolled: items may change the result | `c`, `npc`, `ok`, `die`, `auto`, `labels` | game.ts:2747 | perks/b.ts:564 (+2) |  |
 | `ruling_answered` | the Narrator answered a pending ruling (accepted or refused) | `r`, `accepted`, `c` | game.ts:1445 | perks/f.ts:226 (+8) |  |
-| `braced` | a Defender's Brace landed | `u` | classes/i.ts:353 | classes/j.ts:1135 (+1) |  |
-| `protect_act` | a unit protected another (a Brace or an Interpose: the patrons' protect tag) | `u`, `how`, `t` | combat.ts:2342 (+1) | faith.ts:787 |  |
-| `plate_spent` | Guard was spent on a plate (Adamantile Plate's ally shield) | `u`, `k` | classes/i.ts:423 | classes/j.ts:1186 |  |
+| `braced` | a Defender's Brace landed | `u` | classes/i.ts:354 | classes/j.ts:1135 (+1) |  |
+| `protect_act` | a unit protected another (a Brace or an Interpose: the patrons' protect tag) | `u`, `how`, `t` | combat.ts:2343 (+1) | faith.ts:787 |  |
+| `plate_spent` | Guard was spent on a plate (Adamantile Plate's ally shield) | `u`, `k` | classes/i.ts:424 | classes/j.ts:1186 |  |
 | `round_ap` | a character's AP for a round on the area map is counted | `c`, `ap`, `lines` | game.ts:2462 | perks/a.ts:495 (+2) |  |
-| `world_round_start` | a new round begins on the area map | `n` | game.ts:2460 | classes/i.ts:780 (+5) |  |
+| `world_round_start` | a new round begins on the area map | `n` | game.ts:2460 | classes/i.ts:781 (+5) |  |
 | `story_cond_apply` | a condition is about to be put on a character outside a fight (cancel with a reason) | `c`, `id`, `scope`, `cancel`, `why` | game.ts:1343 | perks/a.ts:94 (+2) |  |
 | `gift` | a gift was given (the patrons' supply tag) |  | **never emitted** | faith.ts:790 |  |
-| `vent` | a Vent is made: the Flux it puts into the air may change | `u`, `flux`, `extra` | magic.ts:659 | classes/rev3.ts:333 |  |
-| `ai_move_risk` | an enemy's walk is scored for risk by items (the AI avoids it) | `u`, `from`, `to`, `risk` | combat.ts:3098 | classes/rev3.ts:138 |  |
-| `cond_resisted` | a condition's save was passed | `by`, `t`, `id` | magic.ts:361 | feelings.ts:188 |  |
-| `call` | a Call is about to be made (its step, TN, a refusal) | `u`, `t`, `id`, `kind`, `step`, `react`, `tnAdd`, `cancel` | calls/core.ts:136 | none |  |
-| `call_cost` | a Call is priced (its AP) | `u`, `id`, `ap`, `react`, `preview` | calls/core.ts:47 | none |  |
+| `vent` | a Vent is made: the Flux it puts into the air may change | `u`, `flux`, `extra` | magic.ts:660 | classes/rev3.ts:333 |  |
+| `ai_move_risk` | an enemy's walk is scored for risk by items (the AI avoids it) | `u`, `from`, `to`, `risk` | combat.ts:3099 | classes/rev3.ts:138 |  |
+| `cond_resisted` | a condition's save was passed | `by`, `t`, `id` | magic.ts:362 | feelings.ts:188 |  |
+| `call` | a Call is about to be made (its step, TN, a refusal) | `u`, `t`, `id`, `kind`, `step`, `react`, `tnAdd`, `cancel` | calls/core.ts:137 | none |  |
+| `call_cost` | a Call is priced (its AP) | `u`, `id`, `ap`, `react`, `preview` | calls/core.ts:48 | none |  |
 | `cost` | every priced action: its AP, its resources, its floor, free (effects/cost.ts price) | `u`, `c`, `action`, `row`, `base`, `ap`, `res`, `min`, `free`, `labels` | effects/cost.ts:160 (+1) | none | `cost` |
 
 ## (c) The primitives
@@ -1040,6 +1040,7 @@ Families: `body`, `brain`, `heart`.
 | `sayAt` | `sayAt(cb: Combat, at: number, line: string)` | Write a line at index at (0: the top of the log). |
 | `unsay` | `unsay(cb: Combat, at: number)` | Take line at back out of the log (a refused call or technique). |
 | `remarkOpening` | `remarkOpening(cb: Combat)` | The fight's initiative line names every unit: when the set-up changes who is seen (sightQuietly: who starts Hidden), its mark is worked out again, as the fight opens. |
+| `tilesN` | `tilesN(n: number \| string \| undefined): string` | Rules 1.66 item 5213: a count of tiles in words, singular for one ("1 tile", "3 tiles"). |
 
 #### What each viewer may see (`fog.ts`)
 
@@ -1558,87 +1559,87 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 
 | kind | fields | first emitted at | sites |
 | --- | --- | --- | --- |
-| `analyze` | `unit`, `target`, `from`, `to`, `glyph` | combat.ts:2760 | 2 |
+| `analyze` | `unit`, `target`, `from`, `to`, `glyph` | combat.ts:2761 | 2 |
 | `anchor` | `unit`, `at`, `what`, `target` | classes/rev3.ts:115 | 4 |
-| `aura_tick` | `unit`, `at`, `tone`, `element`, `targets`, `riderStage` | magic.ts:1758 | 1 |
+| `aura_tick` | `unit`, `at`, `tone`, `element`, `targets`, `riderStage` | magic.ts:1759 | 1 |
 | `bead` | `unit`, `at`, `target`, `to` | physical/ranged/sets.ts:66 | 1 |
 | `bead_end` | `unit`, `at`, `target`, `why` | physical/ranged/sets.ts:44 | 1 |
 | `blink` | `target`, `from`, `to`, `element` | sigil.ts:1141 | 1 |
 | `boon` | `target`, `at`, `word`, `cond`, `amount` | classes/k.ts:888 | 7 |
-| `burn` | `unit`, `at`, `dmg` | magic.ts:955 | 1 |
-| `call` | `unit`, `id`, `target`, `at`, `step`, `kind`, `reaction` | calls/core.ts:156 | 1 |
+| `burn` | `unit`, `at`, `dmg` | magic.ts:956 | 1 |
+| `call` | `unit`, `id`, `target`, `at`, `step`, `kind`, `reaction` | calls/core.ts:157 | 1 |
 | `calm` | `unit`, `at`, `way`, `by`, `strain` | classes/k.ts:1431 | 5 |
 | `carry` | `unit`, `from`, `to`, `target`, `tech` | physical/ranged/fire.ts:279 | 1 |
-| `chain` | `unit`, `from`, `to`, `target`, `element`, `storm`, `jump`, `mult`, `grand`, `feeling` | classes/i.ts:1204 | 6 |
+| `chain` | `unit`, `from`, `to`, `target`, `element`, `storm`, `jump`, `mult`, `grand`, `feeling` | classes/i.ts:1205 | 6 |
 | `charge` | `unit`, `at`, `charges` | classes/j.ts:1064 | 1 |
-| `clear` | `unit`, `at`, `dur`, `by`, `hand` | combat.ts:2418 | 4 |
+| `clear` | `unit`, `at`, `dur`, `by`, `hand` | combat.ts:2419 | 4 |
 | `command` | `target`, `at`, `order`, `to`, `by` | sigil.ts:1095 | 1 |
-| `cond` | `target`, `at`, `id`, `resisted`, `element` | magic.ts:352 | 5 |
+| `cond` | `target`, `at`, `id`, `resisted`, `element` | magic.ts:353 | 5 |
 | `core` | `unit`, `at`, `dur`, `focus` | faith.ts:708 | 3 |
 | `crystallise` | `unit`, `at`, `dur`, `self` | classes/k.ts:580 | 2 |
-| `door` | `unit`, `at`, `open` | combat.ts:831 | 5 |
+| `door` | `unit`, `at`, `open` | combat.ts:832 | 5 |
 | `down` | `unit`, `at`, `dead`, `vanish`, `surrendered` | classes/j.ts:1162 | 4 |
 | `draw` | `unit`, `at`, `tile`, `word`, `side`, `half`, `group`, `cls`, `element`, `effect`, `keystone`, `words`, `stroke`, `joins`, `junction` | classes/k.ts:350 | 3 |
 | `drill` | `unit`, `at`, `weapon`, `add`, `total`, `mark`, `learned` | physical/rules.ts:89 | 1 |
 | `drop` | `unit`, `target`, `at`, `name` | world.ts:319 | 1 |
 | `duck` | `unit`, `from`, `to`, `by`, `out`, `cover` | classes/rev3.ts:231 | 1 |
-| `evoke` | `unit`, `at`, `shape`, `tiles`, `area`, `src`, `impact`, `targets`, `words`, `element`, `stay`, `side`, `missiles`, `placed`, `fizzle`, `facing`, `by`, `targetAt`, `backlash`, `dir`, `fusion`, `fused`, `design`, `school` | classes/i.ts:767 | 9 |
+| `evoke` | `unit`, `at`, `shape`, `tiles`, `area`, `src`, `impact`, `targets`, `words`, `element`, `stay`, `side`, `missiles`, `placed`, `fizzle`, `facing`, `by`, `targetAt`, `backlash`, `dir`, `fusion`, `fused`, `design`, `school` | classes/i.ts:768 | 9 |
 | `explode` | `at`, `radius`, `what`, `element`, `charges`, `shake`, `tiles` | classes/j.ts:519 | 7 |
 | `eye_storm` | `unit`, `at` | classes/rev3.ts:608 | 1 |
 | `eye_storm_spent` | `unit`, `at`, `riderStage` | classes/rev3.ts:615 | 1 |
-| `feed` | `unit`, `at`, `word`, `glyph`, `stage`, `mult` | magic.ts:1239 | 1 |
+| `feed` | `unit`, `at`, `word`, `glyph`, `stage`, `mult` | magic.ts:1240 | 1 |
 | `felt` | `unit`, `char`, `feeling`, `name`, `family`, `why` | feelings.ts:68 | 1 |
 | `field` | `id`, `tiles`, `words`, `element`, `side`, `by`, `rounds` | sigil.ts:1189 | 1 |
 | `field_gone` | `id`, `tile`, `tiles`, `side`, `why`, `only` | sigil.ts:1213 | 1 |
 | `field_tick` | `id`, `target`, `at`, `element`, `side` | sigil.ts:1232 | 1 |
 | `fizzle` | `unit`, `at`, `tiles`, `words`, `element` | sigil.ts:1012 | 1 |
 | `free_reload` | `unit`, `at`, `tech` | physical/ranged/takes.ts:208 | 1 |
-| `fuse` | `unit`, `at`, `to`, `tiles`, `tone`, `element`, `stage` | magic.ts:1493 | 1 |
+| `fuse` | `unit`, `at`, `to`, `tiles`, `tone`, `element`, `stage` | magic.ts:1494 | 1 |
 | `glyph_fade` | `tile`, `word`, `side`, `why` | classes/k.ts:352 | 6 |
 | `guard` | `unit`, `at`, `now`, `was`, `max`, `why` | physical/core.ts:145 | 1 |
 | `hazard` | `target`, `at`, `id`, `kind`, `severity`, `dmg`, `immune`, `attempt`, `spent` | hazards.ts:70 | 2 |
 | `hazard_spotted` | `id`, `kind`, `at`, `tiles`, `by`, `how` | hazards.ts:69 | 3 |
 | `heal` | `target`, `at`, `amount`, `revive` | classes/j.ts:456 | 5 |
-| `heart_overwatch` | `unit`, `at`, `target`, `to`, `stage`, `tone` | magic.ts:1264 | 1 |
+| `heart_overwatch` | `unit`, `at`, `target`, `to`, `stage`, `tone` | magic.ts:1265 | 1 |
 | `heat` | `unit`, `at`, `now`, `was`, `why`, `limit` | physical/ranged/press.ts:337 | 2 |
-| `hold` | `unit`, `at`, `stage`, `tone`, `form`, `watch` | magic.ts:1248 | 2 |
-| `hurt` | `target`, `at`, `dmg`, `why`, `killed`, `element`, `by` | combat.ts:781 | 9 |
+| `hold` | `unit`, `at`, `stage`, `tone`, `form`, `watch` | magic.ts:1249 | 2 |
+| `hurt` | `target`, `at`, `dmg`, `why`, `killed`, `element`, `by` | combat.ts:782 | 9 |
 | `image` | `id`, `owner`, `at`, `side`, `fooled` | illusion.ts:56 | 1 |
 | `image_gone` | `id`, `owner`, `at`, `why` | illusion.ts:61 | 1 |
 | `infusion` | `unit`, `target`, `at`, `element` | classes/j.ts:1040 | 2 |
-| `intent` | `unit`, `target`, `at`, `kind`, `text`, `targetUnit`, `to`, `image` | combat.ts:3165 | 1 |
+| `intent` | `unit`, `target`, `at`, `kind`, `text`, `targetUnit`, `to`, `image` | combat.ts:3166 | 1 |
 | `lane` | `unit`, `at`, `r` | physical/ranged/press.ts:45 | 1 |
 | `lane_end` | `unit`, `why` | physical/ranged/press.ts:61 | 2 |
 | `leech` | `unit`, `to`, `from`, `amount`, `element` | classes/k.ts:682 | 4 |
-| `letgo` | `unit`, `at`, `stage`, `by`, `strain` | magic.ts:1208 | 1 |
+| `letgo` | `unit`, `at`, `stage`, `by`, `strain` | magic.ts:1209 | 1 |
 | `light` | `at`, `tiles`, `side` | sigil.ts:1146 | 1 |
-| `linger` | `unit`, `tiles`, `tone`, `element` | magic.ts:1643 | 1 |
-| `load` | `unit`, `at`, `rounds`, `dur`, `special`, `weapon`, `hand` | combat.ts:2669 | 2 |
+| `linger` | `unit`, `tiles`, `tone`, `element` | magic.ts:1644 | 1 |
+| `load` | `unit`, `at`, `rounds`, `dur`, `special`, `weapon`, `hand` | combat.ts:2670 | 2 |
 | `mana` | `band`, `mana` | game.ts:4229 | 2 |
-| `mask` | `target`, `at`, `fade` | magic.ts:503 | 2 |
-| `melee` | `unit`, `target`, `from`, `to`, `weapon`, `cat`, `mode`, `hit`, `crit`, `fumble`, `dmg`, `killed`, `jam`, `chain`, `thrown`, `round`, `step`, `object`, `image`, `ricochet` | combat.ts:1555 | 7 |
+| `mask` | `target`, `at`, `fade` | magic.ts:504 | 2 |
+| `melee` | `unit`, `target`, `from`, `to`, `weapon`, `cat`, `mode`, `hit`, `crit`, `fumble`, `dmg`, `killed`, `jam`, `chain`, `thrown`, `round`, `step`, `object`, `image`, `ricochet` | combat.ts:1556 | 7 |
 | `miss` | `unit`, `target`, `at`, `by`, `element` | classes/soul.ts:36 | 3 |
 | `momentum` | `unit`, `now`, `was` | perks/skeleton.ts:32 | 2 |
 | `move` | `unit`, `from`, `to`, `path`, `how`, `sight` | classes/j.ts:556 | 3 |
 | `null_wave` | `at`, `tiles`, `n`, `removed`, `glyphs`, `zones`, `walls` | classes/k.ts:917 | 2 |
 | `object` | `at`, `what`, `dmg`, `broken`, `hp`, `element`, `max` | classes/k.ts:926 | 3 |
 | `outburst` | `unit`, `at`, `design`, `school`, `hold`, `stage`, `form`, `tone`, `element`, `watch` | classes/k.ts:1494 | 2 |
-| `overload` | `unit`, `at` | classes/i.ts:100 | 2 |
-| `overwatch` | `unit`, `target`, `from`, `at`, `mode`, `id` | combat.ts:2064 | 2 |
-| `perk` | `unit`, `target`, `from`, `to`, `id` | perks/c.ts:306 | 3 |
-| `pickup` | `unit`, `at`, `items` | combat.ts:2654 | 1 |
-| `pile` | `at`, `id`, `count`, `why` | combat.ts:2455 | 2 |
-| `practice` | `unit`, `gain`, `total` | magic.ts:1669 | 1 |
+| `overload` | `unit`, `at` | classes/i.ts:101 | 2 |
+| `overwatch` | `unit`, `target`, `from`, `at`, `mode`, `id` | combat.ts:2065 | 2 |
+| `perk` | `unit`, `target`, `from`, `to`, `id` | perks/c.ts:307 | 3 |
+| `pickup` | `unit`, `at`, `items` | combat.ts:2655 | 1 |
+| `pile` | `at`, `id`, `count`, `why` | combat.ts:2456 | 2 |
+| `practice` | `unit`, `gain`, `total` | magic.ts:1670 | 1 |
 | `pressure` | `unit`, `at`, `now`, `was`, `state`, `by`, `why`, `hidden` | physical/pressure.ts:48 | 2 |
-| `pull_free` | `unit`, `target`, `at`, `weapon` | combat.ts:1889 | 2 |
+| `pull_free` | `unit`, `target`, `at`, `weapon` | combat.ts:1890 | 2 |
 | `pump` | `unit`, `at`, `stage`, `mult`, `free`, `max`, `tone`, `manifest`, `overflow`, `form`, `mp`, `feeling`, `overdraw` | classes/k.ts:539 | 5 |
 | `release` | `unit`, `at`, `to`, `school`, `form`, `tone`, `element`, `stage`, `body`, `targets`, `area`, `wild`, `air`, `design`, `school2`, `option`, `mult`, `riderStage`, `reaction`, `resonance`, `felt`, `does` | classes/k.ts:1555 | 3 |
-| `reload` | `unit`, `at`, `weapon`, `cat`, `how`, `dur`, `left`, `ammo`, `cap`, `noDrop`, `rounds`, `tactical`, `hand`, `element` | classes/i.ts:202 | 7 |
+| `reload` | `unit`, `at`, `weapon`, `cat`, `how`, `dur`, `left`, `ammo`, `cap`, `noDrop`, `rounds`, `tactical`, `hand`, `element` | classes/i.ts:203 | 7 |
 | `repair` | `unit`, `target`, `at`, `dur` | classes/rev3.ts:472 | 7 |
-| `residue` | `unit`, `tiles`, `feeling`, `family`, `kind`, `side`, `rounds` | magic.ts:1654 | 1 |
-| `residue_tick` | `unit`, `at`, `feeling`, `kind`, `when` | magic.ts:1697 | 1 |
-| `resonance` | `unit`, `at`, `with`, `bonus`, `perk` | magic.ts:1506 | 2 |
-| `revert` | `unit`, `at`, `stage`, `mult`, `feeling` | magic.ts:1164 | 1 |
+| `residue` | `unit`, `tiles`, `feeling`, `family`, `kind`, `side`, `rounds` | magic.ts:1655 | 1 |
+| `residue_tick` | `unit`, `at`, `feeling`, `kind`, `when` | magic.ts:1698 | 1 |
+| `resonance` | `unit`, `at`, `with`, `bonus`, `perk` | magic.ts:1507 | 2 |
+| `revert` | `unit`, `at`, `stage`, `mult`, `feeling` | magic.ts:1165 | 1 |
 | `rig` | `unit`, `at`, `id`, `only` | classes/rev3.ts:299 | 2 |
 | `roll` | `roll`, `unit`, `at`, `by`, `fam`, `why`, `die`, `dice`, `mod`, `total`, `tn`, `ok`, `nat`, `skipped` | rolls.ts:92 | 1 |
 | `routed` | `unit`, `from`, `to`, `by` | physical/ranged/takes.ts:100 | 1 |
@@ -1647,44 +1648,44 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `save` | `unit`, `at`, `ok`, `tech`, `die`, `only` | physical/core.ts:586 | 1 |
 | `scuff` | `unit`, `at` | sigil.ts:940 | 1 |
 | `search` | `unit`, `at`, `obj`, `items` | world.ts:356 | 1 |
-| `shield` | `target`, `at`, `absorbed`, `gained` | classes/i.ts:800 | 6 |
-| `short` | `unit`, `at`, `held`, `tone`, `element`, `strain`, `limit` | magic.ts:984 | 1 |
+| `shield` | `target`, `at`, `absorbed`, `gained` | classes/i.ts:801 | 6 |
+| `short` | `unit`, `at`, `held`, `tone`, `element`, `strain`, `limit` | magic.ts:985 | 1 |
 | `shot` | `unit`, `target`, `from`, `to`, `weapon`, `cat`, `mode`, `hit`, `crit`, `fumble`, `dmg`, `killed`, `jam`, `chain`, `thrown`, `round`, `step`, `object`, `image`, `ricochet`, `tech`, `vi`, `technique` | classes/j.ts:815 | 11 |
-| `shove` | `unit`, `target`, `from`, `to`, `ok`, `interpose`, `path`, `pull`, `source`, `prone`, `magic`, `swap`, `object` | classes/i.ts:380 | 13 |
+| `shove` | `unit`, `target`, `from`, `to`, `ok`, `interpose`, `path`, `pull`, `source`, `prone`, `magic`, `swap`, `object` | classes/i.ts:381 | 13 |
 | `shrug` | `unit`, `at`, `cond` | classes/rev3.ts:84 | 1 |
-| `sight` | `unit`, `at`, `how`, `only` | combat.ts:1190 | 3 |
+| `sight` | `unit`, `at`, `how`, `only` | combat.ts:1191 | 3 |
 | `sigil_growth` | `unit`, `at`, `study`, `mastered` | sigil.ts:413 | 1 |
 | `silver_tongue` | `unit`, `target`, `from`, `to`, `ok`, `ap` | classes/rev3.ts:356 | 1 |
 | `song` | `unit`, `at` | game.ts:1763 | 1 |
-| `spawn` | `unit`, `at`, `owner`, `block` | owned.ts:124 | 1 |
+| `spawn` | `unit`, `at`, `owner`, `block` | owned.ts:125 | 1 |
 | `spot` | `unit`, `at`, `target`, `to`, `only` | physical/ranged/sets.ts:124 | 1 |
-| `stance` | `unit`, `at`, `what`, `target`, `how`, `by`, `only` | classes/i.ts:249 | 16 |
-| `steady` | `unit`, `at`, `by`, `strain`, `stage` | magic.ts:1223 | 1 |
-| `stim` | `unit`, `target`, `from`, `to`, `heal`, `revive`, `thrown` | combat.ts:2830 | 3 |
+| `stance` | `unit`, `at`, `what`, `target`, `how`, `by`, `only` | classes/i.ts:250 | 16 |
+| `steady` | `unit`, `at`, `by`, `strain`, `stage` | magic.ts:1224 | 1 |
+| `stim` | `unit`, `target`, `from`, `to`, `heal`, `revive`, `thrown` | combat.ts:2831 | 3 |
 | `stopped` | `unit`, `how`, `by`, `apLoss`, `untilAp` | physical/core.ts:639 | 1 |
-| `strain` | `unit`, `at`, `strain`, `limit`, `by`, `why`, `over` | magic.ts:919 | 1 |
+| `strain` | `unit`, `at`, `strain`, `limit`, `by`, `why`, `over` | magic.ts:920 | 1 |
 | `swap` | `unit`, `target`, `from`, `to` | classes/rev3.ts:382 | 1 |
 | `swap_in` | `unit`, `at`, `weapon`, `from`, `tech` | physical/core.ts:984 | 1 |
 | `swell` | `unit`, `at`, `stage`, `mult`, `tone`, `forms` | classes/k.ts:1529 | 2 |
-| `syphon` | `unit`, `at`, `mp` | classes/i.ts:1268 | 2 |
+| `syphon` | `unit`, `at`, `mp` | classes/i.ts:1269 | 2 |
 | `technique` | `unit`, `id`, `group`, `system`, `target`, `hand`, `at`, `reaction`, `tile`, `line`, `opt`, `ammo`, `weapon` | physical/core.ts:881 | 2 |
-| `thread` | `unit`, `a`, `b` | magic.ts:1642 | 1 |
-| `trap` | `unit`, `at` | combat.ts:2219 | 1 |
+| `thread` | `unit`, `a`, `b` | magic.ts:1643 | 1 |
+| `trap` | `unit`, `at` | combat.ts:2220 | 1 |
 | `trap_gone` | `id`, `tile`, `tiles`, `side`, `why`, `only` | sigil.ts:1213 | 1 |
 | `trap_set` | `id`, `tile`, `side`, `by`, `words`, `element`, `only` | sigil.ts:1176 | 1 |
-| `trap_spotted` | `id`, `tile`, `by`, `side`, `only`, `kind` | magic.ts:1634 | 2 |
+| `trap_spotted` | `id`, `tile`, `by`, `side`, `only`, `kind` | magic.ts:1635 | 2 |
 | `trap_sprung` | `id`, `tile`, `target`, `element`, `side`, `words` | sigil.ts:1240 | 1 |
 | `turn` | `unit`, `side`, `at`, `summon`, `round` | classes/k.ts:1664 | 4 |
 | `turret_destroyed` | `id`, `tile`, `tiles`, `side`, `why`, `only` | sigil.ts:1213 | 1 |
 | `turret_placed` | `id`, `tile`, `side`, `by`, `words`, `element`, `hidden`, `only` | sigil.ts:1169 | 1 |
 | `turret_shot` | `id`, `tile`, `target`, `at`, `side`, `grand`, `lob`, `from`, `to`, `element`, `path`, `kind`, `burst`, `chain` | classes/k.ts:944 | 4 |
-| `unmake` | `unit`, `at` | owned.ts:135 | 1 |
+| `unmake` | `unit`, `at` | owned.ts:136 | 1 |
 | `unstoppable` | `unit`, `at`, `ignored` | classes/rev3.ts:168 | 1 |
 | `veil` | `at`, `tiles`, `side` | sigil.ts:1145 | 1 |
 | `vent` | `unit`, `at`, `flux`, `heart`, `bleed` | classes/k.ts:559 | 3 |
 | `volley` | `unit`, `target`, `from`, `weapon`, `cat`, `mode`, `name`, `shots`, `to`, `tech` | classes/j.ts:110 | 11 |
 | `wall_crumbled` | `tiles`, `why` | classes/k.ts:916 | 3 |
-| `wall_raised` | `tiles`, `by`, `side`, `hp`, `rounds`, `rune` | classes/i.ts:768 | 2 |
+| `wall_raised` | `tiles`, `by`, `side`, `hp`, `rounds`, `rune` | classes/i.ts:769 | 2 |
 | `watch_end` | `unit`, `at`, `id`, `why` | physical/core.ts:858 | 5 |
 | `watch_fire` | `unit`, `target`, `from`, `at`, `id`, `mode` | physical/core.ts:870 | 1 |
 | `watch_set` | `unit`, `at`, `id`, `trigger`, `tile`, `tiles`, `allyId`, `targetId` | physical/core.ts:852 | 1 |

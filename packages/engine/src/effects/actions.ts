@@ -1,4 +1,5 @@
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
+import { tilesN } from '../log';
 import { say } from '../log';
 // Active items become actions (plan 2.7). One action type per surface:
 //   combat/perk {unitId, id, actionId?, targetId?, targetIds?, tile?, choice?, text?, arm?}   (combat Perks and Class tabs)
@@ -393,7 +394,7 @@ function aimWhy(h: Holder, d: ActionDef, e: PerkActionEntry, args: ActionArgs): 
     if (!t || t.dead) return 'Pick a living target.';
     if (d.target === 'ally' && t.side !== h.u?.side) return 'Pick an ally.';
     if (d.target === 'enemy' && t.side === h.u?.side) return 'Pick an enemy.';
-    if (d.range != null && h.u && distK(h.u.pos, t.pos) > d.range) return 'Out of range (' + d.range + ' tiles).';
+    if (d.range != null && h.u && distK(h.u.pos, t.pos) > d.range) return 'Out of range (' + tilesN(d.range) + ').';
     if (d.reach) { const why = d.reach(h, t); if (why) return why; } // P6: a door verb's reach (side, sight, its `if`)
   }
   if (d.target === 'tile' && !args.tile) return 'Pick a tile.';

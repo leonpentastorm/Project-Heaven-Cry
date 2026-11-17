@@ -66,6 +66,8 @@ export function MemoryPanel({ game, isHost, side, compact = false }: { game: Gam
   // The music shares the dock (floaters.ts): while this one's name shows or its dialog is open, the ♪ button slides away.
   const { place, ...floatStyle } = useFloatStyle(btnRef, open, 'memory', compact && hover && isHost && !!game && game.phase !== 'lobby');
   React.useEffect(() => { openFromAfar = () => setOpen(true); return () => { openFromAfar = null; }; }, []);
+  // rules 1.66 item 5213: Esc closes the dialog, as every dialog of the game does
+  React.useEffect(() => { if (!open) return; const k = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); }; addEventListener('keydown', k); return () => removeEventListener('keydown', k); }, [open]);
   if (!isHost || !game || game.phase === 'lobby') return null;
   const m = game.memory || { people: [], threads: [], facts: [], factions: [], scenes: [], chapters: [], saga: '', pins: [] } as any;
   const match = (s: string) => !q || s.toLowerCase().includes(q.toLowerCase());

@@ -1,4 +1,5 @@
 // Grid combat (spec: Combat on the grid; Attacks, damage and armour; Weapons; Downed and dying).
+import { tilesN } from './log';
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { fxTaps } from './fxtap';
 import { setLogMarker, remarkOpening, say, type LogMark, type LogSideMark } from './log';
@@ -1351,7 +1352,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   if (melee && r > hk.reach) return fail('Out of melee reach.');
   if (!melee && !thrown && att.jammed) return fail('Weapon jammed: clear it (2 AP).');
   if (!melee && !thrown && w.magazine != null && att.ammo <= 0) return fail('Empty: reload (2 AP).');
-  if (thrown && r > throwRangeOf(att)) return fail('Out of throwing range (' + throwRangeOf(att) + ' tiles).');
+  if (thrown && r > throwRangeOf(att)) return fail('Out of throwing range (' + tilesN(throwRangeOf(att)) + ').');
   // hk.noLos: an indirect shot over full cover (Lob with an Arc weapon, rules 1.12): someone on the side must still see the target
   if (!melee && !hk.noLos && !lineOfSight(cb, att.pos, tgt.pos, !!hk.seeVeil)) return fail('No line of sight.');
   const eff = effectiveRange(useW), optic = opticBands(att, mode), bands = melee || thrown ? 0 : Math.max(0, Math.ceil(r / eff) - 1 - optic - Math.max(0, hk.bandsLess || 0)); // hk.bandsLess: range bands an item or technique ignores (Bead, Spot)
@@ -1765,7 +1766,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
       // The walk is checked again here (the ground may have changed since the Evoke): too far, blocked or prone, it
       // stays where it is and the log says why (item 481).
       const to = o.slice(5), P = paths(cb, u.pos, u.id), max = (SIGIL.command as any)?.move_tiles ?? 3; endCond(u, 'commanded', cb);
-      const why = u.prone ? 'it is prone' : P.dist[to] === undefined ? 'no way through' : P.dist[to] > max ? 'more than ' + max + ' tiles' : '';
+      const why = u.prone ? 'it is prone' : P.dist[to] === undefined ? 'no way through' : P.dist[to] > max ? 'more than ' + tilesN(max) + '' : '';
       if (why) { say(cb, u.name + ' is Commanded to walk to ' + refOf(to) + ' but can\'t (' + why + '): it stays.'); said = true; }
       else moveUnit(cb, u, to, rng);
     }
@@ -1943,7 +1944,7 @@ export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint'
   let ap: number;
   { const no = moveHowBlock(u, how); if (no) return no; }
   if (how === 'sprint') {
-    if (tiles > sprintTiles(u)) return 'Too far to sprint (' + sprintTiles(u) + ' tiles).'; ap = price({ cb, u }, 'sprint').ap;
+    if (tiles > sprintTiles(u)) return 'Too far to sprint (' + tilesN(sprintTiles(u)) + ').'; ap = price({ cb, u }, 'sprint').ap;
   }
   else if (how === 'disengage') { if (tiles > 1) return 'Disengage moves 1 tile.'; ap = price({ cb, u }, 'disengage').ap; }
   else ap = apForTiles(tiles, u.bank, u.movement);
@@ -2755,7 +2756,7 @@ export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   if (t.analyzedBy) return t.name + ' is already analyzed.';
   const cost = analyzeCost(u, cb), range = analyzeRange(u);
   { const no = whyNot(cb, u, cost); if (no) return no; }
-  if (dist(u.pos, t.pos) > range) return 'Out of Analyze range (' + range + ' tiles).';
+  if (dist(u.pos, t.pos) > range) return 'Out of Analyze range (' + tilesN(range) + ').';
   if (!lineOfSight(cb, u.pos, t.pos)) return 'No line of sight.';
   pay(cb, u, cost); t.analyzedBy = u.name; emitFx(cb, 'analyze', { unit: u.id, target: t.id, from: u.pos, to: t.pos }); t.weakPoint = (u.analysis || 0) >= 5;
   acted(cb, u, { action: 'analyze', t, ap: cost }); // P2: Analyze is a verb that fires its own `acted` (in the reducer's action, inside another one, on the area map)
@@ -2814,7 +2815,7 @@ export const stimOn = (cb: Combat | null, u: Unit, t: Unit, who: Character) => m
 export function useStim(cb: Combat, u: Unit, t: Unit, who: Character, isMedic: boolean, o: { thrown?: boolean } = {}): string | null {
   if (who.stims <= 0) return 'No stims left.';
   // rules 1.33: Stim Throw is everyone's gear action: an ally within the row's range that you see, at its own price
-  if (o.thrown ? dist(u.pos, t.pos) > stimThrowRange() || (t !== u && !unitSees(cb, u, t.pos)) : dist(u.pos, t.pos) > 1) return o.thrown ? 'Out of reach: within ' + stimThrowRange() + ' tiles you can see.' : 'Must be adjacent.';
+  if (o.thrown ? dist(u.pos, t.pos) > stimThrowRange() || (t !== u && !unitSees(cb, u, t.pos)) : dist(u.pos, t.pos) > 1) return o.thrown ? 'Out of reach: within ' + tilesN(stimThrowRange()) + ' you can see.' : 'Must be adjacent.';
   if (t.dead) return 'Too late.';
   const cost = o.thrown ? price({ cb, u }, 'stim_throw').ap : stimAp(u, t, isMedic, cb);
   { const no = whyNot(cb, u, cost); if (no) return no; }

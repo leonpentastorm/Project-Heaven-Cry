@@ -9,6 +9,7 @@
 //   Hamstring with Point: the target's u.tech.hamstring = { lame } (the Slowed it was given): no Sprint or Disengage
 //     while that Slowed lasts.
 //   Throw: Dexterity replaces the weapon's skill on the roll, and the weapon goes to the pile on the target's tile.
+import { tilesN } from '../../log';
 import { technique, strike, loseWeaponInto, takeWeapon, save, cond, stop, landed, techState, techStateOf, onHook, setUpBonus, spendSetUp, turnStamp, meleeFx, fallFx, refuseFx } from './shared';
 import type { Tech } from './shared';
 import { canStrike, loseWeapon, techSaveTn, techVia, saveOutside } from '../core';
@@ -171,7 +172,7 @@ technique({
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
     if (tgt.id === t.u.id) return 'Pick someone else.';
     const range = throwRangeOf(t.u);
-    if (dist(t.u.pos, tgt.pos) > range) return 'Out of throwing range (' + range + ' tiles).';
+    if (dist(t.u.pos, tgt.pos) > range) return 'Out of throwing range (' + tilesN(range) + ').';
     if (!lineOfSight(t.cb, t.u.pos, tgt.pos)) return 'No line of sight to throw.';
     // "Without Thrown" reads the weapon, not the chosen line: a throwing weapon never takes the penalty.
     const p = t.line('thrown', 'heavy'), thrown = t.holds('thrown');

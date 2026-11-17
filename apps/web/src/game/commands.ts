@@ -4,6 +4,7 @@
 // actionGroups() is the one list of actions a unit has (the panel's tabs show it); the cut-in's four commands are a
 // smart default picked from the unit's state, which a player can override per character, slot by slot. The choice is a
 // personal UI preference kept in this browser (localStorage 'phc.cutinCmds', keyed by character id), never game state.
+import { tilesN } from '@engine';
 import { phys, WEAPON, CLASS, ADVANCED, isMelee, attackApCost, SPELL_AP, ventAp, coreAp, stageMult, weaponActions, perkActionsFor, runItemWhy, withGame, type PerkActionEntry,
   FOCUS_IDS, NEEDS_EVOKER, carriesEvoker, PILE, reloadBothRows, pullFreeTargets as enginePullFree, actionsFor, type ActionDescriptor, PR as ENGINE_PR, prayId as enginePrayId, parsePrayId, PK as ENGINE_PK, perkId, parsePerkId, perkCost, perkState, perkText, faithView, doorTabsOf, DOOR_TABS, GROUP_ORDER } from '@engine';
 import { SIGIL_GLOW, SOUL_INK } from './glyphs';
@@ -247,7 +248,7 @@ export function smartCommands(u: any): Command[] {
     const st = mg.held.stage ?? 0, full = st >= 4, free = (mg.freePumps || 0) > 0;
     cmds.push({ action: 'pump', label: 'Pump', sub: full ? 'The heart is full (stage 4)' : 'Stage ' + st + ' → ' + (st + 1) + ' · ' + (free ? 'FREE' : SPELL_AP.pump + ' AP'), key: '1', off: full || (!free && (u.ap ?? 0) < SPELL_AP.pump) });
     cmds.push({ action: 'release', label: 'Release', sub: 'Stage ' + st + ' · ' + heartMp(mg) + ' · ' + SPELL_AP.release + ' AP', key: '2', off: (u.ap ?? 0) < SPELL_AP.release });
-    cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '3', off: !!u.prone });
+    cmds.push({ action: 'move', label: 'Move', sub: tilesN(u.movement) + ' per AP', key: '3', off: !!u.prone });
     if (melee) cmds.push({ action: plainAction(u), label: 'Hit', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '4' });
     else cmds.push({ action: plainAction(u), label: 'Shoot', sub: attackApCost(w, 'shot') + ' AP · ' + w.name, key: '4', off: u.ammo <= 0 || !!u.jammed });
     if (Array.isArray(u.allowedActions)) return cmds.filter((c) => u.allowedActions.includes(c.action)).map((c, i) => ({ ...c, key: String(i + 1) }));
@@ -256,7 +257,7 @@ export function smartCommands(u: any): Command[] {
   if (u.jammed) cmds.push({ action: 'clear', label: 'Clear jam', sub: 'The gun is jammed', key: '1' });
   else if (melee) cmds.push({ action: plainAction(u), label: 'Hit', sub: (w ? attackApCost(w, 'melee') : 2) + ' AP · ' + (w ? w.name : 'fists'), key: '1' });
   else cmds.push({ action: plainAction(u), label: 'Shoot', sub: u.ammo <= 0 ? 'Empty: reload first' : attackApCost(w, 'shot') + ' AP · ' + w.name, key: '1', off: u.ammo <= 0 });
-  cmds.push({ action: 'move', label: 'Move', sub: u.movement + ' tiles per AP', key: '2', off: !!u.prone });
+  cmds.push({ action: 'move', label: 'Move', sub: tilesN(u.movement) + ' per AP', key: '2', off: !!u.prone });
   const rl = weaponActions(u).find((x: any) => x.id === 'reload'); // only a weapon that reloads offers it, by its own name
   // the engine's own refusal (weaponActions: no rounds left, no loaded spare, full) greys it and says why
   if (rl && !u.jammed) cmds.push({ action: 'reload', label: reloadItems(u)[0][1], sub: u.quiver ? rl.ap + ' AP · the other quiver' : rl.why && !/^Needs/.test(rl.why) ? rl.why.replace(/\.$/, '') : u.ammo + ' / ' + w.magazine + ' loaded', key: '3', off: u.quiver ? !!rl.why : u.ammo >= w.magazine || (!!rl.why && !/^Needs/.test(rl.why)) }); // rules 1.53: a bow's reload is Switch quiver

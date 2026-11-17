@@ -2,6 +2,7 @@
 // the facing rule, Reach, Delivery, Burst, KIN), fired with Evoke. Outbursts are held in the heart, grow each turn and are released when
 // the caster chooses. The ambient mana meter, conditions with saves, shields and standing wall zones live here too.
 // Everything is deterministic: rolls come from the rng passed in.
+import { tilesN } from './log';
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import figmentsJ from '../../../data/figments.json';
 import { SIGIL, SCHOOL, MODULE, MANA_BANDS, SKILL, TONE, SOUL_RULES, SOUL_REV, WEAPON, RULES, type SigilDef, type ToneRider } from './data';
@@ -1892,7 +1893,7 @@ function planInner(cb: Combat, u: Unit, src: string | 'held', aim: string | unde
     if (spread?.condition) for (const v of cb.units) if (v !== t && !v.dead && v.side !== u.side && dist(v.pos, t.pos) <= (spread.radius || 1))
       add({ ...blankAffected(u, v, 'spread'), rider: condName(spread.condition) + (spread.rounds ? ' ' + spread.rounds + ' rounds' : '') + ' (spreads from ' + t.name + ')', saves: spread.save ? [{ cond: spread.condition, fam: (condFamily(spread.condition) || 'body') as Fam, tn: saveTn(u, 'will_power') }] : [] });
     if (pushAll) for (const v of cb.units) if (v !== t && v !== u && !v.dead && dist(v.pos, t.pos) <= (pushAll.radius || 1))
-      add({ ...blankAffected(u, v, 'push'), rider: 'pushed ' + pushAll.tiles + ' tiles away from ' + t.name + ' (' + TONE[tone].name + ')' });
+      add({ ...blankAffected(u, v, 'push'), rider: 'pushed ' + tilesN(pushAll.tiles) + ' away from ' + t.name + ' (' + TONE[tone].name + ')' });
   }
   // Love with no ally in the shape (rules 1.17): who it heals instead, and by how much.
   if (F.has('love') && hostile && !targets.some((t) => t.side === u.side)) { const a = loneLove(cb, u, m, d); if (a) add({ ...blankAffected(u, a, 'area'), heal: Math.floor(loveHeal(m, d, sm, true) * (manaBand(manaOf(cb)).healing_given_mult ?? 1)), rider: 'healed by Love' }); }

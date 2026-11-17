@@ -15,6 +15,7 @@
 //     the target is slammed into whoever stands there and stays where it was, and the occupant is struck at half of the
 //     slam (Momentum included), as Run Through's behind-strike is half of its strike. Bare: the slam always hits (no
 //     roll); Flurry's Bare mark then makes the occupant's Prone save harder.
+import { tilesN } from '../../log';
 import { technique, strike, spendMomentum, momentumOf, save, cond, stop, forceMove, techState, onHook, setUpBonus, meleeFx, fxMark, movedSince, refuseFx, upto } from './shared';
 import type { Tech, StrikeResult } from './shared';
 import type { StrikeOpts } from '../types';
@@ -186,7 +187,7 @@ function slamTile(t: Tech): { at: string; why: string | null } {
   const [x, y] = xy(at);
   if (x < 0 || y < 0 || x >= t.cb.map.w || y >= t.cb.map.h) return { at, why: 'That tile is off the map.' };
   if (at === t.u.pos) return { at, why: 'Not onto your own tile.' };
-  if (dist(t.u.pos, at) > max) return { at, why: max > 1 ? 'Too far: within ' + max + ' tiles of you.' : 'Too far: slam it into a tile next to you.' };
+  if (dist(t.u.pos, at) > max) return { at, why: max > 1 ? 'Too far: within ' + tilesN(max) + ' of you.' : 'Too far: slam it into a tile next to you.' };
   if (at !== tgt.pos && moveBlockers(t.cb).has(at)) return { at, why: 'That tile is blocked.' };
   return { at, why: null };
 }

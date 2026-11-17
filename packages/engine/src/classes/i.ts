@@ -6,6 +6,7 @@
 // "tiles toward the target" on Lunge, Interpose on Brace, the three-Mark limit on Mark). Every move runs in combat and,
 // where it has one, in the story; what the engine can't judge goes to the Narrator (note / pendRuling / brief).
 // Recommended fixes from the audit are marked PROVISIONAL and listed in the spec (section 14, tags I…) and docs/design/perk-runtime.md.
+import { tilesN } from '../log';
 import { isPressed } from '../physical/pressure';
 import { guardSoakOf } from '../physical/guard';
 import { register, stateOf, uses, note, pendRuling, postStory, applyDamage, healUnit, grantShield, modOn, armedOf, AP_MAX, emit, charOfUnit, statQuery, holderOf, effNum, type Holder, type ActionDef, type ActionArgs } from '../effects';
@@ -814,7 +815,7 @@ register({
     id: 'seal', label: 'Seal', scope: ['combat'], target: 'tile', ap: 'data', res: { charge: 2 },
     available: (h) => evokerReady(h) || true,
     preview: (h, args) => { const cb = h.cb!, u = h.u!, t = tileOf(cb, args.tile); if (!t) return {}; const r = MOVE_RANGE + (u.mg?.rangeBonus || 0);
-      if (dist(u.pos, t) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' }; if (t !== u.pos && !lineOfSight(cb, u.pos, t)) return { ok: false, why: 'No line of sight.' }; return { tiles: tilesAround(t, 1), sigil: true }; },
+      if (dist(u.pos, t) > r) return { ok: false, why: 'Out of range (' + tilesN(r) + ').' }; if (t !== u.pos && !lineOfSight(cb, u.pos, t)) return { ok: false, why: 'No line of sight.' }; return { tiles: tilesAround(t, 1), sigil: true }; },
     run: (h, args) => {
       const cb = h.cb!, u = h.u!, t = tileOf(cb, args.tile)!; u.mg!.cast = true;
       cb.zones = [...(cb.zones || []), { id: 'z' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1), kind: 'seal' as any, tiles: tilesAround(t, 1), words: ['seal'], by: u.id, side: u.side, left: 2, mult: 1, who: u.name }];
@@ -1070,7 +1071,7 @@ register({
       id: 'rewrite', label: 'Rewrite', scope: ['combat'], target: 'enemy', ap: 'data', res: { charge: 3 }, uses: { per: 'per_turn', n: 1 },
       available: (h) => evokerReady(h) || true,
       preview: (h, args) => { const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId); if (!t) return {}; const r = MOVE_RANGE + (u.mg?.rangeBonus || 0);
-        if (dist(u.pos, t.pos) > r) return { ok: false, why: 'Out of range (' + r + ' tiles).' }; if (!lineOfSight(cb, u.pos, t.pos)) return { ok: false, why: 'No line of sight.' };
+        if (dist(u.pos, t.pos) > r) return { ok: false, why: 'Out of range (' + tilesN(r) + ').' }; if (!lineOfSight(cb, u.pos, t.pos)) return { ok: false, why: 'No line of sight.' };
         const f = flippable(t); return { lines: [f.length ? 'Flips ' + f[0] + ' (Brain save vs ' + (saveTn(u, 'brain_power')) + ').' : t.name + ' has nothing the game tracks to flip. The Narrator decides what flips.'] }; },
       run: (h, args, rng) => {
         const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, r0 = rng as Rng; u.mg!.cast = true;

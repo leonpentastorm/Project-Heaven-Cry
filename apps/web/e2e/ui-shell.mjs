@@ -288,7 +288,7 @@ if (fought) {
   ok('…which goes back to the fight', (await host.evaluate(() => window.__phc.getState().screen)) === 'combat');
 } else ok('the fight started (scripted Narrator)', false);
 
-// 10. Save and leave: the title, with the room under Saved sessions.
+// 10. Save and leave: the title, with the room under Saved games.
 await host.locator('[data-phc-leave]').first().click();
 await dlg.waitFor({ timeout: 30000 });
 ok('in a fight the dialog says the fight is saved where it is', /The fight is saved where it is/.test(await dlg.textContent()));

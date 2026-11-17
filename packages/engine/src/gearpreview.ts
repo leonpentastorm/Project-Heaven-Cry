@@ -6,6 +6,7 @@
 //
 // Nothing here changes the character: it is copied first; the scratch fight uses its own named stream (`rngFor`), never
 // the game's dice, and is thrown away.
+import { tilesN } from './log';
 import { fmtNumber } from './datatext';
 import { WEAPON, ITEM, RULES, SKILL, ATTRS } from './data';
 import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, weaponMult, specialRoundName, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM, isShieldId } from './character';
@@ -116,7 +117,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
   if (w && w.category === 'thrown') {
     return { ...base, kind: 'thrown', category: 'Thrown', traits: [...(w.properties || [])], lines: [
       ...(Number(w.damage) ? [{ key: 'damage', label: 'Damage', value: shown(w.damage), num: Number(w.damage), better: 'higher' as const }] : []),
-      ...(typeof w.range_tiles === 'number' ? [{ key: 'range', label: 'Range', value: w.range_tiles + ' tiles', num: w.range_tiles, better: 'higher' as const }] : []),
+      ...(typeof w.range_tiles === 'number' ? [{ key: 'range', label: 'Range', value: tilesN(w.range_tiles), num: w.range_tiles, better: 'higher' as const }] : []),
       ...(w.ap_cost?.single != null ? [{ key: 'ap', label: 'AP to throw', value: shown(w.ap_cost.single), num: Number(w.ap_cost.single), better: 'lower' as const }] : []),
       ...skillLines(c, scratch(c, inst, 1).u, w),
     ] };
@@ -138,7 +139,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       if ((w.modes || []).includes('burst')) { const b = apOf('burst', volleyBaseAp(u, 'burst')); lines.push({ key: 'ap_burst', label: 'AP a Burst', value: shown(b), num: b, better: 'lower' }); }
       const mag = magazineSize(id, inst.mods);
       if (mag != null) lines.push({ key: 'mag', label: 'Magazine', value: mag + (CALIBRE_NAME[w.ammo] || w.ammo ? ' · ' + (CALIBRE_NAME[w.ammo] || w.ammo) : ''), num: mag, better: 'higher' });
-      lines.push({ key: 'range', label: 'Range', value: effectiveRange(w) + ' tiles', num: effectiveRange(w), better: 'higher' });
+      lines.push({ key: 'range', label: 'Range', value: tilesN(effectiveRange(w)), num: effectiveRange(w), better: 'higher' });
       // Recoil 2.0 (rules 1.56): what each earlier shot this turn costs to hit, with its mods (the one reading: gearNum)
       const kick = Math.max(0, gearNum(id, inst.mods, 'recoil'));
       lines.push({ key: 'recoil', label: 'Recoil a shot', value: kick ? '−' + kick : 'none', num: kick, better: 'lower' });

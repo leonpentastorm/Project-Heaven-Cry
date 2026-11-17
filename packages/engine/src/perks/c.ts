@@ -5,6 +5,7 @@
 // Every item runs every tier in combat, on the area map where it applies, and its story part where it has one; what
 // the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit (plan
 // section 6) are marked PROVISIONAL and listed in the spec (section 14, tags C…) and docs/design/perk-runtime.md.
+import { tilesN } from '../log';
 import { isPressed } from '../physical/pressure';
 import { PHYS_RULES } from '../physical/data';
 import { register, stateOf, uses, note, postStory, has, modOn, statQuery, actionAp, applyDamage, healUnit, bankAp, emit, PERK_AP_CAP, type Holder } from '../effects';
@@ -526,8 +527,8 @@ register({
       if (!isFinite(kg)) return { ok: false, why: 'Nobody throws a boss.' };
       if (kg > carry) return { ok: false, why: 'Too heavy: about ' + kg + ' kg; you can carry ' + Math.floor(carry) + ' kg.' };
       const range = Math.max(1, throwRangeOf(u) - Math.floor(kg / 20)), k = tileOf(cb, args.tile);
-      if (!k) return { ok: false, why: 'Pick where they land (within ' + range + ' tiles).' };
-      if (dist(u.pos, k) > range) return { ok: false, why: 'Out of range: ' + range + ' tiles for ' + kg + ' kg.' };
+      if (!k) return { ok: false, why: 'Pick where they land (within ' + tilesN(range) + ').' };
+      if (dist(u.pos, k) > range) return { ok: false, why: 'Out of range: ' + tilesN(range) + ' for ' + kg + ' kg.' };
       if (!lineOfSight(cb, u.pos, k)) return { ok: false, why: 'No line of sight to throw there.' };
       if (!landing(cb, k, t)) return { ok: false, why: 'No room to land there.' };
       return { lines: [t.name + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg })) + ' damage to it and to anyone there.'] };
@@ -555,8 +556,8 @@ register({
       const kg = THROW_KG[o.kind], carry = h.c ? carryLimit(h.c) : 0;
       if (kg > carry) return { ok: false, why: 'Too heavy: about ' + kg + ' kg; you can carry ' + Math.floor(carry) + ' kg.' };
       const range = Math.max(1, throwRangeOf(u) - Math.floor(kg / 20)), k = tileOf(cb, args.choice);
-      if (!k) return { ok: false, why: 'Pick where it lands (within ' + range + ' tiles).' };
-      if (dist(u.pos, k) > range) return { ok: false, why: 'Out of range: ' + range + ' tiles for ' + kg + ' kg.' };
+      if (!k) return { ok: false, why: 'Pick where it lands (within ' + tilesN(range) + ').' };
+      if (dist(u.pos, k) > range) return { ok: false, why: 'Out of range: ' + tilesN(range) + ' for ' + kg + ' kg.' };
       if (!lineOfSight(cb, u.pos, k)) return { ok: false, why: 'No line of sight to throw there.' };
       if (!objLanding(cb, k, o)) return { ok: false, why: 'No room to land there.' };
       return { tiles: [k], lines: ['The ' + o.name.toLowerCase() + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg })) + ' damage to whoever is there, and to it.'] };
@@ -610,7 +611,7 @@ register({
         if (dist(u.pos, k) > 1 || !standable(cb.map, k)) return { ok: false, why: 'Place it on your tile or next to you.' };
         if (p.shape !== 'circle' && k === u.pos) return { ok: false, why: 'A line or cone points away from you: set it next to you.' };
         const tiles = shapeTiles(cb, u.pos, k, p.shape, radiusOf(WEAPON[item]));
-        return { tiles, lines: [WEAPON[item].name + ', ' + p.shape + ' (' + tiles.length + ' tiles): ' + Math.floor(((WEAPON[item] as any).damage || 0) * DEMO) + ' before armour' + (p.remote ? ', on your trigger' : '') + '.'] };
+        return { tiles, lines: [WEAPON[item].name + ', ' + p.shape + ' (' + tilesN(tiles.length) + '): ' + Math.floor(((WEAPON[item] as any).damage || 0) * DEMO) + ' before armour' + (p.remote ? ', on your trigger' : '') + '.'] };
       },
       run: (h, args, rng) => {
         const u = h.u!, cb = h.cb!, k = tileOf(cb, args.tile)!, p = parseCharge(args.choice), item = explosiveOf(u, p.item)!;
@@ -677,8 +678,8 @@ type Device = { obj?: any; unit?: Unit; tn: number; name: string } | string;
 function deviceAt(h: Holder, args: { tile?: string; targetId?: string }): Device {
   const cb = h.cb!, u = h.u!;
   const tu = args.targetId ? unitById(cb, args.targetId) : null;
-  const k = tu ? tu.pos : tileOf(cb, args.tile); if (!k) return 'Pick a device within ' + SLICE_RANGE + ' tiles.';
-  if (dist(u.pos, k) > SLICE_RANGE) return 'Out of reach (' + SLICE_RANGE + ' tiles).';
+  const k = tu ? tu.pos : tileOf(cb, args.tile); if (!k) return 'Pick a device within ' + tilesN(SLICE_RANGE) + '.';
+  if (dist(u.pos, k) > SLICE_RANGE) return 'Out of reach (' + tilesN(SLICE_RANGE) + ').';
   const t = tu || cb.units.find((v) => !v.dead && v.pos === k && v !== u) || null;
   if (t) {
     if (t.kind !== 'turret') return 'Only static devices: doors, terminals, cameras, alarms, emplaced turrets.';

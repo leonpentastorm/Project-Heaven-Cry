@@ -31,7 +31,7 @@ export async function leaveFlow() {
   if (g && g.sandbox) return leaveProvingGround(true);
   const host = st.role === 'host', fight = !!g && g.phase === 'combat', code = st.code || (g && g.code) || '';
   const ok = await askConfirm(host
-    ? { title: 'Leave the room?', body: 'The game saves first, here and on the room server. Resume it from Saved sessions on the title screen; your friends stay in the room until you come back.' + (fight ? '\nThe fight is saved where it is.' : ''), confirm: 'Save and leave', cancel: 'Stay' }
+    ? { title: 'Leave the room?', body: 'The game saves first, here and on the room server. Resume it from Saved games on the title screen; your friends stay in the room until you come back.' + (fight ? '\nThe fight is saved where it is.' : ''), confirm: 'Save and leave', cancel: 'Stay' }
     : { title: 'Leave the room?', body: 'Your character stays in the squad; rejoin any time with code ' + code + '.' + (fight ? '\nIn the fight, the host passes your character\'s turns while you are away.' : ''), confirm: 'Leave', cancel: 'Stay' });
   if (!ok) return;
   if (host) {
@@ -57,7 +57,7 @@ export function shellVals(self, screen) {
     settings: () => openSettings(), report: openReport,
     leave: () => { leaveFlow(); },
     leaveName: SB ? 'Leave the Proving Ground' : 'Leave the room',
-    leaveTitle: SB ? (isHost ? 'Close the Proving Ground' : 'Leave the Proving Ground: your fighter goes with you') : isHost ? 'Save and go back to the title screen. Resume any time from Saved sessions.' : 'Back to the title screen. Your character stays in the squad.',
+    leaveTitle: SB ? (isHost ? 'Close the Proving Ground' : 'Leave the Proving Ground: your fighter goes with you') : isHost ? 'Save and go back to the title screen. Resume any time from Saved games.' : 'Back to the title screen. Your character stays in the squad.',
   } };
 }
 

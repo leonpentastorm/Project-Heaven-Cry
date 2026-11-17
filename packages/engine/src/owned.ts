@@ -17,6 +17,7 @@
 // Ops `spawn` (a unit from a data block at the owner's level, through combat.ts levelCompanion; the tie made) and
 // `unmake` (refund: the resources its spawn took come back) are effects/triggers.ts's; spawnOwned and unmakeOwned are
 // the doors.
+import { tilesN } from './log';
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import enemiesJ from '../../../data/enemies.json';
 import figmentsJ from '../../../data/figments.json';
@@ -227,7 +228,7 @@ export function runDataVerb(cb: Combat, rng: Rng, owner: Unit, me: Unit, dv: any
 function dashTo(cb: Combat, me: Unit, dv: any, t: Unit): string | { why: string } {
   const [ax, ay] = me.pos.split(',').map(Number), [bx, by] = t.pos.split(',').map(Number), dx = Math.sign(bx - ax), dy = Math.sign(by - ay), n = Math.max(Math.abs(bx - ax), Math.abs(by - ay));
   if (!(ax === bx || ay === by || Math.abs(bx - ax) === Math.abs(by - ay))) return { why: 'Not in a straight line.' };
-  if (n - 1 > dv.dash) return { why: 'Too far to ' + String(dv.name).toLowerCase() + ' (' + dv.dash + ' tiles).' };
+  if (n - 1 > dv.dash) return { why: 'Too far to ' + String(dv.name).toLowerCase() + ' (' + tilesN(dv.dash) + ').' };
   let to = me.pos;
   for (let i = 1; i < n; i++) { const k = (ax + dx * i) + ',' + (ay + dy * i); if (!canStand(cb, k, me)) return { why: 'Something is in the way.' }; to = k; }
   return to;

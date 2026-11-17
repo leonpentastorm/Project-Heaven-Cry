@@ -117,7 +117,7 @@ export function joinRoom(code: string) {
   set({ role: 'guest', code, game: null, screen: 'room', conn: 'connecting' });
   conn = connect({ code, pid: S.me.id, name: S.me.name, role: 'guest' }, onMessage, onConn);
 }
-// ---------- saved sessions (the title screen's list) ----------
+// ---------- saved games (the title screen's list) ----------
 export interface SessionInfo { code: string; role: 'host' | 'guest'; title: string; chars: string; players: string; phase: string; round: number; savedAt: number }
 export const listSessions = (): SessionInfo[] => read(LS.sessions, []);
 function noteSession(g: GameState, role: 'host' | 'guest') {
@@ -140,7 +140,7 @@ export function saveNow() {
   if (S.role !== 'host' || !hostState) return toast('The host\'s browser keeps the save for everyone. Ask the host to save.');
   persist(); if (conn) conn.send({ t: 'save', state: slim(hostState) }); lastSave = Date.now();
   set({ savedAt: Date.now() });
-  toast('Saved · room ' + hostState.code + '. Find it under Saved sessions on the title screen.', true);
+  toast('Saved · room ' + hostState.code + '. Find it under Saved games on the title screen.', true);
 }
 export function resumeSession(code: string) { const x = listSessions().find((s) => s.code === code); if (!x) return; x.role === 'host' ? hostRoom(code) : joinRoom(code); }
 

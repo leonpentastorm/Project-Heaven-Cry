@@ -12,6 +12,7 @@
 //     Guard with Reach) is the Body family save.
 //   - Sidestep's mark is kept on the user (u.tech.sidestep), not in the shared set-up slot, so a Feint's mark survives
 //     it. It is spent by the next Strike against that enemy this turn (every roll of that one Strike).
+import { tilesN } from '../../log';
 import { statQuery } from '../../effects/hooks';
 import { technique, save, cond, stop, forceMove, stepUser, stepsWithin, chainOf, turnStamp, pressureFilter, onHook, meleeFx, fxMark, movedSince, fallFx, type Tech } from './shared';
 import { PHYS_RULES } from '../data';
@@ -194,7 +195,7 @@ technique({
   check(t) {
     const e = enemyCheck(t, 'shove'); if (e) return e;
     const { range } = shoveLine(t), tgt = t.tgt!;
-    if (dist(t.u.pos, tgt.pos) > range) return range > 1 ? 'Shove someone within ' + range + ' tiles.' : 'Shove someone next to you.';
+    if (dist(t.u.pos, tgt.pos) > range) return range > 1 ? 'Shove someone within ' + tilesN(range) + '.' : 'Shove someone next to you.';
     const to = awayFrom(t.u.pos, tgt.pos);
     if ((!to || !canStand(t.cb, to, tgt)) && tgt.prone) return tgt.name + ' is already Prone and has nowhere to go.';
     return null;
@@ -237,7 +238,7 @@ technique({
   check(t) {
     const e = enemyCheck(t, 'trip'); if (e) return e;
     const tgt = t.tgt!, r = reachOf(t);
-    if (dist(t.u.pos, tgt.pos) > r) return r > 1 ? 'Trip someone within ' + r + ' tiles.' : 'Trip someone next to you.';
+    if (dist(t.u.pos, tgt.pos) > r) return r > 1 ? 'Trip someone within ' + tilesN(r) + '.' : 'Trip someone next to you.';
     if (tgt.prone) return tgt.name + ' is already Prone.';
     if (t.args.opt === 'grapple' && (t.line('hook', 'reach', 'bare') !== 'bare' || dist(t.u.pos, tgt.pos) > 1)) return 'Going down with it needs a Bare weapon and the target next to you.';
     return null;
@@ -302,7 +303,7 @@ technique({
   check(t) {
     const e = enemyCheck(t, 'drag'); if (e) return e;
     // Hook (Leon's ruling, 10 Nov 2026): the hook itself pulls from 2 tiles away, and from 3 with Reach
-    const r = reachOf(t) + (t.line('hook', 'bare') === 'hook' ? t.num('hook_reach', 1) : 0); if (dist(t.u.pos, t.tgt!.pos) > r) return r > 1 ? 'Drag someone within ' + r + ' tiles.' : 'Drag someone next to you.';
+    const r = reachOf(t) + (t.line('hook', 'bare') === 'hook' ? t.num('hook_reach', 1) : 0); if (dist(t.u.pos, t.tgt!.pos) > r) return r > 1 ? 'Drag someone within ' + tilesN(r) + '.' : 'Drag someone next to you.';
     return dragPlan(t).why || null;
   },
   run(t) {

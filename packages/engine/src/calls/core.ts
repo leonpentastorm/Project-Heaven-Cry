@@ -5,6 +5,7 @@
 //
 // The shared ladder, by the speaker's points in the Call's skill (calls.json `rules`): 2 AP and 5 tiles + 1 a point;
 // step 2 at 3 points; 1 AP from 5; step 3 at 7; as a reaction once a round from 9; the first Call of a turn free at 10.
+import { tilesN } from '../log';
 import { say, unsay, type Combat, type Unit, alive, emitFx, checkOver, active, dist, sideSees } from '../combat';
 import { charOfUnit, emit, bindGame } from '../effects/hooks';
 import { grantPerkAp } from '../effects/ap';
@@ -86,7 +87,7 @@ function targetGate(t: Call, h: CallHandler): string | null {
     if (tgt === u && def.aim !== 'self-or-ally') return def.name + ' is for someone else.';
     if (!alive(tgt)) return tgt.name + ' can\'t hear you.';
   }
-  if (tgt !== u && dist(u.pos, tgt.pos) > t.pv.range) return 'Too far to be heard (' + t.pv.range + ' tiles).';
+  if (tgt !== u && dist(u.pos, tgt.pos) > t.pv.range) return 'Too far to be heard (' + tilesN(t.pv.range) + ').';
   const m = tgt.call?.[helping ? 'helped' : 'hindered'];
   if (m && m.r === cb.round) return tgt.name + ' has already been ' + (helping ? 'helped' : 'hindered') + ' by a Call this round.';
   return null;

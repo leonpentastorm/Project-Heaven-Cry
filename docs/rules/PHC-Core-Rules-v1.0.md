@@ -12189,3 +12189,9 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     Ground; in a narrated room none for an engine item and one small "Narrator's call" for a hybrid or narrator item.
     An unbuilt choice reads "Sealed: not yet issued." and the shelved advanced classes "Advanced classes: sealed, not
     yet issued." Words: `rules.json adjudication_marks`, `classes.json advanced.shelved_text`. No number changed.
+5213. **Small words (G5).** "1 tiles": a count of tiles now reads through one helper, `log.ts tilesN` ("1 tile", "3
+    tiles"), on the sheet's Movement ("1 tile per AP" at Agility 1), Vision, the Sigil and Soul ranges, the Move
+    button, a design's reach, a gear card's Range (a melee weapon's 1) and the range refusals of the engine (Analyze,
+    throwing, a Call, a perk's or class move's range, a reach). The Narrator's memory dialog closes on Esc. The title
+    screen's "SAVED GAMES" is the one name: the save toast and the Leave dialog said "Saved sessions", now "Saved
+    games". No number changed.

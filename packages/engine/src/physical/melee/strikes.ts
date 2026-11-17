@@ -1,5 +1,6 @@
 // Physical 2.0, melee Strikes: the body of a chain. Cut is the lead's reference; the melee lane builds Sweep, Bash,
 // Sunder, Flurry, Hamstring, Bind, Half-Sword and Throw here.
+import { tilesN } from '../../log';
 import { technique, strike, cond } from './shared';
 
 // 6. Cut: one strike. Everyone knows it. Edge: a critical leaves Bleeding. Point: +1 to hit. Blunt: a critical leaves Dazed.
@@ -164,7 +165,7 @@ technique({
     if (!targets.length || targets.length !== ids.length) return 'Pick a target.';
     const range: number = thrown ? throwRangeOf(t.u) : 0; // the core's thrown strike checks the same range
     if (thrown) for (const v of targets) {
-      if (dist(t.u.pos, v.pos) > range) return v.name + ' is out of throwing range (' + range + ' tiles).';
+      if (dist(t.u.pos, v.pos) > range) return v.name + ' is out of throwing range (' + tilesN(range) + ').';
       if (!lineOfSight(t.cb, t.u.pos, v.pos)) return 'No line of sight to ' + v.name + '.';
     }
     if (t.preview) { if (p === 'bare') t.note('Each hit after the first: +' + t.num('bare_bonus', 1) + ' to the save your next Bind or Throw Down against it this turn forces.'); }
