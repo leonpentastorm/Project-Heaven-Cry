@@ -127,6 +127,8 @@ await settle(p, 300);
 const perkTab = p.locator('#phc-tab-perks');
 ok('the Perks tab is there', (await perkTab.count()) === 1);
 await perkTab.click(); await settle(p, 300);
+// 0.31.9: the shelves fold, closed by default: open them to read
+for (let i = 0; i < 3; i++) { const h = p.locator('[data-shelf] .phc-fold-h[aria-expanded="false"]').first(); if (!(await h.count())) break; await h.click(); await settle(p, 150); }
 const rows = await p.locator('[role="tabpanel"] button').allTextContents();
 const has = (re) => rows.some((t) => re.test(t.replace(/\s+/g, ' ')));
 // Rules 1.14, the perk card in a fight: a switch on another action says where it is; a passive shows a live line.
