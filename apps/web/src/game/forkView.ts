@@ -57,8 +57,8 @@ export function forkCard(c: any, door: string, o: { inFight?: boolean; only?: nu
       style: 'display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 10px; ' + (s.pending ? 'border: 1px solid ' + WHITE + '; background: rgba(255, 255, 255, 0.04)' : 'border: 1px solid #232D3F') };
   });
   if (!steps.length) return null;
-  const chosen = v.steps.filter((s) => s.picked).length, toPick = v.pending;
-  const summary = ['Forks', chosen ? chosen + ' chosen' : '', toPick ? toPick + ' to pick' : '', !chosen && !toPick ? 'none open yet' : ''].filter(Boolean).join(' · ');
+  const chosen = v.steps.filter((s) => s.picked).length, toPick = v.pending, later = v.steps.filter((s) => s.open && !s.offered).length;
+  const summary = ['Forks', chosen ? chosen + ' chosen' : '', toPick ? toPick + ' to pick' : '', later ? later + ' coming in a later version' : '', !chosen && !toPick && !later ? 'none open yet' : ''].filter(Boolean).join(' · ');
   return { key: door, door, head: (v.name === skillName ? skillName : v.name + ' · ' + skillName).toUpperCase() + ' · FORKS' + (v.pending ? ' · ' + v.pending + ' STILL TO DO' : ''),
     headStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + (v.pending ? WHITE : ink), runsOn: v.runsOn ? 'Every option runs on ' + v.runsOn + '.' : '', steps, pending: v.pending > 0, chips: forkChipsLine(c, door),
     chosen, toPick, summary, summaryStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: ' + (toPick ? WHITE : chosen ? ink : MUTED) };

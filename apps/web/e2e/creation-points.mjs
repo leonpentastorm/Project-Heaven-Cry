@@ -140,10 +140,10 @@ const road = await p.evaluate(() => { const steps = [...document.querySelectorAl
     repeats: steps.filter((s) => { const t = [...s.querySelectorAll('.phc-ep-row')].map((x) => x.textContent); return new Set(t).size !== t.length; }).length,
     perkSteps: steps.filter((s) => s.querySelectorAll('img.phc-icon').length > 0).map((s) => s.getAttribute('data-step')).join(),
     small: [...document.querySelectorAll('.phc-ep-road .phc-ep-row, .phc-ep-head')].filter((x) => parseFloat(getComputedStyle(x).fontSize) < 13).length,
-    head: (document.querySelector('.phc-ep-head') || {}).textContent || '', old: document.querySelectorAll('.phc-ep-give').length }; });
+    head: (document.querySelector('.phc-ep-head') || {}).textContent || '', every: [...document.querySelectorAll('.phc-ep-road .phc-ep-sub')].map((x) => x.textContent).join('|'), old: document.querySelectorAll('.phc-ep-give').length }; });
 ok('Will Power\'s "?" shows ten rows (' + road.n + '), point ' + road.now + ' lit, ' + road.owned + ' owned, no line twice in a row (' + road.repeats + ')',
   road.n === '1,2,3,4,5,6,7,8,9,10' && road.now === '2' && road.owned === '1' && road.repeats === 0 && road.old === 0);
-ok('…the head line says what every point gives, the perk steps show their icons (' + road.perkSteps + '), no rules text under 13 px (' + road.small + ')', /^Every point: \S/.test(road.head) && road.small === 0 && /3/.test(road.perkSteps));
+ok('…EVERY POINT says what every point gives, one line a row (' + road.every + '), the perk steps show their icons (' + road.perkSteps + '), no rules text under 13 px (' + road.small + ')', /^EVERY POINT\|AT \d/.test(road.every) && /^\S/.test(road.head) && road.small === 0 && /3/.test(road.perkSteps));
 ok('no sideways page scroll with the pop-up open (' + await sideways() + ' px over)', (await sideways()) <= 1);
 // the pop-up scrolls inside itself: the shot shows its road map, as a player scrolling down to it sees it
 await p.evaluate(() => document.querySelector('.phc-ep-road').scrollIntoView({ block: 'start' })); await settle(p, 150);

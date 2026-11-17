@@ -781,8 +781,7 @@
       "per_point": {
         "numbers": {
           "sense": 1,
-          "call_range": 1,
-          "check": 1
+          "call_range": 1
         },
         "rows": [
           {
@@ -792,10 +791,6 @@
           {
             "at": "each",
             "text": "Your Warn reaches {=per_point.numbers.call_range} tile further."
-          },
-          {
-            "at": "from 1",
-            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -1304,8 +1299,7 @@
       "summary": "You run the conversation through fear.",
       "per_point": {
         "numbers": {
-          "call_range": 1,
-          "check": 1
+          "call_range": 1
         },
         "rows": [
           {
@@ -1315,10 +1309,6 @@
           {
             "at": "each",
             "text": "Your Threaten is harder to shake off."
-          },
-          {
-            "at": "from 1",
-            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -1972,8 +1962,7 @@
       "per_point": {
         "numbers": {
           "init": 1,
-          "call_range": 1,
-          "check": 1
+          "call_range": 1
         },
         "rows": [
           {
@@ -1983,10 +1972,6 @@
           {
             "at": "each",
             "text": "Your Cue reaches {=per_point.numbers.call_range} tile further."
-          },
-          {
-            "at": "from 1",
-            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -2846,8 +2831,7 @@
         "numbers": {
           "notice": 1,
           "notice_range": 1,
-          "call_range": 1,
-          "check": 1
+          "call_range": 1
         },
         "rows": [
           {
@@ -2861,10 +2845,6 @@
           {
             "at": "each",
             "text": "Your Spot reaches {=per_point.numbers.call_range} tile further."
-          },
-          {
-            "at": "from 1",
-            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -3398,8 +3378,7 @@
       "summary": "Logic as a weapon.",
       "per_point": {
         "numbers": {
-          "call_range": 1,
-          "check": 1
+          "call_range": 1
         },
         "rows": [
           {
@@ -3409,10 +3388,6 @@
           {
             "at": "each",
             "text": "Your Brief reaches {=per_point.numbers.call_range} tile further."
-          },
-          {
-            "at": "from 1",
-            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -3915,8 +3890,7 @@
       "summary": "Warmth, persuasion, and lying with a smile.",
       "per_point": {
         "numbers": {
-          "call_range": 1,
-          "check": 1
+          "call_range": 1
         },
         "rows": [
           {
@@ -3926,10 +3900,6 @@
           {
             "at": "each",
             "text": "Your Rally reaches {=per_point.numbers.call_range} tile further."
-          },
-          {
-            "at": "from 1",
-            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -4511,8 +4481,7 @@
       "summary": "Metaphor, subtext, poetry and flirting.",
       "per_point": {
         "numbers": {
-          "call_range": 1,
-          "check": 1
+          "call_range": 1
         },
         "rows": [
           {
@@ -4522,10 +4491,6 @@
           {
             "at": "each",
             "text": "Your Taunt is harder to shake off."
-          },
-          {
-            "at": "from 1",
-            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -5072,17 +5037,12 @@
       "summary": "The occultist's library: old scripts, curses, relics and the names of things.",
       "per_point": {
         "numbers": {
-          "call_range": 1,
-          "check": 1
+          "call_range": 1
         },
         "rows": [
           {
             "at": "each",
             "text": "Your Name It reaches {=per_point.numbers.call_range} tile further."
-          },
-          {
-            "at": "from 1",
-            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -5633,8 +5593,7 @@
       "per_point": {
         "numbers": {
           "karma": 1,
-          "call_range": 1,
-          "check": 1
+          "call_range": 1
         },
         "rows": [
           {
@@ -5644,10 +5603,6 @@
           {
             "at": "each",
             "text": "Your Order reaches {=per_point.numbers.call_range} tile further."
-          },
-          {
-            "at": "from 1",
-            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },

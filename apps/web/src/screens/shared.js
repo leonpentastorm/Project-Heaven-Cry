@@ -69,7 +69,7 @@ export function roadMap(id) {
     else if (u && u.category === 'Fork' && u.name) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: u.name + '. ' + (u.player || 'Choose one, kept for good.') });
     // a named unlock: its name and player line (an unlock named only for its mastery step, or with no name of its own,
     // shows its player line alone)
-    else if (u && (u.category || u.player) && u.name && !lines.some((l) => l.text.includes(u.name))) lines.push({ key: 'u', kind: 'unlock', at: 'at ' + n, text: u.player ? (/^Mastery \d+$|^Mastered$/.test(u.name) || !u.category ? u.player : u.name + ': ' + u.player) : 'Unlocks ' + u.name });
+    else if (u && (u.category || u.player) && u.name && (u.player || !lines.some((l) => l.text.includes(u.name)))) lines.push({ key: 'u', kind: 'unlock', at: 'at ' + n, text: u.player ? (/^Mastery \d+$|^Mastered$/.test(u.name) || !u.category ? u.player : u.name + ': ' + u.player) : 'Unlocks ' + u.name });
     const step = m >= 1 && m <= 4 ? 'M' + m : m === 5 ? 'mastered' : '';
     const perks = step === 'mastered' ? (ep.mastered ? [ep.mastered] : []) : step ? ep.perks || [] : [];
     if (step) lines.push({ key: 'm', kind: step === 'mastered' ? 'mastered' : 'perk', at: 'at ' + n,
