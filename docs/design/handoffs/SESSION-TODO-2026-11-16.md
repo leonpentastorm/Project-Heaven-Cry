@@ -175,3 +175,17 @@ workflow journals named in section C.
 **Housekeeping owed:** WIP branches of 0.30 and 0.31 (delete one version after their work shipped, per the rule);
 worktrees under E:/phc-wt/ (rel030 is the release tree; int030, field030, dex031, fit030, ui031, icons030 and the older
 lanes can go once Leon agrees); drive C: was 94% full.
+
+## L. Penned in for a future patch (Leon, 17 Nov 2026)
+
+- **Realign a weapon at the Forge.** A Forge service (not a mod: it takes NO mod slot) that changes a melee weapon's
+  alignment between Strength and Dexterity (what it rolls to hit with and what its damage scales with), both
+  directions. It costs a lot of credits (a data number, PROVISIONAL, on the scale of the Relic step), and the
+  weapon's base damage is lowered or raised to the balance line of the attribute it moves to (a data factor per
+  direction, fitted with melee-measure so the realigned weapon lands on that attribute's line with both alpha perks),
+  never a free upgrade. Built from: the weapon row's hits_with / scales_with read in one place, the roll_with op
+  (Open Hand), the rolled_with predicate (0.31), the Forge's paid step. To verify first: whether a per-weapon state
+  can override scales_with (weaponState carries rarity and mods today); if not, that one general field is the only
+  new piece. After 0.31.2 settles the Dexterity blade numbers.
+- **Clean-up done 17 Nov:** 33 work folders and 37 merged GitHub branches removed. Left for Leon's word: about 25
+  non-git leftover folders beside the main checkout (phc-029-l1 to l6, phc-0282-*, phc-bisect-0282, phc-say-repro…).
