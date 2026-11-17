@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.shadow.spotter",
+  "name": "Spotter",
+  "icon_id": "fork.shadow.spotter",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Spotter** (`shadow.spotter`). Renamed: **Called Shot** is a move the Operative holds at rank III. *\"While you are\nHidden, the first weapon hit each round any ally lands on a Marked foe counts as an ambush (the Break's ambush term) and\ncosts you {=numbers.shadow} Shadow. A hit that is already an ambush gains nothing more.\"*\n- Fields: `shadow: 1`, limit `per_round` 1; the term is `rules.shadow.ambush_bonus` (0.5, one copy, no new number).\n- Carrier: trigger `dealing`, `if {actor: ally, damage: [weapon], target_has: [marked], self_has: [hidden],\n  self_has_res: [shadow]}`, op `damage_mult` `value: 1.5`, **`replaces: \"ambush\"`** (the field exists,\n  `triggers.ts:335`, as the Break's row uses it: an ally already ambushing, Lend the Dark's included, stays at \u00d71.5,\n  never \u00d72.25), `and: resource shadow \u22121`. The validator holds 1.5 equal to 1 + `rules.shadow.ambush_bonus`. Weapon\n  hits only: an ally's Release, Evoke, Snap or Rebuke is not an ambush.\n- Operative: Mark (three foes at once) and Execution (a quarter HP) feed it. Peak: no.\n- Excite: you stay in the dark, Tag the Boss, and the Breaker's Coup lands at \u00d71.5.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-shadow-spotter",
+  "path": "art/icons/forks/shadow-spotter.png",
+  "paint": "Hidden Wick peeks low over a wall corner through ONE large simple monocular held to his screen, free hand marking a small diamond over a cropped enemy shoulder. Alert focused pixel eyes.",
+  "avoid": "No second full figure, rifle scope glint, text or a bullseye replacing the diamond.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Hidden Wick peeks low over a wall corner through ONE large simple monocular held to his screen, free hand marking a small diamond over a cropped enemy shoulder. Alert focused pixel eyes.\nAVOID: No second full figure, rifle scope glint, text or a bullseye replacing the diamond.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 7,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "c59b7160d5622fa9c12c6df71d211d666d85e1561037dc8b0f86aa7bc0a18a62",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-shadow-spotter-v1.png",
+  "source_sha256": "6b1b5d9b8578d7c89160cfe53910a664839476b5d24e26f4353a8492e2d36ff9",
+  "export_crop": [
+    49,
+    64,
+    1254,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/shadow-spotter.png",
+    "64": "art/icons/forks/exports/64/shadow-spotter.png",
+    "48": "art/icons/forks/exports/48/shadow-spotter.png",
+    "44": "art/icons/forks/exports/44/shadow-spotter.png",
+    "32": "art/icons/forks/exports/32/shadow-spotter.png",
+    "24": "art/icons/forks/exports/24/shadow-spotter.png"
+  },
+  "export_sha256": {
+    "128": "36bd29f92c521f8edb505318d2b07214dfe41aec42bb1e0dd5fc7c8e3c8a4aba",
+    "64": "1cd4148ab47d216afe08f00af452b816fea45f96ea5296ff68caba2ed9a34468",
+    "48": "23a4c36713fb241a274fbbca9f20aec7a711b4a84f293509f99a772fb1eb4966",
+    "44": "3f090b2cad954d47b5d7338a38d746b0876b1809833862e5445d296c679cb8c4",
+    "32": "3f17e96384fa818e1c6dd433617f667597e0c80efe743e954fb30fa3777e7dfd",
+    "24": "c3ad1dd0a4c328585b3110a09951a64ca1282e2c3a34d1d13f21a50fda44e065"
+  },
+  "framing": {
+    "scale": 0.5200516031762586,
+    "offset": [
+      198,
+      202
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

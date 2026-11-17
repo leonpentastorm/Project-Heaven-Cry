@@ -108,6 +108,222 @@
       },
       "production_approved": false,
       "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.shadow.lend_the_dark",
+      "name": "Lend the Dark",
+      "icon_id": "fork.shadow.lend_the_dark",
+      "path": "art/icons/forks/shadow-lend-the-dark.png",
+      "sha256": "e47e114274b51b062acb653c1bac4ac71fa707abee024c8ef105018aa2345291",
+      "exports": {
+        "128": "art/icons/forks/exports/128/shadow-lend-the-dark.png",
+        "64": "art/icons/forks/exports/64/shadow-lend-the-dark.png",
+        "48": "art/icons/forks/exports/48/shadow-lend-the-dark.png",
+        "44": "art/icons/forks/exports/44/shadow-lend-the-dark.png",
+        "32": "art/icons/forks/exports/32/shadow-lend-the-dark.png",
+        "24": "art/icons/forks/exports/24/shadow-lend-the-dark.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.shadow.light_fingers",
+      "name": "Light Fingers",
+      "icon_id": "fork.shadow.light_fingers",
+      "path": "art/icons/forks/shadow-light-fingers.png",
+      "sha256": "9c1fe8d6d3d653fa4ed51ad1d877a0599d51b58d225d48d16ecadfeded173d66",
+      "exports": {
+        "128": "art/icons/forks/exports/128/shadow-light-fingers.png",
+        "64": "art/icons/forks/exports/64/shadow-light-fingers.png",
+        "48": "art/icons/forks/exports/48/shadow-light-fingers.png",
+        "44": "art/icons/forks/exports/44/shadow-light-fingers.png",
+        "32": "art/icons/forks/exports/32/shadow-light-fingers.png",
+        "24": "art/icons/forks/exports/24/shadow-light-fingers.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.shadow.lightkiller",
+      "name": "Lightkiller",
+      "icon_id": "fork.shadow.lightkiller",
+      "path": "art/icons/forks/shadow-lightkiller.png",
+      "sha256": "59fa4f5ae5a782ab22f4b7d7d27e88da2271403c3809ccc181745fd62eb08931",
+      "exports": {
+        "128": "art/icons/forks/exports/128/shadow-lightkiller.png",
+        "64": "art/icons/forks/exports/64/shadow-lightkiller.png",
+        "48": "art/icons/forks/exports/48/shadow-lightkiller.png",
+        "44": "art/icons/forks/exports/44/shadow-lightkiller.png",
+        "32": "art/icons/forks/exports/32/shadow-lightkiller.png",
+        "24": "art/icons/forks/exports/24/shadow-lightkiller.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.shadow.spotter",
+      "name": "Spotter",
+      "icon_id": "fork.shadow.spotter",
+      "path": "art/icons/forks/shadow-spotter.png",
+      "sha256": "c59b7160d5622fa9c12c6df71d211d666d85e1561037dc8b0f86aa7bc0a18a62",
+      "exports": {
+        "128": "art/icons/forks/exports/128/shadow-spotter.png",
+        "64": "art/icons/forks/exports/64/shadow-spotter.png",
+        "48": "art/icons/forks/exports/48/shadow-spotter.png",
+        "44": "art/icons/forks/exports/44/shadow-spotter.png",
+        "32": "art/icons/forks/exports/32/shadow-spotter.png",
+        "24": "art/icons/forks/exports/24/shadow-spotter.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.tend.keep_the_thread",
+      "name": "Keep the Thread",
+      "icon_id": "fork.tend.keep_the_thread",
+      "path": "art/icons/forks/tend-keep-the-thread.png",
+      "sha256": "eec67a0cc3fe6fcc62daac4481db4405c98a608ef3989e3cad3e38415c06fc5f",
+      "exports": {
+        "128": "art/icons/forks/exports/128/tend-keep-the-thread.png",
+        "64": "art/icons/forks/exports/64/tend-keep-the-thread.png",
+        "48": "art/icons/forks/exports/48/tend-keep-the-thread.png",
+        "44": "art/icons/forks/exports/44/tend-keep-the-thread.png",
+        "32": "art/icons/forks/exports/32/tend-keep-the-thread.png",
+        "24": "art/icons/forks/exports/24/tend-keep-the-thread.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.tend.long_thread",
+      "name": "Long Thread",
+      "icon_id": "fork.tend.long_thread",
+      "path": "art/icons/forks/tend-long-thread.png",
+      "sha256": "7820672a39a40d4746fb795664da9e47681ec3948b7e81c6cd90908749ef412e",
+      "exports": {
+        "128": "art/icons/forks/exports/128/tend-long-thread.png",
+        "64": "art/icons/forks/exports/64/tend-long-thread.png",
+        "48": "art/icons/forks/exports/48/tend-long-thread.png",
+        "44": "art/icons/forks/exports/44/tend-long-thread.png",
+        "32": "art/icons/forks/exports/32/tend-long-thread.png",
+        "24": "art/icons/forks/exports/24/tend-long-thread.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.tend.shared_pulse",
+      "name": "Shared Pulse",
+      "icon_id": "fork.tend.shared_pulse",
+      "path": "art/icons/forks/tend-shared-pulse.png",
+      "sha256": "fb2a3dd179c4242cc841cb5b9636867d568390a25a4a9e16037a2d6b33a79690",
+      "exports": {
+        "128": "art/icons/forks/exports/128/tend-shared-pulse.png",
+        "64": "art/icons/forks/exports/64/tend-shared-pulse.png",
+        "48": "art/icons/forks/exports/48/tend-shared-pulse.png",
+        "44": "art/icons/forks/exports/44/tend-shared-pulse.png",
+        "32": "art/icons/forks/exports/32/tend-shared-pulse.png",
+        "24": "art/icons/forks/exports/24/tend-shared-pulse.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.tend.short_thread",
+      "name": "Short Thread",
+      "icon_id": "fork.tend.short_thread",
+      "path": "art/icons/forks/tend-short-thread.png",
+      "sha256": "90b0506ac6b7ac4471c7358eda253c55f9d369266433e5021c32c116c33a8543",
+      "exports": {
+        "128": "art/icons/forks/exports/128/tend-short-thread.png",
+        "64": "art/icons/forks/exports/64/tend-short-thread.png",
+        "48": "art/icons/forks/exports/48/tend-short-thread.png",
+        "44": "art/icons/forks/exports/44/tend-short-thread.png",
+        "32": "art/icons/forks/exports/32/tend-short-thread.png",
+        "24": "art/icons/forks/exports/24/tend-short-thread.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
     }
   ]
 }

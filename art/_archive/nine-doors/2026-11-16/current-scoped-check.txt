@@ -1,7 +1,7 @@
 {
-  "checked_new_filesets": 8,
+  "checked_new_filesets": 16,
   "legacy_delivered": 348,
-  "new_030_delivered": 4,
+  "new_030_delivered": 12,
   "all_new_source_master_export_hashes_pass": true,
   "new_pixel_alpha_dimensions_safe_box_and_ui_checks_pass": true,
   "repository_44px_white_alpha_check_pass": true,
@@ -24,8 +24,32 @@
       "faint_alpha_to_solid_area_ratio": 0.028435654231679396
     },
     {
+      "asset": "0.30/fork.tend.keep_the_thread",
+      "faint_alpha_to_solid_area_ratio": 0.053199265479310406
+    },
+    {
+      "asset": "0.30/fork.tend.long_thread",
+      "faint_alpha_to_solid_area_ratio": 0.07608142863370192
+    },
+    {
+      "asset": "0.30/fork.shadow.light_fingers",
+      "faint_alpha_to_solid_area_ratio": 0.05380392835760606
+    },
+    {
       "asset": "0.30/fork.guard.cover_them",
       "faint_alpha_to_solid_area_ratio": 0.06832111649480267
+    },
+    {
+      "asset": "0.30/fork.shadow.spotter",
+      "faint_alpha_to_solid_area_ratio": 0.06158569622539281
+    },
+    {
+      "asset": "0.30/fork.shadow.lend_the_dark",
+      "faint_alpha_to_solid_area_ratio": 0.05666918130545676
+    },
+    {
+      "asset": "0.30/fork.tend.shared_pulse",
+      "faint_alpha_to_solid_area_ratio": 0.07321660509758278
     },
     {
       "asset": "0.30/fork.guard.drive",
@@ -36,8 +60,16 @@
       "faint_alpha_to_solid_area_ratio": 0.06560254558974847
     },
     {
+      "asset": "0.30/fork.tend.short_thread",
+      "faint_alpha_to_solid_area_ratio": 0.05244703319912877
+    },
+    {
       "asset": "0.30/fork.guard.provoke",
       "faint_alpha_to_solid_area_ratio": 0.06506571809204653
+    },
+    {
+      "asset": "0.30/fork.shadow.lightkiller",
+      "faint_alpha_to_solid_area_ratio": 0.07283134409860363
     }
   ],
   "approval": "All unapproved review candidates"

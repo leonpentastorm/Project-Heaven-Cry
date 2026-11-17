@@ -1,12 +1,20 @@
 {
   "total": 41,
-  "completed_count": 4,
+  "completed_count": 12,
   "completed_keys": [
     "0.30/fork.guard.cover_them",
     "0.30/fork.guard.drive",
     "0.30/fork.guard.provoke",
-    "0.30/fork.guard.stand_fast"
+    "0.30/fork.guard.stand_fast",
+    "0.30/fork.shadow.lend_the_dark",
+    "0.30/fork.shadow.light_fingers",
+    "0.30/fork.shadow.lightkiller",
+    "0.30/fork.shadow.spotter",
+    "0.30/fork.tend.keep_the_thread",
+    "0.30/fork.tend.long_thread",
+    "0.30/fork.tend.shared_pulse",
+    "0.30/fork.tend.short_thread"
   ],
-  "remaining_count": 37,
+  "remaining_count": 29,
   "scope": "0.30 additions only; original legacy denominator and held recipes are unchanged"
 }

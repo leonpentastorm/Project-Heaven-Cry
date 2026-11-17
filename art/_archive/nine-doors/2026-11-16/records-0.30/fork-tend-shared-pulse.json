@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.tend.shared_pulse",
+  "name": "Shared Pulse",
+  "icon_id": "fork.tend.shared_pulse",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Shared Pulse** (`tend.shared_pulse`). Renamed: **Overflow** is a shelved advanced move (`classes.json`, an Outburst\ngauge). *\"Your Mend on a Bonded ally also sends {=numbers.share|pct}% of it down every Bond you hold, the Mend's own\ntarget included.\"*\n- Fields: `share: 0.25`. Why: with three Bonds, the target gets 125% and the two others 25%: three quarters of a Mend\n  more for the price of one. Worded so the target is included because `selectUnits` has no \"not the event's target\"\n  (only `redirect` drops it, in code); the cheaper wording beats a `targets.not` field.\n- Carrier: a second `mend` row on Mend's action, `targets {side: ally, tied: bond}`, the amount at `share` (copied, not\n  split: no new op field). The brake (below) counts only the Mend's own target as a Tending received.\n- Mender: Rally (once a scene, every Bonded ally) stays the big one. Peak: no (no damage is shared).\n- Excite: the Ward on the Bulwark breaks, you Mend it, and the two others on your threads tick up too.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-tend-shared-pulse",
+  "path": "art/icons/forks/tend-shared-pulse.png",
+  "paint": "Wick presses one careful mitten to a cropped ally forearm, while the same healing pulse branches through TWO broad threads to two other cropped hands. Three matching simple pulse rings, one per receiver; a warm concentrated face.",
+  "avoid": "No full squad figures, lightning attack, blood, tiny busy thread mesh or unequal star clutter.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick presses one careful mitten to a cropped ally forearm, while the same healing pulse branches through TWO broad threads to two other cropped hands. Three matching simple pulse rings, one per receiver; a warm concentrated face.\nAVOID: No full squad figures, lightning attack, blood, tiny busy thread mesh or unequal star clutter.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 10,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "fb2a3dd179c4242cc841cb5b9636867d568390a25a4a9e16037a2d6b33a79690",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-tend-shared-pulse-v1.png",
+  "source_sha256": "0918faa2c8cb20f93e36af11b6cdcebc7b4ae9cb7388b577f0899861c624182e",
+  "export_crop": [
+    41,
+    97,
+    1224,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/tend-shared-pulse.png",
+    "64": "art/icons/forks/exports/64/tend-shared-pulse.png",
+    "48": "art/icons/forks/exports/48/tend-shared-pulse.png",
+    "44": "art/icons/forks/exports/44/tend-shared-pulse.png",
+    "32": "art/icons/forks/exports/32/tend-shared-pulse.png",
+    "24": "art/icons/forks/exports/24/tend-shared-pulse.png"
+  },
+  "export_sha256": {
+    "128": "bf748e49691553197d221da572aff86acd5a2eb7ab2785d83e226d71588768bd",
+    "64": "35033fddb2c34fb428dfb93846e135e42c4da08b007ad6b7cd86589984e5ef58",
+    "48": "b8d2f08fd6e760c1405eb833991b406dbd7679872315b32110f27313ff93e92f",
+    "44": "dbc867718968ed45011b64c715408389eedb46ca803676df6ebac516dcabe5bb",
+    "32": "87c113572751d35d16fec987bb81738f4f9a1a654623d37da1ba1f3d2b5a7d89",
+    "24": "319a6574f1dc07dbb82d9e32f79c4fb1ebc1bccf3df7ebaf539a6a9f1452bd0b"
+  },
+  "framing": {
+    "scale": 0.6242843202788888,
+    "offset": [
+      142,
+      151
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

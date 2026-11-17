@@ -1,6 +1,6 @@
 # Resume the current Nine Doors art run
 
-Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **4/41 candidates**, **37 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
+Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **12/41 candidates**, **29 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
 
 Start at the latest remote art/nine-doors-2026-11-16. Use CURRENT-CHECKPOINT.md and CONTINUE.md, not stale recipe pending flags or old narrative counts. Current source rules and user-direction-2026-11-17.json authorize pinned revision-2 draft depictions for the eight questioned forks. Keep gameplay alternatives and names provisional. Preserve all 28 old holds, including delivered Palm #258; the four new replacements use separate records. Follow checks reuse; no duplicate Sentinel portrait.
 

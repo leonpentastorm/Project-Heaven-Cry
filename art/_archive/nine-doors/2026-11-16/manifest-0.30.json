@@ -388,5 +388,771 @@
     "upscaled": false,
     "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
     "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.shadow.lend_the_dark",
+    "name": "Lend the Dark",
+    "icon_id": "fork.shadow.lend_the_dark",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Lend the Dark** (`shadow.lend_the_dark`). *\"{=ap} AP and {=numbers.shadow} Shadow, from Hidden, once a turn: an ally\nwithin {=numbers.reach} tiles that no enemy can see becomes Hidden (a new entry: its next attack is an ambush).\"*\n- Fields: `ap: 1`, `shadow: 1`, `reach: 4`. Why 4: half of Tag's 8; close enough that you are working together.\n- Carrier: `grant_action` with `reach`, `if {target_sight: [unseen]}`, `res {shadow}`, op `condition hidden target:\n  target` (the op Ghost Kill uses; the Silent Partner perk already makes an ally Hidden, `perks/b.ts:602`: check the\n  condition op puts Hidden on another unit; if not, N13).\n- Collision: Silent Partner (an achieved perk, Ingenuity and Camaraderie: an ally next to you hides when you do) is\n  the same fantasy at no price; Lend the Dark is at range, for Shadow, without your own Hide. Kept, both.\n- Operative: Tradecraft's start Shadow feeds it. Peak: no (the ally must be unseen: never Hidden in view).\n- Excite: your Breaker is behind the wall out of every foe's eyes; you lend it the dark, and its Charge lands as an\n  ambush.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-shadow-lend-the-dark",
+    "path": "art/icons/forks/shadow-lend-the-dark.png",
+    "paint": "Wick, in a low secretive stance, stretches a short dark-cloak-shaped WHITE canopy over a cropped ally shoulder with one open palm; broad transparent cutouts hide that partial underneath. A quiet pixel shushing expression.",
+    "avoid": "No second full figure, ghost sheet, portal or star particles.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick, in a low secretive stance, stretches a short dark-cloak-shaped WHITE canopy over a cropped ally shoulder with one open palm; broad transparent cutouts hide that partial underneath. A quiet pixel shushing expression.\nAVOID: No second full figure, ghost sheet, portal or star particles.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 5,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "e47e114274b51b062acb653c1bac4ac71fa707abee024c8ef105018aa2345291",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-shadow-lend-the-dark-v1.png",
+    "source_sha256": "181b837c83baaa7d9fee9d3bf8f5ff5242019a447d53f36f8905b7f48da73d4e",
+    "export_crop": [
+      0,
+      19,
+      1236,
+      1206
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/shadow-lend-the-dark.png",
+      "64": "art/icons/forks/exports/64/shadow-lend-the-dark.png",
+      "48": "art/icons/forks/exports/48/shadow-lend-the-dark.png",
+      "44": "art/icons/forks/exports/44/shadow-lend-the-dark.png",
+      "32": "art/icons/forks/exports/32/shadow-lend-the-dark.png",
+      "24": "art/icons/forks/exports/24/shadow-lend-the-dark.png"
+    },
+    "export_sha256": {
+      "128": "f7401059b618226d0dc1e1e04dae355b3f0b50e1a1cc6a9832be4cba6927616e",
+      "64": "ef13fe5a81969ebe70737e748b808bbfa3601e1e9f2de5c06bc8672dfc3675a6",
+      "48": "4c3e12a88ddca1d30ba1a665a63dcdfa043d7143909faa67f750fb6c7eace089",
+      "44": "de22c686f0fd99ba7377fcd93f375d787055bb956ed941f9ba1823ec3d104016",
+      "32": "46b0f955cbada8c97761a4ed01d468b455f1aca3f63c4c705188fb18f2d31bf0",
+      "24": "af14fa1f9b4df08124f6f2c7c1da41b8b915dab6cd29670ba8698febdd24f056"
+    },
+    "framing": {
+      "scale": 0.5311193419311538,
+      "offset": [
+        184,
+        197
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.shadow.light_fingers",
+    "name": "Light Fingers",
+    "icon_id": "fork.shadow.light_fingers",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Light Fingers** (`shadow.light_fingers`). Renamed: **Sleight** is the Rigger's rank III move and Sleight of Hand is a\nperk id. *\"Your Lift costs {=numbers.shadow} Shadow and takes any one thing the foe carries that is not in its hands (a\nstim, a core, a grenade, a charm, a spare magazine), straight into your pack. A grenade taken so is ready to throw:\nthe one it was about to throw, back at it.\"*\n- Fields: `shadow: 1`. Why: Lift is free of Shadow today; a Shadow is the price of choosing what to take.\n- Carrier: Lift's row (`shadow.lift`), op `take` with two new fields `what: any` and `to: pack` (N12). Cheaper with no\n  primitive: none that keeps the point of it.\n- Operative: no move touches Lift. Hand's Filch (Figments) lifts a throwable for the Rigger: a different door. Peak: no.\n- Excite: the Elite has one stim and one grenade. You take the grenade on your turn and throw it into its squad.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-shadow-light-fingers",
+    "path": "art/icons/forks/shadow-light-fingers.png",
+    "paint": "Wick crouches slyly and delicately lifts ONE small plain capped canister from a cropped coat pocket with one ceramic mitten, other hand holding his own open pack beneath it. Pixel wink, careful high elbow.",
+    "avoid": "No real explosive design, weapon fuse, money sign, full victim or literal flaming fingers.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick crouches slyly and delicately lifts ONE small plain capped canister from a cropped coat pocket with one ceramic mitten, other hand holding his own open pack beneath it. Pixel wink, careful high elbow.\nAVOID: No real explosive design, weapon fuse, money sign, full victim or literal flaming fingers.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 4,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "9c1fe8d6d3d653fa4ed51ad1d877a0599d51b58d225d48d16ecadfeded173d66",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-shadow-light-fingers-v1.png",
+    "source_sha256": "422402f9381729a90fac63beb3966ffc8cc7ed7bdd42abb8b50e05cda3e7be85",
+    "export_crop": [
+      0,
+      13,
+      1236,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/shadow-light-fingers.png",
+      "64": "art/icons/forks/exports/64/shadow-light-fingers.png",
+      "48": "art/icons/forks/exports/48/shadow-light-fingers.png",
+      "44": "art/icons/forks/exports/44/shadow-light-fingers.png",
+      "32": "art/icons/forks/exports/32/shadow-light-fingers.png",
+      "24": "art/icons/forks/exports/24/shadow-light-fingers.png"
+    },
+    "export_sha256": {
+      "128": "9233e592269b985b85f21805d71762a98d98d476b6a431737013e6416f1a7e8c",
+      "64": "796550eaa77632c3bb76294c129cfc9d7a5138a23df52b0839d107efac2d2312",
+      "48": "5e32df4979b6ed4b3db222e908235b745c086a3bb2530f062b2e82a8edf78363",
+      "44": "c4a6b6272135d049f8948174224fae2478a1ac782f90b8fcc96bcfd4848bbef7",
+      "32": "db8388386bf4fc4987ca37a0319c9b6a8f5d63b8dbd0855a2191155c2d2e7b0b",
+      "24": "95316513493e7cf3b27f3fdb545886056f612a2dbf472df7bf2ebf35b67682b5"
+    },
+    "framing": {
+      "scale": 0.5686975110043778,
+      "offset": [
+        160,
+        159
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.shadow.lightkiller",
+    "name": "Lightkiller",
+    "icon_id": "fork.shadow.lightkiller",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 6,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Lightkiller** (`shadow.lightkiller`). *\"Once a fight, {=ap} AP and {=numbers.shadow} Shadow: you and the tiles next to\nyou go dark for {=numbers.rounds} rounds. A dark tile blocks sight through it as smoke does: from the middle you see\nno one outside and no one outside sees you; a unit next to you always sees you. Hide works there.\"*\n- Sight, one copy: the dark is a VEIL smoke zone (`veilTiles`, read by `sightBlockers`, `combat.ts:750`;\n  `lineOfSight` never tests the start or end tile), so the same sentence holds for both, including VEIL's: the centre\n  of a 3\u00d73 is blind both ways; an edge tile sees out and is seen.\n- Fields: `ap: 1`, `shadow: 2`, `within: 1`, `rounds: 2`, limit `per_combat` 1. Why: a 3\u00d73 for 2 rounds is one Hide and\n  one Break for you or a lent ally. **The lead's version (2 Shadow, no limit) is \"shade where you want it, at will\": the\n  Per\u00b2 peak**; once a fight is below it (question 2).\n- Carrier: op `zone` with kind `veil` (N9: the `zone` op may lay the smoke kind; today `DATA_ZONE_KINDS` is\n  `['sanctuary']`, `magic.ts:58`). Cheaper: none without darkness; Douse needs a lamp.\n- Operative: Vanish (re-pointed, section 4) makes Fade cheaper; Lightkiller makes shade: no overlap. Peak: below.\n- Excite: you are seen by three; one action and the ring goes black, you Hide in its middle, and the first one who\n  steps in after you is Broken from the dark.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [
+      2
+    ],
+    "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+    "file_key": "fork-shadow-lightkiller",
+    "path": "art/icons/forks/shadow-lightkiller.png",
+    "paint": "Wick spreads both hands low, opening ONE dome of transparent negative space edged by THREE broken white arcs around his knees; an eye-shaped sight ray at its edge is blocked. Screen eyes narrowed inside the dark.",
+    "avoid": "No lamp or Douse action, no full scenery, opaque black or gray fill, smoke gradients or real halo.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick spreads both hands low, opening ONE dome of transparent negative space edged by THREE broken white arcs around his knees; an eye-shaped sight ray at its edge is blocked. Screen eyes narrowed inside the dark.\nAVOID: No lamp or Douse action, no full scenery, opaque black or gray fill, smoke gradients or real halo.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "visual_basis_resolution": {
+      "authority": "Leon explicit answer 17 November 2026",
+      "quote": "Use pinned revision-2 rules for these eight proposals",
+      "gameplay_questions_remain_open": true
+    },
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 6,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "59fa4f5ae5a782ab22f4b7d7d27e88da2271403c3809ccc181745fd62eb08931",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-shadow-lightkiller-v1.png",
+    "source_sha256": "b30bb9d2a90db673cc2067bdc4a5132b11705f8221cbb18b7d91b0e550cd9a8b",
+    "export_crop": [
+      0,
+      17,
+      1234,
+      1218
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/shadow-lightkiller.png",
+      "64": "art/icons/forks/exports/64/shadow-lightkiller.png",
+      "48": "art/icons/forks/exports/48/shadow-lightkiller.png",
+      "44": "art/icons/forks/exports/44/shadow-lightkiller.png",
+      "32": "art/icons/forks/exports/32/shadow-lightkiller.png",
+      "24": "art/icons/forks/exports/24/shadow-lightkiller.png"
+    },
+    "export_sha256": {
+      "128": "5e191140ca7ed5d7448fd988cd58cde48abb9c2ba92da90ff69fb633c20ac7bc",
+      "64": "0024c2b0ee37fb7d4ae21874070d29caca802cedc71876854e8f9e0eb49fc4c7",
+      "48": "d17dffa78c7e089ef7efb0e7560a7a548486a0d764520bf17f6c0ac6ee4d8e9a",
+      "44": "1f3240d96a06354b9e1f97c2997f618e424a345f20dba9735328e135687fc20d",
+      "32": "7b0c3ca389b1c96ba536738d23b37dfbfb24ad6efa7e5c6c6787c0b85a296fd9",
+      "24": "c08c892e31e72031bda7ae261d045e7d931b6a10b667a5ff30757419e60252c7"
+    },
+    "framing": {
+      "scale": 0.5714419444252912,
+      "offset": [
+        159,
+        169
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.shadow.spotter",
+    "name": "Spotter",
+    "icon_id": "fork.shadow.spotter",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 6,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Spotter** (`shadow.spotter`). Renamed: **Called Shot** is a move the Operative holds at rank III. *\"While you are\nHidden, the first weapon hit each round any ally lands on a Marked foe counts as an ambush (the Break's ambush term) and\ncosts you {=numbers.shadow} Shadow. A hit that is already an ambush gains nothing more.\"*\n- Fields: `shadow: 1`, limit `per_round` 1; the term is `rules.shadow.ambush_bonus` (0.5, one copy, no new number).\n- Carrier: trigger `dealing`, `if {actor: ally, damage: [weapon], target_has: [marked], self_has: [hidden],\n  self_has_res: [shadow]}`, op `damage_mult` `value: 1.5`, **`replaces: \"ambush\"`** (the field exists,\n  `triggers.ts:335`, as the Break's row uses it: an ally already ambushing, Lend the Dark's included, stays at \u00d71.5,\n  never \u00d72.25), `and: resource shadow \u22121`. The validator holds 1.5 equal to 1 + `rules.shadow.ambush_bonus`. Weapon\n  hits only: an ally's Release, Evoke, Snap or Rebuke is not an ambush.\n- Operative: Mark (three foes at once) and Execution (a quarter HP) feed it. Peak: no.\n- Excite: you stay in the dark, Tag the Boss, and the Breaker's Coup lands at \u00d71.5.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-shadow-spotter",
+    "path": "art/icons/forks/shadow-spotter.png",
+    "paint": "Hidden Wick peeks low over a wall corner through ONE large simple monocular held to his screen, free hand marking a small diamond over a cropped enemy shoulder. Alert focused pixel eyes.",
+    "avoid": "No second full figure, rifle scope glint, text or a bullseye replacing the diamond.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Hidden Wick peeks low over a wall corner through ONE large simple monocular held to his screen, free hand marking a small diamond over a cropped enemy shoulder. Alert focused pixel eyes.\nAVOID: No second full figure, rifle scope glint, text or a bullseye replacing the diamond.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 7,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "c59b7160d5622fa9c12c6df71d211d666d85e1561037dc8b0f86aa7bc0a18a62",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-shadow-spotter-v1.png",
+    "source_sha256": "6b1b5d9b8578d7c89160cfe53910a664839476b5d24e26f4353a8492e2d36ff9",
+    "export_crop": [
+      49,
+      64,
+      1254,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/shadow-spotter.png",
+      "64": "art/icons/forks/exports/64/shadow-spotter.png",
+      "48": "art/icons/forks/exports/48/shadow-spotter.png",
+      "44": "art/icons/forks/exports/44/shadow-spotter.png",
+      "32": "art/icons/forks/exports/32/shadow-spotter.png",
+      "24": "art/icons/forks/exports/24/shadow-spotter.png"
+    },
+    "export_sha256": {
+      "128": "36bd29f92c521f8edb505318d2b07214dfe41aec42bb1e0dd5fc7c8e3c8a4aba",
+      "64": "1cd4148ab47d216afe08f00af452b816fea45f96ea5296ff68caba2ed9a34468",
+      "48": "23a4c36713fb241a274fbbca9f20aec7a711b4a84f293509f99a772fb1eb4966",
+      "44": "3f090b2cad954d47b5d7338a38d746b0876b1809833862e5445d296c679cb8c4",
+      "32": "3f17e96384fa818e1c6dd433617f667597e0c80efe743e954fb30fa3777e7dfd",
+      "24": "c3ad1dd0a4c328585b3110a09951a64ca1282e2c3a34d1d13f21a50fda44e065"
+    },
+    "framing": {
+      "scale": 0.5200516031762586,
+      "offset": [
+        198,
+        202
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.tend.keep_the_thread",
+    "name": "Keep the Thread",
+    "icon_id": "fork.tend.keep_the_thread",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Keep the Thread** (`tend.keep_the_thread`). *\"Your Snap keeps the Bond: it costs {=numbers.mp} MP and gives no\nDaze; the Bond holds. (Let Go still ends a Bond, free. A Boss's Bond still ends after {=bond.boss_rounds} rounds.)\"*\n- The Boss limit (`tending.json bond.boss_rounds` 3, `boss_gap` 4) is read, never overridden: a kept Snap does not\n  restart it. Without that line a Bond on a Boss lasts the fight (a Snap a turn at 3.0 \u00d7 Healing given, 20% of your\n  damage redirected to it, +3 to hit it).\n- Fields: `mp: 12` (Tug's price, `tend.tug res.mp`: read, one copy). Why no Daze: the lead's version kept Snap's Daze,\n  and a Snap once a turn that never ends the Bond is **a \u22122 AP Daze every turn on one foe**: AP taken from a foe is\n  Pressure's best form.\n- Carrier: Snap's row (`tend.snap`): its `tie clear` and Daze ops carry `if {no_door_pick}` (N2); the option adds a\n  `cost_mod res {mp}` row on Snap's price (`cost` trigger). The foe's Heart save to break free is a conditions row\n  `fraying` (content) put by the kept Snap with its save; a passed save (`cond_resisted` is a hook, not a trigger)\n  would need a trigger, so **as specced the save is dropped**: the Bond's own ends (unseen a round, Down, the fight's\n  end) still free the foe. If the lead wants the save, it is one line on N2's list (a `resisted` trigger).\n- Mender: the Ledger empties into a Snap; a kept Snap empties it every turn: the Mender's damage line. Collision with\n  Taut Thread (hits on a Bonded foe) and Bitter Balm: none. Peak: no.\n- Excite: Bond the Elite once, then Snap it every turn for 3.0 \u00d7 Healing given, and it still cannot walk out of your\n  Threads.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [
+      7
+    ],
+    "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+    "file_key": "fork-tend-keep-the-thread",
+    "path": "art/icons/forks/tend-keep-the-thread.png",
+    "paint": "Wick flicks a short tense thread between BOTH mittens; a single white impact tick sits on the side while the thread and its HEART KNOT remain visibly continuous to a cropped hand. A stubborn determined screen face.",
+    "avoid": "The thread must NOT be broken or parted; no daze stars, needles or rope diagram.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick flicks a short tense thread between BOTH mittens; a single white impact tick sits on the side while the thread and its HEART KNOT remain visibly continuous to a cropped hand. A stubborn determined screen face.\nAVOID: The thread must NOT be broken or parted; no daze stars, needles or rope diagram.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "visual_basis_resolution": {
+      "authority": "Leon explicit answer 17 November 2026",
+      "quote": "Use pinned revision-2 rules for these eight proposals",
+      "gameplay_questions_remain_open": true
+    },
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 8,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "eec67a0cc3fe6fcc62daac4481db4405c98a608ef3989e3cad3e38415c06fc5f",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-tend-keep-the-thread-v1.png",
+    "source_sha256": "b119ec02f7f1f10a77017c149e9eb7b3d5612b65b6ae35c8c5ab393af172bcb5",
+    "export_crop": [
+      0,
+      49,
+      1200,
+      1202
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/tend-keep-the-thread.png",
+      "64": "art/icons/forks/exports/64/tend-keep-the-thread.png",
+      "48": "art/icons/forks/exports/48/tend-keep-the-thread.png",
+      "44": "art/icons/forks/exports/44/tend-keep-the-thread.png",
+      "32": "art/icons/forks/exports/32/tend-keep-the-thread.png",
+      "24": "art/icons/forks/exports/24/tend-keep-the-thread.png"
+    },
+    "export_sha256": {
+      "128": "1e3e6d799c43fba87ef6e188e7899dc51768e2bf14c4ad4a2f22ebb1e5140155",
+      "64": "8504d10cdd74f91be489a69da4c26a785cae32eac7edb280563951d8c56ce9ec",
+      "48": "4c6aca49c0b1646c631abdce9ec4b0365bcc0c2f2c1178afcab11dba3996421c",
+      "44": "a5b095e9d30e9163c2fda8e9c230a94cd6f43458f042dd8732dda026787180e3",
+      "32": "837f3fab174f23f0f23102b424846067580f39b00e9bd9c09ad37b9e49455e27",
+      "24": "45b7923cfbaae2cbc60d5ee34775ba8d7d823faefb108c6450b3bf705673e309"
+    },
+    "framing": {
+      "scale": 0.5475987183115697,
+      "offset": [
+        183,
+        196
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.tend.long_thread",
+    "name": "Long Thread",
+    "icon_id": "fork.tend.long_thread",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 6,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Long Thread** (`tend.long_thread`). *\"Your Bond reaches {=numbers.reach} tiles further when you make it, and the\nfirst Mend or Shield you give each Bonded ally each round costs {=numbers.ap|abs} AP less (at least 1).\"*\n- Fields: `reach: 3`, `ap: -1`, `min: 1`, limit `per_round` `each: target`. Leon: *\"Mend and shield at 1 ap less might\n  actually make some team immortal. add a mana cost multiplier each time you heal the same target\"*: the brake, and the\n  cut once per Bonded ally per round, so **at most 3 discounted Tendings a turn** (three Bonds), not six.\n- Carrier: `cost_mod` on `cost`, `if {action: [verb:tend.mend#tend_mend, verb:tend.shield#tend_shield], target_tied:\n  bond, door_pick, uses_left {per: per_round, each: target, key: long_thread}}`, and the `use` op on **`acted`** (never on\n  `cost`: `cost` fires on every preview, `effects/cost.ts:126-141`). **Needs N20**: the `cost` trigger has no target\n  today (`cost: {actor: u_}`, `triggers.ts:84`), so `target_tied` and `each: target` on a price resolve nothing; and the\n  verb's `ap` is not read through `holderNumber` (only `reach.tiles`, `step.tiles` and `res`, `effects/actions.ts:85,\n  :119, :158`), so a number block there is no fallback. Bond's `reach.tiles` number block reads the pick (N2).\n- Mender: Bond (free) already has no range limit for its first Bond a turn; Long Thread's AP counts for the Mender too.\n- Excite: two Mends in one turn on two Bonded allies at opposite ends of the map.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-tend-long-thread",
+    "path": "art/icons/forks/tend-long-thread.png",
+    "paint": "Wick stands on the far left reaching a mitten toward a cropped ally hand far right; ONE long sweeping heart-knotted thread connects them above a simple gap. A calm open stance, generous visible distance.",
+    "avoid": "No short handshake, landscape, full second body, rope bridge or text.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick stands on the far left reaching a mitten toward a cropped ally hand far right; ONE long sweeping heart-knotted thread connects them above a simple gap. A calm open stance, generous visible distance.\nAVOID: No short handshake, landscape, full second body, rope bridge or text.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 11,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "7820672a39a40d4746fb795664da9e47681ec3948b7e81c6cd90908749ef412e",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-tend-long-thread-v1.png",
+    "source_sha256": "6b5b73fe2090d1aa02b65429a5a70820fc1a768c1f3f31511edc4071e8aa3ce5",
+    "export_crop": [
+      0,
+      67,
+      1242,
+      1190
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/tend-long-thread.png",
+      "64": "art/icons/forks/exports/64/tend-long-thread.png",
+      "48": "art/icons/forks/exports/48/tend-long-thread.png",
+      "44": "art/icons/forks/exports/44/tend-long-thread.png",
+      "32": "art/icons/forks/exports/32/tend-long-thread.png",
+      "24": "art/icons/forks/exports/24/tend-long-thread.png"
+    },
+    "export_sha256": {
+      "128": "7e2e239b7d1d2d5c87dba23e9285aa42d48f695a8fe505c7300ba2f34bf91699",
+      "64": "a75633257a441d7d32a1df26bc4a82383616298f0ca748a0e27e32b0c54bb466",
+      "48": "353251e33dd48f9900d6ec0f98e602839a6687f16adba698bbb713b910132d2e",
+      "44": "d600b44eec1a460cdc199b1e80990b02800feabd53682154754ece5abca32af7",
+      "32": "f9cb3bd2b655d85b65ec99c7aaff5ff8b461133c32143cebd1efd13114112d29",
+      "24": "a44bfd3501b4891009b4ff7c61db5c47fdfbcdb943fc6496d95da622c6001441"
+    },
+    "framing": {
+      "scale": 0.6254385207467624,
+      "offset": [
+        123,
+        161
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.tend.shared_pulse",
+    "name": "Shared Pulse",
+    "icon_id": "fork.tend.shared_pulse",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 6,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Shared Pulse** (`tend.shared_pulse`). Renamed: **Overflow** is a shelved advanced move (`classes.json`, an Outburst\ngauge). *\"Your Mend on a Bonded ally also sends {=numbers.share|pct}% of it down every Bond you hold, the Mend's own\ntarget included.\"*\n- Fields: `share: 0.25`. Why: with three Bonds, the target gets 125% and the two others 25%: three quarters of a Mend\n  more for the price of one. Worded so the target is included because `selectUnits` has no \"not the event's target\"\n  (only `redirect` drops it, in code); the cheaper wording beats a `targets.not` field.\n- Carrier: a second `mend` row on Mend's action, `targets {side: ally, tied: bond}`, the amount at `share` (copied, not\n  split: no new op field). The brake (below) counts only the Mend's own target as a Tending received.\n- Mender: Rally (once a scene, every Bonded ally) stays the big one. Peak: no (no damage is shared).\n- Excite: the Ward on the Bulwark breaks, you Mend it, and the two others on your threads tick up too.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-tend-shared-pulse",
+    "path": "art/icons/forks/tend-shared-pulse.png",
+    "paint": "Wick presses one careful mitten to a cropped ally forearm, while the same healing pulse branches through TWO broad threads to two other cropped hands. Three matching simple pulse rings, one per receiver; a warm concentrated face.",
+    "avoid": "No full squad figures, lightning attack, blood, tiny busy thread mesh or unequal star clutter.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick presses one careful mitten to a cropped ally forearm, while the same healing pulse branches through TWO broad threads to two other cropped hands. Three matching simple pulse rings, one per receiver; a warm concentrated face.\nAVOID: No full squad figures, lightning attack, blood, tiny busy thread mesh or unequal star clutter.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 10,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "fb2a3dd179c4242cc841cb5b9636867d568390a25a4a9e16037a2d6b33a79690",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-tend-shared-pulse-v1.png",
+    "source_sha256": "0918faa2c8cb20f93e36af11b6cdcebc7b4ae9cb7388b577f0899861c624182e",
+    "export_crop": [
+      41,
+      97,
+      1224,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/tend-shared-pulse.png",
+      "64": "art/icons/forks/exports/64/tend-shared-pulse.png",
+      "48": "art/icons/forks/exports/48/tend-shared-pulse.png",
+      "44": "art/icons/forks/exports/44/tend-shared-pulse.png",
+      "32": "art/icons/forks/exports/32/tend-shared-pulse.png",
+      "24": "art/icons/forks/exports/24/tend-shared-pulse.png"
+    },
+    "export_sha256": {
+      "128": "bf748e49691553197d221da572aff86acd5a2eb7ab2785d83e226d71588768bd",
+      "64": "35033fddb2c34fb428dfb93846e135e42c4da08b007ad6b7cd86589984e5ef58",
+      "48": "b8d2f08fd6e760c1405eb833991b406dbd7679872315b32110f27313ff93e92f",
+      "44": "dbc867718968ed45011b64c715408389eedb46ca803676df6ebac516dcabe5bb",
+      "32": "87c113572751d35d16fec987bb81738f4f9a1a654623d37da1ba1f3d2b5a7d89",
+      "24": "319a6574f1dc07dbb82d9e32f79c4fb1ebc1bccf3df7ebaf539a6a9f1452bd0b"
+    },
+    "framing": {
+      "scale": 0.6242843202788888,
+      "offset": [
+        142,
+        151
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.tend.short_thread",
+    "name": "Short Thread",
+    "icon_id": "fork.tend.short_thread",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Short Thread** (`tend.short_thread`). *\"Tending a Bonded ally within {=numbers.within} tiles is \u00d7{=numbers.near} (not\n\u00d71.2), and your Touch reaches {=numbers.touch} tiles.\"*\n- Fields: `within: 2`, `near: 1.4`, `touch: 2`. Why 1.4: the front-line medic takes the hits; this pays for standing\n  there. Touch at 2 is what makes it a style, not only a number.\n- Carrier: `mend_mult` on `heal` and `shield`, `if {actor: self, target_tied: bond, target_within, how: [tending],\n  door_pick}` (`actor: self` is required: both triggers are `self: target`, `triggers.ts:81, :83`, so without it the\n  row fires only when the healer is the one healed),\n  value `near / through` (1.4 / 1.2: bound by placeholder, no typed number); Touch's `reach.tiles` as a number block\n  reading the pick (N2).\n- Mender: Triage (re-pointed to a better Touch, section 4) and Short Thread meet in the front line: a fit, not a copy.\n- Excite: you stand in the melee between the Bulwark and the Breaker and every Mend lands 40% above anyone else's.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-tend-short-thread",
+    "path": "art/icons/forks/tend-short-thread.png",
+    "paint": "Wick kneels very close beside a cropped ally arm, touching it with one broad mitten. A SHORT heart-knotted thread runs directly from his lantern chest to that arm, with one large white healing ray at their contact. Tender pixel eyes.",
+    "avoid": "No long slack line, full patient, hospital bed or physical wound.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick kneels very close beside a cropped ally arm, touching it with one broad mitten. A SHORT heart-knotted thread runs directly from his lantern chest to that arm, with one large white healing ray at their contact. Tender pixel eyes.\nAVOID: No long slack line, full patient, hospital bed or physical wound.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 9,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "90b0506ac6b7ac4471c7358eda253c55f9d369266433e5021c32c116c33a8543",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-tend-short-thread-v1.png",
+    "source_sha256": "409ec8415b615964c0b2da7506cccb68639a49c573a859d6074615eec925d0db",
+    "export_crop": [
+      0,
+      23,
+      1242,
+      1183
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/tend-short-thread.png",
+      "64": "art/icons/forks/exports/64/tend-short-thread.png",
+      "48": "art/icons/forks/exports/48/tend-short-thread.png",
+      "44": "art/icons/forks/exports/44/tend-short-thread.png",
+      "32": "art/icons/forks/exports/32/tend-short-thread.png",
+      "24": "art/icons/forks/exports/24/tend-short-thread.png"
+    },
+    "export_sha256": {
+      "128": "d0dc5d7016b92792d2aecda6ee9071c26795e783f2e90c3eb1620e05b96e3881",
+      "64": "fa240038b79ee22ce995b8be0f8db69b130fdf9352e9670e2f5e849fe9a6cbad",
+      "48": "4f0d9eced5a99ad40f06218dc89369b9e52df09e308930a12077734d27e36653",
+      "44": "6cc6e966d5eecba2a08c9527e298e285ea77ea2e36bcfdefdccad86ec49ee028",
+      "32": "a35b3fe6888ed53497a94a214edde9ce0352bfb1450f46b4be646e86641468ca",
+      "24": "d2fd54dad592c3c396c8a1a473301a559bee24f9fcbe19f9a1525bb67563d57f"
+    },
+    "framing": {
+      "scale": 0.5396825389801924,
+      "offset": [
+        177,
+        199
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
   }
 ]
