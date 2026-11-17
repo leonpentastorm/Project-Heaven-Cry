@@ -96,6 +96,14 @@ for (const [vw, vh] of (process.env.FP_NARR ? [] : [[1280, 720], [1600, 900]])) 
       if (img && img.getBoundingClientRect().bottom > h.top + 1) return 'HP not below the portrait';
       return meters.every((m) => m.getBoundingClientRect().top >= h.bottom - 1) ? 'ok' : 'a meter above HP'; });
     ok(tag + ' HP sits in the You card, below the portrait and above the meters (' + where + ')', where === 'ok'); }
+  // the first meter row (MP) is in sight under HP without scrolling the card: wholly inside the card's scroll box and the window
+  { const seen = await p.evaluate(() => { const vis = (e) => !!e && e.getBoundingClientRect().height > 0;
+      const row = Array.from(document.querySelectorAll('[data-meter-row], .phc-me-urgent')).filter(vis)[0]; if (!row) return 'no visible meter row';
+      const top = row.closest('.phc-cb-top'); const r = row.getBoundingClientRect(); const b = top ? top.getBoundingClientRect() : { top: 0, bottom: innerHeight };
+      const mp = Array.from(document.querySelectorAll('[data-res="mp"]')).filter(vis)[0]; const first = mp || row.querySelector('.phc-meter, .phc-res-mini') || row; const f = first.getBoundingClientRect();
+      const res = { mp: !!mp, rowTop: Math.round(f.top), rowBottom: Math.round(f.bottom), boxTop: Math.round(b.top), boxBottom: Math.round(b.bottom), scroll: top ? top.scrollTop : 0 };
+      return (f.top >= b.top - 1 && f.bottom <= b.bottom + 1 && f.bottom <= innerHeight && (!top || top.scrollTop === 0)) ? 'ok ' + JSON.stringify(res) : 'hidden ' + JSON.stringify(res); });
+    ok(tag + ' the first meter row (MP) is in sight under HP without scrolling the card (' + seen + ')', seen.startsWith('ok')); }
   if (vh > 820) { const side = await p.evaluate(() => { const b = document.querySelector('[data-me-side] [data-backpack="card"]'), f = document.querySelector('[data-me-side] svg[aria-label="Your injuries"]'); if (!b || !f) return null; const r = b.getBoundingClientRect(), q = f.getBoundingClientRect(); return { gap: Math.round(q.left - r.right), top: Math.abs(Math.round(q.top - r.top)) }; });
     ok(tag + ' the Backpack button sits beside the limbs figure (' + JSON.stringify(side) + ')', !!side && side.gap >= 0 && side.gap <= 16 && side.top <= 40); }
 

@@ -145,7 +145,11 @@ token's strip is gone):
    focus line, the hint); then Bonds (one line at 0 Bonds). The squad list folds too. On short windows (820 px tall or
    less) the card shrinks to HP and the strip, under the bar's small portrait, and the meters follow as minis: the three
    most urgent open ones and one "+N" chip for the rest (the zero ones folded and the other open ones; a click opens
-   them all, "‹" goes back to three), at most two lines, scrolling inside past that.
+   them all, "‹" goes back to three), at most two lines, scrolling inside past that. The card's height cap is 0.30.0's
+   (min(42%, column − 520 px)); on middle-height windows (801 to 960 px tall, 1600x900) the card is tighter (padding,
+   gaps), the column's gaps are 5 px, the action rows are 34 px and the cap is column − 555 px, so the meters under HP
+   (MP among them) are in sight without a scroll **and** the action list keeps four rows under the ACTION POINTS row
+   (fight-panel checks both).
 3. **The turn box:** the YOUR TURN strip ("ROUND n · n AP", no dots), and directly under it the **ACTION POINTS row**
    (0.31.1, Leon: *"bring back the AP bar. 6 little dots there is barely seeable"*): the word, one segment per max AP
    (the chosen action's cost dimmed and pulsing), and "N / M after this" on the right, on one line; then the vow as one

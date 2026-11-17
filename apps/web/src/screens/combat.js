@@ -195,9 +195,14 @@ const COMBAT_CSS = [
   // squad (capped on your turn, scrolling on their own), the Say row (pinned), then the turn box (YOUR TURN, AP, the tabs,
   // the tab panel that gives up the room, the footer). Nothing above the footer scrolls the Say row away.
   // The cap leaves the turn box what it needs (about 520 px: YOUR TURN, AP, tabs, a usable tab panel, the footer).
-  '.phc-cb-aside.phc-mine>.phc-cb-top{max-height:min(38%, calc(100% - 600px))}.phc-cb-top:empty{display:none}',
+  // 0.31.1: back to 0.30.0's cap, so the meters (MP first) show under HP and the status strip without a scroll at 1600x900.
+  '.phc-cb-aside.phc-mine>.phc-cb-top{max-height:min(42%, calc(100% - 520px))}.phc-cb-top:empty{display:none}',
   // 0.31.1: HP and the status strip stay in sight while the card's meters scroll under them
   '.phc-me-hp{position:sticky;top:0;z-index:2;padding:4px 0;background:#10151F}',
+  // 0.31.1: middle-height windows (801 to 960 px tall, 1600x900): HP and the meters under it (MP first among them) stay in
+  // sight without a scroll AND the action list keeps four rows under the ACTION POINTS row. Room is made by a tighter
+  // You card, the column's gaps and the short-window row height, never by dropping a row or the AP bar.
+  '@media (min-width:1000px) and (min-height:801px) and (max-height:960px){.phc-me-full{padding:7px 12px!important;gap:4px!important}.phc-me-hp{padding:1px 0!important}.phc-cb-aside{gap:5px!important}.phc-cb-aside.phc-mine>.phc-cb-top{max-height:min(42%, calc(100% - 555px))}.phc-cb-tabpanel .phc-cb-act[data-act]{min-height:34px!important}}',
   // A tall footer (a target behind cover under two rows of tabs) used to push Confirm off the column's end and squeeze
   // the action list to nothing. Beside the map (1000 px and wider) the list keeps a usable height, the dock scrolls
   // inside itself when it must, and Confirm and End turn stay at its foot.
