@@ -189,3 +189,20 @@ lanes can go once Leon agrees); drive C: was 94% full.
   new piece. After 0.31.2 settles the Dexterity blade numbers.
 - **Clean-up done 17 Nov:** 33 work folders and 37 merged GitHub branches removed. Left for Leon's word: about 25
   non-git leftover folders beside the main checkout (phc-029-l1 to l6, phc-0282-*, phc-bisect-0282, phc-say-repro…).
+
+## M. The Dexterity melee patch (Leon, 17 Nov 2026): ASK LEON BEFORE STARTING ("big patch so ask before doing it")
+
+One patch with the Forge realign of section L. Not started; not to be started without Leon's word.
+- **Dexterity-rolled melee techniques spend the target's Pressure, not the user's Momentum.** The resource is chosen by
+  what the weapon rolls to hit with (the 0.31 `rolled_with` reading): Dexterity-rolled, its Strikes cost 1 pip of the
+  target's Pressure and its Finishers spend all the target's pips and scale with the number spent; anything else,
+  Momentum as today. A Dexterity melee hit lays a pip and builds no Momentum. Gun techniques already spend the target's
+  Pressure, so the piece exists (verify the cost site takes a target resource for a melee technique).
+- **Why:** ends the double stack (one swing feeding Momentum and Pressure; knife and pistol doing a Finisher and a
+  perk shot in one turn), gives the blade an active use of its door, makes Strength (a chain you carry) and Dexterity
+  (pressure on one target, collapsed) different styles. Replaces 0.31.2's sabre and gladius number fix: re-fit them.
+- **To rule or measure:** Bosses cap at 2 pips (blade Finishers small on a Boss: weakness, or a Boss rule); pips an
+  ally laid can be cashed by the blade (lead: allow); Pressure decays and does not follow to a new target (weak
+  against crowds); a Raw Power + Dexterity character gets no chain counter with a sabre in hand; add a knife-and-pistol
+  build and the Dexterity blades to the simulator and hold them to the melee and gun lines.
+- **Forge realign** (section L) in the same patch: a realigned weapon switches resource too.
