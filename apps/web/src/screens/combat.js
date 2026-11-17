@@ -326,7 +326,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   window.addEventListener('phc-fx-hold', () => { if (LIVE && onScreen()) LIVE.setState({}); });
   // Crossing the narrow (1000 px wide) or very short (620 px high) line changes where panels go: render again then.
   let sizeClass = '';
-  window.addEventListener('resize', () => { if (!LIVE || !onScreen()) return; const c = (window.innerWidth < 1000 ? 'n' : 'w') + (window.innerHeight <= 620 ? 's' : 't'); if (c !== sizeClass) { sizeClass = c; LIVE.setState({}); } LIVE.fitGrid(); });
+  window.addEventListener('resize', () => { if (!LIVE || !onScreen()) return; const c = (window.innerWidth < 1000 ? 'n' : 'w') + (window.innerHeight <= 620 ? 's' : 't'); if (c !== sizeClass || LAYOUT.frac) { sizeClass = c; LIVE.setState({}); } LIVE.fitGrid(); }); // rules 1.66 item 5215: a split by share redraws to the new row
 }
 
 // The action tabs: names, family inks (Sigils Mind cyan, Outbursts Soul violet, Attack the damage red; the rest neutral)
@@ -350,6 +350,14 @@ const ASIDE_MIN = 410;
 const PANEL_KEY = 'phc.combatPanel';
 // The adjustable layout (game/combatLayout.ts): the zones' split and where each panel sits, per browser.
 let LAYOUT = readLayout();
+/** Rules 1.66 item 5215: the map zone's width now: the splitter's share of the row as the row is now (a resized window
+ *  keeps the split; a split saved before by width alone keeps its pixels), always inside both zones' minimums, so the
+ *  turn panel stays in view. */
+function splitWidth() {
+  const sec = typeof document !== 'undefined' ? document.querySelector('.phc-cb-left') : null, row = sec && sec.parentElement;
+  const cs = row ? getComputedStyle(row) : null, rw = row ? row.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0) : 0;
+  return clampWidth(LAYOUT.frac && rw ? LAYOUT.frac * rw : LAYOUT.width, rw || 99999);
+}
 // The map's size (game/mapZoom.ts): Auto fits it to its zone at any resolution; Manual is the player's own size.
 let ZOOM = readZoom();
 let PANEL_HIDDEN = (() => { try { return localStorage.getItem(PANEL_KEY) === 'hidden'; } catch { return false; } })();
@@ -817,10 +825,10 @@ export class CombatLogic extends DCLogic {
       grip: { map: grip('map'), mana: grip('mana'), legend: grip('legend'), log: grip('log'), actions: grip('actions') },
       gripKey: { map: gripKey('map'), mana: gripKey('mana'), legend: gripKey('legend'), log: gripKey('log'), actions: gripKey('actions') },
       splitNow: pl.width ? Math.round((pl.width / rowW()) * 100) : 50,
-      splitDown: (e) => { const bar = e.currentTarget, row = bar && bar.parentElement; if (!row) return; startSplit(e.nativeEvent || e, bar, row, pl.swap, live, (w) => this.setLayout({ ...LAYOUT, width: w })); },
+      splitDown: (e) => { const bar = e.currentTarget, row = bar && bar.parentElement; if (!row) return; startSplit(e.nativeEvent || e, bar, row, pl.swap, live, (w) => this.setLayout({ ...LAYOUT, width: w, frac: w / rowW() })); },
       splitKey: (e) => { const el = sec(); const cur = LAYOUT.width || (el ? el.getBoundingClientRect().width : 600); const r = splitKey(e.nativeEvent || e, cur, rowW(), pl.swap);
-        if (r == null) return; e.preventDefault(); this.setLayout(r === 'reset' ? { ...LAYOUT, width: null } : { ...LAYOUT, width: r }); },
-      splitReset: () => this.setLayout({ ...LAYOUT, width: null }),
+        if (r == null) return; e.preventDefault(); this.setLayout(r === 'reset' ? { ...LAYOUT, width: null, frac: null } : { ...LAYOUT, width: r, frac: r / rowW() }); },
+      splitReset: () => this.setLayout({ ...LAYOUT, width: null, frac: null }),
     };
   }
   /** Size the grid (CSS zoom, so the effects layer's tile rects stay true). Auto: the largest that fits beside the
@@ -1888,7 +1896,7 @@ export class CombatLogic extends DCLogic {
       // Room around the grid inside its scrolling column (top and right) for the hover chips over edge tiles.
       mz: this.zoomVals(),
       // A big Manual size never pushes the action zone below its minimum: the map scrolls inside its zone instead.
-      leftStyle: (hidden || LAYOUT.width ? '' : 'max-width: calc(100% - ' + (ASIDE_MIN + 12) + 'px); ') + 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + (LAYOUT.width ? clampWidth(LAYOUT.width, 99999) : ((this._view ? this._view.col || this._view.w : Math.ceil((48 * Math.min(cb.map.w, REF_W) + 36) * zoom)) + 34)) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
+      leftStyle: (hidden ? '' : 'max-width: calc(100% - ' + (ASIDE_MIN + 12) + 'px); ') + 'flex: ' + (hidden ? '1 1 auto' : '0 1 ' + (LAYOUT.width ? splitWidth() : ((this._view ? this._view.col || this._view.w : Math.ceil((48 * Math.min(cb.map.w, REF_W) + 36) * zoom)) + 34)) + 'px') + '; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overflow-x: hidden; padding: 14px 34px 0 0',
       // On your turn the turn box takes the room under the Say row (its tab panel is what shrinks); the You card above
       // it is capped (CSS .phc-mine) and scrolls on its own, so the Say row, YOUR TURN and Confirm never scroll away.
       // With a panel moved into the action column (the forecast, the legend or the log) the turn box keeps a floor of

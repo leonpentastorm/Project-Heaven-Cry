@@ -9,6 +9,9 @@ export type ZoneId = 'mapZone' | 'sideZone';
 export interface CombatLayout {
   /** The map zone's width in px (null: the screen's own fit). */
   width: number | null;
+  /** Rules 1.66 item 5215: the map zone's share of the row when the splitter set it (0 to 1; null: none). A resized
+   *  window keeps the split by this share, inside both zones' minimums (clampWidth). */
+  frac?: number | null;
   /** The action zone sits on the left (the map zone on the right). */
   swap: boolean;
   /** Panels in the map zone, top to bottom: always the map, plus any of the mana forecast, legend and log. */
@@ -16,7 +19,7 @@ export interface CombatLayout {
   /** Panels in the action zone, top to bottom: always the action menu, plus any of the mana forecast, legend and log. */
   sideZone: PanelId[];
 }
-export const DEFAULT_LAYOUT: CombatLayout = { width: null, swap: false, mapZone: ['mana', 'map', 'legend', 'log'], sideZone: ['actions'] };
+export const DEFAULT_LAYOUT: CombatLayout = { width: null, swap: false, mapZone: ['mana', 'map', 'legend', 'log'], sideZone: ['actions'], frac: null };
 /** The panels that move freely between the zones (the map and the action menu each anchor theirs). */
 const EXTRAS: PanelId[] = ['mana', 'legend', 'log'];
 export const LAYOUT_KEY = 'phc.combatLayout';
@@ -37,7 +40,8 @@ export function normalise(x: any): CombatLayout {
   m.splice(Math.min(mapAt, m.length), 0, 'map'); s.unshift('actions');
   if (noMana) m.splice(m.indexOf('map'), 0, 'mana');
   const w = Number(x?.width);
-  return { width: Number.isFinite(w) && w > 0 ? Math.round(w) : null, swap: !!x?.swap, mapZone: m, sideZone: s };
+  const f = Number(x?.frac), width = Number.isFinite(w) && w > 0 ? Math.round(w) : null;
+  return { width, swap: !!x?.swap, mapZone: m, sideZone: s, frac: width != null && Number.isFinite(f) && f > 0 && f < 1 ? Math.round(f * 1e4) / 1e4 : null };
 }
 export const isDefault = (l: CombatLayout) => JSON.stringify(normalise(l)) === JSON.stringify(DEFAULT_LAYOUT);
 

@@ -9,7 +9,7 @@ describe('the combat layout', () => {
   it('normalises anything stored: every panel once, the map and the action menu in their zones', () => {
     expect(normalise(null)).toEqual(DEFAULT_LAYOUT);
     expect(normalise({ mapZone: ['log', 'log', 'actions', 'map'], sideZone: ['legend', 'map'], width: '640.4', swap: 1 }))
-      .toEqual({ width: 640, swap: true, mapZone: ['log', 'mana', 'map'], sideZone: ['actions', 'legend'] });
+      .toEqual({ width: 640, swap: true, mapZone: ['log', 'mana', 'map'], sideZone: ['actions', 'legend'], frac: null });
     // A layout saved before the mana forecast existed gets it just above the map; one that has it keeps it where it is.
     expect(normalise({ mapZone: ['map', 'legend', 'log'], sideZone: ['actions'] }).mapZone).toEqual(['mana', 'map', 'legend', 'log']);
     expect(normalise({ mapZone: ['map', 'legend', 'log'], sideZone: ['actions', 'mana'] })).toMatchObject({ mapZone: ['map', 'legend', 'log'], sideZone: ['actions', 'mana'] });
@@ -70,5 +70,17 @@ describe('the combat layout', () => {
     expect(t).not.toMatch(/\{\{manaText\}\}/); // the header chip is gone: the forecast panel replaces it
     expect(t.match(/>COMBAT LOG</g)!.length).toBe(2);
     expect(t).toMatch(/role="separator" class="phc-cb-split"/);
+  });
+});
+
+describe('rules 1.66 item 5215: the split kept by share', () => {
+  it('a split made by the splitter keeps its share; a width with no share keeps its pixels; Reset clears both', () => {
+    const l = normalise({ ...DEFAULT_LAYOUT, width: 700, frac: 0.5 });
+    expect(l.frac).toBe(0.5); expect(isDefault(l)).toBe(false);
+    expect(normalise({ ...DEFAULT_LAYOUT, width: 700 }).frac).toBe(null); // an old save
+    expect(normalise({ ...DEFAULT_LAYOUT, width: null, frac: 0.5 }).frac).toBe(null);
+    expect(isDefault(normalise(DEFAULT_LAYOUT))).toBe(true);
+    // the share of a narrower row stays inside both zones' minimums
+    expect(clampWidth(0.9 * 900, 900)).toBe(900 - SIDE_MIN - SPLIT_W);
   });
 });

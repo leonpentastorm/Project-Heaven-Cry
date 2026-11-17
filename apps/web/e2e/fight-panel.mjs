@@ -269,6 +269,19 @@ for (const [vw, vh] of (process.env.FP_NARR ? [] : [[1280, 720], [1600, 900]])) 
   ok('narrated 1280x720, everything opened: still four rows (' + fmtRoom(r2) + ')', roomOk(r2));
   await p.screenshot({ path: shotsDir + 'narrated-1280x720-02-all-open.png' });
   if (process.env.DEBUG_FP) console.log('debug chain', JSON.stringify(await p.evaluate(() => ['.phc-cb-aside', '.phc-cb-turnbox', '.phc-cb-turn', '.phc-cb-dock', '.phc-cb-tabpanel', '.phc-cb-foot', '.phc-cb-confirm', '.phc-me-urgent', '[data-me-hp]', 'form.phc-cb-say', '.phc-cb-tabs', '[data-phc-vow-prompt]'].map((q) => { const e = Array.from(document.querySelectorAll(q)).find((x) => x.offsetParent !== null); if (!e) return q + ' none'; const r = e.getBoundingClientRect(), cs = getComputedStyle(e); return q + ' top ' + Math.round(r.top) + ' h ' + Math.round(r.height) + ' sh ' + e.scrollHeight + ' st ' + e.scrollTop + ' flex ' + cs.flex + ' minh ' + cs.minHeight + ' ov ' + cs.overflowY; }))));
+  // rules 1.66 item 5215: a split made with the splitter is kept by its share through a window resize, and the turn panel
+  // (the action zone) stays in view at every size
+  {
+    const sep = p.locator('.phc-cb-split').first();
+    if (await sep.count()) {
+      await sep.focus(); for (let i = 0; i < 4; i++) await p.keyboard.press('ArrowLeft'); await settle(p, 400);
+      const share = () => p.evaluate(() => { const l = document.querySelector('.phc-cb-left'), row = l && l.parentElement, a = document.querySelector('.phc-cb-aside'); if (!l || !row || !a) return null; const ab = a.getBoundingClientRect(); return { s: l.getBoundingClientRect().width / row.clientWidth, inView: ab.width > 120 && ab.right <= innerWidth + 1 && ab.left >= 0 }; });
+      const s0 = await share(), seen = [];
+      for (const [w, h] of [[1100, 700], [1600, 900], [1280, 720]]) { await p.setViewportSize({ width: w, height: h }); await settle(p, 500); seen.push(await share()); }
+      ok('rules 1.66: the split kept by its share through resizes (' + [s0, ...seen].map((x) => x && x.s.toFixed(2)).join(' → ') + '), the turn panel in view at each size', !!s0 && seen.every((x) => x && x.inView && Math.abs(x.s - s0.s) < 0.06));
+      await sep.focus(); await p.keyboard.press('Home'); await settle(p, 300);
+    } else ok('rules 1.66: the splitter is on the fight screen', false);
+  }
   ok('narrated: no page errors' + (p.errors.length ? ': ' + p.errors.slice(0, 2).join(' | ') : ''), !p.errors.length);
   await p.context().close(); }
 await browser.close();

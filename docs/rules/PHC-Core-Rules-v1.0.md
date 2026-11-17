@@ -12195,3 +12195,15 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     throwing, a Call, a perk's or class move's range, a reach). The Narrator's memory dialog closes on Esc. The title
     screen's "SAVED GAMES" is the one name: the save toast and the Leave dialog said "Saved sessions", now "Saved
     games". No number changed.
+5214. **Main menu (G7).** Reopening the site resumes the last room, and the only way to the title screen was "Leave",
+    behind a warning. The header now has "Main menu" beside Leave (not in the Proving Ground, which has its own leave):
+    (a ⌂ button, its name in its label and tip) the host saves (here and on the room server), the connection closes, the title screen opens, and the room stays
+    the last one, so the title's CONTINUE brings it back; nothing is destroyed and no dialog asks. A guest's character
+    stays in the squad as on Leave. `apps/web/src/game/store.ts toMainMenu`. No number changed.
+5215. **The fight screen's split through a resize (G6).** The splitter saved the map zone's width in pixels and the
+    screen drew that width with no room left for the action zone, so a narrower window pushed the turn panel off the
+    screen and a wider one left the split where it was in pixels. The split now also keeps its share of the row
+    (`combatLayout.ts` `frac`, set by the splitter's drag and keys, cleared by Reset), drawn as that share of the row as
+    it is now, always inside both zones' minimums (`clampWidth`), and the map zone keeps its cap that leaves the action
+    zone its minimum; a resize redraws it. A split saved before (pixels only) keeps its pixels, clamped. No number
+    changed.
