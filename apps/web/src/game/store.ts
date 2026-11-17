@@ -144,6 +144,9 @@ export function saveNow() {
 }
 export function resumeSession(code: string) { const x = listSessions().find((s) => s.code === code); if (!x) return; x.role === 'host' ? hostRoom(code) : joinRoom(code); }
 
+/** Rules 1.66 item 5214: to the title screen without leaving: the host saves (here and on the room server) and the room
+ *  stays the last one, so the title's CONTINUE resumes it; nothing is destroyed, no warning is needed. */
+export function toMainMenu() { if (S.role === 'host' && hostState) { persist(); conn?.send({ t: 'save', state: slim(hostState) }); } conn?.close(); conn = null; hostState = null; set({ role: null, code: null, game: null, screen: 'home', conn: 'offline' }); }
 export function leaveRoom() { if (S.role === 'host' && hostState) { persist(); conn?.send({ t: 'save', state: slim(hostState) }); } conn?.close(); conn = null; hostState = null; write(LS.room, null); set({ role: null, code: null, game: null, screen: 'home', conn: 'offline' }); }
 export function resumeRoom() { const r = read(LS.room, null); if (r?.code && S.me.name) (r.role === 'host' ? hostRoom(r.code) : joinRoom(r.code)); }
 export const lastRoom = () => read(LS.room, null) as { code: string; role: string } | null;

@@ -3,7 +3,7 @@
 // (templates/shell.template.html, put in by expand() at <!--SHELL-->), fed by shellVals(self, screen). The story
 // screen also gets the Narrator chip and its menu (narratorVals) and the Area map button; keys: M opens the area map,
 // Ctrl/⌘+S saves, Escape closes the Narrator menu.
-import { getState, go, leaveRoom, saveNow, retryNarrator, toast } from '../game/store';
+import { getState, go, leaveRoom, toMainMenu, saveNow, retryNarrator, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
 import { openSettings } from '../game/settings';
 import { askConfirm, dialogOpen } from '../game/dialog';
@@ -56,6 +56,9 @@ export function shellVals(self, screen) {
     saveTitle: 'Save now (Ctrl+S). The game also saves itself after every action, in this browser and on the room server.',
     settings: () => openSettings(), report: openReport,
     leave: () => { leaveFlow(); },
+    // rules 1.66 item 5214: Main menu beside Leave: the title screen, the room kept to CONTINUE (not in the Proving Ground: its own leave)
+    showMenu: !SB, menu: () => { try { if (isHost) saveNow(); } catch { /* the room server keeps the last automatic save */ } toMainMenu(); },
+    menuTitle: isHost ? 'Main menu: save and go to the title screen. The room stays yours: CONTINUE there brings you back.' : 'Main menu: the title screen. Your character stays in the squad: CONTINUE or the room code brings you back.',
     leaveName: SB ? 'Leave the Proving Ground' : 'Leave the room',
     leaveTitle: SB ? (isHost ? 'Close the Proving Ground' : 'Leave the Proving Ground: your fighter goes with you') : isHost ? 'Save and go back to the title screen. Resume any time from Saved games.' : 'Back to the title screen. Your character stays in the squad.',
   } };

@@ -45,7 +45,7 @@ for (const w of [1024, 768, 390]) {
     const h = document.querySelector('header'), chip = h.querySelector('[data-phc-narr-chip]').getBoundingClientRect(), room = h.querySelector('[data-phc-room]').getBoundingClientRect();
     const hit = (sel) => { const b = h.querySelector(sel); const r = b.getBoundingClientRect(); const el = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return r.right <= innerWidth + 0.5 && r.left >= 0 && !!el && b.contains(el); };
     const overlap = !(chip.right <= room.left || room.right <= chip.left || chip.bottom <= room.top || room.bottom <= chip.top);
-    return { hs: h.scrollWidth, hc: h.clientWidth, ds: document.documentElement.scrollWidth, iw: innerWidth, overlap, hits: ['[data-phc-room]', '[data-phc-save]', '[data-phc-cog]', '[data-phc-report]', '[data-phc-leave]', '[data-phc-narr-chip]', '[data-phc-areamap]'].filter((x) => !hit(x)) };
+    return { hs: h.scrollWidth, hc: h.clientWidth, ds: document.documentElement.scrollWidth, iw: innerWidth, overlap, hits: ['[data-phc-room]', '[data-phc-save]', '[data-phc-cog]', '[data-phc-report]', '[data-phc-main-menu]', '[data-phc-leave]', '[data-phc-narr-chip]', '[data-phc-areamap]'].filter((x) => !hit(x)) };
   });
   ok('at ' + w + ' wide the header fits (' + m.hs + ' / ' + m.hc + ', page ' + m.ds + ')', m.hs <= m.hc + 1 && m.ds <= m.iw + 1);
   ok('…the Narrator chip is clear of ROOM', !m.overlap);
@@ -288,6 +288,19 @@ if (fought) {
   ok('…which goes back to the fight', (await host.evaluate(() => window.__phc.getState().screen)) === 'combat');
 } else ok('the fight started (scripted Narrator)', false);
 
+// 9b. rules 1.66 item 5214: Main menu beside Leave goes to the title with no warning, the room kept: CONTINUE brings it back.
+{
+  const scr0 = await host.evaluate(() => window.__phc.getState().screen);
+  await host.locator('header [data-phc-main-menu]').first().click();
+  await host.waitForFunction(() => window.__phc.getState().screen === 'home', null, { timeout: 30000 });
+  const noDialog = await host.locator('[data-phc-dialog]').count() === 0;
+  await host.getByText('CONTINUE', { exact: true }).first().click();
+  await host.waitForFunction((c) => window.__phc.getState().code === c && !!window.__phc.getState().game, code, { timeout: 30000 });
+  await settle(host, 800);
+  const back = await host.evaluate(() => window.__phc.getState().screen);
+  ok('Main menu (beside Leave) goes to the title with no dialog, and CONTINUE brings the same room back (' + scr0 + ' → home → ' + back + ')', noDialog && !!back && back !== 'home');
+  if (back !== 'combat' && (await host.locator('header [data-phc-tofight]').count())) { await host.locator('header [data-phc-tofight]').click(); await settle(host, 600); }
+}
 // 10. Save and leave: the title, with the room under Saved games.
 await host.locator('[data-phc-leave]').first().click();
 await dlg.waitFor({ timeout: 30000 });
