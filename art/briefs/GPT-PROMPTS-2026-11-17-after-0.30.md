@@ -6,35 +6,37 @@ This file is the inventory of **what a player sees on live 0.31.1 with no finish
 
 It was found by reading every data row a screen draws (`data/*.json`: weapons, items, mods, conditions, techniques, perks, traits, prayers, forks, Figment forms, orders and traits, Shadow and Tending verbs, boons, node kinds, enemies, patrons, classes, modes, campaigns, trades, hazards, objects) against `art/catalog.json`, the built asset map (`apps/web/src/game/assets.json`) and the client's lookups (`docs/ART-INTEGRATION.md`; `gearIcons.ts`, `faithArt.ts`, `boonIcons.ts`, `runIcons.ts`, `turnIntro.tsx`, `statusStrip.ts`, `worldView.ts`, `PlaceScreen.tsx`). **Most of the game is covered**: every weapon, item, armour piece, magazine, calibre of rounds, perk, trait, call, feeling, module, boon, node kind, foe face, shopkeeper, patron, Figment form and every Wick order is painted or inked. What is left is small marks that the client draws as text glyphs or leaves blank. Every picture below is **invented here**: change any of them freely, as long as each stays distinct at 32 px from its neighbours.
 
-**54 images, all in the game now, none designed-but-unbuilt:** 43 white-ink signs and 11 Wick icons. 10 of the 54 are lower priority (resource and tone marks; the game reads fine without them).
+**45 images to paint, all in the game now, none designed-but-unbuilt:** 34 white-ink signs and 11 Wick icons. 4 of the 45 are lower priority (the resource marks and the Raw tone; the game reads fine without them).
+
+**Cut from the first count of 54 (17 Nov, on integration of the 0.29 delivery), with the art that answers each instead:** row 39, Witnessed (the delivered condition sign `cond-witnessed` is drawn wherever Witnessed shows: `faithArt.ts witnessedUri`), which made it 53; then eight rows that existing art already answers: row 11, Felt (`given_mark`), is the Outburst UI mark `ui-felt` (`art/icons/modules/ui-felt.png`, built as `heart-ui-felt`); row 22, Practice, is `ui-practice` (`art/icons/modules/ui-practice.png`, built as `heart-ui-practice`); rows 49 to 54, the Fire, Storm, Frost, Stone, Gale and Acid tones, are the painted enchantment mods `mod-ench_fire`, `mod-ench_storm`, `mod-ench_frost`, `mod-ench_stone`, `mod-ench_gale` and `mod-ench_acid` (catalog `gear`, built as `gear-ench_<tone>`). The rows below keep their numbers; the gaps are those cuts. The screens still need a slot for these (see "For the builder").
 
 ## Counts
 
 | Kind (mode, size) | Count |
 | --- | --- |
-| white-ink sign (1024 x 1024 PNG, transparent) | 43 |
+| white-ink sign (1024 x 1024 PNG, transparent) | 34 |
 | Wick icon (1024 x 1024 PNG, transparent) | 11 |
-| **All** | **54** |
+| **All** | **45** |
 
 | Section | Count |
 | --- | --- |
 | Fight screen marks: the status strip and the FREE ROAM banner | 4 |
-| Conditions the 0.29 list and the 0.30 list do not ask for | 8 |
+| Conditions the 0.29 list and the 0.30 list do not ask for | 7 |
 | The fight map: hazards and Sigil zones | 8 |
-| Survival: the place cards that show no picture | 12 |
-| Faith: the vows and Witnessed | 7 |
+| Survival: the place cards that show no picture | 11 |
+| Faith: the vows (Witnessed cut) | 6 |
 | Tending and Bonds: the passives with no picture | 5 |
-| Marks for resources and tones (lower priority) | 10 |
-| **All** | **54** |
+| Marks for resources and the Raw tone (lower priority) | 4 |
+| **All** | **45** |
 
 ## Painting order (what a player sees most, first)
 
 1. **The fight screen's marks** (section 1): the three status-strip group marks and the FREE ROAM banner mark. Seen in every fight of every mode.
-2. **The eight conditions** (section 2), including the three the integration notes asked for (Left and Right Brain Debuff, Swinging).
+2. **The seven conditions** (section 2), including the three the integration notes asked for (Left and Right Brain Debuff, Swinging).
 3. **Hazards and Sigil zones on the map** (section 3).
 4. **Survival's place cards with no picture** (section 4): the training, shrine and Crossroads cards.
-5. **The six vows and Witnessed** (section 5), then **the five Tending passives** (section 6).
-6. **Resources and tones** (section 7), last: optional.
+5. **The six vows** (section 5), then **the five Tending passives** (section 6).
+6. **Resources and the Raw tone** (section 7), last: optional.
 
 ## Read this first
 
@@ -71,7 +73,7 @@ It was found by reading every data row a screen draws (`data/*.json`: weapons, i
 
 ## 2. Conditions the 0.29 list and the 0.30 list do not ask for
 
-**Where:** the condition chips on tokens, the hover card, the status strip and the log (`data/conditions.json`, catalog `condition_icons`). The family and its rules are those of the nine-doors file's conditions section: pure white flat ink, no Wick, no glow, readable at 24 px beside a word. **Pair:** Left and Right Brain Debuff must read apart at 24 px (exact mirror images). The 46 `given_*` and `foe_*` feeling states (Given Rage, Felt Grief and so on) are not on this list on purpose: see "Left off" at the end.
+**Where:** the condition chips on tokens, the hover card, the status strip and the log (`data/conditions.json`, catalog `condition_icons`). The family and its rules are those of the nine-doors file's conditions section: pure white flat ink, no Wick, no glow, readable at 24 px beside a word. **Pair:** Left and Right Brain Debuff must read apart at 24 px (exact mirror images). The other 41 `given_*` and `foe_*` feeling states (Given Rage, Felt Grief and so on: 43 rows, less Given Edge below and Felt, cut) are not on this list on purpose: see "Left off" at the end.
 
 | # | Id (catalog) | File to save | Name | Mode | State | In the game | Paint (what to show) | Avoid |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -81,7 +83,6 @@ It was found by reading every data row a screen draws (`data/*.json`: weapons, i
 | 8 | `condition_icons` `cond-ground` | `art/icons/conditions/ground.png` | Ground | white-ink sign | in game now (no sign, no slot yet) | A debuff, 2 rounds: a Grindstone fighter ground it down; its next plain melee hit on the fighter builds them one more Momentum | A heavy round grindstone half sunk into a ground line, one short crack across its face. | a gear (that is machinery) · flying sparks · a mill building |
 | 9 | `condition_icons` `cond-in-your-sights` | `art/icons/conditions/in-your-sights.png` | In Their Sights | white-ink sign | in game now (no sign, no slot yet) | A debuff on you, 1 round: a Converging Fire gunner hit you, so the next ranged hit on you from one of their allies adds a Pressure | A round sight ring open at its top, one thin line entering the gap from the upper right. | a full crosshair over a head · a scope glint · a bullseye |
 | 10 | `condition_icons` `cond-free-move-spent` | `art/icons/conditions/free-move-spent.png` | Free move spent | white-ink sign | in game now (no sign, no slot yet) | A state, until the turn ends: this turn's Fire and Move step has been taken | One footprint with a short flat bar laid across its toe, like a step already counted. | a forbidden sign · a lock · a tick mark |
-| 11 | `condition_icons` `cond-given-mark` | `art/icons/conditions/given-mark.png` | Felt (a feeling was given to you) | white-ink sign | in game now (no sign, no slot yet) | A state, 1 round: a feeling was given to you through a Bond this round, so no other can be given until it ends | A small solid heart-knot (the Outburst family mark, as on the feeling glyphs) with one short curved arrow arriving at it from outside the frame. | a heart emoji · a medical plus · a gift box |
 | 12 | `condition_icons` `cond-given-edge` | `art/icons/conditions/given-edge.png` | Given Edge | white-ink sign | in game now (no sign, no slot yet) | A state that helps, until your next roll to hit lands: a bonus on it (a Bond hands it over) | One blade edge drawn as a single bright line, a short thread of three dots leading into its hilt from outside the frame. | crossed swords · a whetstone · sparkle effects |
 
 ## 3. The fight map: hazards and Sigil zones
@@ -106,7 +107,6 @@ It was found by reading every data row a screen draws (`data/*.json`: weapons, i
 | # | Id (catalog) | File to save | Name | Mode | State | In the game | Paint (what to show) | Avoid |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 21 | `place_icons` `place-study` | `art/icons/places/study.png` | Study (training card) | white-ink sign | in game now (a card with no picture) | Training ground and rest: "Study +N", progress toward the next Sigil word | A flat slate tile with one line of three short strokes scratched across it, a small lamp flame above its corner. | an open book with text · a graduation cap · letters |
-| 22 | `place_icons` `place-practice` | `art/icons/places/practice.png` | Practice (training card) | white-ink sign | in game now (a card with no picture) | Training ground and rest: "Practice +N", progress toward the next Outburst module | A small heart-knot held in an open palm, one ripple ring leaving it. | a boxing glove · a medical heart · a stopwatch |
 | 23 | `place_icons` `place-devotion` | `art/icons/places/devotion.png` | Devotion (training card) | white-ink sign | in game now (a card with no picture) | Rest: "Devotion +N XP", prayer by the fire | Two cupped hands round one small flame, a thread of smoke rising. | a cross, crescent, star or wheel of any real faith · praying hands with a halo |
 | 24 | `place_icons` `place-rite` | `art/icons/places/rite.png` | Keep a rite (shrine card) | white-ink sign | in game now (a card with no picture) | Shrine: keep a rite for the patron, Devotion XP (free) | A small bowl on a stone ledge with three short incense lines rising and a ring of seven dots round the bowl. | an altar with a cross · a temple · a skull |
 | 25 | `place_icons` `place-lore` | `art/icons/places/lore.png` | A piece of lore (shrine card) | white-ink sign | in game now (a card with no picture) | Shrine, for an Atheist: learn the next of the patron's Hymns, prayed by dice | A torn fragment of a clay tablet with one engraved ring on it and a broken edge on two sides. | a scroll with writing · an hourglass · letters |
@@ -118,9 +118,9 @@ It was found by reading every data row a screen draws (`data/*.json`: weapons, i
 | 31 | `place_icons` `place-trade-graft` | `art/icons/places/trade-graft.png` | A back-room graft (trade card) | white-ink sign | in game now (a card with no picture) | Crossroads trade: a small blessing for the rest of the run, paid for in max HP | A thin needle drawing a thread through a small glowing bead set in a flat plate. | a syringe · a medical cross · gore |
 | 32 | `place_icons` `place-trade-salvage` | `art/icons/places/trade-salvage.png` | A salvage buyer (trade card) | white-ink sign | in game now (a card with no picture) | Crossroads trade: sell one weapon or item from your pack at a share of its price | A small pair of scales, one coin on one pan, a broken gun part on the other, the scales level. | a real currency symbol · a pawn shop sign · a skeleton |
 
-## 5. Faith: the vows and Witnessed
+## 5. Faith: the vows
 
-**Where:** the faith tab, the vow line and the pre-fight vow picker (`faithArt.ts VOW_PATHS`, `WITNESSED_PATHS`): the six vows (`data/patrons.json` `vows`) and the Witnessed state draw a **code line mark** today; the resolver takes `prayer-vow-<id>` and `prayer-witnessed` the day they are built. Vows are Wick icons (the prayer family: the six Whisper icons are the reference); Witnessed is a sign. The Whisper, Hymn and Miracle icons are all delivered.
+**Where:** the faith tab, the vow line and the pre-fight vow picker (`faithArt.ts VOW_PATHS`, `WITNESSED_PATHS`): the six vows (`data/patrons.json` `vows`) draw a **code line mark** today; the resolver takes `prayer-vow-<id>` the day they are built. Vows are Wick icons (the prayer family: the six Whisper icons are the reference). Witnessed is not asked for: it shows the delivered `cond-witnessed` sign (cut, see the top). The Whisper, Hymn and Miracle icons are all delivered.
 
 | # | Id (catalog) | File to save | Name | Mode | State | In the game | Paint (what to show) | Avoid |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -130,7 +130,6 @@ It was found by reading every data row a screen draws (`data/*.json`: weapons, i
 | 36 | `prayers` `vow-bare` | `art/icons/prayers/vow-bare.png` | Vow: Bare Hands ("By my own hands.") | Wick icon | in game now (a code line mark) | The vow of the same name: no weapon | Wick's two bare fists raised in front of his flame, a dropped blade lying on the ground line behind him. | boxing gloves · a martial-art pose from any known work |
 | 37 | `prayers` `vow-unarmed-faith` | `art/icons/prayers/vow-unarmed-faith.png` | Vow: No Magic but Theirs | Wick icon | in game now (a code line mark) | The vow of the same name: no Sigils or Outbursts, only prayer | Wick with both open hands raised, a small glyph and a small heart-knot lying cast aside at his feet, one thin ray falling on his palms. | a crossed-out spell circle · a wand |
 | 38 | `prayers` `vow-no-one-behind` | `art/icons/prayers/vow-no-one-behind.png` | Vow: Nobody Left Behind | Wick icon | in game now (a code line mark) | The vow of the same name | Wick turned back over his shoulder, one hand reaching down to pull a partial figure up off the ground line. | a stretcher · a medic cross · a crowd |
-| 39 | `prayers` `witnessed` | `art/icons/prayers/witnessed.png` | Witnessed (state sign) | white-ink sign | in game now (a code line mark) | Faith 5: from a Hymn or Miracle until the fight ends or the patron intervenes; on the faith tab and the token | An open eye with a short ray above it and one on each side, the pupil a solid round dot. | an all-seeing-eye triangle or any real-world religious or secret-society symbol · a camera |
 
 ## 6. Tending and Bonds: the passives with no picture
 
@@ -144,7 +143,7 @@ It was found by reading every data row a screen draws (`data/*.json`: weapons, i
 | 43 | `tending_icons` `tend-bonds-8` | `art/icons/tending/bonds-8.png` | Three Bonds | Wick icon | in game now · no slot yet | You can hold one more Bond (three in all) | Wick holding three threads fanning out to three small partial figures. | the number 3 · a web |
 | 44 | `tending_icons` `tend-mender-bonds` | `art/icons/tending/mender-bonds.png` | One More Bond | Wick icon | in game now · no slot yet | The Mender's class gain: holds one more Bond | Wick tying one extra short thread onto a bundle of threads already in his hand. | a plus sign · a knot with text |
 
-## 7. Marks for resources and tones (lower priority)
+## 7. Marks for resources and the Raw tone (lower priority)
 
 **Where:** the credits count on every place's header and the camp budget, the XP and Devotion XP lines on the reward and level-up cards (`RunScreen.tsx`, `PlaceBar`: words only today), and the quiver's enchantment tag (`quiverView.ts TONE_GLYPH`: a text glyph per tone). The seven tones are the Soul tones of `data/soul_modules.json` (Raw, Fire, Storm, Frost, Stone, Gale, Acid); the Sigil elements share their inks. Signs at 16 to 24 px beside a word or in a row, so each is one silhouette. Optional: the game reads fine without them.
 
@@ -154,18 +153,12 @@ It was found by reading every data row a screen draws (`data/*.json`: weapons, i
 | 46 | `interface_icons` `icon-resource-xp` | `art/icons/resources/xp.png` | Experience | white-ink sign | in game now (the word XP) | XP gained, on the reward and tally cards | A small flame-shaped seed splitting into a sprout of two short leaves. | a star · a level arrow · letters |
 | 47 | `interface_icons` `icon-resource-devotion` | `art/icons/resources/devotion.png` | Devotion XP | white-ink sign | in game now (the words DEVOTION XP) | Devotion gains (rest, shrines, rites) | One small flame inside a thin ring that is open at the top. | a halo over a head · a cross · a prayer-beads loop |
 | 48 | `interface_icons` `icon-tone-raw` | `art/icons/tones/raw.png` | Tone: Raw | white-ink sign | in game now (a coloured word) | A Raw Outburst design, and the plain quiver | A plain heart-knot with no flourish, a clear ring of space round it. | a medical heart · colour |
-| 49 | `interface_icons` `icon-tone-fire` | `art/icons/tones/fire.png` | Tone: Fire | white-ink sign | in game now (a text glyph on a quiver tag) | The Fire tone: an Outburst design, an enchanted quiver | Three flame tongues seated in a small ring. | a campfire · a match |
-| 50 | `interface_icons` `icon-tone-storm` | `art/icons/tones/storm.png` | Tone: Storm | white-ink sign | in game now (a text glyph on a quiver tag) | The Storm tone (the Sigil element Shock) | One long jagged bolt dropping from a small flat cloud line. | a lightning-bolt logo from a known brand · a power symbol |
-| 51 | `interface_icons` `icon-tone-frost` | `art/icons/tones/frost.png` | Tone: Frost | white-ink sign | in game now (a text glyph on a quiver tag) | The Frost tone (the Sigil element Freeze) | A six-armed crystal made of straight strokes, each arm ending in a short fork. | a snowman · a thermometer |
-| 52 | `interface_icons` `icon-tone-stone` | `art/icons/tones/stone.png` | Tone: Stone | white-ink sign | in game now (a text glyph on a quiver tag) | The Stone tone | Three stacked rough slabs, the middle one set a little off-centre. | a cairn with a flag · a mountain |
-| 53 | `interface_icons` `icon-tone-gale` | `art/icons/tones/gale.png` | Tone: Gale | white-ink sign | in game now (a text glyph on a quiver tag) | The Gale tone | Three long streamlines curling into small hooks at their ends. | a tornado funnel · a weather map |
-| 54 | `interface_icons` `icon-tone-acid` | `art/icons/tones/acid.png` | Tone: Acid | white-ink sign | in game now (a text glyph on a quiver tag) | The Acid tone | A single round drop above a bowl-shaped dent, two small pit marks eaten into the bowl's rim. | a skull · a chemical flask · a biohazard mark |
 
 ## Left off, on purpose (for the lead to rule on)
 
-- **The 46 `given_*` and `foe_*` feeling states** (Given Rage, Felt Grief and so on, rules 1.33): the 25 feeling glyphs exist (`feeling-<id>`); the recommendation is that the screen shows the feeling's glyph inside the helps or hurts frame of the status strip, with no new signs. If Leon wants own signs, that is 46 more pictures.
+- **The 41 other `given_*` and `foe_*` feeling states** (25 given, 16 foe: Given Rage, Felt Grief and so on, rules 1.33; 43 rows in all, Given Edge asked for in section 2 and Felt answered by `ui-felt`): the 25 feeling glyphs exist (`feeling-<id>`); the recommendation is that the screen shows the feeling's glyph inside the helps or hurts frame of the status strip, with no new signs. If Leon wants own signs, that is 41 more pictures.
 - **The BATTLE START, VICTORY and DEFEAT banner marks** are delivered (`banner-fight-start`, `-won`, `-lost`) and the 0.31.1 end panel reuses them in its ring; a bigger dedicated emblem for the end panel is not asked for.
-- **The basic fight actions** (the 18 rows of `data/actions.json`: Move, Sprint, Disengage, Drop prone, Pick up, Hide, Analyze and the rest) and Attack, Reload, End turn: the fight's action list draws no icon per row at all. That is a new UI slot (Leon's call, as for the door moves), not missing art.
+- **The basic fight actions** (the 18 rows of `data/actions.json`: Move, Sprint, Disengage, Drop prone, Pick up, Analyze and the rest) and Attack, Reload, End turn: since the 0.31.x art integration the fight's action rows draw an icon left of the name for every technique, class move, door step and verb with a delivered one, and for Hide (`move-hide`); the other core actions have none, and asking for 17 more is Leon's call, not missing art.
 - **`figment_claws` and `figment_edge`** (a Figment's own weapons), and **`mod_follow_guard` and `mod_afterword`** (named in `variant_mods`, never fitted): never reach a shelf, a pack or a card.
 - **The 20 weapon and focus variants** (`data/variants.json`) show their base weapon's painting by design.
 - **The shrine's patron** (`data/survival.json` face `patron`, `portrait_pending: true`) shows the visiting patron's own portrait (`fallback_patron`), which is painted: nothing is missing.
@@ -175,10 +168,11 @@ It was found by reading every data row a screen draws (`data/*.json`: weapons, i
 
 ## Placeholders
 
-**None made.** The repo has a script (`tools/art/make_placeholders.py`, list file `art/briefs/placeholders-2026-11-16.json`), but a placeholder is only worth a catalog entry where a screen would draw it, and for every row above the game already shows something that works (a text glyph, a code line mark, a word) or has no slot yet. The one surface that shows **nothing** meanwhile is the Survival place cards (section 4, 12 cards beside cards that have a picture): it needs a slot (below) before a placeholder could be seen, so none was generated. When the builder adds the slots, run the script on a list built from these rows (ids and files as given; `slot: true`).
+**None made.** The repo has a script (`tools/art/make_placeholders.py`, list file `art/briefs/placeholders-2026-11-16.json`), but a placeholder is only worth a catalog entry where a screen would draw it, and for every row above the game already shows something that works (a text glyph, a code line mark, a word) or has no slot yet. The one surface that shows **nothing** meanwhile is the Survival place cards (section 4, 11 cards beside cards that have a picture; Practice is answered by `ui-practice`): it needs a slot (below) before a placeholder could be seen, so none was generated. When the builder adds the slots, run the script on a list built from these rows (ids and files as given; `slot: true`).
 
 ## For the builder (later; not the artist)
 
-- **Status strip, FREE ROAM, hazards, zones, vows, Witnessed, tones, resources:** the resolvers take a catalog id and fall back to the text glyph or code line mark they use today (`statusStrip.ts SIDE_GLYPH`, `turnIntro.tsx fieldCard` through `glyphArt: ART(...)` as the other banners do, `worldView.ts HAZARD_LOOK`, `sigilView.ts`, `faithArt.ts`, `quiverView.ts TONE_GLYPH`). `tools/build_web_assets.py` builds `interface_icons` `banner-*` and `icon-panel-*` today; the new `icon-*` ids and the `place_icons` map need a loop like the one at its `interface_icons` line.
-- **Place cards:** `PlaceScreen.tsx ChoiceCard` draws an icon only when `x.id` is an item id; a `place-<option>` lookup beside it (white ink as a CSS mask) is a small UI change.
-- **Conditions, Tending passives:** with the 0.29 list's `condition_icons` and `tending_icons`, they wait for the same slot (chips, tooltips and rows).
+- **Status strip, FREE ROAM, hazards, zones, vows, tones, resources:** the resolvers take a catalog id and fall back to the text glyph or code line mark they use today (`statusStrip.ts SIDE_GLYPH`, `turnIntro.tsx fieldCard` through `glyphArt: ART(...)` as the other banners do, `worldView.ts HAZARD_LOOK`, `sigilView.ts`, `faithArt.ts`, `quiverView.ts TONE_GLYPH`). `tools/build_web_assets.py` builds `interface_icons` `banner-*` and `icon-panel-*` today; the new `icon-*` ids and the `place_icons` map need a loop like the one at its `interface_icons` line.
+- **Place cards:** `PlaceScreen.tsx ChoiceCard` draws an icon only when `x.id` is an item id; a `place-<option>` lookup beside it (white ink as a CSS mask) is a small UI change. Practice uses `heart-ui-practice` (built today).
+- **Answered by existing art, still needing their slot:** Felt (`given_mark`) chips take `heart-ui-felt`; the quiver's tone tags (`quiverView.ts TONE_GLYPH`) and an Outburst design's tone take `gear-ench_<tone>` (painted, full colour: never masked or tinted).
+- **Conditions, Tending passives:** the 0.29 list's `condition_icons` are drawn on the status strip's chips and the token hover card since the 0.31.x art integration (`game/doorArt.ts condIconOf`), so section 2's signs need only their catalog entry; the Tending passives have no row that draws an icon yet.

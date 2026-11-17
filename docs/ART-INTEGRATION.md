@@ -86,6 +86,20 @@ its own id, `survival-keeper-<setting>`, the id a face's `portrait` names in `da
 `PathMap.tsx`'s `NodeGlyph` (a CSS mask, so the state colours apply; the line icon of `runIcons.ts` for any kind
 without one). `painted-map` entries are style-model training material and are never built.
 
+**The nine doors (0.31.x art, 17 Nov 2026).** The moves, techniques, Shadow and Tending verbs, conditions, door emblems,
+class portraits and camp signs (catalog `move_icons`, `technique_icons`, `shadow_icons`, `tending_icons`,
+`condition_icons`, `door_emblems`, `class_portraits`, `camp_icons`) are built by `npm run assets` under their catalog id
+and under the family's prefix plus the DATA's own id: the entry's `data_ids` where the two differ (a move's or verb's
+item key, `move-class:defender.brace`, `move-skill:durability.1#guard_slam`; a door's alpha skill, `door-durability`;
+the six techniques whose catalog id carries `-tech`), else the catalog id's stem with hyphens as underscores
+(`tech-run_through`, `cond-off_balance`, `class-defender`, `camp-step-weapon`). Icons ship at 64 px, class portraits at
+320 x 400 and 800 x 1000 (-lg); placeholders are not built. `apps/web/src/game/doorArt.ts` is the one resolver per
+family (`techIconOf`, `condIconOf`, `doorEmblemOf`, `classPortraitOf`, `campStepIconOf`, `moveIconOf`, and
+`actionIconOf` for a fight row's descriptor id); each returns '' when there is no picture, and the screen keeps its text.
+Drawn: the fight's action rows, the status strip's and token card's condition chips, the sheet's SKILLS door skills,
+CLASS block (portrait and moves) and ARMS techniques, and the camp's checklist chips. A new picture of these families
+needs its catalog entry (and `data_ids` when its stem is not the data id), nothing else.
+
 **Figments (rules 1.34, 15 Nov 2026).** A form's portrait is `catalog.figments['figment-<form>']` (4:5, abstract
 skill-portrait mode). A form row in `data/figments.json` names it by `portrait` (the validator checks the id); the engine
 puts the block's portrait on the unit it spawns (`owned.ts` spawnOwned, the road every owned unit's face takes) and

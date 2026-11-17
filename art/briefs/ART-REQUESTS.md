@@ -72,14 +72,14 @@ Behind Me, Wind-up, Read the Swing, Hold the Lane, Scrap Sentinel, Follow, After
 ### 0b. Everything else without art, beyond the 0.30 list: ONE file (requested 17 Nov 2026, 0.31.1)
 
 **Everything the game shows without finished art that neither the 0.29 list nor the 0.30 list asks for is in
-[`GPT-PROMPTS-2026-11-17-after-0.30.md`](GPT-PROMPTS-2026-11-17-after-0.30.md)**: **54 images**, all in the game now
-(Leon, 17 Nov: "request anything without art beyond the 0.30 in mention"): 43 white-ink signs and 11 Wick icons, in seven
+[`GPT-PROMPTS-2026-11-17-after-0.30.md`](GPT-PROMPTS-2026-11-17-after-0.30.md)**: **45 images**, all in the game now
+(Leon, 17 Nov: "request anything without art beyond the 0.30 in mention"; 54 at first: Witnessed, Felt, Practice and six tones
+were cut on integration, answered by delivered art): 34 white-ink signs and 11 Wick icons, in seven
 groups, most-seen first: the fight screen's marks (the status strip's helping, hurting and state marks, and the FREE ROAM
-banner mark), eight conditions (Left and Right Brain Debuff, Swinging, Ground, In Their Sights, Free move spent, Felt,
-Given Edge), the map's hazards and Sigil zones, twelve Survival place cards that show no picture (training, shrine and the
-six Crossroads trades), the six vows and Witnessed, five Tending passives, and (optional) credits, XP, Devotion XP and the
-seven tones. The first three rows of the old table here (G1 Left Brain Debuff, G2 Right Brain Debuff, G3 Swinging) are rows of
-that file now. The same file lists what was left off on purpose (the 46 feeling states, the basic action icons, never-fitted
+banner mark), seven conditions (Left and Right Brain Debuff, Swinging, Ground, In Their Sights, Free move spent, Given
+Edge), the map's hazards and Sigil zones, eleven Survival place cards that show no picture (training, shrine and the
+six Crossroads trades), the six vows, five Tending passives, and (optional) credits, XP, Devotion XP and the Raw tone. The first three rows of the old table here (G1 Left Brain Debuff, G2 Right Brain Debuff, G3 Swinging) are rows of
+that file now. The same file lists what was left off on purpose (the 41 other feeling states, the basic action icons, never-fitted
 mods) and what the builder must wire. **The 0.30 list stays where it is** (`CONTINUE-0.30.md`, 41 pictures, 0 done).
 
 Checked and **nothing missing** (so nobody asks again): every weapon, item, mod, armour piece, calibre of rounds and magazine

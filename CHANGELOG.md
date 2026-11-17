@@ -16,6 +16,19 @@ The game shows its version in the corner of the title screen and in every "Repor
   today: the 18 alpha perks (new pictures), the four gloves' painted icons, Hymn Sanctuary and Whisper Ward; the moves,
   techniques, conditions, Shadow, Tending, door emblems, class portraits and camp signs are catalogued and wait for a
   screen that draws them.
+- **Integrated: the game draws them** (17 Nov). `npm run assets` builds the moves, techniques, Shadow and Tending
+  verbs, conditions, door emblems and camp signs (292 icons, 64 px) and the nine class portraits (320 x 400 and 800 x 1000),
+  under their catalog ids and under the data's own ids (the catalog's new `data_ids`: a move's or verb's item key, a
+  door's alpha skill); about 2.1 MB more in the build (0.25 MB of icons, 0.3 MB of small portraits, 1.6 MB of large
+  portraits fetched only when one is enlarged). One resolver per family, `apps/web/src/game/doorArt.ts`. Drawn: the
+  fight's action rows (a technique's, class move's, door step's or verb's icon left of its name, Hide's too; rows keep
+  their height), the status strip's chips and the token hover card's (a condition's sign in place of the glyph, the
+  colour kept on the chip), the sheet (a door skill's emblem on SKILLS, the class portrait and each move's icon in the
+  CLASS block, each known technique's icon on ARMS) and the camp's checklist chips. Witnessed shows the delivered
+  `cond-witnessed` sign. Not drawn yet (no place on a screen today): the Open Hand's forms and stance (toggles on an
+  attack), the door steps that are passives with no row, the camp's Ready sign, the designed-not-built moves.
+- The request list beyond 0.30 is 45 pictures now: Witnessed (row 39) is cut, and Felt, Practice and the six tones
+  are answered by the delivered `ui-felt`, `ui-practice` and `mod-ench_*` art (cut from the request; the file says so).
 - The 298 placeholder files are retired to `art/_archive/nine-doors/2026-11-16/superseded/placeholders/`; the catalog was
   merged entry by entry (every 0.31.1 entry kept); checksums regenerated; the old delivery manifests of the replaced perks
   name their archived copies (`validate_art.py` OK).
