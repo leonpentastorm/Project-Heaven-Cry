@@ -368,3 +368,45 @@ Live: 0.31.5. Building: 0.31.6 (the outside reviewer's fixes).
 6. **After:** the Faith artifact and chapel; advanced classes as attribute pairs with their three-tier weapons;
    Roguelike and Campaign modes; the canvas brought back in line at 1.0.
 Items 2.0 is still ask-first to start; its first deliverable is a design document with the tables for Leon's edits.
+
+## R. Added 17 Nov, late (Leon)
+
+- **0.32's FIRST slice: finish the 18 shelved fork options** (more important than the effects work). Built today:
+  Guard 4 and 6, Pressure 4 and 6, Momentum 4, Bonds 4, Figments 4 and 6. Not offered: Momentum 6 (Spill, Headlong),
+  Bonds 6 (Long Thread), Shadow 4 and 6 (Light Fingers, Lend the Dark, Lightkiller; Spotter is built), Sigils 4 and 6,
+  Outbursts 4 and 6, Prayer 4 and 6. For each: the one piece it waits on, whether it now exists (the target-aware
+  price, the resource-amount predicate, Strain / Flux as resource rows), build what is unblocked.
+- **0.31.8 (after 0.31.7):** when a fight is joined EVERY enemy group on the map is alerted and comes (no hunting
+  the fog for the last group before VICTORY); ambushers keep their rule; measure clears. A calm track (the Proving
+  Ground's Gearing Up) plays in FREE ROAM and before contact; the fight song starts when the fight is joined.
+- **Will Power gives no Strain limit; only Composure does** (Leon's observation; lead reads it as a fault: the
+  Outburst door's own skill should raise the limit a little, Composure multiplying it: ask Leon to confirm).
+- **Rite in the Field is still useless** ("no one crystallises in battle"). Needs a new effect on its own door
+  (Lore Master = tones). Lead's proposal: once a fight (tier II twice) change a held Outburst's tone for 0 AP, and keep
+  the Name It discount.
+- **The Call ladder's steps 9 and 10 overlap** ("9: also as a reaction, for 0 AP, once a round; 10: your first Call
+  each turn costs no AP": 9 already gives a free Call). Step 10 needs a different reward for all nine Calls. Lead's
+  proposal: at 10 the Call reaches every ally (or foe) in its range at once.
+- **CORRECTION, Leon's ruling on Strain (17 Nov):** the lead read it backwards. Will Power gives TOO MUCH: remove
+  the Strain limit from Will Power entirely. The Strain limit comes ONLY from Composure; with no points in Composure
+  the limit is 3. Lead's numbers to fit (PROVISIONAL, ask Leon): limit = 3 + 1 per Composure point (13 at 10), the
+  existing Will Power x Composure feed left on top or folded in so the top stays about 16; re-measure Outburst
+  steady and peak, Mana Shock entries and heart burns; Outburst forks at Will Power 4 and 6 must not give the limit
+  back. Check every text that says Will Power raises the limit.
+- **Composure's Strain limit steps (Leon, with a screenshot of Composure's ladder):** the limit rises at the
+  Composure points that have no perk step or unlock (1, 2, 4, 6, 8), from the base of 3; amounts to fit (lead's start:
+  +2 at each, 13 at 8; measure).
+- **The skill ladder's wording (Leon: "nobody understands", "like alien speech"):** remove every "Only what every
+  point gives" row and the "You now: ..." line. A point with no unlock shows what that point concretely gives in
+  plain numbers ("Strain limit 7 → 9", "+1 to hit: now +6"), or is not listed. The beta feed's current value is said
+  as an ordinary sentence ("Right now each plate soaks 7 damage."). Applies to all 27 skills, the "?" menu and the
+  level-up card. Goes in 0.31.8 with the alarm rule and the calm track.
+
+## S. 0.31.6 and 0.31.7 are live (17 Nov, night). Carried into 0.31.8
+0.31.7 shipped 4 of its 10 items (bigger icons, the lightbox order, the legend marks, four move icons linked).
+**0.31.8 list:** (1) the alarm: all groups engage when a fight is joined; (2) the calm track in FREE ROAM and before
+contact; (3) the skill ladder wording (CLAUDE.md "Player text never explains a formula"): a sheet of all 27 skills
+for Leon BEFORE it ships; (4) carried from 0.31.7: the prayer reach boundary, the camera jump (needs a browser
+repro), the LEVEL UP banner, duelling blade and strikers to the line, the Throw row's browser check, e2e.py on a
+per-lane port, token-card chips enlarge. Then 0.32 starts with the 18 shelved forks, the Strain ruling (Composure
+only, base 3, steps at 1 / 2 / 4 / 6 / 8), Rite in the Field and the Call ladder's step 10 (both await Leon's yes).
