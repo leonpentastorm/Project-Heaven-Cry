@@ -92,7 +92,7 @@ describe('level-up screen', () => {
     const moves = Array.from(el.querySelectorAll('.phc-lu-move'));
     // Class Roster Revision 3: two moves a rank; II at the class's attribute 5, III at 8.
     expect(moves.length).toBe(6);
-    expect(moves[0].textContent).toMatch(/Engine runs it|Narrator rules it|Both/);
+    expect(moves[0].textContent).not.toMatch(/Engine runs it|Narrator rules it|Both/); // rules 1.66 item 5212: a mark only where it is the Narrator's call
     const groups = Array.from(el.querySelectorAll('.phc-lu-rank-group'));
     expect(groups.length).toBe(3);
     expect(groups.map((x) => x.querySelector('.phc-lu-rank-state')!.textContent)).toEqual(['✓ UNLOCKED', 'LOCKED', 'LOCKED']);
@@ -183,7 +183,7 @@ describe('level-up screen', () => {
     setup((c) => { c.level = 12; c.classId = 'marksman'; c.advancedClass = 'gunslinger';
       Object.assign(c.cores, { body: 10, mind: 10, soul: 10 }); for (const k of Object.keys(c.attrs)) c.attrs[k] = 10; c.tutors = ['gunslinger']; });
     const m = await mount();
-    expect(m.el.querySelector('.phc-lu-adv-note')!.textContent).toBe('Advanced classes are being rebuilt.');
+    expect(m.el.querySelector('.phc-lu-adv-note')!.textContent).toBe('Advanced classes: sealed, not yet issued.');
     expect(m.el.querySelector('.phc-lu-adv')).toBeNull();
     expect(m.el.querySelector('button.phc-lu-learn')).toBeNull();
     expect(m.el.querySelector('.phc-lu-class-name')!.textContent).toBe(CLASS.marksman.name); // the shelved Gunslinger isn't shown

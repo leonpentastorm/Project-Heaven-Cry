@@ -32,7 +32,9 @@ describe('classView', () => {
     expect(m[4].unlock).toBe('unlocks at Agility 8 and level 12');
     expect(m.find((x) => x.id === 'run_and_gun')!.key).toBe('class:marksman.run_and_gun'); // rules 1.30: Called Shot left rank III
     expect(m.find((x) => x.id === 'killzone')!.key).toBe('class:marksman.killzone'); // a reused move keeps its old key
-    m.forEach((x) => expect(['Engine runs it', 'Narrator rules it', 'Both']).toContain(x.badge));
+    // rules 1.66 item 5212: in a narrated room ({} here: no run, no Proving Ground) an engine move has no mark, the rest "Narrator's call"
+    m.forEach((x) => expect(['', "Narrator's call"]).toContain(x.badge));
+    classMoves({ run: {} }, c, 'marksman').forEach((x) => expect(x.badge).toBe('')); // a Survival run: no mark at all
     expect(classLabel(c)).toBe(CLASS.marksman.name + ' II');
   });
   it('ranks: three, two moves each, with the attribute value that unlocks them', () => {
@@ -69,7 +71,7 @@ describe('classView', () => {
   it('advanced classes are shelved: each says so, none is ready; a held one is not shown as active', () => {
     const c = charWith({ classId: 'marksman' });
     const gun = advancedInReach(c, 30).find((a) => a.id === 'gunslinger')!;
-    expect(gun.ready).toBe(false); expect(gun.missing).toEqual(['Advanced classes are being rebuilt; not learnable yet.']);
+    expect(gun.ready).toBe(false); expect(gun.missing).toEqual(['Advanced classes: sealed, not yet issued.']);
     c.advancedClass = 'gunslinger'; expect(classLabel(c)).toBe(CLASS.marksman.name + ' I');
   });
   it('uses left from the engine counters (a per-scene move)', () => {

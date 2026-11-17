@@ -29,7 +29,7 @@ export { MENDING, mendFactor, mendFactorOf, dealFactorOf, flatLevelOf, noteTende
 export { itemAmount, amountMult, amountBlock, amountSpecOf, amountHome, type AmountBlock } from './amounts';
 export { note, noteFight, pendRuling, rulingsPrompt, briefOf, narratorPart, gapsOf, noteFallbacks, postStory, setStoryPoster } from './narrator';
 export { perkActionsFor, perkInfoFor, previewPerkAction, runPerkAction, perkActionId, togglesFor, modOn, armedOf, disarm, openWindow, windowStep, closeWindow, actionDefs, defaultActions, apFromData, dataAp, type PerkActionEntry, type PerkInfoEntry, type ToggleEntry, type WindowEntry } from './actions';
-export { coverageReport, coverageGaps, coverageOf, verdictOf, verdictFor, coverageSummary, type CoverageRow, type Verdict } from './coverage';
+export { coverageReport, coverageGaps, coverageOf, verdictOf, verdictFor, markFor, narratedRoom, ADJ_MARKS, coverageSummary, type CoverageRow, type Verdict } from './coverage';
 export { skillRollMod, actionAp, immune, forbids, xpAfter, itemWords, wordCostMods, wearing, contextHolds, pushAway, TAG_VOCAB } from './core';
 export { gainEcho, ECHO_MAX } from './echo';
 

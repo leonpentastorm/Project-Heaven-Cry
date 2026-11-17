@@ -1,5 +1,7 @@
 // Combat, ported from design/canvas-build/combat.logic.js onto the engine's fight: real initiative, the grid,
 // path arrows with their AP cost, real hit odds, and every action checked by the engine. Enemies act on their own.
+import { dotJoin } from '../game/dotJoin';
+import { narratedRoom, ADJ_MARKS } from '@engine';
 import { shellVals } from './shell';
 import { DCLogic } from '../dc/runtime';
 import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure, ensureStyle, ensureMotionCss, tabNavIndex } from './shared';
@@ -1361,7 +1363,7 @@ export class CombatLogic extends DCLogic {
       area: gid === 'attack' ? (meta && meta.hand) || 'other' : '', sub: (meta && meta.sub) || '',
       // 0.28.3 (rules 1.55 item 46): an MP cost is drawn in the MP blue after the AP, the engine's own figure (meta.mp); the cost text says it in the same words
       ...costParts(costText, meta && meta.mp),
-      name: label, text: why ? why + ' · ' + text : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { if (id === PACK_EVOKER) { this.setState({ bp: true }); return; } const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
+      name: label, text: why ? dotJoin(why, text) : text, why: why || '', locked: !mineTurn, key: id, pressed: rowSel === id ? 'true' : 'false', pick: () => { if (id === PACK_EVOKER) { this.setState({ bp: true }); return; } const t = cb.units.find((x) => x.id === this.state.target); this.setState({ action: id, target: id === 'stim' || (t && t.side === 'pc') ? null : this.state.target, aim: null, evc: null, sgToast: '', ...(id.startsWith('tq:') || id.startsWith(TPAD) || id === TWATCH ? { tile: null } : {}), ...(id.startsWith(CL) ? { tile: null, target: this.state.target } : {}) }); },
       costStyle: 'font-size: 13px; font-weight: 700; color: #E7EBF3',
       style: 'display: flex; justify-content: space-between; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 14px; cursor: pointer; ' + (ink ? 'border-left: 3px solid ' + ink + '; ' : '') +
         (why && rowSel !== id ? 'opacity: 0.62; ' : '') + (rowSel === id ? 'border-top: 1px solid ' + (ink || '#E7EBF3') + '; border-right: 1px solid ' + (ink || '#E7EBF3') + '; border-bottom: 1px solid ' + (ink || '#E7EBF3') + '; ' + (ink ? '' : 'border-left: 1px solid #E7EBF3; ') + 'background: #1C2536; color: #E7EBF3' : 'border-top: 1px solid #232D3F; border-right: 1px solid #232D3F; border-bottom: 1px solid #232D3F; ' + (ink ? '' : 'border-left: 1px solid #232D3F; ') + 'background: #10151F; color: #E7EBF3') })) }));
@@ -1431,7 +1433,7 @@ export class CombatLogic extends DCLogic {
     if (pkE && mineTurn) {
       // The panel's words are the flow's; the form says what it still needs, and the class move's standing state.
       if (pkMissing && flow && flow.d.available) sel.text = pkMissing;
-      sel.extra = (pkE.engine ? 'Engine runs it.' : 'The engine runs its numbers; the Narrator rules the rest after the fight.') + (pkState(pkE).why ? ' ' + pkState(pkE).why : '');
+      sel.extra = dotJoin(pkE.engine || !narratedRoom(g) ? '' : ADJ_MARKS.narrator + '.', pkState(pkE).why); // rules 1.66 item 5212: a Narrator's call only where there is a Narrator
       // each single choice previewed as the engine would take it (the descriptor's form pick, once the target is picked)
       const whyOpt = flow && pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!flow.picks.targetId)) ? (id) => { const r = flow.peekWith({ form: { choice: id } }); return r && !r.ok ? r.why || 'Not now.' : ''; } : null;
       Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt));
@@ -1446,7 +1448,7 @@ export class CombatLogic extends DCLogic {
       const n = tpadOpen.kind === 'watch' ? 'Hold a shot' : 'Techniques · ' + ((blocks.find((b) => b.hand === tpadOpen.hand) || {}).name || '');
       sel.name = n; sel.text = 'Pick one in the pad (arrow keys move, Enter picks), then its target on the map.'; sel.extra = '';
     }
-    sel.toggles = tgls.map((t) => ({ key: t.id, label: t.label + (t.on ? ' ✓' : ''), pressed: t.on ? 'true' : 'false', title: (t.preview || t.label) + (t.why ? ' · ' + t.why : ''), off: !!t.why,
+    sel.toggles = tgls.map((t) => ({ key: t.id, label: t.label + (t.on ? ' ✓' : ''), pressed: t.on ? 'true' : 'false', title: dotJoin(t.preview || t.label, t.why), off: !!t.why,
       pick: () => this.setState({ mods: pickToggle(this.state.mods, tgls, t) }),
       style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (t.on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') + (t.why ? '; opacity: 0.45' : '') }));
     // A technique whose weapon has two of the properties it reads: the player picks which line applies (args.line).
@@ -1830,7 +1832,7 @@ export class CombatLogic extends DCLogic {
         rows: sc.rows.map((r) => ({ key: r.key, tag: r.tag, name: r.name, sub: r.sub, hasSub: !!r.sub, note: r.note, hasNote: !!r.note, hasActs: r.acts.length > 0,
           // the item's icon (gearIcons.ts: painted when there is one, else the monoline one, muted when none of its actions can run now)
           icon: gearIconUri(r.item, r.acts.length && r.acts.every((a) => a.off) ? GEAR_INK_OFF : GEAR_INK), hasIcon: !!gearIconUri(r.item),
-          acts: r.acts.map((a) => ({ key: a.key, text: a.label + (a.cost ? ' · ' + a.cost : ''), off: a.off, why: a.why || a.label + (a.cost ? ' · ' + a.cost : ''),
+          acts: r.acts.map((a) => ({ key: a.key, text: dotJoin(a.label, a.cost), off: a.off, why: a.why || dotJoin(a.label, a.cost),
             go: () => { if (!a.off && a.action) act(a.action); },
             style: 'min-height: 30px; padding: 0 10px; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; white-space: nowrap; ' + (a.off ? 'border: 1px solid #232D3F; background: transparent; color: #5B6577; cursor: default' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; cursor: pointer') })) })) })) : [] };
     const T = {

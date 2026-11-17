@@ -31,10 +31,10 @@ describe('the fork card (game/forkView.ts)', () => {
     expect(lu.steps.map((s) => s.head)).toEqual(['DURABILITY 4 · CHOOSE ONE · STILL TO DO', 'DURABILITY 6 · CHOOSE ONE · STILL TO DO']);
     expect(lu.steps[0].opts[0].label).toBe('After the fight');
   });
-  it('a step not offered yet says it comes in a later version (a player line), and offers no button', () => {
+  it('a step not offered yet says it is sealed (a player line, rules 1.66 item 5212), and offers no button', () => {
     const card = forkCard(ch({ ingenuity: 10 }), 'ingenuity')!;
     expect(card.steps.every((s) => /NOT OFFERED YET/.test(s.head) && s.opts.every((o) => !o.canPick))).toBe(true);
-    expect(card.steps[0].why).toBe('Not offered yet: this choice comes in a later version.');
+    expect(card.steps[0].why).toBe('Sealed: not yet issued.');
   });
   it('an option not built yet shows its rule in words, never the data\'s designer note (no id, no rules number, no N-item)', () => {
     const offs = ['ingenuity', 'raw_power', 'hand_eye_coordination', 'volition', 'lore_master', 'empathy', 'faith'].flatMap((d) => forkCard(ch({ [d]: 10 }), d)?.steps.flatMap((s) => s.opts) || []);

@@ -53,7 +53,7 @@ describe('the Proving Ground class menu (Class Roster Revision 3)', () => {
     expect(o.some((x) => /gunslinger|adv:/i.test(x.id + x.label))).toBe(false);
   });
   it('the help line gives the new rank rule, never signature totals', () => {
-    expect(sandboxClassHelp({ classId: 'marksman' } as any)).toBe('Rank reads Agility and your level: rank II at Agility 5 and level 6, rank III at 8 and level 12; picking II or III raises both that far. Advanced classes are being rebuilt.');
+    expect(sandboxClassHelp({ classId: 'marksman' } as any)).toBe('Rank reads Agility and your level: rank II at Agility 5 and level 6, rank III at 8 and level 12; picking II or III raises both that far. Advanced classes: sealed, not yet issued.');
     expect(sandboxClassHelp({ classId: null } as any)).toMatch(/rank II at 5 and level 6, rank III at 8 and level 12/);
     expect(sandboxClassHelp({ classId: 'bard' } as any)).not.toMatch(/signature|13|18\b/);
   });

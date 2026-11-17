@@ -14,14 +14,15 @@ import { hasPaintedArt, heartMarkKey } from '../game/heartIcons';
 import { startOf } from '../game/starts';
 import { voiceState, speak, stopVoice, coreVoice, voiceChip, voicePrefs } from '../game/voice';
 import { designBan, portraitFor, npcsOf, apLeft, ROUND_AP, ENEMY, attackApCost, isMelee, isPersonObj, songStateOf, musicTraitOf, gearEffects, paths, previewAttack, routeHazards, PICKUP_AP, moveOptions, reachOf, reachTiles, dryRun, withGame, analyzeCost } from '@engine';
+import { dotJoin } from '../game/dotJoin';
 import { act, getState, go, polishText, retryNarrator, saveNow, toast } from '../game/store';
 import { openReport, openSpend } from '../game/report';
 import { derivedLines } from '../game/derived';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, reloadItems, reloadBothItems, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
-import { previewPerkAction, phys, sheetPack, gearLockWhy, gearPreview, plateChoices, plateLesson, plateLessonWhy, GEAR } from '@engine';
+import { previewPerkAction, phys, sheetPack, gearLockWhy, gearPreview, plateChoices, plateLesson, plateLessonWhy, GEAR, carriesMpFocus, inHands } from '@engine';
 import { SHEET_LINE_KEYS } from '../game/previewLines';
-import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
+import { weaponActions, verdictFor, markFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
 import { doorEmblemOf, classPortraitOf, moveIconOf } from '../game/doorArt';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
@@ -341,6 +342,14 @@ function magicVals(self, g, c) {
   };
 }
 
+/** Rules 1.66 item 5211: the MP row names the MP focus in hand (an Emanator, an Attuner: the focus kinds whose fuel is
+ *  MP), by the held item's own name; '' when the MP focus is only in the pack. */
+function mpFocusLine(c) {
+  const held = inHands(c);
+  for (const k of ['emanator', 'attuner']) { const id = held.find((x) => (FOCUS_IDS[k] || []).includes(x)); if (id) return (ITEM[id] || WEAPON[id] || {}).name || id; }
+  return '';
+}
+
 export class MainLogic extends DCLogic {
   constructor(props) {
     super(props);
@@ -449,8 +458,8 @@ export class MainLogic extends DCLogic {
     const eFx = this._echoFx && this._echoFx.id === eKey && Date.now() - this._echoFx.at < 1400 ? this._echoFx.dir : '';
     const echoV = c ? { ...echoView(echo, eFx), open: !!S.echoOpen, expanded: S.echoOpen ? 'true' : 'false', glyph: S.echoOpen ? '×' : '?', cls: eFx ? 'phc-echo-row-flare' : '',
       toggle: () => this.setState({ echoOpen: !this.state.echoOpen }) } : { has: false, pips: [], sections: [] };
-    const hpMax = c ? maxHp(c) : 1, mpMax = c ? maxMp(c) : 1, mpNowV = c ? magicNow(g, c).mp : 0, ema = !!c && carriesEmanator(c), emaHeld = !!c && hasEmanator(c), next = c ? xpForLevel(c.level + 1) : 1, prevXp = c ? xpForLevel(c.level) : 0;
-    const bars = c ? [['HP', '#F65157', Math.round(c.hp / hpMax * 100), fmtNum(c.hp) + ' / ' + fmtNum(hpMax)], ['MP', '#5C9EFF', ema ? Math.round(mpNowV / Math.max(1, mpMax) * 100) : 0, ema ? mpNowV + ' / ' + mpMax + (emaHeld ? '' : ' · in the pack') : 'no Emanator'],
+    const hpMax = c ? maxHp(c) : 1, mpMax = c ? maxMp(c) : 1, mpNowV = c ? magicNow(g, c).mp : 0, ema = !!c && carriesMpFocus(c), mpHeld = c ? mpFocusLine(c) : '', next = c ? xpForLevel(c.level + 1) : 1, prevXp = c ? xpForLevel(c.level) : 0;
+    const bars = c ? [['HP', '#F65157', Math.round(c.hp / hpMax * 100), fmtNum(c.hp) + ' / ' + fmtNum(hpMax)], ['MP', '#5C9EFF', ema ? Math.round(mpNowV / Math.max(1, mpMax) * 100) : 0, ema ? mpNowV + ' / ' + mpMax + (mpHeld ? ' · ' + mpHeld : ' · in the pack') : c && ((c.skills || {}).will_power > 0 || (c.outbursts || []).length) ? 'no Emanator' : 'no MP focus'],
       ['XP', '#A3AEC2', c.level >= 20 ? 100 : Math.round((c.xp - prevXp) / Math.max(1, next - prevXp) * 100), c.xp.toLocaleString() + ' / ' + next.toLocaleString()]]
       .map(([label, col, pct, text]) => ({ label, text, labelStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + col, fill: 'width: ' + Math.max(0, Math.min(100, pct)) + '%; height: 100%; background: ' + col })) : [];
     const barsA = bars.filter((b) => b.label !== 'XP'), barsB = bars.filter((b) => b.label === 'XP');
@@ -501,7 +510,7 @@ export class MainLogic extends DCLogic {
     // Who runs each item (engine effects/coverage.ts): "Engine runs it", "Narrator rules it" or "Both", always in words.
     const BADGE_INK = { engine: '#E7EBF3', both: '#C9D3E3', narrator: '#A3AEC2' };
     const badgeStyleOf = (v) => 'padding: 1px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.04em; border: 1px ' + (v === 'narrator' ? 'dashed' : 'solid') + ' ' + BADGE_INK[v] + '; color: ' + BADGE_INK[v];
-    const badgeOf = (key, tier) => { const v = verdictFor(key, tier); return { badge: v.label, badgeStyle: badgeStyleOf(v.verdict) }; };
+    const badgeOf = (key, tier) => { const v = markFor(key, tier, g); return { badge: v.mark, badgeStyle: v.mark ? badgeStyleOf(v.verdict) : 'display: none' }; }; // rules 1.66 item 5212: one small mark, only in a narrated room
     // Uses left (game/classView.ts usesLine): this fight, scene, session or rest, from the engine's own counters.
     const usesOf = (key, tier) => { const u = c ? usesLine(g, c, key, tier) : ''; return { uses: u, hasUses: !!u }; };
     const traits = c ? c.traits.map((id) => TRAIT[id]).filter(Boolean).map((t) => ({ key: t.id, name: t.name, icon: t.icon, text: t.up[0] || t.flavour, zoom: zoomer(this, t.icon, t.name, 'icon'), ...badgeOf('trait:' + t.id), ...usesOf('trait:' + t.id) })) : [];
@@ -513,7 +522,7 @@ export class MainLogic extends DCLogic {
     // The class and its moves (spec: Classes; game/classView.ts): every rank's move, held or locked with what it takes,
     // who runs it and the uses left, under the emblem, the rank and the class attribute's progress (II at 5, III at 8).
     const klass = c ? classOf(c) : null, clsEm = emblemOf(heldClassId(c));
-    const moveCard = (m) => ({ ...m, ...((ic) => ({ icon: ic, hasIcon: !!ic }))(moveIconOf(m.key)), rank: m.rank + (m.ap ? ' · ' + m.ap : '') + (m.earned ? '' : ' · LOCKED: ' + m.unlock), locked: !m.earned, badgeStyle: badgeStyleOf(m.verdict), hasUses: !!m.uses,
+    const moveCard = (m) => ({ ...m, ...((ic) => ({ icon: ic, hasIcon: !!ic }))(moveIconOf(m.key)), rank: m.rank + (m.ap ? ' · ' + m.ap : '') + (m.earned ? '' : ' · LOCKED: ' + m.unlock), locked: !m.earned, badgeStyle: m.badge ? badgeStyleOf(m.verdict) : 'display: none', hasUses: !!m.uses,
       style: 'display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (m.earned ? clsEm.ink : '#232D3F') + (m.earned ? '' : '; opacity: 0.55') });
     const classMoves = !c ? [] : [...(c.classId ? classMovesOf(g, c, c.classId) : []), ...(c.advancedClass ? advancedMoves(g, c, c.advancedClass) : [])].map(moveCard);
     const clsSig = c && c.classId ? attributeProgress(c, c.classId) : null;
@@ -1457,7 +1466,7 @@ export class MainLogic extends DCLogic {
       const built = open && P ? buildArgs(P, V, px) : null, pv = built && typeof built !== 'string' && !why ? pvOf(e, how, built) : null;
       const ready = !!pv && pv.ok, line = pv ? (pv.ok ? (pv.lines || []).join(' ') : pv.why || 'Not now.') : typeof built === 'string' ? built : '';
       const chosen = open && P ? P.fields.filter((f) => f.kind === 'chips').flatMap((f) => (Array.isArray(V[f.key]) ? V[f.key] : []).map((id) => (f.options.find((o) => o.id === id) || { label: id }).label)) : [];
-      return { key, label: verbOf(e) + (onMap ? ' on the map…' : needs ? '…' : ''), aria: e.label + (needs ? ': choose, then confirm' : ''), title: (why ? why + ' · ' : '') + pkText(e), off: !!why, why: why || '', hasWhy: !!why, open: open && !why && needs, needs,
+      return { key, label: verbOf(e) + (onMap ? ' on the map…' : needs ? '…' : ''), aria: e.label + (needs ? ': choose, then confirm' : ''), title: dotJoin(why, pkText(e)), off: !!why, why: why || '', hasWhy: !!why, open: open && !why && needs, needs,
         click: () => { if (why) return toast(why); if (onMap) return this.setState({ area: true, wAct: pkId(e), wTarget: null, wTile: null, wAim: null }); if (needs) return this.setState({ pkOpen: S.pkOpen === key ? null : key, pkForm: null }); runPk(e, how, {}); },
         style: 'min-height: 30px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (why ? 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1' : open ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF'),
         pickHead: P ? P.head : '', hint: P ? P.hint || '' : '', hasHint: !!(P && P.hint), warn: P ? P.warn || '' : '', hasWarn: !!(P && P.warn), fields, opts: (fields.find((f) => f.isChips) || { opts: [] }).opts, hasOpts: !!(P && P.fields.some((f) => f.kind === 'chips')),
@@ -1563,7 +1572,7 @@ export class MainLogic extends DCLogic {
       // Never the Say box, never a shared detail field. The Proving Ground runs these as area-map actions.
       get hasStoryPerks() { return this.storyPerks.length > 0; }, ...restVals,
       stripOpen: !!stripOpen, stripPick: stripOpen ? stripOpen.v : { fields: [], opts: [] },
-      storyPerks: stripPk.map(({ x: { e }, v }) => ({ key: pkId(e), label: e.label + (v.needs ? '…' : '') + (e.uses.label ? ' · ' + e.uses.label : ''), title: (v.why ? v.why + ' · ' : '') + pkText(e), off: !!v.why,
+      storyPerks: stripPk.map(({ x: { e }, v }) => ({ key: pkId(e), label: e.label + (v.needs ? '…' : '') + (e.uses.label ? ' · ' + e.uses.label : ''), title: dotJoin(v.why, pkText(e)), off: !!v.why,
         pick: () => v.click(),
         style: 'min-height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; border: 1px solid ' + (v.open ? '#FFFFFF' : '#2E3A50') + '; background: #10151F; color: #E7EBF3' + (v.why ? '; opacity: 0.45' : '') })),
       cantSpeak, turnText: why, turnStyle: 'font-size: 13px; color: ' + (cantSpeak ? '#A3AEC2' : myColor),

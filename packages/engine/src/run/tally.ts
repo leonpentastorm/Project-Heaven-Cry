@@ -7,7 +7,8 @@
 //
 // What the stream does not say is not counted, and is listed in docs/design/handoffs/survival-step-6.md:
 //   - Shields GIVEN: `grantShield` emits a hook, not an effect (only two classes emit a `shield` event with a size), so
-//     the tally has the damage a character's shield soaked (`absorbed`), not what was given.
+//     the tally has the damage a character's shield and armour soaked (`absorbed`: a `shield` event's, and since rules
+//     1.66 a weapon hit's `absorbed`, its armour and shield), not what was given. A stim's heal (`stim`) counts.
 //   - A `hurt` or a `heal` carries no source: it is credited to the unit whose `turn` is open (the actor); damage or
 //     healing made while a foe's turn is open (a reaction, a bleed) is the fight's `other`, and a heal that no effect
 //     reports (the perk `mend` op, a Bond) is missing from `healed`.
@@ -15,14 +16,14 @@ import { fxTaps } from '../fxtap';
 import type { Combat, Unit } from '../combat';
 
 /** One event of the tape: the fields the tally reads, copied when the effect was emitted. */
-export interface TapeEv { k: string; unit?: string; target?: string; dmg?: number; hit?: boolean; amount?: number; absorbed?: number; dead?: boolean; surrendered?: boolean; object?: boolean }
+export interface TapeEv { k: string; unit?: string; target?: string; dmg?: number; hit?: boolean; amount?: number; absorbed?: number; heal?: number; dead?: boolean; surrendered?: boolean; object?: boolean }
 /** What one character did in one fight (rules 1.47). `shots`/`hits`: weapon attacks made and landed (a Burst's rounds
- * count each); `absorbed`: damage its shield soaked; `deaths`: Downs that were deaths. */
+ * count each); `absorbed`: damage its shield and armour soaked; `deaths`: Downs that were deaths. */
 export interface TallyRow { name: string; dealt: number; taken: number; healed: number; absorbed: number; kills: number; downs: number; deaths: number; shots: number; hits: number }
 /** A fight's tally: a row per character of the squad (by character id), and what no one's turn owns (`other`). */
 export interface FightTally { rounds: number; chars: Record<string, TallyRow>; other: { dealt: number; healed: number } }
 
-const KINDS = new Set(['turn', 'shot', 'melee', 'hurt', 'heal', 'leech', 'shield', 'down']);
+const KINDS = new Set(['turn', 'shot', 'melee', 'hurt', 'heal', 'leech', 'shield', 'down', 'stim']);
 /** The few fields the tally reads, of one effect. */
 function slim(ev: { k: string; [x: string]: any }): TapeEv {
   const e: TapeEv = { k: ev.k };
@@ -30,6 +31,7 @@ function slim(ev: { k: string; [x: string]: any }): TapeEv {
   if (typeof ev.dmg === 'number') e.dmg = ev.dmg;
   if (typeof ev.amount === 'number') e.amount = ev.amount;
   if (typeof ev.absorbed === 'number') e.absorbed = ev.absorbed;
+  if (typeof ev.heal === 'number') e.heal = ev.heal;
   if (ev.hit) e.hit = true;
   if (ev.dead) e.dead = true;
   if (ev.surrendered) e.surrendered = true;
@@ -64,11 +66,15 @@ export function fightTally(tape: TapeEv[], units: Pick<Unit, 'id' | 'side' | 'na
       if (e.object || !e.unit) continue;
       const me = row(e.unit); if (me) { me.shots++; if (e.hit) me.hits++; }
       damage(e.unit, e.target, e.hit ? e.dmg || 0 : 0);
+      if (e.hit && e.absorbed) { const r = row(e.target); if (r) r.absorbed += e.absorbed; } // rules 1.66: armour and shield on a weapon hit
     } else if (e.k === 'hurt') damage(actor, e.target, e.dmg || 0);
     else if (e.k === 'heal' || e.k === 'leech') {
       const n = e.amount || 0, to = e.k === 'heal' ? e.target : e.unit, by = e.k === 'leech' ? e.unit : actor;
       if (side.get(to || '') !== 'pc') continue;
       const me = row(by); if (me) me.healed += n; else t.other.healed += n;
+    } else if (e.k === 'stim') { // rules 1.66 item 5210: a stim's heal, the stim's user credited
+      const n = e.heal || 0; if (n <= 0 || side.get(e.target || '') !== 'pc') continue;
+      const me = row(e.unit); if (me) me.healed += n; else t.other.healed += n;
     } else if (e.k === 'shield') { const r = row(e.target); if (r) r.absorbed += e.absorbed || 0; }
     else if (e.k === 'down' && e.unit) {
       const r = row(e.unit);

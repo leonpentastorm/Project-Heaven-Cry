@@ -6,6 +6,7 @@
 //
 // In a fight the ammo lives on the unit (u.mags, u.loose, u.offMags, u.extra, u.throwables, u.parts): c.pack is only
 // written back at the end of the fight or on a gear change, so those numbers are read from the unit.
+import { dotJoin } from './dotJoin';
 import { WEAPON, ITEM, magazineSize, packOf, twoHands, isPlotItem, gearCost, isLightArmour, GEAR, calName, type GearOp, FOCUS_IDS, withGame } from '@engine';
 import { magGearId, roundsGearId, torsoGearId } from './gearIcons';
 
@@ -37,7 +38,7 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
   const act = (key: string, verb: string, op: GearOp, action: any, extra = ''): BpAct => {
     const p = gearCost(cb, u, c, op), why = reason || p.why || '', short = !!p.why && /^Needs \d+ AP\.$/.test(p.why);
     const price = p.ap + ' AP' + (p.free ? ' · Hot-Swap' : '') + extra;
-    const cost = !p.why || reason ? price : short ? price + ' · ' + p.why : p.why;
+    const cost = !p.why || reason ? price : short ? dotJoin(price, p.why) : p.why;
     return { key, label: verb, cost, off: !!why, why, action };
   };
   const uid = u.id, w: any = (WEAPON as any)[u.weapon] || (WEAPON as any)[c.weapon], two = twoHands(c, c.weapon);

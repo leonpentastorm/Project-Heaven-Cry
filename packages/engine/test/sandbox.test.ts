@@ -273,7 +273,7 @@ describe('the tools', () => {
     // An advanced class (on here by the test switch): its attribute pair raised to the gate, seated with its first attribute's class.
     const adv = ADVANCED_CLASSES[0];
     _setAdvancedLive(null); // as in play: shelved
-    expect(refused(g, { type: 'sandbox/class', charId: c.id, classId: adv.id })).toBe('Advanced classes are being rebuilt; not learnable yet.');
+    expect(refused(g, { type: 'sandbox/class', charId: c.id, classId: adv.id })).toBe('Advanced classes: sealed, not yet issued.');
     _setAdvancedLive(true);
     g = apply(g, { type: 'sandbox/class', charId: c.id, classId: adv.id }, HOST);
     expect(g.sandbox!.advanced[c.id]).toBe(adv.id); expect(CLASS[charOf(g).classId!]).toBeTruthy(); expect(charOf(g).classId).toBe('marksman'); expect(charOf(g).attrs.agility).toBe(9);

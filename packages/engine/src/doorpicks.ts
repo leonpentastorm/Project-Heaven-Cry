@@ -7,7 +7,7 @@
 import './datatext';
 import type { Character } from './character';
 import forksJ from '../../../data/forks.json';
-import { SKILLS } from './data';
+import { SKILLS, RULES } from './data';
 
 /** One option of a grant, as the screens show it (its icon: a catalog id, '' for none). */
 export interface DoorOption { id: string; label: string; icon: string; /** its rule, as the picker shows it (rules 1.60) */ text?: string }
@@ -118,7 +118,7 @@ export function doorForkView(c: Character | null | undefined, door: string): Doo
     const options = st.of.map(opt), picked = options.find((o) => o.picked)?.id || null, isOpen = points >= st.at;
     const pending = isOpen && st.offered && open.some((p) => p.grant === 'fork:' + st.id);
     const missing = options.filter((o) => !o.built).map((o) => o.name);
-    const why = !st.offered ? 'Not offered yet: this choice comes in a later version.' : !isOpen ? 'Opens at ' + src.name + ' ' + st.at + '.' : pending ? 'Still to do: choose one, kept for good.' : picked ? 'Chosen, kept for good.' : '';
+    const why = !st.offered ? ((RULES as any).adjudication_marks?.sealed || 'Sealed: not yet issued.') : !isOpen ? 'Opens at ' + src.name + ' ' + st.at + '.' : pending ? 'Still to do: choose one, kept for good.' : picked ? 'Chosen, kept for good.' : '';
     return { id: st.id, at: st.at, open: isOpen, offered: st.offered, options, picked, pending, missing, why };
   });
   return { door, name: src.name, skill, points, runsOn: src.runsOn || '', steps, picked: steps.flatMap((s) => s.options.filter((o) => o.picked)), pending: steps.filter((s) => s.pending).length };

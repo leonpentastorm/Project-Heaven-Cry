@@ -141,7 +141,7 @@ describe('resources follow the moves', () => {
 describe('advanced classes are shelved', () => {
   it('learning one is refused with the shelved reason, whatever the attributes', () => {
     const s = storyWith([{ level: 12, attrs: { agility: 10, strength: 10 }, classId: 'marksman' }]);
-    expect(() => s.act({ type: 'levelup/advanced', charId: s.chars[0].id, classId: 'gunslinger' } as any)).toThrow('Advanced classes are being rebuilt; not learnable yet.');
+    expect(() => s.act({ type: 'levelup/advanced', charId: s.chars[0].id, classId: 'gunslinger' } as any)).toThrow('Advanced classes: sealed, not yet issued.'); // rules 1.66 item 5212
     expect(Object.keys(ADVANCED).every((id) => ADVANCED[id].shelved && !advancedActive(id))).toBe(true);
   });
   it('a held advanced class stays in the save but gives no moves, resources or effects', () => {

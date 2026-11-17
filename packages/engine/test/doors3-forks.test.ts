@@ -52,7 +52,7 @@ describe('the forks as data (N1): two steps a door, at 4 and 6 of its alpha skil
       for (const [i, f] of s.forks.entries()) {
         expect(v.steps[i].offered, s.id + ' ' + f.at).toBe(f.of.every(forkBuilt));
         expect(v.steps[i].missing).toEqual(f.of.filter((o: string) => !forkBuilt(o)).map((o: string) => FK[o].name));
-        if (!v.steps[i].offered) expect(v.steps[i].why).toMatch(/Not offered yet/);
+        if (!v.steps[i].offered) expect(v.steps[i].why).toMatch(/Sealed: not yet issued/); // rules 1.66 item 5212
       }
     }
   });

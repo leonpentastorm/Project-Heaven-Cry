@@ -10,6 +10,7 @@
 // other pick (an option, a perk's form, a pile's checklist) in S.picks[key]. Nothing here works out a cost, a range, a
 // legality check or a target list: a step's choices and the verdict are the engine's. A system whose actions are
 // descriptors needs NO code here (docs/design/handoffs/client-boundary-3-actions.md, "How to add an action").
+import { dotJoin } from './dotJoin';
 import { previewDescriptor, actionsFor, stepOn, type ActionDescriptor, type DescriptorPreview, type PickStep, type Picks } from '@engine';
 import type { PickMarks } from './pickOverlay';
 
@@ -135,7 +136,7 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
     for (const o of opts) {
       const on = list.includes(o.id) || o === dflt;
       const next = st.max && st.max > 1 ? (list.includes(o.id) ? list.filter((x) => x !== o.id) : [...list, o.id].slice(-st.max)) : on && st.optional ? null : o.id;
-      chips.push({ key: st.key + '-' + (o.id || 'plain'), label: o.label, title: (o.text || o.label) + (o.why ? ' · ' + o.why : ''), on, off: !!o.why, pick: { picks: { ...own, __id: d.id, [st.key]: next }, ...(st.key === 'opt' && d.preview === 'call' ? { tile: null } : {}) } });
+      chips.push({ key: st.key + '-' + (o.id || 'plain'), label: o.label, title: dotJoin(o.text || o.label, o.why), on, off: !!o.why, pick: { picks: { ...own, __id: d.id, [st.key]: next }, ...(st.key === 'opt' && d.preview === 'call' ? { tile: null } : {}) } });
     }
   }
   const ring = new Set<string>();

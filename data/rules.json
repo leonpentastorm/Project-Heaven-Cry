@@ -2,6 +2,13 @@
   "$schema_version": "1.0",
   "kind": "rules",
   "source": "PHC Core Rules v1.0 (Game Spec)",
+  "adjudication_marks": {
+    "about": "Rules 1.66 item 5212: the one small mark an item's card carries for who rules it, only in a narrated room (a Survival run and the Proving Ground have no Narrator: no mark). An engine item has none; `sealed`: a choice not built yet, in the game's voice.",
+    "engine": "",
+    "both": "Narrator's call",
+    "narrator": "Narrator's call",
+    "sealed": "Sealed: not yet issued."
+  },
   "conventions": {
     "die": "d20",
     "tile_m": 1.5,

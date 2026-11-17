@@ -118,8 +118,10 @@ export function RewardDock({ say, owed, onOpen }: { say: string | null; owed: bo
   return createPortal(
     <div data-phc-reward-dock="" style={{ position: 'fixed', left: box.left, width: box.width, top: box.top + box.height, transform: 'translateY(-100%)', zIndex: 39, display: 'flex', flexDirection: 'column', gap: 8, padding: 12, boxSizing: 'border-box', pointerEvents: 'none', fontFamily: "'Chakra Petch', sans-serif" }}>
       {say ? <span role="status" data-phc-map-say="" style={{ alignSelf: 'center', maxWidth: '100%', padding: '10px 16px', borderRadius: 10, background: ink.raised, border: '1px solid #3B475D', color: ink.white, fontSize: 15, fontWeight: 600, boxShadow: '0 6px 18px rgba(0,0,0,0.5)' }}>{say}</span> : null}
-      {owed ? <button type="button" data-phc-reward-bar="" onClick={onOpen}
-        style={{ pointerEvents: 'auto', minHeight: 56, borderRadius: 12, border: 0, background: ink.text, color: ink.ground, fontFamily: 'inherit', fontSize: 18, fontWeight: 700, letterSpacing: '0.04em', cursor: 'pointer', boxShadow: '0 8px 22px rgba(0,0,0,0.55)' }}>
+      {/* rules 1.66 item 5206: the whole bar reopens the panel on the press itself (a mouse button down anywhere on it), so
+          a redraw between press and release can't lose it; Enter and Space still click it */}
+      {owed ? <button type="button" data-phc-reward-bar="" onPointerDown={(e) => { if (e.button === 0) { e.preventDefault(); onOpen(); } }} onClick={onOpen}
+        style={{ pointerEvents: 'auto', width: '100%', minHeight: 56, borderRadius: 12, border: 0, background: ink.text, color: ink.ground, fontFamily: 'inherit', fontSize: 18, fontWeight: 700, letterSpacing: '0.04em', cursor: 'pointer', boxShadow: '0 8px 22px rgba(0,0,0,0.55)' }}>
         {'▲ '}{W().bar}</button> : null}
     </div>, document.body);
 }

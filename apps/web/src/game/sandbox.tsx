@@ -41,7 +41,7 @@ import { sfx, reducedMotion } from './sfx';
 import { usePresence, presenceCls } from './presence';
 import { emblemOf } from './classView';
 import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankPile, pileAction, pileChoices, isAmmoId, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
-import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName, phys, isUnseenId } from '@engine';
+import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName, phys, isUnseenId, ADVANCED_SHELVED } from '@engine';
 const ITEMS = Object.values(ITEM).filter((it: any) => !isCarriedModifier(it.id)); // rules 1.56: a weapon's own rule (the Open Hand) is no item
 import { ART, zoneOf } from '../screens/shared';
 import { tipProps } from './actionTip';
@@ -518,7 +518,7 @@ export const sandboxClassOptions = () => CLASSES.map((k) => ({ id: k.id, label: 
 export function sandboxClassHelp(c: Pick<Character, 'classId'>): string {
   const an = c.classId ? ATTR[CLASS[c.classId]?.attribute]?.name : null;
   return (an ? 'Rank reads ' + an + ' and your level: rank II at ' + an + ' 5 and level 6, rank III at 8 and level 12; picking II or III raises both that far.'
-    : 'One class per attribute. Rank reads the class\'s attribute and your level: rank II at 5 and level 6, rank III at 8 and level 12.') + ' Advanced classes are being rebuilt.';
+    : 'One class per attribute. Rank reads the class\'s attribute and your level: rank II at 5 and level 6, rank III at 8 and level 12.') + ' ' + ADVANCED_SHELVED;
 }
 
 function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: boolean }) {

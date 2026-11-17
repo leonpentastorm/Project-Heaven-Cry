@@ -12155,3 +12155,37 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     "Put away", `combat/stow`, 1 AP a hand, unchanged). The main hand now offers "Stow <weapon>", and with a two-hander
     held the off hand offers each thing that fits it as one click, "Stow the <weapon> first, then hold <item>" (the
     two engine actions in order). Words: `world_play.json gear.words`. No number changed.
+5206. **The pinned reward bar and the reward cards (E).** Not reproduced in the browser suite: on the survival suite's
+    run (1280 x 720, PHC-0046) a Playwright click on the bar's centre reopened the panel, and each reward card is one
+    button to its edges (the element at each corner of a card is the card). The fix is for the case a real pointer
+    meets and a test click does not: the bar now opens the panel on the press itself (a left button down anywhere on
+    it; Enter and Space still click it), so a redraw between press and release cannot lose it, and it spans the middle's
+    width. The suite now presses near each end of the bar with the pointer moved while held, and checks every card's four
+    corners. No number changed.
+5209. **A reason said once (G2).** The engine gives a refused action's reason once ("Jammed: clear it first."; checked
+    on every row of a jammed gun); the client joined it to texts that could already hold it. Every place a reason joins a
+    row's text, a chip's title or a pack row's cost now goes through one join (`apps/web/src/game/dotJoin.ts`) that
+    drops an empty part and a part already said. No number changed.
+5210. **The run tally counts soaking and stims (G4).** Reproduced through the reducer with the run's tape on: a foe's
+    weapon hit on a character with armour 5 and a 4 shield, then a stim on that character, tallied SOAKED 0 and HEALED
+    0. Causes: a weapon hit's soak was in no effect the tally reads (only a blast's or a spell's `shield` event carried
+    `absorbed`), and a stim's heal is a `stim` event the tally did not read. Now `resolveAttack` writes on its `shot`
+    event `absorbed` (in a run's fight, the one that keeps a tape: no replay moved), what the target's armour and
+    shield took from the hit, and the tally adds it to the target's SOAKED
+    and a `stim`'s heal to its user's HEALED (`run/tally.ts`). The summary's Boons per character listed the starting boon
+    with the Boss boons, so it did not match the stage table (which lists the Boss boons); the starting boon is now marked
+    (`survival.json run.summary.camp_boon`, "{name} (the camp's)"). Proof: `test/rules166.test.ts`. No number changed.
+5211. **The MP row names the MP focus (F2).** The sheet's MP row read "no Emanator" for a character keeping MP through an
+    Attuner (`items.json` focus `fuel: mp`; the engine's `carriesMpFocus`), and "· in the pack" only for an Emanator.
+    It now reads MP from any MP focus carried, names the one in hand by its own name ("MP 40 / 175 · Attuner"), says
+    "in the pack" when the MP focus is only carried, and says "no Emanator" only to a character who has something an
+    Emanator is for (Will Power points or an Outburst design); else "no MP focus". The Outburst warnings stay on the
+    Outbursts section and the design cards. No number changed.
+5212. **Who rules it, in the game's voice (G1).** The sheet's, the level-up's and the class moves' badge ("Engine runs
+    it", "Narrator rules it", "Both"), the fight's perk note ("Engine runs it." / "The engine runs its numbers; the
+    Narrator rules the rest after the fight.") and the notes "Not offered yet: this choice comes in a later version"
+    and "Advanced classes are being rebuilt" were shown in a Survival run, which has no Narrator. Now one engine
+    function gives the mark (`effects/coverage.ts markFor`, `narratedRoom`): none in a Survival run or the Proving
+    Ground; in a narrated room none for an engine item and one small "Narrator's call" for a hybrid or narrator item.
+    An unbuilt choice reads "Sealed: not yet issued." and the shelved advanced classes "Advanced classes: sealed, not
+    yet issued." Words: `rules.json adjudication_marks`, `classes.json advanced.shelved_text`. No number changed.

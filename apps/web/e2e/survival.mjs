@@ -365,6 +365,17 @@ await sidePanels(p, 'the rewards');
   await p.locator('[data-phc-reward-close]').click(); await settle(p, 200);
   await p.locator('[data-phc-reward-bar]').click(); await settle(p, 300);
   ok('… and the pinned bar reopens it', await p.locator('[data-phc-reward-panel]').count() === 1);
+  // rules 1.66 item 5206: the WHOLE bar reopens it (a real mouse press near each end, the pointer moved between press and
+  // release), and the whole card is the pick (the element at each corner of a card is the card)
+  const ends = [];
+  for (const fx of [0.03, 0.97]) {
+    await p.locator('[data-phc-reward-close]').click(); await settle(p, 200);
+    const b = await p.locator('[data-phc-reward-bar]').boundingBox();
+    await p.mouse.move(b.x + b.width * fx, b.y + b.height / 2); await p.mouse.down(); await p.mouse.move(b.x + b.width * fx + 3, b.y + b.height / 2 + 2); await p.mouse.up(); await settle(p, 300);
+    ends.push(await p.locator('[data-phc-reward-panel]').count() === 1);
+  }
+  const corners = await p.evaluate(() => [...document.querySelectorAll('[data-phc-reward-panel] [data-phc-pick-materials], [data-phc-reward-panel] [data-phc-pick]')].map((el) => { const r = el.getBoundingClientRect(); return [[r.left + 4, r.top + 4], [r.right - 4, r.top + 4], [r.left + 4, r.bottom - 4], [r.right - 4, r.bottom - 4]].every(([x, y]) => y < 0 || y > innerHeight || el.contains(document.elementFromPoint(x, y))); }));
+  ok('… the whole bar reopens it (near each end, the mouse moved while held: ' + ends.join(', ') + '), and each reward card is clickable to its corners (' + corners.join(', ') + ')', ends.every(Boolean) && corners.length > 0 && corners.every(Boolean));
   await p.evaluate(() => { const s = document.querySelector('[data-phc-centre]'); s.scrollTop = 0; window.scrollTo(0, 0); }); await settle(p, 200);
 }
 // ---------- rules 1.47 (build step 6): the fight's tally on the reward screen ----------

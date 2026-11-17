@@ -5,6 +5,7 @@ import type { ItemInfo } from './types';
 import { allItems, itemInfo } from './collect';
 import { ownerOf, handlerOf, type Owner } from './hooks';
 import { actionDefs } from './actions';
+import { RULES } from '../data';
 
 export interface CoverageRow { key: string; tier: string; index: number; op: string; owner: Owner }
 export function coverageOf(info: ItemInfo): CoverageRow[] {
@@ -43,4 +44,15 @@ export function coverageSummary() {
   const rows = coverageReport(), by: Record<string, number> = {};
   for (const r of rows) by[r.owner] = (by[r.owner] || 0) + 1;
   return { effects: rows.length, ...by };
+}
+
+/** Rules 1.66 item 5212: the marks for who rules an item (`rules.json adjudication_marks`): none for an engine item, one
+ *  small "Narrator's call" for the rest, and only in a narrated room. */
+export const ADJ_MARKS: { engine: string; both: string; narrator: string; sealed: string } = { engine: '', both: "Narrator's call", narrator: "Narrator's call", sealed: 'Sealed: not yet issued.', ...((RULES as any).adjudication_marks || {}) };
+/** A room with a Narrator (not a Survival run, not the Proving Ground). */
+export const narratedRoom = (g: { run?: unknown; sandbox?: unknown } | null | undefined): boolean => !!g && !g.run && !g.sandbox;
+/** The mark an item's card shows in this room ('' for none), with the verdict it reads. */
+export function markFor(key: string, tier: string | undefined, g: { run?: unknown; sandbox?: unknown } | null | undefined): { mark: string; verdict: Verdict } {
+  const v = verdictFor(key, tier).verdict;
+  return { verdict: v, mark: narratedRoom(g) ? ADJ_MARKS[v] || '' : '' };
 }

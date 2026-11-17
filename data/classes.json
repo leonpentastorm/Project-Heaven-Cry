@@ -24,7 +24,7 @@
     "moves": "a rank's move is either written in full (a Revision 3 move) or {\"ref\": \"<origin>.<moveId>\"}: a move from the pool or an advanced class, kept under its old key class:<origin>.<moveId>",
     "advanced": {
       "live": false,
-      "shelved_text": "Advanced classes are being rebuilt; not learnable yet.",
+      "shelved_text": "Advanced classes: sealed, not yet issued.",
       "held_rule": "A character who already holds an advanced class keeps it on the sheet, but it gives no moves, resources or effects until advanced classes can be learned.",
       "hybrid_gate": {
         "base_attribute_min": 6,

@@ -14,7 +14,7 @@
 // (canRaise, pendingPerkSteps, the character's perks); one click is one engine action, as before.
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, roadMap, nextLine, ceilingLine, callBlock } from './shared';
-import { CLASS, PERK, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
+import { CLASS, PERK, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor, markFor, ADVANCED_SHELVED } from '@engine';
 import { act, getState, go, homeScreen } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
 import { figmentLadderView } from '@engine';
@@ -108,7 +108,7 @@ export class LevelUpLogic extends DCLogic {
     const chipStyle = (ink, solid) => 'flex: none; padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; border: 1px ' + (solid ? 'solid' : 'dashed') + ' ' + ink + '; color: ' + ink;
     const perkRow = (pk, x, p) => {
       const h = held(pk.id), ch = x ? x.choices.find((y) => y.id === pk.id) : null, nextAt = (masteryOf(pk.skills[0]).find((s) => s.step !== 'mastered' && s.n > p) || {}).n;
-      const tier = ch ? ch.tier : h && h.tier === 'II' ? 'II' : 'I', t = (pk.tiers[tier] || pk.tiers.I || {}).text || pk.text || '', v = verdictFor('perk:' + pk.id, tier);
+      const tier = ch ? ch.tier : h && h.tier === 'II' ? 'II' : 'I', t = (pk.tiers[tier] || pk.tiers.I || {}).text || pk.text || '', v = { ...verdictFor('perk:' + pk.id, tier), label: markFor('perk:' + pk.id, tier, g).mark };
       // What you hold always shows (✓ Tier I / II); a waiting step adds its button beside it (Take, or Upgrade to II).
       const state = h ? 'owned' : ch ? 'available' : 'locked';
       const label = ch ? (ch.tier === 'I' ? 'Take · Tier I' : 'Upgrade · Tier II') : '';
@@ -116,7 +116,7 @@ export class LevelUpLogic extends DCLogic {
       // The visible words first (speech input says what it sees), then which perk of which skill.
       const aria = ch ? label + ': ' + pk.name + ' (' + ((SKILL[x.skill] && SKILL[x.skill].name) || x.skill) + ')' : '';
       return { key: pk.id, name: pk.name, aria, icon: PERK_ICON[pk.id] || IMG['wick-mind-without-fog'], state, can: !!ch, label, chip, hasChip: !!chip,
-        title: pk.name + (ch ? ' · ' + (ch.tier === 'I' ? 'Tier I' : 'Tier II') : h ? ' · Tier ' + (h.tier === 'II' ? 'II' : 'I') + ' (yours)' : ' · locked') + ': ' + t + ' (' + v.label + ')',
+        title: pk.name + (ch ? ' · ' + (ch.tier === 'I' ? 'Tier I' : 'Tier II') : h ? ' · Tier ' + (h.tier === 'II' ? 'II' : 'I') + ' (yours)' : ' · locked') + ': ' + t + (v.label ? ' (' + v.label + ')' : ''),
         // What it does shows for a waiting step and for what you hold (readable on touch and by keyboard, not only on
         // hover); a locked perk keeps it in the title and the skill's "?" EPCCG entry.
         text: ch || h ? t.charAt(0).toUpperCase() + t.slice(1) : '', hasText: !!(ch || h),
@@ -179,7 +179,7 @@ export class LevelUpLogic extends DCLogic {
     // ---------- the class panel (the held class, or while picking a preview of the selected one) ----------
     const id = c.classId || sel, preview = !c.classId && !!sel, k = id ? CLASS[id] : null;
     const pc = preview ? { ...c, classId: sel } : c, rank = id ? classRank(pc) : 0, prog = id ? attributeProgress(c, id) : null, em = emblemOf(id);
-    const moveRow = (m) => ({ ...m, badgeStyle: badgeStyle(m.verdict), hasUses: !!m.uses, hasUnlock: !m.earned && !preview, meta: m.ap,
+    const moveRow = (m) => ({ ...m, badgeStyle: m.badge ? badgeStyle(m.verdict) : 'display: none', hasUses: !!m.uses, hasUnlock: !m.earned && !preview, meta: m.ap,
       nameStyle: 'font-size: 14px; font-weight: 700; color: ' + (m.earned ? '#E7EBF3' : '#7F8BA1'),
       style: 'display: flex; flex-direction: column; gap: 4px; padding: 10px; border-radius: 10px; background: #0A0D13; border: 1px solid ' + (m.earned ? em.ink : '#232D3F') + (m.earned ? '' : '; opacity: 0.6') });
     const ranks = id ? classRanks(g, pc, id).map((r) => ({ ...r, key: r.rank, state: r.unlocked ? (preview ? '✓ WITH THE CLASS' : '✓ UNLOCKED') : 'LOCKED',
@@ -199,7 +199,7 @@ export class LevelUpLogic extends DCLogic {
       movesHead: k ? 'MOVES · RANK II AT ' + (ATTR[k.attribute]?.name || k.attribute).toUpperCase() + ' 5 AND LEVEL 6, RANK III AT 8 AND LEVEL 12' : '',
       ranks, closest, hasClosest: closest.length > 0,
       // Advanced classes are shelved (Class Roster Revision 3): one quiet line, nothing to learn.
-      advNote: 'Advanced classes are being rebuilt.', hasAdvNote: !!c.classId && !advancedLive(),
+      advNote: ADVANCED_SHELVED, hasAdvNote: !!c.classId && !advancedLive(),
     };
     const left = c.unspent.skill;
     const owed = pendingPerkSteps(c).reduce((n, x) => n + (x.free || 1), 0); // steps owed, not skills (a 2→5 jump owes two)

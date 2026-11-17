@@ -1564,6 +1564,8 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
     damage = landed(d.total, d.armour);
     const r = applyDamage(cb, tgt, damage, { ...d.src, shield: true, downedFails: crit ? 2 : 1, credit: 'all', nonlethal: (cb.mods || []).includes('nonlethal') } as any);
     damage = r.amount; killed = r.killed;
+    // rules 1.66 item 5210: what the target's armour and shield soaked rides on the shot (the run's tally reads it)
+    if (cb.tape) { const soaked = Math.max(0, Math.floor(d.total) - landed(d.total, d.armour)) + (r.shielded || 0); if (soaked > 0) ev.absorbed = soaked; } // only a run's fight keeps a tape
     if (killed) { ev.dmg = damage; ev.killed = true; fxFell(cb, tgt); }
     if (crit) noteCrit(cb, att, tgt, 'weapon'); // the spotlight's crit (decision 113): presentation only
     if (crit && !tgt.dead && !tgt.downed) injury = rollInjury(rng, tgt, cb, att);

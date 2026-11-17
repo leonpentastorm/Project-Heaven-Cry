@@ -19,7 +19,9 @@ import type { LoadoutPick } from './loadout';
  *  after_fight lines are the fight cards' words for what follows a fight (the client's turnIntro.tsx). */
 export const survivalRun: { start_credits: number; dead_return_hp: number; first_setting: string; after_fight: { won: string; lost: string; /** rules 1.62 items 4900 and 4906: the FREE ROAM banner and the field's round, in words */ field: { name: string; sub: string; round: string } };
   /** rules 1.64: the reward panel's words (the client's RewardPanel.tsx) and the refusal that names who is still choosing ({names}) */
-  reward_panel: Record<string, string> & { say_ms: number } } = (survivalJ as any).run;
+  reward_panel: Record<string, string> & { say_ms: number };
+  /** rules 1.66 item 5210: the run summary's words (the starting boon marked apart from the stages' boons) */
+  summary?: { camp_boon: string } } = (survivalJ as any).run;
 
 /** A mode a room can play (data/modes.json ids). */
 export type PlayMode = 'survival' | 'roguelike' | 'campaign';

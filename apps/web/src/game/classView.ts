@@ -3,7 +3,7 @@
 // rank (earned or locked, with who runs it), the classes on offer before one is earned (the highest attribute, ties
 // included), the picker's cards, and the uses left on any item. Advanced classes are shelved: a held one is never shown
 // as active. Pure functions of the character (and the game, for the use counters), so they are testable.
-import { CLASS, ADVANCED, ATTR, CLASS_MIGRATION, RANK_LEVEL, classTotals, classRank, eligibleClasses, advancedClassError, advancedActive, verdictFor, itemInfo, actionDefs, uses, scopeOf, usesLabel, SKILL } from '@engine';
+import { CLASS, ADVANCED, ATTR, CLASS_MIGRATION, RANK_LEVEL, classTotals, classRank, eligibleClasses, advancedClassError, advancedActive, verdictFor, markFor, itemInfo, actionDefs, uses, scopeOf, usesLabel, SKILL } from '@engine';
 import { classIconUri, classCore, CORE_INK } from './classIcons';
 
 /** Class Roster Revision 3: rank II at the class's attribute 5, rank III at 8; rules 1.11: and at level 6 and 12 (provisional). */
@@ -66,7 +66,7 @@ export function classMoves(g: any, c: any, clsId: string): MoveView[] {
   const rank = c?.classId === clsId ? classRank(c) : 0;
   return RANKS.flatMap((r, i) => ((k.ranks || {})[r]?.moves || []).map((m: any) => {
     // A move keeps the key its handler runs under (Bard's Triage is class:medic.triage).
-    const key = m.key || 'class:' + clsId + '.' + m.id, v = verdictFor(key, r), earned = rank > i;
+    const key = m.key || 'class:' + clsId + '.' + m.id, v = { ...verdictFor(key, r), label: markFor(key, r, g).mark }, earned = rank > i;
     return { key, id: m.id, name: m.name, text: m.text || '', rank: 'RANK ' + r, earned, unlock: earned ? '' : i === 0 ? 'unlocks with the class' : 'unlocks at ' + attrName(k.attribute) + ' ' + RANK_AT[r] + ' and level ' + RANK_LEVEL[r as 'II' | 'III'],
       badge: v.label, verdict: v.verdict, uses: earned ? usesLine(g, c, key, r) : '', ap: m.ap_cost ? m.ap_cost + ' AP' : '' };
   }));
@@ -82,7 +82,7 @@ export function classRanks(g: any, c: any, clsId: string): RankView[] {
 /** An advanced class's moves (all earned once learned). */
 export function advancedMoves(g: any, c: any, advId: string): MoveView[] {
   const a = ADVANCED[advId]; if (!a || !advancedActive(advId)) return [];
-  return (a.moves || []).map((m: any) => { const key = 'class:' + advId + '.' + m.id, v = verdictFor(key, 'adv');
+  return (a.moves || []).map((m: any) => { const key = 'class:' + advId + '.' + m.id, v = { ...verdictFor(key, 'adv'), label: markFor(key, 'adv', g).mark };
     return { key, id: m.id, name: m.name, text: m.text || '', rank: 'ADVANCED', earned: true, unlock: '', badge: v.label, verdict: v.verdict, uses: usesLine(g, c, key, 'adv'), ap: m.ap_cost ? m.ap_cost + ' AP' : '' }; });
 }
 

@@ -3,7 +3,7 @@
 // (stages cleared, nodes, the score, each stage's log, each character's level, class and boons). Everything is read from
 // the engine: the offers (g.run.boons, g.run.tiles), the boons' words and worth (relicRow, worthOf, runWorth), why a
 // pick is refused (boonProblem), the settings' cards (settingCard), the score (g.run.end). StageScreen.tsx draws it.
-import { type GameState, type RunStageLog, relicRow, worthOf, capRoom, BOON_CAP, boonProblem, settingCard, SETTING, keptDraft, runRetireProblem, CLASS } from '@engine';
+import { type GameState, type RunStageLog, relicRow, worthOf, capRoom, BOON_CAP, boonProblem, settingCard, SETTING, keptDraft, runRetireProblem, CLASS, isStartBoon, survivalRun } from '@engine';
 import ASSETS from './assets.json';
 
 const A = ASSETS as Record<string, string>;
@@ -45,7 +45,7 @@ export function stageView(g: GameState, me: string): StageViewV | null {
     const stages: StageRowV[] = (e.stages || []).map((s: RunStageLog) => ({ stage: s.stage, setting: SETTING[s.setting]?.name || s.setting, nodes: s.nodes, fights: s.won + ' of ' + s.fights + ' won', kills: s.kills, credits: s.credits, steps: s.steps,
       boons: Object.entries(s.boons).map(([cid, id]) => (g.characters[cid]?.name || cid) + ': ' + (relicRow(id)?.name || id)).join(' · ') || 'none' }));
     const members: MemberV[] = Object.values(g.characters).map((c) => ({ id: c.id, name: c.name, level: e.levels[c.id] ?? c.level, mine: c.owner === me,
-      classLine: c.classId ? ((CLASS as any)[c.classId]?.name || cap(c.classId)) : 'no class yet', boons: (e.boons?.[c.id] || []).map((id) => relicRow(id)?.name || id).join(', ') || 'none' }));
+      classLine: c.classId ? ((CLASS as any)[c.classId]?.name || cap(c.classId)) : 'no class yet', boons: (e.boons?.[c.id] || []).map((id) => { const n = relicRow(id)?.name || id; return isStartBoon(id) ? String(survivalRun.summary?.camp_boon || '{name}').replace('{name}', n) : n; }).join(', ') || 'none' }));
     summary = { how: e.how, kicker: 'SURVIVAL · SEED ' + r.seed, title: e.how === 'retired' ? 'The squad retired' : 'The squad fell',
       lines: [plural(e.cleared, 'stage') + ' cleared', plural(e.nodes, 'stop') + ' walked', (e.how === 'lost' ? 'fell at stage ' + e.stage : 'retired after stage ' + e.stage), 'renown ' + (e.renown || 0)], stages, members };
   }

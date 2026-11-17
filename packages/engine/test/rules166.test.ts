@@ -8,7 +8,8 @@ import { togglesFor } from '../src/effects/actions';
 import { previewDescriptor, actionsFor } from '../src/descriptors';
 import { physFight, rig } from './helpers/physfight';
 import { calm } from './helpers/physfight-ranged';
-import { TECHNIQUE, gearPreview, WEAPONS, RARITY, GEAR, packOf } from '../src';
+import { TECHNIQUE, gearPreview, WEAPONS, RARITY, GEAR, packOf, resolveAttack } from '../src';
+import { fightTally, settleTape } from '../src/run/tally';
 
 type F = ReturnType<typeof fightWith>;
 const open = (cb: any) => { cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] }; cb.objects = []; };
@@ -132,5 +133,21 @@ describe('F1: stow the two-hander, hold the focus (item 5208)', () => {
     expect(c.offHand?.id).toBe('emanator'); expect(c.weapon === 'fists' || !c.weapon).toBe(true);
     expect(packOf(c).some((x: any) => (x.weapon || x.item || x.id) === 'hellraiser_service_rifle')).toBe(true);
     expect(GEAR.words.stow_first).toMatch(/\{weapon\}.*\{item\}/);
+  });
+});
+
+describe('G4: the run tally counts what armour and shields soaked and what stims healed (item 5210)', () => {
+  it('a foe hit on armour and a shield, then a stim on a hurt ally through the reducer: SOAKED and HEALED are not 0', () => {
+    const f = fight([{ name: 'Medic' }, { name: 'Tank' }], [{}]); const cb = f.cb as any; cb.tape = [];
+    const tank = f.unit(f.pcs[1].id); tank.armour = 5; tank.shield = 4; tank.pos = '3,5';
+    const foe = f.unit(f.foe.id); foe.attack = 60; foe.ap = 9;
+    withGame(f.g, () => resolveAttack(f.cb, f.g.rng, foe, tank, 'shot', null));
+    f.unit(tank.id).hp = Math.max(1, f.unit(tank.id).hp - 30); f.unit(f.pc.id).ap = 9;
+    const c = f.g.characters[f.pc.charId!]; c.stims = Math.max(1, c.stims || 0);
+    f.act({ type: 'combat/stim', unitId: f.pc.id, targetId: tank.id } as any);
+    const cb2: any = f.g.combat!; settleTape(cb2);
+    const t = fightTally(cb2.tape, cb2.units, cb2.round || 1);
+    expect(t.chars[f.pcs[1].charId!].absorbed, JSON.stringify(cb2.tape) + cb2.log.slice(-4).join('|')).toBeGreaterThanOrEqual(5);
+    expect(t.chars[f.pc.charId!].healed).toBeGreaterThan(0);
   });
 });
