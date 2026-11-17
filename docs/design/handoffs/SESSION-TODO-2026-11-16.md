@@ -218,3 +218,12 @@ One patch with the Forge realign of section L. Not started; not to be started wi
   Momentum better**: one plain line on each door tab and technique row saying what the technique will spend and from
   where ("spends 1 Momentum" / "spends 1 Pressure on the target" / both), the two meters shown together on a hybrid
   weapon's attack tab, the target's pips visible on its token while aiming, and a first-use tip for each resource.
+- **Three forms a family (Leon's idea, 17 Nov; same ask-first patch, art in parallel):** every melee weapon family has
+  three forms, one per alignment, each with its own name and icon: realigning at the Forge reforges the weapon into
+  that form (a hybrid katana becomes an odachi as a Strength blade, a wakizashi as a Dexterity blade). Data: a family
+  row names its three forms (name, icon id, alignment, damage factor, properties that change, e.g. Reach or Light);
+  the weapon keeps its grade, mods, Relic property and name-of-the-blade. Built from the variants data added in 0.29
+  (variants are data only) if it fits. Art: weapon icons are the monoline line-icon mode (art/style-guide/
+  weapon-icons.md), which Claude can draw as SVG, so this is not a painting job: count the families first, draw the
+  missing forms, list them in art/briefs/ART-REQUESTS.md. Existing weapons slot in as one of their family's three
+  forms (the claymore as a Strength form, the sabre as a Dexterity form), so few names are new.
