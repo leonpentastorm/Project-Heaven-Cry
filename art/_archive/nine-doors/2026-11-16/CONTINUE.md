@@ -1,6 +1,6 @@
 # Continue the Nine Doors artwork — 0.30 scope applied
 
-Original ledger: **343/375 delivered**. Original unfinished: **32 = 5 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **46 request records**, including replacement/reuse checks.
+Original ledger: **344/375 delivered**. Original unfinished: **31 = 4 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **45 request records**, including replacement/reuse checks.
 
 Read art-hold-list-0.30.md, holds-0.30.json and CONTINUE-0.30.md. All 28 old holds remain enforced. progress.json and records/ own old completion; progress-0.30.json owns added-request completion. Recipe pending flags are not ledgers.
 
@@ -8,7 +8,6 @@ The latest delivered images are review candidates, never automatically approved.
 
 ## Eligible old recipes, in priority order
 
-- P8 · #270 · Step 1: Your free weapon · `art/icons/survival/camp/step-weapon.png` · white-ink sign
 - P8 · #271 · Step 2: Your free focus · `art/icons/survival/camp/step-focus.png` · white-ink sign
 - P8 · #272 · Step 3: Spend your budget · `art/icons/survival/camp/step-budget.png` · white-ink sign
 - P8 · #273 · Step 4: Your starting boon · `art/icons/survival/camp/step-boon.png` · white-ink sign

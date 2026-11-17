@@ -1,0 +1,74 @@
+{
+  "number": 270,
+  "family": "camp_icons",
+  "id": "camp-step-weapon",
+  "path": "art/icons/survival/camp/step-weapon.png",
+  "name": "Step 1: Your free weapon",
+  "mode": "white-ink sign",
+  "state": "designed, not built",
+  "use": "The camp checklist's first step header (the hotfix line; words only, no slot)",
+  "paint": "A rifle and a sword crossed low, a small tick in a ring above them.",
+  "avoid": "any real weapon make \u00b7 text",
+  "section": "Survival and camp",
+  "kind": "sign",
+  "prompt": "Create ONE original RPG object/sign icon matching the attached flat WHITE graphic references. Bold crisp silhouettes, sparse broad TRANSPARENT interior cuts, no full mascot, robot head, screen face, capelet or complete person. Cropped ceramic mittens only if requested. Pure #FFFFFF WHITE flat ink, no black or gray paint, shading, gradients, glow, texture, text or border.\nPaint: A rifle and a sword crossed low, a small tick in a ring above them.\nAvoid: any real weapon make \u00b7 text\nEXACT STAGING: ONE simple invented rifle and ONE short sword crossed at LOWER half only, clearly one continuous stock/barrel and one hilt/blade. Small tick/check INSIDE ONE small ring ABOVE them. No extra weapons or full figure.\nOnly the specified object/partials, no extra decoration.\nTrue transparency in backdrop and ALL holes, not opaque black dividers. Complete subject centered inside 15% transparent margins. Square single icon readable at32/44px; signs at24/48px; door emblems at20px. All decisive shape stays in safe box and circular chip.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 8,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "3a9bbc74d6ad04e293584368c3d16c6f844c71787e76862643ec8ad96b752c23",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/270-step-weapon.png",
+  "source_sha256": "9c2a98a858a7d8d095c52f409bfbac72ae8bb69bd278ca5a5445e76d476f920b",
+  "export_crop": [
+    47,
+    21,
+    1190,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/survival/camp/exports/128/step-weapon.png",
+    "64": "art/icons/survival/camp/exports/64/step-weapon.png",
+    "48": "art/icons/survival/camp/exports/48/step-weapon.png",
+    "44": "art/icons/survival/camp/exports/44/step-weapon.png",
+    "32": "art/icons/survival/camp/exports/32/step-weapon.png",
+    "24": "art/icons/survival/camp/exports/24/step-weapon.png"
+  },
+  "framing": {
+    "scale": 0.6650446066504461,
+    "offset": [
+      132,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "111bb8d0f7bb1259a75bffdb7c01ca5b0f6ce791984d39bb7f63851dd7bdbcf1",
+    "64": "7cbd748956084b25653ee19fe0e711b20510a1186812ab000ae818ce20030e74",
+    "48": "99f67945d4da3ce8682df81b1c0374d0cbe4bba165f584623763337fc1be0f4d",
+    "44": "c51b8d279e3f858b3152c903769dfc595978813dd1a21e281b7170bbe3b00894",
+    "32": "11f9ffdda3037fa1a6c8383ad0f623cdb5856841291beebce8c9e04e8ef73ff0",
+    "24": "2f45406d38546930c728646043131589f44ddc189d74813e23b82310a71aead0"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

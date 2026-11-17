@@ -1103,6 +1103,11 @@
       "faint_alpha_to_solid_area_ratio": 0.05845
     },
     {
+      "number": 270,
+      "name": "Step 1: Your free weapon",
+      "faint_alpha_to_solid_area_ratio": 0.04047
+    },
+    {
       "number": 275,
       "name": "Bleeding",
       "faint_alpha_to_solid_area_ratio": 0.01771

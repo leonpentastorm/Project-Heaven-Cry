@@ -11842,5 +11842,37 @@
         "32": "art/icons/gear/exports/32/weapon-kemizuchi_strikers.png"
       }
     }
+  },
+  "camp_icons": {
+    "camp-step-weapon": {
+      "label": "Step 1: Your free weapon",
+      "path": "art/icons/survival/camp/step-weapon.png",
+      "sha256": "3a9bbc74d6ad04e293584368c3d16c6f844c71787e76862643ec8ad96b752c23",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/270-step-weapon.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 270,
+      "exports": {
+        "128": "art/icons/survival/camp/exports/128/step-weapon.png",
+        "64": "art/icons/survival/camp/exports/64/step-weapon.png",
+        "48": "art/icons/survival/camp/exports/48/step-weapon.png",
+        "44": "art/icons/survival/camp/exports/44/step-weapon.png",
+        "32": "art/icons/survival/camp/exports/32/step-weapon.png",
+        "24": "art/icons/survival/camp/exports/24/step-weapon.png"
+      },
+      "ink": "#FFFFFF"
+    }
   }
 }
