@@ -2344,6 +2344,66 @@
       },
       "ink": "#FFFFFF"
     },
+    "move-flush-out": {
+      "label": "Wick \u2014 Flush Out",
+      "path": "art/icons/moves/flush-out.png",
+      "sha256": "281b77895fbd4ef7cc95bf779120cca2a90ecacc6e6740c076c198588a1772c7",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/076-flush-out.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 76,
+      "exports": {
+        "128": "art/icons/moves/exports/128/flush-out.png",
+        "64": "art/icons/moves/exports/64/flush-out.png",
+        "48": "art/icons/moves/exports/48/flush-out.png",
+        "44": "art/icons/moves/exports/44/flush-out.png",
+        "32": "art/icons/moves/exports/32/flush-out.png",
+        "24": "art/icons/moves/exports/24/flush-out.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-open": {
+      "label": "Wick \u2014 Open",
+      "path": "art/icons/moves/open.png",
+      "sha256": "ce7c63e03090e1f3d4942c62ad144ee45c7e1d343c087fc8d13d08f11799a222",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/077-open.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 77,
+      "exports": {
+        "128": "art/icons/moves/exports/128/open.png",
+        "64": "art/icons/moves/exports/64/open.png",
+        "48": "art/icons/moves/exports/48/open.png",
+        "44": "art/icons/moves/exports/44/open.png",
+        "32": "art/icons/moves/exports/32/open.png",
+        "24": "art/icons/moves/exports/24/open.png"
+      },
+      "ink": "#FFFFFF"
+    },
     "move-hide": {
       "label": "Wick \u2014 Hide",
       "path": "art/icons/moves/hide.png",
@@ -2790,6 +2850,96 @@
         "44": "art/icons/moves/exports/44/called-shot.png",
         "32": "art/icons/moves/exports/32/called-shot.png",
         "24": "art/icons/moves/exports/24/called-shot.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-parting-cut": {
+      "label": "Wick \u2014 Parting Cut",
+      "path": "art/icons/moves/parting-cut.png",
+      "sha256": "46d10895fd0a83c16a0cae19bea4d03b471dd9b50d1aa388c6db27a3ab1f29c7",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/117-parting-cut.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 117,
+      "exports": {
+        "128": "art/icons/moves/exports/128/parting-cut.png",
+        "64": "art/icons/moves/exports/64/parting-cut.png",
+        "48": "art/icons/moves/exports/48/parting-cut.png",
+        "44": "art/icons/moves/exports/44/parting-cut.png",
+        "32": "art/icons/moves/exports/32/parting-cut.png",
+        "24": "art/icons/moves/exports/24/parting-cut.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-case": {
+      "label": "Wick \u2014 Case",
+      "path": "art/icons/moves/case.png",
+      "sha256": "77ef8ad7617ea6eb6a702ca76ef602ffa8f79c3f63a6c224de30338df6228f00",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/118-case.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 118,
+      "exports": {
+        "128": "art/icons/moves/exports/128/case.png",
+        "64": "art/icons/moves/exports/64/case.png",
+        "48": "art/icons/moves/exports/48/case.png",
+        "44": "art/icons/moves/exports/44/case.png",
+        "32": "art/icons/moves/exports/32/case.png",
+        "24": "art/icons/moves/exports/24/case.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-shade-step": {
+      "label": "Wick \u2014 Shade Step",
+      "path": "art/icons/moves/shade-step.png",
+      "sha256": "fcec8b19ae30c3f884694104a32e8ffb912a5f90ee8dadbaceeb6fe80ac77a1a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/119-shade-step.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 119,
+      "exports": {
+        "128": "art/icons/moves/exports/128/shade-step.png",
+        "64": "art/icons/moves/exports/64/shade-step.png",
+        "48": "art/icons/moves/exports/48/shade-step.png",
+        "44": "art/icons/moves/exports/44/shade-step.png",
+        "32": "art/icons/moves/exports/32/shade-step.png",
+        "24": "art/icons/moves/exports/24/shade-step.png"
       },
       "ink": "#FFFFFF"
     },
@@ -4281,6 +4431,36 @@
         "44": "art/icons/moves/exports/44/verdict.png",
         "32": "art/icons/moves/exports/32/verdict.png",
         "24": "art/icons/moves/exports/24/verdict.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-hallow": {
+      "label": "Wick \u2014 Hallow",
+      "path": "art/icons/moves/hallow.png",
+      "sha256": "6e8fd017371406fb5934d74ade5609e25cc85464b03cd2c9748f5971ae588232",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/248-hallow.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 248,
+      "exports": {
+        "128": "art/icons/moves/exports/128/hallow.png",
+        "64": "art/icons/moves/exports/64/hallow.png",
+        "48": "art/icons/moves/exports/48/hallow.png",
+        "44": "art/icons/moves/exports/44/hallow.png",
+        "32": "art/icons/moves/exports/32/hallow.png",
+        "24": "art/icons/moves/exports/24/hallow.png"
       },
       "ink": "#FFFFFF"
     },

@@ -1,6 +1,6 @@
 # Continue the Nine Doors artwork — 0.30 scope applied
 
-Original ledger: **332/375 delivered**. Original unfinished: **43 = 16 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **57 request records**, including replacement/reuse checks.
+Original ledger: **338/375 delivered**. Original unfinished: **37 = 10 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **51 request records**, including replacement/reuse checks.
 
 Read art-hold-list-0.30.md, holds-0.30.json and CONTINUE-0.30.md. All 28 old holds remain enforced. progress.json and records/ own old completion; progress-0.30.json owns added-request completion. Recipe pending flags are not ledgers.
 
@@ -8,14 +8,8 @@ The latest delivered images are review candidates, never automatically approved.
 
 ## Eligible old recipes, in priority order
 
-- P8 · #76 · Flush Out · `art/icons/moves/flush-out.png` · Wick icon
-- P8 · #77 · Open · `art/icons/moves/open.png` · Wick icon
-- P8 · #117 · Parting Cut · `art/icons/moves/parting-cut.png` · Wick icon
-- P8 · #118 · Case · `art/icons/moves/case.png` · Wick icon
-- P8 · #119 · Shade Step · `art/icons/moves/shade-step.png` · Wick icon
 - P8 · #198 · Draw Taut · `art/icons/tending/draw-taut.png` · Wick icon
 - P8 · #205 · Weaver's Hands · `art/icons/tending/weavers-hands.png` · Wick icon
-- P8 · #248 · Hallow · `art/icons/moves/hallow.png` · Wick icon
 - P8 · #264 · Closing Strike · `art/icons/moves/closing-strike.png` · Wick icon
 - P8 · #265 · Flow · `art/icons/moves/flow.png` · Wick icon
 - P8 · #266 · Slip (unarmed) · `art/icons/moves/slip-unarmed.png` · Wick icon

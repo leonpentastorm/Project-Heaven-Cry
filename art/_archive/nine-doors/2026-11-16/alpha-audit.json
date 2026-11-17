@@ -313,6 +313,16 @@
       "faint_alpha_to_solid_area_ratio": 0.02217
     },
     {
+      "number": 76,
+      "name": "Flush Out",
+      "faint_alpha_to_solid_area_ratio": 0.09367
+    },
+    {
+      "number": 77,
+      "name": "Open",
+      "faint_alpha_to_solid_area_ratio": 0.0655
+    },
+    {
       "number": 80,
       "name": "Long Dark",
       "faint_alpha_to_solid_area_ratio": 0.04579
@@ -491,6 +501,21 @@
       "number": 115,
       "name": "Shadow wisp (door emblem)",
       "faint_alpha_to_solid_area_ratio": 0.05224
+    },
+    {
+      "number": 117,
+      "name": "Parting Cut",
+      "faint_alpha_to_solid_area_ratio": 0.06856
+    },
+    {
+      "number": 118,
+      "name": "Case",
+      "faint_alpha_to_solid_area_ratio": 0.0704
+    },
+    {
+      "number": 119,
+      "name": "Shade Step",
+      "faint_alpha_to_solid_area_ratio": 0.07423
     },
     {
       "number": 123,
@@ -1006,6 +1031,11 @@
       "number": 246,
       "name": "Prayer mark (door emblem)",
       "faint_alpha_to_solid_area_ratio": 0.02338
+    },
+    {
+      "number": 248,
+      "name": "Hallow",
+      "faint_alpha_to_solid_area_ratio": 0.06748
     },
     {
       "number": 256,
