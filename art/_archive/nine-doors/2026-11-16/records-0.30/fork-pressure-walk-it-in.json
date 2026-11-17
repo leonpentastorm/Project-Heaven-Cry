@@ -1,0 +1,101 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.pressure.walk_it_in",
+  "name": "Walk It In",
+  "icon_id": "fork.pressure.walk_it_in",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Walk It In** (`pressure.walk_it_in`). *\"Your ranged attack that misses a foe still lays {=numbers.pips} Pressure on\nit (once a turn for each foe).\"*\n- Fields: `pips: 1`. Why: suppressive fire is about where the rounds go, not only what they hit; a miss is no longer a\n  wasted turn for the low-Dexterity gunner. One pip, never the first-hit's full Pressure.\n- Carrier: trigger `miss` (`on_miss`, `triggers.ts:68`), `if {actor: self, damage: [ranged], door_pick}`, op `resource\n  pressure +1 target: target`, limit `per_turn` `each: target`. Existing pieces only.\n- Why Tunnel went: a held-down foe whose Pressure does not fall is the **Bead** technique (`techniques.json bead`: \"its\n  Pressure doesn't fall while you see it\", its filter at `physical/ranged/sets.ts:102`), and Tunnel's `turn_start`\n  give-back ran a whole turn late: decay is at the unit's turn **end** (`physical/rules.ts:101-109`). An option that\n  changes Bead instead is dead to anyone who has not learned Bead. N11 is dropped.\n- Skirmisher: Break Them (cheaper Rout) and Walk It In: a Skirmisher at a long range band keeps its target pressed\n  through bad rolls. Peak: no (one target a shot).\n- Excite: three misses in a row at the Elite behind the barricade, and it is still pinned at Suppressed when your\n  Breaker gets there.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [
+    15
+  ],
+  "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+  "file_key": "fork-pressure-walk-it-in",
+  "path": "art/icons/forks/pressure-walk-it-in.png",
+  "paint": "Wick aims a compact rifle past a cropped target shoulder; ONE shot line passes just beside it and ends in a small dust tick, while ONE simple pressure pip sits by that shoulder. Wick looks persistent rather than victorious.",
+  "avoid": "The shot must visibly MISS the target; no hit burst on the body, gore, fireworks or a walking boot literal name gag.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick aims a compact rifle past a cropped target shoulder; ONE shot line passes just beside it and ends in a small dust tick, while ONE simple pressure pip sits by that shoulder. Wick looks persistent rather than victorious.\nAVOID: The shot must visibly MISS the target; no hit burst on the body, gore, fireworks or a walking boot literal name gag.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "visual_basis_resolution": {
+    "authority": "Leon explicit answer 17 November 2026",
+    "quote": "Use pinned revision-2 rules for these eight proposals",
+    "gameplay_questions_remain_open": true
+  },
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 21,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "7364ed1082c49ef89ee1c0e0362c18c8581a06dee8130f332fd04d21ee7dfb98",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-pressure-walk-it-in-v1.png",
+  "source_sha256": "e290dc7700d1215f88d8b594d061245331d2fc2b922940d9d250995831c19359",
+  "export_crop": [
+    0,
+    51,
+    1254,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/pressure-walk-it-in.png",
+    "64": "art/icons/forks/exports/64/pressure-walk-it-in.png",
+    "48": "art/icons/forks/exports/48/pressure-walk-it-in.png",
+    "44": "art/icons/forks/exports/44/pressure-walk-it-in.png",
+    "32": "art/icons/forks/exports/32/pressure-walk-it-in.png",
+    "24": "art/icons/forks/exports/24/pressure-walk-it-in.png"
+  },
+  "export_sha256": {
+    "128": "efc019129f71f42c4d15b2aa31ffeeaf5dcbc56b08e684f098e1a31083d09562",
+    "64": "5b349dd0eb4bc2690736a89eec9feb51858b57a4656ccc926ca00a2a7f3dccee",
+    "48": "7cb0100ce582c927e68ec3d9b37bccda8dd571357cba746062fd0908da1f683c",
+    "44": "4c51260496890ef094e75d3dbfd49b3e4b5fad6b8ef1ba93e70f82307e7a8c80",
+    "32": "d623ada0a040e064cf38f4b5cf5b6e94b1342d7e606c2aa736dbfe41bdce8c24",
+    "24": "24bd5cbe0bcdc2c45fe9383a8fb1993ca5a5230c452773071295b371be28698d"
+  },
+  "framing": {
+    "scale": 0.5068185271759222,
+    "offset": [
+      194,
+      207
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

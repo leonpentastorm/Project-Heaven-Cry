@@ -1,0 +1,101 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.pressure.lockdown",
+  "name": "Lockdown",
+  "icon_id": "fork.pressure.lockdown",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Lockdown** (`pressure.lockdown`). *\"Once a round, a foe at its Pressure cap that moves where you can see it takes one\nshot from you, without your reaction (a plain shot with your ranged weapon).\"*\n- Fields: limit `per_round` 1. Why: at the cap a foe already loses reactions or AP; this shot is yours, free.\n- Carrier: trigger `moved`, `if {actor: foe, actor_res: {pressure: {at: \"max\"}}}` (N10), an item op that makes an\n  attack (N4). Cheaper: *\"a foe your hit takes to its cap is also Slowed for a round (no save)\"*: trigger `hit`, op\n  `condition slowed skip_save`; it still needs N10 for \"at its cap\" (the old claim that it was data today was wrong:\n  `target_has: [suppressed]` misses every foe the door Suppresses) (question 6).\n- Skirmisher: Killzone (two held shots, both reactions) and Lockdown are different windows. Peak: no (no shot before\n  initiative).\n- Excite: the Boss, Pressed and furious, walks out from behind its pillar and eats your round on the way.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [
+    6
+  ],
+  "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+  "file_key": "fork-pressure-lockdown",
+  "path": "art/icons/forks/pressure-lockdown.png",
+  "paint": "Wick stands watch with ONE shouldered rifle, body still, tracking a cropped moving enemy boot crossing his sight line. ONE short hard shot ray intercepts the movement beside a small pressure pip. Pixel eyes sharply focused.",
+  "avoid": "Use the pinned free-shot concept, NOT slowing chains, weights or a prison lock. No full target body.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick stands watch with ONE shouldered rifle, body still, tracking a cropped moving enemy boot crossing his sight line. ONE short hard shot ray intercepts the movement beside a small pressure pip. Pixel eyes sharply focused.\nAVOID: Use the pinned free-shot concept, NOT slowing chains, weights or a prison lock. No full target body.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "visual_basis_resolution": {
+    "authority": "Leon explicit answer 17 November 2026",
+    "quote": "Use pinned revision-2 rules for these eight proposals",
+    "gameplay_questions_remain_open": true
+  },
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 23,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "adce8880d814e9eb9fbe6d324fc71c0eec7e46b5954fe902f4ad1e124bd9347a",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-pressure-lockdown-v1.png",
+  "source_sha256": "1ceef94e912490384db8f5268c5365fde064d9a82bd3bc739b824bf803d302d5",
+  "export_crop": [
+    0,
+    15,
+    1194,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/pressure-lockdown.png",
+    "64": "art/icons/forks/exports/64/pressure-lockdown.png",
+    "48": "art/icons/forks/exports/48/pressure-lockdown.png",
+    "44": "art/icons/forks/exports/44/pressure-lockdown.png",
+    "32": "art/icons/forks/exports/32/pressure-lockdown.png",
+    "24": "art/icons/forks/exports/24/pressure-lockdown.png"
+  },
+  "export_sha256": {
+    "128": "cb558aacea8913a14afd3099604031fa97b22c1d70e42a8a554e9b4fe69ff8ac",
+    "64": "b8ec4ba5d9671a988905d1d9b19427a268a65316aeb7cac0e0a8fa6b674400f5",
+    "48": "ddc9dad5b29b067673be2b49a362cf4dcb07558c98cceb46ee1a8afb5874fdbe",
+    "44": "2b80e8d1e9add9f4125461577b03cf25bf33d3e63b6b6da0b5282fa593f3bd13",
+    "32": "fb665e0abd5c8301f32ddd441901c76790704ec437f690a0e8066a5358ce607f",
+    "24": "d9d9731e3f2e8ac79b8e913406234c5b2a9710fcf2cbb0a81eedec7783f2110e"
+  },
+  "framing": {
+    "scale": 0.5118448260790807,
+    "offset": [
+      206,
+      195
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

@@ -19,6 +19,8 @@ for p in sorted((A/'records-0.30').glob('*.json')) if (A/'records-0.30').exists(
   if old.get('sha256')!=r['sha256'] and old.get('path') and old['path']!=r['path']:
    prior=O/old['path'];assert prior.exists(),'Download and archive previous binding first';archive=A/'superseded/0.30'/r['file_key']/prior.name;assert archive.exists() and sha(archive)==sha(prior);old.update(previous_path=archive.relative_to(O).as_posix(),previous_sha256=sha(archive))
   old.update(label=r['name'],path=r['path'],sha256=r['sha256'],width=r['export_dimensions'][0],height=r['export_dimensions'][1],background='transparent' if r['kind']!='class' else 'opaque',status='review-candidate',production_approved=False,implementation_ready=False,collection='nine-doors-0.30',native_dimensions=r['native_dimensions'],source_path=r['source_path'],upscaled=False,format='png',mode=r['kind'],request_key=r['request_key'],exports=r['exports']);old.pop('placeholder',None);old.pop('wanted',None);old.pop('brief_number',None)
+  if r.get('legacy_replaced_job'):
+   old.setdefault('legacy_binding_brief',old.get('brief'));old['brief']='art/_archive/nine-doors/2026-11-16/prepared-render-jobs-0.30.json — '+r['request_key'];old['replaces_held_legacy_recipe']=r['legacy_replaced_job'];old['legacy_recipe_remains_held']=True
   if r['kind'] in ['wick','sign']:old['ink']='#FFFFFF'
   cat[fam][key]=old
 write(O/'art/catalog.json',cat);ordered=[rows[k] for k in sorted(rows)];write(A/'manifest.json',ordered);write(A/'manifest-0.30.json',extra)

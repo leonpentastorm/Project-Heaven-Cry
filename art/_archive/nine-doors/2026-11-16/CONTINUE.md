@@ -1,21 +1,11 @@
 # Continue the Nine Doors artwork
 
-Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **20/41 candidates**, **21 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
+Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **30/41 candidates**, **11 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
 
 Leon authorized the pinned revision-2 visual basis for Cover Them, Drive, Lightkiller, Keep the Thread, Benediction, Held Breath, Walk It In and Lockdown. Their gameplay questions remain open; this is approval to paint draft proposals only. See user-direction-2026-11-17.json.
 
 ## Remaining 0.30 requests
 
-- `0.30/fork.pressure.converging_fire` · Converging Fire
-- `0.30/fork.pressure.walk_it_in` · Walk It In · pinned revision-2 art basis authorized
-- `0.30/fork.pressure.through_the_gap` · Through the Gap
-- `0.30/fork.pressure.lockdown` · Lockdown · pinned revision-2 art basis authorized
-- `0.30/fork.sigil.overflux` · Overflux
-- `0.30/fork.sigil.clean_vent` · Clean Vent
-- `0.30/fork.sigil.written_in_advance` · Written in Advance
-- `0.30/fork.sigil.running_script` · Running Script
-- `0.30/fork.soul.ride_the_edge` · Ride the Edge
-- `0.30/fork.soul.slow_burn` · Slow Burn
 - `0.30/fork.soul.blood_price` · Blood Price
 - `0.30/fork.soul.clean_break` · Clean Break
 - `0.30/class/stand-behind-me` · Stand Behind Me

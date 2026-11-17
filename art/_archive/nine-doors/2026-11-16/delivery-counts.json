@@ -2,10 +2,10 @@
   "legacy_delivered": 348,
   "legacy_held_pending": 27,
   "legacy_eligible_pending": 0,
-  "new_030_delivered": 20,
-  "new_030_pending": 21,
-  "combined_outstanding_requests": 21,
+  "new_030_delivered": 30,
+  "new_030_pending": 11,
+  "combined_outstanding_requests": 11,
   "new_030_by_kind": {
-    "wick": 20
+    "wick": 30
   }
 }

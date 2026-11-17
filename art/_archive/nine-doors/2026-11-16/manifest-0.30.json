@@ -1158,6 +1158,396 @@
   {
     "production_approved": false,
     "implementation_ready": false,
+    "request_key": "0.30/fork.pressure.converging_fire",
+    "name": "Converging Fire",
+    "icon_id": "fork.pressure.converging_fire",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Converging Fire** (`pressure.converging_fire`). Renamed: **Crossfire** is a press technique. *\"Each ally's ranged hit\non a foe you have hit this round adds {=numbers.pips} more Pressure (once a round for each foe).\"*\n- Fields: `pips: 1`. Why: one more pip per foe per round takes a foe to its cap with the squad's help.\n- Carrier: a conditions row `in_your_sights` (content, put by your ranged hit, 1 round), trigger `hit`, `if {actor:\n  ally, damage: [ranged], target_has: [in_your_sights]}`, op `resource pressure +1 target: target` (the `pressure` row's\n  `setter` goes through the one add, Guard's filter included), limit `per_round` `each: target`; the mark row after the\n  check row.\n- Skirmisher: Relocated and Keep Their Heads Down are your own hits; this is the squad's. Peak: no (one target a shot).\n- Excite: you tag the Elite once; the squad's two shots pin it at Suppressed before its turn.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-pressure-converging-fire",
+    "path": "art/icons/forks/pressure-converging-fire.png",
+    "paint": "Wick kneels aiming ONE simple rifle at a small DIAMOND TRAINING MARKER on a plain cover panel. A second rifle barrel and mitten enter only as a cropped ally fragment from above-left. TWO clean aiming sight lines meet at the same marker. Coordinated aim, no person at the target and no impact or injury.",
+    "avoid": "No full second soldier, crossed guns as emblem, explosions or real gun brand.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick kneels aiming ONE simple rifle at a small DIAMOND TRAINING MARKER on a plain cover panel. A second rifle barrel and mitten enter only as a cropped ally fragment from above-left. TWO clean aiming sight lines meet at the same marker. Coordinated aim, no person at the target and no impact or injury.\nAVOID: Full second figure, humanoid target, injury, explosions, actual firing effects, brand or text. Focus on TWO clearly convergent aim lines.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 20,
+    "generation_attempt": 2,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "cf5bd97cf68425918f990a45f51e75233047fc55a93949a1275628ad7fb9260e",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-pressure-converging-fire-v2.png",
+    "source_sha256": "a173643b513655be133e1522bc40e711707dc086c17a02259d092c96f790f32a",
+    "export_crop": [
+      0,
+      19,
+      1248,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/pressure-converging-fire.png",
+      "64": "art/icons/forks/exports/64/pressure-converging-fire.png",
+      "48": "art/icons/forks/exports/48/pressure-converging-fire.png",
+      "44": "art/icons/forks/exports/44/pressure-converging-fire.png",
+      "32": "art/icons/forks/exports/32/pressure-converging-fire.png",
+      "24": "art/icons/forks/exports/24/pressure-converging-fire.png"
+    },
+    "export_sha256": {
+      "128": "105f11d162818b3e45e2d9cccee3e76e20fd5699925e49a7490b818e85ffa7b9",
+      "64": "1faa30369374588c6e762dca654622bce89a53d32b7df767a98ff45ffe12fdcf",
+      "48": "c6d34562168a11bc2922779196181fe557aea3a1938622f05e78b995ecf83205",
+      "44": "c099d5420f1c3170222ad4465a1f808a58f3b7024266fafd85e9f6ce3e137977",
+      "32": "feab3962ebb8a0a07d384fa43c170873be87ad5bd175f23e0fb71662012512db",
+      "24": "5ea69084bbcf6463f8b4416055c63b3219b64d60dff033112ca5e1d8cf338beb"
+    },
+    "framing": {
+      "scale": 0.5349635012722431,
+      "offset": [
+        178,
+        181
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.pressure.lockdown",
+    "name": "Lockdown",
+    "icon_id": "fork.pressure.lockdown",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 6,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Lockdown** (`pressure.lockdown`). *\"Once a round, a foe at its Pressure cap that moves where you can see it takes one\nshot from you, without your reaction (a plain shot with your ranged weapon).\"*\n- Fields: limit `per_round` 1. Why: at the cap a foe already loses reactions or AP; this shot is yours, free.\n- Carrier: trigger `moved`, `if {actor: foe, actor_res: {pressure: {at: \"max\"}}}` (N10), an item op that makes an\n  attack (N4). Cheaper: *\"a foe your hit takes to its cap is also Slowed for a round (no save)\"*: trigger `hit`, op\n  `condition slowed skip_save`; it still needs N10 for \"at its cap\" (the old claim that it was data today was wrong:\n  `target_has: [suppressed]` misses every foe the door Suppresses) (question 6).\n- Skirmisher: Killzone (two held shots, both reactions) and Lockdown are different windows. Peak: no (no shot before\n  initiative).\n- Excite: the Boss, Pressed and furious, walks out from behind its pillar and eats your round on the way.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [
+      6
+    ],
+    "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+    "file_key": "fork-pressure-lockdown",
+    "path": "art/icons/forks/pressure-lockdown.png",
+    "paint": "Wick stands watch with ONE shouldered rifle, body still, tracking a cropped moving enemy boot crossing his sight line. ONE short hard shot ray intercepts the movement beside a small pressure pip. Pixel eyes sharply focused.",
+    "avoid": "Use the pinned free-shot concept, NOT slowing chains, weights or a prison lock. No full target body.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick stands watch with ONE shouldered rifle, body still, tracking a cropped moving enemy boot crossing his sight line. ONE short hard shot ray intercepts the movement beside a small pressure pip. Pixel eyes sharply focused.\nAVOID: Use the pinned free-shot concept, NOT slowing chains, weights or a prison lock. No full target body.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "visual_basis_resolution": {
+      "authority": "Leon explicit answer 17 November 2026",
+      "quote": "Use pinned revision-2 rules for these eight proposals",
+      "gameplay_questions_remain_open": true
+    },
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 23,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "adce8880d814e9eb9fbe6d324fc71c0eec7e46b5954fe902f4ad1e124bd9347a",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-pressure-lockdown-v1.png",
+    "source_sha256": "1ceef94e912490384db8f5268c5365fde064d9a82bd3bc739b824bf803d302d5",
+    "export_crop": [
+      0,
+      15,
+      1194,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/pressure-lockdown.png",
+      "64": "art/icons/forks/exports/64/pressure-lockdown.png",
+      "48": "art/icons/forks/exports/48/pressure-lockdown.png",
+      "44": "art/icons/forks/exports/44/pressure-lockdown.png",
+      "32": "art/icons/forks/exports/32/pressure-lockdown.png",
+      "24": "art/icons/forks/exports/24/pressure-lockdown.png"
+    },
+    "export_sha256": {
+      "128": "cb558aacea8913a14afd3099604031fa97b22c1d70e42a8a554e9b4fe69ff8ac",
+      "64": "b8ec4ba5d9671a988905d1d9b19427a268a65316aeb7cac0e0a8fa6b674400f5",
+      "48": "ddc9dad5b29b067673be2b49a362cf4dcb07558c98cceb46ee1a8afb5874fdbe",
+      "44": "2b80e8d1e9add9f4125461577b03cf25bf33d3e63b6b6da0b5282fa593f3bd13",
+      "32": "fb665e0abd5c8301f32ddd441901c76790704ec437f690a0e8066a5358ce607f",
+      "24": "d9d9731e3f2e8ac79b8e913406234c5b2a9710fcf2cbb0a81eedec7783f2110e"
+    },
+    "framing": {
+      "scale": 0.5118448260790807,
+      "offset": [
+        206,
+        195
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.pressure.through_the_gap",
+    "name": "Through the Gap",
+    "icon_id": "fork.pressure.through_the_gap",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 6,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Through the Gap** (`pressure.through_the_gap`). Renamed: Break and Enter sits beside the Skirmisher's Break Them.\n*\"Once a turn, when your hit takes a foe to its Pressure cap, you may move at once up to your Movement for 0 AP, drawing\nno opportunity attack. It is not the turn's one free move.\"*\n- Fields: limit `per_turn` 1. Why: at the cap you have earned the line breaking (a Soldier Broken, an Elite Suppressed,\n  a Boss Pressed).\n- Carrier: trigger `hit`, `if {target_res: {pressure: {at: \"max\"}}}` (N10; `max` for `pressure` reads `pressureCap`),\n  then Fire and Move's own shape (`classes.json marksman.gain fire_and_move`: a flag and a `cost_mod set 0` on the next\n  move) with its own flag.\n- Skirmisher: Fire and Move and Run and Gun share one free move; this one is apart, so the Skirmisher is not left with\n  a dead option. Peak: no.\n- Excite: the Elite is pinned at Suppressed; you walk through the hole it leaves and take the flank before anyone turns.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-pressure-through-the-gap",
+    "path": "art/icons/forks/pressure-through-the-gap.png",
+    "paint": "Wick slips sideways through ONE clear gap between two cropped cover edges, holding his rifle close to his chest. Front knee raised and back boot already through, looking toward the flank; ONE low motion arc.",
+    "avoid": "No teleport portal, vault jump, full other figures, gap filled by a wall or overly long cape.",
+    "prompt": "ESSENTIAL CONSTRUCTION: Wick's TORSO must visibly keep the large ROUND LANTERN HEART with thick equal cross arms. The asymmetric CAPELET must have a broad transparent wedge separating it from his chest and upper arm. Broad TRANSPARENT cuts separate arms, waist and boots. Do not make the body a filled white blob. All negative spaces are real transparent holes, never opaque black/gray paint. Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick slips sideways through ONE clear gap between two cropped cover edges, holding his rifle close to his chest. Front knee raised and back boot already through, looking toward the flank; ONE low motion arc.\nAVOID: No teleport portal, vault jump, full other figures, gap filled by a wall or overly long cape.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 22,
+    "generation_attempt": 2,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "69cc407394b8a8f9edd12b13ef4b950a748f80acbcbbb0dad8889bffb5025f57",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-pressure-through-the-gap-v2.png",
+    "source_sha256": "0bf7ab7d78e7f3650632d1894c3151a4de102091e65ddd94419bf2c00226b065",
+    "export_crop": [
+      0,
+      19,
+      1253,
+      1228
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/pressure-through-the-gap.png",
+      "64": "art/icons/forks/exports/64/pressure-through-the-gap.png",
+      "48": "art/icons/forks/exports/48/pressure-through-the-gap.png",
+      "44": "art/icons/forks/exports/44/pressure-through-the-gap.png",
+      "32": "art/icons/forks/exports/32/pressure-through-the-gap.png",
+      "24": "art/icons/forks/exports/24/pressure-through-the-gap.png"
+    },
+    "export_sha256": {
+      "128": "8aade8ac8b9b9c9807975b4622a3bcc261e75b9b8a445a2bfb4a2d0932830c4f",
+      "64": "093e8a15947d44ed7bb22012426c27ef6f5f7b704f0c8bb7e3ff43c2ec15b823",
+      "48": "6f752c068f260095782df12f3ed8230781fecd6328fcc16c913742e620e57099",
+      "44": "2c337a4e22d820284d9388d80ce7c501b7dd93519f8535d69322e9315943d987",
+      "32": "1b66b40cfba52e65dd68207a3af97e8956969d1b6d199243578ea0abdfc05f11",
+      "24": "5940b10a30bbf597458ab53c6f28684a99ec4fba7efb9b81eaffeab631b3047c"
+    },
+    "framing": {
+      "scale": 0.5607826293319061,
+      "offset": [
+        160,
+        173
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.pressure.walk_it_in",
+    "name": "Walk It In",
+    "icon_id": "fork.pressure.walk_it_in",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Walk It In** (`pressure.walk_it_in`). *\"Your ranged attack that misses a foe still lays {=numbers.pips} Pressure on\nit (once a turn for each foe).\"*\n- Fields: `pips: 1`. Why: suppressive fire is about where the rounds go, not only what they hit; a miss is no longer a\n  wasted turn for the low-Dexterity gunner. One pip, never the first-hit's full Pressure.\n- Carrier: trigger `miss` (`on_miss`, `triggers.ts:68`), `if {actor: self, damage: [ranged], door_pick}`, op `resource\n  pressure +1 target: target`, limit `per_turn` `each: target`. Existing pieces only.\n- Why Tunnel went: a held-down foe whose Pressure does not fall is the **Bead** technique (`techniques.json bead`: \"its\n  Pressure doesn't fall while you see it\", its filter at `physical/ranged/sets.ts:102`), and Tunnel's `turn_start`\n  give-back ran a whole turn late: decay is at the unit's turn **end** (`physical/rules.ts:101-109`). An option that\n  changes Bead instead is dead to anyone who has not learned Bead. N11 is dropped.\n- Skirmisher: Break Them (cheaper Rout) and Walk It In: a Skirmisher at a long range band keeps its target pressed\n  through bad rolls. Peak: no (one target a shot).\n- Excite: three misses in a row at the Elite behind the barricade, and it is still pinned at Suppressed when your\n  Breaker gets there.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [
+      15
+    ],
+    "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+    "file_key": "fork-pressure-walk-it-in",
+    "path": "art/icons/forks/pressure-walk-it-in.png",
+    "paint": "Wick aims a compact rifle past a cropped target shoulder; ONE shot line passes just beside it and ends in a small dust tick, while ONE simple pressure pip sits by that shoulder. Wick looks persistent rather than victorious.",
+    "avoid": "The shot must visibly MISS the target; no hit burst on the body, gore, fireworks or a walking boot literal name gag.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick aims a compact rifle past a cropped target shoulder; ONE shot line passes just beside it and ends in a small dust tick, while ONE simple pressure pip sits by that shoulder. Wick looks persistent rather than victorious.\nAVOID: The shot must visibly MISS the target; no hit burst on the body, gore, fireworks or a walking boot literal name gag.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "visual_basis_resolution": {
+      "authority": "Leon explicit answer 17 November 2026",
+      "quote": "Use pinned revision-2 rules for these eight proposals",
+      "gameplay_questions_remain_open": true
+    },
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 21,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "7364ed1082c49ef89ee1c0e0362c18c8581a06dee8130f332fd04d21ee7dfb98",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-pressure-walk-it-in-v1.png",
+    "source_sha256": "e290dc7700d1215f88d8b594d061245331d2fc2b922940d9d250995831c19359",
+    "export_crop": [
+      0,
+      51,
+      1254,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/pressure-walk-it-in.png",
+      "64": "art/icons/forks/exports/64/pressure-walk-it-in.png",
+      "48": "art/icons/forks/exports/48/pressure-walk-it-in.png",
+      "44": "art/icons/forks/exports/44/pressure-walk-it-in.png",
+      "32": "art/icons/forks/exports/32/pressure-walk-it-in.png",
+      "24": "art/icons/forks/exports/24/pressure-walk-it-in.png"
+    },
+    "export_sha256": {
+      "128": "efc019129f71f42c4d15b2aa31ffeeaf5dcbc56b08e684f098e1a31083d09562",
+      "64": "5b349dd0eb4bc2690736a89eec9feb51858b57a4656ccc926ca00a2a7f3dccee",
+      "48": "7cb0100ce582c927e68ec3d9b37bccda8dd571357cba746062fd0908da1f683c",
+      "44": "4c51260496890ef094e75d3dbfd49b3e4b5fad6b8ef1ba93e70f82307e7a8c80",
+      "32": "d623ada0a040e064cf38f4b5cf5b6e94b1342d7e606c2aa736dbfe41bdce8c24",
+      "24": "24bd5cbe0bcdc2c45fe9383a8fb1993ca5a5230c452773071295b371be28698d"
+    },
+    "framing": {
+      "scale": 0.5068185271759222,
+      "offset": [
+        194,
+        207
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
     "request_key": "0.30/fork.shadow.lend_the_dark",
     "name": "Lend the Dark",
     "icon_id": "fork.shadow.lend_the_dark",
@@ -1530,6 +1920,570 @@
       "offset": [
         198,
         202
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.sigil.clean_vent",
+    "name": "Clean Vent",
+    "icon_id": "fork.sigil.clean_vent",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Clean Vent** (`sigil.clean_vent`). *\"Once a turn, a Vent of {=numbers.min} Flux or more shoves every foe next to you\n{=numbers.push} tile and scorches it for {=amounts.vent.base} \u00d7 the Flux vented (fire, the Sigil's damage).\"*\n- Fields: `min: 2`, `push: 1`, `amounts.vent {kind: damage, base: 4, profile: sigil, type: fire, provisional}`. Why 4:\n  six Flux vented is a 24-base blast on the adjacent ring, under a two-glyph Line.\n- Carrier: the `vent` hook as a trigger (**N22**; `vent` carries `{u, flux, extra}`, `magic.ts:655`; on `acted` the\n  Flux is already emptied, so `res:flux` would read 0), ops `deal` and `displace` with `targets {of: self, within: 1,\n  side: foe}` (existing), the amount a number block on `event:flux`. No N3b, no N5.\n- Sigilist: **Bleed the Flux makes the Vent free**: a free nova every turn. Bounded by `min` 2 and once a turn. Peak: no.\n- Excite: they close on the caster; you dump 6 Flux into their faces and they reel back a tile.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-sigil-clean-vent",
+    "path": "art/icons/forks/sigil-clean-vent.png",
+    "paint": "Wick grips an Evoker at waist height and opens its ONE vent downward. THREE broad white flame wedges and a low expanding arc push cropped enemy feet outward from him. He leans back against the pressure, screen firm.",
+    "avoid": "No grenade, large explosion, smoke gradient, full second person or rifle firing pose.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick grips an Evoker at waist height and opens its ONE vent downward. THREE broad white flame wedges and a low expanding arc push cropped enemy feet outward from him. He leans back against the pressure, screen firm.\nAVOID: No grenade, large explosion, smoke gradient, full second person or rifle firing pose.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 25,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "baf40c02b7a7dde9a220b16f646bd7b4838bfd60b41769bea100d3802328f2b6",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-sigil-clean-vent-v1.png",
+    "source_sha256": "956fb2d75e898c88147edef8f478c7c5127cd34a47b9aaae5bdc1cb59d05f764",
+    "export_crop": [
+      0,
+      39,
+      1226,
+      1240
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/sigil-clean-vent.png",
+      "64": "art/icons/forks/exports/64/sigil-clean-vent.png",
+      "48": "art/icons/forks/exports/48/sigil-clean-vent.png",
+      "44": "art/icons/forks/exports/44/sigil-clean-vent.png",
+      "32": "art/icons/forks/exports/32/sigil-clean-vent.png",
+      "24": "art/icons/forks/exports/24/sigil-clean-vent.png"
+    },
+    "export_sha256": {
+      "128": "395f98a541be2bf5136e08e16837d51a062753070756eaf1cd73bd2a2b0c0865",
+      "64": "0c736aea1d7a5a90a70714bd2512b3762be38dcfaca236b1cdb2698c6961a949",
+      "48": "353422791af05cc2f277a88eb2954429584cd3f13a0417987903ab7d9e85f12e",
+      "44": "c89b85a7b4fda64da80055c6109ecd9dff03c3706fe284873c270097ee5c1fce",
+      "32": "6514be56130929e9d5ce7e303abfbeb192d730acdaa7c10bbbe8b0d213c43ee3",
+      "24": "9b0354c40f7f2acf2f3ebb152cd582466d5f20a0acc9d74cfe2feeb76725113d"
+    },
+    "framing": {
+      "scale": 0.6173572175851554,
+      "offset": [
+        133,
+        141
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.sigil.overflux",
+    "name": "Overflux",
+    "icon_id": "fork.sigil.overflux",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Overflux** (`sigil.overflux`). *\"Drawing past your Flux limit no longer Overloads you: your Evoker does not lock and\nnothing is vented. Each glyph you draw while over costs you the Overload's damage for each Flux over (self-harm). A\nVent still empties it.\"*\n- Fields: none new; the damage is `mana.sigil.flux.overload.damage_per_flux_over` (10, one copy). Why: the Line you\n  need now, paid in blood.\n- Carrier: the Overload's lock and vent as a stat the option answers (N15, `overload_lock`, 0 with the pick).\n- Sigilist: Bleed the Flux (cheap Vent) is the clean way; Overflux the dirty one: both live. Running Hand II (no Flux\n  on the first glyph): fine. Peak: no (the Line is still 2 to 4, on your tile).\n- Excite: at 6 Flux, one glyph short of the Line that kills the Boss: you draw it, take 10, and Evoke.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-sigil-overflux",
+    "path": "art/icons/forks/sigil-overflux.png",
+    "paint": "Wick keeps drawing ONE simple angular glyph with an Evoker despite its chamber being visibly overfull: a few hard square ticks push beyond the chamber rim. His shoulders tense and pixel eyes grimace; the tool stays OPEN and working.",
+    "avoid": "No real injury, blood, broken robot body, locked padlock, vent cloud or computer chip.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick keeps drawing ONE simple angular glyph with an Evoker despite its chamber being visibly overfull: a few hard square ticks push beyond the chamber rim. His shoulders tense and pixel eyes grimace; the tool stays OPEN and working.\nAVOID: No real injury, blood, broken robot body, locked padlock, vent cloud or computer chip.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 24,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "a04d3abcf8344c21e2d95432ff061ee458d5046f3776f06095588035ef6d129a",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-sigil-overflux-v1.png",
+    "source_sha256": "a7678fe097bb41fc6009035e4579bfa81b6ba5dabe6263e23b92429fa3ee0955",
+    "export_crop": [
+      31,
+      19,
+      1218,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/sigil-overflux.png",
+      "64": "art/icons/forks/exports/64/sigil-overflux.png",
+      "48": "art/icons/forks/exports/48/sigil-overflux.png",
+      "44": "art/icons/forks/exports/44/sigil-overflux.png",
+      "32": "art/icons/forks/exports/32/sigil-overflux.png",
+      "24": "art/icons/forks/exports/24/sigil-overflux.png"
+    },
+    "export_sha256": {
+      "128": "3e855a0a930215eb5ea63e721bcfa42a2387897e4ff691d7f9c41868c88d1ffb",
+      "64": "beaac7167ade6c43d928ea70a6cab9141d1510fe99b0a09ce362d23613576aab",
+      "48": "3f9161ae235cc518088d4ccfa91ee89ea751248b53cf7eee504b8cf89dc3a20c",
+      "44": "abdb84785ca3526ee37f1037f207f9a8e7c81d144002e94d4af32043735174a1",
+      "32": "6005eacf7aeabfbc3379860bb12530cc85ef2bdf60940f792569af174f91f055",
+      "24": "7fff49ab3f2ffb3fb34cff19a98c32fbc6624d36b2132de6f0c12eae93336d67"
+    },
+    "framing": {
+      "scale": 0.5712277280366803,
+      "offset": [
+        173,
+        159
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.sigil.running_script",
+    "name": "Running Script",
+    "icon_id": "fork.sigil.running_script",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 6,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Running Script** (`sigil.running_script`). *\"When you Evoke, the glyph you Evoke from stays drawn; your next Line may\nstart from it.\"*\n- Fields: `keep: 1`. Why: one glyph saved is one glyph's charge, AP and Flux.\n- Carrier: an Evoke that leaves a glyph (N14's same piece in `sigil.ts`).\n- Sigilist: Barrage (cheap damage words) chains with it. Peak: no (the kept glyph is on a tile you drew it on; the\n  next Line is still 2 to 4).\n- Excite: FIRE\u00b7SEEK, Evoke; SEEK stays; next turn SEEK\u00b7FREEZE is one glyph away.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-sigil-running-script",
+    "path": "art/icons/forks/sigil-running-script.png",
+    "paint": "Wick extends a NEW line from ONE large intact square glyph left on a ground tile while a spent chain breaks away into three small fragments behind it. His Evoker points at the surviving start glyph. Active angled kneel, eager focused screen.",
+    "avoid": "The anchor glyph MUST remain intact. No running Wick, scroll of text, all glyphs disappearing or smoky magic.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick extends a NEW line from ONE large intact square glyph left on a ground tile while a spent chain breaks away into three small fragments behind it. His Evoker points at the surviving start glyph. Active angled kneel, eager focused screen.\nAVOID: The anchor glyph MUST remain intact. No running Wick, scroll of text, all glyphs disappearing or smoky magic.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 27,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-sigil-running-script-v1.png",
+    "source_sha256": "38bfb719ca507aaf54d9066bad4a72ac0f6e84e8b557704449bc56f5602e1c23",
+    "export_crop": [
+      0,
+      0,
+      1234,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/sigil-running-script.png",
+      "64": "art/icons/forks/exports/64/sigil-running-script.png",
+      "48": "art/icons/forks/exports/48/sigil-running-script.png",
+      "44": "art/icons/forks/exports/44/sigil-running-script.png",
+      "32": "art/icons/forks/exports/32/sigil-running-script.png",
+      "24": "art/icons/forks/exports/24/sigil-running-script.png"
+    },
+    "export_sha256": {
+      "128": "2982b425c4e398c2b0117fd35cf2f4046b849d6aa8d2d41c86848243b2bc066b",
+      "64": "f583c78c386af6834dc93f623b690f62b8460975e4bb63dc633a4f67e1a6ae6d",
+      "48": "8561456dbf0415900121034819d321c7a876ee505f0ceb9920d3b203f72190cd",
+      "44": "633f2773017d54ee3b11af122ee24d3d3581efa227f2dc8cc5e829cd27347211",
+      "32": "b1cb80f4a3228599baf05c67bde664ad1c7a49041a00bad368747f11a6f4a6e8",
+      "24": "c4c120cd62a83b6b89d0fe3d018343584ef97795b9c2d327f86018043b0888ce"
+    },
+    "framing": {
+      "scale": 0.5414981678840104,
+      "offset": [
+        178,
+        172
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.sigil.written_in_advance",
+    "name": "Written in Advance",
+    "icon_id": "fork.sigil.written_in_advance",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 6,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Written in Advance** (`sigil.written_in_advance`). *\"A Line that has stood on the ground since before your last turn\nended Evokes at \u00d7{=numbers.mult} (its damage, heal or shield).\"* The lead's \"one size stronger\" would read a 4-glyph\nLine as a fifth size: the Int\u00b2 peak. A multiplier is below it.\n- Fields: `mult: 1.2`. Why: one fifth more for a whole turn of standing on a known tile.\n- Carrier: the Line's age (N14) as a predicate on `dealing` with `damage: [sigil_spell]`.\n- Sigilist: Stored Spell (written out of a fight) and Payload (area): different. Peak: below.\n- Excite: you draw a Line in the doorway they must come through and Evoke it next turn at +20%.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-sigil-written-in-advance",
+    "path": "art/icons/forks/sigil-written-in-advance.png",
+    "paint": "Wick kneels patiently beside ONE already drawn ground line of THREE bold abstract geometric glyphs, holding his Evoker clear of the line while watching it settle. Quiet concentrated pixel expression and a short protective palm above it.",
+    "avoid": "No legible letters, written words, clock, book, running pose or casting from an empty floor.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick kneels patiently beside ONE already drawn ground line of THREE bold abstract geometric glyphs, holding his Evoker clear of the line while watching it settle. Quiet concentrated pixel expression and a short protective palm above it.\nAVOID: No legible letters, written words, clock, book, running pose or casting from an empty floor.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 26,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "638647b9e9679d6ad4b8d133b94f0ed20f6abff174169a4cfa21446907447e76",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-sigil-written-in-advance-v1.png",
+    "source_sha256": "3e9986077aca7b5f3012a5f70a307ef5dae156962dcdeaf14da324eafe49703c",
+    "export_crop": [
+      0,
+      79,
+      1232,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/sigil-written-in-advance.png",
+      "64": "art/icons/forks/exports/64/sigil-written-in-advance.png",
+      "48": "art/icons/forks/exports/48/sigil-written-in-advance.png",
+      "44": "art/icons/forks/exports/44/sigil-written-in-advance.png",
+      "32": "art/icons/forks/exports/32/sigil-written-in-advance.png",
+      "24": "art/icons/forks/exports/24/sigil-written-in-advance.png"
+    },
+    "export_sha256": {
+      "128": "4b21d8d7fe7efda77a8bd9b47cf0e6f9f87307c9dd0920bcac9c4530285b0281",
+      "64": "d385ad8b5985c8b419a5d5fa4ab6632c4ed997a5c0f845214f128b999eacf8ea",
+      "48": "4b5845ffc379beb8bfbce51775cfe0eea6c4eff04b1f6f5bd0998dd873b255f1",
+      "44": "96c3e417e2b652bb4f659e46368ca4b8c0ad4b18cbb786fda850d7cc80bc6e37",
+      "32": "5f645daa98f05c8e7a2e41b06056e4052b880c57a70c41abe13558b5b4bdb970",
+      "24": "2b795c5e404d8d7138968b8a855467f2057114b33122c5fe7150406311c4c2a2"
+    },
+    "framing": {
+      "scale": 0.5521757826792922,
+      "offset": [
+        172,
+        187
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.soul.ride_the_edge",
+    "name": "Ride the Edge",
+    "icon_id": "fork.soul.ride_the_edge",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Ride the Edge** (`soul.ride_the_edge`). *\"A Release made while your Strain is exactly at your limit is\n\u00d7{=numbers.mult}.\"*\n- Fields: `mult: 1.15`. Why: three quarters of a plain Pump step (0.2), for living one point from three over.\n- Carrier: trigger `dealing`, `if {damage: [outburst], self_res: {strain: {at: \"limit\"}}}` (N10: `limit` reads the\n  stat `strain_limit` separately; Strain's resource row has **no `max`**, because Strain may stand above the limit, the\n  Short coming at 3 over, and a `max` would clamp it and break the Mana Shock).\n- Mana Shock: at the limit is safe (the Short is at 3 over); the reward is for standing on the line, not over it. The\n  bare heart's +4 gets you there in one Begin: a known risk, measured. Peak: no.\n- Excite: you Pump to the limit on purpose and Release at +15%, one swell away from the Short.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-soul-ride-the-edge",
+    "path": "art/icons/forks/soul-ride-the-edge.png",
+    "paint": "Wick balances on a short narrow edge line, knees flexed, and releases ONE large round Outburst from his outstretched mitten. A simple strain arc touches exactly one bold limit tick beside his lantern, screen thrilled and wary.",
+    "avoid": "No falling off a cliff, injury, extra gauge labels, weapon or strain spilling beyond the marker.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick balances on a short narrow edge line, knees flexed, and releases ONE large round Outburst from his outstretched mitten. A simple strain arc touches exactly one bold limit tick beside his lantern, screen thrilled and wary.\nAVOID: No falling off a cliff, injury, extra gauge labels, weapon or strain spilling beyond the marker.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 28,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "978a350aef31ba440d7a1eaf6f620e9b86ead933db8e90837368561678ba0155",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-soul-ride-the-edge-v1.png",
+    "source_sha256": "67c151980d66b84b64aee70865175676dfb5a174a48570dca80c877b9e2c6b69",
+    "export_crop": [
+      25,
+      49,
+      1242,
+      1240
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/soul-ride-the-edge.png",
+      "64": "art/icons/forks/exports/64/soul-ride-the-edge.png",
+      "48": "art/icons/forks/exports/48/soul-ride-the-edge.png",
+      "44": "art/icons/forks/exports/44/soul-ride-the-edge.png",
+      "32": "art/icons/forks/exports/32/soul-ride-the-edge.png",
+      "24": "art/icons/forks/exports/24/soul-ride-the-edge.png"
+    },
+    "export_sha256": {
+      "128": "0e4806945d32f57c3363da2f782d85399c6fa52b6ee12d7f3e4dc94251c7cf4f",
+      "64": "a2cf2a016fa551239094beb5294f27be7202a00c13fd4b9625acf51f5d51a884",
+      "48": "78b09c5ba40ac3e6d2b054392677ee99e9d8651d0ec02ee41a40ef73249d48db",
+      "44": "30aa1da4dbcd335f65d4a391fbde56353459eae063751180d2582b9cc08944fa",
+      "32": "911544e5f002847ae53d7d394224c4250203112198d363b05f25a21e0a6104bc",
+      "24": "e088276903c0f0394c89ff1f4de79f8c6f26dd1ca9fb2941c9a4bc906bbe0609"
+    },
+    "framing": {
+      "scale": 0.5713452222008277,
+      "offset": [
+        164,
+        172
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": 460.8
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+    "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+  },
+  {
+    "production_approved": false,
+    "implementation_ready": false,
+    "request_key": "0.30/fork.soul.slow_burn",
+    "name": "Slow Burn",
+    "icon_id": "fork.soul.slow_burn",
+    "kind": "wick",
+    "mode": "Wick flat-ink fork icon",
+    "step": 4,
+    "source": {
+      "branch": "wip/design-three-layers",
+      "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+      "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+      "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+      "section": "2; art ids in 7"
+    },
+    "rule_excerpt": "**Slow Burn** (`soul.slow_burn`). *\"Each turn you start holding an Outburst, your Strain falls {=numbers.calm} more.\"*\n- Fields: `calm: 1`. Why: it cancels the swell's own point (`strain.per_held_turn`): holding is patient, not free.\n- Carrier: the `held_turn_start` hook as a trigger (**N22**; the hook exists, `magic.ts:1710`, and fires only while an\n  Outburst is held, so no \"holds an Outburst\" predicate is needed), op `resource strain \u22121` (N3b: through the one\n  Strain function).\n- Mana Shock: one of the ways out of it. Will Power 7 (the swell without Strain) makes it a net \u22121 a held turn; a\n  shield in hand stops the swell (rules 1.57) but not Slow Burn. Channeler's Shape (a free Pump while held): fits.\n- Excite: a stage-4 Lance held through two turns, released the moment the Elite leaves cover.",
+    "name_status": "suggested",
+    "target_directory": "art/icons/forks/",
+    "filename_status": "proposed filename chosen for this candidate delivery",
+    "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+    "status": "review-candidate",
+    "open_source_questions": [],
+    "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+    "file_key": "fork-soul-slow-burn",
+    "path": "art/icons/forks/soul-slow-burn.png",
+    "paint": "Wick stands with relaxed low shoulders, both open mittens steadily holding ONE small contained Outburst core off to his side. A few strain ticks fall away below it as he waits, pixel eyes patient and half closed.",
+    "avoid": "No physical bowl or cup, fire on his head, meditation seat, shield or explosion.",
+    "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick stands with relaxed low shoulders, both open mittens steadily holding ONE small contained Outburst core off to his side. A few strain ticks fall away below it as he waits, pixel eyes patient and half closed.\nAVOID: No physical bowl or cup, fire on his head, meditation seat, shield or explosion.",
+    "refs": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "transparent": true,
+    "active_binding": null,
+    "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+    "composition_scope": "one Wick and partials",
+    "recipe_index": 29,
+    "generation_attempt": 1,
+    "generation_references": [
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/traits/mind-without-fog.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "531a6ea23eceedd99b19ae96068a217fb2ca28a95d0659dd026b5fd4a943b62e",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-soul-slow-burn-v1.png",
+    "source_sha256": "6bd0fad3224f9fca63e52557da90d286f1602f949b1d1407c6a2e7a235303381",
+    "export_crop": [
+      0,
+      21,
+      1182,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/forks/exports/128/soul-slow-burn.png",
+      "64": "art/icons/forks/exports/64/soul-slow-burn.png",
+      "48": "art/icons/forks/exports/48/soul-slow-burn.png",
+      "44": "art/icons/forks/exports/44/soul-slow-burn.png",
+      "32": "art/icons/forks/exports/32/soul-slow-burn.png",
+      "24": "art/icons/forks/exports/24/soul-slow-burn.png"
+    },
+    "export_sha256": {
+      "128": "8579de62fb91b3b0512cc4de1a333706fb30742c1f2f2a132d2358b9723b49ab",
+      "64": "a7001b0ee690a3b30fd533a65a9b494f3a257cc4a19f24ccd9f1b6fe7590ad3f",
+      "48": "d8713ebeab03fa636001b7220fd56a209c21f78237b1bf3313c57a70ffa112cf",
+      "44": "b1cbc42c54020c26d0e6b258d9e5cb16601df6d2f437c9bebc00452c1765c1aa",
+      "32": "8d7c74c9c3012edf90c8bfcbf533901f5b2a8ca9351c9d0090338ef2e4dd5fde",
+      "24": "67e4a02f4e871c027bc19dc56ae8016cc0ea71612bc50efa7e44d0319884f28b"
+    },
+    "framing": {
+      "scale": 0.5941454391674761,
+      "offset": [
+        161,
+        145
       ],
       "subject_box": 820,
       "perk_safe_radius": 460.8

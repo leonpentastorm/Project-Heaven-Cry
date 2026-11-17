@@ -326,6 +326,114 @@
       "implementation_ready": false
     },
     {
+      "request_key": "0.30/fork.pressure.converging_fire",
+      "name": "Converging Fire",
+      "icon_id": "fork.pressure.converging_fire",
+      "path": "art/icons/forks/pressure-converging-fire.png",
+      "sha256": "cf5bd97cf68425918f990a45f51e75233047fc55a93949a1275628ad7fb9260e",
+      "exports": {
+        "128": "art/icons/forks/exports/128/pressure-converging-fire.png",
+        "64": "art/icons/forks/exports/64/pressure-converging-fire.png",
+        "48": "art/icons/forks/exports/48/pressure-converging-fire.png",
+        "44": "art/icons/forks/exports/44/pressure-converging-fire.png",
+        "32": "art/icons/forks/exports/32/pressure-converging-fire.png",
+        "24": "art/icons/forks/exports/24/pressure-converging-fire.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.pressure.lockdown",
+      "name": "Lockdown",
+      "icon_id": "fork.pressure.lockdown",
+      "path": "art/icons/forks/pressure-lockdown.png",
+      "sha256": "adce8880d814e9eb9fbe6d324fc71c0eec7e46b5954fe902f4ad1e124bd9347a",
+      "exports": {
+        "128": "art/icons/forks/exports/128/pressure-lockdown.png",
+        "64": "art/icons/forks/exports/64/pressure-lockdown.png",
+        "48": "art/icons/forks/exports/48/pressure-lockdown.png",
+        "44": "art/icons/forks/exports/44/pressure-lockdown.png",
+        "32": "art/icons/forks/exports/32/pressure-lockdown.png",
+        "24": "art/icons/forks/exports/24/pressure-lockdown.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.pressure.through_the_gap",
+      "name": "Through the Gap",
+      "icon_id": "fork.pressure.through_the_gap",
+      "path": "art/icons/forks/pressure-through-the-gap.png",
+      "sha256": "69cc407394b8a8f9edd12b13ef4b950a748f80acbcbbb0dad8889bffb5025f57",
+      "exports": {
+        "128": "art/icons/forks/exports/128/pressure-through-the-gap.png",
+        "64": "art/icons/forks/exports/64/pressure-through-the-gap.png",
+        "48": "art/icons/forks/exports/48/pressure-through-the-gap.png",
+        "44": "art/icons/forks/exports/44/pressure-through-the-gap.png",
+        "32": "art/icons/forks/exports/32/pressure-through-the-gap.png",
+        "24": "art/icons/forks/exports/24/pressure-through-the-gap.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.pressure.walk_it_in",
+      "name": "Walk It In",
+      "icon_id": "fork.pressure.walk_it_in",
+      "path": "art/icons/forks/pressure-walk-it-in.png",
+      "sha256": "7364ed1082c49ef89ee1c0e0362c18c8581a06dee8130f332fd04d21ee7dfb98",
+      "exports": {
+        "128": "art/icons/forks/exports/128/pressure-walk-it-in.png",
+        "64": "art/icons/forks/exports/64/pressure-walk-it-in.png",
+        "48": "art/icons/forks/exports/48/pressure-walk-it-in.png",
+        "44": "art/icons/forks/exports/44/pressure-walk-it-in.png",
+        "32": "art/icons/forks/exports/32/pressure-walk-it-in.png",
+        "24": "art/icons/forks/exports/24/pressure-walk-it-in.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
       "request_key": "0.30/fork.shadow.lend_the_dark",
       "name": "Lend the Dark",
       "icon_id": "fork.shadow.lend_the_dark",
@@ -419,6 +527,168 @@
         "44": "art/icons/forks/exports/44/shadow-spotter.png",
         "32": "art/icons/forks/exports/32/shadow-spotter.png",
         "24": "art/icons/forks/exports/24/shadow-spotter.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.sigil.clean_vent",
+      "name": "Clean Vent",
+      "icon_id": "fork.sigil.clean_vent",
+      "path": "art/icons/forks/sigil-clean-vent.png",
+      "sha256": "baf40c02b7a7dde9a220b16f646bd7b4838bfd60b41769bea100d3802328f2b6",
+      "exports": {
+        "128": "art/icons/forks/exports/128/sigil-clean-vent.png",
+        "64": "art/icons/forks/exports/64/sigil-clean-vent.png",
+        "48": "art/icons/forks/exports/48/sigil-clean-vent.png",
+        "44": "art/icons/forks/exports/44/sigil-clean-vent.png",
+        "32": "art/icons/forks/exports/32/sigil-clean-vent.png",
+        "24": "art/icons/forks/exports/24/sigil-clean-vent.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.sigil.overflux",
+      "name": "Overflux",
+      "icon_id": "fork.sigil.overflux",
+      "path": "art/icons/forks/sigil-overflux.png",
+      "sha256": "a04d3abcf8344c21e2d95432ff061ee458d5046f3776f06095588035ef6d129a",
+      "exports": {
+        "128": "art/icons/forks/exports/128/sigil-overflux.png",
+        "64": "art/icons/forks/exports/64/sigil-overflux.png",
+        "48": "art/icons/forks/exports/48/sigil-overflux.png",
+        "44": "art/icons/forks/exports/44/sigil-overflux.png",
+        "32": "art/icons/forks/exports/32/sigil-overflux.png",
+        "24": "art/icons/forks/exports/24/sigil-overflux.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.sigil.running_script",
+      "name": "Running Script",
+      "icon_id": "fork.sigil.running_script",
+      "path": "art/icons/forks/sigil-running-script.png",
+      "sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+      "exports": {
+        "128": "art/icons/forks/exports/128/sigil-running-script.png",
+        "64": "art/icons/forks/exports/64/sigil-running-script.png",
+        "48": "art/icons/forks/exports/48/sigil-running-script.png",
+        "44": "art/icons/forks/exports/44/sigil-running-script.png",
+        "32": "art/icons/forks/exports/32/sigil-running-script.png",
+        "24": "art/icons/forks/exports/24/sigil-running-script.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.sigil.written_in_advance",
+      "name": "Written in Advance",
+      "icon_id": "fork.sigil.written_in_advance",
+      "path": "art/icons/forks/sigil-written-in-advance.png",
+      "sha256": "638647b9e9679d6ad4b8d133b94f0ed20f6abff174169a4cfa21446907447e76",
+      "exports": {
+        "128": "art/icons/forks/exports/128/sigil-written-in-advance.png",
+        "64": "art/icons/forks/exports/64/sigil-written-in-advance.png",
+        "48": "art/icons/forks/exports/48/sigil-written-in-advance.png",
+        "44": "art/icons/forks/exports/44/sigil-written-in-advance.png",
+        "32": "art/icons/forks/exports/32/sigil-written-in-advance.png",
+        "24": "art/icons/forks/exports/24/sigil-written-in-advance.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.soul.ride_the_edge",
+      "name": "Ride the Edge",
+      "icon_id": "fork.soul.ride_the_edge",
+      "path": "art/icons/forks/soul-ride-the-edge.png",
+      "sha256": "978a350aef31ba440d7a1eaf6f620e9b86ead933db8e90837368561678ba0155",
+      "exports": {
+        "128": "art/icons/forks/exports/128/soul-ride-the-edge.png",
+        "64": "art/icons/forks/exports/64/soul-ride-the-edge.png",
+        "48": "art/icons/forks/exports/48/soul-ride-the-edge.png",
+        "44": "art/icons/forks/exports/44/soul-ride-the-edge.png",
+        "32": "art/icons/forks/exports/32/soul-ride-the-edge.png",
+        "24": "art/icons/forks/exports/24/soul-ride-the-edge.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.soul.slow_burn",
+      "name": "Slow Burn",
+      "icon_id": "fork.soul.slow_burn",
+      "path": "art/icons/forks/soul-slow-burn.png",
+      "sha256": "531a6ea23eceedd99b19ae96068a217fb2ca28a95d0659dd026b5fd4a943b62e",
+      "exports": {
+        "128": "art/icons/forks/exports/128/soul-slow-burn.png",
+        "64": "art/icons/forks/exports/64/soul-slow-burn.png",
+        "48": "art/icons/forks/exports/48/soul-slow-burn.png",
+        "44": "art/icons/forks/exports/44/soul-slow-burn.png",
+        "32": "art/icons/forks/exports/32/soul-slow-burn.png",
+        "24": "art/icons/forks/exports/24/soul-slow-burn.png"
       },
       "active_binding": null,
       "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",

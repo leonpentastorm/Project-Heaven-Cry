@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.soul.slow_burn",
+  "name": "Slow Burn",
+  "icon_id": "fork.soul.slow_burn",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Slow Burn** (`soul.slow_burn`). *\"Each turn you start holding an Outburst, your Strain falls {=numbers.calm} more.\"*\n- Fields: `calm: 1`. Why: it cancels the swell's own point (`strain.per_held_turn`): holding is patient, not free.\n- Carrier: the `held_turn_start` hook as a trigger (**N22**; the hook exists, `magic.ts:1710`, and fires only while an\n  Outburst is held, so no \"holds an Outburst\" predicate is needed), op `resource strain \u22121` (N3b: through the one\n  Strain function).\n- Mana Shock: one of the ways out of it. Will Power 7 (the swell without Strain) makes it a net \u22121 a held turn; a\n  shield in hand stops the swell (rules 1.57) but not Slow Burn. Channeler's Shape (a free Pump while held): fits.\n- Excite: a stage-4 Lance held through two turns, released the moment the Elite leaves cover.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-soul-slow-burn",
+  "path": "art/icons/forks/soul-slow-burn.png",
+  "paint": "Wick stands with relaxed low shoulders, both open mittens steadily holding ONE small contained Outburst core off to his side. A few strain ticks fall away below it as he waits, pixel eyes patient and half closed.",
+  "avoid": "No physical bowl or cup, fire on his head, meditation seat, shield or explosion.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick stands with relaxed low shoulders, both open mittens steadily holding ONE small contained Outburst core off to his side. A few strain ticks fall away below it as he waits, pixel eyes patient and half closed.\nAVOID: No physical bowl or cup, fire on his head, meditation seat, shield or explosion.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 29,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "531a6ea23eceedd99b19ae96068a217fb2ca28a95d0659dd026b5fd4a943b62e",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-soul-slow-burn-v1.png",
+  "source_sha256": "6bd0fad3224f9fca63e52557da90d286f1602f949b1d1407c6a2e7a235303381",
+  "export_crop": [
+    0,
+    21,
+    1182,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/soul-slow-burn.png",
+    "64": "art/icons/forks/exports/64/soul-slow-burn.png",
+    "48": "art/icons/forks/exports/48/soul-slow-burn.png",
+    "44": "art/icons/forks/exports/44/soul-slow-burn.png",
+    "32": "art/icons/forks/exports/32/soul-slow-burn.png",
+    "24": "art/icons/forks/exports/24/soul-slow-burn.png"
+  },
+  "export_sha256": {
+    "128": "8579de62fb91b3b0512cc4de1a333706fb30742c1f2f2a132d2358b9723b49ab",
+    "64": "a7001b0ee690a3b30fd533a65a9b494f3a257cc4a19f24ccd9f1b6fe7590ad3f",
+    "48": "d8713ebeab03fa636001b7220fd56a209c21f78237b1bf3313c57a70ffa112cf",
+    "44": "b1cbc42c54020c26d0e6b258d9e5cb16601df6d2f437c9bebc00452c1765c1aa",
+    "32": "8d7c74c9c3012edf90c8bfcbf533901f5b2a8ca9351c9d0090338ef2e4dd5fde",
+    "24": "67e4a02f4e871c027bc19dc56ae8016cc0ea71612bc50efa7e44d0319884f28b"
+  },
+  "framing": {
+    "scale": 0.5941454391674761,
+    "offset": [
+      161,
+      145
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}
