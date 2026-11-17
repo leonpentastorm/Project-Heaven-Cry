@@ -22,6 +22,9 @@ The game shows its version in the corner of the title screen and in every "Repor
   review (`target_not_tier`); no change.
 - **K4, Rite in the Field cuts Name It (item 5006):** the approved price predicate `action_id` (a priced action's own
   id); the perk's new `cost_mod` row cuts Lore Master's Call Name It by 1 (Tier II: 2), never below 0.
+- **K2, the Dexterity blades (item 5007):** sabre damage 28 -> 23, legion gladius 26 -> 22 (PROVISIONAL): with both
+  Dexterity alpha perks 147 to 169% of the plain rifle at levels 1 / 5 / 10 (were 175 to 208%); the knife and the
+  gloves untouched. The katana follows the sabre (rules 1.35: 28 -> 23). The duelling blade is listed for the lead.
 
 ## 0.31.0 — the field is turns, the fight's big banners, and the playtest's faults
 

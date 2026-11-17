@@ -626,7 +626,7 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 | Recurve bow | Bow | 20 + 5 × Raw Power | 14 | quiver of 40 | none | single | 1.5 kg |
 | Crossbow | Bow | 55 | 16 | 1 | none | single | 4 kg |
 | Combat knife | Light melee | 15 (thrown: 6 tiles) | 1 | none | none | none | 0.5 kg |
-| Sabre | Light melee | 28 | 1 | none | none | none | 1.5 kg |
+| Sabre | Light melee | 23 | 1 | none | none | none | 1.5 kg |
 | Ork machete | Heavy melee | 35 | 1 | none | none | none | 3 kg |
 | Maul | Heavy melee | 45 | 1 | none | none | none | 7 kg |
 | Lance | Heavy melee, polearm | 32 | 2 | none | none | none | 3 kg |
@@ -843,10 +843,10 @@ Weapon skills and lore:
 | ✓ Combat knife | 15 | 0.5 | 60 | thrown 6 tiles *(rules 1.12: every thrown weapon reaches your Throwing range, 6 + 0.5 × Dexterity; the per-weapon tiles here and on the next two rows are not used)* |
 | Throwing knives (set of 4) | 12 | 0.8 | 80 | thrown 6 tiles |
 | Hatchet | 22 | 1 | 120 | thrown 5 tiles |
-| Legion gladius | 26 | 1.3 | 300 | |
-| ✓ Sabre | 28 | 1.5 | 400 | |
+| Legion gladius | 22 | 1.3 | 300 | |
+| ✓ Sabre | 23 | 1.5 | 400 | |
 | Kemizuchi duelling blade | 24, +1 accuracy | 1.2 | 550 | |
-| Katana (rules 1.32) | 28 | 1.4 | 500 | lends Draw Cut; PROVISIONAL (items 1950 to 1952) |
+| Katana (rules 1.32) | 23 | 1.4 | 500 | lends Draw Cut; PROVISIONAL (items 1950 to 1952) |
 | Afterword (rules 1.58) | 15 | 0.4 | 700 | follows in the off hand (5e): its follow ×0.25 and Bleeding once a turn; rolls in shop gear and weapon picks from the 700 band; PROVISIONAL (item 4534) |
 
 - **Combat knife · Finish It:** +50% damage against a target that is Dazed, Stunned, Bleeding or Downed. *"Every kit has one. Every story ends with one."*
@@ -10246,7 +10246,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2136. **Scrap Turret (rules 1.34; `trickster.scrap_turret`; was Jury-Rig):** 3 AP, once a scene, one at a time; `figments.json turret` 40 HP, Defense 10, armour 5; 3 rounds; d20 + Improvisation modifier; the weapon profile at the owner's level. PROVISIONAL. *(Superseded by rules 1.60 item 4633.)*
 2137. **Leave the Rigger (rules 1.34):** Silver Tongue, Blind and Slow, Rewrite (shelved in the move pool); Read to the Operative. PROVISIONAL.
 2140. **The figments ceiling (rules 1.34; `rules.json balance.ceilings.figments`):** the Rigger all in 150, the door all in 130, door normal 104, Rigger normal 120 (Leon's budget reading). PROVISIONAL.
-2200. **The katana's family and damage (rules 1.35):** a light blade (Dexterity, 2 AP), 28 damage, the sabre's. Lead's numbers, Leon to confirm. PROVISIONAL.
+2200. **The katana's family and damage (rules 1.35):** a light blade (Dexterity, 2 AP), 28 damage, the sabre's. *(Superseded by item 5007: 23, with the sabre.)* Lead's numbers, Leon to confirm. PROVISIONAL.
 2201. **The katana's weight and price (rules 1.35):** 1.4 kg, 500 credits; durability 250, mod slots edge and grip, no requirement. Lead's numbers, Leon to confirm. PROVISIONAL.
 2202. **The katana lends Draw Cut (rules 1.35):** its `phys.teaches`; no weapon skill of its own; in no loot table (as the sabre). Lead's numbers, Leon to confirm. PROVISIONAL.
 2203. **The katana's rarity (rules 1.35):** as every weapon: none in data; a found or bought one rolls a rarity as any weapon does. PROVISIONAL.
@@ -11878,6 +11878,25 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
     `action_id: ["call.name_it"]`: Lore Master's own Call costs **1** AP less at Tier I and **2** at Tier II, never
     below **0** (at Lore Master 3 to 4, 2 AP becomes 1 or 0). Proof: `test/perks-d.test.ts` (the Call made through the
     reducer: 2, 1 and 0 AP; Spot unchanged). Supersedes item 4814. PROVISIONAL: 1, 2, 0.
+5007. **The sabre and the gladius in Dexterity hands (K2; rules 1.63 items 4812, 4821's refit ticket):** `weapons.json`
+    `sabre.damage` **23** (was **28**), `legion_gladius.damage` **22** (was **26**). PROVISIONAL. **Why they were over
+    the line:** a light blade swings for 2 AP, so the all-in build lands about 2.6 blows a turn (a heavy blade at 3 AP:
+    1.3), and the two rows carried a heavy blade's damage (28 at 2 AP is 14 a point of AP; the Ork machete 35 at 3 AP
+    is 11.7; the knife 15 at 2 AP is 7.5); the melee profile and the Agility term are the same for every blade, so
+    nothing shared stacks: the excess was the rows' own damage, with the Dexterity build's 85 to 95% to hit on top. The
+    knife, the gloves, the shared melee profile and every other row are untouched. Measured (percent of the plain
+    rifle, levels 1 / 5 / 10, 20 fights a cell, before -> after):
+    - `dex-melee-measure` (the All-in Deadeye sheet, Dexterity 7): sabre, no perks 183 / 191 / 204 -> 148 / 154 / 165;
+      both alpha perks 206 / 208 / 201 -> **166 / 169 / 162**; with the forks -> 156 / 164 / 178. Gladius, no perks 160
+      / 156 / 166 -> 133 / 129 / 138; both perks 175 / 177 / 184 -> **147 / 147 / 153**; the forks -> 143 / 144 / 155.
+      The knife (both perks 95 / 95 / 107) and the striking gloves (90 / 117 / 122) did not move.
+    - `melee-measure` (the optimised blade build's Dexterity twin, Masterwork): sabre 199 / 198 / 246 -> 161 / 160 /
+      200; gladius 185 / 190 / 227 -> 156 / 158 / 189; knife 115 / 112 / 120 and gloves 98 / 121 / 146 unchanged.
+    The katana is "the sabre's damage" by rules 1.35 (item 2200; `katana.test.ts` holds it inside the family and
+    nearest the sabre), so `katana.damage` **23** (was **28**) with it (before: 198 / 185 / 251 in `melee-measure`).
+    **For the lead:** that twin still rises past the line at level 10 (the rifle's own level 10 is the pin), and the
+    Kemizuchi duelling blade (24: 170 / 189 / 208) and the strikers (130 / 157 / 181) were not asked for and are left. The test squad's tank carries a
+    sabre (balance builds), so its numbers move with it.
 4550. **Sight both ways (rules 1.57 opening volley item 1; a bug):** `lineOfSight(a, b)` is clear only if the Bresenham walk a to b and the walk b to a are both clear (each skips its end tile). Before, it was the walk a to b only: with one blocker, 2% of tile pairs (72 of 3,551 on the proposal's ground) saw one way, and 4% of the stage-1 runs' enemy gun rolls had a blocked line back. `perks/b.ts losNoVeil` (Skin Map) was a second copy of the walk; it is now `lineOfSight(..., ignoreVeil)`. Proof: `test/rules157-volley.test.ts` (every pair on a 15 x 15 ground with a wall; the reproduced case, played).
 4551. **The enemy's Burst (item 2):** `techniques.json burst.numbers.enemy_same` 1 (was unset: an enemy with an Auto weapon rolled three at 0 / −1 / −2 and cooled 1; item 1079). Measured (one enemy turn on the yardstick, 200 seeds): a Gun drone (Soldier, service rifle) 21 then 29 damage on turns 1 and 2 (14% / 20% of 145 HP), was 30 / 46; a Soldier sabre 10 then 30. Supersedes item 1079's "keep the old Burst" and item 1316. PROVISIONAL.
 4552. **The tier damage factors after the refit (item 2):** Soldier 0.78, Elite 1.05, Boss 1.2, unchanged on purpose (item 1079 proposed Soldier 0.88 and Elite 1.08 to hold the rifleman's 3 rounds under two Soldiers; the lead's target for this pass is that a gun foe threatens what a melee foe of its tier does). Moved guards: the idle pair under two Soldiers at level 6 lasts 3.5 rounds (bound 3.2 → 4.2, `defence-measure.test.ts`); a healer and a shielder under four Soldiers at level 6 now hold for 10 rounds (`heal-measure.test.ts`: OLD "somebody goes Down", now "outlasts a healer alone"). PROVISIONAL.

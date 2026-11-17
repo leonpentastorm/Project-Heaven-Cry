@@ -7,7 +7,7 @@
 // gloves (door-builds.ts dex_knife, dex_monk) with no perk steps, with both Dexterity alpha perks, and with both and the
 // forks (Walk It In, Lockdown); the sabre in the same hands is the Dexterity blade line. Stage 1: survival-run.ts
 // through party-fit.ts partyRun, the door members dex_knife and dex_monk solo, cleared or not over DEX_SEEDS seeds.
-//   DEX_MELEE=1 [DEX_N=12] [DEX_LEVELS=1,6] [DEX_SEEDS=20] [DEX_STAGE=0] [DEX_OUT=file.json] npx vitest run --root packages/engine test/balance/dex-melee-measure.test.ts --silent=false
+//   DEX_MELEE=1 [DEX_BUILDS=dex_knife,dex_monk,dex_sabre,dex_gladius] [DEX_STEPS=none,perks,forks] [DEX_N=12] [DEX_LEVELS=1,6] [DEX_SEEDS=20] [DEX_STAGE=0] [DEX_OUT=file.json] npx vitest run --root packages/engine test/balance/dex-melee-measure.test.ts --silent=false
 import { describe, it } from 'vitest';
 import { writeFileSync } from 'node:fs';
 import { runFight } from './sim';
@@ -22,6 +22,8 @@ const r1 = (n: number) => Math.round(n * 10) / 10;
 const FORKS = ['fork.pressure.walk_it_in', 'fork.pressure.lockdown'];
 /** The Dexterity blade line: the sabre in the Dexterity knife's hands. */
 if (!BUILD.dex_sabre) { const d = { ...BUILD.dex_knife, id: 'dex_sabre', label: 'Dexterity sabre', weapon: 'sabre' }; BUILDS.push(d); BUILD.dex_sabre = d; }
+// rules 1.64 item 5007 (K2): the gladius in the same hands
+if (!BUILD.dex_gladius) { const d = { ...BUILD.dex_knife, id: 'dex_gladius', label: 'Dexterity gladius', weapon: 'legion_gladius' }; BUILDS.push(d); BUILD.dex_gladius = d; }
 
 function yardRow(build: string, level: number, n: number, yard: number, steps: 'none' | 'perks' | 'forks') {
   const was = { perks: STEPS.perks, forks: STEPS.forks };
@@ -45,12 +47,12 @@ describe.runIf(env.DEX_MELEE)('rules 1.63: the Dexterity melee builds', () => {
     const levels = String(env.DEX_LEVELS || '1,6').split(',').map(Number), n = Number(env.DEX_N || 12), out: any = { yard: [], stage1: [] };
     let md = '| Build | Steps | ' + levels.map((l) => 'L' + l + ' % rifle · pips/turn · Pressed / Suppressed / Broken %').join(' | ') + ' |\n|---|---|' + levels.map(() => '---').join('|') + '|\n';
     const yard = Object.fromEntries(levels.map((l) => [l, rifleYard(l, Math.max(60, n))]));
-    for (const b of ['dex_knife', 'dex_monk', 'dex_sabre']) for (const steps of ['none', 'perks', 'forks'] as const) {
+    for (const b of String(env.DEX_BUILDS || 'dex_knife,dex_monk,dex_sabre').split(',')) for (const steps of String(env.DEX_STEPS || 'none,perks,forks').split(',') as ('none' | 'perks' | 'forks')[]) {
       const cells: string[] = [];
       for (const lv of levels) { const r = yardRow(b, lv, n, yard[lv], steps); out.yard.push(r); cells.push(r.pct + '% · ' + r.pips + ' · ' + r.pressed + ' / ' + r.suppressed + ' / ' + r.broken + (r.errs ? ' · ERR ' + r.errs : '')); console.log('[dex] ' + JSON.stringify(r)); }
       md += '| ' + BUILD[b].label + ' | ' + steps + ' | ' + cells.join(' | ') + ' |\n';
     }
-    console.log(md);
+    console.log(md); if (env.DEX_MD) writeFileSync(env.DEX_MD, md);
     const seeds = Number(env.DEX_SEEDS || 20);
     if (env.DEX_STAGE !== '0') for (const cell of ['solo_dex_knife', 'solo_dex_monk']) {
       let cleared = 0, depth = 0;
