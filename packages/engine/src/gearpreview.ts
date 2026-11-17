@@ -6,6 +6,7 @@
 //
 // Nothing here changes the character: it is copied first; the scratch fight uses its own named stream (`rngFor`), never
 // the game's dice, and is thrown away.
+import { fmtNumber } from './datatext';
 import { WEAPON, ITEM, RULES, SKILL, ATTRS } from './data';
 import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, weaponMult, specialRoundName, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM, isShieldId } from './character';
 import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee, weaponVia, rollWithPick, rollWithWords, type RollWithOffer } from './combat';
@@ -102,6 +103,9 @@ function attackLines(cb: Combat, u: Unit, foe: Unit, mode: AttackMode) {
 /** Rules 1.56 L4: a variant's modifiers (data/variants.json), one line each, its kind's sentence (the field kinds' numbers
  * are already in the lines above: the variant's row carries them). */
 const variantLines = (row: any): PreviewLine[] => ((row?.variant_lines || []) as any[]).map((l) => ({ key: 'variant:' + l.kind, label: l.name, value: l.text, num: null }));
+/** Rules 1.66 item 5207: a number on a gear card as a player reads it: one decimal at most (the shop showed "Damage per
+ *  hit 29.400000000000002"), through the one number formatter (datatext.ts fmtNumber); a text stays as it is. */
+const shown = (v: unknown): string => (typeof v === 'number' && Number.isFinite(v) ? fmtNumber(Math.round(v * 10) / 10) : String(v ?? ''));
 /** The numbers a card shows for `inst` in `c`'s hands (rules 1.42, spec item 14): for a weapon, to hit against the
  * reference foe of the character's level, damage per hit, the AP of each mode, magazine, range, traits; for a focus its
  * door and the door skill's modifier; for armour and shields what the character's Defense, armour and injury resistance
@@ -111,9 +115,9 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
   const base = { id, name: nameOf(id), rarity, text: String(w?.text || it?.text || '') };
   if (w && w.category === 'thrown') {
     return { ...base, kind: 'thrown', category: 'Thrown', traits: [...(w.properties || [])], lines: [
-      ...(Number(w.damage) ? [{ key: 'damage', label: 'Damage', value: String(w.damage), num: Number(w.damage), better: 'higher' as const }] : []),
+      ...(Number(w.damage) ? [{ key: 'damage', label: 'Damage', value: shown(w.damage), num: Number(w.damage), better: 'higher' as const }] : []),
       ...(typeof w.range_tiles === 'number' ? [{ key: 'range', label: 'Range', value: w.range_tiles + ' tiles', num: w.range_tiles, better: 'higher' as const }] : []),
-      ...(w.ap_cost?.single != null ? [{ key: 'ap', label: 'AP to throw', value: String(w.ap_cost.single), num: Number(w.ap_cost.single), better: 'lower' as const }] : []),
+      ...(w.ap_cost?.single != null ? [{ key: 'ap', label: 'AP to throw', value: shown(w.ap_cost.single), num: Number(w.ap_cost.single), better: 'lower' as const }] : []),
       ...skillLines(c, scratch(c, inst, 1).u, w),
     ] };
   }
@@ -124,14 +128,14 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
     const main = attackLines(cb, u, foe, melee ? 'melee' : 'shot');
     if (main) {
       lines.push({ key: 'hit', label: 'To hit (' + GP.name.toLowerCase() + ', level ' + c.level + ')', value: pct(main.pct), num: main.pct, better: 'higher' });
-      lines.push({ key: 'dmg', label: 'Damage per hit', value: String(main.dmg), num: main.dmg, better: 'higher' });
+      lines.push({ key: 'dmg', label: 'Damage per hit', value: shown(main.dmg), num: main.dmg, better: 'higher' });
     }
     const apOf = (m: AttackMode, b: number) => priced({ cb, u }, 'attack', b, undefined, { mode: m, tgt: foe }).ap;
-    if (melee) lines.push({ key: 'ap', label: 'AP a strike', value: String(apOf('melee', attackApCost(w, 'melee'))), num: apOf('melee', attackApCost(w, 'melee')), better: 'lower' });
+    if (melee) lines.push({ key: 'ap', label: 'AP a strike', value: shown(apOf('melee', attackApCost(w, 'melee'))), num: apOf('melee', attackApCost(w, 'melee')), better: 'lower' });
     else {
       const s = apOf('shot', attackApCost(w, 'shot'));
-      lines.push({ key: 'ap', label: 'AP a shot', value: String(s), num: s, better: 'lower' });
-      if ((w.modes || []).includes('burst')) { const b = apOf('burst', volleyBaseAp(u, 'burst')); lines.push({ key: 'ap_burst', label: 'AP a Burst', value: String(b), num: b, better: 'lower' }); }
+      lines.push({ key: 'ap', label: 'AP a shot', value: shown(s), num: s, better: 'lower' });
+      if ((w.modes || []).includes('burst')) { const b = apOf('burst', volleyBaseAp(u, 'burst')); lines.push({ key: 'ap_burst', label: 'AP a Burst', value: shown(b), num: b, better: 'lower' }); }
       const mag = magazineSize(id, inst.mods);
       if (mag != null) lines.push({ key: 'mag', label: 'Magazine', value: mag + (CALIBRE_NAME[w.ammo] || w.ammo ? ' · ' + (CALIBRE_NAME[w.ammo] || w.ammo) : ''), num: mag, better: 'higher' });
       lines.push({ key: 'range', label: 'Range', value: effectiveRange(w) + ' tiles', num: effectiveRange(w), better: 'higher' });
@@ -140,13 +144,13 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       lines.push({ key: 'recoil', label: 'Recoil a shot', value: kick ? '−' + kick : 'none', num: kick, better: 'lower' });
     }
     // rules 1.56: each fitted mod, by its own data text
-    for (const m of inst.mods || []) { const mi: any = ITEM[m]; if (mi) lines.push({ key: 'mod:' + m, label: mi.name, value: String(mi.text || ''), num: null }); }
+    for (const m of inst.mods || []) { const mi: any = ITEM[m]; if (mi) lines.push({ key: 'mod:' + m, label: mi.name, value: shown(mi.text || ''), num: null }); }
     // rules 1.56 (the unarmed fighter): a carried modifier of the row (`variant_mods`) says its one card line (its `card.text`)
-    for (const m of ((w as any)?.variant_mods || []) as string[]) { const mi: any = ITEM[m]; if (mi?.card?.text) lines.push({ key: 'carried:' + m, label: mi.name, value: String(mi.card.text), num: null }); }
+    for (const m of ((w as any)?.variant_mods || []) as string[]) { const mi: any = ITEM[m]; if (mi?.card?.text) lines.push({ key: 'carried:' + m, label: mi.name, value: shown(mi.card.text), num: null }); }
     lines.push(...variantLines(w));
     // rules 1.57 (A1): a shield's row gives what it holds (its own `effects`): the Defense with it in the off hand
-    if (isShieldId(id)) { const x = clone(c); x.offHand = { id } as any; const su = unitFromCharacter(x, '0,0', rngFor('gear-preview', c.id + '#' + id)); lines.push({ key: 'def', label: 'Defense (held)', value: String(su.def), num: su.def, better: 'higher' }); }
-    { const full = maxDurOf(id, rarity); if (full) lines.push({ key: 'dur', label: 'Durability (full)', value: String(full), num: full, better: 'higher' }); } // rules 1.50: the wear it holds at its grade
+    if (isShieldId(id)) { const x = clone(c); x.offHand = { id } as any; const su = unitFromCharacter(x, '0,0', rngFor('gear-preview', c.id + '#' + id)); lines.push({ key: 'def', label: 'Defense (held)', value: shown(su.def), num: su.def, better: 'higher' }); }
+    { const full = maxDurOf(id, rarity); if (full) lines.push({ key: 'dur', label: 'Durability (full)', value: shown(full), num: full, better: 'higher' }); } // rules 1.50: the wear it holds at its grade
     lines.push(...skillLines(c, u, w));
     const traits = [...(w.properties || []), ...((w.phys?.props as string[]) || [])].map((t) => cap(String(t).replace(/_/g, ' ')));
     return { ...base, kind: 'weapon', category: cap(String(w.category).replace(/_/g, ' ')), traits: [...new Set(traits)], lines };
@@ -168,18 +172,18 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
     if (slot === 'off_hand') x.offHand = { id } as any; else if (slot) x.worn = { ...(x.worn || {}), [slot]: id };
     const rng = rngFor('gear-preview', c.id + '#' + id), u = unitFromCharacter(x, '0,0', rng);
     return { ...base, kind: 'armour', category: cap(String(it.category)) + (slot ? ' · ' + slot.replace(/_/g, ' ') : ''), traits: [], lines: [
-      { key: 'def', label: 'Defense', value: String(u.def), num: u.def, better: 'higher' },
-      { key: 'armour', label: 'Armour', value: String(u.armour), num: u.armour, better: 'higher' },
+      { key: 'def', label: 'Defense', value: shown(u.def), num: u.def, better: 'higher' },
+      { key: 'armour', label: 'Armour', value: shown(u.armour), num: u.armour, better: 'higher' },
       { key: 'injury', label: 'Injury resistance', value: pct(u.injResist || 0), num: u.injResist || 0, better: 'higher' },
       { key: 'kg', label: 'Weight', value: (it.weight_kg ?? 0) + ' kg', num: it.weight_kg ?? 0, better: 'lower' },
-      ...(maxDurOf(id, rarity) ? [{ key: 'dur', label: 'Durability (full)', value: String(maxDurOf(id, rarity)), num: maxDurOf(id, rarity), better: 'higher' as const }] : []), // rules 1.50: a shield wears
+      ...(maxDurOf(id, rarity) ? [{ key: 'dur', label: 'Durability (full)', value: shown(maxDurOf(id, rarity)), num: maxDurOf(id, rarity), better: 'higher' as const }] : []), // rules 1.50: a shield wears
     ] };
   }
   // rules 1.53: a quiver's grade gives arrows held and nothing else; it has one enchantment slot at every grade
   if (it?.category === 'quiver') {
     const n = quiverHolds(id, rarity), e = (inst.mods || []).map((m) => ITEM[m] as any).find((m) => m?.mod_slot === 'enchantment');
     return { ...base, kind: 'item', category: 'Quiver', traits: [], lines: [
-      { key: 'arrows', label: 'Arrows held', value: String(n), num: n, better: 'higher' },
+      { key: 'arrows', label: 'Arrows held', value: shown(n), num: n, better: 'higher' },
       { key: 'ench', label: 'Enchantment', value: e ? e.name : 'None (room for one)', num: null },
       { key: 'kg', label: 'Weight', value: (it.weight_kg ?? 0) + ' kg', num: it.weight_kg ?? 0, better: 'lower' },
     ] };
@@ -202,7 +206,7 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
     return { ...base, name: r ? (r[1] === 'rounds' ? (specialRoundName(r[2], rs?.type) ?? (CALIBRE_NAME[r[2]] || r[2]) + ' rounds') : nameOf(r[2]) + ' magazine' + (held ? '' : ' (empty)')) : base.name, kind: 'ammo', category: 'Ammunition', traits: [],
       text: r ? (r[1] === 'mag' ? (held ? held === mcap ? 'A full magazine for the ' : 'A magazine of ' + held + ' rounds for the ' : 'An empty magazine for the ') + nameOf(r[2]) + (held ? '.' : ': fill it from loose rounds out of a fight.') : sp ? sp.text : 'Loose rounds.') : base.text,
       lines: [
-        ...(r?.[1] === 'mag' ? [{ key: 'rounds', label: 'Rounds', value: String(held), num: held }] : []),
+        ...(r?.[1] === 'mag' ? [{ key: 'rounds', label: 'Rounds', value: shown(held), num: held }] : []),
         ...(cal ? [{ key: 'calibre', label: 'Calibre', value: CALIBRE_NAME[cal] || cal, num: null }] : [{ key: 'fits', label: 'Fits', value: 'any gun', num: null }]),
         ...(users.length ? [{ key: 'used', label: 'Used by', value: users.length > 2 ? users.length + ' guns' : users.join(', '), num: null }] : []),
       ] };

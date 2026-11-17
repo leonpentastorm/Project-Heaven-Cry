@@ -12143,3 +12143,8 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     blast radius of the picked tile), targets (the units there, harm for the other side, help for one's own). A held
     Thrown weapon keeps its Throw technique. No number changed; no closed-list entry (the row is a descriptor of the
     physical system, its action the existing `combat/throw`).
+5207. **A gear card's numbers: one decimal at most (G3).** The shop's "Damage per hit 29.400000000000002" (a weapon
+    multiplier on a whole damage, 28 x 1.05) came from the gear card (`gearpreview.ts gearPreview`, the one view every
+    gear card, shop shelf and reward card reads) printing the number raw. Every number on the card now goes through the
+    one number formatter (`datatext.ts fmtNumber`) at one decimal (`gearpreview.ts shown`). Not reproduced with the
+    test's own sheet (no boon on it); the guard checks every weapon at every grade. No number changed.

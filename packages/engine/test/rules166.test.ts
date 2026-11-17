@@ -8,7 +8,7 @@ import { togglesFor } from '../src/effects/actions';
 import { previewDescriptor, actionsFor } from '../src/descriptors';
 import { physFight, rig } from './helpers/physfight';
 import { calm } from './helpers/physfight-ranged';
-import { TECHNIQUE } from '../src';
+import { TECHNIQUE, gearPreview, WEAPONS, RARITY } from '../src';
 
 type F = ReturnType<typeof fightWith>;
 const open = (cb: any) => { cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] }; cb.objects = []; };
@@ -106,5 +106,16 @@ describe('C: a thrown item from the pack (item 5205)', () => {
     expect(f.unit(f.pc.id).ap).toBe(ap - 2); expect(f.unit(f.pc.id).throwables!.flashbang).toBe(0);
     expect(f.cb.log.some((l) => /throws a flashbang/.test(l))).toBe(true);
     expect(actionsFor(f.g, f.pc.id).some((d) => d.id === 'throw:flashbang')).toBe(false);
+  });
+});
+
+describe('G3: the gear card numbers (item 5207)', () => {
+  it('every weapon at every grade: no number on its card has more than one decimal', () => {
+    const f = fight([{ level: 5 }]); const c = f.g.characters[f.pc.charId!]; const bad: string[] = [];
+    for (const w of WEAPONS as any[]) for (const r of Object.keys(RARITY)) {
+      let p: any; try { p = gearPreview(c, { id: w.id, rarity: r as any }); } catch { continue; }
+      for (const l of p.lines || []) if (/\d\.\d\d/.test(String(l.value))) bad.push(w.id + '/' + r + ' ' + l.label + ' ' + l.value);
+    }
+    expect(bad).toEqual([]);
   });
 });
