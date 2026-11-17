@@ -5,7 +5,7 @@ import { d20, type Unit } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 import { canYield } from '../src/yielding';
 import { togglesFor } from '../src/effects/actions';
-import { previewDescriptor } from '../src/descriptors';
+import { previewDescriptor, actionsFor } from '../src/descriptors';
 import { physFight, rig } from './helpers/physfight';
 import { calm } from './helpers/physfight-ranged';
 import { TECHNIQUE } from '../src';
@@ -87,5 +87,24 @@ describe('B: Mag Dump (item 5204)', () => {
   });
   it('the target falls to the first roll: one roll, rounds_per_roll rounds spent, the rest stay in the gun, no Heat to the limit', () => {
     const r = dump('decrkm_smg', 10); expect(r.rolls).toBe(1); expect(r.spent).toBe(N.rounds_per_roll); expect(r.heat).toBeLessThan(5);
+  });
+});
+
+describe('C: a thrown item from the pack (item 5205)', () => {
+  it('a flashbang in the pack is a Throw row on the Attack tab; its preview shows the reach and the blast area; the reducer throws it', () => {
+    const f = fight([{}], [{}, {}]); f.unit(f.pc.id).throwables = { flashbang: 1 };
+    const row = actionsFor(f.g, f.pc.id).find((d) => d.id === 'throw:flashbang')!;
+    expect(row).toBeTruthy(); expect(row.group).toBe('attack'); expect(row.available).toBe(true); expect(row.cost.ap).toBe(2);
+    const none = previewDescriptor(f.g, f.pc.id, row.id, {})!;
+    expect(none.marks.tiles.some((t) => t.kind === 'reach')).toBe(true); expect(none.ask).toMatch(/Click a tile/);
+    const at = f.unit(f.foe.id).pos;
+    const pv = previewDescriptor(f.g, f.pc.id, row.id, { tile: at })!;
+    expect(pv.ok).toBe(true); expect(pv.ap).toBe(2);
+    expect(pv.marks.tiles.filter((t) => t.kind === 'area').length).toBeGreaterThan(1);
+    expect(pv.marks.units.some((m) => m.id === f.foe.id && m.tone === 'harm')).toBe(true);
+    const ap = f.unit(f.pc.id).ap; f.act(pv.action as any);
+    expect(f.unit(f.pc.id).ap).toBe(ap - 2); expect(f.unit(f.pc.id).throwables!.flashbang).toBe(0);
+    expect(f.cb.log.some((l) => /throws a flashbang/.test(l))).toBe(true);
+    expect(actionsFor(f.g, f.pc.id).some((d) => d.id === 'throw:flashbang')).toBe(false);
   });
 });

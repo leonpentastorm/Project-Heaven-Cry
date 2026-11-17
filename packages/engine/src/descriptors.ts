@@ -20,8 +20,8 @@ import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON, SOUL_RULES } from './data';
 import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange, analyzeRange, pairs } from './combat';
 import { kindOf } from './objects';
-import { apFor, canPay, RESOURCES, resGive } from './effects/cost';
-import { eyesOn, seenByFoes, HIDE_WHY } from './tactics';
+import { apFor, canPay, RESOURCES, resGive, price, whyNot } from './effects/cost';
+import { eyesOn, seenByFoes, HIDE_WHY, throwRangeOf, radiusOf } from './tactics';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun, fightWith, preview as previewOnCopy } from './preview';
 import type { Action, GameState } from './game';
@@ -491,6 +491,7 @@ const PHYSICAL: ActionSystem = {
     }
     if (offW && !dual) atk.push(D('paired', 'attack', 'Both hands (' + offW.name + ')', 0, 'AP +1', 'Attack with both weapons in one action. It costs the higher of the two AP costs, plus 1. The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1.', null, { picks: basicPicks(x, 'paired'), preview: 'attack', hand: 'both' }));
     if (gunTab) atk.push(...reloads('attack'), ...offRows('attack'), ...clear('attack'), ...offHand('clear-off'));
+    atk.push(...throwRows(x));
     atk.push(...B('shove'), ...wRow('brace', 'attack'), ...B('cover').map((d) => (w ? { ...d, hand: 'main' as const } : d)), ...offHand('cover-off'));
     out.push(...atk);
     // ----- utility -----
@@ -505,6 +506,7 @@ const PHYSICAL: ActionSystem = {
   send(x, d, p) {
     const t = parseTechId(d.id);
     if (t) return { type: 'combat/technique', unitId: x.u.id, id: t.id, hand: t.hand, ...(t.item != null ? { item: t.item } : {}), ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.allyId ? { allyId: p.allyId } : {}), ...(p.tile ? { tile: p.tile } : {}), ...(p.line ? { line: p.line } : {}), ...((() => { const o = techOpt(t.id, p.opt); return o ? { opt: o } : {}; })()), ...mx(p) } as any;
+    if (d.id.startsWith(THROW)) return p.tile ? { type: 'combat/throw', unitId: x.u.id, item: d.id.slice(THROW.length), tile: p.tile } : null;
     const f = BASIC_SEND[d.id]; return f ? f(x, p) || null : null;
   },
   choices(x, d, step, p) {
@@ -518,6 +520,8 @@ const PHYSICAL: ActionSystem = {
       const fcb = p.mods?.length ? fightWith(x.seen, p.mods) : x.seen;
       return cands.filter((k) => { const args = techArgs(t, { ...p, [step.key]: k }); return !!safe(() => previewTechnique(fcb, x.u, t.id, args, x.g), null as any)?.ok; });
     }
+    // rules 1.66 item 5205: a thrown item's tiles, each through the reducer (throwItem's own gate: range, sight)
+    if (d.id.startsWith(THROW) && step.key === 'tile') return throwReach(x, d.id.slice(THROW.length)).filter((k) => !!safe(() => previewAction(x.g, { type: 'combat/throw', unitId: x.u.id, item: d.id.slice(THROW.length), tile: k } as any, x.by), null as any)?.ok);
     // a basic action's units or tiles: the reducer itself on a copy (previewAction), of the engine's own list
     const f = BASIC_SEND[d.id]; if (!f || !step.choices) return undefined;
     return step.choices.filter((k) => { const a = safe(() => f(x, { ...p, [step.key]: k }), null); return !!a && !!safe(() => previewAction(x.g, a, x.by), null as any)?.ok; });
@@ -525,12 +529,46 @@ const PHYSICAL: ActionSystem = {
   preview(x, d, p, action) {
     const t = parseTechId(d.id);
     if (t) return techPreviewOf(x, t, p);
+    if (d.id.startsWith(THROW)) return throwPreview(x, d.id.slice(THROW.length), p);
     // rules 1.65 item 5108.2: a basic action aimed at a unit shades where it reaches (its own range, the reducer's)
     const out = basicPreview(x, d, p, action), reach = basicReach(x, d.id);
     if (!reach.length) return out;
     return { ...(out || {}), marks: { units: out?.marks?.units || [], tiles: [...(out?.marks?.tiles || []), ...reach] } };
   },
 };
+// ---------- thrown items from the pack (rules 1.66 item 5205) ----------
+// A grenade, a flashbang, a charge carried in the pack (`Unit.throwables`) is thrown from the Attack tab: one row per
+// item carried, a tile pick, the reducer's `combat/throw` (tactics.ts throwItem: its range, its sight, its price 'throw').
+const THROW = 'throw:';
+const isPlaced = (w: any) => (w?.properties || []).includes('placed');
+/** The tiles a thrown item could land on from here: its range (1 placed), the side's sight. */
+function throwReach(x: DescCtx, item: string): string[] {
+  const n = isPlaced(WEAPON[item]) ? 1 : throwRangeOf(x.u), s = seenTiles(x);
+  return [x.u.pos, ...tilesAround(x.u.pos, n, x.cb)].filter((k, i, a) => a.indexOf(k) === i && (k === x.u.pos || s.has(k)));
+}
+function throwRows(x: DescCtx): ActionDescriptor[] {
+  const { cb, u } = x, out: ActionDescriptor[] = [];
+  for (const [id, n] of Object.entries(u.throwables || {})) {
+    const w: any = WEAPON[id]; if (!w || !((n as number) > 0)) continue;
+    const pr = safe(() => price({ cb, u }, 'throw'), null as any), ap = pr ? pr.ap : 2, placed = isPlaced(w), rad = radiusOf(w);
+    const range = placed ? 1 : throwRangeOf(u), why = pr ? whyNot(cb, u, pr) : null;
+    const text = (w.text || w.name) + ' ' + (placed ? 'Place it on your tile or next to you.' : 'Throw it at a tile you see within ' + range + (range === 1 ? ' tile.' : ' tiles.')) + (rad ? ' It covers every tile within ' + rad + (rad === 1 ? ' tile' : ' tiles') + ' of where it lands.' : '') + ' ' + n + ' carried.';
+    out.push(D(THROW + id, 'attack', (placed ? 'Place ' : 'Throw ') + w.name + ' (' + n + ')', ap, apT(ap), text, why, { picks: [{ key: 'tile', kind: 'tile', prompt: placed ? 'Click your tile or one next to you.' : 'Click a tile within ' + range + (range === 1 ? ' tile' : ' tiles') + ' to throw it at.' }], preview: 'basic' }));
+  }
+  return out;
+}
+/** A throw's marks: its reach, and for the picked tile the blast's area and the units in it. */
+function throwPreview(x: DescCtx, item: string, p: Picks): ReturnType<NonNullable<ActionSystem['preview']>> {
+  const w: any = WEAPON[item], rad = radiusOf(w);
+  const tiles: GridMarks['tiles'] = throwReach(x, item).map((k) => ({ tile: k, kind: 'reach' as const }));
+  const units: GridMarks['units'] = [];
+  if (p.tile) {
+    const area = rad ? [p.tile, ...tilesAround(p.tile, rad, x.cb)] : [p.tile];
+    tiles.push(...area.filter((k, i, a) => a.indexOf(k) === i).map((k) => ({ tile: k, kind: 'area' as const })));
+    for (const v of x.seen.units) if (area.includes(v.pos) && !v.dead) units.push({ id: v.id, tag: '', tone: v.side === x.u.side ? 'help' as const : 'harm' as const });
+  }
+  return { lines: p.tile ? [{ k: 'note', text: (w?.name || item) + ' at ' + refOf(p.tile) + (rad ? ': every tile within ' + rad + ' of it.' : '.') }] : [], marks: { units, tiles } };
+}
 /** Rules 1.65 item 5108.2: where a basic action aimed at a unit reaches from here, from the numbers its reducer checks: a
  * stim and a Shove next to you (actions.json `pick` ..._adjacent; combat.ts stimOn, shove), a thrown stim within
  * stimThrowRange you see, Analyze within analyzeRange you see, an attack its weapon's reach (reachTiles, as a technique's). */

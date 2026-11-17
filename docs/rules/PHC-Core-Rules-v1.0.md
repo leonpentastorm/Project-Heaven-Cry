@@ -12133,3 +12133,13 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     but logs one d20 roll"). Now the dump stops with the target: rounds spent = rolls made x `rounds_per_roll` (never
     more than are left), and a dump cut short leaves the Heat its rolls made (no jump to the limit). The Spread line
     (one roll) is unchanged. Supersedes the old test "the rest of the magazine still goes". PROVISIONAL.
+5205. **A thrown item in the pack is thrown from the Attack tab (C).** Reproduced: a flashbang (any `weapons.json`
+    item of category `thrown`: the frag, smoke and incendiary grenades, the flashbang, throwing knives, the charges)
+    bought into the pack sits in `Unit.throwables`, and its tooltip said "Throw it from the Attack tab", but no action
+    descriptor sent the reducer's `combat/throw` (`tactics.ts throwItem`), so nothing threw it. Now the Attack tab has
+    one row per item carried ("Throw Flashbang (1)", the price `throw` **2** AP, its text, the range and the blast
+    radius in words), a tile pick whose choices are the reducer's own (range `throwRangeOf`, 1 for a placed charge,
+    sight), and the picking marks of rules 1.65: reach (every tile it could land on), area (every tile within the
+    blast radius of the picked tile), targets (the units there, harm for the other side, help for one's own). A held
+    Thrown weapon keeps its Throw technique. No number changed; no closed-list entry (the row is a descriptor of the
+    physical system, its action the existing `combat/throw`).
