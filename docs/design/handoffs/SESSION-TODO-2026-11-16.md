@@ -213,3 +213,8 @@ One patch with the Forge realign of section L. Not started; not to be started wi
   and fists carry `also_scales` [raw_power, dexterity]; the hatchet hits with Dexterity and scales with Strength.
   Candidates: the hatchet, the gloves family, a new hybrid blade. A hit with one builds both; hold it to a line above
   the single-attribute melee line, by measurement.
+- **Ruled (Leon, 17 Nov):** the Forge realign has three targets: Strength, Dexterity, or **hybrid**, for any melee
+  weapon (hybrid costs the most; its damage factor fitted to the hybrid line). And the patch must **explain pips and
+  Momentum better**: one plain line on each door tab and technique row saying what the technique will spend and from
+  where ("spends 1 Momentum" / "spends 1 Pressure on the target" / both), the two meters shown together on a hybrid
+  weapon's attack tab, the target's pips visible on its token while aiming, and a first-use tip for each resource.
