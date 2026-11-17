@@ -73,6 +73,16 @@
       "faint_alpha_to_solid_area_ratio": 0.00854
     },
     {
+      "number": 17,
+      "name": "Wall",
+      "faint_alpha_to_solid_area_ratio": 0.04515
+    },
+    {
+      "number": 20,
+      "name": "Weather the Volley",
+      "faint_alpha_to_solid_area_ratio": 0.05427
+    },
+    {
       "number": 23,
       "name": "Keep Swinging",
       "faint_alpha_to_solid_area_ratio": 0.04827
@@ -166,6 +176,26 @@
       "number": 43,
       "name": "Momentum counter (door emblem)",
       "faint_alpha_to_solid_area_ratio": 0.01104
+    },
+    {
+      "number": 45,
+      "name": "Bowl Over",
+      "faint_alpha_to_solid_area_ratio": 0.0702
+    },
+    {
+      "number": 46,
+      "name": "Execute",
+      "faint_alpha_to_solid_area_ratio": 0.07992
+    },
+    {
+      "number": 47,
+      "name": "Into the Wall",
+      "faint_alpha_to_solid_area_ratio": 0.05701
+    },
+    {
+      "number": 48,
+      "name": "Hurl",
+      "faint_alpha_to_solid_area_ratio": 0.07161
     },
     {
       "number": 51,

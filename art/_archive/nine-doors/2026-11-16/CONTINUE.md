@@ -1,6 +1,6 @@
 # Continue the Nine Doors artwork — 0.30 scope applied
 
-Original ledger: **326/375 delivered**. Original unfinished: **49 = 22 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **63 request records**, including replacement/reuse checks.
+Original ledger: **332/375 delivered**. Original unfinished: **43 = 16 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **57 request records**, including replacement/reuse checks.
 
 Read art-hold-list-0.30.md, holds-0.30.json and CONTINUE-0.30.md. All 28 old holds remain enforced. progress.json and records/ own old completion; progress-0.30.json owns added-request completion. Recipe pending flags are not ledgers.
 
@@ -8,12 +8,6 @@ The latest delivered images are review candidates, never automatically approved.
 
 ## Eligible old recipes, in priority order
 
-- P8 · #17 · Wall · `art/icons/moves/wall.png` · Wick icon
-- P8 · #20 · Weather the Volley · `art/icons/moves/weather-the-volley.png` · Wick icon
-- P8 · #45 · Bowl Over · `art/icons/moves/bowl-over.png` · Wick icon
-- P8 · #46 · Execute · `art/icons/moves/execute.png` · Wick icon
-- P8 · #47 · Into the Wall · `art/icons/moves/into-the-wall.png` · Wick icon
-- P8 · #48 · Hurl · `art/icons/moves/hurl.png` · Wick icon
 - P8 · #76 · Flush Out · `art/icons/moves/flush-out.png` · Wick icon
 - P8 · #77 · Open · `art/icons/moves/open.png` · Wick icon
 - P8 · #117 · Parting Cut · `art/icons/moves/parting-cut.png` · Wick icon

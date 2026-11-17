@@ -1,0 +1,78 @@
+{
+  "number": 45,
+  "family": "move_icons",
+  "id": "move-bowl-over",
+  "path": "art/icons/moves/bowl-over.png",
+  "name": "Bowl Over",
+  "mode": "Wick icon",
+  "state": "designed, not built",
+  "use": "Momentum 2.0 next slice",
+  "paint": "Wick shoulder-first, mid-stride, a small figure tipping over in front of him.",
+  "avoid": "a bowling pin \u00b7 a vehicle",
+  "section": "Raw Power: the Momentum chain, and the Breaker",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick shoulder-first, mid-stride, a small figure tipping over in front of him.\nAvoid: a bowling pin \u00b7 a vehicle\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: One Wick lunges RIGHT shoulder-first. Only a cropped opponent torso/arm fragment tips toward upper right; no second full figure or opponent face. Clear bent front knee and trailing boot.\nWick is the exact CERAMIC AUTOMATON: clipped oversized head with transparent screen and white pixel face, ear discs, offset fasteners, short asymmetric capelet, round medical lantern chest, chunky mittens and cuffed boots. No default bowl/cup/halo or unrequested stars/arrows.\nTrue transparency in backdrop and ALL holes, not opaque black dividers. Complete subject centered inside 15% transparent margins. Square single icon readable at32/44px; signs at24/48px; door emblems at20px. All decisive shape stays in safe box and circular chip.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 8,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "072895ccde2261b3aff505c8038181f16529e5fcf62041d66687d0cf2ae45788",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/045-bowl-over.png",
+  "source_sha256": "5495fd95bf5e3c1f759d32d3571494226a8668bf39ced51f642eca587dcff8b2",
+  "export_crop": [
+    0,
+    29,
+    1254,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/bowl-over.png",
+    "64": "art/icons/moves/exports/64/bowl-over.png",
+    "48": "art/icons/moves/exports/48/bowl-over.png",
+    "44": "art/icons/moves/exports/44/bowl-over.png",
+    "32": "art/icons/moves/exports/32/bowl-over.png",
+    "24": "art/icons/moves/exports/24/bowl-over.png"
+  },
+  "framing": {
+    "scale": 0.5023910581332365,
+    "offset": [
+      197,
+      204
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "cc1f7e778a9748ee0c6eacd7ce43681de4be1e0c6e87032e579353c9ba08a271",
+    "64": "3ac62b1b4fd1364e5825293765dd73c8db3b182c821eb043d3a6037f2f22d7cf",
+    "48": "b7c1e8854acae75fd207868d91b2f75a1040ae7a95f52c71aece7912527de02d",
+    "44": "c3219b9af0426ba08968c3bfd8e13af2645369d9868aca42eca099f3cdecac58",
+    "32": "d338675392aba704bd1b386456bc12f77524ecf38a088760c19ee1384c8dca42",
+    "24": "6f79061159a3e1772a7029ea452f3c207aea4db4c781a2ca8f130f4d3e001c81"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

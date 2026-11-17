@@ -1305,6 +1305,66 @@
       },
       "ink": "#FFFFFF"
     },
+    "move-wall": {
+      "label": "Wick \u2014 Wall",
+      "path": "art/icons/moves/wall.png",
+      "sha256": "826444670d97ad63c78a8c06b517d3c3c6f3b302aa5714356892f8bc84411855",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/017-wall.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 17,
+      "exports": {
+        "128": "art/icons/moves/exports/128/wall.png",
+        "64": "art/icons/moves/exports/64/wall.png",
+        "48": "art/icons/moves/exports/48/wall.png",
+        "44": "art/icons/moves/exports/44/wall.png",
+        "32": "art/icons/moves/exports/32/wall.png",
+        "24": "art/icons/moves/exports/24/wall.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-weather-the-volley": {
+      "label": "Wick \u2014 Weather the Volley",
+      "path": "art/icons/moves/weather-the-volley.png",
+      "sha256": "a4dfd19d1befb0c75a84bbe6da233ea56fd1ffd0c629b12508addce028afb98f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/020-weather-the-volley.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 20,
+      "exports": {
+        "128": "art/icons/moves/exports/128/weather-the-volley.png",
+        "64": "art/icons/moves/exports/64/weather-the-volley.png",
+        "48": "art/icons/moves/exports/48/weather-the-volley.png",
+        "44": "art/icons/moves/exports/44/weather-the-volley.png",
+        "32": "art/icons/moves/exports/32/weather-the-volley.png",
+        "24": "art/icons/moves/exports/24/weather-the-volley.png"
+      },
+      "ink": "#FFFFFF"
+    },
     "move-follow-through": {
       "label": "Wick \u2014 Follow Through",
       "path": "art/icons/moves/follow-through.png",
@@ -1680,6 +1740,126 @@
         "44": "art/icons/moves/exports/44/unstoppable.png",
         "32": "art/icons/moves/exports/32/unstoppable.png",
         "24": "art/icons/moves/exports/24/unstoppable.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-bowl-over": {
+      "label": "Wick \u2014 Bowl Over",
+      "path": "art/icons/moves/bowl-over.png",
+      "sha256": "072895ccde2261b3aff505c8038181f16529e5fcf62041d66687d0cf2ae45788",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/045-bowl-over.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 45,
+      "exports": {
+        "128": "art/icons/moves/exports/128/bowl-over.png",
+        "64": "art/icons/moves/exports/64/bowl-over.png",
+        "48": "art/icons/moves/exports/48/bowl-over.png",
+        "44": "art/icons/moves/exports/44/bowl-over.png",
+        "32": "art/icons/moves/exports/32/bowl-over.png",
+        "24": "art/icons/moves/exports/24/bowl-over.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-execute": {
+      "label": "Wick \u2014 Execute",
+      "path": "art/icons/moves/execute.png",
+      "sha256": "0e93442cda0256a1d9518fe02682dd85f6a86f163f4ea7a841d499fb2f603e39",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/046-execute.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 46,
+      "exports": {
+        "128": "art/icons/moves/exports/128/execute.png",
+        "64": "art/icons/moves/exports/64/execute.png",
+        "48": "art/icons/moves/exports/48/execute.png",
+        "44": "art/icons/moves/exports/44/execute.png",
+        "32": "art/icons/moves/exports/32/execute.png",
+        "24": "art/icons/moves/exports/24/execute.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-into-the-wall": {
+      "label": "Wick \u2014 Into the Wall",
+      "path": "art/icons/moves/into-the-wall.png",
+      "sha256": "8211725540744f7f51b9d9176a8f483eccfa68bc76ba4726ad7a6399aee64cfc",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/047-into-the-wall.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 47,
+      "exports": {
+        "128": "art/icons/moves/exports/128/into-the-wall.png",
+        "64": "art/icons/moves/exports/64/into-the-wall.png",
+        "48": "art/icons/moves/exports/48/into-the-wall.png",
+        "44": "art/icons/moves/exports/44/into-the-wall.png",
+        "32": "art/icons/moves/exports/32/into-the-wall.png",
+        "24": "art/icons/moves/exports/24/into-the-wall.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-hurl": {
+      "label": "Wick \u2014 Hurl",
+      "path": "art/icons/moves/hurl.png",
+      "sha256": "287b5dc86be56a49d00e2bc386c99b6b4df38f05f71b4b8edfb616f1e00fe247",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/048-hurl.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 48,
+      "exports": {
+        "128": "art/icons/moves/exports/128/hurl.png",
+        "64": "art/icons/moves/exports/64/hurl.png",
+        "48": "art/icons/moves/exports/48/hurl.png",
+        "44": "art/icons/moves/exports/44/hurl.png",
+        "32": "art/icons/moves/exports/32/hurl.png",
+        "24": "art/icons/moves/exports/24/hurl.png"
       },
       "ink": "#FFFFFF"
     },
