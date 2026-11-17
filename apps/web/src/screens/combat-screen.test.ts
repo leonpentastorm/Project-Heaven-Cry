@@ -2,7 +2,8 @@
 // The combat screen (combat feel v1): Fan the Hammer from pick to the end of its volley, rendered for real with the
 // effects layer and the turn intro mounted; the your-turn panel and the waiting card; the attack's red reach and the
 // odds chip; spent AP draining; the initiative strip turning over; the turn intro's command tiles selecting an action.
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { setFolded } from '../game/tabPrefs';
 import { ARCHETYPES, apply, newGame, viewFor, active, type GameState, type Sheet } from '@engine';
 
 let G: GameState; const ME = 'host';
@@ -334,6 +335,8 @@ describe('combat screen', () => {
 });
 
 describe('the Perks tab on the combat screen (plan 3)', () => {
+  // 0.31.9: the shelves fold, closed by default; these tests read them open
+  beforeEach(() => { setFolded('fight:shelf:rides', false); setFolded('fight:shelf:always', false); });
   it('a perk holder gets a Perks tab; picking Vanishing Act and confirming sends combat/perk and the engine runs it (rules 1.56: Shrug It Off has no action now)', async () => {
     vi.useFakeTimers();
     const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
@@ -405,8 +408,8 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     // three labelled shelves, in that order
     expect(Array.from(panel.querySelectorAll('[data-shelf]')).map((x) => x.getAttribute('data-shelf'))).toEqual(['use', 'rides', 'always']);
     expect((panel.querySelector('[data-shelf="use"]') as HTMLElement).textContent).toBe('USE NOW');
-    expect((panel.querySelector('[data-shelf="rides"] > span') as HTMLElement).textContent).toBe('RIDES AN ACTION');
-    expect((panel.querySelector('[data-shelf="always"] > span') as HTMLElement).textContent).toBe('ALWAYS ON');
+    expect((panel.querySelector('[data-shelf="rides"] .phc-fold-h > span[id]') as HTMLElement).textContent).toBe('RIDES AN ACTION');
+    expect((panel.querySelector('[data-shelf="always"] .phc-fold-h > span[id]') as HTMLElement).textContent).toBe('ALWAYS ON');
     // Use now is the buttons players press, as before
     const use = Array.from(panel.querySelectorAll('button.phc-cb-act[data-act^="pk:"]'));
     expect(use.map((b) => b.getAttribute('data-act'))).toEqual(['pk:perk:vanishing_act#vanishing_act', 'pk:skill:durability.1#guard_challenge', 'pk:skill:durability.1#guard_slam']);

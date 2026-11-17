@@ -60,6 +60,7 @@ import { NOT_PERSON, faceOf, kindBadge, worldLayer, markVals, talkVals, hazardVa
 import { approachOptions, sigilGrowthView, canLayGrandForms, makeView, giveView, shieldsView } from '@engine';
 import { groupedSection, sigilWordGroups } from '../game/workshopGroups';
 import { forkSheetCard } from '../game/forkView'; // rules 1.60: each door's forks under its skill on the SKILLS tab (the engine's doorForkView)
+import { fromSkillsOf } from '../game/skillUnlocks'; // 0.31.9: the PERKS menu's FROM YOUR SKILLS
 import { foldVals } from '../game/fold'; // 0.31.x: the fork card folds to one line (the shared fold, remembered)
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
@@ -519,6 +520,12 @@ export class MainLogic extends DCLogic {
       return { key: x.id, zoom: zoomer(this, icon, p.name, 'perk', text.charAt(0).toUpperCase() + text.slice(1)), name: p.name, icon, text: text.charAt(0).toUpperCase() + text.slice(1),
         tier: x.tier === 'I' || x.tier === 'II' ? 'TIER ' + x.tier : x.tier.toUpperCase(), chip: p.skills.map((s) => SKILL[s].name).join(' + ') || 'Ultimate',
         chipStyle: 'padding: 1px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink, ...badgeOf('perk:' + x.id, x.tier), ...usesOf('perk:' + x.id, x.tier) }; }) : [];
+    // 0.31.9: the named unlocks of the character's skill ladders (an ability of its own, not a perk step, a fork or a door
+    // verb row), read from the engine's skill data: its name, its one card line, its skill
+    const fromSkills = fromSkillsOf(c, SKILL);
+    const pkRedraw = () => this.setState({ foldTick: Date.now() });
+    const pkFold = { traits: foldVals('sheet:perks:traits', { byRule: true, redraw: pkRedraw }), perks: foldVals('sheet:perks:perks', { byRule: true, redraw: pkRedraw }),
+      skills: foldVals('sheet:perks:skills', { byRule: true, redraw: pkRedraw }),  };
     // The class and its moves (spec: Classes; game/classView.ts): every rank's move, held or locked with what it takes,
     // who runs it and the uses left, under the emblem, the rank and the class attribute's progress (II at 5, III at 8).
     const klass = c ? classOf(c) : null, clsEm = emblemOf(heldClassId(c));
@@ -1506,7 +1513,7 @@ export class MainLogic extends DCLogic {
       echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabArms: S.tab === 'arms', ar: S.tab === 'arms' ? armsTabVals(this, g, c) : { has: false }, tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
       fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : c && c.unspent && c.unspent.skill + c.unspent.attr + c.unspent.core === 0 && pendingPerkSteps(c).length ? 'Level up · pick a perk' : 'Level up · spend points', // what is due (levelUpDue): points, or only a perk step (a skill at Mastery 1 from creation)
-      status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? fmtNum(c.hp) + ' / ' + fmtNum(hpMax) + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, mk, gs, packBig, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',
+      status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? fmtNum(c.hp) + ' / ' + fmtNum(hpMax) + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, fromSkills, hasFromSkills: fromSkills.length > 0, noFromSkills: !fromSkills.length, pkFold, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, mk, gs, packBig, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',
       canLoad, cantLoad: !canLoad || g.phase === 'combat', loadMags: () => act({ type: 'gear/load', charId: c.id }),
       load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 13px; color: ' + (over ? '#F65157' : '#A3AEC2'), bio,
       hero, stream, pushes,

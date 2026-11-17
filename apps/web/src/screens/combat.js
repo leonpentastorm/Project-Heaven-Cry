@@ -371,7 +371,7 @@ const CHIP = (on) => 'min-height: 30px; padding: 0 10px; border-radius: 999px; f
  *  Colour is meaning (docs/design/colour-system.md), always with the word: Ready green, Used muted, the rest text. */
 const SHELF_HEAD = 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: #A3AEC2';
 const STATE_INK = { ready: '#6FEA77', used: '#A3AEC2', last: '#FFFFFF', waiting: '#C9D3E3', active: '#C9D3E3' };
-export function perkShelfVals(sh, items, sel) {
+export function perkShelfVals(sh, items, sel, redraw) {
   const byKey = {}; for (const a of items) byKey[a.key] = a;
   const rowOf = (r) => { const a = byKey[PKI + r.key]; if (!a) return null; const on = sel === a.key;
     return { key: a.key, name: r.name, line: r.line, text: r.detail, state: r.state || 'rides', open: on ? 'true' : 'false', isOpen: on, locked: a.locked, pick: a.pick, title: r.name + ': ' + r.line + (/[.!?…]$/.test(r.line) ? ' ' : '. ') + 'Pick it to read its card.',
@@ -379,7 +379,8 @@ export function perkShelfVals(sh, items, sel) {
       btnStyle: 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; min-height: 32px; padding: 0; border: 0; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; text-align: left; cursor: pointer',
       lineStyle: 'font-size: 13px; line-height: 1.3; font-weight: ' + (r.state === 'ready' || r.state === 'last' ? '700' : '500') + '; color: ' + (STATE_INK[r.state] || '#C9D3E3'),
       textStyle: 'font-size: 13px; line-height: 1.4; color: #C9D3E3' }; };
-  const shelves = ['rides', 'always'].map((id) => ({ key: id, label: SHELF_LABEL[id], help: SHELF_HELP[id], headId: 'phc-shelf-' + id, headStyle: SHELF_HEAD, rows: sh[id].map(rowOf).filter(Boolean) })).filter((x) => x.rows.length > 0);
+  // 0.31.9: each shelf folds (the one fold, closed by default, remembered)
+  const shelves = ['rides', 'always'].map((id) => ({ key: id, label: SHELF_LABEL[id], help: SHELF_HELP[id], headId: 'phc-shelf-' + id, headStyle: SHELF_HEAD, rows: sh[id].map(rowOf).filter(Boolean), fold: foldVals('fight:shelf:' + id, { byRule: true, redraw }) })).filter((x) => x.rows.length > 0);
   const hasUse = items.some((a) => !isPerkInfo(a.key));
   return { hasUse, useLabel: SHELF_LABEL.use, useHelp: SHELF_HELP.use, useStyle: SHELF_HEAD, shelves };
 }
@@ -1814,7 +1815,7 @@ export class CombatLogic extends DCLogic {
       // Faith 2.2 (spec 2.4): the FAITH tab's header, your patron's portrait beside the Devotion meter.
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),
       // Rules 1.14, the perk card in a fight: three shelves. USE NOW is the buttons below; the other two are lists to read.
-      ...(tabG.id === 'perks' ? perkShelfVals(pkShelves(), tabG.items, rowSel) : { hasUse: false, useLabel: '', useHelp: '', shelves: [] }),
+      ...(tabG.id === 'perks' ? perkShelfVals(pkShelves(), tabG.items, rowSel, () => this.setState({ foldTick: Date.now() })) : { hasUse: false, useLabel: '', useHelp: '', shelves: [] }),
       items: tabG.items.filter((a) => !isPerkInfo(a.key)).filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, ...callRow(a), ...actIcon(a), code: this._codeOf[a.key] || '', hasCode: !!this._codeOf[a.key], padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], hasSep: !!sepOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
     // Leon (8 Nov 2026): the whole action panel greys out until it is really your turn: someone else's turn, or the
     // enemies' moves still playing on screen after the engine has handed the turn back (Say stays usable).

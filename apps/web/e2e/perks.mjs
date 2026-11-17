@@ -102,6 +102,8 @@ const gun = (await me()).weapon;
 ok('the gun (' + gun + ') grants its reload: ' + names.filter((n) => RELOAD.test(n)).join(', '), names.some((n) => RELOAD.test(n)));
 await p.locator('#phc-tab-perks').click().catch(() => {});
 await settle(p, 150);
+// 0.31.9: the shelves fold, closed by default: open ALWAYS ON to read it
+await p.locator('[data-shelf="always"] .phc-fold-h[aria-expanded="false"]').click().catch(() => {}); await settle(p, 150);
 ok('the PERKS tab lists Preach (Fire Sermon) to use, and the passive Keep Swinging (breaching_strike) on the Always on shelf', (await p.locator('[role="tabpanel"]').getByRole('button', { name: /^Preach/ }).count()) > 0 && /Keep Swinging/.test(await p.locator('[data-shelf="always"]').innerText().catch(() => '')));
 await snap(p, '02-perks-tab');
 // a sabre in hand: no reload any more
