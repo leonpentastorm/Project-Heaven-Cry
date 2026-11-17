@@ -177,6 +177,8 @@ P('hostile', 'bool', 'the actor and the target are (or are not) on different sid
 P('cond', 'ids', 'the condition is one of these', (ev, v) => list(v).map(condId).includes(condId(ev.ctx.id)));
 P('cond_family', 'words', 'the condition\'s family is one of these (body, brain, heart)', (ev, v) => list(v).includes(ev.ctx.fam));
 P('action', 'words', 'the priced action (its cost site) is one of these', (ev, v) => list(v).includes(ev.ctx.action));
+// rules 1.64 item 5006 (the lead's approved primitive): a priced action's own id, for a cost_mod that names one Call
+P('action_id', 'words', 'the own id of the priced action is one of these (a Call: its Calls id, call.name_it; any priced action that passes its id on the context of its price)', (ev, v) => ev.ctx.action != null && typeof ev.ctx.id === 'string' && list(v).includes(ev.ctx.id));
 P('word', 'words', 'the Sigil word being drawn is one of these', (ev, v) => list(v).includes(ev.ctx.word));
 P('hand', 'words', 'the hand is one of these (main, off, both)', (ev, v) => list(v).includes(ev.ctx.hand || (ev.ctx.both ? 'both' : 'main')));
 P('how', 'words', 'the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (heal, tending, blessing (every prayer), perk, stim, leech, thread)', (ev, v) => list(v).includes(ev.ctx.kind ?? ev.ctx.how));

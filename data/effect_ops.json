@@ -4769,6 +4769,10 @@
         "arg": "words",
         "about": "the priced action (its cost site) is one of these"
       },
+      "action_id": {
+        "arg": "words",
+        "about": "the own id of the priced action is one of these (a Call: its Calls id, call.name_it; any priced action that passes its id on the context of its price)"
+      },
       "word": {
         "arg": "words",
         "about": "the Sigil word being drawn is one of these"

@@ -18,6 +18,10 @@ The game shows its version in the corner of the title screen and in every "Repor
   melee Relic properties (True, Biting, Balanced) at the Forge; bare fists and Figment or companion weapons do not;
   a weapon nothing fits gets an honest refusal. Every category walked: only thrown items have none (and are not
   upgradable).
+- **K3, a Pressed Boss (item 5005):** checked: the blade's Flush Out already spares Elites and Bosses since 0.31.0's
+  review (`target_not_tier`); no change.
+- **K4, Rite in the Field cuts Name It (item 5006):** the approved price predicate `action_id` (a priced action's own
+  id); the perk's new `cost_mod` row cuts Lore Master's Call Name It by 1 (Tier II: 2), never below 0.
 
 ## 0.31.0 — the field is turns, the fight's big banners, and the playtest's faults
 

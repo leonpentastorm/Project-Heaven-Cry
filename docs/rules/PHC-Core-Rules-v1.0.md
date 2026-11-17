@@ -11866,6 +11866,18 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
     gun or melee words). **None fits:** the six thrown items (grenades, satchel charge, the bot scrambler), which the
     grade step already refuses ("Thrown weapons can't be upgraded"): a thrown property is a new design, listed for
     the lead.
+5005. **A Pressed Boss and the blade's Flush Out (K3; checked, no change):** rules 1.63 item 4819 already holds:
+    `skills.json dexterity` row `flush_out_blade` carries `target_not_tier: ["elite", "boss"]`, so a Dexterity blow
+    on a Pressed Elite or Boss asks no save and gives no Fear; `test/rules163-dex.test.ts` proves it through a real
+    cut (a Soldier is Afraid on a failed save; an Elite and a Boss are not asked). A Boss can still be made Afraid
+    only by the paid Flush Out (the ranged half, item 4805), which costs AP and keeps its own limits. No new number.
+5006. **Rite in the Field cuts Name It (the lead's approved primitive):** a new price predicate **`action_id`**
+    (`effects/triggers.ts`, its row in `effect_ops.json` predicates): the priced action's own id is one of these
+    words, for any priced action that passes its id on its price's context (a Call does: `calls/core.ts callAp` prices
+    the site `call` with `{ id }`). `perks.json rite_in_the_field` adds a `cost_mod` row on `action: ["call"]`,
+    `action_id: ["call.name_it"]`: Lore Master's own Call costs **1** AP less at Tier I and **2** at Tier II, never
+    below **0** (at Lore Master 3 to 4, 2 AP becomes 1 or 0). Proof: `test/perks-d.test.ts` (the Call made through the
+    reducer: 2, 1 and 0 AP; Spot unchanged). Supersedes item 4814. PROVISIONAL: 1, 2, 0.
 4550. **Sight both ways (rules 1.57 opening volley item 1; a bug):** `lineOfSight(a, b)` is clear only if the Bresenham walk a to b and the walk b to a are both clear (each skips its end tile). Before, it was the walk a to b only: with one blocker, 2% of tile pairs (72 of 3,551 on the proposal's ground) saw one way, and 4% of the stage-1 runs' enemy gun rolls had a blocked line back. `perks/b.ts losNoVeil` (Skin Map) was a second copy of the walk; it is now `lineOfSight(..., ignoreVeil)`. Proof: `test/rules157-volley.test.ts` (every pair on a 15 x 15 ground with a wall; the reproduced case, played).
 4551. **The enemy's Burst (item 2):** `techniques.json burst.numbers.enemy_same` 1 (was unset: an enemy with an Auto weapon rolled three at 0 / −1 / −2 and cooled 1; item 1079). Measured (one enemy turn on the yardstick, 200 seeds): a Gun drone (Soldier, service rifle) 21 then 29 damage on turns 1 and 2 (14% / 20% of 145 HP), was 30 / 46; a Soldier sabre 10 then 30. Supersedes item 1079's "keep the old Burst" and item 1316. PROVISIONAL.
 4552. **The tier damage factors after the refit (item 2):** Soldier 0.78, Elite 1.05, Boss 1.2, unchanged on purpose (item 1079 proposed Soldier 0.88 and Elite 1.08 to hold the rifleman's 3 rounds under two Soldiers; the lead's target for this pass is that a gun foe threatens what a melee foe of its tier does). Moved guards: the idle pair under two Soldiers at level 6 lasts 3.5 rounds (bound 3.2 → 4.2, `defence-measure.test.ts`); a healer and a shielder under four Soldiers at level 6 now hold for 10 rounds (`heal-measure.test.ts`: OLD "somebody goes Down", now "outlasts a healer alone"). PROVISIONAL.
