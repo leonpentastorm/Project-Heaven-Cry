@@ -1728,7 +1728,7 @@ export class CombatLogic extends DCLogic {
       mePanel.bonds = bondStripVals(cb, myU, mc, (id) => { const v = cb.units.find((x) => x.id === id); return v ? faceOf(v) || '' : ''; }, ledgerRow);
       // a chip hovered lights its line on the map (tieLayer); the layer itself never takes the pointer
       for (const b of [...(mePanel.bonds.allies || []), ...(mePanel.bonds.enemies || [])]) Object.assign(b, { hot: () => { if (this.state.tieHot !== b.id) this.setState({ tieHot: b.id }); }, cold: () => { if (this.state.tieHot) this.setState({ tieHot: null }); } });
-      const resSrc = rows0.filter((r) => !(mePanel.bonds.show && mePanel.bonds.hasLedger && r.key === 'res-ledger')).filter((r) => !(S.tab === 'outbursts' && myU.mg && myU.mg.held && (r.key === 'strain' || r.key === 'held')))
+      const resSrc = rows0.filter((r) => !(mePanel.bonds.show && mePanel.bonds.hasLedger && r.key === 'res-ledger')).filter((r) => !(S.tab === 'outbursts' && myU.mg && myU.mg.held && r.key === 'held')) // 0.31.9: Strain stays while holding (the moment it matters most)
         .map((r) => (r.warn === 'JAMMED' && jamHead.has(r.key === 'off' ? 'off' : 'main') ? { ...r, warn: undefined, level: undefined } : r));
       mePanel.res = resView(resSrc);
       // 0.31.0 (U2): one row of mini meters (name, pips or a thin bar, the number; the explainer is the hover card), and
@@ -1737,8 +1737,8 @@ export class CombatLogic extends DCLogic {
         const rows = mePanel.res.rows.map((r) => ({ ...r, now: (rows0.find((x) => x.key === r.key) || {}).now }));
         const { open, folded } = meterFolds(rows, mem, cb.name + '|' + (cb.map && cb.map.id) + '|' + cb.order.join(','));
         // (a zero meter with a warning, RELOAD CORE or EMPTY, never folds: game/fold.ts meterFolds; it takes no fold click)
-        mePanel.res.rows = open.map((r) => ({ ...r, tip: (r.sub ? r.sub + '. ' : '') + r.hint, zero: r.now != null && r.now <= 0 && !r.warn,
-          fold: r.now != null && r.now <= 0 && !r.warn ? () => { foldMeter(r.key, true); redraw(); } : () => {} }));
+        mePanel.res.rows = open.map((r) => ({ ...r, tip: (r.sub ? r.sub + '. ' : '') + r.hint, zero: r.now != null && r.now <= 0 && !r.warn && !r.pin,
+          fold: r.now != null && r.now <= 0 && !r.warn && !r.pin ? () => { foldMeter(r.key, true); redraw(); } : () => {} }));
         mePanel.res.has = open.length > 0 || folded.length > 0;
         mePanel.res.hasFolded = folded.length > 0; mePanel.res.foldedN = '+' + folded.length;
         mePanel.res.foldedTip = 'At zero, nothing this fight (click to show): ' + folded.map((r) => r.label.charAt(0) + r.label.slice(1).toLowerCase()).join(', ');

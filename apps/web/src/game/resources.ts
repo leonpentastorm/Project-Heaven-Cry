@@ -25,6 +25,7 @@ export interface ResRow {
   warn?: ResWarn; /** alert: act now (red chip); caution: soon (white chip); ready: something good to spend (green). */ level?: 'alert' | 'caution' | 'ready';
   hint: string; /** A short second line (the ammo type, the source move, the held design's tone). */ sub?: string;
   /** The value in the compact rows (the mini-bar, the urgent rows), when 'now / max' alone would lose its meaning. */ short?: string;
+  /** 0.31.9: always shown and counted most urgent (Strain while an Outburst is held: never folded, never dropped). */ pin?: boolean;
 }
 
 // ---------- colours (CLAUDE.md; docs/design/colour-system.md) ----------
@@ -166,7 +167,7 @@ export function strainRows(hh: HeldHeart): ResRow[] {
   const holdTxt = steady ? 'Steadied: your next turn start only eases 1 (no swell)' : 'Holding into your next turn: its start eases 1, then the swell adds ' + hh.swell + ' (net ' + sgn(hh.swell - (s > 0 ? 1 : 0)) + ')';
   const nextTxt = held ? holdTxt : 'Your next Begin adds ' + b + ' Strain' + why;
   const peakTxt = ' → ' + peak + ' / ' + L + (peak > L ? ', ' + (peak - L) + ' over' : '');
-  const row: ResRow = { key: 'strain', label: 'Strain', value: s + ' / ' + L, now: s, max: L, kind: 'pips', colour: RES_INK.soul,
+  const row: ResRow = { key: 'strain', label: 'Strain', value: s + ' / ' + L, now: s, max: L, kind: 'pips', colour: RES_INK.soul, ...(held ? { pin: true } : {}),
     hint: 'A Begin adds ' + b + ' Strain' + why + '. A held Outburst swells at your turn start (+' + hh.swell + ' after the turn start\'s −1, so an idle held turn nets ' + sgn(hh.swell - 1) + '). Over ' + L + ', every point burns ' + burn + ' at your turn end; ' + shortAt + ' over is a Mana Short, and then ' + (SOUL().strain?.shock?.name || 'Mana Shock') + ' until Strain is back at the limit or the fight ends: from your next turn, it costs ' + Math.round((SOUL().strain?.shock?.hp_share || 0) * 100) + '% of your max HP at each of your turn ends in it. ' + calm };
   const SH = SOUL().strain?.shock || {};
   // Rules 1.56: in Mana Shock the row says so first (the share of max HP a turn, until Strain is back at the limit).
@@ -372,7 +373,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
 
 /** The most urgent rows first (alert, caution, then the rest in order), for the narrow and collapsed bars. */
 export function urgentRows(rows: ResRow[], n = 3): ResRow[] {
-  const rank = (r: ResRow) => (r.level === 'alert' ? 0 : r.level === 'caution' ? 1 : r.level === 'ready' ? 2 : 3);
+  const rank = (r: ResRow) => (r.pin ? -1 : r.level === 'alert' ? 0 : r.level === 'caution' ? 1 : r.level === 'ready' ? 2 : 3);
   return rows.map((r, i) => [r, i] as const).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).slice(0, n).map((x) => x[0]);
 }
 
@@ -426,7 +427,7 @@ export function resRowView(r: ResRow, compact = false) {
   const ink = fillInk(r);
   const value = compact && r.short ? r.short : compact && r.max != null && r.kind !== 'text' && r.value !== 'DOWN' && r.value !== 'BROKEN' ? Math.round(r.now ?? 0) + ' / ' + r.max : r.value;
   return {
-    key: r.key, wide: ['ammo', 'held', 'thr', 'off', 'charge'].includes(r.key) || r.value.length > 22 ? 'true' : 'false', label: r.label.toUpperCase(), value, hint: r.hint, sub: r.sub || '', hasSub: !!r.sub && !compact, warn: r.warn || '', hasWarn: !!r.warn, level: r.level || 'none',
+    key: r.key, pin: !!r.pin, wide: ['ammo', 'held', 'thr', 'off', 'charge'].includes(r.key) || r.value.length > 22 ? 'true' : 'false', label: r.label.toUpperCase(), value, hint: r.hint, sub: r.sub || '', hasSub: !!r.sub && !compact, warn: r.warn || '', hasWarn: !!r.warn, level: r.level || 'none',
     // the meter's hover card (game/actionTip.ts, look 'meter'): its name, its whole value and warning, then what it is and what to do
     card: JSON.stringify({ name: r.label.toUpperCase(), chips: [r.value, r.warn || ''].filter(Boolean), lines: [...(r.sub ? [{ key: 'sub', kind: 'note', label: '', text: r.sub }] : []), ...proseTip(r.hint).lines], look: 'meter' }),
     aria: r.label + ': ' + r.value + (r.sub ? ' (' + r.sub + ')' : '') + (r.warn ? '. ' + r.warn : '') + '. ' + r.hint,

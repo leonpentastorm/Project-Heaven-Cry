@@ -94,3 +94,22 @@ describe('the action list keeps its room (U5)', () => {
   it('at least four rows', () => { expect(LIST_MIN_ROWS).toBeGreaterThanOrEqual(4); expect(listMinPx()).toBeGreaterThanOrEqual(4 * LIST_ROW_PX + 32); }); // four rows under a head line (a weapon's name)
   it('at least four 32 px rows under a head on short windows', () => { expect(listMinShortPx()).toBeGreaterThanOrEqual(4 * (32 + 6) + 32); expect(listMinShortPx()).toBeLessThan(listMinPx()); });
 });
+
+describe('Strain while holding (0.31.9)', () => {
+  it('a held Outburst pins Strain: never folded at 0, always among the three most urgent meters', async () => {
+    const { strainRows, urgentRows } = await import('./resources');
+    const hh: any = { strain: 0, limit: 4, beginStrain: 1, canBegin: true, turnCalm: 1, swell: 1, holdNet: 1, onTurn: true, flooded: false, emanator: true,
+      held: { name: 'Soul Bolt', stage: 1, maxStage: 4, toneName: 'Raw', form: 'Bolt' } };
+    const rows = strainRows(hh), strain = rows.find((r) => r.key === 'strain')!;
+    expect(strain.pin).toBe(true);
+    const others = [{ key: 'ammo', label: 'Ammo', value: '0', now: 0, kind: 'bar', colour: '', hint: '', warn: 'EMPTY', level: 'alert' },
+      { key: 'heat', label: 'Heat', value: '5', now: 5, kind: 'bar', colour: '', hint: '', warn: 'OVERLOAD NEXT', level: 'alert' },
+      { key: 'flux', label: 'Flux', value: '9', now: 9, kind: 'bar', colour: '', hint: '', warn: 'OVERLOAD SOON', level: 'alert' }] as any[];
+    expect(urgentRows([...others, ...rows], 3).map((r) => r.key)).toContain('strain');
+    const r = meterFolds([...others, ...rows].map((x) => ({ key: x.key, now: x.now, warn: x.warn, pin: x.pin })), new MeterMemory(), 'f');
+    expect(r.open.map((x) => x.key)).toContain('strain');
+    // not holding: Strain at 0 folds as any zero meter does
+    const idle = strainRows({ ...hh, held: null })[0];
+    expect(idle.pin).toBeFalsy();
+  });
+});

@@ -306,6 +306,12 @@ await pause(host, 500);
 ok('the Outburst is held: ' + JSON.stringify(u.mg?.held), !!u.mg?.held);
 console.log('  log:', cb.log.slice(-3).join(' | '));
 await host.evaluate(() => scrollTo(0, 0)); await snap('12-combat-holding');
+// 0.31.9 (Leon: "strain does not show when you are holding an outburst"): Strain is shown, unfolded, while holding, at both sizes
+if (u.mg?.held) { const vp0 = host.viewportSize();
+  for (const [w, h] of [[1280, 720], [1600, 900]]) { await host.setViewportSize({ width: w, height: h }); await pause(host, 400);
+    const seen = await host.evaluate(() => [...document.querySelectorAll('[data-res="strain"]')].some((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && e.getAttribute('data-zero') !== 'true'; }));
+    ok('holding at ' + w + 'x' + h + ': the Strain meter shows', seen); }
+  if (vp0) await host.setViewportSize(vp0); await pause(host, 300); }
 // end turn, come back, release at the raider
 await host.getByRole('button', { name: 'End turn', exact: true }).click();
 const back = await waitMine();
