@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.guard.stand_fast",
+  "name": "Stand Fast",
+  "icon_id": "fork.guard.stand_fast",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Stand Fast** (`guard.stand_fast`). Leon: *\"change slam to an AOE circle around you ... slam the shield on the ground\nmake a shockwave\"*. *\"Your Slam is a shockwave: it pushes nobody; every foe within {=numbers.within} tiles is Taunted by\nyou for {=numbers.rounds} round with no save (a Boss too, never forced) and makes Slam's Body save or is Off Balance.\nSame price: {=ap} AP and {=guard} Guard.\"*\n- Fields: `within: 2`, `rounds: 1`; price is Slam's own (`durability.unlocks.1.effects.7`, one copy). Why 2: Challenge's\n  reach; what the dearer Slam buys over Challenge is no save.\n- Runs on: plates (Slam's Guard). Carrier, paired rows (Slam's reach is `targets.within`, nested: no number block or\n  pick reaches it, `triggers.ts:304-310`): Slam's `displace` row and its 1-tile `off_balance` row gain `no_door_pick`;\n  the option adds a 2-tile `off_balance` row and a `condition taunted skip_save` row, both `targets {of: self, within:\n  2, side: foe}` with `door_pick` (N2). Four rows, no new reader.\n- Bulwark: Called Out (section 4, R1) is the aimed one: one named foe, no save, no Guard. Stand Fast is the mass one at\n  Slam's price, with Off Balance on all. Anchor wants foes beside you: a fit. Readers of \"pushed\" (Brace, Anchor, Heavy\n  Hands) lose nothing: nobody is pushed. Peak: no.\n- Excite: five foes around you, one Slam: all five must hit you next round while the Ward and the plates hold.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-guard-stand-fast",
+  "path": "art/icons/forks/guard-stand-fast.png",
+  "paint": "Wick crouches front-on and slams the bottom of ONE round shield firmly against a short ground line. ONE broad broken ring travels out from the contact under his boots, cropped enemy feet recoil at the two edges. Determined pixel eyes.",
+  "avoid": "No forward shield shove, no enemies flying away, no crater or elaborate explosion.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick crouches front-on and slams the bottom of ONE round shield firmly against a short ground line. ONE broad broken ring travels out from the contact under his boots, cropped enemy feet recoil at the two edges. Determined pixel eyes.\nAVOID: No forward shield shove, no enemies flying away, no crater or elaborate explosion.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 2,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "44c3c5fa671445f65c235976b8334d2a08e1d810fbcad44c769f650f7243ba96",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-guard-stand-fast-v1.png",
+  "source_sha256": "a0f648f62d9162cbba0f145a392925fa51f4c44089883a772d71dc94695376c4",
+  "export_crop": [
+    0,
+    41,
+    1240,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/guard-stand-fast.png",
+    "64": "art/icons/forks/exports/64/guard-stand-fast.png",
+    "48": "art/icons/forks/exports/48/guard-stand-fast.png",
+    "44": "art/icons/forks/exports/44/guard-stand-fast.png",
+    "32": "art/icons/forks/exports/32/guard-stand-fast.png",
+    "24": "art/icons/forks/exports/24/guard-stand-fast.png"
+  },
+  "export_sha256": {
+    "128": "54df6014fad8f95da125110c5f27bd1f37580ef48a04dd19ad779fb88e42bf98",
+    "64": "1d922f7deeb309aaf165ba3e981d1475e6cd409cc5e7b47620d1caf4c3fb7593",
+    "48": "df54fb6f0f7342ac4db6aa26c407550d61ab51792da3a0751344cce29c7d96f7",
+    "44": "123aa4b2b1467e3d5dda0b33d2294c9527b37d0474c4d36c59e7225b984aca70",
+    "32": "4f512de34e593080387384748374e08e98a262c596fa97309b02db7612ef9736",
+    "24": "54548c78f811586f504e1ed98cfd622b362ef77a0e5abf38ce591c3ee15d4fc7"
+  },
+  "framing": {
+    "scale": 0.5578049333313227,
+    "offset": [
+      166,
+      173
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

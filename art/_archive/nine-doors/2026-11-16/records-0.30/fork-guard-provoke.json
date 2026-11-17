@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.guard.provoke",
+  "name": "Provoke",
+  "icon_id": "fork.guard.provoke",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Provoke** (`guard.provoke`). *\"While you hold Guard, the first foe each round whose blow your plates soak is Taunted\nby you for {=numbers.rounds} round, with no save (a Boss too: it is never forced, but it is worse at hitting anyone\nelse).\"*\n- Fields: `rounds: 1`; limit `per_round` n 1. Why: one free Taunt a round is Challenge's price (1 AP, 1 Guard) saved\n  once a round; two a round would leave Challenge with no job.\n- Runs on: plates (it fires only on a soak). Carrier: trigger `taking`, `if {target: self, actor: foe, by_hit: true,\n  self_has_res: [guard]}`, op `condition taunted target: actor skip_save rounds`.\n- Bulwark: its Challenge (with Draw Fire merged, section 4) taunts on its turn; Provoke taunts on theirs. Perks: Answer\n  in Kind (hurt \u2192 damage) and Weight of the Wall stack with it, no overlap. Peak: no.\n- Excite: walk into the gunline holding plates; the first rifleman to fire at you is stuck on you while your squad\n  flanks him.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-guard-provoke",
+  "path": "art/icons/forks/guard-provoke.png",
+  "paint": "Wick leans forward behind ONE curved chest plate, beckoning with the free hand as ONE short incoming dart stops on the plate. Cocky pixel smirk: soaking the first blow draws attention back to him. A cropped opposing forearm only at the far edge.",
+  "avoid": "No giant shield, extra full person, floating default arrows or aggression marks over an ally.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick leans forward behind ONE curved chest plate, beckoning with the free hand as ONE short incoming dart stops on the plate. Cocky pixel smirk: soaking the first blow draws attention back to him. A cropped opposing forearm only at the far edge.\nAVOID: No giant shield, extra full person, floating default arrows or aggression marks over an ally.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 0,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "021b879e6d686343fd55770dd1e0a1eb96edb2c8873aeaa2d6117a47d2f18f2f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-guard-provoke-v1.png",
+  "source_sha256": "46b2057e441166716971c9f3c18d48e1d5492f7d97cf88cb9aead9cb3b15d42c",
+  "export_crop": [
+    25,
+    53,
+    1248,
+    1228
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/guard-provoke.png",
+    "64": "art/icons/forks/exports/64/guard-provoke.png",
+    "48": "art/icons/forks/exports/48/guard-provoke.png",
+    "44": "art/icons/forks/exports/44/guard-provoke.png",
+    "32": "art/icons/forks/exports/32/guard-provoke.png",
+    "24": "art/icons/forks/exports/24/guard-provoke.png"
+  },
+  "export_sha256": {
+    "128": "b569a562d00a2ac5ba08705bf42117ac6c6777a86a1b36eafafd9cd4c467adf2",
+    "64": "6acd22f2b4f183d08c3d83b3018f50f4454d676f1862504183dca7b8129935cb",
+    "48": "3b7c1ddf01a14be4b77c0a49a8e4d6c77cfdedfe8c7ed179623ac795ece5d452",
+    "44": "31f4e5e1d75dd132cae70ebf4513e8f9389ab63c775e7396ffdebd749f3be1c6",
+    "32": "214b7c58ad99627fbd23045964313cf94ba5ffd4dcafd5499602d72e5a623119",
+    "24": "5ac8cdd916abe7e8368fb98408f61a4386df37b84ab127b8e77ef98a5f38d3ce"
+  },
+  "framing": {
+    "scale": 0.6075094268539483,
+    "offset": [
+      140,
+      155
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

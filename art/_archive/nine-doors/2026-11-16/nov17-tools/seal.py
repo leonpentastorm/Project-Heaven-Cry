@@ -13,7 +13,7 @@ full=subprocess.run(['python3',str(O/'tools/validate_art.py')],cwd=O,capture_out
 build=subprocess.run(['npm','run','assets'],cwd=O,capture_output=True,text=True);(A/'current-asset-build-check.txt').write_text(build.stdout+build.stderr)
 progress=read(A/'progress-0.30.json');validation={'legacy_delivered':348,'new_030_delivered':progress['completed_count'],'new_scoped_validation_pass':True,'full_library_exit':full.returncode,'asset_build_exit':build.returncode,'limitation':'This runtime is a verified partial art checkout: historical inputs are not downloaded. Exact current logs are preserved; do not claim the complete repository validator/build passed. The preceding full 344 worktree had a historical Bulwark export-set mismatch.','native_render_dimensions_recorded_honestly':True,'approval':'unapproved review candidates'};(A/'current-run-validation.json').write_text(json.dumps(validation,indent=2)+'\n')
 tools=A/'nov17-tools';tools.mkdir(exist_ok=True)
-for name in ['update_state.py','verify_batch.py','seal.py','export-one.py','review_ids.py','prepare-camp.py','setup.py','git-metadata.py']:
+for name in ['update_state.py','verify_batch.py','seal.py','export-one.py','review_ids.py','prepare-camp.py','setup.py','git-metadata.py','prepare_new.py','export_new.py','review_new.py','accept_new.py','reject_new.py','generate_new.js']:
  if (R/name).exists():shutil.copy2(R/name,tools/name)
 if '--zip-camp' in sys.argv:
  paths=set()

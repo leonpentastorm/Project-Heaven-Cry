@@ -1,7 +1,7 @@
 {
-  "checked_new_filesets": 4,
+  "checked_new_filesets": 8,
   "legacy_delivered": 348,
-  "new_030_delivered": 0,
+  "new_030_delivered": 4,
   "all_new_source_master_export_hashes_pass": true,
   "new_pixel_alpha_dimensions_safe_box_and_ui_checks_pass": true,
   "repository_44px_white_alpha_check_pass": true,
@@ -22,6 +22,22 @@
     {
       "asset": 271,
       "faint_alpha_to_solid_area_ratio": 0.028435654231679396
+    },
+    {
+      "asset": "0.30/fork.guard.cover_them",
+      "faint_alpha_to_solid_area_ratio": 0.06832111649480267
+    },
+    {
+      "asset": "0.30/fork.guard.drive",
+      "faint_alpha_to_solid_area_ratio": 0.07157445761391133
+    },
+    {
+      "asset": "0.30/fork.guard.stand_fast",
+      "faint_alpha_to_solid_area_ratio": 0.06560254558974847
+    },
+    {
+      "asset": "0.30/fork.guard.provoke",
+      "faint_alpha_to_solid_area_ratio": 0.06506571809204653
     }
   ],
   "approval": "All unapproved review candidates"

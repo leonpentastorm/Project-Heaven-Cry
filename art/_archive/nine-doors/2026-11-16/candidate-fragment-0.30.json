@@ -1,4 +1,113 @@
 {
   "scope": "Art candidates; unbound proposals do not register active game lookups",
-  "items": []
+  "items": [
+    {
+      "request_key": "0.30/fork.guard.cover_them",
+      "name": "Cover Them",
+      "icon_id": "fork.guard.cover_them",
+      "path": "art/icons/forks/guard-cover-them.png",
+      "sha256": "5d3455661e229d664d1c70c6e7a808c6c40c13a80eca38376818978b8c0d0847",
+      "exports": {
+        "128": "art/icons/forks/exports/128/guard-cover-them.png",
+        "64": "art/icons/forks/exports/64/guard-cover-them.png",
+        "48": "art/icons/forks/exports/48/guard-cover-them.png",
+        "44": "art/icons/forks/exports/44/guard-cover-them.png",
+        "32": "art/icons/forks/exports/32/guard-cover-them.png",
+        "24": "art/icons/forks/exports/24/guard-cover-them.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.guard.drive",
+      "name": "Drive",
+      "icon_id": "fork.guard.drive",
+      "path": "art/icons/forks/guard-drive.png",
+      "sha256": "e2d1b3244035b8387577f85fc665bc9529d9d57e21ab12dca68e0a2c13fdfa93",
+      "exports": {
+        "128": "art/icons/forks/exports/128/guard-drive.png",
+        "64": "art/icons/forks/exports/64/guard-drive.png",
+        "48": "art/icons/forks/exports/48/guard-drive.png",
+        "44": "art/icons/forks/exports/44/guard-drive.png",
+        "32": "art/icons/forks/exports/32/guard-drive.png",
+        "24": "art/icons/forks/exports/24/guard-drive.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.guard.provoke",
+      "name": "Provoke",
+      "icon_id": "fork.guard.provoke",
+      "path": "art/icons/forks/guard-provoke.png",
+      "sha256": "021b879e6d686343fd55770dd1e0a1eb96edb2c8873aeaa2d6117a47d2f18f2f",
+      "exports": {
+        "128": "art/icons/forks/exports/128/guard-provoke.png",
+        "64": "art/icons/forks/exports/64/guard-provoke.png",
+        "48": "art/icons/forks/exports/48/guard-provoke.png",
+        "44": "art/icons/forks/exports/44/guard-provoke.png",
+        "32": "art/icons/forks/exports/32/guard-provoke.png",
+        "24": "art/icons/forks/exports/24/guard-provoke.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    {
+      "request_key": "0.30/fork.guard.stand_fast",
+      "name": "Stand Fast",
+      "icon_id": "fork.guard.stand_fast",
+      "path": "art/icons/forks/guard-stand-fast.png",
+      "sha256": "44c3c5fa671445f65c235976b8334d2a08e1d810fbcad44c769f650f7243ba96",
+      "exports": {
+        "128": "art/icons/forks/exports/128/guard-stand-fast.png",
+        "64": "art/icons/forks/exports/64/guard-stand-fast.png",
+        "48": "art/icons/forks/exports/48/guard-stand-fast.png",
+        "44": "art/icons/forks/exports/44/guard-stand-fast.png",
+        "32": "art/icons/forks/exports/32/guard-stand-fast.png",
+        "24": "art/icons/forks/exports/24/guard-stand-fast.png"
+      },
+      "active_binding": null,
+      "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+      "source": {
+        "branch": "wip/design-three-layers",
+        "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+        "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+        "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+        "section": "2; art ids in 7"
+      },
+      "production_approved": false,
+      "implementation_ready": false
+    }
+  ]
 }

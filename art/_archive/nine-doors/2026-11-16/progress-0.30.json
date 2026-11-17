@@ -1,7 +1,12 @@
 {
   "total": 41,
-  "completed_count": 0,
-  "completed_keys": [],
-  "remaining_count": 41,
+  "completed_count": 4,
+  "completed_keys": [
+    "0.30/fork.guard.cover_them",
+    "0.30/fork.guard.drive",
+    "0.30/fork.guard.provoke",
+    "0.30/fork.guard.stand_fast"
+  ],
+  "remaining_count": 37,
   "scope": "0.30 additions only; original legacy denominator and held recipes are unchanged"
 }

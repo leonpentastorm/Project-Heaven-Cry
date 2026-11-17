@@ -1,0 +1,101 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.guard.drive",
+  "name": "Drive",
+  "icon_id": "fork.guard.drive",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Drive** (`guard.drive`). *\"Your Slam pushes {=numbers.tiles} tiles and its Off Balance save is at\n{=numbers.save|signed}. Each foe it knocks Off Balance gives you back a plate (at most {=limit.n} a turn). You stay\nwhere you are, still Braced.\"*\n- Fields: `tiles: 2`, `save: -2`, limit `per_turn` n 2 (= Slam's Guard price, read: one copy). Why: a Slam that lands\n  on two foes pays for itself, so Drive is the plate economy against Stand Fast's taunt. Both run on plates; a Bulwark\n  that taunts by Called Out picks Drive, a Guard user with no class taunt picks Stand Fast.\n- Runs on: plates (the price and the refund). Carrier: Slam's `displace` and `tiles` as paired rows (as Stand Fast);\n  `roll_mod` on `cond_incoming` with `door_pick`; the refund on trigger `cond_landed`, `if {actor: self, cond:\n  [off_balance], door_pick}`, op `resource guard +1` on the holder, limit `per_turn`. All existing.\n- The lead's \"you advance with it\" needs a follow step (N17). Optional rider, if N16 is approved: *\"a foe whose push is\n  stopped by a wall, a unit or cover takes your plate soak as damage\"*.\n- Bulwark: Anchor (no one pushes you) and Drive (you push them 2) are the two halves of holding ground. Peak: no.\n- Excite: you Slam two foes off your Sigilist, back into the fire it laid; both reel, your two plates come back, and\n  you can Slam again next turn.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [
+    11
+  ],
+  "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+  "file_key": "fork-guard-drive",
+  "path": "art/icons/forks/guard-drive.png",
+  "paint": "Wick holds a wide braced side-on stance, BOTH boots planted, and drives ONE round shield straight into a cropped enemy torso tipping away to the right. One small curved plate tab returns toward his free hand: guard regained from the push.",
+  "avoid": "Do not move Wick forward with the foe; no driving car or vehicle.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick holds a wide braced side-on stance, BOTH boots planted, and drives ONE round shield straight into a cropped enemy torso tipping away to the right. One small curved plate tab returns toward his free hand: guard regained from the push.\nAVOID: Do not move Wick forward with the foe; no driving car or vehicle.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "visual_basis_resolution": {
+    "authority": "Leon explicit answer 17 November 2026",
+    "quote": "Use pinned revision-2 rules for these eight proposals",
+    "gameplay_questions_remain_open": true
+  },
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 3,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "e2d1b3244035b8387577f85fc665bc9529d9d57e21ab12dca68e0a2c13fdfa93",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-guard-drive-v1.png",
+  "source_sha256": "02fbe2ca8e08bba2c5ab5a1d5e113ec384cb3cfa9f6dfdf566f7b09ed9ef6c03",
+  "export_crop": [
+    0,
+    134,
+    1218,
+    1198
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/guard-drive.png",
+    "64": "art/icons/forks/exports/64/guard-drive.png",
+    "48": "art/icons/forks/exports/48/guard-drive.png",
+    "44": "art/icons/forks/exports/44/guard-drive.png",
+    "32": "art/icons/forks/exports/32/guard-drive.png",
+    "24": "art/icons/forks/exports/24/guard-drive.png"
+  },
+  "export_sha256": {
+    "128": "1a01f33c976478fd35971510368766761c1bab3a3ab4f53a8787820938bd94cb",
+    "64": "51159f7bafe86834772afc5f835b841094f3946a22a6eaa7bcdc866847f81a92",
+    "48": "82cacbf39cb92f67b17558b9452a7bcd1d98578af6616111390c7b708be9ddad",
+    "44": "e2ba5ae3ff86b40de4127ae941ac07bece877358b060cc28ad91a40ec55b18b0",
+    "32": "f24e432df58e0a15473866c435305b6eab9249a7301f2a0d70285fd517e1b6a5",
+    "24": "41b027dafd4b33882fb2d1d78b545b5b6946838af6062afe2b82bff0bae2725c"
+  },
+  "framing": {
+    "scale": 0.5864777209484905,
+    "offset": [
+      155,
+      200
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}
