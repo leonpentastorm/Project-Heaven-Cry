@@ -843,6 +843,16 @@
       "faint_alpha_to_solid_area_ratio": 0.05093
     },
     {
+      "number": 198,
+      "name": "Draw Taut",
+      "faint_alpha_to_solid_area_ratio": 0.04073
+    },
+    {
+      "number": 205,
+      "name": "Weaver's Hands",
+      "faint_alpha_to_solid_area_ratio": 0.04439
+    },
+    {
       "number": 208,
       "name": "Clenched Heart",
       "faint_alpha_to_solid_area_ratio": 0.05902
@@ -1076,6 +1086,21 @@
       "number": 263,
       "name": "Counter",
       "faint_alpha_to_solid_area_ratio": 0.05129
+    },
+    {
+      "number": 264,
+      "name": "Closing Strike",
+      "faint_alpha_to_solid_area_ratio": 0.05456
+    },
+    {
+      "number": 265,
+      "name": "Flow",
+      "faint_alpha_to_solid_area_ratio": 0.06474
+    },
+    {
+      "number": 266,
+      "name": "Slip (unarmed)",
+      "faint_alpha_to_solid_area_ratio": 0.05845
     },
     {
       "number": 275,

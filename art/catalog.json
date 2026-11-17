@@ -33969,6 +33969,96 @@
         "24": "art/icons/moves/exports/24/hallow.png"
       },
       "ink": "#FFFFFF"
+    },
+    "move-closing-strike": {
+      "label": "Wick \u2014 Closing Strike",
+      "path": "art/icons/moves/closing-strike.png",
+      "sha256": "e707c17bee925fce6d70c842fe1b49b548046b488e1ff2db9ea55b608f9c73ca",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/264-closing-strike.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 264,
+      "exports": {
+        "128": "art/icons/moves/exports/128/closing-strike.png",
+        "64": "art/icons/moves/exports/64/closing-strike.png",
+        "48": "art/icons/moves/exports/48/closing-strike.png",
+        "44": "art/icons/moves/exports/44/closing-strike.png",
+        "32": "art/icons/moves/exports/32/closing-strike.png",
+        "24": "art/icons/moves/exports/24/closing-strike.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-flow": {
+      "label": "Wick \u2014 Flow",
+      "path": "art/icons/moves/flow.png",
+      "sha256": "119eb9f31858b2b972c66e6a3b62c6a9a49da51a6f2d20bbaeff94a0424266da",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/265-flow.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 265,
+      "exports": {
+        "128": "art/icons/moves/exports/128/flow.png",
+        "64": "art/icons/moves/exports/64/flow.png",
+        "48": "art/icons/moves/exports/48/flow.png",
+        "44": "art/icons/moves/exports/44/flow.png",
+        "32": "art/icons/moves/exports/32/flow.png",
+        "24": "art/icons/moves/exports/24/flow.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "move-slip-unarmed": {
+      "label": "Wick \u2014 Slip (unarmed)",
+      "path": "art/icons/moves/slip-unarmed.png",
+      "sha256": "ed06ca89db0dd5b7658e1ee7526dbc14e1094293280f17f6708c20d36a1ab8f9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/266-slip-unarmed.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 266,
+      "exports": {
+        "128": "art/icons/moves/exports/128/slip-unarmed.png",
+        "64": "art/icons/moves/exports/64/slip-unarmed.png",
+        "48": "art/icons/moves/exports/48/slip-unarmed.png",
+        "44": "art/icons/moves/exports/44/slip-unarmed.png",
+        "32": "art/icons/moves/exports/32/slip-unarmed.png",
+        "24": "art/icons/moves/exports/24/slip-unarmed.png"
+      },
+      "ink": "#FFFFFF"
     }
   },
   "technique_icons": {
@@ -37440,6 +37530,66 @@
         "24": "art/icons/tending/exports/24/syphon.png"
       },
       "previous_path": "art/icons/tending/syphon.svg"
+    },
+    "tend-draw-taut": {
+      "label": "Draw Taut",
+      "path": "art/icons/tending/draw-taut.png",
+      "sha256": "af319452c3e8cc6d754252414efafd88872318f71fdfd4ba6b403178cad0a179",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/198-draw-taut.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 198,
+      "exports": {
+        "128": "art/icons/tending/exports/128/draw-taut.png",
+        "64": "art/icons/tending/exports/64/draw-taut.png",
+        "48": "art/icons/tending/exports/48/draw-taut.png",
+        "44": "art/icons/tending/exports/44/draw-taut.png",
+        "32": "art/icons/tending/exports/32/draw-taut.png",
+        "24": "art/icons/tending/exports/24/draw-taut.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "tend-weavers-hands": {
+      "label": "Weaver's Hands",
+      "path": "art/icons/tending/weavers-hands.png",
+      "sha256": "5b4353f3433831eaba599329e1275f549c24a076ed2d3bbc5a7be16fb8a1adb2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/205-weavers-hands.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "wick",
+      "brief_number": 205,
+      "exports": {
+        "128": "art/icons/tending/exports/128/weavers-hands.png",
+        "64": "art/icons/tending/exports/64/weavers-hands.png",
+        "48": "art/icons/tending/exports/48/weavers-hands.png",
+        "44": "art/icons/tending/exports/44/weavers-hands.png",
+        "32": "art/icons/tending/exports/32/weavers-hands.png",
+        "24": "art/icons/tending/exports/24/weavers-hands.png"
+      },
+      "ink": "#FFFFFF"
     }
   },
   "condition_icons": {
