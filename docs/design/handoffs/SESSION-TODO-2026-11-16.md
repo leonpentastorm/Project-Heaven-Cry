@@ -253,3 +253,32 @@ what both do." Scope so far (ask Leon before starting; design pass and a "Built 
    beta skills gate (armour and equipment: Leon's earlier ruling, not built); mods for focuses and shields; variants
    in shops and Boss drops; plates and the lesson pick; spare parts and repairs; weight; durability; Relic properties
    for every category (0.31.2 does gloves); the Forge's screens as a whole; dead or Narrator-only items.
+
+## O. 0.31.5 IS LIVE (17 Nov 2026); 0.31.1 and 0.31.2 went live earlier the same day
+
+Live commit = `main` = `develop` head at the deploy; `backup/live-0.31.5` and `backup/live-0.31.2` kept (plus 0.22.0,
+0.23.0). Gate: check ALL GREEN (engine 4843, web about 1600), 29 replays, 73 browser suites green (voice only alone).
+- **0.31.1:** HP back in the You card, the ACTION POINTS row back, Backpack by the limbs figure, the VICTORY / DEFEAT
+  panel with a sound before the leave vote.
+- **0.31.2:** the reward panel (XP, credits, the pick; the map says why a click is refused); rules 1.64: the approach
+  before contact (free movement, full AP when joined), Patch in a run with spare parts at 60, Triage once a stage
+  map, Relic properties for gloves, Rite cuts Name It, sabre / gladius / katana damage lowered.
+- **0.31.5:** the picking contract (rules 1.65: reach, choices, area, targets for every aimed action; net gain on
+  mends; refusal line on an illegal click); the SKILLS tab said to a player (forks under their skill, the points
+  block folded and rewritten for all 27 skills, each gamma's Call and how it grows); ALL the artist's art in (443
+  pictures: one placeholder left, move-draw-fire), drawn on action rows, the status strip, the sheet, the camp, place
+  cards, vows, fork cards, map marks; click to enlarge on every icon through the one lightbox.
+- **Not seen in a browser by anyone:** the status strip's new group marks, a Survival place card with its picture,
+  the approach line on the turn strip in real play, the reward panel's vault-chest case.
+- **Known, unfixed:** enlarged item's text sits above its name; fork, action-row and trap icons are very small; no
+  "Your trap" line in the legend (not investigated); a prayer outlines every tile in sight (heavy); the camera jumps
+  after an illegal far click; condition chips in the token hover card do not enlarge; delivered art with no place yet
+  (5 Tending passives, 3 resource marks, 7 tone marks; moves not linked in data: Stand Behind Me, Wind-up, Read the
+  Swing, Hold the Lane, Scrap Sentinel); the Kemizuchi duelling blade and strikers over the melee line; the tank camp
+  kit; victory fanfare still the game's own sting (source a CC0 / CC BY one); tools/e2e.py kills every wrangler on
+  the machine, so two lanes cannot run browser suites at once (give it a per-lane port).
+- **Next (not started):** prayer effects, Figment effects (live trace first), Shadow (dark maps, Douse, Prone, detect
+  ranges, Stalk, Silent), the vow pop-up, the level-up banner, sounds; then ask-first Items 2.0 (sections M, N).
+- **Housekeeping at the next release (the two-release rule):** worktrees known0312, pick0315, skill031, art031 and
+  their wip/lane branches are merged and can go; rel030 is the release tree. About 25 non-git leftover folders beside
+  the main checkout still wait for Leon's word.
