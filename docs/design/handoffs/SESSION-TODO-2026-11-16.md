@@ -236,3 +236,20 @@ One patch with the Forge realign of section L. Not started; not to be started wi
   First step when Leon gives the go: the family table (each family's Strength / hybrid / Dexterity form: existing
   weapon or new, name, what changes), for his ruling; then the art list into art/briefs/ART-REQUESTS.md with GPT
   prompts; the patch may ship with placeholders.
+
+## N. "Items 2.0" (Leon, 17 Nov 2026): the name of the ask-first patch; section M and its notes belong to it
+
+Leon: "this will be fit into an 'Items 2.0 update' with the forge too, since many other things are still a hang up in
+our system, like for example, defense and armor in items only display in the starting shop and is really opaque on
+what both do." Scope so far (ask Leon before starting; design pass and a "Built from" table first):
+1. Section M: Dexterity techniques on Pressure, hybrid weapons, the Forge realign to three alignments, three forms a
+   family (paintings), pips and Momentum explained.
+2. **Defense and armour made legible:** today they show only on the camp's starting shop. Wanted: what Defense does
+   (the number a roll to hit must beat) and what armour does (taken off each blow's damage) said in plain words with
+   the character's own numbers, on the sheet (STATUS and GEAR), on every armour and shield card everywhere an item
+   card is shown (shop, rewards, Forge, Give, inventory), on the token's hover card, and in the hit preview
+   ("need 12" / "− armour 10" already appear there: name them the same way everywhere). One item card component.
+3. To audit at the design pass (each a likely hang-up): one item card for every item kind and every screen; what
+   beta skills gate (armour and equipment: Leon's earlier ruling, not built); mods for focuses and shields; variants
+   in shops and Boss drops; plates and the lesson pick; spare parts and repairs; weight; durability; Relic properties
+   for every category (0.31.2 does gloves); the Forge's screens as a whole; dead or Narrator-only items.
