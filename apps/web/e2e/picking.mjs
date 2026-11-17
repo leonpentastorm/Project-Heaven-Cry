@@ -83,6 +83,7 @@ async function check(name, btn, o = {}) {
     const cov = await tilesWith('it covers this tile'), line = await chip();
     ok(name + ': on ' + pick + ', the area (' + cov.length + ' tiles) or the hover line ("' + line.slice(0, 60) + '")', cov.length > 0 || !!line);
     if (o.area) ok(name + ': the area under the pointer is the data\'s ' + o.area + ' tiles (' + cov.length + ')', cov.length === o.area);
+    if (o.short) ok(name + ': the hover line stays short (' + line.length + ' characters, at most 90)', line.length > 0 && line.length <= 90);
     if (o.chip) ok(name + ': the hover line leads with ' + o.chip + ' ("' + line.slice(0, 70) + '")', o.chip.test(line));
     await snap(o.shot + '-2-hover');
   } else ok(name + ': a legal pick to hover', false);
@@ -128,7 +129,7 @@ await act({ type: 'sandbox/spawn', tier: 'soldier', weapon: 'combat_knife', at: 
 await check('a technique (Shot)', /^Shot/, { shot: 'technique', hoverUnit: true, need: ['reach', 'units'], bad: async () => (await me()).pos });
 await check('a thrown stim', /^Throw a stim/, { shot: 'stim', hoverUnit: true, need: ['reach', 'units'], chip: /no gain|→|stands again/, bad: emptyNear });
 // the FAITH tab: a Whisper, a Hymn with an area, the Miracle
-await check('a Whisper (Health)', /^Health/, { shot: 'whisper', hoverUnit: true, need: ['reach', 'units'], chip: /^[^·]*(no gain|→|stands again)/, bad: emptyNear });
+await check('a Whisper (Health)', /^Health/, { shot: 'whisper', hoverUnit: true, need: ['reach', 'units'], chip: /^[^·]*(no gain|→|stands again)/, short: true, bad: emptyNear });
 await check('a Hymn with an area (Thunderclap, radius 2)', /^Thunderclap/, { shot: 'hymn', area: 25, fit: 2, need: ['reach', 'choice'], bad: async ({ reach, choice }) => { const out = await p.evaluate(() => [...document.querySelectorAll('button.phc-tok')].map((b) => b.getAttribute('aria-label') || '').filter((l) => l.includes('out of sight')).map((l) => l.split(' · ')[0])); return out[0] ? keyOf(out[0]) : null; } });
 await check('the Miracle (The Sky Answers, 5×5)', /The Sky Answers/, { shot: 'miracle', area: 25, fit: 2, need: ['reach', 'choice'] });
 // Figments: Picture, then a Beast's Move

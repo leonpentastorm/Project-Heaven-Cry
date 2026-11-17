@@ -68,6 +68,14 @@ export interface FlowView {
   after: Record<string, any>;
 }
 
+/** The hover chip's line: the engine's first note (a mend's net gain leads), with the second only while the chip stays
+ *  short; a long rule text is cut, never run off the map (the panel keeps the whole text). */
+const HOVER_MAX = 90;
+const shortLine = (words: string[]): string => {
+  const [a, b] = words; if (!a) return '';
+  const two = b ? a + ' · ' + b : a, one = two.length <= HOVER_MAX ? two : a;
+  return one.length <= HOVER_MAX ? one : one.slice(0, HOVER_MAX - 1).replace(/\s+\S*$/, '') + '…';
+};
 /** Where the screen keeps a step's pick. */
 const slot = (st: PickStep) => (UNIT_KINDS.includes(st.kind) ? (st.key === 'targetId2' ? 'target2' : 'target') : st.kind === 'tile' ? 'tile' : null);
 /** The picks the screen holds for this descriptor. An enemy pick starts on the screen's target (or the first hostile
@@ -192,7 +200,7 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
     if (!st) return null;
     const pv2 = peekWith({ [st.key]: unitId && UNIT_KINDS.includes(st.kind) ? unitId : k }); if (!pv2) return null;
     const b2 = byKind(pv2), words = pv2.lines.filter((l) => l.k === 'odds' || l.k === 'note').map((l) => l.text);
-    return { area: b2.area, targets: b2.targets, ok: pv2.ok || !!pv2.ask, line: pv2.ok || pv2.ask ? words.slice(0, 2).join(' · ') || (pv2.ask || 'Confirm: ' + d.name + '.') : '✕ ' + (pv2.why || 'Not now.') };
+    return { area: b2.area, targets: b2.targets, ok: pv2.ok || !!pv2.ask, line: pv2.ok || pv2.ask ? shortLine(words) || (pv2.ask || 'Confirm: ' + d.name + '.') : '✕ ' + (pv2.why || 'Not now.') };
   };
   const peek = (unitId: string) => { const pk = { ...picks, targetId: unitId }; return cached(g, 'pv|' + cur.id + '|' + me + '|' + d.id + '|' + JSON.stringify(pk), () => { try { return previewDescriptor(g, cur.id, d.id, pk, me); } catch { return null; } }); };
   return { d, pv, picks, cost: pv.ap, reach, peek, peekWith, sel: { name: (d.preview === 'prayer' ? (d.id.startsWith('pr:miracle:') ? '✦ MIRACLE · ' : d.id.startsWith('pr:hymn:') ? 'HYMN · ' : 'WHISPER · ') : '') + d.name.replace(/^✦ /, '').replace(/ · (MIRACLE|HYMN [IV]+|BY DICE · TN \d+)$/, '') + (pv.cost ? ' · ' + (d.preview === 'call' ? pv.cost.replace(/ · (\d+ tiles?)$/, ' · within $1') : pv.cost) : ''), text, extra: more.join(' · ') }, chips, ring, area, targets, marks: { reach: [...reach.keys()], choice: bk.choice, choiceUnits: bk.choiceUnits, area: bk.area, targets: bk.targets }, hoverAt, ready: !!action, action, click,

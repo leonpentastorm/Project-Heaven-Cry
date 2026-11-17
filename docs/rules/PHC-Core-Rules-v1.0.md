@@ -12068,6 +12068,10 @@ picking UI in the same change") is made a contract of the engine's action descri
        tile says "Nobody there." and the pick's prompt by the action box, and never picks a later tile step out of turn
        (Guide's tile before its ally); a click an optional tile step can't take says the engine's refusal (a pile of
        the step's own list out of reach stays picked, so its way there shows).
+    5. **Seen in the screenshots (item 5105):** the hover chip is the engine's first note, with the second only while it
+       stays within 90 characters (a long rule text ran off the map both sides; the action box keeps the whole text); a
+       choice's tile card says "in reach" as well as "you can pick this tile", and a weapon's red reach bands say "in
+       reach" (with the range band), so every shaded tile carries a word.
 5109. **Items 5100 to 5109 are rules 1.65's.**
 
 ### Rules 1.61 (0.30), cover beside you, the shot that shows, focus memory
