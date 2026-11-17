@@ -722,7 +722,7 @@
         "from_points": 5,
         "trigger": "you take Bleeding, Burning or a toxin",
         "consequence": "You don't notice it. The engine hides that condition from you until it deals damage.",
-        "text": "Trigger: you take Bleeding, Burning or a toxin. Indulge: You don't notice it. The engine hides that condition from you until it deals damage.",
+        "text": "Trigger: you take Bleeding, Burning or a toxin. Indulge: you don't notice it until it deals damage.",
         "effects": [
           {
             "op": "narrator",
@@ -5440,9 +5440,9 @@
       "gates": [],
       "unlocks": {
         "1": {
-          "name": "The prayers' shields (the feed)",
+          "name": "Prayer shields",
           "mastery": 0,
-          "text": "Every shield your prayers give (a Whisper's, a Hymn's, the Ward) is multiplied by Faith's beta feed: {=per_point.numbers.feed|pct}% more for each Faith point times each Conscience point (rules 1.60 item 4612).",
+          "text": "Prayer shields: +{=per_point.numbers.feed|pct}% per Faith point, for each Conscience point.",
           "effects": [
             {
               "op": "mend_mult",

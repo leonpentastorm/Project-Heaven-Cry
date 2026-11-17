@@ -12248,3 +12248,11 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     packCount`, `supplyMp`. Proof: `test/survival-camp.test.ts` (a Boss node won through the reducer).
 5405. **Recorded on purpose (items 5403, 5404):** the golden tables `costs-pad` (and its marks) and `costs-credit` (a
     Syphon's MP and air), and 2 replays of 29 (`cover-4v7-casters`, `proving-4v10-boss`: a caster's Syphons).
+5406. **No rule numbers or dev words in player text:** every player-facing text was swept and written as a card line
+    (Slide, Stim Throw, the shield and Afterword follow mods, the off hand's follow, Pain Threshold's Overreach, the
+    prayers' shields on Conscience; the sheet's "(a later step)" on a perk's tier II is gone). The validator fails on
+    `rules N`, `item(s) NNNN`, `(a later step)` and `beta feed` in the fields text, player, short, door_line, summary,
+    why, say and label of skills, perks, traits, classes, techniques, shadow, tending, figments, forks, calls, patrons,
+    items, weapons, conditions, survival, actions and pressure; designer fields (note, source, rules, about, `*_note`,
+    `*_about`), the `pending` and `retired` lists and shelved rows are exempt. Slide's text no longer repeats its AP and
+    its once-a-turn: the row and its chips say them.

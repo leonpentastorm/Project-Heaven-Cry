@@ -2980,7 +2980,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "The off hand's follow strike (rules 1.58, hands 5e): after a melee technique of your one-handed main weapon, the follows item in your off hand strikes the same foe once, at {=numbers.extra|signed} to hit and \u00d7{=numbers.mult} its own damage. No AP. It is never picked: the engine makes it.",
+      "text": "After a melee technique with a one-handed main weapon, your off-hand weapon strikes the same foe: {=numbers.extra|signed} to hit, \u00d7{=numbers.mult} its damage. No AP.",
       "lines": [],
       "free": false,
       "comes_with": [],

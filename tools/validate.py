@@ -3553,6 +3553,28 @@ if _FK is not None:
         if ((_fe("fork.guard.cover_them").get("and") or [{}])[0]).get("value") != -(_ic or 0): errors.append(f"forks:fork.guard.cover_them: its Guard is techniques.json rules.guard.interpose_cost ({_ic})")
 
 
+# No rule references or dev words in player text (rules 1.68 item 5406; CLAUDE.md "Player text never explains a formula").
+# Player-facing: these fields of these files. Designer-facing (exempt): note, source, rules, about, *_note, *_about, the
+# `pending` and `retired` lists, and a shelved row (status shelved, or shelved: true).
+PLAYER_FILES = ["skills", "perks", "traits", "classes", "techniques", "shadow", "tending", "figments", "forks", "calls",
+                "patrons", "items", "weapons", "conditions", "survival", "actions", "pressure"]
+PLAYER_FIELDS = {"text", "player", "short", "door_line", "summary", "why", "say", "label"}
+DEV_WORDS = re.compile(r"rules \d|items? \d{4}|\(a later step\)|beta feed")
+def _player_text(o, where, shelved=False):
+    if isinstance(o, dict):
+        shelved = shelved or o.get("shelved") is True or o.get("status") == "shelved"
+        for k, v in o.items():
+            if k in ("pending", "retired", "note", "source", "rules", "about") or k.endswith("_note") or k.endswith("_about"): continue
+            if isinstance(v, str):
+                if k in PLAYER_FIELDS and not shelved:
+                    m = DEV_WORDS.search(v)
+                    if m: errors.append(f"{where}.{k}: player text names {m.group(0)!r} (a rule reference or a dev word; write it as a card line): {v[:70]}")
+            else: _player_text(v, f"{where}.{k}", shelved)
+    elif isinstance(o, list):
+        for i, v in enumerate(o): _player_text(v, f"{where}[{i}]", shelved)
+for _pf in PLAYER_FILES:
+    if _pf in data: _player_text(data[_pf], _pf)
+
 # The text-number guard (tools/text_numbers.py): a number in a player-facing text must be a number in the item's own fields.
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import text_numbers

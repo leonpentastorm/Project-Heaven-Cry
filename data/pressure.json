@@ -20,7 +20,7 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "text": "{=effects.0.ap} AP, once a turn: dive to the nearest tile by cover within {=effects.0.effects.1.tiles.per.0.value} tiles (more with Athletics: the reach x Dexterity's beta feed, rules 1.60 item 4606), drawing no opportunity attack, and shed {=effects.0.effects.2.value|abs} of your own Pressure. With no cover in reach you stay put and still shed it.",
+      "text": "Dive to the nearest cover within {=effects.0.effects.1.tiles.per.0.value} tiles (more with Athletics). No opportunity attacks. Shed {=effects.0.effects.2.value|abs} Pressure, cover or not.",
       "effects": [
         {
           "op": "grant_action",
