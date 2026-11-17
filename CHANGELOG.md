@@ -8,6 +8,13 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.2 — the known faults of 0.31.0 (rules 1.64)
+
+- **K5, healing between stops (rules 1.64 items 5000 to 5002):** Field Surgeon's Patch works in a Survival run; a
+  spare-parts charge costs 60 credits (was 16; repairs are dearer with it). The Mender's story Triage works in a run,
+  once a stage map for each Mender (`numbers.run_per_stage`); the sheet's button says when it is spent. Measured with
+  the run simulator's new `SIM_STORY_HEAL=1` (mix_trio, 20 seeds): within noise.
+
 ## 0.31.0 — the field is turns, the fight's big banners, and the playtest's faults
 
 Rules revision 1.62 (spec items 4900 to 4909), every new number PROVISIONAL. Leon's playtest of live 0.29.0, seven

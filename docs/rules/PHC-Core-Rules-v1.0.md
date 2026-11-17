@@ -11833,6 +11833,26 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
     the lead:** a refit ticket for the sabre and the gladius in Dexterity hands (and a ruling on the reading).
 4822. **Moved on purpose (review):** see `CHANGELOG.md` 0.31.0 "Review fixes" for the golden and replay lines the
     throw's skill and the Boss rule moved.
+
+### Rules 1.64 (0.31.2), the known faults of 0.31.0
+
+5000. **Field Surgeon's Patch in a Survival run (Leon, 16 Nov: "keep field surgeon, increase the price of the part"):**
+    the out-of-fight Patch (`perks/e.ts field_surgeon`, action `patch`) carries the `run` scope (rules 1.61 addendum item
+    4761), so it works on the path map, at a shop or a rest, for one spare-parts charge as in a story. The charge's
+    price `items.json spare_parts.price_credits` **60** (was **16**): every repair that spends a charge (Field Repair on
+    your own weapon) is dearer with it. PROVISIONAL.
+5001. **Triage's story heal in a Survival run (Leon: "triage is one per whole map of survival"):** the Mender's story
+    Triage (`classes/i.ts medic.triage`, action `triage_story`) carries the `run` scope; in a run it is
+    `classes.json medic.triage numbers.run_per_stage` **1** use a stage map **for each Mender** (any ally; in a story it
+    stays once an ally a scene). No uses scope is keyed to the run's stage, and a run opens no session or scene: the
+    nearest existing scope, `per_scene`, is used with a counter key that carries the stage (`uses(h).take('per_scene', n,
+    key + '#stage' + stage)`), so it is fresh again on the next stage's map. The sheet's button reads "Spent on this
+    stage map". A `per_stage` scope is listed for the lead (item 5009). PROVISIONAL.
+5002. **Measured (items 5000, 5001):** `survival-run.ts` between stops, with `SIM_STORY_HEAL=1`, a member that has the
+    story Triage or the Patch uses it on the most hurt squadmate under 70% of max HP. The party-fit cell `mix_trio`
+    (Breaker, Skirmisher, Mender, all in, level 1), seeds PHC-0001 to PHC-0020: stage 1 cleared 19 of 20 with and
+    without; over three stages, 51 stages cleared without, 47 with (123 Triages used): within the seeds' noise. The
+    Patch was not measured in a run (Field Surgeon is an Achieved perk no simulated member holds).
 4550. **Sight both ways (rules 1.57 opening volley item 1; a bug):** `lineOfSight(a, b)` is clear only if the Bresenham walk a to b and the walk b to a are both clear (each skips its end tile). Before, it was the walk a to b only: with one blocker, 2% of tile pairs (72 of 3,551 on the proposal's ground) saw one way, and 4% of the stage-1 runs' enemy gun rolls had a blocked line back. `perks/b.ts losNoVeil` (Skin Map) was a second copy of the walk; it is now `lineOfSight(..., ignoreVeil)`. Proof: `test/rules157-volley.test.ts` (every pair on a 15 x 15 ground with a wall; the reproduced case, played).
 4551. **The enemy's Burst (item 2):** `techniques.json burst.numbers.enemy_same` 1 (was unset: an enemy with an Auto weapon rolled three at 0 / −1 / −2 and cooled 1; item 1079). Measured (one enemy turn on the yardstick, 200 seeds): a Gun drone (Soldier, service rifle) 21 then 29 damage on turns 1 and 2 (14% / 20% of 145 HP), was 30 / 46; a Soldier sabre 10 then 30. Supersedes item 1079's "keep the old Burst" and item 1316. PROVISIONAL.
 4552. **The tier damage factors after the refit (item 2):** Soldier 0.78, Elite 1.05, Boss 1.2, unchanged on purpose (item 1079 proposed Soldier 0.88 and Elite 1.08 to hold the rifleman's 3 rounds under two Soldiers; the lead's target for this pass is that a gun foe threatens what a melee foe of its tier does). Moved guards: the idle pair under two Soldiers at level 6 lasts 3.5 rounds (bound 3.2 → 4.2, `defence-measure.test.ts`); a healer and a shielder under four Soldiers at level 6 now hold for 10 rounds (`heal-measure.test.ts`: OLD "somebody goes Down", now "outlasts a healer alone"). PROVISIONAL.

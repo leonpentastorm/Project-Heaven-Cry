@@ -3,7 +3,7 @@
 // that would leave the Narrator a ruling is refused in words. The case: Blade Recluse's "Name your weapon" was refused as
 // story at a shop. Field Surgery (the one injury treatment, with the field kit) works in a run the same way. Through the reducer.
 import { describe, expect, it } from 'vitest';
-import { type GameState, type RunNode, apply, RuleError, packOf, giveView, reachable, plateChoices, MODULE, runItemWhy } from '../src';
+import { type GameState, type RunNode, apply, RuleError, packOf, giveView, reachable, plateChoices, MODULE, runItemWhy, perkActionsFor, ITEM } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 
 const SEED = 'PHC-0001';
@@ -43,9 +43,30 @@ describe('a Survival run takes an item\'s own out-of-fight action (story/perk)',
     const g = started(), c = Object.values(g.characters)[0]; c.perks = [...(c.perks || []), { id: 'bone_talk', tier: 'I' } as any];
     expect(refused(g, { type: 'story/perk', charId: c.id, id: 'perk:bone_talk', actionId: 'bone_talk_story', text: 'the scar on your hand' })).toBe('Bone Talk works in a story, not in a run.');
     expect(runItemWhy(g, c, 'perk:bone_talk', 'bone_talk_story')).toBe('Bone Talk works in a story, not in a run.');
-    // the Mender's story Triage and Field Surgeon's Patch: free healing between nodes, unmeasured (left out)
+  });
+  // Rules 1.64 items 5000 and 5001 (Leon: "keep field surgeon, increase the price of the part. triage is one per whole map of survival")
+  it("the Mender's story Triage works in a run once a stage map for each Mender, and the sheet's button says it is spent", () => {
     const d = duo(); d.characters.c1.classId = 'bard'; d.characters.c2.hp = 10;
-    expect(runItemWhy(d, d.characters.c1, 'class:medic.triage', 'triage_story')).toMatch(/works in a story, not in a run/);
+    const tri = { type: 'story/perk', charId: 'c1', id: 'class:medic.triage', actionId: 'triage_story', choice: 'c2' } as any;
+    expect(runItemWhy(d, d.characters.c1, 'class:medic.triage', 'triage_story')).toBeNull();
+    const g = apply(d, tri, ownerOf(0)); expect(g.characters.c2.hp).toBeGreaterThan(10);
+    g.characters.c2.hp = 10;
+    expect(refused(g, tri, ownerOf(0))).toMatch(/Spent on this stage map/);
+    const row = perkActionsFor({ c: g.characters.c1, g } as any, 'story').find((e: any) => e.actionId === 'triage_story') as any;
+    expect(row.why).toMatch(/Spent on this stage map/);
+    // the next stage's map: fresh again
+    const n: GameState = JSON.parse(JSON.stringify(g)); n.run!.stage = 2;
+    expect(apply(n, tri, ownerOf(0)).characters.c2.hp).toBeGreaterThan(10);
+  });
+  it("Field Surgeon's Patch works in a run for one spare-parts charge, priced from data", () => {
+    const d = duo(), c = d.characters.c1; c.perks = [...(c.perks || []), { id: 'field_surgeon' } as any]; c.skills.proficiency = 3;
+    c.pack = [...packOf(c), { id: 'spare_parts', item: 'spare_parts', name: 'Spare-parts charge', qty: 1, kind: 'tool' } as any]; d.characters.c2.hp = 10;
+    const pat = { type: 'story/perk', charId: 'c1', id: 'perk:field_surgeon', actionId: 'patch', choice: 'c2' } as any;
+    const g = apply(d, pat, ownerOf(0));
+    expect(g.characters.c2.hp).toBeGreaterThan(10);
+    expect(packOf(g.characters.c1).some((x) => (x.item || x.id) === 'spare_parts')).toBe(false);
+    expect(refused(g, pat, ownerOf(0))).toMatch(/No spare-parts charges/);
+    expect((ITEM as any).spare_parts.price_credits).toBe(60);
   });
   it('the ruling guard is the second net: a run action that would leave the Narrator a ruling is refused, and nothing is spent', () => {
     const g = started(), c = Object.values(g.characters)[0]; c.traits = [...(c.traits || []), 'lunarshine'];
