@@ -359,21 +359,23 @@ describe('Trickster', () => {
 // ======================================================================================================== CHANNELER
 const designOf = (u: Unit, school = 'damage', option?: string) => { const d = { id: 'd-' + school + (option || ''), name: school + ' test', school, modules: [], ...(option ? { option } : {}) }; u.mg!.designs.push(d as any); return d.id; };
 describe('Channeler', () => {
-  it('Shape (rules 1.5): the first Pump a turn that would cost AP is free, on a Damage design; the second costs 1', () => {
+  it('Shape (rules 1.68): no free Pump of its own: with none left, the first Pump costs AP and steps nothing more', () => {
     const f = fightWith([cls('channeler', 1, SOUL)], [{}]);
     const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); f.unit(u.id).ap = 9; f.unit(f.foe.id).hp = 999; const m = f.unit(u.id).mg!; m.freePumps = 0; m.freePumpsMax = 0; m.firstUsed = true; // rules 1.8's free first Pump spent
     const d = f.pc.mg!.designs.find((x) => x.school === 'damage')!.id;
     act(f, f.unit(u.id), { type: 'combat/outburst', design: d }); expect(f.pc.ap).toBe(7);
-    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(7); expect(f.pc.mg!.held!.stage).toBe(1); expect(logHas(f.cb, /Shape: the first Pump/)).toBe(true);
-    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.held!.stage).toBe(2);
+    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.held!.stage).toBe(1); expect(f.pc.mg!.held!.plus || 0).toBe(0);
+    expect(logHas(f.cb, /Shape:/)).toBe(false);
   });
-  it('Shape (rules 1.19): one free Pump a turn, so with Empathy\'s Shape adds none; the free Pump steps +0.1 more', () => {
+  it('Shape (rules 1.68): the free Pump of the turn (Will Power 3) steps +0.12 more, once a turn', () => {
     const f = fightWith([cls('channeler', 1, SOUL)], [{}]);
     const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); f.unit(u.id).ap = 9; const m = f.unit(u.id).mg!; m.freePumps = 1; m.freePumpsMax = 1; m.firstUsed = true;
+    const step = Number((itemInfo('class:channeler.shape') as any).effects[0].value);
+    expect(step).toBe(0.12);
     const d = f.pc.mg!.designs.find((x) => x.school === 'damage')!.id;
     act(f, f.unit(u.id), { type: 'combat/outburst', design: d });
-    act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.held!.plus).toBe(0.1);
-    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(5); expect(f.pc.mg!.held!.stage).toBe(3);
+    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(7); expect(f.pc.mg!.held!.plus).toBe(step);
+    act(f, f.unit(u.id), { type: 'combat/pump' }); expect(f.pc.ap).toBe(6); expect(f.pc.mg!.held!.stage).toBe(2); expect(f.pc.mg!.held!.plus).toBe(step);
   });
   it('Storm Front: +10 MP, two more enemies within 2 tiles of the first, once a turn', () => {
     const f = fightWith([cls('channeler', 2, SOUL)], [{}, {}, {}]);
@@ -395,7 +397,7 @@ describe('Channeler', () => {
       return { f, rel: (f.cb.fx || []).filter((e: any) => e.k === 'release').at(-1) as any, strain: f.pc.mg!.strain - s0 };
     };
     const plain = run([]), surge = run(['class:channeler.heart_surge#surge']);
-    expect(plain.rel.stage).toBe(2); expect(surge.rel.stage).toBe(3); expect(surge.rel.mult).toBe(1.5); // stage 3 is ×1.4, and Shape's +0.1 on the free Pump (rules 1.19)
+    expect(plain.rel.stage).toBe(2); expect(surge.rel.stage).toBe(3); expect(surge.rel.mult).toBe(1.52); // stage 3 is ×1.4, and Shape's +0.12 on the free Pump (rules 1.68)
     expect(surge.strain).toBe(plain.strain + 1); expect(logHas(surge.f.cb, /Heart Surge: the heart pays for it/)).toBe(true);
   });
 });

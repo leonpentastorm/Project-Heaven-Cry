@@ -2210,13 +2210,14 @@
               "id": "iron_heart",
               "name": "Iron Heart",
               "ap_cost": 0,
-              "uses": "at_will",
-              "text": "Your Strain limit is {=effects.0.value} higher.",
+              "uses": "per_combat",
+              "text": "Once a fight: Strain that would go over your limit stops at it.",
               "effects": [
                 {
-                  "op": "stat_mod",
-                  "stat": "strain_limit",
-                  "value": 1
+                  "op": "resource",
+                  "resource": "strain",
+                  "set": "limit",
+                  "when": "strain would pass the limit"
                 }
               ],
               "adjudication": "engine",
@@ -4343,14 +4344,15 @@
         "name": "Shape",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "While you hold a Damage Outburst, you get your one free Pump a turn even without Empathy 3. And your free Pump each turn, wherever it comes from, adds +0.1 more to the multiplier.",
+        "text": "Your free Pump each turn adds +{=effects.0.value} to the multiplier.",
         "effects": [
           {
             "op": "stat_mod",
-            "stat": "pump_ap",
-            "value": -1,
-            "when": "first_pump_each_turn",
-            "context": "damage design"
+            "stat": "free_pump_step",
+            "value": 0.12,
+            "when": "the free pump each turn",
+            "context": "damage design",
+            "provisional": true
           }
         ],
         "adjudication": "engine",

@@ -183,14 +183,14 @@ describe('a fight saved under 1.2 gets its free Pumps back', () => {
 
 describe('the release preview (the same standard as Sigil\'s)', () => {
   const cls = (id: string, rank: 1 | 3): CharSpec => { const sig = SIG(id), pts = rank === 3 ? [6, 6, 6] : [1, 1, 1]; return { archetype: 'stormcaller', kit: 'soul', classId: id, level: 5, skills: Object.fromEntries(sig.map((s, i) => [s, pts[i]])) }; };
-  it('Pumps are priced through outburst_pump (Shape): stage 1 → 3 with 2 AP is legal', () => {
+  it('Pumps are priced through outburst_pump: stage 1 → 3 with no free Pump costs 2 Pumps and the Release (rules 1.68: Shape gives none)', () => {
     const f = fightWith([cls('channeler', 1)], [{}]); const u = f.turn(f.pc); const m = u.mg!; m.freePumps = 0; m.freePumpsMax = 0; m.firstUsed = true; m.mp = 500; u.ap = 9;
     const d = m.designs.find((x) => x.school === 'damage')!.id; f.foe.pos = '6,' + u.pos.split(',')[1];
     f.act({ type: 'combat/outburst', unitId: u.id, design: d, hold: true } as any);
     const v = f.unit(u.id); v.mg!.held!.stage = 1; v.ap = 2;
     const plan = withGame(f.g, () => previewOutburstPlan(f.cb, v, 'held', f.foe.pos, { stage: 3 }));
-    expect(plan.ap).toBe(2); expect(plan.ok).toBe(true);
-    expect(withGame(f.g, () => pumpsAp(f.cb, v, v.mg!.designs.find((x) => x.id === d)!, 2, 1))).toBe(1);
+    expect(plan.ap).toBe(3); expect(plan.ok).toBe(false);
+    expect(withGame(f.g, () => pumpsAp(f.cb, v, v.mg!.designs.find((x) => x.id === d)!, 2, 1))).toBe(2); // rules 1.68: Shape gives no free Pump of its own
   });
   it('Heart Surge on: the plan shows the surged stage and multiplier, and a refused release doesn\'t spend it', () => {
     const f = fightWith([cls('channeler', 3)], [{}]); const u = f.turn(f.pc); const m = u.mg!; m.mp = 500; m.strainLimit = 20; u.ap = 9;

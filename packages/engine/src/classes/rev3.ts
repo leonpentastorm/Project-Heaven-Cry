@@ -566,10 +566,22 @@ function turretTile(cb: Combat, k: string): string | null {
 // every ally within 4).
 
 // ======================================================================================================== CHANNELER
-// ---------- Iron Heart (rank I, passive) ----------
-// Strain limit +1: the data's stat_mod strain_limit, run by the generic op (character.ts strainLimit, the unit's
-// mg.strainLimit at the fight's start).
-register({ id: 'channeler.iron_heart', brief: () => null });
+// ---------- Iron Heart (rank I, passive; rules 1.68, 0.31.9) ----------
+// Leon: the Strain limit comes only from Composure. Once a fight, the first Strain that would take the heart over its
+// limit (a Begin, a Pump's feeling, the swell, any other) stops at the limit, so the heart does not burn for it. On the
+// one 'strain' hook (magic.ts addStrain); the use is the move's per_combat use.
+register({
+  id: 'channeler.iron_heart', claims: 'all',
+  on: {
+    strain: (ctx, h) => {
+      const m = h.u?.mg; if (ctx.u !== h.u || !m || !h.cb || h.cb.overworld) return;
+      const lim = ctx.limit ?? m.strainLimit, room = Math.max(0, lim - m.strain);
+      if (ctx.n <= room || !uses(h).take('per_combat', 1)) return;
+      ctx.n = room; say(h.cb, 'Iron Heart: ' + h.u!.name + "'s heart holds at its limit (" + lim + ').');
+    },
+  },
+  brief: () => null,
+});
 
 // ---------- Occult Library (rank II) ----------
 // One more ready design (the data's stat_mod ready_designs, generic: character.ts readyDesigns) and one more tone:

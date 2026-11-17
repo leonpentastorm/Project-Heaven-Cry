@@ -296,11 +296,19 @@ describe('Bard', () => {
 
 // ======================================================================================================== CHANNELER
 describe('Channeler', () => {
-  it('Iron Heart: Strain limit +1 (the sheet and the fight\'s unit)', () => {
+  it('Iron Heart (rules 1.68): no Strain limit of its own; once a fight, Strain that would go over the limit stops at it', () => {
     const f = fightWith([cls('channeler', 3, SOUL), cls('guardian', 3, SOUL)], [{}]);
     const [c, g] = f.pcs;
-    expect(strainLimit(charOf(f, c))).toBe(strainLimit(charOf(f, g)) + 1);
-    expect(f.unit(c.id).mg!.strainLimit).toBe(strainLimit(charOf(f, c)));
+    expect(strainLimit(charOf(f, c))).toBe(strainLimit(charOf(f, g)));
+    const u = f.turn(c); f.unit(u.id).ap = 9; const m = f.unit(u.id).mg!; m.strain = m.strainLimit;
+    const d = m.designs.find((x) => x.school === 'damage')!.id;
+    act(f, f.unit(u.id), { type: 'combat/outburst', design: d, hold: true });
+    expect(f.unit(u.id).mg!.strain).toBe(m.strainLimit); expect(logHas(f.cb, /Iron Heart/)).toBe(true);
+    act(f, f.unit(u.id), { type: 'combat/letgo' } as any);
+    f.unit(u.id).mg!.strain = m.strainLimit; f.unit(u.id).ap = 9;
+    act(f, f.unit(u.id), { type: 'combat/outburst', design: d, hold: true });
+    expect(f.unit(u.id).mg!.strain).toBeGreaterThan(m.strainLimit); // the second time it goes over (once a fight)
+    expect(f.cb.log.filter((l) => /Iron Heart/.test(l)).length).toBe(1);
   });
   it('Occult Library: one more ready design; learn one more tone out of a fight, once', () => {
     const s = storyWith([cls('channeler', 5, SOUL), cls('channeler', 3, SOUL)]);

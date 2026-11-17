@@ -12,7 +12,7 @@
 // What the feelings do at the Release is pinned in outburst40.test.ts (the section "feelings poured in").
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
-import {
+import { itemInfo,
   STAGE_MULT, stageMult, SOUL_DAMAGE, SOUL_DAMAGE_ENEMY, heldMult, previewOutburstPlan, previewPump, pumpBaseAp, FREE_PER_TURN, freeStageLeft,
   FEELINGS, FEELING, PLAIN_STEP, ONCE_EACH, feelingStep, feelingCost, SOUL_RULES, SCHOOL, SOUL_AP, heartMagic, HEART_CASTERS, pumpOutburst,
   freePumps, swellFree, checkOutburstDesign, sameSchoolError, moduleSlots, condOn, stageSaveTn, stageRounds, stageTiles, stageBoonRounds, damageModeMult,
@@ -138,12 +138,13 @@ describe('rules 1.19: one free Pump a turn', () => {
     expect(run(false)).toEqual({ stage: 1, strain: 0 }); // −1 at the turn start, +1 for the swell
     expect(run(true)).toEqual({ stage: 1, strain: -1 }); // −1 at the turn start, nothing for the swell
   });
-  it('Shape (Channeler): the free Pump on a Damage design even without Empathy 3, still one a turn; the free Pump steps +0.1 more', () => {
-    const f = heart(['6,5'], [], { classId: 'channeler', level: 5 }); const d = give(f.pc); begin(f, d); const ap = me(f).ap;
-    expect(withGame(f.g, () => previewPump(f.cb, me(f)))).toMatchObject({ ok: true, ap: 0, mult: 1.1 });
-    pump(f); expect(me(f).ap).toBe(ap); expect(me(f).mg!.held!.plus).toBe(0.1); expect(heldMult(f.cb, me(f), me(f).mg!.held)).toBe(1.1);
-    pump(f); expect(me(f).ap).toBe(ap - 1); expect(me(f).mg!.held!.plus).toBe(0.1); // one a turn
-    release(f); expect(lost(f.foe)).toBe(Math.floor(20 * 1.3 * 0.8)); // 1.2 + 0.1, At Once ×0.8
+  it('Shape (Channeler, rules 1.68): the free Pump steps the move’s step more, still one a turn (Will Power 3 gives the free Pump)', () => {
+    const f = heart(['6,5'], [], { classId: 'channeler', level: 5 }); const d = give(f.pc); begin(f, d); const ap = me(f).ap; me(f).mg!.freePumps = 1; me(f).mg!.freePumpsMax = 1; // Will Power 3's free Pump
+    const step = Number((itemInfo('class:channeler.shape') as any).effects[0].value), m1 = Math.round((1 + step) * 100) / 100;
+    expect(withGame(f.g, () => previewPump(f.cb, me(f)))).toMatchObject({ ok: true, ap: 0, mult: m1 });
+    pump(f); expect(me(f).ap).toBe(ap); expect(me(f).mg!.held!.plus).toBe(step); expect(heldMult(f.cb, me(f), me(f).mg!.held)).toBe(m1);
+    pump(f); expect(me(f).ap).toBe(ap - 1); expect(me(f).mg!.held!.plus).toBe(step); // one a turn
+    release(f); expect(lost(f.foe)).toBe(Math.floor(20 * (1.2 + step) * 0.8)); // stage 2 and the step, At Once ×0.8
     // not on a design that doesn't deal damage
     const g = heart(['6,5'], ['4,5'], { classId: 'channeler', level: 5 }); const b = give(g.pc, { school: 'buff', option: 'heal', modules: [] }); begin(g, b); const ap2 = me(g).ap; pump(g); expect(me(g).ap).toBe(ap2 - 1); expect(me(g).mg!.held!.plus || 0).toBe(0);
   });

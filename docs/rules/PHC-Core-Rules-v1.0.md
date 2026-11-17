@@ -317,7 +317,7 @@ The 54 moves:
 - **Silver Tongue** (2 AP): an enemy within 6 makes a Brain save or loses 2 AP on its next turn (a Boss 1).
 - **Sleight** (1 AP, once a scene): swap places with your False Image or a squadmate within 6.
 - **Rally** (2 AP, once a scene): every squadmate within 4 heals 20 × your Healing given *(Superseded by rules 1.23 (item 1308): 6 × Healing given × the level factor)* and loses Fear and Shaken.
-- **Iron Heart:** Strain limit +1. **Occult Library:** one more ready design, and one tone learned once, out of a fight.
+- **Iron Heart:** Strain limit +1 *(Superseded by rules 1.68 item 5401: once a fight, Strain that would go over the limit stops at it.)* **Occult Library:** one more ready design, and one tone learned once, out of a fight.
 - **Eye of the Storm** (once a scene): your next Release this turn adds no Strain and its tone's riders count a stage higher.
 - **Command** (1 AP, once a turn; Authority 1): a squadmate within 6 walks up to 2 tiles now, for no AP.
 
@@ -12216,3 +12216,25 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     policy needs a new reference build that takes the perk, and a measure of 20 seeds before and after; left for the
     lead. **Needs a new primitive: none** (no closed-list addition in rules 1.66; new exports are named in the hand-off).
     Items 5200 to 5216 are rules 1.66's.
+
+### Rules 1.68 (0.31.9), the Channeler's rank I and the owner's playtest (17 Nov 2026)
+
+5400. **Shape** (`classes.json` channeler `shape`): the free Pump each turn (Will Power 3's, or the fight's first) steps
+    +0.12 more on a Damage Outburst (it was +0.1; the move's `effects.0.value`, PROVISIONAL). The old half, "the free
+    Pump even without Will Power 3", is gone: a Channeler reaches the class with Will Power 3. (The old text said
+    Empathy 3; the engine has gated the free Pump on Will Power since rules 1.33, `character.ts freePumps`.) The lead
+    asked for +0.2, else +0.15; both break the balance contract's Outburst peak at level 5 (`balance-contract.test.ts`,
+    all in, band 124 to 212%): +0.2 gives 217%, +0.15 214%, +0.13 213%, +0.12 passes (+0.1 sat at the cap already).
+    Measured at the normal share (`test/balance/magic-measure.test.ts`): steady 102% to 104% of the plain rifle, a new
+    caster 105% to 106%, the biggest Release 160% to 161% (band 95 to 170). A bigger step needs the peak's band or
+    `cycle.stage_mult` refitted: the lead's call. Supersedes items 522, 1108 and 1208.
+5401. **Iron Heart** (same id and name): no longer raises the Strain limit (Leon: the limit comes only from Composure).
+    Once a fight, the first Strain that would take the heart over its limit stops at the limit, so it does not burn for
+    it. Run on the one `strain` hook (`magic.ts addStrain`), the move's `per_combat` use. The lead asked for the burn
+    itself to be skipped at the turn's end; the burn (`magic.ts magicTurnEnd`) has no hook and heart harm is never
+    reduced (item 4505), so that needs a new primitive (a hook before the turn end's heart burn): not built, listed for
+    the lead. Saves load unchanged (ids kept).
+5402. **Recorded on purpose:** the golden tables `builds-normal`, `builds-allin`, `itemops-perks.log` and
+    `itemops-traits-classes` (the Channeler's Shape and Iron Heart), and 3 replays of 29 (`open-4v7-magic-boss`,
+    `cover-4v7-casters`, `story-fight-story`: a Channeler's Pumps and Strain). **Needs a new primitive** (not built):
+    a hook before the turn end's heart burn (item 5401).

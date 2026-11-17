@@ -1137,27 +1137,17 @@ function markRelease(h: Holder, ctx: any, what: 'surge' | 'status' | 'mend') {
   rel[what] = true; void ctx;
 }
 
-// ---------- Shape (rank I, passive; rules 1.5, reworked in rules 1.19) ----------
-// Rules 1.5: your first Pump each turn that would cost AP was free on a Damage design, on top of Empathy's free Pumps.
-// Rules 1.19: a character takes one free Pump a turn at most, so Shape no longer adds a second one. What it does now:
-// (1) on a Damage design you have the turn's free Pump even without Empathy 3 (the first Pump of the turn that would
-// cost AP, while the turn's free stage is still there: ctx.capLeft); (2) the turn's free Pump, whoever gave it, steps
-// SHAPE_PLUS more on a Damage design (kept on the hold: held.plus). Items 522 and 1208, PROVISIONAL.
-const SHAPE_PLUS = 0.1; // PROVISIONAL (item 1108)
+// ---------- Shape (rank I, passive; rules 1.5, reworked in rules 1.19 and 1.68) ----------
+// Rules 1.68 (0.31.9, Leon): the turn's free Pump (Will Power 3's, or the fight's first) steps more on a Damage design,
+// kept on the hold (held.plus). The number is the move's data (classes.json shape effects.0.value, PROVISIONAL). The
+// old "free Pump without Will Power 3" half is gone: a Channeler has Will Power 3 to reach the class.
 register({
   id: 'channeler.shape', claims: 'all', priority: 900,
   on: {
     outburst_pump: (ctx, h) => {
-      if (ctx.u !== h.u || !isDamageDesign(ctx.design) || !h.cb) return; const st = stateOf(h), held = h.u?.mg?.held;
-      if (ctx.preview) {
-        st.shape = ctx.ap > 0 && ctx.capLeft !== false && uses(h).left('per_turn', 1, h.key + '#shape') > 0; if (st.shape) ctx.ap = 0;
-        if ((st.shape || ctx.free) && held && held.shapeAt !== h.cb.round) ctx.plus = (ctx.plus || 0) + SHAPE_PLUS; // the card shows the free Pump's better step
-        return;
-      }
-      const mine = st.shape && ctx.ap === 0 && uses(h).take('per_turn', 1, h.key + '#shape');
-      if (mine) say(h.cb, 'Shape: the first Pump this turn costs no AP.');
-      if ((mine || ctx.freeKind) && held && held.shapeAt !== h.cb.round) { held.plus = Math.round(((held.plus || 0) + SHAPE_PLUS) * 100) / 100; held.shapeAt = h.cb.round; say(h.cb, 'Shape: the free Pump steps +' + SHAPE_PLUS + ' more.'); }
-      st.shape = false;
+      if (ctx.u !== h.u || !isDamageDesign(ctx.design) || !h.cb) return; const held = h.u?.mg?.held, plus = effNum(h, 'stat_mod');
+      if (ctx.preview) { if (ctx.free && held && held.shapeAt !== h.cb.round) ctx.plus = (ctx.plus || 0) + plus; return; } // the card shows the free Pump's better step
+      if (ctx.freeKind && held && held.shapeAt !== h.cb.round) { held.plus = Math.round(((held.plus || 0) + plus) * 100) / 100; held.shapeAt = h.cb.round; say(h.cb, 'Shape: the free Pump steps +' + plus + ' more.'); }
     },
   },
   brief: () => null,

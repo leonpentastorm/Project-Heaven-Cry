@@ -433,3 +433,33 @@ only, base 3, steps at 1 / 2 / 4 / 6 / 8), Rite in the Field and the Call ladder
   Strain folds away or is replaced. Strain must always show while an Outburst is held.
 - **Syphon:** triple the mana a Syphon draws from the air by default (data), and **no MP is restored at the end of
   a Survival stage** (find what refills MP after a stage / Boss and remove it for MP only).
+- **Iron Heart, Leon's ruling (17 Nov, overrides the lead's "ignore one heart burn"):** once a fight, when you reach
+  Mana Shock, it relieves 2 Strain. Apply after the 0.31.9 builder finishes (it was briefed with the lead's version).
+- **"The whole Channeler class is useless now that a load of old perks went into the alpha skill's ladder"
+  (Leon):** a class must be the best user of its door, not a second copy of what the skill's points already give.
+  Audit all nine base classes against their alpha skill's ladder (what each rank's two moves give that the ladder
+  does not), Channeler first, and redesign the moves that are empty or duplicated; put the audit table to Leon. In
+  0.32, with the fork slice.
+- **The ladder, Leon's ruling (17 Nov, screenshot of Pain Threshold's ladder with "—" at 1, 2, 4, 6, 8):** delete
+  the "EVERY POINT" block; put what every point gives INTO each level that would otherwise be empty (the "—" rows),
+  as card lines ("+10% elemental resistance", "+2 max HP a level"). And every number names its unit: "Enemies need 1
+  more to spot you while you sneak" must say 1 more WHAT ("+1 to the roll enemies need to spot you"). The lead applies
+  this in apps/web/src/screens/shared.js roadMap (empty steps take the head rows; the head block is not rendered)
+  after the 0.31.9 builder finishes, with Iron Heart's ruling.
+- **The ladder, two more rulings (Leon, 17 Nov):** (1) EVERY level lists what every point gives, in addition to
+  its perk, fork or unlock (else a perk level reads as if it forgoes the per-point gain); gains that start later show
+  from their first level. (2) **Spread the unlocks out:** today 3 and 5 give both a named passive AND a perk step
+  while 1, 2, 4, 6, 8 give nothing: move the named unlocks onto the empty levels so no level carries two things and
+  none is empty. A RULES change for all 27 skills (which point each unlock is earned at; data/skills.json unlocks;
+  spec first). Lead's proposed mapping, to confirm with Leon: beta and gamma: the unlock at 3 moves to 2, the one at
+  5 to 4 (7 to 6, 9 to 8 where one exists); perk steps stay at 3 / 5 / 7 / 9, Mastered at 10. Alpha: the door at 1,
+  forks at 4 and 6, perk steps at 3 / 5 / 7 / 9, so its door verbs at 3 and 5 move to 2 and 8 (or stay, and the
+  alpha's empty levels 2 and 8 take the per-point line only). Moving an unlock earlier is a buff: measure. 0.32.
+- **Leon: YES to the mapping** (beta / gamma: passives at 2 and 4, perks at 3 / 5 / 7 / 9, Mastered at 10). **And
+  alphas give too much:** "all alpha are giving so much there isn't even space to put it all": where an alpha's
+  ladder has more than its levels can hold, MOVE the surplus abilities (the old perks folded into it, the extra
+  passives) out of the alpha and into its attribute's beta or gamma skill (or another skill where the ability
+  belongs), so every skill of an attribute has reasons to be bought and the alpha keeps: the door at 1, one thing a
+  level, forks at 4 and 6, perks at 3 / 5 / 7 / 9. Do it as one table for all nine attributes (ability, from, to,
+  why) for Leon's edits, with the class audit and the fork slice, in 0.32. This also answers "who will ever put
+  points in beta and gamma" and "the class is useless": decide ladder, class and fork contents together.

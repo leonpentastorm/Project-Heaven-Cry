@@ -11,7 +11,6 @@
 "class/bard@III/heal-out": "P1 res:{\"ledger\":0,\"guard\":0,\"shadow\":0}>{\"ledger\":30,\"guard\":0,\"shadow\":0}, P2 hp:126/315>156/315",
 "class/bard@III/shield-out": "P1 res:{\"ledger\":0,\"guard\":0,\"shadow\":0}>{\"ledger\":30,\"guard\":0,\"shadow\":0}, P2 sh:0>30",
 "class/bard@III/start": "order=pc-c3,pc-c1,foe-0,foe-1,foe-2; round=1; turn=1; over=; u:pc-c1=hp400/666 sh0 ap9 bank0 pos3,6 conds mv3 res{\"ledger\":0,\"guard\":0,\"shadow\":0} inj0 mg0/0/0/600; u:pc-c3=hp126/315 sh0 ap6 bank0 pos2,6 conds mv2.5 res{\"guard\":0,\"shadow\":0} inj0; u:foe-0=hp259/259 sh0 ap0 bank0 pos4,6 conds mv1.5 res{} inj0; u:foe-1=hp259/259 sh0 ap0 bank0 pos7,6 conds mv1.5 res{} inj0; u:foe-2=hp444/444 sh0 ap0 bank0 pos7,9 conds mv2 res{} inj0; echo=1",
-"class/channeler@I/stats": "",
 "class/channeler@II/stats": "",
 "class/channeler@III/stats": "",
 "class/defender@I/ally-lethal": "turn:1>3, P1 hp:129/214>111/214 res:{\"guard\":1,\"shadow\":0}>{\"guard\":0,\"shadow\":0}, P2 hp:126/315>3/315, F2 ap:0>7",

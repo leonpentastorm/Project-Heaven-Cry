@@ -40,7 +40,7 @@
 "perk/iron_stomach@II/cond-in-fear-nosave": "",
 "perk/iron_stomach@II/cond-in-nausea-nosave": "",
 "perk/last_wall@mastered/taken-lethal": "Tester 1 refuses to fall (Last Wall): 1 HP, and nothing gets through until their next turn. / Tester 1 has felt Spite (hurt by Far soldier): it can be poured in now. / Far soldier fires at Tester 1: d20 10 +2 = 12 vs 14 · hit, 2 damage",
-"perk/litany@II/stats": "STATS ready_designs:1x1 strain_limit:1x1 never_jams:1x1 hymn_wait:-1x1 never_jams:1x1",
+"perk/litany@II/stats": "STATS ready_designs:1x1 never_jams:1x1 hymn_wait:-1x1 never_jams:1x1",
 "perk/make_way@achieved/move": "Tester 1 moves to D10 (3 tiles, 2 AP).",
 "perk/make_way@achieved/move-charge": "Tester 1 moves to G7 (3 tiles, 2 AP).",
 "perk/make_way@achieved/move-far": "Tester 1 moves to L7 (8 tiles, 4 AP).",
