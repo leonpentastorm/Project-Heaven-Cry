@@ -1,0 +1,73 @@
+{
+  "number": 273,
+  "family": "camp_icons",
+  "id": "camp-step-boon",
+  "path": "art/icons/survival/camp/step-boon.png",
+  "name": "Step 4: Your starting boon",
+  "mode": "white-ink sign",
+  "state": "designed, not built",
+  "use": "The camp checklist's boon step",
+  "paint": "A small ribbon medal on a pin.",
+  "avoid": "a real military medal \u00b7 a star with text",
+  "section": "Survival and camp",
+  "kind": "sign",
+  "prompt": "Create ONE fantasy-game camp-step UI SIGN. Subject ONLY: ONE small ribbon medal: a short folded ribbon pinned above a plain circular medallion with ONE transparent circular inset. No star, real military insignia, religion, letters, figure or decoration. Pure-white #FFFFFF flat solid ink on a completely TRANSPARENT background, bold compact silhouette with a few thick transparent interior cuts. Slightly hand-inked print contours, no distress, no grunge or speckles. Must read clearly at 24px and 48px on charcoal. All dark spaces are TRANSPARENT HOLES, not black paint. NO shading, gray, glow, shadows, gradients, blur, texture or frame. No person, mascot, robot or unrelated props. Center full subject in a 15% clear margin, square 1024x1024 composition.",
+  "refs": [],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 8,
+  "recipe_refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "generation_references": [],
+  "generation_reference_mode": "Text-only new object-sign render; no reference-image inputs attached while the runtime was unavailable.",
+  "composition_scope": "object-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "2380b2ab152f0698be4a692649a3f8d1098f050863d6c3e291068ec894c2c60c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/273-step-boon.png",
+  "source_sha256": "53c4b20fa1670dbe5c1ee2407a9baaa198029f373003ddc4303ecd87ed96e14f",
+  "export_crop": [
+    39,
+    17,
+    1154,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/survival/camp/exports/128/step-boon.png",
+    "64": "art/icons/survival/camp/exports/64/step-boon.png",
+    "48": "art/icons/survival/camp/exports/48/step-boon.png",
+    "44": "art/icons/survival/camp/exports/44/step-boon.png",
+    "32": "art/icons/survival/camp/exports/32/step-boon.png",
+    "24": "art/icons/survival/camp/exports/24/step-boon.png"
+  },
+  "framing": {
+    "scale": 0.6628940986257074,
+    "offset": [
+      142,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "a91b92c5de287c863e4344786cdb4cbc6ed1fecea2810cd8ad06356b4890991b",
+    "64": "f40576a1733b82387d6c621b75411b2d3c88651f98f98d226ae004adba78a31d",
+    "48": "e48ce2d98091ead31addbbe2422e0f7690b1e5b778738aaf399f0b69cb97455d",
+    "44": "575beda92f4ea9e78edda3e1a0b11d1732f958dd2deb92ffc43ad43ab5bfa2d9",
+    "32": "ff8dd91c1a815dadb778cdad65935264673be32fd913b28d1fabf3cd376cef88",
+    "24": "927598790bd293e3aca918d99060878061bd2c9ef76c40cdf6aa8fea6e04f605"
+  },
+  "visual_review": "Viewed on charcoal at full preview and actual 24/48px; unapproved review candidate."
+}

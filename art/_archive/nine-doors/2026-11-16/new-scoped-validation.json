@@ -1,0 +1,28 @@
+{
+  "checked_new_filesets": 4,
+  "legacy_delivered": 348,
+  "new_030_delivered": 0,
+  "all_new_source_master_export_hashes_pass": true,
+  "new_pixel_alpha_dimensions_safe_box_and_ui_checks_pass": true,
+  "repository_44px_white_alpha_check_pass": true,
+  "original_344_records_unchanged": true,
+  "alpha_audits": [
+    {
+      "asset": 274,
+      "faint_alpha_to_solid_area_ratio": 0.02374207976146105
+    },
+    {
+      "asset": 272,
+      "faint_alpha_to_solid_area_ratio": 0.023084001577494413
+    },
+    {
+      "asset": 273,
+      "faint_alpha_to_solid_area_ratio": 0.02854516504981862
+    },
+    {
+      "asset": 271,
+      "faint_alpha_to_solid_area_ratio": 0.028435654231679396
+    }
+  ],
+  "approval": "All unapproved review candidates"
+}

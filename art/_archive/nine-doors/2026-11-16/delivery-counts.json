@@ -1,35 +1,9 @@
 {
-  "delivered": 344,
-  "delivered_by_kind": {
-    "wick": 254,
-    "sign": 71,
-    "class": 9,
-    "monoline": 5,
-    "gear": 5
-  },
-  "remaining": 31,
-  "remaining_by_kind": {
-    "wick": 26,
-    "abstract": 1,
-    "sign": 4
-  },
-  "remaining_by_priority": {
-    "1": 0,
-    "2": 0,
-    "3": 0,
-    "4": 0,
-    "5": 5,
-    "6": 0,
-    "7": 1,
-    "8": 25
-  },
-  "remaining_by_mode": {
-    "Wick icon": 26,
-    "Figment portrait": 1,
-    "white-ink sign": 4
-  },
-  "eligible_legacy_remaining": 4,
-  "held_legacy_remaining": 27,
-  "new_030_remaining": 41,
-  "combined_remaining_request_records": 45
+  "legacy_delivered": 348,
+  "legacy_held_pending": 27,
+  "legacy_eligible_pending": 0,
+  "new_030_delivered": 0,
+  "new_030_pending": 41,
+  "combined_outstanding_requests": 41,
+  "new_030_by_kind": {}
 }

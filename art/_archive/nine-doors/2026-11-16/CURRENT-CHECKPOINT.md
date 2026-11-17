@@ -1,12 +1,5 @@
 # Current continuation checkpoint — 17 November 2026
 
-Legacy delivery: 344/375 review candidates. Unfinished old rows: 31, of which 4 eligible and 27 held. New 0.30 additions: 0/41 delivered. Combined outstanding request records: 45.
+Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **0/41 candidates**, **41 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
 
-The 28 old hold recipes remain enforced. Palm #258 remains preserved and held for review. None of the 41 newly queued proposals is completed merely by being queued.
-
-The actual source composites for Last Turn #323 and Augment Offline #324 are clean. Their quantitative faint-alpha audit and actual-size review supersede the earlier preview-only rejection; no native source was altered. The original rejected glowing #323 remains archived separately and is not reactivated.
-
-Review sheets are in review/. Master/export/source paths, actual native dimensions and SHA-256 values are in records/ and manifest.json. Every new image is review-candidate, production_approved false and implementation_ready false. See continuation-validation.json for the latest checks. Historical validation and blocker reports remain records of their original checkpoints.
-
-
-**Current image-generation blocker:** actual HTTP 429 usage limit on 17 November 2026; reset reported at 13:28:30 Bangkok. Read [the fresh resumption handoff](RESUME-AUDIT-2026-11-17.md) and [service details](generation-limit-2026-11-17.json). Next legacy jobs: #271–274. Added 0.30 requests: 0/41 delivered.
+Read CONTINUE.md, records/, records-0.30/, progress.json and progress-0.30.json. Current validation is in current-run-validation.json; previous quota/build/validation reports remain historical. Original art and the fresh #44 Breaker are preserved. No held old recipe is revived and no game/UI code is changed. Native dimensions and exports are recorded honestly.

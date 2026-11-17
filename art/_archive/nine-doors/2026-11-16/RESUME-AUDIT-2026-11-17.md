@@ -1,3 +1,7 @@
+<!-- current-completion -->
+> **Current: Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **0/41 candidates**, **41 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.  Camp signs #271–274 are completed. Pinned revision-2 art proposals for the eight source-question forks were explicitly authorized by Leon. Read CURRENT-CHECKPOINT.md, CONTINUE.md and current-run-validation.json. Earlier quota and 344-item sections below are historical.**
+<!-- /current-completion -->
+
 # Resume after actual image limit — 17 November 2026
 
 This is the current handoff. The 16 November RESUME-AUDIT and blockers.json describe historical states. The latest numeric records and progress.json agree on **344/375 legacy candidates**. This continuation adds **94** to checkpoint 250. All 54 techniques, nine door emblems, nine class portraits, four remaining gloves, and 18 of 22 final legacy jobs are delivered.

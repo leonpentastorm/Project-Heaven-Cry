@@ -11873,6 +11873,126 @@
         "24": "art/icons/survival/camp/exports/24/step-weapon.png"
       },
       "ink": "#FFFFFF"
+    },
+    "camp-step-focus": {
+      "label": "Step 2: Your free focus",
+      "path": "art/icons/survival/camp/step-focus.png",
+      "sha256": "4b577819d25097cdd93abb544648f673055b069956fe93cd2b85ffe87b4aa391",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/271-step-focus.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 271,
+      "exports": {
+        "128": "art/icons/survival/camp/exports/128/step-focus.png",
+        "64": "art/icons/survival/camp/exports/64/step-focus.png",
+        "48": "art/icons/survival/camp/exports/48/step-focus.png",
+        "44": "art/icons/survival/camp/exports/44/step-focus.png",
+        "32": "art/icons/survival/camp/exports/32/step-focus.png",
+        "24": "art/icons/survival/camp/exports/24/step-focus.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "camp-step-budget": {
+      "label": "Step 3: Spend your budget",
+      "path": "art/icons/survival/camp/step-budget.png",
+      "sha256": "da0bd53debb7c2eec2dd67724ed698578e09c7f8a12522d7744768b586a4dc5c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/272-step-budget.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 272,
+      "exports": {
+        "128": "art/icons/survival/camp/exports/128/step-budget.png",
+        "64": "art/icons/survival/camp/exports/64/step-budget.png",
+        "48": "art/icons/survival/camp/exports/48/step-budget.png",
+        "44": "art/icons/survival/camp/exports/44/step-budget.png",
+        "32": "art/icons/survival/camp/exports/32/step-budget.png",
+        "24": "art/icons/survival/camp/exports/24/step-budget.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "camp-step-boon": {
+      "label": "Step 4: Your starting boon",
+      "path": "art/icons/survival/camp/step-boon.png",
+      "sha256": "2380b2ab152f0698be4a692649a3f8d1098f050863d6c3e291068ec894c2c60c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/273-step-boon.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 273,
+      "exports": {
+        "128": "art/icons/survival/camp/exports/128/step-boon.png",
+        "64": "art/icons/survival/camp/exports/64/step-boon.png",
+        "48": "art/icons/survival/camp/exports/48/step-boon.png",
+        "44": "art/icons/survival/camp/exports/44/step-boon.png",
+        "32": "art/icons/survival/camp/exports/32/step-boon.png",
+        "24": "art/icons/survival/camp/exports/24/step-boon.png"
+      },
+      "ink": "#FFFFFF"
+    },
+    "camp-step-ready": {
+      "label": "Ready",
+      "path": "art/icons/survival/camp/step-ready.png",
+      "sha256": "0f88ef5033aa41a2f327f05c0b05310a8feb5c2d330be2c8e258f18010fdd394",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/274-step-ready.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "sign",
+      "brief_number": 274,
+      "exports": {
+        "128": "art/icons/survival/camp/exports/128/step-ready.png",
+        "64": "art/icons/survival/camp/exports/64/step-ready.png",
+        "48": "art/icons/survival/camp/exports/48/step-ready.png",
+        "44": "art/icons/survival/camp/exports/44/step-ready.png",
+        "32": "art/icons/survival/camp/exports/32/step-ready.png",
+        "24": "art/icons/survival/camp/exports/24/step-ready.png"
+      },
+      "ink": "#FFFFFF"
     }
   }
 }

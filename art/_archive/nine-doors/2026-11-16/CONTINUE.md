@@ -1,65 +1,54 @@
-# Continue the Nine Doors artwork — 0.30 scope applied
+# Continue the Nine Doors artwork
 
-Original ledger: **344/375 delivered**. Original unfinished: **31 = 4 eligible + 27 held**. The 0.30 additions have **0/41 delivered**. Combined remaining: **45 request records**, including replacement/reuse checks.
+Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **0/41 candidates**, **41 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
 
-Read art-hold-list-0.30.md, holds-0.30.json and CONTINUE-0.30.md. All 28 old holds remain enforced. progress.json and records/ own old completion; progress-0.30.json owns added-request completion. Recipe pending flags are not ledgers.
+Leon authorized the pinned revision-2 visual basis for Cover Them, Drive, Lightkiller, Keep the Thread, Benediction, Held Breath, Walk It In and Lockdown. Their gameplay questions remain open; this is approval to paint draft proposals only. See user-direction-2026-11-17.json.
 
-The latest delivered images are review candidates, never automatically approved. Preserve all originals and old assets. No gameplay or UI changes.
+## Remaining 0.30 requests
 
-## Eligible old recipes, in priority order
+- `0.30/fork.guard.provoke` · Provoke
+- `0.30/fork.guard.cover_them` · Cover Them · pinned revision-2 art basis authorized
+- `0.30/fork.guard.stand_fast` · Stand Fast
+- `0.30/fork.guard.drive` · Drive · pinned revision-2 art basis authorized
+- `0.30/fork.shadow.light_fingers` · Light Fingers
+- `0.30/fork.shadow.lend_the_dark` · Lend the Dark
+- `0.30/fork.shadow.lightkiller` · Lightkiller · pinned revision-2 art basis authorized
+- `0.30/fork.shadow.spotter` · Spotter
+- `0.30/fork.tend.keep_the_thread` · Keep the Thread · pinned revision-2 art basis authorized
+- `0.30/fork.tend.short_thread` · Short Thread
+- `0.30/fork.tend.shared_pulse` · Shared Pulse
+- `0.30/fork.tend.long_thread` · Long Thread
+- `0.30/fork.prayer.round_of_blessings` · Round of Blessings
+- `0.30/fork.prayer.steadfast` · Steadfast
+- `0.30/fork.prayer.benediction` · Benediction · pinned revision-2 art basis authorized
+- `0.30/fork.prayer.held_breath` · Held Breath · pinned revision-2 art basis authorized
+- `0.30/fork.momentum.rolling_start` · Rolling Start
+- `0.30/fork.momentum.grindstone` · Grindstone
+- `0.30/fork.momentum.spill` · Spill
+- `0.30/fork.momentum.headlong` · Headlong
+- `0.30/fork.pressure.converging_fire` · Converging Fire
+- `0.30/fork.pressure.walk_it_in` · Walk It In · pinned revision-2 art basis authorized
+- `0.30/fork.pressure.through_the_gap` · Through the Gap
+- `0.30/fork.pressure.lockdown` · Lockdown · pinned revision-2 art basis authorized
+- `0.30/fork.sigil.overflux` · Overflux
+- `0.30/fork.sigil.clean_vent` · Clean Vent
+- `0.30/fork.sigil.written_in_advance` · Written in Advance
+- `0.30/fork.sigil.running_script` · Running Script
+- `0.30/fork.soul.ride_the_edge` · Ride the Edge
+- `0.30/fork.soul.slow_burn` · Slow Burn
+- `0.30/fork.soul.blood_price` · Blood Price
+- `0.30/fork.soul.clean_break` · Clean Break
+- `0.30/class/stand-behind-me` · Stand Behind Me
+- `0.30/replacement/33` · Wind-up
+- `0.30/replacement/35` · Read the Swing
+- `0.30/replacement/63` · Hold the Lane
+- `0.30/replacement/163` · Scrap Sentinel
+- `0.30/shared/follow` · Follow
+- `0.30/shared/afterword` · Afterword
+- `0.30/shared/mana-shock` · Mana Shock
+- `0.30/shared/staggered` · Staggered
 
-- P8 · #271 · Step 2: Your free focus · `art/icons/survival/camp/step-focus.png` · white-ink sign
-- P8 · #272 · Step 3: Spend your budget · `art/icons/survival/camp/step-budget.png` · white-ink sign
-- P8 · #273 · Step 4: Your starting boon · `art/icons/survival/camp/step-boon.png` · white-ink sign
-- P8 · #274 · Ready · `art/icons/survival/camp/step-ready.png` · white-ink sign
-
-## Additional 0.30 requests
-
-Use planned-jobs-0.30.json for exact source excerpts, provisional names, source questions and generation gates. Follow checks reuse first; four replacement depictions use the new rules, never held old recipes.
-
-- `0.30/fork.guard.provoke` · Provoke · queued-proposal
-- `0.30/fork.guard.cover_them` · Cover Them · queued-proposal · source questions [1]
-- `0.30/fork.guard.stand_fast` · Stand Fast · queued-proposal
-- `0.30/fork.guard.drive` · Drive · queued-proposal · source questions [11]
-- `0.30/fork.shadow.light_fingers` · Light Fingers · queued-proposal
-- `0.30/fork.shadow.lend_the_dark` · Lend the Dark · queued-proposal
-- `0.30/fork.shadow.lightkiller` · Lightkiller · queued-proposal · source questions [2]
-- `0.30/fork.shadow.spotter` · Spotter · queued-proposal
-- `0.30/fork.tend.keep_the_thread` · Keep the Thread · queued-proposal · source questions [7]
-- `0.30/fork.tend.short_thread` · Short Thread · queued-proposal
-- `0.30/fork.tend.shared_pulse` · Shared Pulse · queued-proposal
-- `0.30/fork.tend.long_thread` · Long Thread · queued-proposal
-- `0.30/fork.prayer.round_of_blessings` · Round of Blessings · queued-proposal
-- `0.30/fork.prayer.steadfast` · Steadfast · queued-proposal
-- `0.30/fork.prayer.benediction` · Benediction · queued-proposal · source questions [3]
-- `0.30/fork.prayer.held_breath` · Held Breath · queued-proposal · source questions [3]
-- `0.30/fork.momentum.rolling_start` · Rolling Start · queued-proposal
-- `0.30/fork.momentum.grindstone` · Grindstone · queued-proposal
-- `0.30/fork.momentum.spill` · Spill · queued-proposal
-- `0.30/fork.momentum.headlong` · Headlong · queued-proposal
-- `0.30/fork.pressure.converging_fire` · Converging Fire · queued-proposal
-- `0.30/fork.pressure.walk_it_in` · Walk It In · queued-proposal · source questions [15]
-- `0.30/fork.pressure.through_the_gap` · Through the Gap · queued-proposal
-- `0.30/fork.pressure.lockdown` · Lockdown · queued-proposal · source questions [6]
-- `0.30/fork.sigil.overflux` · Overflux · queued-proposal
-- `0.30/fork.sigil.clean_vent` · Clean Vent · queued-proposal
-- `0.30/fork.sigil.written_in_advance` · Written in Advance · queued-proposal
-- `0.30/fork.sigil.running_script` · Running Script · queued-proposal
-- `0.30/fork.soul.ride_the_edge` · Ride the Edge · queued-proposal
-- `0.30/fork.soul.slow_burn` · Slow Burn · queued-proposal
-- `0.30/fork.soul.blood_price` · Blood Price · queued-proposal
-- `0.30/fork.soul.clean_break` · Clean Break · queued-proposal
-- `0.30/class/stand-behind-me` · Stand Behind Me · queued-proposal
-- `0.30/replacement/33` · Wind-up · queued-proposal
-- `0.30/replacement/35` · Read the Swing · queued-proposal
-- `0.30/replacement/63` · Hold the Lane · queued-proposal
-- `0.30/replacement/163` · Scrap Sentinel · queued-proposal
-- `0.30/shared/follow` · Follow · queued-reuse-check
-- `0.30/shared/afterword` · Afterword · queued
-- `0.30/shared/mana-shock` · Mana Shock · queued
-- `0.30/shared/staggered` · Staggered · queued-proposal
-
-## Held old recipes — do not paint
+## Held old recipes — never revive
 
 - #10 · Draw Fire
 - #18 · Hold the Gap
@@ -89,7 +78,6 @@ Use planned-jobs-0.30.json for exact source excerpts, provisional names, source 
 - #249 · Confessor (Office)
 - #250 · Crusader (Office)
 
-Already delivered and held for review: #258. Preserve these files.
+Palm #258 is already delivered and held for review; preserve it. Four new replacements use separate 0.30 records at the old bindings and never complete the held numeric recipes. Follow checks reuse before painting. Scrap Turret portrait #164 stays held.
 
-
-**Current image-generation blocker:** actual HTTP 429 usage limit on 17 November 2026; reset reported at 13:28:30 Bangkok. Read [the fresh resumption handoff](RESUME-AUDIT-2026-11-17.md) and [service details](generation-limit-2026-11-17.json). Next legacy jobs: #271–274. Added 0.30 requests: 0/41 delivered.
+Image generation works. The four camp signs were painted during runtime failure; their native PNGs were recovered byte-for-byte from preserved Git blobs, then exported using Pillow when the workspace returned. The earlier API-only PNG draft objects were never activated. See current-run-validation.json for fresh check limits.

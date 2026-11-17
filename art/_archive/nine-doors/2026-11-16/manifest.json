@@ -16232,6 +16232,298 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 271,
+    "family": "camp_icons",
+    "id": "camp-step-focus",
+    "path": "art/icons/survival/camp/step-focus.png",
+    "name": "Step 2: Your free focus",
+    "mode": "white-ink sign",
+    "state": "designed, not built",
+    "use": "The camp checklist's focus step",
+    "paint": "A single glove with a small round core on its back, a tick in a ring above.",
+    "avoid": "a real brand \u00b7 a magic wand",
+    "section": "Survival and camp",
+    "kind": "sign",
+    "prompt": "Create one small fantasy-game UI SIGN in pure white #FFFFFF flat ink on a fully TRANSPARENT background. Subject ONLY: one empty practical focus glove upright, with five short stubby glove fingers and a single round mana-core fitting on the BACK of the glove. Above it, one small checkmark inside one simple ring. A compact, bold, slightly hand-inked silhouette with only two or three clear transparent interior separations, readable at 24px and 48px on charcoal #10151F. No living hand, skin, person, robot, mascot, face, wand, letters, numbers, brand, star, extra decoration or border. No shading, gray, black paint, glow, shadow, gradient, texture or blur. Only solid white forms and real transparent negative space. Full subject centered with a generous 15% clear margin, square 1024x1024 composition. The ring/check belongs to this camp-step sign, not to a mascot.",
+    "refs": [],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 8,
+    "recipe_refs": [
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png"
+    ],
+    "generation_references": [],
+    "generation_reference_mode": "Text-only new object-sign render; no reference-image inputs attached while the runtime was unavailable.",
+    "composition_scope": "object-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "4b577819d25097cdd93abb544648f673055b069956fe93cd2b85ffe87b4aa391",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/271-step-focus.png",
+    "source_sha256": "284918eb70f3f643a386a0cda5d95e5a208d79da602e0dede19319bd1491248d",
+    "export_crop": [
+      152,
+      17,
+      1075,
+      1218
+    ],
+    "exports": {
+      "128": "art/icons/survival/camp/exports/128/step-focus.png",
+      "64": "art/icons/survival/camp/exports/64/step-focus.png",
+      "48": "art/icons/survival/camp/exports/48/step-focus.png",
+      "44": "art/icons/survival/camp/exports/44/step-focus.png",
+      "32": "art/icons/survival/camp/exports/32/step-focus.png",
+      "24": "art/icons/survival/camp/exports/24/step-focus.png"
+    },
+    "framing": {
+      "scale": 0.6827643630308077,
+      "offset": [
+        197,
+        102
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": null
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "db27fafad6cbf3e9a7d983534a0e34922f709c7b08b7e33b4c69883dea5831a6",
+      "64": "c23fd644bc083d869f9251cab975460ab64420ff15de85178ec8b8f0d7d66f3c",
+      "48": "1ed56712746e8129c3d9e4295f0730d1a50089a18dcff66247daa60763cb5681",
+      "44": "612a14ed428ccf097ce202a3d1c45512c9dda9f5d30c496f45e0bb17eff89bbf",
+      "32": "dfcb8a9f4eb993cf8ff1cb578efdcdef47c6b48ebb06810e80cdedf0601b4ca4",
+      "24": "55ed2ea912982abd7036d2a7ff08246772cc00b5a83220a44c7a27aaa5373bdd"
+    },
+    "visual_review": "Viewed on charcoal at full preview and actual 24/48px; unapproved review candidate."
+  },
+  {
+    "number": 272,
+    "family": "camp_icons",
+    "id": "camp-step-budget",
+    "path": "art/icons/survival/camp/step-budget.png",
+    "name": "Step 3: Spend your budget",
+    "mode": "white-ink sign",
+    "state": "designed, not built",
+    "use": "The camp checklist's budget step",
+    "paint": "A small purse with three coins stacked beside it.",
+    "avoid": "a currency symbol \u00b7 text",
+    "section": "Survival and camp",
+    "kind": "sign",
+    "prompt": "Create ONE fantasy-game camp-step UI SIGN. Subject ONLY: ONE tied small coin purse on the LEFT and exactly THREE blank round coins stacked on the RIGHT with a slight step so the three rims read. Coins have NO marks. No currency symbols, letters or numbers. Pure-white #FFFFFF flat solid ink on a completely TRANSPARENT background, bold compact silhouette with a few thick transparent interior cuts. Slightly hand-inked print contours, no distress, no grunge or speckles. Must read clearly at 24px and 48px on charcoal. All dark spaces are TRANSPARENT HOLES, not black paint. NO shading, gray, glow, shadows, gradients, blur, texture or frame. No person, mascot, robot or unrelated props. Center full subject in a 15% clear margin, square 1024x1024 composition.",
+    "refs": [],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 8,
+    "recipe_refs": [
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png"
+    ],
+    "generation_references": [],
+    "generation_reference_mode": "Text-only new object-sign render; no reference-image inputs attached while the runtime was unavailable.",
+    "composition_scope": "object-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "da0bd53debb7c2eec2dd67724ed698578e09c7f8a12522d7744768b586a4dc5c",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/272-step-budget.png",
+    "source_sha256": "d496aeb85fabc3ca04315a1ae975ff8405fe85e5e6ec8681c7359d61421761bb",
+    "export_crop": [
+      59,
+      25,
+      1161,
+      1168
+    ],
+    "exports": {
+      "128": "art/icons/survival/camp/exports/128/step-budget.png",
+      "64": "art/icons/survival/camp/exports/64/step-budget.png",
+      "48": "art/icons/survival/camp/exports/48/step-budget.png",
+      "44": "art/icons/survival/camp/exports/44/step-budget.png",
+      "32": "art/icons/survival/camp/exports/32/step-budget.png",
+      "24": "art/icons/survival/camp/exports/24/step-budget.png"
+    },
+    "framing": {
+      "scale": 0.7174103237095363,
+      "offset": [
+        116,
+        102
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": null
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "54633d4f2e0803a24717beaed98a64d8f8f62f8af3c27b675b1ec6185210a25f",
+      "64": "300a9597b8e2c68f953f990d844c5bf11c757e64df5fb5e19fe6bebc67160842",
+      "48": "274a36fad1e783e2c9ba1a60d5202e9fb43218c21e5b6fa59734d67fdf6d20e4",
+      "44": "386b215d96bd1c5db328bdb9806edd305c95dc1a33521a3bcb991098a7197de7",
+      "32": "faae3840fa63263abfa3964332d7dae5d3b9a56a92f909aa00469bf4b26bee16",
+      "24": "dbe2ce5c5a0c322f000c5d71d68b50e0d4a4b430099cee7da39cc7e5a10aa771"
+    },
+    "visual_review": "Viewed on charcoal at full preview and actual 24/48px; unapproved review candidate."
+  },
+  {
+    "number": 273,
+    "family": "camp_icons",
+    "id": "camp-step-boon",
+    "path": "art/icons/survival/camp/step-boon.png",
+    "name": "Step 4: Your starting boon",
+    "mode": "white-ink sign",
+    "state": "designed, not built",
+    "use": "The camp checklist's boon step",
+    "paint": "A small ribbon medal on a pin.",
+    "avoid": "a real military medal \u00b7 a star with text",
+    "section": "Survival and camp",
+    "kind": "sign",
+    "prompt": "Create ONE fantasy-game camp-step UI SIGN. Subject ONLY: ONE small ribbon medal: a short folded ribbon pinned above a plain circular medallion with ONE transparent circular inset. No star, real military insignia, religion, letters, figure or decoration. Pure-white #FFFFFF flat solid ink on a completely TRANSPARENT background, bold compact silhouette with a few thick transparent interior cuts. Slightly hand-inked print contours, no distress, no grunge or speckles. Must read clearly at 24px and 48px on charcoal. All dark spaces are TRANSPARENT HOLES, not black paint. NO shading, gray, glow, shadows, gradients, blur, texture or frame. No person, mascot, robot or unrelated props. Center full subject in a 15% clear margin, square 1024x1024 composition.",
+    "refs": [],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 8,
+    "recipe_refs": [
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png"
+    ],
+    "generation_references": [],
+    "generation_reference_mode": "Text-only new object-sign render; no reference-image inputs attached while the runtime was unavailable.",
+    "composition_scope": "object-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "2380b2ab152f0698be4a692649a3f8d1098f050863d6c3e291068ec894c2c60c",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/273-step-boon.png",
+    "source_sha256": "53c4b20fa1670dbe5c1ee2407a9baaa198029f373003ddc4303ecd87ed96e14f",
+    "export_crop": [
+      39,
+      17,
+      1154,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/survival/camp/exports/128/step-boon.png",
+      "64": "art/icons/survival/camp/exports/64/step-boon.png",
+      "48": "art/icons/survival/camp/exports/48/step-boon.png",
+      "44": "art/icons/survival/camp/exports/44/step-boon.png",
+      "32": "art/icons/survival/camp/exports/32/step-boon.png",
+      "24": "art/icons/survival/camp/exports/24/step-boon.png"
+    },
+    "framing": {
+      "scale": 0.6628940986257074,
+      "offset": [
+        142,
+        102
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": null
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "a91b92c5de287c863e4344786cdb4cbc6ed1fecea2810cd8ad06356b4890991b",
+      "64": "f40576a1733b82387d6c621b75411b2d3c88651f98f98d226ae004adba78a31d",
+      "48": "e48ce2d98091ead31addbbe2422e0f7690b1e5b778738aaf399f0b69cb97455d",
+      "44": "575beda92f4ea9e78edda3e1a0b11d1732f958dd2deb92ffc43ad43ab5bfa2d9",
+      "32": "ff8dd91c1a815dadb778cdad65935264673be32fd913b28d1fabf3cd376cef88",
+      "24": "927598790bd293e3aca918d99060878061bd2c9ef76c40cdf6aa8fea6e04f605"
+    },
+    "visual_review": "Viewed on charcoal at full preview and actual 24/48px; unapproved review candidate."
+  },
+  {
+    "number": 274,
+    "family": "camp_icons",
+    "id": "camp-step-ready",
+    "path": "art/icons/survival/camp/step-ready.png",
+    "name": "Ready",
+    "mode": "white-ink sign",
+    "state": "designed, not built",
+    "use": "The camp checklist's last step",
+    "paint": "A pack with its flap buckled and a tick above it.",
+    "avoid": "a real brand \u00b7 a checkmark alone (keep the pack)",
+    "section": "Survival and camp",
+    "kind": "sign",
+    "prompt": "Create ONE fantasy-game camp-step UI SIGN. Subject ONLY: ONE stout travel PACK with its flap closed by ONE clear central BUCKLE and a broad shoulder-strap loop behind. ONE small checkmark immediately above the pack. No text, brands or figure. Pure-white #FFFFFF flat solid ink on a completely TRANSPARENT background, bold compact silhouette with a few thick transparent interior cuts. Slightly hand-inked print contours, no distress, no grunge or speckles. Must read clearly at 24px and 48px on charcoal. All dark spaces are TRANSPARENT HOLES, not black paint. NO shading, gray, glow, shadows, gradients, blur, texture or frame. No person, mascot, robot or unrelated props. Center full subject in a 15% clear margin, square 1024x1024 composition.",
+    "refs": [],
+    "transparent": true,
+    "status": "review-candidate",
+    "priority": 8,
+    "recipe_refs": [
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png"
+    ],
+    "generation_references": [],
+    "generation_reference_mode": "Text-only new object-sign render; no reference-image inputs attached while the runtime was unavailable.",
+    "composition_scope": "object-only",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "sha256": "0f88ef5033aa41a2f327f05c0b05310a8feb5c2d330be2c8e258f18010fdd394",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/274-step-ready.png",
+    "source_sha256": "b2797f743599021b03b078906435986f13b353f2285d39bb51390edecd93e6bd",
+    "export_crop": [
+      0,
+      37,
+      1234,
+      1254
+    ],
+    "exports": {
+      "128": "art/icons/survival/camp/exports/128/step-ready.png",
+      "64": "art/icons/survival/camp/exports/64/step-ready.png",
+      "48": "art/icons/survival/camp/exports/48/step-ready.png",
+      "44": "art/icons/survival/camp/exports/44/step-ready.png",
+      "32": "art/icons/survival/camp/exports/32/step-ready.png",
+      "24": "art/icons/survival/camp/exports/24/step-ready.png"
+    },
+    "framing": {
+      "scale": 0.6645056726094003,
+      "offset": [
+        102,
+        107
+      ],
+      "subject_box": 820,
+      "perk_safe_radius": null
+    },
+    "upscaled": false,
+    "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+    "export_sha256": {
+      "128": "d130202b4492ae150945bcdc36104d4ab5fcb0286d985f4943e8c3bc497b88c6",
+      "64": "91bff1ea03881be173d4c626166e261912dc99065feb986f1f2ecde8bf88d01f",
+      "48": "f683bb3b8dc017156af2805bf667b4f64467d8b78e40a716bcfa4032276dbae2",
+      "44": "a2aa5f51131bef1d3f442f71d7d8ba62ad545959d34421792803ed9496f0c80c",
+      "32": "0c37343ab882914bcf64c35efbe582a50fc41035375c4aa8a0cbce2222bbacfc",
+      "24": "0d74013105345f3f8da79e31fa6a9fdedf7755ba22aa2ee5fc5eeadddd435bb2"
+    },
+    "visual_review": "Viewed on charcoal at full preview and actual 24/48px; unapproved review candidate."
+  },
+  {
     "number": 275,
     "family": "condition_icons",
     "id": "cond-bleeding",

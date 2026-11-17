@@ -1,0 +1,73 @@
+{
+  "number": 272,
+  "family": "camp_icons",
+  "id": "camp-step-budget",
+  "path": "art/icons/survival/camp/step-budget.png",
+  "name": "Step 3: Spend your budget",
+  "mode": "white-ink sign",
+  "state": "designed, not built",
+  "use": "The camp checklist's budget step",
+  "paint": "A small purse with three coins stacked beside it.",
+  "avoid": "a currency symbol \u00b7 text",
+  "section": "Survival and camp",
+  "kind": "sign",
+  "prompt": "Create ONE fantasy-game camp-step UI SIGN. Subject ONLY: ONE tied small coin purse on the LEFT and exactly THREE blank round coins stacked on the RIGHT with a slight step so the three rims read. Coins have NO marks. No currency symbols, letters or numbers. Pure-white #FFFFFF flat solid ink on a completely TRANSPARENT background, bold compact silhouette with a few thick transparent interior cuts. Slightly hand-inked print contours, no distress, no grunge or speckles. Must read clearly at 24px and 48px on charcoal. All dark spaces are TRANSPARENT HOLES, not black paint. NO shading, gray, glow, shadows, gradients, blur, texture or frame. No person, mascot, robot or unrelated props. Center full subject in a 15% clear margin, square 1024x1024 composition.",
+  "refs": [],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 8,
+  "recipe_refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "generation_references": [],
+  "generation_reference_mode": "Text-only new object-sign render; no reference-image inputs attached while the runtime was unavailable.",
+  "composition_scope": "object-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "da0bd53debb7c2eec2dd67724ed698578e09c7f8a12522d7744768b586a4dc5c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/272-step-budget.png",
+  "source_sha256": "d496aeb85fabc3ca04315a1ae975ff8405fe85e5e6ec8681c7359d61421761bb",
+  "export_crop": [
+    59,
+    25,
+    1161,
+    1168
+  ],
+  "exports": {
+    "128": "art/icons/survival/camp/exports/128/step-budget.png",
+    "64": "art/icons/survival/camp/exports/64/step-budget.png",
+    "48": "art/icons/survival/camp/exports/48/step-budget.png",
+    "44": "art/icons/survival/camp/exports/44/step-budget.png",
+    "32": "art/icons/survival/camp/exports/32/step-budget.png",
+    "24": "art/icons/survival/camp/exports/24/step-budget.png"
+  },
+  "framing": {
+    "scale": 0.7174103237095363,
+    "offset": [
+      116,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "54633d4f2e0803a24717beaed98a64d8f8f62f8af3c27b675b1ec6185210a25f",
+    "64": "300a9597b8e2c68f953f990d844c5bf11c757e64df5fb5e19fe6bebc67160842",
+    "48": "274a36fad1e783e2c9ba1a60d5202e9fb43218c21e5b6fa59734d67fdf6d20e4",
+    "44": "386b215d96bd1c5db328bdb9806edd305c95dc1a33521a3bcb991098a7197de7",
+    "32": "faae3840fa63263abfa3964332d7dae5d3b9a56a92f909aa00469bf4b26bee16",
+    "24": "dbe2ce5c5a0c322f000c5d71d68b50e0d4a4b430099cee7da39cc7e5a10aa771"
+  },
+  "visual_review": "Viewed on charcoal at full preview and actual 24/48px; unapproved review candidate."
+}

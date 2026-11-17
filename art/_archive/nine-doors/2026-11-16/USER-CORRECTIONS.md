@@ -7,3 +7,5 @@
 - Check physical equipment construction, grip/contact, number of parts and support in the full image and the card preview. A technically valid export is insufficient evidence of visual correctness.
 
 Corrections and delivery remain review candidates; no user approval is implied.
+
+- 17 November: Leon explicitly chose “Use pinned revision-2 rules for these eight proposals” for Cover Them, Drive, Lightkiller, Keep the Thread, Benediction, Held Breath, Walk It In and Lockdown. Paint those current draft depictions as unapproved proposals. Gameplay alternatives remain open; no held old recipe is revived. See user-direction-2026-11-17.json.

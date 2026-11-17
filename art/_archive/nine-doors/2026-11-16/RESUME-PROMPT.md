@@ -1,12 +1,7 @@
-# Resume the Nine Doors artwork
+# Resume the current Nine Doors art run
 
-Continue art/nine-doors-2026-11-16 from its latest remote head. Read CURRENT-CHECKPOINT.md, CONTINUE.md, holds-0.30.json and the current style guide. Legacy delivered 344/375; 4 eligible old jobs and 27 held. New 0.30 requests remaining 41/41. Combined outstanding request records 45.
+Legacy: **348/375 candidates**, zero eligible original jobs; **27 unfinished old recipes held**. Separate 0.30 additions: **0/41 candidates**, **41 requests remain**. All images unapproved. The source table has three non-painting rows; do not count them.
 
-Use records/progress as completion ledgers, not recipe pending fields. All 28 old hold recipes remain blocked, including Palm #258 already delivered. The four separately authorized replacement depictions use the new 0.30 rules, not old Paint instructions. Follow must check reuse; eight fork proposals retain source questions. Never invent approval or completion.
+Start at the latest remote art/nine-doors-2026-11-16. Use CURRENT-CHECKPOINT.md and CONTINUE.md, not stale recipe pending flags or old narrative counts. Current source rules and user-direction-2026-11-17.json authorize pinned revision-2 draft depictions for the eight questioned forks. Keep gameplay alternatives and names provisional. Preserve all 28 old holds, including delivered Palm #258; the four new replacements use separate records. Follow checks reuse; no duplicate Sentinel portrait.
 
-Wick is the approved ceramic pixel-screen automaton with capelet, lantern heart, chunky limbs and asymmetry. No default bowl, cup, halo or copied arrows. Sign and object-only rows must not gain a full Wick. Pure-white ink, transparency and no glow. Inspect source composites on charcoal; raw transparent chat thumbnails can misrepresent faint alpha. Preserve all native renders and replaced files. Use image generation for creative painting and edits; technical exports preserve source alpha.
-
-Continue priority order from CONTINUE.md. Export exact UI sizes and review them, update catalog/records/manifests/queue/checksums, validate scoped assets and the full library/build where available. Check actual tools rather than trusting historical quota/environment blockers. Push reviewable completed work to the art branch, with preview/ZIP/checksum and a truthful fresh handoff. No game/UI changes and no automatic resume promise.
-
-
-**Current image-generation blocker:** actual HTTP 429 usage limit on 17 November 2026; reset reported at 13:28:30 Bangkok. Read [the fresh resumption handoff](RESUME-AUDIT-2026-11-17.md) and [service details](generation-limit-2026-11-17.json). Next legacy jobs: #271–274. Added 0.30 requests: 0/41 delivered.
+Wick is the ceramic pixel-screen mascot with asymmetric capelet and lantern heart; the Mind Without Fog cup is only that trait's prop. Flat white ink on transparency, no glow; no full Wick in object-only signs. Use actual mode references. Preserve original sources and replaced art; use honest native/export dimensions. New 0.30 images use records-0.30 and a separate progress ledger, never numeric legacy completion. Proposed filenames/bindings are explicit and unbound until registered; no game/UI code. Run appropriate checks and report missing historical inputs honestly. See current-run-validation.json for current limits.
