@@ -146,8 +146,8 @@ ok('Will Power\'s "?" shows ten rows (' + road.n + '), point ' + road.now + ' li
 ok('…EVERY POINT says what every point gives, one line a row (' + road.every + '), the perk steps show their icons (' + road.perkSteps + '), no rules text under 13 px (' + road.small + ')', /^EVERY POINT\|AT \d/.test(road.every) && /^\S/.test(road.head) && road.small === 0 && /3/.test(road.perkSteps));
 ok('no sideways page scroll with the pop-up open (' + await sideways() + ' px over)', (await sideways()) <= 1);
 // the pop-up scrolls inside itself: the shot shows its road map, as a player scrolling down to it sees it
-await p.evaluate(() => document.querySelector('.phc-ep-road').scrollIntoView({ block: 'start' })); await settle(p, 150);
-ok('the road map fits the 1280×720 window once scrolled to (its ten rows all in view)', await p.evaluate(() => [...document.querySelectorAll('.phc-ep-road .phc-ep-step')].every((s) => { const r = s.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })));
+await p.evaluate(() => document.querySelector('.phc-ep-road .phc-ep-track').scrollIntoView({ block: 'start' })); await settle(p, 150);
+ok('the road map ten rows fit the 1280×720 window once scrolled to (all in view; the Call, door and every-point lines sit above them)', await p.evaluate(() => [...document.querySelectorAll('.phc-ep-road .phc-ep-step')].every((s) => { const r = s.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })));
 if (process.env.LANE_SHOTS) await p.screenshot({ path: process.env.LANE_SHOTS + '/D-roadmap-popup-willpower.png' });
 await p.getByRole('button', { name: 'Close the EPCCG entry' }).click(); await settle(p, 200);
 for (let i = 0; i < 2; i++) { await p.locator('[data-points-undo]').click(); await settle(p, 60); }
