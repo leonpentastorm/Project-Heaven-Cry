@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, newGame, newCharacter, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, focusHand, packOf, positionsOf, migrateCharacterFocus,
-  ARCHETYPES, KITS, refOf, SOUL_RULES, type Action, type Character, type GameState, type Unit,
+  ARCHETYPES, KITS, refOf, SOUL_RULES, RULES, type Action, type Character, type GameState, type Unit,
 } from '../src';
 import { storyWith, sheetOf } from './helpers/perkfight';
 
@@ -83,6 +83,14 @@ describe('a focus counts only in a hand', () => {
     const mp1 = v.mg!.mp, st0 = v.mg!.strain;
     p.act({ type: 'combat/outburst', unitId: v.id, design: p.char(p.soul).outbursts![0].id, hold: true }); v = p.unit(p.soul);
     expect(v.mg!.held).toBeTruthy(); expect(v.mg!.mp).toBe(mp1); expect(v.mg!.strain).toBeGreaterThanOrEqual(st0 + SOUL_RULES.cycle.begin_strain + SOUL_RULES.cycle.no_emanator_strain);
+  });
+  it('Syphon (rules 1.68): three times the MP of 0.31.8 by the band, and three times the air', () => {
+    const bands: any[] = (RULES as any).mana.meter.bands, ev = (RULES as any).mana.meter.events.find((e: any) => e.event === 'syphon');
+    expect(bands.map((b) => b.syphon_mp)).toEqual([30, 60, 90, 120]); expect(ev.delta).toBe(-6);
+    const f = fight((_, b) => { b.weapon = 'emanator_gauntlet'; b.loaded = 0; b.offHand = null; b.mp = 0; });
+    let u = f.turn(f.soul); u.mg!.mp = 0; f.g.combat!.mana = 15; const want = Math.min(u.mg!.mpMax, Math.round(60 * u.mg!.syphon));
+    f.act({ type: 'combat/syphon', unitId: u.id }); u = f.unit(f.soul);
+    expect(u.mg!.mp).toBe(want); expect(f.g.combat!.mana).toBe(9);
   });
   it('the Emanator katana (rules 1.38, data alone): in hand MP pays the Outburst; without any Emanator it draws on the air', () => {
     const f = fight((_, b) => { b.weapon = 'emanator_katana'; b.loaded = 0; b.offHand = null; b.pack = packOf(b).filter((x) => (x.item || x.id) !== 'emanator'); b.mp = 100; });

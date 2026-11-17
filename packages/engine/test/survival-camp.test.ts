@@ -358,6 +358,19 @@ describe('rules 1.51: the supply pack (spec rule 52)', () => {
     expect(mpNow(done.characters.c2)).toBe(Math.min(maxMp(done.characters.c2), 5 + supplyMp(done.characters.c2, 1))); expect(mpNow(done.characters.c2)).toBeGreaterThan(5);
     expect(done.run!.note!.ammo!.c2.some((x) => / MP$/.test(x))).toBe(true);
   });
+  it('through the reducer (rules 1.68): the Boss gives no MP back as the stage ends; its burnt cores still come back', () => {
+    const pcs: Pc[] = [{ build: 'sigil', level: 1 }, { build: 'outburst', level: 1 }];
+    const g0 = clone(apply(camp(pcs), { type: 'run/go' }, 'host')), r = g0.run!, n = r.nodes.find((x) => x.depth === 3)!, prev = r.nodes.find((x) => x.links.includes(n.id))!;
+    n.kind = 'boss'; r.at = prev.id; r.state = 'map';
+    let g = g0; for (let i = 0; i < 2 && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
+    const sig = g.combat!.units.find((u) => u.charId === 'c1')!, out = g.combat!.units.find((u) => u.charId === 'c2')!;
+    const before = cores(packOf(g.characters.c1));
+    sig.mg!.charge = 1; sig.mg!.cores -= 1; out.mg!.mp = 5;
+    const done = leaveField(apply(g, { type: 'run/skip' }, 'host'));
+    expect(SV.ammo_pack.mp.boss).toBe(0); expect(SV.ammo_pack.supply.boss).toBeGreaterThan(0);
+    expect(mpNow(done.characters.c2)).toBe(5); expect((done.run!.note?.ammo?.c2 || []).some((x: string) => / MP$/.test(x))).toBe(false);
+    expect(cores(packOf(done.characters.c1))).toBe(before); // the burnt core still comes back
+  });
   it('a Rest fills the loaded charge of every carried Evoker and Visualizer', () => {
     const g0 = clone(apply(camp([{ build: 'sigil', level: 1 }]), { type: 'run/go' }, 'host')), r = g0.run!, n = r.nodes.find((x) => x.depth === 2)!, prev = r.nodes.find((x) => x.links.includes(n.id))!;
     n.kind = 'rest'; r.at = prev.id; r.state = 'map'; g0.characters.c1.evoCharge = 2;

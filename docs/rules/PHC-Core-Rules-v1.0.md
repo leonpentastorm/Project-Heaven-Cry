@@ -12238,3 +12238,13 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     `itemops-traits-classes` (the Channeler's Shape and Iron Heart), and 3 replays of 29 (`open-4v7-magic-boss`,
     `cover-4v7-casters`, `story-fight-story`: a Channeler's Pumps and Strain). **Needs a new primitive** (not built):
     a hook before the turn end's heart burn (item 5401).
+5403. **Syphon draws three times as much** (Leon: "triple the amount of mana syphon out the air by default"): the bands'
+    `syphon_mp` are 30 / 60 / 90 / 120 (Thin to Flooded; were 10 / 20 / 30 / 40), and one Syphon takes three times the
+    air too: the meter's `syphon` event is -6 (was -2), so the floor refuses a Syphon under 6. `data/rules.json`
+    mana.meter, PROVISIONAL. Proof: `test/focus.test.ts` (the reducer's `combat/syphon`).
+5404. **No MP after a stage is finished in Survival** (Leon: "no mana generate after finishing the stage"): the
+    supply pack's MP share has its own count by node, `survival.json ammo_pack.mp` (absent: `supply`), and the Boss's
+    is 0; its burnt cores still come back (`supply.boss` 3), HP and everything else as before. `run/rewards.ts
+    packCount`, `supplyMp`. Proof: `test/survival-camp.test.ts` (a Boss node won through the reducer).
+5405. **Recorded on purpose (items 5403, 5404):** the golden tables `costs-pad` (and its marks) and `costs-credit` (a
+    Syphon's MP and air), and 2 replays of 29 (`cover-4v7-casters`, `proving-4v10-boss`: a caster's Syphons).

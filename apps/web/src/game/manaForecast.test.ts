@@ -21,7 +21,7 @@ describe('the mana forecast', () => {
     expect(Number(/left: calc\(([\d.]+)%/.exec(manaForecast(fight(40)).marker)![1])).toBeLessThan(100);
   });
   it('what the air does comes from its data row (cost, Syphon, healing, rider shift, Strain)', () => {
-    expect(bandEffects('normal')).toEqual(['Outbursts cost their plain MP', 'Syphon draws 20 MP', 'Magical healing at full']);
+    expect(bandEffects('normal')).toEqual(['Outbursts cost their plain MP', 'Syphon draws 60 MP', 'Magical healing at full']);
     expect(bandEffects('thin')).toEqual(expect.arrayContaining(['Outbursts cost ×1.5 MP (+50%)', 'Magical healing ×0.75', 'Outburst riders read a stage lower']));
     expect(bandEffects('flooded')).toEqual(expect.arrayContaining(['Outbursts cost ×0.5 MP (−50%)', 'Outburst riders read a stage higher', '+1 Strain on every Begin and swell']));
     expect(movers()[0]).toMatch(/^A person dies: \+5 \(a beast \+3, a robot \+2\)/); expect(movers().some((m) => /Crystallise: −10/.test(m))).toBe(true);

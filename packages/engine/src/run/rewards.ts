@@ -65,13 +65,13 @@ export const nodeXp = (k: PayKind, depth: number, stage: number): number =>
 /** Credits each character takes at a node (section 3.1, 11.1): c(d) = base + per_depth x d, x the kind, x the stage's. */
 export const nodeCredits = (k: PayKind, depth: number, stage: number): number =>
   Math.round((SV.credits.base + SV.credits.per_depth * depth) * mult(SV.credits, k) * (1 + ENC_BUDGET.stage.credits * (Math.max(1, stage) - 1)));
-type PackN = { mags: number; supply: number };
+type PackN = { mags: number; supply: number; /** rules 1.68: the MP share's n (ammo_pack.mp; absent: supply) */ mp?: number };
 /** The supply pack's counts at a node (rule 23; rules 1.55, the lead's ruling): `mags`, the magazines' worth for each
  * gun, and `supply`, the n of the burnt cores back and the MP share (`ammo_pack.mags`, `ammo_pack.supply` by kind,
  * through rowKind; else the fight's). */
 export const packCount = (k: PayKind): PackN => {
   const part = (t: Record<string, number>) => t[rowKind(k, t) ?? 'fight'];
-  return { mags: part(SV.ammo_pack.mags), supply: part(SV.ammo_pack.supply) };
+  return { mags: part(SV.ammo_pack.mags), supply: part(SV.ammo_pack.supply), mp: part(SV.ammo_pack.mp ?? SV.ammo_pack.supply) }; // rules 1.68: the MP share's own count (the Boss: none)
 };
 /** Rules 1.48: the grade of the vault's weapon in a stage: `vault.grade_up` above the stage's pick ceiling, at most
  * `vault.grade_max` (stage 1 Masterwork, from stage 2 Relic). */
@@ -116,7 +116,7 @@ export function ammoPack(c: Character, count: number | PackN, guns: string[] = g
  * `run_supply` (Deep Satchel) of its max MP, rounded, for a character carrying an MP focus of `ammo_pack.mp_doors`; else
  * 0. The caller adds it, never above the max. */
 export function supplyMp(c: Character, count: number | PackN): number {
-  const n = typeof count === 'number' ? count : count.supply;
+  const n = typeof count === 'number' ? count : count.mp ?? count.supply;
   const mp = (SV.ammo_pack.mp_doors as string[]).some((k) => holds(c, { slot: 'person', door: k }));
   return mp ? Math.round(SV.ammo_pack.mp_share * n * supplyMult(c) * maxMp(c)) : 0;
 }

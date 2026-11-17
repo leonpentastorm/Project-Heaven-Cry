@@ -29,7 +29,7 @@ describe('Syphon reads the mp row\'s needs (an Attuner is an MP focus)', () => {
   it('the data: the mp row needs an Emanator or an Attuner in hand', () => {
     expect((actionsJ as any).resources.mp.needs).toEqual(['mg.emanator', 'mg.attuner']);
   });
-  it('an Attuner in hand: Syphon is offered and gives MP from the air, AP paid, the meter thinned by 2', () => {
+  it('an Attuner in hand: Syphon is offered and gives MP from the air, AP paid, the meter thinned by its draw (6 since rules 1.68)', () => {
     const f = fight('hand'); const u = f.unit();
     expect(u.mg.attuner).toBe(true); expect(u.mg.emanator).toBe(false);
     const d = f.row(); expect(d).toBeTruthy(); expect(d.available).toBe(true);
@@ -38,7 +38,7 @@ describe('Syphon reads the mp row\'s needs (an Attuner is an MP focus)', () => {
     const v = f.unit();
     expect(v.mg.mp - mp0).toBe(want); expect(want).toBeGreaterThan(0);
     expect(v.ap).toBe(ap0 - (actionsJ as any).costs.syphon.ap);
-    expect(f.s.g.combat.mana).toBe(air0 - 2);
+    expect(f.s.g.combat.mana).toBe(air0 - 6);
   });
   it('the Attuner in the pack: the row is shown greyed with the reason, and the reducer refuses with the same words', () => {
     const f = fight('pack'); const u = f.unit();

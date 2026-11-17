@@ -1357,7 +1357,7 @@
           "min": 0,
           "max": 9,
           "soul_cost_mult": 1.5,
-          "syphon_mp": 10,
+          "syphon_mp": 30,
           "healing_given_mult": 0.75,
           "strain_per_cast_extra": 0
         },
@@ -1366,7 +1366,7 @@
           "min": 10,
           "max": 19,
           "soul_cost_mult": 1.0,
-          "syphon_mp": 20,
+          "syphon_mp": 60,
           "healing_given_mult": 1.0,
           "strain_per_cast_extra": 0
         },
@@ -1375,7 +1375,7 @@
           "min": 20,
           "max": 29,
           "soul_cost_mult": 0.75,
-          "syphon_mp": 30,
+          "syphon_mp": 90,
           "healing_given_mult": 1.25,
           "strain_per_cast_extra": 0
         },
@@ -1384,7 +1384,7 @@
           "min": 30,
           "max": 40,
           "soul_cost_mult": 0.5,
-          "syphon_mp": 40,
+          "syphon_mp": 120,
           "healing_given_mult": 1.25,
           "strain_per_cast_extra": 1
         }
@@ -1416,7 +1416,9 @@
         },
         {
           "event": "syphon",
-          "delta": -2
+          "delta": -6,
+          "provisional": true,
+          "note": "Rules 1.68 item 5403: three times the MP drawn (the bands' syphon_mp), three times the air it takes (was -2)."
         },
         {
           "event": "soul_cast",

@@ -645,7 +645,7 @@
 "pad/soul/steady": "P1 faith.acted0>true faith.apMark6>8 faith.seenMp500>483 ps.skill:composure.5.acted0>true",
 "pad/soul/stim": "P1 faith.acted0>true faith.apMark6>8 mg.calmTend0>true ps.skill:composure.5.acted0>true",
 "pad/soul/stim-downed": "P1 faith.acted0>true faith.apMark6>7 mg.calmTend0>true ps.skill:composure.5.acted0>true",
-"pad/soul/syphon": "P1 faith.acted0>true faith.apMark6>8 faith.seenMp500>307 ps.skill:composure.5.acted0>true",
+"pad/soul/syphon": "P1 faith.acted0>true faith.apMark6>8 faith.seenMp500>421 ps.skill:composure.5.acted0>true",
 "pad/soul/tech/aimed_shot": "P1 attackedTurn0>true faith.acted0>true firstShotDone0>true firstShotTurn0>true mg.calmFight0>true ps.skill:composure.5.acted0>true ps.skill:ingenuity.1.flags.struck0>true shotsThisTurn0>1",
 "pad/soul/tech/guard": "P1 attackedTurn0>true chain.last0>guard chain.n0>1 chain.t0>1.1 faith.acted0>true faith.apMark6>8 ps.skill:composure.5.acted0>true tech.guard.def0>2 tech.guard.front0>1/0 tech.guard.on0>true tech.guard.t0>1.1 tech.guard.via0>dexterity",
 "pad/soul/tech/mag_dump": "P1 attackedTurn0>true faith.acted0>true faith.apMark6>5 faith.lastKey0>combat/technique:mag_dump faith.lastRound0>1 faith.lastSpent0>1 firstShotDone0>true firstShotTurn0>true mg.calmFight0>true ps.skill:composure.5.acted0>true ps.skill:ingenuity.1.flags.struck0>true shotsThisTurn0>2",

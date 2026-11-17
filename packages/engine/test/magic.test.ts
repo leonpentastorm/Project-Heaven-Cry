@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
-  ARCHETYPES, MAPS, newCharacter, validateSheet, startCombat, apply, newGame, positionsOf, zoneMap, npcsOf, refOf, keyOf,
+  SYPHON_DRAW,   ARCHETYPES, MAPS, newCharacter, validateSheet, startCombat, apply, newGame, positionsOf, zoneMap, npcsOf, refOf, keyOf,
   drawGlyph, evoke, findPattern, previewEvoke, scuff, vent, beginOutburst, releaseOutburst, addStrain, syphon, crystallise, magicTurnStart, moveUnit,
   designCost, manaOf, coresCarried, packOf, type Sheet, type GameState, type Combat,
 } from '../src';
@@ -88,7 +88,7 @@ describe('Outbursts (spec: Soul magic)', () => {
   it('Syphon refills MP and thins the air; Crystallise makes a core, written to the pack', () => {
     const { c, cb, u } = fight(sheet('stormcaller', 'W', { kit: 'soul' }));
     u.mg!.mp = 10; const m0 = manaOf(cb);
-    expect(syphon(cb, u)).toBeNull(); expect(u.mg!.mp).toBeGreaterThan(10); expect(manaOf(cb)).toBe(m0 - 2);
+    expect(syphon(cb, u)).toBeNull(); expect(u.mg!.mp).toBeGreaterThan(10); expect(manaOf(cb)).toBe(m0 - SYPHON_DRAW); expect(SYPHON_DRAW).toBe(6); // rules 1.68: three times the air
     cb.mana = 9; expect(crystallise(cb, u)).toMatch(/too thin/); cb.mana = 20;
     expect(crystallise(cb, u)).toBeNull(); expect(manaOf(cb)).toBe(10);
   });
