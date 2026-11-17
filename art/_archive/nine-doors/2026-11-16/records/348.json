@@ -20,12 +20,7 @@
   "transparent": true,
   "status": "review-candidate",
   "priority": 5,
-  "generation_references": [
-    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
-    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
-    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
-    "art/icons/traits/mind-without-fog.png"
-  ],
+  "generation_references": [],
   "composition_scope": "object-only",
   "service_revision": "Nonviolent abstract nozzle-and-line variant after rejected input.",
   "production_approved": false,
@@ -74,5 +69,6 @@
     "32": "243b152e53efb29a28744d1d18c0de9fb922450c887f1e4613cb41046ff24a93",
     "24": "d6d1e3992d08a78e0919aaa6c0576de381279801b65386d082aa1542615aeb85"
   },
-  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+  "reference_provenance_note": "Actual request used no attached reference images for its nonviolent abstract/static variant; do not infer references from other jobs."
 }

@@ -1,15 +1,16 @@
 {
-  "delivered": 313,
+  "delivered": 316,
   "delivered_by_kind": {
     "wick": 237,
     "sign": 70,
+    "class": 3,
     "monoline": 5,
     "gear": 1
   },
-  "remaining": 62,
+  "remaining": 59,
   "remaining_by_kind": {
     "wick": 43,
-    "class": 9,
+    "class": 6,
     "abstract": 1,
     "gear": 4,
     "sign": 5
@@ -20,19 +21,19 @@
     "3": 0,
     "4": 0,
     "5": 5,
-    "6": 9,
+    "6": 6,
     "7": 5,
     "8": 43
   },
   "remaining_by_mode": {
     "Wick icon": 43,
-    "class portrait": 9,
+    "class portrait": 6,
     "Figment portrait": 1,
     "painted gear icon": 4,
     "white-ink sign": 5
   },
-  "eligible_legacy_remaining": 35,
+  "eligible_legacy_remaining": 32,
   "held_legacy_remaining": 27,
   "new_030_remaining": 41,
-  "combined_remaining_request_records": 76
+  "combined_remaining_request_records": 73
 }

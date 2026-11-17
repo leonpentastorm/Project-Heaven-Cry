@@ -72,5 +72,6 @@
     "32": "b912ea4ce29b434553b159756c1a18397d13d9537176588bc8ba82cf72e70d49",
     "24": "63a0f9858b4c1d166e942f03584d5b5913cc3c81e81e1ffcb3bd6c34685d249b"
   },
-  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+  "reference_provenance_note": "Actual request used no attached reference images for its nonviolent abstract/static variant; do not infer references from other jobs."
 }

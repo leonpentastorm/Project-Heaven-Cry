@@ -954,6 +954,69 @@
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
+    "number": 16,
+    "family": "class_portraits",
+    "id": "class-defender",
+    "path": "art/portraits/classes/defender.png",
+    "name": "The Bulwark (class portrait)",
+    "mode": "class portrait",
+    "state": "designed, not built",
+    "use": "A portrait for the class card and the level-3 choice; today the class shows its code-drawn emblem only",
+    "paint": "A broad, steady person in scuffed plate with a Buckler on the forearm, planted in a doorway, looking past the viewer at what is coming; warm firelight from one side.",
+    "avoid": "a recognisable knight from any known work \u00b7 a raised sword pose",
+    "section": "Durability: Guard, and the Bulwark",
+    "kind": "class",
+    "prompt": "Create an original Project Heaven Cry illustration in HEAVENPRINT. Use the attached approved Original 27 and New Faces\nimages as the painting authority: expressive ink and opaque gouache, deliberate angular form, selective dry-brush\nscumbling, restrained hatching, charcoal lost edges and warm ivory accents. Faces have believable anatomy and restrained\nstylization and specific emotional acting. Format: 4:5, 800 x 1000 PNG, one character from the chest or waist up, one\nvisible action, one specific emotion, one useful setting hint behind them; the eye line about 22% from the top. The class\nattribute's pigment appears only as one accent (given in the section). No text, frame, UI or watermark; no real-world\nperson, brand or recognisable character. The portrait shows:\n\nPaint: A broad, steady person in scuffed plate with a Buckler on the forearm, planted in a doorway, looking past the viewer at what is coming; warm firelight from one side.\nAvoid: a recognisable knight from any known work \u00b7 a raised sword pose\nCAST AND STAGING: Bulwark: broad 50-year-old woman with deep brown skin, a wide weathered face, close-braided gray-black hair and tired alert eyes. Waist-up, shoulders square but head turned slightly toward something beyond viewer. Scuffed ivory ceramic and charcoal iron plate over practical dark cloth; ONE ROUND BUCKLER on forward forearm held across lower chest, other bare hand braced against rough doorway jamb. Warm firelight from left gives natural warm skin planes; cooler neutral doorway behind. Eye line22% from top. No raised sword, medieval heraldry, helmet, familiar franchise armor, pose copied from references or decorative emblem badge. Show the shield motif through actual useful equipment.\nACTING SENTENCE: A broad veteran holds the doorway because something is approaching, and feels steady protective resolve.\nRendering follows the approved paintings: visible deliberate angular opaque gouache brush blocks, broken ink contours, selective dry scumbling, quiet charcoal lost edges and warm ivory focal planes. Believable face anatomy with restrained illustration stylization, no photo skin/3D gloss/airbrush, no oversized anime eyes. Borrow rendering, NEVER the identity/face/pose/costume of a reference person. The final small motif reference supplies only the class's equipment/gesture motif; DO NOT paste its emblem/frame into painting. Vertical 4:5, full-bleed opaque RGB painting, chest/waist-up, eye line approximately22% from top, face/decisive hands/tool central80%. One person, action, emotion, useful setting hint. Preserve natural skin/cloth/metal colors; one small crimson-red #CC2435 accent in a repaired shoulder strap is the SINGLE ATTRIBUTE ACCENT, never a monochrome wash. No letters, readable glyphs, labels, symbols of real faiths, real insignia, caption, UI, frame, border or watermark.",
+    "refs": [],
+    "transparent": false,
+    "status": "review-candidate",
+    "priority": 6,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/heavenprint-authority-panels.jpg",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/portraits/world/new-faces/ivara-drenn.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/portrait-archetype-pair.jpg",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/class-defender.png"
+    ],
+    "portrait_cast": {
+      "number": 16,
+      "motif": "defender",
+      "color": "one small crimson-red #CC2435 accent in a repaired shoulder strap",
+      "acting": "A broad veteran holds the doorway because something is approaching, and feels steady protective resolve.",
+      "notes": "Bulwark: broad 50-year-old woman with deep brown skin, a wide weathered face, close-braided gray-black hair and tired alert eyes. Waist-up, shoulders square but head turned slightly toward something beyond viewer. Scuffed ivory ceramic and charcoal iron plate over practical dark cloth; ONE ROUND BUCKLER on forward forearm held across lower chest, other bare hand braced against rough doorway jamb. Warm firelight from left gives natural warm skin planes; cooler neutral doorway behind. Eye line22% from top. No raised sword, medieval heraldry, helmet, familiar franchise armor, pose copied from references or decorative emblem badge. Show the shield motif through actual useful equipment."
+    },
+    "composition_scope": "one original waist-up Heavenprint character",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "sha256": "61ab44732d0ad93cdbda6d07c23477f8530e72e041910fbcf35ead057161a36a",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/016-defender.png",
+    "source_sha256": "063927a3d052947fb5c3d1056abe47e476c1dc4f324a8c3b1607d81fe8648666",
+    "export_crop": [
+      0,
+      0,
+      1121,
+      1401
+    ],
+    "exports": {},
+    "framing": {
+      "scale": 0.7136485280999108,
+      "aspect_ratio": "4:5",
+      "crop_policy": "Centered aspect-preserving 4:5 crop before downsampling"
+    },
+    "upscaled": false,
+    "export_processing": "Centered aspect-preserving 4:5 crop and Lanczos downsample to RGB portrait",
+    "export_sha256": {},
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
     "number": 23,
     "family": "perks",
     "id": "breaching-strike",
@@ -2281,6 +2344,69 @@
       "24": "6b4d1fd1e013ad2c9ec31a916ddee32577121645fe020dcfd602b96635740f17",
       "20": "65cb70f788ab14b120c2cce370427e8a4b640da39084d247ea953bf2a2f27945"
     },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 44,
+    "family": "class_portraits",
+    "id": "class-fighter",
+    "path": "art/portraits/classes/fighter.png",
+    "name": "The Breaker (class portrait)",
+    "mode": "class portrait",
+    "state": "designed, not built",
+    "use": "Class card portrait",
+    "paint": "A heavy-shouldered fighter mid-stride with a war axe resting on one shoulder, dust kicked up, grinning at the next wall to go through.",
+    "avoid": "a barbarian from a known work \u00b7 bare-chested pin-up pose",
+    "section": "Raw Power: the Momentum chain, and the Breaker",
+    "kind": "class",
+    "prompt": "Create an original Project Heaven Cry illustration in HEAVENPRINT. Use the attached approved Original 27 and New Faces\nimages as the painting authority: expressive ink and opaque gouache, deliberate angular form, selective dry-brush\nscumbling, restrained hatching, charcoal lost edges and warm ivory accents. Faces have believable anatomy and restrained\nstylization and specific emotional acting. Format: 4:5, 800 x 1000 PNG, one character from the chest or waist up, one\nvisible action, one specific emotion, one useful setting hint behind them; the eye line about 22% from the top. The class\nattribute's pigment appears only as one accent (given in the section). No text, frame, UI or watermark; no real-world\nperson, brand or recognisable character. The portrait shows:\n\nPaint: A heavy-shouldered fighter mid-stride with a war axe resting on one shoulder, dust kicked up, grinning at the next wall to go through.\nAvoid: a barbarian from a known work \u00b7 bare-chested pin-up pose\nCAST AND STAGING: Breaker: stocky 35-year-old man with medium tan skin, freckles, a bent broad nose, short wiry copper hair and dark stubble, an unguarded crooked GRIN. Waist-up in strong forward three-quarter stride, plain war AXE resting across ONE shoulder, hand gripping haft at collar height. Fully clothed in worn charcoal padded work jacket with patched leather shoulder guard, not bare chest. Dust rises at lower frame and a broken plaster doorway behind hints at the next wall; no visible victim or attack. Natural iron, ocher cloth, ivory hard accents, broad directional brushwork. Face stays high at22%, axehead fully visible, no branded or recognizable axe.\nACTING SENTENCE: A heavy-shouldered fighter strides toward the next obstacle with an axe on one shoulder, and feels delighted determination.\nRendering follows the approved paintings: visible deliberate angular opaque gouache brush blocks, broken ink contours, selective dry scumbling, quiet charcoal lost edges and warm ivory focal planes. Believable face anatomy with restrained illustration stylization, no photo skin/3D gloss/airbrush, no oversized anime eyes. Borrow rendering, NEVER the identity/face/pose/costume of a reference person. The final small motif reference supplies only the class's equipment/gesture motif; DO NOT paste its emblem/frame into painting. Vertical 4:5, full-bleed opaque RGB painting, chest/waist-up, eye line approximately22% from top, face/decisive hands/tool central80%. One person, action, emotion, useful setting hint. Preserve natural skin/cloth/metal colors; one restrained hot-orange #F68A38 sash edge is the SINGLE ATTRIBUTE ACCENT, never a monochrome wash. No letters, readable glyphs, labels, symbols of real faiths, real insignia, caption, UI, frame, border or watermark.",
+    "refs": [],
+    "transparent": false,
+    "status": "review-candidate",
+    "priority": 6,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/heavenprint-authority-panels.jpg",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/portraits/world/new-faces/ivara-drenn.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/portrait-archetype-pair.jpg",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/class-fighter.png"
+    ],
+    "portrait_cast": {
+      "number": 44,
+      "motif": "fighter",
+      "color": "one restrained hot-orange #F68A38 sash edge",
+      "acting": "A heavy-shouldered fighter strides toward the next obstacle with an axe on one shoulder, and feels delighted determination.",
+      "notes": "Breaker: stocky 35-year-old man with medium tan skin, freckles, a bent broad nose, short wiry copper hair and dark stubble, an unguarded crooked GRIN. Waist-up in strong forward three-quarter stride, plain war AXE resting across ONE shoulder, hand gripping haft at collar height. Fully clothed in worn charcoal padded work jacket with patched leather shoulder guard, not bare chest. Dust rises at lower frame and a broken plaster doorway behind hints at the next wall; no visible victim or attack. Natural iron, ocher cloth, ivory hard accents, broad directional brushwork. Face stays high at22%, axehead fully visible, no branded or recognizable axe."
+    },
+    "composition_scope": "one original waist-up Heavenprint character",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "sha256": "9099dea80a3039842ed11414eab9755bbe35ca5e6fc9131a80869ac41ce4287b",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/044-fighter.png",
+    "source_sha256": "0321ec16fe420bc49589fce1ecc0dd1ee63d83ec743868f19295b12fa33d9273",
+    "export_crop": [
+      0,
+      0,
+      1121,
+      1401
+    ],
+    "exports": {},
+    "framing": {
+      "scale": 0.7136485280999108,
+      "aspect_ratio": "4:5",
+      "crop_policy": "Centered aspect-preserving 4:5 crop before downsampling"
+    },
+    "upscaled": false,
+    "export_processing": "Centered aspect-preserving 4:5 crop and Lanczos downsample to RGB portrait",
+    "export_sha256": {},
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
@@ -3882,6 +4008,69 @@
       "24": "2181f0a1f39e5d069d5c20c1c08cf4a0d12fc1e755005b9e1eddc64864614b5c",
       "20": "6fe429d46f9ef56d9af3137fbfc8693c4f70f89c4b71d0e50c030ca48b6b44cd"
     },
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  },
+  {
+    "number": 75,
+    "family": "class_portraits",
+    "id": "class-marksman",
+    "path": "art/portraits/classes/marksman.png",
+    "name": "The Skirmisher (class portrait)",
+    "mode": "class portrait",
+    "state": "designed, not built",
+    "use": "Class card portrait",
+    "paint": "A lean runner in a dusty coat, half crouched at the corner of cover, rifle up, already looking at the next cover.",
+    "avoid": "a real army uniform or insignia \u00b7 a sniper in a ghillie suit",
+    "section": "Dexterity: Pressure, and the Skirmisher",
+    "kind": "class",
+    "prompt": "Create an original Project Heaven Cry illustration in HEAVENPRINT. Use the attached approved Original 27 and New Faces\nimages as the painting authority: expressive ink and opaque gouache, deliberate angular form, selective dry-brush\nscumbling, restrained hatching, charcoal lost edges and warm ivory accents. Faces have believable anatomy and restrained\nstylization and specific emotional acting. Format: 4:5, 800 x 1000 PNG, one character from the chest or waist up, one\nvisible action, one specific emotion, one useful setting hint behind them; the eye line about 22% from the top. The class\nattribute's pigment appears only as one accent (given in the section). No text, frame, UI or watermark; no real-world\nperson, brand or recognisable character. The portrait shows:\n\nPaint: A lean runner in a dusty coat, half crouched at the corner of cover, rifle up, already looking at the next cover.\nAvoid: a real army uniform or insignia \u00b7 a sniper in a ghillie suit\nCAST AND STAGING: Skirmisher: lean 30-year-old dark-skinned woman with a long face, strong nose, one temple closely shorn and tight short coils swept back. Waist-up half-crouch at a chipped COVER CORNER; holds one unloaded invented angular rifle UP in ready position angled safely past frame, gaze already turns toward the next cover on viewer-left. Dusty muted teal-gray long work coat with reinforced elbow, no real military uniform, camouflage, insignia, ghillie suit or scope flare. One sunlit pale masonry plane behind and quiet dark cover edge nearby. Dynamic shoulders and intent eyes; no firing, target, other person or copied reference face. Eye line22%, useful hands/rifle central80%.\nACTING SENTENCE: A lean skirmisher pauses at cover because the next safe position is opening, and feels quick alert focus.\nRendering follows the approved paintings: visible deliberate angular opaque gouache brush blocks, broken ink contours, selective dry scumbling, quiet charcoal lost edges and warm ivory focal planes. Believable face anatomy with restrained illustration stylization, no photo skin/3D gloss/airbrush, no oversized anime eyes. Borrow rendering, NEVER the identity/face/pose/costume of a reference person. The final small motif reference supplies only the class's equipment/gesture motif; DO NOT paste its emblem/frame into painting. Vertical 4:5, full-bleed opaque RGB painting, chest/waist-up, eye line approximately22% from top, face/decisive hands/tool central80%. One person, action, emotion, useful setting hint. Preserve natural skin/cloth/metal colors; one muted golden-yellow #E3BF51 coat lining accent is the SINGLE ATTRIBUTE ACCENT, never a monochrome wash. No letters, readable glyphs, labels, symbols of real faiths, real insignia, caption, UI, frame, border or watermark.",
+    "refs": [],
+    "transparent": false,
+    "status": "review-candidate",
+    "priority": 6,
+    "generation_references": [
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/heavenprint-authority-panels.jpg",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/portraits/world/new-faces/ivara-drenn.png",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/portrait-archetype-pair.jpg",
+      "art/_archive/nine-doors/2026-11-16/review/reference-previews/class-marksman.png"
+    ],
+    "portrait_cast": {
+      "number": 75,
+      "motif": "marksman",
+      "color": "one muted golden-yellow #E3BF51 coat lining accent",
+      "acting": "A lean skirmisher pauses at cover because the next safe position is opening, and feels quick alert focus.",
+      "notes": "Skirmisher: lean 30-year-old dark-skinned woman with a long face, strong nose, one temple closely shorn and tight short coils swept back. Waist-up half-crouch at a chipped COVER CORNER; holds one unloaded invented angular rifle UP in ready position angled safely past frame, gaze already turns toward the next cover on viewer-left. Dusty muted teal-gray long work coat with reinforced elbow, no real military uniform, camouflage, insignia, ghillie suit or scope flare. One sunlit pale masonry plane behind and quiet dark cover edge nearby. Dynamic shoulders and intent eyes; no firing, target, other person or copied reference face. Eye line22%, useful hands/rifle central80%."
+    },
+    "composition_scope": "one original waist-up Heavenprint character",
+    "production_approved": false,
+    "implementation_ready": false,
+    "native_dimensions": [
+      1122,
+      1402
+    ],
+    "export_dimensions": [
+      800,
+      1000
+    ],
+    "sha256": "ccdba7c23654f10a709891f55823da815ca2de99dae436478e0b6b763f900bbb",
+    "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/075-marksman.png",
+    "source_sha256": "ecd54bcf4d78b7254b3971730a8640b926122cfd412c5aeeecc81cf823044375",
+    "export_crop": [
+      0,
+      0,
+      1121,
+      1401
+    ],
+    "exports": {},
+    "framing": {
+      "scale": 0.7136485280999108,
+      "aspect_ratio": "4:5",
+      "crop_policy": "Centered aspect-preserving 4:5 crop before downsampling"
+    },
+    "upscaled": false,
+    "export_processing": "Centered aspect-preserving 4:5 crop and Lanczos downsample to RGB portrait",
+    "export_sha256": {},
     "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
   },
   {
@@ -18800,12 +18989,7 @@
     "transparent": true,
     "status": "review-candidate",
     "priority": 5,
-    "generation_references": [
-      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
-      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
-      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
-      "art/icons/traits/mind-without-fog.png"
-    ],
+    "generation_references": [],
     "composition_scope": "object-only",
     "service_revision": "Nonviolent abstract nozzle-and-line variant after rejected input.",
     "production_approved": false,
@@ -18854,7 +19038,8 @@
       "32": "243b152e53efb29a28744d1d18c0de9fb922450c887f1e4613cb41046ff24a93",
       "24": "d6d1e3992d08a78e0919aaa6c0576de381279801b65386d082aa1542615aeb85"
     },
-    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+    "reference_provenance_note": "Actual request used no attached reference images for its nonviolent abstract/static variant; do not infer references from other jobs."
   },
   {
     "number": 349,
@@ -19688,7 +19873,8 @@
       "32": "b912ea4ce29b434553b159756c1a18397d13d9537176588bc8ba82cf72e70d49",
       "24": "63a0f9858b4c1d166e942f03584d5b5913cc3c81e81e1ffcb3bd6c34685d249b"
     },
-    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+    "reference_provenance_note": "Actual request used no attached reference images for its nonviolent abstract/static variant; do not infer references from other jobs."
   },
   {
     "number": 360,
@@ -20096,12 +20282,7 @@
     "transparent": true,
     "status": "review-candidate",
     "priority": 5,
-    "generation_references": [
-      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
-      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
-      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
-      "art/icons/traits/mind-without-fog.png"
-    ],
+    "generation_references": [],
     "composition_scope": "object/partial-only",
     "service_revision": "Nonviolent training/inventory abstraction after rejected output.",
     "production_approved": false,
@@ -20150,7 +20331,8 @@
       "32": "5866110bda303a750b7d596120a1c8dda5a386da6daac6f770f9fd018faaf3bc",
       "24": "d9f9329f55b3611396338eab0f02bccffa2d76c15429b3c500fbd9af83abd694"
     },
-    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+    "reference_provenance_note": "Actual request used no attached reference images for its nonviolent abstract/static variant; do not infer references from other jobs."
   },
   {
     "number": 366,
@@ -20402,12 +20584,7 @@
     "transparent": true,
     "status": "review-candidate",
     "priority": 5,
-    "generation_references": [
-      "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
-      "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
-      "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
-      "art/icons/traits/mind-without-fog.png"
-    ],
+    "generation_references": [],
     "composition_scope": "object/partial-only",
     "service_revision": "Nonviolent training/inventory abstraction after rejected output.",
     "production_approved": false,
@@ -20456,7 +20633,8 @@
       "32": "6c786998b038c458f1ae352942547a4bd7a37d354b8be56770baf73393303fe0",
       "24": "e553c0b8aa7205a06c4420c6dd0ac480dbfceb0a433faec2633ef9bc4a4df305"
     },
-    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+    "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+    "reference_provenance_note": "Actual request used no attached reference images for its nonviolent abstract/static variant; do not infer references from other jobs."
   },
   {
     "number": 370,

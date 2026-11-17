@@ -20,12 +20,7 @@
   "transparent": true,
   "status": "review-candidate",
   "priority": 5,
-  "generation_references": [
-    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
-    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
-    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
-    "art/icons/traits/mind-without-fog.png"
-  ],
+  "generation_references": [],
   "composition_scope": "object/partial-only",
   "service_revision": "Nonviolent training/inventory abstraction after rejected output.",
   "production_approved": false,
@@ -74,5 +69,6 @@
     "32": "6c786998b038c458f1ae352942547a4bd7a37d354b8be56770baf73393303fe0",
     "24": "e553c0b8aa7205a06c4420c6dd0ac480dbfceb0a433faec2633ef9bc4a4df305"
   },
-  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+  "reference_provenance_note": "Actual request used no attached reference images for its nonviolent abstract/static variant; do not infer references from other jobs."
 }

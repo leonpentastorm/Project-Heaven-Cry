@@ -39332,5 +39332,73 @@
       },
       "ink": "#FFFFFF"
     }
+  },
+  "class_portraits": {
+    "class-defender": {
+      "label": "The Bulwark (class portrait)",
+      "path": "art/portraits/classes/defender.png",
+      "sha256": "61ab44732d0ad93cdbda6d07c23477f8530e72e041910fbcf35ead057161a36a",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/016-defender.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "class",
+      "brief_number": 16,
+      "exports": {}
+    },
+    "class-fighter": {
+      "label": "The Breaker (class portrait)",
+      "path": "art/portraits/classes/fighter.png",
+      "sha256": "9099dea80a3039842ed11414eab9755bbe35ca5e6fc9131a80869ac41ce4287b",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/044-fighter.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "class",
+      "brief_number": 44,
+      "exports": {}
+    },
+    "class-marksman": {
+      "label": "The Skirmisher (class portrait)",
+      "path": "art/portraits/classes/marksman.png",
+      "sha256": "ccdba7c23654f10a709891f55823da815ca2de99dae436478e0b6b763f900bbb",
+      "width": 800,
+      "height": 1000,
+      "background": "opaque",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "collection": "nine-doors-2026-11-16",
+      "native_dimensions": [
+        1122,
+        1402
+      ],
+      "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/075-marksman.png",
+      "upscaled": false,
+      "format": "png",
+      "mode": "class",
+      "brief_number": 75,
+      "exports": {}
+    }
   }
 }
