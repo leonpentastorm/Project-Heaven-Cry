@@ -8,6 +8,17 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.9 — the owner's playtest fixes (rules 1.68)
+
+- **Strain shows while you hold an Outburst:** never folded, always among the three meters on a short window.
+- **Shape:** your free Pump each turn adds +0.12 to the multiplier (was +0.1; +0.2 and +0.15 break the Outburst peak's band at level 5). No free Pump of its own.
+- **Iron Heart:** once a fight, Strain stops at your limit instead of going over. No Strain limit of its own.
+- **Syphon:** 30 / 60 / 90 / 120 MP by band (×3); −6 air (×3).
+- **Survival:** the Boss gives no MP back. Burnt cores still come back.
+- **Player text:** no rule numbers or dev words; Slide, Stim Throw, the follow strikes and the prayers' shields rewritten as card lines; the validator fails on them.
+- **Enlarge:** every icon shows its text under the picture.
+- **PERKS tab:** Traits, Perks and FROM YOUR SKILLS fold, closed by default; the fight's Perks shelves fold too.
+
 ## 0.31.8 — the words, cut down (the lead's wording pass)
 
 - **The skill ladder says the core and stops** (Leon, 17 Nov 2026; CLAUDE.md "Say the core, once, and stop"): "Perk: X or Y", "Fork: A or B", "Mastered: <perk>"; no "Only what every point gives" row; the beta's box reads "Feeds <door>" and its number in one plain line (no formula, no "You now"); a Call reads "1 AP · reach 5" and "+5 on checks and Asks".
