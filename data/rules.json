@@ -417,8 +417,10 @@
       "provisional": true
     },
     "approach": {
-      "about": "Rules 1.64 item 5008 (Leon, 16 Nov 2026: \"you run into an enemy in the fog, combat start and you stood there like an idiot with zero AP\"): a Survival fight that opens with no foe seeing any character is not yet joined (Combat.approach). Until contact the actions of `free` cost no AP, no round passes, nothing that lasts ticks and no foe acts but a Hidden one; the turn strip shows `line`. Contact (a foe sees a character, a character's attack lands or is made, a Hidden foe attacks, or `passes_max` full passes of the turn order go by with no contact) joins the fight: BATTLE START, the initiative order read out, round 1 from the top of the order, every unit's first turn on full AP (`joined_log` in the fight's log).",
+      "about": "Rules 1.64 item 5008 (Leon, 16 Nov 2026: \"you run into an enemy in the fog, combat start and you stood there like an idiot with zero AP\"): a Survival fight that opens with no foe seeing any character is not yet joined (Combat.approach). Until contact the actions of `free` cost no AP, no round passes, nothing that lasts ticks and no foe acts but a Hidden one; the turn strip shows `line`. Contact (a foe sees a character, a character's attack lands or is made, a Hidden foe attacks, or `passes_max` full passes of the turn order go by with no contact) joins the fight: BATTLE START, the initiative order read out, round 1 from the top of the order, every unit's first turn on full AP (`joined_log` in the fight's log). Rules 1.64 item 5011: any other action (an action type not in `quiet`, or a move whose site is not in `free`) is contact itself: the fight is joined before it resolves, so it is paid from that unit's round-1 turn; if after the initiative order is read out it is not that unit's turn, the action is not made and the log says `acts_log`.",
       "free": ["move", "sprint"],
+      "quiet": ["combat/move", "combat/end-turn", "combat/decline"],
+      "acts_log": "moves to act: the fight is joined, and acts on its turn.",
       "passes_max": 3,
       "line": "Not yet joined: walking is free until contact",
       "joined_log": "Contact: the fight is joined.",

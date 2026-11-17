@@ -58,6 +58,20 @@ describe('a Survival run takes an item\'s own out-of-fight action (story/perk)',
     const n: GameState = JSON.parse(JSON.stringify(g)); n.run!.stage = 2;
     expect(apply(n, tri, ownerOf(0)).characters.c2.hp).toBeGreaterThan(10);
   });
+  it('Triage stays spent when the squad walks on to the next stop (each stop is a new scene), and is fresh on the next stage and in a new run', () => {
+    const d = duo(); d.characters.c1.classId = 'bard'; d.characters.c2.hp = 10;
+    const tri = { type: 'story/perk', charId: 'c1', id: 'class:medic.triage', actionId: 'triage_story', choice: 'c2' } as any;
+    const g = apply(d, tri, ownerOf(0)); const scene = g.story.scene.n;
+    const s = walkTo(g, 'shop'); expect(s.run!.state).toBe('shop'); expect(s.story.scene.n).not.toBe(scene); // run/move entered a new scene
+    s.characters.c2.hp = 10;
+    expect(refused(s, tri, ownerOf(0))).toMatch(/Spent on this stage map/);
+    const r = walkTo(s, 'rest'); r.characters.c2.hp = 10;
+    expect(refused(r, tri, ownerOf(0))).toMatch(/Spent on this stage map/);
+    const n: GameState = JSON.parse(JSON.stringify(s)); n.run!.stage = 2;
+    expect(apply(n, tri, ownerOf(0)).characters.c2.hp).toBeGreaterThan(10);
+    const fresh: GameState = JSON.parse(JSON.stringify(s)); fresh.run!.seed = 'PHC-0002';
+    expect(apply(fresh, tri, ownerOf(0)).characters.c2.hp).toBeGreaterThan(10);
+  });
   it("Field Surgeon's Patch works in a run for one spare-parts charge, priced from data", () => {
     const d = duo(), c = d.characters.c1; c.perks = [...(c.perks || []), { id: 'field_surgeon' } as any]; c.skills.proficiency = 3;
     c.pack = [...packOf(c), { id: 'spare_parts', item: 'spare_parts', name: 'Spare-parts charge', qty: 1, kind: 'tool' } as any]; d.characters.c2.hp = 10;

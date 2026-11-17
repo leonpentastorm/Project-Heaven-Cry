@@ -62,4 +62,28 @@ describe('rules 1.64: a fight not yet joined', () => {
     const u = active(cb)!; if (u.side === 'pc') expect(u.ap).toBe(turnAp(u, [], []).ap); // the first turn after contact, on full AP
     else expect(pcOf(g).ap).toBe(turnAp(pcOf(g), [], []).ap);
   });
+  // Rules 1.64 item 5011 (review): no pre-contact turns of actions. Any action that is not the approach's own joins the
+  // fight before it resolves: it is paid from the round-1 turn (full AP less its price), or, not this unit's turn after the
+  // order is read out, it is not made.
+  for (const [what, act] of [
+    ['Hide', (u: any) => ({ type: 'combat/hide', unitId: u.id })],
+    ['Prone', (u: any) => ({ type: 'combat/prone', unitId: u.id })],
+    ['an attack', (u: any, g: GameState) => ({ type: 'combat/attack', unitId: u.id, targetId: g.combat!.units.find((x) => x.side === 'foe' && !x.dead)!.id, mode: 'shot' })],
+  ] as const) it(what + ' before contact joins the fight first', () => {
+    const g = g0!, u = pcOf(g), full = turnAp(u, [], []).ap;
+    let n: GameState; try { n = apply(g, act(u, g) as any, ownerOf(0)); } catch (e) { expect(g.combat!.approach).toBeTruthy(); return; } // refused: nothing changed
+    const cb = n.combat!; expect(cb.approach).toBeUndefined(); expect(cb.round).toBe(1);
+    expect(cb.log.some((l) => l.startsWith(APPROACH.joined_log))).toBe(true);
+    const p = cb.units.find((x) => x.id === u.id)!;
+    if (cb.log.some((l) => l === u.name + ' ' + APPROACH.acts_log)) expect(p.ap).toBe(full); // not its turn: not made; its turn comes on full AP
+    else expect(p.ap).toBeLessThan(full); // made from the round-1 turn: full AP less its price, nothing left over from before
+  });
+  it('first in the order: Prone before contact is made from the round-1 turn, full AP less its price', () => {
+    const g: GameState = JSON.parse(JSON.stringify(g0!)), cb0 = g.combat!, u = pcOf(g), full = turnAp(u, [], []).ap;
+    cb0.order = [u.id, ...cb0.order.filter((id) => id !== u.id)]; cb0.turn = 0; // the character wins initiative
+    const n = apply(g, { type: 'combat/prone', unitId: u.id } as any, ownerOf(0)), cb = n.combat!, p = cb.units.find((x) => x.id === u.id)!;
+    expect(cb.approach).toBeUndefined(); expect(cb.round).toBe(1); expect(active(cb)!.id).toBe(u.id);
+    expect(p.prone).toBe(true); expect(p.ap).toBeLessThan(full); expect(p.ap).toBeGreaterThan(0);
+    expect(cb.log.some((l) => l === u.name + ' ' + APPROACH.acts_log)).toBe(false);
+  });
 });

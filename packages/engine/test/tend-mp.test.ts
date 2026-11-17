@@ -23,7 +23,7 @@ function survivalFight() {
   const cb = g.combat, mu = cb.units.find((u: any) => u.charId === med.id), al = cb.units.find((u: any) => u.side === 'pc' && u.id !== mu.id);
   const [x, y] = mu.pos.split(',').map(Number); al.pos = x + ',' + (y + 1); al.hp = Math.max(1, Math.floor(al.maxHp / 2));
   g.characters[mu.charId].relics = []; if (mu.held) mu.held = { ...mu.held, relics: [] }; // the run's start boon may give MP back on a heal (Kindled): the price alone is measured here
-  cb.turn = cb.order.indexOf(mu.id); delete cb.window; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9;
+  cb.turn = cb.order.indexOf(mu.id); delete cb.window; delete cb.approach; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9; // rules 1.64 item 5011: the fight set up by hand as joined
   return { g, mu, al };
 }
 const U = (g: any, id: string) => g.combat.units.find((u: any) => u.id === id);

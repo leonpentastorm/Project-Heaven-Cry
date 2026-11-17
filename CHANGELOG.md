@@ -13,7 +13,9 @@ The game shows its version in the corner of the title screen and in every "Repor
 - **K5, healing between stops (rules 1.64 items 5000 to 5002):** Field Surgeon's Patch works in a Survival run; a
   spare-parts charge costs 60 credits (was 16; repairs are dearer with it). The Mender's story Triage works in a run,
   once a stage map for each Mender (`numbers.run_per_stage`); the sheet's button says when it is spent. Measured with
-  the run simulator's new `SIM_STORY_HEAL=1` (mix_trio, 20 seeds): within noise.
+  the run simulator's new `SIM_STORY_HEAL=1` (mix_trio, 20 seeds): within noise. Review fix: the once-a-stage count
+  is kept in the never-fresh `per_campaign` scope keyed by the run and the stage (the per_scene key came back at every
+  stop, since each node is a new scene); re-measured: 47 Triages in 20 seeds x 3 stages, no gain beyond noise.
 - **K6, Relic properties for every weapon (items 5003, 5004):** gloves, wraps and the unarmed family take the
   melee Relic properties (True, Biting, Balanced) at the Forge; bare fists and Figment or companion weapons do not;
   a weapon nothing fits gets an honest refusal. Every category walked: only thrown items have none (and are not
@@ -22,12 +24,16 @@ The game shows its version in the corner of the title screen and in every "Repor
   review (`target_not_tier`); no change.
 - **K4, Rite in the Field cuts Name It (item 5006):** the approved price predicate `action_id` (a priced action's own
   id); the perk's new `cost_mod` row cuts Lore Master's Call Name It by 1 (Tier II: 2), never below 0.
-- **K2, the Dexterity blades (item 5007):** sabre damage 28 -> 23, legion gladius 26 -> 22 (PROVISIONAL): with both
-  Dexterity alpha perks 147 to 169% of the plain rifle at levels 1 / 5 / 10 (were 175 to 208%); the knife and the
-  gloves untouched. The katana follows the sabre (rules 1.35: 28 -> 23). The duelling blade is listed for the lead.
+- **K2, the Dexterity blades (item 5007):** sabre damage 28 -> 20, legion gladius 26 -> 19, katana 28 -> 20 (it
+  follows the sabre, rules 1.35) (PROVISIONAL; a first pass at 23 / 22 / 23 left the optimised twin at 194 to 206% at
+  level 10). Now at or under about 175% at level 10 on both measures (melee-measure all in: sabre 173, gladius 165,
+  katana 177; dex-melee-measure with both perks: sabre 140, gladius 130); the knife and the gloves untouched. The
+  duelling blade is listed for the lead.
 - **K1, a fight not yet joined (item 5008):** a Survival fight that opens unseen is not joined until contact:
   walking is free, no round passes, no foe but a Hidden one acts, the turn strip says so; at contact (seen, an attack,
-  or three idle passes) BATTLE START, round 1, every first turn on full AP.
+  or three idle passes) BATTLE START, round 1, every first turn on full AP. Review fix (item 5011): only walking and
+  End turn are free before contact; any other action (an attack, Hide, Overwatch, a Pump, a glyph) joins the fight
+  first and is paid from that unit's round-1 turn, or, if it is not that unit's turn, is not made.
 - **K7, the mixed squad (item 5009):** the 3 of 20 is the replay walker's (no making, buying or rests: the guns run
   dry); the run simulator clears the same squad 8 of 20 (10 of 20 with K1). Nothing changed; the tank's camp kit is listed for the lead.
 

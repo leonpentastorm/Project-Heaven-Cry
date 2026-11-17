@@ -1795,7 +1795,7 @@ export function checkOver(cb: Combat) {
 }
 
 /** Rules 1.64 item 5008 (rules.json combat.approach): the words and numbers of the time before contact. */
-export const APPROACH: { free: string[]; passes_max: number; line: string; joined_log: string } = (RULES as any).combat.approach;
+export const APPROACH: { free: string[]; quiet: string[]; acts_log: string; passes_max: number; line: string; joined_log: string } = (RULES as any).combat.approach;
 /** Rules 1.64 item 5008: open the time before contact on a fight that has just started, when no foe sees any character
  * (a run's fight: game.ts runFight). True when it opened. */
 export function openApproach(cb: Combat): boolean {
@@ -1805,9 +1805,11 @@ export function openApproach(cb: Combat): boolean {
 }
 /** Rules 1.64 item 5008: is there contact now? A foe sees a character, a character has attacked (this turn) or a foe has
  * been hurt, or a foe (a Hidden one: the only kind that acts before contact) has attacked. Then the fight is joined
- * (joinFight) and true. A fight already joined: false. */
-export function contactCheck(cb: Combat, rng: Rng): boolean {
+ * (joinFight) and true. A fight already joined: false. o.acting (rules 1.64 item 5011): a unit is about to make an
+ * action that is not the approach's (rules.json combat.approach.quiet / free): that is contact itself. */
+export function contactCheck(cb: Combat, rng: Rng, o: { acting?: boolean } = {}): boolean {
   if (!cb.approach) return false;
+  if (o.acting) { joinFight(cb, rng); return true; }
   const seen = cb.units.some((u) => u.side === 'pc' && alive(u) && sideSees(cb, 'foe', u));
   const hit = cb.units.some((u) => (u.side === 'pc' && (u.attackedTurn || (u.shotsThisTurn || 0) > 0)) || (u.side === 'foe' && (u.attackedTurn || u.hp < u.maxHp)));
   if (!seen && !hit) return false;

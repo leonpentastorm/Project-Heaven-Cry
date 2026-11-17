@@ -290,7 +290,7 @@
 "special/order/weapon/sabre/mult-1.5+vs-0.2/hit": "n1  || n1  || n1  || n1  || n1 ",
 "special/order/weapon/sabre/mults-1.3-1.15-0.9+vs-0.35/crit": "n4 F1 inj0>1 || n2  || n3 F1 bleed0>3 || n2  || n3 F1 bleed0>3",
 "special/order/weapon/sabre/mults-1.3-1.15-0.9+vs-0.35/hit": "n1  || n1  || n1  || n1  || n1 ",
-"special/order/weapon/sabre/mults-1.5-1.2+vs-0.2/crit": "n1  || n1  || n1  || n1  || n1 ",
+"special/order/weapon/sabre/mults-1.5-1.2+vs-0.2/crit": "n4 F1 inj0>1 || n2  || n3 F1 bleed0>3 || n2  || n3 F1 bleed0>3",
 "special/order/weapon/sabre/mults-1.5-1.2+vs-0.2/hit": "n1  || n1  || n1  || n1  || n1 ",
 "special/order/weapon/sabre/mults-1.5-1.2/crit": "n4 F1 inj0>1 || n2  || n3 F1 bleed0>3 || n2  || n3 F1 bleed0>3",
 "special/order/weapon/sabre/mults-1.5-1.2/hit": "n1  || n1  || n1  || n1  || n1 ",

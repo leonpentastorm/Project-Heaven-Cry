@@ -112,7 +112,7 @@ describe('a save written by the live build (origin/main, 0.22.0) loads and plays
     let g = g0, sent = 0, refused = 0, checked = 0;
     // every unit of a player attacks what it can (a shot, else a blow) and ends its turn; the enemies are the engine's.
     // Every action goes through `step`: the result is the deep-copy result, the earlier state is untouched.
-    for (let guard = 0; guard < 600 && g.phase === 'combat' && !g.combat.over && g.combat.round <= 12; guard++) {
+    for (let guard = 0; guard < 600 && g.phase === 'combat' && !g.combat.over && g.combat.round <= 14; guard++) {
       const cb = g.combat, id = cb.window?.queue?.[0]?.unitId ?? cb.order[cb.turn], u = cb.units.find((q: any) => q.id === id), by = owner(g, id);
       if (cb.window) { try { g = step(g, { type: 'combat/decline', unitId: id }, by); } catch { g = step(g, { type: 'combat/end-turn', unitId: id }, by); } continue; }
       if (u.side === 'pc' && !u.downed && !u.dead) {
@@ -126,7 +126,7 @@ describe('a save written by the live build (origin/main, 0.22.0) loads and plays
       if (g.phase === 'combat' && !g.combat.over && g.combat.order[g.combat.turn] === id && !g.combat.window) { g = step(g, { type: 'combat/end-turn', unitId: id }, by); checked++; }
     }
     expect(sent).toBeGreaterThan(3); expect(checked).toBeGreaterThan(10);
-    expect(g.combat.over, 'the fight ended within 12 rounds (seeded: it always does)').toBeTruthy();
+    expect(g.combat.over, 'the fight ended within 14 rounds (seeded: it always does)').toBeTruthy();
     g = step(g, { type: 'narrator/turn', turn: { narration: 'The bridge is quiet.' } }, 'host'); // the Narrator closes the fight
     expect(g.phase).toBe('story');
     // the story goes on: 40 more lines push 40 more into the archive, after the 511 that were there

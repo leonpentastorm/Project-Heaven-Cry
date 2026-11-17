@@ -13,7 +13,7 @@ import { takeDoorPick, doorOption } from './doorpicks';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV, shockClear } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, given, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { objectAtLevel, openApproach, contactCheck, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange, layoutMap } from './combat';
+import { objectAtLevel, openApproach, contactCheck, APPROACH, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange, layoutMap } from './combat';
 import { type Rng, seedFrom } from './rng';
 import { rollD20, rollVs, judge } from './rolls';
 import { CALL, useCall, callView, briefUsed, type CallArgs } from './calls';
@@ -26,6 +26,7 @@ import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp
 import { type MapObject, type Approach, type CacheItem, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, ensureMark, MARK } from './objects';
 import type { Hazard } from './hazards';
 import { type Where, setWhere } from './missions';
+import { fxTaps } from './fxtap';
 import { type Trigger, type WorldEvent, worldAfter, tryApproach, approachResult, talkAsk, carry as carryNpc, putDown, search as searchCache, examineTriggers, enterTriggers, cleanApproaches, cleanItems, npcTalkFields, avatarOf,
   applyHazardOp, applyTriggerOp, eventsSeen, walkStory, zoneHazards, setZoneHazards, landDropped, worldView, hazardEvents, applyGroundOp, pickupWorld, pileFog, worldEvent } from './world';
 import { isCache, isPile, packAdd, grantGoods, lootToPack, LOOT_QTY_MAX, itemLabel, magItem, dropOnTile, PILE, COUNTED, intoCounts } from './containers';
@@ -1610,6 +1611,8 @@ function startStoryFight(g: GameState, combat: NonNullable<NarratorTurn['combat'
 }
 
 // ---------- combat actions ----------
+/** Rules 1.64 item 5011: true while an action made before contact is tried on a copy (the try itself joins nothing). */
+let PROBING = false;
 function combatAction(g: GameState, a: Action, by: string) {
   const cb = g.combat; if (!cb || g.phase !== 'combat') fail('No fight is on.');
   if (cb!.over) fail('The fight is over.');
@@ -1637,6 +1640,16 @@ function combatAction(g: GameState, a: Action, by: string) {
     // a free technique is the plain action it stands for (rules 1.12): Shot is 'shot', Aimed Shot 'aimed', Cut 'melee'
     const id = a.type === 'combat/attack' ? a.mode || 'shot' : a.type === 'combat/move' ? a.how || 'move' : a.type === 'combat/technique' ? ({ shot: 'shot', aimed_shot: 'aimed', cut: 'melee', overwatch: 'overwatch' } as Record<string, string>)[(a as any).id] || 'technique' : a.type.slice('combat/'.length);
     if (!u.allowedActions.includes(id)) fail(u.name + ' can only ' + u.allowedActions.map((x) => ACT_NAME[x] || x).join(', ') + ' and end its turn.');
+  }
+  // rules 1.64 item 5011: before contact, an action that is not the approach's own (a free walk, End turn) is contact:
+  // the fight is joined first and the action is paid from this unit's round-1 turn; not its turn now, it is not made.
+  // An action the reducer would refuse now is refused as before, and joins nothing: it is first tried on a copy.
+  if (!PROBING && cb!.approach && !(APPROACH.quiet.includes(a.type) && (a.type !== 'combat/move' || APPROACH.free.includes(a.how || 'move')))) {
+    // (the try's effects are its copy's alone: the stream's taps are held off while it runs, so no watcher counts them)
+    const taps = fxTaps.splice(0); PROBING = true;
+    try { apply(g, a, by); } catch (e) { if (e instanceof RuleError) fail(e.message); throw e; } finally { PROBING = false; fxTaps.push(...taps); }
+    contactCheck(cb!, g.rng, { acting: true });
+    if (active(cb!) !== u) { say(cb!, u.name + ' ' + APPROACH.acts_log); runEnemies(g); return; }
   }
   const who = u.charId ? c : null; // a companion or puppet fights with its own numbers
   let err: string | null = null;
