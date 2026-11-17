@@ -206,3 +206,10 @@ One patch with the Forge realign of section L. Not started; not to be started wi
   against crowds); a Raw Power + Dexterity character gets no chain counter with a sabre in hand; add a knife-and-pistol
   build and the Dexterity blades to the simulator and hold them to the melee and gun lines.
 - **Forge realign** (section L) in the same patch: a realigned weapon switches resource too.
+- **Hybrid weapons (Leon's idea, 17 Nov; same ask-first patch):** some weapons scale on both Raw Power and Dexterity
+  and their techniques consume BOTH resources (a Strike costs 1 Momentum and 1 pip of the target's Pressure; a
+  Finisher spends both and scales with both). The double stack made deliberate and priced: the highest melee ceiling,
+  only for a character with both alpha skills and both resources set up. Data today that points this way: hand wraps
+  and fists carry `also_scales` [raw_power, dexterity]; the hatchet hits with Dexterity and scales with Strength.
+  Candidates: the hatchet, the gloves family, a new hybrid blade. A hit with one builds both; hold it to a line above
+  the single-attribute melee line, by measurement.
