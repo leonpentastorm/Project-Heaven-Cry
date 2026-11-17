@@ -21,7 +21,9 @@ const inkOf = (skill: string): string => ATTR_INK[(SKILL as any)[skill]?.attribu
 
 export interface ForkOptView { key: string; name: string; text: string; icon: string; picked: boolean; canPick: boolean; label: string; style: string; nameStyle: string; btnStyle: string; pick: () => void; title: string }
 export interface ForkStepView { key: string; head: string; headStyle: string; why: string; hasWhy: boolean; opts: ForkOptView[]; pending: boolean; style: string }
-export interface ForkCardView { key: string; door: string; head: string; headStyle: string; runsOn: string; steps: ForkStepView[]; pending: boolean; chips: string }
+export interface ForkCardView { key: string; door: string; head: string; headStyle: string; runsOn: string; steps: ForkStepView[]; pending: boolean; chips: string;
+  /** The folded card's one line (the SKILLS tab): "Forks · 1 chosen · 1 to pick"; a pick still to make makes it white. */
+  chosen: number; toPick: number; summary: string; summaryStyle: string }
 
 /** The option a player has asked to choose and not yet confirmed (character id | option id): a pick is kept for good,
  *  so the first press arms it and the second sends door/pick (the pick is confirmed once). */
@@ -55,8 +57,11 @@ export function forkCard(c: any, door: string, o: { inFight?: boolean; only?: nu
       style: 'display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 10px; ' + (s.pending ? 'border: 1px solid ' + WHITE + '; background: rgba(255, 255, 255, 0.04)' : 'border: 1px solid #232D3F') };
   });
   if (!steps.length) return null;
+  const chosen = v.steps.filter((s) => s.picked).length, toPick = v.pending;
+  const summary = ['Forks', chosen ? chosen + ' chosen' : '', toPick ? toPick + ' to pick' : '', !chosen && !toPick ? 'none open yet' : ''].filter(Boolean).join(' · ');
   return { key: door, door, head: (v.name === skillName ? skillName : v.name + ' · ' + skillName).toUpperCase() + ' · FORKS' + (v.pending ? ' · ' + v.pending + ' STILL TO DO' : ''),
-    headStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + (v.pending ? WHITE : ink), runsOn: v.runsOn ? 'Every option runs on ' + v.runsOn + '.' : '', steps, pending: v.pending > 0, chips: forkChipsLine(c, door) };
+    headStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + (v.pending ? WHITE : ink), runsOn: v.runsOn ? 'Every option runs on ' + v.runsOn + '.' : '', steps, pending: v.pending > 0, chips: forkChipsLine(c, door),
+    chosen, toPick, summary, summaryStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: ' + (toPick ? WHITE : chosen ? ink : MUTED) };
 }
 
 /** Every door's fork card a character has reached (its alpha at a step's points, or a pick made), pending ones first. */
@@ -64,6 +69,13 @@ export function forkCards(c: any, o: { inFight?: boolean; rerender?: () => void 
   if (!c) return [];
   const out = doorForkViews(c).filter((v) => v.steps.some((s) => s.open || s.picked)).map((v) => forkCard(c, v.door, o)).filter((x): x is ForkCardView => !!x);
   return [...out.filter((x) => x.pending), ...out.filter((x) => !x.pending)];
+}
+
+/** The SKILLS tab's fork card for one skill (its door), under that skill's row: null when the skill is no door or the
+ *  character has reached none of its steps (no step open, nothing picked). */
+export function forkSheetCard(c: any, skill: string, o: { inFight?: boolean; rerender?: () => void } = {}): ForkCardView | null {
+  const v = c ? doorForkView(c, skill) : null; if (!v || !v.steps.some((s) => s.open || s.picked)) return null;
+  return forkCard(c, v.door, o);
 }
 
 /** The level-up skill card's fork block: the steps of this skill's door at these points (a step just reached, to choose
