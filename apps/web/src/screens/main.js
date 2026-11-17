@@ -22,6 +22,7 @@ import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesig
 import { previewPerkAction, phys, sheetPack, gearLockWhy, gearPreview, plateChoices, plateLesson, plateLessonWhy } from '@engine';
 import { SHEET_LINE_KEYS } from '../game/previewLines';
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
+import { doorEmblemOf, classPortraitOf, moveIconOf } from '../game/doorArt';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
 import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, hasMpFocus, carriesEvoker, carriesEmanator, focusHand, FOCUS_IDS, NEEDS_EVOKER, NEEDS_EMANATOR, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
@@ -474,7 +475,7 @@ export class MainLogic extends DCLogic {
       const p = P(s.id), m = checkMod(s.id, p), ink = ATTR[s.attr].ink, done = asked.includes(s.id), off = !c || p === 0 || g.phase !== 'story', silent = !done && !off && !voiced.includes(s.id);
       return { key: s.id, head, headName: ATTR[s.attr].name.toUpperCase(), headVal: c ? av : '', headNote: c ? 'its skills can reach ' + av : '',
         headStyle: 'display: flex; align-items: baseline; gap: 10px; margin-top: ' + (i ? 6 : 0) + 'px; padding: 4px 8px; border-left: 3px solid ' + ATTR[s.attr].ink + '; color: ' + ATTR[s.attr].ink,
-        zoom: zoomer(this, s.img, s.name, 'skill'), img: s.img, name: s.name, attr: ATTR[s.attr].name, pts: p, mod: fmt(m), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
+        zoom: zoomer(this, s.img, s.name, 'skill'), img: s.img, name: s.name, attr: ATTR[s.attr].name, ...((d) => ({ door: d, hasDoor: !!d }))(doorEmblemOf(s.id)), pts: p, mod: fmt(m), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
         ask: () => act({ type: 'voice/ask', charId: c.id, skill: s.id }), noAsk: done || off || silent, askLabel: done ? 'Asked' : silent || off ? 'Silent' : 'Ask',
         askTitle: done ? 'Asked once this scene.' : silent ? 'Nothing to say about this right now.' : off ? (p === 0 ? 'No points: no voice yet.' : g.phase !== 'story' ? 'Ask a skill out of combat.' : '') : 'It has something to say. Ask it (once this scene).',
         rowCls: 'phc-m-tab-' + (S.coreDir || 'r'),
@@ -507,11 +508,12 @@ export class MainLogic extends DCLogic {
     // The class and its moves (spec: Classes; game/classView.ts): every rank's move, held or locked with what it takes,
     // who runs it and the uses left, under the emblem, the rank and the class attribute's progress (II at 5, III at 8).
     const klass = c ? classOf(c) : null, clsEm = emblemOf(heldClassId(c));
-    const moveCard = (m) => ({ ...m, rank: m.rank + (m.ap ? ' · ' + m.ap : '') + (m.earned ? '' : ' · LOCKED: ' + m.unlock), locked: !m.earned, badgeStyle: badgeStyleOf(m.verdict), hasUses: !!m.uses,
+    const moveCard = (m) => ({ ...m, ...((ic) => ({ icon: ic, hasIcon: !!ic }))(moveIconOf(m.key)), rank: m.rank + (m.ap ? ' · ' + m.ap : '') + (m.earned ? '' : ' · LOCKED: ' + m.unlock), locked: !m.earned, badgeStyle: badgeStyleOf(m.verdict), hasUses: !!m.uses,
       style: 'display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (m.earned ? clsEm.ink : '#232D3F') + (m.earned ? '' : '; opacity: 0.55') });
     const classMoves = !c ? [] : [...(c.classId ? classMovesOf(g, c, c.classId) : []), ...(c.advancedClass ? advancedMoves(g, c, c.advancedClass) : [])].map(moveCard);
     const clsSig = c && c.classId ? attributeProgress(c, c.classId) : null;
-    const classHead = klass ? { name: classLabel(c).toUpperCase(), icon: klass.icon, ink: klass.ink, sig: clsSig ? clsSig.attributeName + ' ' + clsSig.total + ' · ' + clsSig.nextLine : '',
+    const clsPic = classPortraitOf(heldClassId(c)), clsBig = classPortraitOf(heldClassId(c), true);
+    const classHead = klass ? { name: classLabel(c).toUpperCase(), icon: klass.icon, ink: klass.ink, portrait: clsPic, hasPortrait: !!clsPic, zoomPortrait: zoomer(this, clsBig, klass.name, 'portrait'), sig: clsSig ? clsSig.attributeName + ' ' + clsSig.total + ' · ' + clsSig.nextLine : '',
       bar: clsSig ? 'height: 100%; border-radius: 99px; background: ' + klass.ink + '; width: ' + clsSig.pct + '%' : '' } : null;
     const top = c ? Object.entries(c.skills).filter(([, p]) => p > 0 && p < 10).sort((a, b) => b[1] - a[1])[0] : null;
     const mp = top ? masteredVals(this, SK[top[0]].ep.mastered, ATTR[SK[top[0]].attr].ink, SK[top[0]].name, top[1]) : {};

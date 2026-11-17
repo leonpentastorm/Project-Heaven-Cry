@@ -17,6 +17,7 @@ import { loadoutView, type LoadoutCardV, type LoadoutViewV, type CompareRowV, ty
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { FRAME_INK as I } from './FullScreenFrame';
+import { campStepIconOf } from './doorArt';
 import { boonCards, campBackdrop, campChecklist, campHelp, campGuard, freeAction, type CampCheckV } from './campView';
 import { boonIconSvg } from './boonIcons';
 import { MoveOn } from './runPanels';
@@ -207,10 +208,11 @@ function Carrying({ v, wide }: { v: LoadoutViewV; wide?: boolean }) {
  * still to do, green with a tick and the name once done), a thin meter for the budget; a click opens its section. */
 function CheckChip({ k, on, mark }: { k: CampCheckV; on: () => void; mark?: Record<string, string> }) {
   const tone = k.done ? I.ok : I.white;
+  const sign = campStepIconOf(k.key); // 0.31.x art: the step's camp sign (game/doorArt.ts), '' none
   return (
     <button type="button" data-phc-camp-check={k.key} data-phc-done={k.done ? '1' : '0'} onClick={on} {...(mark || {})} {...tipProps(k.n + ' · ' + k.title + ': ' + k.hint)}
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, minWidth: 0, maxWidth: 260, minHeight: 52, padding: '6px 12px', borderRadius: 10, border: '1px solid ' + (k.done ? I.ok : '#3B475D'), background: I.panel, color: I.text, fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
-      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: I.muted, whiteSpace: 'nowrap' }}>{k.n + ' · ' + k.title}</span>
+      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: I.muted, whiteSpace: 'nowrap' }}>{sign ? <img data-phc-camp-sign={k.key} src={sign} alt="" width={16} height={16} style={{ width: 16, height: 16, marginRight: 6, verticalAlign: -3 }} /> : null}{k.n + ' · ' + k.title}</span>
       {k.meter ? (
         <span data-phc-camp-budget="" style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
           <span style={{ fontSize: 15, fontWeight: 700, color: tone, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}><span data-phc-camp-left="">{k.meter.left}</span> of {k.meter.total} cr left</span>

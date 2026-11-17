@@ -7,6 +7,7 @@
 // Placeholders follow the art brief's ideas, drawn in the classIcons.ts style: 24 × 24 white line marks, no colour (the
 // game tints nothing; a patron's accent lights effects only, never text or icons).
 import ASSETS from './assets.json';
+import { condIconOf } from './doorArt';
 
 /** The launch patrons' ids, as in the art brief (the engine's data/patrons.json v2 is the authority once it lands). */
 export const PATRON_IDS = ['nerukhan', 'the_quartermaster', 'the_laughing_mask', 'the_toll_keeper', 'mother_ember', 'old_overcast', 'the_matchmaker', 'the_counting_weaver'] as const;
@@ -118,7 +119,9 @@ export function prayerIconUri(kind: 'whisper' | 'hymn' | 'miracle', id: string, 
   return uri(lineSvg(HYMN_PATHS(level || 1), color, 24, `<g transform="translate(16 0) scale(.33)" stroke-width="3">${mark.map((d) => `<path d="${d}"/>`).join('')}</g>`));
 }
 export const vowIconUri = (id: string, color = '#FFFFFF') => assetFor('prayer-vow-' + id.replace(/_/g, '-')) || uri(lineSvg(VOW_PATHS[id] || GENERIC_MARK, color));
-export const witnessedUri = (color = '#FFFFFF') => assetFor('prayer-witnessed') || uri(lineSvg(WITNESSED_PATHS, color));
+/** The Witnessed eye: its prayer icon, else (0.31.x art) the delivered condition sign (condition_icons cond-witnessed,
+ *  through doorArt.ts condIconOf), else the line mark. */
+export const witnessedUri = (color = '#FFFFFF') => assetFor('prayer-witnessed') || condIconOf('witnessed') || uri(lineSvg(WITNESSED_PATHS, color));
 
 // ---------- the portrait's face (Faith 2.2, spec 2.2, 2.5, 2.6) ----------
 /** Where each patron's face (or mask) sits in its 4:5 portrait (art/portraits/patrons, 800 × 1000), picked by eye from

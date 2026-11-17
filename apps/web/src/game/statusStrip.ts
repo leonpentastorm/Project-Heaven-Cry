@@ -5,6 +5,9 @@
 // into "+N" (its hover lists them).
 // Which group a condition is in is DATA: conditions.json `side` ("helps" | "hurts" | "state"), checked by
 // tools/validate.py; this file reads the row through the engine's CONDITION_ROWS and never decides it.
+// 0.31.x art: a chip whose condition has a delivered sign (art/catalog.json condition_icons, game/doorArt.ts) shows it in
+// place of the side's glyph; the side's colour stays on the chip's border and word.
+import { condIconOf } from './doorArt';
 
 export type Side = 'helps' | 'hurts' | 'state';
 /** Colour = meaning (docs/design/colour-system.md), always with a glyph and a word. */
@@ -22,8 +25,8 @@ export function sideOf(id: string, rows: any[], condId: (id: string) => string =
   return s === 'helps' || s === 'hurts' || s === 'state' ? s : 'state';
 }
 
-export interface StatusIn { key: string; side: Side; word: string; tip: string; n?: number | string | null }
-export interface StatusChip { key: string; side: Side; glyph: string; word: string; tip: string; count: string; hasCount: boolean; style: string; aria: string }
+export interface StatusIn { key: string; side: Side; word: string; tip: string; n?: number | string | null; /** its conditions.json id (its sign) */ cond?: string | null }
+export interface StatusChip { key: string; side: Side; glyph: string; word: string; tip: string; count: string; hasCount: boolean; style: string; aria: string; icon: string; hasIcon: boolean; noIcon: boolean; iconStyle: string }
 export interface StatusGroup { side: Side; head: string; hasHead: boolean; chips: StatusChip[]; more: number; hasMore: boolean; moreText: string; moreTip: string; ink: string; headStyle: string; moreStyle: string }
 
 /** The short word a chip shows: the name when it is short (12 letters or fewer), else its first word, at most 9
@@ -47,8 +50,8 @@ export function statusGroups(list: StatusIn[], o: { small?: boolean; cap?: numbe
     const all = list.filter((x) => x.side === side), shown = all.slice(0, cap), rest = all.slice(cap);
     return { side, head: SIDE_HEAD[side], hasHead: !small && !!SIDE_HEAD[side], ink: SIDE_INK[side],
       headStyle: 'flex: none; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: ' + SIDE_INK[side],
-      chips: shown.map((x) => { const c = x.n == null || x.n === '' ? '' : String(x.n);
-        return { key: x.key, side, glyph: SIDE_GLYPH[side], word: x.word, tip: x.tip, count: c, hasCount: !!c && !small, style: chipStyle(side, small),
+      chips: shown.map((x) => { const c = x.n == null || x.n === '' ? '' : String(x.n), icon = condIconOf(x.cond);
+        return { key: x.key, side, glyph: SIDE_GLYPH[side], icon, hasIcon: !!icon, noIcon: !icon, iconStyle: 'flex: none; width: ' + (small ? '10px' : '14px') + '; height: ' + (small ? '10px' : '14px'), word: x.word, tip: x.tip, count: c, hasCount: !!c && !small, style: chipStyle(side, small),
           aria: (side === 'state' ? '' : SIDE_HEAD[side].toLowerCase() + ': ') + x.tip }; }),
       more: rest.length, hasMore: rest.length > 0, moreText: '+' + rest.length, moreTip: rest.map((x) => x.tip).join('\n'),
       moreStyle: chipStyle(side, small) };

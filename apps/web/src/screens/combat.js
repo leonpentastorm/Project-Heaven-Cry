@@ -62,6 +62,7 @@ import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, w
 import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
+import { actionIconOf } from '../game/doorArt';
 import { mapLegacy, isLegacyUnit, plainAction, actionGroups, hideHelp, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, tabIdsKnown, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView, pickToggle, verdictOf } from '../game/actionFlow';
@@ -488,8 +489,8 @@ export const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([id
  *  each with its side read from its conditions.json row (an effect with no row is a harm: Heat, a jam, overweight). Its
  *  shields are on the HP bar, never a chip. own: your own panel (Witnessed is its Devotion row there). */
 export const statusOf = (u, g, phys, refOf, own) => [
-  ...effectsOf(u, own).map(([k, t, id]) => ({ key: 'fx-' + k, side: id ? sideOf(id, CONDITION_ROWS, condId) : 'hurts', word: shortWord(k), tip: k.charAt(0) + k.slice(1).toLowerCase() + ': ' + t })),
-  ...(own ? ownConds(u, g) : condChips(u, g).filter((c) => c.key !== 'shield')).map((c) => ({ key: c.key, side: c.side || 'state', word: c.word || shortWord(c.k), n: c.n, tip: c.t })),
+  ...effectsOf(u, own).map(([k, t, id]) => ({ key: 'fx-' + k, cond: id || null, side: id ? sideOf(id, CONDITION_ROWS, condId) : 'hurts', word: shortWord(k), tip: k.charAt(0) + k.slice(1).toLowerCase() + ': ' + t })),
+  ...(own ? ownConds(u, g) : condChips(u, g).filter((c) => c.key !== 'shield')).map((c) => ({ key: c.key, cond: c.id || null, side: c.side || 'state', word: c.word || shortWord(c.k), n: c.n, tip: c.t })),
   // a Physical line: Pressure on you is a harm (its view's own key), a held Watch or a weapon stuck in someone a state
   // (a thrown weapon's chip keeps where it is, "STUCK IN <target>": its first word alone was the weapon's, and said nothing)
   ...physChips(phys, refOf, '').map((c) => { const m = /^(.*) STUCK IN (.*)$/.exec(c.k);
@@ -1768,6 +1769,8 @@ export class CombatLogic extends DCLogic {
     });
     // The Calls tab's rows are chips (as the technique pad's): the Call, its AP and reach, the text of the step the
     // speaker has, its save and TN; greyed with the engine's reason when it can't be made now.
+    // 0.31.x art: a technique's, class move's, door step's or verb's icon left of its name (game/doorArt.ts; '' none: the row as before)
+    const actIcon = (a) => { const icon = actionIconOf(a.key); return { icon, hasIcon: !!icon, iconStyle: 'flex: none; width: 18px; height: 18px; margin-right: 6px; vertical-align: -4px' + (a.why ? '; opacity: 0.45' : '') }; };
     const callRow = (a) => { const c = a.key.startsWith(CL) ? cChips.find((x) => x.action === a.key) : null; if (!c) return { isCall: false, notCall: true, call: null };
       const on = a.pressed === 'true';
       return { isCall: true, notCall: false, call: { ...c, hasIcon: !!c.icon, hasWhy: !c.ok, hasSave: !!c.save, disabled: c.ok ? 'false' : 'true', meta: c.apText + ' · ' + c.reach, to: 'TO ' + c.aimWord.toUpperCase() + ' · ' + c.skillName.toUpperCase() + ' · ' + c.stepText,
@@ -1789,7 +1792,7 @@ export class CombatLogic extends DCLogic {
       ...(tabG.id === 'faith' ? (() => { const fh = faithHeadVals(this, g, cur, zoomer); return { faith: fh.show, fh }; })() : { faith: false, fh: {} }),
       // Rules 1.14, the perk card in a fight: three shelves. USE NOW is the buttons below; the other two are lists to read.
       ...(tabG.id === 'perks' ? perkShelfVals(pkShelves(), tabG.items, rowSel) : { hasUse: false, useLabel: '', useHelp: '', shelves: [] }),
-      items: tabG.items.filter((a) => !isPerkInfo(a.key)).filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, ...callRow(a), code: this._codeOf[a.key] || '', hasCode: !!this._codeOf[a.key], padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], hasSep: !!sepOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
+      items: tabG.items.filter((a) => !isPerkInfo(a.key)).filter((a) => !(tabG.id === 'outbursts' && heartV.show && ['pump', 'release', 'steady', 'letgo', 'feed', 'heartwatch'].includes(a.key))).map((a) => ({ ...a, ...callRow(a), ...actIcon(a), code: this._codeOf[a.key] || '', hasCode: !!this._codeOf[a.key], padT: pt.show && !!pt.val && a.key === pt.val.key, head: headOf[a.key] || null, hasHead: !!headOf[a.key], hasSep: !!sepOf[a.key], padW: a.key === 'draw' && pw.show, padE: a.key === 'evoke' && !!pad.repick, padD: a.key === 'outburst' && pd.show })) }] : [];
     // Leon (8 Nov 2026): the whole action panel greys out until it is really your turn: someone else's turn, or the
     // enemies' moves still playing on screen after the engine has handed the turn back (Say stays usable).
     const holdUntil = mineTurn && typeof performance !== 'undefined' ? turnsBusyUntil() : 0, holding = holdUntil > performance.now();
