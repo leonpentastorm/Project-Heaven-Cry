@@ -39,6 +39,20 @@ describe('the player texts in skills.json', () => {
         const out: [number, string][] = []; gated(u.effects, s.id, out);
         for (const [g, label] of out.filter(([g]) => g > Number(n))) expect(roadMap(s.id).steps[g - 1].lines.map((l: any) => l.text).join(' '), s.id + ': ' + label + ' at ' + g).toContain(label);
       }
+      if (s.door_line) {
+        // the door line (the page's YOUR DOOR, the fight tab's header) is held to the same words, and more: it names its
+        // door first in five plain words, every number is a placeholder, and the heart's harm uses the fight's words
+        const plain = String(s.door_line).replace(/\{=[^}]*\}/g, '');
+        expect(s.door_line, s.id + ' door line').toMatch(/^Your door is [A-Za-z ]+[:.]/);
+        expect(plain, s.id + ' door line: no typed digit').not.toMatch(/\d/);
+        expect(plain.split(/(?<=[.!?])\s+/).every((x: string) => x.split(/\s+/).length <= 40), s.id + ' door line: short sentences').toBe(true);
+        if (/Mana Shock/.test(plain)) expect(plain, s.id + ': Mana Shock comes after a Mana Short, both named').toMatch(/Mana Short\)?[^]*Mana Shock/);
+      }
+      // a list of new moves gives each its few plain words (the name, then what it does in brackets)
+      for (const [n, u] of Object.entries<any>(s.unlocks)) {
+        const m = /New moves?(?: from Hidden)?: ([^.]*)\./.exec(u.player || '');
+        if (m) for (const item of m[1].split(/, | and /)) expect(item, s.id + ' at ' + n + ': ' + item).toMatch(/^[A-Z][\w ]+ \([^)]+\)$/);
+      }
       if (s.feed) { expect(s.per_point.rows[0].text, s.id + ': a beta\'s first row is its door line').toMatch(/\{=per_point\.numbers\.feed\b/); expect(feedBlock(s.id, null)!.head).toMatch(/^Feeds /); }
     });
   }

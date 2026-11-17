@@ -11,7 +11,8 @@ let G: GameState;
 const view = () => ({ game: viewFor(G, 'host'), me: { id: 'host', name: 'Leon' }, role: 'host', screen: 'main', toast: null, savedAt: 0 });
 vi.mock('../game/store', () => ({ getState: () => view(), act: (a: any) => { G = apply(G, a, 'host'); }, go: () => {}, toast: () => {}, polishText: async () => '', retryNarrator: () => {}, saveNow: () => {}, subscribe: () => () => {} }));
 const { MainLogic } = await import('./main.js');
-const { D, epccgVals, callBlock } = await import('./shared');
+const { D, epccgVals, callBlock, feedBlock } = await import('./shared');
+const { doorFeedView } = await import('@engine');
 
 
 const MAIN_TPL = readFileSync(new URL('../templates/main.template.html', import.meta.url), 'utf-8');
@@ -109,3 +110,17 @@ describe('S4: a gamma skill\'s page leads with its Call and how it grows', () =>
   });
 });
 
+
+describe('the Feeds box reads this character, not a sheet of its points', () => {
+  it('Pain Threshold at level 6: "You now" is the engine view on the character (the soak grows with level), with its unit', () => {
+    const { c } = story({ durability: 3, pain_threshold: 3 }); c.level = 6;
+    const pts = (id: string) => c.skills[id] || 0;
+    const real = feedBlock('pain_threshold', pts, c)!, sheet = feedBlock('pain_threshold', pts)!;
+    expect(real.now).toBe('You now: ' + doorFeedView(c, 'durability')!.line + '.');
+    expect(real.now).toMatch(/each Guard plate takes \d+ damage off a hit/);
+    expect(real.now).not.toBe(sheet.now); // the level-1 sheet soaks less
+    // the page passes the character it was opened for
+    const { L } = story({ durability: 3, pain_threshold: 3 }); L.state.epccg = 'pain_threshold';
+    expect(L.renderVals().ep.feed.now).toMatch(/^You now: Pain Threshold 3: each Guard plate takes \d+ damage off a hit/);
+  });
+});

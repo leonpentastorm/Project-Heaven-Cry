@@ -44,7 +44,7 @@
       "core": "body",
       "slot": "alpha",
       "summary": "The tank.",
-      "door_line": "Guard is your door: plates around you. The Guard technique (any weapon) and Brace raise them; each plate eats part of a blow, and Challenge and Slam spend them.",
+      "door_line": "Your door is Guard: plates around you that soak hits before your HP does. The Guard technique (with any weapon) and Brace raise plates; Challenge and Slam spend them.",
       "forks": [
         {
           "id": "a",
@@ -89,7 +89,7 @@
           },
           {
             "at": "from 1",
-            "text": "A shield in one hand adds {=per_point.numbers.shield} to every plate gain; a shield in each hand multiplies every gain by {=per_point.numbers.two_shields} instead."
+            "text": "A shield in one hand adds {=per_point.numbers.shield} to every plate gain; a shield in each hand multiplies every gain by {=per_point.numbers.two_shields} instead. Neither lets you hold more plates."
           },
           {
             "at": "each from 2",
@@ -619,7 +619,7 @@
       "summary": "Wounds don't slow you down.",
       "feed": {
         "carrier": "plate_soak",
-        "line": "{beta} {points}: each plate soaks {now}",
+        "line": "{beta} {points}: each Guard plate takes {now} damage off a hit",
         "next": " (next point: {next})",
         "provisional": true,
         "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
@@ -932,7 +932,7 @@
       "core": "body",
       "slot": "alpha",
       "summary": "Hit harder, bend further, lift higher.",
-      "door_line": "Momentum: land melee hits and Charge to build it (the number on your token), then spend it on a Finisher: Cleave a crowd, Break a guard, Coup the hurt, or (the Breaker) Launch a foe across the room.",
+      "door_line": "Your door is Momentum: the number on your token, built by landing melee hits and by Charge. Spend it all on a Finisher: Cleave hits a crowd, Break smashes a guard, Coup cuts down the wounded, and a Breaker's Launch throws a foe across the room.",
       "forks": [
         {
           "id": "a",
@@ -1492,7 +1492,7 @@
         "weapon:thrown",
         "weapon:light_melee"
       ],
-      "door_line": "Strike to pin: every hit you roll with Dexterity adds Pressure (a gun, a bow, a thrown knife, a light blade, a Dexterity glove). Pressed foes aim worse, Suppressed ones lose AP, Broken ones lose more. Strike, then move: Slide into cover, never stand still.",
+      "door_line": "Your door is Pressure: pips on a foe that rattle its aim. Every hit you roll with Dexterity adds one (a gun, a bow, a thrown knife, a light blade, a Dexterity glove). A Pressed foe aims worse, a Suppressed one loses AP, a Broken one loses more. Hit, then Slide into cover: never stand still.",
       "forks": [
         {
           "id": "a",
@@ -2109,7 +2109,7 @@
       "core": "mind",
       "slot": "alpha",
       "summary": "Stealth, sleight of hand, sticky fingers.",
-      "door_line": "Hidden: enemies can't target you, and your first attack from it is an ambush. Get there: Hide where no enemy's eyes reach you (behind a wall, in smoke, out of their sight). Holding Shadow, switch Break on that attack. Hidden ends when you attack, take a hit, or a foe ends its turn next to you.",
+      "door_line": "Your door is Shadow: a meter you fill while no enemy sees you. Hide where no enemy can see you (behind a wall, in smoke) to become Hidden: enemies can't target you, and your first attack is an ambush. Spend all your Shadow on a Break, one big attack from Hidden. Hidden ends when you attack, take a hit, or a foe ends its turn next to you.",
       "forks": [
         {
           "id": "a",
@@ -2158,7 +2158,7 @@
           "adjudication": "engine",
           "provisional": true,
           "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Break: spend it all on one weapon attack from Hidden. Go to Ground: Hide costs you {=unlocks.1.effects.8.value|abs} AP less (at least {=unlocks.1.effects.8.min}). First Shade: your first Hide of a fight, holding no Shadow, gives {=unlocks.1.effects.9.value} at once. Tagged: +{=unlocks.1.effects.10.value} to hit from Hidden on a Marked enemy.",
-          "player": "You build Shadow (a meter filled while unseen) and spend it all on a Break from Hidden; Hide costs you {=.effects.8.value|abs} AP less.",
+          "player": "You fill Shadow while unseen: {=.effects.0.value} for a turn you end Hidden without attacking, {=.effects.1.value} for a move from cover to cover nobody sees (once a turn), {=.effects.2.value} for a kill nobody sees; at most {=.effects.0.limit.n} a turn. While an enemy can see you, you lose {=.effects.3.value|abs} at the start of your turn. Spend it all on a Break, one big attack from Hidden. Go to Ground: Hide costs you {=.effects.8.value|abs} AP less (never under {=.effects.8.min}). First Shade: your first Hide of a fight, with no Shadow, gives you {=.effects.9.value} at once. Tagged: from Hidden you get +{=.effects.10.value} to hit a Marked enemy.",
           "effects": [
             {
               "op": "resource",
@@ -2410,7 +2410,7 @@
           "category": "Combat Interaction",
           "mastery": 1,
           "text": "A perk step in this skill. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=unlocks.3.effects.1.value}) instead of finding you outright. Ghost Kill: drop a foe while no enemy's eyes reach you and you sink back into Hidden (once a turn; not while Marked). The Shadow verbs of this rung open: Lift, Decoy, Read Intent and Cut the Strap.",
-          "player": "Close Quarters and Ghost Kill, and the Shadow verbs Lift, Decoy, Read Intent and Cut the Strap open.",
+          "player": "Close Quarters: a foe that ends its turn next to you while you are Hidden has to roll to spot you (at +{=.effects.1.value}) instead of finding you outright. Ghost Kill: once a turn, drop a foe while no enemy can see you and you slip back into Hidden (not while Marked). New moves from Hidden: Lift (steal a grenade or a magazine), Decoy (a noise every foe believes is you), Read Intent (see a foe's next action) and Cut the Strap (disarm a foe next to you).",
           "effects": [
             {
               "op": "perk_choice",
@@ -2494,7 +2494,7 @@
           "category": "Active Skill",
           "mastery": 2,
           "text": "Still Breath: spot rolls against you are {=unlocks.5.effects.0.value} while you stand next to cover. Your Shadow holds one more, and the Shadow verbs of this rung open: Fade, Vault, Open Seam, Foul the Action, Pick and Douse.",
-          "player": "Still Breath (spot rolls against you are {=.effects.0.value} beside cover), your Shadow holds one more, and Fade, Vault, Open Seam, Foul the Action, Pick and Douse open.",
+          "player": "Still Breath: spot rolls against you are {=.effects.0.value} while you stand next to cover. Your Shadow holds one more. New moves: Fade (slip back into Hidden by cover even when seen), Vault (hop a low barrier), Open Seam (lower a foe's Defense), Foul the Action (spoil a foe's weapon), Pick (open or lock a door) and Douse (put out a lamp).",
           "effects": [
             {
               "op": "roll_mod",
@@ -2525,7 +2525,7 @@
           "name": "Mastery 3",
           "mastery": 3,
           "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Shadow Run: once a turn, a move made Hidden from cover to cover costs {=unlocks.7.effects.1.value} AP less (at least {=unlocks.7.effects.1.min}). Your Shadow holds one more, and the Shadow verbs of this rung open: Timing, Rig, Plant and Disable.",
-          "player": "Shadow Run (a Hidden move from cover to cover costs {=.effects.1.value|abs} AP less), your Shadow holds one more, and Timing, Rig, Plant and Disable open.",
+          "player": "Shadow Run: once a turn, a move you make Hidden from cover to cover costs {=.effects.1.value|abs} AP less (never under {=.effects.1.min}). Your Shadow holds one more. New moves: Timing (a foe loses an AP next turn), Rig (set a trap), Plant (a tracker that Marks a foe) and Disable (stun a machine).",
           "effects": [
             {
               "op": "perk_choice",
@@ -2565,7 +2565,7 @@
           "name": "Mastery 4",
           "mastery": 4,
           "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. The Shadow verbs of this rung open: Parting Cut and Hijack.",
-          "player": "The Shadow verbs Parting Cut and Hijack open.",
+          "player": "New move: Hijack (take control of a machine next to you). Parting Cut is listed here but not in the game yet.",
           "effects": [],
           "adjudication": "engine"
         },
@@ -2671,7 +2671,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "foes need more to find you while you are Hidden: up to {=per_point.numbers.feed_at_double} more, growing with your points here times your points in Ingenuity ({=per_point.numbers.feed|pct}% of the way for each)."
+            "text": "While you are Hidden, foes need more to find you: the more points you have here and in Ingenuity, the more, up to {=per_point.numbers.feed_at_double} more with both at the top (each point here times each point there gives {=per_point.numbers.feed|pct}% of that)."
           },
           {
             "at": "each",
@@ -2979,7 +2979,7 @@
       "core": "mind",
       "slot": "alpha",
       "summary": "Raw processing speed for Sigils. Attack skill for Sigils that strike.",
-      "door_line": "Draw words on your own tile in a straight row of {=door_numbers.line_min} to {=door_numbers.line_max}, then Evoke from an end or the side.",
+      "door_line": "Your door is Sigils: spells written as glyphs on the ground. Draw one word on the tile you stand on, then move and draw the next, until {=door_numbers.line_min} to {=door_numbers.line_max} words make a straight row. Then Evoke it from beside the row: from an end it fires along the row, from the side it fires across it.",
       "forks": [
         {
           "id": "a",
@@ -3530,7 +3530,7 @@
       "core": "mind",
       "slot": "alpha",
       "summary": "Shapes thought into images; pictures the Figments built of mana.",
-      "door_line": "In a fight, Picture offers your ready designs first, then every bare form you have opened (the Visualizer in hand).",
+      "door_line": "Your door is Figments: shapes you build out of mana. With the Visualizer in hand, Picture one: your ready designs are offered first, then every plain shape you have opened.",
       "fork_runs_on": "Visualizer charge (the held count)",
       "door_focus_line": "Your Visualizer is in your pack, not in a hand: open the Backpack and draw it to Picture.",
       "door_tab": "figments",
@@ -3548,6 +3548,18 @@
           {
             "at": "each",
             "text": "Your Figments are more accurate."
+          },
+          {
+            "at": "at 2",
+            "text": "You can Picture the Hand."
+          },
+          {
+            "at": "at 8",
+            "text": "Four ready designs, and one more shape from your second fork."
+          },
+          {
+            "at": "at 10",
+            "text": "Every shape is yours, and five ready designs."
           }
         ]
       },
@@ -3561,7 +3573,7 @@
           "category": "Active Skill",
           "mastery": 0,
           "text": "The door, its whole loop, smaller: Picture (a Figment built of mana), the Double, one held; projection range four tiles plus your Visualization. Needs the Visualizer (figments.json).",
-          "player": "With the Visualizer in hand, Picture a Figment: the Double, one held at a time, reaching four tiles plus your Visualization.",
+          "player": "With the Visualizer in hand, Picture a Figment: the Double (a decoy of you) or the Snare. You hold one at a time, and it reaches four tiles plus your Visualization. Glimmer (a fake you, painted in light), Redraw (move a Figment) and Cash in (unmake it for its charge back) are yours too.",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -3572,7 +3584,7 @@
           "category": "Active Skill",
           "mastery": 1,
           "text": "A perk step in this skill; two ready designs, one trait each (figments.json ladder).",
-          "player": "Two ready designs, one trait each.",
+          "player": "Ready designs: Figments you set up out of a fight, each with a trait (an extra power), to Picture in one go. You keep two, with one trait each.",
           "effects": [
             {
               "op": "perk_choice",
@@ -3620,7 +3632,7 @@
           "name": "Mastery 3",
           "mastery": 3,
           "text": "Three Figments held; two traits a design. A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "player": "Three Figments held at once, and two traits a design.",
+          "player": "Three Figments held at once, two traits a design, and one more shape from your first fork.",
           "effects": [
             {
               "op": "perk_choice",
@@ -3634,7 +3646,7 @@
           "name": "Mastery 4",
           "mastery": 4,
           "text": "A destroyed Figment no longer Snaps. A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "player": "A destroyed Figment no longer Snaps.",
+          "player": "A destroyed Figment no longer Snaps (a Snap costs you AP on your next turn), and you get one more shape from either fork.",
           "effects": [],
           "adjudication": "engine"
         },
@@ -4039,7 +4051,7 @@
       "core": "soul",
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
-      "door_line": "A Bond does not heal by itself: Tend a Bonded ally to heal it (Mend or Shield at any range you see, Touch beside you).",
+      "door_line": "Your door is Bonds: a thread from you to a friend. A Bond does not heal by itself: Tend a Bonded friend to heal them, with Mend or Shield at any range you can see, or Touch from beside them.",
       "forks": [
         {
           "id": "a",
@@ -4255,7 +4267,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "what you heal through a Bond heals you too: up to {=per_point.numbers.feed_at_double|pct}% of it, growing with your points here times your points in Empathy ({=per_point.numbers.feed|pct}% of the way for each); it does not count as healing you give."
+            "text": "What you heal through a Bond heals you too: the more points you have here and in Empathy, the more, up to {=per_point.numbers.feed_at_double|pct}% of it with both at the top (each point here times each point there gives {=per_point.numbers.feed|pct}% of that). It does not count as healing you give."
           },
           {
             "at": "each",
@@ -4274,7 +4286,7 @@
           "category": "Reaction",
           "mastery": 0,
           "text": "Your reaction, when an ally next to you is hit (from {=unlocks.1.effects.1.if.self_skill.camaraderie} points also a Bonded ally you see): you take {=unlocks.1.effects.0.share.base|pct}% of the damage instead, +{=unlocks.1.effects.0.share.per.0.value|pct}% a point of Camaraderie (at most {=unlocks.1.effects.0.share.max|pct}%). It needs no focus. An Answer: on until you switch it off, like every Answer.",
-          "player": "Your reaction when a friend next to you is hit: you take {=.effects.0.share.base|pct}% of the damage instead, {=.effects.0.share.per.0.value|pct}% more for each point (at most {=.effects.0.share.max|pct}%).",
+          "player": "Your reaction when a friend next to you is hit: you take {=.effects.0.share.base|pct}% of the damage instead, {=.effects.0.share.per.0.value|pct}% more for each point (at most {=.effects.0.share.max|pct}%). It needs no focus, and it stays on until you switch it off.",
           "effects": [
             {
               "op": "redirect",
@@ -4631,7 +4643,7 @@
       "core": "soul",
       "slot": "alpha",
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
-      "door_line": "Begin a design, Pump it up to its top stage, then Release. Strain is the cost, and MP pays. {=door_numbers.short_at_over} past your Strain limit is Mana Shock: from your next turn, {=door_numbers.shock_hp_share|pct}% of your max HP every turn until you calm the heart or the fight ends.",
+      "door_line": "Your door is Outbursts: Soul spells you charge, then release. Begin a design, Pump it up stage by stage, then Release it; each step adds Strain (the load on your heart), and MP pays. Go {=door_numbers.short_at_over} past your Strain limit and your heart shorts (a Mana Short): you are Stunned and anything you hold goes off wild. From your next turn you are in Mana Shock: each turn you end still over your limit costs {=door_numbers.shock_hp_share|pct}% of your max HP, until your heart calms or the fight ends.",
       "forks": [
         {
           "id": "a",
@@ -4653,7 +4665,7 @@
       "fork_runs_on": "Strain (and the stage)",
       "door_focus_line": "Your Emanator is in your pack, not in a hand: open the Backpack and draw it, so your Outbursts are paid in MP instead of drawing on the air.",
       "door_bare_headline": "Using magic without a focus causes great harm.",
-      "door_bare_line": "Every Outburst you Begin draws on the air at +{=door_numbers.no_emanator_strain} Strain. Past your limit Strain burns you, and {=door_numbers.short_at_over} past it is Mana Shock: from your next turn, {=door_numbers.shock_hp_share|pct}% of your max HP every turn until you calm the heart back to the limit or the fight ends.",
+      "door_bare_line": "Every Outburst you Begin draws on the air at +{=door_numbers.no_emanator_strain} Strain. Past your limit Strain burns you, and {=door_numbers.short_at_over} past it your heart shorts (a Mana Short). From your next turn you are in Mana Shock: each turn you end still over your limit costs {=door_numbers.shock_hp_share|pct}% of your max HP, until you calm the heart back to the limit or the fight ends.",
       "door_numbers": {
         "no_emanator_strain": 4,
         "short_at_over": 3,
@@ -5189,7 +5201,7 @@
       "core": "soul",
       "slot": "alpha",
       "summary": "The saints judge. You deliver.",
-      "door_line": "Pray to your patron. A Whisper is quick and comes once a turn; a Hymn is strong and then must wait. Your patron watches what you do: each thing it likes raises your Devotion, each thing it hates lowers it.",
+      "door_line": "Your door is prayer to your patron. A Whisper is quick and comes once a turn; a Hymn is strong and then must wait. Your patron watches what you do: each thing it likes raises your Devotion (your standing with it), each thing it hates lowers it.",
       "forks": [
         {
           "id": "a",
@@ -5417,7 +5429,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "every shield your prayers give is {=per_point.numbers.feed|pct}% stronger for every point here times every point in Faith."
+            "text": "Every shield your prayers give (Protection, a Hymn's shield, the Ward) is {=per_point.numbers.feed|pct}% stronger for every point here times every point in Faith."
           },
           {
             "at": "each",

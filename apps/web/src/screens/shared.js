@@ -69,7 +69,12 @@ export function roadMap(id) {
     else if (u && u.category === 'Fork' && u.name) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: u.name + '. ' + (u.player || 'Choose one, kept for good.') });
     // a named unlock: its name and player line (an unlock named only for its mastery step, or with no name of its own,
     // shows its player line alone)
-    else if (u && (u.category || u.player) && u.name && (u.player || !lines.some((l) => l.text.includes(u.name)))) lines.push({ key: 'u', kind: 'unlock', at: 'at ' + n, text: u.player ? (/^Mastery \d+$|^Mastered$/.test(u.name) || !u.category ? u.player : u.name + ': ' + u.player) : 'Unlocks ' + u.name });
+    // (0.31.x: a player line of several sentences is one line a sentence, the first in the unlock's style, the rest
+    // under it as plain lines: one short sentence a line)
+    else if (u && (u.category || u.player) && u.name && (u.player || !lines.some((l) => l.text.includes(u.name)))) {
+      const said = u.player ? (/^Mastery \d+$|^Mastered$/.test(u.name) || !u.category ? u.player : u.name + ': ' + u.player) : 'Unlocks ' + u.name;
+      said.split(/(?<=[.!?])\s+(?=[A-Z])/).forEach((x, i) => lines.push({ key: 'u' + (i || ''), kind: i ? 'more' : 'unlock', at: 'at ' + n, text: x }));
+    }
     const step = m >= 1 && m <= 4 ? 'M' + m : m === 5 ? 'mastered' : '';
     const perks = step === 'mastered' ? (ep.mastered ? [ep.mastered] : []) : step ? ep.perks || [] : [];
     if (step) lines.push({ key: 'm', kind: step === 'mastered' ? 'mastered' : 'perk', at: 'at ' + n,
@@ -99,13 +104,15 @@ export function callBlock(id, pts) {
     ladder: merged.map((x) => ({ key: x.n, n: x.n, what: x.what.charAt(0).toUpperCase() + x.what.slice(1), now: x.n === cur, owned: has && x.n <= p })) };
 }
 /** A beta skill's door line on its page: what it multiplies on its alpha door, the top (both skills at the top, the
- *  engine's doorFeedView on a sheet there), and this character's number now. `ptsOf` null: no character. */
-export function feedBlock(id, ptsOf) {
+ *  engine's doorFeedView on a sheet there), and this character's number now: the engine's doorFeedView on the character
+ *  itself (`who`: its perks, class and items move some numbers, the Strain limit and the plate soak), else on a sheet of
+ *  its points. `ptsOf` null: no character. */
+export function feedBlock(id, ptsOf, who) {
   const door = doorOfBeta(id), r = roadMap(id); if (!door || !r.feed) return null;
   const Dk = ENGINE_SKILL[door], name = (Dk && Dk.name) || door, mine = (SK[id] && SK[id].name) || id, top = r.top;
   const v = (sheet) => { try { return doorFeedView(sheet, door); } catch { return null; } };
   const at = v({ skills: { [door]: top, [id]: top } }), mult = at ? Math.round(at.mult * 100) / 100 : 0;
-  const has = typeof ptsOf === 'function', now = has ? v({ skills: { [door]: ptsOf(door) || 0, [id]: ptsOf(id) || 0 } }) : null;
+  const has = typeof ptsOf === 'function', now = has ? v(who && who.skills ? who : { skills: { [door]: ptsOf(door) || 0, [id]: ptsOf(id) || 0 } }) : null;
   return { door, doorName: name, head: 'Feeds ' + name + ': ' + r.feed,
     top: at ? 'With ' + name + ' and ' + mine + ' both at ' + top + ', it is ×' + mult + (mult === 2 ? ' (twice as strong).' : '.') : '',
     now: now && has && (ptsOf(door) || 0) > 0 && (ptsOf(id) || 0) > 0 ? 'You now: ' + now.line + '.' : has ? 'You now: it needs points in both ' + name + ' and ' + mine + '.' : '' };
@@ -115,7 +122,7 @@ export const headLine = (id) => { const h = roadMap(id).head; return h.length ? 
 /** What the point after `p` gives, as one line: that step's lines, else what every point gives ('' past the top). */
 export const nextLine = (id, p) => {
   const r = roadMap(id), s = r.steps[(p || 0)]; if (!s) return '';
-  const mine = (l) => l.kind === 'row' || l.kind === 'unlock' || l.kind === 'fork';
+  const mine = (l) => l.kind === 'row' || l.kind === 'unlock' || l.kind === 'more' || l.kind === 'fork';
   const own = s.lines.filter(mine).map((l) => l.text), extra = s.lines.filter((l) => !mine(l)).map((l) => l.text);
   return [...(own.length ? own : r.head), ...extra].join(' · ');
 };
@@ -256,8 +263,9 @@ export function roadTrack(self, id, pts, ink) {
         + (state === 'now' ? 'background: ' + epRgba(ink, 0.16) + '; box-shadow: inset 0 0 0 1px ' + ink : state === 'owned' ? 'background: #121826' : 'background: transparent'),
     }; }) };
 }
-/** The "?" pop-up. `ptsOf(id)`: the character's points in a skill when the screen has one (creation, level up). */
-export function epccgVals(self, ptsOf) {
+/** The "?" pop-up. `ptsOf(id)`: the character's points in a skill when the screen has one (creation, level up);
+ *  `who`: that character (the Feeds box reads the engine's view on it). */
+export function epccgVals(self, ptsOf, who) {
   const id = self.state.epccg, s = id && D.skills.find((x) => x.id === id);
   const closeEpccg = () => self.setState({ epccg: null });
   if (!s) return { epOpen: false, ep: EP_BLANK, closeEpccg, ...attrPageVals(self) };
@@ -282,7 +290,7 @@ export function epccgVals(self, ptsOf) {
     // an alpha skill's door, how it is used (skills.json door_line, the one line the fight tab's header reads too)
     door: (() => { const t = ENGINE_SKILL[s.id] && ENGINE_SKILL[s.id].door_line; return t ? { has: true, text: t } : { has: false, text: '' }; })(),
     // a beta skill's door: what it multiplies on its attribute's alpha door (the engine's doorFeedView)
-    feed: (() => { const fb = feedBlock(s.id, typeof ptsOf === 'function' ? ptsOf : null); if (!fb) return FEED_BLANK;
+    feed: (() => { const fb = feedBlock(s.id, typeof ptsOf === 'function' ? ptsOf : null, who); if (!fb) return FEED_BLANK;
       return { has: true, head: fb.head, top: fb.top, now: fb.now, hasNow: !!fb.now, boxStyle: 'display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 10px; background: #10151F; border-left: 3px solid ' + ink }; })(),
     ptsLine: typeof pts === 'number' ? 'You have ' + pts + (pts === 1 ? ' point' : ' points') + ' in ' + s.name : 'Points 1 to ' + track.steps.length,
     headStyle: 'font-size: 14px; line-height: 1.4; color: #E7EBF3', inkStyle: 'color: ' + ink,

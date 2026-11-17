@@ -33,7 +33,7 @@ describe('the Outbursts door', () => {
   it('its line is the data\'s (skills.json door_line) and heads the Outbursts tab', () => {
     const d = DOORS.find((x) => x.skill === 'will_power')!;
     expect(d.line).toBe((SKILL.will_power as any).door_line);
-    expect(d.line).toMatch(/^Begin a design, Pump it up .*then Release\. Strain is the cost, and MP pays\. \d+ past your Strain limit is Mana Shock: from your next turn, \d+% of your max HP every turn until you calm the heart or the fight ends\.$/); // rules 1.56, the Mana Shock
+    expect(d.line).toMatch(/^Your door is Outbursts: .*Begin a design, Pump it up .*then Release it; .*Go \d+ past your Strain limit and your heart shorts \(a Mana Short\): .*Mana Shock: each turn you end still over your limit costs \d+% of your max HP, until your heart calms or the fight ends\.$/); // rules 1.56, the Mana Short and the Mana Shock after it (0.31.x: said to the player)
     expect(tabDoorLine('outbursts')).toBe(d);
     expect(tabDoorLine('move')).toBeNull();
   });
@@ -99,7 +99,7 @@ describe('the Sigils door', () => {
     const d = tabDoorLine('sigils')!;
     expect(d).toMatchObject({ skill: 'brain_power', tab: (SKILL.brain_power as any).door_tab });
     expect((SKILL.brain_power as any).door_numbers).toMatchObject({ line_min: SIGIL_GRAMMAR.min_glyphs, line_max: SIGIL_GRAMMAR.max_glyphs }); // ordinary {=placeholders} of its row (tools/validate.py holds the copy equal)
-    expect(d.line).toBe('Draw words on your own tile in a straight row of ' + SIGIL_GRAMMAR.min_glyphs + ' to ' + SIGIL_GRAMMAR.max_glyphs + ', then Evoke from an end or the side.');
+    expect(d.line).toContain('until ' + SIGIL_GRAMMAR.min_glyphs + ' to ' + SIGIL_GRAMMAR.max_glyphs + ' words make a straight row'); expect(d.line).toMatch(/^Your door is Sigils: /);
     expect(d.line).not.toMatch(/\{/);
   });
   it("the first turn: the top door's tab when its first action is usable; else the usual rule (null)", () => {
