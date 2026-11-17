@@ -1,0 +1,78 @@
+{
+  "number": 117,
+  "family": "move_icons",
+  "id": "move-parting-cut",
+  "path": "art/icons/moves/parting-cut.png",
+  "name": "Parting Cut",
+  "mode": "Wick icon",
+  "state": "designed, not built",
+  "use": "Shadow 2.0 pending (`shadow.json pending`)",
+  "paint": "A last slash as Wick turns away into shadow, the blade line trailing.",
+  "avoid": "blood \u00b7 a cape",
+  "section": "Ingenuity: Shadow, and the Operative",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: A last slash as Wick turns away into shadow, the blade line trailing.\nAvoid: blood \u00b7 a cape\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Wick three-quarter back, stepping LEFT away from a SHORT single blade trailing in right mitten toward RIGHT. Hilt firmly connects to hand and blade. Short standard capelet only, no long cape. Shadow is THREE thick detached white broken bands near trailing boot with transparent spaces, no gradient.\nWick is the exact CERAMIC AUTOMATON: clipped oversized head with transparent screen and white pixel face, ear discs, offset fasteners, short asymmetric capelet, round medical lantern chest, chunky mittens and cuffed boots. No default bowl/cup/halo or unrequested stars/arrows.\nTrue transparency in backdrop and ALL holes, not opaque black dividers. Complete subject centered inside 15% transparent margins. Square single icon readable at32/44px; signs at24/48px; door emblems at20px. All decisive shape stays in safe box and circular chip.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 8,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "46d10895fd0a83c16a0cae19bea4d03b471dd9b50d1aa388c6db27a3ab1f29c7",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/117-parting-cut.png",
+  "source_sha256": "e7bb12b0d0631a755d7e019bfc0a8beb37fd58e287c3570eaec90d7f7f532bc2",
+  "export_crop": [
+    39,
+    32,
+    1216,
+    1239
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/parting-cut.png",
+    "64": "art/icons/moves/exports/64/parting-cut.png",
+    "48": "art/icons/moves/exports/48/parting-cut.png",
+    "44": "art/icons/moves/exports/44/parting-cut.png",
+    "32": "art/icons/moves/exports/32/parting-cut.png",
+    "24": "art/icons/moves/exports/24/parting-cut.png"
+  },
+  "framing": {
+    "scale": 0.5697016174649345,
+    "offset": [
+      176,
+      168
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "3017183f4c489d133c07650c56af47cf4e90486a657e8d15e2caacc59b26b6cb",
+    "64": "36d445d975786a3346e6f9d77e9866a3e129aaf9e0d6d526f117654fc3ba20a0",
+    "48": "5957658d7cc6345da4b2ea920eaaa7db503f663349cafa111222365980f267e5",
+    "44": "eedfd5283ec178030a1ea77318990fff2dbc22bde01557fa7e88cbb198e5ef28",
+    "32": "d9871522f53da393c36c2ac4bf55d644e30cc27f1516587bd524ec5592f83e68",
+    "24": "ce0705acc7e465fb64c281029dd3bb3047e24a6259bf1d8122ea16816c44a3a2"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

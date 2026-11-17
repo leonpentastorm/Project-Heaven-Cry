@@ -1,0 +1,75 @@
+{
+  "number": 64,
+  "family": "move_icons",
+  "id": "move-special-ammo",
+  "path": "art/icons/moves/special-ammo.png",
+  "name": "Special Ammo",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Skirmisher rank II move",
+  "paint": "One round standing taller than two plain ones beside it, its tip marked with a small star cut.",
+  "avoid": "glowing magic effects \u00b7 a rocket",
+  "section": "Dexterity: Pressure, and the Skirmisher",
+  "kind": "wick",
+  "prompt": "Match the attached object-only flat white RPG icon style. New subject:\nOBJECTS ONLY: THREE plain original ammunition cartridges upright beside each other, the middle round noticeably taller and broader than the two smaller plain ones. Its tapered tip bears ONE small clearly visible star-shaped transparent cut. Three cartridges form one compact group. The two flanking rounds are plain with no mark. No rockets, fins, launchers, guns, brands, lettering, glows, grey shades, full Wick, mascot heads, robot body or hands. Bold flat WHITE #FFFFFF ink, transparent backdrop and cuts. Readable at 32px, keep the star cut generous.\nObject icon only; do NOT add a mascot.\nPure white flat ink only. All dark screen/holes/background must be transparent, never black or grey paint. No shading, gradients or glow. One centered square icon safely inside a central 75\u201380% box and a 90% circular chip. No labels, border or writing.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "05cba60661e91f8e433a101d9419aa86f65a49fe3275a140ce4b22d1c5e45596",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/064-special-ammo.png",
+  "source_sha256": "c13b47da8b5250c06d79c574d41ea8f82cc36ba708bd1ddf9e6bacc77270f997",
+  "export_crop": [
+    142,
+    115,
+    1113,
+    1232
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/special-ammo.png",
+    "64": "art/icons/moves/exports/64/special-ammo.png",
+    "48": "art/icons/moves/exports/48/special-ammo.png",
+    "44": "art/icons/moves/exports/44/special-ammo.png",
+    "32": "art/icons/moves/exports/32/special-ammo.png",
+    "24": "art/icons/moves/exports/24/special-ammo.png"
+  },
+  "framing": {
+    "scale": 0.7105041108497697,
+    "offset": [
+      167,
+      115
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "c243d16bc36074f32938a56c8e7e8e16355ad1cc7474a1e968d0914e49aa17f8",
+    "64": "333a95341ba77dc2808b9041867bd96f4ea7ae02b7e75ba3937a7b58b2d700b6",
+    "48": "0e4514c57be0c5e6afddd6b6e68ffca6f055f7cc8c19da86c54417892714a6cd",
+    "44": "8a0070bc22555f5f3636226783377bb5eab6c450267311f33eafa33ca0257384",
+    "32": "534adddf039dcf12776bf984344d404200b6775e3c0128df3b474e4c8c9d9fe0",
+    "24": "12526539f7ab38f79d6ae6e72fcbe04258b5dc0ac757e174acf02f3e57af8885"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

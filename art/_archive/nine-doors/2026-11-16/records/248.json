@@ -1,0 +1,78 @@
+{
+  "number": 248,
+  "family": "move_icons",
+  "id": "move-hallow",
+  "path": "art/icons/moves/hallow.png",
+  "name": "Hallow",
+  "mode": "Wick icon",
+  "state": "designed, not built",
+  "use": "Prayer 2.0 next slice",
+  "paint": "Wick pressing a palm to the ground, three lines rising.",
+  "avoid": "a church \u00b7 a cross",
+  "section": "Faith: prayer, and the Chaplain",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick pressing a palm to the ground, three lines rising.\nAvoid: a church \u00b7 a cross\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Wick kneels in profile facing left, ONE mitten palm flat on bare ground implied only by short white baseline under hand. Exactly THREE separate broad upright rising strokes from palm area. Other hand rests on raised knee. No religious symbol, no extra plus outside standard chest lantern.\nWick is the exact CERAMIC AUTOMATON: clipped oversized head with transparent screen and white pixel face, ear discs, offset fasteners, short asymmetric capelet, round medical lantern chest, chunky mittens and cuffed boots. No default bowl/cup/halo or unrequested stars/arrows.\nTrue transparency in backdrop and ALL holes, not opaque black dividers. Complete subject centered inside 15% transparent margins. Square single icon readable at32/44px; signs at24/48px; door emblems at20px. All decisive shape stays in safe box and circular chip.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 8,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "6e8fd017371406fb5934d74ade5609e25cc85464b03cd2c9748f5971ae588232",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/248-hallow.png",
+  "source_sha256": "adc967ac16cfdfadb54a3ee3d60ffc5816758fb5194b3e2667af0ef484dcd468",
+  "export_crop": [
+    29,
+    25,
+    1253,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/hallow.png",
+    "64": "art/icons/moves/exports/64/hallow.png",
+    "48": "art/icons/moves/exports/48/hallow.png",
+    "44": "art/icons/moves/exports/44/hallow.png",
+    "32": "art/icons/moves/exports/32/hallow.png",
+    "24": "art/icons/moves/exports/24/hallow.png"
+  },
+  "framing": {
+    "scale": 0.549584426556596,
+    "offset": [
+      175,
+      174
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "41bce162bcc5428789eacd077903e6551675a6a09d54b92cfd215fe250727221",
+    "64": "6f41e8e184495780232096286d442cfb140389a99445fe25943a18e701c165ac",
+    "48": "ad8a11dc2295ecbae3b35c9529c6d6e267cecbad7cca80190579b7e83347cf58",
+    "44": "16c763a5ca04b9aaacc35b7835cfad3bda2b2cc425c0ab090c56c4fcd900c7ea",
+    "32": "bfe123ae56385f38307914eb049935f932e9084efef62dac3221a942850a85c4",
+    "24": "8d5f6c5e3f83ca58d193b57932f5a280eb4ed0aef17fc88dbbfdee83d6e4dabb"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

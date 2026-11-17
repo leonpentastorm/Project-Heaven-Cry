@@ -1,0 +1,77 @@
+{
+  "number": 12,
+  "family": "move_icons",
+  "id": "move-shrug-it-off-move",
+  "path": "art/icons/moves/shrug-it-off-move.png",
+  "name": "Shrug It Off (move)",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Bulwark rank II move: ends Bleeding, Slowed, Weakened or Prone at once for Guard",
+  "paint": "Wick rolling his shoulders, four small loose bands (conditions) falling away from his arms to the ground.",
+  "avoid": "the perk of the same id's picture (the perk is now Answer in Kind) \u00b7 chains",
+  "section": "Durability: Guard, and the Bulwark",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick rolling his shoulders, four small loose bands (conditions) falling away from his arms to the ground.\nAvoid: the perk of the same id's picture (the perk is now Answer in Kind) \u00b7 chains\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nSpecific action clarification: The FOUR falling loose bands are plain separate short ribbon/cuff-like curved strips dropping free from Wick's ARMS toward his feet while he rolls both shoulders. They are NOT chains, not shackles, not a scarf around his face. Show a buoyant shoulder-shrug action, elbows angled away with open ceramic mittens and a relieved lopsided pixel grin. No smoke, stars, arrows, weapon or other figure. Count four clearly separated bands.\nThe first three references are exact charcoal preview composites of existing Wick production icons; copy their character construction and ink weight, not their accessories or actions. The final meditation master is an identity anchor only: do not copy its bowl or arrows. Keep ink within the central 75\u201380% of a square, with full safe margins. Screen, cuts and gaps are transparent; solid visible ink is pure white. No gray, gradients or glow.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f65c547c56b6b50a8c73acbc467b99f6c51259b93a18de0684825040646dab15",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/012-shrug-it-off-move.png",
+  "source_sha256": "e0ab181d87c734d1b86361d2791e33e33721575138c0b6e899340140a4755cf8",
+  "export_crop": [
+    33,
+    0,
+    1228,
+    1220
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/shrug-it-off-move.png",
+    "64": "art/icons/moves/exports/64/shrug-it-off-move.png",
+    "48": "art/icons/moves/exports/48/shrug-it-off-move.png",
+    "44": "art/icons/moves/exports/44/shrug-it-off-move.png",
+    "32": "art/icons/moves/exports/32/shrug-it-off-move.png",
+    "24": "art/icons/moves/exports/24/shrug-it-off-move.png"
+  },
+  "framing": {
+    "scale": 0.5946422406383948,
+    "offset": [
+      156,
+      149
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "91ac495dfddd566a0910dea6b94ffc8c734072c0bae51b1175144b655750f917",
+    "64": "f62ee680949e224ff9bf961272050d8e69b131adfebe45feb8082dc66d976e6d",
+    "48": "cba62acbe938774cb738bb049f86e7969b044ab2cac9eb97f4fcbec55bc38984",
+    "44": "b56842218411b1f06583902456f7018c81ff3cbfc805d9ae185c1bd33cdaf8b4",
+    "32": "e1ee6761390e23b25f9890a61757e21030191062e8775931d5edc5537f14b9ed",
+    "24": "ea56cfa8e7866706dd01fac3030eb0be14501b7e3a9b093b0f218e999fa0dce8"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ]
+}

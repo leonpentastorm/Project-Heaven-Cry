@@ -1,0 +1,60 @@
+{
+  "number": 144,
+  "family": "figment_order_icons",
+  "id": "order-filch",
+  "path": "art/icons/figments/order-filch.png",
+  "name": "Filch",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment order (`figment_filch`, the Hand)",
+  "paint": "A hand of flecks lifting a grenade off a foe's belt.",
+  "avoid": "a real grenade model \u00b7 a thief's mask",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE fictional fantasy-game white-ink UI pictogram on fully transparent background. ONLY a magical mitten-shaped hand made of a few detached angular flecks, gently lifting a small round capped canister out of a plain hanging belt pouch. Show a fragment of the pouch and belt only, no person or mascot. The canister is an invented unmarked prop with a top tab, no real device details. Match the bold white silhouettes and transparent cuts of the attached object-only references. Square 1024x1024, center the complete pictogram inside a 15% clear margin. Very simple readable silhouette at 32px. Pure solid white #FFFFFF only, with transparent negative spaces. No black paint, gray, shading, texture, gradients, glow, text, numerals, frames or extra props. A few floating angular white fragments make up the hand; no smoke. No Wick face, head or body.",
+  "refs": [
+    "art/icons/boons/edge.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "23aa3f17eacc0f98196f9bbc4c26d4257458912e55c33360fdb3c8ec5be6b833",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/144-order-filch.png",
+  "source_sha256": "63d62c559dcfdc096a02a40d3e7364990e9f968be9e5a2ec7ce010d74cccebc2",
+  "export_crop": [
+    0,
+    19,
+    1195,
+    1219
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/order-filch.png",
+    "64": "art/icons/figments/exports/64/order-filch.png",
+    "48": "art/icons/figments/exports/48/order-filch.png",
+    "44": "art/icons/figments/exports/44/order-filch.png",
+    "32": "art/icons/figments/exports/32/order-filch.png",
+    "24": "art/icons/figments/exports/24/order-filch.png"
+  },
+  "framing": {
+    "scale": 0.6014177832475321,
+    "offset": [
+      152,
+      151
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

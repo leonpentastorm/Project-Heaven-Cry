@@ -221,7 +221,9 @@ def validate_delivery(selected=None):
     manifest = json.loads(mp.read_text())
     for a in manifest['icons']:
         entry = catalog[a['family']][a['id']]
-        if entry.get('placeholder'):  # the icon was retired behind a placeholder (validate_art.py validate_placeholders)
+        if entry.get('placeholder') or entry.get('previous_revision_path') == a['path']:
+            # retired behind a placeholder (validate_art.py validate_placeholders), or replaced since by a later delivery
+            # (the nine doors, 16 Nov 2026) and archived at previous_revision_path
             assert entry.get('previous_revision_path') == a['path'] and entry.get('previous_sha256') == a['sha256'] == sha(ROOT / a['path']), a['id'] + ' retired hash'
         else:
             assert entry['sha256'] == a['sha256'] == sha(ROOT / a['path']), a['id'] + ' hash'

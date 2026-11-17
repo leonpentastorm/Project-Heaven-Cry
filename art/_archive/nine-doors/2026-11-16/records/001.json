@@ -1,0 +1,64 @@
+{
+  "number": 1,
+  "family": "perks",
+  "id": "bulwark",
+  "path": "art/icons/perks/bulwark.png",
+  "name": "Weight of the Wall",
+  "mode": "Wick icon",
+  "state": "in game now (shows the OLD perk's icon) \u00b7 placeholder",
+  "use": "Durability perk (was Stonewall: the old icon shows Wick bracing a riot shield)",
+  "paint": "Wick braced low behind a raised round shield, swinging a short hammer over its rim at a foe out of frame; the shield takes the blow, the hammer answers it.",
+  "avoid": "a plain shield pose with no strike (that is the old Stonewall) \u00b7 a full second figure",
+  "section": "Durability: Guard, and the Bulwark",
+  "kind": "wick",
+  "prompt": "EDIT THE FIRST ATTACHED ICON. Remove the floating CUP/BOWL above the ceramic head, leaving clean transparency in its place. Remove any generic floating up-arrows copied from the original Still Water trait; retain only motion/impact marks needed by this particular action. The cup was a perk-specific prop, never part of Wick. Preserve the exact little ceramic robot, pixel-screen face and expression, asymmetrical capelet, lantern-heart, body pose, limb anatomy, clothing plates and bold flat white linework. Preserve the action and props described below. Do not redesign the head, do not add a flame head, hat, halo, replacement prop or text. Wick braced low behind a raised round shield, swinging a short hammer over its rim at a foe out of frame; the shield takes the blow, the hammer answers it. Avoid: a plain shield pose with no strike (that is the old Stonewall) \u00b7 a full second figure Pure WHITE #FFFFFF filled ink only, transparent internal cuts and fully TRANSPARENT background, square 1024 PNG. No gray, shading, gradient or glow. Keep the whole figure and requested props with clear margins. Other attached icons show the same mascot without the cup.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/superseded/001-cup-v1/native.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "d9a3c71c8e642a24d907597054a77e3922e7443a09fa13b18c87f9414b0e5aa9",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/001-bulwark.png",
+  "source_sha256": "f25bd59d2f852851de7b2866aefdcf13cbc195b562848690bd59a51c20929c81",
+  "export_crop": [
+    57,
+    35,
+    1214,
+    1254
+  ],
+  "exports": {
+    "256": "art/icons/perks/exports/256/bulwark.png",
+    "128": "art/icons/perks/exports/128/bulwark.png",
+    "64": "art/icons/perks/exports/64/bulwark.png",
+    "56": "art/icons/perks/exports/56/bulwark.png",
+    "48": "art/icons/perks/exports/48/bulwark.png",
+    "44": "art/icons/perks/exports/44/bulwark.png",
+    "40": "art/icons/perks/exports/40/bulwark.png",
+    "32": "art/icons/perks/exports/32/bulwark.png"
+  },
+  "framing": {
+    "scale": 0.5622696726696478,
+    "offset": [
+      186,
+      169
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "priority": 1
+}

@@ -1,0 +1,76 @@
+{
+  "number": 42,
+  "family": "technique_icons",
+  "id": "tech-run-through",
+  "path": "art/icons/techniques/run-through.png",
+  "name": "Run Through",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, finisher: a thrust through",
+  "paint": "A long straight thrust passing through a ring and out the far side, Wick's arm extended.",
+  "avoid": "a skewered body \u00b7 blood",
+  "section": "Raw Power: the Momentum chain, and the Breaker",
+  "kind": "wick",
+  "prompt": "Match the attached object-only flat white RPG icon style. New subject:\nONE clean mechanical TRAINING-TARGET pictogram for an RPG: a long straight pointed practice tool is held horizontally by a single cropped ceramic mitten/cuff at the left. The tool passes through the empty opening of a freestanding circular ring at center; its straight tapered tip projects out well beyond the ring to the right. The ring is an ordinary empty training hoop. Show the overlap clearly with a broad transparent separation between the nearer part of the ring and the tool. Only tool, empty hoop and partial mitten; no person, body, animal, robot head, face or scene. Flat white ink with no texture, shading, glow, writing or background. One simple graphic, square, generous margins, readable at 32px.\nObject icon only; do NOT add a mascot.\nPure white flat ink only. All dark screen/holes/background must be transparent, never black or grey paint. No shading, gradients or glow. One centered square icon safely inside a central 75\u201380% box and a 90% circular chip. No labels, border or writing.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "service_rejection_resolution": "Benign mechanical training target; no body or injury depiction.",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "1ae18cd2e4e3cba1a2b08123b75161051c15348bd5be1f6cc07c33cb4a526d4f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/042-run-through.png",
+  "source_sha256": "625d94de59eca9508e5984194bf810d2231a5e041dfb107a7cd385c64112d4ed",
+  "export_crop": [
+    31,
+    63,
+    1222,
+    1141
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/run-through.png",
+    "64": "art/icons/techniques/exports/64/run-through.png",
+    "48": "art/icons/techniques/exports/48/run-through.png",
+    "44": "art/icons/techniques/exports/44/run-through.png",
+    "32": "art/icons/techniques/exports/32/run-through.png",
+    "24": "art/icons/techniques/exports/24/run-through.png"
+  },
+  "framing": {
+    "scale": 0.6884970612930311,
+    "offset": [
+      102,
+      141
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "1d6ceb07f13b5c7bf683f4bf54ba54d18aff0c836c47a88e0d090bc93cb8683f",
+    "64": "28f2822c7152bcdfae89497184b446ea54f5f4056e434f7bc2e4f3fbbf754e83",
+    "48": "077e3d58b0a0a82e72fc157e269a8dada180b4bea62929c07e216497cba35409",
+    "44": "7b5dd5be51ccd18534dca4a235c71a1d535e6788c7064fecba735a0f1336d3b3",
+    "32": "cfe7d76c2bfa156aaae34df3ba494e77f6fa490b612848aa165c6556ada70756",
+    "24": "e35f7676544a26a1914a436fab1982022a6f3e9113a6d7718cbd3a71c843e55a"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

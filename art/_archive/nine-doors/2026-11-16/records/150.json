@@ -1,0 +1,76 @@
+{
+  "number": 150,
+  "family": "figment_trait_icons",
+  "id": "trait-volatile",
+  "path": "art/icons/figments/trait-volatile.png",
+  "name": "Volatile",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment trait",
+  "paint": "A figment shape with cracks of light breaking out of it.",
+  "avoid": "a bomb with a fuse \u00b7 fire",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape with cracks of light breaking out of it.\nAvoid: a bomb with a fuse \u00b7 fire\nEXACT STAGING: One SMALL FLOATING ABSTRACT FIGMENT CONSTRUCT, three joined angular white fragments making an asymmetrical pointed kite-like mass, with TWO tiny loose diamond flecks. Its body is split by TWO LARGE TRANSPARENT ZIGZAG CRACKS, with just THREE SHORT SOLID WHITE TICKS escaping at the crack endpoints. Cracks of light are rendered as hard cutouts and hard ticks ONLY. No glow, halo, smoky aura, gradient, gray, flame, bomb, fuse, eyes, face, animal anatomy, human, robot or extra figure.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "598fa0e3300556c31dc08ab87e8bed5b9dcda8ea0ab2d57809707413328b23b8",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/150-trait-volatile.png",
+  "source_sha256": "aa574ae7e09f8143c72c28c3452ead0cd0df73f6f807b7c3a82d9092e2a703e0",
+  "export_crop": [
+    47,
+    103,
+    1190,
+    1158
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-volatile.png",
+    "64": "art/icons/figments/exports/64/trait-volatile.png",
+    "48": "art/icons/figments/exports/48/trait-volatile.png",
+    "44": "art/icons/figments/exports/44/trait-volatile.png",
+    "32": "art/icons/figments/exports/32/trait-volatile.png",
+    "24": "art/icons/figments/exports/24/trait-volatile.png"
+  },
+  "framing": {
+    "scale": 0.6778092199404948,
+    "offset": [
+      124,
+      154
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "833e9a560c435ce1e1cb5c45b61a088cf3bd84de28986bb596e70bed02d8949b",
+    "64": "eadfb1abb2e20c7a5db6cc5b550b8ec374b6e831b3c54c64ad5d910583d6a8cf",
+    "48": "474a97b33aa8565f8eec48551fbccc276d81d2d60d117bec1be79f4b0391bbe4",
+    "44": "e7faffc76548ad3d584dc910b9e64fe623236a95161b2634b7801573e919ba83",
+    "32": "0c28a9556555f2c0757cd8b1070b9592ca0aae00b72919ae7a60b25123a122b5",
+    "24": "7ef1cdceec4ffcdb13ca93421568d2ef2b1014815b4bfd3afe3c1ca225234a45"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

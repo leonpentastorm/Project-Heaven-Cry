@@ -1,0 +1,60 @@
+{
+  "number": 291,
+  "family": "condition_icons",
+  "id": "cond-read",
+  "path": "art/icons/conditions/read.png",
+  "name": "Read",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "State word READ",
+  "paint": "A silhouette with a small arrow above showing its next move.",
+  "avoid": "a book \u00b7 a crystal ball",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "Draw ONE pure white flat VECTOR-LIKE pictogram on fully transparent background. A SIMPLE GENERIC HUMAN PERSON SILHOUETTE: round head above torso, two arms, TWO DISTINCT LEGS, one foot stepping forward. A small curved arrow immediately ABOVE the person points forward, indicating the person's NEXT STEP. The silhouette must unmistakably be a human person, not an ink splat, abstract blob, star or cloud. No Wick, mascot, robot or screen head. Bold white fill, crisp hard edges, two transparent cuts at most. Match the attached simple white-ink signs. No shadow, soft glow, blur, texture, gray, black paint, text, borders or extra objects. Square 1024x1024, 15% clear transparent margin, read at 24px.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f818c41c5d076bad6830a65f5d857b4e017c51a9ab2fc833a31f6fee0861ef01",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/291-read.png",
+  "source_sha256": "597a8b5c29f4dc6f302e31eb3cb2109ee394b020854f8243fa32a45979d07785",
+  "export_crop": [
+    168,
+    79,
+    1047,
+    1214
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/read.png",
+    "64": "art/icons/conditions/exports/64/read.png",
+    "48": "art/icons/conditions/exports/48/read.png",
+    "44": "art/icons/conditions/exports/44/read.png",
+    "32": "art/icons/conditions/exports/32/read.png",
+    "24": "art/icons/conditions/exports/24/read.png"
+  },
+  "framing": {
+    "scale": 0.7224669603524229,
+    "offset": [
+      194,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

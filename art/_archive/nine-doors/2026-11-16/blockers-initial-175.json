@@ -1,0 +1,20 @@
+{
+  "code": "usage_limit_reached",
+  "http_status": 429,
+  "failed_row": 324,
+  "reset_epoch": 1794873475,
+  "reset_utc": "2026-11-16T23:57:55Z",
+  "reset_bangkok": "2026-11-17T06:57:55+07:00",
+  "delivered_candidates": 175,
+  "remaining_rows": 200,
+  "pending_repaint_rows": [
+    323
+  ],
+  "description": "Image generation stopped at its usage limit; no substitute painted assets were manufactured. Four explicitly permitted original SVGs were completed afterward. Last Turn is archived for glow correction, not counted as delivered and not activated in catalog.",
+  "resolved_service_rejections": [
+    104,
+    144,
+    300,
+    316
+  ]
+}

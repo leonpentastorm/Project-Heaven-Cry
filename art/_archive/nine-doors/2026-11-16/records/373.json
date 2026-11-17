@@ -1,0 +1,76 @@
+{
+  "number": 373,
+  "family": "technique_icons",
+  "id": "tech-dead-to-rights",
+  "path": "art/icons/techniques/dead-to-rights.png",
+  "name": "Dead to Rights",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, watch",
+  "paint": "A sight-line pinning a silhouette caught in the open.",
+  "avoid": "handcuffs \u00b7 a skull",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A sight-line pinning a silhouette caught in the open.\nAvoid: handcuffs \u00b7 a skull\nEXACT STAGING: Dead to Rights: ONE LONG STRAIGHT WHITE SIGHT-LINE from left ENDS AT THE CHEST of ONE CROPPED FEATURELESS STANDING TORSO in open empty space at right. One thin open square bracket under torso indicates it is exposed, no cover wall. Quiet locked aim, no bullet contact, wound, blood, gun body, face, full person, handcuffs, skull, text or crosshair on head. Broad transparent gaps preserve clean partial silhouette.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "0d0ba7c8fd4ef01c2e33ed521e4609f22e64a08518cf764aae634e583b3ca380",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/373-dead-to-rights.png",
+  "source_sha256": "c679d6a9bcbe8c450cf150eaf27059a2e8d7193e14ffff61f49c6ef264357183",
+  "export_crop": [
+    0,
+    39,
+    1222,
+    1196
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/dead-to-rights.png",
+    "64": "art/icons/techniques/exports/64/dead-to-rights.png",
+    "48": "art/icons/techniques/exports/48/dead-to-rights.png",
+    "44": "art/icons/techniques/exports/44/dead-to-rights.png",
+    "32": "art/icons/techniques/exports/32/dead-to-rights.png",
+    "24": "art/icons/techniques/exports/24/dead-to-rights.png"
+  },
+  "framing": {
+    "scale": 0.5399141848665413,
+    "offset": [
+      182,
+      199
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "dd6ed03b8980844255293b5a8e1eaca391659f579566831ce618cb684fe62c94",
+    "64": "ba735c8cf79e355ef6b34936f05d59640912116631bfb8843454800b19b44d98",
+    "48": "2f75cb2b21fb2fb876de7c85f33f1f6a4edc039f9953c7f98daea54537084eb5",
+    "44": "05ac6329a273e8668d7a0d202fd65883d7790518daa5ac258f327849d5581433",
+    "32": "30eec2892a51d3e3bbba9f9d044f7bfb7025a08a60f169426e54b4e675e6f412",
+    "24": "6fbdab3d5866c40bb3fbd2a05aa37e53eacc92761ef248605736ee850b712125"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

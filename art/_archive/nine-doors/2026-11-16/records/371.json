@@ -1,0 +1,76 @@
+{
+  "number": 371,
+  "family": "technique_icons",
+  "id": "tech-deny",
+  "path": "art/icons/techniques/deny.png",
+  "name": "Deny",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, watch",
+  "paint": "A bullet line cutting across a doorway gap.",
+  "avoid": "a no-entry road sign \u00b7 a wall",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A bullet line cutting across a doorway gap.\nAvoid: a no-entry road sign \u00b7 a wall\nEXACT STAGING: Deny: ONE short straight horizontal WHITE MOTION LINE cuts RIGHT ACROSS AN OPEN DOORWAY GAP. Doorway is TWO SMALL VERTICAL POSTS with a short top lintel, no solid wall. Clear empty space inside, single line traverses between posts at waist height. No no-entry road sign, stop sign, letters, gun, person, target, injury, explosion or extra lines. Flat pure white architecture marks and fully transparent gap.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "601ba5c5e0f7330cfa2b25ae98ffbb4dd5f5fd71a0e9b76c48d513ad7db17372",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/371-deny.png",
+  "source_sha256": "49a0076b6d931fd04b40f55d1f1832648eda04fc12fee03cd74f86c24fbeb62f",
+  "export_crop": [
+    0,
+    0,
+    1253,
+    1206
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/deny.png",
+    "64": "art/icons/techniques/exports/64/deny.png",
+    "48": "art/icons/techniques/exports/48/deny.png",
+    "44": "art/icons/techniques/exports/44/deny.png",
+    "32": "art/icons/techniques/exports/32/deny.png",
+    "24": "art/icons/techniques/exports/24/deny.png"
+  },
+  "framing": {
+    "scale": 0.5064225895711072,
+    "offset": [
+      194,
+      206
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "1f15d71c1bc5e207be24bdaae18d7900f7d4c3b2e923a4c2862b6cd974452908",
+    "64": "e736edcaba6c0ac6b4ead269c1239b92df9ac7d98bae5287c4556b7a55c19796",
+    "48": "29d04ddfbff800bde43188a0326664bfa95832d86c7c41ec2e42c03232434ab8",
+    "44": "5b19b226edbec358f954f921d55449ba3a364d3dcab3e90551c1fd49429643d6",
+    "32": "aaf852806c08cb6fd13a4f3931ea4853addac33682c5054d37593fac58096789",
+    "24": "3956afcb73bc8f2671d69d12388c9b5cf8de577a06e6cbb8c30e88167c41d8a7"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

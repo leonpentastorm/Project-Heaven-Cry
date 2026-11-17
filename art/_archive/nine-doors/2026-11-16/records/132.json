@@ -1,0 +1,76 @@
+{
+  "number": 132,
+  "family": "move_icons",
+  "id": "move-stored-spell",
+  "path": "art/icons/moves/stored-spell.png",
+  "name": "Stored Spell",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Sigilist rank III move",
+  "paint": "A glyph sealed inside a small round core, held between two fingers.",
+  "avoid": "a potion \u00b7 a book",
+  "section": "Brain Power: Sigils, and the Sigilist",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A glyph sealed inside a small round core, held between two fingers.\nAvoid: a potion \u00b7 a book\nEXACT STAGING: ONLY two short rounded ceramic fingertip shapes enter from the lower-left in a gentle PINCH: one thumb and one finger pad. They hold ONE generously sized ROUND CORE near the center. Inside the core is ONE hollow geometric diamond glyph, sealed and static. The core is a round token with a clear rim and the geometric glyph cut, not a glowing orb. No full hand/body, Wick head, potion, vial, book, words, sparkle, rays or decorative star.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-125.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-127.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-125.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-127.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "3b51b820bfa01be423f59edc7cbc9b388afe2f9f33379eced1ca770ec55c555c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/132-stored-spell.png",
+  "source_sha256": "f75b5e7ef65f6fd3bff1ab83c83f6ba4f55f796a8f3bc6e069777a092604ef66",
+  "export_crop": [
+    9,
+    302,
+    1152,
+    1230
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/stored-spell.png",
+    "64": "art/icons/moves/exports/64/stored-spell.png",
+    "48": "art/icons/moves/exports/48/stored-spell.png",
+    "44": "art/icons/moves/exports/44/stored-spell.png",
+    "32": "art/icons/moves/exports/32/stored-spell.png",
+    "24": "art/icons/moves/exports/24/stored-spell.png"
+  },
+  "framing": {
+    "scale": 0.6531013756290576,
+    "offset": [
+      139,
+      209
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "76e33f05416ea9b338d3dda260559bd13ed5634b841bc48e09166c51890a3d21",
+    "64": "e44e4be0601f3fa18468ccc147bc31ead4676c728aac02b9580fa7ebcf84cfc2",
+    "48": "3d35c4f7d0a8917ceca52b12f29ab578969346e45d7d3bb1ae492bd999f3c1ee",
+    "44": "7cf13824b4608ca2d0d029348914a0d87c726040927404908f71c1adf63b761b",
+    "32": "649ae6c382a78d5f393cfdf0d9f21df48aed88f0cdc13664072cfd1db7357da7",
+    "24": "0cd7384b0a6c881b5d7d3d6c363256c4f04cb8d4d9f93610b2a607c434ba0a57"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

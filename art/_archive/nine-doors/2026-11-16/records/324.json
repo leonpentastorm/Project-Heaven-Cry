@@ -1,0 +1,70 @@
+{
+  "number": 324,
+  "family": "condition_icons",
+  "id": "cond-augment-offline",
+  "path": "art/icons/conditions/augment-offline.png",
+  "name": "Augment Offline",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Body condition",
+  "paint": "A prosthetic arm with a small cut-power mark.",
+  "avoid": "a real brand \u00b7 lightning",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No\noutline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a\nscene: Wick does not appear; a small generic silhouette may. One subject, centred, with clear space around it, square,\n1024 x 1024 PNG with transparency. It must read at 24 px beside a word on a token and at 48 px on a card: silhouette first,\ntwo interior cuts at most. A door emblem must also read inside a 20 px chip. No text, no letters, no numbers, no border,\nno frame. Invented shapes only. The icon shows:\n\nPaint: A prosthetic arm with a small cut-power mark.\nAvoid: a real brand \u00b7 lightning\nSTYLE CLARIFICATION: this is a generic condition SIGN. NO Wick, no screen head, no mascot capelet or lantern chest. Only the named subject, 2 interior cuts at most, bold clear silhouette. Center within a 15% transparent margin. Use solid white shapes and transparent cutouts only, including the background and all interior holes. Translate any light/glow into a single white tick or ray; never gray, gradients or bloom.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "20838d0654d14b71311dfe97627663e8287bc6fa69d1eed38b31d1287850adbf",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/324-augment-offline.png",
+  "source_sha256": "dbca8d4ddab95c75d9f6e992eee8190c9406fbd8688667ff5dc1b0ee1c62f200",
+  "export_crop": [
+    0,
+    17,
+    1190,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/augment-offline.png",
+    "64": "art/icons/conditions/exports/64/augment-offline.png",
+    "48": "art/icons/conditions/exports/48/augment-offline.png",
+    "44": "art/icons/conditions/exports/44/augment-offline.png",
+    "32": "art/icons/conditions/exports/32/augment-offline.png",
+    "24": "art/icons/conditions/exports/24/augment-offline.png"
+  },
+  "framing": {
+    "scale": 0.6628940986257074,
+    "offset": [
+      117,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "3c474d1fe4d7f2ac39d591d4ac810acdd2099e7b95b9a7fae06e3a3cb31cb67a",
+    "64": "2c1e7afd3aaad9444db2e70a7bb5916fb91a41e480d88be492a98938160f5229",
+    "48": "ff2e0d6d40903a3376e6ca66b1e18474dfd680c7fefe8bb7761e5f629945d5aa",
+    "44": "377eeb4bd10e76c392dd1a4c8d397916eb8454f8479badc6beb6fb41a56c02b8",
+    "32": "57248710119321439889ad7519f3b7338528adcb397496c58c59d67e798413a8",
+    "24": "52326f336da3fb6d67bb448cdade2b74183e229391d3f369975e35a159b35d7a"
+  },
+  "continuation_review": "Reinspection on charcoal and quantitative alpha audit supersede the earlier preview-only rejection in continuation-attempts. Native source bytes and alpha were preserved.",
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

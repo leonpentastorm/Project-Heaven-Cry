@@ -1,0 +1,78 @@
+{
+  "number": 325,
+  "family": "technique_icons",
+  "id": "tech-lunge",
+  "path": "art/icons/techniques/lunge.png",
+  "name": "Lunge (technique)",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, opener",
+  "paint": "Wick in a deep lunge, blade point leading.",
+  "avoid": "fencing gear \u00b7 a second figure",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick in a deep lunge, blade point leading.\nAvoid: fencing gear \u00b7 a second figure\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Technique Lunge: ONE Wick in an exaggerated DEEP LOW LUNGE toward the right: front knee deeply bent, rear boot extended straight backward, body close to ground, one mitten thrusts a single short invented blade HORIZONTALLY right with its POINT leading well beyond his head. Other mitten drawn back for balance, capelet flicks left, determined pixel eyes. This is a practice pose, no target or second figure. Keep full rear boot, blade tip, head and cape safely within circular chip. No fencing mask, sports gear, floating arrows, stars, cup/bowl or halo. Bold flat white silhouette with transparent interior gaps.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "aeb32dcc2148a7a8003208eb4879a6570a20abe6a3152599bb93091fc58ba570",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/325-lunge.png",
+  "source_sha256": "4d3d4b61ebee111fb7b776fe2817a30ee9052b4a930ebd120303ee3453475aac",
+  "export_crop": [
+    0,
+    115,
+    1204,
+    1238
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/lunge.png",
+    "64": "art/icons/techniques/exports/64/lunge.png",
+    "48": "art/icons/techniques/exports/48/lunge.png",
+    "44": "art/icons/techniques/exports/44/lunge.png",
+    "32": "art/icons/techniques/exports/32/lunge.png",
+    "24": "art/icons/techniques/exports/24/lunge.png"
+  },
+  "framing": {
+    "scale": 0.5858947056058845,
+    "offset": [
+      159,
+      183
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "5696277fa2abec06a7da498999798526456db509f8f3d19966686d8fb5b3bd63",
+    "64": "4fd12d8300ac11f55384057255043f34e52c8a7cd08ad63a57f1250a6c77fc69",
+    "48": "322bf4efb9ffd1cd04729ac1d9592ccfc24aa1ab38303e34248495c643309b32",
+    "44": "40931b03b7b8c4c9ddd339d486baa0d7d208545035fc14fb9c8e240250755f15",
+    "32": "0b6a7726401e7ad8827aaa98d4524bdbe8566ec6fe5a6a42da4446de1e0d0a0e",
+    "24": "10ba2471f3164af2e2884803987f973b1819c38c88b2159b0cefa6fe17e6692f"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

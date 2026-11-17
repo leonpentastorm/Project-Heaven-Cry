@@ -1,0 +1,69 @@
+{
+  "number": 253,
+  "family": "gear",
+  "id": "weapon-striking_gloves",
+  "path": "art/icons/gear/weapon-striking_gloves.png",
+  "name": "Striking gloves",
+  "mode": "painted gear icon",
+  "state": "in game now (on its own stand-in)",
+  "use": "Glove weapon (monoline icon; painting wanted)",
+  "paint": "A slim open fingerless glove in dark leather, two seam lines across the knuckles.",
+  "avoid": "a boxing glove \u00b7 a real brand",
+  "section": "The monk's gloves (the Open Hand)",
+  "kind": "gear",
+  "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush\nstrokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows,\nwarm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D\nrender. One single object, three-quarter view, lit from the upper left, a short soft painted shading on its own underside\nonly: no ground, no cast shadow, no scene. Fully transparent background, 1024 x 1024 PNG with alpha; the object fills about\n80% of the canvas. No text, letters, numbers, logos, maker marks, borders, hands or figures. Invented, never a real make.\nBold silhouette first: it is shown at 64 px in a shop grid and 32 px in a backpack row. The object:\n\nPaint: A slim open fingerless glove in dark leather, two seam lines across the knuckles.\nAvoid: a boxing glove \u00b7 a real brand\nCONSTRUCTION: EMPTY SLIM OPEN FINGERLESS dark leather glove, five hollow finger openings and hollow wrist. Show the BACK of glove so TWO seam lines across the knuckles read. No closed fist, no skin.\nThe attached images establish material painting, invented manufacture and inventory silhouette only. Do not copy the portrait person or scenery. Four visual planes and material edges read at32px. Bold opaque gouache planes, no thin sketch outline, no floating parts. True transparent background and real hollow holes.",
+  "refs": [],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 7,
+  "generation_references": [
+    "art/icons/gear/weapon-knuckledusters.png",
+    "art/icons/gear/weapon-hellraiser_servo_fist.png",
+    "art/sprites/objects/tool-rack.png",
+    "art/portraits/world/new-faces/orren-vask.png",
+    "art/icons/gear/mod-open_hand.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "4e54720c6116953f5aa708040f4f083708ebaff75d8ee5ec794ffcb04c400576",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/253-weapon-striking_gloves.png",
+  "source_sha256": "377be5a9e9de8bbe9c9919212a08822d58141d4ca8a8f580f4f12b90ab3a591f",
+  "export_crop": [
+    0,
+    0,
+    1240,
+    1254
+  ],
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-striking_gloves.png",
+    "128": "art/icons/gear/exports/128/weapon-striking_gloves.png",
+    "64": "art/icons/gear/exports/64/weapon-striking_gloves.png",
+    "32": "art/icons/gear/exports/32/weapon-striking_gloves.png"
+  },
+  "framing": {
+    "scale": 0.6539074960127592,
+    "offset": [
+      106,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "256": "83ccbbf804c4bb09d3cff8a5f70586a516ec4e021b30df7cd30fa789f34a9ed1",
+    "128": "a704d3120b34ff430d4fca3327bca68b9b12aba64ef8c8d151491449ef2f2af7",
+    "64": "be23c61670a54060026a41cf2701d6da20edb7fb8f09e2fc2187b4e1b84f885a",
+    "32": "6b334c90f4159089c1475653275c86e8a1eb855f2cee353c8c8579d44c8cbbdd"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

@@ -1,0 +1,77 @@
+{
+  "number": 359,
+  "family": "technique_icons",
+  "id": "tech-brace-tech",
+  "path": "art/icons/techniques/brace-tech.png",
+  "name": "Brace (technique)",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, set",
+  "paint": "A rifle's fore-end resting on a wall edge.",
+  "avoid": "a bipod (Suppressor) \u00b7 a dental brace",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Correct this exact rejected Project Heaven Cry icon. DELETE THE ENTIRE OUTER CIRCULAR BORDER. Keep one inert practice rifle horizontal. Replace the small plain rectangular block beneath it with a WIDE LOW WALL CORNER of TWO MASONRY BLOCKS showing one horizontal mortar gap and one short vertical seam; the rifle's FORE-END rests DIRECTLY ON THE TOP EDGE of this wall, barrel extends past wall edge. The wall must be wider than it is tall and clearly separate from rifle body, not an attached magazine. No ammunition, firing lines or people. Only rifle and wall corner, no surrounding circle or badge. Pure opaque white flat ink #FFFFFF only, all gaps and background GENUINELY TRANSPARENT. No black or gray pigment, no aura, glow, shadow, texture, gradient, text or border. Square icon centered inside 15% transparent margins and circular chip.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/superseded/359-wall-and-border-fix/native.png"
+  ],
+  "composition_scope": "object-only",
+  "service_revision": "Static inert training equipment after rejected input.",
+  "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/359-wall-and-border-fix/native.png",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "4442efb9a5dbfcbcf58b3351343c2f9f913f0639ec6c46fe86896c1e457ab770",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/359-brace-tech.png",
+  "source_sha256": "674073793239aaaba16e26bca6adf03fe627e6b17e8b76680b38cedc9e6a49ca",
+  "export_crop": [
+    0,
+    71,
+    1218,
+    1134
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/brace-tech.png",
+    "64": "art/icons/techniques/exports/64/brace-tech.png",
+    "48": "art/icons/techniques/exports/48/brace-tech.png",
+    "44": "art/icons/techniques/exports/44/brace-tech.png",
+    "32": "art/icons/techniques/exports/32/brace-tech.png",
+    "24": "art/icons/techniques/exports/24/brace-tech.png"
+  },
+  "framing": {
+    "scale": 0.5817712955080329,
+    "offset": [
+      157,
+      203
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "88dd720a8ccea1bd33a33b40d3eb6f2c6dea1d09228a6c949a208098bb63dcdc",
+    "64": "1791ab8e4b1a0618cce9bb6fcd6711e62f0ec8674542f5aca62c1144a7959cdc",
+    "48": "b329b9ac0dd86f09042bde9e6251321e101ee4b6f45cda7c2aa73396f08bda8f",
+    "44": "d6bb48424436116273e288f9c1a242e972a9cac31a2b551b64cec54ecdfa1ce5",
+    "32": "b912ea4ce29b434553b159756c1a18397d13d9537176588bc8ba82cf72e70d49",
+    "24": "63a0f9858b4c1d166e942f03584d5b5913cc3c81e81e1ffcb3bd6c34685d249b"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+  "reference_provenance_note": "Actual request used no attached reference images for its nonviolent abstract/static variant; do not infer references from other jobs."
+}

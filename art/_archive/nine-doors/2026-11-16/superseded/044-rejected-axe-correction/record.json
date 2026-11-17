@@ -1,0 +1,63 @@
+{
+  "number": 44,
+  "family": "class_portraits",
+  "id": "class-fighter",
+  "path": "art/portraits/classes/fighter.png",
+  "name": "The Breaker (class portrait)",
+  "mode": "class portrait",
+  "state": "designed, not built",
+  "use": "Class card portrait",
+  "paint": "A heavy-shouldered fighter mid-stride with a war axe resting on one shoulder, dust kicked up, grinning at the next wall to go through.",
+  "avoid": "a barbarian from a known work \u00b7 bare-chested pin-up pose",
+  "section": "Raw Power: the Momentum chain, and the Breaker",
+  "kind": "class",
+  "prompt": "Edit this exact Heavenprint Breaker portrait to FIX THE AXE GEOMETRY ONLY. The user points out that the current axe looks like an X. REPLACE THE WHOLE AXE HEAD AND ITS JUNCTION WITH A NORMAL SINGLE-BIT WAR AXE: ONE broad wedge-shaped metal blade on the UPPER-LEFT SIDE of one central rectangular SOCKET; on the OPPOSITE SIDE only a SHORT FLAT RECTANGULAR POLL, no second blade, crescent, spikes or crossed metal arms. ONE continuous straight wooden HAFT runs from the fighter's gripping hand directly INTO that socket and ends just a little above it. Blade, socket and haft are physically connected and share one coherent orientation. Strong readable single-headed L/T silhouette, absolutely NO X-shaped head, double axe, crossed blades, detached shaft or second handle. Keep the axe resting naturally on the shoulder with the exact same hand gripping the single haft. Give the entire corrected head enough breathing room within the upper-left of frame; slightly shrink it if needed. Preserve this same fighter's face, grin, copper hair, clothing, forward stride, orange accent, dusty doorway and Heavenprint opaque gouache/ink treatment. Painterly metal, wood and scuffed materials with directional brush blocks and charcoal edges; no photographic/3D finish. No text, watermark, new symbols, frame or unrelated changes. Vertical4:5 opaque painting.",
+  "refs": [],
+  "transparent": false,
+  "status": "review-candidate",
+  "priority": 6,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/native.png"
+  ],
+  "portrait_cast": {
+    "number": 44,
+    "motif": "fighter",
+    "color": "one restrained hot-orange #F68A38 sash edge",
+    "acting": "A heavy-shouldered fighter strides toward the next obstacle with an axe on one shoulder, and feels delighted determination.",
+    "notes": "Breaker: stocky 35-year-old man with medium tan skin, freckles, a bent broad nose, short wiry copper hair and dark stubble, an unguarded crooked GRIN. Waist-up in strong forward three-quarter stride, plain war AXE resting across ONE shoulder, hand gripping haft at collar height. Fully clothed in worn charcoal padded work jacket with patched leather shoulder guard, not bare chest. Dust rises at lower frame and a broken plaster doorway behind hints at the next wall; no visible victim or attack. Natural iron, ocher cloth, ivory hard accents, broad directional brushwork. Face stays high at22%, axehead fully visible, no branded or recognizable axe."
+  },
+  "composition_scope": "one original waist-up Heavenprint character",
+  "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/native.png",
+  "replaces_path": "art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/master.png",
+  "replaces_sha256": "9099dea80a3039842ed11414eab9755bbe35ca5e6fc9131a80869ac41ce4287b",
+  "user_revision": "Correct the X-shaped axe head to one single-bit head on a continuous haft.",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1122,
+    1402
+  ],
+  "export_dimensions": [
+    800,
+    1000
+  ],
+  "sha256": "5a8023a8a346667838e568a6e9b082f2260661cf1b9238dd3535d6cf9da7a352",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/044-fighter.png",
+  "source_sha256": "5fcf459ce140f582ec72e23bf4a03766e1c20f120d627d423bef8e6b3f20a573",
+  "export_crop": [
+    0,
+    0,
+    1121,
+    1401
+  ],
+  "exports": {},
+  "framing": {
+    "scale": 0.7136485280999108,
+    "aspect_ratio": "4:5",
+    "crop_policy": "Centered aspect-preserving 4:5 crop before downsampling"
+  },
+  "upscaled": false,
+  "export_processing": "Centered aspect-preserving 4:5 crop and Lanczos downsample to RGB portrait",
+  "export_sha256": {},
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

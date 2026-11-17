@@ -1,0 +1,61 @@
+{
+  "number": 143,
+  "family": "figment_order_icons",
+  "id": "order-stare",
+  "path": "art/icons/figments/order-stare.png",
+  "name": "Stare",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment order (`figment_stare`, the Eye)",
+  "paint": "A lens of flecks with three straight sight lines leaving it.",
+  "avoid": "an eyeball \u00b7 a camera brand",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: A lens of flecks with three straight sight lines leaving it.\nAvoid: an eyeball \u00b7 a camera brand\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "4c0c3cb7300b6264cd92cb4087f0a4fc1fe0a6d9ebfe2790e8343f07fd49502e",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/143-order-stare.png",
+  "source_sha256": "6cf0c7d4915d55195cb02dc52a40020fd4f5e79081ba0f3effc8e7737fea9b88",
+  "export_crop": [
+    0,
+    174,
+    1220,
+    1150
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/order-stare.png",
+    "64": "art/icons/figments/exports/64/order-stare.png",
+    "48": "art/icons/figments/exports/48/order-stare.png",
+    "44": "art/icons/figments/exports/44/order-stare.png",
+    "32": "art/icons/figments/exports/32/order-stare.png",
+    "24": "art/icons/figments/exports/24/order-stare.png"
+  },
+  "framing": {
+    "scale": 0.6150745845195374,
+    "offset": [
+      137,
+      212
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

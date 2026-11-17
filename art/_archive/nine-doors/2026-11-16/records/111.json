@@ -1,0 +1,76 @@
+{
+  "number": 111,
+  "family": "move_icons",
+  "id": "move-toxin",
+  "path": "art/icons/moves/toxin.png",
+  "name": "Toxin",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Operative rank II move (asked 13 Nov, C2)",
+  "paint": "A single drop falling from a vial onto a blade's edge.",
+  "avoid": "a skull and crossbones \u00b7 green goo",
+  "section": "Ingenuity: Shadow, and the Operative",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A single drop falling from a vial onto a blade's edge.\nAvoid: a skull and crossbones \u00b7 green goo\nEXACT STAGING: A single small original glass VIAL tilts downward from upper-left. ONE generous WHITE DROP falls from its lip and nearly touches the EDGE of a plain blade angled across the lower third. The blade and vial are recognizable simple object silhouettes with one or two transparent cuts. No hands, people, mascot, skull, crossbones, green paint, goo cloud, glows, writing or branding. A compact preparation symbol rather than an attack.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "666995ec6f951f4bf03a1991393a4fcf4b6f803c5a7ed4b4887c61c8d099ee6c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/111-toxin.png",
+  "source_sha256": "7bfc822031d9ef3d43a846c98ad335649edee632e7c682e8831287d83c5c625c",
+  "export_crop": [
+    21,
+    101,
+    1218,
+    1230
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/toxin.png",
+    "64": "art/icons/moves/exports/64/toxin.png",
+    "48": "art/icons/moves/exports/48/toxin.png",
+    "44": "art/icons/moves/exports/44/toxin.png",
+    "32": "art/icons/moves/exports/32/toxin.png",
+    "24": "art/icons/moves/exports/24/toxin.png"
+  },
+  "framing": {
+    "scale": 0.5978790677185084,
+    "offset": [
+      154,
+      174
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "39c5c87aee1002438dc6764cc35dc8d9ab018a27938f107f83bb8a6ab1197814",
+    "64": "b195f6fdd71ed51afccebee3f43bd6ec41301740aaadac721ba5ea95bbc3a71f",
+    "48": "6f82b348b6b21a68f4274274361009e28e5cf7c067e653bfbbbf776ec680a13b",
+    "44": "e304fe0854a0ce63c93e3148cf6b8af048fd7afa71ba9c2334907b8fbbcc7a0b",
+    "32": "066a968264d8aace01365098cabff68d5861cdf38b34efa7df6c9f1ded93ddef",
+    "24": "26713ff6de7aa0a09abd40209d666c2924b8bef8925cc6abbc5444b3c062edd8"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

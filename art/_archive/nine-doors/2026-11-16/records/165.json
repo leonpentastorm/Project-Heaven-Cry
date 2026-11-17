@@ -1,0 +1,76 @@
+{
+  "number": 165,
+  "family": "door_emblems",
+  "id": "door-figment",
+  "path": "art/emblems/doors/figment.png",
+  "name": "Figment (door emblem)",
+  "mode": "door emblem",
+  "state": "designed, not built",
+  "use": "The door's mark",
+  "paint": "A small frame with a shape forming inside it out of scattered dots.",
+  "avoid": "a picture frame with a photo \u00b7 the Figments boon line icon (keep the frame square, not a portrait frame)",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "sign",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A small frame with a shape forming inside it out of scattered dots.\nAvoid: a picture frame with a photo \u00b7 the Figments boon line icon (keep the frame square, not a portrait frame)\nEXACT STAGING: DOOR EMBLEM at20px: ONE SIMPLE SQUARE WHITE FRAME with broad transparent center. Inside, ONE SMALL ANGULAR FIGMENT SHAPE forms from exactly FIVE SEPARATE WHITE DOTS/DIAMOND FLECKS clustered toward center, lower two joined into a pointed fragment while upper three remain separated. Clearly a shape forming, no photo/portrait, face, canvas scene, person or lettering. Use few big flecks that remain readable at20px; square frame explicitly requested.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 6,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "a1adc730761ae686948f80877d454582dfffeddbb9723325109b7374686bb50e",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/165-figment.png",
+  "source_sha256": "4040d1155d5149a58f4aa0e22ba866afc4ef4f59e7a55e5384f2e73ecd602fd0",
+  "export_crop": [
+    0,
+    103,
+    1232,
+    1206
+  ],
+  "exports": {
+    "128": "art/emblems/doors/exports/128/figment.png",
+    "64": "art/emblems/doors/exports/64/figment.png",
+    "48": "art/emblems/doors/exports/48/figment.png",
+    "44": "art/emblems/doors/exports/44/figment.png",
+    "32": "art/emblems/doors/exports/32/figment.png",
+    "24": "art/emblems/doors/exports/24/figment.png",
+    "20": "art/emblems/doors/exports/20/figment.png"
+  },
+  "framing": {
+    "scale": 0.6655844155844156,
+    "offset": [
+      102,
+      145
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "5cf7e50d5a8b78ef496edffb1c3c7a5986a634d462545c70967124f9cfbf5481",
+    "64": "a82681c030fbf633a2d1760406a529bc700996b67d03f28acb83cc161e047f2c",
+    "48": "8c1f5209dce03ddb63b4c5eb658ab2bb5f2888a6bcb32b3520ba18bd6add557c",
+    "44": "a49c2ae6df7d3951da16dd3a6effffa4dc1b4c7508615bb131ffa46df02a33ae",
+    "32": "1a25c2afd4e13796a90cbfa6ae5baea4ff4d9d89304f69bd744801883139a835",
+    "24": "776da3ed45f5b47cf3f3d0344e15b2f89a04f153196e557a553af3d9d3a8303f",
+    "20": "a7289fa3e37afc1ac8f8cb447309614046258076d967da660c357cdd5d443688"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

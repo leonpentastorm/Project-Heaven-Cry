@@ -1,0 +1,75 @@
+{
+  "number": 355,
+  "family": "technique_icons",
+  "id": "tech-lob",
+  "path": "art/icons/techniques/lob.png",
+  "name": "Lob",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, fire",
+  "paint": "A high dotted arc from a launcher to a small ring.",
+  "avoid": "a basketball \u00b7 a firework",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Correct this exact rejected Project Heaven Cry icon. Keep the high dotted arc and short tube at lower-left. Replace the SOLID WHITE DOT at lower-right endpoint with a WHITE OUTLINE RING whose LARGE CENTER IS GENUINELY TRANSPARENT. Also make tube opening a GENUINELY TRANSPARENT ELLIPSE, not gray/black paint. Remove gray side shading on tube. Strong separate white dots tracing high parabola, one outlined empty target ring. No solid endpoint dot. Pure opaque white flat ink #FFFFFF only, all gaps and background GENUINELY TRANSPARENT. No black or gray pigment, no aura, glow, shadow, texture, gradient, text or border. Square icon centered inside 15% transparent margins and circular chip.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/superseded/355-transparent-ring-fix/native.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/355-transparent-ring-fix/native.png",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "bf817e0f77686f04fe695dec96bdbd10984523ae555058002e9069d02df0203c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/355-lob.png",
+  "source_sha256": "0f4a2f0a5de29c7c4abf642927545856737052d7e3bbaebf37226e317964216c",
+  "export_crop": [
+    83,
+    168,
+    1244,
+    1117
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/lob.png",
+    "64": "art/icons/techniques/exports/64/lob.png",
+    "48": "art/icons/techniques/exports/48/lob.png",
+    "44": "art/icons/techniques/exports/44/lob.png",
+    "32": "art/icons/techniques/exports/32/lob.png",
+    "24": "art/icons/techniques/exports/24/lob.png"
+  },
+  "framing": {
+    "scale": 0.6728709780364244,
+    "offset": [
+      121,
+      192
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "682215ddf62428dcb176d02cc184c74c6481b93847de7cbecc5002e9a1a79b9d",
+    "64": "48b7e1ab0a97fe1664155ac951c647bcf65fee668907fbe23a470ba7f47ab8ce",
+    "48": "8ee83f927f77947eb6d0670b177444060619249213c08b4d352c51cac0e3e4dc",
+    "44": "21e84366849a4de61a81ebd98b730b60bad33cac93f863b466068efe3d875e63",
+    "32": "418561906d14140ccb417dfa23907b75f7ec1a8b76898ca82ed23c1ecc12794b",
+    "24": "1a3219c8e2b102937973fdb830901a19cee51d79e491debe5e5db7d903fca7c0"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

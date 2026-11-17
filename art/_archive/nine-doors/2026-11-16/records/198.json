@@ -1,0 +1,75 @@
+{
+  "number": 198,
+  "family": "tending_icons",
+  "id": "tend-draw-taut",
+  "path": "art/icons/tending/draw-taut.png",
+  "name": "Draw Taut",
+  "mode": "Wick icon",
+  "state": "designed, not built",
+  "use": "Bonds 2.0 next slice",
+  "paint": "A thread pulled straight and thick between two hands.",
+  "avoid": "a bow string \u00b7 a rope",
+  "section": "Empathy: Bonds and Tending, and the Mender",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG object/sign icon matching the attached flat WHITE graphic references. Bold crisp silhouettes, sparse broad TRANSPARENT interior cuts, no full mascot, robot head, screen face, capelet or complete person. Cropped ceramic mittens only if requested. Pure #FFFFFF WHITE flat ink, no black or gray paint, shading, gradients, glow, texture, text or border.\nPaint: A thread pulled straight and thick between two hands.\nAvoid: a bow string \u00b7 a rope\nEXACT STAGING: ONLY two cropped ceramic mitten hands gripping opposite ends of ONE taut straight horizontal thick THREAD at midheight. Broad white line for thread, transparent gap between hands, short cuffs at far ends. No head/body/fullWick, no bow or thick rope.\nOnly the specified object/partials, no extra decoration.\nTrue transparency in backdrop and ALL holes, not opaque black dividers. Complete subject centered inside 15% transparent margins. Square single icon readable at32/44px; signs at24/48px; door emblems at20px. All decisive shape stays in safe box and circular chip.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 8,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "af319452c3e8cc6d754252414efafd88872318f71fdfd4ba6b403178cad0a179",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/198-draw-taut.png",
+  "source_sha256": "fb19042fbce81debe33c8a69908aa64c94bc1122894f60b1f62232eaae06a0f5",
+  "export_crop": [
+    0,
+    111,
+    1254,
+    1198
+  ],
+  "exports": {
+    "128": "art/icons/tending/exports/128/draw-taut.png",
+    "64": "art/icons/tending/exports/64/draw-taut.png",
+    "48": "art/icons/tending/exports/48/draw-taut.png",
+    "44": "art/icons/tending/exports/44/draw-taut.png",
+    "32": "art/icons/tending/exports/32/draw-taut.png",
+    "24": "art/icons/tending/exports/24/draw-taut.png"
+  },
+  "framing": {
+    "scale": 0.6353982737463252,
+    "offset": [
+      113,
+      166
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "5eefd576f88ceb331ba0444ac8e03545937196dbf40b981b3abe41f9ed70595d",
+    "64": "b17edffbc142967e35f9b577f2fd40361bb96b5afa693ffa0a7930d0c511aea5",
+    "48": "ecfad109e4fa96c4c54f94393df94a2e442cc3327c2fc9947bf8bc3c57a53299",
+    "44": "ba5668ad27cd85530db05e83bd4f65158e6d9d32853e95d1eea2038febe0d411",
+    "32": "1329e1cfec726358648d9b2c784dba05dd384afd68b8ad3123e89e509f706538",
+    "24": "3d1654d6637b987a59903b938f1f42686f462a16ebda938475c5974a68d7604d"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

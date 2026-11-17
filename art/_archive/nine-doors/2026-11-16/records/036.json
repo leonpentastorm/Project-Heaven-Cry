@@ -1,0 +1,78 @@
+{
+  "number": 36,
+  "family": "move_icons",
+  "id": "move-finisher",
+  "path": "art/icons/moves/finisher.png",
+  "name": "Finisher",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Breaker rank III move: a heavy blow on a weakened foe",
+  "paint": "Wick with both hands over his head on a long haft, about to bring it down.",
+  "avoid": "blood \u00b7 an executioner's hood",
+  "section": "Raw Power: the Momentum chain, and the Breaker",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick with both hands over his head on a long haft, about to bring it down.\nAvoid: blood \u00b7 an executioner's hood\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nSpecific staging: Wick holds ONE long-hafted blunt practice weapon with BOTH mitten hands raised high over his head, ready to bring it down; feet wide and body arched with effort. Keep both hands unmistakably on the same shaft, spaced apart, with the head visible and enough room around the face. This safe icon also serves the renamed Measured Blow; preserve the binding. No victim, execution hood, block, gore, or blood.\nCharacter/style: exactly the same small CERAMIC AUTOMATON as the first three production references, with inset pixel-screen face, chamfered head with offset fasteners, ear discs, short asymmetric capelet, circular medical-lantern chest, mitten hands and chunky cuffed boots. Fourth reference is identity only: NO meditation bowl and NO copied up-arrows. Flat pure white ink, all negative space transparent, no black fill, grey, shading or glow. Square single icon, no writing or frame, complete silhouette inside a central 75\u201380% square and 90% circular chip.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "release_030_display_name": "Measured Blow",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "c79817cf79d9c35d0221b94e86091ad23253129c74496b514181b51178fbdd76",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/036-finisher.png",
+  "source_sha256": "be0bb5a8d557d10884ac913eaf1cb2ea610df52fb5b0327e7a7e52184d3cde84",
+  "export_crop": [
+    0,
+    23,
+    1248,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/finisher.png",
+    "64": "art/icons/moves/exports/64/finisher.png",
+    "48": "art/icons/moves/exports/48/finisher.png",
+    "44": "art/icons/moves/exports/44/finisher.png",
+    "32": "art/icons/moves/exports/32/finisher.png",
+    "24": "art/icons/moves/exports/24/finisher.png"
+  },
+  "framing": {
+    "scale": 0.5398154373960059,
+    "offset": [
+      175,
+      179
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "21a3ef2f2692f352a4561353b0ce5c52e26430e92ecb021c565aa0ba17dbdec8",
+    "64": "84b17e60c14fde1195c8d6e9381326f18d811812414c45ccd5c66579407d647c",
+    "48": "7650905ef5555a8431fe7a54b317165d437e0a821105556afd9e5c67ba468849",
+    "44": "c546d15499406eabec739800ac2015d314daf19e2ef44e4c2d8ac701574eab58",
+    "32": "58b9b6c285066bb52219d166606b6b5e45bd178428193c7ca41d725acb6d44bb",
+    "24": "f3430eaf216e15c203e8bbd14d76b040c62b34a1deaf6a4fac0555a5214deaaa"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "number": 174,
+  "family": "move_icons",
+  "id": "move-mercy",
+  "path": "art/icons/moves/mercy.png",
+  "name": "Mercy (thread kind)",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Empathy door: the ally thread",
+  "paint": "A slack thread with a heart-shaped knot running to a partial open hand.",
+  "avoid": "a red heart emoji \u00b7 a rope",
+  "section": "Empathy: Bonds and Tending, and the Mender",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: A slack thread with a heart-shaped knot running to a partial open hand.\nAvoid: a red heart emoji \u00b7 a rope\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "449ddeabc94c87b1b7db2960a177ecc8e12aaf4f99af232731b7788c9f1d4d77",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/174-mercy.png",
+  "source_sha256": "9419251f476bf3cd6a90360f037364d62064c692ab9b09258044df9d11ce2825",
+  "export_crop": [
+    41,
+    150,
+    1238,
+    1118
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/mercy.png",
+    "64": "art/icons/moves/exports/64/mercy.png",
+    "48": "art/icons/moves/exports/48/mercy.png",
+    "44": "art/icons/moves/exports/44/mercy.png",
+    "32": "art/icons/moves/exports/32/mercy.png",
+    "24": "art/icons/moves/exports/24/mercy.png"
+  },
+  "framing": {
+    "scale": 0.6626955080089224,
+    "offset": [
+      115,
+      191
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

@@ -1,0 +1,76 @@
+{
+  "number": 351,
+  "family": "technique_icons",
+  "id": "tech-aimed-shot",
+  "path": "art/icons/techniques/aimed-shot.png",
+  "name": "Aimed Shot",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, fire",
+  "paint": "A rifle with a long straight sight-line to a small ring.",
+  "avoid": "a crosshair over a head \u00b7 a scope glint",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A rifle with a long straight sight-line to a small ring.\nAvoid: a crosshair over a head \u00b7 a scope glint\nEXACT STAGING: Aimed Shot: ONE generic angular RIFLE at lower-left rests level, pointing right. From its top FRONT SIGHT a LONG THIN STRAIGHT WHITE SIGHT-LINE runs right to ONE SMALL EMPTY WHITE TARGET RING. Ring has truly transparent center. No person/head, scope glint, muzzle flash, firing projectile, crosshair, letters, brand or real gun make. Keep rifle, line and target complete inside safe circle.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "521cea50db20dc6ed628d7b65d4a609c6b920f454929fa7432086df60fc60ebd",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/351-aimed-shot.png",
+  "source_sha256": "447fd251e67b5fcbb87941cf561ac06950ac58296aac108d53fb4a5b5f92db8d",
+  "export_crop": [
+    31,
+    326,
+    1240,
+    1117
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/aimed-shot.png",
+    "64": "art/icons/techniques/exports/64/aimed-shot.png",
+    "48": "art/icons/techniques/exports/48/aimed-shot.png",
+    "44": "art/icons/techniques/exports/44/aimed-shot.png",
+    "32": "art/icons/techniques/exports/32/aimed-shot.png",
+    "24": "art/icons/techniques/exports/24/aimed-shot.png"
+  },
+  "framing": {
+    "scale": 0.6782464846980976,
+    "offset": [
+      102,
+      244
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "8e925224144b50c2d404c7029bdb987624efa84ecd42f487a36e4345f01e2beb",
+    "64": "6b1ea39a0d7f359912decb75366ed5c12733efe2d620b67928ebec8aa57c073d",
+    "48": "0ea77c852af2d020de50e7d3c764ad3d89d224254d1e0c20fb9a35bd9b0d1e77",
+    "44": "779f666edaeeaf2b3e8c22844bc7babfedb4e3a735288d57f5d424de2fd659a5",
+    "32": "88daa90c4892ad750d25467775091da36f8ebcd8883e31d2b2bf85115c630466",
+    "24": "03ca0edb1b609159f6249e89f12d8560ffd8d9bda1a8bcb5eeb304854d30041c"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

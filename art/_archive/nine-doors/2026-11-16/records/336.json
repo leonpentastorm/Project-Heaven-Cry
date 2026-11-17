@@ -1,0 +1,76 @@
+{
+  "number": 336,
+  "family": "technique_icons",
+  "id": "tech-bind",
+  "path": "art/icons/techniques/bind.png",
+  "name": "Bind",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, strike",
+  "paint": "Two blades locked together at the guards.",
+  "avoid": "crossed swords standing still (show the lock) \u00b7 a chain",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Two blades locked together at the guards.\nAvoid: crossed swords standing still (show the lock) \u00b7 a chain\nEXACT STAGING: Bind: TWO invented plain BLADES PUSHED TOGETHER, with their CROSSGUARDS ACTUALLY INTERLOCKED at center. Show one guard's quillon caught behind the other's guard, blades extend opposing diagonal directions, two short inward pressure strokes emphasize the jam. Clear tight lock, not an ornamental symmetrical crossed-swords emblem. No chain, ribbon, hand, character, blood or decorative star.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "e1936c08f5adeb406314d7f595f5d94a75ebe5e336322cf66081bf051aa52ef4",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/336-bind.png",
+  "source_sha256": "cd5b16973b257d702d5683ff1cd5a8452efead3df2e316c3166e0695d22d3a99",
+  "export_crop": [
+    0,
+    19,
+    1254,
+    1230
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/bind.png",
+    "64": "art/icons/techniques/exports/64/bind.png",
+    "48": "art/icons/techniques/exports/48/bind.png",
+    "44": "art/icons/techniques/exports/44/bind.png",
+    "32": "art/icons/techniques/exports/32/bind.png",
+    "24": "art/icons/techniques/exports/24/bind.png"
+  },
+  "framing": {
+    "scale": 0.5454813130145799,
+    "offset": [
+      170,
+      181
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "ddf1e8af10f4694c63d873ea086c9f157a63b9985edee74b2a52ecf7731d1e2b",
+    "64": "754db2dcddefbdf6f5c1c3e7d809428c4d7e8d1f2465f73c4dca38fd5b8d7c19",
+    "48": "230f726c3aeda47aa20b735274fe7ab431ae9c16b2ac70eec92491e828aa9366",
+    "44": "c3ebb9a3994b4842833222b80661013296e13c4bb37eec308345a4906a7b9a35",
+    "32": "3b9069b1b5c58d9ed98d35dce804aaa6349ddc8d9510e4cec8fdeac5fcc4aaec",
+    "24": "9c353eca23789d29d320d294db23c6adc94432657ec1bc3f9408177479357f02"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

@@ -1,0 +1,61 @@
+{
+  "number": 141,
+  "family": "figment_order_icons",
+  "id": "order-pounce",
+  "path": "art/icons/figments/order-pounce.png",
+  "name": "Pounce",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment order (`figment_pounce`, the Beast)",
+  "paint": "A beast of flecks mid-leap, front paws forward.",
+  "avoid": "a real cat or dog breed \u00b7 teeth with blood",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: A beast of flecks mid-leap, front paws forward.\nAvoid: a real cat or dog breed \u00b7 teeth with blood\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "7184e53a40c6d1483bdd7b4ad05e472a73dfe76a5fdee2575d1807803b2a321c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/141-order-pounce.png",
+  "source_sha256": "47c05ca40cba7cf889c7725d4c61d10320d207a8d2328936613fc12ad1c86be0",
+  "export_crop": [
+    0,
+    216,
+    1224,
+    1163
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/order-pounce.png",
+    "64": "art/icons/figments/exports/64/order-pounce.png",
+    "48": "art/icons/figments/exports/48/order-pounce.png",
+    "44": "art/icons/figments/exports/44/order-pounce.png",
+    "32": "art/icons/figments/exports/32/order-pounce.png",
+    "24": "art/icons/figments/exports/24/order-pounce.png"
+  },
+  "framing": {
+    "scale": 0.6548262545680935,
+    "offset": [
+      111,
+      202
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

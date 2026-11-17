@@ -1,0 +1,74 @@
+{
+  "number": 369,
+  "family": "technique_icons",
+  "id": "tech-last-round",
+  "path": "art/icons/techniques/last-round.png",
+  "name": "Last Round",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, take",
+  "paint": "A single round standing alone in an open magazine.",
+  "avoid": "a skull \u00b7 a clock",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE flat-white technical equipment inventory icon for an RPG. A short OPEN RECTANGULAR MAGAZINE shown as two parallel side rails and a bottom plate, viewed straight-on as a simple cutaway. Exactly ONE BLANK AMMUNITION CARTRIDGE rests inside, with rounded pointed top, straight parallel casing sides and a small flat base rim. Clearly empty transparent space on either side of this sole cartridge. No hands, people, action, firing, gun body, decorative symbols or additional cartridges. Pure white #FFFFFF opaque silhouettes with generous transparent separations and transparent background; no black, gray, glow, gradient, shading, texture, numerals, text or frame. Compact square composition readable at 32px with 15% margins.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [],
+  "composition_scope": "object/partial-only",
+  "service_revision": "Nonviolent training/inventory abstraction after rejected output.",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "5c018ff85541a27361ac68ac7b4dc4ab72cab95190f75b32162faf1d49cde0eb",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/369-last-round.png",
+  "source_sha256": "628a1e1e9b55953f9c498f08b8f1a6ba7dfa54e21997f8e1ab7eeb4313d3f436",
+  "export_crop": [
+    81,
+    65,
+    1194,
+    1220
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/last-round.png",
+    "64": "art/icons/techniques/exports/64/last-round.png",
+    "48": "art/icons/techniques/exports/48/last-round.png",
+    "44": "art/icons/techniques/exports/44/last-round.png",
+    "32": "art/icons/techniques/exports/32/last-round.png",
+    "24": "art/icons/techniques/exports/24/last-round.png"
+  },
+  "framing": {
+    "scale": 0.6177180392457534,
+    "offset": [
+      168,
+      155
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "5abd5aba25738aeab3ec363fc361c5bc0e215933c9c5cc5bb1af41210bc819e4",
+    "64": "612855b1a231948598009f336b50f92feec947598dcbf4ef256aed2ffde0dbc7",
+    "48": "67fe5b967a59b0952e43f1996a7adb529a8f24707a64ce22fce69a474d16459d",
+    "44": "dddba3161b14c90c9f2b652b87e9a538f900950ab7cde8f230794e34d54cff29",
+    "32": "6c786998b038c458f1ae352942547a4bd7a37d354b8be56770baf73393303fe0",
+    "24": "e553c0b8aa7205a06c4420c6dd0ac480dbfceb0a433faec2633ef9bc4a4df305"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+  "reference_provenance_note": "Actual request used no attached reference images for its nonviolent abstract/static variant; do not infer references from other jobs."
+}

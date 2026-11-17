@@ -1,0 +1,61 @@
+{
+  "number": 183,
+  "family": "tending_icons",
+  "id": "tend-soothe",
+  "path": "art/icons/tending/soothe.png",
+  "name": "Soothe",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Tend verb (Help)",
+  "paint": "A hand drawing a slow curve over a partial head, three small calm lines.",
+  "avoid": "a halo \u00b7 music notes",
+  "section": "Empathy: Bonds and Tending, and the Mender",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: A hand drawing a slow curve over a partial head, three small calm lines.\nAvoid: a halo \u00b7 music notes\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "/workspace/phc-nine-doors-2026-11-16/delivery/art/icons/shadow/cut-strap.png",
+    "/workspace/phc-nine-doors-2026-11-16/delivery/art/icons/shadow/hijack.png",
+    "/workspace/phc-nine-doors-2026-11-16/delivery/art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "e2f1a26475356d7ee3ca8acadae2e87a39ba7cad3774401d8f9b2dd45b461426",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/183-soothe.png",
+  "source_sha256": "9d590e62cb7ef1c0c0af2dd8ebc2b00300fb2cd49f3b912ec6bac6d300761aa3",
+  "export_crop": [
+    57,
+    168,
+    1226,
+    1182
+  ],
+  "exports": {
+    "128": "art/icons/tending/exports/128/soothe.png",
+    "64": "art/icons/tending/exports/64/soothe.png",
+    "48": "art/icons/tending/exports/48/soothe.png",
+    "44": "art/icons/tending/exports/44/soothe.png",
+    "32": "art/icons/tending/exports/32/soothe.png",
+    "24": "art/icons/tending/exports/24/soothe.png"
+  },
+  "framing": {
+    "scale": 0.6157935436391672,
+    "offset": [
+      152,
+      200
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

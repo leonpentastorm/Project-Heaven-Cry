@@ -1,0 +1,76 @@
+{
+  "number": 352,
+  "family": "technique_icons",
+  "id": "tech-called-shot-tech",
+  "path": "art/icons/techniques/called-shot-tech.png",
+  "name": "Called Shot (technique)",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, fire",
+  "paint": "A ring drawn round one limb of a silhouette.",
+  "avoid": "a crosshair over a head \u00b7 text",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A ring drawn round one limb of a silhouette.\nAvoid: a crosshair over a head \u00b7 text\nEXACT STAGING: Called Shot technique: ONLY ONE CROPPED FEATURELESS ARM AND SHOULDER PARTIAL bent slightly at elbow, with ONE LARGE WHITE EMPTY RING drawn AROUND THE FOREARM. Ring clearly surrounds a limb, not a head, and has broad transparent spacing from arm. No head, face, full person, crosshair bars, wounds, blood, text, arrows or gun. Pure white shapes; avoid opaque black separator.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "8d6c9e8d034d9f35259e72df62574a526ca82071b5fa5b00d3902648cbf0fe7a",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/352-called-shot-tech.png",
+  "source_sha256": "42b78a7b586386feb7bee3b9ae7b0e7fbc7c85050525fdc3c8e2f66b193ce40f",
+  "export_crop": [
+    0,
+    25,
+    1253,
+    1166
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/called-shot-tech.png",
+    "64": "art/icons/techniques/exports/64/called-shot-tech.png",
+    "48": "art/icons/techniques/exports/48/called-shot-tech.png",
+    "44": "art/icons/techniques/exports/44/called-shot-tech.png",
+    "32": "art/icons/techniques/exports/32/called-shot-tech.png",
+    "24": "art/icons/techniques/exports/24/called-shot-tech.png"
+  },
+  "framing": {
+    "scale": 0.5530654785370297,
+    "offset": [
+      165,
+      196
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "4393a2f9011f2f6dcacaca385683fe3f64501c14e83c63eb1192247970a16e6d",
+    "64": "5aa6383866efcde689975229b16fda2d00128c25e4659aafe26b8ec28e8a0c03",
+    "48": "ea4762142deb568bb908203b528925b38632f5b8ed0484048d1f874b9b57a24d",
+    "44": "be1a9d529ad0ec6a40b3f6a019437e948ca3f8eafda9b5ddcbf13e290d6e1a52",
+    "32": "2554af4ec84a29e49473e1f04d4099284f12abe03b51ea3b73d9091b44fe391f",
+    "24": "e21f8ee0f2c43ccfff276afffdc621b07f5ab9bfe9953e60daa204ec72ed3cfb"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

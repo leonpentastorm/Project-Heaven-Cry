@@ -1,0 +1,76 @@
+{
+  "number": 366,
+  "family": "technique_icons",
+  "id": "tech-rout",
+  "path": "art/icons/techniques/rout.png",
+  "name": "Rout",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, take",
+  "paint": "Three small figures running away from a gun line.",
+  "avoid": "a white flag \u00b7 a chase scene",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Three small figures running away from a gun line.\nAvoid: a white flag \u00b7 a chase scene\nEXACT STAGING: Rout: exactly THREE SMALL CROPPED RUNNING SILHOUETTE PARTIALS on right, staggered, each head/shoulder plus one bent knee fragment, all leaning and moving AWAY RIGHT from THREE short parallel white horizontal projectile lines at left. Each partial terminates at its own clean oblique crop edge, never complete detailed people or Wicks. Clear retreat direction, no pursuit figure, chase scene, white flag, injury, blood or gun body. Sparse graphic action.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "9f4474baa29b30679cbc58f63f18708d1ccfd91e3396e7e24f206c72fe40ba8f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/366-rout.png",
+  "source_sha256": "21c89dedbfd07e1c81d23f10e1bad0b153c99e100399a56b9b756c9078943e17",
+  "export_crop": [
+    121,
+    200,
+    1146,
+    1089
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/rout.png",
+    "64": "art/icons/techniques/exports/64/rout.png",
+    "48": "art/icons/techniques/exports/48/rout.png",
+    "44": "art/icons/techniques/exports/44/rout.png",
+    "32": "art/icons/techniques/exports/32/rout.png",
+    "24": "art/icons/techniques/exports/24/rout.png"
+  },
+  "framing": {
+    "scale": 0.7488670159267372,
+    "offset": [
+      128,
+      179
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "acd2c8374620e8836eca93ebc15528770927364bbe16b92719474634d73bb55f",
+    "64": "792be60bb573d96a6cc419e8f3a2a3b824db455404a43ff79147adffec0bae14",
+    "48": "958b342b717552d6eb9a581de28b4796c18a0261394a3578cb07d47b349cbdb9",
+    "44": "8c2d133e495294e5a328d7b67cc8bfd12670954099a36817f399a08f3306b28b",
+    "32": "080b5efd00c15063a51b13cf49e83e4902d016003e748947f27995d5d67d4300",
+    "24": "abd8f815ad74ad5c9374f5fd455b2cd758a66a0005facba54f76a1bc9e00bf44"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

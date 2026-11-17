@@ -1,0 +1,76 @@
+{
+  "number": 38,
+  "family": "technique_icons",
+  "id": "tech-coup",
+  "path": "art/icons/techniques/coup.png",
+  "name": "Coup",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, finisher: an Execute on a foe under half HP for the Breaker",
+  "paint": "A short decisive downward stroke ending on a small cracked ring (the foe's last health), Wick's arm at the top of the stroke.",
+  "avoid": "a crown \u00b7 a guillotine",
+  "section": "Raw Power: the Momentum chain, and the Breaker",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique icon in the attached object-only icons' flat white graphic style. This row is an OBJECT OR PARTIAL-ARM action, NOT a mascot scene. Pure WHITE #FFFFFF solid flat ink on true TRANSPARENCY. Bold deliberate silhouettes, broad transparent interior cuts, very few details. No full figure, no robot head, face, capelet, lantern-heart or mascot body. A cropped ceramic mitten may appear ONLY when the action requires a grip. No text, letters, numbers, labels, border, background scene, glow, gray shading or gradients. Square 1024x1024 intended master with generous 12\u201315% margins, all decisive action readable at 32px and 44px.\n\nPaint: A short decisive downward stroke ending on a small cracked ring (the foe's last health), Wick's arm at the top of the stroke.\nAvoid: a crown \u00b7 a guillotine\nEXACT STAGING: PARTIAL ARM ONLY. One chunky ceramic mitten and cuff enter from the upper-left edge holding a short original blade. Its SINGLE decisive straight downward white stroke ends at a small ring with one clean zigzag crack, representing the foe's last health. Arm plus stroke plus cracked ring fill one coherent silhouette. No full character, head, face, chest, cape, blood, crown or guillotine.\nDo not add any mascot figure even though a hand is allowed. References establish object-only visual density and pure-white ink; do not copy their incidental motifs.\nKeep the whole action inside the central 75\u201380% square and the centered 90% circular safe area. All holes and negative spaces are transparent, not black paint. No glow, bloom, texture, random rays or duplicate subjects.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object or partial-arm only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "4832ce3d29135e8439e3b5a53169fd6bc46822b9f0862c86c8e9361eae3262b7",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/038-coup.png",
+  "source_sha256": "54d6f2a7ffc6c9d862336ca4ba4e8a773510381debcfe9336d7044cced5d2230",
+  "export_crop": [
+    0,
+    23,
+    1015,
+    1222
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/coup.png",
+    "64": "art/icons/techniques/exports/64/coup.png",
+    "48": "art/icons/techniques/exports/48/coup.png",
+    "44": "art/icons/techniques/exports/44/coup.png",
+    "32": "art/icons/techniques/exports/32/coup.png",
+    "24": "art/icons/techniques/exports/24/coup.png"
+  },
+  "framing": {
+    "scale": 0.6474495955153471,
+    "offset": [
+      183,
+      124
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "4306a5236df207799cf6d31071f13f0bced567387c1c6fcbf00bad873f56c166",
+    "64": "760ff80f9a82b81129ee847d9c8e8908fda27998f63e4d48cbfbc64a837757ca",
+    "48": "8527b02ed03bf5096b131f62977b9a689606d1d647f3e0494052d271f9a79a5c",
+    "44": "db62a1c0f759a72e0c943c5da6bd057847e639b91a539dba51173620f3ff671a",
+    "32": "2c4e03cfaefd133cf2c450d859aac9835011db52021c94e9535a1b85f98529ac",
+    "24": "c7f7bf219d6a1a804dbe749ce7c36693385b086d53251a89b2c525fde906154b"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

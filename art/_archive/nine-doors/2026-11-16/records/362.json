@@ -1,0 +1,76 @@
+{
+  "number": 362,
+  "family": "technique_icons",
+  "id": "tech-vent",
+  "path": "art/icons/techniques/vent.png",
+  "name": "Vent",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, set",
+  "paint": "A gun barrel with three heat curls.",
+  "avoid": "steam train \u00b7 fire",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A gun barrel with three heat curls.\nAvoid: steam train \u00b7 fire\nEXACT STAGING: Vent: ONE SHORT PLAIN INVENTED BARREL TUBE points diagonally right, with a large GENUINELY TRANSPARENT oval opening. Above its top exactly THREE SEPARATE WHITE HEAT CURLS rise as crisp flat S-shaped strokes, never gray steam or glow. No train, fire, flame, projectile, explosion, hand, whole gun, character or text. Tube side has one transparent vent-slot cut, no shaded filled side face.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "db8b9145d6329612951e72b5e0f912c304f1e13d6d62faa999a9801dfae916af",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/362-vent.png",
+  "source_sha256": "ebdac71488baa88b10529f6576ae27d4da2cca89ce314f280d407e674d69766b",
+  "export_crop": [
+    77,
+    83,
+    1224,
+    1204
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/vent.png",
+    "64": "art/icons/techniques/exports/64/vent.png",
+    "48": "art/icons/techniques/exports/48/vent.png",
+    "44": "art/icons/techniques/exports/44/vent.png",
+    "32": "art/icons/techniques/exports/32/vent.png",
+    "24": "art/icons/techniques/exports/24/vent.png"
+  },
+  "framing": {
+    "scale": 0.6188167046633195,
+    "offset": [
+      157,
+      165
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "21f3292345259411a80e17000121c11675afad155bb92b1c6ad06658d72829cb",
+    "64": "216aa20bbb7e0938d9fe9b26be247ee5d8741adcd15ad22fcb322f8ab5ecc2e8",
+    "48": "65ac40f05b2606f1586830a73f387ce16bbcd3603cb93417f5b7eaa171b1d69b",
+    "44": "fefd5ca02d2778a90cbeb6d08b6b087d4708c9b059a4475bb42c7319270e6675",
+    "32": "d094d9d7c9900f86ed64328ab92c78f986351b42a91db00b71f123591b91d865",
+    "24": "5ce812ac176ebeda979580dfd34816762c908aefd489d008c5b59cc65b9061cc"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

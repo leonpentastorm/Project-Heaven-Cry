@@ -1,0 +1,61 @@
+{
+  "number": 146,
+  "family": "figment_order_icons",
+  "id": "order-let-go",
+  "path": "art/icons/figments/order-let-go.png",
+  "name": "Let go",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment verb (`let_go`)",
+  "paint": "A shape coming apart into drifting flecks, open hand below it.",
+  "avoid": "a balloon \u00b7 smoke",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: A shape coming apart into drifting flecks, open hand below it.\nAvoid: a balloon \u00b7 smoke\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "75db227054cd40ca54bf96bdcd221bb8633ee9ad55296179ce2ff2a5e63435fd",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/146-order-let-go.png",
+  "source_sha256": "6f192cf60e452b3271d8dfab7fca2bd9c14df463d24d74a79e9bc080a3c7f8be",
+  "export_crop": [
+    119,
+    17,
+    1208,
+    1230
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/order-let-go.png",
+    "64": "art/icons/figments/exports/64/order-let-go.png",
+    "48": "art/icons/figments/exports/48/order-let-go.png",
+    "44": "art/icons/figments/exports/44/order-let-go.png",
+    "32": "art/icons/figments/exports/32/order-let-go.png",
+    "24": "art/icons/figments/exports/24/order-let-go.png"
+  },
+  "framing": {
+    "scale": 0.6153966531893422,
+    "offset": [
+      177,
+      139
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

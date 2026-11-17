@@ -1,0 +1,64 @@
+{
+  "number": 135,
+  "family": "perks",
+  "id": "mirage",
+  "path": "art/icons/perks/mirage.png",
+  "name": "Many-Eyed Dream",
+  "mode": "Wick icon",
+  "state": "in game now (shows the OLD perk's icon) \u00b7 placeholder",
+  "use": "Visualization perk (old icon: Wick shimmering into a mirage)",
+  "paint": "Wick with eyes open on several small floating figment shapes round him, each a shape of flecks.",
+  "avoid": "a heat-haze mirage (the old icon) \u00b7 many eyeballs",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "EDIT THE FIRST ATTACHED ICON. Keep the exact little ceramic Wick, pixel-screen head, cape, lantern-heart and pure-white flat-ink finish. REMOVE ALL generic sparkles and stars. Replace them with THREE CLEAR SMALL FLOATING BOT CONSTRUCTS around him: one hollow cube, one small angular kite-shaped shard, and one compact faceted orb. Each construct has ONE little mechanical aperture mark, NOT a realistic eyeball, and two or three detached square bot flecks at one edge. They must be large and solid enough to recognize at 32px, rather than mere star-shaped dots. Wick opens his pixel eyes wide and reaches one hand toward the constructs as if seeing through them. NO cup, bowl, head halo or floating up-arrows. ONLY one full Wick and three little made shapes, no other people. Pure white #FFFFFF on TRANSPARENT background, transparent internal cuts, no gray, gradients, shading, glow, texture, lettering, numbers, logos, frame or extra decorative stars. Square 1024x1024, central 80 percent subject with clear margins. This icon means MANY-EYED DREAM: shared sight through Figments, not a generic celebration.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/superseded/135-concept-v1/native.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 1,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f374d42ccbb88603f52de476fd6ea9a21c4b7a4542fb48c919f8b55519beaf81",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/135-mirage.png",
+  "source_sha256": "7caa67452393e167dcaf8f151810ae17371d54e7a3d4092fc0237b4307bd60ed",
+  "export_crop": [
+    31,
+    10,
+    1228,
+    1254
+  ],
+  "exports": {
+    "256": "art/icons/perks/exports/256/mirage.png",
+    "128": "art/icons/perks/exports/128/mirage.png",
+    "64": "art/icons/perks/exports/64/mirage.png",
+    "56": "art/icons/perks/exports/56/mirage.png",
+    "48": "art/icons/perks/exports/48/mirage.png",
+    "44": "art/icons/perks/exports/44/mirage.png",
+    "40": "art/icons/perks/exports/40/mirage.png",
+    "32": "art/icons/perks/exports/32/mirage.png"
+  },
+  "framing": {
+    "scale": 0.5288506422931137,
+    "offset": [
+      195,
+      183
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

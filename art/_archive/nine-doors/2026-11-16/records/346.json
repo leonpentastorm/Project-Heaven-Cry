@@ -1,0 +1,76 @@
+{
+  "number": 346,
+  "family": "technique_icons",
+  "id": "tech-riposte-tech",
+  "path": "art/icons/techniques/riposte-tech.png",
+  "name": "Riposte (technique)",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, answer",
+  "paint": "A parry turning into a point thrust in one curved line.",
+  "avoid": "two crossed swords \u00b7 fencing gear",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A parry turning into a point thrust in one curved line.\nAvoid: two crossed swords \u00b7 fencing gear\nEXACT STAGING: Riposte technique: ONE PLAIN BLADE with cropped ceramic mitten at hilt traces ONE continuous CURVED WHITE ACTION LINE: a small curved parry deflection at left feeds into a long straight pointed THRUST to right. Main blade point leads right, curve wraps behind hilt as follow-through. No second whole blade, static crossed swords, fencing gear, full figure, opponent, blood, labels or decorative sparks.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f184af84f2e5e2257d1445d06903d220ce84c223619f8024b54e52e67e146f00",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/346-riposte-tech.png",
+  "source_sha256": "a650a01e26769591d88374bd60d0acf4fa524fa2ab0c28c75f894bedc365c6fc",
+  "export_crop": [
+    35,
+    167,
+    1235,
+    1212
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/riposte-tech.png",
+    "64": "art/icons/techniques/exports/64/riposte-tech.png",
+    "48": "art/icons/techniques/exports/48/riposte-tech.png",
+    "44": "art/icons/techniques/exports/44/riposte-tech.png",
+    "32": "art/icons/techniques/exports/32/riposte-tech.png",
+    "24": "art/icons/techniques/exports/24/riposte-tech.png"
+  },
+  "framing": {
+    "scale": 0.6154500794717997,
+    "offset": [
+      142,
+      190
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "8cb5edacf32ebc36e296b41433c5f4ee7501cdfe073ca9ad03242674a9527d6d",
+    "64": "2a659206730a7f7bd3bc6e3c2e4c7f545f31365ff53b85f5fbb4c7c339985d91",
+    "48": "3b70f0f3caf3bd6d09487f120c132236298845792c45a6323f2ba5654f8989f1",
+    "44": "7c3d2f573edc80bd406abfbcbe029e9f26d1b00efce406a60f43deea5ecaae18",
+    "32": "d61bafdcf54995d15c67e02e8ef771008bfb9d20d88aecfcd052d4e2e43332c9",
+    "24": "9acd4f7082a7121e92427a47ac44411d4cdbd4be9d451f99c860df04844e0729"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

@@ -1,0 +1,67 @@
+{
+  "number": 147,
+  "family": "figment_trait_icons",
+  "id": "trait-armoured",
+  "path": "art/icons/figments/trait-armoured.png",
+  "name": "Armoured",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment trait (in data; asked 13 Nov, C4)",
+  "paint": "A figment shape with three overlapping plate arcs on its front.",
+  "avoid": "a knight helmet \u00b7 a real armour model",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape with three overlapping plate arcs on its front.\nAvoid: a knight helmet \u00b7 a real armour model\nEXACT STAGING: Use a SMALL FLOATING ABSTRACT FIGMENT CONSTRUCT as the base: three joined angular white fragments making an asymmetrical pointed kite-like body, with TWO tiny loose diamond flecks behind it. It has NO face, eyes, human anatomy, ears or Wick features. Across its FRONT are exactly THREE overlapping thick PLATE ARCS like layered protective scales, clearly readable at 32px. The plates, not a helmet, carry Armoured. No knight helmet, real armor suit, shield emblem, full person, creature face, gear brand, glow or scene.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "79052cc9a710bba47ef26a0d897fb0d5f5bb6c3f7ea01d0b7be43368f86c9992",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/147-trait-armoured.png",
+  "source_sha256": "95b78eac8d1a1616dfa7a3c8b76705b89d35c5a1fd5c9aca080fcf5e31a9317a",
+  "export_crop": [
+    0,
+    138,
+    1146,
+    1182
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-armoured.png",
+    "64": "art/icons/figments/exports/64/trait-armoured.png",
+    "48": "art/icons/figments/exports/48/trait-armoured.png",
+    "44": "art/icons/figments/exports/44/trait-armoured.png",
+    "32": "art/icons/figments/exports/32/trait-armoured.png",
+    "24": "art/icons/figments/exports/24/trait-armoured.png"
+  },
+  "framing": {
+    "scale": 0.6923662853400746,
+    "offset": [
+      115,
+      150
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

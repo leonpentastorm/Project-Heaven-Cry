@@ -1,0 +1,76 @@
+{
+  "number": 368,
+  "family": "technique_icons",
+  "id": "tech-storm",
+  "path": "art/icons/techniques/storm.png",
+  "name": "Storm",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, take",
+  "paint": "A dense rain of bullet lines over a wide area.",
+  "avoid": "weather icons \u00b7 lightning",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A dense rain of bullet lines over a wide area.\nAvoid: weather icons \u00b7 lightning\nEXACT STAGING: Storm technique: a DENSE ARRAY of exactly NINE SHORT STRAIGHT WHITE PROJECTILE-STROKES slants diagonally DOWN-RIGHT across a WIDE RECTANGULAR AREA, three staggered rows of three strokes. Broad transparent spaces keep each stroke distinct. No clouds, rain drops, weather symbol, lightning, gun body, target, person, ground scenery, flames or explosions. Graphic coordinated barrage of simple hard tapered marks, not blur.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "623832c8060708dc09df3ceea81169081035a84ed784b40a77f9fcab7eaa83de",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/368-storm.png",
+  "source_sha256": "4a64a791501cc2ea034b8b2cc0d8e7a4500fe6ca5137e8480378b793c6a3a540",
+  "export_crop": [
+    0,
+    101,
+    1245,
+    1222
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/storm.png",
+    "64": "art/icons/techniques/exports/64/storm.png",
+    "48": "art/icons/techniques/exports/48/storm.png",
+    "44": "art/icons/techniques/exports/44/storm.png",
+    "32": "art/icons/techniques/exports/32/storm.png",
+    "24": "art/icons/techniques/exports/24/storm.png"
+  },
+  "framing": {
+    "scale": 0.5954188132579924,
+    "offset": [
+      141,
+      178
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "a69f9a4745bd968445ccf1b462931aefcdc837357e46e9e3917f742278989669",
+    "64": "8a7895e21c13ef358311b4610073a56df0aa14d0b37cd7689c4fc74b4e4f0dac",
+    "48": "7372c7e4f9e9ffe836a1708b651159ad9fd72291987578206adafb10440ecae3",
+    "44": "b6e05c589a55ae3d097a427dd2804c769492f263413721fd23bb461cf3c1dfec",
+    "32": "1d888c71f62df072edd99dfcd77c3e5f171b8d4838f0eb64c5fc617ea57cfdbf",
+    "24": "7339efeb7fd3ae6a7d5599a13ed9e3af95b0c7c657175eb3320a0befe62d0be7"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

@@ -1,0 +1,76 @@
+{
+  "number": 154,
+  "family": "figment_trait_icons",
+  "id": "trait-lasting",
+  "path": "art/icons/figments/trait-lasting.png",
+  "name": "Lasting",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment trait",
+  "paint": "A figment shape standing on a long horizontal line that runs off both edges.",
+  "avoid": "an hourglass \u00b7 a clock",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape standing on a long horizontal line that runs off both edges.\nAvoid: an hourglass \u00b7 a clock\nEXACT STAGING: One abstract angular pointed kite-like Figment body matching the references with two small loose diamond flecks. Its lower point TOUCHES one long straight horizontal WHITE BASELINE extending far beyond the body left and right. The line spans almost the entire safe icon width but ends INSIDE the transparent 15% margins. No clock, timer, hourglass, arrowhead, eyes, face or Wick.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "7731dfce8a5c9c5dcdea1945107b802fe60f8925f13f4c89ac516167cd5b4c13",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/154-trait-lasting.png",
+  "source_sha256": "e554896b3a048867fc2637baa0fe4c014b9fedcafc059b1270cf3b77c535188c",
+  "export_crop": [
+    87,
+    159,
+    1164,
+    1166
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-lasting.png",
+    "64": "art/icons/figments/exports/64/trait-lasting.png",
+    "48": "art/icons/figments/exports/48/trait-lasting.png",
+    "44": "art/icons/figments/exports/44/trait-lasting.png",
+    "32": "art/icons/figments/exports/32/trait-lasting.png",
+    "24": "art/icons/figments/exports/24/trait-lasting.png"
+  },
+  "framing": {
+    "scale": 0.6355057958306704,
+    "offset": [
+      170,
+      192
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "dbfbb60178a3364779a8c027dbdc6bdc01d1082e6d2331747811f1f3e3e559ca",
+    "64": "92c5f9cdd8ded1358b8af50085522ea31c8d09b7b5006bdb2960174d916d3e7f",
+    "48": "04fdb6a2a664a4be4577580d6fa9895bc1488e5abe48412398300645ca7225e2",
+    "44": "ab9b71ec90bec7a80e83de11a7d1fede5a31da0653ebcd9e83f6cca7bc5d77d7",
+    "32": "7a58c50fa2c0b065bfb88e4576dac79d4f385afbb3a40682b716bdcc18d7a461",
+    "24": "0bc00b1e802cc13f0b90411a5566eed5dc9eb7b532ab495349bdef37d9dc8242"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

@@ -1,0 +1,76 @@
+{
+  "number": 377,
+  "family": "technique_icons",
+  "id": "tech-shield-wall",
+  "path": "art/icons/techniques/shield-wall.png",
+  "name": "Shield Wall",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, answer (shield)",
+  "paint": "Two round shields overlapping edge to edge.",
+  "avoid": "a castle wall \u00b7 a phalanx from a known film",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Two round shields overlapping edge to edge.\nAvoid: a castle wall \u00b7 a phalanx from a known film\nEXACT STAGING: Shield Wall: exactly TWO LARGE ROUND SHIELDS OVERLAP EDGE TO EDGE across center, offset slightly diagonal. Both are round bucklers with one simple central circular boss each, one behind the other. A broad truly TRANSPARENT CURVED CHANNEL separates overlapping edges, not black outline. No people, arms, castle wall, phalanx, film insignia, third shield, pointed heater shield, border or text. Strong paired discs readable at 32px.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "1db1d9e9f0b72783881286d8a020ad7e238a58d7b4d2bb41ebe9fab81f2e7a65",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/377-shield-wall.png",
+  "source_sha256": "c8ed79bfa572219cbc611188c9d2ce001e817c4d755ff5add59f818120fe2c6d",
+  "export_crop": [
+    0,
+    29,
+    1253,
+    1238
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/shield-wall.png",
+    "64": "art/icons/techniques/exports/64/shield-wall.png",
+    "48": "art/icons/techniques/exports/48/shield-wall.png",
+    "44": "art/icons/techniques/exports/44/shield-wall.png",
+    "32": "art/icons/techniques/exports/32/shield-wall.png",
+    "24": "art/icons/techniques/exports/24/shield-wall.png"
+  },
+  "framing": {
+    "scale": 0.528444376045652,
+    "offset": [
+      181,
+      192
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "83e0b2a5dbf4f6aef2d954130e7efe452dd18849b2577fd11c72ec1916ea93d8",
+    "64": "2320eb9273766de6e23733d624dc7bae54181e9d3da29713834941ff8c421bfc",
+    "48": "a845b5df51c91cea6f4408c91476ec36d4a1f535445d4e3ba2c6e9da6382eecf",
+    "44": "36abcda19df6193f6e14469ef542e46ab8f2119aa5c242868f3d27e7e994fe6a",
+    "32": "9f467caf35431cbaf02ad53c63e4c089a0aa17798eeae59c6da9c8ae18860a8f",
+    "24": "f9cfebdfbc66b400ca8e55061643851acf6fdde0db363d206f833cd0b9cfe1e7"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

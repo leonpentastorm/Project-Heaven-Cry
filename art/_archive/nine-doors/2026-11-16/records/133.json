@@ -1,0 +1,76 @@
+{
+  "number": 133,
+  "family": "door_emblems",
+  "id": "door-sigil",
+  "path": "art/emblems/doors/sigil.png",
+  "name": "Sigil chip (door emblem)",
+  "mode": "door emblem",
+  "state": "designed, not built",
+  "use": "The door's mark: today a chip of text",
+  "paint": "A short straight Line of three abstract glyph marks joined by one stroke, inside a thin square.",
+  "avoid": "letters of any real script \u00b7 the Sigil boon line icon (three marks, no square)",
+  "section": "Brain Power: Sigils, and the Sigilist",
+  "kind": "sign",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A short straight Line of three abstract glyph marks joined by one stroke, inside a thin square.\nAvoid: letters of any real script \u00b7 the Sigil boon line icon (three marks, no square)\nEXACT STAGING: DOOR EMBLEM at20px: ONE THIN WHITE SQUARE OUTLINE encloses a SHORT STRAIGHT HORIZONTAL WHITE LINE joining exactly THREE ABSTRACT GEOMETRIC GLYPH MARKS: a solid small diamond, a hollow hexagon, a small right-pointing triangular wedge. All connected along their centers by the straight line, with large clear transparent gaps around forms. The square is EXPLICITLY REQUESTED here and distinguishes this from boon-line sigils without square. No letters, real script, runes, text or extra border.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 6,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "c9eaea4b79e3501bafc67f5f76f4d382542a3cca35b76753f2f9c52434cedd81",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/133-sigil.png",
+  "source_sha256": "deb1378005d39557749b7f8e639dfde9f2abaf4aa02497eb6e996bc81a9a48d9",
+  "export_crop": [
+    47,
+    17,
+    1202,
+    1222
+  ],
+  "exports": {
+    "128": "art/emblems/doors/exports/128/sigil.png",
+    "64": "art/emblems/doors/exports/64/sigil.png",
+    "48": "art/emblems/doors/exports/48/sigil.png",
+    "44": "art/emblems/doors/exports/44/sigil.png",
+    "32": "art/emblems/doors/exports/32/sigil.png",
+    "24": "art/emblems/doors/exports/24/sigil.png",
+    "20": "art/emblems/doors/exports/20/sigil.png"
+  },
+  "framing": {
+    "scale": 0.6804979253112033,
+    "offset": [
+      119,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "fef213713cd0356b533d7fcae0789584084a32e853c363bdc54e14a30e7c65c8",
+    "64": "2faedb2743e6ced0fb77b9b31549386ee83bddaf678d3d6f067132c30e1deb95",
+    "48": "bf1c5b6d2feb229961c1bff7ca968c0c2a4869d0c53314dbaa01dba8fa1d435f",
+    "44": "b2085490ba3825037b3463cf47a48990edddcf3b2b688bc62dd62145a9977496",
+    "32": "46c801828a656d50a97f800f58b084246432f675b2bb9de9c37b41cdd4bd9696",
+    "24": "113a44ef9ce631c3a3a177c7997b3749ecec7590a5d3aa3d21b38fa18e9276c2",
+    "20": "e478652019037c6542babfce1a51cc16fca818dc562dd114aeba535586d5fce8"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

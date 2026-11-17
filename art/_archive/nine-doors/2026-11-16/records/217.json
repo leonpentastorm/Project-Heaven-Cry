@@ -1,0 +1,78 @@
+{
+  "number": 217,
+  "family": "move_icons",
+  "id": "move-eye-of-the-storm",
+  "path": "art/icons/moves/eye-of-the-storm.png",
+  "name": "Eye of the Storm",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Channeler rank III move",
+  "paint": "Wick standing still at the calm centre of a spiral of arcs.",
+  "avoid": "a hurricane satellite view \u00b7 an eyeball",
+  "section": "Will Power: the Outburst, and the Channeler",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick standing still at the calm centre of a spiral of arcs.\nAvoid: a hurricane satellite view \u00b7 an eyeball\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Eye of the Storm: ONE Wick stands completely STILL and upright with relaxed lowered mittens, feet planted, calm level pixel eyes and small quiet straight mouth. Around him exactly THREE LARGE separated SPIRAL ARCS turn, but leave a CLEAR EMPTY CALM CIRCLE immediately around his full body. Flat WHITE broken curves only, never gray wind or glow. His stillness and centered pose contrast with moving arcs. No eyeball, satellite hurricane, clouds, rain, copied up-arrows, bowl or halo. Full Wick stays visible; arcs must not cross screen/face.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "d664bc4959a21be2afd92c7f444d9140dc6e02194253a1698c94da366c19aa35",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/217-eye-of-the-storm.png",
+  "source_sha256": "6a7c56254cd6dbb8826deff55d869c6dadb62ceb87a5f192a42dfd31c47c8737",
+  "export_crop": [
+    57,
+    31,
+    1240,
+    1205
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/eye-of-the-storm.png",
+    "64": "art/icons/moves/exports/64/eye-of-the-storm.png",
+    "48": "art/icons/moves/exports/48/eye-of-the-storm.png",
+    "44": "art/icons/moves/exports/44/eye-of-the-storm.png",
+    "32": "art/icons/moves/exports/32/eye-of-the-storm.png",
+    "24": "art/icons/moves/exports/24/eye-of-the-storm.png"
+  },
+  "framing": {
+    "scale": 0.6012897303016842,
+    "offset": [
+      156,
+      159
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "7c82c4f518873a91a19c03fdfc8e07377a037864764bb34db523f89aba65aa77",
+    "64": "a8f14f0983264bdf7b7a1dbeddab492d30f76d53d5e219b0cb5836d32f766095",
+    "48": "3eb51f2dd0363126048b1966594d44ef598c705a3dd69083a06ded0a27f3b933",
+    "44": "4133b0ed18179a3a34cce6edcb070c629bd4d5ec7aa81e0ebd27b15ab1ac0278",
+    "32": "44ff7f3cee47e0011df1e6dffaa76c5947a1c139044c82999df6bca39009a3d0",
+    "24": "36a7834fcee3492cb50a2c023d727390fd43b188b3ba34817c71b54c2cbb5e16"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

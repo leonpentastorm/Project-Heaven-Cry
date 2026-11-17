@@ -1,0 +1,60 @@
+{
+  "number": 287,
+  "family": "condition_icons",
+  "id": "cond-fear",
+  "path": "art/icons/conditions/fear.png",
+  "name": "Fear",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Heart condition",
+  "paint": "A small figure shrinking back with three shake lines.",
+  "avoid": "a horror face \u00b7 a skull",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "Draw ONE pure white flat VECTOR-LIKE pictogram on fully transparent background. A simple generic human figure crouching and shrinking backward, shoulders hunched and both hands held close to the chest. THREE short angular shake marks around it. Round featureless head, no face or hair. Every shape has a solid white fill and crisp hard edges, transparent cuts. NO shadow, NO soft alpha, NO halo, NO glow, NO blur, NO background patch of any opacity. Only the little crouching figure and three shake marks. No Wick, robot, extra props, text, gray or texture. Match the attached white-ink signs. Square 1024x1024 with 15% transparent margin; readable at 24px.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "d3eaaa1ba6a1a8e179b3814ea25ca6879b5c7449264fef6f336660f5a2337041",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/287-fear.png",
+  "source_sha256": "b74a78ada191dbef6ae529d3ca9b4fbd8cfbd26a72baefa83c4db47c5dbe360f",
+  "export_crop": [
+    101,
+    61,
+    1075,
+    1238
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/fear.png",
+    "64": "art/icons/conditions/exports/64/fear.png",
+    "48": "art/icons/conditions/exports/48/fear.png",
+    "44": "art/icons/conditions/exports/44/fear.png",
+    "32": "art/icons/conditions/exports/32/fear.png",
+    "24": "art/icons/conditions/exports/24/fear.png"
+  },
+  "framing": {
+    "scale": 0.6966864910790145,
+    "offset": [
+      172,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

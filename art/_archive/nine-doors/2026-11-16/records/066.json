@@ -1,0 +1,76 @@
+{
+  "number": 66,
+  "family": "move_icons",
+  "id": "move-killzone",
+  "path": "art/icons/moves/killzone.png",
+  "name": "Killzone",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Skirmisher rank III move",
+  "paint": "A rectangle marked on the ground by four corner ticks, Wick's sight-line across it.",
+  "avoid": "a crosshair over a person \u00b7 skulls",
+  "section": "Dexterity: Pressure, and the Skirmisher",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A rectangle marked on the ground by four corner ticks, Wick's sight-line across it.\nAvoid: a crosshair over a person \u00b7 skulls\nEXACT STAGING: A simple low perspective rectangle made ONLY of FOUR large right-angle corner ticks marks a ground area. One clean straight sight-line goes ACROSS the rectangle from a cropped ceramic mitten and short plain rifle barrel entering from the left edge. The gun itself is mostly out of the icon: the marked ZONE dominates, not the weapon. No full figure, humanoid target, reticle, crosshair, skulls, text, ground texture, scene or frame. Use two or three very sparse interior line segments at most.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "0573668951dbf0ce213f3955d365ad97d558612c4f4d5eb5170682df5630a78f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/066-killzone.png",
+  "source_sha256": "63cbca2026a4a6234244fbcae59e906d4653001176d5b41278189b0e87284a01",
+  "export_crop": [
+    0,
+    85,
+    1226,
+    1196
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/killzone.png",
+    "64": "art/icons/moves/exports/64/killzone.png",
+    "48": "art/icons/moves/exports/48/killzone.png",
+    "44": "art/icons/moves/exports/44/killzone.png",
+    "32": "art/icons/moves/exports/32/killzone.png",
+    "24": "art/icons/moves/exports/24/killzone.png"
+  },
+  "framing": {
+    "scale": 0.6335486592968916,
+    "offset": [
+      123,
+      160
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "ba7dc77d9b42d144302f190fa76a577bc97fb255c6e2f99494978fcaebea27f4",
+    "64": "8baf6d1aceb9337bbf4764104357b90e0abd832f86a79788601280525d1018b0",
+    "48": "1e5ed614fdb8de6e156842d153c3588cdfc56732ee9c4ab19563fba1c7eab398",
+    "44": "aef9838c05dad8d1d522e2f97d0c05e915ffda9db95cca9c7d07d88a183fd64e",
+    "32": "3b110ce40e4fda2f1e62a4709278bc1d4dc0097727bd9c0898310c2a6f8c677a",
+    "24": "8c1dd1f8839e342d02f172748524cc1181389120c0ffc68ba7851de45986d2bf"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

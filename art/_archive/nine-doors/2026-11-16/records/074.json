@@ -1,0 +1,76 @@
+{
+  "number": 74,
+  "family": "door_emblems",
+  "id": "door-pressure",
+  "path": "art/emblems/doors/pressure.png",
+  "name": "Pressure pips (door emblem)",
+  "mode": "door emblem",
+  "state": "designed, not built",
+  "use": "The door's mark: today the pips are SVG",
+  "paint": "Three short rising chevrons stacked one above the other, like a meter climbing.",
+  "avoid": "a military rank insignia \u00b7 a wifi signal",
+  "section": "Dexterity: Pressure, and the Skirmisher",
+  "kind": "sign",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Three short rising chevrons stacked one above the other, like a meter climbing.\nAvoid: a military rank insignia \u00b7 a wifi signal\nEXACT STAGING: DOOR EMBLEM at20px: exactly THREE SHORT RISING CHEVRONS stacked vertically, all point UP, each a BOLD angular open V inverted like a climbing meter. Bottom chevron shortest, middle medium, top widest, with broad transparent gaps. Use subtly clipped squared tips and an offset asymmetric break in one arm so it is an invented meter, not a real military rank badge. No wifi curved arcs, rectangle/badge, stars, letters or frame.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 6,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "045fa4cd2d306966af43c174567c9cccca5c2fe7384f9640fddbd171b64ce189",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/074-pressure.png",
+  "source_sha256": "e54b2d7be3e9da23f3379c7afd42a87ebeed741736047bc05195cb14073fcbad",
+  "export_crop": [
+    63,
+    87,
+    1240,
+    1228
+  ],
+  "exports": {
+    "128": "art/emblems/doors/exports/128/pressure.png",
+    "64": "art/emblems/doors/exports/64/pressure.png",
+    "48": "art/emblems/doors/exports/48/pressure.png",
+    "44": "art/emblems/doors/exports/44/pressure.png",
+    "32": "art/emblems/doors/exports/32/pressure.png",
+    "24": "art/emblems/doors/exports/24/pressure.png",
+    "20": "art/emblems/doors/exports/20/pressure.png"
+  },
+  "framing": {
+    "scale": 0.6966864910790145,
+    "offset": [
+      102,
+      114
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "cb4f4e01d527ca5a615ba5e08c6777fd3bc253cee68b6e6d63f1a0d91f50caee",
+    "64": "db6c5e2fb3b84d9343a2b989dd7fe05977e52e2746002dc5eefb8d9b301ba11e",
+    "48": "026923992ce979a1e2352fe1eccb93364e8491cbdff3317cc2b8b971708b9694",
+    "44": "a5a576be11f50a5f425b436ee9ab0faec437515c77c05643ccd9457d5ae4e09c",
+    "32": "cb25e9fb058ada6204c9baff0622c043af65f3932826f588eb238990a98f483e",
+    "24": "2181f0a1f39e5d069d5c20c1c08cf4a0d12fc1e755005b9e1eddc64864614b5c",
+    "20": "6fe429d46f9ef56d9af3137fbfc8693c4f70f89c4b71d0e50c030ca48b6b44cd"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

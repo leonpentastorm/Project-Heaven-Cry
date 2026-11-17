@@ -1,0 +1,75 @@
+{
+  "number": 344,
+  "family": "technique_icons",
+  "id": "tech-drag",
+  "path": "art/icons/techniques/drag.png",
+  "name": "Drag",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, link",
+  "paint": "A hand hauling a partial figure by the collar along the ground.",
+  "avoid": "a body bag \u00b7 blood",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Edit this exact Project Heaven Cry icon to correct its rejected draft. Keep the collar-drag action exactly legible: ONE cropped ceramic mitten gripping ONE coat collar attached to cropped shoulder/torso along short ground line. REMOVE every halo, glow, soft gray outline, blur and shadow. ONLY fully opaque #FFFFFF silhouettes separated by broad TRANSPARENT gaps at wrist, mitten, collar and coat. Native edge antialiasing only, no faint surrounding pigment. No whole head/figure, blood, text or new props. Preserve the composition and established ceramic-mitten/Wick graphic style. Center the complete subject inside generous transparent 15% margins and safe circular chip. Square icon; no text, gradients, grayscale shading, texture or extra props. ALL dark cuts must be TRANSPARENT HOLES, not black RGB paint.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/superseded/344-halo-fix/native.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/344-halo-fix/native.png",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "31ea5df523beb3b0f451a9e547544b808ecf7d2d1abd659fc117cc9f9b977196",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/344-drag.png",
+  "source_sha256": "ac9c40c9bae347c1560da1758da2ab1d4acde632e53ce772e0a8c4bd81c8909d",
+  "export_crop": [
+    0,
+    136,
+    1234,
+    1224
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/drag.png",
+    "64": "art/icons/techniques/exports/64/drag.png",
+    "48": "art/icons/techniques/exports/48/drag.png",
+    "44": "art/icons/techniques/exports/44/drag.png",
+    "32": "art/icons/techniques/exports/32/drag.png",
+    "24": "art/icons/techniques/exports/24/drag.png"
+  },
+  "framing": {
+    "scale": 0.5589256549526794,
+    "offset": [
+      167,
+      208
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "6a49ecf7a6ca4b84cff670af4dd8b62454ca135f19cd328eae940af57d652839",
+    "64": "e6596cca227edb522ae4d16509c93716a37c72aee80f85fca08afb9b2ca6d704",
+    "48": "11f4bbfadae322c4bf48d2b238d9516754f2047e049ecb181fec654fe556ae00",
+    "44": "f8034c9e2a2b916c354483f6cf1c839ab502acb4f0daa4874b559b5a78c0d52d",
+    "32": "f39b81a5c50d6c385aa5c5d4b83e27bd6c8ba124b22e30d384c92b6f0ce404dd",
+    "24": "b148a0d070a8bead88ccacaa5d6c6adb01db343d0513009684196a521d06d871"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

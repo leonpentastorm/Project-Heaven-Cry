@@ -1,0 +1,76 @@
+{
+  "number": 148,
+  "family": "figment_trait_icons",
+  "id": "trait-swift",
+  "path": "art/icons/figments/trait-swift.png",
+  "name": "Swift",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment trait",
+  "paint": "A figment shape trailing three long speed lines.",
+  "avoid": "a running shoe \u00b7 wings",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape trailing three long speed lines.\nAvoid: a running shoe \u00b7 wings\nEXACT STAGING: One SMALL FLOATING ABSTRACT FIGMENT made of three joined angular white fragments, an asymmetrical kite-like pointed body with TWO tiny loose diamond flecks near it. NO face, eyes, animal ears, humanoid body or Wick. It streaks toward viewer-right trailing exactly THREE LONG PARALLEL WHITE SPEED LINES to viewer-left. Keep speed lines crisp, separated and longer than the body, with no blur. No running shoe, wings, rockets, flames or full figure.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "d2a27c02f5b2c927444e57ddde9310da30de6f21df7b9677f29ad9d38d23bf71",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/148-trait-swift.png",
+  "source_sha256": "b81ac621cd3698e1ad62d3fc01ae91071435ed566c4e31738b2e691c40c55515",
+  "export_crop": [
+    33,
+    218,
+    1234,
+    1051
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-swift.png",
+    "64": "art/icons/figments/exports/64/trait-swift.png",
+    "48": "art/icons/figments/exports/48/trait-swift.png",
+    "44": "art/icons/figments/exports/44/trait-swift.png",
+    "32": "art/icons/figments/exports/32/trait-swift.png",
+    "24": "art/icons/figments/exports/24/trait-swift.png"
+  },
+  "framing": {
+    "scale": 0.6249596500854997,
+    "offset": [
+      136,
+      251
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "2a4343b10163d638b33e00857b78387b8d98d7031a34e114b53c43634e38265d",
+    "64": "ea943624c8b1fc545847dd9282b38ba66665c0023e38b6c13a5a10a06c33fd41",
+    "48": "eb92bdc3bf28349ed4c24c2731b743f65ddb8bdd864b9220f8714e3e4ff42487",
+    "44": "3f8183d358e25fdf1162673e398257c486189823250a507a53edc88cfe7b293d",
+    "32": "12461eaba3132b74f0dc2b5860543be5cc389a631ab4c73004dde7f3a5a5fdd5",
+    "24": "fe25f413c1479b06e77a02011f46236095dea392b111958f517f53d38a92a950"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

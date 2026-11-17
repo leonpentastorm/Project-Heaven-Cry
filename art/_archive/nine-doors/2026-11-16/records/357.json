@@ -1,0 +1,76 @@
+{
+  "number": 357,
+  "family": "technique_icons",
+  "id": "tech-bead",
+  "path": "art/icons/techniques/bead.png",
+  "name": "Bead",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, set",
+  "paint": "A front sight post lined up on a small dot.",
+  "avoid": "a bead necklace \u00b7 a scope logo",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A front sight post lined up on a small dot.\nAvoid: a bead necklace \u00b7 a scope logo\nEXACT STAGING: Bead: ONE SIMPLE FRONT SIGHT POST at lower-center, a white U-shaped bracket with a SINGLE CENTER UPRIGHT POST. ONE SMALL WHITE DOT centered directly ABOVE the post at eye line, with clean narrow transparent gap. Alignment is the whole message. No necklace beads, scope branding, enclosing circle, crosshair, weapon body, hands, person, glow or text. Bold simple geometry, strong transparent U opening.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "6f192964d71aedab61ce471db4a31106a2c7134b73da69eba699b52a593e12e5",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/357-bead.png",
+  "source_sha256": "53401a9b17e7d5aceedbd459aef36d6d632aedc242e07677871ee1070e165ba3",
+  "export_crop": [
+    119,
+    290,
+    1192,
+    1150
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/bead.png",
+    "64": "art/icons/techniques/exports/64/bead.png",
+    "48": "art/icons/techniques/exports/48/bead.png",
+    "44": "art/icons/techniques/exports/44/bead.png",
+    "32": "art/icons/techniques/exports/32/bead.png",
+    "24": "art/icons/techniques/exports/24/bead.png"
+  },
+  "framing": {
+    "scale": 0.6729164198884958,
+    "offset": [
+      151,
+      222
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "9f6aea68448e310d53ffc0d702f27d0e8bbf1223e5ed74ed2ab0767c0f4fe20a",
+    "64": "798b4a1cfc5e780eb99075a7d10766ad43635885af4c790423281b90be6f1ddb",
+    "48": "2769fad32820cb673b0ea7dd58bb95d12413834fee46a5798196c14d3efa7a6f",
+    "44": "f2a2461784d2ad8cd24570c3fa1729a1308c26585bf7fe2be1142f763c6c1c08",
+    "32": "92b4921328eb5abc4bb98279013c3f7a60fc9d31f8768586e8406379e434a1f4",
+    "24": "2f8bbe2c8d6ea6a6194c356075f605cb0280f43d57292cacab692bca2ce07b99"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

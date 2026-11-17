@@ -1,0 +1,76 @@
+{
+  "number": 68,
+  "family": "technique_icons",
+  "id": "tech-suppress",
+  "path": "art/icons/techniques/suppress.png",
+  "name": "Suppress",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, press: pins a foe down",
+  "paint": "A low burst of four bullet lines raking just over a crate's top edge.",
+  "avoid": "a soldier's helmet with insignia \u00b7 fire",
+  "section": "Dexterity: Pressure, and the Skirmisher",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A low burst of four bullet lines raking just over a crate's top edge.\nAvoid: a soldier's helmet with insignia \u00b7 fire\nEXACT STAGING: ONE broad plain crate occupies the bottom third of the frame, with a clear straight top edge and a single thick band cut. EXACTLY FOUR short straight parallel projectile streaks skim HORIZONTALLY just above that top edge, low and close together. The crate is cover, with no person hiding behind it. No full Wick, hands, gun, helmet, insignia, fire, smoke or explosion. Bold coherent crate-and-streaks silhouette readable at 32px.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "d92d3a21eb641df080cd81e3b46c46efa24895cb17ed1803dd4c2e1f8ea2beb8",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/068-suppress.png",
+  "source_sha256": "e09d5cdcffce580bbd32d63a98f13c0a0fb546e43f104d9c48a7fd2d7efbdefb",
+  "export_crop": [
+    0,
+    158,
+    1224,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/suppress.png",
+    "64": "art/icons/techniques/exports/64/suppress.png",
+    "48": "art/icons/techniques/exports/48/suppress.png",
+    "44": "art/icons/techniques/exports/44/suppress.png",
+    "32": "art/icons/techniques/exports/32/suppress.png",
+    "24": "art/icons/techniques/exports/24/suppress.png"
+  },
+  "framing": {
+    "scale": 0.5761420642457881,
+    "offset": [
+      159,
+      196
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "52c9839333f2a2a0e949966c01b6e7ec8bdaa9ce17dde6a42e6b4e631b4916ae",
+    "64": "551374c65919ca6013ce11d39ddf7a2998b3fb486cd3dd7636088a3303f4adaa",
+    "48": "5141ae2600d117b68fb8ce504435fb705eb9a968e77d9484831b6713e04604c4",
+    "44": "6d5a66dd322477dab250deb0d3d4ce1179fef7037f20672e19c414f6154016b7",
+    "32": "83f176268b7a73748bd40297ebd61f4f3cedaaf85312fba79b39a7ec5d50b3af",
+    "24": "52235ef44710c6e801a5297af995771a74627b5155dddcd1ffc069f0c8e12c85"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

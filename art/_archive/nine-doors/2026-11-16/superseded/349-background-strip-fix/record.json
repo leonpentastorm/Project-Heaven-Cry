@@ -1,0 +1,67 @@
+{
+  "number": 349,
+  "family": "technique_icons",
+  "id": "tech-snap-shot",
+  "path": "art/icons/techniques/snap-shot.png",
+  "name": "Snap Shot",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, fire",
+  "paint": "A pistol fired from the hip, a short quick line.",
+  "avoid": "a cowboy \u00b7 a camera",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A pistol fired from the hip, a short quick line.\nAvoid: a cowboy \u00b7 a camera\nEXACT STAGING: Snap Shot: a CROPPED CERAMIC MITTEN holds ONE small angular generic PISTOL low alongside a CROPPED HIP/COAT EDGE. One short QUICK WHITE LINE exits right from muzzle, close range. Only hand, pistol and hip partial, no whole figure, cowboy hat, camera, target, blood, flash, fire or real pistol model. Put BROAD TRANSPARENT GAPS between hip, hand, pistol so white conversion cannot fuse them.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "91fa925d0a9e2d0001d5eae35e07c790f1f04a5cb7ee33f139a19b0762a6387e",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/349-snap-shot.png",
+  "source_sha256": "db976921561cee03a071ecabb36c787834de52185ad059d9695f2f7ae0ce5ad7",
+  "export_crop": [
+    0,
+    0,
+    1254,
+    1198
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/snap-shot.png",
+    "64": "art/icons/techniques/exports/64/snap-shot.png",
+    "48": "art/icons/techniques/exports/48/snap-shot.png",
+    "44": "art/icons/techniques/exports/44/snap-shot.png",
+    "32": "art/icons/techniques/exports/32/snap-shot.png",
+    "24": "art/icons/techniques/exports/24/snap-shot.png"
+  },
+  "framing": {
+    "scale": 0.5078297821498312,
+    "offset": [
+      193,
+      208
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

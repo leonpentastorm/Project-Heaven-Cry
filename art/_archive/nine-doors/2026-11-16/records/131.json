@@ -1,0 +1,76 @@
+{
+  "number": 131,
+  "family": "move_icons",
+  "id": "move-payload",
+  "path": "art/icons/moves/payload.png",
+  "name": "Payload",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Sigilist rank III move",
+  "paint": "A heavy glyph falling like a weight onto a small ring on the ground.",
+  "avoid": "a bomb \u00b7 a real missile",
+  "section": "Brain Power: Sigils, and the Sigilist",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A heavy glyph falling like a weight onto a small ring on the ground.\nAvoid: a bomb \u00b7 a real missile\nEXACT STAGING: ONE heavy angular GEOMETRIC GLYPH, a thick hollow HEXAGON with a diamond-shaped inner cut, is falling vertically like a weight onto ONE small flat elliptical ring on a tiny ground line below. Give it just TWO short parallel descent ticks above, and a clear small gap between glyph and ring. It is a solid symbolic weight, NOT a bomb, missile, rocket, falling person or literal explosive. No hand, figure, robot, face, flames, rays, shading or glow.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-127.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sigil-127.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f74c14b65d01a86a585acadcda92b2bd8202d5ae1601e7c2c0dcabf335a684c1",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/131-payload.png",
+  "source_sha256": "bd6ab9769b89dd638eef00a1223a7441d8967c5a33454aca60b7276e89c445ba",
+  "export_crop": [
+    0,
+    0,
+    1230,
+    1230
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/payload.png",
+    "64": "art/icons/moves/exports/64/payload.png",
+    "48": "art/icons/moves/exports/48/payload.png",
+    "44": "art/icons/moves/exports/44/payload.png",
+    "32": "art/icons/moves/exports/32/payload.png",
+    "24": "art/icons/moves/exports/24/payload.png"
+  },
+  "framing": {
+    "scale": 0.5406170372795539,
+    "offset": [
+      179,
+      179
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "c0a07bc57f605b25624327c60149000061083e30df3c7684305eb5d7fd24ec1f",
+    "64": "f549c09038bd2b6badb6a65cba2ea4cfa8bb22d46acd4a6e7da9901b5bcf3913",
+    "48": "bf81ea176d95029b24eb55ba3035584b3baebf554ea2d1bb5380a0ddfbd794c5",
+    "44": "7bfaa41df9c90910e1417ad4dc7522a1deb2a9c4dc08c776f2ebca7d25d44d60",
+    "32": "9c12b27b4c1ffed744ab1c24f566c84a1893275e1fe2a3622f249319b999497b",
+    "24": "f9efc364a0df8b376f973ea32785af2ed2280413ad1e4532680b951989c8eec2"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

@@ -1,0 +1,60 @@
+{
+  "number": 104,
+  "family": "shadow_icons",
+  "id": "shadow-rig",
+  "path": "art/icons/shadow/rig.png",
+  "name": "Rig",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Shadow verb (Work): a trap on a tile",
+  "paint": "A tripwire stretched across a tile between two pegs, a small charge at one end.",
+  "avoid": "a bomb with a timer \u00b7 a fishing rig",
+  "section": "Ingenuity: Shadow, and the Operative",
+  "kind": "wick",
+  "prompt": "Paint ONE fictional game UI symbol in pure white flat ink on fully transparent background. A taut string stretched across a small diamond tile between two short pegs, with a small rectangular marker attached at one end. A static symbolic pictogram, no characters, no injury, no operational engineering details. Use the bold silhouettes and sparse transparent cuts of the attached reference icons. Center the entire small mechanism inside a generous 15% transparent margin, square 1024x1024. It must be readable at 32px. No mascot, no robot head, no hand, no text, no numbers, no shading, no gray, no glow, no texture, no border. Only white shapes and transparent negative spaces.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "c8b03417a11c1a95c356d5bdccf8df4055dfbb8c7365ad8d5fe731a719a0b5be",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/104-rig.png",
+  "source_sha256": "4f437ca7ec5a32a841cd62e94466362b59c1c5f928966e3ff3efe6f0aab20989",
+  "export_crop": [
+    146,
+    239,
+    1216,
+    1212
+  ],
+  "exports": {
+    "128": "art/icons/shadow/exports/128/rig.png",
+    "64": "art/icons/shadow/exports/64/rig.png",
+    "48": "art/icons/shadow/exports/48/rig.png",
+    "44": "art/icons/shadow/exports/44/rig.png",
+    "32": "art/icons/shadow/exports/32/rig.png",
+    "24": "art/icons/shadow/exports/24/rig.png"
+  },
+  "framing": {
+    "scale": 0.6659429844763515,
+    "offset": [
+      155,
+      188
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

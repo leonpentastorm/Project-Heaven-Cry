@@ -1,0 +1,76 @@
+{
+  "number": 232,
+  "family": "move_icons",
+  "id": "move-blessed-arms",
+  "path": "art/icons/moves/blessed-arms.png",
+  "name": "Blessed Arms",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Chaplain rank II move (from the Lumeri Templar)",
+  "paint": "A blade and a shell crossed under a single short ray.",
+  "avoid": "a real religion's cross \u00b7 fire",
+  "section": "Faith: prayer, and the Chaplain",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A blade and a shell crossed under a single short ray.\nAvoid: a real religion's cross \u00b7 fire\nEXACT STAGING: Blessed Arms: ONE short plain invented BLADE and ONE oversized stubby blank AMMUNITION SHELL cross diagonally in a compact X, with ONE short vertical white RAY pointing down just above their intersection. Distinct blade point and shell blunt rim, no gun or person. Ray is a single tapered bar with no star/halo. No flame, real religious emblem, text, numerals, insignia, labels or brands. Pure white flat silhouettes, transparent separating cuts.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "ed6513a87eec23ae58d54af141796e7cf75de5e594ed4eeec4c04ec6b923a789",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/232-blessed-arms.png",
+  "source_sha256": "b1bda795ae35c9b954ced0816d15a5fe13630380f0293adcbbde9738ae2c95dd",
+  "export_crop": [
+    33,
+    21,
+    1144,
+    1228
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/blessed-arms.png",
+    "64": "art/icons/moves/exports/64/blessed-arms.png",
+    "48": "art/icons/moves/exports/48/blessed-arms.png",
+    "44": "art/icons/moves/exports/44/blessed-arms.png",
+    "32": "art/icons/moves/exports/32/blessed-arms.png",
+    "24": "art/icons/moves/exports/24/blessed-arms.png"
+  },
+  "framing": {
+    "scale": 0.5435790988580297,
+    "offset": [
+      210,
+      184
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "a8e462bbd5c4c0a93719a0d72b4457fee98473c705b411028fdea7e8799b66d0",
+    "64": "59ca82cc3fffe90f2d98afc485306a7e5baf745ce4547af09062a51636f75eed",
+    "48": "01fa85548243469093acf5d120f6f546880d2e2aa50ab06518e4a576872fb1c3",
+    "44": "257228aae7bde0617f75ec8b1d918f2231ee2f41f92e529b13b6c112f0e7851e",
+    "32": "ddedac6919581a88c06c22e05805d1fe1eb34b251f49ef6d47904bb4da5f3de2",
+    "24": "c1ccf3d909ba9d56364ac539468b5af1a88f02167355bf901da91b9f09c4c867"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

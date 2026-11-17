@@ -1,0 +1,76 @@
+{
+  "number": 191,
+  "family": "move_icons",
+  "id": "move-the-ledger",
+  "path": "art/icons/moves/the-ledger.png",
+  "name": "The Ledger",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Mender rank I move (asked 13 Nov, C3)",
+  "paint": "An open ledger book with a thread for a bookmark, tally marks on the page.",
+  "avoid": "readable text or numbers \u00b7 coins",
+  "section": "Empathy: Bonds and Tending, and the Mender",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: An open ledger book with a thread for a bookmark, tally marks on the page.\nAvoid: readable text or numbers \u00b7 coins\nEXACT STAGING: The Ledger: ONE open bookkeeping ledger seen slightly from above, TWO broad white pages separated by a deep transparent spine crease. ONE thin thread bookmark hangs below the book. On pages only several small GROUPS OF TALLY STROKES, with one diagonal stroke across four short vertical strokes; clearly marks, no letters, readable words, numerals or currency. No coins, quill, hands or whole character. Broad shapes, sparse crisp transparent cuts.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "221bd7b51fd454a4d889e4f344fbbc0f3be18b18a804d9d6ccd0f6fd7ee6ca4c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/191-the-ledger.png",
+  "source_sha256": "17263037de52800f61ffa3e18716bc2ac8052ef1711ca073b23dbef9160db519",
+  "export_crop": [
+    0,
+    264,
+    1178,
+    1178
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/the-ledger.png",
+    "64": "art/icons/moves/exports/64/the-ledger.png",
+    "48": "art/icons/moves/exports/48/the-ledger.png",
+    "44": "art/icons/moves/exports/44/the-ledger.png",
+    "32": "art/icons/moves/exports/32/the-ledger.png",
+    "24": "art/icons/moves/exports/24/the-ledger.png"
+  },
+  "framing": {
+    "scale": 0.6717843023700031,
+    "offset": [
+      116,
+      205
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "bd34b95c4d36d397f156259b3b81a478f9fc1ea60dbe98f6146692ad81988d9a",
+    "64": "02690d61c8d19b1472cb676c420502cf8edf0ff499db1f344cf723692560e557",
+    "48": "9962df1301419a40cb9446012d2751c3b3b25b26f8cc2dcfe1988fb68cbb24a2",
+    "44": "d8f157599573b511b695f9d3b27a3d46eb8426bc7c545d8b231c8164ff0d9544",
+    "32": "5ea3843239a4dd22dc526f6fea5ae9262824d94f3ac9d57e18e17f6eef9163c0",
+    "24": "325efa9cb87fb218ba10bde05b83d2b7e61bfae223e601b3bca65429246f16ba"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

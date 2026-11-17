@@ -1,0 +1,63 @@
+{
+  "number": 197,
+  "family": "class_portraits",
+  "id": "class-bard",
+  "path": "art/portraits/classes/bard.png",
+  "name": "The Mender (class portrait)",
+  "mode": "class portrait",
+  "state": "designed, not built",
+  "use": "Class card portrait",
+  "paint": "A tired, kind field medic with an Attuner glove, fine threads of light from its fingertips to people off frame, sleeves rolled, steady eyes.",
+  "avoid": "a red cross \u00b7 a nurse uniform from any real service",
+  "section": "Empathy: Bonds and Tending, and the Mender",
+  "kind": "class",
+  "prompt": "Create an original Project Heaven Cry illustration in HEAVENPRINT. Use the attached approved Original 27 and New Faces\nimages as the painting authority: expressive ink and opaque gouache, deliberate angular form, selective dry-brush\nscumbling, restrained hatching, charcoal lost edges and warm ivory accents. Faces have believable anatomy and restrained\nstylization and specific emotional acting. Format: 4:5, 800 x 1000 PNG, one character from the chest or waist up, one\nvisible action, one specific emotion, one useful setting hint behind them; the eye line about 22% from the top. The class\nattribute's pigment appears only as one accent (given in the section). No text, frame, UI or watermark; no real-world\nperson, brand or recognisable character. The portrait shows:\n\nPaint: A tired, kind field medic with an Attuner glove, fine threads of light from its fingertips to people off frame, sleeves rolled, steady eyes.\nAvoid: a red cross \u00b7 a nurse uniform from any real service\nCAST AND STAGING: A 52-year-old woman with medium-brown skin, heavy-lidded steady eyes, a broad slightly tired face and dark hair wound into a practical loose bun with gray streaks. Waist-up seated/leaning forward, shoulders lowered, ONE ATTUNER GLOVE open with fine separate threads of light traveling from fingertips to PEOPLE OFF FRAME, never complete other figures. Natural believable fingers, glove follows hand anatomy, threads begin at fingertips rather than wrist. Rolled sleeves, worn slate canvas medic coat and small plain ivory plus on an uncolored pouch if needed, never red cross or recognizable nurse uniform. Neutral improvised clinic wall and hanging clean cloth behind, no armor, candle altar or glamour pose. Kind expression quiet, not a broad grin.\nACTING SENTENCE: A tired field medic reaches with an Attuner glove toward companions beyond the frame because they need steady help, and feels patient concern.\nRendering follows the approved paintings: visible deliberate angular opaque gouache brush blocks, broken ink contours, selective dry scumbling, quiet charcoal lost edges and warm ivory focal planes. Believable face anatomy with restrained illustration stylization, no photo skin/3D gloss/airbrush, no oversized anime eyes. Borrow rendering, NEVER the identity/face/pose/costume of a reference person. The final small motif reference supplies only the class's equipment/gesture motif; DO NOT paste its emblem/frame into painting. Vertical 4:5, full-bleed opaque RGB painting, chest/waist-up, eye line approximately22% from top, face/decisive hands/tool central80%. One person, action, emotion, useful setting hint. Preserve natural skin/cloth/metal colors; one soft rose-pink #EB95B7 thread-and-glove light accent is the SINGLE ATTRIBUTE ACCENT, never a monochrome wash. No letters, readable glyphs, labels, symbols of real faiths, real insignia, caption, UI, frame, border or watermark.",
+  "refs": [],
+  "transparent": false,
+  "status": "review-candidate",
+  "priority": 6,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/heavenprint-authority-panels.jpg",
+    "art/portraits/world/new-faces/orren-vask.png",
+    "art/portraits/world/new-faces/ivara-drenn.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/portrait-archetype-pair.jpg",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/class-bard.png"
+  ],
+  "portrait_cast": {
+    "number": 197,
+    "motif": "bard",
+    "color": "one soft rose-pink #EB95B7 thread-and-glove light accent",
+    "acting": "A tired field medic reaches with an Attuner glove toward companions beyond the frame because they need steady help, and feels patient concern.",
+    "notes": "A 52-year-old woman with medium-brown skin, heavy-lidded steady eyes, a broad slightly tired face and dark hair wound into a practical loose bun with gray streaks. Waist-up seated/leaning forward, shoulders lowered, ONE ATTUNER GLOVE open with fine separate threads of light traveling from fingertips to PEOPLE OFF FRAME, never complete other figures. Natural believable fingers, glove follows hand anatomy, threads begin at fingertips rather than wrist. Rolled sleeves, worn slate canvas medic coat and small plain ivory plus on an uncolored pouch if needed, never red cross or recognizable nurse uniform. Neutral improvised clinic wall and hanging clean cloth behind, no armor, candle altar or glamour pose. Kind expression quiet, not a broad grin."
+  },
+  "composition_scope": "one original waist-up Heavenprint character",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1122,
+    1402
+  ],
+  "export_dimensions": [
+    800,
+    1000
+  ],
+  "sha256": "42b17b74d30a2f7a86754fd0a0a5ead8f7cd735bcd5951c42475eec67a023cf2",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/197-bard.png",
+  "source_sha256": "8d073789c62238def4178ab050b95bb977b318c3a8de322587a8cf747dee4b33",
+  "export_crop": [
+    0,
+    0,
+    1121,
+    1401
+  ],
+  "exports": {},
+  "framing": {
+    "scale": 0.7136485280999108,
+    "aspect_ratio": "4:5",
+    "crop_policy": "Centered aspect-preserving 4:5 crop before downsampling"
+  },
+  "upscaled": false,
+  "export_processing": "Centered aspect-preserving 4:5 crop and Lanczos downsample to RGB portrait",
+  "export_sha256": {},
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

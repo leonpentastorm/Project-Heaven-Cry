@@ -1,0 +1,60 @@
+{
+  "number": 316,
+  "family": "condition_icons",
+  "id": "cond-lowered",
+  "path": "art/icons/conditions/lowered.png",
+  "name": "Weapon lowered",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Heart state",
+  "paint": "A gun held pointing at the ground line.",
+  "avoid": "a white flag \u00b7 a broken gun",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "Paint one nonviolent EQUIPMENT-ONLY fantasy game UI icon. A generic invented long hunting-style firearm in profile, held DOWN by just a tiny cropped mitten hand on its wooden grip, barrel diagonal downward, muzzle clearly pointing at a short ground line. No human body, no head, no targets, no firing or impact effects, no ammunition or real model details. The object is idle and lowered. Pure solid white #FFFFFF flat ink and transparent cuts, fully transparent background, crisp vector-like silhouette, no shadows, glow, gray, texture, blur, text, frame or extra objects. Match the attached white-ink game signs. Square 1024x1024 with a 15% transparent margin. The diagonal DOWNWARD muzzle direction must be unmistakable at 24px.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "24ee3ef578aee390e1f9e7ef962c2d96a68c25735db8bfca85a2b9bb417a490c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/316-lowered.png",
+  "source_sha256": "d15a04da471a074d1d4fa4e85e8bdc840b377a5ddb216f5c987d84592afb7afe",
+  "export_crop": [
+    0,
+    0,
+    1202,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/lowered.png",
+    "64": "art/icons/conditions/exports/64/lowered.png",
+    "48": "art/icons/conditions/exports/48/lowered.png",
+    "44": "art/icons/conditions/exports/44/lowered.png",
+    "32": "art/icons/conditions/exports/32/lowered.png",
+    "24": "art/icons/conditions/exports/24/lowered.png"
+  },
+  "framing": {
+    "scale": 0.6539074960127592,
+    "offset": [
+      119,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

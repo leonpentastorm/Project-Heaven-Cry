@@ -1,0 +1,76 @@
+{
+  "number": 196,
+  "family": "door_emblems",
+  "id": "door-bond",
+  "path": "art/emblems/doors/bond.png",
+  "name": "Bond thread (door emblem)",
+  "mode": "door emblem",
+  "state": "designed, not built",
+  "use": "The door's mark",
+  "paint": "Two open rings linked by one thread with a heart knot at its middle.",
+  "avoid": "chain links (the Bonds boon line) \u00b7 a wedding ring",
+  "section": "Empathy: Bonds and Tending, and the Mender",
+  "kind": "sign",
+  "prompt": "Create ONE original RPG object/sign icon matching the attached flat WHITE graphic references. Bold crisp silhouettes, sparse broad TRANSPARENT interior cuts, no full mascot, robot head, screen face, capelet or complete person. Cropped ceramic mittens only if requested. Pure #FFFFFF WHITE flat ink, no black or gray paint, shading, gradients, glow, texture, text or border.\nPaint: Two open rings linked by one thread with a heart knot at its middle.\nAvoid: chain links (the Bonds boon line) \u00b7 a wedding ring\nEXACT STAGING: DOOR EMBLEM at20px: TWO OPEN WHITE RINGS sit apart left and right, each with one unmistakable small opening at outer edge. ONE THIN WHITE THREAD links the two inner edges and forms ONE SIMPLE HEART-SHAPED KNOT at center. They are not interlocking chain links or wedding rings. Large empty transparent centers, broad gaps around thread, no metal shading, hands, person, text or border.\nOnly the specified object/partials, no extra decoration.\nTrue transparency in backdrop and ALL holes, not opaque black dividers. Complete subject centered inside 15% transparent margins. Square single icon readable at32/44px; signs at24/48px; door emblems at20px. All decisive shape stays in safe box and circular chip.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 6,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/196-bond.png",
+  "source_sha256": "91eae1d048bd9363559dc525c1be07ae19fe499f0e48afb63ec85a2e4ed37720",
+  "export_crop": [
+    0,
+    23,
+    1253,
+    1142
+  ],
+  "exports": {
+    "128": "art/emblems/doors/exports/128/bond.png",
+    "64": "art/emblems/doors/exports/64/bond.png",
+    "48": "art/emblems/doors/exports/48/bond.png",
+    "44": "art/emblems/doors/exports/44/bond.png",
+    "32": "art/emblems/doors/exports/32/bond.png",
+    "24": "art/emblems/doors/exports/24/bond.png",
+    "20": "art/emblems/doors/exports/20/bond.png"
+  },
+  "framing": {
+    "scale": 0.6544293695131684,
+    "offset": [
+      102,
+      146
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "f11471d4a6dca8b4f32e98a2aa64833a4536cc2c31ed8d540cd24de3ca46792f",
+    "64": "91bd2d7c21ca61f9e1c13cb33e057106926c1c9892f58014b47a06f1284b1ee2",
+    "48": "7069c09d16ddfd92a1ff7e4b74077bcd7d7c238f5f22529a57f70817babf9d95",
+    "44": "15d288b871a1e3ab8a7f72d492c4a9795d3bb71dcafdb2e4712b4d3802b8c7b0",
+    "32": "9cb41130fd76bf09a1df200d7477b5673bbd0cd8571b3d9f6af95452d2e8f246",
+    "24": "0d1f4025dfc7ae1d5916f7b6569133557fcb1cd93a8d7ad2d10764642ff8af85",
+    "20": "ea8646ab8720376e4c9f01d3d96bfdfefe5aab33324c26efd8979fb40a241a19"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

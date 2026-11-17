@@ -1,0 +1,76 @@
+{
+  "number": 43,
+  "family": "door_emblems",
+  "id": "door-momentum",
+  "path": "art/emblems/doors/momentum.png",
+  "name": "Momentum counter (door emblem)",
+  "mode": "door emblem",
+  "state": "designed, not built",
+  "use": "The door's mark: today the counter chip and arcs are SVG",
+  "paint": "A heavy round weight with three curved motion lines rolling off its back edge.",
+  "avoid": "a bowling ball \u00b7 a clock",
+  "section": "Raw Power: the Momentum chain, and the Breaker",
+  "kind": "sign",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A heavy round weight with three curved motion lines rolling off its back edge.\nAvoid: a bowling ball \u00b7 a clock\nEXACT STAGING: DOOR EMBLEM at20px: ONE HEAVY ROUND WEIGHT, almost solid white circle with one short flat bottom bevel and a tiny offset center notch. Exactly THREE SHORT CURVED MOTION TRAILS peel LEFT from its back edge as if rolling RIGHT. No bowling finger holes, clock face/hands/numerals, character or extra decoration. Strong big weight silhouette; motion trails broad and separated.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 6,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "c1d504daea1586ec0495f8d6cbab826cc08ffa53ff45c784ee57b5e791a90dbe",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/043-momentum.png",
+  "source_sha256": "490403ae62c537934035fb9db16eff9979dffa8e6b599ac70c9eed7ab5615af5",
+  "export_crop": [
+    0,
+    57,
+    1206,
+    1224
+  ],
+  "exports": {
+    "128": "art/emblems/doors/exports/128/momentum.png",
+    "64": "art/emblems/doors/exports/64/momentum.png",
+    "48": "art/emblems/doors/exports/48/momentum.png",
+    "44": "art/emblems/doors/exports/44/momentum.png",
+    "32": "art/emblems/doors/exports/32/momentum.png",
+    "24": "art/emblems/doors/exports/24/momentum.png",
+    "20": "art/emblems/doors/exports/20/momentum.png"
+  },
+  "framing": {
+    "scale": 0.6799336650082919,
+    "offset": [
+      102,
+      115
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "388f969a5836b21483c822bcfb5ba8de490e6619c5b4b63b9d25dd09df230b42",
+    "64": "c4a101c36e75a90e15e093de5c44d2aed63d86798c24ffec193f9cfb5af5efab",
+    "48": "866becc7246379122e960bd26a954818fff8e3c9c4b71ce8913622f0d384df5b",
+    "44": "46371fa21348d33a590f3597eba2ca1ab746c32ee163b5836541b6bae9e9fc18",
+    "32": "96b5b019619aa2edf6fbd706385dd360dc9fa6dd058497190f4cea1fa837123a",
+    "24": "6b4d1fd1e013ad2c9ec31a916ddee32577121645fe020dcfd602b96635740f17",
+    "20": "65cb70f788ab14b120c2cce370427e8a4b640da39084d247ea953bf2a2f27945"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

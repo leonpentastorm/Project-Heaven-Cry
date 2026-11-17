@@ -1,0 +1,76 @@
+{
+  "number": 343,
+  "family": "technique_icons",
+  "id": "tech-trip",
+  "path": "art/icons/techniques/trip.png",
+  "name": "Trip",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, link",
+  "paint": "A foot hooking a partial ankle, the figure tipping.",
+  "avoid": "a banana peel \u00b7 a cartoon fall",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A foot hooking a partial ankle, the figure tipping.\nAvoid: a banana peel \u00b7 a cartoon fall\nEXACT STAGING: Trip: only TWO CROPPED LOWER-LEG PARTIALS. A plain ceramic boot at left hooks its toe BEHIND the ankle of the right boot, which visibly TIPS off its heel. Two short angled motion ticks indicate imbalance. Athletic practice abstraction, no wound, blood, full body, cartoon banana peel, exaggerated sprawling fall or extra foot. Show actual ankle-hook contact clearly.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "ff39f77b6a95524ab5213479625f9359523e443a171bb976fe1686b8dfa833a2",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/343-trip.png",
+  "source_sha256": "51e8fc900b8b52d101d72b7eba0a6074aa692d8b7129be8b97ecb2d23aec1c6f",
+  "export_crop": [
+    0,
+    160,
+    1238,
+    1228
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/trip.png",
+    "64": "art/icons/techniques/exports/64/trip.png",
+    "48": "art/icons/techniques/exports/48/trip.png",
+    "44": "art/icons/techniques/exports/44/trip.png",
+    "32": "art/icons/techniques/exports/32/trip.png",
+    "24": "art/icons/techniques/exports/24/trip.png"
+  },
+  "framing": {
+    "scale": 0.538686648819637,
+    "offset": [
+      178,
+      224
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "f64ec56fc8f6797942d69ac265204a3d49e73bf38238d0eec6f2e7ceba3b3d44",
+    "64": "49398395b353bc3258a1b71b4516f1b99ee04e18f9697deb3b71124b59d0246d",
+    "48": "3d5faf86afa79da2ef99a80068c61cb84c958a288af83ec5c4a8ec5fa7e217cf",
+    "44": "6218e419b0b462d26149c947a6a10f8d98189d0b4f84e8dcf3c0b3cc015d4fd9",
+    "32": "f3a9f26d1fef2dfc74fae3fe8cf626484d9ddbbeaad5c74cbf26d8aae183d208",
+    "24": "4ddc56b959b0f810cd8a2445319aa1b1cdf50eee85d67b9d6300993234de3220"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

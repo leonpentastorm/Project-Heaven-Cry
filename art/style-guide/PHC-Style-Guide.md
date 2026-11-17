@@ -372,6 +372,9 @@ Use “Heavenprint v1.3” as shorthand within a context containing this pack. F
 
 # 14 / Approved perk and trait icon lock
 
+**Wick prop clarification — Leon, 16 November 2026:** The bowl/cup floating above Wick in Mind Without Fog belongs to that trait alone (still water). It is not part of Wick’s head, silhouette or default accessories. Keep the approved master unchanged as a style reference, but omit the cup from every other icon unless its own brief asks for it. Reference-specific arrows and other props likewise do not carry over automatically. Wick’s defining features remain the ceramic pixel-screen head, capelet, lantern heart and asymmetry.
+
+
 USER-APPROVED MASTER • 4 NOVEMBER 2026
 
 Exact reference: ../icons/traits/mind-without-fog.png. This is the FIRST Mind Without Fog render, selected by the user after the later clean redraw. Do not select another attempt because its filename says “clean” or “final.”

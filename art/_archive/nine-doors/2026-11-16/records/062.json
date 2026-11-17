@@ -1,0 +1,77 @@
+{
+  "number": 62,
+  "family": "move_icons",
+  "id": "move-fire-discipline",
+  "path": "art/icons/moves/fire-discipline.png",
+  "name": "Fire Discipline",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Skirmisher rank I move",
+  "paint": "Wick with the rifle tight to the shoulder, three short evenly spaced shot ticks in a row.",
+  "avoid": "a spray of bullets \u00b7 a metronome",
+  "section": "Dexterity: Pressure, and the Skirmisher",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick with the rifle tight to the shoulder, three short evenly spaced shot ticks in a row.\nAvoid: a spray of bullets \u00b7 a metronome\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nSTAGING: One full Wick with a single original simple rifle held tightly to his shoulder: front mitten under the fore-end, other mitten on the grip, cheek turned toward the aiming direction, planted disciplined stance. Exactly THREE short evenly spaced WHITE SHOT TICKS in a neat line beyond the muzzle, not projectiles flying everywhere. The rifle is recognizable by stock and barrel, invented with no real make, no tiny attachments. No target, other figure, large flash, fire, glow, smoke or metronome. Keep the lantern chest and asymmetric capelet visible.\nWick is the exact reference ceramic automaton with pixel-screen face, short capelet, lantern medical chest, ear discs, head fasteners, mitten hands and cuffed boots. NO cup, bowl, halo, generic up-arrows or four-point decoration.\nPure white flat ink only. All dark screen/holes/background must be transparent, never black or grey paint. No shading, gradients or glow. One centered square icon safely inside a central 75\u201380% box and a 90% circular chip. No labels, border or writing.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "8ef3df46145ab8854871e4d099cff0fd47262a12611f0f1d6f948a9e2e3d7c71",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/062-fire-discipline.png",
+  "source_sha256": "9d133bceebd202b27aa18d2d7d0b9a98d39a35e85ec6f26a3e4d06743da3dbd5",
+  "export_crop": [
+    63,
+    101,
+    1240,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/fire-discipline.png",
+    "64": "art/icons/moves/exports/64/fire-discipline.png",
+    "48": "art/icons/moves/exports/48/fire-discipline.png",
+    "44": "art/icons/moves/exports/44/fire-discipline.png",
+    "32": "art/icons/moves/exports/32/fire-discipline.png",
+    "24": "art/icons/moves/exports/24/fire-discipline.png"
+  },
+  "framing": {
+    "scale": 0.5705976763251539,
+    "offset": [
+      176,
+      183
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "c9319ac26ac843bfe958cae91be4e56aa533c8197e8cfe5f147fcef85bd5d0dd",
+    "64": "85225df11fd383b1ea10dd8b1e66d64dfa35b7eb1b0cedad061d75e4db7af737",
+    "48": "9f3c1332153978b20f16729c37e479fcceaa58bc813652949e8bd77088657740",
+    "44": "c3a16cddf7a75b518479f3ebcc0085d69e8ae18c5804990b00cb2b1297446a1d",
+    "32": "c66c35f64a55f18477bb0992bc2279f82b18dd48f7c2b2193c4c16971c9a953d",
+    "24": "813e046f8bbe98eb725db5d6bb36559a407e930bec3576bba68cf16ef27a6abe"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

@@ -1,0 +1,78 @@
+{
+  "number": 340,
+  "family": "technique_icons",
+  "id": "tech-sidestep",
+  "path": "art/icons/techniques/sidestep.png",
+  "name": "Sidestep",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, link",
+  "paint": "Wick stepping sideways, a dart passing where he stood.",
+  "avoid": "a dance step chart \u00b7 a ninja",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick stepping sideways, a dart passing where he stood.\nAvoid: a dance step chart \u00b7 a ninja\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Sidestep: ONE Wick steps quickly SIDEWAYS RIGHT, torso tilted and both mittens open for balance, leading boot visibly slides right. A SINGLE DART travels horizontally through EMPTY SPACE to Wick's LEFT where he just stood. One short dashed horizontal trail behind dart, not another body or ghost. No dance chart, ninja, arrows, bowl, halo or shield. Clear lateral evasive movement, no rolled or airborne pose.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "6999476581ef9593f72fea4ef41eceeba6715fc49b51c83bb5279a45592b245c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/340-sidestep.png",
+  "source_sha256": "2aa17b9e6cab434ebcd97ee124d74b5eec7e03736b5823da7d38181a80a02657",
+  "export_crop": [
+    48,
+    20,
+    1240,
+    1220
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/sidestep.png",
+    "64": "art/icons/techniques/exports/64/sidestep.png",
+    "48": "art/icons/techniques/exports/48/sidestep.png",
+    "44": "art/icons/techniques/exports/44/sidestep.png",
+    "32": "art/icons/techniques/exports/32/sidestep.png",
+    "24": "art/icons/techniques/exports/24/sidestep.png"
+  },
+  "framing": {
+    "scale": 0.5374627361344554,
+    "offset": [
+      191,
+      189
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "49c29d72b953a7bc12aa8ec6de44697bc750efbf78db6bec5afd14ec59fd9707",
+    "64": "084d0094815ee9ef9383a15a2493e75d6a8f7e7aa3d466b4214c182e2d014b0c",
+    "48": "6b7f0c995d13182b5d85755ed198796c13fe08c9ace140bc2538f7ebdee0c451",
+    "44": "e3b223cec21800f64cb5323852b414e6c684f41cd93ff6c39382ee7faa26374f",
+    "32": "bb80f828d7a8419ddc2d4a7beaa232e8498d43a39855a22b318fbbe45ce0c22a",
+    "24": "683c465a612cbaa38e866e70fa39a24529ca9b2de0947545e4e1a85708b8e017"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

@@ -1,0 +1,76 @@
+{
+  "number": 335,
+  "family": "technique_icons",
+  "id": "tech-hamstring",
+  "path": "art/icons/techniques/hamstring.png",
+  "name": "Hamstring",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, strike",
+  "paint": "A low cut behind a partial leg, a small ring at the cut.",
+  "avoid": "blood \u00b7 an animal",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A low cut behind a partial leg, a small ring at the cut.\nAvoid: blood \u00b7 an animal\nEXACT STAGING: Hamstring: ONE CROPPED LOWER LEG AND BOOT only, with ONE low white CURVED BLADE-STROKE passing BEHIND THE ANKLE. ONE SMALL EMPTY RING precisely marks that low contact. Abstract non-graphic fantasy training-technique symbol, intact boot/leg, no wound, blood, flesh, injury detail, animal or full figure. Leg upright, low cut reads clearly at ankle height, crisp white and transparent cuts.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "997f3ce1d4d539ff02ae55d6eab1271c1e06834f1f8345b3a3c8dd50549cf70f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/335-hamstring.png",
+  "source_sha256": "3811877a235626a28c42b905cb5969334e126f7f1bd8868ddf2d03adb14e70b8",
+  "export_crop": [
+    65,
+    83,
+    1194,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/hamstring.png",
+    "64": "art/icons/techniques/exports/64/hamstring.png",
+    "48": "art/icons/techniques/exports/48/hamstring.png",
+    "44": "art/icons/techniques/exports/44/hamstring.png",
+    "32": "art/icons/techniques/exports/32/hamstring.png",
+    "24": "art/icons/techniques/exports/24/hamstring.png"
+  },
+  "framing": {
+    "scale": 0.6740574442583186,
+    "offset": [
+      131,
+      117
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "fb30e8d0af4c16b026523ea04be41525bc619d90777f7cbb844832288bc9c11e",
+    "64": "34d1a73e8dd5e2beb4989793bee1717935cdbb43c300568e8c2373a371ba2397",
+    "48": "85897ce78803ca605c9b49c41f7026fdb56e8b5c31a1e304fac3ea1b251884ac",
+    "44": "b6f88143856d3f429cc20b91efe76a70ca0d133f1190564c9950ca8287760eb2",
+    "32": "1905188255e62f90097e04330046a86935612a96e96f050def4192eeab37d807",
+    "24": "15e765456125ed720f30e17b034603e3a69c41b6903776275f86ae8676595a26"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

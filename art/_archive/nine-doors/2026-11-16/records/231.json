@@ -1,0 +1,76 @@
+{
+  "number": 231,
+  "family": "move_icons",
+  "id": "move-under-the-eye",
+  "path": "art/icons/moves/under-the-eye.png",
+  "name": "Under the Eye",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Chaplain rank II move (from the Lumeri Templar)",
+  "paint": "A partial ally under a large open eye drawn as an arc above.",
+  "avoid": "a real religious all-seeing-eye symbol \u00b7 a pyramid",
+  "section": "Faith: prayer, and the Chaplain",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A partial ally under a large open eye drawn as an arc above.\nAvoid: a real religious all-seeing-eye symbol \u00b7 a pyramid\nEXACT STAGING: Under the Eye: only an ALLY PARTIAL, a rounded featureless head and ONE cropped shoulder at lower center. Above it ONE large OPEN EYE drawn as TWO shallow asymmetrical arcs, with a small empty circular pupil centered between them. Eye is a quiet protective canopy, not inside a triangle or pyramid and no rays, mandala, real religious or occult symbol, wings, whole figure or Wick. Broad simple flat white forms, all spaces transparent.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "30483f7e21e1c0cb68865a1c982fea2ba181fad975762e20fa2a4f74ac14c7d3",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/231-under-the-eye.png",
+  "source_sha256": "ed7198a22f16ae048c28b0d239ff052ffa23436cc5be3f809c6d03f8095e8dce",
+  "export_crop": [
+    57,
+    111,
+    1182,
+    1215
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/under-the-eye.png",
+    "64": "art/icons/moves/exports/64/under-the-eye.png",
+    "48": "art/icons/moves/exports/48/under-the-eye.png",
+    "44": "art/icons/moves/exports/44/under-the-eye.png",
+    "32": "art/icons/moves/exports/32/under-the-eye.png",
+    "24": "art/icons/moves/exports/24/under-the-eye.png"
+  },
+  "framing": {
+    "scale": 0.694992337255879,
+    "offset": [
+      121,
+      128
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "1b00d69cc8a8dff3a48020dfceda9b83026a707bfe584465350c48852171a100",
+    "64": "6a82cfbf0dd2b7030d6943760c06ccc5e25698b514d0c578573cebb65e3608b2",
+    "48": "6de153190a029351883ab1507bcffb2d28385b25e55e6ca3d7c926cc629bf053",
+    "44": "a456e983fc02079a623cdec319eea7141d9fe0f9692c0c66fa25164a044ebefe",
+    "32": "95499a778dae07635d729dd928a88bc52c59f18461b4c154906c1be7f49037cd",
+    "24": "47a8fe5df67409974a0dee8fba8013819be9f12a9ca9a8f9e4c086dc2ccd766b"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

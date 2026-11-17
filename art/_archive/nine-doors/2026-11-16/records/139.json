@@ -1,0 +1,76 @@
+{
+  "number": 139,
+  "family": "move_icons",
+  "id": "move-beast-and-blade",
+  "path": "art/icons/moves/beast-and-blade.png",
+  "name": "Beast and Blade (fork)",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Visualization 5 fork choice",
+  "paint": "A beast's head silhouette and a blade side by side, a fork line joining them below.",
+  "avoid": "a real animal species badge \u00b7 a sword from a known work",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A beast's head silhouette and a blade side by side, a fork line joining them below.\nAvoid: a real animal species badge \u00b7 a sword from a known work\nEXACT STAGING: Two simple form marks side by side: LEFT, an invented ANGULAR CONSTRUCT-BEAST HEAD made from jagged white facets and two tiny loose diamond flecks, with a short asymmetrical horn/crest so it is no real animal species badge; RIGHT, one plain original short BLADE silhouette with a simple guard. Under both, one small Y-SHAPED FORK LINE joins their bases as a choice. No full animal body, real-world species emblem, famous sword shape, person, robot or text.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "1650639b3ab81ede2979b3abeb507dcfccac9fea35b6db0fb49f4172501fa5db",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/139-beast-and-blade.png",
+  "source_sha256": "52e8f39ce1fce984071e7c98c990d9e7e8de630d539a9b62f0f86bbc33a9f96b",
+  "export_crop": [
+    33,
+    0,
+    1192,
+    1164
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/beast-and-blade.png",
+    "64": "art/icons/moves/exports/64/beast-and-blade.png",
+    "48": "art/icons/moves/exports/48/beast-and-blade.png",
+    "44": "art/icons/moves/exports/44/beast-and-blade.png",
+    "32": "art/icons/moves/exports/32/beast-and-blade.png",
+    "24": "art/icons/moves/exports/24/beast-and-blade.png"
+  },
+  "framing": {
+    "scale": 0.6152418707978539,
+    "offset": [
+      155,
+      154
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "bfa1962259f91415955f65fc58549fe4fcefc35db896d7a3549de87bca6d840c",
+    "64": "14e833284b55571079211a7f511c8bb34cb2bb59d3f9878dee4bcb6c9a3ebfdb",
+    "48": "6c5aad47f6790f07df43f29053259ec6f21673a2b3d03ad66fd608dad1ead50a",
+    "44": "75d59f035e96c8a8edac197f8f74b2765b8bbb8b0d17937d801579f3d710c6ec",
+    "32": "c045afe57112047dd6b6b4f78240ae2e6fd4033d9b33ce3a84d62446995aad62",
+    "24": "2b588eba26c127a75998b0e49182bcccd89581d23cfdb9be3e9c93d58d9e1873"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

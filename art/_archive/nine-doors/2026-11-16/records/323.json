@@ -1,0 +1,70 @@
+{
+  "number": 323,
+  "family": "condition_icons",
+  "id": "cond-last-turn",
+  "path": "art/icons/conditions/last-turn.png",
+  "name": "Last Turn",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "State word",
+  "paint": "An hourglass with one grain left.",
+  "avoid": "a clock face with numbers \u00b7 a skull",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "Create ONE simple hourglass sign with exactly ONE small grain remaining above the narrow waist. Pure solid WHITE #FFFFFF flat vector-like ink, fully TRANSPARENT background. A clean outline silhouette with broad crisp edges, no shading, NO GLOW, NO HALO, NO BLUR, NO SHADOW and no translucent atmosphere around the shape. Only the hourglass and its single grain. The lower chamber may hold a small solid mound. No text, labels, numbers or frame. Match the attached white-ink signs. Square 1024x1024, center within a 15% transparent margin, readable at 24px.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "23620ba1bb3bfd7ce91a7b2bb9df46f396ba2968738e6efa11e51ab5b7e00ab0",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/323-last-turn.png",
+  "source_sha256": "f4fb33b558fb9b766f996e630aab8a81089b7e66b2a0b42976ef925a8923274d",
+  "export_crop": [
+    150,
+    20,
+    1150,
+    1235
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/last-turn.png",
+    "64": "art/icons/conditions/exports/64/last-turn.png",
+    "48": "art/icons/conditions/exports/48/last-turn.png",
+    "44": "art/icons/conditions/exports/44/last-turn.png",
+    "32": "art/icons/conditions/exports/32/last-turn.png",
+    "24": "art/icons/conditions/exports/24/last-turn.png"
+  },
+  "framing": {
+    "scale": 0.6748971193415638,
+    "offset": [
+      174,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "6e6aab1d3ae27780598d245e39b86e9a68332cc91c36475c0ccc3cd2552deb09",
+    "64": "014fd6bf66ba814709a045b79049ffc30439fb51fc681d9e29a58b7c4f9b3173",
+    "48": "b86f1a2aa80831aa90167c6fd3037ec988bc03914c8c950035452f617ebdcdd8",
+    "44": "e116288f3f9c405a81035f50f52fd56bcb75726c92c633d1f9faf9e03641cef1",
+    "32": "540bfbd831364888237cd27fa5a682f82e33e8c78e0bf436fc6dbe680e22176b",
+    "24": "4ec97c36703b65034cea2e80f8ff89aa5133d1c7f164d196301289a30ee1f987"
+  },
+  "continuation_review": "Reinspection on charcoal and quantitative alpha audit supersede the earlier preview-only rejection in continuation-attempts. Native source bytes and alpha were preserved.",
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

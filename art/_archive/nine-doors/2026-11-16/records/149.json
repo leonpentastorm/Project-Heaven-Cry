@@ -1,0 +1,76 @@
+{
+  "number": 149,
+  "family": "figment_trait_icons",
+  "id": "trait-loud",
+  "path": "art/icons/figments/trait-loud.png",
+  "name": "Loud",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment trait",
+  "paint": "A figment shape with three sound arcs leaving it.",
+  "avoid": "a loudspeaker \u00b7 music notes",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape with three sound arcs leaving it.\nAvoid: a loudspeaker \u00b7 music notes\nEXACT STAGING: One SMALL FLOATING ABSTRACT FIGMENT made of three angular fragments, an asymmetrical pointed kite-like mass with TWO small diamond flecks. NO face or anatomy. Exactly THREE bold separate concentric SOUND ARCS leave its front toward viewer-right, growing larger with distance. The construct is the emitter; no loudspeaker cone, speaker box, grille, music notes, ear, person or Wick. Wide transparent gaps between the arcs; flat ink only.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-143.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-141.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-143.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f955e7fdd616a7d9686611d0493ad64e11f8a8118fca671d9685b22421c1c5f7",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/149-trait-loud.png",
+  "source_sha256": "97cf413fabf2b7a680ef2633ce06b6344a0514f913f0e991491d0d3826058dfe",
+  "export_crop": [
+    47,
+    232,
+    1222,
+    1149
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-loud.png",
+    "64": "art/icons/figments/exports/64/trait-loud.png",
+    "48": "art/icons/figments/exports/48/trait-loud.png",
+    "44": "art/icons/figments/exports/44/trait-loud.png",
+    "32": "art/icons/figments/exports/32/trait-loud.png",
+    "24": "art/icons/figments/exports/24/trait-loud.png"
+  },
+  "framing": {
+    "scale": 0.6049637552495103,
+    "offset": [
+      156,
+      234
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "d3eb23db6112f77412245b03f29bd84a7b12a97f3b29f2de9db6121f67ef49a0",
+    "64": "75674d1cd237c29b4f393e58e66314551d5295f397408098ee25c2edd4ad435b",
+    "48": "9d8d7dee6ff105d6fa9fe0f2cd34a70f4217c7c8cbcc34ddfdbbb894d9b1d6f7",
+    "44": "13a4da73d944208bbf911f053fdcb0495a7ce56c13c61a18a69c59eeceeb9951",
+    "32": "de3a55025f26ba2fb4ac423f2c9a85733fc35f0e34c0472482d5c4ce8ef62b01",
+    "24": "0b56fdceae10b2040c8a358de3514f7b1c67c48017a13fd61fc790a95af02a1a"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

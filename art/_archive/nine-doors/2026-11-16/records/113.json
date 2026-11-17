@@ -1,0 +1,76 @@
+{
+  "number": 113,
+  "family": "move_icons",
+  "id": "move-execution",
+  "path": "art/icons/moves/execution.png",
+  "name": "Execution",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Operative rank III move (asked 13 Nov, C2)",
+  "paint": "A reversed blade held point down over a nearly spent ring.",
+  "avoid": "a guillotine \u00b7 blood",
+  "section": "Ingenuity: Shadow, and the Operative",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A reversed blade held point down over a nearly spent ring.\nAvoid: a guillotine \u00b7 blood\nEXACT STAGING: A cropped chunky ceramic mitten at the TOP holds one plain reversed practice blade vertically POINT DOWN. The point is held STILL above, clearly NOT TOUCHING, a nearly empty ring at the bottom: only a quarter of that ring remains solid white, the rest is a faintly implied space, no gray. The large air GAP and still held weapon distinguish this from Coup's completed downward strike into a cracked ring. No person, victim, skull, hood, guillotine, block, injury or blood.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f458210e805775913e653e38f8f377371e0dbd7fdf77ba4b4612977f798617a1",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/113-execution.png",
+  "source_sha256": "27ccf1869451d6f59171080ac3b5c602d22436729146ee2acad4ec0713473067",
+  "export_crop": [
+    27,
+    17,
+    1079,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/execution.png",
+    "64": "art/icons/moves/exports/64/execution.png",
+    "48": "art/icons/moves/exports/48/execution.png",
+    "44": "art/icons/moves/exports/44/execution.png",
+    "32": "art/icons/moves/exports/32/execution.png",
+    "24": "art/icons/moves/exports/24/execution.png"
+  },
+  "framing": {
+    "scale": 0.5568949940414731,
+    "offset": [
+      219,
+      167
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "e6894293f58460b896c9b3d02254da079c71a121885e10e57953623e9d5809ab",
+    "64": "1aab0d6010731832b36b564def7d2b98dbeb61b51a5ad612ed0b538798967461",
+    "48": "f8d170d534f8e13270740aab94ffed484a3bcc81ca1f7c2d42423bab5e6d2e8d",
+    "44": "f7fab8d522c9d5d3c4ebd6f05859f64c2d1cd78ad290d7427bca83a337e7d67d",
+    "32": "34c4aea57542ce558a08f3eef2b80f9c94a5d215bc82075bcef62d0ee783084c",
+    "24": "ae377ac00c577bb508c413b1511d5e7b16d44030915c9247eec76a5d02ff4c3a"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

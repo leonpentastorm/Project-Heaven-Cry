@@ -1,0 +1,76 @@
+{
+  "number": 160,
+  "family": "move_icons",
+  "id": "move-salvage",
+  "path": "art/icons/moves/salvage.png",
+  "name": "Salvage",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Rigger rank II move (asked 13 Nov, C4)",
+  "paint": "A small round core pulled from a wrecked drone's shell.",
+  "avoid": "a junkyard \u00b7 recycling symbol",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A small round core pulled from a wrecked drone's shell.\nAvoid: a junkyard \u00b7 recycling symbol\nEXACT STAGING: Salvage: a simple wrecked DRONE SHELL below, two short broken rotor stubs and a cracked round casing, with an EMPTY CIRCULAR SOCKET exposed. Above that socket ONE round core is being lifted out by one cropped ceramic mitten, joined by a short clear upward motion stroke. Core has one simple transparent center cut. Sparse parts only, no junkyard, no recycling arrows, no live robot face or body. Clearly show extraction from empty socket.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "29e2a142bf42df5df716cb75ea22d44eb76e5740344400a8e46b4984c0a5bc5f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/160-salvage.png",
+  "source_sha256": "8239d4802e06b049b687e965aa93662759908ec5cf8bc58cb229da3eac7372be",
+  "export_crop": [
+    81,
+    21,
+    1224,
+    1238
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/salvage.png",
+    "64": "art/icons/moves/exports/64/salvage.png",
+    "48": "art/icons/moves/exports/48/salvage.png",
+    "44": "art/icons/moves/exports/44/salvage.png",
+    "32": "art/icons/moves/exports/32/salvage.png",
+    "24": "art/icons/moves/exports/24/salvage.png"
+  },
+  "framing": {
+    "scale": 0.6009717772772692,
+    "offset": [
+      168,
+      146
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "e737ea4168d552cfc4c72ac92419da5370444f9b49b84b2636170dca16c2597e",
+    "64": "5fd6c95f1241b7f39d84e403aa7432f47d8a3513cded5a333a91e888311efae7",
+    "48": "421a53b5931da6717c77998ee0ecec15cdd8ad319c095719bc083a7a0434a0d4",
+    "44": "e0be17d95571f0cebc5c6c7da4c9ebadc68ac97a03b60e2c85016b5d09a39ae4",
+    "32": "d93acab2ed84746c38bf84c30bf3538e6756169c8043ed5ab16bd0482ce68651",
+    "24": "4121aa6727319f134e0e45a219b89fd0ebf5c0de37c1c25a280bf32d9043f414"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

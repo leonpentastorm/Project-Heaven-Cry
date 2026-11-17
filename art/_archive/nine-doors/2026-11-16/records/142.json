@@ -1,0 +1,61 @@
+{
+  "number": 142,
+  "family": "figment_order_icons",
+  "id": "order-cut",
+  "path": "art/icons/figments/order-cut.png",
+  "name": "Cut",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment order (`figment_cut`, the Blade)",
+  "paint": "A floating blade of flecks drawing one long cut line.",
+  "avoid": "a kitchen knife \u00b7 blood",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: A floating blade of flecks drawing one long cut line.\nAvoid: a kitchen knife \u00b7 blood\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "490c881477dae6d547347e89c8104a3d0872d63bb2b2128e3871ec41bed42283",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/142-order-cut.png",
+  "source_sha256": "de830cf7801aec28b326a19654501eacf715e6ef6db26d62d023b5879eb699b5",
+  "export_crop": [
+    57,
+    109,
+    1222,
+    1206
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/order-cut.png",
+    "64": "art/icons/figments/exports/64/order-cut.png",
+    "48": "art/icons/figments/exports/48/order-cut.png",
+    "44": "art/icons/figments/exports/44/order-cut.png",
+    "32": "art/icons/figments/exports/32/order-cut.png",
+    "24": "art/icons/figments/exports/24/order-cut.png"
+  },
+  "framing": {
+    "scale": 0.5585033699476689,
+    "offset": [
+      186,
+      205
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

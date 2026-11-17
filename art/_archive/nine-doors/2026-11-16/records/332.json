@@ -1,0 +1,76 @@
+{
+  "number": 332,
+  "family": "technique_icons",
+  "id": "tech-bash",
+  "path": "art/icons/techniques/bash.png",
+  "name": "Bash",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, strike",
+  "paint": "A blunt head striking a small ring with three impact ticks.",
+  "avoid": "a baseball bat \u00b7 blood",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A blunt head striking a small ring with three impact ticks.\nAvoid: a baseball bat \u00b7 blood\nEXACT STAGING: Bash: ONE short blunt rectangular MALLET HEAD on a plain cropped handle swings down-right into ONE SMALL EMPTY RING, with exactly THREE WHITE IMPACT TICKS outside contact point. Generic abstract practice impact, no creature/person. No baseball bat, blood, full figure, cracked ground or explosion. Bold geometric white silhouettes; ring hole genuinely transparent.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "7b442a1a47ddab758ade2a1601aacfeef846a6e891a7fa5b76c16a69bb25f3c8",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/332-bash.png",
+  "source_sha256": "b2b814c2e9741386e23154ac54a2515a5e298fc2523ab76bd2b12056199339bf",
+  "export_crop": [
+    25,
+    160,
+    1170,
+    1053
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/bash.png",
+    "64": "art/icons/techniques/exports/64/bash.png",
+    "48": "art/icons/techniques/exports/48/bash.png",
+    "44": "art/icons/techniques/exports/44/bash.png",
+    "32": "art/icons/techniques/exports/32/bash.png",
+    "24": "art/icons/techniques/exports/24/bash.png"
+  },
+  "framing": {
+    "scale": 0.6716500604552733,
+    "offset": [
+      127,
+      212
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "6dc4e77aa17713f5c11aec1ef0600679c2f92fa11c4ba7bb2079765f259e8dd1",
+    "64": "16f771a7051ceb51dded64d43b53b7d27d3b0054b4b693e048041435554a0b74",
+    "48": "6216a0115e9dd0db5150cc31a36010d830f60af4e014bb53fb2d3c93dd840441",
+    "44": "e483155c7f3040baee7699e0abced572bb577b7677a8005b20b859977d3855c6",
+    "32": "fe9b3d23b8855d3ed4ac29ad06c4db7b087a639726b7fc117b197d5010572c2f",
+    "24": "c976ad83df3040310d3689c6f30554af9aa386dc39ccab935e532f49b3dc7690"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

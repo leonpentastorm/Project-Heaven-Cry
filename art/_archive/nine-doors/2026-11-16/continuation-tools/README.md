@@ -1,0 +1,1 @@
+These are the continuation workflow sources, not game code. export-one.py is run from a scratch folder with a delivery symlink to the current checkout and result-N.json inputs; update_state.py takes --root explicitly. Do not run against stale baselines. All source alpha is preserved. Always inspect review sheets before calling update_state.

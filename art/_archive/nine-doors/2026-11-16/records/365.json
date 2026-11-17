@@ -1,0 +1,74 @@
+{
+  "number": 365,
+  "family": "technique_icons",
+  "id": "tech-pin-down",
+  "path": "art/icons/techniques/pin-down.png",
+  "name": "Pin Down",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, take",
+  "paint": "A foe flat behind cover under three bullet lines.",
+  "avoid": "a pushpin \u00b7 a map pin",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE simple nonviolent RPG training icon in pure white flat ink on true transparency. A featureless PRACTICE DUMMY'S cropped head and shoulder crouch completely BELOW THE TOP EDGE of one solid rectangular cover block. Three separate parallel horizontal WHITE MOTION DASHES travel safely above that top edge. The cover block visibly protects the low dummy partial. No weapon, target contact, injury, dramatic scene or whole person. Broad crisp white shapes with truly transparent holes and gaps, no black/gray fill, gradients, glow, shading, text, labels or border. Square icon central 75% safe box. At 32px the protective block, low partial and three overhead dashes remain distinct.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [],
+  "composition_scope": "object/partial-only",
+  "service_revision": "Nonviolent training/inventory abstraction after rejected output.",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "fd519d7b2645358199847c673774512457061e3a836fc77c4336aa582cbc42b4",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/365-pin-down.png",
+  "source_sha256": "3b1392429bf73ac850f4e5f6d2e7c60707d5adbcdadc3da7919650bf0b71b5ed",
+  "export_crop": [
+    0,
+    87,
+    1226,
+    1232
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/pin-down.png",
+    "64": "art/icons/techniques/exports/64/pin-down.png",
+    "48": "art/icons/techniques/exports/48/pin-down.png",
+    "44": "art/icons/techniques/exports/44/pin-down.png",
+    "32": "art/icons/techniques/exports/32/pin-down.png",
+    "24": "art/icons/techniques/exports/24/pin-down.png"
+  },
+  "framing": {
+    "scale": 0.5897507394723966,
+    "offset": [
+      150,
+      174
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "4a448e2bfe5dce567c243e0bdf8919ab3cf3957f66159ecb1266313db416f98b",
+    "64": "4ea6df717971dd5b7fc93fc56e18b3da6ee4b22a4831db98e85b843d6877ddaa",
+    "48": "d54d23f43509150582817c7bd85ac08e67f5673b0d7c2c2b4cb8bcb14594a2da",
+    "44": "6ec3aabd4f3ef3b72ff79af1974a4f0083494c59da2e7076a0e9fc2587c85008",
+    "32": "5866110bda303a750b7d596120a1c8dda5a386da6daac6f770f9fd018faaf3bc",
+    "24": "d9f9329f55b3611396338eab0f02bccffa2d76c15429b3c500fbd9af83abd694"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+  "reference_provenance_note": "Actual request used no attached reference images for its nonviolent abstract/static variant; do not infer references from other jobs."
+}
