@@ -134,6 +134,8 @@ ok('Will Power raised to 2 (' + await val('skill', 'will_power') + ')', (await v
 await p.evaluate(() => window.scrollTo(0, 0)); await p.mouse.move(1276, 716); await settle(p, 150);
 if (process.env.LANE_SHOTS) await p.screenshot({ path: process.env.LANE_SHOTS + '/D-roadmap-creation-skills.png' });
 await p.locator('[data-skill="will_power"] [data-skill-face]').click(); await settle(p, 350);
+// 0.31.8: what each point gives is closed by default: open it
+await p.evaluate(() => { const f = document.querySelector('.phc-ep-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); await settle(p, 200);
 const road = await p.evaluate(() => { const steps = [...document.querySelectorAll('.phc-ep-road .phc-ep-step')];
   return { n: steps.map((s) => s.getAttribute('data-step')).join(), now: steps.filter((s) => s.getAttribute('data-state') === 'now').map((s) => s.getAttribute('data-step')).join(),
     owned: steps.filter((s) => s.getAttribute('data-state') === 'owned').map((s) => s.getAttribute('data-step')).join(),

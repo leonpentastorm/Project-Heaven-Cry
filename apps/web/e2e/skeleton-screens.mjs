@@ -64,6 +64,8 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     const line = (await ep.locator('.phc-ep-line').innerText()).replace(/\s+/g, ' ');
     ok(at + 'the "?" page says the slot in words: ' + line, /^How you talk and notice: it rolls 1 better on checks · \w+/.test(line) && !/[αβγ]|Body|Mind|Soul/.test(line));
     // what a point gives: the road map (rules 1.54 item 4119), ten rows, no line twice in a row
+    await ep.evaluate((el) => { const f = el.querySelector('.phc-ep-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); // 0.31.8: closed by default
+    await new Promise((r) => setTimeout(r, 250));
     const road = await ep.evaluate((el) => { const st = [...el.querySelectorAll('.phc-ep-road .phc-ep-step')]; return { n: st.length, rep: st.filter((s) => { const t = [...s.querySelectorAll('.phc-ep-row')].map((x) => x.textContent); return new Set(t).size !== t.length; }).length }; });
     ok(at + '…and what each point gives, as ten rows (' + road.n + ', ' + road.rep + ' with a line twice)', road.n === 10 && road.rep === 0);
     await p.screenshot({ path: SHOTS + '/skillpage-' + W + '.png' });

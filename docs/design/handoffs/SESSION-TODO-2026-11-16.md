@@ -416,3 +416,20 @@ only, base 3, steps at 1 / 2 / 4 / 6 / 8), Rite in the Field and the Call ladder
   card still predicts after the training is spent. Card style: "+200 Combat knife mastery" / bar "211 / 300" /
   "Unlocks Coup" only when this drill gets there / when spent: the card greyed with "Training used this rest" and no
   prediction. Audit every Survival card (training, shrine, shop, Forge, rest, Crossroads, boons) the same way.
+
+## T. Reported 17 Nov, last hour (Leon); none built unless noted
+- **0.31.8 (the lead's wording pass, live if section U says so):** the skill ladder's generated lines, the beta
+  box, the Call line, the Training card, the points block closed by default. NOT yet done: the 27 skills' own data
+  rows (still sentences), every other card.
+- **Old perks rolled into the skill ladder (the unlocks: Second Wind, Poker Face, Stand Still...) must appear as
+  perks in the PERKS menu;** the perk menu folds and is CLOSED by default.
+- **"bruh" (three screenshots):** (1) the Sinner's Due perk card ends "(a later step)": dev text; (2) enlarging its
+  icon shows the picture and the name only, no text, on a view that covers the card; (3) the Slide tooltip says
+  "(more with Athletics: the reach x Dexterity's beta feed, rules 1.60 item 4606)": a rule reference and a formula
+  in player text, and "1 AP" / "0/1 turn" are printed in the row, the chips and the sentence. The wording pass must
+  sweep every perk, technique and verb text for rule references ("rules 1.", "item NNNN", "beta feed") and "(a later
+  step)"; add a validator check that no player text holds "rules \d" or "item \d{4}".
+- **Strain is not shown while holding an Outburst** (the moment it matters most): the meter row shows HOLDING and
+  Strain folds away or is replaced. Strain must always show while an Outburst is held.
+- **Syphon:** triple the mana a Syphon draws from the air by default (data), and **no MP is restored at the end of
+  a Survival stage** (find what refills MP after a stage / Boss and remove it for MP only).
