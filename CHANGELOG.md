@@ -8,6 +8,11 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.10
+
+- No Survival node gives MP back: only Syphon does (Leon, 17 Nov 2026; `survival.json ammo_pack.mp` all 0, PROVISIONAL). A Rest's own restore is unchanged.
+- The mana forecast opens above the small map.
+
 ## 0.31.9 — the owner's playtest fixes (rules 1.68)
 
 - **Strain shows while you hold an Outburst:** never folded, always among the three meters on a short window.

@@ -355,8 +355,8 @@ describe('rules 1.51: the supply pack (spec rule 52)', () => {
     const none = leaveField(apply(g2, { type: 'run/skip' }, 'host'));
     expect(cores(packOf(none.characters.c1))).toBe(before);
     expect(done.story.magic!.c1.flux).toBe(0);
-    expect(mpNow(done.characters.c2)).toBe(Math.min(maxMp(done.characters.c2), 5 + supplyMp(done.characters.c2, 1))); expect(mpNow(done.characters.c2)).toBeGreaterThan(5);
-    expect(done.run!.note!.ammo!.c2.some((x) => / MP$/.test(x))).toBe(true);
+    expect(SV.ammo_pack.mp.fight).toBe(0); expect(mpNow(done.characters.c2)).toBe(5); // 0.31.10 (Leon, 17 Nov 2026): no node gives MP back; only Syphon does
+    expect((done.run!.note!.ammo!.c2 || []).some((x) => / MP$/.test(x))).toBe(false);
   });
   it('through the reducer (rules 1.68): the Boss gives no MP back as the stage ends; its burnt cores still come back', () => {
     const pcs: Pc[] = [{ build: 'sigil', level: 1 }, { build: 'outburst', level: 1 }];

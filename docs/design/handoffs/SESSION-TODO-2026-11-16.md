@@ -504,3 +504,5 @@ default.
 at it", NOT Leon's ruling (once a fight, on reaching Mana Shock, relieve 2 Strain): change it. (2) The ladder layout
 (every level lists the per-point gains; no EVERY POINT block). (3) The 27 skills' own rows in card style (82 rows,
 64 unlock lines). (4) Section U, the whole-game wording pass. (5) Nobody looked at 0.31.8 or 0.31.9 on screen.
+- **0.31.10 live (17 Nov):** no Survival node gives MP back (fight, Elite, cache, vault, Boss all 0); the mana
+  forecast sits above the small map (z-index; not seen on screen). A Rest still restores MP: ask Leon.
