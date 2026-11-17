@@ -463,3 +463,44 @@ only, base 3, steps at 1 / 2 / 4 / 6 / 8), Rite in the Field and the Call ladder
   level, forks at 4 and 6, perks at 3 / 5 / 7 / 9. Do it as one table for all nine attributes (ability, from, to,
   why) for Leon's edits, with the class audit and the fork slice, in 0.32. This also answers "who will ever put
   points in beta and gamma" and "the class is useless": decide ladder, class and fork contents together.
+- **Outburst "What it does" options that cannot be earned (Leon, 17 Nov):** the Outburst designer's "What it does"
+  row (the school / effect of a design) has options a character can only ever hold through the one starting spell
+  picked at creation: nothing in play grants them. NOT investigated. Trace: which schools / modules a design can
+  use, how each is learned (creation, practice picks, a Heart plate's lesson, the training ground, a boon), and list
+  those with no way to earn; then give each a source (practice picks or the Heart plate, by plateChoices) or say why
+  it is creation-only. 0.32.
+  Leon: the missing one is **Damage**: the Damage "What it does" can only be had from the starting spell. Start the
+  trace there (is the Damage school in plateChoices and in the practice picks; does a character whose starting
+  design was not Damage ever get it).
+  CORRECTION with Leon's screenshot: it is the Damage school's four WAYS in the "What it does" row (Strike, Finish,
+  Brand, Drain; rules 1.19) that cannot be earned: a character holds only the way its starting spell came with.
+  Lead's proposal (ask Leon): Strike is free with the Damage school; Finish, Brand and Drain are learned like
+  modules (a practice pick, or a Heart plate's lesson through plateChoices), and the same check for every other
+  school's ways (Buff, Heal, Shield...). Also that card's text is a paragraph: card style.
+
+## U. FIRST JOB AFTER THE USAGE RESET (Leon, 17 Nov): the whole-game wording pass
+"Have haiku or someone go screenshot every screen and you rewrite it after looking; this is so widespread."
+1. A haiku agent (cheap; no judging) drives the browser and saves a screenshot of EVERY screen and state into one
+   folder with an index: title, lobby, creation (all 7 steps, a skill's "?" open, a trait, a patron), the sheet's
+   every tab (SKILLS with a ladder open, STATUS, PERKS, GEAR, ARMS, MAGIC with the Outburst designer and the Sigil
+   tab, FAITH), the level-up screen, the camp, the path map with a node card, each node kind (shop, Forge, rest with
+   Training, shrine, Crossroads, cache, vault), the reward panel, the boon pick, the fight panel with each tab open
+   and an action selected (tooltip visible), a token hover card, the victory panel, the field, the run summary,
+   settings. At 1600x900. It only captures; it changes nothing.
+2. The lead reads every screenshot once, asks the three questions (CLAUDE.md "Say the core, once, and stop"), and
+   rewrites the words directly, in data and templates, in one pass: card lines, units on every number, no formula,
+   no sub-text, nothing twice, no rule numbers.
+3. Check, one browser run, deploy. Then the 0.32 tables (ladders, classes, forks per attribute) for Leon.
+
+## V. 0.31.9 IS LIVE (17 Nov, night). What it holds and what it does NOT
+In: Strain always shown while an Outburst is held; Shape = the free Pump's multiplier +0.12 (NOT +0.2: 0.2 and 0.15
+break the Outburst peak band at level 5, 217% / 214% against 212%; refit the band to go higher; the free Pump is
+gated on Will Power 3, the "Empathy 3" text was wrong); Iron Heart no longer raises the Strain limit; Syphon draws
+30 / 60 / 90 / 120 MP by band and takes 6 from the air; the Survival Boss gives no MP back (fight, Elite, cache,
+vault and Rest MP untouched: confirm with Leon whether only the Boss was meant); rule and item numbers out of player
+text with a validator check; the lightbox shows the thing's text; Traits, Perks and FROM YOUR SKILLS fold, closed by
+default.
+**NOT done, owed first:** (1) Iron Heart is the builder's "once a fight, Strain that would go over your limit stops
+at it", NOT Leon's ruling (once a fight, on reaching Mana Shock, relieve 2 Strain): change it. (2) The ladder layout
+(every level lists the per-point gains; no EVERY POINT block). (3) The 27 skills' own rows in card style (82 rows,
+64 unlock lines). (4) Section U, the whole-game wording pass. (5) Nobody looked at 0.31.8 or 0.31.9 on screen.
