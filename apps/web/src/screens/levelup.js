@@ -13,7 +13,7 @@
 // waiting: one click takes it), locked (until the next step), and the Mastered perk. Every number is the engine's
 // (canRaise, pendingPerkSteps, the character's perks); one click is one engine action, as before.
 import { DCLogic } from '../dc/runtime';
-import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, roadMap, nextLine, ceilingLine } from './shared';
+import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, roadMap, nextLine, ceilingLine, callBlock } from './shared';
 import { CLASS, PERK, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, verdictFor } from '@engine';
 import { act, getState, go, homeScreen } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
@@ -136,6 +136,11 @@ export class LevelUpLogic extends DCLogic {
       return { key: s.id, img: s.img, name: s.name, pts: p, tag, tagTitle: slotWords, tagStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + ink, mod: (checkMod(s.id, p) >= 0 ? '+' : '') + checkMod(s.id, p),
         cls: 'phc-lu-skill' + (free ? ' phc-lu-step' : ''), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
         canRaise: !!c.unspent.skill, blocked: !!why, why: nice(why), raise: () => act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: s.id }), raiseStyle: raiseStyle(!why, ink), raiseLabel: 'Raise ' + s.name,
+        // a gamma skill's Call (the same block as its page: shared.js callBlock): its step now and the next change
+        ...(() => { const cb = callBlock(s.id, p); if (!cb) return { hasCall: false, call: '', callName: '', callStyle: '' };
+          const now = cb.ladder.find((x) => x.now), nx = cb.ladder.find((x) => x.n > p);
+          return { hasCall: true, callName: cb.name.toUpperCase(), call: [p > 0 ? cb.now : '', now ? 'Now: ' + now.what : 'Opens at 1 point: ' + cb.ladder[0].what, nx && p > 0 ? 'At ' + nx.n + ': ' + nx.what : ''].filter(Boolean).join(' · '),
+            callStyle: 'font-size: 13px; line-height: 1.4; color: #E7EBF3; padding: 4px 8px; border-radius: 6px; border: 1px solid ' + ink + '; background: rgba(255, 255, 255, 0.03)' }; })(),
         hasWhy: !!(why && c.unspent.skill && p < 10), hasNext: !!nxt, next: 'Next point (' + np + '): ' + nxt, nextAt: np, fig: figLevelUp(s.id, p),
         // rules 1.60 (the forks): this skill's door's fork steps reached and the next (game/forkView.ts, the engine's doorForkView)
         ...(() => { const fk = forkLevelUp(c, s.id, p, g.phase === 'combat', () => this.setState({ forkArm: Date.now() })); return { hasFork: !!fk, fork: fk ? { ...fk, fold: foldVals('levelup:fork:' + s.id, { redraw: () => this.setState({ foldTick: Date.now() }) }) } : { steps: [], head: '', headStyle: '', runsOn: '', fold: foldVals('levelup:fork:none') } }; })(), // 0.31.0: the fork card closes (the shared fold), under its skill

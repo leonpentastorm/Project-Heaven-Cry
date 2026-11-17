@@ -40,6 +40,7 @@
         {
           "at": 1,
           "text": "An ally reloads, stands up or picks up a pile right now. It uses their reaction and costs them no AP.",
+          "short": "An ally reloads, stands up or picks up a pile, free",
           "numbers": {
             "things": 1,
             "move": 0
@@ -48,6 +49,7 @@
         {
           "at": 3,
           "text": "An ally reloads, stands up, picks up a pile or moves right now. The move goes as far as 1 AP walks them, to a tile you pick. It uses their reaction and costs them no AP.",
+          "short": "Or moves as far as {=.numbers.move} AP walks them",
           "numbers": {
             "things": 1,
             "move": 1
@@ -56,6 +58,7 @@
         {
           "at": 7,
           "text": "An ally does two different things right now: reload, stand up, pick up a pile, or move as far as 1 AP walks them. Both use the one reaction and cost them no AP.",
+          "short": "{=.numbers.things} of those things at once",
           "numbers": {
             "things": 2,
             "move": 1
@@ -76,6 +79,7 @@
         {
           "at": 1,
           "text": "An ally gains {=steps.0.numbers.ap} AP: this turn if they have not acted yet this round, on their next turn if they have.",
+          "short": "+{=.numbers.ap} AP to an ally",
           "numbers": {
             "ap": 1,
             "pressure": 0
@@ -84,6 +88,7 @@
         {
           "at": 3,
           "text": "An ally gains {=steps.1.numbers.ap} AP and loses {=steps.1.numbers.pressure} Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
+          "short": "+{=.numbers.ap} AP and {=.numbers.pressure} Pressure less",
           "numbers": {
             "ap": 1,
             "pressure": 1
@@ -92,6 +97,7 @@
         {
           "at": 7,
           "text": "An ally gains {=steps.2.numbers.ap} AP and loses {=steps.2.numbers.pressure} Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
+          "short": "+{=.numbers.ap} AP and {=.numbers.pressure} Pressure less",
           "numbers": {
             "ap": 2,
             "pressure": 1
@@ -112,6 +118,7 @@
         {
           "at": 1,
           "text": "An ally's next action costs 1 AP less. This lasts until the end of their next turn.",
+          "short": "Their next action costs {=.numbers.first} AP less",
           "numbers": {
             "first": 1,
             "second": 0
@@ -120,6 +127,7 @@
         {
           "at": 3,
           "text": "An ally's next two actions cost 1 AP less each. This lasts until the end of their next turn.",
+          "short": "Their next two actions cost {=.numbers.first} AP less each",
           "numbers": {
             "first": 1,
             "second": 1
@@ -128,6 +136,7 @@
         {
           "at": 7,
           "text": "An ally's next action costs 2 AP less, and the one after it 1 AP less. This lasts until the end of their next turn.",
+          "short": "Next action {=.numbers.first} AP less, the one after {=.numbers.second} less",
           "numbers": {
             "first": 2,
             "second": 1
@@ -148,6 +157,7 @@
         {
           "at": 1,
           "text": "You or an ally gets +{=steps.0.numbers.saves} on all saves until the start of your next turn.",
+          "short": "+{=.numbers.saves} on all saves",
           "numbers": {
             "saves": 2,
             "fresh_save": 0,
@@ -157,6 +167,7 @@
         {
           "at": 3,
           "text": "You or an ally gets +{=steps.1.numbers.saves} on all saves until the start of your next turn, and rolls a new save right now against one condition they have.",
+          "short": "+{=.numbers.saves} on all saves and a new save against one condition",
           "numbers": {
             "saves": 3,
             "fresh_save": 1,
@@ -166,6 +177,7 @@
         {
           "at": 7,
           "text": "You or an ally gets +{=steps.2.numbers.saves} on all saves until the start of your next turn, rolls a new save right now against one condition they have, and stops being Shaken and Afraid.",
+          "short": "+{=.numbers.saves} on all saves, a new save, and Shaken and Afraid end",
           "numbers": {
             "saves": 4,
             "fresh_save": 1,
@@ -187,6 +199,7 @@
         {
           "at": 1,
           "text": "An ally gets one more reaction, to use before the start of your next turn.",
+          "short": "An ally gets one more reaction",
           "numbers": {
             "reactions": 1,
             "step": 0,
@@ -196,6 +209,7 @@
         {
           "at": 3,
           "text": "An ally gets one more reaction, to use before the start of your next turn. Or name a free tile next to them: they step there at once instead, for no AP and without provoking an opportunity attack.",
+          "short": "Or they step at once to a tile you name",
           "numbers": {
             "reactions": 1,
             "step": 1,
@@ -205,6 +219,7 @@
         {
           "at": 7,
           "text": "An ally gets one more reaction, to use before the start of your next turn, or steps at once to a free tile you name next to them (no AP, no opportunity attack). If you Call on your own turn and they have not acted yet this round, they also take their turn straight after yours.",
+          "short": "And if they have not acted yet, they go straight after you",
           "numbers": {
             "reactions": 1,
             "step": 1,
@@ -226,6 +241,7 @@
         {
           "at": 1,
           "text": "The next ally to attack this enemy ignores its cover. There is no save, and you can't use the mark yourself. It lasts until the start of your next turn.",
+          "short": "The next ally to attack it ignores its cover",
           "numbers": {
             "allies": 1,
             "unhide": 0,
@@ -235,6 +251,7 @@
         {
           "at": 3,
           "text": "The next ally to attack this enemy ignores its cover and can target it even if it is Hidden. You can Spot a Hidden enemy if you can see its tile. There is no save, and you can't use the mark yourself. It lasts until the start of your next turn.",
+          "short": "And can attack it even while it is Hidden",
           "numbers": {
             "allies": 1,
             "unhide": 1,
@@ -244,6 +261,7 @@
         {
           "at": 7,
           "text": "The next two allies to attack this enemy ignore its cover, get +{=steps.2.numbers.hit} to hit and can target it even if it is Hidden. You can Spot a Hidden enemy if you can see its tile. There is no save, and you can't use the mark yourself. It lasts until the start of your next turn.",
+          "short": "The next {=.numbers.allies} allies, with +{=.numbers.hit} to hit",
           "numbers": {
             "allies": 2,
             "unhide": 1,
@@ -265,6 +283,7 @@
         {
           "at": 1,
           "text": "Just before the next weapon attack on an ally is rolled, they step 1 tile out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. An attack that can no longer reach them is wasted. It lasts until the start of your next turn.",
+          "short": "They step {=.numbers.tiles} tile out of the attack's way",
           "numbers": {
             "tiles": 1,
             "hit": 0
@@ -273,6 +292,7 @@
         {
           "at": 3,
           "text": "Just before the next weapon attack on an ally is rolled, they step up to {=steps.1.numbers.tiles} tiles out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. An attack that can no longer reach them is wasted. It lasts until the start of your next turn.",
+          "short": "Up to {=.numbers.tiles} tiles out of the way",
           "numbers": {
             "tiles": 2,
             "hit": 0
@@ -281,6 +301,7 @@
         {
           "at": 7,
           "text": "Just before the next weapon attack on an ally is rolled, they step up to {=steps.2.numbers.tiles} tiles out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. That attack is at {=steps.2.numbers.hit} to hit, and it is wasted if it can no longer reach them. It lasts until the start of your next turn.",
+          "short": "Up to {=.numbers.tiles} tiles, and the attack is at {=.numbers.hit} to hit",
           "numbers": {
             "tiles": 2,
             "hit": -2
@@ -302,6 +323,7 @@
         {
           "at": 1,
           "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds and loses {=steps.0.numbers.ap_loss} AP on its next turn.",
+          "short": "If it fails its save: Shaken and {=.numbers.ap_loss} AP less",
           "numbers": {
             "ap_loss": 1,
             "no_approach": 0
@@ -310,6 +332,7 @@
         {
           "at": 3,
           "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds, loses {=steps.1.numbers.ap_loss} AP on its next turn and can't move toward you on that turn.",
+          "short": "And it can't move toward you on its turn",
           "numbers": {
             "ap_loss": 1,
             "no_approach": 1
@@ -318,6 +341,7 @@
         {
           "at": 7,
           "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds, loses {=steps.2.numbers.ap_loss} AP on its next turn and can't move toward you on that turn.",
+          "short": "{=.numbers.ap_loss} AP less, and it can't move toward you",
           "numbers": {
             "ap_loss": 2,
             "no_approach": 1
@@ -339,6 +363,7 @@
         {
           "at": 1,
           "text": "The enemy makes a Heart save. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you.",
+          "short": "If it fails its save, its next attack must be at you",
           "numbers": {
             "attack_ap": 0
           }
@@ -346,6 +371,7 @@
         {
           "at": 3,
           "text": "The enemy makes a Heart save. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you, and that attack costs it {=steps.1.numbers.attack_ap} AP more.",
+          "short": "And that attack costs it {=.numbers.attack_ap} AP more",
           "numbers": {
             "attack_ap": 1
           }
@@ -353,6 +379,7 @@
         {
           "at": 7,
           "text": "The enemy makes a Heart save. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you, and that attack costs it {=steps.2.numbers.attack_ap} AP more.",
+          "short": "That attack costs it {=.numbers.attack_ap} AP more",
           "numbers": {
             "attack_ap": 2
           }

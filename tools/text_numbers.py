@@ -53,7 +53,7 @@ import json, re, pathlib
 
 FILE = pathlib.Path(__file__).resolve().parent / "text_numbers.json"
 # The keys whose strings a player reads as rules text.
-TEXT_KEYS = {"text", "upsides", "downsides", "grand"}
+TEXT_KEYS = {"text", "upsides", "downsides", "grand", "short", "player"}  # short: a Call step's ladder cell; player: an unlock's one line on the skill page (0.31.x)
 SKIP_FILES = {"effect_ops", "weapon_mastery", "maps", "archetypes", "loot_tables"}  # no rules texts (the op catalogue, the retired file, layouts, presets, tables)
 PH = re.compile(r"\{=(\.?[A-Za-z0-9_$]+(?:\.[A-Za-z0-9_$]+)*)(?:\|([a-z]+))?\}")
 REF = re.compile(r"\b(?:rules?|items?|revision|decision|section|step)\s+\d+(?:\.\d+)*(?:\s*(?:,|and|to|–|-)\s*\d+(?:\.\d+)*)*", re.I)
