@@ -66,6 +66,7 @@ export function roadMap(id) {
     const u = un[n], m = u ? Number(u.mastery) || 0 : 0;
     const fs = u && u.category === 'Fork' && forks ? forks.steps.find((x) => x.at === n) : null;
     if (fs) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + fs.options.map((o) => o.name).join(' or ') + (fs.offered ? '. Choose one, kept for good.' : '. Coming in a later version.') });
+    else if (u && u.category === 'Fork' && u.name) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: u.name + '. ' + (u.player || 'Choose one, kept for good.') });
     // a named unlock: its name and player line (an unlock named only for its mastery step, or with no name of its own,
     // shows its player line alone)
     else if (u && (u.category || u.player) && u.name && !lines.some((l) => l.text.includes(u.name))) lines.push({ key: 'u', kind: 'unlock', at: 'at ' + n, text: u.player ? (/^Mastery \d+$|^Mastered$/.test(u.name) || !u.category ? u.player : u.name + ': ' + u.player) : 'Unlocks ' + u.name });

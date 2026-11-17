@@ -3040,23 +3040,23 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.sigil|pct}% Sigil power"
+            "text": "+{=per_point.numbers.sigil|pct}% Sigil power (spells of glyphs drawn on the ground)."
           },
           {
             "at": "each",
-            "text": "You know {=per_point.numbers.words} more Sigil word"
+            "text": "You know {=per_point.numbers.words} more Sigil word."
           },
           {
             "at": "each",
-            "text": "Your Sigils' conditions are harder to save against"
+            "text": "Your Sigils' conditions are harder to save against."
           },
           {
             "at": "every 2",
-            "text": "Sigils reach {=per_point.numbers.range} tile further and last {=per_point.numbers.rounds} round longer"
+            "text": "Your Sigils reach {=per_point.numbers.range} tile further and last {=per_point.numbers.rounds} round longer."
           },
           {
             "at": "every 3",
-            "text": "A Sigil burns {=per_point.numbers.charge} less core charge"
+            "text": "Each Sigil burns {=per_point.numbers.charge} less core charge."
           }
         ]
       },
@@ -3069,6 +3069,7 @@
           "category": "Active Skill",
           "mastery": 1,
           "text": "Draw a spell one word longer than your Max Sigil words (never past 4 glyphs), for +{=unlocks.3.effects.1.value|abs} Core charge.",
+          "player": "Draw a spell one word longer than you know (never past four glyphs), for {=.effects.1.value|abs} more core charge.",
           "effects": [
             {
               "op": "grant_action",
@@ -3106,6 +3107,7 @@
           "category": "Combat Interaction",
           "mastery": 2,
           "text": "Once per combat, draw the glyphs of two Sigil spells and pay the Glyph AP of the longer spell only.",
+          "player": "Once a fight, draw the glyphs of two Sigil spells and pay only the longer one's glyph AP.",
           "effects": [
             {
               "op": "grant_action",
@@ -3237,11 +3239,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "Feeds Brain Power's Sigils: your Flux limit is {=per_point.numbers.feed|pct}% more for each Brain Power point times each Rumination point"
+            "text": "your Flux limit (the heat your glyphs can build) rises by {=per_point.numbers.feed|pct}% for every point here times every point in Brain Power."
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.save} on Brain saves: confusion, illusions, your mind turned"
+            "text": "+{=per_point.numbers.save} on Brain saves: against confusion, illusions and your mind being turned."
           }
         ]
       },
@@ -3252,6 +3254,7 @@
           "category": "Passive",
           "mastery": 1,
           "text": "Once per scene, ask the Narrator one factual question about technology, biology or history. The answer is true.",
+          "player": "Once a scene, ask the Narrator one factual question about technology, biology or history; the answer is true.",
           "effects": [
             {
               "op": "grant_action",
@@ -3276,6 +3279,7 @@
           "category": "Passive",
           "mastery": 2,
           "text": "+{=unlocks.5.effects.0.value} on your saves against a spell or condition that has already hit you this combat.",
+          "player": "+{=.effects.0.value} on saves against a spell or condition that has already hit you this fight.",
           "effects": [
             {
               "op": "save_mod",
@@ -3400,15 +3404,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "Persuading an enemy in a fight is harder to resist"
+            "text": "Persuading an enemy in a fight is harder for it to resist."
           },
           {
             "at": "each",
-            "text": "Your Brief Call reaches {=per_point.numbers.call_range} tile further"
+            "text": "Your Brief reaches {=per_point.numbers.call_range} tile further."
           },
           {
             "at": "from 1",
-            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -3419,6 +3423,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "When an NPC makes a claim in front of others, roll Eloquence to expose a contradiction; on a success, they lose credibility with everyone listening.",
+          "player": "When someone makes a claim in front of others, roll Eloquence to expose a contradiction; on a success, everyone listening trusts them less.",
           "effects": [
             {
               "op": "narrator",
@@ -3437,6 +3442,7 @@
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Debate the enemy leader before a fight. On a success, every enemy has 1 AP less in round 1.",
+          "player": "Debate the enemy leader before a fight; on a success, every enemy has {=.numbers.ap_loss} AP less in the first round.",
           "effects": [
             {
               "op": "grant_action",
@@ -3449,7 +3455,10 @@
               "note": "Narrator sets the TN for the debate"
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "hybrid",
+          "numbers": {
+            "ap_loss": 1
+          }
         },
         "7": {
           "name": "Mastery 3",
@@ -3559,11 +3568,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "Your Figments reach {=per_point.numbers.range} more tile (projection range)"
+            "text": "Your Figments (shapes you build of mana) reach {=per_point.numbers.range} tile further."
           },
           {
             "at": "each",
-            "text": "Your Figments are more accurate (the roll modifier)"
+            "text": "Your Figments are more accurate."
           }
         ]
       },
@@ -3577,6 +3586,7 @@
           "category": "Active Skill",
           "mastery": 0,
           "text": "The door, its whole loop, smaller: Picture (a Figment built of mana), the Double, one held; projection range four tiles plus your Visualization. Needs the Visualizer (figments.json).",
+          "player": "With the Visualizer in hand, Picture a Figment: the Double, one held at a time, reaching four tiles plus your Visualization.",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -3587,6 +3597,7 @@
           "category": "Active Skill",
           "mastery": 1,
           "text": "A perk step in this skill; two ready designs, one trait each (figments.json ladder).",
+          "player": "Two ready designs, one trait each.",
           "effects": [
             {
               "op": "perk_choice",
@@ -3602,6 +3613,7 @@
           "category": "Fork",
           "mastery": 0,
           "text": "The door's first fork: choose one of the Eye, the Wall or the Ward, out of a fight, kept for good (figments.json ladder).",
+          "player": "Choose one, out of a fight, kept for good.",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -3612,6 +3624,7 @@
           "category": "Active Skill",
           "mastery": 2,
           "text": "Two Figments held; three ready designs (figments.json ladder).",
+          "player": "Two Figments held at once, and three ready designs.",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -3622,6 +3635,7 @@
           "category": "Fork",
           "mastery": 0,
           "text": "The door's second fork: choose one of the Beast, the Blade, the Husk or the Sentinel, out of a fight, kept for good (figments.json ladder).",
+          "player": "Choose one, out of a fight, kept for good.",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -3631,6 +3645,7 @@
           "name": "Mastery 3",
           "mastery": 3,
           "text": "Three Figments held; two traits a design. A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "player": "Three Figments held at once, and two traits a design.",
           "effects": [
             {
               "op": "perk_choice",
@@ -3644,6 +3659,7 @@
           "name": "Mastery 4",
           "mastery": 4,
           "text": "A destroyed Figment no longer Snaps. A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "player": "A destroyed Figment no longer Snaps.",
           "effects": [],
           "adjudication": "engine"
         },
@@ -3737,15 +3753,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "Feeds Visualization's Figments: their HP is {=per_point.numbers.feed|pct}% more for each Visualization point times each Improvisation point"
+            "text": "your Figments have more HP: {=per_point.numbers.feed|pct}% more for every point here times every point in Visualization."
           },
           {
             "at": "each",
-            "text": "−{=per_point.numbers.ambush_taken|pct}% ambush damage taken"
+            "text": "You take {=per_point.numbers.ambush_taken|pct}% less damage from ambushes."
           },
           {
             "at": "each from 3",
-            "text": "Field Repair restores more"
+            "text": "Field Repair restores more."
           }
         ]
       },
@@ -3756,6 +3772,7 @@
           "category": "AP Mod",
           "mastery": 1,
           "text": "{=unlocks.3.effects.0.ap} AP and one spare part: on you, or an ally, machine or Figment next to you, clear a jam, restore {=unlocks.3.effects.0.repair_base|pct}% + {=unlocks.3.effects.0.repair_per_point|pct}% per Improvisation point above 3 of a weapon's durability, or repair a robot, drone, turret, Factory Made squadmate or Figment for {=unlocks.3.amounts.repair.base}, more as you level (a Downed machine comes back up). Out of combat, 10 minutes per charge restores 50%.",
+          "player": "{=.effects.0.ap} AP and one spare part, on you or something next to you: clear a jam, restore {=.effects.0.repair_base|pct}% of a weapon's durability (more above three points), or repair a machine or Figment for {=.amounts.repair.base} (a Downed machine gets back up).",
           "effects": [
             {
               "op": "grant_action",
@@ -3787,6 +3804,7 @@
           "category": "Passive",
           "mastery": 2,
           "text": "The weapon in your main hand never jams and never breaks.",
+          "player": "The weapon in your main hand never jams and never breaks.",
           "effects": [
             {
               "op": "immunity",
@@ -3903,15 +3921,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "An offer of terms is harder to refuse"
+            "text": "An offer of terms is harder to refuse."
           },
           {
             "at": "each",
-            "text": "Your Rally Call reaches {=per_point.numbers.call_range} tile further"
+            "text": "Your Rally reaches {=per_point.numbers.call_range} tile further."
           },
           {
             "at": "from 1",
-            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -3922,6 +3940,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "A failed lie doesn't get exposed straight away; the listener is only suspicious.",
+          "player": "A failed lie isn't exposed straight away; the listener only grows suspicious.",
           "effects": [
             {
               "op": "narrator",
@@ -3940,6 +3959,7 @@
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Before a fight, one attempt to talk the enemy down. On a success, the leader stands down, or the rank-and-file walk away.",
+          "player": "Before a fight, one try to talk the enemy down: on a success the leader stands down, or the rank-and-file walk away.",
           "effects": [
             {
               "op": "grant_action",
