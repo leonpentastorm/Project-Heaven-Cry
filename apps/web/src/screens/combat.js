@@ -1361,7 +1361,7 @@ export class CombatLogic extends DCLogic {
     const sel = { name: isMove ? actName + ' · ' + (hv ? moveAp + ' AP for ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') : '1 AP per ' + mv + (mv === 1 ? ' tile' : ' tiles')) : flow ? flow.sel.name : actName,
       text: !mineTurn ? (cb.over ? 'The fight is over.' : cur && cur.side === 'foe' ? cur.name + ' is acting…' : cur ? 'Waiting for ' + (playerOf(owner(cur))?.name || 'a player') + ' (' + cur.name + ').' : '') : isMove ? (MO && MO.why ? MO.why : 'Hover a highlighted tile to see the path and its AP cost; click to move.')
         : flow ? flow.sel.text : S.action === 'analyze' && readSel ? readText : S.action === 'pickup' ? '' : 'Click a hostile to target it.',
-      hasPick: false, pickFields: [], extra: flow ? (S.pickWhy && S.pickWhy.id === S.action ? '✕ ' + S.pickWhy.text + (flow.sel.extra ? ' · ' + flow.sel.extra : '') : flow.sel.extra) : mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };
+      hasPick: false, pickFields: [], extra: flow ? flow.sel.extra : mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };
     // Rules 1.9: the two reloads, the pick-up checklist and the path's hazards, in words (the costs are the engine's).
     sel.hasPile = false; sel.pileRows = [];
     if (mineTurn) {
@@ -1585,6 +1585,8 @@ export class CombatLogic extends DCLogic {
         + (b.on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; color: #E7EBF3; box-shadow: 0 0 6px rgba(79, 200, 223, 0.4)' : b.ok ? 'border: 1px solid #1F4A55; background: transparent; color: #8BDEEE' : 'border: 1px dashed #2A3A48; background: transparent; color: #A3AEC2') }));
     sel.strokeBtns = pad.strokeBtns;
     // The HEART panel at the top of the Outbursts tab while holding: its buttons run the moves at once (Release picks the aim).
+    // rules 1.65: a click the open pick can't take, refused in the engine's words, by the action box (after every panel's own words)
+    if (flow && S.pickWhy && S.pickWhy.id === S.action) sel.extra = '✕ ' + S.pickWhy.text + (sel.extra ? ' · ' + sel.extra : '');
     if (encoreLend > 0) { sel.name += ' · FREE · ENCORE'; sel.extra = ((sel.extra || '') + ' Encore: this repeat is lent ' + encoreLend + ' AP.').trim(); }
     else if (encoreWaiting) sel.extra = ((sel.extra || '') + ' Encore: ' + encoreWords(encoreWaiting.key) + ' is free once (' + encoreWaiting.ap + ' AP lent)' + (encoreWaiting.started ? ' this turn.' : '.')).trim();
     const heartV = heartVals(hp, (id) => { if (id === 'release') return this.pickAction('release'); this.heartAct(id); },

@@ -23,7 +23,7 @@ const keyOf = (r) => ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(r[0])) + ',' + (Numbe
 /** The action box's words (the refusal line is there). */
 const dock = () => p.evaluate(() => (document.querySelector('.phc-cb-dock') || document.body).innerText || '');
 /** The hover chip over a tile (z-index 30 inside a tile button): the engine's hover line. */
-const chip = () => p.evaluate(() => { const s = [...document.querySelectorAll('button.phc-tok span')].find((e) => e.style.zIndex === '30' && (e.textContent || '').trim()); return s ? s.textContent.trim() : ''; });
+const chip = () => p.evaluate(() => { const s = [...document.querySelectorAll('button.phc-tok span')].find((e) => e.style.zIndex === '30' && e.style.padding === '2px 6px' && (e.textContent || '').trim()); return s ? s.textContent.trim() : ''; });
 let charId;
 const me = async () => (await G()).combat.units.find((u) => u.charId === charId);
 async function toMe() {
@@ -36,6 +36,7 @@ async function toMe() {
   return false;
 }
 /** Walk to a tile through the reducer, a few tiles at a time, ending turns when the AP runs out. */
+let last = '';
 async function walkTo(to) {
   for (let i = 0; i < 40; i++) {
     const u = await me(); if (u.pos === to) return true;
@@ -43,25 +44,30 @@ async function walkTo(to) {
     let moved = false;
     for (const n of [4, 3, 2, 1]) {
       const nx = x + Math.sign(tx - x) * Math.min(n, Math.abs(tx - x)), ny = y + Math.sign(ty - y) * Math.min(n, Math.abs(ty - y));
-      for (const k of [nx + ',' + ny, nx + ',' + y, x + ',' + ny]) { if (k === u.pos) continue; if (!(await act({ type: 'combat/move', unitId: u.id, to: k, how: 'move' }))) { moved = true; break; } }
+      for (const k of [nx + ',' + ny, nx + ',' + y, x + ',' + ny]) { if (k === u.pos) continue; const e = await act({ type: 'combat/move', unitId: u.id, to: k, how: 'move' }); await settle(p, 100); if (!e && (await me()).pos !== u.pos) { moved = true; break; } last = k + ': ' + (e || 'no move (still at ' + (await me()).pos + ')'); }
       if (moved) break;
     }
     if (!moved) { await act({ type: 'combat/end-turn', unitId: u.id }); if (!(await toMe())) return false; }
     await settle(p, 120);
   }
+  if ((await me()).pos !== to) console.log('INFO walk stopped at ' + (await me()).pos + ': ' + last);
   return (await me()).pos === to;
 }
 /** One aimed action: select it, read its reach or choices, hover a legal pick, click an illegal one. */
 async function check(name, btn, o = {}) {
   await dismissCut();
   await p.keyboard.press('Escape').catch(() => {}); await settle(p, 100);
-  await pickAction(p, btn, { timeout: 15000 }).catch((e) => ok(name + ': its button (' + String(e.message || e).slice(0, 60) + ')', false));
+  const miss = (e) => ok(name + ': its button (' + String(e.message || e).slice(0, 60) + ')', false);
+  if (o.tab) { await p.locator('#phc-tab-' + o.tab).click(); await settle(p, 200); await p.locator('[role="tabpanel"]').getByRole('button', { name: btn }).first().click({ timeout: 15000 }).catch(async (e) => { console.log('INFO the tab buttons: ' + (await p.locator('[role="tabpanel"] button').allTextContents()).map((t) => t.trim().slice(0, 30)).join(' | ')); miss(e); }); }
+  else await pickAction(p, btn, { timeout: 15000 }).catch(miss);
   await settle(p, 400);
   const reach = await tilesWith('in reach'), choice = await tilesWith('you can pick this tile'), units = await tilesWith('you can pick them');
   ok(name + ': selected, its reach or choices shown (reach ' + reach.length + ', tiles ' + choice.length + ', units ' + units.length + ')', reach.length + choice.length + units.length > 0);
   await snap(o.shot + '-1-select');
   // the pointer on a legal pick: the area it covers, whom it touches, or the engine's hover line
-  const pick = o.hoverUnit ? units[0] : choice[0] || units[0];
+  // the legal pick nearest to the unit (a corner tile's area is cut by the map's edge)
+  const at = (await me()).pos, near = (l) => [...l].sort((a, b) => { const d = (r) => { const [x, y] = keyOf(r).split(',').map(Number), [ux, uy] = at.split(',').map(Number); return Math.max(Math.abs(x - ux), Math.abs(y - uy)) || 99; }; return d(a) - d(b); })[0];
+  const pick = o.hoverUnit ? near(units) : near(choice) || near(units);
   if (pick) {
     await tok(keyOf(pick)).hover(); await settle(p, 500);
     const cov = await tilesWith('it covers this tile'), line = await chip();
@@ -117,11 +123,17 @@ await check('the Miracle (The Sky Answers, 5×5)', /The Sky Answers/, { shot: 'm
 // Figments: Picture, then a Beast's Move
 await check('Picture', /^Picture/, { shot: 'picture', bad: '25,25' });
 { const u = await me(), [x, y] = u.pos.split(',').map(Number); let made = null;
-  for (const k of [(x + 1) + ',' + y, x + ',' + (y + 1), (x - 1) + ',' + y]) if (!(await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'beast', tile: k }))) { made = k; break; }
+  const figs = async () => (await G()).combat.units.filter((v) => v.owned?.kind === 'figment' && !v.dead).length, n0 = await figs();
+  for (const k of [x + ',' + (y + 1), (x - 1) + ',' + y, x + ',' + (y - 1), (x - 1) + ',' + (y + 1)]) { await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'beast', tile: k }); await settle(p, 300); if ((await figs()) > n0) { made = k; break; } }
   ok('a Beast pictured at ' + (made && ref(made)), !!made); await settle(p, 600); }
-await check('a Figment\'s Move', /: Move/, { shot: 'figment-move', bad: '12,2' });
+await check('a Figment\'s Move', /Move/, { shot: 'figment-move', tab: 'figments', bad: '12,2' });
 // Douse: to C2 (the lamp at M4 is 2 tiles off through the blockhouse wall)
 await act({ type: 'combat/end-turn', unitId: (await me()).id }); await toMe();
-ok('walked to M2, two tiles from the lamp', await walkTo('12,1'));
-await check('Douse', /^Douse/, { shot: 'douse', bad: '13,0' });
+// into the blockhouse (the lamp at M4 is seen from inside): to J5, open the door at K5, step in to L5
+ok('walked to J5, by the blockhouse door', (await walkTo('7,1')) && (await walkTo('9,4')));
+await act({ type: 'combat/end-turn', unitId: (await me()).id }); await toMe();
+{ const e = await act({ type: 'combat/door', unitId: (await me()).id, tile: '10,4' }); await settle(p, 300); const dr = (await G()).combat.objects.find((o) => o.pos === '10,4'); ok('the blockhouse door opened (' + (e || (dr && dr.open ? 'open' : 'shut')) + ')', !!dr && !!dr.open); }
+ok('inside the blockhouse at L5, next to the lamp', await walkTo('11,4'));
+await act({ type: 'combat/end-turn', unitId: (await me()).id }); await toMe();
+await check('Douse', /^Douse/, { shot: 'douse', bad: '11,5' });
 await browser.close();
