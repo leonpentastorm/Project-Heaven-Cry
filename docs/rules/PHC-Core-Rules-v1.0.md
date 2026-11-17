@@ -12148,3 +12148,10 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     gear card, shop shelf and reward card reads) printing the number raw. Every number on the card now goes through the
     one number formatter (`datatext.ts fmtNumber`) at one decimal (`gearpreview.ts shown`). Not reproduced with the
     test's own sheet (no boon on it); the guard checks every weapon at every grade. No number changed.
+5208. **The hands' Stow on the sheet (F1).** Reproduced on the GEAR tab out of a fight: the main hand offered only
+    "Equip" from the pack (no way to put a held weapon away), and with a two-hander held the off hand offered nothing
+    ("Your weapon needs both hands."), so a character with a two-hander and no one-handed weapon could not hold the free
+    Emanator. The engine had the path (`gear/unequip` slot `main`, `character.ts unequip`; in a fight the backpack's
+    "Put away", `combat/stow`, 1 AP a hand, unchanged). The main hand now offers "Stow <weapon>", and with a two-hander
+    held the off hand offers each thing that fits it as one click, "Stow the <weapon> first, then hold <item>" (the
+    two engine actions in order). Words: `world_play.json gear.words`. No number changed.

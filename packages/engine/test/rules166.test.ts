@@ -2,13 +2,13 @@
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { d20, type Unit } from '../src';
-import { fightWith, withGame } from './helpers/perkfight';
+import { fightWith, withGame, storyWith } from './helpers/perkfight';
 import { canYield } from '../src/yielding';
 import { togglesFor } from '../src/effects/actions';
 import { previewDescriptor, actionsFor } from '../src/descriptors';
 import { physFight, rig } from './helpers/physfight';
 import { calm } from './helpers/physfight-ranged';
-import { TECHNIQUE, gearPreview, WEAPONS, RARITY } from '../src';
+import { TECHNIQUE, gearPreview, WEAPONS, RARITY, GEAR, packOf } from '../src';
 
 type F = ReturnType<typeof fightWith>;
 const open = (cb: any) => { cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] }; cb.objects = []; };
@@ -117,5 +117,20 @@ describe('G3: the gear card numbers (item 5207)', () => {
       for (const l of p.lines || []) if (/\d\.\d\d/.test(String(l.value))) bad.push(w.id + '/' + r + ' ' + l.label + ' ' + l.value);
     }
     expect(bad).toEqual([]);
+  });
+});
+
+describe('F1: stow the two-hander, hold the focus (item 5208)', () => {
+  it('out of a fight: the off hand refuses a focus while a two-hander is held; Stow (gear/unequip main) then Hold (gear/equip off) puts the Emanator in hand', () => {
+    const st = storyWith([{ weapon: 'hellraiser_service_rifle' }]); const id = st.chars[0].id;
+    let c = st.g.characters[id]; c.pack = [...packOf(c), { id: 'emanator', item: 'emanator', name: 'Emanator', qty: 1, kind: 'gear' } as any];
+    const i = packOf(c).findIndex((x: any) => (x.item || x.id) === 'emanator');
+    expect(() => st.act({ type: 'gear/equip', charId: id, idx: i, to: 'off' } as any)).toThrow(/both hands/);
+    st.act({ type: 'gear/unequip', charId: id, slot: 'main' } as any);
+    st.act({ type: 'gear/equip', charId: id, idx: i, to: 'off' } as any);
+    c = st.g.characters[id];
+    expect(c.offHand?.id).toBe('emanator'); expect(c.weapon === 'fists' || !c.weapon).toBe(true);
+    expect(packOf(c).some((x: any) => (x.weapon || x.item || x.id) === 'hellraiser_service_rifle')).toBe(true);
+    expect(GEAR.words.stow_first).toMatch(/\{weapon\}.*\{item\}/);
   });
 });

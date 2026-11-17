@@ -291,6 +291,12 @@
     "drop_ap": 0,
     "light_armour_ap": 1,
     "light_armour_max_kg": 1.2,
+    "words": {
+      "about": "Rules 1.66 item 5208: the sheet's GEAR tab out of a fight: the main hand's Stow, and the one-click step that frees the off hand from a two-hander. {weapon}, {item}: names.",
+      "stow": "Stow {weapon}",
+      "stow_first": "Stow the {weapon} first, then hold {item}",
+      "two_hands": "Your {weapon} needs both hands: stow it to free the off hand."
+    },
     "provisional": true,
     "text": "In a fight, changing what a hand holds costs 1 AP per hand: drawing a one-handed item costs 1 AP, drawing a two-handed weapon 2 AP, swapping your main and off hand 1 AP, and putting an item away 1 AP per hand it took. Dropping an item is free; it lands in the pile on your tile. A light piece of armour (1.2 kg or less) takes 1 AP to put on or take off, and heavier armour can't be changed in a fight. Hot-Swap applies to the hand changes, not to armour."
   }

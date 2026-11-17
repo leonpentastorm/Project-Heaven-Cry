@@ -19,7 +19,7 @@ import { openReport, openSpend } from '../game/report';
 import { derivedLines } from '../game/derived';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, reloadItems, reloadBothItems, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
-import { previewPerkAction, phys, sheetPack, gearLockWhy, gearPreview, plateChoices, plateLesson, plateLessonWhy } from '@engine';
+import { previewPerkAction, phys, sheetPack, gearLockWhy, gearPreview, plateChoices, plateLesson, plateLessonWhy, GEAR } from '@engine';
 import { SHEET_LINE_KEYS } from '../game/previewLines';
 import { weaponActions, verdictFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
 import { doorEmblemOf, classPortraitOf, moveIconOf } from '../game/doorArt';
@@ -611,9 +611,15 @@ export class MainLogic extends DCLogic {
       const isMain = which === 'main', id = isMain ? c.weapon : c.offHand?.id, st = isMain ? c.weaponState || {} : c.offHand || {};
       const key = 'hand-' + which; tips[key] = id ? (weaponTip(id, st) || itemTip(id)) : { title: 'Empty', sub: isMain ? 'main hand' : 'off hand', lines: [isMain ? 'Your main-hand weapon.' : 'Hold a one-handed weapon, a shield, a torch, a flare or a focus here.'], glyph: '·', img: '', lore: '' };
       const twoHanded = !isMain && WEAPON[c.weapon]?.hands === '2H';
-      const acts = gearLocked ? [] : isMain ? cand((it) => it.kind === 'weapon' && it.weapon && WEAPON[it.weapon], 'Equip', 'main')
-        : twoHanded ? [] : [...(c.offHand ? [{ key: 'off-x', label: 'Take off', go: () => { act({ type: 'gear/unequip', charId: c.id, slot: 'off' }); this.setState({ gearMenu: null }); } }] : []),
-          ...cand((it) => (it.weapon && WEAPON[it.weapon]?.hands === '1H') || ITEM[it.item || it.id]?.slot === 'off_hand', 'Hold', 'off')];
+      // rules 1.66 item 5208: the main hand's Stow (to the pack: gear/unequip, the engine's one path), and with a two-hander
+      // held, the off hand's things offered as one click: stow the two-hander first, then hold the thing
+      const GW = GEAR.words, mainName = WEAPON[c.weapon]?.name || c.weapon, wordsOf = (t, o) => String(t || '').replace('{weapon}', o.weapon || '').replace('{item}', o.item || '');
+      const offFits = (it) => (it.weapon && WEAPON[it.weapon]?.hands === '1H') || ITEM[it.item || it.id]?.slot === 'off_hand';
+      const stowMain = c.weapon && c.weapon !== 'fists' ? [{ key: 'main-x', label: wordsOf(GW.stow, { weapon: mainName }), go: () => { act({ type: 'gear/unequip', charId: c.id, slot: 'main' }); this.setState({ gearMenu: null }); } }] : [];
+      const acts = gearLocked ? [] : isMain ? [...stowMain, ...cand((it) => it.kind === 'weapon' && it.weapon && WEAPON[it.weapon], 'Equip', 'main')]
+        : twoHanded ? pk.map((it, i) => ({ it, i })).filter(({ it }) => offFits(it)).map(({ it, i }) => ({ key: 'off-first' + i, label: wordsOf(GW.stow_first, { weapon: mainName, item: it.name }), go: () => { act({ type: 'gear/unequip', charId: c.id, slot: 'main' }); act({ type: 'gear/equip', charId: c.id, idx: i, to: 'off' }); this.setState({ gearMenu: null }); } }))
+        : [...(c.offHand ? [{ key: 'off-x', label: 'Take off', go: () => { act({ type: 'gear/unequip', charId: c.id, slot: 'off' }); this.setState({ gearMenu: null }); } }] : []),
+          ...cand(offFits, 'Hold', 'off')];
       const r = st.rarity || 'standard';
       const fk = id && !twoHanded ? focusKindOf(id) : null; // the focus this hand holds (it counts only in a hand)
       // rules 1.56: what is fitted to it (a mod) and a variant's modifiers, by the engine's preview lines, one chip each
@@ -623,7 +629,7 @@ export class MainLogic extends DCLogic {
         frameStyle: 'position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; border-radius: 10px; background: #0D1119; border: ' + (id ? (RARITY[r]?.marks ? 2 + RARITY[r].marks : 1) + 'px solid ' + (RARITY[r]?.marks ? '#E7EBF3' : '#3B475D') : '1px dashed #3B475D') + '; font-size: 40px; color: #5B6577; cursor: pointer',
         fitted, hasFitted: fitted.length > 0,
         nameStyle: 'font-size: 13px; font-weight: 700; color: ' + (id || twoHanded ? '#E7EBF3' : '#5B6577'), ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length,
-        noActText: gearLocked ? IN_FIGHT : twoHanded ? 'Your weapon needs both hands.' : 'Nothing in the pack fits here.' };
+        noActText: gearLocked ? IN_FIGHT : twoHanded ? wordsOf(GW.two_hands, { weapon: mainName }) : 'Nothing in the pack fits here.' };
     };
     const hands = c ? (mainSide === 'right' ? [handCard('main'), handCard('off')] : [handCard('off'), handCard('main')]) : [];
     const bodySlots = SLOTS.filter(([id]) => !['main', 'off', 'pack'].includes(id)).map(([id, label]) => {
