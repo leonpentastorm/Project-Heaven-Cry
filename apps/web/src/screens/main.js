@@ -57,7 +57,8 @@ import { NOT_PERSON, faceOf, kindBadge, worldLayer, markVals, talkVals, hazardVa
   pilesIn, pileRows, pileTake, pickupLabel, pickupWhy, toggleUntick, crossesText, pileTipStyle, CROSS_STYLE, CROSS_CHIP_STYLE } from '../game/worldView';
 import { approachOptions, sigilGrowthView, canLayGrandForms, makeView, giveView, shieldsView } from '@engine';
 import { groupedSection, sigilWordGroups } from '../game/workshopGroups';
-import { forkCards } from '../game/forkView'; // rules 1.60: the doors' forks on the SKILLS tab (the engine's doorForkView)
+import { forkSheetCard } from '../game/forkView'; // rules 1.60: each door's forks under its skill on the SKILLS tab (the engine's doorForkView)
+import { foldVals } from '../game/fold'; // 0.31.x: the fork card folds to one line (the shared fold, remembered)
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
@@ -478,6 +479,10 @@ export class MainLogic extends DCLogic {
         ask: () => act({ type: 'voice/ask', charId: c.id, skill: s.id }), noAsk: done || off || silent, askLabel: done ? 'Asked' : silent || off ? 'Silent' : 'Ask',
         askTitle: done ? 'Asked once this scene.' : silent ? 'Nothing to say about this right now.' : off ? (p === 0 ? 'No points: no voice yet.' : g.phase !== 'story' ? 'Ask a skill out of combat.' : '') : 'It has something to say. Ask it (once this scene).',
         rowCls: 'phc-m-tab-' + (S.coreDir || 'r'),
+        // 0.31.x (Leon: "fork menu need to be closeable, and sit below the skill"): the door's forks under its own row,
+        // folded by default to one line (the shared fold, game/fold.ts; a hand-set state is remembered)
+        ...(() => { const fk = S.tab === 'skills' && c ? forkSheetCard(c, s.id, { inFight: g.phase === 'combat' && !!g.combat, rerender: () => this.setState({ forkArm: Date.now() }) }) : null;
+          return { hasFork: !!fk, fork: fk ? { ...fk, fold: foldVals('sheet:fork:' + s.id, { byRule: true, redraw: () => this.setState({ foldTick: Date.now() }) }) } : { steps: [], summary: '', summaryStyle: '', runsOn: '', fold: foldVals('sheet:fork:none', { byRule: true }) } }; })(),
         nameStyle: 'font-size: 14px; font-weight: 700; color: ' + (p ? ink : '#A3AEC2'), modStyle: 'font-size: 13px; text-align: right; color: ' + (p ? '#E7EBF3' : '#7F8BA1'),
         askStyle: 'min-height: 32px; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; ' + (silent || (off && !done) ? 'border: 1px dashed #232D3F; background: transparent; color: #5B6577; font-style: italic' : done ? 'border: 1px solid #232D3F; background: transparent; color: #7F8BA1' : 'border: 1px solid ' + ink + '; background: ' + epRgba(ink, 0.14) + '; color: ' + ink) };
     });
@@ -1474,14 +1479,14 @@ export class MainLogic extends DCLogic {
     const rpV = this.panelVals(SB ? 4 : SQUAD_SEATS, PL);
 
     return {
-      ...epccgVals(this, c ? (id) => c.skills[id] || 0 : undefined), ...lightboxVals(this), code: g.code, withNarrator: !SB && !RUN, canRest: !SB && !RUN && !HIDES.has('rest'), canAsk: !HIDES.has('ask'), report: openReport,
+      ...epccgVals(this, c ? (id) => c.skills[id] || 0 : undefined, c || undefined), ...lightboxVals(this), code: g.code, withNarrator: !SB && !RUN, canRest: !SB && !RUN && !HIDES.has('rest'), canAsk: !HIDES.has('ask'), report: openReport,
       // The header (UI pass): the shell's cluster (room, Save, ⚙, ⚑, Leave), the Narrator chip and its menu, and the
       // Area map / Back to the fight button (screens/shell.js).
       ...shellVals(this, 'main'), ...narratorVals(this, g, { openArea: () => this.toggleArea(true) }),
       isHost, toCombat: () => { if (g.combat) go('combat'); }, noCombat: !g.combat,
       narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'),
       thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],
-      echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', forks: (() => { const cards = S.tab === 'skills' && c ? forkCards(c, { inFight: g.phase === 'combat' && !!g.combat, rerender: () => this.setState({ forkArm: Date.now() }) }) : []; return { has: cards.length > 0, cards }; })(), tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabArms: S.tab === 'arms', ar: S.tab === 'arms' ? armsTabVals(this, g, c) : { has: false }, tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
+      echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabArms: S.tab === 'arms', ar: S.tab === 'arms' ? armsTabVals(this, g, c) : { has: false }, tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
       fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : c && c.unspent && c.unspent.skill + c.unspent.attr + c.unspent.core === 0 && pendingPerkSteps(c).length ? 'Level up · pick a perk' : 'Level up · spend points', // what is due (levelUpDue): points, or only a perk step (a skill at Mastery 1 from creation)
       status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? fmtNum(c.hp) + ' / ' + fmtNum(hpMax) + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, mk, gs, packBig, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',

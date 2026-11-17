@@ -30,7 +30,16 @@ The game shows its version in the corner of the title screen and in every "Repor
   Tending, perks, prayers) is the first thing the hover says, with "no gain" when nothing changes; a click on an empty
   tile while a unit pick is open says "Nobody there." by the action box.
 
-## 0.31.2 — the known faults of 0.31.0 (rules 1.64)
+### The SKILLS tab said to a player (0.31.5) — forks under their skill, the points page folds and speaks to the player, the gamma's Call
+
+Leon, 17 Nov 2026: *"collapsable fork menu in the skill tab is still not in"*; *"make the 'what each point gives' menu collapsable too, and write the text for player reading"*; *"In the gamma tab, highlight the call action and how it grows in that menu too"*. Docs: `docs/design/ui-screens.md`, "The SKILLS tab and the skill page, said to a player".
+
+- **Forks under their skill (S1).** The SKILLS tab's separate forks section is gone; each door's fork card sits under its skill's row, folded to one line ("Forks · 1 chosen · 1 to pick", white while a pick waits) and opens on click (the shared fold, remembered per skill).
+- **WHAT EACH POINT GIVES folds (S2)**, per skill and remembered, open by default; inside it one layout for every skill: YOUR CALL (gamma), YOUR DOOR (alpha), EVERY POINT, Feeds <door> (beta: the top and this character's number now, from the engine's `doorFeedView`), AT 1 / 3 / 5 … and the ten steps.
+- **Said to the player (S3).** All 27 skills' rows rewritten as one sentence to "you"; every named unlock has a player line (`skills.json` `unlocks.<n>.player`); the door verbs named at the points they open; forks name their options; perk steps say "Perk step: take X or Y". No ids, rule numbers or engine words (a test holds it). Five typed numbers got fields (Second Wind, Marrow Talk, Opening Argument, Veiled Insult, Ward): the text-number baseline shrinks by 5. `tools/text_numbers.py` guards the new `player` and `short` texts.
+- **The gamma's Call (S4).** A gamma skill's page leads with YOUR CALL: the Call, its AP and reach now, how it grows (its steps' new `calls.json` `steps[].short` texts, the AP drop at 5, the reaction at 9 for a helping Call, the free first Call at 10, read through the engine's ladder functions) with the character's step lit, and what it rolls on checks and Asks. The level-up skill card shows the Call's line.
+- **Review fixes.** The nine door lines said to the player ("Your door is Shadow: a meter you fill while no enemy sees you", Sigils' row lengths from the grammar, Outbursts naming the Mana Short and the Mana Shock after it); the facts the rewrite had dropped put back (Ingenuity's Shadow gains, loss, First Shade and Tagged at 1; Shadow Run once a turn and never under its floor; Share a Hit stays on until switched off; which prayer shields Conscience feeds; two shields never raise the plates you hold; Visualization's Snare, Hand, extra fork shapes and every shape at 10); every Shadow and Figment move named with a few plain words; the beta feed rows in one plain sentence; the Feeds box's "You now" is the engine's view on the character itself (the soak grows with level), and Pain Threshold's says its unit ("each Guard plate takes 7 damage off a hit"); a player line of several sentences shows one sentence a line. Parting Cut (Ingenuity 9) is listed but not built: the page says so.
+
 ## 0.31.2 — the reward panel (hotfix)
 
 Leon on live 0.31.1: players zoomed into the path map never saw the rewards above it, and the map ignored their clicks

@@ -24,18 +24,30 @@
 </blockquote>
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.6; color: #E7EBF3">{{ep.intro}}</p>
 <section class="phc-ep-road" aria-label="What each point gives" style="display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 10px; border-radius: 12px; background: #0C1018; border: 1px solid #232D3F">
-<div style="display: flex; justify-content: space-between; align-items: baseline; gap: 4px 12px; flex-wrap: wrap"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2">WHAT EACH POINT GIVES</span><span class="phc-ep-pts" style="font-size: 12px; color: #A3AEC2">{{ep.ptsLine}}</span></div>
-<sc-if value="{{ep.hasHead}}" hint-placeholder-val="{{true}}"><p class="phc-ep-head" style="margin: 0; {{ep.headStyle}}"><b style="{{ep.inkStyle}}">Every point:</b> {{ep.head}}</p></sc-if>
+<button type="button" class="phc-fold-h phc-ep-fold" data-fold="{{ep.fold.id}}" onClick="{{ep.fold.toggle}}" aria-expanded="{{ep.fold.expanded}}" tip="Open or close what each point gives (it stays as you leave it)" style="{{ep.fold.headStyle}}"><span aria-hidden="true" style="{{ep.fold.chevStyle}}">{{ep.fold.chev}}</span><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2">WHAT EACH POINT GIVES</span><span class="phc-ep-pts" style="margin-left: auto; font-size: 12px; color: #A3AEC2">{{ep.ptsLine}}</span></button>
+<sc-if value="{{ep.fold.open}}" hint-placeholder-val="{{true}}">
+<sc-if value="{{ep.call.has}}" hint-placeholder-val="{{false}}"><div class="phc-ep-call" data-call="{{ep.call.name}}" style="{{ep.call.boxStyle}}">
+<span style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #FFFFFF">YOUR CALL</span><span style="font-size: 16px; font-weight: 700; {{ep.call.inkStyle}}">{{ep.call.name}}</span><span class="phc-ep-call-now" style="font-size: 13px; color: #E7EBF3">{{ep.call.now}}</span></span>
+<span class="phc-ep-call-text" style="font-size: 14px; line-height: 1.4; color: #E7EBF3">{{ep.call.text}}</span>
+<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2">HOW IT GROWS</span>
+<ol class="phc-ep-call-ladder" style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px"><sc-for list="{{ep.call.ladder}}" as="cl" hint-placeholder-count="5"><li class="phc-ep-call-step" data-at="{{cl.n}}" data-now="{{cl.now}}" aria-label="{{cl.label}}" style="{{cl.style}}"><span aria-hidden="true" style="{{cl.numStyle}}">{{cl.n}}</span><span style="{{cl.textStyle}}">{{cl.what}}</span></li></sc-for></ol>
+<span class="phc-ep-call-checks" style="font-size: 13px; line-height: 1.4; color: #C9D3E3">{{ep.call.checks}}</span>
+</div></sc-if>
+<sc-if value="{{ep.door.has}}" hint-placeholder-val="{{false}}"><p class="phc-ep-door" style="margin: 0; font-size: 14px; line-height: 1.4; color: #E7EBF3"><b style="font-size: 11px; letter-spacing: 0.14em; {{ep.inkStyle}}">YOUR DOOR</b> {{ep.door.text}}</p></sc-if>
+<sc-if value="{{ep.hasHead}}" hint-placeholder-val="{{true}}"><div class="phc-ep-every" style="display: flex; flex-direction: column; gap: 2px"><span class="phc-ep-sub" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; {{ep.inkStyle}}">EVERY POINT</span><sc-for list="{{ep.head}}" as="h" hint-placeholder-count="2"><p class="phc-ep-head" style="margin: 0; {{ep.headStyle}}">{{h.text}}</p></sc-for></div></sc-if>
+<sc-if value="{{ep.feed.has}}" hint-placeholder-val="{{false}}"><div class="phc-ep-feed" style="{{ep.feed.boxStyle}}"><span style="font-size: 14px; line-height: 1.4; font-weight: 700; color: #E7EBF3">{{ep.feed.head}}</span><span style="font-size: 13px; line-height: 1.4; color: #C9D3E3">{{ep.feed.top}}</span><sc-if value="{{ep.feed.hasNow}}"><span class="phc-ep-feed-now" style="font-size: 13px; line-height: 1.4; color: #FFFFFF">{{ep.feed.now}}</span></sc-if></div></sc-if>
+<span class="phc-ep-sub" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; {{ep.inkStyle}}">{{ep.atLabel}}</span>
 <ol class="phc-ep-track" style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px">
 <sc-for list="{{ep.steps}}" as="t" hint-placeholder-count="10"><li class="phc-ep-step" data-step="{{t.n}}" data-state="{{t.state}}" data-mastery="{{t.step}}" aria-label="{{t.label}}" style="{{t.style}}">
 <span aria-hidden="true" style="{{t.numStyle}}">{{t.n}}</span>
 <span style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 0; min-width: 0">
 <sc-for list="{{t.lines}}" as="l" hint-placeholder-count="1"><span class="phc-ep-row" data-line="{{l.kind}}" data-at="{{l.at}}" style="{{l.style}}">{{l.text}}</span></sc-for>
-<sc-if value="{{t.empty}}" hint-placeholder-val="{{false}}"><span class="phc-ep-row" data-line="none" style="font-size: 13px; color: #7F8BA1">What every point gives</span></sc-if>
+<sc-if value="{{t.empty}}" hint-placeholder-val="{{false}}"><span class="phc-ep-row" data-line="none" style="font-size: 13px; color: #7F8BA1">Only what every point gives</span></sc-if>
 </span>
 <sc-if value="{{t.hasPerks}}" hint-placeholder-val="{{false}}"><span style="display: flex; gap: 4px; flex: none"><sc-for list="{{t.perks}}" as="pi" hint-placeholder-count="2"><sc-if value="{{pi.has}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{pi.zoom}}" aria-label="Enlarge {{pi.name}}" tip="{{pi.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{pi.icon}}" alt="{{pi.alt}}" style="{{pi.style}}"></button></sc-if></sc-for></span></sc-if>
 </li></sc-for>
 </ol>
+</sc-if>
 </section>
 <dl style="margin: 0; display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 8px 14px; font-size: 14px; line-height: 1.45">
 <sc-for list="{{ep.rows}}" as="r" hint-placeholder-count="4"><dt style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2; padding-top: 3px">{{r.k}}</dt><dd style="margin: 0; color: #DCE2EC">{{r.v}}</dd></sc-for>

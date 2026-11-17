@@ -72,7 +72,7 @@ describe('the "?" skill page', () => {
       expect(v.ep.line + v.ep.attrName).not.toMatch(/[αβγ]|Body|Mind|Soul/);
       expect(v.ep.attrName).toBe(D.attrs.find((a: any) => a.id === s.attr).name);
       // what a point gives: the road map's ten steps and the head line (rules 1.54 item 4119)
-      expect(v.ep.steps).toHaveLength(10); expect(v.ep.head).toBe(roadMap(s.id).head.join(' · '));
+      expect(v.ep.steps).toHaveLength(10); expect(v.ep.head.map((h: any) => h.text)).toEqual(roadMap(s.id).head);
     }
     expect(slotLine('alpha')).toBe('How you fight');
     expect(slotLine('beta')).toBe('How you survive');

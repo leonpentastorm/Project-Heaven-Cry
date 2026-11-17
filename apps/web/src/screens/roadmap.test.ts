@@ -26,7 +26,9 @@ describe('the road map of every skill', () => {
         for (const t of r.steps) expect(t.lines.some((l: any) => l.key === 'r' + j), s.id + ' row ' + j + ' (' + row.at + ') on ' + t.n).toBe(want(row.at).includes(t.n));
       });
       // `each` (and `each from n`) rows are the head line; nothing else is
-      expect(r.head).toHaveLength(rows.filter((x) => x.at === 'each' || x.at.startsWith('each from')).length);
+      // (a beta's first row is its door line, shown under "Feeds <door>": never in the head)
+      expect(r.head).toHaveLength(rows.filter((x, j) => !(k.feed && j === 0) && (x.at === 'each' || x.at.startsWith('each from'))).length);
+      if (k.feed) expect(r.feed).toBe(rows[0].text);
       for (const t of r.steps) {
         const texts = t.lines.map((l: any) => l.text);
         expect(new Set(texts).size, s.id + ' step ' + t.n + ' repeats a line').toBe(texts.length);
