@@ -6,8 +6,8 @@ import { describe, expect, it, vi } from 'vitest';
 vi.stubGlobal('location', { search: '', hash: '' });
 const { roadMap, feedBlock } = await import('./shared');
 const RAW = JSON.parse(readFileSync(new URL('../../../../data/skills.json', import.meta.url), 'utf-8'));
-/** The skills rewritten so far (the rewrite goes one attribute at a time; at the end every skill is here). */
-const DONE = new Set<string>(['durability', 'pain_threshold', 'sensory', 'raw_power', 'guts', 'intimidation', 'dexterity', 'athletics', 'reaction_speed', 'ingenuity', 'analysis', 'vigilant', 'brain_power', 'rumination', 'eloquence', 'visualization', 'proficiency', 'charisma']);
+/** Every skill (the rewrite went one attribute at a time; all 27 are done). */
+const DONE = new Set<string>(RAW.items.map((s: any) => s.id));
 const BANNED = /\b(ops?|hooks?|stats?|predicates?|carriers?|feeds?|sites?)\b/i;
 
 /** A labelled effect gated by the skill's own points (if.self_skill) above its unlock's level: [points, label]. */

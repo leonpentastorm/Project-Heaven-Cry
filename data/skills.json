@@ -496,7 +496,7 @@
           "name": "Second Wind",
           "category": "Active Skill",
           "mastery": 2,
-          "text": "{=unlocks.5.effects.0.ap} AP, once per combat: recover 25% of your max HP.",
+          "text": "{=unlocks.5.effects.0.ap} AP, once per combat: recover {=unlocks.5.numbers.heal_share|pct}% of your max HP.",
           "player": "{=.effects.0.ap} AP, once a fight: heal {=.numbers.heal_share|pct}% of your max HP.",
           "effects": [
             {
@@ -1328,7 +1328,7 @@
           "name": "Marrow Talk",
           "category": "Conversation Quirk",
           "mastery": 1,
-          "text": "Even a failed threat leaves the target Shaken: −2 on their next roll against you.",
+          "text": "Even a failed threat leaves the target Shaken: {=unlocks.3.numbers.next_roll} on their next roll against you.",
           "player": "Even a failed threat leaves them Shaken: {=.numbers.next_roll} on their next roll against you.",
           "effects": [
             {
@@ -3441,7 +3441,7 @@
           "name": "Opening Argument",
           "category": "Combat Starter",
           "mastery": 2,
-          "text": "Debate the enemy leader before a fight. On a success, every enemy has 1 AP less in round 1.",
+          "text": "Debate the enemy leader before a fight. On a success, every enemy has {=unlocks.5.numbers.ap_loss} AP less in the first round.",
           "player": "Debate the enemy leader before a fight; on a success, every enemy has {=.numbers.ap_loss} AP less in the first round.",
           "effects": [
             {
@@ -4096,15 +4096,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "Healing you give grows"
+            "text": "Healing you give grows."
           },
           {
             "at": "from 1",
-            "text": "With an Attuner in hand, it opens Bonds and Tending"
+            "text": "With an Attuner in hand, it opens Bonds (a thread to a friend) and Tending (healing a friend through it)."
           },
           {
             "at": "each",
-            "text": "With an Attuner: more Bonds held and more verbs as it grows"
+            "text": "With an Attuner, you hold more Bonds and gain more Tending moves as it grows."
           }
         ]
       },
@@ -4117,6 +4117,7 @@
           "category": "Combat Interaction",
           "mastery": 1,
           "text": "You see the HP state and morale of every creature in your Vision range.",
+          "player": "You see the health and morale of every creature in your Vision range.",
           "effects": [
             {
               "op": "stat_mod",
@@ -4146,6 +4147,7 @@
           "category": "Active Skill",
           "mastery": 2,
           "text": "{=unlocks.5.effects.0.ap} AP: a humanoid enemy below 50% HP makes a Heart save, harder the more Empathy you have, or surrenders or flees.",
+          "player": "{=.effects.0.ap} AP: a humanoid enemy below half its HP makes a Heart save, harder the more Empathy you have, or surrenders or flees.",
           "effects": [
             {
               "op": "grant_action",
@@ -4283,15 +4285,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "Feeds Empathy's Bonds: what you Tend a Bonded ally heals you too, up to {=per_point.numbers.feed_at_double|pct}% of it when Empathy and Camaraderie are both at their top ({=per_point.numbers.feed|pct}% of that for each Empathy point times each Camaraderie point); it is no heal given"
+            "text": "what you heal through a Bond heals you too: up to {=per_point.numbers.feed_at_double|pct}% of it, growing with your points here times your points in Empathy ({=per_point.numbers.feed|pct}% of the way for each); it does not count as healing you give."
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.heal|pct}% healing received"
+            "text": "+{=per_point.numbers.heal|pct}% healing you receive."
           },
           {
-            "at": "from 1",
-            "text": "Share a Hit, a protective reaction"
+            "at": "at 5",
+            "text": "Share a Hit also covers a Bonded friend you can see."
           }
         ]
       },
@@ -4302,6 +4304,7 @@
           "category": "Reaction",
           "mastery": 0,
           "text": "Your reaction, when an ally next to you is hit (from {=unlocks.1.effects.1.if.self_skill.camaraderie} points also a Bonded ally you see): you take {=unlocks.1.effects.0.share.base|pct}% of the damage instead, +{=unlocks.1.effects.0.share.per.0.value|pct}% a point of Camaraderie (at most {=unlocks.1.effects.0.share.max|pct}%). It needs no focus. An Answer: on until you switch it off, like every Answer.",
+          "player": "Your reaction when a friend next to you is hit: you take {=.effects.0.share.base|pct}% of the damage instead, {=.effects.0.share.per.0.value|pct}% more for each point (at most {=.effects.0.share.max|pct}%).",
           "effects": [
             {
               "op": "redirect",
@@ -4371,6 +4374,7 @@
           "category": "Passive",
           "mastery": 1,
           "text": "Once per round, when an ally next to you is attacked, they use your Defense in place of their own if yours is higher.",
+          "player": "Once a round, a friend next to you who is attacked uses your Defense if it is higher.",
           "effects": [
             {
               "op": "stat_mod",
@@ -4395,6 +4399,7 @@
           "category": "Passive",
           "mastery": 2,
           "text": "Carry a Downed ally at full Movement, and stabilise them for {=unlocks.5.effects.0.value|abs} AP.",
+          "player": "Carry a Downed friend at full Movement, and stabilise them for {=.effects.0.value|abs} AP.",
           "effects": [
             {
               "op": "stat_mod",
@@ -4512,15 +4517,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "Your Taunt Call reaches {=per_point.numbers.call_range} tile further"
+            "text": "Your Taunt reaches {=per_point.numbers.call_range} tile further."
           },
           {
             "at": "each",
-            "text": "Your Taunt is harder to shake off"
+            "text": "Your Taunt is harder to shake off."
           },
           {
             "at": "from 1",
-            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -4531,6 +4536,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "When an NPC speaks in code or hides their meaning, the Narrator tells you what they really mean.",
+          "player": "When someone speaks in code or hides their meaning, the Narrator tells you what they really mean.",
           "effects": [
             {
               "op": "narrator",
@@ -4548,7 +4554,8 @@
           "name": "Veiled Insult",
           "category": "Combat Starter",
           "mastery": 2,
-          "text": "Before a fight, taunt one enemy in metaphor. It makes a Heart save or must target you first, at −2 to hit.",
+          "text": "Before a fight, taunt one enemy in metaphor. It makes a Heart save or must target you first, at {=unlocks.5.numbers.hit} to hit.",
+          "player": "Before a fight, taunt one enemy in metaphor: it makes a Heart save or must attack you first, at {=.numbers.hit} to hit.",
           "effects": [
             {
               "op": "grant_action",
@@ -4557,7 +4564,10 @@
               "uses": "per_combat"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "numbers": {
+            "hit": -2
+          }
         },
         "7": {
           "name": "Mastery 3",
@@ -4699,31 +4709,31 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.soul|pct}% Soul power, +{=per_point.numbers.syphon|pct}% mana syphoned"
+            "text": "+{=per_point.numbers.soul|pct}% Soul power and +{=per_point.numbers.syphon|pct}% mana syphoned."
           },
           {
             "at": "each",
-            "text": "Your Outbursts' conditions are harder to save against"
+            "text": "Your Outbursts (Soul spells you charge, then release) are harder to save against."
           },
           {
             "at": "every 2",
-            "text": "+{=per_point.numbers.strain} Strain limit, Outbursts reach {=per_point.numbers.reach} tile further"
+            "text": "+{=per_point.numbers.strain} Strain limit (what your heart can take), and your Outbursts reach {=per_point.numbers.reach} tile further."
           },
           {
             "at": "every 2",
-            "text": "You keep {=per_point.numbers.designs} more design ready"
+            "text": "You keep {=per_point.numbers.designs} more design ready."
           },
           {
             "at": "every 3",
-            "text": "{=per_point.numbers.slots} more module slot"
+            "text": "{=per_point.numbers.slots} more module slot in a design."
           },
           {
             "at": "from 3",
-            "text": "{=per_point.numbers.pumps} Pump of an Outburst each round is free"
+            "text": "{=per_point.numbers.pumps} Pump of an Outburst each round is free."
           },
           {
             "at": "from 7",
-            "text": "A held Outburst swells without Strain"
+            "text": "A held Outburst swells without Strain."
           }
         ]
       },
@@ -4736,6 +4746,7 @@
           "category": "Active Skill",
           "mastery": 1,
           "text": "Once a turn, a Pump can be an Overdraw: it adds 2 stages instead of 1, so it needs stage 2 or lower. It costs only the Pump's own AP. Your first Overdraw of a fight costs no Strain. Each one after it costs you 1 Strain once the Pump is done.",
+          "player": "Once a turn, a Pump can add two stages instead of one (from stage two or lower) for the Pump's own AP; your first of a fight costs no Strain, each after it one Strain.",
           "effects": [
             {
               "op": "grant_action",
@@ -4768,6 +4779,7 @@
           "category": "Combat Interaction",
           "mastery": 2,
           "text": "Once per combat, the first Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release.",
+          "player": "Once a fight, the first Strain that would Mana Short you is refused: your Strain falls to your limit, with no Stun and no wild release.",
           "effects": [
             {
               "op": "grant_action",
@@ -4909,11 +4921,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "Feeds Will Power's Outbursts: your Strain limit is {=per_point.numbers.feed|pct}% more for each Will Power point times each Composure point"
+            "text": "your Strain limit rises by {=per_point.numbers.feed|pct}% for every point here times every point in Will Power."
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.save} on Heart saves: fear, despair, losing your nerve"
+            "text": "+{=per_point.numbers.save} on Heart saves: against fear, despair and losing your nerve."
           }
         ]
       },
@@ -4924,6 +4936,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "Interrogators and lie-readers take −{=unlocks.3.effects.0.value} against you.",
+          "player": "Anyone questioning you or reading your lies takes −{=.effects.0.value} against you.",
           "effects": [
             {
               "op": "tn_mod",
@@ -4943,6 +4956,7 @@
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Until you first act in a combat, enemies attacking you are at −2 to hit, and the first one to miss gives you a free attack on it (once a combat, if your weapon reaches). A Call doesn't count as acting.",
+          "player": "Until you first act in a fight, enemies attacking you are at −{=.effects.0.value} to hit, and the first to miss gives you a free attack on it (once a fight, if your weapon reaches); a Call does not count as acting.",
           "effects": [
             {
               "op": "stat_mod",
@@ -5064,11 +5078,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "Your Name It Call reaches {=per_point.numbers.call_range} tile further"
+            "text": "Your Name It reaches {=per_point.numbers.call_range} tile further."
           },
           {
             "at": "from 1",
-            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -5079,6 +5093,7 @@
           "category": "Passive",
           "mastery": 1,
           "text": "Once per scene, ask the Narrator one question about a supernatural creature, curse or relic. The answer is true.",
+          "player": "Once a scene, ask the Narrator one question about a supernatural creature, curse or relic; the answer is true.",
           "effects": [
             {
               "op": "grant_action",
@@ -5102,7 +5117,8 @@
           "name": "Ward",
           "category": "AP Mod",
           "mastery": 2,
-          "text": "{=unlocks.5.effects.0.ap} AP: an ally gets +3 on their next save against a supernatural effect.",
+          "text": "{=unlocks.5.effects.0.ap} AP: an ally gets +{=unlocks.5.numbers.save} on their next save against a supernatural effect.",
+          "player": "{=.effects.0.ap} AP: a friend gets +{=.numbers.save} on their next save against a supernatural effect.",
           "effects": [
             {
               "op": "grant_action",
@@ -5111,7 +5127,10 @@
               "uses": "at_will"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "numbers": {
+            "save": 3
+          }
         },
         "7": {
           "name": "Mastery 3",
@@ -5240,15 +5259,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.blessing|pct}% Blessing power"
+            "text": "+{=per_point.numbers.blessing|pct}% Blessing power."
           },
           {
             "at": "each",
-            "text": "Hymns come back {=per_point.numbers.hymn_cut} round sooner, {=per_point.numbers.hymn_floor} rounds at least"
+            "text": "Hymns (strong prayers that must wait) come back {=per_point.numbers.hymn_cut} round sooner, never sooner than {=per_point.numbers.hymn_floor} rounds."
           },
           {
             "at": "each",
-            "text": "Your Blessings' conditions are harder to save against"
+            "text": "Your Blessings' conditions are harder to save against."
           }
         ]
       },
@@ -5261,6 +5280,7 @@
           "category": "Active Skill",
           "mastery": 1,
           "text": "Once per combat, reset your prayer cooldown.",
+          "player": "Once a fight, reset your prayers' wait.",
           "effects": [
             {
               "op": "grant_action",
@@ -5291,6 +5311,7 @@
           "category": "Combat Interaction",
           "mastery": 2,
           "text": "Your patron's blows (Smite, Amen, Rebuke, a Hymn's or an intervention's harm) deal {=unlocks.5.effects.0.value|pct}% more to a foe your squad has Marked (Marking is Shadow's).",
+          "player": "Your patron's blows (Smite, Amen, Rebuke, a Hymn's or an intervention's harm) deal {=.effects.0.value|pct}% more to a foe your squad has Marked.",
           "effects": [
             {
               "op": "damage_vs",
@@ -5436,11 +5457,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "Feeds Faith's prayers: every shield your prayers give (Protection, a Hymn's, the Ward) is {=per_point.numbers.feed|pct}% stronger for each Faith point times each Conscience point"
+            "text": "every shield your prayers give is {=per_point.numbers.feed|pct}% stronger for every point here times every point in Faith."
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.shield|pct}% to every shield you are given"
+            "text": "+{=per_point.numbers.shield|pct}% to every shield you are given."
           }
         ]
       },
@@ -5481,6 +5502,7 @@
           "category": "Passive",
           "mastery": 1,
           "text": "Before a major decision, ask the Narrator for its worst likely consequence. The answer is honest.",
+          "player": "Before a big decision, ask the Narrator for its worst likely result; the answer is honest.",
           "effects": [
             {
               "op": "narrator",
@@ -5499,6 +5521,7 @@
           "category": "AP Mod",
           "mastery": 2,
           "text": "While protecting innocents, your first action each turn costs {=unlocks.5.effects.0.value|abs} AP less.",
+          "player": "While you protect innocents, your first action each turn costs {=.effects.0.value|abs} AP less.",
           "effects": [
             {
               "op": "stat_mod",
@@ -5616,15 +5639,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "Karma moves {=per_point.numbers.karma} further each time it changes, up or down"
+            "text": "Karma moves {=per_point.numbers.karma} further each time it changes, up or down."
           },
           {
             "at": "each",
-            "text": "Your Order Call reaches {=per_point.numbers.call_range} tile further"
+            "text": "Your Order reaches {=per_point.numbers.call_range} tile further."
           },
           {
             "at": "from 1",
-            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -5635,6 +5658,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "Lower-ranked NPCs (soldiers, guards, clerks) follow reasonable orders without a roll.",
+          "player": "Lower-ranked people (soldiers, guards, clerks) follow reasonable orders without a roll.",
           "effects": [
             {
               "op": "narrator",
@@ -5653,6 +5677,7 @@
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Your squad has +{=unlocks.5.effects.0.value} AP in round 1, and enemy rank-and-file make a Heart save or hesitate (−{=unlocks.5.effects.0.value} AP).",
+          "player": "Your squad has +{=.effects.0.value} AP in the first round, and enemy rank-and-file make a Heart save or lose {=.effects.0.value} AP.",
           "effects": [
             {
               "op": "stat_mod",
