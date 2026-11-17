@@ -1,0 +1,81 @@
+{
+  "number": 29,
+  "section": 4,
+  "family": "place_icons",
+  "id": "place-trade-crate",
+  "path": "art/icons/places/trade-crate.png",
+  "name": "A sealed crate (trade card)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a card with no picture)",
+  "use": "Crossroads trade: pay, open it, pick one of three weapons of an Elite's grade",
+  "paint": "A closed crate with three bound straps and one round wax seal on its lid.",
+  "avoid": "a treasure chest \u00b7 a gift box with a bow \u00b7 a real shipping logo",
+  "file_key": "29-trade-crate",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A closed crate with three bound straps and one round wax seal on its lid.\nAVOID: a treasure chest \u00b7 a gift box with a bow \u00b7 a real shipping logo",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/29-trade-crate-v1.png",
+  "source_sha256": "084b1831927b855b1e67d62b1e8577eeaa2de0ed8a6cf39ffe9e56360ef17be9",
+  "generation_attempt": 1,
+  "export_crop": [
+    49,
+    22,
+    1202,
+    1166
+  ],
+  "scale": 0.7111882046834345,
+  "offset": [
+    102,
+    105
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "c8ff230ccb1b6604025c5e4e46d177f8c125156a05dad47373bf5761e42a3f4a",
+  "exports": {
+    "256": "art/icons/places/exports/256/trade-crate.png",
+    "128": "art/icons/places/exports/128/trade-crate.png",
+    "64": "art/icons/places/exports/64/trade-crate.png",
+    "48": "art/icons/places/exports/48/trade-crate.png",
+    "44": "art/icons/places/exports/44/trade-crate.png",
+    "32": "art/icons/places/exports/32/trade-crate.png",
+    "24": "art/icons/places/exports/24/trade-crate.png",
+    "16": "art/icons/places/exports/16/trade-crate.png"
+  },
+  "export_sha256": {
+    "256": "0f146dc9cf5ca3a9ef6d6e9abbc0914ad3241176da20dc8775c944ed9221c414",
+    "128": "bfb49919a482f580fc18daa94f25c1f0fc39a78a7dd2f32235e6cff89aaaffce",
+    "64": "4a94c07c25cd2e01ddb64baf69f069c9ad18324331fc58d6ebd1ecb2ad410aa3",
+    "48": "d0e5a66189d6585ccee351b1d8e54b82519c2562c88b6d9597ec5b172be848af",
+    "44": "6cefda348e350650de1d74fd60b45d69030eddffd07c28a470421459af5c2787",
+    "32": "9bac9afe31460c235df37ecc95d1ca93c6dfe1ffcb4a52ece0cb82ab00095ec1",
+    "24": "ae4c298110352092ee572c0fadaff28e2b6cf4c9a7e1b92634ee84eeb8342f0a",
+    "16": "86e7b354713ca960472fd3da9b7b99cdae1a6c99d136f30d2a1cede4bf3aa6ed"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

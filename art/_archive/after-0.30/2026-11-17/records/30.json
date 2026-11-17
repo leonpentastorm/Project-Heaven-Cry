@@ -1,0 +1,81 @@
+{
+  "number": 30,
+  "section": 4,
+  "family": "place_icons",
+  "id": "place-trade-wayside",
+  "path": "art/icons/places/trade-wayside.png",
+  "name": "A wayside shrine (trade card)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a card with no picture)",
+  "use": "Crossroads trade: free once a stage, Devotion XP or a study or practice step",
+  "paint": "A small roadside stone with a cord of three ribbons hung across it and a lit lamp on top.",
+  "avoid": "a cross, a crescent or a gravestone \u00b7 a temple",
+  "file_key": "30-trade-wayside",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small roadside stone with a cord of three ribbons hung across it and a lit lamp on top.\nAVOID: a cross, a crescent or a gravestone \u00b7 a temple",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/30-trade-wayside-v1.png",
+  "source_sha256": "8f8371bbafd0d49552a1feef0e5834e794fb47aeec1c3c801e69209bfbe29fb2",
+  "generation_attempt": 1,
+  "export_crop": [
+    9,
+    29,
+    1240,
+    1208
+  ],
+  "scale": 0.6661251015434606,
+  "offset": [
+    102,
+    119
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "430440993439c34bf36139b74e86cdc2813e95f30aa0c23dc43c9df4a5ac75e2",
+  "exports": {
+    "256": "art/icons/places/exports/256/trade-wayside.png",
+    "128": "art/icons/places/exports/128/trade-wayside.png",
+    "64": "art/icons/places/exports/64/trade-wayside.png",
+    "48": "art/icons/places/exports/48/trade-wayside.png",
+    "44": "art/icons/places/exports/44/trade-wayside.png",
+    "32": "art/icons/places/exports/32/trade-wayside.png",
+    "24": "art/icons/places/exports/24/trade-wayside.png",
+    "16": "art/icons/places/exports/16/trade-wayside.png"
+  },
+  "export_sha256": {
+    "256": "aa7d60a9a5b7aedc9e161d0c750401da60e7de8bfa0d453a58fcb4645000bfe4",
+    "128": "a370cfba40dc1313d82ff0dfd9d579f217e51a1d645daca00efa0fe872b64275",
+    "64": "377ecd476688040acb043f7cd8cac9e7d49b21602d0282bc5ff112f3efed2968",
+    "48": "76d7d1cc3b4c6f2d5b1e3edc4bfe1d0427e37e71fd76b4d772d4e580a306c050",
+    "44": "123b56c942a1aeb5572d2ba8f4ee1ce17fe7e8be25854c9c33d8a5f8ebd86ff4",
+    "32": "dbbfa4a411285f743a3f2bf2c8e2caf9c3113d26cf1a5a83eaca697e231630a8",
+    "24": "fa1b877c2dac1ead6a2f02e6bd0589d12aa1474408232511c18e6ee0ff05532d",
+    "16": "01c49d5cd6e71ec40591a680950106dc78821cba25d9375cf5f9fa1252da5766"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

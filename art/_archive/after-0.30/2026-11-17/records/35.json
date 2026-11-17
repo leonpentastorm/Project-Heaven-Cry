@@ -1,0 +1,82 @@
+{
+  "number": 35,
+  "section": 5,
+  "family": "prayers",
+  "id": "vow-stand",
+  "path": "art/icons/prayers/vow-stand.png",
+  "name": "Vow: Stand (\"I don't give ground.\")",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "state": "in game now (a code line mark)",
+  "use": "The vow of the same name",
+  "paint": "Wick with his heel planted on a long line scratched across the ground, his weight set forward.",
+  "avoid": "a wall \u00b7 a flag planted \u00b7 a mountain",
+  "file_key": "35-vow-stand",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick with his heel planted on a long line scratched across the ground, his weight set forward.\nAVOID: a wall \u00b7 a flag planted \u00b7 a mountain",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/35-vow-stand-v1.png",
+  "source_sha256": "b2693ec9435184150204c20bffa90d20d3d51415efa3676544c8267845e03838",
+  "generation_attempt": 1,
+  "export_crop": [
+    31,
+    79,
+    1254,
+    1254
+  ],
+  "scale": 0.5193064593889062,
+  "offset": [
+    194,
+    207
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "65bd0adc9fef0e7eadb6278b8ce3c5e2728bb16921b338902b6c3bf6ca964306",
+  "exports": {
+    "256": "art/icons/prayers/exports/256/vow-stand.png",
+    "128": "art/icons/prayers/exports/128/vow-stand.png",
+    "64": "art/icons/prayers/exports/64/vow-stand.png",
+    "48": "art/icons/prayers/exports/48/vow-stand.png",
+    "44": "art/icons/prayers/exports/44/vow-stand.png",
+    "32": "art/icons/prayers/exports/32/vow-stand.png",
+    "24": "art/icons/prayers/exports/24/vow-stand.png",
+    "16": "art/icons/prayers/exports/16/vow-stand.png"
+  },
+  "export_sha256": {
+    "256": "597c770310f805f8aa8fc087f3a5f65d41cac61cbb818d1b0da5ae1f27026446",
+    "128": "02030565c75d512276c2f765ce69a7f91e8bb2afaea8f1db1b90b6c0cd6d8cc8",
+    "64": "64ea6c95213879f9bff1282e990db9891e7d4d865ae65bb989c5790007722810",
+    "48": "9b5fbceca65d99e2af4d59a72951c917c0ce473eccc449d8d2555b38a4033a65",
+    "44": "b3c1e522a98a2b2b40b0c29020668272f3ca428e128350d566cb367a92067ab3",
+    "32": "9c3fcd1f1fdae95fc74fb99899adcd8a6e4b7238ad6d34a6376ed1ea92973e43",
+    "24": "072834717cea9308c37297838eb35295d616f551cbd51615ff2a01a7b6a18f96",
+    "16": "1e60e67acf1d656bc3d0a8a7168c5b6102f9f2c90720f48ee0ca4f4c48640792"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

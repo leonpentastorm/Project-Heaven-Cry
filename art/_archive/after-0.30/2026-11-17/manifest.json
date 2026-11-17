@@ -2268,5 +2268,575 @@
       "16": "fb0325006a15cead3e4485d6d90e5d2ff8a3ac78ba0804b3a8663fa951cd1ea2"
     },
     "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 29,
+    "section": 4,
+    "family": "place_icons",
+    "id": "place-trade-crate",
+    "path": "art/icons/places/trade-crate.png",
+    "name": "A sealed crate (trade card)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a card with no picture)",
+    "use": "Crossroads trade: pay, open it, pick one of three weapons of an Elite's grade",
+    "paint": "A closed crate with three bound straps and one round wax seal on its lid.",
+    "avoid": "a treasure chest \u00b7 a gift box with a bow \u00b7 a real shipping logo",
+    "file_key": "29-trade-crate",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A closed crate with three bound straps and one round wax seal on its lid.\nAVOID: a treasure chest \u00b7 a gift box with a bow \u00b7 a real shipping logo",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/29-trade-crate-v1.png",
+    "source_sha256": "084b1831927b855b1e67d62b1e8577eeaa2de0ed8a6cf39ffe9e56360ef17be9",
+    "generation_attempt": 1,
+    "export_crop": [
+      49,
+      22,
+      1202,
+      1166
+    ],
+    "scale": 0.7111882046834345,
+    "offset": [
+      102,
+      105
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "c8ff230ccb1b6604025c5e4e46d177f8c125156a05dad47373bf5761e42a3f4a",
+    "exports": {
+      "256": "art/icons/places/exports/256/trade-crate.png",
+      "128": "art/icons/places/exports/128/trade-crate.png",
+      "64": "art/icons/places/exports/64/trade-crate.png",
+      "48": "art/icons/places/exports/48/trade-crate.png",
+      "44": "art/icons/places/exports/44/trade-crate.png",
+      "32": "art/icons/places/exports/32/trade-crate.png",
+      "24": "art/icons/places/exports/24/trade-crate.png",
+      "16": "art/icons/places/exports/16/trade-crate.png"
+    },
+    "export_sha256": {
+      "256": "0f146dc9cf5ca3a9ef6d6e9abbc0914ad3241176da20dc8775c944ed9221c414",
+      "128": "bfb49919a482f580fc18daa94f25c1f0fc39a78a7dd2f32235e6cff89aaaffce",
+      "64": "4a94c07c25cd2e01ddb64baf69f069c9ad18324331fc58d6ebd1ecb2ad410aa3",
+      "48": "d0e5a66189d6585ccee351b1d8e54b82519c2562c88b6d9597ec5b172be848af",
+      "44": "6cefda348e350650de1d74fd60b45d69030eddffd07c28a470421459af5c2787",
+      "32": "9bac9afe31460c235df37ecc95d1ca93c6dfe1ffcb4a52ece0cb82ab00095ec1",
+      "24": "ae4c298110352092ee572c0fadaff28e2b6cf4c9a7e1b92634ee84eeb8342f0a",
+      "16": "86e7b354713ca960472fd3da9b7b99cdae1a6c99d136f30d2a1cede4bf3aa6ed"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 30,
+    "section": 4,
+    "family": "place_icons",
+    "id": "place-trade-wayside",
+    "path": "art/icons/places/trade-wayside.png",
+    "name": "A wayside shrine (trade card)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a card with no picture)",
+    "use": "Crossroads trade: free once a stage, Devotion XP or a study or practice step",
+    "paint": "A small roadside stone with a cord of three ribbons hung across it and a lit lamp on top.",
+    "avoid": "a cross, a crescent or a gravestone \u00b7 a temple",
+    "file_key": "30-trade-wayside",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small roadside stone with a cord of three ribbons hung across it and a lit lamp on top.\nAVOID: a cross, a crescent or a gravestone \u00b7 a temple",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/30-trade-wayside-v1.png",
+    "source_sha256": "8f8371bbafd0d49552a1feef0e5834e794fb47aeec1c3c801e69209bfbe29fb2",
+    "generation_attempt": 1,
+    "export_crop": [
+      9,
+      29,
+      1240,
+      1208
+    ],
+    "scale": 0.6661251015434606,
+    "offset": [
+      102,
+      119
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "430440993439c34bf36139b74e86cdc2813e95f30aa0c23dc43c9df4a5ac75e2",
+    "exports": {
+      "256": "art/icons/places/exports/256/trade-wayside.png",
+      "128": "art/icons/places/exports/128/trade-wayside.png",
+      "64": "art/icons/places/exports/64/trade-wayside.png",
+      "48": "art/icons/places/exports/48/trade-wayside.png",
+      "44": "art/icons/places/exports/44/trade-wayside.png",
+      "32": "art/icons/places/exports/32/trade-wayside.png",
+      "24": "art/icons/places/exports/24/trade-wayside.png",
+      "16": "art/icons/places/exports/16/trade-wayside.png"
+    },
+    "export_sha256": {
+      "256": "aa7d60a9a5b7aedc9e161d0c750401da60e7de8bfa0d453a58fcb4645000bfe4",
+      "128": "a370cfba40dc1313d82ff0dfd9d579f217e51a1d645daca00efa0fe872b64275",
+      "64": "377ecd476688040acb043f7cd8cac9e7d49b21602d0282bc5ff112f3efed2968",
+      "48": "76d7d1cc3b4c6f2d5b1e3edc4bfe1d0427e37e71fd76b4d772d4e580a306c050",
+      "44": "123b56c942a1aeb5572d2ba8f4ee1ce17fe7e8be25854c9c33d8a5f8ebd86ff4",
+      "32": "dbbfa4a411285f743a3f2bf2c8e2caf9c3113d26cf1a5a83eaca697e231630a8",
+      "24": "fa1b877c2dac1ead6a2f02e6bd0589d12aa1474408232511c18e6ee0ff05532d",
+      "16": "01c49d5cd6e71ec40591a680950106dc78821cba25d9375cf5f9fa1252da5766"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 31,
+    "section": 4,
+    "family": "place_icons",
+    "id": "place-trade-graft",
+    "path": "art/icons/places/trade-graft.png",
+    "name": "A back-room graft (trade card)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a card with no picture)",
+    "use": "Crossroads trade: a small blessing for the rest of the run, paid for in max HP",
+    "paint": "A thin needle drawing a thread through a small glowing bead set in a flat plate.",
+    "avoid": "a syringe \u00b7 a medical cross \u00b7 gore",
+    "file_key": "31-trade-graft",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A thin needle drawing a thread through a small glowing bead set in a flat plate.\nAVOID: a syringe \u00b7 a medical cross \u00b7 gore",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/31-trade-graft-v1.png",
+    "source_sha256": "b6db1f680235da1f0a4ee9279d9d0d63c041fc9a01ca1c216693c0ceec328cad",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      29,
+      1200,
+      1254
+    ],
+    "scale": 0.6693877551020408,
+    "offset": [
+      110,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "4be21022b8de5901110ad075aa465bfe04dfa00c096545e703c259afa3a4cdea",
+    "exports": {
+      "256": "art/icons/places/exports/256/trade-graft.png",
+      "128": "art/icons/places/exports/128/trade-graft.png",
+      "64": "art/icons/places/exports/64/trade-graft.png",
+      "48": "art/icons/places/exports/48/trade-graft.png",
+      "44": "art/icons/places/exports/44/trade-graft.png",
+      "32": "art/icons/places/exports/32/trade-graft.png",
+      "24": "art/icons/places/exports/24/trade-graft.png",
+      "16": "art/icons/places/exports/16/trade-graft.png"
+    },
+    "export_sha256": {
+      "256": "ef9d5dffa4cf42bcf6c9a7f6e59d2ea76578a1cf15eda9476ac8c03a39c6359d",
+      "128": "1af6855498a550dd6dc9f4f3134e558e4f5a512781b5edfaa37842eaa02e188e",
+      "64": "8eac5a1b6a71e66c3435e371206c0e4db21d9143434f2a0c79286cbec1827e83",
+      "48": "d86e4eb8686cb569d97612a12595818822ae66abdce1a30656cb743fb3ad36b0",
+      "44": "9aacabf5bee49f50f61ee3bdbe99543e954ab73bb8f1da1ba97da7a5f77bb1e9",
+      "32": "3fa9a581363766c2e99931e2e6f002f6233c90f34aec1076a44b64003fb23542",
+      "24": "661d382f47f99580cc209de4ee6a83bb91b860e78f65435ee9c92be18fb26cec",
+      "16": "69ff8faa6753bd7e5e8a970917c1b85c7062e21011bf81621d0824e8d5a68730"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 32,
+    "section": 4,
+    "family": "place_icons",
+    "id": "place-trade-salvage",
+    "path": "art/icons/places/trade-salvage.png",
+    "name": "A salvage buyer (trade card)",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a card with no picture)",
+    "use": "Crossroads trade: sell one weapon or item from your pack at a share of its price",
+    "paint": "A small pair of scales, one coin on one pan, a broken gun part on the other, the scales level.",
+    "avoid": "a real currency symbol \u00b7 a pawn shop sign \u00b7 a skeleton",
+    "file_key": "32-trade-salvage",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small pair of scales, one coin on one pan, a broken gun part on the other, the scales level.\nAVOID: a real currency symbol \u00b7 a pawn shop sign \u00b7 a skeleton",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/32-trade-salvage-v1.png",
+    "source_sha256": "89aaf04b1231e73d305e339e82fff79c95d450db0c3987a1bbdda5b8adb6463d",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      96,
+      1242,
+      1228
+    ],
+    "scale": 0.6602254428341385,
+    "offset": [
+      102,
+      138
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "0ccc8be5d5553d3aa92e56c5327509cbfaeded580c72b15032ef97ce5f24be31",
+    "exports": {
+      "256": "art/icons/places/exports/256/trade-salvage.png",
+      "128": "art/icons/places/exports/128/trade-salvage.png",
+      "64": "art/icons/places/exports/64/trade-salvage.png",
+      "48": "art/icons/places/exports/48/trade-salvage.png",
+      "44": "art/icons/places/exports/44/trade-salvage.png",
+      "32": "art/icons/places/exports/32/trade-salvage.png",
+      "24": "art/icons/places/exports/24/trade-salvage.png",
+      "16": "art/icons/places/exports/16/trade-salvage.png"
+    },
+    "export_sha256": {
+      "256": "103b1aeb56276766b1197f70934f9b885f920cb71afbafe22780f5b83796187b",
+      "128": "17fa735058909defdcb4d79682dae57e76cb3091c3c18abd057c471fa8775dcb",
+      "64": "9a369d1c7ebefbd12916a75483194191fc6c7ad4a6cbf21e710f7489d0c46021",
+      "48": "e69f13879e1d5be7bde36c4cf75f11c48b101b41db14b40c85500271ee147b91",
+      "44": "c81921df84a4a8ce62f1cbf6b5eed97da82aab28eedf95a0ad2fd9c6b22a0899",
+      "32": "368781c885d03daa3955debc48627b381b51ad0867d070b6b8c6a353534dc96b",
+      "24": "e86caef764dacae204a55342c81e452c5bd39d2c2894a957c88ea72258846529",
+      "16": "347582a63385c69c0f05ae792cd515d62ff9f4a0569c7bc6f935cfd472065a4b"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 33,
+    "section": 5,
+    "family": "prayers",
+    "id": "vow-shield",
+    "path": "art/icons/prayers/vow-shield.png",
+    "name": "Vow: Shield (\"None of them falls.\")",
+    "kind": "wick",
+    "mode": "Wick icon",
+    "state": "in game now (a code line mark)",
+    "use": "The vow of the same name, on the vow line and the vow picker",
+    "paint": "Wick standing between two partial figures at the frame's edges, both arms spread wide over them.",
+    "avoid": "a shield with a cross \u00b7 a knight's pose",
+    "file_key": "33-vow-shield",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick standing between two partial figures at the frame's edges, both arms spread wide over them.\nAVOID: a shield with a cross \u00b7 a knight's pose",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/33-vow-shield-v1.png",
+    "source_sha256": "cd2e585737590b70cb808156d75c5eb04b5bbade475a0d0182721486476be1d5",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      19,
+      1254,
+      1254
+    ],
+    "scale": 0.5003906788751583,
+    "offset": [
+      198,
+      203
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "064675515fa3d469b9ab0ca52b2a63a9004e9109124fb69ad8a0ccdd1b09f902",
+    "exports": {
+      "256": "art/icons/prayers/exports/256/vow-shield.png",
+      "128": "art/icons/prayers/exports/128/vow-shield.png",
+      "64": "art/icons/prayers/exports/64/vow-shield.png",
+      "48": "art/icons/prayers/exports/48/vow-shield.png",
+      "44": "art/icons/prayers/exports/44/vow-shield.png",
+      "32": "art/icons/prayers/exports/32/vow-shield.png",
+      "24": "art/icons/prayers/exports/24/vow-shield.png",
+      "16": "art/icons/prayers/exports/16/vow-shield.png"
+    },
+    "export_sha256": {
+      "256": "c93f9abbb91e4f74346a142c0c4ea0f507faf58d45f0452e970bd2ef9b226ce9",
+      "128": "9d62df6da34f9b34003b4dabb96d077bb55a006bea327a22e10b75597d6db196",
+      "64": "2368142f657c4b320769a571c80f78cda7f2a0ef8eb0fa6667bd25c47b37e6db",
+      "48": "ea71bca8b11c6a4ccdc8a9cb32e7560d1b6dfa75d735a34aea324c0a1958a228",
+      "44": "36b1dbc16fefc2b1d388e0253182beb8b59281a22f328e42ea6ac67796a335ae",
+      "32": "b8e2adf10a80c4ca3063dd27ad5ac2503da12d3296d51925967709b1caa1ab74",
+      "24": "ad2b0d3a35a7fd77efbd19fc413782744cf9d0430b51155538b19ecf7a391d8c",
+      "16": "fed5104db26970b9eb52e7b6e315e5c2e96745b3e0e605e3b3b416638437baf9"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 34,
+    "section": 5,
+    "family": "prayers",
+    "id": "vow-mercy",
+    "path": "art/icons/prayers/vow-mercy.png",
+    "name": "Vow: Mercy (\"I spare who yields.\")",
+    "kind": "wick",
+    "mode": "Wick icon",
+    "state": "in game now (a code line mark)",
+    "use": "The vow of the same name",
+    "paint": "Wick lowering a blade to his side, his other open hand held out to a kneeling partial figure.",
+    "avoid": "a white flag \u00b7 a dove \u00b7 a crown",
+    "file_key": "34-vow-mercy",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick lowering a blade to his side, his other open hand held out to a kneeling partial figure.\nAVOID: a white flag \u00b7 a dove \u00b7 a crown",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/34-vow-mercy-v1.png",
+    "source_sha256": "ca094a40530f04274c5e72134557576fd495a8f5c6cc3df50edac255b68568ee",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      65,
+      1234,
+      1254
+    ],
+    "scale": 0.5139582850355457,
+    "offset": [
+      195,
+      206
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "e89add83a9b209170cf267c72d170331b2726882926ca044f8b91afb78400052",
+    "exports": {
+      "256": "art/icons/prayers/exports/256/vow-mercy.png",
+      "128": "art/icons/prayers/exports/128/vow-mercy.png",
+      "64": "art/icons/prayers/exports/64/vow-mercy.png",
+      "48": "art/icons/prayers/exports/48/vow-mercy.png",
+      "44": "art/icons/prayers/exports/44/vow-mercy.png",
+      "32": "art/icons/prayers/exports/32/vow-mercy.png",
+      "24": "art/icons/prayers/exports/24/vow-mercy.png",
+      "16": "art/icons/prayers/exports/16/vow-mercy.png"
+    },
+    "export_sha256": {
+      "256": "8bd6aa92b0a6cfc30030e8f4ec443a130ba7cbd2342022add6840ed64af12345",
+      "128": "3b05afa40d3a7a6681b3328d3d53ebe8249bb5c8c8b1489d23cad5799c495322",
+      "64": "7719ec27ff5f278b2c2158fd042d87bcf658547ed977358b4ed7ce2b46082c14",
+      "48": "d66542f42ff2fb44208092860759ea4385000680a1940e7fd5438e429aaefcf8",
+      "44": "46372100ca0a7d20941a12b6d69a0ff80fd8c790bf7429941c9e0af41670b07e",
+      "32": "4a1fd48571e3b5cf4c99370cc90cd0a087ab0ba1878bca9d6882b5a3a1c53ee5",
+      "24": "07643701592f2c2b564a294011c8cd4bf5937b6d732ff6a9016a9e96c91e0adb",
+      "16": "ae1ad677a4b1dbdbcf2b50fa721ba04a1d26a7c91db046b6f8c0a13520e865a8"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 35,
+    "section": 5,
+    "family": "prayers",
+    "id": "vow-stand",
+    "path": "art/icons/prayers/vow-stand.png",
+    "name": "Vow: Stand (\"I don't give ground.\")",
+    "kind": "wick",
+    "mode": "Wick icon",
+    "state": "in game now (a code line mark)",
+    "use": "The vow of the same name",
+    "paint": "Wick with his heel planted on a long line scratched across the ground, his weight set forward.",
+    "avoid": "a wall \u00b7 a flag planted \u00b7 a mountain",
+    "file_key": "35-vow-stand",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick with his heel planted on a long line scratched across the ground, his weight set forward.\nAVOID: a wall \u00b7 a flag planted \u00b7 a mountain",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/35-vow-stand-v1.png",
+    "source_sha256": "b2693ec9435184150204c20bffa90d20d3d51415efa3676544c8267845e03838",
+    "generation_attempt": 1,
+    "export_crop": [
+      31,
+      79,
+      1254,
+      1254
+    ],
+    "scale": 0.5193064593889062,
+    "offset": [
+      194,
+      207
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "65bd0adc9fef0e7eadb6278b8ce3c5e2728bb16921b338902b6c3bf6ca964306",
+    "exports": {
+      "256": "art/icons/prayers/exports/256/vow-stand.png",
+      "128": "art/icons/prayers/exports/128/vow-stand.png",
+      "64": "art/icons/prayers/exports/64/vow-stand.png",
+      "48": "art/icons/prayers/exports/48/vow-stand.png",
+      "44": "art/icons/prayers/exports/44/vow-stand.png",
+      "32": "art/icons/prayers/exports/32/vow-stand.png",
+      "24": "art/icons/prayers/exports/24/vow-stand.png",
+      "16": "art/icons/prayers/exports/16/vow-stand.png"
+    },
+    "export_sha256": {
+      "256": "597c770310f805f8aa8fc087f3a5f65d41cac61cbb818d1b0da5ae1f27026446",
+      "128": "02030565c75d512276c2f765ce69a7f91e8bb2afaea8f1db1b90b6c0cd6d8cc8",
+      "64": "64ea6c95213879f9bff1282e990db9891e7d4d865ae65bb989c5790007722810",
+      "48": "9b5fbceca65d99e2af4d59a72951c917c0ce473eccc449d8d2555b38a4033a65",
+      "44": "b3c1e522a98a2b2b40b0c29020668272f3ca428e128350d566cb367a92067ab3",
+      "32": "9c3fcd1f1fdae95fc74fb99899adcd8a6e4b7238ad6d34a6376ed1ea92973e43",
+      "24": "072834717cea9308c37297838eb35295d616f551cbd51615ff2a01a7b6a18f96",
+      "16": "1e60e67acf1d656bc3d0a8a7168c5b6102f9f2c90720f48ee0ca4f4c48640792"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
   }
 ]

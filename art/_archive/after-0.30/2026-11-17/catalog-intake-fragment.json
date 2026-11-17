@@ -199,6 +199,57 @@
       "mode": "white-ink sign",
       "production_approved": false,
       "implementation_ready": false
+    },
+    "place-trade-crate": {
+      "path": "art/icons/places/trade-crate.png",
+      "sha256": "c8ff230ccb1b6604025c5e4e46d177f8c125156a05dad47373bf5761e42a3f4a",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-trade-wayside": {
+      "path": "art/icons/places/trade-wayside.png",
+      "sha256": "430440993439c34bf36139b74e86cdc2813e95f30aa0c23dc43c9df4a5ac75e2",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-trade-graft": {
+      "path": "art/icons/places/trade-graft.png",
+      "sha256": "4be21022b8de5901110ad075aa465bfe04dfa00c096545e703c259afa3a4cdea",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-trade-salvage": {
+      "path": "art/icons/places/trade-salvage.png",
+      "sha256": "0ccc8be5d5553d3aa92e56c5327509cbfaeded580c72b15032ef97ce5f24be31",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    }
+  },
+  "prayers": {
+    "vow-shield": {
+      "path": "art/icons/prayers/vow-shield.png",
+      "sha256": "064675515fa3d469b9ab0ca52b2a63a9004e9109124fb69ad8a0ccdd1b09f902",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "vow-mercy": {
+      "path": "art/icons/prayers/vow-mercy.png",
+      "sha256": "e89add83a9b209170cf267c72d170331b2726882926ca044f8b91afb78400052",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "vow-stand": {
+      "path": "art/icons/prayers/vow-stand.png",
+      "sha256": "65bd0adc9fef0e7eadb6278b8ce3c5e2728bb16921b338902b6c3bf6ca964306",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
     }
   }
 }

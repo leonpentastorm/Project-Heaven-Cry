@@ -1,17 +1,10 @@
 # After-0.30 art checkpoint
 
-28/54 review candidates complete; 26 remain. Source brief pinned at45bb92679410814489d3bb5704a51e2754f04c97 on wip/lane-0.31-art. Branch starts at1317c61, preserving all prior41 version0.30 candidates.
+35/54 review candidates complete; 19 remain. Source brief pinned at45bb92679410814489d3bb5704a51e2754f04c97 on wip/lane-0.31-art. Branch starts at1317c61, preserving all prior41 version0.30 candidates.
 
 Read source-brief.md and planned-jobs.json. New candidates are in records/; master, native and all eight UI export hashes are recorded. No catalog entries or screen slots added: the brief assigns intake to Claude. Use catalog-intake-fragment.json. The old27 holds and all prior art remain untouched. Wick has the ceramic pixel screen/cape/lantern, no flame head/default cup.
 
 Remaining:
-- 29 A sealed crate (trade card) — art/icons/places/trade-crate.png
-- 30 A wayside shrine (trade card) — art/icons/places/trade-wayside.png
-- 31 A back-room graft (trade card) — art/icons/places/trade-graft.png
-- 32 A salvage buyer (trade card) — art/icons/places/trade-salvage.png
-- 33 Vow: Shield ("None of them falls.") — art/icons/prayers/vow-shield.png
-- 34 Vow: Mercy ("I spare who yields.") — art/icons/prayers/vow-mercy.png
-- 35 Vow: Stand ("I don't give ground.") — art/icons/prayers/vow-stand.png
 - 36 Vow: Bare Hands ("By my own hands.") — art/icons/prayers/vow-bare.png
 - 37 Vow: No Magic but Theirs — art/icons/prayers/vow-unarmed-faith.png
 - 38 Vow: Nobody Left Behind — art/icons/prayers/vow-no-one-behind.png
