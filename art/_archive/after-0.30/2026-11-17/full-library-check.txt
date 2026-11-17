@@ -1,1 +1,1 @@
-FAIL: Missing file: art/catalog.json
+FAIL: Missing file: art/style-guide/palette.json
