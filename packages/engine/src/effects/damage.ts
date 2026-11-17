@@ -16,6 +16,7 @@ import type { Combat, Unit } from '../combat';
 import { emit, harmHeld } from './hooks';
 import { noteTended } from './mending';
 import { rawHidden, setDowned } from '../unitstate';
+import { canYield, YIELD } from '../yielding';
 
 /** Tending others (rules 1.5, calming the heart): magic.ts sets f; a heal, stim, shield or cleanse given calls it. */
 export const tendHook: { f: ((cb: Combat | null, by: Unit | null, t: Unit) => void) | null } = { f: null };
@@ -115,7 +116,11 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
   if (src.by) { t.lastHitBy = src.by.id; const d = (t.damagedBy ||= []); if (!d.includes(src.by.id)) d.push(src.by.id); }
   if (t.hidden && res.dealt > 0) { rawHidden(cb, t, false); ctx.revealed = true; if (cb) (cb.sightWhy ||= {})[t.id] = 'reveal'; } // damage reveals a Hidden unit (rules 1.3; presentation: a reveal, not a plain entry)
   if (t.hp === 0) {
-    if (src.nonlethal && t.side === 'foe' && !t.companion) { t.surrendered = true; t.subdued = true; res.killed = false; if (cb) { emit(cb, 'on_surrender', { t, by: src.by || null, why: 'subdued', cb }); say(cb, t.name + ' is subdued, not killed.'); } }
+    // rules 1.66 item 5201: a unit that cannot yield is disabled by a non-lethal blow (out of the fight as any fallen
+    // foe), and no mercy is shown: no surrender, so no Clean Hands shield, no Mercy Devotion
+    const cannot = src.nonlethal && t.side === 'foe' && !t.companion && !canYield(t);
+    if (cannot && cb) say(cb, t.name + ' ' + (YIELD.disabled_text || 'cannot yield') + '.');
+    if (src.nonlethal && t.side === 'foe' && !t.companion && !cannot) { t.surrendered = true; t.subdued = true; res.killed = false; if (cb) { emit(cb, 'on_surrender', { t, by: src.by || null, why: 'subdued', cb }); say(cb, t.name + ' is subdued, not killed.'); } }
     else { if (t.side === 'foe' || t.companion) t.dead = true; else setDowned(t, true); res.killed = true; dropped(cb, t, src, res, src.credit !== 'none'); }
   }
   if (cb) {

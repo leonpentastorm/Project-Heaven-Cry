@@ -39,7 +39,7 @@ import { ATTEMPT_AP, FIGHT_CONDS, FIGHT_COND_NAME, FIGHT_COND_ROUNDS, attemptWhy
 export * from './fighttalk';
 import { scaleOf } from './effects/output';
 import { instanceMods, advancedActive, bindGame, boundGame, heldOfChar, emit as emitHook, emitStory, holdersOf, holderOf, checkQuery, perkActionsFor, previewPerkAction, runPerkAction, perkActionId, togglesFor, windowStep, pendRuling, setStoryPoster, gainEcho, skillRollMod, xpAfter, uses as usesOf, scopeOf, dayOf, actionDefs, itemKey, type PendingRuling, type ActionArgs } from './effects';
-import { surrender as yieldUnit } from './tactics';
+import { surrender as yieldUnit, canYield } from './tactics';
 import { deedGrant } from './deeds';
 import { condSkillMod, STORY_CARRY, CORE_ITEM } from './magic';
 import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
@@ -1827,7 +1827,6 @@ function giveBackRuling(g: GameState, cb: Combat, r: FightRuling, note?: string)
   delete t.ruling; if (t.attempted) delete t.attempted[r.unit];
   sayOf(cb, [], (String(note || '').trim().slice(0, 160) || 'The Narrator didn\'t answer.') + (back ? ' ' + (u?.name || 'The speaker') + ' gets ' + back + ' back.' : ''));
 }
-const UNYIELDING = ['machine', 'robot', 'turret', 'drone'];
 /** A unit the speaker may name in a fight ruling: an enemy of theirs still in the fight (by its id, or its name when
  *  only one enemy carries it). */
 function fightTarget(cb: Combat, u: Combat['units'][number] | undefined, ref: unknown) {
@@ -1846,7 +1845,7 @@ function fightOutcome(cb: Combat, u: Combat['units'][number] | undefined, e: any
     return t && (FIGHT_CONDS as readonly string[]).includes(id) ? { condition: { target: t.id, id: id as FightCond } } : null;
   }
   const t = fightTarget(cb, u, e.surrender?.target); if (!t) return null;
-  if (t.tier === 'boss' || UNYIELDING.includes(t.kind || '') || (t.tags || []).includes('no_surrender')) return null; // it never surrenders
+  if (!canYield(t)) return null; // it never surrenders
   if (!afterCheck && t.hp > t.maxHp / 2) return null; // only a beaten enemy gives up without a check
   return { surrender: { target: t.id } };
 }

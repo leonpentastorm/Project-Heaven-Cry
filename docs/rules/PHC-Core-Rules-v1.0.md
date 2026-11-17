@@ -12094,3 +12094,21 @@ picking UI in the same change") is made a contract of the engine's action descri
 ### Rules 1.64 (0.31.2), the reward panel's pay (17 Nov 2026)
 
 4971. **A won run fight records what each character was paid:** the fight record (`run.stats.fights[i]`, `RunFight`) gains `paid`, by character id, `{xp, credits}`: the XP the character took as the fight was won (the node's XP after its items' changes and the `xp_grant` hook: `giveXp` returns what it gave) and the credits (the node's credits after Tithe, `creditsFor`). It is written in the one place the pay is given (`game.ts runFightOver`), next to the stage log's credits; the reward panel (ui-screens.md "The reward panel") reads it, and nothing else. A cache and the vault's chest keep their pay in the node's note as before. **The map's refusal in the reward state names who is still choosing:** to a player with a character of its own still owed a pick (or a pick of kit) it stays "Take your pick first. The squad moves on when everyone has."; to any other player it is `run.reward_panel.waiting_for` with the names ("Waiting for Ana to choose their reward."). No number changed. Saves load unchanged (an older record has no `paid`; the panel then reads the note's). Replays: see the commit. Item 4971 is rules 1.64's.
+
+### Rules 1.66 (0.31.6), the outside reviewer's report (17 Nov 2026)
+
+An outside reviewer played live 0.31.5 for 90 minutes (a gunslinger, and a Virtue Confessor who became a Chaplain;
+Survival to stop 10). Each finding was reproduced through the real path first, then fixed at its cause.
+
+5200. **Can this enemy yield: one answer (A2).** `yielding.ts canYield` reads `rules.json combat.yield`:
+    `cannot_tiers` **["boss"]**, `cannot_kinds` **["machine", "robot", "turret", "drone"]**, `cannot_tag`
+    **"no_surrender"**. Before, the same list was typed three times (`tactics.ts canSurrender`, `faith.ts` Love
+    Conquers, `game.ts` a Narrator's surrender). Surrender (talked down, Open Hand's mercy, a feeling's Mercy, a
+    Narrator's surrender), every non-lethal blow (Spare, Nonlethal, Mercy's release), Clean Hands, the Mercy vow and the
+    end-of-fight Mercy tag all read it. PROVISIONAL.
+5201. **A unit that cannot yield is disabled, and no mercy is shown (A2).** A non-lethal blow that takes the last HP
+    of an enemy that cannot yield takes it out of the fight as any fallen foe (`effects/damage.ts applyDamage`); it
+    does not surrender, so no Clean Hands shield, no Mercy vow kept, no Mercy Devotion tag. The log says
+    `combat.yield.disabled_text` ("Gun drone cannot yield: disabled, no mercy shown."), and the Spare toggle's preview
+    on such a target is `combat.yield.spare_preview`. Before: a combat drone was "subdued" by Spare and fed Clean Hands
+    and the Mercy vow. Proof: `test/rules166.test.ts`.

@@ -304,8 +304,10 @@ export function spotHidden(cb: Combat, rng: Rng, by: Unit, only?: Unit | null) {
 
 // ---------- surrender and subdue (rules 1.3) ----------
 /** May this unit surrender at all? Not a Boss, not a machine, robot or turret, not tagged no_surrender, once per fight. */
+export { canYield } from './yielding';
+import { canYield } from './yielding';
 export function canSurrender(t: Unit): boolean {
-  return t.side === 'foe' && alive(t) && t.tier !== 'boss' && !['machine', 'robot', 'turret', 'drone'].includes(t.kind || '') && !(t.tags || []).includes('no_surrender') && !t.surrenderTried;
+  return canYield(t) && alive(t) && !t.surrenderTried;
 }
 /** It gives up: out of the fight, not a target, counted as defeated; no kill credit and no mana rise. 'on_surrender'. */
 export function surrender(cb: Combat, t: Unit, by: Unit | null, why: string): string {

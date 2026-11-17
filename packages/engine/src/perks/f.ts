@@ -18,7 +18,8 @@ import { WEAPON, PERK } from '../data';
 /** Case Closed's two numbers, read from its card (perks.json effects[1] and [2]): the Defense and the damage. */
 const CASE_CLOSED: any[] = (PERK.case_closed as any)?.effects || [];
 import { setStoryCond, storyConds, npcsOf, npcConds } from '../game';
-import { trySurrender, canSurrender, surrender, HEARING, COMPANION_KINDS, isExplosive } from '../tactics';
+import { YIELD } from '../yielding';
+import { trySurrender, canSurrender, canYield, surrender, HEARING, COMPANION_KINDS, isExplosive } from '../tactics';
 import { cdFire, cdTick, landsNext } from './cooldown';
 import { overworld, say, rngOf } from '../kit';
 import { rollVs, rerollAttack, attackHits, tierSave, TN, SAVE_TN } from '../rolls';
@@ -214,7 +215,7 @@ function cleanShield(h: Holder, why: string) {
 const innocent = (t: Unit) => (t.tags || []).includes('civilian') || (t.side as string) === 'neutral';
 register({
   id: 'clean_hands', claims: 'all',
-  toggles: [{ id: 'spare', label: 'Spare', on: ['combat/attack'], preview: (h) => 'If this attack takes an enemy\'s last HP, it is subdued instead of killed, and you gain a shield of ' + cleanPct(h) + '% of your max HP.' }],
+  toggles: [{ id: 'spare', label: 'Spare', on: ['combat/attack'], preview: (h, actx) => actx?.target && !canYield(actx.target) ? (YIELD.spare_preview || 'It cannot yield.') : 'If this attack takes an enemy\'s last HP, it is subdued instead of killed, and you gain a shield of ' + cleanPct(h) + '% of your max HP.' }],
   on: {
     damage_in: (ctx, h) => { if (ctx.phase === 'would_drop_to_0' && ctx.src?.by === h.u && ctx.t.side !== h.u!.side && modOn(h, 'spare')) ctx.src.nonlethal = true; },
     on_surrender: (ctx, h) => { if (ctx.by === h.u || (ctx.by == null && ctx.t?.lastHitBy === h.u?.id)) cleanShield(h, 'spared ' + ctx.t.name); },

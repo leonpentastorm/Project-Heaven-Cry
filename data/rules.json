@@ -899,6 +899,14 @@
       }
     },
     "death_releases_bots": true,
+    "yield": {
+      "cannot_kinds": ["machine", "robot", "turret", "drone"],
+      "cannot_tiers": ["boss"],
+      "cannot_tag": "no_surrender",
+      "disabled_text": "cannot yield: disabled, no mercy shown",
+      "spare_preview": "It cannot yield: a blow that takes its last HP disables it, and no mercy is shown (no Clean Hands shield, no Mercy Devotion).",
+      "note": "Rules 1.66 item 5200: the one answer to can this enemy yield (surrender, Spare, Clean Hands, the Mercy vow, Love Conquers, a Narrator surrender)."
+    },
     "focus_memory": {
       "per_attacker": 1,
       "finish_share": 0.25,

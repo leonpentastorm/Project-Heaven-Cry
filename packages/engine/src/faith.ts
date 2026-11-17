@@ -31,7 +31,7 @@ import { amountOf, term, levelOf, profileOf, mendSized, type Term } from './effe
 import { onHook, onStat, onCheck, onStoryHook, charOfUnit, boundGame, growthHeld, emit, emitStory, statQuery, holdersOf, runOwnEffects } from './effects/hooks';
 import { apDebt, bankAp, AP_MAX } from './effects/ap';
 import { pendRuling } from './effects/narrator';
-import { surrender, reveal, blessing as legacyBlessing , dropHeldShot } from './tactics';
+import { surrender, canYield, reveal, blessing as legacyBlessing , dropHeldShot } from './tactics';
 import { FAITH_PATRONS, FAITH_PATRON, patronById, beliefOf } from './belief';
 import { die, type Rng } from './rng';
 import { rollVs, rerollAttack, attackHits } from './rolls';
@@ -1174,8 +1174,6 @@ const enemiesIn = (cb: Combat, u: Unit, tiles: string[]) => foesOf(cb, u, { down
 const hymnSave = (cb: Combat, rng: Rng, by: Unit, t: Unit, fam: 'body' | 'brain' | 'heart') => saveAgainst(cb, rng, by, t, fam, 'hymn', { via: 'faith' });
 /** Enemies the praying unit sees (not Hidden, not out of the fight): a Miracle's "every enemy in sight". */
 const enemiesInSight = (cb: Combat, u: Unit) => foesOf(cb, u, { hidden: false, seenBy: u });
-/** Would this enemy yield to Love Conquers: not a boss, not a machine, not no_surrender (a refused parley doesn't matter). */
-const canYield = (v: Unit) => v.side === 'foe' && v.tier !== 'boss' && !['machine', 'robot', 'turret', 'drone'].includes(v.kind || '') && !(v.tags || []).includes('no_surrender');
 /** End every harmful condition on a unit (Everyone Home): the non-boon conditions, and Prone, Bleeding, Dazed and a
  * fumble's stagger. Returns their ids. */
 function cleanseHarmful(cb: Combat, v: Unit): string[] {
@@ -1391,7 +1389,7 @@ export function faithFightEnd(g: GameState, cb: Combat) {
     if (!u.charId) continue; const c = g.characters[u.charId]; if (!c) continue;
     if (patronOf(c) && !u.dead) {
       // Mercy: a surrendered enemy is still alive and this fighter never harmed the helpless.
-      if (cb.units.some((v) => v.side !== u.side && v.surrendered && !v.dead) && !fs(u).harmedHelpless) faithTag(cb, u, 'mercy');
+      if (cb.units.some((v) => v.side !== u.side && v.surrendered && !v.dead && canYield(v)) && !fs(u).harmedHelpless) faithTag(cb, u, 'mercy');
       if (extracted) faithTag(cb, u, 'flee');
     }
     const v = u.vow;
