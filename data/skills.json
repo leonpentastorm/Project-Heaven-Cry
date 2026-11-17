@@ -77,23 +77,31 @@
         "rows": [
           {
             "at": "each",
-            "text": "Your Guard pool holds {=per_point.numbers.pool} more ({=per_point.numbers.pool_max} at most; the Bulwark's own pool is larger, by its rank)"
+            "text": "Your Guard (plates that soak hits on you) holds {=per_point.numbers.pool} more plate, up to {=per_point.numbers.pool_max}; a Bulwark holds more by its rank."
           },
           {
             "at": "at 1",
-            "text": "The Guard technique gives you {=per_point.numbers.guard_base} Guard"
+            "text": "The Guard technique gives you {=per_point.numbers.guard_base} plate."
           },
           {
             "at": "at 1",
-            "text": "Brace gives a flat {=per_point.numbers.brace} Guard, whatever your points"
+            "text": "Brace always gives {=per_point.numbers.brace} plates, whatever your points."
           },
           {
             "at": "from 1",
-            "text": "A shield in hand adds {=per_point.numbers.shield} to each Guard gain; a shield in each hand multiplies every Guard gain by {=per_point.numbers.two_shields} instead (the pool's cap is unchanged)"
+            "text": "A shield in one hand adds {=per_point.numbers.shield} to every plate gain; a shield in each hand multiplies every gain by {=per_point.numbers.two_shields} instead."
           },
           {
             "at": "each from 2",
-            "text": "The Guard technique gives {=per_point.numbers.guard_per_point} more Guard"
+            "text": "The Guard technique gives {=per_point.numbers.guard_per_point} more plate."
+          },
+          {
+            "at": "at 3",
+            "text": "Challenge (taunt the foes around you), Retort (throw part of a melee hit back) and Set Against the Blow (a critical on you lands as a plain hit) open."
+          },
+          {
+            "at": "at 5",
+            "text": "Slam (push away every foe next to you) and Last Plate (once a fight, a killing blow leaves you standing) open."
           }
         ]
       },
@@ -109,6 +117,7 @@
           "adjudication": "engine",
           "provisional": true,
           "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your melee attacks (a shield's own strike and its follow included) roll with Durability's modifier in place of the weapon's own skill when Durability's is higher (never added on top: the tank hits through its door); a gun, a bow or a throw rolls with its own skill. The blow's damage still grows with the weapon's own attribute, never with Durability. Set Against the Blow (Durability {=unlocks.1.effects.1.if.self_skill.durability}): while you hold Guard, a critical hit on you lands as an ordinary hit (its critical multiplier is taken out) and leaves no injury. Close Guard (an Answer): while you hold Guard, {=unlocks.1.effects.3.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it. Retort (Durability {=unlocks.1.effects.5.if.self_skill.durability}, an Answer): a foe hits you in melee while you hold Guard: {=unlocks.1.effects.5.and.0.value|abs} Guard and your reaction throw {=unlocks.1.amounts.retort.per.0.value|pct}% of the blow back at it (its armour applies). Challenge (Durability {=unlocks.1.effects.6.if.self_skill.durability}): {=unlocks.1.effects.6.ap} AP and {=unlocks.1.effects.6.res.guard} Guard, named at one foe you see within {=unlocks.1.effects.6.reach.tiles} tiles: every foe you see within {=unlocks.1.effects.6.effects.0.targets.within} tiles makes a Heart save or is Taunted (a Boss too: it is never forced to attack you, but it is worse at hitting anyone else). Last Plate (Durability {=unlocks.1.effects.4.if.self_skill.durability}): once a fight, a blow that would drop you leaves you on {=unlocks.1.effects.4.value} HP and breaks every plate. Slam (Durability {=unlocks.1.effects.7.if.self_skill.durability}): {=unlocks.1.effects.7.ap} AP and {=unlocks.1.effects.7.res.guard} Guard: every foe next to you is pushed {=unlocks.1.effects.7.effects.1.tiles} tile (a Boss holds its ground) and makes a Body save or is Off Balance.",
+          "player": "Raise plates with the Guard technique (any weapon) or Brace. While you hold plates, your melee attacks roll with Durability when it is higher, and Close Guard takes part of a hit on a friend next to you.",
           "effects": [
             {
               "op": "roll_with",
@@ -488,6 +497,7 @@
           "category": "Active Skill",
           "mastery": 2,
           "text": "{=unlocks.5.effects.0.ap} AP, once per combat: recover 25% of your max HP.",
+          "player": "{=.effects.0.ap} AP, once a fight: heal a quarter of your max HP.",
           "effects": [
             {
               "op": "grant_action",
@@ -620,15 +630,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "Feeds Durability's Guard: each plate soaks {=per_point.numbers.feed|pct}% more for each Durability point times each Pain Threshold point"
+            "text": "your Guard plates soak more of every hit, by {=per_point.numbers.feed|pct}% for every point here times every point in Durability."
           },
           {
             "at": "each",
-            "text": "−{=per_point.numbers.elemental_taken|pct}% elemental damage taken"
+            "text": "You take {=per_point.numbers.elemental_taken|pct}% less elemental damage."
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.hp_per_level} HP every level"
+            "text": "Every level gives you {=per_point.numbers.hp_per_level} more max HP."
           }
         ]
       },
@@ -639,6 +649,7 @@
           "category": "Passive",
           "mastery": 1,
           "text": "Ignore the penalty from one injured limb (arm or leg injury).",
+          "player": "One injured arm or leg no longer holds you back.",
           "effects": [
             {
               "op": "stat_mod",
@@ -658,6 +669,7 @@
           "category": "AP Mod",
           "mastery": 2,
           "text": "When you drop to 0 HP, take one more turn with {=unlocks.5.effects.0.ap} AP before you fall Downed.",
+          "player": "When your HP runs out, you get one more turn with {=.effects.0.ap} AP before you fall Downed.",
           "effects": [
             {
               "op": "grant_action",
@@ -772,15 +784,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "You sense what you can't see {=per_point.numbers.sense} better (ear, smell, touch)"
+            "text": "You sense what you cannot see {=per_point.numbers.sense} better: by sound, smell and touch."
           },
           {
             "at": "each",
-            "text": "Your Warn Call reaches {=per_point.numbers.call_range} tile further"
+            "text": "Your Warn reaches {=per_point.numbers.call_range} tile further."
           },
           {
             "at": "from 1",
-            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -791,6 +803,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "Learn one physical tell of an NPC you're close to (pulse, sweat, scent). +{=unlocks.3.effects.1.value} on your next social roll against them.",
+          "player": "Read one tell of someone close to you (pulse, sweat, scent): +{=.effects.1.value} on your next social roll against them.",
           "effects": [
             {
               "op": "narrator",
@@ -814,6 +827,7 @@
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Nothing moving on the ground within your Vision range can ambush you: you act in the surprise round.",
+          "player": "Nothing moving on the ground within your Vision range can surprise you: you act in the surprise round.",
           "effects": [
             {
               "op": "grant_action",
@@ -1507,7 +1521,9 @@
               "target": "target",
               "if": {
                 "actor": "self",
-                "rolled_with": ["dexterity"],
+                "rolled_with": [
+                  "dexterity"
+                ],
                 "hostile": true,
                 "own_turn": false,
                 "self_skill": {
@@ -1572,7 +1588,9 @@
                 "hostile": true,
                 "melee": true,
                 "target_alive": true,
-                "rolled_with": ["dexterity"]
+                "rolled_with": [
+                  "dexterity"
+                ]
               },
               "limit": {
                 "per": "per_turn",
@@ -1594,8 +1612,13 @@
                 "hostile": true,
                 "melee": true,
                 "target_alive": true,
-                "rolled_with": ["dexterity"],
-                "target_not_tier": ["elite", "boss"],
+                "rolled_with": [
+                  "dexterity"
+                ],
+                "target_not_tier": [
+                  "elite",
+                  "boss"
+                ],
                 "target_res": {
                   "pressure": {
                     "at_least": 2
@@ -2975,7 +2998,9 @@
         "about": "The Sigil grammar's Line lengths (sigils.json grammar.min_glyphs / max_glyphs), for the door line's placeholders; tools/validate.py holds them equal."
       },
       "door_tab": "sigils",
-      "door_mirror": ["scuff"],
+      "door_mirror": [
+        "scuff"
+      ],
       "per_point": {
         "numbers": {
           "sigil": 0.1,
