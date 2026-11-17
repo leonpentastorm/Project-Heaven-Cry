@@ -1473,19 +1473,27 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.hit} to hit with guns, light blades and thrown weapons"
+            "text": "+{=per_point.numbers.hit} to hit with guns, light blades and thrown weapons."
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.crit|pct}% critical damage"
+            "text": "+{=per_point.numbers.crit|pct}% critical damage."
           },
           {
             "at": "each",
-            "text": "You throw half a tile further"
+            "text": "You throw half a tile further."
           },
           {
             "at": "each",
-            "text": "Your shots' techniques are harder to save against"
+            "text": "Your shooting techniques are harder to save against."
+          },
+          {
+            "at": "at 3",
+            "text": "Near Miss (a held shot that misses still adds Pressure) and Shaken Nerves (foes save worse for each Pressure on them) open."
+          },
+          {
+            "at": "at 5",
+            "text": "Flush Out opens: your Flush, or a Dexterity blow on a Pressed foe, can leave it Afraid of you."
           }
         ]
       },
@@ -1523,6 +1531,7 @@
           "adjudication": "engine",
           "provisional": true,
           "text": "Pressure is Dexterity's door: every hit you roll with Dexterity presses its target, a gun's, a bow's, a thrown knife's, a light blade's or a Dexterity glove's alike (a glove whose blows roll with Dexterity counts). A ranged hit adds Pressure (the first on each target each turn); a blow rolled with Dexterity adds {=unlocks.1.effects.3.value} (at most {=unlocks.1.effects.3.limit.n} on a target a turn) and does not shed your own; a blow rolled with anything else sheds your own. Slide is yours from the first point (its own card). From Dexterity {=unlocks.1.effects.0.if.self_skill.dexterity}, Near Miss: an attack of yours rolled with Dexterity off your own turn (a held shot: Overwatch, Deny, Cover Me, Dead to Rights; a Riposte) that misses still adds {=unlocks.1.effects.0.value} Pressure (once a turn for each target): your lane holds even when the round or the blade goes wide; and Shaken Nerves: every save a foe makes against you is harder by {=unlocks.1.effects.1.value.per.0.value} for each Pressure pip on it (at most {=unlocks.1.effects.1.value.max}). From Dexterity {=unlocks.1.effects.2.if.self_skill.dexterity}, Flush Out: your Flush also makes its target save (Heart) or be Afraid of you for {=unlocks.1.effects.2.rounds} round: it won't come at you or shoot at you; and its blade twin: a Pressed foe (Pressure {=unlocks.1.effects.4.if.target_res.pressure.at_least} or more) you hit with a blow rolled with Dexterity saves the same way or is Afraid of you for {=unlocks.1.effects.4.rounds} round (once a turn; never an Elite or a Boss: only a Flush frightens those).",
+          "player": "Every hit you roll with Dexterity adds Pressure (pips that make a foe aim worse), and Slide is yours.",
           "effects": [
             {
               "op": "resource",
@@ -1652,6 +1661,7 @@
           "category": "AP Mod",
           "mastery": 1,
           "text": "Reloading costs {=unlocks.3.effects.0.value|abs} AP less.",
+          "player": "Reloading costs {=.effects.0.value|abs} AP less.",
           "effects": [
             {
               "op": "stat_mod",
@@ -1681,6 +1691,7 @@
           "category": "AP Mod",
           "mastery": 2,
           "text": "Once per combat, your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs 0 AP.",
+          "player": "Once a fight, your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs no AP.",
           "effects": [
             {
               "op": "cost_mod",
@@ -1815,11 +1826,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "Feeds Dexterity's Pressure: the Pressure you shed at a turn's end, and Slide's reach, are {=per_point.numbers.feed|pct}% more for each Dexterity point times each Athletics point"
+            "text": "you shake off more of your own Pressure at the end of a plain turn, and Slide reaches further, by {=per_point.numbers.feed|pct}% for every point here times every point in Dexterity."
           },
           {
             "at": "each from 2",
-            "text": "+{=per_point.numbers.defense} Defense: you are harder to hit"
+            "text": "+{=per_point.numbers.defense} Defense: you are harder to hit."
           }
         ]
       },
@@ -1833,6 +1844,7 @@
           "category": "Combat Interaction",
           "mastery": 1,
           "text": "Move over cover and obstacles at no extra movement cost.",
+          "player": "Move over cover and obstacles at no extra movement cost.",
           "effects": [
             {
               "op": "stat_mod",
@@ -1852,6 +1864,7 @@
           "category": "Active Skill",
           "mastery": 2,
           "text": "While wearing no torso armour (Class 0), attacks against you roll twice and take the worse result.",
+          "player": "While you wear no torso armour, attacks on you roll twice and take the worse result.",
           "effects": [
             {
               "op": "disadvantage",
@@ -1965,15 +1978,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.init} Initiative: you act earlier in the round"
+            "text": "+{=per_point.numbers.init} Initiative: you act earlier in the round."
           },
           {
             "at": "each",
-            "text": "Your Cue Call reaches {=per_point.numbers.call_range} tile further"
+            "text": "Your Cue reaches {=per_point.numbers.call_range} tile further."
           },
           {
             "at": "from 1",
-            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -1984,6 +1997,7 @@
           "category": "Combat Starter",
           "mastery": 1,
           "text": "You act in the surprise round even when your side is the one surprised.",
+          "player": "You act in the surprise round even when your side is the one surprised.",
           "effects": [
             {
               "op": "grant_action",
@@ -2004,6 +2018,7 @@
           "category": "Conversation Quirk",
           "mastery": 2,
           "text": "Once per scene, interrupt an NPC mid-sentence or mid-action to act first: grab, draw, leave, or speak.",
+          "player": "Once a scene, cut in on someone mid-sentence or mid-action and act first: grab, draw, leave or speak.",
           "effects": [
             {
               "op": "grant_action",
@@ -2138,11 +2153,11 @@
         "rows": [
           {
             "at": "every 2",
-            "text": "Enemies need {=per_point.numbers.spot} more to spot you while you sneak"
+            "text": "Enemies need {=per_point.numbers.spot} more to spot you while you sneak."
           },
           {
             "at": "each",
-            "text": "Your traps, poisons and unseen acts: harder to save against"
+            "text": "Your traps, poisons and unseen acts are harder to save against."
           }
         ]
       },
@@ -2158,6 +2173,7 @@
           "adjudication": "engine",
           "provisional": true,
           "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Break: spend it all on one weapon attack from Hidden. Go to Ground: Hide costs you {=unlocks.1.effects.8.value|abs} AP less (at least {=unlocks.1.effects.8.min}). First Shade: your first Hide of a fight, holding no Shadow, gives {=unlocks.1.effects.9.value} at once. Tagged: +{=unlocks.1.effects.10.value} to hit from Hidden on a Marked enemy.",
+          "player": "You build Shadow (a meter filled while unseen) and spend it all on a Break from Hidden; Hide costs you {=.effects.8.value|abs} AP less.",
           "effects": [
             {
               "op": "resource",
@@ -2409,6 +2425,7 @@
           "category": "Combat Interaction",
           "mastery": 1,
           "text": "A perk step in this skill. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=unlocks.3.effects.1.value}) instead of finding you outright. Ghost Kill: drop a foe while no enemy's eyes reach you and you sink back into Hidden (once a turn; not while Marked). The Shadow verbs of this rung open: Lift, Decoy, Read Intent and Cut the Strap.",
+          "player": "Close Quarters and Ghost Kill, and the Shadow verbs Lift, Decoy, Read Intent and Cut the Strap open.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2492,6 +2509,7 @@
           "category": "Active Skill",
           "mastery": 2,
           "text": "Still Breath: spot rolls against you are {=unlocks.5.effects.0.value} while you stand next to cover. Your Shadow holds one more, and the Shadow verbs of this rung open: Fade, Vault, Open Seam, Foul the Action, Pick and Douse.",
+          "player": "Still Breath (spot rolls against you are {=.effects.0.value} beside cover), your Shadow holds one more, and Fade, Vault, Open Seam, Foul the Action, Pick and Douse open.",
           "effects": [
             {
               "op": "roll_mod",
@@ -2522,6 +2540,7 @@
           "name": "Mastery 3",
           "mastery": 3,
           "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Shadow Run: once a turn, a move made Hidden from cover to cover costs {=unlocks.7.effects.1.value} AP less (at least {=unlocks.7.effects.1.min}). Your Shadow holds one more, and the Shadow verbs of this rung open: Timing, Rig, Plant and Disable.",
+          "player": "Shadow Run (a Hidden move from cover to cover costs {=.effects.1.value|abs} AP less), your Shadow holds one more, and Timing, Rig, Plant and Disable open.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2561,6 +2580,7 @@
           "name": "Mastery 4",
           "mastery": 4,
           "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. The Shadow verbs of this rung open: Parting Cut and Hijack.",
+          "player": "The Shadow verbs Parting Cut and Hijack open.",
           "effects": [],
           "adjudication": "engine"
         },
@@ -2666,23 +2686,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "Feeds Ingenuity's Shadow: a foe needs more to find you, up to {=per_point.numbers.feed_at_double} more when Ingenuity and Acuity are both at their top ({=per_point.numbers.feed|pct}% of that for each Ingenuity point times each Acuity point)"
+            "text": "foes need more to find you while you are Hidden: up to {=per_point.numbers.feed_at_double} more, growing with your points here times your points in Ingenuity ({=per_point.numbers.feed|pct}% of the way for each)."
           },
           {
             "at": "each",
-            "text": "−{=per_point.numbers.crit_taken|pct}% critical damage taken"
+            "text": "You take {=per_point.numbers.crit_taken|pct}% less critical damage."
           },
           {
             "at": "each",
-            "text": "Analyse reaches {=per_point.numbers.range} tile further"
-          },
-          {
-            "at": "at 3",
-            "text": "Analyse is quicker (Quick Read)"
-          },
-          {
-            "at": "at 5",
-            "text": "Analyse also shows the target's weak point (Read Them)"
+            "text": "Analyze reaches {=per_point.numbers.range} tile further."
           }
         ]
       },
@@ -2693,6 +2705,7 @@
           "category": "AP Mod",
           "mastery": 1,
           "text": "Analyze costs 1 AP.",
+          "player": "Analyze costs {=.effects.0.value|abs} AP less.",
           "effects": [
             {
               "op": "stat_mod",
@@ -2712,6 +2725,7 @@
           "category": "Passive",
           "mastery": 2,
           "text": "Enemies you've analyzed deal {=unlocks.5.effects.0.value_pct}% less damage to your whole squad.",
+          "player": "Enemies you have analysed deal {=.effects.0.value_pct}% less damage to your whole squad.",
           "effects": [
             {
               "op": "damage_reduction",
@@ -2838,19 +2852,19 @@
         "rows": [
           {
             "at": "each",
-            "text": "You notice traps, hidden things and hidden enemies {=per_point.numbers.notice} better"
+            "text": "You notice traps, hidden things and hidden enemies {=per_point.numbers.notice} better."
           },
           {
             "at": "each",
-            "text": "You notice them {=per_point.numbers.notice_range} tile further off"
+            "text": "You notice them {=per_point.numbers.notice_range} tile further off."
           },
           {
             "at": "each",
-            "text": "Your Spot Call reaches {=per_point.numbers.call_range} tile further"
+            "text": "Your Spot reaches {=per_point.numbers.call_range} tile further."
           },
           {
             "at": "from 1",
-            "text": "On a check it rolls {=per_point.numbers.check} better than its points say"
+            "text": "On checks it rolls {=per_point.numbers.check} higher than its points alone."
           }
         ]
       },
@@ -2861,6 +2875,7 @@
           "category": "Combat Starter",
           "mastery": 1,
           "text": "When a hidden enemy aims at you, you learn which direction it's in.",
+          "player": "When a hidden enemy aims at you, you learn which direction it is in.",
           "effects": [
             {
               "op": "stat_mod",
@@ -2880,6 +2895,7 @@
           "category": "Conversation Quirk",
           "mastery": 2,
           "text": "In any conversation, you notice concealed weapons and hostile intent.",
+          "player": "In any conversation, you notice hidden weapons and hostile intent.",
           "effects": [
             {
               "op": "narrator",
