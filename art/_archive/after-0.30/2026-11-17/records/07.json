@@ -24,12 +24,12 @@
   "production_approved": false,
   "implementation_ready": false,
   "reference_images_requested": [
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/conditions/augment-offline.png",
+    "art/icons/conditions/bleeding.png",
+    "art/icons/conditions/blinded.png"
   ],
   "native_dimensions": [
     1254,

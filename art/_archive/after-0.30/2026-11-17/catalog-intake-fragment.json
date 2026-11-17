@@ -125,6 +125,34 @@
       "mode": "white-ink sign",
       "production_approved": false,
       "implementation_ready": false
+    },
+    "icon-tone-frost": {
+      "path": "art/icons/tones/frost.png",
+      "sha256": "65273ca849604680de2c73aa5f37c2f0e14c158258314611d20bd7b0720d8131",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-stone": {
+      "path": "art/icons/tones/stone.png",
+      "sha256": "d2b0ee0135277fde417d378fedbbe13a6e088607a664866ce62fdb5c2941624a",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-gale": {
+      "path": "art/icons/tones/gale.png",
+      "sha256": "8a6942d91b6d4a52d8c15502445dbc06482ff035c8c95bdac70014a688c94329",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-acid": {
+      "path": "art/icons/tones/acid.png",
+      "sha256": "10519a4da74a16c85712d584434612105ec6eada60f535563e89827b2be816bf",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
     }
   },
   "condition_icons": {

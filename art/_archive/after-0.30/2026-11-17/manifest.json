@@ -25,12 +25,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-start.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-won.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-lost.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/banners/fight-start.png",
+      "art/icons/banners/fight-won.png",
+      "art/icons/banners/fight-lost.png"
     ],
     "native_dimensions": [
       1254,
@@ -106,12 +106,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-start.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-won.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-lost.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/banners/fight-start.png",
+      "art/icons/banners/fight-won.png",
+      "art/icons/banners/fight-lost.png"
     ],
     "native_dimensions": [
       1254,
@@ -187,12 +187,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-start.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-won.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-lost.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/banners/fight-start.png",
+      "art/icons/banners/fight-won.png",
+      "art/icons/banners/fight-lost.png"
     ],
     "native_dimensions": [
       1254,
@@ -268,12 +268,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-start.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-won.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-lost.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/banners/fight-start.png",
+      "art/icons/banners/fight-won.png",
+      "art/icons/banners/fight-lost.png"
     ],
     "native_dimensions": [
       1254,
@@ -349,12 +349,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/conditions/augment-offline.png",
+      "art/icons/conditions/bleeding.png",
+      "art/icons/conditions/blinded.png"
     ],
     "native_dimensions": [
       1254,
@@ -430,12 +430,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/conditions/augment-offline.png",
+      "art/icons/conditions/bleeding.png",
+      "art/icons/conditions/blinded.png"
     ],
     "native_dimensions": [
       1254,
@@ -485,7 +485,9 @@
     },
     "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending.",
     "derived_exact_mirror_of": 5,
-    "render_type": "Exact horizontal mirror export of generated left-brain master; no independent native render"
+    "render_type": "Exact horizontal mirror export of generated left-brain master; no independent native render",
+    "independent_native_render": false,
+    "source_generation_prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A brain in profile with its left half cut away by a single clean slash.\nAVOID: a lightning bolt \u00b7 a skull \u00b7 a head with a gear in it"
   },
   {
     "number": 7,
@@ -513,12 +515,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/conditions/augment-offline.png",
+      "art/icons/conditions/bleeding.png",
+      "art/icons/conditions/blinded.png"
     ],
     "native_dimensions": [
       1254,
@@ -594,12 +596,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/conditions/augment-offline.png",
+      "art/icons/conditions/bleeding.png",
+      "art/icons/conditions/blinded.png"
     ],
     "native_dimensions": [
       1254,
@@ -675,12 +677,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/conditions/augment-offline.png",
+      "art/icons/conditions/bleeding.png",
+      "art/icons/conditions/blinded.png"
     ],
     "native_dimensions": [
       1254,
@@ -756,12 +758,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/conditions/augment-offline.png",
+      "art/icons/conditions/bleeding.png",
+      "art/icons/conditions/blinded.png"
     ],
     "native_dimensions": [
       1254,
@@ -837,12 +839,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/conditions/augment-offline.png",
+      "art/icons/conditions/bleeding.png",
+      "art/icons/conditions/blinded.png"
     ],
     "native_dimensions": [
       1254,
@@ -918,12 +920,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/conditions/augment-offline.png",
+      "art/icons/conditions/bleeding.png",
+      "art/icons/conditions/blinded.png"
     ],
     "native_dimensions": [
       1254,
@@ -999,12 +1001,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -1080,12 +1082,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -1161,12 +1163,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -1242,12 +1244,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -1323,12 +1325,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -1404,12 +1406,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -1485,12 +1487,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -1566,12 +1568,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -1647,12 +1649,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -1728,12 +1730,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -1809,12 +1811,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -1890,12 +1892,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -1971,12 +1973,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -2052,12 +2054,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -2133,12 +2135,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -2214,12 +2216,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -2295,12 +2297,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -2376,12 +2378,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -2457,12 +2459,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -2538,12 +2540,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/boss.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/cache.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/crossroads.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/survival/markers/boss.png",
+      "art/icons/survival/markers/cache.png",
+      "art/icons/survival/markers/crossroads.png"
     ],
     "native_dimensions": [
       1254,
@@ -2620,12 +2622,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/prayers/whisper-courage.png",
+      "art/icons/prayers/whisper-guidance.png"
     ],
     "native_dimensions": [
       1254,
@@ -2702,12 +2704,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/prayers/whisper-courage.png",
+      "art/icons/prayers/whisper-guidance.png"
     ],
     "native_dimensions": [
       1254,
@@ -2784,12 +2786,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/prayers/whisper-courage.png",
+      "art/icons/prayers/whisper-guidance.png"
     ],
     "native_dimensions": [
       1254,
@@ -2866,12 +2868,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/prayers/whisper-courage.png",
+      "art/icons/prayers/whisper-guidance.png"
     ],
     "native_dimensions": [
       1254,
@@ -2948,12 +2950,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/prayers/whisper-courage.png",
+      "art/icons/prayers/whisper-guidance.png"
     ],
     "native_dimensions": [
       1254,
@@ -3030,12 +3032,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/prayers/whisper-courage.png",
+      "art/icons/prayers/whisper-guidance.png"
     ],
     "native_dimensions": [
       1254,
@@ -3112,11 +3114,11 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/prayers/whisper-courage.png",
+      "art/icons/prayers/whisper-guidance.png"
     ],
     "native_dimensions": [
       1254,
@@ -3193,12 +3195,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/bond.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/tug.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/tending/bond.png",
+      "art/icons/tending/tug.png"
     ],
     "native_dimensions": [
       1254,
@@ -3275,12 +3277,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/bond.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/tug.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/tending/bond.png",
+      "art/icons/tending/tug.png"
     ],
     "native_dimensions": [
       1254,
@@ -3357,12 +3359,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/bond.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/tug.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/tending/bond.png",
+      "art/icons/tending/tug.png"
     ],
     "native_dimensions": [
       1254,
@@ -3439,12 +3441,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/bond.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/tug.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/tending/bond.png",
+      "art/icons/tending/tug.png"
     ],
     "native_dimensions": [
       1254,
@@ -3521,12 +3523,12 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/bond.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/tug.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/perks/angel-of-the-trenches.png",
+      "art/icons/perks/bedside-manner.png",
+      "art/icons/perks/solid-image.png",
+      "art/icons/tending/bond.png",
+      "art/icons/tending/tug.png"
     ],
     "native_dimensions": [
       1254,
@@ -3603,11 +3605,11 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
     ],
     "native_dimensions": [
       1254,
@@ -3684,11 +3686,11 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
     ],
     "native_dimensions": [
       1254,
@@ -3765,11 +3767,11 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
     ],
     "native_dimensions": [
       1254,
@@ -3846,11 +3848,11 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
     ],
     "native_dimensions": [
       1254,
@@ -3927,11 +3929,11 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
     ],
     "native_dimensions": [
       1254,
@@ -4008,11 +4010,11 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_images_requested": [
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
-      "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
     ],
     "native_dimensions": [
       1254,
@@ -4059,6 +4061,330 @@
       "32": "473ec10b1fa47ba20bc58f3423f887aa1e94bedbc2efeddd4aab0cac5ccd09b7",
       "24": "7e502f7a325e6b9585ab10e09a1003fb74ae7e68270dd229fc1da36c88f7af97",
       "16": "aef897bc5373e9b7f7275006cccacf45cd6b6ae4da553ac459f594c5938708df"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 51,
+    "section": 7,
+    "family": "interface_icons",
+    "id": "icon-tone-frost",
+    "path": "art/icons/tones/frost.png",
+    "name": "Tone: Frost",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a text glyph on a quiver tag)",
+    "use": "The Frost tone (the Sigil element Freeze)",
+    "paint": "A six-armed crystal made of straight strokes, each arm ending in a short fork.",
+    "avoid": "a snowman \u00b7 a thermometer",
+    "file_key": "51-frost",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A six-armed crystal made of straight strokes, each arm ending in a short fork.\nAVOID: a snowman \u00b7 a thermometer",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/51-frost-v1.png",
+    "source_sha256": "8d63fba51087fdf2defef45b6700d4a87dc45ca54b8cf81bbbd418b38f64a83c",
+    "generation_attempt": 1,
+    "export_crop": [
+      0,
+      17,
+      1240,
+      1222
+    ],
+    "scale": 0.6612903225806451,
+    "offset": [
+      102,
+      113
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "65273ca849604680de2c73aa5f37c2f0e14c158258314611d20bd7b0720d8131",
+    "exports": {
+      "256": "art/icons/tones/exports/256/frost.png",
+      "128": "art/icons/tones/exports/128/frost.png",
+      "64": "art/icons/tones/exports/64/frost.png",
+      "48": "art/icons/tones/exports/48/frost.png",
+      "44": "art/icons/tones/exports/44/frost.png",
+      "32": "art/icons/tones/exports/32/frost.png",
+      "24": "art/icons/tones/exports/24/frost.png",
+      "16": "art/icons/tones/exports/16/frost.png"
+    },
+    "export_sha256": {
+      "256": "cfc8a9d38f7b3cddd7050cb74c3c0173cd3f24d78be71439f2de581494c15e7e",
+      "128": "76f01ad51421df8cfb5d8e7e570074018f9a13d918e5e7ef69b4b1646224c262",
+      "64": "3ead572c29ada457d79201a76cbdfd437269ad524c10ea75334a860e964514f0",
+      "48": "34570389e5bb6067c77add24bb9770ceb88ea12e31cf1686fef356523521ad38",
+      "44": "e1194c2519cea8b4491d6ab2a3434fe43a40dbd4fefa9b9488bccab90d5ed794",
+      "32": "a046b2c9429384a2ae15779df3655b82e35178da668ef70e71fd9e0925cf4975",
+      "24": "8e5723cf8a2b53a636209e7a450e2adb282f30fd1b7ba5dde7ec7606fdd0a71f",
+      "16": "bad9873bbf2329fcd1553ef230875ac531cabce92dfa0cf1444fda3dc12c7f93"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 52,
+    "section": 7,
+    "family": "interface_icons",
+    "id": "icon-tone-stone",
+    "path": "art/icons/tones/stone.png",
+    "name": "Tone: Stone",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a text glyph on a quiver tag)",
+    "use": "The Stone tone",
+    "paint": "Three stacked rough slabs, the middle one set a little off-centre.",
+    "avoid": "a cairn with a flag \u00b7 a mountain",
+    "file_key": "52-stone",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Three stacked rough slabs, the middle one set a little off-centre.\nAVOID: a cairn with a flag \u00b7 a mountain",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/52-stone-v1.png",
+    "source_sha256": "c8733e1c17b94c4ba4346a5c69e21807670cf0f4ee5a3c103167132b0fa91bb7",
+    "generation_attempt": 1,
+    "export_crop": [
+      81,
+      29,
+      1188,
+      1214
+    ],
+    "scale": 0.6919831223628692,
+    "offset": [
+      129,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "d2b0ee0135277fde417d378fedbbe13a6e088607a664866ce62fdb5c2941624a",
+    "exports": {
+      "256": "art/icons/tones/exports/256/stone.png",
+      "128": "art/icons/tones/exports/128/stone.png",
+      "64": "art/icons/tones/exports/64/stone.png",
+      "48": "art/icons/tones/exports/48/stone.png",
+      "44": "art/icons/tones/exports/44/stone.png",
+      "32": "art/icons/tones/exports/32/stone.png",
+      "24": "art/icons/tones/exports/24/stone.png",
+      "16": "art/icons/tones/exports/16/stone.png"
+    },
+    "export_sha256": {
+      "256": "67569940b084b47db1027a6ac125853c4849afc128456241d079272b33a177a9",
+      "128": "6c4bbf2d040d696d4977ee98200729210b45a4e8a8c5f9255028c6e4c551a2c1",
+      "64": "77851107fe1b038af291feb61c048bc43872bedbec6a5fda4be996203c79b966",
+      "48": "e45e406df1940c4ce831d4bbe7587f36940b0240efeefdc803a05799596c681a",
+      "44": "ecf120245dca8bbda7751bc555631fd7732ebf4de3f9dc7cff57a0879ed2e4c6",
+      "32": "f56e7d7bafa11ae33e3c67529cbb062287a19d303d7179194193d311b2c8df30",
+      "24": "57c0a2845ab83f1517ad5e889b4beca5b266a005f420e717815efccc7f7af9ab",
+      "16": "f716db66677e3996928cba267862175ae7ec7eebbd2adea1e07c6d48afadf4e7"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 53,
+    "section": 7,
+    "family": "interface_icons",
+    "id": "icon-tone-gale",
+    "path": "art/icons/tones/gale.png",
+    "name": "Tone: Gale",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a text glyph on a quiver tag)",
+    "use": "The Gale tone",
+    "paint": "Three long streamlines curling into small hooks at their ends.",
+    "avoid": "a tornado funnel \u00b7 a weather map",
+    "file_key": "53-gale",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Three long streamlines curling into small hooks at their ends.\nAVOID: a tornado funnel \u00b7 a weather map",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/53-gale-v1.png",
+    "source_sha256": "67e5ce70c1a801f0da999bc8b79044830dd68243d18074c5b778a559c38fe59e",
+    "generation_attempt": 1,
+    "export_crop": [
+      23,
+      96,
+      1202,
+      1221
+    ],
+    "scale": 0.6955046649703138,
+    "offset": [
+      102,
+      121
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "8a6942d91b6d4a52d8c15502445dbc06482ff035c8c95bdac70014a688c94329",
+    "exports": {
+      "256": "art/icons/tones/exports/256/gale.png",
+      "128": "art/icons/tones/exports/128/gale.png",
+      "64": "art/icons/tones/exports/64/gale.png",
+      "48": "art/icons/tones/exports/48/gale.png",
+      "44": "art/icons/tones/exports/44/gale.png",
+      "32": "art/icons/tones/exports/32/gale.png",
+      "24": "art/icons/tones/exports/24/gale.png",
+      "16": "art/icons/tones/exports/16/gale.png"
+    },
+    "export_sha256": {
+      "256": "603155e00bae07f247c57e0125cd214be5f5f55d8085353ffbe85f8662c6412c",
+      "128": "7674b91587488c34befa94fe5efe4431e869fe839f2f6f7496c08ea6f3e99adb",
+      "64": "3275f2df113b717074dfc0388c640440b9872270ec6fa342ceb8648a1d8491d3",
+      "48": "001011c570338a164fad96f0faebaf973769cf96fe38509aa20f93606fca54e1",
+      "44": "3e3f4a562e1c27e11efe932c5e6354d2a730c30663b7450b896a51dda41ebe17",
+      "32": "ee53fd965dee0a35cfd11abbdaf1dae4e38999cd24e0b47547931275674dd664",
+      "24": "da75e2a0cad01b47bcc37e55a114ea4810bef70d481a1a9336962c8bf36dd49c",
+      "16": "58ef3da524ff15c460c79096e5c7a86933e42685e0249cbf775d8e7d2a5d6d0d"
+    },
+    "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+  },
+  {
+    "number": 54,
+    "section": 7,
+    "family": "interface_icons",
+    "id": "icon-tone-acid",
+    "path": "art/icons/tones/acid.png",
+    "name": "Tone: Acid",
+    "kind": "sign",
+    "mode": "white-ink sign",
+    "state": "in game now (a text glyph on a quiver tag)",
+    "use": "The Acid tone",
+    "paint": "A single round drop above a bowl-shaped dent, two small pit marks eaten into the bowl's rim.",
+    "avoid": "a skull \u00b7 a chemical flask \u00b7 a biohazard mark",
+    "file_key": "54-acid",
+    "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+    "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+    "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A single round drop above a bowl-shaped dent, two small pit marks eaten into the bowl's rim.\nAVOID: a skull \u00b7 a chemical flask \u00b7 a biohazard mark",
+    "refs": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_images_requested": [
+      "art/icons/traits/mind-without-fog.png",
+      "art/icons/survival/markers/shop.png",
+      "art/icons/boons/edge.png",
+      "art/icons/feelings/feeling-abandon.png",
+      "art/icons/feelings/feeling-awe.png"
+    ],
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "export_dimensions": [
+      1024,
+      1024
+    ],
+    "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/54-acid-v1.png",
+    "source_sha256": "9b091ef5dd4c312549ecf8e40365859109a58ec5ce4c7b7405c26eaf6d2c120a",
+    "generation_attempt": 1,
+    "export_crop": [
+      33,
+      23,
+      1232,
+      1228
+    ],
+    "scale": 0.6804979253112033,
+    "offset": [
+      104,
+      102
+    ],
+    "upscaled": false,
+    "status": "review-candidate",
+    "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+    "sha256": "10519a4da74a16c85712d584434612105ec6eada60f535563e89827b2be816bf",
+    "exports": {
+      "256": "art/icons/tones/exports/256/acid.png",
+      "128": "art/icons/tones/exports/128/acid.png",
+      "64": "art/icons/tones/exports/64/acid.png",
+      "48": "art/icons/tones/exports/48/acid.png",
+      "44": "art/icons/tones/exports/44/acid.png",
+      "32": "art/icons/tones/exports/32/acid.png",
+      "24": "art/icons/tones/exports/24/acid.png",
+      "16": "art/icons/tones/exports/16/acid.png"
+    },
+    "export_sha256": {
+      "256": "29cd9cf2482571ddbdad88826029f9b69880b38d9a15df7c9619f63a46fe04df",
+      "128": "b091c66fe03649ac586ac92089120366ed6c30409dd4f18b4cc50ece98badd57",
+      "64": "d1278ae8965a0cda115436158be08a900d63ea679d1bb39c97c769d3c83d3d52",
+      "48": "e6db8d9394cb76167afdf559ad07a826d6336234a71e2bfc02309173b6d5e1b1",
+      "44": "830bf87787c32edca9554aa02a857122ccce72510abf2d7b34b15f7bc124936d",
+      "32": "ae4826d9d937b4e6c9039c06013d850d4738a4bb5670dffbade1929e0c3fd3c5",
+      "24": "9b7bde988291c300c625876ecbc7ab83b4566e02c41f9abbe5ff8cfb6e1b9275",
+      "16": "951316970d87bb15065d5b2494b6dff18c336e7a002914a6163dad369242276b"
     },
     "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
   }

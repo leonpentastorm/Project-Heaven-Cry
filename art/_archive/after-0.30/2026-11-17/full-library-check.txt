@@ -1,0 +1,1 @@
+FAIL: Missing file: art/catalog.json

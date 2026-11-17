@@ -1,0 +1,81 @@
+{
+  "number": 51,
+  "section": 7,
+  "family": "interface_icons",
+  "id": "icon-tone-frost",
+  "path": "art/icons/tones/frost.png",
+  "name": "Tone: Frost",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph on a quiver tag)",
+  "use": "The Frost tone (the Sigil element Freeze)",
+  "paint": "A six-armed crystal made of straight strokes, each arm ending in a short fork.",
+  "avoid": "a snowman \u00b7 a thermometer",
+  "file_key": "51-frost",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A six-armed crystal made of straight strokes, each arm ending in a short fork.\nAVOID: a snowman \u00b7 a thermometer",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/51-frost-v1.png",
+  "source_sha256": "8d63fba51087fdf2defef45b6700d4a87dc45ca54b8cf81bbbd418b38f64a83c",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    17,
+    1240,
+    1222
+  ],
+  "scale": 0.6612903225806451,
+  "offset": [
+    102,
+    113
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "65273ca849604680de2c73aa5f37c2f0e14c158258314611d20bd7b0720d8131",
+  "exports": {
+    "256": "art/icons/tones/exports/256/frost.png",
+    "128": "art/icons/tones/exports/128/frost.png",
+    "64": "art/icons/tones/exports/64/frost.png",
+    "48": "art/icons/tones/exports/48/frost.png",
+    "44": "art/icons/tones/exports/44/frost.png",
+    "32": "art/icons/tones/exports/32/frost.png",
+    "24": "art/icons/tones/exports/24/frost.png",
+    "16": "art/icons/tones/exports/16/frost.png"
+  },
+  "export_sha256": {
+    "256": "cfc8a9d38f7b3cddd7050cb74c3c0173cd3f24d78be71439f2de581494c15e7e",
+    "128": "76f01ad51421df8cfb5d8e7e570074018f9a13d918e5e7ef69b4b1646224c262",
+    "64": "3ead572c29ada457d79201a76cbdfd437269ad524c10ea75334a860e964514f0",
+    "48": "34570389e5bb6067c77add24bb9770ceb88ea12e31cf1686fef356523521ad38",
+    "44": "e1194c2519cea8b4491d6ab2a3434fe43a40dbd4fefa9b9488bccab90d5ed794",
+    "32": "a046b2c9429384a2ae15779df3655b82e35178da668ef70e71fd9e0925cf4975",
+    "24": "8e5723cf8a2b53a636209e7a450e2adb282f30fd1b7ba5dde7ec7606fdd0a71f",
+    "16": "bad9873bbf2329fcd1553ef230875ac531cabce92dfa0cf1444fda3dc12c7f93"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

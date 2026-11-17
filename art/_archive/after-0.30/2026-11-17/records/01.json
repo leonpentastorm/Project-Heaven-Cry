@@ -24,12 +24,12 @@
   "production_approved": false,
   "implementation_ready": false,
   "reference_images_requested": [
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-start.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-won.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/banners/fight-lost.png"
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/banners/fight-start.png",
+    "art/icons/banners/fight-won.png",
+    "art/icons/banners/fight-lost.png"
   ],
   "native_dimensions": [
     1254,

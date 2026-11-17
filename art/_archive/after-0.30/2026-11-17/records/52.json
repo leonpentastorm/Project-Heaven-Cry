@@ -1,0 +1,81 @@
+{
+  "number": 52,
+  "section": 7,
+  "family": "interface_icons",
+  "id": "icon-tone-stone",
+  "path": "art/icons/tones/stone.png",
+  "name": "Tone: Stone",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph on a quiver tag)",
+  "use": "The Stone tone",
+  "paint": "Three stacked rough slabs, the middle one set a little off-centre.",
+  "avoid": "a cairn with a flag \u00b7 a mountain",
+  "file_key": "52-stone",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Three stacked rough slabs, the middle one set a little off-centre.\nAVOID: a cairn with a flag \u00b7 a mountain",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/52-stone-v1.png",
+  "source_sha256": "c8733e1c17b94c4ba4346a5c69e21807670cf0f4ee5a3c103167132b0fa91bb7",
+  "generation_attempt": 1,
+  "export_crop": [
+    81,
+    29,
+    1188,
+    1214
+  ],
+  "scale": 0.6919831223628692,
+  "offset": [
+    129,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "d2b0ee0135277fde417d378fedbbe13a6e088607a664866ce62fdb5c2941624a",
+  "exports": {
+    "256": "art/icons/tones/exports/256/stone.png",
+    "128": "art/icons/tones/exports/128/stone.png",
+    "64": "art/icons/tones/exports/64/stone.png",
+    "48": "art/icons/tones/exports/48/stone.png",
+    "44": "art/icons/tones/exports/44/stone.png",
+    "32": "art/icons/tones/exports/32/stone.png",
+    "24": "art/icons/tones/exports/24/stone.png",
+    "16": "art/icons/tones/exports/16/stone.png"
+  },
+  "export_sha256": {
+    "256": "67569940b084b47db1027a6ac125853c4849afc128456241d079272b33a177a9",
+    "128": "6c4bbf2d040d696d4977ee98200729210b45a4e8a8c5f9255028c6e4c551a2c1",
+    "64": "77851107fe1b038af291feb61c048bc43872bedbec6a5fda4be996203c79b966",
+    "48": "e45e406df1940c4ce831d4bbe7587f36940b0240efeefdc803a05799596c681a",
+    "44": "ecf120245dca8bbda7751bc555631fd7732ebf4de3f9dc7cff57a0879ed2e4c6",
+    "32": "f56e7d7bafa11ae33e3c67529cbb062287a19d303d7179194193d311b2c8df30",
+    "24": "57c0a2845ab83f1517ad5e889b4beca5b266a005f420e717815efccc7f7af9ab",
+    "16": "f716db66677e3996928cba267862175ae7ec7eebbd2adea1e07c6d48afadf4e7"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

@@ -25,11 +25,11 @@
   "production_approved": false,
   "implementation_ready": false,
   "reference_images_requested": [
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-abandon.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/feelings/feeling-awe.png"
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
   ],
   "native_dimensions": [
     1254,

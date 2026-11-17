@@ -24,12 +24,12 @@
   "production_approved": false,
   "implementation_ready": false,
   "reference_images_requested": [
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/survival/markers/shop.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/boons/edge.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/augment-offline.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/bleeding.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/conditions/blinded.png"
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/conditions/augment-offline.png",
+    "art/icons/conditions/bleeding.png",
+    "art/icons/conditions/blinded.png"
   ],
   "native_dimensions": [
     1254,
@@ -79,5 +79,7 @@
   },
   "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending.",
   "derived_exact_mirror_of": 5,
-  "render_type": "Exact horizontal mirror export of generated left-brain master; no independent native render"
+  "render_type": "Exact horizontal mirror export of generated left-brain master; no independent native render",
+  "independent_native_render": false,
+  "source_generation_prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A brain in profile with its left half cut away by a single clean slash.\nAVOID: a lightning bolt \u00b7 a skull \u00b7 a head with a gear in it"
 }

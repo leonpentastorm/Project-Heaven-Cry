@@ -25,12 +25,12 @@
   "production_approved": false,
   "implementation_ready": false,
   "reference_images_requested": [
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/bond.png",
-    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/tending/tug.png"
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/tending/bond.png",
+    "art/icons/tending/tug.png"
   ],
   "native_dimensions": [
     1254,
