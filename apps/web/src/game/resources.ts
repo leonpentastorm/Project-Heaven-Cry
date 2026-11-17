@@ -40,6 +40,8 @@ export interface HeldHeart {
    *  that −1 (0 when steadied); holdNet: the net of one idle held turn (turn start −1, then the swell); onTurn: it is
    *  this caster's turn now (the next turn start's −1 has not come yet when false); flooded; emanator. */
   beginStrain: number; turnCalm: number; swell: number; holdNet: number; onTurn: boolean; flooded: boolean; emanator: boolean;
+  /** 0.31.2: is there a Begin to make (a design, and in a fight one the engine's preview prices)? false: the warnings
+   *  count no Begin's Strain. */ canBegin?: boolean;
   /** Rules 1.56: the heart is in Mana Shock (soul_modules.json strain.shock), from the unit's magic or the story's. */ shock?: boolean;
 }
 const SOUL: any = () => (E as any).SOUL_RULES || {};
@@ -67,8 +69,12 @@ export function heldOutburstOf(m: any, designs?: any[], limit?: number, ctx: Hea
   // The engine's own price for a Begin (items can change it): only when nothing is held, and only when the preview got
   // as far as pricing (its AP is set past the 'outburst_cost' hook).
   const ds0 = designs || m?.designs || [];
+  // 0.31.2 (Leon: NEAR THE LIMIT at 0 / 4): a Begin's Strain counts only when there is a Begin to make. In a fight the
+  // engine's preview says so: no design it prices (none held, or every one refused before its price: Downed, Silenced,
+  // an item's refusal) is no Begin, so the warnings read only the turn start and a held Outburst's swell.
+  let canBegin = ds0.length > 0;
   if (cb && u && u.mg && !(m?.held || m?.heart?.held) && ds0.length && typeof (E as any).previewOutburst === 'function') {
-    try { let best = -1; for (const d of ds0) { const pv = (E as any).previewOutburst(cb, u, d.id, undefined, false); if (pv && pv.ap > 0) best = Math.max(best, Number(pv.strain) || 0); } if (best >= 0) begin = best; } catch { /* fall back to the data */ }
+    try { let best = -1; for (const d of ds0) { const pv = (E as any).previewOutburst(cb, u, d.id, undefined, false); if (pv && pv.ap > 0) best = Math.max(best, Number(pv.strain) || 0); } if (best >= 0) begin = best; else canBegin = false; } catch { /* fall back to the data */ }
   }
   begin += debt;
   const onTurn = !cb || !u ? true : !!cb.overworld || cb.order?.[cb.turn] === u.id || cb.window?.queue?.[0]?.unitId === u.id;
@@ -76,7 +82,7 @@ export function heldOutburstOf(m: any, designs?: any[], limit?: number, ctx: Hea
   const h = m?.held || m?.heart?.held || null;
   const swellBase = flooded ? cyc.flooded_strain ?? 2 : cyc.swell_strain ?? 1;
   const swell = h?.steady ? 0 : swellBase;
-  const base = { strain, limit: lim, beginStrain: begin, turnCalm, swell, holdNet: (strain > 0 ? -turnCalm : 0) + swell, onTurn, flooded, emanator: !!emanator, shock: !!(m?.shock ?? m?.heart?.shock) };
+  const base = { strain, limit: lim, beginStrain: begin, canBegin, turnCalm, swell, holdNet: (strain > 0 ? -turnCalm : 0) + swell, onTurn, flooded, emanator: !!emanator, shock: !!(m?.shock ?? m?.heart?.shock) };
   if (!h) return { ...base, swell: swellBase, holdNet: (strain > 0 ? -turnCalm : 0) + swellBase, held: null };
   const id = h.design ?? h.designId ?? '', ds = ds0;
   const d = ds.find((x: any) => x.id === id) || h.designDef || null;
@@ -154,7 +160,8 @@ export function strainRows(hh: HeldHeart): ResRow[] {
   // Where Strain stands when your next turn starts (its −1 first; then a held Outburst swells), and the next step:
   // holding → that turn start; not holding → your next Begin.
   const atTurn = hh.onTurn ? s : Math.max(0, s - hh.turnCalm);
-  const peak = held ? (hh.onTurn ? s + hh.holdNet : Math.max(0, s - hh.turnCalm) + hh.swell) : atTurn + b;
+  // nothing held and no Begin to make (canBegin false): Strain only falls, so nothing can reach the limit
+  const peak = held ? (hh.onTurn ? s + hh.holdNet : Math.max(0, s - hh.turnCalm) + hh.swell) : atTurn + (hh.canBegin === false ? 0 : b);
   const burnOver = held ? (hh.onTurn ? s : Math.max(0, s - hh.turnCalm) + hh.swell) - L : atTurn - L;
   const holdTxt = steady ? 'Steadied: your next turn start only eases 1 (no swell)' : 'Holding into your next turn: its start eases 1, then the swell adds ' + hh.swell + ' (net ' + sgn(hh.swell - (s > 0 ? 1 : 0)) + ')';
   const nextTxt = held ? holdTxt : 'Your next Begin adds ' + b + ' Strain' + why;
@@ -170,7 +177,7 @@ export function strainRows(hh: HeldHeart): ResRow[] {
     Object.assign(row, { warn: 'OVER THE LIMIT', level: 'alert', hint: (s - L) + ' over the limit: ' + (dmg > 0 ? dmg + ' damage to you at your ' + (hh.onTurn ? '' : 'next ') + 'turn end' + (!hh.onTurn && burnOver < s - L ? ' (after the turn start\'s −1)' : '') : 'your turn start\'s −1 brings it back to the limit, so no burn unless you add more') + '. ' + nextTxt + peakTxt + '. ' + calm });
   } else if (peak > L) Object.assign(row, { warn: s === L ? 'AT THE LIMIT' : 'NEAR THE LIMIT', level: 'caution', hint: (s === L ? 'At your limit. ' : 'Close to your limit. ') + nextTxt + peakTxt + ' (' + burn + ' damage a point at your turn end). ' + calm });
   else if (s === L && s > 0) Object.assign(row, { warn: 'AT THE LIMIT', level: 'caution', hint: 'At your limit. ' + nextTxt + peakTxt + ': no burn. ' + calm });
-  else if (s === L - 1 && s > 0) Object.assign(row, { warn: 'NEAR THE LIMIT', level: 'caution', hint: 'One below your limit. ' + nextTxt + peakTxt + '. ' + calm });
+  else if (s === L - 1 && s > 0 && peak >= L) Object.assign(row, { warn: 'NEAR THE LIMIT', level: 'caution', hint: 'One below your limit. ' + nextTxt + peakTxt + '. ' + calm });
   out.push(row);
   if (hh.held) {
     const h = hh.held, mult = (SOUL().cycle?.stage_mult || [])[h.stage];

@@ -268,6 +268,20 @@ describe('resource panel fixes', () => {
     expect(r).toMatchObject({ warn: 'MANA SHORT NEXT', level: 'alert' });
     expect(r.hint).toContain('next Begin adds ' + bare + ' Strain');
   });
+  it('0.31.2: no Begin to make, no Strain from a Begin: 0 / 4 with no design (an Emanator carried, nothing designed) shows no chip', () => {
+    // the Emanator in the pack (stowed, not in hand): the Strain row shows, and a Begin would draw on the air
+    const { u, c, g, cb } = fight((c) => { c.weapon = 'fists'; c.pack = [...(c.pack || []), { id: 'emanator', item: 'emanator', name: 'Emanator', qty: 1, kind: 'focus' }]; });
+    onTurn(cb, u);
+    // a Begin would add begin_strain + no_emanator_strain (over the limit of 4), but there is no design to Begin
+    u.mg = soul({ emanator: false, strain: 0, designs: [] });
+    expect(heldOutburstOf(u.mg, undefined, undefined, { cb, u }).canBegin).toBe(false);
+    expect(row(resourcesOf(u, c, g), 'strain').warn).toBeUndefined();
+    u.mg.strain = 3; expect(row(resourcesOf(u, c, g), 'strain').warn).toBeUndefined(); // falling only: nothing reaches the limit
+    // with a design the engine prices, the same Begin really goes over: the chip is back (the engine's margin, not a guess)
+    u.mg = soul({ emanator: false, strain: 0 });
+    expect(heldOutburstOf(u.mg, undefined, undefined, { cb, u }).canBegin).toBe(true);
+    expect(row(resourcesOf(u, c, g), 'strain').warn).toBeDefined();
+  });
   it('Flooded: a Begin adds 2, so 1 over the limit is a Mana Short next', () => {
     const { u, c, g, cb } = fight((c) => { c.weapon = 'fists'; });
     onTurn(cb, u); cb.mana = 40;
