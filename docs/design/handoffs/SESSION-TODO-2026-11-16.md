@@ -227,3 +227,12 @@ One patch with the Forge realign of section L. Not started; not to be started wi
   weapon-icons.md), which Claude can draw as SVG, so this is not a painting job: count the families first, draw the
   missing forms, list them in art/briefs/ART-REQUESTS.md. Existing weapons slot in as one of their family's three
   forms (the claymore as a Strength form, the sabre as a Dexterity form), so few names are new.
+- **Correction and ruling on the three forms (Leon, 17 Nov):** every weapon has a PAINTING (art/icons/gear/
+  weapon-<id>.png), shown in the shop, inventory and Forge; the SVG line icons are not the weapon's picture. So new
+  forms are paintings for the artist, not something Claude draws. Leon: "no need to keep small if the feature is
+  compelling enough": do NOT squeeze the families to save art. Merge two existing weapons into one family only where
+  it makes sense in the world (same make, same lineage of blade); otherwise a weapon is its own family and gets two
+  new forms. Melee today: 8 light, 7 heavy, 6 wearable gloves (2 gloves unpainted): up to about 42 new paintings.
+  First step when Leon gives the go: the family table (each family's Strength / hybrid / Dexterity form: existing
+  weapon or new, name, what changes), for his ruling; then the art list into art/briefs/ART-REQUESTS.md with GPT
+  prompts; the patch may ship with placeholders.
