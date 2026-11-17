@@ -8,6 +8,19 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.x art
+
+- **The nine doors' art is in** (the artist's branch `art/nine-doors-2026-11-16` at `5406ede0`, merged whole: it changed
+  only `art/`). 348 of the 375 pictures of the 0.29 list, all review candidates: 300 replace their placeholders by catalog
+  id, 48 are for designed-not-built rows; 27 are held for 0.30 and the 0.30 list (41) is not started. Shown in the game
+  today: the 18 alpha perks (new pictures), the four gloves' painted icons, Hymn Sanctuary and Whisper Ward; the moves,
+  techniques, conditions, Shadow, Tending, door emblems, class portraits and camp signs are catalogued and wait for a
+  screen that draws them.
+- The 298 placeholder files are retired to `art/_archive/nine-doors/2026-11-16/superseded/placeholders/`; the catalog was
+  merged entry by entry (every 0.31.1 entry kept); checksums regenerated; the old delivery manifests of the replaced perks
+  name their archived copies (`validate_art.py` OK).
+- `art/briefs/ART-REQUESTS.md` 0b: three signs asked for beyond the 0.30 list (Left and Right Brain Debuff, Swinging).
+
 ## 0.31.1 — the fight panel put back, and a real VICTORY (hotfix)
 
 Leon on live 0.31.0, with a screenshot of the fight panel. No rules change; new numbers PROVISIONAL.

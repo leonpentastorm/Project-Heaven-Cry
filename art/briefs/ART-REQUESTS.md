@@ -59,6 +59,33 @@ here on 15 Nov for the same things: the 18 alpha perks (was 1b), the Bonds 2.0 i
 (`tools/art/make_placeholders.py`, list `placeholders-2026-11-16.json`, catalog `placeholder: true`), 305 in all, 20 drawn
 by a screen today (the 18 perks, the Open Hand, Glimmer); the delivery replaces each by its catalog id.
 
+**Delivered (merged in 0.31.x from `art/nine-doors-2026-11-16` at `5406ede0`, 17 Nov 2026): 348 of 375**, all review
+candidates (`production_approved: false`). 300 replace their placeholders by catalog id (the placeholder files are archived
+under `_archive/nine-doors/2026-11-16/superseded/placeholders/`); 48 are designed-not-built rows. The artist's hand-off is
+[`NINE-DOORS-ART-HANDOFF-2026-11-16.md`](NINE-DOORS-ART-HANDOFF-2026-11-16.md). **27 rows are held** for 0.30 (the
+[hold list](../_archive/nine-doors/2026-11-16/art-hold-list-0.30.md)); **the 0.30 list, 41 pictures** (32 fork icons, Stand
+Behind Me, Wind-up, Read the Swing, Hold the Lane, Scrap Sentinel, Follow, Afterword, Mana Shock, Staggered:
+[`CONTINUE-0.30.md`](../_archive/nine-doors/2026-11-16/CONTINUE-0.30.md)) is **0/41**. Still a placeholder in the game: the 32
+`fork_icons`, `move-draw-fire`, `move-shove`, `move-lingering-dread`, `move-speed-loader`, `move-scrap-turret`,
+`cond-mana-shock` and `weapon-afterword` (all on the 0.30 list or held).
+
+### 0b. Missing art beyond the 0.30 list (requested 17 Nov 2026, 0.31.1)
+
+A sweep of 0.31.1's data against the catalog for anything in the game with no picture that neither the 0.29 list nor the
+0.30 list asks for. Same family rules as the nine-doors file (the condition-sign family: pure white flat ink on
+transparency, 1024 x 1024, no glow, at most two interior cuts, readable at 24 px and 48 px; no Wick).
+
+| # | For | Status | What it must show | Direction | Goes to |
+| --- | --- | --- | --- | --- | --- |
+| G1 | **Left Brain Debuff** (`data/conditions.json` `left_brain_debuff`, a debuff of the brain family, 2 rounds) | Wanted; no sign and no placeholder | A brain in profile with its left half cut away by a single slash | Condition sign; must pair with G2 (mirror images, so the two read apart at 24 px) | `art/icons/conditions/left-brain-debuff.png` (catalog `condition_icons`, id `cond-left-brain-debuff`) |
+| G2 | **Right Brain Debuff** (`right_brain_debuff`) | Wanted; no sign and no placeholder | The same brain with its right half cut away | As G1 | `art/icons/conditions/right-brain-debuff.png` (`cond-right-brain-debuff`) |
+| G3 | **Swinging** (rules 1.60 R7, Keep Swinging: "the next Strike or Opener is free", a state that helps, 2 rounds) | Wanted; no sign and no placeholder | A blade still moving on a long follow-through arc, the arc running back round to its start | Condition sign | `art/icons/conditions/swinging.png` (`cond-swinging`) |
+
+Not requested, for the lead to rule on: the 46 `given_*` / `foe_*` feeling states (Felt Rage and the rest, rules 1.33) could
+show their feeling's glyph (`feeling-<id>`) rather than new signs; `free_move_spent`, `ground` and `in_your_sights` are
+bookkeeping or marks the 0.30 spec asks no sign for; `figment_claws` / `figment_edge` (a Figment's own weapons) and
+`mod_follow_guard` / `mod_afterword` (named in variant_mods, never fitted) never reach a shelf or pack.
+
 ### 2. Outburst feelings and modules
 
 | # | For | Status | What it must show | Direction | Goes to |

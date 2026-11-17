@@ -81,6 +81,7 @@ Byte-identical duplicates were removed and every reference pointed at the copy t
 
 - **Icons:** all 74 trait and 106 perk icons are delivered (review candidates; Leon's visual approval pending).
 - **12 November icons:** 77/77 delivered; nine Calls, replacement Both Hands, Rebuke, 25 feelings, 38 modules and three UI marks. Outburst family styles approved; individual art remains review-candidate. See [`handoff`](_archive/deliveries/2026-11-12/HANDOFF.md).
+- **The nine doors (0.29 list):** 348/375 delivered 17 Nov 2026 (moves, techniques, conditions, Shadow, Tending, Figments, door emblems, class portraits, camp signs, the 18 alpha perks, the gloves); 27 held for 0.30; the 0.30 list is 0/41. Review candidates. See the [`hand-off`](briefs/NINE-DOORS-ART-HANDOFF-2026-11-16.md) and `_archive/nine-doors/2026-11-16/`.
 - **M813 campaign:** 53 images delivered (banners, portraits, maps, story moments, sprites); review candidates.
 - **Archetype cards:** 46 portraits (`pool: player-card` in the catalog); review candidates.
 - **Patrons (Blessing 2.0):** eight portraits, eight marks and 39 prayer icons; review candidates.

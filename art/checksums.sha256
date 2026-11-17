@@ -1,7 +1,7 @@
 14553529ae5b164f1ca84ddff48437047b13f8439397cfaeb0abaed9a92940f3  .gitignore
 612f236c4a72694552d9ea098d213206d8cb57d8a85a84b0ece8dd6d9963bdf9  README.md
 e80b981479a3b2fe1ba4314569d7b91c6fb33dd6a4df64fdf869b9d098b13ae5  art/AGENTS.md
-f1032a668c85fe7ed12c4fb99ca1eb4a2fbb918114a42004944c8105f0b55eae  art/README.md
+1a025527c3aa9305ff6f73758ec443f25fb43e7ed611e5219f4c7293bd2eca37  art/README.md
 d5bf3eef82c43e61dc9361633b12fa5a283f4c70a26ac8483366ea2cc25836f2  art/_archive/briefs/m813-tutorial/maps/archive-2026-11-06/outpost-layout.png
 73a3962469347cb7e4482796abb2320f55959bf7c4eef4591a3a35ad6fe400af  art/_archive/campaigns/m813/tutorial-v1/README.md
 5670d8faaabbf09a2054d007ff7039d218bc7a558edda3b7aecd4b803da8b8e3  art/_archive/campaigns/m813/tutorial-v1/manifest.json
@@ -4072,7 +4072,7 @@ fdd7c36efe3c8a23a0d6c78c6c90875df52a8941edd04ee5a7909a6b92613462  art/_archive/u
 3e2a46e3761f429c81126e838bf4f78c273bceec495c057bc5fa5db1dae8807a  art/_archive/ui/title-screen/source-renders/title-back-native.png
 0e2bf5319cf4a3236811c008052ce53a066d29e9fd59873e974a15ab6a17f105  art/_archive/ui/title-screen/source-renders/title-front-native.png
 c116fc3201c5bc293ff601b0dae0694087512777909f5ec2293fbc49c570a635  art/_archive/ui/title-screen/source-renders/title-mid-native.png
-ed8a4a91f002fbf9b12b6afd1b3b8f55343534711db9ca7196ae9fe64218dca0  art/briefs/ART-REQUESTS.md
+1f19f892edcdd145cd322d6f1ba2fac1d04b8354c9bb5b36f8a4618f30e2edbe  art/briefs/ART-REQUESTS.md
 2a7124da61595c42fa024611ff6da489c3317b216034c94cbe4dcfd50e8c6e53  art/briefs/FORGE-PHC.md
 7de6e209774c1613e3d74d7fcc9b014658122a5d55e90385ead9481ccffe7387  art/briefs/GPT-CONTINUE-2026-11-13-survival.md
 5ac78bd3f6fc7dead3745784d88e9bf079638c42771d3a52e4f41b5ad221a4b3  art/briefs/GPT-PROMPTS-2026-11-12.md
