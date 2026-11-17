@@ -8,6 +8,14 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.7 — small fixes (no rules change)
+
+- The fight's action-row icons are 24 px (were 18); the fork cards' option icons 40 px (were 24); a placed field's, trap's or turret's mark on its map badge 15 px (was 1em of a 9 px badge).
+- The enlarged view shows the name first, then the picture, then the text.
+- The map legend's field, trap and turret lines carry the map's own mark (interface_icons icon-zone-*).
+- Wind-up, Read the Swing, Hold the Lane and Scrap Sentinel show their delivered icons (catalog data_ids). Stand Behind Me has no move in data.
+- Not in this release (left for the next): the hover card's condition chips opening the enlarged view, the prayer reach's boundary, the camera on a refused click, the level-up banner, the two Kemizuchi weapons over the melee line, the Throw row's browser check, the browser suites' own port.
+
 ## 0.31.6 — the outside reviewer's report (rules 1.66)
 
 An outside reviewer played live 0.31.5 for 90 minutes (a gunslinger and a Virtue Confessor who became a Chaplain,
