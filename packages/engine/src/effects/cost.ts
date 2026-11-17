@@ -37,6 +37,7 @@
 // price passes the fight (`price({ cb, u }, …)`), so another unit's item and an engine system's listener are asked too.
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import actionsJ from '../../../../data/actions.json';
+import rulesJ from '../../../../data/rules.json';
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import { emit, emitOwn, hookUsed, charOfUnit } from './hooks';
@@ -135,6 +136,8 @@ export function resGive(cb: Combat | null | undefined, u: Unit, id: string, n: n
 
 // ---------------------------------------------------------------------------------------------- the price
 const r10 = (n: number) => Math.round(n * 10) / 10;
+/** Rules 1.64 item 5008: the sites that cost no AP before contact (data/rules.json combat.approach.free). */
+const APPROACH_FREE: string[] = (rulesJ as any).combat.approach.free;
 type Who = { cb?: Combat | null; u?: Unit | null; c?: Character | null; /** Classes 3.0 P9: who will pay (priced on u, paid by payer: whyNot / pay take it too) */ payer?: Unit | null };
 /** What `action` costs this unit now. base: its AP (or `{ ap, res }`) before items; left out, the data's
  * (data/actions.json). ctx: what the action knows that an item may ask about (the hand, the target, the word). It goes
@@ -148,6 +151,8 @@ export function price(x: Who, action: string, base?: number | Cost | null, ctx: 
   const b: Cost = base == null ? { ap: costOf(action) } : typeof base === 'number' ? { ap: base } : base;
   // one name, one floor, whichever of its two names the verb was asked by (the row's id or the site)
   let ap = b.ap ?? 0; const labels: string[] = [], site = actionName(action), min = verbOf(action)?.min ?? 0;
+  // rules 1.64 item 5008: before contact (Combat.approach) the approach's actions (rules.json combat.approach.free) cost no AP
+  if (x.cb?.approach && APPROACH_FREE.includes(site)) return { action: site, ap: 0, res: b.res ? { ...b.res } : {}, labels: [], free: true };
   // the fast way out (an attack's preview runs thousands of times a turn): no site to ask, and nobody on the `cost` hook
   if (!hookUsed('cost') && !(x.u && COST_SITES.has(site))) return { action: site, ap: r10(Math.max(min, ap)), res: b.res ? { ...b.res } : {}, labels, free: false };
   if (x.u && COST_SITES.has(site) && site !== 'heal') { const r = actionAp(x, site as CostSite, ap, ctx); ap = r.ap; labels.push(...r.labels); }

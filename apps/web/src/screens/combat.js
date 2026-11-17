@@ -10,7 +10,7 @@ import { MANA_SHOCK, WEAPON, musicTraitOf, songOf, active, paths, previewAttack,
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
-  attemptWhy, narratorOff, previewAction, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, shieldsView, survivalRun } from '@engine';
+  attemptWhy, narratorOff, previewAction, ATTEMPT_AP, healthView, FIGHT_CONDS, FIGHT_COND_NAME, SKILL as SKILLS_BY_ID, TN_LADDER, sendDescriptor, presenceOf, ownedView, shieldsView, survivalRun, APPROACH } from '@engine';
 import { shieldStrip, shieldBlock, hpShieldBar } from '../game/shieldLook';
 import { patronPortrait, patronMarkUri, accentOf } from '../game/faithArt';
 import { act as actNow, getState, go, toast, homeScreen } from '../game/store';
@@ -1811,7 +1811,7 @@ export class CombatLogic extends DCLogic {
             style: 'min-height: 30px; padding: 0 10px; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 700; white-space: nowrap; ' + (a.off ? 'border: 1px solid #232D3F; background: transparent; color: #5B6577; cursor: default' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF; cursor: pointer') })) })) })) : [] };
     const T = {
       tabs, tabPanel, tabsCog: () => openSettings('tabs'), showWho: !mePanel, lock, lockMsg, vow: vowV, bp,
-      mine: mineTurn, waiting: !mineTurn, wait, ytWord: 'YOUR TURN', ytInk: curInk, ytSub: (fv && fv.roundText ? fv.roundText.toUpperCase() : 'ROUND ' + cb.round) + ' · ' + ap + ' AP', // rules 1.62 item 4906: on the field, its round of its rounds
+      mine: mineTurn, waiting: !mineTurn, wait, ytWord: 'YOUR TURN', ytInk: curInk, ytSub: (cb.approach ? APPROACH.line.toUpperCase() : fv && fv.roundText ? fv.roundText.toUpperCase() : 'ROUND ' + cb.round) + ' · ' + ap + ' AP', // rules 1.64 item 5008: not yet joined, the strip says so (rules.json combat.approach.line) // rules 1.62 item 4906: on the field, its round of its rounds
       // 0.31.0 (U5): the AP pips ride in the YOUR TURN strip (dark on its white), no row of their own
       ytPips: apPips.map((p) => ({ ...p, style: p.style.replace('height: 14px', 'height: 11px; width: 9px; flex: none').replace(/#E7EBF3/g, '#0A0D13').replace('#1C2536', 'rgba(10, 13, 19, 0.14); box-shadow: inset 0 0 0 1px rgba(10, 13, 19, 0.35)') })), apMax: maxAp, apNow: ap,
       ytStyle: 'position: relative; overflow: hidden; display: flex; align-items: center; gap: 12px; margin: 0 6px; padding: 9px 18px; background: #FFFFFF; color: #0A0D13; box-shadow: -6px 0 0 ' + curInk + ', 0 6px 18px rgba(0, 0, 0, 0.45)',

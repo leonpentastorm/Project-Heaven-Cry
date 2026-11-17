@@ -11904,6 +11904,44 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
     cover-4v7-level20-allin, cover-4v6-level3, open-4v3-level3, proving-4v12-guns, proving-4v12-magic,
     proving-waves-long, proving-waves-low, story-fight-story-magic, proving-doors-hiding-watches-wave6,
     cover-4v7-blades-walk-away.
+5008. **A fight not yet joined (K1; Leon: "you run into an enemy in the fog, combat start and you stood there like an
+    idiot with zero AP, giving them a full turn"; the lead's approved primitive; supersedes item 4908 and item 4902's
+    "every step costs AP"):** a Survival fight that opens with no foe seeing any character (`combat.ts openApproach`,
+    called by `game.ts runFight`) carries `Combat.approach` `{ passes }`. Until contact: the actions named in
+    `rules.json combat.approach.free` (**move, sprint**) cost no AP (`effects/cost.ts price`, the one price site); no
+    round passes (`endTurn` counts a pass of the order instead) and nothing that lasts ticks (`beginTurn` only sets the
+    turn's AP; `turn_end` and `closeTurn` do not run; a unit's eyes still look for the Hidden); no foe acts but a Hidden
+    one (`endTurn`, `runEnemies`); the YOUR TURN strip shows `combat.approach.line` in place of "ROUND 1"; BATTLE START
+    is not shown. **Contact** (`combat.ts contactCheck`, after every action and every foe's turn in `runEnemies`): a foe
+    sees a character, a character has attacked this turn or a foe is hurt, a (Hidden) foe has attacked, or
+    `combat.approach.passes_max` **3** full passes go by with no contact (an idle squad is noticed; it also stops a
+    stall). Then the fight is joined (`joinFight`): `combat.approach.joined_log` and the initiative order (rolled as
+    the fight began) in the log, round 1 from the top of the order, every unit's first turn through the full
+    `beginTurn` on full AP; the screen shows BATTLE START then (`apps/web turnIntro.tsx`). A fight that opens with a
+    foe seeing a character (an ambush's Hidden foes watch the party) is joined at once, as before; a field opened after
+    a win drops the state. The banner line `combat.cards.joined.fog` is now "Hostiles still in the fog". PROVISIONAL:
+    the free list and 3 passes. Proof: `test/rules164-approach.test.ts` (through the reducer: run/move into an unseen
+    fight; two moves, AP untouched, round 1; end turn twice, no foe acts and no round; the third pass joins; walking
+    into sight joins, round 1, full AP) and `apps/web turnIntro-banners.test.tsx` (no BATTLE START until contact).
+    **Moved on purpose:** the Survival replay guard plays PHC-0002 (PHC-0003 loses its eighth fight; of PHC-0001 to
+    0020, 0002 and 0019 reach the boon); `bond-heal-shown.test.ts` sets its hand-built fight as joined. The 29 replays
+    did not move (no run fight in them). New exports: `APPROACH`, `openApproach`, `contactCheck` (combat.ts), the parts
+    of the approved state.
+5009. **The mixed test squad (K7):** the "3 of 20" is the test helper's walker (`test/helpers/survival.ts playStage`,
+    the replay guard's player), not the run simulator: it buys nothing, makes no rounds or cores and takes no rest. Its
+    20 seeds (measured with the sabre at 24, before item 5008): 3 cleared; in the 17 losing fights the gunner's rifle
+    was empty in 14, the Sigil caster held no core (0 MP) and fought with its revolver, empty in 15, and the tank fought
+    with its camp Hand wraps; the Outburst caster went down in every loss with 159 to 373 MP unspent. The run simulator
+    (`survival-run.ts simRun`, which makes, buys and rests) plays the same squad (tank member added) to **8 of 20**
+    stage-1 clears on PHC-0001 to 0020 before item 5008 (sabre 23), losses at depth 6 to 12 with ammunition in hand (one dry fight in 12 losses), and **10 of 20** with item 5008 (the walker: 2 of 20). No
+    policy bug and no clear data fault was found: nothing is changed. **For the lead:** measure squads with the run
+    simulator, never with the walker; the squad's 8 of 20 is below the party-fit cells (mix_trio 19 of 20) because the
+    tank's camp kit (Hand wraps and a Buckler, rules 1.59) deals little and the casters run thin: the weak tank camp kit
+    (0.31.0 known item 8) is the lever, a balance call.
+5010. **Needs a new primitive (listed, not built):** (a) a uses scope keyed to a Survival run's stage (`per_stage`, for
+    item 5001, which keys `per_scene` by the stage instead); (b) a Relic property for thrown items (item 5004); (c) an fx
+    event for a fight joined (item 5008's banner reads the state, `Combat.approach` going away, as item 4908 noted).
+    Items 5000 to 5010 are rules 1.64's.
 4550. **Sight both ways (rules 1.57 opening volley item 1; a bug):** `lineOfSight(a, b)` is clear only if the Bresenham walk a to b and the walk b to a are both clear (each skips its end tile). Before, it was the walk a to b only: with one blocker, 2% of tile pairs (72 of 3,551 on the proposal's ground) saw one way, and 4% of the stage-1 runs' enemy gun rolls had a blocked line back. `perks/b.ts losNoVeil` (Skin Map) was a second copy of the walk; it is now `lineOfSight(..., ignoreVeil)`. Proof: `test/rules157-volley.test.ts` (every pair on a 15 x 15 ground with a wall; the reproduced case, played).
 4551. **The enemy's Burst (item 2):** `techniques.json burst.numbers.enemy_same` 1 (was unset: an enemy with an Auto weapon rolled three at 0 / −1 / −2 and cooled 1; item 1079). Measured (one enemy turn on the yardstick, 200 seeds): a Gun drone (Soldier, service rifle) 21 then 29 damage on turns 1 and 2 (14% / 20% of 145 HP), was 30 / 46; a Soldier sabre 10 then 30. Supersedes item 1079's "keep the old Burst" and item 1316. PROVISIONAL.
 4552. **The tier damage factors after the refit (item 2):** Soldier 0.78, Elite 1.05, Boss 1.2, unchanged on purpose (item 1079 proposed Soldier 0.88 and Elite 1.08 to hold the rifleman's 3 rounds under two Soldiers; the lead's target for this pass is that a gun foe threatens what a melee foe of its tier does). Moved guards: the idle pair under two Soldiers at level 6 lasts 3.5 rounds (bound 3.2 → 4.2, `defence-measure.test.ts`); a healer and a shielder under four Soldiers at level 6 now hold for 10 rounds (`heal-measure.test.ts`: OLD "somebody goes Down", now "outlasts a healer alone"). PROVISIONAL.

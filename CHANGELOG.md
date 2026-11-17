@@ -25,6 +25,11 @@ The game shows its version in the corner of the title screen and in every "Repor
 - **K2, the Dexterity blades (item 5007):** sabre damage 28 -> 23, legion gladius 26 -> 22 (PROVISIONAL): with both
   Dexterity alpha perks 147 to 169% of the plain rifle at levels 1 / 5 / 10 (were 175 to 208%); the knife and the
   gloves untouched. The katana follows the sabre (rules 1.35: 28 -> 23). The duelling blade is listed for the lead.
+- **K1, a fight not yet joined (item 5008):** a Survival fight that opens unseen is not joined until contact:
+  walking is free, no round passes, no foe but a Hidden one acts, the turn strip says so; at contact (seen, an attack,
+  or three idle passes) BATTLE START, round 1, every first turn on full AP.
+- **K7, the mixed squad (item 5009):** the 3 of 20 is the replay walker's (no making, buying or rests: the guns run
+  dry); the run simulator clears the same squad 8 of 20 (10 of 20 with K1). Nothing changed; the tank's camp kit is listed for the lead.
 
 ## 0.31.0 — the field is turns, the fight's big banners, and the playtest's faults
 
