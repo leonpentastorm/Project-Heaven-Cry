@@ -11,17 +11,13 @@
   "avoid": "a barbarian from a known work \u00b7 bare-chested pin-up pose",
   "section": "Raw Power: the Momentum chain, and the Breaker",
   "kind": "class",
-  "prompt": "Create an original Project Heaven Cry illustration in HEAVENPRINT. Use the attached approved Original 27 and New Faces\nimages as the painting authority: expressive ink and opaque gouache, deliberate angular form, selective dry-brush\nscumbling, restrained hatching, charcoal lost edges and warm ivory accents. Faces have believable anatomy and restrained\nstylization and specific emotional acting. Format: 4:5, 800 x 1000 PNG, one character from the chest or waist up, one\nvisible action, one specific emotion, one useful setting hint behind them; the eye line about 22% from the top. The class\nattribute's pigment appears only as one accent (given in the section). No text, frame, UI or watermark; no real-world\nperson, brand or recognisable character. The portrait shows:\n\nPaint: A heavy-shouldered fighter mid-stride with a war axe resting on one shoulder, dust kicked up, grinning at the next wall to go through.\nAvoid: a barbarian from a known work \u00b7 bare-chested pin-up pose\nCAST AND STAGING: Breaker: stocky 35-year-old man with medium tan skin, freckles, a bent broad nose, short wiry copper hair and dark stubble, an unguarded crooked GRIN. Waist-up in strong forward three-quarter stride, plain war AXE resting across ONE shoulder, hand gripping haft at collar height. Fully clothed in worn charcoal padded work jacket with patched leather shoulder guard, not bare chest. Dust rises at lower frame and a broken plaster doorway behind hints at the next wall; no visible victim or attack. Natural iron, ocher cloth, ivory hard accents, broad directional brushwork. Face stays high at22%, axehead fully visible, no branded or recognizable axe.\nACTING SENTENCE: A heavy-shouldered fighter strides toward the next obstacle with an axe on one shoulder, and feels delighted determination.\nRendering follows the approved paintings: visible deliberate angular opaque gouache brush blocks, broken ink contours, selective dry scumbling, quiet charcoal lost edges and warm ivory focal planes. Believable face anatomy with restrained illustration stylization, no photo skin/3D gloss/airbrush, no oversized anime eyes. Borrow rendering, NEVER the identity/face/pose/costume of a reference person. The final small motif reference supplies only the class's equipment/gesture motif; DO NOT paste its emblem/frame into painting. Vertical 4:5, full-bleed opaque RGB painting, chest/waist-up, eye line approximately22% from top, face/decisive hands/tool central80%. One person, action, emotion, useful setting hint. Preserve natural skin/cloth/metal colors; one restrained hot-orange #F68A38 sash edge is the SINGLE ATTRIBUTE ACCENT, never a monochrome wash. No letters, readable glyphs, labels, symbols of real faiths, real insignia, caption, UI, frame, border or watermark.",
+  "prompt": "Edit this exact Heavenprint Breaker portrait to FIX THE AXE GEOMETRY ONLY. The user points out that the current axe looks like an X. REPLACE THE WHOLE AXE HEAD AND ITS JUNCTION WITH A NORMAL SINGLE-BIT WAR AXE: ONE broad wedge-shaped metal blade on the UPPER-LEFT SIDE of one central rectangular SOCKET; on the OPPOSITE SIDE only a SHORT FLAT RECTANGULAR POLL, no second blade, crescent, spikes or crossed metal arms. ONE continuous straight wooden HAFT runs from the fighter's gripping hand directly INTO that socket and ends just a little above it. Blade, socket and haft are physically connected and share one coherent orientation. Strong readable single-headed L/T silhouette, absolutely NO X-shaped head, double axe, crossed blades, detached shaft or second handle. Keep the axe resting naturally on the shoulder with the exact same hand gripping the single haft. Give the entire corrected head enough breathing room within the upper-left of frame; slightly shrink it if needed. Preserve this same fighter's face, grin, copper hair, clothing, forward stride, orange accent, dusty doorway and Heavenprint opaque gouache/ink treatment. Painterly metal, wood and scuffed materials with directional brush blocks and charcoal edges; no photographic/3D finish. No text, watermark, new symbols, frame or unrelated changes. Vertical4:5 opaque painting.",
   "refs": [],
   "transparent": false,
   "status": "review-candidate",
   "priority": 6,
   "generation_references": [
-    "art/_archive/nine-doors/2026-11-16/review/reference-previews/heavenprint-authority-panels.jpg",
-    "art/portraits/world/new-faces/orren-vask.png",
-    "art/portraits/world/new-faces/ivara-drenn.png",
-    "art/_archive/nine-doors/2026-11-16/review/reference-previews/portrait-archetype-pair.jpg",
-    "art/_archive/nine-doors/2026-11-16/review/reference-previews/class-fighter.png"
+    "art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/native.png"
   ],
   "portrait_cast": {
     "number": 44,
@@ -31,6 +27,10 @@
     "notes": "Breaker: stocky 35-year-old man with medium tan skin, freckles, a bent broad nose, short wiry copper hair and dark stubble, an unguarded crooked GRIN. Waist-up in strong forward three-quarter stride, plain war AXE resting across ONE shoulder, hand gripping haft at collar height. Fully clothed in worn charcoal padded work jacket with patched leather shoulder guard, not bare chest. Dust rises at lower frame and a broken plaster doorway behind hints at the next wall; no visible victim or attack. Natural iron, ocher cloth, ivory hard accents, broad directional brushwork. Face stays high at22%, axehead fully visible, no branded or recognizable axe."
   },
   "composition_scope": "one original waist-up Heavenprint character",
+  "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/native.png",
+  "replaces_path": "art/_archive/nine-doors/2026-11-16/superseded/044-axe-head-geometry-fix/master.png",
+  "replaces_sha256": "9099dea80a3039842ed11414eab9755bbe35ca5e6fc9131a80869ac41ce4287b",
+  "user_revision": "Correct the X-shaped axe head to one single-bit head on a continuous haft.",
   "production_approved": false,
   "implementation_ready": false,
   "native_dimensions": [
@@ -41,9 +41,9 @@
     800,
     1000
   ],
-  "sha256": "9099dea80a3039842ed11414eab9755bbe35ca5e6fc9131a80869ac41ce4287b",
+  "sha256": "5a8023a8a346667838e568a6e9b082f2260661cf1b9238dd3535d6cf9da7a352",
   "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/044-fighter.png",
-  "source_sha256": "0321ec16fe420bc49589fce1ecc0dd1ee63d83ec743868f19295b12fa33d9273",
+  "source_sha256": "5fcf459ce140f582ec72e23bf4a03766e1c20f120d627d423bef8e6b3f20a573",
   "export_crop": [
     0,
     0,

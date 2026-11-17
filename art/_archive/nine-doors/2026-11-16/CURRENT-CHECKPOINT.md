@@ -1,4 +1,4 @@
-# Current continuation checkpoint — 16 November 2026
+# Current continuation checkpoint — 17 November 2026
 
 Legacy delivery: 316/375 review candidates. Unfinished old rows: 59, of which 32 eligible and 27 held. New 0.30 additions: 0/41 delivered. Combined outstanding request records: 73.
 

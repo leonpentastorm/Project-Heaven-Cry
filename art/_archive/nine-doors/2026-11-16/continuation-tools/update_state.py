@@ -1,6 +1,8 @@
 from pathlib import Path
 from collections import Counter
 import argparse, hashlib, json, re, shutil
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('ids',type=int,nargs='+');args=p.parse_args()
 root=args.root.resolve();arc=root/'art/_archive/nine-doors/2026-11-16'
@@ -21,7 +23,8 @@ for n in args.ids:
         else:shutil.copy2(previous,dest)
         old.update(previous_path=dest.relative_to(root).as_posix(),previous_sha256=sha(dest))
     elif old and old.get('sha256')!=r['sha256']:
-        raise AssertionError('Archive an existing non-placeholder candidate before replacement')
+        prior=r.get('replaces_path');assert prior and r.get('replaces_sha256')==old['sha256'] and sha(root/prior)==old['sha256'],'Archive an existing non-placeholder candidate before replacement'
+        old.update(previous_path=prior,previous_sha256=old['sha256'])
     old.update(label=('Wick — ' if r['kind']=='wick' and 'Wick' in r['paint'] else '')+r['name'],path=r['path'],sha256=r['sha256'],width=r['export_dimensions'][0],height=r['export_dimensions'][1],background='transparent' if r['transparent'] else 'opaque',status='review-candidate',production_approved=False,implementation_ready=False,collection='nine-doors-2026-11-16',native_dimensions=r['native_dimensions'],source_path=r['source_path'],upscaled=False,format='png',mode=r['kind'],brief_number=n,exports=r.get('exports',{}))
     if r['kind'] in ['wick','sign']:old['ink']='#FFFFFF'
     old.pop('placeholder',None);old.pop('wanted',None)
@@ -52,7 +55,7 @@ continuation += ['', '## Held old recipes — do not paint','']+[f'- #{n} · {by
 continuation += ['', 'Already delivered and held for review: '+', '.join('#'+str(n) for n in sorted(held&done))+'. Preserve these files.','']
 (arc/'CONTINUE.md').write_text('\n'.join(continuation))
 scope=(arc/'CONTINUE-0.30.md').read_text();scope=re.sub(r'\*\*\d+/375 delivered\*\*',f'**{len(done)}/375 delivered**',scope);scope=re.sub(r'\*\*\d+ eligible \+ \d+ held\*\*',f'**{len(eligible)} eligible + {len(held-done)} held**',scope);scope=re.sub(r'\*\*\d+ request records\*\*',f'**{len(eligible)+new_remaining} request records**',scope);(arc/'CONTINUE-0.30.md').write_text(scope)
-report=f'''# Current continuation checkpoint — 16 November 2026
+report=f'''# Current continuation checkpoint — {datetime.now(ZoneInfo('Asia/Bangkok')).strftime('%d %B %Y')}
 
 Legacy delivery: {len(done)}/375 review candidates. Unfinished old rows: {len(remaining)}, of which {len(eligible)} eligible and {len(held-done)} held. New 0.30 additions: {new_progress['completed_count']}/41 delivered. Combined outstanding request records: {len(eligible)+new_remaining}.
 
