@@ -1793,7 +1793,7 @@ export class CombatLogic extends DCLogic {
     // The Calls tab's rows are chips (as the technique pad's): the Call, its AP and reach, the text of the step the
     // speaker has, its save and TN; greyed with the engine's reason when it can't be made now.
     // 0.31.x art: a technique's, class move's, door step's or verb's icon left of its name (game/doorArt.ts; '' none: the row as before)
-    const actIcon = (a) => { const icon = actionIconOf(a.key); return { icon, hasIcon: !!icon, iconStyle: 'flex: none; width: 18px; height: 18px; margin-right: 6px; vertical-align: -4px' + (a.why ? '; opacity: 0.45' : '') }; };
+    const actIcon = (a) => { const icon = actionIconOf(a.key); return { icon, hasIcon: !!icon, iconStyle: 'flex: none; width: 24px; height: 24px; margin-right: 6px; vertical-align: -7px' + (a.why ? '; opacity: 0.45' : '') }; };
     const callRow = (a) => { const c = a.key.startsWith(CL) ? cChips.find((x) => x.action === a.key) : null; if (!c) return { isCall: false, notCall: true, call: null };
       const on = a.pressed === 'true';
       return { isCall: true, notCall: false, call: { ...c, hasIcon: !!c.icon, hasWhy: !c.ok, hasSave: !!c.save, disabled: c.ok ? 'false' : 'true', meta: c.apText + ' · ' + c.reach, to: 'TO ' + c.aimWord.toUpperCase() + ' · ' + c.skillName.toUpperCase() + ' · ' + c.stepText,

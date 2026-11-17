@@ -528,6 +528,9 @@ export function placedLegend(kinds: Set<string>, anyGlyph: boolean): { key: stri
   if (kinds.has('veil')) out.push({ key: 'zv', box: box('background: rgba(120, 128, 142, 0.55)'), name: 'Smoke (blocks sight)' });
   if (kinds.has('grand')) out.push({ key: 'zg', box: box('background: rgba(79, 200, 223, 0.16); box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW), name: '◎ Grand form (radius 2 round the planted staff; hover a tile for what it does)' });
   if (kinds.has('light')) out.push({ key: 'zl', box: box('background: rgba(255, 248, 225, 0.12); box-shadow: inset 0 0 6px rgba(255, 248, 225, 0.5)'), name: 'Magic light' });
+  // 0.31.7: a placed trap, field or turret's legend line carries the map's own mark (interface_icons icon-zone-<kind>), as
+  // its corner badge shows it; the box stays when no mark is delivered.
+  for (const r of out) { const kind = ({ zf: 'field', zt: 'trap', zu: 'turret' } as Record<string, string>)[r.key]; const mk = kind ? uiMarkOf('zone', kind) : ''; if (mk) { r.img = mk; delete r.box; r.name = r.name.replace(/^\S+ /, ''); } }
   return out;
 }
 // ---------- class moves and perks that cast (spec 9: everything shown before it goes off; item 489 c) ----------
