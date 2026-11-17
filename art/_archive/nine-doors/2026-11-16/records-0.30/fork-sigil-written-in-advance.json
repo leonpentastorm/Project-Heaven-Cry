@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.sigil.written_in_advance",
+  "name": "Written in Advance",
+  "icon_id": "fork.sigil.written_in_advance",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Written in Advance** (`sigil.written_in_advance`). *\"A Line that has stood on the ground since before your last turn\nended Evokes at \u00d7{=numbers.mult} (its damage, heal or shield).\"* The lead's \"one size stronger\" would read a 4-glyph\nLine as a fifth size: the Int\u00b2 peak. A multiplier is below it.\n- Fields: `mult: 1.2`. Why: one fifth more for a whole turn of standing on a known tile.\n- Carrier: the Line's age (N14) as a predicate on `dealing` with `damage: [sigil_spell]`.\n- Sigilist: Stored Spell (written out of a fight) and Payload (area): different. Peak: below.\n- Excite: you draw a Line in the doorway they must come through and Evoke it next turn at +20%.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-sigil-written-in-advance",
+  "path": "art/icons/forks/sigil-written-in-advance.png",
+  "paint": "Wick kneels patiently beside ONE already drawn ground line of THREE bold abstract geometric glyphs, holding his Evoker clear of the line while watching it settle. Quiet concentrated pixel expression and a short protective palm above it.",
+  "avoid": "No legible letters, written words, clock, book, running pose or casting from an empty floor.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick kneels patiently beside ONE already drawn ground line of THREE bold abstract geometric glyphs, holding his Evoker clear of the line while watching it settle. Quiet concentrated pixel expression and a short protective palm above it.\nAVOID: No legible letters, written words, clock, book, running pose or casting from an empty floor.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 26,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "638647b9e9679d6ad4b8d133b94f0ed20f6abff174169a4cfa21446907447e76",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-sigil-written-in-advance-v1.png",
+  "source_sha256": "3e9986077aca7b5f3012a5f70a307ef5dae156962dcdeaf14da324eafe49703c",
+  "export_crop": [
+    0,
+    79,
+    1232,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/sigil-written-in-advance.png",
+    "64": "art/icons/forks/exports/64/sigil-written-in-advance.png",
+    "48": "art/icons/forks/exports/48/sigil-written-in-advance.png",
+    "44": "art/icons/forks/exports/44/sigil-written-in-advance.png",
+    "32": "art/icons/forks/exports/32/sigil-written-in-advance.png",
+    "24": "art/icons/forks/exports/24/sigil-written-in-advance.png"
+  },
+  "export_sha256": {
+    "128": "4b21d8d7fe7efda77a8bd9b47cf0e6f9f87307c9dd0920bcac9c4530285b0281",
+    "64": "d385ad8b5985c8b419a5d5fa4ab6632c4ed997a5c0f845214f128b999eacf8ea",
+    "48": "4b5845ffc379beb8bfbce51775cfe0eea6c4eff04b1f6f5bd0998dd873b255f1",
+    "44": "96c3e417e2b652bb4f659e46368ca4b8c0ad4b18cbb786fda850d7cc80bc6e37",
+    "32": "5f645daa98f05c8e7a2e41b06056e4052b880c57a70c41abe13558b5b4bdb970",
+    "24": "2b795c5e404d8d7138968b8a855467f2057114b33122c5fe7150406311c4c2a2"
+  },
+  "framing": {
+    "scale": 0.5521757826792922,
+    "offset": [
+      172,
+      187
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

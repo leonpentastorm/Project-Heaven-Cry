@@ -1,0 +1,63 @@
+{
+  "number": 75,
+  "family": "class_portraits",
+  "id": "class-marksman",
+  "path": "art/portraits/classes/marksman.png",
+  "name": "The Skirmisher (class portrait)",
+  "mode": "class portrait",
+  "state": "designed, not built",
+  "use": "Class card portrait",
+  "paint": "A lean runner in a dusty coat, half crouched at the corner of cover, rifle up, already looking at the next cover.",
+  "avoid": "a real army uniform or insignia \u00b7 a sniper in a ghillie suit",
+  "section": "Dexterity: Pressure, and the Skirmisher",
+  "kind": "class",
+  "prompt": "Create an original Project Heaven Cry illustration in HEAVENPRINT. Use the attached approved Original 27 and New Faces\nimages as the painting authority: expressive ink and opaque gouache, deliberate angular form, selective dry-brush\nscumbling, restrained hatching, charcoal lost edges and warm ivory accents. Faces have believable anatomy and restrained\nstylization and specific emotional acting. Format: 4:5, 800 x 1000 PNG, one character from the chest or waist up, one\nvisible action, one specific emotion, one useful setting hint behind them; the eye line about 22% from the top. The class\nattribute's pigment appears only as one accent (given in the section). No text, frame, UI or watermark; no real-world\nperson, brand or recognisable character. The portrait shows:\n\nPaint: A lean runner in a dusty coat, half crouched at the corner of cover, rifle up, already looking at the next cover.\nAvoid: a real army uniform or insignia \u00b7 a sniper in a ghillie suit\nCAST AND STAGING: Skirmisher: lean 30-year-old dark-skinned woman with a long face, strong nose, one temple closely shorn and tight short coils swept back. Waist-up half-crouch at a chipped COVER CORNER; holds one unloaded invented angular rifle UP in ready position angled safely past frame, gaze already turns toward the next cover on viewer-left. Dusty muted teal-gray long work coat with reinforced elbow, no real military uniform, camouflage, insignia, ghillie suit or scope flare. One sunlit pale masonry plane behind and quiet dark cover edge nearby. Dynamic shoulders and intent eyes; no firing, target, other person or copied reference face. Eye line22%, useful hands/rifle central80%.\nACTING SENTENCE: A lean skirmisher pauses at cover because the next safe position is opening, and feels quick alert focus.\nRendering follows the approved paintings: visible deliberate angular opaque gouache brush blocks, broken ink contours, selective dry scumbling, quiet charcoal lost edges and warm ivory focal planes. Believable face anatomy with restrained illustration stylization, no photo skin/3D gloss/airbrush, no oversized anime eyes. Borrow rendering, NEVER the identity/face/pose/costume of a reference person. The final small motif reference supplies only the class's equipment/gesture motif; DO NOT paste its emblem/frame into painting. Vertical 4:5, full-bleed opaque RGB painting, chest/waist-up, eye line approximately22% from top, face/decisive hands/tool central80%. One person, action, emotion, useful setting hint. Preserve natural skin/cloth/metal colors; one muted golden-yellow #E3BF51 coat lining accent is the SINGLE ATTRIBUTE ACCENT, never a monochrome wash. No letters, readable glyphs, labels, symbols of real faiths, real insignia, caption, UI, frame, border or watermark.",
+  "refs": [],
+  "transparent": false,
+  "status": "review-candidate",
+  "priority": 6,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/heavenprint-authority-panels.jpg",
+    "art/portraits/world/new-faces/orren-vask.png",
+    "art/portraits/world/new-faces/ivara-drenn.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/portrait-archetype-pair.jpg",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/class-marksman.png"
+  ],
+  "portrait_cast": {
+    "number": 75,
+    "motif": "marksman",
+    "color": "one muted golden-yellow #E3BF51 coat lining accent",
+    "acting": "A lean skirmisher pauses at cover because the next safe position is opening, and feels quick alert focus.",
+    "notes": "Skirmisher: lean 30-year-old dark-skinned woman with a long face, strong nose, one temple closely shorn and tight short coils swept back. Waist-up half-crouch at a chipped COVER CORNER; holds one unloaded invented angular rifle UP in ready position angled safely past frame, gaze already turns toward the next cover on viewer-left. Dusty muted teal-gray long work coat with reinforced elbow, no real military uniform, camouflage, insignia, ghillie suit or scope flare. One sunlit pale masonry plane behind and quiet dark cover edge nearby. Dynamic shoulders and intent eyes; no firing, target, other person or copied reference face. Eye line22%, useful hands/rifle central80%."
+  },
+  "composition_scope": "one original waist-up Heavenprint character",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1122,
+    1402
+  ],
+  "export_dimensions": [
+    800,
+    1000
+  ],
+  "sha256": "ccdba7c23654f10a709891f55823da815ca2de99dae436478e0b6b763f900bbb",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/075-marksman.png",
+  "source_sha256": "ecd54bcf4d78b7254b3971730a8640b926122cfd412c5aeeecc81cf823044375",
+  "export_crop": [
+    0,
+    0,
+    1121,
+    1401
+  ],
+  "exports": {},
+  "framing": {
+    "scale": 0.7136485280999108,
+    "aspect_ratio": "4:5",
+    "crop_policy": "Centered aspect-preserving 4:5 crop before downsampling"
+  },
+  "upscaled": false,
+  "export_processing": "Centered aspect-preserving 4:5 crop and Lanczos downsample to RGB portrait",
+  "export_sha256": {},
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

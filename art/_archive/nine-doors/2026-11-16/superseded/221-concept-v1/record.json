@@ -1,0 +1,64 @@
+{
+  "number": 221,
+  "family": "perks",
+  "id": "holy-ordnance",
+  "path": "art/icons/perks/holy-ordnance.png",
+  "name": "Sinner's Due",
+  "mode": "Wick icon",
+  "state": "in game now (shows the OLD perk's icon) \u00b7 placeholder",
+  "use": "Faith perk (old icon: a blessed shell)",
+  "paint": "A beam from above striking a kneeling, broken partial figure.",
+  "avoid": "an artillery shell (the old icon) \u00b7 a real religion's cross",
+  "section": "Faith: prayer, and the Chaplain",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: A beam from above striking a kneeling, broken partial figure.\nAvoid: an artillery shell (the old icon) \u00b7 a real religion's cross\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nSUBJECT OVERRIDE: this row asks for a prop/sign/partial-view composition. Draw only that requested subject. Do not add a full Wick figure when this row does not name him.",
+  "refs": [
+    "/workspace/phc-nine-doors-2026-11-16/references/angel-of-the-trenches.png",
+    "/workspace/phc-nine-doors-2026-11-16/references/bedside-manner.png",
+    "/workspace/phc-nine-doors-2026-11-16/references/solid-image.png",
+    "/workspace/phc-nine-doors-2026-11-16/references/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 1,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "39431cbbc3cedb025760aa96daeb0ae1b6d175a9be8ad78baf076e348d5f7dbb",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/221-holy-ordnance.png",
+  "source_sha256": "ad28e975bec9e1b8ca15ab982b192971e4ff7fda1859bd6229c8e8cb0e4236b3",
+  "export_crop": [
+    19,
+    13,
+    1203,
+    1254
+  ],
+  "exports": {
+    "256": "art/icons/perks/exports/256/holy-ordnance.png",
+    "128": "art/icons/perks/exports/128/holy-ordnance.png",
+    "64": "art/icons/perks/exports/64/holy-ordnance.png",
+    "56": "art/icons/perks/exports/56/holy-ordnance.png",
+    "48": "art/icons/perks/exports/48/holy-ordnance.png",
+    "44": "art/icons/perks/exports/44/holy-ordnance.png",
+    "40": "art/icons/perks/exports/40/holy-ordnance.png",
+    "32": "art/icons/perks/exports/32/holy-ordnance.png"
+  },
+  "framing": {
+    "scale": 0.5388394184189365,
+    "offset": [
+      193,
+      177
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

@@ -1,0 +1,17 @@
+{
+  "date": "2026-11-17",
+  "authority": "Explicit user answer in this conversation",
+  "quote": "Use pinned revision-2 rules for these eight proposals",
+  "request_names": [
+    "Cover Them",
+    "Drive",
+    "Lightkiller",
+    "Keep the Thread",
+    "Benediction",
+    "Held Breath",
+    "Walk It In",
+    "Lockdown"
+  ],
+  "source_spec_commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+  "scope": "Visual basis for unapproved art proposals only. Gameplay questions remain open; no old hold is lifted."
+}

@@ -10,6 +10,50 @@ The game shows its version in the corner of the title screen and in every "Repor
 
 ## 0.31.5 — the picking contract (rules 1.65)
 
+### The art is in (0.31.5)
+
+- **The 0.30 and after-0.30 art is in** (the artist's `art/after-0.30-2026-11-17` at `d2e5eb1a`, containing the 0.30
+  delivery `1317c61d`; only `art/` changed). 41 + 54 pictures, all catalogued: the 32 fork icons (on the fork cards in
+  level up and on the sheet), Stand Behind Me, Wind-up (Shove), Read the Swing, Hold the Lane, Scrap Sentinel, Follow,
+  Afterword, the Mana Shock and Staggered signs; the status strip's helps / hurts / state marks (a chip with no sign of its
+  own shows its group's mark, not the text triangle), the FREE ROAM banner's mark, eight new condition signs, the hazard
+  tiles' marks and the Sigil field / trap / turret badges on the fight map, the Survival place cards (Study, Practice,
+  Devotion, the shrine's rite, lore and token, the six Crossroads trades; catalog `place_icons`, by the option's key or
+  trade id), the six vows and Witnessed. 38 placeholders retired to the archive; one left (Draw Fire, not delivered).
+  Catalogued with no place to draw them yet: the Tending passives (5), the resource marks (credits, XP, Devotion), the
+  seven tone marks.
+- **Click to enlarge, everywhere.** Any icon slot carrying `data-zoom` opens the one lightbox (`screens/shared.js`) with
+  the picture's 512 px copy (built for every white-ink family, `-lg`, fetched only when opened), its name and its text:
+  the GEAR tab and backpack rows, the Give list, shop, Sell, Forge and upgrade cards, reward and material cards, the camp's
+  stock, the place cards, the fight's action-row icons and weapon heads (clicking the icon enlarges; the rest of the row
+  still picks), status chips, vows, the tab icons, fork cards, ARMS techniques, the sheet's moves and level up's perks.
+
+- **The nine doors' art is in** (the artist's branch `art/nine-doors-2026-11-16` at `5406ede0`, merged whole: it changed
+  only `art/`). 348 of the 375 pictures of the 0.29 list, all review candidates: 300 replace their placeholders by catalog
+  id, 48 are for designed-not-built rows; 27 are held for 0.30 and the 0.30 list (41) is not started. Shown in the game
+  today: the 18 alpha perks (new pictures), the four gloves' painted icons, Hymn Sanctuary and Whisper Ward; the moves,
+  techniques, conditions, Shadow, Tending, door emblems, class portraits and camp signs are catalogued and wait for a
+  screen that draws them.
+- **Integrated: the game draws them** (17 Nov). `npm run assets` builds the moves, techniques, Shadow and Tending
+  verbs, conditions, door emblems and camp signs (292 icons, 64 px) and the nine class portraits (320 x 400 and 800 x 1000),
+  under their catalog ids and under the data's own ids (the catalog's new `data_ids`: a move's or verb's item key, a
+  door's alpha skill); about 2.1 MB more in the build (0.25 MB of icons, 0.3 MB of small portraits, 1.6 MB of large
+  portraits fetched only when one is enlarged). One resolver per family, `apps/web/src/game/doorArt.ts`. Drawn: the
+  fight's action rows (a technique's, class move's, door step's or verb's icon left of its name, Hide's too; rows keep
+  their height), the status strip's chips and the token hover card's (a condition's sign in place of the glyph, the
+  colour kept on the chip), the sheet (a door skill's emblem on SKILLS, the class portrait and each move's icon in the
+  CLASS block, each known technique's icon on ARMS) and the camp's checklist chips. Witnessed shows the delivered
+  `cond-witnessed` sign. Not drawn yet (no place on a screen today): the Open Hand's forms and stance (toggles on an
+  attack), the door steps that are passives with no row, the camp's Ready sign, the designed-not-built moves.
+- The request list beyond 0.30 is 45 pictures now: Witnessed (row 39) is cut, and Felt, Practice and the six tones
+  are answered by the delivered `ui-felt`, `ui-practice` and `mod-ench_*` art (cut from the request; the file says so).
+- The 298 placeholder files are retired to `art/_archive/nine-doors/2026-11-16/superseded/placeholders/`; the catalog was
+  merged entry by entry (every 0.31.1 entry kept); checksums regenerated; the old delivery manifests of the replaced perks
+  name their archived copies (`validate_art.py` OK).
+- **The art request list beyond the 0.30 list:** `art/briefs/GPT-PROMPTS-2026-11-17-after-0.30.md`, 54 pictures for what a player's screen shows as a text glyph or a blank (the status strip's marks, the FREE ROAM banner, eight conditions, hazards and Sigil zones, twelve Survival place cards, six vows and Witnessed, five Tending passives, credits, XP and tones), with what was left off on purpose and what the builder must wire. `ART-REQUESTS.md` 0b points at it.
+
+
+
 - **Every aimed action shows its picking (Leon: "Picking UI for every aimed action is important"):** the engine's
   action preview now sends, for every system, the reach (where it could be aimed from here), the legal choices of the
   open pick, the area the aim covers and whom it touches with a word; the choices are worked out by the same check

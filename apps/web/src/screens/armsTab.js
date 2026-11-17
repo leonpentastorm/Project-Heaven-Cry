@@ -3,6 +3,7 @@
 // a drill bar per weapon you have drilled or hold (its three marks, what each gives, a pick chooser), and the quiver
 // menu for each quiver you carry (rules 1.53: two, worn and ready). Every number is the engine's (physOf, readyCap, readyTechniques, drillMarks, picksOwed,
 // pickable); this file is screen glue: state, words and styles. Modelled on faithTab.js; computed only while open.
+import { techIconOf } from '../game/doorArt';
 import { WEAPON, phys, packOf, quiverCards } from '@engine';
 import { enchantMark } from '../game/quiverView';
 import { act, toast } from '../game/store';
@@ -40,7 +41,7 @@ export function armsTabVals(sc, g, c) {
       items: TECHNIQUES.filter((t) => t.system === sys && t.group === gr && knownIds.has(t.id)).map((t) => {
         const by = teachers(t.id);
         const tag = t.free ? 'EVERYONE KNOWS IT' + (t.needs && t.needs.stuck ? ' · ONLY WHILE A WEAPON IS STUCK' : '') : comes.has(t.id) ? 'COMES WITH ' + String(comes.get(t.id)).toUpperCase() : by.length ? 'SIGNATURE · ' + by.join(', ') : '';
-        return { key: t.id, name: t.name, free: t.free, tag, hasTag: !!tag,
+        return { key: t.id, name: t.name, free: t.free, tag, hasTag: !!tag, ...((ic) => ({ icon: ic, hasIcon: !!ic }))(techIconOf(t.id)),
           text: t.text, lines: (t.lines || []).map(lineView), hasLines: (t.lines || []).length > 0, help: t.name + ': ' + t.text, ap: t.ap.base === 'flat' ? (t.ap.value || 0) + ' AP' : t.ap.base === 'reaction' ? 'reaction' : 'weapon AP' + (t.ap.add ? ' +' + t.ap.add : '') };
       }) })).filter((gr) => gr.items.length);
     return { key: sys, title, ink: INK[sys], titleStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + INK[sys], groups, has: groups.length > 0 };

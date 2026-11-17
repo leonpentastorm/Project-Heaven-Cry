@@ -1,0 +1,81 @@
+{
+  "number": 48,
+  "section": 7,
+  "family": "interface_icons",
+  "id": "icon-tone-raw",
+  "path": "art/icons/tones/raw.png",
+  "name": "Tone: Raw",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a coloured word)",
+  "use": "A Raw Outburst design, and the plain quiver",
+  "paint": "A plain heart-knot with no flourish, a clear ring of space round it.",
+  "avoid": "a medical heart \u00b7 colour",
+  "file_key": "48-raw",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A plain heart-knot with no flourish, a clear ring of space round it.\nAVOID: a medical heart \u00b7 colour",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/48-raw-v1.png",
+  "source_sha256": "429c94d47c0ab67d419ca4e776351ca7811ff26b481d13e779235964686ec1b2",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    79,
+    1136,
+    1236
+  ],
+  "scale": 0.7087294727744166,
+  "offset": [
+    109,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "4ffe597fd229b297add89ee1768ae59908d5ac8eb0976dea2e3a0de0014bdd52",
+  "exports": {
+    "256": "art/icons/tones/exports/256/raw.png",
+    "128": "art/icons/tones/exports/128/raw.png",
+    "64": "art/icons/tones/exports/64/raw.png",
+    "48": "art/icons/tones/exports/48/raw.png",
+    "44": "art/icons/tones/exports/44/raw.png",
+    "32": "art/icons/tones/exports/32/raw.png",
+    "24": "art/icons/tones/exports/24/raw.png",
+    "16": "art/icons/tones/exports/16/raw.png"
+  },
+  "export_sha256": {
+    "256": "8827e982b1cb82f097f0e1393a59362540a0f861183f7f64795d3eb56df5cc7a",
+    "128": "54f07226953158cdce3e2acc5d784c2e7faf5d87698054aed58b11b3430a4785",
+    "64": "6d3c316354195f67e61df2d94a822b64d61aec5571272e8daab665b7b70425d2",
+    "48": "29a502e382a972c8e274d25b257bde216a942d475236948df07e56f100b752f9",
+    "44": "dbab855e2ecfc93aa966d1e95ad687e39cd58d170211a0d744b0817b1298213e",
+    "32": "f4c807a09d5e18d1f4632cd3694100f99edb792d6af8c069122ceb416d03d686",
+    "24": "dffdc39add8d09d51cd38a29966ee6fc7d49c15fda0e7166fe99baf6cbec9556",
+    "16": "d66b7306349357dca4afcb0778bf291e6c6164ab9df01e060b9cf4f65cb86ab6"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

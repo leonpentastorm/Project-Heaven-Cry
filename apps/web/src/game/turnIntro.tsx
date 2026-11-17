@@ -169,7 +169,7 @@ function endCard(g: GameState, cb: any, won: boolean): Banner {
  * the words survival.json run.after_fight.field). */
 function fieldCard(cb: any): Banner {
   const f = cb && typeof cb.field === 'object' ? cb.field : null, W = survivalRun.after_fight.field, sub = f ? W.sub.replace('{rounds}', String(f.of)) : '';
-  return { id: 'm' + Date.now(), kind: 'field', kicker: cb.name, kickerColor: '#FFFFFF', name: W.name, sub, stripe: '#FFFFFF', slab: '#6FEA77', mark: '', glyph: '⟳', img: '', mine: false, foe: false, hold: CARDS.hold_ms };
+  return { id: 'm' + Date.now(), kind: 'field', kicker: cb.name, kickerColor: '#FFFFFF', name: W.name, sub, stripe: '#FFFFFF', slab: '#6FEA77', mark: '', glyph: '⟳', glyphArt: ART('banner-fight-field'), img: '', mine: false, foe: false, hold: CARDS.hold_ms };
 }
 
 /** Would the card on the left cover this unit's tile? Then it comes in from the right instead, so the unit stays in view. */

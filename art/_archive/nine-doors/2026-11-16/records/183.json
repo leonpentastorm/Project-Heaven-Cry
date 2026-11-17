@@ -1,0 +1,61 @@
+{
+  "number": 183,
+  "family": "tending_icons",
+  "id": "tend-soothe",
+  "path": "art/icons/tending/soothe.png",
+  "name": "Soothe",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Tend verb (Help)",
+  "paint": "A hand drawing a slow curve over a partial head, three small calm lines.",
+  "avoid": "a halo \u00b7 music notes",
+  "section": "Empathy: Bonds and Tending, and the Mender",
+  "kind": "wick",
+  "prompt": "One pure-white flat-ink UI icon on transparent background. A simple EMPTY open mitten hand hovering gently over the top of a partial rounded head silhouette. Three small curved calm lines between the palm and the head. The hand is empty: NO paintbrush, wand, pen, tool or object. Only palm, partial head, three calm lines. Bold white silhouettes, sparse transparent cuts, like the attached icons. No full mascot, face, body or extra props. Pure #FFFFFF only and transparent negative space, no gray, black paint, shading, glow, texture, text or border. Center the complete pictogram in a 15% clear margin, 1024x1024 square, immediately readable at 32px.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "fd701bf55a19e255f6f035bd01dc780cee83b4b8017c5c29ae3789398e7a2b23",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/183-soothe.png",
+  "source_sha256": "1225af602a557f4a18f1086d43e1d531493f33c4b778d32529cd075b038de0b6",
+  "export_crop": [
+    89,
+    23,
+    1214,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/tending/exports/128/soothe.png",
+    "64": "art/icons/tending/exports/64/soothe.png",
+    "48": "art/icons/tending/exports/48/soothe.png",
+    "44": "art/icons/tending/exports/44/soothe.png",
+    "32": "art/icons/tending/exports/32/soothe.png",
+    "24": "art/icons/tending/exports/24/soothe.png"
+  },
+  "framing": {
+    "scale": 0.5847218675051954,
+    "offset": [
+      183,
+      152
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

@@ -1,0 +1,86 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/shared/staggered",
+  "name": "Staggered",
+  "kind": "sign",
+  "mode": "condition sign",
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "4.1 R19"
+  },
+  "rule_excerpt": "| R19 | `open_hand` toggle Palm (items.json:1184) | \u00d70.6; Body save or Off Balance and pushed 1 | \u00d70.6; Body save or **Staggered** (a new conditions row: `forbid action reaction`, all kinds, until its next turn; no AP lost) | `items.json:1370, :1371, :1404, :1407`; `variants.json:96`; `fx/openhand.ts:8`; monk-measure; conditions golden (a new row) |",
+  "name_status": "suggested",
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a generic sign for loss of reaction only; do not depict AP loss or push",
+  "file_key": "shared-staggered",
+  "path": "art/icons/conditions/staggered.png",
+  "paint": "ONE generic featureless human silhouette staggered but standing, BOTH feet still planted, torso recoiling and arms half raised. A short hooked reaction-arrow beside one shoulder is visibly broken at its bend, showing a lost response.",
+  "avoid": "No Wick, robot head, AP pips, numbers, stars circling the head, falling or pushed figure, lying body or clock.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). NO full Wick, screen face, mascot capelet or lantern chest; only the specified object/construct/sign. \nPAINT: ONE generic featureless human silhouette staggered but standing, BOTH feet still planted, torso recoiling and arms half raised. A short hooked reaction-arrow beside one shoulder is visibly broken at its bend, showing a lost response.\nAVOID: No Wick, robot head, AP pips, numbers, stars circling the head, falling or pushed figure, lying body or clock.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "composition_scope": "object/sign-only",
+  "recipe_index": 40,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "3bf3690c4db2fffd6f21f5d22a85e114630beff4e5834bd38f5f82a57f7d7cb4",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/shared-staggered-v1.png",
+  "source_sha256": "895c9fe6cc0782a8bce23db79340e43c62211486adf8ac6617f4224bb467486f",
+  "export_crop": [
+    69,
+    17,
+    1253,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/staggered.png",
+    "64": "art/icons/conditions/exports/64/staggered.png",
+    "48": "art/icons/conditions/exports/48/staggered.png",
+    "44": "art/icons/conditions/exports/44/staggered.png",
+    "32": "art/icons/conditions/exports/32/staggered.png",
+    "24": "art/icons/conditions/exports/24/staggered.png"
+  },
+  "export_sha256": {
+    "128": "648705d13eed14b5f2194d5ed623a226836df4f6ee34ddfb1f2b6db3e867e988",
+    "64": "70870a6f903f55e637b9dc460acdc1647a6bcc6c9e6de3c322925039288de056",
+    "48": "f8057c1d1d1b6427f56e7ecd42c9ec53037a174b0cb0b33f51c9c1736a93064c",
+    "44": "1198b892d1c4dcc6a07190039ddb5eff4f60eb5b39f2f8ecb6586a5858cce70d",
+    "32": "ece61058d22aae4bc883656bbb453d00eba15c9f9b3a29e9ce59621a3f9ffa1e",
+    "24": "a7a1600ca117ef836bafbcfd12fbd20f9b979199f00e40a358588e08344095db"
+  },
+  "framing": {
+    "scale": 0.6628940986257074,
+    "offset": [
+      119,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

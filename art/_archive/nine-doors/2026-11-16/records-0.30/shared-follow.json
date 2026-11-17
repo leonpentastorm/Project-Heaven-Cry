@@ -1,0 +1,98 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/shared/follow",
+  "name": "Follow",
+  "kind": "wick",
+  "mode": "Wick technique icon",
+  "source": {
+    "branch": "wip/lane-shield-either-hand",
+    "commit": "a995b3ea8d385ae56bdb0085a9f37656aab0b955",
+    "path": "docs/design/proposals/2026-11-follow-strike.md",
+    "blob_sha": "0153225719def036c6bee60acbbcd2a648b15143"
+  },
+  "rule_excerpt": "An off-hand follows weapon makes a follow strike after the main attack. See rules 1.58 and the follow-strike proposal.",
+  "reuse_candidate_legacy_job": 19,
+  "reuse_candidate_path": "art/icons/moves/the-shield-follows.png",
+  "reuse_note": "The hold list explicitly allows reusing #19's picture for Follow if kept. #19 is undelivered; do not assume a valid source exists. Check first, paint at most one shared picture if required, never regenerate the held path move as an extra job.",
+  "name_status": "settled",
+  "binding_status": "Confirmed source technique id follow; pinned lane catalog has no Follow icon binding. Filename is explicitly proposed, active catalog binding remains unregistered.",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "inspect for a reusable source; confirm current Follow binding and avoid duplicate artwork",
+  "file_key": "shared-follow",
+  "path": "art/icons/techniques/follow.png",
+  "paint": "Wick completes a main-hand short blade stroke while ONE round off-hand shield follows closely behind on a single lower curved sweep. One uninterrupted pose with the shield trailing the blade, screen focused; all grips and hilt/blade construction clear.",
+  "avoid": "No two exposure copies, crossed-weapon emblem, extra full figure or separate painting for old held #19.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick completes a main-hand short blade stroke while ONE round off-hand shield follows closely behind on a single lower curved sweep. One uninterrupted pose with the shield trailing the blade, screen focused; all grips and hilt/blade construction clear.\nAVOID: No two exposure copies, crossed-weapon emblem, extra full figure or separate painting for old held #19.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "composition_scope": "one Wick and partials",
+  "reuse_audit": {
+    "legacy_job": 19,
+    "candidate_path": "art/icons/moves/the-shield-follows.png",
+    "result": "No PNG exists in the inspected branch tree and numeric #19 is undelivered. No reusable real painting found. Paint Follow once; do not complete the held old recipe."
+  },
+  "source_technique_id": "follow",
+  "binding_audit_source": "references-0.30/follow-proposal.md; pinned a995b3ea data/techniques.json and art/catalog.json inspected",
+  "recipe_index": 37,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "a635b26973cd24ad63e19ac86e650705d05b330366f5c608543824962352dfe6",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/shared-follow-v1.png",
+  "source_sha256": "5341313226dd5afe2220300bfaa2e8d31e07ad375c0191fbd47ed8e5a37ac5bc",
+  "export_crop": [
+    0,
+    51,
+    1240,
+    1234
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/follow.png",
+    "64": "art/icons/techniques/exports/64/follow.png",
+    "48": "art/icons/techniques/exports/48/follow.png",
+    "44": "art/icons/techniques/exports/44/follow.png",
+    "32": "art/icons/techniques/exports/32/follow.png",
+    "24": "art/icons/techniques/exports/24/follow.png"
+  },
+  "export_sha256": {
+    "128": "6d146741e5d4a5e2bd163d6b6cec7b43af88628d86dad3704e1c043621b45536",
+    "64": "157797257b9c344f3a141f9c0d1405dc3cc86f15810845baa932bd1d86ff76f6",
+    "48": "c792a8522cfd127115bb8773c94e403a6df8a0a15ee0e3b57af001986587b280",
+    "44": "d3c5301b841ebeb16b40a478bc21f604e47fb1605c4b337c198700954c66d922",
+    "32": "e75f422edee1eb745444124368d6032db74e418f6df483da0f1842094dd65452",
+    "24": "fdb538423366b2acde743047084cd08d8b2009cc73619e050da7b702248ebf19"
+  },
+  "framing": {
+    "scale": 0.5945602585367915,
+    "offset": [
+      143,
+      160
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

@@ -1,0 +1,81 @@
+{
+  "number": 27,
+  "section": 4,
+  "family": "place_icons",
+  "id": "place-trade-offbooks",
+  "path": "art/icons/places/trade-offbooks.png",
+  "name": "The off-books armourer (trade card)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a card with no picture)",
+  "use": "Crossroads trade: upgrade a weapon to Fine or Masterwork at a cut rate, for some of its durability",
+  "paint": "A hammer leaning on a plate, one small coin tucked under the plate's lower edge.",
+  "avoid": "an anvil (that is the Forge) \u00b7 a price tag \u00b7 a dollar sign",
+  "file_key": "27-trade-offbooks",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A hammer leaning on a plate, one small coin tucked under the plate's lower edge.\nAVOID: an anvil (that is the Forge) \u00b7 a price tag \u00b7 a dollar sign",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/survival/markers/boss.png",
+    "art/icons/survival/markers/cache.png",
+    "art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/27-trade-offbooks-v1.png",
+  "source_sha256": "0dc299523e21e6e1db94ed5bca3f6d0c2e2c62b2e9afe1a52833c2ad59b02e2e",
+  "generation_attempt": 1,
+  "export_crop": [
+    31,
+    55,
+    1216,
+    1230
+  ],
+  "scale": 0.6919831223628692,
+  "offset": [
+    102,
+    105
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "fbb0f453db11fb0dcd62c7d4d6f240acdebda47a7e74ebf05c468a4fa1410427",
+  "exports": {
+    "256": "art/icons/places/exports/256/trade-offbooks.png",
+    "128": "art/icons/places/exports/128/trade-offbooks.png",
+    "64": "art/icons/places/exports/64/trade-offbooks.png",
+    "48": "art/icons/places/exports/48/trade-offbooks.png",
+    "44": "art/icons/places/exports/44/trade-offbooks.png",
+    "32": "art/icons/places/exports/32/trade-offbooks.png",
+    "24": "art/icons/places/exports/24/trade-offbooks.png",
+    "16": "art/icons/places/exports/16/trade-offbooks.png"
+  },
+  "export_sha256": {
+    "256": "d1de277423b2261f6b97af71986854f6b92d0b46f8b8025a58dfdca433b5269c",
+    "128": "a518298d90fd71ee8ff487433bcb1b1d5f8c02fc08922296a298ce64dec54977",
+    "64": "b59ac12c394a92163cb421881700c08ba9149f3f7a21b55c92727e22dc5cd6da",
+    "48": "87f91ef96745580371b7b23b3daeb22e09bc1b9a8bdbc4f49295ba1ae1435850",
+    "44": "d1ee45cb7ef6535dc1dd71fa44f64db750fc7a4de4dda55af94efb175a143335",
+    "32": "4c0c9adb457c98bdd99a4439c17274a0503917047a57bffad1ca125861fb0734",
+    "24": "d89a1c23a3ef99be513c4a8e5c1131827b5cbda84f05312fa22bd9d12202e932",
+    "16": "33b287d9bac6124666d66517d22ff08e74685bc8f13739e9ec82a98b5980cecc"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

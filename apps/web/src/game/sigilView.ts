@@ -7,6 +7,7 @@
 import { feelingInk, feelingName, residueTileStyle, residueTitle } from './feelingsView';
 import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, strokeRuns, strokesOfGlyph, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX, holderOf, sigilGrowthView } from '@engine';
 import { glyphUri, scratchUri, starUri, SIGIL_INK, SIGIL_GLOW, type JoinSeg } from './glyphs';
+import { uiMarkOf } from './doorArt';
 import { grandLook, grandTint } from './fx/grand';
 
 export const HOSTILE_INK = '#F65157', ALLY_INK = '#FFFFFF', SPARED_INK = '#6FEA77', MUTED_INK = '#A3AEC2';
@@ -229,7 +230,7 @@ const round2 = (n: number) => Math.round(n * 100) / 100;
 
 // ---------- 3–8. Evoke: where to stand, the area, delivery, burst, who is affected, fizzle ----------
 export interface EvokeChoice { /** Rules 1.10 Junctions: which of a junction's strokes to Evoke. */ stroke?: string | null; aims?: string[]; dest?: string | null; order?: string | null; orderTo?: string | null; /** Paint the Field's free Burst word. */ paint?: 'spread' | 'push' | null }
-export interface SgMark { key: string; text: string; style: string; title: string }
+export interface SgMark { key: string; text: string; style: string; title: string; /** a delivered zone mark drawn before the text (0.31.x art) */ mark?: string }
 export interface SgTile { layer: string; marks: SgMark[]; note: string }
 export interface AffectedRow { key: string; unit: string; name: string; tag: string; ink: string; text: string; at: string; /** A summary row (LEECH's heal, NULL's catch), not a creature the spell affects. */ extra?: boolean }
 export interface EvokeView {
@@ -489,7 +490,7 @@ export function placedView(cb: any, side: 'pc' | 'foe' = 'pc', seen?: Set<string
     const first = z.kind === 'field' || z.kind === 'veil' || z.kind === 'light' ? z.tiles[0] : null;
     for (const k of z.tiles) {
       const t = T(k); t.layer = t.layer && z.kind === 'light' ? t.layer : layer; t.note += (t.note ? ' · ' : '') + text;
-      if (badgeText && (!first || k === first)) t.marks.push({ key: 'pl' + z.id, text: badgeText, style: badge(z.mine ? SIGIL_GLOW : HOSTILE_INK) + '; ' + CORNER.br, title: text });
+      if (badgeText && (!first || k === first)) t.marks.push({ key: 'pl' + z.id, ...((mk) => ({ mark: mk, text: mk ? badgeText.slice(1) : badgeText }))(uiMarkOf('zone', z.kind)), style: badge(z.mine ? SIGIL_GLOW : HOSTILE_INK) + '; ' + CORNER.br, title: text });
     }
   }
   // Rules 1.8 (Outburst 4.0): residue (a feeling's tint and glyph; another side's only where you can see: the fog), a

@@ -1,0 +1,390 @@
+{
+  "interface_icons": {
+    "icon-status-helps": {
+      "path": "art/icons/status/helps.png",
+      "sha256": "ab3954fe46c2959c9cea7013fbd9567232d46c79b326b9f0ea964db0565d54c6",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-status-hurts": {
+      "path": "art/icons/status/hurts.png",
+      "sha256": "04dc7d0be37c08113f9fb56747bd23094eaaff4b6f846abf283641a4e4f9164d",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-status-state": {
+      "path": "art/icons/status/state.png",
+      "sha256": "8bbeedc5d7cca56c77e482fcbf1d11a053d96cac1c21ef004befa2684feeda46",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "banner-fight-field": {
+      "path": "art/icons/banners/fight-field.png",
+      "sha256": "7b659f09f0c1da7ad6224524ce99d703e68a3297bad8ff8fa6049d8c5b4ba085",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-hazard-minefield": {
+      "path": "art/icons/world/hazard-minefield.png",
+      "sha256": "b40533d1842c2b8f0d6fa37733140b80e7847a2e8ed7fbd535712e04509dfcb4",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-hazard-fire": {
+      "path": "art/icons/world/hazard-fire.png",
+      "sha256": "a4173c9396d134ac2630c513c7d415139feef504e32bca6b4ece71bae22703b7",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-hazard-radiation": {
+      "path": "art/icons/world/hazard-radiation.png",
+      "sha256": "7998cb09160ef74e4cc9cd88e9b115c0834acdb6e58afcf9026ac6d42b71c683",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-hazard-gas": {
+      "path": "art/icons/world/hazard-gas.png",
+      "sha256": "fbc7809d263d2111d46c30164639bbcc99d6296eaa57000d42bb69908c883834",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-hazard-collapse": {
+      "path": "art/icons/world/hazard-collapse.png",
+      "sha256": "15e4b3db2388022adac98def15c040a1a73f97faab399e8bd7235c0844dd90a5",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-zone-field": {
+      "path": "art/icons/world/zone-field.png",
+      "sha256": "d04d54233953de71aa90141292b70cad3add03622bf6f98c9a2abb767e1bebbb",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-zone-trap": {
+      "path": "art/icons/world/zone-trap.png",
+      "sha256": "bcc67685734ebb8e00bc99e30b37f3c314d8aaee8ee0b1eb7863c47cfd060360",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-zone-turret": {
+      "path": "art/icons/world/zone-turret.png",
+      "sha256": "2419c0a5dbd9d00dbac8a2fa0130034776b2e74677d39ecbaab2305091adcf3c",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-resource-credits": {
+      "path": "art/icons/resources/credits.png",
+      "sha256": "b02f6fd9b1ad5c76941356a7a8da29f2825259b17730a1846f27c92ff6d4ebf0",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-resource-xp": {
+      "path": "art/icons/resources/xp.png",
+      "sha256": "4b1ec8a1415a0da8d42085e72927d94d3c16b467db288831c726cef658120b9e",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-resource-devotion": {
+      "path": "art/icons/resources/devotion.png",
+      "sha256": "fd7b979c8e9caf923b66164e8e9fcb03655e46990f1a20287b1763931daae350",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-raw": {
+      "path": "art/icons/tones/raw.png",
+      "sha256": "4ffe597fd229b297add89ee1768ae59908d5ac8eb0976dea2e3a0de0014bdd52",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-fire": {
+      "path": "art/icons/tones/fire.png",
+      "sha256": "7b0fb09c4a72c1139ad1d54cd024fe69da4e4a4f09eba4b640f0b038af232091",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-storm": {
+      "path": "art/icons/tones/storm.png",
+      "sha256": "3795e662c412944194116e94f1d82f7861efd3e3ed1ab31d5ce3c6efcbe3710c",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-frost": {
+      "path": "art/icons/tones/frost.png",
+      "sha256": "65273ca849604680de2c73aa5f37c2f0e14c158258314611d20bd7b0720d8131",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-stone": {
+      "path": "art/icons/tones/stone.png",
+      "sha256": "d2b0ee0135277fde417d378fedbbe13a6e088607a664866ce62fdb5c2941624a",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-gale": {
+      "path": "art/icons/tones/gale.png",
+      "sha256": "8a6942d91b6d4a52d8c15502445dbc06482ff035c8c95bdac70014a688c94329",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "icon-tone-acid": {
+      "path": "art/icons/tones/acid.png",
+      "sha256": "10519a4da74a16c85712d584434612105ec6eada60f535563e89827b2be816bf",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    }
+  },
+  "condition_icons": {
+    "cond-left-brain-debuff": {
+      "path": "art/icons/conditions/left-brain-debuff.png",
+      "sha256": "037d8a4c47796b4af43402f66661aadf585e442569410367f5b03a751b4545b4",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-right-brain-debuff": {
+      "path": "art/icons/conditions/right-brain-debuff.png",
+      "sha256": "c4498de5d820cb7f68f39c256b71a6e88b8dedc57bdc50b3c199e73d19f87cd6",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-swinging": {
+      "path": "art/icons/conditions/swinging.png",
+      "sha256": "4f1084801ac73f787df4116e7e3a5642296f3b83614eff9cee6a0132b819e4f4",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-ground": {
+      "path": "art/icons/conditions/ground.png",
+      "sha256": "d274b8053cf75bc65fe53f9c7525e467bc0a9a1e85f384e90454a294d5931dcd",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-in-your-sights": {
+      "path": "art/icons/conditions/in-your-sights.png",
+      "sha256": "6eb56ace02432b554e8f4c375addb3d03abc7c8da1cbd87513fb94ad308fcfa3",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-free-move-spent": {
+      "path": "art/icons/conditions/free-move-spent.png",
+      "sha256": "80ffaad1df6da051b8b8bb2d997593777922c04cf34ad0afaa81f5503c9ad176",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-given-mark": {
+      "path": "art/icons/conditions/given-mark.png",
+      "sha256": "41c53452349a1190b28ab498b35219d6ac1db3cc5425ae24215c17a590cdea19",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "cond-given-edge": {
+      "path": "art/icons/conditions/given-edge.png",
+      "sha256": "691e7d0d477a0231cb063ccef39ef0b1c78e37d62ddaeac6e3e89c847883b86b",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    }
+  },
+  "place_icons": {
+    "place-study": {
+      "path": "art/icons/places/study.png",
+      "sha256": "68f9cafd0478eda02f3602036c83685efb3db512f5c7c1829590123e464fc9e5",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-practice": {
+      "path": "art/icons/places/practice.png",
+      "sha256": "03343f314e27c112b879085b9bbbb8167277de33a43621062acebdc4b7aa368e",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-devotion": {
+      "path": "art/icons/places/devotion.png",
+      "sha256": "9e0711ee9f167d774df02bc4bedb5288ef5bb14f1f7f2084a8d2f7c53ef90be5",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-rite": {
+      "path": "art/icons/places/rite.png",
+      "sha256": "5749d7edb9905f578ca47d7d545f79240df2b117d83c0dd51dfb06327c2e5994",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-lore": {
+      "path": "art/icons/places/lore.png",
+      "sha256": "242c2b7feb1abdbaace7b9728e13e6d0af58d7ca282a32cce9fe11b517b8ac9c",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-token": {
+      "path": "art/icons/places/token.png",
+      "sha256": "179ce2ae5f1686c940a69b702fe55f856fcd8b7fa8d676898178d0d35d832101",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-trade-offbooks": {
+      "path": "art/icons/places/trade-offbooks.png",
+      "sha256": "fbb0f453db11fb0dcd62c7d4d6f240acdebda47a7e74ebf05c468a4fa1410427",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-trade-sparring": {
+      "path": "art/icons/places/trade-sparring.png",
+      "sha256": "2adc2f60d41ce38756daadc8302baafae5002b67fb0d29d23b539f76c8876b41",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-trade-crate": {
+      "path": "art/icons/places/trade-crate.png",
+      "sha256": "c8ff230ccb1b6604025c5e4e46d177f8c125156a05dad47373bf5761e42a3f4a",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-trade-wayside": {
+      "path": "art/icons/places/trade-wayside.png",
+      "sha256": "430440993439c34bf36139b74e86cdc2813e95f30aa0c23dc43c9df4a5ac75e2",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-trade-graft": {
+      "path": "art/icons/places/trade-graft.png",
+      "sha256": "4be21022b8de5901110ad075aa465bfe04dfa00c096545e703c259afa3a4cdea",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "place-trade-salvage": {
+      "path": "art/icons/places/trade-salvage.png",
+      "sha256": "0ccc8be5d5553d3aa92e56c5327509cbfaeded580c72b15032ef97ce5f24be31",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    }
+  },
+  "prayers": {
+    "vow-shield": {
+      "path": "art/icons/prayers/vow-shield.png",
+      "sha256": "064675515fa3d469b9ab0ca52b2a63a9004e9109124fb69ad8a0ccdd1b09f902",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "vow-mercy": {
+      "path": "art/icons/prayers/vow-mercy.png",
+      "sha256": "e89add83a9b209170cf267c72d170331b2726882926ca044f8b91afb78400052",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "vow-stand": {
+      "path": "art/icons/prayers/vow-stand.png",
+      "sha256": "65bd0adc9fef0e7eadb6278b8ce3c5e2728bb16921b338902b6c3bf6ca964306",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "vow-bare": {
+      "path": "art/icons/prayers/vow-bare.png",
+      "sha256": "f7681864e7cafd70931af8c5dd22671f7f639e9b236d1c3be8d2c5296b44407f",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "vow-unarmed-faith": {
+      "path": "art/icons/prayers/vow-unarmed-faith.png",
+      "sha256": "eb8178fc1d39df1cc23f85bba004dcb48997b9add516133548c47ae4fe90b32e",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "vow-no-one-behind": {
+      "path": "art/icons/prayers/vow-no-one-behind.png",
+      "sha256": "27b85eda71709a34ea2cbbb590352a60f1f3f87cc9ec578c9440d38244f6d39a",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "witnessed": {
+      "path": "art/icons/prayers/witnessed.png",
+      "sha256": "03fc99ffc20af369e828413fb6a78d27fb95268f9067c941c5f223b797b9657b",
+      "mode": "white-ink sign",
+      "production_approved": false,
+      "implementation_ready": false
+    }
+  },
+  "tending_icons": {
+    "tend-threads": {
+      "path": "art/icons/tending/threads.png",
+      "sha256": "d1d53731f35edc2bbd84b35360716a0126dc7ec2f055960a848219cbec7fed4b",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "tend-hold-down": {
+      "path": "art/icons/tending/hold-down.png",
+      "sha256": "905f4b502f999b53dc0fb8f98f5020cf49cad3f8a41c5493bd326b9dc8f9117f",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "tend-bonds-5": {
+      "path": "art/icons/tending/bonds-5.png",
+      "sha256": "1e1594f9f169f130412f9f8b6dedd0d8a93633d5515b28ca636577ea436ac6be",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "tend-bonds-8": {
+      "path": "art/icons/tending/bonds-8.png",
+      "sha256": "202c997f9b6e113a02859cce46a675b0bd224732196f3826d87a6df60aca48dd",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    },
+    "tend-mender-bonds": {
+      "path": "art/icons/tending/mender-bonds.png",
+      "sha256": "552a742532cbac2e2155f714a93c1edb8b56cb906c9b11f9094f000498db5254",
+      "mode": "Wick icon",
+      "production_approved": false,
+      "implementation_ready": false
+    }
+  }
+}

@@ -11,6 +11,7 @@ import React from 'react';
 import { act, getState } from './store';
 import { placeView, type PlaceCardV, type PlaceViewV } from '@engine';
 import { gearIconUri } from './gearIcons';
+import { placeIconOf } from './doorArt';
 import { tipProps, openTipOn } from './actionTip';
 import { MoveOn } from './runPanels';
 import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from './FullScreenFrame';
@@ -55,14 +56,14 @@ function TrainBarView({ b }: { b: NonNullable<PlaceCardV['bar']> }) {
 }
 
 function ChoiceCard({ x, big }: { x: PlaceCardV; big?: boolean }) {
-  const o = x.o, icon = x.id ? gearIconUri(x.id, undefined, { large: true }) : '';
+  const o = x.o, icon = x.id ? gearIconUri(x.id, undefined, { large: true }) : placeIconOf(o.key);
   return (
     <button type="button" data-phc-choice={o.key} data-phc-why={o.why ? '' : undefined} aria-disabled={o.why ? 'true' : undefined} {...tipProps(o.why)}
       onClick={(e) => { if (o.why) openTipOn(e.currentTarget); else act(o.action as any); }}
       style={{ gridColumn: big ? 'span 2' : undefined, display: 'flex', flexDirection: 'column', gap: 10, minHeight: 200, padding: 18, borderRadius: 16, textAlign: 'left', fontFamily: 'inherit', cursor: 'pointer', color: I.text,
         background: 'linear-gradient(180deg, rgba(28,37,54,0.96), rgba(16,21,31,0.96))', border: '1px solid ' + (o.why ? I.line : '#7A879E'), opacity: o.why ? 0.8 : 1 }}>
       <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-        {icon ? <span style={{ flexShrink: 0, width: 72, height: 72, display: 'grid', placeItems: 'center', borderRadius: 12, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}><img src={icon} alt="" width={64} height={64} style={{ objectFit: 'contain' }} /></span> : null}
+        {icon ? <span style={{ flexShrink: 0, width: 72, height: 72, display: 'grid', placeItems: 'center', borderRadius: 12, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}><img data-zoom={o.label} data-zoom-text={o.detail} src={icon} alt="" width={64} height={64} style={{ objectFit: 'contain' }} /></span> : null}
         <span style={{ fontFamily: "'Spectral', serif", fontSize: big ? 24 : 20, fontWeight: 600, lineHeight: 1.2 }}>{o.label}</span>
       </div>
       {o.detail ? <span style={{ fontSize: 14, lineHeight: 1.45, color: '#DCE2EC' }}>{o.detail}</span> : null}

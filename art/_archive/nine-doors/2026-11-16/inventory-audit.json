@@ -1,0 +1,2627 @@
+[
+  {
+    "number": 1,
+    "path": "art/icons/perks/bulwark.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 2,
+    "path": "art/icons/perks/shrug-it-off.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 3,
+    "path": "art/icons/moves/close-guard.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 4,
+    "path": "art/icons/moves/last-plate.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 5,
+    "path": "art/icons/moves/retort.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 6,
+    "path": "art/icons/moves/challenge.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 7,
+    "path": "art/icons/moves/slam.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 8,
+    "path": "art/icons/moves/set-against-the-blow.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 9,
+    "path": "art/icons/moves/brace.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 10,
+    "path": "art/icons/moves/draw-fire.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 11,
+    "path": "art/icons/moves/unbroken.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 12,
+    "path": "art/icons/moves/shrug-it-off-move.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 13,
+    "path": "art/icons/moves/reactive-plate.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 14,
+    "path": "art/icons/moves/anchor.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 15,
+    "path": "art/emblems/doors/guard.png",
+    "exists": false,
+    "mode": "door emblem",
+    "state": "designed, not built"
+  },
+  {
+    "number": 16,
+    "path": "art/portraits/classes/defender.png",
+    "exists": false,
+    "mode": "class portrait",
+    "state": "designed, not built"
+  },
+  {
+    "number": 17,
+    "path": "art/icons/moves/wall.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 18,
+    "path": "art/icons/moves/hold-the-gap.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 19,
+    "path": "art/icons/moves/the-shield-follows.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 20,
+    "path": "art/icons/moves/weather-the-volley.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 21,
+    "path": "art/icons/moves/bastion.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 22,
+    "path": "art/icons/moves/bulwarks-edge.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 23,
+    "path": "art/icons/perks/breaching-strike.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 24,
+    "path": "art/icons/perks/grapple.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 25,
+    "path": "art/icons/moves/follow-through.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 26,
+    "path": "art/icons/moves/heavy-hands.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 27,
+    "path": "art/icons/moves/the-charge-carries.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 28,
+    "path": "art/icons/moves/four-ways-to-finish.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 29,
+    "path": "art/icons/moves/launch.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 30,
+    "path": "art/icons/moves/wrecker.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 31,
+    "path": "art/icons/moves/breach.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 32,
+    "path": "art/icons/moves/lunge.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 33,
+    "path": "art/icons/moves/shove.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 34,
+    "path": "art/icons/moves/riposte.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 35,
+    "path": "art/icons/moves/lingering-dread.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 36,
+    "path": "art/icons/moves/finisher.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 37,
+    "path": "art/icons/moves/unstoppable.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 38,
+    "path": "art/icons/techniques/coup.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 39,
+    "path": "art/icons/techniques/cleave.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 40,
+    "path": "art/icons/techniques/break.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 41,
+    "path": "art/icons/techniques/throw-down.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 42,
+    "path": "art/icons/techniques/run-through.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 43,
+    "path": "art/emblems/doors/momentum.png",
+    "exists": false,
+    "mode": "door emblem",
+    "state": "designed, not built"
+  },
+  {
+    "number": 44,
+    "path": "art/portraits/classes/fighter.png",
+    "exists": false,
+    "mode": "class portrait",
+    "state": "designed, not built"
+  },
+  {
+    "number": 45,
+    "path": "art/icons/moves/bowl-over.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 46,
+    "path": "art/icons/moves/execute.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 47,
+    "path": "art/icons/moves/into-the-wall.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 48,
+    "path": "art/icons/moves/hurl.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 49,
+    "path": "art/icons/moves/demolisher.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 50,
+    "path": "art/icons/moves/duelist.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 51,
+    "path": "art/icons/perks/both-hands.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 52,
+    "path": "art/icons/perks/running-reload.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 53,
+    "path": "art/icons/moves/quick-draw.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 54,
+    "path": "art/icons/moves/speed-load.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 55,
+    "path": "art/icons/moves/near-miss.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 56,
+    "path": "art/icons/moves/shaken-nerves.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 57,
+    "path": "art/icons/moves/reflex.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 58,
+    "path": "art/icons/moves/fire-and-move.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 59,
+    "path": "art/icons/moves/relocated.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 60,
+    "path": "art/icons/moves/break-them.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 61,
+    "path": "art/icons/moves/slide.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 62,
+    "path": "art/icons/moves/fire-discipline.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 63,
+    "path": "art/icons/moves/speed-loader.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 64,
+    "path": "art/icons/moves/special-ammo.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 65,
+    "path": "art/icons/moves/duck-and-roll.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 66,
+    "path": "art/icons/moves/killzone.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 67,
+    "path": "art/icons/moves/run-and-gun.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 68,
+    "path": "art/icons/techniques/suppress.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 69,
+    "path": "art/icons/techniques/rake.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 70,
+    "path": "art/icons/techniques/warning-shot.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 71,
+    "path": "art/icons/techniques/flush.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 72,
+    "path": "art/icons/techniques/mag-dump.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 73,
+    "path": "art/icons/techniques/crossfire.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 74,
+    "path": "art/emblems/doors/pressure.png",
+    "exists": false,
+    "mode": "door emblem",
+    "state": "designed, not built"
+  },
+  {
+    "number": 75,
+    "path": "art/portraits/classes/marksman.png",
+    "exists": false,
+    "mode": "class portrait",
+    "state": "designed, not built"
+  },
+  {
+    "number": 76,
+    "path": "art/icons/moves/flush-out.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 77,
+    "path": "art/icons/moves/open.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 78,
+    "path": "art/icons/moves/suppressor.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 79,
+    "path": "art/icons/moves/runner.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 80,
+    "path": "art/icons/perks/sleight-of-hand.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 81,
+    "path": "art/icons/perks/shadow-step.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 82,
+    "path": "art/icons/moves/hide.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 83,
+    "path": "art/icons/moves/first-shade.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 84,
+    "path": "art/icons/moves/ghost-kill.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 85,
+    "path": "art/icons/moves/go-to-ground.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 86,
+    "path": "art/icons/moves/close-quarters.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 87,
+    "path": "art/icons/moves/shadow-run.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 88,
+    "path": "art/icons/moves/still-breath.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 89,
+    "path": "art/icons/shadow/tag.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 90,
+    "path": "art/icons/shadow/lift.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 91,
+    "path": "art/icons/shadow/fade.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 92,
+    "path": "art/icons/shadow/read-intent.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 93,
+    "path": "art/icons/shadow/open-seam.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 94,
+    "path": "art/icons/shadow/timing.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 95,
+    "path": "art/icons/shadow/cut-strap.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 96,
+    "path": "art/icons/shadow/foul.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 97,
+    "path": "art/icons/shadow/plant.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 98,
+    "path": "art/icons/shadow/disable.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 99,
+    "path": "art/icons/shadow/hijack.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 100,
+    "path": "art/icons/shadow/decoy.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 101,
+    "path": "art/icons/shadow/vault.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 102,
+    "path": "art/icons/shadow/pick.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 103,
+    "path": "art/icons/shadow/douse.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 104,
+    "path": "art/icons/shadow/rig.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 105,
+    "path": "art/icons/shadow/slip.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 106,
+    "path": "art/icons/shadow/mark.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 107,
+    "path": "art/icons/shadow/work.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 108,
+    "path": "art/icons/shadow/break.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 109,
+    "path": "art/icons/moves/tradecraft.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 110,
+    "path": "art/icons/moves/vanish.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 111,
+    "path": "art/icons/moves/toxin.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 112,
+    "path": "art/icons/moves/sabotage.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 113,
+    "path": "art/icons/moves/execution.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 114,
+    "path": "art/icons/moves/called-shot.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 115,
+    "path": "art/emblems/doors/shadow.png",
+    "exists": false,
+    "mode": "door emblem",
+    "state": "designed, not built"
+  },
+  {
+    "number": 116,
+    "path": "art/portraits/classes/infiltrator.png",
+    "exists": false,
+    "mode": "class portrait",
+    "state": "designed, not built"
+  },
+  {
+    "number": 117,
+    "path": "art/icons/moves/parting-cut.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 118,
+    "path": "art/icons/moves/case.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 119,
+    "path": "art/icons/moves/shade-step.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 120,
+    "path": "art/icons/moves/way-ghost.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 121,
+    "path": "art/icons/moves/way-knife.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 122,
+    "path": "art/icons/moves/way-hand.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 123,
+    "path": "art/icons/perks/hold-the-stroke.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 124,
+    "path": "art/icons/perks/parallel-thought.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 125,
+    "path": "art/icons/moves/overclock-sigil.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 126,
+    "path": "art/icons/moves/twin-draw.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 127,
+    "path": "art/icons/moves/barrage.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 128,
+    "path": "art/icons/moves/core-change.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 129,
+    "path": "art/icons/moves/overcharge.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 130,
+    "path": "art/icons/moves/bleed-the-flux.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 131,
+    "path": "art/icons/moves/payload.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 132,
+    "path": "art/icons/moves/stored-spell.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 133,
+    "path": "art/emblems/doors/sigil.png",
+    "exists": false,
+    "mode": "door emblem",
+    "state": "designed, not built"
+  },
+  {
+    "number": 134,
+    "path": "art/portraits/classes/mage.png",
+    "exists": false,
+    "mode": "class portrait",
+    "state": "designed, not built"
+  },
+  {
+    "number": 135,
+    "path": "art/icons/perks/mirage.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 136,
+    "path": "art/icons/perks/blueprint.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 137,
+    "path": "art/icons/figments/figment-glimmer.svg",
+    "exists": true,
+    "mode": "monoline icon",
+    "state": "in game now · placeholder"
+  },
+  {
+    "number": 138,
+    "path": "art/icons/moves/eye-and-wall.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 139,
+    "path": "art/icons/moves/beast-and-blade.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 140,
+    "path": "art/icons/figments/order-strike.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 141,
+    "path": "art/icons/figments/order-pounce.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 142,
+    "path": "art/icons/figments/order-cut.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 143,
+    "path": "art/icons/figments/order-stare.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 144,
+    "path": "art/icons/figments/order-filch.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 145,
+    "path": "art/icons/figments/order-cash-in.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 146,
+    "path": "art/icons/figments/order-let-go.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 147,
+    "path": "art/icons/figments/trait-armoured.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 148,
+    "path": "art/icons/figments/trait-swift.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 149,
+    "path": "art/icons/figments/trait-loud.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 150,
+    "path": "art/icons/figments/trait-volatile.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 151,
+    "path": "art/icons/figments/trait-tethered.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 152,
+    "path": "art/icons/figments/trait-mirror.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 153,
+    "path": "art/icons/figments/trait-barbed.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 154,
+    "path": "art/icons/figments/trait-lasting.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 155,
+    "path": "art/icons/figments/trait-keen.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 156,
+    "path": "art/icons/figments/trait-hollow.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 157,
+    "path": "art/icons/moves/riggers-hands.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 158,
+    "path": "art/icons/moves/double.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 159,
+    "path": "art/icons/moves/field-fix.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 160,
+    "path": "art/icons/moves/salvage.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 161,
+    "path": "art/icons/moves/overclock.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 162,
+    "path": "art/icons/moves/sleight.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 163,
+    "path": "art/icons/moves/scrap-turret.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 164,
+    "path": "art/portraits/figments/figment-scrap-turret.png",
+    "exists": false,
+    "mode": "Figment portrait",
+    "state": "in game now (on its own stand-in)"
+  },
+  {
+    "number": 165,
+    "path": "art/emblems/doors/figment.png",
+    "exists": false,
+    "mode": "door emblem",
+    "state": "designed, not built"
+  },
+  {
+    "number": 166,
+    "path": "art/portraits/classes/trickster.png",
+    "exists": false,
+    "mode": "class portrait",
+    "state": "designed, not built"
+  },
+  {
+    "number": 167,
+    "path": "art/icons/figments/figment-glass.svg",
+    "exists": false,
+    "mode": "monoline icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 168,
+    "path": "art/icons/figments/figment-ferry.svg",
+    "exists": false,
+    "mode": "monoline icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 169,
+    "path": "art/icons/figments/figment-breaker.svg",
+    "exists": false,
+    "mode": "monoline icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 170,
+    "path": "art/icons/figments/figment-hush.svg",
+    "exists": false,
+    "mode": "monoline icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 171,
+    "path": "art/icons/perks/shared-breath.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 172,
+    "path": "art/icons/perks/lay-down-arms.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 173,
+    "path": "art/icons/moves/feel-their-pain.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 174,
+    "path": "art/icons/moves/mercy.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 175,
+    "path": "art/icons/tending/bond.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 176,
+    "path": "art/icons/tending/let-go.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 177,
+    "path": "art/icons/tending/snap.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 178,
+    "path": "art/icons/tending/tug.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 179,
+    "path": "art/icons/tending/mend.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 180,
+    "path": "art/icons/tending/mend-self.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 181,
+    "path": "art/icons/tending/touch.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 182,
+    "path": "art/icons/tending/settle.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 183,
+    "path": "art/icons/tending/soothe.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 184,
+    "path": "art/icons/tending/shield.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 185,
+    "path": "art/icons/tending/raise.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 186,
+    "path": "art/icons/tending/guide.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 187,
+    "path": "art/icons/tending/field-surgery.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 188,
+    "path": "art/icons/tending/last-thread.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 189,
+    "path": "art/icons/tending/syphon.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 190,
+    "path": "art/icons/moves/triage.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 191,
+    "path": "art/icons/moves/the-ledger.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 192,
+    "path": "art/icons/moves/inspire.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 193,
+    "path": "art/icons/moves/take-the-weight.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 194,
+    "path": "art/icons/moves/brimming.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 195,
+    "path": "art/icons/moves/rally.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 196,
+    "path": "art/emblems/doors/bond.png",
+    "exists": false,
+    "mode": "door emblem",
+    "state": "designed, not built"
+  },
+  {
+    "number": 197,
+    "path": "art/portraits/classes/bard.png",
+    "exists": false,
+    "mode": "class portrait",
+    "state": "designed, not built"
+  },
+  {
+    "number": 198,
+    "path": "art/icons/tending/draw-taut.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 199,
+    "path": "art/icons/tending/take-it-on.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 200,
+    "path": "art/icons/tending/pass-it-on.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 201,
+    "path": "art/icons/tending/forewarn.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 202,
+    "path": "art/icons/tending/knot.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 203,
+    "path": "art/icons/tending/steal-the-mending.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 204,
+    "path": "art/icons/tending/pass-the-thread.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 205,
+    "path": "art/icons/tending/weavers-hands.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 206,
+    "path": "art/icons/tending/kind-spite.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 207,
+    "path": "art/icons/tending/kind-leash.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 208,
+    "path": "art/icons/perks/heart-overload.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 209,
+    "path": "art/icons/perks/resonance.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 210,
+    "path": "art/icons/moves/overdraw.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 211,
+    "path": "art/icons/moves/pure-heart.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 212,
+    "path": "art/icons/moves/shape.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 213,
+    "path": "art/icons/moves/iron-heart.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 214,
+    "path": "art/icons/moves/storm-front.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 215,
+    "path": "art/icons/moves/occult-library.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 216,
+    "path": "art/icons/moves/heart-surge.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 217,
+    "path": "art/icons/moves/eye-of-the-storm.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 218,
+    "path": "art/emblems/doors/outburst.png",
+    "exists": false,
+    "mode": "door emblem",
+    "state": "designed, not built"
+  },
+  {
+    "number": 219,
+    "path": "art/portraits/classes/channeler.png",
+    "exists": false,
+    "mode": "class portrait",
+    "state": "designed, not built"
+  },
+  {
+    "number": 220,
+    "path": "art/icons/perks/litany.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 221,
+    "path": "art/icons/perks/holy-ordnance.png",
+    "exists": true,
+    "mode": "Wick icon",
+    "state": "in game now (shows the OLD perk's icon) · placeholder"
+  },
+  {
+    "number": 222,
+    "path": "art/icons/moves/answered-prayer.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 223,
+    "path": "art/icons/moves/deliver-the-sinner.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 224,
+    "path": "art/icons/moves/at-your-side.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 225,
+    "path": "art/icons/moves/canticle.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 226,
+    "path": "art/icons/moves/amen.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 227,
+    "path": "art/icons/moves/holy-dread.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 228,
+    "path": "art/icons/moves/last-rites.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 229,
+    "path": "art/icons/prayers/whisper-ward.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 230,
+    "path": "art/icons/moves/smite.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 231,
+    "path": "art/icons/moves/under-the-eye.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 232,
+    "path": "art/icons/moves/blessed-arms.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 233,
+    "path": "art/icons/prayers/hymn-sanctuary.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 234,
+    "path": "art/icons/moves/verdict.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 235,
+    "path": "art/icons/conditions/canticle-nerukhan.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 236,
+    "path": "art/icons/conditions/canticle-the-quartermaster.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 237,
+    "path": "art/icons/conditions/canticle-the-laughing-mask.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 238,
+    "path": "art/icons/conditions/canticle-toll-keeper.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 239,
+    "path": "art/icons/conditions/canticle-mother-ember.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 240,
+    "path": "art/icons/conditions/canticle-old-overcast.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 241,
+    "path": "art/icons/conditions/canticle-the-matchmaker.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 242,
+    "path": "art/icons/conditions/canticle-counting-weaver.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 243,
+    "path": "art/icons/conditions/canticle-plain.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 244,
+    "path": "art/icons/conditions/canticle-crescendo.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 245,
+    "path": "art/icons/conditions/canticle-rising.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 246,
+    "path": "art/emblems/doors/prayer.png",
+    "exists": false,
+    "mode": "door emblem",
+    "state": "designed, not built"
+  },
+  {
+    "number": 247,
+    "path": "art/portraits/classes/guardian.png",
+    "exists": false,
+    "mode": "class portrait",
+    "state": "designed, not built"
+  },
+  {
+    "number": 248,
+    "path": "art/icons/moves/hallow.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 249,
+    "path": "art/icons/moves/confessor.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 250,
+    "path": "art/icons/moves/crusader.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 251,
+    "path": "art/icons/gear/mod-open_hand.png",
+    "exists": true,
+    "mode": "painted gear icon",
+    "state": "in game now · placeholder"
+  },
+  {
+    "number": 252,
+    "path": "art/icons/gear/weapon-hand_wraps.png",
+    "exists": false,
+    "mode": "painted gear icon",
+    "state": "in game now (on its own stand-in)"
+  },
+  {
+    "number": 253,
+    "path": "art/icons/gear/weapon-striking_gloves.png",
+    "exists": false,
+    "mode": "painted gear icon",
+    "state": "in game now (on its own stand-in)"
+  },
+  {
+    "number": 254,
+    "path": "art/icons/gear/weapon-iron_mitts.png",
+    "exists": false,
+    "mode": "painted gear icon",
+    "state": "in game now (on its own stand-in)"
+  },
+  {
+    "number": 255,
+    "path": "art/icons/gear/weapon-kemizuchi_strikers.png",
+    "exists": false,
+    "mode": "painted gear icon",
+    "state": "in game now (on its own stand-in)"
+  },
+  {
+    "number": 256,
+    "path": "art/icons/moves/open-guard.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 257,
+    "path": "art/icons/moves/jab.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 258,
+    "path": "art/icons/moves/palm.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 259,
+    "path": "art/icons/moves/sweep-form.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 260,
+    "path": "art/icons/moves/snatch.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 261,
+    "path": "art/icons/moves/breath.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 262,
+    "path": "art/icons/moves/sway.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 263,
+    "path": "art/icons/moves/counter.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 264,
+    "path": "art/icons/moves/closing-strike.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 265,
+    "path": "art/icons/moves/flow.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 266,
+    "path": "art/icons/moves/slip-unarmed.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "designed, not built"
+  },
+  {
+    "number": 270,
+    "path": "art/icons/survival/camp/step-weapon.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "designed, not built"
+  },
+  {
+    "number": 271,
+    "path": "art/icons/survival/camp/step-focus.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "designed, not built"
+  },
+  {
+    "number": 272,
+    "path": "art/icons/survival/camp/step-budget.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "designed, not built"
+  },
+  {
+    "number": 273,
+    "path": "art/icons/survival/camp/step-boon.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "designed, not built"
+  },
+  {
+    "number": 274,
+    "path": "art/icons/survival/camp/step-ready.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "designed, not built"
+  },
+  {
+    "number": 275,
+    "path": "art/icons/conditions/bleeding.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 276,
+    "path": "art/icons/conditions/burning.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 277,
+    "path": "art/icons/conditions/weakened.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 278,
+    "path": "art/icons/conditions/slowed.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 279,
+    "path": "art/icons/conditions/silenced.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 280,
+    "path": "art/icons/conditions/nausea.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 281,
+    "path": "art/icons/conditions/pinned.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 282,
+    "path": "art/icons/conditions/stunned.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 283,
+    "path": "art/icons/conditions/dazed.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 284,
+    "path": "art/icons/conditions/blinded.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 285,
+    "path": "art/icons/conditions/prone.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 286,
+    "path": "art/icons/conditions/confused.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 287,
+    "path": "art/icons/conditions/fear.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 288,
+    "path": "art/icons/conditions/shaken.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 289,
+    "path": "art/icons/conditions/hidden.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 290,
+    "path": "art/icons/conditions/marked.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 291,
+    "path": "art/icons/conditions/read.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 292,
+    "path": "art/icons/conditions/judged.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 293,
+    "path": "art/icons/conditions/braced.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 294,
+    "path": "art/icons/conditions/overwatch.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 295,
+    "path": "art/icons/conditions/witnessed.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 296,
+    "path": "art/icons/conditions/downed.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 297,
+    "path": "art/icons/conditions/grappled.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 298,
+    "path": "art/icons/conditions/taunted.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 299,
+    "path": "art/icons/conditions/commanded.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 300,
+    "path": "art/icons/conditions/puppeted.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 301,
+    "path": "art/icons/conditions/disarmed.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 302,
+    "path": "art/icons/conditions/injured.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 303,
+    "path": "art/icons/conditions/suppressed.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 304,
+    "path": "art/icons/conditions/corroded.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 305,
+    "path": "art/icons/conditions/off-balance.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 306,
+    "path": "art/icons/conditions/guarded.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 307,
+    "path": "art/icons/conditions/bonded.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 308,
+    "path": "art/icons/conditions/traced.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 309,
+    "path": "art/icons/conditions/exposed.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 310,
+    "path": "art/icons/conditions/reeled.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 311,
+    "path": "art/icons/conditions/settled.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 312,
+    "path": "art/icons/conditions/watched.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 313,
+    "path": "art/icons/conditions/slipping.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 314,
+    "path": "art/icons/conditions/emplaced.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 315,
+    "path": "art/icons/conditions/withdrawing.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 316,
+    "path": "art/icons/conditions/lowered.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 317,
+    "path": "art/icons/conditions/quickened.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 318,
+    "path": "art/icons/conditions/sharpened.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 319,
+    "path": "art/icons/conditions/inspired.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 320,
+    "path": "art/icons/conditions/hopeful.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 321,
+    "path": "art/icons/conditions/scorned.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 322,
+    "path": "art/icons/conditions/smitten.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 323,
+    "path": "art/icons/conditions/last-turn.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 324,
+    "path": "art/icons/conditions/augment-offline.png",
+    "exists": false,
+    "mode": "white-ink sign",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 325,
+    "path": "art/icons/techniques/lunge.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 326,
+    "path": "art/icons/techniques/charge.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 327,
+    "path": "art/icons/techniques/feint.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 328,
+    "path": "art/icons/techniques/draw-cut.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 329,
+    "path": "art/icons/techniques/ambush.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 330,
+    "path": "art/icons/techniques/cut.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 331,
+    "path": "art/icons/techniques/sweep.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 332,
+    "path": "art/icons/techniques/bash.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 333,
+    "path": "art/icons/techniques/sunder.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 334,
+    "path": "art/icons/techniques/flurry.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 335,
+    "path": "art/icons/techniques/hamstring.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 336,
+    "path": "art/icons/techniques/bind.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 337,
+    "path": "art/icons/techniques/half-sword.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 338,
+    "path": "art/icons/techniques/throw.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 339,
+    "path": "art/icons/techniques/pull-out.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 340,
+    "path": "art/icons/techniques/sidestep.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 341,
+    "path": "art/icons/techniques/guard-tech.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 342,
+    "path": "art/icons/techniques/shove-tech.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 343,
+    "path": "art/icons/techniques/trip.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 344,
+    "path": "art/icons/techniques/drag.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 345,
+    "path": "art/icons/techniques/parry.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 346,
+    "path": "art/icons/techniques/riposte-tech.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 347,
+    "path": "art/icons/techniques/keep-back.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 348,
+    "path": "art/icons/techniques/shot.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 349,
+    "path": "art/icons/techniques/snap-shot.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 350,
+    "path": "art/icons/techniques/burst.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 351,
+    "path": "art/icons/techniques/aimed-shot.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 352,
+    "path": "art/icons/techniques/called-shot-tech.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 353,
+    "path": "art/icons/techniques/walking-fire.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 354,
+    "path": "art/icons/techniques/punch-through.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 355,
+    "path": "art/icons/techniques/lob.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 356,
+    "path": "art/icons/techniques/heavy-bolt.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 357,
+    "path": "art/icons/techniques/bead.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 358,
+    "path": "art/icons/techniques/spot.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 359,
+    "path": "art/icons/techniques/brace-tech.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 360,
+    "path": "art/icons/techniques/load-special.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 361,
+    "path": "art/icons/techniques/shift.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 362,
+    "path": "art/icons/techniques/vent.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 363,
+    "path": "art/icons/techniques/head-down.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 364,
+    "path": "art/icons/techniques/dead-centre.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 365,
+    "path": "art/icons/techniques/pin-down.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 366,
+    "path": "art/icons/techniques/rout.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 367,
+    "path": "art/icons/techniques/stopping-shot.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 368,
+    "path": "art/icons/techniques/storm.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 369,
+    "path": "art/icons/techniques/last-round.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 370,
+    "path": "art/icons/techniques/overwatch-tech.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 371,
+    "path": "art/icons/techniques/deny.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 372,
+    "path": "art/icons/techniques/cover-me.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 373,
+    "path": "art/icons/techniques/dead-to-rights.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 374,
+    "path": "art/icons/techniques/shield-bash.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 375,
+    "path": "art/icons/techniques/raise-shield.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 376,
+    "path": "art/icons/techniques/grapple.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 377,
+    "path": "art/icons/techniques/shield-wall.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  },
+  {
+    "number": 378,
+    "path": "art/icons/techniques/interpose.png",
+    "exists": false,
+    "mode": "Wick icon",
+    "state": "in game now · placeholder · no slot yet"
+  }
+]

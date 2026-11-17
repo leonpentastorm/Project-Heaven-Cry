@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.tend.long_thread",
+  "name": "Long Thread",
+  "icon_id": "fork.tend.long_thread",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Long Thread** (`tend.long_thread`). *\"Your Bond reaches {=numbers.reach} tiles further when you make it, and the\nfirst Mend or Shield you give each Bonded ally each round costs {=numbers.ap|abs} AP less (at least 1).\"*\n- Fields: `reach: 3`, `ap: -1`, `min: 1`, limit `per_round` `each: target`. Leon: *\"Mend and shield at 1 ap less might\n  actually make some team immortal. add a mana cost multiplier each time you heal the same target\"*: the brake, and the\n  cut once per Bonded ally per round, so **at most 3 discounted Tendings a turn** (three Bonds), not six.\n- Carrier: `cost_mod` on `cost`, `if {action: [verb:tend.mend#tend_mend, verb:tend.shield#tend_shield], target_tied:\n  bond, door_pick, uses_left {per: per_round, each: target, key: long_thread}}`, and the `use` op on **`acted`** (never on\n  `cost`: `cost` fires on every preview, `effects/cost.ts:126-141`). **Needs N20**: the `cost` trigger has no target\n  today (`cost: {actor: u_}`, `triggers.ts:84`), so `target_tied` and `each: target` on a price resolve nothing; and the\n  verb's `ap` is not read through `holderNumber` (only `reach.tiles`, `step.tiles` and `res`, `effects/actions.ts:85,\n  :119, :158`), so a number block there is no fallback. Bond's `reach.tiles` number block reads the pick (N2).\n- Mender: Bond (free) already has no range limit for its first Bond a turn; Long Thread's AP counts for the Mender too.\n- Excite: two Mends in one turn on two Bonded allies at opposite ends of the map.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-tend-long-thread",
+  "path": "art/icons/forks/tend-long-thread.png",
+  "paint": "Wick stands on the far left reaching a mitten toward a cropped ally hand far right; ONE long sweeping heart-knotted thread connects them above a simple gap. A calm open stance, generous visible distance.",
+  "avoid": "No short handshake, landscape, full second body, rope bridge or text.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick stands on the far left reaching a mitten toward a cropped ally hand far right; ONE long sweeping heart-knotted thread connects them above a simple gap. A calm open stance, generous visible distance.\nAVOID: No short handshake, landscape, full second body, rope bridge or text.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 11,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "7820672a39a40d4746fb795664da9e47681ec3948b7e81c6cd90908749ef412e",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-tend-long-thread-v1.png",
+  "source_sha256": "6b5b73fe2090d1aa02b65429a5a70820fc1a768c1f3f31511edc4071e8aa3ce5",
+  "export_crop": [
+    0,
+    67,
+    1242,
+    1190
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/tend-long-thread.png",
+    "64": "art/icons/forks/exports/64/tend-long-thread.png",
+    "48": "art/icons/forks/exports/48/tend-long-thread.png",
+    "44": "art/icons/forks/exports/44/tend-long-thread.png",
+    "32": "art/icons/forks/exports/32/tend-long-thread.png",
+    "24": "art/icons/forks/exports/24/tend-long-thread.png"
+  },
+  "export_sha256": {
+    "128": "7e2e239b7d1d2d5c87dba23e9285aa42d48f695a8fe505c7300ba2f34bf91699",
+    "64": "a75633257a441d7d32a1df26bc4a82383616298f0ca748a0e27e32b0c54bb466",
+    "48": "353251e33dd48f9900d6ec0f98e602839a6687f16adba698bbb713b910132d2e",
+    "44": "d600b44eec1a460cdc199b1e80990b02800feabd53682154754ece5abca32af7",
+    "32": "f9cb3bd2b655d85b65ec99c7aaff5ff8b461133c32143cebd1efd13114112d29",
+    "24": "a44bfd3501b4891009b4ff7c61db5c47fdfbcdb943fc6496d95da622c6001441"
+  },
+  "framing": {
+    "scale": 0.6254385207467624,
+    "offset": [
+      123,
+      161
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

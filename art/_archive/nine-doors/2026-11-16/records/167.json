@@ -1,0 +1,38 @@
+{
+  "number": 167,
+  "family": "figment_icons",
+  "id": "figment-glass",
+  "path": "art/icons/figments/figment-glass.svg",
+  "name": "Glass",
+  "mode": "monoline icon",
+  "state": "designed, not built",
+  "use": "Figments 2.0 form, waits for its build (portrait delivered 15 Nov)",
+  "paint": "Monoline: a tall pane shape with one diagonal crack line and three dots at its edge.",
+  "avoid": "a window with a frame \u00b7 shards",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "monoline",
+  "prompt": "Draw one monoline icon on a 64 x 64 grid: a single 2-unit round-capped, round-joined stroke in one colour, no fill, no\nshading, one clear silhouette outline plus at most three interior lines, readable at 32 px; the same hand as the attached\nFigment line icons. The shape is a Figment, a picture given a body by nanobots: one or two edges break into three small\ndots. No text, no letters, no frame. The icon shows:\n\nPaint: Monoline: a tall pane shape with one diagonal crack line and three dots at its edge.\nAvoid: a window with a frame \u00b7 shards",
+  "refs": [],
+  "transparent": false,
+  "status": "review-candidate",
+  "priority": 8,
+  "production_approved": false,
+  "implementation_ready": false,
+  "format": "svg",
+  "native_dimensions": [
+    64,
+    64
+  ],
+  "export_dimensions": [
+    64,
+    64
+  ],
+  "sha256": "14e2353c734825b111c3a8043222b34a83816f1c67b6c6fa17574669393c4d20",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-vectors/167-figment-glass.svg",
+  "source_sha256": "14e2353c734825b111c3a8043222b34a83816f1c67b6c6fa17574669393c4d20",
+  "review_path": "art/_archive/nine-doors/2026-11-16/previews/167-figment-glass.png",
+  "review_sha256": "b5f175f3357d706c6c6d3ccf0bf62771a9df341d4dfc87bb8d1730ed7b7f0101",
+  "exports": {},
+  "upscaled": false,
+  "creation_method": "Original vector geometry drawn in house as explicitly permitted by the brief; 2-unit currentColor stroke, no fill; Inkscape proof rasterization"
+}

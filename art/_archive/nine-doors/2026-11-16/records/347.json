@@ -1,0 +1,76 @@
+{
+  "number": 347,
+  "family": "technique_icons",
+  "id": "tech-keep-back",
+  "path": "art/icons/techniques/keep-back.png",
+  "name": "Keep Back",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, answer",
+  "paint": "A long polearm held level at a partial figure's chest, holding it off.",
+  "avoid": "a fence \u00b7 a real spear make",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A long polearm held level at a partial figure's chest, holding it off.\nAvoid: a fence \u00b7 a real spear make\nEXACT STAGING: Keep Back: ONE LONG PLAIN POLEARM held HORIZONTALLY from left by one cropped ceramic mitten, its point held just BEFORE a CROPPED FEATURELESS TORSO/CHEST at far right, with a clean small transparent gap. The torso leans back, showing distance being maintained, no penetration. No full figure, face, fence, spear brand, blood, impact burst or excessive decorative arrows. Long level silhouette.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "8ecff60511956d77ed9312175070f51aab003bcc6679f717a50a95e8ff9f8684",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/347-keep-back.png",
+  "source_sha256": "a7a844653160c450c57240c7491b48a1302caa84733f24708c04cc8b4a9e1dd2",
+  "export_crop": [
+    0,
+    278,
+    1253,
+    1176
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/keep-back.png",
+    "64": "art/icons/techniques/exports/64/keep-back.png",
+    "48": "art/icons/techniques/exports/48/keep-back.png",
+    "44": "art/icons/techniques/exports/44/keep-back.png",
+    "32": "art/icons/techniques/exports/32/keep-back.png",
+    "24": "art/icons/techniques/exports/24/keep-back.png"
+  },
+  "framing": {
+    "scale": 0.6544293695131684,
+    "offset": [
+      102,
+      218
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "50cf2edf17c19dd94b0849f5d3619268319d19226f8f3edd235ecfd5da1dbdab",
+    "64": "4d4825b57c6297325d81d3fc65f6f95c428dccedeee4030bf891670d2131b6ce",
+    "48": "286cbd9b086ee4863c351aa674dc827bef95541e0ed5334b88464e12e4ab4a9f",
+    "44": "d162ebdccf9799ae8de801d0ef85d9968d2b0d67dbf1083fb19755223ca832b4",
+    "32": "e39e728fa1860d563486fde17a0d0e2b14da9c0294016d26cd6f1458c12882c5",
+    "24": "882e38b232d786d8d9d90461b543314a2859af8e3b42cd53a5a5181ed6bab843"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

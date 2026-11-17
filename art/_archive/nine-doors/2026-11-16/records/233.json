@@ -1,0 +1,78 @@
+{
+  "number": 233,
+  "family": "prayers",
+  "id": "hymn-sanctuary",
+  "path": "art/icons/prayers/hymn-sanctuary.png",
+  "name": "Sanctuary",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Chaplain rank III move, a Hymn (asked 13 Nov, C1)",
+  "paint": "Wick singing, a square patch of ground under him lit by a soft outline.",
+  "avoid": "a church building \u00b7 a dome",
+  "section": "Faith: prayer, and the Chaplain",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick singing, a square patch of ground under him lit by a soft outline.\nAvoid: a church building \u00b7 a dome\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Sanctuary: ONE Wick stands singing gently, pixel mouth OPEN as a small squared O, eyes tilted upward, one mitten over his chest and other palm open. Under BOTH BOOTS is ONE SQUARE PATCH OF GROUND drawn in shallow perspective as a broad WHITE OUTLINE with completely transparent center. Outline softly rounded corners but HARD FLAT WHITE, no glow or gray. Square extends around Wick's feet as a visible safe zone, not a dome, church, building, circle or shield. No music notes, halo, floating cup or scenery.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "d73f39d9a6c3cea490510e6ef5e15db81f5d3d848ba271d90cf7b409d1a1f7d5",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/233-hymn-sanctuary.png",
+  "source_sha256": "4ed5b85a071e72a783f9d97c3ccf8172d22d344fb835696e689ac92fa44536f2",
+  "export_crop": [
+    27,
+    23,
+    1184,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/prayers/exports/128/hymn-sanctuary.png",
+    "64": "art/icons/prayers/exports/64/hymn-sanctuary.png",
+    "48": "art/icons/prayers/exports/48/hymn-sanctuary.png",
+    "44": "art/icons/prayers/exports/44/hymn-sanctuary.png",
+    "32": "art/icons/prayers/exports/32/hymn-sanctuary.png",
+    "24": "art/icons/prayers/exports/24/hymn-sanctuary.png"
+  },
+  "framing": {
+    "scale": 0.6194639898250894,
+    "offset": [
+      153,
+      130
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "b401270c3843d9f56e0ad5e0c2bdedf299a412221c65e9a8cef401eb0e9b234c",
+    "64": "37ee8ecde7dca80a27e4f0d00de74db0624ea8da37da421743755bcffedf3c61",
+    "48": "5958c928cdac15f3a1c133943c23654afb884a3b5cc746df707fa18754d1d430",
+    "44": "edaa777c7233dd10a5368978fbd1198d1ae3ef2e559fbd0ae3d4e2e1619177da",
+    "32": "0fbc4ffdd1e1094f639bed50986b473623817dccf238b83fb42288b350081c50",
+    "24": "ed0b02b90aee70059a8c803c2ca20f3b367773c0f6e8977c0b3bca29ad9b6994"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

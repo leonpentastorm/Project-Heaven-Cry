@@ -1,0 +1,60 @@
+{
+  "number": 299,
+  "family": "condition_icons",
+  "id": "cond-commanded",
+  "path": "art/icons/conditions/commanded.png",
+  "name": "Commanded",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Heart condition",
+  "paint": "A small figure under a pointing hand from above.",
+  "avoid": "a puppet string (that is Puppeted) \u00b7 a crown",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No\noutline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a\nscene: Wick does not appear; a small generic silhouette may. One subject, centred, with clear space around it, square,\n1024 x 1024 PNG with transparency. It must read at 24 px beside a word on a token and at 48 px on a card: silhouette first,\ntwo interior cuts at most. A door emblem must also read inside a 20 px chip. No text, no letters, no numbers, no border,\nno frame. Invented shapes only. The icon shows:\n\nPaint: A small figure under a pointing hand from above.\nAvoid: a puppet string (that is Puppeted) \u00b7 a crown\nSTYLE CLARIFICATION: this is a generic condition SIGN. NO Wick, no screen head, no mascot capelet or lantern chest. Only the named subject, 2 interior cuts at most, bold clear silhouette. Center within a 15% transparent margin. Use solid white shapes and transparent cutouts only, including the background and all interior holes. Translate any light/glow into a single white tick or ray; never gray, gradients or bloom.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "b0fcba6b3e8156085b7daf00d71c70b6f4f943f2bcc1602dc38779a38ff712f5",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/299-commanded.png",
+  "source_sha256": "496c667634e0deb95b4f422a732e273e77342f9c31bae8800b50b5a421be376d",
+  "export_crop": [
+    178,
+    35,
+    1071,
+    1214
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/commanded.png",
+    "64": "art/icons/conditions/exports/64/commanded.png",
+    "48": "art/icons/conditions/exports/48/commanded.png",
+    "44": "art/icons/conditions/exports/44/commanded.png",
+    "32": "art/icons/conditions/exports/32/commanded.png",
+    "24": "art/icons/conditions/exports/24/commanded.png"
+  },
+  "framing": {
+    "scale": 0.6955046649703138,
+    "offset": [
+      201,
+      102
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

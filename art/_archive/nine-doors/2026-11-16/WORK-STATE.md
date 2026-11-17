@@ -1,0 +1,21 @@
+# Nine Doors artwork handoff — 175 complete, 200 remaining
+
+Real blocker: image generation HTTP 429 usage_limit_reached on #324. Reset reported 2026-11-16 23:57:55 UTC / 2026-11-17 06:57:55 Bangkok. No automatic resume scheduled. Stop image-generation calls until reset. Four explicitly allowed original SVGs were completed after quota. No fake painted replacements.
+
+Delivery: /workspace/phc-nine-doors-2026-11-16/delivery. Source brief branch wip/feature-0.29 snapshot 8f9d45ae5c219bea418fac92d60a453b7af44d9a. Target branch art/nine-doors-2026-11-16. Records and progress.json are authoritative; jobs status fields are just recipes.
+
+175 candidates: 110 Wick mode icons (some object-only actions), 59 condition signs, 5 genuine monoline SVGs, 1 painted gear icon. All 18 alpha perks, Open Hand, Glimmer and 92 priority-three combat rows are done. 200 remain: #323 no-glow Last Turn repaint, #324 Augment Offline, 132 priority-five class/weapon moves, 18 portraits/emblems, 5 remaining painted gloves/turret, 43 other designed assets. Exact full queue/prompts: delivery/art/_archive/nine-doors/2026-11-16/{CONTINUE.md,RESUME-PROMPT.md,planned-jobs.json}.
+
+The user's cup correction is locked in guide and STYLE-LOCK. Mind Without Fog's cup/bowl is perk-specific. Wick is the approved ceramic pixel-screen automaton with capelet, lantern-heart and asymmetry, not a flame-headed figure. Object-only rows need object-only refs. Condition signs use generic humans, no Wick. All Wick/sign art white ink on transparency, no glow. Native PNGs 1254 square, masters 1024, no upscales. SVGs native 64 grid, currentColor 2-unit stroke, fill none.
+
+#323's rejected glow render and all UI sizes are preserved under superseded/323-glow-repaint-pending; do not reactivate it. Active record/master were removed, retaining the original repository placeholder. No new art for #324. Superseded revisions preserve earlier cup errors, wrong-mascot Figments, brush Soothe, one-handed Palm, glow Fear, blob Read and unclear Grappled. Corrected rows are delivered. Resolved image-service rejections: #104, #144, #300, #316 (benign abstraction/casting clarification). See BLOCKERS.md and alpha-audit.json.
+
+Painting and edits require imagegen. The brief explicitly permits hand-drawn monoline SVGs; all five are now complete and need no rework. Remaining portrait/gear/abstract modes still need references prepared from the guide before generation. No UI implementation is authorized.
+
+Use export-one.py for generated image framing and metadata. Never overwrite immutable native sources; archive/unlink before a revision. Mutable PNG/JSON backups must use COPY, not hardlinks. Native source hardlinks are immutable. Do not delete generated_images originals. review.py makes section sheets: Wick 32/44px, signs 24/48px. Final overview and all review sheets under review/.
+
+checkpoint.py rebuilds catalog from immutable baseline plus every completed record, retains IDs and old replacements, and writes prompts/manifests/remaining queue. seal-checkpoint.py runs scoped validation and repository white/alpha checks, actual full validator and npm assets, rehashes, then stages changed art only and creates commit. Full historical checks stop on missing durability.png in delivery-only checkout; don't claim they passed. Use --zip only for final/blocker delivery. Push explicit art branch, then update last-pushed.json only after success.
+
+Dedicated bare publisher /workspace/phc-nine-doors-publish.git was reduced to commit/tree metadata after verified remote push 71cb2e9. All unchanged blobs are remote; no need to fetch them. Set GIT_NO_LAZY_FETCH=1, changed-only staging, write-tree --missing-ok; push pack.window=0 and push.negotiate=true. Source baseline catalog is ~1.2MB (do not ask connector fetch_file for it). Split jobs JSON into pages of 50 when reading through tools (output cap ~524kB). No subagents authorized.
+
+Workspace disk limited: about 300MiB before final ZIP and checkpoint. Old final ZIPs and generated originals must be preserved. Own Git blob cache may be pruned ONLY after verified successful push, retaining all commit/tree metadata. Only remove other working duplicates after exact ZIP member hash verification; preserve reviews and final downloads.

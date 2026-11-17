@@ -1,0 +1,78 @@
+{
+  "number": 229,
+  "family": "prayers",
+  "id": "whisper-ward",
+  "path": "art/icons/prayers/whisper-ward.png",
+  "name": "Ward",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Chaplain rank I move, a Whisper only the Chaplain says (asked 13 Nov, C1)",
+  "paint": "Wick whispering into his cupped hand, a thin hex-shaped ward forming round a partial ally.",
+  "avoid": "a heater shield \u00b7 the Protection Whisper's arc",
+  "section": "Faith: prayer, and the Chaplain",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick whispering into his cupped hand, a thin hex-shaped ward forming round a partial ally.\nAvoid: a heater shield \u00b7 the Protection Whisper's arc\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Ward: ONE Wick at left leans toward his own CUPPED MITTEN raised close to screen mouth as if whispering quietly into palm. A slender WHITE HEXAGONAL WARD on right encloses only a CROPPED ALLY SHOULDER AND HEAD PARTIAL (no complete second character, no legs). The hexagon is an open center crisp geometric outline, not a heater shield and not a curved arc. One small curved breath-thread joins Wick's hand to hexagon edge. Distinguish the quiet cupped-hand gesture and geometric hexagon. No letters, speech bubble, glow, bowl or full ally.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "9e116a2f207122880e246184547ebe3fbf887e59e05663455a764fa99de65190",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/229-whisper-ward.png",
+  "source_sha256": "72cb0cd7e55505fc5b6b517d0cc4edfc7b6a0af50491664bd55d2584e70fb77d",
+  "export_crop": [
+    0,
+    123,
+    1226,
+    1214
+  ],
+  "exports": {
+    "128": "art/icons/prayers/exports/128/whisper-ward.png",
+    "64": "art/icons/prayers/exports/64/whisper-ward.png",
+    "48": "art/icons/prayers/exports/48/whisper-ward.png",
+    "44": "art/icons/prayers/exports/44/whisper-ward.png",
+    "32": "art/icons/prayers/exports/32/whisper-ward.png",
+    "24": "art/icons/prayers/exports/24/whisper-ward.png"
+  },
+  "framing": {
+    "scale": 0.5527584757498232,
+    "offset": [
+      173,
+      210
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "5d1618d4ff2075c71baa38324282bc80de229513a954cda65d8c17de9f476d01",
+    "64": "5ab0a1cfd16c102bf713b561761fa3c3126b290ff34638d53211f5cddd5c9dd4",
+    "48": "54f412c511aa014276cb3e9efe7ffa8eecfa858a20d50f6f46dd297c7bad94bb",
+    "44": "3fdee582db40c799425cf0f41b92604699fc80c09bd6b2f4af8c74ea0798ccdb",
+    "32": "e1c3682e956995de9d0c03959728cdabfc902373b481f33650af9e21e40e339d",
+    "24": "c57ab3b5326f2cc3d47e38d4e30379eea6a9024ad426878b6d89f14dc64c55f3"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

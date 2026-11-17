@@ -1,0 +1,101 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.guard.cover_them",
+  "name": "Cover Them",
+  "icon_id": "fork.guard.cover_them",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Cover Them** (`guard.cover_them`). Leon: *\"you have an aoe around you, any ally that's about to get hit by a range\nattack you take that hit instead\"*. *\"An Answer (on until you switch it off): while you hold Guard, the first ranged\nhit each round on an ally within {=numbers.within} tiles of you lands on you instead. Your plates soak it as any blow,\nand it costs {=numbers.guard} Guard more. It uses your reaction.\"* (A Burst or Mag Dump is several hits: the first\ncomes to you, the rest land on the ally: `taking` moves one damage packet.)\n- Fields: `within: 2`, `guard: 1` (= `rules.guard.interpose_cost`, one copy: the field reads it). Why 2: Close Guard is\n  adjacent, Stand behind me is the one tile behind; 2 reaches the back line one step away without the peak's ring. Why\n  once a round with the reaction: **as Leon worded it (every ranged hit, standing) it is the End\u00b2 peak** (\"every blow on\n  every ally, standing\"), and it would make the Bulwark's Stand behind me (rank III, 0.30) dead. Question 1.\n- Runs on: plates and the Guard it spends. Carrier: Share a Hit's shape (`skills.json camaraderie.unlocks.1`): trigger\n  `taking`, `if {target: ally, target_within, damage: [ranged], self_has_res: [guard], answer_on}`, op `redirect share\n  1`, `and: resource guard \u22121`, the reaction as Share a Hit spends it.\n- Bulwark: Interpose (adjacent, any weapon attack, 1 Guard and the reaction) shares the reaction: a choice each round,\n  not a stack. Stand behind me (one tile, every ranged attack, no reaction) stays the ceiling. Shield Wall (half cover\n  for an adjacent ally) shares the reaction too. Peak: below (once a round, reaction, ranged only).\n- Excite: the sniper puts a round into your Sigilist two tiles back; it rings off your plates instead.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [
+    1
+  ],
+  "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+  "file_key": "fork-guard-cover-them",
+  "path": "art/icons/forks/guard-cover-them.png",
+  "paint": "Wick reaches a curved guard plate diagonally across to intercept ONE dart aimed past him at a cropped ally shoulder. His torso leans sideways, feet planted, face urgently protective. A single bent dart trajectory ends on his plate; the ally stays a partial behind him.",
+  "avoid": "No second full mascot; no crowd or full battlefield; no claim of intercepting every hit.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick reaches a curved guard plate diagonally across to intercept ONE dart aimed past him at a cropped ally shoulder. His torso leans sideways, feet planted, face urgently protective. A single bent dart trajectory ends on his plate; the ally stays a partial behind him.\nAVOID: No second full mascot; no crowd or full battlefield; no claim of intercepting every hit.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "visual_basis_resolution": {
+    "authority": "Leon explicit answer 17 November 2026",
+    "quote": "Use pinned revision-2 rules for these eight proposals",
+    "gameplay_questions_remain_open": true
+  },
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 1,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "5d3455661e229d664d1c70c6e7a808c6c40c13a80eca38376818978b8c0d0847",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-guard-cover-them-v1.png",
+  "source_sha256": "fe68da39f1ba7f7de0f64e5bc2be8fc4894ae3168db31a628b38d265623cc585",
+  "export_crop": [
+    0,
+    17,
+    1234,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/guard-cover-them.png",
+    "64": "art/icons/forks/exports/64/guard-cover-them.png",
+    "48": "art/icons/forks/exports/48/guard-cover-them.png",
+    "44": "art/icons/forks/exports/44/guard-cover-them.png",
+    "32": "art/icons/forks/exports/32/guard-cover-them.png",
+    "24": "art/icons/forks/exports/24/guard-cover-them.png"
+  },
+  "export_sha256": {
+    "128": "9364c442810dacda7cad19f083be056ff89854b156827a6a4f60f4ff0f9c4c5d",
+    "64": "0e2892b2ea130604bfd0ad9f6adc3fd3fb374b276651c19323189294e7a1c9f8",
+    "48": "c62093e4d8b2e31a2df77f4ce0d48a30f225ea047b4d39620757028c699cea7f",
+    "44": "bf11ed4a520e01ec6b7d94f436ac2882b5f225d39004205ef39ccc669839503b",
+    "32": "32f092b3e4e57a84b5baff6e1cbd8adf3cf1a4f51800dad7a765427b39a78bbd",
+    "24": "5059343864e9647d91863cf70ee13bdeb18b36c903a5311d4717c1a7ccea48f3"
+  },
+  "framing": {
+    "scale": 0.5503999377584132,
+    "offset": [
+      172,
+      171
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

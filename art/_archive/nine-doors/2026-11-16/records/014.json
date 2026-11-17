@@ -1,0 +1,70 @@
+{
+  "number": 14,
+  "family": "move_icons",
+  "id": "move-anchor",
+  "path": "art/icons/moves/anchor.png",
+  "name": "Anchor",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Bulwark rank III move: while Braced you can't be moved, and foes leaving you provoke",
+  "paint": "Wick standing on a ship's anchor shape sunk into the ground line, a short chain from his belt to it.",
+  "avoid": "a real ship \u00b7 water",
+  "section": "Durability: Guard, and the Bulwark",
+  "kind": "wick",
+  "prompt": "Correct ONLY the staging of this Anchor icon. Preserve Wick's exact ceramic head, pixel face, medical lantern, capelet, white flat ink style and planted stance. Move the large anchor UNDER WICK: a big horizontal anchor STOCK lies directly beneath both boots as a platform, while the curved flukes and vertical shank sink below and around that stock into a short ground line. Both boots must visibly REST ON THE ANCHOR ITSELF. The anchor occupies the lower third of the complete icon and is centered beneath the body, not sitting beside him on viewer-right. A short three-link chain comes from Wick's BELT down to the anchor ring. Neither hand holds the chain: let both mittens hang free or rest on hips, leaving the lantern heart exposed. Squat grounded confident posture; defiant pixel brows. No ship, water, weapon, scenery, halo, cup, bowl, stars or added effects. A single full figure and one anchor, clean bold pure-white ink with transparent screen and interior cuts. Remove every trace of the old anchor position beside him. Fully transparent background, safe margin 12% on all sides, square master. Do not add glow, shading, gray, texture or black paint.",
+  "refs": [],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/014-anchor-position-fix/native.png",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "6bb5e818fe5586a6e38413ed9e50c8c08cabdeae417b80c812875f7bebecc28f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/014-anchor.png",
+  "source_sha256": "f28d8f96f06f9ac998dd6cb09d1437d03f459a2a7d1b2ffe590ac4bf9314d252",
+  "export_crop": [
+    59,
+    19,
+    1148,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/anchor.png",
+    "64": "art/icons/moves/exports/64/anchor.png",
+    "48": "art/icons/moves/exports/48/anchor.png",
+    "44": "art/icons/moves/exports/44/anchor.png",
+    "32": "art/icons/moves/exports/32/anchor.png",
+    "24": "art/icons/moves/exports/24/anchor.png"
+  },
+  "framing": {
+    "scale": 0.5969572292599792,
+    "offset": [
+      187,
+      143
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "2c6445f338337ebed93db4c29a62453ea2d3b307ab1946c3bc24a7ad11f93dd1",
+    "64": "debd2908efd717775e06644eb783239e1f2a703ac6fe4dbc9ae3870bc96b5d61",
+    "48": "4f0271b540febad0484802b622026294ef5c39fd52697b25bb0bb2947c04575e",
+    "44": "23760618b59977ef558ed5bb900f354ad29d15d2e10ee6ab025fbfb4b31a9267",
+    "32": "86137d8f5574c4fce1577b4118295f360614a72538d6a79ea030243d6a89e053",
+    "24": "be28366ef90bcc9d27a93782ea6905d9938404288a645b4a3170720efcfd078b"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/superseded/014-anchor-position-fix/native.png"
+  ]
+}

@@ -1,0 +1,1633 @@
+{
+  "method": "Faint alpha 9..119 / solid alpha >=250 must be below 0.15. Native alpha preserved by exports.",
+  "passed": true,
+  "records": [
+    {
+      "number": 1,
+      "name": "Weight of the Wall",
+      "faint_alpha_to_solid_area_ratio": 0.05083
+    },
+    {
+      "number": 2,
+      "name": "Answer in Kind",
+      "faint_alpha_to_solid_area_ratio": 0.04985
+    },
+    {
+      "number": 3,
+      "name": "Close Guard",
+      "faint_alpha_to_solid_area_ratio": 0.03901
+    },
+    {
+      "number": 4,
+      "name": "Last Plate",
+      "faint_alpha_to_solid_area_ratio": 0.05311
+    },
+    {
+      "number": 5,
+      "name": "Retort",
+      "faint_alpha_to_solid_area_ratio": 0.04973
+    },
+    {
+      "number": 6,
+      "name": "Challenge",
+      "faint_alpha_to_solid_area_ratio": 0.04592
+    },
+    {
+      "number": 7,
+      "name": "Slam",
+      "faint_alpha_to_solid_area_ratio": 0.04735
+    },
+    {
+      "number": 8,
+      "name": "Set Against the Blow",
+      "faint_alpha_to_solid_area_ratio": 0.05479
+    },
+    {
+      "number": 9,
+      "name": "Brace",
+      "faint_alpha_to_solid_area_ratio": 0.05634
+    },
+    {
+      "number": 11,
+      "name": "Unbroken",
+      "faint_alpha_to_solid_area_ratio": 0.05972
+    },
+    {
+      "number": 12,
+      "name": "Shrug It Off (move)",
+      "faint_alpha_to_solid_area_ratio": 0.07481
+    },
+    {
+      "number": 13,
+      "name": "Reactive Plate",
+      "faint_alpha_to_solid_area_ratio": 0.06688
+    },
+    {
+      "number": 14,
+      "name": "Anchor",
+      "faint_alpha_to_solid_area_ratio": 0.0644
+    },
+    {
+      "number": 15,
+      "name": "Guard plate (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.00854
+    },
+    {
+      "number": 17,
+      "name": "Wall",
+      "faint_alpha_to_solid_area_ratio": 0.04515
+    },
+    {
+      "number": 20,
+      "name": "Weather the Volley",
+      "faint_alpha_to_solid_area_ratio": 0.05427
+    },
+    {
+      "number": 23,
+      "name": "Keep Swinging",
+      "faint_alpha_to_solid_area_ratio": 0.04827
+    },
+    {
+      "number": 24,
+      "name": "Iron Grip",
+      "faint_alpha_to_solid_area_ratio": 0.04877
+    },
+    {
+      "number": 25,
+      "name": "Follow Through",
+      "faint_alpha_to_solid_area_ratio": 0.04931
+    },
+    {
+      "number": 26,
+      "name": "Heavy Hands",
+      "faint_alpha_to_solid_area_ratio": 0.04048
+    },
+    {
+      "number": 27,
+      "name": "The Charge Carries",
+      "faint_alpha_to_solid_area_ratio": 0.05342
+    },
+    {
+      "number": 28,
+      "name": "Four Ways to Finish",
+      "faint_alpha_to_solid_area_ratio": 0.03762
+    },
+    {
+      "number": 29,
+      "name": "Launch",
+      "faint_alpha_to_solid_area_ratio": 0.05853
+    },
+    {
+      "number": 30,
+      "name": "Wrecker",
+      "faint_alpha_to_solid_area_ratio": 0.05662
+    },
+    {
+      "number": 31,
+      "name": "Breach",
+      "faint_alpha_to_solid_area_ratio": 0.03004
+    },
+    {
+      "number": 32,
+      "name": "Lunge",
+      "faint_alpha_to_solid_area_ratio": 0.0764
+    },
+    {
+      "number": 34,
+      "name": "Riposte",
+      "faint_alpha_to_solid_area_ratio": 0.07718
+    },
+    {
+      "number": 36,
+      "name": "Finisher",
+      "faint_alpha_to_solid_area_ratio": 0.07664
+    },
+    {
+      "number": 37,
+      "name": "Unstoppable",
+      "faint_alpha_to_solid_area_ratio": 0.07353
+    },
+    {
+      "number": 38,
+      "name": "Coup",
+      "faint_alpha_to_solid_area_ratio": 0.03543
+    },
+    {
+      "number": 39,
+      "name": "Cleave",
+      "faint_alpha_to_solid_area_ratio": 0.04775
+    },
+    {
+      "number": 40,
+      "name": "Break",
+      "faint_alpha_to_solid_area_ratio": 0.03083
+    },
+    {
+      "number": 41,
+      "name": "Throw Down",
+      "faint_alpha_to_solid_area_ratio": 0.0647
+    },
+    {
+      "number": 42,
+      "name": "Run Through",
+      "faint_alpha_to_solid_area_ratio": 0.0445
+    },
+    {
+      "number": 43,
+      "name": "Momentum counter (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.01104
+    },
+    {
+      "number": 45,
+      "name": "Bowl Over",
+      "faint_alpha_to_solid_area_ratio": 0.0702
+    },
+    {
+      "number": 46,
+      "name": "Execute",
+      "faint_alpha_to_solid_area_ratio": 0.07992
+    },
+    {
+      "number": 47,
+      "name": "Into the Wall",
+      "faint_alpha_to_solid_area_ratio": 0.05701
+    },
+    {
+      "number": 48,
+      "name": "Hurl",
+      "faint_alpha_to_solid_area_ratio": 0.07161
+    },
+    {
+      "number": 51,
+      "name": "Pressure Point",
+      "faint_alpha_to_solid_area_ratio": 0.05419
+    },
+    {
+      "number": 52,
+      "name": "Keep Their Heads Down",
+      "faint_alpha_to_solid_area_ratio": 0.04957
+    },
+    {
+      "number": 53,
+      "name": "Quick Draw",
+      "faint_alpha_to_solid_area_ratio": 0.04287
+    },
+    {
+      "number": 54,
+      "name": "Speed Load",
+      "faint_alpha_to_solid_area_ratio": 0.0464
+    },
+    {
+      "number": 55,
+      "name": "Near Miss",
+      "faint_alpha_to_solid_area_ratio": 0.05839
+    },
+    {
+      "number": 56,
+      "name": "Shaken Nerves",
+      "faint_alpha_to_solid_area_ratio": 0.04367
+    },
+    {
+      "number": 57,
+      "name": "Reflex",
+      "faint_alpha_to_solid_area_ratio": 0.05671
+    },
+    {
+      "number": 58,
+      "name": "Fire and Move",
+      "faint_alpha_to_solid_area_ratio": 0.05232
+    },
+    {
+      "number": 59,
+      "name": "Relocated",
+      "faint_alpha_to_solid_area_ratio": 0.04874
+    },
+    {
+      "number": 60,
+      "name": "Break Them",
+      "faint_alpha_to_solid_area_ratio": 0.05428
+    },
+    {
+      "number": 61,
+      "name": "Slide",
+      "faint_alpha_to_solid_area_ratio": 0.06174
+    },
+    {
+      "number": 62,
+      "name": "Fire Discipline",
+      "faint_alpha_to_solid_area_ratio": 0.0734
+    },
+    {
+      "number": 64,
+      "name": "Special Ammo",
+      "faint_alpha_to_solid_area_ratio": 0.02322
+    },
+    {
+      "number": 65,
+      "name": "Duck and Roll",
+      "faint_alpha_to_solid_area_ratio": 0.06576
+    },
+    {
+      "number": 66,
+      "name": "Killzone",
+      "faint_alpha_to_solid_area_ratio": 0.08188
+    },
+    {
+      "number": 67,
+      "name": "Run and Gun",
+      "faint_alpha_to_solid_area_ratio": 0.06359
+    },
+    {
+      "number": 68,
+      "name": "Suppress",
+      "faint_alpha_to_solid_area_ratio": 0.05293
+    },
+    {
+      "number": 69,
+      "name": "Rake",
+      "faint_alpha_to_solid_area_ratio": 0.07617
+    },
+    {
+      "number": 70,
+      "name": "Warning Shot",
+      "faint_alpha_to_solid_area_ratio": 0.06539
+    },
+    {
+      "number": 71,
+      "name": "Flush",
+      "faint_alpha_to_solid_area_ratio": 0.04173
+    },
+    {
+      "number": 72,
+      "name": "Mag Dump",
+      "faint_alpha_to_solid_area_ratio": 0.14168
+    },
+    {
+      "number": 73,
+      "name": "Crossfire",
+      "faint_alpha_to_solid_area_ratio": 0.08003
+    },
+    {
+      "number": 74,
+      "name": "Pressure pips (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.02217
+    },
+    {
+      "number": 76,
+      "name": "Flush Out",
+      "faint_alpha_to_solid_area_ratio": 0.09367
+    },
+    {
+      "number": 77,
+      "name": "Open",
+      "faint_alpha_to_solid_area_ratio": 0.0655
+    },
+    {
+      "number": 80,
+      "name": "Long Dark",
+      "faint_alpha_to_solid_area_ratio": 0.04579
+    },
+    {
+      "number": 81,
+      "name": "Shadow Step",
+      "faint_alpha_to_solid_area_ratio": 0.04782
+    },
+    {
+      "number": 82,
+      "name": "Hide",
+      "faint_alpha_to_solid_area_ratio": 0.0483
+    },
+    {
+      "number": 83,
+      "name": "First Shade",
+      "faint_alpha_to_solid_area_ratio": 0.04145
+    },
+    {
+      "number": 84,
+      "name": "Ghost Kill",
+      "faint_alpha_to_solid_area_ratio": 0.06163
+    },
+    {
+      "number": 85,
+      "name": "Go to Ground",
+      "faint_alpha_to_solid_area_ratio": 0.04766
+    },
+    {
+      "number": 86,
+      "name": "Close Quarters",
+      "faint_alpha_to_solid_area_ratio": 0.06065
+    },
+    {
+      "number": 87,
+      "name": "Shadow Run",
+      "faint_alpha_to_solid_area_ratio": 0.04941
+    },
+    {
+      "number": 88,
+      "name": "Still Breath",
+      "faint_alpha_to_solid_area_ratio": 0.04919
+    },
+    {
+      "number": 89,
+      "name": "Tag",
+      "faint_alpha_to_solid_area_ratio": 0.03518
+    },
+    {
+      "number": 90,
+      "name": "Lift",
+      "faint_alpha_to_solid_area_ratio": 0.02557
+    },
+    {
+      "number": 91,
+      "name": "Fade",
+      "faint_alpha_to_solid_area_ratio": 0.04478
+    },
+    {
+      "number": 92,
+      "name": "Read Intent",
+      "faint_alpha_to_solid_area_ratio": 0.03855
+    },
+    {
+      "number": 93,
+      "name": "Open Seam",
+      "faint_alpha_to_solid_area_ratio": 0.02426
+    },
+    {
+      "number": 94,
+      "name": "Timing",
+      "faint_alpha_to_solid_area_ratio": 0.04734
+    },
+    {
+      "number": 95,
+      "name": "Cut the Strap",
+      "faint_alpha_to_solid_area_ratio": 0.03338
+    },
+    {
+      "number": 96,
+      "name": "Foul the Action",
+      "faint_alpha_to_solid_area_ratio": 0.03126
+    },
+    {
+      "number": 97,
+      "name": "Plant",
+      "faint_alpha_to_solid_area_ratio": 0.04644
+    },
+    {
+      "number": 98,
+      "name": "Disable",
+      "faint_alpha_to_solid_area_ratio": 0.03414
+    },
+    {
+      "number": 99,
+      "name": "Hijack",
+      "faint_alpha_to_solid_area_ratio": 0.03405
+    },
+    {
+      "number": 100,
+      "name": "Decoy",
+      "faint_alpha_to_solid_area_ratio": 0.04563
+    },
+    {
+      "number": 101,
+      "name": "Vault",
+      "faint_alpha_to_solid_area_ratio": 0.04506
+    },
+    {
+      "number": 102,
+      "name": "Pick",
+      "faint_alpha_to_solid_area_ratio": 0.02808
+    },
+    {
+      "number": 103,
+      "name": "Douse",
+      "faint_alpha_to_solid_area_ratio": 0.03365
+    },
+    {
+      "number": 104,
+      "name": "Rig",
+      "faint_alpha_to_solid_area_ratio": 0.01945
+    },
+    {
+      "number": 105,
+      "name": "Slip (group mark)",
+      "faint_alpha_to_solid_area_ratio": 0.03717
+    },
+    {
+      "number": 106,
+      "name": "Mark (group mark and Operative rank I move)",
+      "faint_alpha_to_solid_area_ratio": 0.04918
+    },
+    {
+      "number": 107,
+      "name": "Work (group mark)",
+      "faint_alpha_to_solid_area_ratio": 0.05024
+    },
+    {
+      "number": 108,
+      "name": "Break (group mark)",
+      "faint_alpha_to_solid_area_ratio": 0.00987
+    },
+    {
+      "number": 109,
+      "name": "Tradecraft",
+      "faint_alpha_to_solid_area_ratio": 0.05241
+    },
+    {
+      "number": 110,
+      "name": "Vanish",
+      "faint_alpha_to_solid_area_ratio": 0.04805
+    },
+    {
+      "number": 111,
+      "name": "Toxin",
+      "faint_alpha_to_solid_area_ratio": 0.04386
+    },
+    {
+      "number": 112,
+      "name": "Sabotage",
+      "faint_alpha_to_solid_area_ratio": 0.03284
+    },
+    {
+      "number": 113,
+      "name": "Execution",
+      "faint_alpha_to_solid_area_ratio": 0.0991
+    },
+    {
+      "number": 114,
+      "name": "Called Shot",
+      "faint_alpha_to_solid_area_ratio": 0.0565
+    },
+    {
+      "number": 115,
+      "name": "Shadow wisp (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.05224
+    },
+    {
+      "number": 117,
+      "name": "Parting Cut",
+      "faint_alpha_to_solid_area_ratio": 0.06856
+    },
+    {
+      "number": 118,
+      "name": "Case",
+      "faint_alpha_to_solid_area_ratio": 0.0704
+    },
+    {
+      "number": 119,
+      "name": "Shade Step",
+      "faint_alpha_to_solid_area_ratio": 0.07423
+    },
+    {
+      "number": 123,
+      "name": "Second Clause",
+      "faint_alpha_to_solid_area_ratio": 0.06059
+    },
+    {
+      "number": 124,
+      "name": "Running Hand",
+      "faint_alpha_to_solid_area_ratio": 0.04982
+    },
+    {
+      "number": 125,
+      "name": "Overclock (Brain Power step)",
+      "faint_alpha_to_solid_area_ratio": 0.01742
+    },
+    {
+      "number": 126,
+      "name": "Twin Draw",
+      "faint_alpha_to_solid_area_ratio": 0.03205
+    },
+    {
+      "number": 127,
+      "name": "Barrage",
+      "faint_alpha_to_solid_area_ratio": 0.06537
+    },
+    {
+      "number": 128,
+      "name": "Core Change",
+      "faint_alpha_to_solid_area_ratio": 0.0414
+    },
+    {
+      "number": 129,
+      "name": "Overcharge",
+      "faint_alpha_to_solid_area_ratio": 0.04451
+    },
+    {
+      "number": 130,
+      "name": "Bleed the Flux",
+      "faint_alpha_to_solid_area_ratio": 0.02928
+    },
+    {
+      "number": 131,
+      "name": "Payload",
+      "faint_alpha_to_solid_area_ratio": 0.04392
+    },
+    {
+      "number": 132,
+      "name": "Stored Spell",
+      "faint_alpha_to_solid_area_ratio": 0.02765
+    },
+    {
+      "number": 133,
+      "name": "Sigil chip (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.0867
+    },
+    {
+      "number": 135,
+      "name": "Many-Eyed Dream",
+      "faint_alpha_to_solid_area_ratio": 0.05831
+    },
+    {
+      "number": 136,
+      "name": "Wake of the Kill",
+      "faint_alpha_to_solid_area_ratio": 0.04661
+    },
+    {
+      "number": 138,
+      "name": "Eye and Wall (fork)",
+      "faint_alpha_to_solid_area_ratio": 0.02711
+    },
+    {
+      "number": 139,
+      "name": "Beast and Blade (fork)",
+      "faint_alpha_to_solid_area_ratio": 0.05068
+    },
+    {
+      "number": 140,
+      "name": "Strike",
+      "faint_alpha_to_solid_area_ratio": 0.034
+    },
+    {
+      "number": 141,
+      "name": "Pounce",
+      "faint_alpha_to_solid_area_ratio": 0.03228
+    },
+    {
+      "number": 142,
+      "name": "Cut",
+      "faint_alpha_to_solid_area_ratio": 0.05268
+    },
+    {
+      "number": 143,
+      "name": "Stare",
+      "faint_alpha_to_solid_area_ratio": 0.0374
+    },
+    {
+      "number": 144,
+      "name": "Filch",
+      "faint_alpha_to_solid_area_ratio": 0.03086
+    },
+    {
+      "number": 145,
+      "name": "Cash in",
+      "faint_alpha_to_solid_area_ratio": 0.0404
+    },
+    {
+      "number": 146,
+      "name": "Let go",
+      "faint_alpha_to_solid_area_ratio": 0.01747
+    },
+    {
+      "number": 147,
+      "name": "Armoured",
+      "faint_alpha_to_solid_area_ratio": 0.04268
+    },
+    {
+      "number": 148,
+      "name": "Swift",
+      "faint_alpha_to_solid_area_ratio": 0.0922
+    },
+    {
+      "number": 149,
+      "name": "Loud",
+      "faint_alpha_to_solid_area_ratio": 0.04019
+    },
+    {
+      "number": 150,
+      "name": "Volatile",
+      "faint_alpha_to_solid_area_ratio": 0.03238
+    },
+    {
+      "number": 151,
+      "name": "Tethered",
+      "faint_alpha_to_solid_area_ratio": 0.0544
+    },
+    {
+      "number": 152,
+      "name": "Mirror",
+      "faint_alpha_to_solid_area_ratio": 0.05633
+    },
+    {
+      "number": 153,
+      "name": "Barbed",
+      "faint_alpha_to_solid_area_ratio": 0.03076
+    },
+    {
+      "number": 154,
+      "name": "Lasting",
+      "faint_alpha_to_solid_area_ratio": 0.04627
+    },
+    {
+      "number": 155,
+      "name": "Keen",
+      "faint_alpha_to_solid_area_ratio": 0.041
+    },
+    {
+      "number": 156,
+      "name": "Hollow",
+      "faint_alpha_to_solid_area_ratio": 0.04752
+    },
+    {
+      "number": 157,
+      "name": "The Rigger's Hands",
+      "faint_alpha_to_solid_area_ratio": 0.03047
+    },
+    {
+      "number": 158,
+      "name": "Double",
+      "faint_alpha_to_solid_area_ratio": 0.13459
+    },
+    {
+      "number": 159,
+      "name": "Field Fix",
+      "faint_alpha_to_solid_area_ratio": 0.02517
+    },
+    {
+      "number": 160,
+      "name": "Salvage",
+      "faint_alpha_to_solid_area_ratio": 0.04057
+    },
+    {
+      "number": 161,
+      "name": "Overclock",
+      "faint_alpha_to_solid_area_ratio": 0.05086
+    },
+    {
+      "number": 162,
+      "name": "Sleight",
+      "faint_alpha_to_solid_area_ratio": 0.07607
+    },
+    {
+      "number": 165,
+      "name": "Figment (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.05311
+    },
+    {
+      "number": 171,
+      "name": "Taut Thread",
+      "faint_alpha_to_solid_area_ratio": 0.06042
+    },
+    {
+      "number": 172,
+      "name": "Bitter Balm",
+      "faint_alpha_to_solid_area_ratio": 0.06405
+    },
+    {
+      "number": 173,
+      "name": "Feel Their Pain",
+      "faint_alpha_to_solid_area_ratio": 0.04695
+    },
+    {
+      "number": 174,
+      "name": "Mercy (thread kind)",
+      "faint_alpha_to_solid_area_ratio": 0.03845
+    },
+    {
+      "number": 175,
+      "name": "Bond",
+      "faint_alpha_to_solid_area_ratio": 0.06233
+    },
+    {
+      "number": 176,
+      "name": "Let Go",
+      "faint_alpha_to_solid_area_ratio": 0.02873
+    },
+    {
+      "number": 177,
+      "name": "Snap",
+      "faint_alpha_to_solid_area_ratio": 0.03454
+    },
+    {
+      "number": 178,
+      "name": "Tug",
+      "faint_alpha_to_solid_area_ratio": 0.05021
+    },
+    {
+      "number": 179,
+      "name": "Mend",
+      "faint_alpha_to_solid_area_ratio": 0.02135
+    },
+    {
+      "number": 180,
+      "name": "Mend Yourself",
+      "faint_alpha_to_solid_area_ratio": 0.0473
+    },
+    {
+      "number": 181,
+      "name": "Touch",
+      "faint_alpha_to_solid_area_ratio": 0.02478
+    },
+    {
+      "number": 182,
+      "name": "Settle",
+      "faint_alpha_to_solid_area_ratio": 0.01778
+    },
+    {
+      "number": 183,
+      "name": "Soothe",
+      "faint_alpha_to_solid_area_ratio": 0.02065
+    },
+    {
+      "number": 184,
+      "name": "Shield (Tend)",
+      "faint_alpha_to_solid_area_ratio": 0.05589
+    },
+    {
+      "number": 185,
+      "name": "Raise",
+      "faint_alpha_to_solid_area_ratio": 0.05163
+    },
+    {
+      "number": 186,
+      "name": "Guide",
+      "faint_alpha_to_solid_area_ratio": 0.04956
+    },
+    {
+      "number": 187,
+      "name": "Field Surgery",
+      "faint_alpha_to_solid_area_ratio": 0.03413
+    },
+    {
+      "number": 188,
+      "name": "Last Thread",
+      "faint_alpha_to_solid_area_ratio": 0.03692
+    },
+    {
+      "number": 189,
+      "name": "Syphon",
+      "faint_alpha_to_solid_area_ratio": 0.05134
+    },
+    {
+      "number": 190,
+      "name": "Triage",
+      "faint_alpha_to_solid_area_ratio": 0.02036
+    },
+    {
+      "number": 191,
+      "name": "The Ledger",
+      "faint_alpha_to_solid_area_ratio": 0.03697
+    },
+    {
+      "number": 192,
+      "name": "Inspire",
+      "faint_alpha_to_solid_area_ratio": 0.08306
+    },
+    {
+      "number": 193,
+      "name": "Take the Weight",
+      "faint_alpha_to_solid_area_ratio": 0.05714
+    },
+    {
+      "number": 194,
+      "name": "Brimming",
+      "faint_alpha_to_solid_area_ratio": 0.02799
+    },
+    {
+      "number": 195,
+      "name": "Rally (Mender)",
+      "faint_alpha_to_solid_area_ratio": 0.08005
+    },
+    {
+      "number": 196,
+      "name": "Bond thread (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.05093
+    },
+    {
+      "number": 198,
+      "name": "Draw Taut",
+      "faint_alpha_to_solid_area_ratio": 0.04073
+    },
+    {
+      "number": 205,
+      "name": "Weaver's Hands",
+      "faint_alpha_to_solid_area_ratio": 0.04439
+    },
+    {
+      "number": 208,
+      "name": "Clenched Heart",
+      "faint_alpha_to_solid_area_ratio": 0.05902
+    },
+    {
+      "number": 209,
+      "name": "Resonance",
+      "faint_alpha_to_solid_area_ratio": 0.05752
+    },
+    {
+      "number": 210,
+      "name": "Overdraw",
+      "faint_alpha_to_solid_area_ratio": 0.0411
+    },
+    {
+      "number": 211,
+      "name": "Pure Heart",
+      "faint_alpha_to_solid_area_ratio": 0.00826
+    },
+    {
+      "number": 212,
+      "name": "Shape",
+      "faint_alpha_to_solid_area_ratio": 0.03696
+    },
+    {
+      "number": 213,
+      "name": "Iron Heart",
+      "faint_alpha_to_solid_area_ratio": 0.02223
+    },
+    {
+      "number": 214,
+      "name": "Storm Front",
+      "faint_alpha_to_solid_area_ratio": 0.05923
+    },
+    {
+      "number": 215,
+      "name": "Occult Library",
+      "faint_alpha_to_solid_area_ratio": 0.02876
+    },
+    {
+      "number": 216,
+      "name": "Heart Surge",
+      "faint_alpha_to_solid_area_ratio": 0.01498
+    },
+    {
+      "number": 217,
+      "name": "Eye of the Storm",
+      "faint_alpha_to_solid_area_ratio": 0.05925
+    },
+    {
+      "number": 218,
+      "name": "Outburst heart (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.02
+    },
+    {
+      "number": 220,
+      "name": "Unbroken Litany",
+      "faint_alpha_to_solid_area_ratio": 0.05408
+    },
+    {
+      "number": 221,
+      "name": "Sinner's Due",
+      "faint_alpha_to_solid_area_ratio": 0.02099
+    },
+    {
+      "number": 222,
+      "name": "Answered Prayer",
+      "faint_alpha_to_solid_area_ratio": 0.02213
+    },
+    {
+      "number": 223,
+      "name": "Deliver the Sinner",
+      "faint_alpha_to_solid_area_ratio": 0.03215
+    },
+    {
+      "number": 224,
+      "name": "The Patron at Your Side",
+      "faint_alpha_to_solid_area_ratio": 0.04137
+    },
+    {
+      "number": 225,
+      "name": "Canticle",
+      "faint_alpha_to_solid_area_ratio": 0.05445
+    },
+    {
+      "number": 226,
+      "name": "Amen",
+      "faint_alpha_to_solid_area_ratio": 0.06251
+    },
+    {
+      "number": 227,
+      "name": "Holy Dread",
+      "faint_alpha_to_solid_area_ratio": 0.04744
+    },
+    {
+      "number": 228,
+      "name": "Last Rites",
+      "faint_alpha_to_solid_area_ratio": 0.0411
+    },
+    {
+      "number": 229,
+      "name": "Ward",
+      "faint_alpha_to_solid_area_ratio": 0.07117
+    },
+    {
+      "number": 230,
+      "name": "Smite",
+      "faint_alpha_to_solid_area_ratio": 0.04786
+    },
+    {
+      "number": 231,
+      "name": "Under the Eye",
+      "faint_alpha_to_solid_area_ratio": 0.03624
+    },
+    {
+      "number": 232,
+      "name": "Blessed Arms",
+      "faint_alpha_to_solid_area_ratio": 0.03595
+    },
+    {
+      "number": 233,
+      "name": "Sanctuary",
+      "faint_alpha_to_solid_area_ratio": 0.06154
+    },
+    {
+      "number": 234,
+      "name": "Verdict",
+      "faint_alpha_to_solid_area_ratio": 0.04136
+    },
+    {
+      "number": 235,
+      "name": "Shelter of the Saints (verse)",
+      "faint_alpha_to_solid_area_ratio": 0.02955
+    },
+    {
+      "number": 236,
+      "name": "Short Supply (verse)",
+      "faint_alpha_to_solid_area_ratio": 0.01831
+    },
+    {
+      "number": 237,
+      "name": "Missed Me (verse)",
+      "faint_alpha_to_solid_area_ratio": 0.02408
+    },
+    {
+      "number": 238,
+      "name": "Not Yet (verse)",
+      "faint_alpha_to_solid_area_ratio": 0.02168
+    },
+    {
+      "number": 239,
+      "name": "Warm Hands (verse)",
+      "faint_alpha_to_solid_area_ratio": 0.02069
+    },
+    {
+      "number": 240,
+      "name": "Gathering (verse)",
+      "faint_alpha_to_solid_area_ratio": 0.01117
+    },
+    {
+      "number": 241,
+      "name": "Hold My Hand (verse)",
+      "faint_alpha_to_solid_area_ratio": 0.02053
+    },
+    {
+      "number": 242,
+      "name": "Foreknown (verse)",
+      "faint_alpha_to_solid_area_ratio": 0.02365
+    },
+    {
+      "number": 243,
+      "name": "Stubborn (verse)",
+      "faint_alpha_to_solid_area_ratio": 0.01453
+    },
+    {
+      "number": 244,
+      "name": "Crescendo (verse)",
+      "faint_alpha_to_solid_area_ratio": 0.02558
+    },
+    {
+      "number": 245,
+      "name": "Rising (verse)",
+      "faint_alpha_to_solid_area_ratio": 0.02325
+    },
+    {
+      "number": 246,
+      "name": "Prayer mark (door emblem)",
+      "faint_alpha_to_solid_area_ratio": 0.02338
+    },
+    {
+      "number": 248,
+      "name": "Hallow",
+      "faint_alpha_to_solid_area_ratio": 0.06748
+    },
+    {
+      "number": 256,
+      "name": "Open guard",
+      "faint_alpha_to_solid_area_ratio": 0.05906
+    },
+    {
+      "number": 257,
+      "name": "Jab",
+      "faint_alpha_to_solid_area_ratio": 0.04788
+    },
+    {
+      "number": 258,
+      "name": "Palm",
+      "faint_alpha_to_solid_area_ratio": 0.07032
+    },
+    {
+      "number": 259,
+      "name": "Sweep (form)",
+      "faint_alpha_to_solid_area_ratio": 0.04821
+    },
+    {
+      "number": 260,
+      "name": "Snatch",
+      "faint_alpha_to_solid_area_ratio": 0.06003
+    },
+    {
+      "number": 261,
+      "name": "Breath",
+      "faint_alpha_to_solid_area_ratio": 0.04822
+    },
+    {
+      "number": 262,
+      "name": "Sway",
+      "faint_alpha_to_solid_area_ratio": 0.04966
+    },
+    {
+      "number": 263,
+      "name": "Counter",
+      "faint_alpha_to_solid_area_ratio": 0.05129
+    },
+    {
+      "number": 264,
+      "name": "Closing Strike",
+      "faint_alpha_to_solid_area_ratio": 0.05456
+    },
+    {
+      "number": 265,
+      "name": "Flow",
+      "faint_alpha_to_solid_area_ratio": 0.06474
+    },
+    {
+      "number": 266,
+      "name": "Slip (unarmed)",
+      "faint_alpha_to_solid_area_ratio": 0.05845
+    },
+    {
+      "number": 270,
+      "name": "Step 1: Your free weapon",
+      "faint_alpha_to_solid_area_ratio": 0.04047
+    },
+    {
+      "number": 275,
+      "name": "Bleeding",
+      "faint_alpha_to_solid_area_ratio": 0.01771
+    },
+    {
+      "number": 276,
+      "name": "Burning",
+      "faint_alpha_to_solid_area_ratio": 0.01677
+    },
+    {
+      "number": 277,
+      "name": "Weakened",
+      "faint_alpha_to_solid_area_ratio": 0.01977
+    },
+    {
+      "number": 278,
+      "name": "Slowed",
+      "faint_alpha_to_solid_area_ratio": 0.02597
+    },
+    {
+      "number": 279,
+      "name": "Silenced",
+      "faint_alpha_to_solid_area_ratio": 0.00844
+    },
+    {
+      "number": 280,
+      "name": "Nausea",
+      "faint_alpha_to_solid_area_ratio": 0.01839
+    },
+    {
+      "number": 281,
+      "name": "Pinned",
+      "faint_alpha_to_solid_area_ratio": 0.02637
+    },
+    {
+      "number": 282,
+      "name": "Stunned",
+      "faint_alpha_to_solid_area_ratio": 0.01824
+    },
+    {
+      "number": 283,
+      "name": "Dazed",
+      "faint_alpha_to_solid_area_ratio": 0.01131
+    },
+    {
+      "number": 284,
+      "name": "Blinded",
+      "faint_alpha_to_solid_area_ratio": 0.01111
+    },
+    {
+      "number": 285,
+      "name": "Prone",
+      "faint_alpha_to_solid_area_ratio": 0.01933
+    },
+    {
+      "number": 286,
+      "name": "Confused",
+      "faint_alpha_to_solid_area_ratio": 0.0161
+    },
+    {
+      "number": 287,
+      "name": "Fear",
+      "faint_alpha_to_solid_area_ratio": 0.03235
+    },
+    {
+      "number": 288,
+      "name": "Shaken",
+      "faint_alpha_to_solid_area_ratio": 0.01642
+    },
+    {
+      "number": 289,
+      "name": "Hidden",
+      "faint_alpha_to_solid_area_ratio": 0.01628
+    },
+    {
+      "number": 290,
+      "name": "Marked",
+      "faint_alpha_to_solid_area_ratio": 0.01197
+    },
+    {
+      "number": 291,
+      "name": "Read",
+      "faint_alpha_to_solid_area_ratio": 0.0216
+    },
+    {
+      "number": 292,
+      "name": "Judged",
+      "faint_alpha_to_solid_area_ratio": 0.01766
+    },
+    {
+      "number": 293,
+      "name": "Braced",
+      "faint_alpha_to_solid_area_ratio": 0.01992
+    },
+    {
+      "number": 294,
+      "name": "Overwatch",
+      "faint_alpha_to_solid_area_ratio": 0.02538
+    },
+    {
+      "number": 295,
+      "name": "Witnessed",
+      "faint_alpha_to_solid_area_ratio": 0.01637
+    },
+    {
+      "number": 296,
+      "name": "Downed",
+      "faint_alpha_to_solid_area_ratio": 0.01851
+    },
+    {
+      "number": 297,
+      "name": "Grappled",
+      "faint_alpha_to_solid_area_ratio": 0.02712
+    },
+    {
+      "number": 298,
+      "name": "Taunted",
+      "faint_alpha_to_solid_area_ratio": 0.0141
+    },
+    {
+      "number": 299,
+      "name": "Commanded",
+      "faint_alpha_to_solid_area_ratio": 0.01616
+    },
+    {
+      "number": 300,
+      "name": "Puppeted",
+      "faint_alpha_to_solid_area_ratio": 0.08704
+    },
+    {
+      "number": 301,
+      "name": "Disarmed",
+      "faint_alpha_to_solid_area_ratio": 0.02365
+    },
+    {
+      "number": 302,
+      "name": "Injured",
+      "faint_alpha_to_solid_area_ratio": 0.01722
+    },
+    {
+      "number": 303,
+      "name": "Suppressed",
+      "faint_alpha_to_solid_area_ratio": 0.04355
+    },
+    {
+      "number": 304,
+      "name": "Corroded",
+      "faint_alpha_to_solid_area_ratio": 0.0173
+    },
+    {
+      "number": 305,
+      "name": "Off Balance",
+      "faint_alpha_to_solid_area_ratio": 0.01757
+    },
+    {
+      "number": 306,
+      "name": "Guarded",
+      "faint_alpha_to_solid_area_ratio": 0.02102
+    },
+    {
+      "number": 307,
+      "name": "Bonded",
+      "faint_alpha_to_solid_area_ratio": 0.01982
+    },
+    {
+      "number": 308,
+      "name": "Traced",
+      "faint_alpha_to_solid_area_ratio": 0.0248
+    },
+    {
+      "number": 309,
+      "name": "Exposed",
+      "faint_alpha_to_solid_area_ratio": 0.01639
+    },
+    {
+      "number": 310,
+      "name": "Reeled",
+      "faint_alpha_to_solid_area_ratio": 0.0328
+    },
+    {
+      "number": 311,
+      "name": "Settled",
+      "faint_alpha_to_solid_area_ratio": 0.02481
+    },
+    {
+      "number": 312,
+      "name": "Watched",
+      "faint_alpha_to_solid_area_ratio": 0.0146
+    },
+    {
+      "number": 313,
+      "name": "Slipping",
+      "faint_alpha_to_solid_area_ratio": 0.01981
+    },
+    {
+      "number": 314,
+      "name": "Emplaced",
+      "faint_alpha_to_solid_area_ratio": 0.02201
+    },
+    {
+      "number": 315,
+      "name": "Withdrawing",
+      "faint_alpha_to_solid_area_ratio": 0.01972
+    },
+    {
+      "number": 316,
+      "name": "Weapon lowered",
+      "faint_alpha_to_solid_area_ratio": 0.05643
+    },
+    {
+      "number": 317,
+      "name": "Quickened",
+      "faint_alpha_to_solid_area_ratio": 0.02396
+    },
+    {
+      "number": 318,
+      "name": "Sharpened",
+      "faint_alpha_to_solid_area_ratio": 0.02218
+    },
+    {
+      "number": 319,
+      "name": "Inspired",
+      "faint_alpha_to_solid_area_ratio": 0.00957
+    },
+    {
+      "number": 320,
+      "name": "Hopeful",
+      "faint_alpha_to_solid_area_ratio": 0.01232
+    },
+    {
+      "number": 321,
+      "name": "Scorned",
+      "faint_alpha_to_solid_area_ratio": 0.01033
+    },
+    {
+      "number": 322,
+      "name": "Smitten",
+      "faint_alpha_to_solid_area_ratio": 0.01077
+    },
+    {
+      "number": 323,
+      "name": "Last Turn",
+      "faint_alpha_to_solid_area_ratio": 0.02569
+    },
+    {
+      "number": 324,
+      "name": "Augment Offline",
+      "faint_alpha_to_solid_area_ratio": 0.02272
+    },
+    {
+      "number": 325,
+      "name": "Lunge (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.06769
+    },
+    {
+      "number": 326,
+      "name": "Charge",
+      "faint_alpha_to_solid_area_ratio": 0.06457
+    },
+    {
+      "number": 327,
+      "name": "Feint",
+      "faint_alpha_to_solid_area_ratio": 0.07506
+    },
+    {
+      "number": 328,
+      "name": "Draw Cut",
+      "faint_alpha_to_solid_area_ratio": 0.0372
+    },
+    {
+      "number": 329,
+      "name": "Ambush",
+      "faint_alpha_to_solid_area_ratio": 0.05693
+    },
+    {
+      "number": 330,
+      "name": "Cut",
+      "faint_alpha_to_solid_area_ratio": 0.03759
+    },
+    {
+      "number": 331,
+      "name": "Sweep",
+      "faint_alpha_to_solid_area_ratio": 0.05257
+    },
+    {
+      "number": 332,
+      "name": "Bash",
+      "faint_alpha_to_solid_area_ratio": 0.02661
+    },
+    {
+      "number": 333,
+      "name": "Sunder",
+      "faint_alpha_to_solid_area_ratio": 0.04454
+    },
+    {
+      "number": 334,
+      "name": "Flurry",
+      "faint_alpha_to_solid_area_ratio": 0.04459
+    },
+    {
+      "number": 335,
+      "name": "Hamstring",
+      "faint_alpha_to_solid_area_ratio": 0.03472
+    },
+    {
+      "number": 336,
+      "name": "Bind",
+      "faint_alpha_to_solid_area_ratio": 0.04687
+    },
+    {
+      "number": 337,
+      "name": "Half-Sword",
+      "faint_alpha_to_solid_area_ratio": 0.04038
+    },
+    {
+      "number": 338,
+      "name": "Throw",
+      "faint_alpha_to_solid_area_ratio": 0.07055
+    },
+    {
+      "number": 339,
+      "name": "Pull Out",
+      "faint_alpha_to_solid_area_ratio": 0.04629
+    },
+    {
+      "number": 340,
+      "name": "Sidestep",
+      "faint_alpha_to_solid_area_ratio": 0.07471
+    },
+    {
+      "number": 341,
+      "name": "Guard (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.06131
+    },
+    {
+      "number": 342,
+      "name": "Shove (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.03119
+    },
+    {
+      "number": 343,
+      "name": "Trip",
+      "faint_alpha_to_solid_area_ratio": 0.0344
+    },
+    {
+      "number": 344,
+      "name": "Drag",
+      "faint_alpha_to_solid_area_ratio": 0.03234
+    },
+    {
+      "number": 345,
+      "name": "Parry",
+      "faint_alpha_to_solid_area_ratio": 0.06854
+    },
+    {
+      "number": 346,
+      "name": "Riposte (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.06592
+    },
+    {
+      "number": 347,
+      "name": "Keep Back",
+      "faint_alpha_to_solid_area_ratio": 0.04313
+    },
+    {
+      "number": 348,
+      "name": "Shot",
+      "faint_alpha_to_solid_area_ratio": 0.04563
+    },
+    {
+      "number": 349,
+      "name": "Snap Shot",
+      "faint_alpha_to_solid_area_ratio": 0.03982
+    },
+    {
+      "number": 350,
+      "name": "Burst",
+      "faint_alpha_to_solid_area_ratio": 0.0596
+    },
+    {
+      "number": 351,
+      "name": "Aimed Shot",
+      "faint_alpha_to_solid_area_ratio": 0.07343
+    },
+    {
+      "number": 352,
+      "name": "Called Shot (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.0321
+    },
+    {
+      "number": 353,
+      "name": "Walking Fire",
+      "faint_alpha_to_solid_area_ratio": 0.10065
+    },
+    {
+      "number": 354,
+      "name": "Punch Through",
+      "faint_alpha_to_solid_area_ratio": 0.02435
+    },
+    {
+      "number": 355,
+      "name": "Lob",
+      "faint_alpha_to_solid_area_ratio": 0.05855
+    },
+    {
+      "number": 356,
+      "name": "Heavy Bolt",
+      "faint_alpha_to_solid_area_ratio": 0.04581
+    },
+    {
+      "number": 357,
+      "name": "Bead",
+      "faint_alpha_to_solid_area_ratio": 0.02693
+    },
+    {
+      "number": 358,
+      "name": "Spot",
+      "faint_alpha_to_solid_area_ratio": 0.04138
+    },
+    {
+      "number": 359,
+      "name": "Brace (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.04808
+    },
+    {
+      "number": 360,
+      "name": "Load Special",
+      "faint_alpha_to_solid_area_ratio": 0.08547
+    },
+    {
+      "number": 361,
+      "name": "Shift",
+      "faint_alpha_to_solid_area_ratio": 0.06262
+    },
+    {
+      "number": 362,
+      "name": "Vent",
+      "faint_alpha_to_solid_area_ratio": 0.03121
+    },
+    {
+      "number": 363,
+      "name": "Head Down",
+      "faint_alpha_to_solid_area_ratio": 0.02933
+    },
+    {
+      "number": 364,
+      "name": "Dead Centre",
+      "faint_alpha_to_solid_area_ratio": 0.06093
+    },
+    {
+      "number": 365,
+      "name": "Pin Down",
+      "faint_alpha_to_solid_area_ratio": 0.01618
+    },
+    {
+      "number": 366,
+      "name": "Rout",
+      "faint_alpha_to_solid_area_ratio": 0.08394
+    },
+    {
+      "number": 367,
+      "name": "Stopping Shot",
+      "faint_alpha_to_solid_area_ratio": 0.04772
+    },
+    {
+      "number": 368,
+      "name": "Storm",
+      "faint_alpha_to_solid_area_ratio": 0.09357
+    },
+    {
+      "number": 369,
+      "name": "Last Round",
+      "faint_alpha_to_solid_area_ratio": 0.03161
+    },
+    {
+      "number": 370,
+      "name": "Overwatch (technique)",
+      "faint_alpha_to_solid_area_ratio": 0.07819
+    },
+    {
+      "number": 371,
+      "name": "Deny",
+      "faint_alpha_to_solid_area_ratio": 0.03794
+    },
+    {
+      "number": 372,
+      "name": "Cover Me",
+      "faint_alpha_to_solid_area_ratio": 0.07223
+    },
+    {
+      "number": 373,
+      "name": "Dead to Rights",
+      "faint_alpha_to_solid_area_ratio": 0.06199
+    },
+    {
+      "number": 374,
+      "name": "Shield Bash",
+      "faint_alpha_to_solid_area_ratio": 0.02844
+    },
+    {
+      "number": 375,
+      "name": "Raise Shield",
+      "faint_alpha_to_solid_area_ratio": 0.05767
+    },
+    {
+      "number": 376,
+      "name": "Grapple",
+      "faint_alpha_to_solid_area_ratio": 0.02287
+    },
+    {
+      "number": 377,
+      "name": "Shield Wall",
+      "faint_alpha_to_solid_area_ratio": 0.01265
+    },
+    {
+      "number": 378,
+      "name": "Interpose",
+      "faint_alpha_to_solid_area_ratio": 0.07408
+    }
+  ],
+  "excluded": [],
+  "historical_rejection": "The original glowing #323 remains archived; its active replacement is a distinct native render."
+}

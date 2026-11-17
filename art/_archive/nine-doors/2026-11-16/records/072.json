@@ -1,0 +1,77 @@
+{
+  "number": 72,
+  "family": "technique_icons",
+  "id": "tech-mag-dump",
+  "path": "art/icons/techniques/mag-dump.png",
+  "name": "Mag Dump",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, press: empties the magazine",
+  "paint": "A gun with a long straight line of spent cases pouring out of its side.",
+  "avoid": "a machine gun nest \u00b7 a real make",
+  "section": "Dexterity: Pressure, and the Skirmisher",
+  "kind": "wick",
+  "prompt": "Create ONE small flat white inventory-style icon of an UNLOADED CARTOON TRAINING PROP, a clearly invented chunky ceramic toy ray-projector in side profile. No operator, hands, human, robot character, target or firing scene. The static prop has a plain short rounded muzzle at the left, a rectangular body, a simple handle beneath it, and one obvious EMPTY side port. From that side port, SIX EMPTY open-ended cylinder casings form ONE long straight diagonal row downward to the right. Make the casings visibly hollow with a tiny open-end cut, not pointed ammunition. The purpose is to show an EMPTY magazine after practice, not firing. Keep construction simple and playful, no real product make or brand, text, numbers, insignia or scene. Bold pure-white #FFFFFF flat screen-print ink with sparse broad transparent cutouts, no grey shades, gradient, texture, glow, smoke, light effects or burst. Transparent background. One centered square graphic with 15 percent safe margins, readable at 32px. Match the attached object-only white icon style.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "service_rejection_resolution": "Unloaded cartoon practice prop with empty casings, no firing scene.",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "fe0c6785b817175739055bcef4ae49345db16953d80184f910d6cc3151de7b0b",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/072-mag-dump.png",
+  "source_sha256": "a4e3cc2e53b1a392f0a38efc3fa0ecedde0fcd70367d22a23f318cfe06964d8b",
+  "export_crop": [
+    27,
+    143,
+    1240,
+    1105
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/mag-dump.png",
+    "64": "art/icons/techniques/exports/64/mag-dump.png",
+    "48": "art/icons/techniques/exports/48/mag-dump.png",
+    "44": "art/icons/techniques/exports/44/mag-dump.png",
+    "32": "art/icons/techniques/exports/32/mag-dump.png",
+    "24": "art/icons/techniques/exports/24/mag-dump.png"
+  },
+  "framing": {
+    "scale": 0.6457882935874004,
+    "offset": [
+      120,
+      201
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "6bac23a3bccd58224829265371e578cce0169e399a13378dc4c98312a17f5ae3",
+    "64": "3bd745ec8d0c11c5ef3a17da274c4e94a6ba97c7ad37a23597117e47cc56aeee",
+    "48": "4fdef72237803852c347011de279f6d707436b64645edc8839bfc8dbdd15db3b",
+    "44": "9842eb6d4b9b5e39d9ab3a55e89588a3a65644a499bf28fd90e1019edea3b290",
+    "32": "4f5626097137a148539b3aebf79df8f46f5d92fd82acc17a56189de43a35f17e",
+    "24": "c636f0852b088ca2a224cb1eb5edb930e75bfa64a797b34a056a63ca6cae59d4"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

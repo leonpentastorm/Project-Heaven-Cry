@@ -1,0 +1,10 @@
+{
+  "legacy_delivered": 348,
+  "new_030_delivered": 41,
+  "new_scoped_validation_pass": true,
+  "full_library_exit": 1,
+  "asset_build_exit": 1,
+  "limitation": "This runtime is a verified partial art checkout: historical inputs are not downloaded. Exact current logs are preserved; do not claim the complete repository validator/build passed. The preceding full 344 worktree had a historical Bulwark export-set mismatch.",
+  "native_render_dimensions_recorded_honestly": true,
+  "approval": "unapproved review candidates"
+}

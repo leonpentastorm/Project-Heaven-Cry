@@ -1,0 +1,81 @@
+{
+  "number": 2,
+  "section": 1,
+  "family": "interface_icons",
+  "id": "icon-status-hurts",
+  "path": "art/icons/status/hurts.png",
+  "name": "Status: hurting",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph, triangle down)",
+  "use": "The group mark of every condition that hurts you",
+  "paint": "A short wedge pointing down with its tip chipped, hanging from a flat bar; the same size and weight as the helping mark, so the pair reads as a mirror.",
+  "avoid": "a skull \u00b7 a drip of blood \u00b7 an arrow with a minus sign",
+  "file_key": "02-hurts",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Exactly ONE downward triangle wedge with ONE chipped tip, suspended directly below ONE wide flat horizontal bar. ONE symbol only, large and centered; no second wedge, no comparison samples or multiple variants. A few pixels of open space separate bar and triangle.\nAVOID: duplicates, two triangles, skull, blood, minus sign.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-1-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/banners/fight-start.png",
+    "art/icons/banners/fight-won.png",
+    "art/icons/banners/fight-lost.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/02-hurts-v2.png",
+  "source_sha256": "814efa3d24ed664921340e312f8cab76b1e7731d5033e1f78f70e82ae88a2e24",
+  "generation_attempt": 2,
+  "export_crop": [
+    57,
+    119,
+    1226,
+    1131
+  ],
+  "scale": 0.7014542343883661,
+  "offset": [
+    102,
+    157
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "04dc7d0be37c08113f9fb56747bd23094eaaff4b6f846abf283641a4e4f9164d",
+  "exports": {
+    "256": "art/icons/status/exports/256/hurts.png",
+    "128": "art/icons/status/exports/128/hurts.png",
+    "64": "art/icons/status/exports/64/hurts.png",
+    "48": "art/icons/status/exports/48/hurts.png",
+    "44": "art/icons/status/exports/44/hurts.png",
+    "32": "art/icons/status/exports/32/hurts.png",
+    "24": "art/icons/status/exports/24/hurts.png",
+    "16": "art/icons/status/exports/16/hurts.png"
+  },
+  "export_sha256": {
+    "256": "efef3caadeac80a234e3293b95f0e54c30aca3b2f184adda436b664e10dd20e7",
+    "128": "cc914e7fb03a38d7d57782f052b56acf6f730a200744b58d6fa01611981dc424",
+    "64": "af550d079b35f6ac4afd9727bf6cf3f032ec43d58a29d9ef63af49e43f21de5c",
+    "48": "8a713557bcf2da1daca0a3c09455313139c337c04c750d49b94775a826bc2f22",
+    "44": "88ae8472371e476da3abeadae67d1cf8031999c06510688a3a7c70b431785115",
+    "32": "a8483699e0fb90095abc2a9d15be66d8d4955670275334b3802dde78b01dfe6d",
+    "24": "c5808e5e9b3b0a36b1a798a30df8222cd4ed34db56d1102190081fd1a1163896",
+    "16": "d121e710c421da4dc19cfd8b345e39927d0c6baf11a5a82f0f708862fd2d7bf1"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

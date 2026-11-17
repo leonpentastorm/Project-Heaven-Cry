@@ -1,0 +1,24 @@
+{
+  "built_at": "2026-11-17T07:50:35+07:00",
+  "legacy_total": 344,
+  "increment_baseline": 250,
+  "new_candidates": 94,
+  "new_by_kind": {
+    "sign": 10,
+    "class": 9,
+    "wick": 71,
+    "gear": 4
+  },
+  "zip_files": 894,
+  "zip_bytes": 94514987,
+  "zip_sha256": "8f6793e9051407cd2d771924847e4e1e2da4959053f0e895f41eceae103531d9",
+  "zip_crc_and_every_source_file_hash_verified": true,
+  "remaining_eligible_legacy": [
+    271,
+    272,
+    273,
+    274
+  ],
+  "added_030_delivered": 0,
+  "added_030_pending": 41
+}

@@ -1,0 +1,81 @@
+{
+  "number": 53,
+  "section": 7,
+  "family": "interface_icons",
+  "id": "icon-tone-gale",
+  "path": "art/icons/tones/gale.png",
+  "name": "Tone: Gale",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph on a quiver tag)",
+  "use": "The Gale tone",
+  "paint": "Three long streamlines curling into small hooks at their ends.",
+  "avoid": "a tornado funnel \u00b7 a weather map",
+  "file_key": "53-gale",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Three long streamlines curling into small hooks at their ends.\nAVOID: a tornado funnel \u00b7 a weather map",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/53-gale-v1.png",
+  "source_sha256": "67e5ce70c1a801f0da999bc8b79044830dd68243d18074c5b778a559c38fe59e",
+  "generation_attempt": 1,
+  "export_crop": [
+    23,
+    96,
+    1202,
+    1221
+  ],
+  "scale": 0.6955046649703138,
+  "offset": [
+    102,
+    121
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "8a6942d91b6d4a52d8c15502445dbc06482ff035c8c95bdac70014a688c94329",
+  "exports": {
+    "256": "art/icons/tones/exports/256/gale.png",
+    "128": "art/icons/tones/exports/128/gale.png",
+    "64": "art/icons/tones/exports/64/gale.png",
+    "48": "art/icons/tones/exports/48/gale.png",
+    "44": "art/icons/tones/exports/44/gale.png",
+    "32": "art/icons/tones/exports/32/gale.png",
+    "24": "art/icons/tones/exports/24/gale.png",
+    "16": "art/icons/tones/exports/16/gale.png"
+  },
+  "export_sha256": {
+    "256": "603155e00bae07f247c57e0125cd214be5f5f55d8085353ffbe85f8662c6412c",
+    "128": "7674b91587488c34befa94fe5efe4431e869fe839f2f6f7496c08ea6f3e99adb",
+    "64": "3275f2df113b717074dfc0388c640440b9872270ec6fa342ceb8648a1d8491d3",
+    "48": "001011c570338a164fad96f0faebaf973769cf96fe38509aa20f93606fca54e1",
+    "44": "3e3f4a562e1c27e11efe932c5e6354d2a730c30663b7450b896a51dda41ebe17",
+    "32": "ee53fd965dee0a35cfd11abbdaf1dae4e38999cd24e0b47547931275674dd664",
+    "24": "da75e2a0cad01b47bcc37e55a114ea4810bef70d481a1a9336962c8bf36dd49c",
+    "16": "58ef3da524ff15c460c79096e5c7a86933e42685e0249cbf775d8e7d2a5d6d0d"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

@@ -1,0 +1,81 @@
+{
+  "number": 24,
+  "section": 4,
+  "family": "place_icons",
+  "id": "place-rite",
+  "path": "art/icons/places/rite.png",
+  "name": "Keep a rite (shrine card)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a card with no picture)",
+  "use": "Shrine: keep a rite for the patron, Devotion XP (free)",
+  "paint": "A small bowl on a stone ledge with three short incense lines rising and a ring of seven dots round the bowl.",
+  "avoid": "an altar with a cross \u00b7 a temple \u00b7 a skull",
+  "file_key": "24-rite",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small bowl on a stone ledge with three short incense lines rising and a ring of seven dots round the bowl.\nAVOID: an altar with a cross \u00b7 a temple \u00b7 a skull",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/survival/markers/boss.png",
+    "art/icons/survival/markers/cache.png",
+    "art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/24-rite-v1.png",
+  "source_sha256": "6c6f4002272d503bbcf3a8bee4eea2aa614c110806a11ff8600295f281c74cfc",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    9,
+    1253,
+    1231
+  ],
+  "scale": 0.6544293695131684,
+  "offset": [
+    102,
+    112
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "5749d7edb9905f578ca47d7d545f79240df2b117d83c0dd51dfb06327c2e5994",
+  "exports": {
+    "256": "art/icons/places/exports/256/rite.png",
+    "128": "art/icons/places/exports/128/rite.png",
+    "64": "art/icons/places/exports/64/rite.png",
+    "48": "art/icons/places/exports/48/rite.png",
+    "44": "art/icons/places/exports/44/rite.png",
+    "32": "art/icons/places/exports/32/rite.png",
+    "24": "art/icons/places/exports/24/rite.png",
+    "16": "art/icons/places/exports/16/rite.png"
+  },
+  "export_sha256": {
+    "256": "678610dece007386cc20ea9b6c8b1d52d9a7c162860c3e2c6a9ceebcfe69dab5",
+    "128": "5501009ef181866e4610fadeed7a7dc49b25e0c7a0a63adb2f12f57117172449",
+    "64": "f6441c3559a0ce77e8d1584864d5c7221834b9167dcee60994293a631063c47f",
+    "48": "5ff1415a020d8de2690212d2b3df6adcd0dd7731ac9e85f347fb938f52a279f1",
+    "44": "6da4a117c9d380f5ed730d2b61de36364764d02c9fcfb23a8c3d01f7b98535b5",
+    "32": "8f9c00222c2d87ffa1e3b37e6721a149b9b3c0b4b26b4e27c0dbfd2662cb70e9",
+    "24": "0574d8a7bb7737f9bbb6dae821b77c8b5898ba09031b55ca7f9ef149f7335180",
+    "16": "a57ca5929357231cd71c02713f15bb9c90fb9d3a7f74fd39164730712713025c"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

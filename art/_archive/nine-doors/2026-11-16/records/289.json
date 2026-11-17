@@ -1,0 +1,60 @@
+{
+  "number": 289,
+  "family": "condition_icons",
+  "id": "cond-hidden",
+  "path": "art/icons/conditions/hidden.png",
+  "name": "Hidden",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "State word HIDDEN",
+  "paint": "An eye half closed behind a low wall line.",
+  "avoid": "a closed eye only \u00b7 a box",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No\noutline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a\nscene: Wick does not appear; a small generic silhouette may. One subject, centred, with clear space around it, square,\n1024 x 1024 PNG with transparency. It must read at 24 px beside a word on a token and at 48 px on a card: silhouette first,\ntwo interior cuts at most. A door emblem must also read inside a 20 px chip. No text, no letters, no numbers, no border,\nno frame. Invented shapes only. The icon shows:\n\nPaint: An eye half closed behind a low wall line.\nAvoid: a closed eye only \u00b7 a box\nSTYLE CLARIFICATION: this is a generic condition SIGN. NO Wick, no screen head, no mascot capelet or lantern chest. Only the named subject, 2 interior cuts at most, bold clear silhouette. Center within a 15% transparent margin. Use solid white shapes and transparent cutouts only, including the background and all interior holes. Translate any light/glow into a single white tick or ray; never gray, gradients or bloom.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "d7fb8531cc43d2374487c6d04bdc03f7c06eab7954b5db24ac1f3cf7e0c47408",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/289-hidden.png",
+  "source_sha256": "ad10811bd2aadffb0a35362cd1293441f2a372f7bebaf571c7d29a28b4872e24",
+  "export_crop": [
+    47,
+    55,
+    1214,
+    1206
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/hidden.png",
+    "64": "art/icons/conditions/exports/64/hidden.png",
+    "48": "art/icons/conditions/exports/48/hidden.png",
+    "44": "art/icons/conditions/exports/44/hidden.png",
+    "32": "art/icons/conditions/exports/32/hidden.png",
+    "24": "art/icons/conditions/exports/24/hidden.png"
+  },
+  "framing": {
+    "scale": 0.702656383890317,
+    "offset": [
+      102,
+      107
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

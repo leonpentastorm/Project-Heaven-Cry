@@ -1,0 +1,67 @@
+{
+  "number": 344,
+  "family": "technique_icons",
+  "id": "tech-drag",
+  "path": "art/icons/techniques/drag.png",
+  "name": "Drag",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, link",
+  "paint": "A hand hauling a partial figure by the collar along the ground.",
+  "avoid": "a body bag \u00b7 blood",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A hand hauling a partial figure by the collar along the ground.\nAvoid: a body bag \u00b7 blood\nEXACT STAGING: Drag: ONE CROPPED CERAMIC MITTEN at upper-left firmly GRIPS A LARGE COAT COLLAR attached to a CROPPED SHOULDER AND UPPER TORSO at lower-right, hauling that partial figure horizontally ALONG A SHORT GROUND LINE. Featureless safe training silhouette, head outside composition, no full body. Coat edge and two small ground scrape strokes show pulling direction. No injury, blood, body bag, rope, skull or extra figure.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "861070c25eb19b2b46fac98e8101c3f39dcf91a30c4695a0d3bb838fadd9c042",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/344-drag.png",
+  "source_sha256": "d949eda461ee447eb2fcf51d9153d881b6935a41739f102732674ef52d6e0c62",
+  "export_crop": [
+    0,
+    32,
+    1234,
+    1230
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/drag.png",
+    "64": "art/icons/techniques/exports/64/drag.png",
+    "48": "art/icons/techniques/exports/48/drag.png",
+    "44": "art/icons/techniques/exports/44/drag.png",
+    "32": "art/icons/techniques/exports/32/drag.png",
+    "24": "art/icons/techniques/exports/24/drag.png"
+  },
+  "framing": {
+    "scale": 0.5690654116638375,
+    "offset": [
+      161,
+      171
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

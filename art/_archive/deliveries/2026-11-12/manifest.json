@@ -39,7 +39,7 @@
           "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
         },
         {
-          "path": "art/icons/perks/holy-ordnance.png",
+          "path": "art/_archive/perks/wick/replaced/2026-11-16/holy-ordnance.png",
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         },
         {
@@ -53,7 +53,7 @@
       ]
     },
     {
-      "path": "art/icons/perks/both-hands.png",
+      "path": "art/_archive/perks/wick/replaced/2026-11-16/both-hands.png",
       "sha256": "01573b6e7a3ec7a09ef5ddb9fe8dae336e6da0cd70fb3639e36076d9214fdb9c",
       "id": "both-hands",
       "family": "perks",
@@ -71,13 +71,13 @@
         "sha256": "10a70cc1081ca4e054d8f039b0196009b6c892ab9ad05745729fed6f6fb062fc"
       },
       "exports": {
-        "256": "art/icons/perks/exports/256/both-hands.png",
-        "128": "art/icons/perks/exports/128/both-hands.png",
-        "64": "art/icons/perks/exports/64/both-hands.png",
-        "56": "art/icons/perks/exports/56/both-hands.png",
-        "48": "art/icons/perks/exports/48/both-hands.png",
-        "44": "art/icons/perks/exports/44/both-hands.png",
-        "40": "art/icons/perks/exports/40/both-hands.png"
+        "256": "art/_archive/perks/wick/replaced/2026-11-16/exports/256/both-hands.png",
+        "128": "art/_archive/perks/wick/replaced/2026-11-16/exports/128/both-hands.png",
+        "64": "art/_archive/perks/wick/replaced/2026-11-16/exports/64/both-hands.png",
+        "56": "art/_archive/perks/wick/replaced/2026-11-16/exports/56/both-hands.png",
+        "48": "art/_archive/perks/wick/replaced/2026-11-16/exports/48/both-hands.png",
+        "44": "art/_archive/perks/wick/replaced/2026-11-16/exports/44/both-hands.png",
+        "40": "art/_archive/perks/wick/replaced/2026-11-16/exports/40/both-hands.png"
       },
       "references": [
         {
@@ -89,7 +89,7 @@
           "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
         },
         {
-          "path": "art/icons/perks/holy-ordnance.png",
+          "path": "art/_archive/perks/wick/replaced/2026-11-16/holy-ordnance.png",
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
@@ -135,7 +135,7 @@
           "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
         },
         {
-          "path": "art/icons/perks/holy-ordnance.png",
+          "path": "art/_archive/perks/wick/replaced/2026-11-16/holy-ordnance.png",
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
@@ -177,7 +177,7 @@
           "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
         },
         {
-          "path": "art/icons/perks/holy-ordnance.png",
+          "path": "art/_archive/perks/wick/replaced/2026-11-16/holy-ordnance.png",
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
@@ -223,7 +223,7 @@
           "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
         },
         {
-          "path": "art/icons/perks/holy-ordnance.png",
+          "path": "art/_archive/perks/wick/replaced/2026-11-16/holy-ordnance.png",
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
@@ -265,7 +265,7 @@
           "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
         },
         {
-          "path": "art/icons/perks/holy-ordnance.png",
+          "path": "art/_archive/perks/wick/replaced/2026-11-16/holy-ordnance.png",
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
@@ -307,7 +307,7 @@
           "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
         },
         {
-          "path": "art/icons/perks/holy-ordnance.png",
+          "path": "art/_archive/perks/wick/replaced/2026-11-16/holy-ordnance.png",
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
@@ -349,7 +349,7 @@
           "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
         },
         {
-          "path": "art/icons/perks/holy-ordnance.png",
+          "path": "art/_archive/perks/wick/replaced/2026-11-16/holy-ordnance.png",
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
@@ -391,7 +391,7 @@
           "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
         },
         {
-          "path": "art/icons/perks/holy-ordnance.png",
+          "path": "art/_archive/perks/wick/replaced/2026-11-16/holy-ordnance.png",
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
@@ -433,7 +433,7 @@
           "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
         },
         {
-          "path": "art/icons/perks/holy-ordnance.png",
+          "path": "art/_archive/perks/wick/replaced/2026-11-16/holy-ordnance.png",
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]
@@ -475,7 +475,7 @@
           "sha256": "6e1238f3a82d4c4e3021d4b596b5b017338a2b78cacf0b0f2fbbcd9baa809bad"
         },
         {
-          "path": "art/icons/perks/holy-ordnance.png",
+          "path": "art/_archive/perks/wick/replaced/2026-11-16/holy-ordnance.png",
           "sha256": "e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4"
         }
       ]

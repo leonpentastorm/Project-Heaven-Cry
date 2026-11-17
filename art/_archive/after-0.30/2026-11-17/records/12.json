@@ -1,0 +1,81 @@
+{
+  "number": 12,
+  "section": 2,
+  "family": "condition_icons",
+  "id": "cond-given-edge",
+  "path": "art/icons/conditions/given-edge.png",
+  "name": "Given Edge",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (no sign, no slot yet)",
+  "use": "A state that helps, until your next roll to hit lands: a bonus on it (a Bond hands it over)",
+  "paint": "One blade edge drawn as a single bright line, a short thread of three dots leading into its hilt from outside the frame.",
+  "avoid": "crossed swords \u00b7 a whetstone \u00b7 sparkle effects",
+  "file_key": "12-given-edge",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: One blade edge drawn as a single bright line, a short thread of three dots leading into its hilt from outside the frame.\nAVOID: crossed swords \u00b7 a whetstone \u00b7 sparkle effects",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/conditions/augment-offline.png",
+    "art/icons/conditions/bleeding.png",
+    "art/icons/conditions/blinded.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/12-given-edge-v1.png",
+  "source_sha256": "08617d73bcf69116c7f90d711272570f59140b682ddef106701dab92372ac5d9",
+  "generation_attempt": 1,
+  "export_crop": [
+    31,
+    134,
+    1253,
+    1101
+  ],
+  "scale": 0.6710310965630114,
+  "offset": [
+    102,
+    187
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "691e7d0d477a0231cb063ccef39ef0b1c78e37d62ddaeac6e3e89c847883b86b",
+  "exports": {
+    "256": "art/icons/conditions/exports/256/given-edge.png",
+    "128": "art/icons/conditions/exports/128/given-edge.png",
+    "64": "art/icons/conditions/exports/64/given-edge.png",
+    "48": "art/icons/conditions/exports/48/given-edge.png",
+    "44": "art/icons/conditions/exports/44/given-edge.png",
+    "32": "art/icons/conditions/exports/32/given-edge.png",
+    "24": "art/icons/conditions/exports/24/given-edge.png",
+    "16": "art/icons/conditions/exports/16/given-edge.png"
+  },
+  "export_sha256": {
+    "256": "90ed6772d0e5210652b6c90b87110901f00f86b69780c8321168f10ad2dca4f6",
+    "128": "31ac7e59126aa2f78fc002a7f5c037057552672e8ed1e951cbf028fdfc2f4f6d",
+    "64": "7229ed934c52320650d0e1bc179558037361514064a605325361e7670adaa3b5",
+    "48": "e5e7f8b931ea044ddb382b4e43c8ab897ebd41f752e89eca889ff68fe18ebb8f",
+    "44": "4a15dd01a072862671d741d5d6cb90cd7afa63ba3dd0c3a5ffaac0b4bc70e5f6",
+    "32": "3463b05b47cae024aa12898845ee6e74cc9c033efd897acd56d09d9c0f96d21d",
+    "24": "0e788221515b63da97beab54d1a16716d8d8fe50a0fcbdf5da749124cdc60dfe",
+    "16": "f8c3ea2c8257d96f813d6601be4a50d450bd64b4f9c328ae2722d346f9f1f3a8"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

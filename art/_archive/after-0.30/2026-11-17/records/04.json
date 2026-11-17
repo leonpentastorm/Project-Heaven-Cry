@@ -1,0 +1,81 @@
+{
+  "number": 4,
+  "section": 1,
+  "family": "interface_icons",
+  "id": "banner-fight-field",
+  "path": "art/icons/banners/fight-field.png",
+  "name": "Free roam (flash mark)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph, a looping arrow)",
+  "use": "The FREE ROAM banner after a won Survival fight, when the party has three free rounds on the cleared field",
+  "paint": "An open ring (the cleared field) with two small footprints crossing it and one short curved arrow looping back to the first print; the three flash marks of the family (start, won, lost) are the references.",
+  "avoid": "a compass \u00b7 a map pin \u00b7 a flag \u00b7 any text",
+  "file_key": "04-fight-field",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: An open ring (the cleared field) with two small footprints crossing it and one short curved arrow looping back to the first print; the three flash marks of the family (start, won, lost) are the references.\nAVOID: a compass \u00b7 a map pin \u00b7 a flag \u00b7 any text",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-1-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/banners/fight-start.png",
+    "art/icons/banners/fight-won.png",
+    "art/icons/banners/fight-lost.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/04-fight-field-v1.png",
+  "source_sha256": "84aa4d4989d980a755783350a543e7bf70e627df65544ccd5dbdf558fd8cae77",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    27,
+    1240,
+    1230
+  ],
+  "scale": 0.6612903225806451,
+  "offset": [
+    102,
+    114
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "7b659f09f0c1da7ad6224524ce99d703e68a3297bad8ff8fa6049d8c5b4ba085",
+  "exports": {
+    "256": "art/icons/banners/exports/256/fight-field.png",
+    "128": "art/icons/banners/exports/128/fight-field.png",
+    "64": "art/icons/banners/exports/64/fight-field.png",
+    "48": "art/icons/banners/exports/48/fight-field.png",
+    "44": "art/icons/banners/exports/44/fight-field.png",
+    "32": "art/icons/banners/exports/32/fight-field.png",
+    "24": "art/icons/banners/exports/24/fight-field.png",
+    "16": "art/icons/banners/exports/16/fight-field.png"
+  },
+  "export_sha256": {
+    "256": "9815dbe5ba42bc6eb1ba7f18708516c86383412431ca1f7131fada1016b44879",
+    "128": "836271c452076ae2252a19afb64864a8d6438c941ef46449784b1aa577f79865",
+    "64": "fcafb85a3650f0cbf9e6240f79ec15fb8dae0cc35ef852dfc941e9ebe913183a",
+    "48": "f4296a16ba5f6ae6ac9ee124e4ab586f3c1df68571c807dd65a15db50b93b73b",
+    "44": "cc1a14044c1783b7076f7bd4a8d8cd0a37a00d9444e373386f7dff33e217ce28",
+    "32": "c881deac767a28542dc928ea774f1614749ba0b63d674a44537c33a9deb5eb91",
+    "24": "98f83221ad34a350ea6475b90376281283cb9f2ddeb75df203899bcd3e5f764c",
+    "16": "a7ebdf234f7e0b4574c92aa3ce687096fa1021963385d22e267ddb238fef0e8e"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

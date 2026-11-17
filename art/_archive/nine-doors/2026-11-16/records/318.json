@@ -1,0 +1,60 @@
+{
+  "number": 318,
+  "family": "condition_icons",
+  "id": "cond-sharpened",
+  "path": "art/icons/conditions/sharpened.png",
+  "name": "Sharpened",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "State word",
+  "paint": "A blade edge with a small bright point.",
+  "avoid": "a pencil \u00b7 a whetstone brand",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No\noutline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a\nscene: Wick does not appear; a small generic silhouette may. One subject, centred, with clear space around it, square,\n1024 x 1024 PNG with transparency. It must read at 24 px beside a word on a token and at 48 px on a card: silhouette first,\ntwo interior cuts at most. A door emblem must also read inside a 20 px chip. No text, no letters, no numbers, no border,\nno frame. Invented shapes only. The icon shows:\n\nPaint: A blade edge with a small bright point.\nAvoid: a pencil \u00b7 a whetstone brand\nSTYLE CLARIFICATION: this is a generic condition SIGN. NO Wick, no screen head, no mascot capelet or lantern chest. Only the named subject, 2 interior cuts at most, bold clear silhouette. Center within a 15% transparent margin. Use solid white shapes and transparent cutouts only, including the background and all interior holes. Translate any light/glow into a single white tick or ray; never gray, gradients or bloom.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "cb8058d5384b368bb26f77a6c0cb60696cb699c77f2e202cd6e580c14f98f50c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/318-sharpened.png",
+  "source_sha256": "ac964953f54965e2d7bd98d7dad406b8ae4176c59548b09dce02e37ec7f5d7dc",
+  "export_crop": [
+    0,
+    64,
+    1218,
+    1236
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/sharpened.png",
+    "64": "art/icons/conditions/exports/64/sharpened.png",
+    "48": "art/icons/conditions/exports/48/sharpened.png",
+    "44": "art/icons/conditions/exports/44/sharpened.png",
+    "32": "art/icons/conditions/exports/32/sharpened.png",
+    "24": "art/icons/conditions/exports/24/sharpened.png"
+  },
+  "framing": {
+    "scale": 0.6732348111658456,
+    "offset": [
+      102,
+      117
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

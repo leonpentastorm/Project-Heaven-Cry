@@ -1,0 +1,76 @@
+{
+  "number": 114,
+  "family": "move_icons",
+  "id": "move-called-shot",
+  "path": "art/icons/moves/called-shot.png",
+  "name": "Called Shot",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Operative rank III move (asked 13 Nov, C2)",
+  "paint": "A small ring drawn round one limb of a silhouette, a sight-line to it.",
+  "avoid": "a crosshair over a head \u00b7 text",
+  "section": "Ingenuity: Shadow, and the Operative",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A small ring drawn round one limb of a silhouette, a sight-line to it.\nAvoid: a crosshair over a head \u00b7 text\nEXACT STAGING: Show only a cropped lower-leg segment of a plain wooden TRAINING DUMMY, from cuff to boot, with one SMALL CLEAN RING circling the knee joint. One thin straight sight-line comes from the left edge and ENDS AT THE RING, without a projectile, impact or injury. The ring is a simple empty outline, NOT a crosshair. No head or complete person, no Wick, no text, weapon, blood or firing scene. This is a harmless practice marker on a dummy joint.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "7c17970625700d44908ced081855b8393be98fe8adad30fc34b3b3cf1f03670f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/114-called-shot.png",
+  "source_sha256": "e45341239732c1ff8a0d5222d6b5a7d193342041a7dbe52779f411257c8fe527",
+  "export_crop": [
+    18,
+    21,
+    1208,
+    1206
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/called-shot.png",
+    "64": "art/icons/moves/exports/64/called-shot.png",
+    "48": "art/icons/moves/exports/48/called-shot.png",
+    "44": "art/icons/moves/exports/44/called-shot.png",
+    "32": "art/icons/moves/exports/32/called-shot.png",
+    "24": "art/icons/moves/exports/24/called-shot.png"
+  },
+  "framing": {
+    "scale": 0.6035249381601249,
+    "offset": [
+      153,
+      154
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "a661df8dc64fd5826de3a34678ded17910bf58ca911628acb4999eb083c82062",
+    "64": "bc378168aaf9e85549eaf2587ddb24133d276440656a967528df2f0c9c3bec99",
+    "48": "9da01223a27cd142d27bc795263adaabbfe775b9893e3b83249ee2038bd544b9",
+    "44": "1ec4c48b1ddc65ff76d451326559fc0cbbd3a8e8299dc071c1766fdac9064560",
+    "32": "765ef0f60112a22eeb0eeb496ae495236d937309f7b16748e0d617007f4a8648",
+    "24": "82e1dcf7043f49225b9d3f8c260bf0308aed76b6fa98eb41a180c62c7a55d145"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

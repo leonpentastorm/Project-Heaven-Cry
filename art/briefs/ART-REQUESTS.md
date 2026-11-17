@@ -35,7 +35,7 @@ needs a catalog entry in [`art/catalog.json`](../catalog.json); Claude adds it a
 
 ## Open requests
 
-**The 0.29 revamp (16 Nov 2026): section 0 below, one file for everything.** **Ready-to-paste prompts for an image generator** (12 Nov 2026): [`GPT-PROMPTS-2026-11-12.md`](GPT-PROMPTS-2026-11-12.md) covers W1 to W3, F1, F2 and the two maps whose layouts are set (M1, M6).
+**The 0.29 revamp (16 Nov 2026): section 0 below, one file for everything; what is wanted beyond the 0.30 list: section 0b.** **Ready-to-paste prompts for an image generator** (12 Nov 2026): [`GPT-PROMPTS-2026-11-12.md`](GPT-PROMPTS-2026-11-12.md) covers W1 to W3, F1, F2 and the two maps whose layouts are set (M1, M6).
 
 ### 1. Wick icons (white flat ink, 1024 × 1024, transparent; the STYLE-LOCK applies)
 
@@ -58,6 +58,35 @@ here on 15 Nov for the same things: the 18 alpha perks (was 1b), the Bonds 2.0 i
 (C1 to C4), whose rows above stay as history. **Placeholders:** every in-game image with no art of its own has one
 (`tools/art/make_placeholders.py`, list `placeholders-2026-11-16.json`, catalog `placeholder: true`), 305 in all, 20 drawn
 by a screen today (the 18 perks, the Open Hand, Glimmer); the delivery replaces each by its catalog id.
+
+**Delivered (merged in 0.31.x from `art/nine-doors-2026-11-16` at `5406ede0`, 17 Nov 2026): 348 of 375**, all review
+candidates (`production_approved: false`). 300 replace their placeholders by catalog id (the placeholder files are archived
+under `_archive/nine-doors/2026-11-16/superseded/placeholders/`); 48 are designed-not-built rows. The artist's hand-off is
+[`NINE-DOORS-ART-HANDOFF-2026-11-16.md`](NINE-DOORS-ART-HANDOFF-2026-11-16.md). **27 rows are held** for 0.30 (the
+[hold list](../_archive/nine-doors/2026-11-16/art-hold-list-0.30.md)); **the 0.30 list, 41 pictures** (32 fork icons, Stand
+Behind Me, Wind-up, Read the Swing, Hold the Lane, Scrap Sentinel, Follow, Afterword, Mana Shock, Staggered:
+[`CONTINUE-0.30.md`](../_archive/nine-doors/2026-11-16/CONTINUE-0.30.md)) is **0/41**. Still a placeholder in the game: the 32
+`fork_icons`, `move-draw-fire`, `move-shove`, `move-lingering-dread`, `move-speed-loader`, `move-scrap-turret`,
+`cond-mana-shock` and `weapon-afterword` (all on the 0.30 list or held).
+
+### 0b. Everything else without art, beyond the 0.30 list: ONE file (requested 17 Nov 2026, 0.31.1)
+
+**Everything the game shows without finished art that neither the 0.29 list nor the 0.30 list asks for is in
+[`GPT-PROMPTS-2026-11-17-after-0.30.md`](GPT-PROMPTS-2026-11-17-after-0.30.md)**: **45 images**, all in the game now
+(Leon, 17 Nov: "request anything without art beyond the 0.30 in mention"; 54 at first: Witnessed, Felt, Practice and six tones
+were cut on integration, answered by delivered art): 34 white-ink signs and 11 Wick icons, in seven
+groups, most-seen first: the fight screen's marks (the status strip's helping, hurting and state marks, and the FREE ROAM
+banner mark), seven conditions (Left and Right Brain Debuff, Swinging, Ground, In Their Sights, Free move spent, Given
+Edge), the map's hazards and Sigil zones, eleven Survival place cards that show no picture (training, shrine and the
+six Crossroads trades), the six vows, five Tending passives, and (optional) credits, XP, Devotion XP and the Raw tone. The first three rows of the old table here (G1 Left Brain Debuff, G2 Right Brain Debuff, G3 Swinging) are rows of
+that file now. The same file lists what was left off on purpose (the 41 other feeling states, the basic action icons, never-fitted
+mods) and what the builder must wire. **The 0.30 list stays where it is** (`CONTINUE-0.30.md`, 41 pictures, 0 done).
+
+Checked and **nothing missing** (so nobody asks again): every weapon, item, mod, armour piece, calibre of rounds and magazine
+(19 of 19 magazine guns), all six gloves, every perk, trait, Call, feeling, module, boon and boon line, every Survival node
+kind, foe face, shopkeeper and Boss, every patron, Whisper, Hymn and Miracle, every Figment form, order and trait, every
+Shadow verb, the three fight banners (start, won, lost) and the class and door art (delivered, waiting for a screen).
+Row S7 below (the Ork warlord and upper-realm patch portraits) is **done**: both are in the catalog and used.
 
 ### 2. Outburst feelings and modules
 

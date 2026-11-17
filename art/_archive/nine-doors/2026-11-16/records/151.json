@@ -1,0 +1,76 @@
+{
+  "number": 151,
+  "family": "figment_trait_icons",
+  "id": "trait-tethered",
+  "path": "art/icons/figments/trait-tethered.png",
+  "name": "Tethered",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment trait",
+  "paint": "A figment shape tied by one thin line to a small ring on the ground.",
+  "avoid": "a dog leash \u00b7 chains",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape tied by one thin line to a small ring on the ground.\nAvoid: a dog leash \u00b7 chains\nEXACT STAGING: Match the attached angular pointed kite-like abstract Figment body with two loose diamond flecks. One slim taut white tether descends diagonally from its bottom point to one small WHITE RING resting on an implied ground baseline below. Tether and ring must be large enough to read at 32px. No animal, face, collar, leash handle, chain, humanoid or Wick. Solid white flat shapes and fully transparent gaps.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "3c0976ca848b2d36c69ec2bbfd54e6e4cf6b6f2c7207d04a1709fa6944789e43",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/151-trait-tethered.png",
+  "source_sha256": "914d1a54b594909b7a8a2213b5720f3d57dc528983c9e759357cfaa1d7b5d895",
+  "export_crop": [
+    57,
+    27,
+    1127,
+    1236
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-tethered.png",
+    "64": "art/icons/figments/exports/64/trait-tethered.png",
+    "48": "art/icons/figments/exports/48/trait-tethered.png",
+    "44": "art/icons/figments/exports/44/trait-tethered.png",
+    "32": "art/icons/figments/exports/32/trait-tethered.png",
+    "24": "art/icons/figments/exports/24/trait-tethered.png"
+  },
+  "framing": {
+    "scale": 0.5599458937928923,
+    "offset": [
+      212,
+      173
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "f5b9e4cbedc2ac509298016f87e7a40bdccf00aee91a599e92334d3ac2a5cbbc",
+    "64": "135650d5098911fdde0469678648453a73258d2516759ccd0f8b2fa413814d24",
+    "48": "577f578bc8fa9663e91ae75b62942ed424b6bfd92903180a518a57adcb4943a9",
+    "44": "e2381f6ab036dfecb226da95795ffd9017b7d916cdc38adc054bb1c33d0d2185",
+    "32": "1b2766248d222477b93bce3e5982a4c7f4a5391b4ac962c832cba0e6e03be31c",
+    "24": "f49dddf393484528c7a05a51036307d64ec38998b8b970631a4de0a94c6f19a9"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

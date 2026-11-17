@@ -1,0 +1,101 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.prayer.benediction",
+  "name": "Benediction",
+  "icon_id": "fork.prayer.benediction",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Benediction** (`prayer.benediction`). *\"Your Whisper on an ally may be said wide, for {=numbers.ap} AP more: it also\nreaches every ally within {=numbers.within} tile of its target, at {=numbers.share|pct}% (Luck, Health, Protection\nand Courage; Guidance reveals {=numbers.radius} tiles further; Safe Passage also covers every ally within\n{=numbers.within} tile of you). A wide Whisper adds {=numbers.wait} round to your Hymn's wait; with no Hymn of yours,\nyou may say one once a fight. Not Rebuke, not the Ward.\"*\n- Fields: `ap: 1`, `within: 1`, `share: 0.7`, `radius: 2`, `wait: 1`, limit `per_combat` 1 (no Hymn only). Why the\n  wait: it is paid in **the door's own resource** (the prayer slots), so a Faithful chooses each round between a wide\n  Whisper and an earlier Hymn; with no price it was a 3\u00d73 heal or shield every turn, the Protection refreshed each turn\n  (the larger stands) and doubled by Conscience. Why no Rebuke: said wide it was armour-ignoring, no-roll area damage\n  every turn for every Faithful, another door's outcome (the burst, Payload). Why 0.7: a 3\u00d73 of four allies at 70% is\n  about three Whispers for 2 AP; not standing, so not the Canticle's aura.\n- Carrier: the Whisper's effects are run by `blessing()` from `patrons.json whispers` (`tactics.ts:409-418`), which\n  reads no `targets` and no `if`: **N5** (restated: the blessing runner reads `targets` and `if`). The wait through N7\n  (`hymnCut` as a count an op adds; a wide Whisper adds \u22121).\n- Chaplain: the Canticle stays the squad's standing aura; Ward is excluded so the layering shield stays one target.\n- Excite: your squad is stacked in the doorway; one wide Protection shields all three, and you know the Hymn comes a\n  round late.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [
+    3
+  ],
+  "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+  "file_key": "fork-prayer-benediction",
+  "path": "art/icons/forks/prayer-benediction.png",
+  "paint": "Wick opens BOTH arms wide from a low stable stance; ONE broad blessing fan from his hands spreads to a central cropped hand and two smaller cropped hands beside it. Open kind screen face, chest lantern clearly visible.",
+  "avoid": "No full group, actual saint, Ward shield, cross or glow gradient.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick opens BOTH arms wide from a low stable stance; ONE broad blessing fan from his hands spreads to a central cropped hand and two smaller cropped hands beside it. Open kind screen face, chest lantern clearly visible.\nAVOID: No full group, actual saint, Ward shield, cross or glow gradient.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "visual_basis_resolution": {
+    "authority": "Leon explicit answer 17 November 2026",
+    "quote": "Use pinned revision-2 rules for these eight proposals",
+    "gameplay_questions_remain_open": true
+  },
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 14,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "273394fe61923747f67563b9a33773814cc1a5e5efe73ac5348b6ba3c70b212f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-prayer-benediction-v1.png",
+  "source_sha256": "76a25af6f86e786bd5c1e2ecc529dd9fef0c3b5643e5ad8de2518ee04223dbf8",
+  "export_crop": [
+    0,
+    31,
+    1248,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/prayer-benediction.png",
+    "64": "art/icons/forks/exports/64/prayer-benediction.png",
+    "48": "art/icons/forks/exports/48/prayer-benediction.png",
+    "44": "art/icons/forks/exports/44/prayer-benediction.png",
+    "32": "art/icons/forks/exports/32/prayer-benediction.png",
+    "24": "art/icons/forks/exports/24/prayer-benediction.png"
+  },
+  "export_sha256": {
+    "128": "c97e600fcbb2f8c19817dd018aaa7de7357911e8b9843cfaf945143c25968c60",
+    "64": "a80a7690588d27c1492feeed252251ef6d290e2fa9b6d17ddc4e210c60fbde0c",
+    "48": "71123d2759834cac032fe08c357ab6cbe12f67cbd8ef8d0609b76b79aaa0c199",
+    "44": "303761e2188181a2e0ea02b7b0c7b994b2d61bc04fbf3baa9d74e8ca42fec6ed",
+    "32": "c17bf6325c87a93bdd41d32b5e0e260c65d375b616bb21aa9b03638e632a4acb",
+    "24": "61bab0092001db0de564ee248f6290ba29f3a27070fd8f52fc834becf8268d16"
+  },
+  "framing": {
+    "scale": 0.5662673178987597,
+    "offset": [
+      158,
+      165
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

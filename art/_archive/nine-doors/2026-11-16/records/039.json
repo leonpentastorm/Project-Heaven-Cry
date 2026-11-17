@@ -1,0 +1,76 @@
+{
+  "number": 39,
+  "family": "technique_icons",
+  "id": "tech-cleave",
+  "path": "art/icons/techniques/cleave.png",
+  "name": "Cleave",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, finisher: one swing through several foes",
+  "paint": "Wick's weapon carving one wide flat arc that passes through three short upright posts.",
+  "avoid": "a meat cleaver \u00b7 gore",
+  "section": "Raw Power: the Momentum chain, and the Breaker",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique icon in the attached object-only icons' flat white graphic style. This row is an OBJECT OR PARTIAL-ARM action, NOT a mascot scene. Pure WHITE #FFFFFF solid flat ink on true TRANSPARENCY. Bold deliberate silhouettes, broad transparent interior cuts, very few details. No full figure, no robot head, face, capelet, lantern-heart or mascot body. A cropped ceramic mitten may appear ONLY when the action requires a grip. No text, letters, numbers, labels, border, background scene, glow, gray shading or gradients. Square 1024x1024 intended master with generous 12\u201315% margins, all decisive action readable at 32px and 44px.\n\nPaint: Wick's weapon carving one wide flat arc that passes through three short upright posts.\nAvoid: a meat cleaver \u00b7 gore\nEXACT STAGING: OBJECT/WEAPON ACTION ONLY. One simple original long blade, held by only a cropped ceramic mitten at left, carves ONE wide almost-horizontal white arc through EXACTLY THREE short upright plain practice posts. Posts are simple stout rectangles, not people. Keep all three recognizable and spaced, no splinters cloud. No full robot or head, no meat cleaver, gore or extra props.\nDo not add any mascot figure even though a hand is allowed. References establish object-only visual density and pure-white ink; do not copy their incidental motifs.\nKeep the whole action inside the central 75\u201380% square and the centered 90% circular safe area. All holes and negative spaces are transparent, not black paint. No glow, bloom, texture, random rays or duplicate subjects.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object or partial-arm only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "c6ba6bddafbd5513b29cd2ce63e5228c4c0d439cace7479852e1ed3d14834fac",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/039-cleave.png",
+  "source_sha256": "6d938e1d9ae11de4d9ce3bd1d8b56bcc16756da3a6a6729562d7e94eb095d572",
+  "export_crop": [
+    0,
+    296,
+    1240,
+    1172
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/cleave.png",
+    "64": "art/icons/techniques/exports/64/cleave.png",
+    "48": "art/icons/techniques/exports/48/cleave.png",
+    "44": "art/icons/techniques/exports/44/cleave.png",
+    "32": "art/icons/techniques/exports/32/cleave.png",
+    "24": "art/icons/techniques/exports/24/cleave.png"
+  },
+  "framing": {
+    "scale": 0.6278271258529176,
+    "offset": [
+      122,
+      237
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "15accddb4409c4c3096f25c738e0665fd2bd24867b22ab55b013b08e99345c85",
+    "64": "edeaf81285fabc1c20742191fc87052bf7d29ae0c49025c1e21893f5846c4e04",
+    "48": "db494df0a53b479d5ddbce66a0dc3881cab7f796623fbb7a3381047dff0356ce",
+    "44": "77871569689469df9dff7954f9545c74ba4ec437e35c995f5b4ff366ae9494fc",
+    "32": "3c55e8db3d76b17bb79955493e05092657b0df24c2ea962b745633fa7809356e",
+    "24": "46e56ea5e74c633ff173813d37f41d8dc5670776a33f7354db0cea28021d3308"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

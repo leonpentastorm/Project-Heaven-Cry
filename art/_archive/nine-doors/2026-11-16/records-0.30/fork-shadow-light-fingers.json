@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.shadow.light_fingers",
+  "name": "Light Fingers",
+  "icon_id": "fork.shadow.light_fingers",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Light Fingers** (`shadow.light_fingers`). Renamed: **Sleight** is the Rigger's rank III move and Sleight of Hand is a\nperk id. *\"Your Lift costs {=numbers.shadow} Shadow and takes any one thing the foe carries that is not in its hands (a\nstim, a core, a grenade, a charm, a spare magazine), straight into your pack. A grenade taken so is ready to throw:\nthe one it was about to throw, back at it.\"*\n- Fields: `shadow: 1`. Why: Lift is free of Shadow today; a Shadow is the price of choosing what to take.\n- Carrier: Lift's row (`shadow.lift`), op `take` with two new fields `what: any` and `to: pack` (N12). Cheaper with no\n  primitive: none that keeps the point of it.\n- Operative: no move touches Lift. Hand's Filch (Figments) lifts a throwable for the Rigger: a different door. Peak: no.\n- Excite: the Elite has one stim and one grenade. You take the grenade on your turn and throw it into its squad.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-shadow-light-fingers",
+  "path": "art/icons/forks/shadow-light-fingers.png",
+  "paint": "Wick crouches slyly and delicately lifts ONE small plain capped canister from a cropped coat pocket with one ceramic mitten, other hand holding his own open pack beneath it. Pixel wink, careful high elbow.",
+  "avoid": "No real explosive design, weapon fuse, money sign, full victim or literal flaming fingers.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick crouches slyly and delicately lifts ONE small plain capped canister from a cropped coat pocket with one ceramic mitten, other hand holding his own open pack beneath it. Pixel wink, careful high elbow.\nAVOID: No real explosive design, weapon fuse, money sign, full victim or literal flaming fingers.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 4,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "9c1fe8d6d3d653fa4ed51ad1d877a0599d51b58d225d48d16ecadfeded173d66",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-shadow-light-fingers-v1.png",
+  "source_sha256": "422402f9381729a90fac63beb3966ffc8cc7ed7bdd42abb8b50e05cda3e7be85",
+  "export_crop": [
+    0,
+    13,
+    1236,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/shadow-light-fingers.png",
+    "64": "art/icons/forks/exports/64/shadow-light-fingers.png",
+    "48": "art/icons/forks/exports/48/shadow-light-fingers.png",
+    "44": "art/icons/forks/exports/44/shadow-light-fingers.png",
+    "32": "art/icons/forks/exports/32/shadow-light-fingers.png",
+    "24": "art/icons/forks/exports/24/shadow-light-fingers.png"
+  },
+  "export_sha256": {
+    "128": "9233e592269b985b85f21805d71762a98d98d476b6a431737013e6416f1a7e8c",
+    "64": "796550eaa77632c3bb76294c129cfc9d7a5138a23df52b0839d107efac2d2312",
+    "48": "5e32df4979b6ed4b3db222e908235b745c086a3bb2530f062b2e82a8edf78363",
+    "44": "c4a6b6272135d049f8948174224fae2478a1ac782f90b8fcc96bcfd4848bbef7",
+    "32": "db8388386bf4fc4987ca37a0319c9b6a8f5d63b8dbd0855a2191155c2d2e7b0b",
+    "24": "95316513493e7cf3b27f3fdb545886056f612a2dbf472df7bf2ebf35b67682b5"
+  },
+  "framing": {
+    "scale": 0.5686975110043778,
+    "offset": [
+      160,
+      159
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

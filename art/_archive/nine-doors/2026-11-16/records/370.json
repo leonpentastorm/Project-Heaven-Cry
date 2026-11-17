@@ -1,0 +1,78 @@
+{
+  "number": 370,
+  "family": "technique_icons",
+  "id": "tech-overwatch-tech",
+  "path": "art/icons/techniques/overwatch-tech.png",
+  "name": "Overwatch (technique)",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, watch",
+  "paint": "Wick lying still, a long sight-line across a lane.",
+  "avoid": "a tower \u00b7 an eye logo",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick lying still, a long sight-line across a lane.\nAvoid: a tower \u00b7 an eye logo\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Overwatch technique: ONE Wick lies PRONE AND COMPLETELY STILL low at left, boots stretched behind left, screen head low behind a compact invented practice rifle resting forward. ONE LONG STRAIGHT WHITE SIGHT-LINE extends right from front sight across a clear empty lane, no target or projectile. Wick's eyes patient focused, capelet lies flat. No tower, eye logo, arrows, bowl, halo, flames, stars or second figure. Long low silhouette safely inside circle.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "9c8f27685d6d39275a12c5abc8ae04d14459a5ba2375e735da18bf7d1c749257",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/370-overwatch-tech.png",
+  "source_sha256": "07d2833b1c1bfe6e2ff0df5d6f653c58ab05d239ed636bca3e8f03137439c747",
+  "export_crop": [
+    0,
+    39,
+    1242,
+    1198
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/overwatch-tech.png",
+    "64": "art/icons/techniques/exports/64/overwatch-tech.png",
+    "48": "art/icons/techniques/exports/48/overwatch-tech.png",
+    "44": "art/icons/techniques/exports/44/overwatch-tech.png",
+    "32": "art/icons/techniques/exports/32/overwatch-tech.png",
+    "24": "art/icons/techniques/exports/24/overwatch-tech.png"
+  },
+  "framing": {
+    "scale": 0.643595971173836,
+    "offset": [
+      112,
+      139
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "0e43480fae5915e94ff96fb19b78338e2f2e15d233b69da506cfe4756f147a0f",
+    "64": "e83a30234d9f81e20ddd0913a7c6465e78f320fa738265982eb2a31f035c03fe",
+    "48": "ca43f20e879c561c57cbcbdbbaad9ddec705687e686657dd2108a6d172eac9e6",
+    "44": "a0dd420d83ac9f0b545525e407763647b0902e4ac400506143e19f2294959257",
+    "32": "2191374fea8a4000b93fffd249f20d67c6bbea7132de46e8e60ad8c8c67b60a9",
+    "24": "f5220fa4319dcd27fdc48b597824c364b38647e6079ba37aea6cc62dea0c1d3b"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

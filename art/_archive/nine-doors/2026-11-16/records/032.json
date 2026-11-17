@@ -1,0 +1,78 @@
+{
+  "number": 32,
+  "family": "move_icons",
+  "id": "move-lunge",
+  "path": "art/icons/moves/lunge.png",
+  "name": "Lunge",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Breaker rank I move (and a technique): a long step and strike",
+  "paint": "Wick in a deep lunge, back leg straight, blade point leading far ahead.",
+  "avoid": "fencing gear \u00b7 a second figure",
+  "section": "Raw Power: the Momentum chain, and the Breaker",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick in a deep lunge, back leg straight, blade point leading far ahead.\nAvoid: fencing gear \u00b7 a second figure\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nSpecific staging: A very deep forward lunge toward viewer-right: front knee sharply bent, back leg visibly straight, back boot planted, torso and long blade point reaching far forward on one strong diagonal. The whole blade must fit inside the canvas and be at least a third of the frame width. Not a fencing uniform or realistic duelist. Wick's ceramic model and capelet are unchanged. One figure and one original simple blade, no opponent or scene. This safe image can later serve the renamed Barrel In move; keep its existing icon binding.\nCharacter/style: exactly the same small CERAMIC AUTOMATON as the first three production references, with inset pixel-screen face, chamfered head with offset fasteners, ear discs, short asymmetric capelet, circular medical-lantern chest, mitten hands and chunky cuffed boots. Fourth reference is identity only: NO meditation bowl and NO copied up-arrows. Flat pure white ink, all negative space transparent, no black fill, grey, shading or glow. Square single icon, no writing or frame, complete silhouette inside a central 75\u201380% square and 90% circular chip.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "release_030_display_name": "Barrel In",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "9b73cfa5a1d70915408d16321ed2a8f85ec3b631b79d62b635e82cef88f5cabd",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/032-lunge.png",
+  "source_sha256": "f2abc91c11972e290bcb1f1db275979fa3ec807ba0bf397b262a7c0cc4e4db73",
+  "export_crop": [
+    0,
+    117,
+    1224,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/lunge.png",
+    "64": "art/icons/moves/exports/64/lunge.png",
+    "48": "art/icons/moves/exports/48/lunge.png",
+    "44": "art/icons/moves/exports/44/lunge.png",
+    "32": "art/icons/moves/exports/32/lunge.png",
+    "24": "art/icons/moves/exports/24/lunge.png"
+  },
+  "framing": {
+    "scale": 0.6502566213360732,
+    "offset": [
+      114,
+      142
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "bbb147314ddeb6247e225f88b77929e405d616f6df5422dbd271e5cb4f1d5c8b",
+    "64": "f21e99f7c048dffff48758a8400ea0acd1df2da65d51da7dfd06e0909de4f642",
+    "48": "c1bcccb62d0d1b8ea4fd529b6e9e6fd447b5cd435fa56ed26c070b0207b072cc",
+    "44": "d04b484e87f3a07b6c722058d3d716d3d98a562402dc5e9a0b113bd34866e8a4",
+    "32": "cf19178a0e51ecc9d0f468d9c10618269a9c325355e75d3a6b67c0731db0f601",
+    "24": "7290e49e8516f8b7d153dbcf727b6415f7227ed4f01fd6afeabf06b2c2d5e19d"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ]
+}

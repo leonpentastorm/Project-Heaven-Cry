@@ -1,0 +1,82 @@
+{
+  "number": 41,
+  "section": 6,
+  "family": "tending_icons",
+  "id": "tend-hold-down",
+  "path": "art/icons/tending/hold-down.png",
+  "name": "Threads That Hold",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 no slot yet",
+  "use": "Your Bonds to allies hold while you are Downed",
+  "paint": "Wick down on one knee, his threads still taut and rising from his chest to two allies.",
+  "avoid": "a fallen figure with no threads \u00b7 chains",
+  "file_key": "41-hold-down",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick down on one knee, his threads still taut and rising from his chest to two allies.\nAVOID: a fallen figure with no threads \u00b7 chains",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-6-wick-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/tending/bond.png",
+    "art/icons/tending/tug.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/41-hold-down-v1.png",
+  "source_sha256": "348f10e41e7428a7bd8618b4db264c1d51411b663bcfe791479728bb27d68268",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    71,
+    1228,
+    1254
+  ],
+  "scale": 0.5165175849153262,
+  "offset": [
+    195,
+    206
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "905f4b502f999b53dc0fb8f98f5020cf49cad3f8a41c5493bd326b9dc8f9117f",
+  "exports": {
+    "256": "art/icons/tending/exports/256/hold-down.png",
+    "128": "art/icons/tending/exports/128/hold-down.png",
+    "64": "art/icons/tending/exports/64/hold-down.png",
+    "48": "art/icons/tending/exports/48/hold-down.png",
+    "44": "art/icons/tending/exports/44/hold-down.png",
+    "32": "art/icons/tending/exports/32/hold-down.png",
+    "24": "art/icons/tending/exports/24/hold-down.png",
+    "16": "art/icons/tending/exports/16/hold-down.png"
+  },
+  "export_sha256": {
+    "256": "20eb1179d335e19917e3e693210dbcef32a9aed5127e52a85382e8bea840f3b8",
+    "128": "0507cc04253e56956edc2df8a4af1fcd3fd5ef9b2558dcaf6c064a23a27c60c1",
+    "64": "0bf45c3f21abda31de2aded62e18f2083045d8bd666c1200a18a276037d4dfa4",
+    "48": "ed47d8b49ff4f07d1de5ff005ba09156d98a5de00460c4a54ef7c35194527a42",
+    "44": "f7eedf4b2ed5468f1e2b8f9bce9ef69747018d6e5bedfbed5e2b96ecbc00e466",
+    "32": "233296846b8e3a7b1c92504825bf31a3d6f5639a668718a743875c0a5e1c0dc8",
+    "24": "1ddbc74e3e7013fb89c27a738bd46069ad22a987d255e8375de399e3a27172f0",
+    "16": "34ab9ae5334cb4eebd7e73654aa1c8cf2c8172a3106d444587d94f32984b4d4d"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

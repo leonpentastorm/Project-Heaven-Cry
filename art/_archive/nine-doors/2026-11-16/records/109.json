@@ -1,0 +1,62 @@
+{
+  "number": 109,
+  "family": "move_icons",
+  "id": "move-tradecraft",
+  "path": "art/icons/moves/tradecraft.png",
+  "name": "Tradecraft",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Operative gain",
+  "paint": "Wick turning a small notebook toward himself, a key and a picklock clipped to its cover.",
+  "avoid": "text on the pages \u00b7 a spy from a known work",
+  "section": "Ingenuity: Shadow, and the Operative",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick turning a small notebook toward himself, a key and a picklock clipped to its cover.\nAvoid: text on the pages \u00b7 a spy from a known work\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "1a7e75292f794cee349b7681fb13623329f11c14cb7a56fb2d25806ed49428b4",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/109-tradecraft.png",
+  "source_sha256": "58320739bc4e7888eec749db077076b8cdf38972bc90cdc1292786ed83a5a689",
+  "export_crop": [
+    65,
+    13,
+    1248,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/tradecraft.png",
+    "64": "art/icons/moves/exports/64/tradecraft.png",
+    "48": "art/icons/moves/exports/48/tradecraft.png",
+    "44": "art/icons/moves/exports/44/tradecraft.png",
+    "32": "art/icons/moves/exports/32/tradecraft.png",
+    "24": "art/icons/moves/exports/24/tradecraft.png"
+  },
+  "framing": {
+    "scale": 0.610273501642183,
+    "offset": [
+      151,
+      133
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

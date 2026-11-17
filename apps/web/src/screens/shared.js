@@ -13,6 +13,7 @@ import { foldVals } from '../game/fold';
 import { shieldBlock } from '../game/shieldLook';
 import { kitSprite } from '../game/kitMap';
 import { figmentFaceOf } from '../game/figmentIcons';
+import { bigOf } from '../game/doorArt';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 
 export const D = PD;
@@ -156,7 +157,7 @@ export const spriteStyle = (o) => { const b = o.spriteBox || { w: 1, h: 1, dx: 0
  *  <!--SHIELDS:path-->, wherever a template shows a unit's HP (the target card, your own panel). */
 const SHIELDS_TPL = '<sc-if value="{{Y.has}}"><span data-shields-block style="display: flex; flex-direction: column; gap: 2px"><span style="{{Y.headStyle}}">{{Y.head}}</span><sc-if value="{{Y.hasGuardFirst}}"><span data-shield-guard="first" tip="{{Y.guardTitle}}" style="{{Y.lineStyle}}"><span aria-hidden="true" style="flex: none; width: 10px; text-align: center; font-size: 11px; color: #E7EBF3">{{Y.guardGlyph}}</span><span>{{Y.guardLine}}</span></span></sc-if><sc-for list="{{Y.lines}}" as="shl"><span data-shield-line="{{shl.kind}}" style="{{Y.lineStyle}}"><span aria-hidden="true" style="{{shl.pipStyle}}">{{shl.glyph}}</span><span style="{{shl.nameStyle}}">{{shl.name}}</span><span style="font-weight: 700; font-variant-numeric: tabular-nums">{{shl.amount}}</span><span style="font-size: 12px; color: #A3AEC2">· {{shl.lasts}}</span></span></sc-for><sc-if value="{{Y.hasGuardLast}}"><span data-shield-guard="last" tip="{{Y.guardTitle}}" style="{{Y.lineStyle}}"><span aria-hidden="true" style="flex: none; width: 10px; text-align: center; font-size: 11px; color: #E7EBF3">{{Y.guardGlyph}}</span><span>{{Y.guardLine}}</span></span></sc-if><span data-shield-absorb style="font-size: 13px; font-weight: 700; color: #FFFFFF">{{Y.absorb}}</span><sc-if value="{{Y.hasAbsorbDrop}}"><span data-shield-absorb-drop style="{{Y.subStyle}}">{{Y.absorbDrop}}</span></sc-if><sc-if value="{{Y.hasRule}}"><span data-shield-rule style="{{Y.subStyle}}">{{Y.rule}}</span><sc-if value="{{Y.hasGuard}}"><span data-shield-guard-how style="{{Y.subStyle}}">{{Y.guardName}}: {{Y.guardTitle}}</span></sc-if></sc-if></span></sc-if>';
 /** Expand the shared template pieces exactly as design/canvas-build/build.py does. */
-const popTpl = '<span class="phc-pop" role="tooltip" style="{{X.popStyle}}">\n<span style="display: flex; gap: 8px; align-items: center"><sc-if value="{{X.hasImg}}"><img src="{{X.img}}" alt="" style="width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #000; flex: none"></sc-if><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{X.name}}</span><span style="{{X.subStyle}}">{{X.sub}}</span></span></span>\n<sc-if value="{{X.known}}"><span style="display: flex; justify-content: space-between; font-size: 13px"><span style="font-weight: 700; color: #F65157">{{X.hp}}</span><span style="{{X.stateStyle}}">{{X.state}}</span></span><span style="display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="display: block; {{X.hpFill}}"></span></span><sc-if value="{{X.hasAp}}"><span style="font-size: 13px; color: #A3AEC2">{{X.ap}}</span></sc-if><sc-if value="{{X.hasInj}}"><span style="font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #F65157">⚠ {{X.inj}}</span></sc-if><sc-if value="{{X.hasSt}}"><span data-token-status="" style="display: flex; flex-wrap: wrap; gap: 3px 8px"><sc-for list="{{X.st}}" as="sg"><span data-status-group="{{sg.side}}" style="display: inline-flex; flex-wrap: wrap; gap: 3px"><sc-for list="{{sg.chips}}" as="sc"><span data-status="{{sc.key}}" style="{{sc.style}}"><span aria-hidden="true">{{sc.glyph}}</span><span>{{sc.word}}</span></span></sc-for><sc-if value="{{sg.hasMore}}"><span style="{{sg.moreStyle}}">{{sg.moreText}}</span></sc-if></span></sc-for></span></sc-if></sc-if>\n<sc-if value="{{X.unknown}}"><span style="{{X.stateStyle}}">{{X.state}}</span><span style="font-size: 13px; color: #A3AEC2">{{X.hint}}</span></sc-if>\n' + SHIELDS_TPL.replace(/Y\./g, 'X.sh.') + '\n';
+const popTpl = '<span class="phc-pop" role="tooltip" style="{{X.popStyle}}">\n<span style="display: flex; gap: 8px; align-items: center"><sc-if value="{{X.hasImg}}"><img src="{{X.img}}" alt="" style="width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #000; flex: none"></sc-if><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 14px; font-weight: 700">{{X.name}}</span><span style="{{X.subStyle}}">{{X.sub}}</span></span></span>\n<sc-if value="{{X.known}}"><span style="display: flex; justify-content: space-between; font-size: 13px"><span style="font-weight: 700; color: #F65157">{{X.hp}}</span><span style="{{X.stateStyle}}">{{X.state}}</span></span><span style="display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="display: block; {{X.hpFill}}"></span></span><sc-if value="{{X.hasAp}}"><span style="font-size: 13px; color: #A3AEC2">{{X.ap}}</span></sc-if><sc-if value="{{X.hasInj}}"><span style="font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: #F65157">⚠ {{X.inj}}</span></sc-if><sc-if value="{{X.hasSt}}"><span data-token-status="" style="display: flex; flex-wrap: wrap; gap: 3px 8px"><sc-for list="{{X.st}}" as="sg"><span data-status-group="{{sg.side}}" style="display: inline-flex; flex-wrap: wrap; gap: 3px"><sc-for list="{{sg.chips}}" as="sc"><span data-status="{{sc.key}}" style="{{sc.style}}"><sc-if value="{{sc.hasIcon}}" hint-placeholder-val="{{false}}"><img class="phc-cond-icon" src="{{sc.icon}}" alt="" style="{{sc.iconStyle}}"></sc-if><sc-if value="{{sc.noIcon}}" hint-placeholder-val="{{true}}"><span aria-hidden="true">{{sc.glyph}}</span></sc-if><span>{{sc.word}}</span></span></sc-for><sc-if value="{{sg.hasMore}}"><span style="{{sg.moreStyle}}">{{sg.moreText}}</span></sc-if></span></sc-for></span></sc-if></sc-if>\n<sc-if value="{{X.unknown}}"><span style="{{X.stateStyle}}">{{X.state}}</span><span style="font-size: 13px; color: #A3AEC2">{{X.hint}}</span></sc-if>\n' + SHIELDS_TPL.replace(/Y\./g, 'X.sh.') + '\n';
 export function expand(tpl) {
   let t = tpl.replace('<!--EPCCG-->', epTpl).replace('<!--LIGHTBOX-->', lbTpl).replace('<!--SHELL-->', shellTpl);
   t = t.replace(/<!--MASTERED:([\w.]+)-->/g, (_, p) => mastTpl.replace(/X\./g, p + '.'));
@@ -167,21 +168,40 @@ export function expand(tpl) {
 
 // ---------- lightbox ----------
 const LB_BIG = D.big || {};
-const LB_KIND = { portrait: 'CHARACTER PORTRAIT', patron: 'PATRON · CELESTIAL PORTRAIT', skill: 'SKILL PORTRAIT', icon: 'WICK ICON', perk: 'WICK PERK ICON', world: 'WORLD ILLUSTRATION' };
-export function zoomer(self, img, caption, kind) { return () => {
+const LB_KIND = { portrait: 'CHARACTER PORTRAIT', patron: 'PATRON · CELESTIAL PORTRAIT', skill: 'SKILL PORTRAIT', icon: 'ICON', perk: 'WICK PERK ICON', world: 'WORLD ILLUSTRATION' };
+export function zoomer(self, img, caption, kind, text) { return () => {
   if (!img) return;
-  self.setState({ lb: { img: LB_BIG[img] || img, caption: caption || '', kind: kind || 'portrait' } });
+  self.setState({ lb: { img: LB_BIG[img] || bigOf(img), caption: caption || '', kind: kind || 'portrait', text: text || '' } });
   // Your own uploaded portrait: show the full size this browser keeps, if it has it.
   if (/^data:image\//.test(img)) bigPortrait(img).then((big) => { if (big !== img && self.state.lb && self.state.lb.img === img) self.setState({ lb: { ...self.state.lb, img: big } }); });
 }; }
+// Click to enlarge, everywhere (the owner, 17 Nov 2026: "make these icons click enlargeable too"): any <img> carrying
+// data-zoom opens THIS lightbox (the one enlarge view; the screen that last rendered lightboxVals hosts it) with the
+// picture's large copy (its assets.json key + '-lg', the 512 px build; else the same picture), the name (data-zoom, else
+// the alt) and the thing's text (data-zoom-text) under it. Clicking the icon enlarges only: the row or card it sits in
+// is not picked (the click stops here, in the capture phase, before React sees it).
+let LB_HOST = null;
+/** The enlarge request an icon slot carries: its name, its text (the slot's data-zoom / data-zoom-text attributes). */
+export function zoomAttrs(name, text) { return { 'data-zoom': name || '', 'data-zoom-text': text || '' }; }
+if (typeof document !== 'undefined' && !globalThis.__phcZoom) {
+  globalThis.__phcZoom = true;
+  document.addEventListener('click', (e) => {
+    const img = e.target && e.target.closest ? e.target.closest('img[data-zoom]') : null;
+    if (!img || !LB_HOST || !img.getAttribute('src')) return;
+    e.preventDefault(); e.stopPropagation();
+    LB_HOST.setState({ lb: { img: bigOf(img.getAttribute('src')), caption: img.getAttribute('data-zoom') || img.getAttribute('alt') || '', kind: 'icon', text: img.getAttribute('data-zoom-text') || '' } });
+  }, true);
+  const st = document.createElement('style'); st.textContent = 'img[data-zoom]{cursor:zoom-in}'; document.head.appendChild(st);
+}
 export const zoomBtn = 'display: block; flex: none; padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: inherit';
 export function lightboxVals(self) {
+  LB_HOST = self;
   // Closing plays the modal's out animation first (closeAnim, below; hoisted), then drops the picture.
   const L = self.state.lb, closeLb = () => closeAnim(self, 'lb', () => self.setState({ lb: null }));
-  if (!L) return { lbOpen: false, closeLb, lbCls: 'phc-m-backdrop', lb: { img: '', caption: '', kind: '', imgStyle: '' }, zoomBtn };
+  if (!L) return { lbOpen: false, closeLb, lbCls: 'phc-m-backdrop', lb: { img: '', caption: '', kind: '', imgStyle: '', text: '', hasText: false }, zoomBtn };
   const icon = L.kind === 'icon' || L.kind === 'perk';
-  return { lbOpen: true, closeLb, lbCls: modalCls(self, 'lb'), zoomBtn, lb: { img: L.img, caption: L.caption, kind: LB_KIND[L.kind] || '',
-    imgStyle: 'display: block; max-width: min(92vw, ' + (icon ? '512px' : '800px') + '); max-height: 80vh; object-fit: contain; border-radius: ' + (icon ? '16px; background: #10151F; padding: 24px' : '10px; background: #000') } };
+  return { lbOpen: true, closeLb, lbCls: modalCls(self, 'lb'), zoomBtn, lb: { img: L.img, caption: L.caption, kind: LB_KIND[L.kind] || '', text: L.text || '', hasText: !!L.text,
+    imgStyle: 'display: block; width: ' + (icon ? 'min(80vw, 512px)' : 'auto') + '; max-width: min(92vw, ' + (icon ? '512px' : '800px') + '); max-height: 80vh; object-fit: contain; border-radius: ' + (icon ? '16px; background: #10151F; padding: 24px' : '10px; background: #000') } };
 }
 
 // ---------- EPCCG "?" pop-up (ported verbatim from epccg.logic.js) ----------

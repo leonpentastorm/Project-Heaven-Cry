@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.soul.blood_price",
+  "name": "Blood Price",
+  "icon_id": "fork.soul.blood_price",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Blood Price** (`soul.blood_price`). Renamed: \"Bleed\" is the Sigilist's Bleed the Flux. *\"A Pump may be paid in HP\ninstead of MP: {=numbers.hp_per_mp} HP for each MP (self-harm). Never when it would Down you.\"*\n- Fields: `hp_per_mp: 0.5`. Why: a Pump's MP (a tenth of the Begin's) is small; half of it in HP is a real but not\n  ruinous price.\n- Carrier: the Pump on the cost hook (N18) with a payment in HP. Cheaper: none that keeps \"instead of MP\".\n- Mana Shock: HP, not Strain, so it neither brings nor clears it; with the Shock's 25% it can Down you, so the refusal\n  reads the Shock's next charge too. Peak: no.\n- Excite: the Emanator is dry, the Boss is at a quarter: you pay the last two Pumps in blood.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-soul-blood-price",
+  "path": "art/icons/forks/soul-blood-price.png",
+  "paint": "Wick places one mitten over his intact lantern heart while the other holds ONE growing Outburst orb. ONE small abstract heart-charge token travels from the lantern toward the orb: health resource spent instead of mana. A brave strained pixel face.",
+  "avoid": "No physical injury, real person, blood, wound, knife, needle or damage to his body. The heart window remains intact.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick places one mitten over his intact lantern heart while the other holds ONE growing Outburst orb. ONE small abstract heart-charge token travels from the lantern toward the orb: health resource spent instead of mana. A brave strained pixel face.\nAVOID: No physical injury, real person, blood, wound, knife, needle or damage to his body. The heart window remains intact.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 30,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "0c4dae6ac582284c0b6fd3df4cfb4dba50fb972f16f1a731154aeea9f2ee6e65",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-soul-blood-price-v1.png",
+  "source_sha256": "1b8c0a66dace479af16eba2658821277a1727aaf13429fcd3c278cf75eb698d9",
+  "export_crop": [
+    0,
+    9,
+    1230,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/soul-blood-price.png",
+    "64": "art/icons/forks/exports/64/soul-blood-price.png",
+    "48": "art/icons/forks/exports/48/soul-blood-price.png",
+    "44": "art/icons/forks/exports/44/soul-blood-price.png",
+    "32": "art/icons/forks/exports/32/soul-blood-price.png",
+    "24": "art/icons/forks/exports/24/soul-blood-price.png"
+  },
+  "export_sha256": {
+    "128": "607641f797531168f6a1361ced5ef9627f61597391cc8178ded58c4de641b5f2",
+    "64": "d34ea32893e6a1b0d8e7ea3b7cd272ebfcba45ab44f9ecdab6cf3ec7d73ce170",
+    "48": "4f550e5c820567c1e6ad91c7846b8de91bf32744084270549a81de65f5fa7067",
+    "44": "5306a80fecc105efb4024c3ff27b9915a27e4cab015719c7d736329c41b15bb5",
+    "32": "1151600b46ef9cf530679f451b68be5beb541448f142a9abbbb9d84c5e47b019",
+    "24": "bc35cd2702ac914b236d6a80d52aef872b910620ac4b8e6dc0b08ff5e6d2b15b"
+  },
+  "framing": {
+    "scale": 0.5032288890252503,
+    "offset": [
+      202,
+      198
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

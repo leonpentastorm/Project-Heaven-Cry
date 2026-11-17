@@ -1,0 +1,1 @@
+User review: axe reads as an X. Replace the malformed/double-headed assembly with one single-bit axe head, one clear socket and one continuous haft. Preserve this rejected candidate and all source bytes.

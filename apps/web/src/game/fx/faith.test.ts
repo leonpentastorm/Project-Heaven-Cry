@@ -155,7 +155,7 @@ describe('the faith effects (Blessing 2.0)', () => {
   it('Witnessed\'s eye waits for the Hymn\'s face over the same head', () => {
     ctx(); const layer = document.body.lastElementChild as HTMLElement;
     playFx(FAITH_EVENTS[1]); vi.advanceTimersByTime(900); playFx(FAITH_EVENTS[3]); vi.advanceTimersByTime(50);
-    const eye = () => [...layer.querySelectorAll('img')].find((i) => /prayer-witnessed|%3Cpath/.test(i.getAttribute('src') || '') && !i.closest('[data-phc-faith-face]'));
+    const eye = () => [...layer.querySelectorAll('img')].find((i) => /prayer-witnessed|cond-witnessed|%3Cpath/.test(i.getAttribute('src') || '') && !i.closest('[data-phc-faith-face]'));
     expect(eye()).toBeFalsy();
     vi.advanceTimersByTime(600); expect(eye()).toBeTruthy();
   });

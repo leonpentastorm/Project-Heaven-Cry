@@ -1,0 +1,76 @@
+{
+  "number": 153,
+  "family": "figment_trait_icons",
+  "id": "trait-barbed",
+  "path": "art/icons/figments/trait-barbed.png",
+  "name": "Barbed",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment trait",
+  "paint": "A figment shape with a row of short barbs along its edge.",
+  "avoid": "barbed wire \u00b7 blood",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape with a row of short barbs along its edge.\nAvoid: barbed wire \u00b7 blood\nEXACT STAGING: One abstract angular pointed kite-like Figment body matching the references, two loose diamond flecks, a ROW OF FOUR SHORT TRIANGULAR BARBS projecting along its lower-left long edge. The barbs are clear bold silhouette teeth separated by transparent notches. No wire, chain, weapon handle, blood, person, robot or eye.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "0e9ed5a2d62945a809f413822d2d1488d95bcf82cd96b6d842ade6d70a4ee360",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/153-trait-barbed.png",
+  "source_sha256": "9d5bee2165b213d43d466e383e9158b349a442d67e2dd0266b643201b86128c7",
+  "export_crop": [
+    87,
+    214,
+    1144,
+    1085
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-barbed.png",
+    "64": "art/icons/figments/exports/64/trait-barbed.png",
+    "48": "art/icons/figments/exports/48/trait-barbed.png",
+    "44": "art/icons/figments/exports/44/trait-barbed.png",
+    "32": "art/icons/figments/exports/32/trait-barbed.png",
+    "24": "art/icons/figments/exports/24/trait-barbed.png"
+  },
+  "framing": {
+    "scale": 0.7103189178323481,
+    "offset": [
+      136,
+      202
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "7c908449848f94ff7219d24ae22749dfe085787c0c7089d021568444c22d7290",
+    "64": "3ccfd131721016fd567e41861ef35bd5990bb15abd4efcdb3ded982435065239",
+    "48": "37df80fa09a31d792912ec7fa94037eee5d07f47d72e8e95c45c5bc17f5ea747",
+    "44": "0d825a8c140107b8a9f289d536300249258b8ddb7bb60511a325ffd52e4f9ccd",
+    "32": "fe9560c9de60471f1bd63685b9d65b003f59c4778c9a65de8e5511cb8423586d",
+    "24": "72a415db2adc7c32e00238d1911a9da50551726a935f31ae3c8d1aaba946e6f2"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

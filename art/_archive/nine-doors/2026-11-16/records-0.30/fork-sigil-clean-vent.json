@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.sigil.clean_vent",
+  "name": "Clean Vent",
+  "icon_id": "fork.sigil.clean_vent",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Clean Vent** (`sigil.clean_vent`). *\"Once a turn, a Vent of {=numbers.min} Flux or more shoves every foe next to you\n{=numbers.push} tile and scorches it for {=amounts.vent.base} \u00d7 the Flux vented (fire, the Sigil's damage).\"*\n- Fields: `min: 2`, `push: 1`, `amounts.vent {kind: damage, base: 4, profile: sigil, type: fire, provisional}`. Why 4:\n  six Flux vented is a 24-base blast on the adjacent ring, under a two-glyph Line.\n- Carrier: the `vent` hook as a trigger (**N22**; `vent` carries `{u, flux, extra}`, `magic.ts:655`; on `acted` the\n  Flux is already emptied, so `res:flux` would read 0), ops `deal` and `displace` with `targets {of: self, within: 1,\n  side: foe}` (existing), the amount a number block on `event:flux`. No N3b, no N5.\n- Sigilist: **Bleed the Flux makes the Vent free**: a free nova every turn. Bounded by `min` 2 and once a turn. Peak: no.\n- Excite: they close on the caster; you dump 6 Flux into their faces and they reel back a tile.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-sigil-clean-vent",
+  "path": "art/icons/forks/sigil-clean-vent.png",
+  "paint": "Wick grips an Evoker at waist height and opens its ONE vent downward. THREE broad white flame wedges and a low expanding arc push cropped enemy feet outward from him. He leans back against the pressure, screen firm.",
+  "avoid": "No grenade, large explosion, smoke gradient, full second person or rifle firing pose.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick grips an Evoker at waist height and opens its ONE vent downward. THREE broad white flame wedges and a low expanding arc push cropped enemy feet outward from him. He leans back against the pressure, screen firm.\nAVOID: No grenade, large explosion, smoke gradient, full second person or rifle firing pose.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 25,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "baf40c02b7a7dde9a220b16f646bd7b4838bfd60b41769bea100d3802328f2b6",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-sigil-clean-vent-v1.png",
+  "source_sha256": "956fb2d75e898c88147edef8f478c7c5127cd34a47b9aaae5bdc1cb59d05f764",
+  "export_crop": [
+    0,
+    39,
+    1226,
+    1240
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/sigil-clean-vent.png",
+    "64": "art/icons/forks/exports/64/sigil-clean-vent.png",
+    "48": "art/icons/forks/exports/48/sigil-clean-vent.png",
+    "44": "art/icons/forks/exports/44/sigil-clean-vent.png",
+    "32": "art/icons/forks/exports/32/sigil-clean-vent.png",
+    "24": "art/icons/forks/exports/24/sigil-clean-vent.png"
+  },
+  "export_sha256": {
+    "128": "395f98a541be2bf5136e08e16837d51a062753070756eaf1cd73bd2a2b0c0865",
+    "64": "0c736aea1d7a5a90a70714bd2512b3762be38dcfaca236b1cdb2698c6961a949",
+    "48": "353422791af05cc2f277a88eb2954429584cd3f13a0417987903ab7d9e85f12e",
+    "44": "c89b85a7b4fda64da80055c6109ecd9dff03c3706fe284873c270097ee5c1fce",
+    "32": "6514be56130929e9d5ce7e303abfbeb192d730acdaa7c10bbbe8b0d213c43ee3",
+    "24": "9b0354c40f7f2acf2f3ebb152cd582466d5f20a0acc9d74cfe2feeb76725113d"
+  },
+  "framing": {
+    "scale": 0.6173572175851554,
+    "offset": [
+      133,
+      141
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

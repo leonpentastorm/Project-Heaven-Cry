@@ -1,0 +1,82 @@
+{
+  "number": 34,
+  "section": 5,
+  "family": "prayers",
+  "id": "vow-mercy",
+  "path": "art/icons/prayers/vow-mercy.png",
+  "name": "Vow: Mercy (\"I spare who yields.\")",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "state": "in game now (a code line mark)",
+  "use": "The vow of the same name",
+  "paint": "Wick lowering a blade to his side, his other open hand held out to a kneeling partial figure.",
+  "avoid": "a white flag \u00b7 a dove \u00b7 a crown",
+  "file_key": "34-vow-mercy",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick lowering a blade to his side, his other open hand held out to a kneeling partial figure.\nAVOID: a white flag \u00b7 a dove \u00b7 a crown",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/prayers/whisper-courage.png",
+    "art/icons/prayers/whisper-guidance.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/34-vow-mercy-v1.png",
+  "source_sha256": "ca094a40530f04274c5e72134557576fd495a8f5c6cc3df50edac255b68568ee",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    65,
+    1234,
+    1254
+  ],
+  "scale": 0.5139582850355457,
+  "offset": [
+    195,
+    206
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "e89add83a9b209170cf267c72d170331b2726882926ca044f8b91afb78400052",
+  "exports": {
+    "256": "art/icons/prayers/exports/256/vow-mercy.png",
+    "128": "art/icons/prayers/exports/128/vow-mercy.png",
+    "64": "art/icons/prayers/exports/64/vow-mercy.png",
+    "48": "art/icons/prayers/exports/48/vow-mercy.png",
+    "44": "art/icons/prayers/exports/44/vow-mercy.png",
+    "32": "art/icons/prayers/exports/32/vow-mercy.png",
+    "24": "art/icons/prayers/exports/24/vow-mercy.png",
+    "16": "art/icons/prayers/exports/16/vow-mercy.png"
+  },
+  "export_sha256": {
+    "256": "8bd6aa92b0a6cfc30030e8f4ec443a130ba7cbd2342022add6840ed64af12345",
+    "128": "3b05afa40d3a7a6681b3328d3d53ebe8249bb5c8c8b1489d23cad5799c495322",
+    "64": "7719ec27ff5f278b2c2158fd042d87bcf658547ed977358b4ed7ce2b46082c14",
+    "48": "d66542f42ff2fb44208092860759ea4385000680a1940e7fd5438e429aaefcf8",
+    "44": "46372100ca0a7d20941a12b6d69a0ff80fd8c790bf7429941c9e0af41670b07e",
+    "32": "4a1fd48571e3b5cf4c99370cc90cd0a087ab0ba1878bca9d6882b5a3a1c53ee5",
+    "24": "07643701592f2c2b564a294011c8cd4bf5937b6d732ff6a9016a9e96c91e0adb",
+    "16": "ae1ad677a4b1dbdbcf2b50fa721ba04a1d26a7c91db046b6f8c0a13520e865a8"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

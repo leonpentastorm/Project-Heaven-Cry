@@ -1,0 +1,76 @@
+{
+  "number": 216,
+  "family": "move_icons",
+  "id": "move-heart-surge",
+  "path": "art/icons/moves/heart-surge.png",
+  "name": "Heart Surge",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Channeler rank III move",
+  "paint": "A heart with a sharp spike rising out of its top like a pulse line.",
+  "avoid": "an ECG of a real monitor \u00b7 blood",
+  "section": "Will Power: the Outburst, and the Channeler",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A heart with a sharp spike rising out of its top like a pulse line.\nAvoid: an ECG of a real monitor \u00b7 blood\nEXACT STAGING: Heart Surge: ONE bold rounded heart, its TOP CENTER cleft rises into ONE very tall narrow angular WHITE SPIKE like an invented pulse. Spike is continuous with heart silhouette, grows upward then returns to the top edge. A single sparse transparent angular cut may clarify the rising spike but no real ECG monitor diagram. No blood, anatomy, additional heartbeat waveform across whole image, lightning bolts, arrows, flame, character or glow.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "875cc719cbfc310627386b448903d209e4f76954db12e9e5fd804be0d7110550",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/216-heart-surge.png",
+  "source_sha256": "7de469d6fa25103312c5afdc3bb4c6d12aed99400d3ad6756ee8ee4df07aa079",
+  "export_crop": [
+    33,
+    37,
+    1168,
+    1196
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/heart-surge.png",
+    "64": "art/icons/moves/exports/64/heart-surge.png",
+    "48": "art/icons/moves/exports/48/heart-surge.png",
+    "44": "art/icons/moves/exports/44/heart-surge.png",
+    "32": "art/icons/moves/exports/32/heart-surge.png",
+    "24": "art/icons/moves/exports/24/heart-surge.png"
+  },
+  "framing": {
+    "scale": 0.5533536288009779,
+    "offset": [
+      198,
+      191
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "19c466fbdd4b4641ba6307e666b5b777f4ec85e1c1cb19569a33af2129f3b1d1",
+    "64": "d062dbcdfb1e83d263c3aee94c143618aa4885b13c0c7b09fff4387237a7dc46",
+    "48": "d40eb7d123fa74900641183249e1bf99ca61a6a285eb09c3bdd7f855f668eb16",
+    "44": "55a51ac3f1945178d6cd69c3f4c7c9a1e04884ab270dbdbf561fc7c4c9476b70",
+    "32": "b3aaabe2e9be363ae0c5e8756c3645d4542ed2d9c782d08ca6d0c0d59e29e84e",
+    "24": "8fc25debdfbdeb947f1a46acb73569ffdfd80e2c78f97d85f41781ed0390a655"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

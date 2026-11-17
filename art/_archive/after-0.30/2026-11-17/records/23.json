@@ -1,0 +1,81 @@
+{
+  "number": 23,
+  "section": 4,
+  "family": "place_icons",
+  "id": "place-devotion",
+  "path": "art/icons/places/devotion.png",
+  "name": "Devotion (training card)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a card with no picture)",
+  "use": "Rest: \"Devotion +N XP\", prayer by the fire",
+  "paint": "Two cupped hands round one small flame, a thread of smoke rising.",
+  "avoid": "a cross, crescent, star or wheel of any real faith \u00b7 praying hands with a halo",
+  "file_key": "23-devotion",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: Two cupped hands round one small flame, a thread of smoke rising.\nAVOID: a cross, crescent, star or wheel of any real faith \u00b7 praying hands with a halo",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/survival/markers/boss.png",
+    "art/icons/survival/markers/cache.png",
+    "art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/23-devotion-v1.png",
+  "source_sha256": "67a3057be370f0cab609a13f4ac25a5be58153ddd7a888f9d131a9ef14d929f7",
+  "generation_attempt": 1,
+  "export_crop": [
+    41,
+    21,
+    1232,
+    1254
+  ],
+  "scale": 0.6650446066504461,
+  "offset": [
+    116,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "9e0711ee9f167d774df02bc4bedb5288ef5bb14f1f7f2084a8d2f7c53ef90be5",
+  "exports": {
+    "256": "art/icons/places/exports/256/devotion.png",
+    "128": "art/icons/places/exports/128/devotion.png",
+    "64": "art/icons/places/exports/64/devotion.png",
+    "48": "art/icons/places/exports/48/devotion.png",
+    "44": "art/icons/places/exports/44/devotion.png",
+    "32": "art/icons/places/exports/32/devotion.png",
+    "24": "art/icons/places/exports/24/devotion.png",
+    "16": "art/icons/places/exports/16/devotion.png"
+  },
+  "export_sha256": {
+    "256": "9d66b10b6ae6b3ef22453fbf754590504d29e14521a66dfb5f4f575e7ee931cd",
+    "128": "43fd839967d43bdee9c0f9cb261b9c3cd661de96117f6f7d75bec73f792ff281",
+    "64": "5abf6d0f20ec9f04d0f9d2b4ad6bae8be5274fac9c64fecd06ca9deb3b55c923",
+    "48": "e994bc15cc9cb336310672ef5f5179c33d215dc288305b2da21929e8c183a38b",
+    "44": "3bd3e26f5f137b6bcf2a8d6e0045ba4f9d242a5ff543f524429509159cace56e",
+    "32": "312493eed9aea0024ba32902707c6c6f055e218b5f8b76762130fd2539ec48a9",
+    "24": "679c36c297597f013e2fcda5b0f44428796cdcbbc8bfc34ec07e786b04abfa65",
+    "16": "13eb402c30206e443006de2f7eaee861541a2b3bcb8022d6abb51841d7e09565"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

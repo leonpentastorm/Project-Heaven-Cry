@@ -1,0 +1,188 @@
+{
+  "checked_new_filesets": 45,
+  "legacy_delivered": 348,
+  "new_030_delivered": 41,
+  "all_new_source_master_export_hashes_pass": true,
+  "new_pixel_alpha_dimensions_safe_box_and_ui_checks_pass": true,
+  "repository_44px_white_alpha_check_pass": true,
+  "original_344_records_unchanged": true,
+  "alpha_audits": [
+    {
+      "asset": 274,
+      "faint_alpha_to_solid_area_ratio": 0.02374207976146105
+    },
+    {
+      "asset": 272,
+      "faint_alpha_to_solid_area_ratio": 0.023084001577494413
+    },
+    {
+      "asset": 273,
+      "faint_alpha_to_solid_area_ratio": 0.02854516504981862
+    },
+    {
+      "asset": 271,
+      "faint_alpha_to_solid_area_ratio": 0.028435654231679396
+    },
+    {
+      "asset": "0.30/fork.tend.keep_the_thread",
+      "faint_alpha_to_solid_area_ratio": 0.053199265479310406
+    },
+    {
+      "asset": "0.30/fork.pressure.lockdown",
+      "faint_alpha_to_solid_area_ratio": 0.0856850633183953
+    },
+    {
+      "asset": "0.30/fork.momentum.headlong",
+      "faint_alpha_to_solid_area_ratio": 0.06385148004571224
+    },
+    {
+      "asset": "0.30/fork.sigil.clean_vent",
+      "faint_alpha_to_solid_area_ratio": 0.06989424983476537
+    },
+    {
+      "asset": "0.30/shared/follow",
+      "faint_alpha_to_solid_area_ratio": 0.06427151401273351
+    },
+    {
+      "asset": "0.30/fork.pressure.through_the_gap",
+      "faint_alpha_to_solid_area_ratio": 0.06188780842056787
+    },
+    {
+      "asset": "0.30/fork.tend.long_thread",
+      "faint_alpha_to_solid_area_ratio": 0.07608142863370192
+    },
+    {
+      "asset": "0.30/fork.prayer.steadfast",
+      "faint_alpha_to_solid_area_ratio": 0.05989524408129059
+    },
+    {
+      "asset": "0.30/fork.shadow.light_fingers",
+      "faint_alpha_to_solid_area_ratio": 0.05380392835760606
+    },
+    {
+      "asset": "0.30/fork.sigil.overflux",
+      "faint_alpha_to_solid_area_ratio": 0.06959267734553776
+    },
+    {
+      "asset": "0.30/fork.momentum.rolling_start",
+      "faint_alpha_to_solid_area_ratio": 0.060002233333746914
+    },
+    {
+      "asset": "0.30/fork.momentum.spill",
+      "faint_alpha_to_solid_area_ratio": 0.056923227488278154
+    },
+    {
+      "asset": "0.30/shared/staggered",
+      "faint_alpha_to_solid_area_ratio": 0.03399887484210638
+    },
+    {
+      "asset": "0.30/fork.guard.cover_them",
+      "faint_alpha_to_solid_area_ratio": 0.06832111649480267
+    },
+    {
+      "asset": "0.30/fork.shadow.spotter",
+      "faint_alpha_to_solid_area_ratio": 0.06158569622539281
+    },
+    {
+      "asset": "0.30/fork.shadow.lend_the_dark",
+      "faint_alpha_to_solid_area_ratio": 0.05666918130545676
+    },
+    {
+      "asset": "0.30/fork.soul.ride_the_edge",
+      "faint_alpha_to_solid_area_ratio": 0.08408660107542133
+    },
+    {
+      "asset": "0.30/class/stand-behind-me",
+      "faint_alpha_to_solid_area_ratio": 0.06493735257176117
+    },
+    {
+      "asset": "0.30/fork.soul.clean_break",
+      "faint_alpha_to_solid_area_ratio": 0.054260772359218376
+    },
+    {
+      "asset": "0.30/fork.pressure.converging_fire",
+      "faint_alpha_to_solid_area_ratio": 0.09182472362784715
+    },
+    {
+      "asset": "0.30/fork.prayer.round_of_blessings",
+      "faint_alpha_to_solid_area_ratio": 0.06686001581947613
+    },
+    {
+      "asset": "0.30/fork.tend.shared_pulse",
+      "faint_alpha_to_solid_area_ratio": 0.07321660509758278
+    },
+    {
+      "asset": "0.30/replacement/63",
+      "faint_alpha_to_solid_area_ratio": 0.06675817767490266
+    },
+    {
+      "asset": "0.30/fork.soul.slow_burn",
+      "faint_alpha_to_solid_area_ratio": 0.056820214097749164
+    },
+    {
+      "asset": "0.30/shared/mana-shock",
+      "faint_alpha_to_solid_area_ratio": 0.014530258362403858
+    },
+    {
+      "asset": "0.30/fork.momentum.grindstone",
+      "faint_alpha_to_solid_area_ratio": 0.05573794345267868
+    },
+    {
+      "asset": "0.30/fork.pressure.walk_it_in",
+      "faint_alpha_to_solid_area_ratio": 0.07335734134154091
+    },
+    {
+      "asset": "0.30/fork.prayer.benediction",
+      "faint_alpha_to_solid_area_ratio": 0.061593345761140075
+    },
+    {
+      "asset": "0.30/replacement/33",
+      "faint_alpha_to_solid_area_ratio": 0.05357320099255583
+    },
+    {
+      "asset": "0.30/fork.guard.drive",
+      "faint_alpha_to_solid_area_ratio": 0.07157445761391133
+    },
+    {
+      "asset": "0.30/fork.sigil.written_in_advance",
+      "faint_alpha_to_solid_area_ratio": 0.06388180374416479
+    },
+    {
+      "asset": "0.30/fork.guard.stand_fast",
+      "faint_alpha_to_solid_area_ratio": 0.06560254558974847
+    },
+    {
+      "asset": "0.30/fork.tend.short_thread",
+      "faint_alpha_to_solid_area_ratio": 0.05244703319912877
+    },
+    {
+      "asset": "0.30/replacement/163",
+      "faint_alpha_to_solid_area_ratio": 0.1277550481720998
+    },
+    {
+      "asset": "0.30/replacement/35",
+      "faint_alpha_to_solid_area_ratio": 0.06555385288966725
+    },
+    {
+      "asset": "0.30/fork.sigil.running_script",
+      "faint_alpha_to_solid_area_ratio": 0.07090490155006283
+    },
+    {
+      "asset": "0.30/fork.soul.blood_price",
+      "faint_alpha_to_solid_area_ratio": 0.07944023079428598
+    },
+    {
+      "asset": "0.30/fork.guard.provoke",
+      "faint_alpha_to_solid_area_ratio": 0.06506571809204653
+    },
+    {
+      "asset": "0.30/fork.prayer.held_breath",
+      "faint_alpha_to_solid_area_ratio": 0.05038682457310681
+    },
+    {
+      "asset": "0.30/fork.shadow.lightkiller",
+      "faint_alpha_to_solid_area_ratio": 0.07283134409860363
+    }
+  ],
+  "approval": "All unapproved review candidates"
+}

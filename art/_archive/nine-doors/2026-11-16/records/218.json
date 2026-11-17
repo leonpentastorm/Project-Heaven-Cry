@@ -1,0 +1,76 @@
+{
+  "number": 218,
+  "family": "door_emblems",
+  "id": "door-outburst",
+  "path": "art/emblems/doors/outburst.png",
+  "name": "Outburst heart (door emblem)",
+  "mode": "door emblem",
+  "state": "designed, not built",
+  "use": "The door's mark",
+  "paint": "A heart with one swelling ring round it and a single spark at its top.",
+  "avoid": "the Outburst boon line icon (four rings) \u00b7 a red heart emoji",
+  "section": "Will Power: the Outburst, and the Channeler",
+  "kind": "sign",
+  "prompt": "Create ONE original RPG object/sign icon matching the attached flat WHITE graphic references. Bold crisp silhouettes, sparse broad TRANSPARENT interior cuts, no full mascot, robot head, screen face, capelet or complete person. Cropped ceramic mittens only if requested. Pure #FFFFFF WHITE flat ink, no black or gray paint, shading, gradients, glow, texture, text or border.\nPaint: A heart with one swelling ring round it and a single spark at its top.\nAvoid: the Outburst boon line icon (four rings) \u00b7 a red heart emoji\nEXACT STAGING: DOOR EMBLEM at20px: ONE BOLD WHITE HEART with exactly ONE SWELLING OUTLINE RING around it, elliptical ring slightly wider at bottom, all transparent space between heart and ring. ONE SINGLE SMALL HARD WHITE SPARK TICK at heart top, outside upper cleft but inside ring. Not four rings, no red color, emoji face, glow, extra stars, letters, body or frame. All holes true transparency.\nOnly the specified object/partials, no extra decoration.\nTrue transparency in backdrop and ALL holes, not opaque black dividers. Complete subject centered inside 15% transparent margins. Square single icon readable at32/44px; signs at24/48px; door emblems at20px. All decisive shape stays in safe box and circular chip.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 6,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-shop.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/sign-edge.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "17d54abbd5a90f8b435fb9fcdb225f4c5a666fcf6901a529b9bb8582095ab3a6",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/218-outburst.png",
+  "source_sha256": "bc5546183627095775eccff8589c2d9d2e45845cf3792e1fd0d25d3fbf08d48e",
+  "export_crop": [
+    0,
+    21,
+    1254,
+    1254
+  ],
+  "exports": {
+    "128": "art/emblems/doors/exports/128/outburst.png",
+    "64": "art/emblems/doors/exports/64/outburst.png",
+    "48": "art/emblems/doors/exports/48/outburst.png",
+    "44": "art/emblems/doors/exports/44/outburst.png",
+    "32": "art/emblems/doors/exports/32/outburst.png",
+    "24": "art/emblems/doors/exports/24/outburst.png",
+    "20": "art/emblems/doors/exports/20/outburst.png"
+  },
+  "framing": {
+    "scale": 0.6539074960127592,
+    "offset": [
+      102,
+      109
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "53588aa052207b3ccb7ea1388431fdda787b77cfe8aac47caa67832bbab2bab5",
+    "64": "b2af7235379e84cfa0ae103d1a55f06f3181cce928a763458733a850992793dc",
+    "48": "c78902697ee9daebc96dec41d59407049b1c2347c0f74a68d4d1111249e53285",
+    "44": "40e3b8246290d8d2b41fc720cc700f4478021e5735a883e52e7f3179aa2d8fc8",
+    "32": "455901005017c857acdfee01811daa0a73ec05eda57674b39c58456fa637f395",
+    "24": "016db55d1111ef5ace4515ec3b58cd920881d85222bd47deef158551a3454136",
+    "20": "ede7fa06b73ba5d1532c20436b3cdc51a92bbfdd099e47256ffefb4cbd368e52"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

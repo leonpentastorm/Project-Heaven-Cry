@@ -1,0 +1,81 @@
+{
+  "number": 26,
+  "section": 4,
+  "family": "place_icons",
+  "id": "place-token",
+  "path": "art/icons/places/token.png",
+  "name": "The token (shrine card)",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a card with no picture)",
+  "use": "Shrine: a small token that is a boon (it uses boon room)",
+  "paint": "A small round token with a hole through its centre, hung on a short loop of thread.",
+  "avoid": "a coin with a face \u00b7 a medal \u00b7 a ring of keys",
+  "file_key": "26-token",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A small round token with a hole through its centre, hung on a short loop of thread.\nAVOID: a coin with a face \u00b7 a medal \u00b7 a ring of keys",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-4-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/survival/markers/boss.png",
+    "art/icons/survival/markers/cache.png",
+    "art/icons/survival/markers/crossroads.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/26-token-v1.png",
+  "source_sha256": "1adbb9a4886d934c9dbcf7fdefb5feeeb409cdc7b27e27090371e963497fd878",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    20,
+    1055,
+    1202
+  ],
+  "scale": 0.6937394247038917,
+  "offset": [
+    146,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "179ce2ae5f1686c940a69b702fe55f856fcd8b7fa8d676898178d0d35d832101",
+  "exports": {
+    "256": "art/icons/places/exports/256/token.png",
+    "128": "art/icons/places/exports/128/token.png",
+    "64": "art/icons/places/exports/64/token.png",
+    "48": "art/icons/places/exports/48/token.png",
+    "44": "art/icons/places/exports/44/token.png",
+    "32": "art/icons/places/exports/32/token.png",
+    "24": "art/icons/places/exports/24/token.png",
+    "16": "art/icons/places/exports/16/token.png"
+  },
+  "export_sha256": {
+    "256": "5cdb514d6628cbb315dede72d4384e126bef7510bfe691b3cc51cb4c7f5e72be",
+    "128": "cd266dde706597ce3d8cbc6714cb5192556cad9b97ec9ac12d5e343853b7650a",
+    "64": "5d7cc15f703985ce2740bdd7409ea79cfcc15967f94a2b17bf7309074e35c141",
+    "48": "d9be32ef1091bc286cf40b96430dd85a2d6cd51998dab85bb0f4ecaba9e53abf",
+    "44": "282855b4e33a8f837b13265f83448667d48c7cdf4bf01db46afeff225431dc99",
+    "32": "dc62de7756131d0d6aa59ea79e95584b8630868f6a16efb117edbd59a6b08f8b",
+    "24": "f29dc1c1204a17f23fd3d04752356661ab6996463c8e8752e7fabba2d0a1929b",
+    "16": "2eef110fa434ae7fa5ceae4dce1440661caf64f344210779d53927278f73986d"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

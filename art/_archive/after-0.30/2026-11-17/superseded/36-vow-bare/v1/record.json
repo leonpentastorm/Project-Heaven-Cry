@@ -1,0 +1,82 @@
+{
+  "number": 36,
+  "section": 5,
+  "family": "prayers",
+  "id": "vow-bare",
+  "path": "art/icons/prayers/vow-bare.png",
+  "name": "Vow: Bare Hands (\"By my own hands.\")",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "state": "in game now (a code line mark)",
+  "use": "The vow of the same name: no weapon",
+  "paint": "Wick's two bare fists raised in front of his flame, a dropped blade lying on the ground line behind him.",
+  "avoid": "boxing gloves \u00b7 a martial-art pose from any known work",
+  "file_key": "36-vow-bare",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick's two bare fists raised in front of his flame, a dropped blade lying on the ground line behind him.\nAVOID: boxing gloves \u00b7 a martial-art pose from any known work",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-5-wick-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/traits/mind-without-fog.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/angel-of-the-trenches.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/bedside-manner.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/perks/solid-image.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-courage.png",
+    "/workspace/phc-after-0.30-2026-11-17/delivery/art/icons/prayers/whisper-guidance.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/36-vow-bare-v1.png",
+  "source_sha256": "328092145045ecca17ce834a65ee94417c9653a4ae840d11d7f5894883c39ad9",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    17,
+    1222,
+    1234
+  ],
+  "scale": 0.5320683288370709,
+  "offset": [
+    187,
+    188
+  ],
+  "upscaled": false,
+  "status": "draft-pending-visual-review",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "11aae75d84f719da5576325aad494605d30c0489b4bb1c9382e48ea145b8445f",
+  "exports": {
+    "256": "art/icons/prayers/exports/256/vow-bare.png",
+    "128": "art/icons/prayers/exports/128/vow-bare.png",
+    "64": "art/icons/prayers/exports/64/vow-bare.png",
+    "48": "art/icons/prayers/exports/48/vow-bare.png",
+    "44": "art/icons/prayers/exports/44/vow-bare.png",
+    "32": "art/icons/prayers/exports/32/vow-bare.png",
+    "24": "art/icons/prayers/exports/24/vow-bare.png",
+    "16": "art/icons/prayers/exports/16/vow-bare.png"
+  },
+  "export_sha256": {
+    "256": "af202d3dc14b32781c73bbc2b1fbfb83e7957d88876d637c50be32a096622247",
+    "128": "f82ce817a35dd14c8801e0e7309a3854977d8bffe739f325992a9e1cd0af0ec5",
+    "64": "be3510a610da8adb3a531cea57c90baae2904038b3e6148281f7c5a3d554a747",
+    "48": "39831180e20b15e66e7db94d44ac199c495c4f03243af02356a45320f9229ba6",
+    "44": "5bcea66cb867e2b62409d3f84dc058b5fbcd38a2e5122154e8181ac98ed32fef",
+    "32": "dec27621461022fa5b6e6ac966b7e2711bfa92bee37d3ae9800437a54564c5cb",
+    "24": "f59fa744a55612a363d6348a1588c743cc5d23e42b0a4b2e3106f4b89a47cb72",
+    "16": "62d0c20c93142ca612121630be5d7becadf59adedeed67b1bf115222af8c2285"
+  },
+  "rejection_reason": "Unwanted literal flame crown: Wick is ceramic-screen automaton."
+}

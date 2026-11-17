@@ -1,0 +1,101 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.prayer.held_breath",
+  "name": "Held Breath",
+  "icon_id": "fork.prayer.held_breath",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Held Breath** (`prayer.held_breath`). *\"If your turn ends with no Whisper said, it is held (one at most). On a later\nturn of this fight you may say it as well as that turn's Whisper. A turn whose Whisper was spent by Steadfast holds\nnothing.\"*\n- Fields: `held: 1`. Why one: two Whispers a turn at most, once per turn not said. The Steadfast sentence closes the\n  loop where both are held (Steadfast at 4, Held Breath at 6): spending each Whisper off-turn would otherwise bank one\n  every turn, two Whispers a round for good.\n- Carrier: N7 (prayer slots as numbers): a stat `whispers_per_turn` read where the limit is a literal today\n  (`lim.left('per_turn', 1, WHISPER_KEY)`, `faith.ts:299, :1021`, taken at `:970`; `extra_use` never reaches it); the\n  held Whisper is a content condition `held_breath` (put on `turn_end` when the Whisper key has a use left, and not\n  after a Steadfast Whisper) that adds 1 to the stat until spent.\n- Chaplain: a held Whisper may be a Ward (two Ward layers in one turn, the `holders` cap stands). Peak: no.\n- Excite: the Boss steps in next round; you hold this turn's Whisper and open the next with Protection on both\n  front-liners.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [
+    3
+  ],
+  "generation_gate": "resolve applicable source question before committing to its depicted behaviour",
+  "file_key": "fork-prayer-held-breath",
+  "path": "art/icons/forks/prayer-held-breath.png",
+  "paint": "Wick stands very still, one mitten just in front of his closed pixel mouth and the other protecting ONE small curved prayer-ray token against his lantern chest. Eyes gently shut: one unused Whisper is being kept.",
+  "avoid": "No face cheeks on ceramic, breath smoke, bowl/cup, hourglass or multiple stored tokens.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick stands very still, one mitten just in front of his closed pixel mouth and the other protecting ONE small curved prayer-ray token against his lantern chest. Eyes gently shut: one unused Whisper is being kept.\nAVOID: No face cheeks on ceramic, breath smoke, bowl/cup, hourglass or multiple stored tokens.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "visual_basis_resolution": {
+    "authority": "Leon explicit answer 17 November 2026",
+    "quote": "Use pinned revision-2 rules for these eight proposals",
+    "gameplay_questions_remain_open": true
+  },
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 15,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f7384ceef75e7b85ffa834583c16538bef529febcb9204aeceaa5567192ede41",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-prayer-held-breath-v1.png",
+  "source_sha256": "b1afb4a8dfd7e47a2b3e9f278735dab9ee49b73b9f1d45b1f906af62e299c09b",
+  "export_crop": [
+    0,
+    15,
+    1190,
+    1244
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/prayer-held-breath.png",
+    "64": "art/icons/forks/exports/64/prayer-held-breath.png",
+    "48": "art/icons/forks/exports/48/prayer-held-breath.png",
+    "44": "art/icons/forks/exports/44/prayer-held-breath.png",
+    "32": "art/icons/forks/exports/32/prayer-held-breath.png",
+    "24": "art/icons/forks/exports/24/prayer-held-breath.png"
+  },
+  "export_sha256": {
+    "128": "52488ccd4c2b7bef2fe36fdd0550c0a65cf1ec6d128d5e2008288291fdf623e6",
+    "64": "2be570a47e784bcbfe91f31d2c76471fa4e1e271ca9267c83e06b8ca5ebff75a",
+    "48": "8e35aef005855da0a7f6357fe397f15a0061cd818e661acee8cb1b6ef77a287b",
+    "44": "00760f22a79f40115ca4c8bdca86293aa127e8bf75898fc00e98e6e79bf80734",
+    "32": "6ce0d2cf43bd3ce638f45ad5ad6d641f48a4eef002ddc28094f75f5483be3ed5",
+    "24": "b1b4d905f140c09d6057f6bfe411316f6a8e78b87798f50214faef2ecb58fec4"
+  },
+  "framing": {
+    "scale": 0.5997544328651492,
+    "offset": [
+      155,
+      143
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

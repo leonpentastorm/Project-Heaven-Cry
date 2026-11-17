@@ -1,0 +1,76 @@
+{
+  "number": 234,
+  "family": "move_icons",
+  "id": "move-verdict",
+  "path": "art/icons/moves/verdict.png",
+  "name": "Verdict",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Chaplain rank III move, was Judgement (asked 13 Nov, C1)",
+  "paint": "One decided downward blow after a pointed finger.",
+  "avoid": "a gavel \u00b7 scales of justice",
+  "section": "Faith: prayer, and the Chaplain",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: One decided downward blow after a pointed finger.\nAvoid: a gavel \u00b7 scales of justice\nEXACT STAGING: Verdict: a compact TWO-PHASE SINGLE ACTION using only cropped ceramic mittens. At upper left one cropped hand POINTS A FINGER directly down toward one little abstract tile; at center-right a clenched cropped fist follows through ONE DECISIVE DOWNWARD BLOW onto the SAME tile, shown with ONE broad downward motion stroke and two small impact ticks. Keep the pointing finger distinct from striking fist, no full arms/bodies/heads. No gavel, scales, judge, gore, blood, text or extra symbols. Generic flat fantasy game abstraction.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "0839b6f43054e0474092b112eb850924df7ca2d7f193a8b9528201e00f0dbf9d",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/234-verdict.png",
+  "source_sha256": "187b158400ae364a36fc9aae0c26e05f324ff24b217b67a226d9965f8a353e06",
+  "export_crop": [
+    0,
+    9,
+    1127,
+    1222
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/verdict.png",
+    "64": "art/icons/moves/exports/64/verdict.png",
+    "48": "art/icons/moves/exports/48/verdict.png",
+    "44": "art/icons/moves/exports/44/verdict.png",
+    "32": "art/icons/moves/exports/32/verdict.png",
+    "24": "art/icons/moves/exports/24/verdict.png"
+  },
+  "framing": {
+    "scale": 0.6051491072534027,
+    "offset": [
+      171,
+      145
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "7342079c7c03258841f8e3b8e9435230d1a4c557ffbea65f67b226e171756197",
+    "64": "37a370bc991b6e6d6eb3190af6f0884572b2d63e621de97a011bd809308a947c",
+    "48": "731e02d3ea86281c1b9915a0ec49445be4d4fbe20432b54cc68af7cebb7c9e90",
+    "44": "641a4f1344a902b926f6c8944ebb2af238961821034a3b20b5c8008a24d330ea",
+    "32": "80ecfa69ce59ed3376c43932ae8c69b09fbe2caea92408203439e857b1e987b3",
+    "24": "48e38e8485b6df33e520b2812b8a4f1061ad536e36e4dff48a0628a4f6107060"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

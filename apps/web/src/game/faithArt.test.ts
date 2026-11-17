@@ -6,6 +6,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PATRON_IDS, WHISPER_IDS, VOW_IDS, PATRON_MARK_PATHS, WHISPER_PATHS, VOW_PATHS, PATRON_ACCENT, FAITH_INK, FAITH_GOLD, accentOf,
   patronMarkUri, patronMarkSvg, prayerFile, prayerIconUri, vowIconUri, witnessedUri, patronPortrait, PORTRAIT_FACE, faceOf, faceImgStyle, patronFace } from './faithArt';
+import { condIconOf } from './doorArt';
 
 const svgOf = (u: string) => decodeURIComponent(u.replace('data:image/svg+xml,', ''));
 describe('Blessing art placeholders', () => {
@@ -26,7 +27,7 @@ describe('Blessing art placeholders', () => {
     const h = svgOf(prayerIconUri('hymn', 'x', 'mother_ember', 9)), m = svgOf(prayerIconUri('miracle', 'x', 'a_future_patron'));
     expect(h).toMatch(/scale\(\.33\)/); expect(m).toMatch(/scale\(\.667\)/);
     expect(svgOf(prayerIconUri('whisper', 'nonsense'))).toMatch(/<path/); expect(svgOf(patronMarkUri('a_future_patron'))).toMatch(/<path/);
-    expect(svgOf(vowIconUri('stand'))).toMatch(/<path/); expect(svgOf(witnessedUri())).toMatch(/<path/);
+    expect(svgOf(vowIconUri('a_future_vow'))).toMatch(/<path/); expect(vowIconUri('stand')).toMatch(/prayer-vow-stand/); expect(witnessedUri()).toMatch(/prayer-witnessed/); expect(condIconOf('witnessed')).toBeTruthy(); // 0.31.x art: the delivered vow and Witnessed signs
     expect(patronMarkSvg('old_overcast', '#000000', 48)).toMatch(/width="48"/);
   });
   it('the painted portraits are wired for all eight (two files carry "the_"); an unpainted patron has none', () => {

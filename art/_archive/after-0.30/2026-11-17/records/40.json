@@ -1,0 +1,82 @@
+{
+  "number": 40,
+  "section": 6,
+  "family": "tending_icons",
+  "id": "tend-threads",
+  "path": "art/icons/tending/threads.png",
+  "name": "Threads",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 no slot yet",
+  "use": "With an Attuner in hand, a share of the damage you take goes to the enemies you are Bonded to",
+  "paint": "Wick with two fine threads running from his chest out to two partial figures, a small impact star at each far end.",
+  "avoid": "a spider web \u00b7 puppet strings",
+  "file_key": "40-threads",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick with two fine threads running from his chest out to two partial figures, a small impact star at each far end.\nAVOID: a spider web \u00b7 puppet strings",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-6-wick-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/tending/bond.png",
+    "art/icons/tending/tug.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/40-threads-v1.png",
+  "source_sha256": "775a1ddc15c428555d153244028b406cf9753665ddfa6c11828f1d9166ccbe02",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    39,
+    1248,
+    1230
+  ],
+  "scale": 0.585367681127712,
+  "offset": [
+    146,
+    163
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "d1d53731f35edc2bbd84b35360716a0126dc7ec2f055960a848219cbec7fed4b",
+  "exports": {
+    "256": "art/icons/tending/exports/256/threads.png",
+    "128": "art/icons/tending/exports/128/threads.png",
+    "64": "art/icons/tending/exports/64/threads.png",
+    "48": "art/icons/tending/exports/48/threads.png",
+    "44": "art/icons/tending/exports/44/threads.png",
+    "32": "art/icons/tending/exports/32/threads.png",
+    "24": "art/icons/tending/exports/24/threads.png",
+    "16": "art/icons/tending/exports/16/threads.png"
+  },
+  "export_sha256": {
+    "256": "554967f06bbde74ecb1be2e14f17a078c4bd7b81949588dd88f145836eb4940f",
+    "128": "376cef0910b22e1d196e98412e2b42abe7240b9f159273aa44b74c99cbec395e",
+    "64": "30b16874b6b48867c658ba181a3f34cb83fd94efe4010a8b3146fcf548f30d67",
+    "48": "e372a6fa0062b0b0dbd8fff7ee212ec6d1f911bbd2e7cfaee7c136852cf2790c",
+    "44": "8c46de8ee75534d66e2f56014017b48234aa8036dc0570b50b62713fa21a5d8d",
+    "32": "a097ccfd2e9a3927712740e8aa70435c3b65b974ce995d39757bd89a94619a49",
+    "24": "4ebc956fe3a2fe0943517574ae70494da6a67c0e6d46568db266515100c75d5d",
+    "16": "5d8d719c7158243d9e16b8c989067ee444b75ce7cf410935ae7e88a22edb5066"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

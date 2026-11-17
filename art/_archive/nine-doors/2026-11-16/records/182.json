@@ -1,0 +1,61 @@
+{
+  "number": 182,
+  "family": "tending_icons",
+  "id": "tend-settle",
+  "path": "art/icons/tending/settle.png",
+  "name": "Settle",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Tend verb (Help)",
+  "paint": "A hand resting on a trembling partial shoulder, the shake lines going still.",
+  "avoid": "a sleeping figure \u00b7 a bed",
+  "section": "Empathy: Bonds and Tending, and the Mender",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: A hand resting on a trembling partial shoulder, the shake lines going still.\nAvoid: a sleeping figure \u00b7 a bed\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "401497286b5897b681eaf08d41c792c6520aeacb4a1d3dc797eb4fde143625ae",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/182-settle.png",
+  "source_sha256": "9aa2f04318b79929f5091522a9ff67f8f9b62800b9831e2edd8f1433274cc9ae",
+  "export_crop": [
+    0,
+    21,
+    1246,
+    1166
+  ],
+  "exports": {
+    "128": "art/icons/tending/exports/128/settle.png",
+    "64": "art/icons/tending/exports/64/settle.png",
+    "48": "art/icons/tending/exports/48/settle.png",
+    "44": "art/icons/tending/exports/44/settle.png",
+    "32": "art/icons/tending/exports/32/settle.png",
+    "24": "art/icons/tending/exports/24/settle.png"
+  },
+  "framing": {
+    "scale": 0.5914773277294458,
+    "offset": [
+      143,
+      173
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

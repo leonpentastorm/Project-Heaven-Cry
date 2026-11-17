@@ -1,0 +1,76 @@
+{
+  "number": 70,
+  "family": "technique_icons",
+  "id": "tech-warning-shot",
+  "path": "art/icons/techniques/warning-shot.png",
+  "name": "Warning Shot",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, press",
+  "paint": "A single bullet line striking the ground just in front of a partial foot, a small dust kick.",
+  "avoid": "a firework \u00b7 a flare",
+  "section": "Dexterity: Pressure, and the Skirmisher",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A single bullet line striking the ground just in front of a partial foot, a small dust kick.\nAvoid: a firework \u00b7 a flare\nEXACT STAGING: A single straight white training-projectile line travels low from viewer-left and ends at a TINY hard-edged dust tick on a short ground baseline, just IN FRONT OF a cropped boot toe entering from viewer-right. The boot remains intact, untouched and clearly separated from the endpoint. Show only the partial boot and a short cuff, no whole person or robot. No injury, spark shower, firework, flare, smoke, flash or scene.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "9bd26f9ca23a826b05d09348fde11ad76d81353f080503d586e1a88ad98e8bea",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/070-warning-shot.png",
+  "source_sha256": "e8f9f8f16e5c34510cfd8333c9ce37e678a69779bec423ddede204beca52c626",
+  "export_crop": [
+    65,
+    103,
+    1224,
+    977
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/warning-shot.png",
+    "64": "art/icons/techniques/exports/64/warning-shot.png",
+    "48": "art/icons/techniques/exports/48/warning-shot.png",
+    "44": "art/icons/techniques/exports/44/warning-shot.png",
+    "32": "art/icons/techniques/exports/32/warning-shot.png",
+    "24": "art/icons/techniques/exports/24/warning-shot.png"
+  },
+  "framing": {
+    "scale": 0.688258872585796,
+    "offset": [
+      113,
+      211
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "e165501e627bdda9cff1872a56589884b590692093134094d3f93da8995cc1e5",
+    "64": "2f1c3996190e90e77947bb38f3f250ab84746e375ae64bf2e2616d5dbdce90f1",
+    "48": "646accfddf5ced8123c3357586e6fcacf0888f916c6388c4a87d8b9df1b271dc",
+    "44": "7ec1bc480501b7fe23b39a9cb91951fdbab1657673ae36610a34debb803e58c2",
+    "32": "f5cb3df2682ef1fe78ff93d7651bdc8779c0ec5ff285af07e81d89545d1569c8",
+    "24": "4b48f58c89eefb28f622ca7a339611f1e01f2b50e16e67449eac6c2ef1bd0809"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

@@ -1,0 +1,75 @@
+{
+  "number": 127,
+  "family": "move_icons",
+  "id": "move-barrage",
+  "path": "art/icons/moves/barrage.png",
+  "name": "Barrage",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Sigilist rank I move",
+  "paint": "Three small glyph-darts leaving a line of glyphs one after another.",
+  "avoid": "missiles with fire trails \u00b7 text",
+  "section": "Brain Power: Sigils, and the Sigilist",
+  "kind": "wick",
+  "prompt": "Correct ONLY the LETTER-LIKE glyphs in this flat white Barrage icon. Replace EVERY shape resembling H, F or any letter with a SIMPLE CLOSED HEXAGON containing one small diamond-shaped TRANSPARENT hole. Keep the existing diamond and triangular glyphs and the clear arrangement: three abstract glyphs in a short source line, then three small corresponding glyph-darts leaving in sequence toward the right with tiny trailing ticks. Source and moving copies of the corrected hexagon must match. None of the marks may be alphabetic, numeric, runic text, words, labels or readable characters. Preserve the existing bold pure-white flat graphic style, transparency, spacing and clear simple motion. No mascot, hands, weapon, missile, flame, rays, glow, gradient, gray, texture or border. One square icon, central 75% safe area and circular chip safety.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/superseded/127-letterlike-glyph-fix/native.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "revision_source": "art/_archive/nine-doors/2026-11-16/superseded/127-letterlike-glyph-fix/native.png",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "747f45405c688ae97a6dfe2dc5f8f240500e60debbf421305b6f5eb12d2977a9",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/127-barrage.png",
+  "source_sha256": "d9cae7a589debcc393db80687abda2aaffd283edb38394d0e057807d8e274136",
+  "export_crop": [
+    17,
+    248,
+    1218,
+    1013
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/barrage.png",
+    "64": "art/icons/moves/exports/64/barrage.png",
+    "48": "art/icons/moves/exports/48/barrage.png",
+    "44": "art/icons/moves/exports/44/barrage.png",
+    "32": "art/icons/moves/exports/32/barrage.png",
+    "24": "art/icons/moves/exports/24/barrage.png"
+  },
+  "framing": {
+    "scale": 0.653760858628334,
+    "offset": [
+      119,
+      262
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "51b8a48dd63a8f236f36e8fdec2b25a6725d3b74cc95f6ba15ab0a55d40b14bb",
+    "64": "f7bc57ef6595ee919709dc06e8c31e9f35775df368e6ccfdea5490d957686ff8",
+    "48": "f37c48c7af131c899606e5bd13a32cb8c127e84e80404b67c40f3259e4a42cab",
+    "44": "62b98ba6f0f83162f5958bec302e81dcc907855b11f9f125d4c288263ae248d7",
+    "32": "b41b19650a744669e4355789b4727c24cb0ea65d75e7db1d96d1c97f155db3ee",
+    "24": "0d6ca99285c93bece714532dea01988afcd90c075fab55616583980a2a504372"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

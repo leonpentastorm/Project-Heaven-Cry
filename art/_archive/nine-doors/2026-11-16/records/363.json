@@ -1,0 +1,78 @@
+{
+  "number": 363,
+  "family": "technique_icons",
+  "id": "tech-head-down",
+  "path": "art/icons/techniques/head-down.png",
+  "name": "Head Down",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, set",
+  "paint": "Wick ducking low behind a wall, only his flame showing.",
+  "avoid": "a turtle \u00b7 a helmet",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick ducking low behind a wall, only the top of his ceramic screen head showing.\nAvoid: a turtle \u00b7 a helmet\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Head Down: apply current CERAMIC AUTOMATON casting correction to stale brief wording 'flame': NO LITERAL FLAME. ONE Wick ducks VERY LOW BEHIND ONE short low rectangular cover WALL, only the TOP OF HIS CERAMIC HEAD with its two offset fasteners and tiny upper screen edge peeks above wall. His full body stays hidden by wall. No turtle, helmet, weapon, fire, bowl, halo, star or other figure. Bold low cover silhouette with sparse masonry cuts. Square circle-safe.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "876c9165576fe80bb1b355fa7a9089cc4ca30b9b05bceac0868e2803eb3b502b",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/363-head-down.png",
+  "source_sha256": "e04ef157b51388ef7f11f2c769b0a3293c68e85c92a21a5558f11a7d088b4bb0",
+  "export_crop": [
+    0,
+    37,
+    1222,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/head-down.png",
+    "64": "art/icons/techniques/exports/64/head-down.png",
+    "48": "art/icons/techniques/exports/48/head-down.png",
+    "44": "art/icons/techniques/exports/44/head-down.png",
+    "32": "art/icons/techniques/exports/32/head-down.png",
+    "24": "art/icons/techniques/exports/24/head-down.png"
+  },
+  "framing": {
+    "scale": 0.5106710363266096,
+    "offset": [
+      200,
+      201
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "f7ca4d459a25afec65d1190d748a5f71cbc7b1762a7bfd544ef940fb4011d20b",
+    "64": "05733e65888b9e176a81cfba42ffda722206a94bbea7c3bf31e06b52ad3f3a3f",
+    "48": "a9b0c37f25b42d6fced49318cd3e67f8a0855425e95dc7e8e8b777e204616b56",
+    "44": "7c4e4bf57cc6e22d272941f1d9197d13f7fd7e1d6015ece881d9ab7c89a64f81",
+    "32": "7dcf62acd1d6a851a107e58552c33776d39cea82131b3c1fd3c25a20f7df0277",
+    "24": "82cb372b5b8861756b78cee902ef0cf77f916ff4de4059cda9fb604c5365f4b1"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

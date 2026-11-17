@@ -1,0 +1,76 @@
+{
+  "number": 331,
+  "family": "technique_icons",
+  "id": "tech-sweep",
+  "path": "art/icons/techniques/sweep.png",
+  "name": "Sweep",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, strike",
+  "paint": "A long weapon swinging a low flat arc at ankle height.",
+  "avoid": "a broom \u00b7 the Open Hand Sweep (that is a leg)",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A long weapon swinging a low flat arc at ankle height.\nAvoid: a broom \u00b7 the Open Hand Sweep (that is a leg)\nEXACT STAGING: Sweep technique: ONE long plain POLE WEAPON swings in a LOW BROAD NEAR-HORIZONTAL ARC. A cropped ceramic mitten holds its left end; its pointed right end follows one flattened white curve just above a tiny baseline and one cropped ankle/boot at far right for height. No full figure, no sweeping leg, no broom, no severing, injury or blood. Single low sweeping movement, clear negative space.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "e28aca6c7fa29dfa9006f90827b9b8267543e5bd8c1ddb87b50579b2639db336",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/331-sweep.png",
+  "source_sha256": "d509139354d4e1f56ef87dc9ef824fb7767be440af278bad5980f0934a03cb10",
+  "export_crop": [
+    17,
+    50,
+    1212,
+    1180
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/sweep.png",
+    "64": "art/icons/techniques/exports/64/sweep.png",
+    "48": "art/icons/techniques/exports/48/sweep.png",
+    "44": "art/icons/techniques/exports/44/sweep.png",
+    "32": "art/icons/techniques/exports/32/sweep.png",
+    "24": "art/icons/techniques/exports/24/sweep.png"
+  },
+  "framing": {
+    "scale": 0.580291527496142,
+    "offset": [
+      165,
+      184
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "634adb3b4c4614eb0dcf012da82aca14e717b6d540fe8399704a3fd4b31c1e62",
+    "64": "f3a8193eeeb393d3ce3a5453bb14e38637c0fa3afe2011cac079b13b18af8626",
+    "48": "363b5a4aedb0ffaf44a059da7ebd8fc84eab54b3335bf016daad047308d5ecfe",
+    "44": "a65b427f764312ca6361e7a8d93fda017e2f87db7542d345edce468c2a5ff2cf",
+    "32": "6e06a6300c15a75278013145d4d370f5d587d70ead234d27a32179f758451cbc",
+    "24": "a0bf2b13690daa698c5f5d72383bf74fc44d4f8ad85e310216000e416326a1e0"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

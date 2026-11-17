@@ -1,0 +1,29 @@
+{
+  "number": 73,
+  "family": "technique_icons",
+  "id": "tech-crossfire",
+  "path": "art/icons/techniques/crossfire.png",
+  "name": "Crossfire",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, press: two lines of fire cross",
+  "paint": "Two bullet lines crossing at one point from opposite sides.",
+  "avoid": "crossed swords \u00b7 an X on a map",
+  "section": "Dexterity: Pressure, and the Skirmisher",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Two bullet lines crossing at one point from opposite sides.\nAvoid: crossed swords \u00b7 an X on a map\nEXACT STAGING: TWO straight projectile paths cross ONCE at the center from opposite sides and different shallow diagonals. Each path is a bold clean white streak with one small pointed projectile tip at its leading end and two short spaced trailing dashes at its opposite end. Their difference in direction makes actual crossing FIRE LINES, not a simple symmetric X mark. No swords, map, target circle, person, mascot, weapon, sparks, blast or surrounding frame. Give both paths clear negative-space separation at the crossing if useful.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "pending",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only"
+}

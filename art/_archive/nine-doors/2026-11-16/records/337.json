@@ -1,0 +1,76 @@
+{
+  "number": 337,
+  "family": "technique_icons",
+  "id": "tech-half-sword",
+  "path": "art/icons/techniques/half-sword.png",
+  "name": "Half-Sword",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, strike",
+  "paint": "A hand gripping a blade halfway along its length, point forward.",
+  "avoid": "blood \u00b7 a known film's knight",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A hand gripping a blade halfway along its length, point forward.\nAvoid: blood \u00b7 a known film's knight\nEXACT STAGING: Half-Sword: ONE long plain blade held HORIZONTALLY with sharp POINT FORWARD RIGHT. ONE CROPPED CERAMIC MITTEN grasps it HALFWAY ALONG THE FLAT OF ITS BLADE, visibly BETWEEN hilt and tip. Hilt remains visible well to left, tip extends to right. Keep the mitten fully wrapped on the broad flat, not gripping handle. No full knight, blood, wounds, armor insignia, extra hands or scenery.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "176c6523405afb3142eae8fc93cc5777e9087d7fe42471ebd11d8c314a83711c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/337-half-sword.png",
+  "source_sha256": "e578a5b005bc7791c04840d40e65f092cd87b23b7cb00da3827d6fe3c039c2b8",
+  "export_crop": [
+    0,
+    21,
+    1224,
+    1166
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/half-sword.png",
+    "64": "art/icons/techniques/exports/64/half-sword.png",
+    "48": "art/icons/techniques/exports/48/half-sword.png",
+    "44": "art/icons/techniques/exports/44/half-sword.png",
+    "32": "art/icons/techniques/exports/32/half-sword.png",
+    "24": "art/icons/techniques/exports/24/half-sword.png"
+  },
+  "framing": {
+    "scale": 0.5640032650697989,
+    "offset": [
+      167,
+      189
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "5d161e2304c5ccea1e6e76c9b3548862050b2bf094b3bc2f4c0c5fedc670cae0",
+    "64": "9aec3aeb491a812411209712dc819677b5a8318811c72268dfd20e534f877c58",
+    "48": "51f95c8dd247c4420d3e9f5fbc2d0a5e0de5b087c3a191b5137698fe80495854",
+    "44": "71457bafde14d254dd93e86641076e849fb359678c4e86fe1133349cd9727120",
+    "32": "44faea385e447477ad9cf9cce943bfa57ae721b69b1c573dd10febe5e66d8407",
+    "24": "58a441a407dbbb65d429a8bc5945a784275d5659033fc6a5359568d9a480d82c"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

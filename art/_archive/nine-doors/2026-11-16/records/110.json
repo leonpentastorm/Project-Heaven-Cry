@@ -1,0 +1,78 @@
+{
+  "number": 110,
+  "family": "move_icons",
+  "id": "move-vanish",
+  "path": "art/icons/moves/vanish.png",
+  "name": "Vanish",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Operative rank I move: Hidden when unseen",
+  "paint": "Wick stepping backwards into a doorway of darkness, half gone.",
+  "avoid": "smoke bomb clouds \u00b7 sparkles",
+  "section": "Ingenuity: Shadow, and the Operative",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick stepping backwards into a doorway of darkness, half gone.\nAvoid: smoke bomb clouds \u00b7 sparkles\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nEXACT STAGING: Wick steps BACKWARDS into ONE narrow doorway defined by a thick white jamb and a short top corner. The doorway interior is TRANSPARENCY. His rear foot, one arm and the rear half of the torso disappear cleanly beyond that jamb, while his face turns toward the viewer. NO soft fade or gray: the missing half is an intentional crisp transparent cut. One full implied Wick only, never a duplicated ghost pose. Keep the visible half's head, pixel face, capelet and part of the lantern heart. No smoke bomb, sparkles, stars or portal ornament.\nCASTING: the exact small ceramic automaton from these production references. Retain pixel-screen expression, ear discs, chamfered head and offset fasteners, asymmetric capelet, round medical lantern chest, mittens and chunky cuffed boots. NEVER add the meditation cup/bowl, generic up-arrows or random stars from the identity reference.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "composition_scope": "one full Wick at most",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "d38a85afafd8a04d708545329b64d5959816151f65692212abb098401a0652fb",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/110-vanish.png",
+  "source_sha256": "117755f1e28c60babab70c7c8d9546f85a74dbab1cb1f9d22fe5a22a744b99eb",
+  "export_crop": [
+    33,
+    83,
+    1210,
+    1200
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/vanish.png",
+    "64": "art/icons/moves/exports/64/vanish.png",
+    "48": "art/icons/moves/exports/48/vanish.png",
+    "44": "art/icons/moves/exports/44/vanish.png",
+    "32": "art/icons/moves/exports/32/vanish.png",
+    "24": "art/icons/moves/exports/24/vanish.png"
+  },
+  "framing": {
+    "scale": 0.6039758034919132,
+    "offset": [
+      156,
+      174
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "791b8152c0463f61efd746deb32648ef9c271bfbb738f009fff7d54336a44c6e",
+    "64": "e6229b2045d015824016c937ef7581704f35bcf5b0ec6003e1351db023a17093",
+    "48": "28200ec94c39616c20e425bca0345bab63b4a34383f5685961c6dfd1fd5b1ee8",
+    "44": "9335cbd03e5ffb4685c6d6aa7f8323ca1f9c47578bd471c5f0f6379af17111c7",
+    "32": "6c109be5d7ee6b0e0703e8253562e69875a8ad461636ab15483c1e3b5f38fa34",
+    "24": "7dfeb08457c84eb180dff0587e626f75dd41a38d00e8396ce0ea23ea3887ed2f"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

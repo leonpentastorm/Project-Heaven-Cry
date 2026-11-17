@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Afterword: a short off-hand knife held reversed, a stamp notch on the spine (rules 1.58) -->
+  <g transform="rotate(135 32 32)">
+    <path d="M6 29 L9 27.5 L22 27.5 L22 22 L26 22 L26 26 L38 26 L41 29 L44 26 L56 26 L60 32 Q52 38 42 38 L26 38 L26 42 L22 42 L22 36.5 L9 36.5 L6 35 Z"/>
+    <path d="M29 32 L50 32"/>
+    <path d="M12 30 L12 34"/>
+  </g>
+</svg>

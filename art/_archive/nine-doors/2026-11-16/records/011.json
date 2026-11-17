@@ -1,0 +1,77 @@
+{
+  "number": 11,
+  "family": "move_icons",
+  "id": "move-unbroken",
+  "path": "art/icons/moves/unbroken.png",
+  "name": "Unbroken",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Bulwark rank II move (from the Adamantile Knight): keeps standing through a killing blow",
+  "paint": "Wick standing straight with a long crack running down his body like a cracked statue, still upright.",
+  "avoid": "lying down \u00b7 wings or halo",
+  "section": "Durability: Guard, and the Bulwark",
+  "kind": "wick",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons: Wick, the small ceramic screen-headed automaton of the trait and perk icons, in bold flat white shapes, a confident\ninked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no\ntexture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a\nsilhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency.\nIt must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no\nletters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia\nor religions (a medical mark is a plain plus, never a red cross). The icon shows:\n\nPaint: Wick standing straight with a long crack running down his body like a cracked statue, still upright.\nAvoid: lying down \u00b7 wings or halo\n\nCASTING AUTHORITY: Wick MUST be the exact approved little CERAMIC AUTOMATON in the reference: oversized rounded rectangular head with a TRANSPARENT inset screen cutout and changeable WHITE 8-BIT PIXEL eyes/mouth; small ear discs, two offset plate fasteners, stubby mitten hands/boots, short asymmetrical capelet, and a lantern-heart chest inset. Keep his lively off-balance silhouette. Do NOT replace him with a literal flame head, human face, generic stick person or another game's mascot. The screen's dark area is TRANSPARENT NEGATIVE SPACE, with white pixels inside; all interior gaps must be transparent, not opaque black or gray paint. One full Wick maximum; any opponent/ally is a cropped partial fragment. Use only the action and props requested above; no extra corner star or decorative icons. Make every pose distinctive and physically legible at 32px. No real gore; any fallen foe is a simple partial abstract shape, no facial detail. Translate any requested glow, fading or shadow into solid-white rays, sparse broken arcs or transparent cutouts, NEVER gray shading, gradients or bloom. Preserve breathing room and the full silhouette.\n\nUSER CASTING CORRECTION, 16 Nov: The bowl/cup floating above Wick in Mind Without Fog is that trait's STILL-WATER PROP, NOT Wick's anatomy or a standard accessory. DO NOT draw a cup, bowl, saucer or halo above Wick in this icon. Likewise do not copy that reference's floating up-arrows unless this row explicitly requests them. Keep the rounded ceramic head itself, pixel-screen face, capelet, lantern-heart and asymmetry. Only include props named in THIS row.\nSpecific action clarification: Make the long crack run down Wick's ceramic body, through shell plates, yet he stands straight and resolute. The crack is a single broad transparent zigzag cut, not scratch texture or exposed guts. No second figure, weapon, halo or wings. Keep his short asymmetric capelet, screen face, circular medical lantern and wide boots readable.\nThe first three references are exact charcoal preview composites of existing Wick production icons; copy their character construction and ink weight, not their accessories or actions. The final meditation master is an identity anchor only: do not copy its bowl or arrows. Keep ink within the central 75\u201380% of a square, with full safe margins. Screen, cuts and gaps are transparent; solid visible ink is pure white. No gray, gradients or glow.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "4d4edf905e6ef1b4fcc8d9572c268b1e8ac7d1b80a2aee615e97490e3a6c1b3c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/011-unbroken.png",
+  "source_sha256": "f49e6ec58a233e2d0affca9a3a677a5b9008c398a094f8e975fe3d6489f0c73d",
+  "export_crop": [
+    117,
+    29,
+    1103,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/unbroken.png",
+    "64": "art/icons/moves/exports/64/unbroken.png",
+    "48": "art/icons/moves/exports/48/unbroken.png",
+    "44": "art/icons/moves/exports/44/unbroken.png",
+    "32": "art/icons/moves/exports/32/unbroken.png",
+    "24": "art/icons/moves/exports/24/unbroken.png"
+  },
+  "framing": {
+    "scale": 0.6218758264399089,
+    "offset": [
+      205,
+      131
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "6d55dd7a2ce4dbb3fbdb5f8d08feaa191bf3b1c0a22c0758a36e68844a4e54ed",
+    "64": "364bfb9e91d9d9b3629ee6c5d5bb63c6b54d3740a34a512c30a1e743c57abdb5",
+    "48": "db9dddab6e1245ddd6bc9e01bc0e85ad964f15aceb647f7002b7d81da7431254",
+    "44": "40ceb3d427ef36a0d5858b1f414c9763d1fd2779db41c86002a6dd97c3928c20",
+    "32": "7099a26a80eb6340a61ce4e03bb7c22a5f3a0d43b8d2dbd77fdae754291baa85",
+    "24": "1c093ce0e086b691d7ecf2eeafbe1a34c3ff27d26439407920f86c5f877bf455"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate.",
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/angel-of-the-trenches.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/bedside-manner.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ]
+}

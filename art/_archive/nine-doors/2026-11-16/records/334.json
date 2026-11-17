@@ -1,0 +1,76 @@
+{
+  "number": 334,
+  "family": "technique_icons",
+  "id": "tech-flurry",
+  "path": "art/icons/techniques/flurry.png",
+  "name": "Flurry",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, strike",
+  "paint": "Three quick blade lines stacked one after another.",
+  "avoid": "a blender \u00b7 motion blur",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Three quick blade lines stacked one after another.\nAvoid: a blender \u00b7 motion blur\nEXACT STAGING: Flurry: Exactly THREE QUICK WHITE BLADE-STROKES stacked PARALLEL one above another, all diagonal lower-left to upper-right with tapered sharp tips pointing right and short squared heels left. Each is a separate crisp silhouette, with wide transparent spacing, slight progressively longer lengths. No handles, whole blades, hands, character, blender, blur, glow, extra strokes or sparkles.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "3a2c58fa6c6aaf093ce7486088c05b571f25fad7989b7bd3ca5954e8b468c233",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/334-flurry.png",
+  "source_sha256": "fe2da8d11d93176e93aabf4c848700520f8aa1a2a0cc16f358aaa6617b15cfd6",
+  "export_crop": [
+    49,
+    150,
+    1176,
+    1036
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/flurry.png",
+    "64": "art/icons/techniques/exports/64/flurry.png",
+    "48": "art/icons/techniques/exports/48/flurry.png",
+    "44": "art/icons/techniques/exports/44/flurry.png",
+    "32": "art/icons/techniques/exports/32/flurry.png",
+    "24": "art/icons/techniques/exports/24/flurry.png"
+  },
+  "framing": {
+    "scale": 0.665683804695,
+    "offset": [
+      137,
+      217
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "34b4ea354dff4a33cb8b17bfb1e7e041141c0367f3fc724b82873ccf43fa97bc",
+    "64": "0fa75062820dac045a89c0400f02a2ae027625a3208c8b50bd16579847c1a241",
+    "48": "80fc8da10360251d004c183202001f05a9e9fd22f55d70265fc17cb08f2bbfbd",
+    "44": "77e137d07b086a92e5ccce09b561b3fde9d2a09164f4ab968e2a67a824666fd8",
+    "32": "d8d03beded05b429a7907a59d1019897778d17a00ca46ab571d614862e472e0d",
+    "24": "e1d3f4c25c52b0274a8f44c785b9b175f9e732646f758da31e75df7ae33175a2"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

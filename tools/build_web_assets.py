@@ -228,6 +228,53 @@ for stem, a in C.get("gear", {}).items():
         for suffix in ("", "-lg"):
             assert "gear-" + did + suffix not in assets, f"gear alias {did} is already a key"
             assets["gear-" + did + suffix] = assets[key + suffix]
+# The nine doors delivery (17 Nov 2026; art/briefs/NINE-DOORS-ART-HANDOFF-2026-11-16.md), by catalog id. Each family is
+# built under its catalog id (<prefix><stem>) and ALSO answers to <prefix><data id>, the id the screens hold, so the one
+# resolver per family (apps/web/src/game/doorArt.ts) asks by the data's own id and no id is typed in code:
+#   the data id is the catalog entry's `data_ids` (a move's or verb's item key, `class:defender.brace`, a door's alpha
+#   skill, `durability`, a technique whose catalog id carries a `-tech` suffix), else its catalog id minus the prefix with
+#   hyphens as underscores (`tech-run-through` -> run_through, `cond-off-balance` -> off_balance, `class-defender`).
+# White-ink icons (moves, techniques, Shadow, Tending, conditions, door emblems, camp signs): the 64 px export only (rows,
+# chips and cards draw them at 14 to 32 css px, sharp at 2x). Class portraits (4:5): 320 x 400 and 800 x 1000 (-lg), as
+# the character portraits. A placeholder (an SVG stand-in for art still wanted) is not built: the screen draws what it drew.
+DOOR_ART = (("move_icons", "move-"), ("technique_icons", "tech-"), ("shadow_icons", "shadow-"), ("tending_icons", "tend-"),
+            ("condition_icons", "cond-"), ("door_emblems", "door-"), ("camp_icons", "camp-step-"), ("class_portraits", "class-"))
+
+def door_art_ids(cid, a, prefix):
+    """The data ids a delivered picture answers to: its `data_ids`, else its catalog id's stem as a data id."""
+    return a.get("data_ids") or [cid[len(prefix):].replace("-", "_")]
+
+for fam, prefix in DOOR_ART:
+    for cid, a in C.get(fam, {}).items():
+        if a.get("placeholder") or a.get("format") == "svg" or not cid.startswith(prefix):
+            continue
+        if fam == "class_portraits":
+            emit(cid, ROOT / a["path"], (320, 400), (800, 1000), versioned=True)
+        else:
+            emit(cid, ROOT / a.get("exports", {}).get("64", a["path"]), (64, 64), None, 90, versioned=True)
+            # -lg: the enlarged view's copy (512 px from the delivered 1024 master; fetched only when a picture is opened)
+            emit(cid, ROOT / a["path"], None, (512, 512), 90, versioned=True)
+        for did in door_art_ids(cid, a, prefix):
+            for suffix in ("", "-lg"):
+                if cid + suffix not in assets:
+                    continue
+                key = prefix + did + suffix
+                assert assets.get(key, assets[cid + suffix]) == assets[cid + suffix], f"{fam}: {key} is already another picture"
+                assets[key] = assets[cid + suffix]
+# The after-0.30 delivery (17 Nov 2026; art/briefs/GPT-PROMPTS-2026-11-17-after-0.30.md): white-ink signs at 64 px and
+# 512 px (-lg, the enlarged view), under their catalog id: place_icons place-<stem> (the Survival place cards, by the
+# offer's kind), interface_icons icon-<group>-<stem> (status-helps/hurts/state, hazard-<kind>, zone-<kind>,
+# resource-<name>, tone-<tone>). game/doorArt.ts asks by the data's own word (placeIconOf, uiMarkOf).
+for fam, pre in (("place_icons", "place-"), ("interface_icons", "icon-")):
+    for cid, a in C.get(fam, {}).items():
+        if a.get("placeholder") or not cid.startswith(pre) or cid.startswith("icon-panel-"):
+            continue
+        emit(cid, ROOT / a.get("exports", {}).get("64", a["path"]), (64, 64), None, 90, versioned=True)
+        emit(cid, ROOT / a["path"], None, (512, 512), 90, versioned=True)
+        for did in a.get("data_ids", []):  # a place card asks by its option's key or trade id (catalog data_ids)
+            for suffix in ("", "-lg"):
+                assert assets.get(pre + did + suffix, assets[cid + suffix]) == assets[cid + suffix], f"{fam}: {pre + did} is another picture"
+                assets[pre + did + suffix] = assets[cid + suffix]
 # Title screen (art/briefs/title-screen.md, docs/design/title-screen.md §8). The painted layers are 4096 x 2304 with
 # overscan (the central safe rect is art/ui/title-screen/technical-review.json); they are exported whole, at three
 # widths, and the title picks one by viewport (srcset): <layer> 1600 w, <layer>-lg 2560 w, <layer>-xl 3840 w.

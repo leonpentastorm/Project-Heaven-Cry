@@ -1,0 +1,82 @@
+{
+  "created_at": "2026-11-16 06:33:51 UTC",
+  "status": "blocked-before-export-and-validation",
+  "completed_count": 175,
+  "remaining_count": 200,
+  "items": [
+    {
+      "number": 323,
+      "name": "Last Turn",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 369605,
+      "sha256": "f4fb33b558fb9b766f996e630aab8a81089b7e66b2a0b42976ef925a8923274d",
+      "git_blob_sha": "79df93ffec74f1fa9ed7335996caad9758245d87",
+      "status": "unaccepted-native-render",
+      "delivery_count_increment": 0,
+      "production_approved": false,
+      "implementation_ready": false,
+      "review_note": "Visible unwanted texture/alpha-like artifacts in generated preview; flat-sign requirement not met. No quantitative alpha audit or UI export validation was possible because execution tools are unavailable.",
+      "path": "art/_archive/nine-doors/2026-11-16/continuation-attempts/2026-11-16-0630/native-323.png",
+      "recipe": {
+        "number": 323,
+        "family": "condition_icons",
+        "id": "cond-last-turn",
+        "path": "art/icons/conditions/last-turn.png",
+        "name": "Last Turn",
+        "mode": "white-ink sign",
+        "state": "in game now · placeholder · no slot yet",
+        "use": "State word",
+        "paint": "An hourglass with one grain left.",
+        "avoid": "a clock face with numbers · a skull",
+        "section": "Conditions and states",
+        "kind": "sign",
+        "prompt": "Create ONE simple hourglass sign with exactly ONE small grain remaining above the narrow waist. Pure solid WHITE #FFFFFF flat vector-like ink, fully TRANSPARENT background. A clean outline silhouette with broad crisp edges, no shading, NO GLOW, NO HALO, NO BLUR, NO SHADOW and no translucent atmosphere around the shape. Only the hourglass and its single grain. The lower chamber may hold a small solid mound. No text, labels, numbers or frame. Match the attached white-ink signs. Square 1024x1024, center within a 15% transparent margin, readable at 24px.",
+        "refs": [
+          "art/icons/survival/markers/shop.png",
+          "art/icons/boons/edge.png"
+        ],
+        "transparent": true,
+        "status": "pending",
+        "priority": 4
+      }
+    },
+    {
+      "number": 324,
+      "name": "Augment Offline",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 449585,
+      "sha256": "dbca8d4ddab95c75d9f6e992eee8190c9406fbd8688667ff5dc1b0ee1c62f200",
+      "git_blob_sha": "4e3dc84d95af8306f04b91207e27f821002eb933",
+      "status": "unaccepted-native-render",
+      "delivery_count_increment": 0,
+      "production_approved": false,
+      "implementation_ready": false,
+      "review_note": "Visible unwanted texture/alpha-like artifacts in generated preview; flat-sign requirement not met. No quantitative alpha audit or UI export validation was possible because execution tools are unavailable.",
+      "path": "art/_archive/nine-doors/2026-11-16/continuation-attempts/2026-11-16-0630/native-324.png",
+      "recipe": {
+        "number": 324,
+        "family": "condition_icons",
+        "id": "cond-augment-offline",
+        "path": "art/icons/conditions/augment-offline.png",
+        "name": "Augment Offline",
+        "mode": "white-ink sign",
+        "state": "in game now · placeholder · no slot yet",
+        "use": "Body condition",
+        "paint": "A prosthetic arm with a small cut-power mark.",
+        "avoid": "a real brand · lightning",
+        "section": "Conditions and states",
+        "kind": "sign",
+        "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No\noutline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a\nscene: Wick does not appear; a small generic silhouette may. One subject, centred, with clear space around it, square,\n1024 x 1024 PNG with transparency. It must read at 24 px beside a word on a token and at 48 px on a card: silhouette first,\ntwo interior cuts at most. A door emblem must also read inside a 20 px chip. No text, no letters, no numbers, no border,\nno frame. Invented shapes only. The icon shows:\n\nPaint: A prosthetic arm with a small cut-power mark.\nAvoid: a real brand · lightning\nSTYLE CLARIFICATION: this is a generic condition SIGN. NO Wick, no screen head, no mascot capelet or lantern chest. Only the named subject, 2 interior cuts at most, bold clear silhouette. Center within a 15% transparent margin. Use solid white shapes and transparent cutouts only, including the background and all interior holes. Translate any light/glow into a single white tick or ray; never gray, gradients or bloom.",
+        "refs": [
+          "art/icons/survival/markers/shop.png",
+          "art/icons/boons/edge.png"
+        ],
+        "transparent": true,
+        "status": "pending",
+        "priority": 4
+      }
+    }
+  ]
+}

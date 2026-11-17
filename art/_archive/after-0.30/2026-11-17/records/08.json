@@ -1,0 +1,81 @@
+{
+  "number": 8,
+  "section": 2,
+  "family": "condition_icons",
+  "id": "cond-ground",
+  "path": "art/icons/conditions/ground.png",
+  "name": "Ground",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (no sign, no slot yet)",
+  "use": "A debuff, 2 rounds: a Grindstone fighter ground it down; its next plain melee hit on the fighter builds them one more Momentum",
+  "paint": "A heavy round grindstone half sunk into a ground line, one short crack across its face.",
+  "avoid": "a gear (that is machinery) \u00b7 flying sparks \u00b7 a mill building",
+  "file_key": "08-ground",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A heavy round grindstone half sunk into a ground line, one short crack across its face.\nAVOID: a gear (that is machinery) \u00b7 flying sparks \u00b7 a mill building",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/conditions/augment-offline.png",
+    "art/icons/conditions/bleeding.png",
+    "art/icons/conditions/blinded.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/08-ground-v1.png",
+  "source_sha256": "c5a93345ed93950557d825b3737cf07530f4b193df3f126fe155064acb75f35d",
+  "generation_attempt": 1,
+  "export_crop": [
+    57,
+    341,
+    1236,
+    1198
+  ],
+  "scale": 0.6955046649703138,
+  "offset": [
+    102,
+    214
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "d274b8053cf75bc65fe53f9c7525e467bc0a9a1e85f384e90454a294d5931dcd",
+  "exports": {
+    "256": "art/icons/conditions/exports/256/ground.png",
+    "128": "art/icons/conditions/exports/128/ground.png",
+    "64": "art/icons/conditions/exports/64/ground.png",
+    "48": "art/icons/conditions/exports/48/ground.png",
+    "44": "art/icons/conditions/exports/44/ground.png",
+    "32": "art/icons/conditions/exports/32/ground.png",
+    "24": "art/icons/conditions/exports/24/ground.png",
+    "16": "art/icons/conditions/exports/16/ground.png"
+  },
+  "export_sha256": {
+    "256": "7abf7600e423d7196952c3fb0b80522562726322596df854fb7b9d3dba8d50e3",
+    "128": "459f7cebe07b702f5c02842559db5c394316096095eb0eba3e836cac3adccb98",
+    "64": "39d6055c6b4a68d7a32d1d23540cc496367a73fe1e71161df08ec92ba21431d0",
+    "48": "21c0f93dbd37bf379b65b5a449138ae82b215838ac027283e4695f0ec1e0150f",
+    "44": "77c5116e57ade05c27b2e3b6b85023198fa8611d9a910b5a538e79d23edc0e67",
+    "32": "1021ca3e5c28f4b8a78746a8a1b1eb5bdfd02894d2489bc94f78e372c125b891",
+    "24": "14fb626febc4a24ef7df5b612ab06d651d5acb775f1fe2cd9504045b21a71f80",
+    "16": "964c624b09cc4f5fda13ee2bd0d6e841b68aa369928b8ba7e70cd783b5d16672"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

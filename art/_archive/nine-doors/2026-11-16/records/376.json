@@ -1,0 +1,76 @@
+{
+  "number": 376,
+  "family": "technique_icons",
+  "id": "tech-grapple",
+  "path": "art/icons/techniques/grapple.png",
+  "name": "Grapple",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, link",
+  "paint": "Two arms locking round a partial figure.",
+  "avoid": "a wrestling ring \u00b7 the old Grapple perk icon pose (show the lock from behind)",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Two arms locking round a partial figure.\nAvoid: a wrestling ring \u00b7 the old Grapple perk icon pose (show the lock from behind)\nEXACT STAGING: Grapple: ONLY TWO CROPPED CERAMIC FOREARMS from BEHIND wrap and LOCK around ONE CROPPED FEATURELESS TORSO at center. One mitten grips the opposite wrist at front to form unmistakable CLOSED ARM LOCK. View from behind/three-quarter rear, no whole head or whole figures, no wrestling ring, blood, injury or floor scene. Broad transparent channels separate both arms, wrist grip and torso, no black paint. The closed wrist lock is decisive.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "53180611e3278056d7e555958b220f28815f5f0fbd716b6d99e73e21400bda6c",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/376-grapple.png",
+  "source_sha256": "61c03614f10554a7d87946de5b691f5fe863c5439ebde2a82c678828c7411da7",
+  "export_crop": [
+    0,
+    69,
+    1184,
+    1238
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/grapple.png",
+    "64": "art/icons/techniques/exports/64/grapple.png",
+    "48": "art/icons/techniques/exports/48/grapple.png",
+    "44": "art/icons/techniques/exports/44/grapple.png",
+    "32": "art/icons/techniques/exports/32/grapple.png",
+    "24": "art/icons/techniques/exports/24/grapple.png"
+  },
+  "framing": {
+    "scale": 0.6925675675675675,
+    "offset": [
+      102,
+      107
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "4287a123d0468081e81fcee1df94a7c2cffc23cfb5dd8ba3d830bb452d3f7a6c",
+    "64": "1cfee5610cf7594785ff06d7d5290643bcc89e41e47c7145bc12bec962c58b49",
+    "48": "e2d5d71ed993efaf85274667d6523ecc610f7d857880ae57f193102d7dfa9a5d",
+    "44": "24bd208cb0d8d5be45309d6651c1190a358305ebb11d10b3e90fdffc7659e1c2",
+    "32": "d3e498f26c25a50871fbe1284544abbd93978d856622fd2f18e2e478f719ac3f",
+    "24": "7fd8a4df067852e1abef15792f51c689851e17e6dd88e8669d103898a1fb79b7"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

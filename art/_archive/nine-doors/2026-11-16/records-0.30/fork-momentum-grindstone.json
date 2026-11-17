@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.momentum.grindstone",
+  "name": "Grindstone",
+  "icon_id": "fork.momentum.grindstone",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 4,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Grindstone** (`momentum.grindstone`). *\"A melee hit on the foe you hit last builds {=numbers.build} Momentum, not 1.\"*\n- Fields: `build: 2`. Why: two hits on one foe reach x3 (Launch, a big Finisher) a hit sooner.\n- Carrier: a conditions row `ground` (content: put by your hit on its target, 1 round), trigger `hit`, `if {target_has:\n  [ground], melee: true}`, op `resource momentum +1`; the mark row after the check row in the option, or the first hit\n  counts itself. (Another Grindstone user's mark counts too: accepted.)\n- Breaker: Charge Carries opens, Grindstone climbs: a fit. Keep Swinging, Iron Grip: none. Peak: no.\n- Excite: you lock onto the Elite: x1, x3, and the third blow is a Launch through its own line.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-momentum-grindstone",
+  "path": "art/icons/forks/momentum-grindstone.png",
+  "paint": "Wick braces close to a cropped enemy armour shoulder and makes a compact repeated melee stroke with ONE short straight blade. TWO short parallel impact cuts mark the SAME contact point. Screen jaw set, feet close and grounded.",
+  "avoid": "No literal grinding wheel, smithy, multiple full figures, blood or extra weapons.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick braces close to a cropped enemy armour shoulder and makes a compact repeated melee stroke with ONE short straight blade. TWO short parallel impact cuts mark the SAME contact point. Screen jaw set, feet close and grounded.\nAVOID: No literal grinding wheel, smithy, multiple full figures, blood or extra weapons.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 17,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "5442ad14e4f7fc4aabdc8861ec9590d0f421adf533396a40ae7695302548271d",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-momentum-grindstone-v1.png",
+  "source_sha256": "e0e60616d0ec0c69015b280bf248d583c944dab2a79d5a37ac620226d4c79cf7",
+  "export_crop": [
+    0,
+    17,
+    1244,
+    1212
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/momentum-grindstone.png",
+    "64": "art/icons/forks/exports/64/momentum-grindstone.png",
+    "48": "art/icons/forks/exports/48/momentum-grindstone.png",
+    "44": "art/icons/forks/exports/44/momentum-grindstone.png",
+    "32": "art/icons/forks/exports/32/momentum-grindstone.png",
+    "24": "art/icons/forks/exports/24/momentum-grindstone.png"
+  },
+  "export_sha256": {
+    "128": "6d98c84fffb6e4b1471098ac942d64377248e51a637f9d06a2e0f09e8d032add",
+    "64": "8b5d92abc4010aaa768fbe8981ae87168de8a2cf24e298428544cba968622866",
+    "48": "4964914fee2134fc55e9eb41b4f0090d7c59263121850ad887a24a5f1f535747",
+    "44": "59c34ea5b1d309b0f29124f9571ca8465f7ad44b575a6e409f3b9719a9f8af8c",
+    "32": "7cd27bdc2d74ad35c5054c093735520110de4e0ec31a9aa3c617a350213b3e92",
+    "24": "f6db8f9ed8f6c54274b797f958a8cc1179ff8752c1c15b2717a89f278fc4d5b5"
+  },
+  "framing": {
+    "scale": 0.5386661615276405,
+    "offset": [
+      177,
+      190
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

@@ -17,6 +17,7 @@ import { loadoutView, type LoadoutCardV, type LoadoutViewV, type CompareRowV, ty
 import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { FRAME_INK as I } from './FullScreenFrame';
+import { campStepIconOf } from './doorArt';
 import { boonCards, campBackdrop, campChecklist, campHelp, campGuard, freeAction, type CampCheckV } from './campView';
 import { boonIconSvg } from './boonIcons';
 import { MoveOn } from './runPanels';
@@ -60,9 +61,9 @@ const head = (title: string, note?: string) => (
     <span aria-hidden="true" style={{ flex: 1, height: 1, background: I.line, alignSelf: 'center' }} />
   </div>
 );
-const Icon = ({ src, size = 48 }: { src: string; size?: number }) => (
+const Icon = ({ src, size = 48, name = '', text = '' }: { src: string; size?: number; name?: string; text?: string }) => (
   <span style={{ flexShrink: 0, width: size + 6, height: size + 6, display: 'grid', placeItems: 'center', borderRadius: 10, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}>
-    {src ? <img src={src} alt="" width={size} height={size} style={{ objectFit: 'contain' }} /> : <span style={{ color: I.muted }}>+</span>}
+    {src ? <img data-zoom={name} data-zoom-text={text} src={src} alt="" width={size} height={size} style={{ objectFit: 'contain' }} /> : <span style={{ color: I.muted }}>+</span>}
   </span>
 );
 const label = (s: string) => s.replace(/ \(.*\)$/, '');
@@ -93,7 +94,7 @@ function PickCard({ c, slot, charId, v }: { c: LoadoutCardV; slot: 'weapon' | 'f
         {...tipProps(c.why || (c.picked ? 'Yours, free. Press again to put it back.' : (c.text || c.name)))}
         style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10, padding: 14, minWidth: 0, textAlign: 'left', fontFamily: 'inherit', color: I.text, cursor: 'pointer', background: 'transparent', border: 0, borderRadius: 14, opacity: off ? 0.6 : 1 }}>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0, width: '100%' }}>
-          <Icon src={iconOf(c.id)} />
+          <Icon src={iconOf(c.id)} name={c.name} text={c.text || ''} />
           <span style={{ display: 'flex', flexDirection: 'column', gap: 3, ...wrap }}>
             <span data-phc-camp-name="" style={{ fontFamily: "'Spectral', serif", fontSize: 18, fontWeight: 600, lineHeight: 1.15, ...wrap }}>{label(c.name)}</span>
             <span data-phc-camp-freetag="" style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.12em', color: I.ok }}>{c.picked ? '✓ YOURS · FREE' : 'FREE'}</span>
@@ -114,7 +115,7 @@ function ShelfCard({ c, charId, tag, compare }: { c: LoadoutCardV; charId: strin
   return (
     <article data-phc-camp-card={c.key} {...tipProps(c.text ? c.name + '. ' + c.text : c.name)} style={{ ...cardBox(false), border: '1px solid ' + (c.taken ? '#7A879E' : I.line) }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0 }}>
-        <Icon src={iconOf(c.id)} size={46} />
+        <Icon src={iconOf(c.id)} size={46} name={c.name} text={c.text || ''} />
         <span style={{ display: 'flex', flexDirection: 'column', gap: 3, ...wrap }}>
           <span data-phc-camp-name="" style={{ fontFamily: "'Spectral', serif", fontSize: 17, fontWeight: 600, lineHeight: 1.15, ...wrap }}>{c.name}</span>
           {tag ? <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>{tag}</span> : null}
@@ -207,10 +208,11 @@ function Carrying({ v, wide }: { v: LoadoutViewV; wide?: boolean }) {
  * still to do, green with a tick and the name once done), a thin meter for the budget; a click opens its section. */
 function CheckChip({ k, on, mark }: { k: CampCheckV; on: () => void; mark?: Record<string, string> }) {
   const tone = k.done ? I.ok : I.white;
+  const sign = campStepIconOf(k.key); // 0.31.x art: the step's camp sign (game/doorArt.ts), '' none
   return (
     <button type="button" data-phc-camp-check={k.key} data-phc-done={k.done ? '1' : '0'} onClick={on} {...(mark || {})} {...tipProps(k.n + ' · ' + k.title + ': ' + k.hint)}
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, minWidth: 0, maxWidth: 260, minHeight: 52, padding: '6px 12px', borderRadius: 10, border: '1px solid ' + (k.done ? I.ok : '#3B475D'), background: I.panel, color: I.text, fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
-      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: I.muted, whiteSpace: 'nowrap' }}>{k.n + ' · ' + k.title}</span>
+      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: I.muted, whiteSpace: 'nowrap' }}>{sign ? <img data-phc-camp-sign={k.key} src={sign} alt="" width={16} height={16} style={{ width: 16, height: 16, marginRight: 6, verticalAlign: -3 }} /> : null}{k.n + ' · ' + k.title}</span>
       {k.meter ? (
         <span data-phc-camp-budget="" style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
           <span style={{ fontSize: 15, fontWeight: 700, color: tone, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}><span data-phc-camp-left="">{k.meter.left}</span> of {k.meter.total} cr left</span>

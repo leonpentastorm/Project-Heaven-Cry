@@ -1,0 +1,81 @@
+{
+  "number": 54,
+  "section": 7,
+  "family": "interface_icons",
+  "id": "icon-tone-acid",
+  "path": "art/icons/tones/acid.png",
+  "name": "Tone: Acid",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph on a quiver tag)",
+  "use": "The Acid tone",
+  "paint": "A single round drop above a bowl-shaped dent, two small pit marks eaten into the bowl's rim.",
+  "avoid": "a skull \u00b7 a chemical flask \u00b7 a biohazard mark",
+  "file_key": "54-acid",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A single round drop above a bowl-shaped dent, two small pit marks eaten into the bowl's rim.\nAVOID: a skull \u00b7 a chemical flask \u00b7 a biohazard mark",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/feelings/feeling-abandon.png",
+    "art/icons/feelings/feeling-awe.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/54-acid-v1.png",
+  "source_sha256": "9b091ef5dd4c312549ecf8e40365859109a58ec5ce4c7b7405c26eaf6d2c120a",
+  "generation_attempt": 1,
+  "export_crop": [
+    33,
+    23,
+    1232,
+    1228
+  ],
+  "scale": 0.6804979253112033,
+  "offset": [
+    104,
+    102
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "10519a4da74a16c85712d584434612105ec6eada60f535563e89827b2be816bf",
+  "exports": {
+    "256": "art/icons/tones/exports/256/acid.png",
+    "128": "art/icons/tones/exports/128/acid.png",
+    "64": "art/icons/tones/exports/64/acid.png",
+    "48": "art/icons/tones/exports/48/acid.png",
+    "44": "art/icons/tones/exports/44/acid.png",
+    "32": "art/icons/tones/exports/32/acid.png",
+    "24": "art/icons/tones/exports/24/acid.png",
+    "16": "art/icons/tones/exports/16/acid.png"
+  },
+  "export_sha256": {
+    "256": "29cd9cf2482571ddbdad88826029f9b69880b38d9a15df7c9619f63a46fe04df",
+    "128": "b091c66fe03649ac586ac92089120366ed6c30409dd4f18b4cc50ece98badd57",
+    "64": "d1278ae8965a0cda115436158be08a900d63ea679d1bb39c97c769d3c83d3d52",
+    "48": "e6db8d9394cb76167afdf559ad07a826d6336234a71e2bfc02309173b6d5e1b1",
+    "44": "830bf87787c32edca9554aa02a857122ccce72510abf2d7b34b15f7bc124936d",
+    "32": "ae4826d9d937b4e6c9039c06013d850d4738a4bb5670dffbade1929e0c3fd3c5",
+    "24": "9b7bde988291c300c625876ecbc7ab83b4566e02c41f9abbe5ff8cfb6e1b9275",
+    "16": "951316970d87bb15065d5b2494b6dff18c336e7a002914a6163dad369242276b"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

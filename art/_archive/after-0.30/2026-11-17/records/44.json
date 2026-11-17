@@ -1,0 +1,82 @@
+{
+  "number": 44,
+  "section": 6,
+  "family": "tending_icons",
+  "id": "tend-mender-bonds",
+  "path": "art/icons/tending/mender-bonds.png",
+  "name": "One More Bond",
+  "kind": "wick",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 no slot yet",
+  "use": "The Mender's class gain: holds one more Bond",
+  "paint": "Wick tying one extra short thread onto a bundle of threads already in his hand.",
+  "avoid": "a plus sign \u00b7 a knot with text",
+  "file_key": "44-mender-bonds",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. Exactly the approved WICK: ceramic chibi automaton, broad chamfered rectangular head with inset pixel-screen expression, small side discs, chunky mitten hands and boots, short ASYMMETRIC CAPELET and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall. No flame head or human face. ONE full Wick maximum; other people only cropped partials. No default bowl/cup/head halo, arrows or corner star copied from references. Read at32px/44px; cape wedge and lantern remain distinct. \nPAINT: Wick tying one extra short thread onto a bundle of threads already in his hand.\nAVOID: a plus sign \u00b7 a knot with text",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-6-wick-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/tending/bond.png",
+    "art/icons/tending/tug.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/44-mender-bonds-v1.png",
+  "source_sha256": "cc90d8d2553afc2357c96e1df8347d63a490b291f7b2f8ab0f55857e75fe5769",
+  "generation_attempt": 1,
+  "export_crop": [
+    53,
+    31,
+    1212,
+    1238
+  ],
+  "scale": 0.6138734808714903,
+  "offset": [
+    156,
+    141
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "552a742532cbac2e2155f714a93c1edb8b56cb906c9b11f9094f000498db5254",
+  "exports": {
+    "256": "art/icons/tending/exports/256/mender-bonds.png",
+    "128": "art/icons/tending/exports/128/mender-bonds.png",
+    "64": "art/icons/tending/exports/64/mender-bonds.png",
+    "48": "art/icons/tending/exports/48/mender-bonds.png",
+    "44": "art/icons/tending/exports/44/mender-bonds.png",
+    "32": "art/icons/tending/exports/32/mender-bonds.png",
+    "24": "art/icons/tending/exports/24/mender-bonds.png",
+    "16": "art/icons/tending/exports/16/mender-bonds.png"
+  },
+  "export_sha256": {
+    "256": "20ac918eaca05827ee4541465e6ea229962adc8cab461f40ba6171ca7d2c56ea",
+    "128": "59f8f066627004bac49478fcd87034e6830e0e9cc499f07e47d65d365a981c14",
+    "64": "df7b36f94b88f5e4156fc6afffe2c375e3d9b77415fb1a2be9d073662e80a6ef",
+    "48": "abad23769e8d190031ac79333e4e2b687507c399bbded6460db22fabdcc77ca5",
+    "44": "29ec2e0e4f2307e1e0e6ef27e1650d17b9a375b77a15785e43e24aeee7eab6ce",
+    "32": "e24804ebb6bf94661c9e7f65e695ceaa47629d00f370b16aa74dfe58bc72670e",
+    "24": "349450de8c70cd0efed00a7a55629c11a390ad0cbb7ad73da2744c791f9e8cad",
+    "16": "a731e277d1cc263ba1d0061ac566c29164985855a38a40807a849bf170a74f34"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

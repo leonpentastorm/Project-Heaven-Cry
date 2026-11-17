@@ -1,0 +1,67 @@
+{
+  "number": 342,
+  "family": "technique_icons",
+  "id": "tech-shove-tech",
+  "path": "art/icons/techniques/shove-tech.png",
+  "name": "Shove (technique)",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, link",
+  "paint": "A single palm pushing a partial figure back one step.",
+  "avoid": "the Palm form (two palms) \u00b7 a cliff",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A single palm pushing a partial figure back one step.\nAvoid: the Palm form (two palms) \u00b7 a cliff\nEXACT STAGING: Shove TECHNIQUE, the safe generic action: ONE CROPPED CERAMIC OPEN PALM from left presses against ONE CROPPED ALLY/TRAINING-DUMMY TORSO at right, moving it back a SINGLE STEP. Show only cropped shoulder/chest plus one partial boot sliding back, no full person. Exactly ONE palm, no two-palm martial form. One short horizontal movement tick, no cliff, edge, fall, pain, blood or stars.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "49974182a329588f513d6802d913742e59bfbf170c59e6ab01cdb52f50fda6f2",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/342-shove-tech.png",
+  "source_sha256": "52b0081d3a734cb04b94102a4558a61654891c5fc5112be415d74d302edf941a",
+  "export_crop": [
+    31,
+    21,
+    1226,
+    1198
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/shove-tech.png",
+    "64": "art/icons/techniques/exports/64/shove-tech.png",
+    "48": "art/icons/techniques/exports/48/shove-tech.png",
+    "44": "art/icons/techniques/exports/44/shove-tech.png",
+    "32": "art/icons/techniques/exports/32/shove-tech.png",
+    "24": "art/icons/techniques/exports/24/shove-tech.png"
+  },
+  "framing": {
+    "scale": 0.5295086223177673,
+    "offset": [
+      195,
+      200
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

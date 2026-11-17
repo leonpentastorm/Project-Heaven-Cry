@@ -1,0 +1,76 @@
+{
+  "number": 212,
+  "family": "move_icons",
+  "id": "move-shape",
+  "path": "art/icons/moves/shape.png",
+  "name": "Shape",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Channeler rank I move",
+  "paint": "Two hands shaping a heart-burst into a long lance between them.",
+  "avoid": "a potter's wheel \u00b7 clay",
+  "section": "Will Power: the Outburst, and the Channeler",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Two hands shaping a heart-burst into a long lance between them.\nAvoid: a potter's wheel \u00b7 clay\nEXACT STAGING: Shape: TWO CROPPED CERAMIC MITTEN HANDS, one to each side, actively compress and shape ONE angular HEART-BURST into a LONG TAPERED LANCE between them, oriented diagonally lower-left to upper-right. Heart swelling remains at the lance's wider lower base; top becomes one clean long point. One single continuous energy shape, with sparse hard ray ticks showing shaping pressure. No clay, potter wheel, weapon handle, metal spear, blood, whole figure or glow. All internal gaps transparent.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "f68327e05d40758de7c686065a6099e984ab258baead736e5e41d5bebc00e073",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/212-shape.png",
+  "source_sha256": "6e5ef890d8b7d5a392764d88224cc4bc1ca3a9e48df58c5a82e635a27f4772d9",
+  "export_crop": [
+    0,
+    162,
+    1218,
+    1167
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/shape.png",
+    "64": "art/icons/moves/exports/64/shape.png",
+    "48": "art/icons/moves/exports/48/shape.png",
+    "44": "art/icons/moves/exports/44/shape.png",
+    "32": "art/icons/moves/exports/32/shape.png",
+    "24": "art/icons/moves/exports/24/shape.png"
+  },
+  "framing": {
+    "scale": 0.6260352143442784,
+    "offset": [
+      130,
+      197
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "af93103775e1029e832b75933b219035c046e19d94c117dc21cfba59b7c64b37",
+    "64": "68b5fcb313a1029981874c3d5bf5abb3e4cfb70008a980990cd3c23c44666b05",
+    "48": "30e63eee386d2433f3931785cbf3c8eedf6d2d5f91018dc198d1944ac9e4319a",
+    "44": "6f2fc822ade424f16413f83660ff3eaefe1f58bf774162dac1ffeb191f141a83",
+    "32": "9585ada4da4ddf6ea21cdde1f536ac69d586ce8e16cbfc985403c316adff7576",
+    "24": "36b1a7375f32eac19886f9d8cf903887dd3656643a4e056a46fe88b4d04fac10"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

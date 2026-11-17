@@ -1,0 +1,76 @@
+{
+  "number": 230,
+  "family": "move_icons",
+  "id": "move-smite",
+  "path": "art/icons/moves/smite.png",
+  "name": "Smite",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Chaplain rank I move (asked 13 Nov, C1)",
+  "paint": "A weapon hit that carries a single ray coming down from above into the struck point.",
+  "avoid": "a real religious symbol \u00b7 lightning bolt",
+  "section": "Faith: prayer, and the Chaplain",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A weapon hit that carries a single ray coming down from above into the struck point.\nAvoid: a real religious symbol \u00b7 lightning bolt\nEXACT STAGING: Smite: one plain invented short BLADE angled downward from upper left strikes ONE small abstract TARGET SLAB at lower right. A SINGLE STRAIGHT TAPERED WHITE RAY descends vertically from above to meet that exact contact point, with two tiny hard impact ticks. Cropped ceramic mitten on hilt allowed, no full person, body or face. No lightning zigzag, religious emblem, blood, flames, gore, text or ground scenery. It is an abstract fantasy training-symbol with simple broad white silhouettes.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "c2b77e94c6043307309acc693228965b55cdf8fd85208750294b02f7ec5f73e7",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/230-smite.png",
+  "source_sha256": "d7461ee04a77d73692343f5807d5a489e855ece7d350a87cbb9c80cdec1948b2",
+  "export_crop": [
+    0,
+    71,
+    1218,
+    1230
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/smite.png",
+    "64": "art/icons/moves/exports/64/smite.png",
+    "48": "art/icons/moves/exports/48/smite.png",
+    "44": "art/icons/moves/exports/44/smite.png",
+    "32": "art/icons/moves/exports/32/smite.png",
+    "24": "art/icons/moves/exports/24/smite.png"
+  },
+  "framing": {
+    "scale": 0.5768180653549454,
+    "offset": [
+      160,
+      177
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "d31004f5e4a217e7950aaf43c798c5ad54fd8277d1f06bc9ff879eba40cb1bff",
+    "64": "cd8c59efa11584d86d741b1bc2f1f33d005a7ec1a7b74a2e59696638eb253fe1",
+    "48": "6a26baf6edc3482a2c826187ad9542f5cf50524764cbd688e050473182b06bfc",
+    "44": "219b0f58eb37a768f2d2f038b275f2c2333d8a9c03277c50ac175d3886f6d809",
+    "32": "f58498dee5edd35aa98d95824d0bf9cd5ce8e6e22b30eb693aae14f80240475c",
+    "24": "8fc7ff98c5ae97197135e1016773948e3bbe2dc50a51b97b452e05501be1d869"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

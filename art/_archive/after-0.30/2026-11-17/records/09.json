@@ -1,0 +1,81 @@
+{
+  "number": 9,
+  "section": 2,
+  "family": "condition_icons",
+  "id": "cond-in-your-sights",
+  "path": "art/icons/conditions/in-your-sights.png",
+  "name": "In Their Sights",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (no sign, no slot yet)",
+  "use": "A debuff on you, 1 round: a Converging Fire gunner hit you, so the next ranged hit on you from one of their allies adds a Pressure",
+  "paint": "A round sight ring open at its top, one thin line entering the gap from the upper right.",
+  "avoid": "a full crosshair over a head \u00b7 a scope glint \u00b7 a bullseye",
+  "file_key": "09-in-your-sights",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A round sight ring open at its top, one thin line entering the gap from the upper right.\nAVOID: a full crosshair over a head \u00b7 a scope glint \u00b7 a bullseye",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-2-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/conditions/augment-offline.png",
+    "art/icons/conditions/bleeding.png",
+    "art/icons/conditions/blinded.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/09-in-your-sights-v1.png",
+  "source_sha256": "671e5fcaea7675e0dbdbec87fd16d3eaf982bbd0386e29ac54c98168858c84dc",
+  "generation_attempt": 1,
+  "export_crop": [
+    0,
+    61,
+    1202,
+    1236
+  ],
+  "scale": 0.6821963394342762,
+  "offset": [
+    102,
+    111
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "6eb56ace02432b554e8f4c375addb3d03abc7c8da1cbd87513fb94ad308fcfa3",
+  "exports": {
+    "256": "art/icons/conditions/exports/256/in-your-sights.png",
+    "128": "art/icons/conditions/exports/128/in-your-sights.png",
+    "64": "art/icons/conditions/exports/64/in-your-sights.png",
+    "48": "art/icons/conditions/exports/48/in-your-sights.png",
+    "44": "art/icons/conditions/exports/44/in-your-sights.png",
+    "32": "art/icons/conditions/exports/32/in-your-sights.png",
+    "24": "art/icons/conditions/exports/24/in-your-sights.png",
+    "16": "art/icons/conditions/exports/16/in-your-sights.png"
+  },
+  "export_sha256": {
+    "256": "3c0ce3fbf3b530066d64661811440baac6170d93db67ac4df6b60eedd6ecf46d",
+    "128": "24f58172d2d2c1021ff563f186e64e441b7aa64c8419c6294bb32875c3fbd2b1",
+    "64": "ef7769f44ff713ae368a16f1202a843f144e896203fee7bf986799313004fa0c",
+    "48": "c5464c322778706e8b57bfcf4d84a832c0dda1dd80256a8a9fd0ff37b35dff07",
+    "44": "72edb9599d8942cfdbe617085d8957735a247efb3332ff3270dcd46255e3475c",
+    "32": "72aa4640933ff677e02b35207064811a1b00d1d66708ef422629f3dc79b185fb",
+    "24": "a1548a0e919a811c8443c15cb08b98ac5051066505c77c28a1bca00a7cc400a7",
+    "16": "99b216fcba5365606d15001b636957481021adb4fa8c3356449586e38c9664dd"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}

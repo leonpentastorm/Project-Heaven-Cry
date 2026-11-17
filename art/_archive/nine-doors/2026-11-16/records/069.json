@@ -1,0 +1,76 @@
+{
+  "number": 69,
+  "family": "technique_icons",
+  "id": "tech-rake",
+  "path": "art/icons/techniques/rake.png",
+  "name": "Rake",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, press: sweeps a line",
+  "paint": "A sweeping fan of short bullet lines spreading across the ground.",
+  "avoid": "a garden rake \u00b7 blood",
+  "section": "Dexterity: Pressure, and the Skirmisher",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A sweeping fan of short bullet lines spreading across the ground.\nAvoid: a garden rake \u00b7 blood\nEXACT STAGING: A sparse WIDE FAN of FIVE short projectile-streak shapes spreads low across a single short ground baseline, all starting near one cropped barrel end at viewer-left and widening toward viewer-right. Keep the fan shallow and sweeping, not a radial burst or lightning bolt. No full gun, figure, mascot, gardening tool, sparks, blood, smoke or scene. Streaks are solid white straight dashes with clear transparent gaps.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "526ddfe9c3d987ca58492e3a0c4055dca9d07467c95bec8aadde56a681d5519f",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/069-rake.png",
+  "source_sha256": "1da22086bd9d255f227d4b0f16378e4c6eadfc52d6bb66b9a50de727899148e9",
+  "export_crop": [
+    33,
+    117,
+    1214,
+    1085
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/rake.png",
+    "64": "art/icons/techniques/exports/64/rake.png",
+    "48": "art/icons/techniques/exports/48/rake.png",
+    "44": "art/icons/techniques/exports/44/rake.png",
+    "32": "art/icons/techniques/exports/32/rake.png",
+    "24": "art/icons/techniques/exports/24/rake.png"
+  },
+  "framing": {
+    "scale": 0.6450612708922954,
+    "offset": [
+      131,
+      200
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "28dd0ddc339dafa2c21e0c7bba3f2c3f6a06b17b2e0bc871ed956e7d68ebb5ce",
+    "64": "b00e4376713c697d296ac4bdab28a3bedb5f1cee7720cd228ce050529aef4f6c",
+    "48": "5086b4cce37548e1099557f6812b80d101c050a3a70d9926a53bb6c39c3cc383",
+    "44": "605816a8fc747740875a445c395f9442005d69db8d5cc53d883a92e07721a1da",
+    "32": "4924aafc8d6c65479c8e95d5418408e5bd41930849d482a0feafa1246fdb65d3",
+    "24": "2f7d6f72f334d77c65018b38f397f2febf022736eb6fdedeed02b702fffa44bf"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

@@ -1,0 +1,76 @@
+{
+  "number": 350,
+  "family": "technique_icons",
+  "id": "tech-burst",
+  "path": "art/icons/techniques/burst.png",
+  "name": "Burst",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Technique, fire",
+  "paint": "Three short bullet lines in a tight group.",
+  "avoid": "a firework burst \u00b7 blood",
+  "section": "Shared: the weapon techniques",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: Three short bullet lines in a tight group.\nAvoid: a firework burst \u00b7 blood\nEXACT STAGING: Burst: exactly THREE SHORT WHITE BULLET-STROKES in one TIGHT PARALLEL HORIZONTAL GROUP, each with squared left tail and tapered right tip. Broad transparent spaces separate all three; central line slightly longer. No muzzle, character, gun, fireworks, radiating starburst, blood, target or extra lines. Compact clear grouped graphic, each short stroke individually readable.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-140.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-142.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/object-104.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "7620a587a1a564ebb85cdca66a7a0dcf29925d4e758eb527f21370f15fa6db54",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/350-burst.png",
+  "source_sha256": "2999205a1117d7e5588d4f1ce8078ba375db07d1c130a205c973f148b3b034fe",
+  "export_crop": [
+    81,
+    39,
+    1230,
+    1134
+  ],
+  "exports": {
+    "128": "art/icons/techniques/exports/128/burst.png",
+    "64": "art/icons/techniques/exports/64/burst.png",
+    "48": "art/icons/techniques/exports/48/burst.png",
+    "44": "art/icons/techniques/exports/44/burst.png",
+    "32": "art/icons/techniques/exports/32/burst.png",
+    "24": "art/icons/techniques/exports/24/burst.png"
+  },
+  "framing": {
+    "scale": 0.5671120296933155,
+    "offset": [
+      186,
+      201
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "5919592be705ac5a1b1cf4f4a9c0ed1c5c1b87c904573af57f64e22ea3e53dbe",
+    "64": "1f9e830a11fb39c8f1a29f96d35d31c09c1be7ac7ead122abe928e69e2442f70",
+    "48": "a82fb46c0f1d12f9d1e52ec32220a2b34fa97e781787ef1e0aed9e0c5853d710",
+    "44": "fb40b1a158bd3c19d92c94919c65a574477bbaa024a9a0b3b62188387560b231",
+    "32": "5c17efeb497424f69a1db6a6f7299c77f02439e6bcec0aeea45dba5a016516a9",
+    "24": "1913ccc948b95b68dc11b6f2a0ffedecf4ec9f4f57a0fe710923a202615a0e11"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

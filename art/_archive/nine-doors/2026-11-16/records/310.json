@@ -1,0 +1,60 @@
+{
+  "number": 310,
+  "family": "condition_icons",
+  "id": "cond-reeled",
+  "path": "art/icons/conditions/reeled.png",
+  "name": "Reeled",
+  "mode": "white-ink sign",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Body condition REELED",
+  "paint": "A silhouette pulled along a curved thread toward a hand.",
+  "avoid": "a fishing reel \u00b7 a hook",
+  "section": "Conditions and states",
+  "kind": "sign",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached\nreference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No\noutline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a\nscene: Wick does not appear; a small generic silhouette may. One subject, centred, with clear space around it, square,\n1024 x 1024 PNG with transparency. It must read at 24 px beside a word on a token and at 48 px on a card: silhouette first,\ntwo interior cuts at most. A door emblem must also read inside a 20 px chip. No text, no letters, no numbers, no border,\nno frame. Invented shapes only. The icon shows:\n\nPaint: A simple generic human silhouette pulled along a curved thread toward a hand.\nAvoid: a fishing reel \u00b7 a hook\nSTYLE CLARIFICATION: this is a generic condition SIGN. NO Wick, no screen head, no mascot capelet or lantern chest. Only the named subject, 2 interior cuts at most, bold clear silhouette. Center within a 15% transparent margin. Use solid white shapes and transparent cutouts only, including the background and all interior holes. Translate any light/glow into a single white tick or ray; never gray, gradients or bloom.",
+  "refs": [
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 4,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "10d79ea352c610cce6a46f9b39e3d3719f7f41ba5e6c21bf5ec5caf8bcbb7efd",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/310-reeled.png",
+  "source_sha256": "a23e9cd3f8b9c618153555e119fe3db7d209f0bf84625440f6cb1db21313fc41",
+  "export_crop": [
+    25,
+    166,
+    1218,
+    1210
+  ],
+  "exports": {
+    "128": "art/icons/conditions/exports/128/reeled.png",
+    "64": "art/icons/conditions/exports/64/reeled.png",
+    "48": "art/icons/conditions/exports/48/reeled.png",
+    "44": "art/icons/conditions/exports/44/reeled.png",
+    "32": "art/icons/conditions/exports/32/reeled.png",
+    "24": "art/icons/conditions/exports/24/reeled.png"
+  },
+  "framing": {
+    "scale": 0.6873428331936295,
+    "offset": [
+      102,
+      153
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": null
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

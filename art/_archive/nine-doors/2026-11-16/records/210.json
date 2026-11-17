@@ -1,0 +1,61 @@
+{
+  "number": 210,
+  "family": "move_icons",
+  "id": "move-overdraw",
+  "path": "art/icons/moves/overdraw.png",
+  "name": "Overdraw",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Will Power door step",
+  "paint": "A heart pulled wider than its outline, the outline cracking at one side.",
+  "avoid": "a bow (that is the archer) \u00b7 blood",
+  "section": "Will Power: the Outburst, and the Channeler",
+  "kind": "wick",
+  "prompt": "Create one single prop/action icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT PNG. Match the bold white silhouettes, mitten hands and sparse transparent interior cuts of the three attached object-only reference icons. No mascot, NO WICK, no head, no body, no screen face, no figure unless the requested subject itself is a fleeting abstract beast. ONLY the following subject:\n\nPaint: A heart pulled wider than its outline, the outline cracking at one side.\nAvoid: a bow (that is the archer) \u00b7 blood\n\nSquare 1024x1024. Center the complete subject inside a generous 15% transparent margin. One action readable at 32px and 44px. Solid white ink and transparent holes only; no opaque black, gray, shading, glow, gradient, texture, text, numerals, border or frame. Generic invented tools, no brands or real insignia. If glow/fading/shadow is requested, use white rays, broken arcs or transparent cuts. Flecks are a small number of separate angular white fragments with negative spaces forming the requested shape, not smoke or a flame. Human hands are simple ceramic mittens in this icon language. No extra decorative props, no cup, no bowl, no floating halo. The attached references demonstrate style only: do not copy their subject. ONLY paint the subject specified above.",
+  "refs": [
+    "art/icons/shadow/cut-strap.png",
+    "art/icons/shadow/hijack.png",
+    "art/icons/shadow/decoy.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 3,
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "1fd19efd78d9c94828a445599ef54fd12e8acc5a25b8ef8d57a9880a5ce20770",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/210-overdraw.png",
+  "source_sha256": "dd0dc0e2f62f40d4000faeb10d3d39778f539e795d84d4bc3f5adf1af017b145",
+  "export_crop": [
+    0,
+    148,
+    1200,
+    1101
+  ],
+  "exports": {
+    "128": "art/icons/moves/exports/128/overdraw.png",
+    "64": "art/icons/moves/exports/64/overdraw.png",
+    "48": "art/icons/moves/exports/48/overdraw.png",
+    "44": "art/icons/moves/exports/44/overdraw.png",
+    "32": "art/icons/moves/exports/32/overdraw.png",
+    "24": "art/icons/moves/exports/24/overdraw.png"
+  },
+  "framing": {
+    "scale": 0.6403835405312264,
+    "offset": [
+      128,
+      207
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes"
+}

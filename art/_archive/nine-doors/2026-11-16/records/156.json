@@ -1,0 +1,74 @@
+{
+  "number": 156,
+  "family": "figment_trait_icons",
+  "id": "trait-hollow",
+  "path": "art/icons/figments/trait-hollow.png",
+  "name": "Hollow",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment trait",
+  "paint": "A figment outline with an empty centre, flecks only round the edge.",
+  "avoid": "a ghost \u00b7 a donut",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment outline with an empty centre, flecks only round the edge.\nAvoid: a ghost \u00b7 a donut\nEXACT STAGING: One HOLLOW VERSION of the angular pointed kite-like abstract Figment in the references. Broad WHITE OUTLINE follows its pointed angular perimeter but leaves the ENTIRE middle genuinely TRANSPARENT. Two tiny loose diamond flecks just outside edge. NO filled lightning bolt in middle, no glow, gray, ghost, eye, rounded ring or donut. Strong angular silhouette and big empty center.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "3a97b4f064726f5a86d66c219a7d08ddc5680360cc9afcee0f8701c6bb082123",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/156-trait-hollow.png",
+  "source_sha256": "f541069089a7b48dbe5205bd7acf7c84fe4e7ea21a6a3d7dc43e041de71f3a7b",
+  "export_crop": [
+    79,
+    113,
+    1184,
+    1164
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-hollow.png",
+    "64": "art/icons/figments/exports/64/trait-hollow.png",
+    "48": "art/icons/figments/exports/48/trait-hollow.png",
+    "44": "art/icons/figments/exports/44/trait-hollow.png",
+    "32": "art/icons/figments/exports/32/trait-hollow.png",
+    "24": "art/icons/figments/exports/24/trait-hollow.png"
+  },
+  "framing": {
+    "scale": 0.6331348157901676,
+    "offset": [
+      162,
+      179
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "cfa5a0a34f2f856f379d748d14c472fa0705bdbcca7b35796a9babb54a8ee7ee",
+    "64": "9c43f8609e8f8c8fcfe9611838ce0310fccf394d09c628823d9d6693dbf5a3a3",
+    "48": "c0c3962fb71cb2d885eb380af3c0c8e95ec64afb3e2e940657c8bfecf8b2d116",
+    "44": "79cb3b15ff7e8203b43674345184a872986e50f527aba2e4b22790977e486916",
+    "32": "409356fcc5e31613d2e170bc1a73e8bba1df5dddf693be596d20da3622dba235",
+    "24": "47863a5d1bd402ae6e9b795391367111d5d491c94c7665bd561aabf9bc8df474"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

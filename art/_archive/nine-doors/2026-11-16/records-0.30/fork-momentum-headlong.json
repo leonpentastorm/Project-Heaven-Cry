@@ -1,0 +1,94 @@
+{
+  "production_approved": false,
+  "implementation_ready": false,
+  "request_key": "0.30/fork.momentum.headlong",
+  "name": "Headlong",
+  "icon_id": "fork.momentum.headlong",
+  "kind": "wick",
+  "mode": "Wick flat-ink fork icon",
+  "step": 6,
+  "source": {
+    "branch": "wip/design-three-layers",
+    "commit": "5b62e6d04a31116f55ebc52d7026be08eec084fb",
+    "path": "docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "blob_sha": "de372ea918c9e398eecd1b4631c5dd0239aedafc",
+    "url": "https://github.com/leonpentastorm/Project-Heaven-Cry/blob/5b62e6d04a31116f55ebc52d7026be08eec084fb/docs/design/proposals/2026-11-doors-3.0-spec.md",
+    "section": "2; art ids in 7"
+  },
+  "rule_excerpt": "**Headlong** (`momentum.headlong`). Renamed: \"Spend to Move\" moves nothing. *\"Once a turn, your Charge may be paid\nwith {=numbers.momentum} Momentum instead of its AP. A Charge so paid builds no Momentum (no Rolling Start, no Charge\nCarries).\"*\n- Fields: `momentum: 2`. Why: the price of Launch's minimum; the walk into the Charge still costs its AP.\n- Carrier: `cost_mod` on `attack`, `if {mode: [charge], door_pick, self_res: {momentum: {at_least: 2}}}` (N10:\n  `self_has_res` tests at least 1), `set 0`; the 2 Momentum through **N23**'s stat family `momentum_cost:<tech>` +2,\n  read by `momentumCost` (`core.ts:182-188`; a Charge's Momentum price is code on no hook, and `cost_mod`'s `res` only\n  writes `ctx.res` on the `cost` hook, `triggers.ts:358`, so on `attack` nothing would pay it); and `condition\n  headlong_paid` on self to the turn's end (content), which Rolling Start's cut and build rows and Charge Carries' row\n  read with `self_lacks` (so with Rolling Start held the price stays 2; the condition is put at the price, before\n  `momentumCost` is read: the builder checks that order in a reducer test).\n- Breaker: a Headlong Charge is a free swing for 2 Momentum, no more: without the \"builds nothing\" line, Rolling Start\n  and Charge Carries made it free in AP and +1 Momentum every turn, which the 15.7 rule (no AP given inside a turn) was\n  meant to stop. Peak: no.\n- Excite: x4 after a kill, two foes left: Charge the first for Momentum, walk, Charge the second.",
+  "name_status": "suggested",
+  "target_directory": "art/icons/forks/",
+  "filename_status": "proposed filename chosen for this candidate delivery",
+  "catalog_binding_status": "not defined in source; do not silently invent a production binding",
+  "status": "review-candidate",
+  "open_source_questions": [],
+  "generation_gate": "prepare a visual recipe from this rule and inspect current Wick anchors before painting",
+  "file_key": "fork-momentum-headlong",
+  "path": "art/icons/forks/momentum-headlong.png",
+  "paint": "Wick lunges headlong almost horizontally, leading shoulder and ONE low held weapon forward, boots driving back and capelet streaming. A bold swoosh runs from his lantern toward his leading foot: committing stored momentum to a charge.",
+  "avoid": "No vehicle, horse, extra figure, flame jet or multiple exposure poses.",
+  "prompt": "Create ONE original flat WHITE #FFFFFF ink RPG icon on a fully TRANSPARENT backdrop. Match the attached references' confident hand-inked silhouettes and broad transparent interior cuts. No gray, shading, gradients, glow, texture, opaque black paint, text, numerals, frame or border. All gaps, including screen dark areas, must be transparent. Center the whole compact action in a generous 15% transparent margin, square 1024x1024 composition. Readable at 32/44px (condition signs also at24/48px). CAST: exactly the approved Wick, the small CERAMIC AUTOMATON with oversized chamfered rectangular head, inset 8-BIT PIXEL-SCREEN expression, small ear discs and offset fasteners, chunky mitten hands/boots, short ASYMMETRIC CAPELET, and visible round LANTERN HEART with thick equal cross arms. About 2.4 heads tall, no human face, no literal flame-head. ONE full Wick maximum; others are cropped partials. Keep cape wedge and heart readable. The cup/bowl and floating arrows in Mind Without Fog belong ONLY to that trait, NOT this icon. No default cup, saucer, head halo, reference corner star or decorative arrows. \nPAINT: Wick lunges headlong almost horizontally, leading shoulder and ONE low held weapon forward, boots driving back and capelet streaming. A bold swoosh runs from his lantern toward his leading foot: committing stored momentum to a charge.\nAVOID: No vehicle, horse, extra figure, flame jet or multiple exposure poses.",
+  "refs": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "transparent": true,
+  "active_binding": null,
+  "binding_status": "candidate only; source icon id and chosen filename recorded, not registered as a new production lookup",
+  "composition_scope": "one Wick and partials",
+  "recipe_index": 19,
+  "generation_attempt": 1,
+  "generation_references": [
+    "art/icons/perks/angel-of-the-trenches.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/solid-image.png",
+    "art/icons/traits/mind-without-fog.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "b6f4891dad40eda24e8b1552abcdb0b5287f2188844f889be4cf9ab5e1145689",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders-0.30/fork-momentum-headlong-v1.png",
+  "source_sha256": "01e062bf8786856193e13a45e627e2dd6b8686ab7f222dd6abed06b31b8a0dc1",
+  "export_crop": [
+    21,
+    21,
+    1218,
+    1254
+  ],
+  "exports": {
+    "128": "art/icons/forks/exports/128/momentum-headlong.png",
+    "64": "art/icons/forks/exports/64/momentum-headlong.png",
+    "48": "art/icons/forks/exports/48/momentum-headlong.png",
+    "44": "art/icons/forks/exports/44/momentum-headlong.png",
+    "32": "art/icons/forks/exports/32/momentum-headlong.png",
+    "24": "art/icons/forks/exports/24/momentum-headlong.png"
+  },
+  "export_sha256": {
+    "128": "98157fbf1da370420c368cf7dbecd759135e3ad69afa38f0fb1a714fee75efac",
+    "64": "3fd65aa28f6c661bedf0bd477c1a0888510bff5612f85a8f16d3b2d8bfaae12e",
+    "48": "efd1763c58ca4cf2faa67a4ff3e351c15b067f746e41845226ae34c68184d922",
+    "44": "6526bb23a54d7c8ff192f3a083be6dd0bcd813b7f3eefa7d3a1ae8b4da2e9b5b",
+    "32": "9ac06acdcd4d8ce841e111c2e921241b42d63394f86906f01da1216dd2787453",
+    "24": "4d67b1b033778f15d189f81f2ffe1bbf08aa259cd509c14c502c5f74f55e2efc"
+  },
+  "framing": {
+    "scale": 0.5488178845336303,
+    "offset": [
+      183,
+      173
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos RGBA/UI export; pure-white RGB retaining alpha for ink modes.",
+  "visual_review": "Inspected charcoal preview and actual use-size silhouettes; anatomy, props, white ink and source-rule depiction reviewed. Unapproved proposal, not gameplay approval."
+}

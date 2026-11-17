@@ -1,0 +1,76 @@
+{
+  "number": 152,
+  "family": "figment_trait_icons",
+  "id": "trait-mirror",
+  "path": "art/icons/figments/trait-mirror.png",
+  "name": "Mirror",
+  "mode": "Wick icon",
+  "state": "in game now \u00b7 placeholder \u00b7 no slot yet",
+  "use": "Figment trait",
+  "paint": "A figment shape and its reversed copy facing it across a thin line.",
+  "avoid": "a hand mirror \u00b7 a person",
+  "section": "Visualization: Figments, and the Rigger",
+  "kind": "wick",
+  "prompt": "Create ONE original RPG technique/action icon matching the attached OBJECT-ONLY flat white graphic references. Pure WHITE #FFFFFF flat ink, broad crisp silhouettes and sparse transparent interior cuts. This is an object/partial action, NOT a full mascot scene. Do NOT add a robot head, screen face, capelet, chest or complete character. A cropped ceramic mitten or a generic partial limb is allowed ONLY when the requested action needs it. No text, label, border, scenery, grey shading, gradients, texture or glow.\nPaint: A figment shape and its reversed copy facing it across a thin line.\nAvoid: a hand mirror \u00b7 a person\nEXACT STAGING: TWO abstract angular pointed kite-like Figment bodies facing inward as reversed reflections, one on left and its horizontally FLIPPED identical copy on right. ONE slender VERTICAL DIVIDER between them, no frame. Each body has two small diamond flecks toward its outer edge. Left and right shapes clearly separated. No character, eyes, human, mirror handle or glass reflection.\nUse only the specified objects/partials, never an unrequested full figure.\nTrue transparency in backdrop, screen and all holes. Pure white ink with no opaque black fill, no grey, gradients or halo. Square single icon with complete action safely inside the central 75\u201380% box and 90% circular chip. All decisive shapes must read at 32px and 44px.",
+  "refs": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+  ],
+  "transparent": true,
+  "status": "review-candidate",
+  "priority": 5,
+  "generation_references": [
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-147.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-148.png",
+    "art/_archive/nine-doors/2026-11-16/review/reference-previews/figment-150.png"
+  ],
+  "composition_scope": "object/partial-only",
+  "production_approved": false,
+  "implementation_ready": false,
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "sha256": "783d95ce143e3aa2b1c1ea7bc78aae6a63147be21c9523ad5d3a7258d76780a6",
+  "source_path": "art/_archive/nine-doors/2026-11-16/native-renders/152-trait-mirror.png",
+  "source_sha256": "3dfc1ded79c5a9850cba4cc036fabd7629fa56eb5ffe1daace0d91e6395a7c04",
+  "export_crop": [
+    0,
+    41,
+    1242,
+    1196
+  ],
+  "exports": {
+    "128": "art/icons/figments/exports/128/trait-mirror.png",
+    "64": "art/icons/figments/exports/64/trait-mirror.png",
+    "48": "art/icons/figments/exports/48/trait-mirror.png",
+    "44": "art/icons/figments/exports/44/trait-mirror.png",
+    "32": "art/icons/figments/exports/32/trait-mirror.png",
+    "24": "art/icons/figments/exports/24/trait-mirror.png"
+  },
+  "framing": {
+    "scale": 0.553170258037758,
+    "offset": [
+      168,
+      192
+    ],
+    "subject_box": 820,
+    "perk_safe_radius": 460.8
+  },
+  "upscaled": false,
+  "export_processing": "Aspect-preserving alpha-bounds framing, Lanczos downsample/UI exports; white RGB enforced preserving generated alpha for ink modes",
+  "export_sha256": {
+    "128": "cb07947c4b18957c320111537b2a7332ae9543615e92bd78a6361c4506614f2d",
+    "64": "dd197661d97bf81c35c960c3863883922d4ece2f213159007ec10fe2c00ecfcc",
+    "48": "d7e84a7d652071071bd531ba21f61759b6c84f270c6374f26e221b780a6bfbf1",
+    "44": "ec1519a20bff86b754dcf40be5d19b65f52763fe18569ffa4d297512d7d86d26",
+    "32": "19cf5fc48195b7776aeb79bce311e8cdb9773fd1e200d15f875a9876a42c8a96",
+    "24": "6b8ad24a818962a592b2dd4d404e1bf2dd557654d4cf207b1cd2d2f22054a97e"
+  },
+  "visual_review": "Inspected on #10151F at the actual target sizes; delivered as an unapproved review candidate."
+}

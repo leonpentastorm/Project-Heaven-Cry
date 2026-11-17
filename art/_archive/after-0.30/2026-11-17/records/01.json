@@ -1,0 +1,81 @@
+{
+  "number": 1,
+  "section": 1,
+  "family": "interface_icons",
+  "id": "icon-status-helps",
+  "path": "art/icons/status/helps.png",
+  "name": "Status: helping",
+  "kind": "sign",
+  "mode": "white-ink sign",
+  "state": "in game now (a text glyph, triangle up)",
+  "use": "The group mark of every condition that helps you, on the status strip under HP, the token hover card and the log chip",
+  "paint": "A short wedge pointing up, standing on a flat bar; the wedge solid, the bar a little wider than its base.",
+  "avoid": "an arrow with a plus sign (a medical mark is a plain plus only) \u00b7 a laurel \u00b7 a medal",
+  "file_key": "01-helps",
+  "source_commit": "45bb92679410814489d3bb5704a51e2754f04c97",
+  "source_brief_blob": "98e885b64ac839060b34eff2d58304065213359e",
+  "prompt": "Create ONE original PHC icon in pure WHITE #FFFFFF flat ink on fully TRANSPARENT background. Bold confident hand-inked silhouette, broad clear negative-space interior cuts, no gray, shading, gradients, texture, glow, opaque black paint, text, letters, numbers, frame or border. All dark gaps must be transparent. Center whole compact action inside generous 15% clear margin, square 1024x1024 composition. This is a SIGN, not a scene. NO WICK, robot head, mascot cape or lantern-heart chest. A generic human silhouette only if specifically requested. One very simple subject, two interior cuts at most, broad strokes and generous gaps that remain legible at16px,24px and48px. \nPAINT: A short wedge pointing up, standing on a flat bar; the wedge solid, the bar a little wider than its base.\nAVOID: an arrow with a plus sign (a medical mark is a plain plus only) \u00b7 a laurel \u00b7 a medal",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/_archive/after-0.30/2026-11-17/references/section-1-sign-neighbours.png"
+  ],
+  "production_approved": false,
+  "implementation_ready": false,
+  "reference_images_requested": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/survival/markers/shop.png",
+    "art/icons/boons/edge.png",
+    "art/icons/banners/fight-start.png",
+    "art/icons/banners/fight-won.png",
+    "art/icons/banners/fight-lost.png"
+  ],
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "export_dimensions": [
+    1024,
+    1024
+  ],
+  "source_path": "art/_archive/after-0.30/2026-11-17/native-renders/01-helps-v1.png",
+  "source_sha256": "f080f913c8ba8b28f69c95bcf7601b42733c378cf2b19cbbb069d3352a2e6df3",
+  "generation_attempt": 1,
+  "export_crop": [
+    136,
+    212,
+    1152,
+    1166
+  ],
+  "scale": 0.8070866141732284,
+  "offset": [
+    102,
+    127
+  ],
+  "upscaled": false,
+  "status": "review-candidate",
+  "export_processing": "Aspect-preserving alpha framing, pure white RGB retaining source alpha, Lanczos downsample.",
+  "sha256": "ab3954fe46c2959c9cea7013fbd9567232d46c79b326b9f0ea964db0565d54c6",
+  "exports": {
+    "256": "art/icons/status/exports/256/helps.png",
+    "128": "art/icons/status/exports/128/helps.png",
+    "64": "art/icons/status/exports/64/helps.png",
+    "48": "art/icons/status/exports/48/helps.png",
+    "44": "art/icons/status/exports/44/helps.png",
+    "32": "art/icons/status/exports/32/helps.png",
+    "24": "art/icons/status/exports/24/helps.png",
+    "16": "art/icons/status/exports/16/helps.png"
+  },
+  "export_sha256": {
+    "256": "2f99f32c6b7d2e570cefcfb599589f526a139178039a461b7ec3385b4d365834",
+    "128": "4e8c044da4a221d48c8ee310aaa4ca73a311860e7eb85a283fa599add13efe2a",
+    "64": "a6b80188603a4bc9045719f62d6b47527df109032a45b78d226dcdfc2de4e698",
+    "48": "c2df6f1736994de58cc3a93c0cf71b024262132cf5b15d1ed5c5c72356e972a6",
+    "44": "5e97eef8340e42cb1c7c19c9d8bb9b225cd550f13cd74238d1ce4f8e4b8c0b37",
+    "32": "398a72f091eac3e2472c473711e07281cba17eba27d08cdc9ec862cd282747de",
+    "24": "8a1d3efad06999cadba06fdacc841babac47e9c0f42913b0fe22a0c3345a4267",
+    "16": "048897b8992ccd3b82b63b80091b2a1b9387a06ca7364af38f2980041736b16a"
+  },
+  "visual_review": "Inspected charcoal preview and actual small sizes; assistant review only, production approval pending."
+}
