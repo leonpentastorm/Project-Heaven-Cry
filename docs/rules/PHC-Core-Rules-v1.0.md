@@ -11897,6 +11897,13 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
     **For the lead:** that twin still rises past the line at level 10 (the rifle's own level 10 is the pin), and the
     Kemizuchi duelling blade (24: 170 / 189 / 208) and the strikers (130 / 157 / 181) were not asked for and are left. The test squad's tank carries a
     sabre (balance builds), so its numbers move with it.
+    **Moved on purpose:** the golden damage tables (GOLDEN_RECORD: weapons, builds normal and all-in, techniques,
+    special, enemies, the costs pad, conditions.log) and 18 of the 29 replays (REPLAY_RECORD; the balance tank and the
+    blade builds carry a sabre): cover-4v6-guns-blades, open-4v7-magic-boss, proving-waves, story-fight-story,
+    proving-doors-hiding-watches, open-4v6-blades-walk-away, open-4v6-guns-blades, cover-4v7-magic-boss,
+    cover-4v7-level20-allin, cover-4v6-level3, open-4v3-level3, proving-4v12-guns, proving-4v12-magic,
+    proving-waves-long, proving-waves-low, story-fight-story-magic, proving-doors-hiding-watches-wave6,
+    cover-4v7-blades-walk-away.
 4550. **Sight both ways (rules 1.57 opening volley item 1; a bug):** `lineOfSight(a, b)` is clear only if the Bresenham walk a to b and the walk b to a are both clear (each skips its end tile). Before, it was the walk a to b only: with one blocker, 2% of tile pairs (72 of 3,551 on the proposal's ground) saw one way, and 4% of the stage-1 runs' enemy gun rolls had a blocked line back. `perks/b.ts losNoVeil` (Skin Map) was a second copy of the walk; it is now `lineOfSight(..., ignoreVeil)`. Proof: `test/rules157-volley.test.ts` (every pair on a 15 x 15 ground with a wall; the reproduced case, played).
 4551. **The enemy's Burst (item 2):** `techniques.json burst.numbers.enemy_same` 1 (was unset: an enemy with an Auto weapon rolled three at 0 / −1 / −2 and cooled 1; item 1079). Measured (one enemy turn on the yardstick, 200 seeds): a Gun drone (Soldier, service rifle) 21 then 29 damage on turns 1 and 2 (14% / 20% of 145 HP), was 30 / 46; a Soldier sabre 10 then 30. Supersedes item 1079's "keep the old Burst" and item 1316. PROVISIONAL.
 4552. **The tier damage factors after the refit (item 2):** Soldier 0.78, Elite 1.05, Boss 1.2, unchanged on purpose (item 1079 proposed Soldier 0.88 and Elite 1.08 to hold the rifleman's 3 rounds under two Soldiers; the lead's target for this pass is that a gun foe threatens what a melee foe of its tier does). Moved guards: the idle pair under two Soldiers at level 6 lasts 3.5 rounds (bound 3.2 → 4.2, `defence-measure.test.ts`); a healer and a shielder under four Soldiers at level 6 now hold for 10 rounds (`heal-measure.test.ts`: OLD "somebody goes Down", now "outlasts a healer alone"). PROVISIONAL.
