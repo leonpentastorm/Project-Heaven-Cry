@@ -1,7 +1,5 @@
-// 0.31.x art: the fight's action rows wear the delivered icons (game/doorArt.ts), through the real screen. Harness as
-// combat-door.test.ts. Was: the Sigils door on the combat screen (nine doors audit, 0.29): a Sigilist's first turn of a fight opens on the Sigils
-// tab, headed by the door line from data; with the Evoker only in the pack the tab is one row that says so, priced as
-// the pack's own Draw; the caster's token wears its charge and Flux. Through the real screen and real actions.
+// 0.31.x art: the fight's action rows wear the delivered icons (game/doorArt.ts), through the real combat screen and
+// real actions (the harness of combat-door.test.ts).
 import { describe, expect, it, vi } from 'vitest';
 import { ARCHETYPES, apply, newGame, viewFor, active, gearCost, packOf, FOCUS_IDS, SIGIL_GRAMMAR, SKILL, type GameState, type Sheet } from '@engine';
 
