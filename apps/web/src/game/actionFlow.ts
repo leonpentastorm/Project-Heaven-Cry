@@ -61,7 +61,8 @@ export interface FlowView {
   peekWith: (more: Picks) => DescriptorPreview | null;
   ready: boolean; action: any | null;
   /** What a grid click does: a state patch for the screen, or null (the screen's own default runs). A patch
-   *  { refused: words } is a unit the open pick can't take: the screen says the words and changes nothing. */
+   *  { refused: words } is a unit or a tile the open pick can't take: the screen says the words and changes nothing
+   *  else (a `tile` beside it: a listed tile out of reach, kept so its way there shows). */
   click: (u: { id: string; side: string } | null, k: string) => Record<string, any> | null;
   /** The state to clear after Confirm. */
   after: Record<string, any>;
@@ -164,13 +165,21 @@ export function flowView(g: any, me: string | null, cur: any, S: any, extra: Pic
       if (two) { const now = [S.target, S.target2].filter((x) => x && x !== u.id && (!two.choices || two.choices.includes(x))); const sel = [S.target, S.target2].includes(u.id) ? now : [...now, u.id].slice(-2); return { target: sel[0] || null, target2: sel[1] || null }; }
       return { target: u.id, readTile: null };
     }
+    // item 5108.4 (the review): an empty tile while a unit pick is still the open one (required, not yet made, before any
+    // tile step: Guide's ally before its tile) is refused with that pick's own prompt, never a silent no-op, never a tile
+    // picked out of turn (a unit pick already made, as the target card's, leaves the click to the steps after it)
+    const first = steps.find((st) => (UNIT_KINDS.includes(st.kind) || st.kind === 'tile') && !st.optional && picks[st.key] == null);
+    if (first && UNIT_KINDS.includes(first.kind)) return { refused: 'Nobody there. ' + first.prompt };
     const tile = steps.find((st) => st.kind === 'tile' && tileOk(st, k));
     if (!tile) {
       // rules 1.65: a tile the open (required) tile pick can't take is refused in the engine's words, never picked
       const open = steps.find((st) => st.kind === 'tile' && !st.optional && (bk.choice.size || st.choices));
-      if (!open) return null;
-      const pv2 = peekWith({ [open.key]: k });
-      return { refused: (pv2 && !pv2.ok && pv2.why) || open.prompt };
+      if (open) { const pv2 = peekWith({ [open.key]: k }); return { refused: (pv2 && !pv2.ok && pv2.why) || open.prompt }; }
+      // an optional tile pick (a Call's step, a pile) the click can't take: the engine's refusal for that tile; a tile
+      // of the step's own list (a pile out of reach) stays picked, so its way there is shown, and Confirm says why
+      const opt = steps.find((st) => st.kind === 'tile' && st.optional);
+      if (opt) { const pv2 = peekWith({ [opt.key]: k }); return { refused: (pv2 && !pv2.ok && pv2.why) || opt.prompt, ...(opt.choices && opt.choices.includes(k) ? { tile: k } : {}) }; }
+      return null;
     }
     return { tile: S.tile === k && tile.optional ? null : k };
   };

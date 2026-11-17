@@ -150,9 +150,9 @@ export function ownedVerbs(u: Unit): string[] {
 const VERB_NAMES: Record<string, string> = { move: 'Move', shot: 'Shot', aimed: 'Aimed shot', melee: 'Strike' };
 /** A data verb's name, its AP for this owner now (its site, priced on the owner), and what it is aimed at: the
  * descriptors' row. null: one of OWNED_VERBS (the descriptors price those from the weapon). */
-export function ownedVerbInfo(cb: Combat, owner: Unit, u: Unit, verb: string): { name: string; ap: number; pick: 'tile' | 'enemy' | 'ally' | 'none'; text: string; icon: string } | null {
+export function ownedVerbInfo(cb: Combat, owner: Unit, u: Unit, verb: string): { name: string; ap: number; pick: 'tile' | 'enemy' | 'ally' | 'none'; text: string; icon: string; /** its reach in tiles from the owned unit (the row's reach.tiles, dataVerbAimWhy's own number) */ range: number | null } | null {
   const dv = OWNED_DATA_VERBS[verb]; if (!dv) return null;
-  return { name: dv.name || VERB_NAMES[verb] || verb, ap: verbPrice(cb, owner, u, dv).ap, pick: dv.reach?.tile ? 'tile' : dv.reach?.side === 'ally' ? 'ally' : dv.reach ? 'enemy' : 'none', text: dv.text || '', icon: dv.icon || '' };
+  return { name: dv.name || VERB_NAMES[verb] || verb, ap: verbPrice(cb, owner, u, dv).ap, pick: dv.reach?.tile ? 'tile' : dv.reach?.side === 'ally' ? 'ally' : dv.reach ? 'enemy' : 'none', text: dv.text || '', icon: dv.icon || '', range: dv.reach ? dv.reach.tiles ?? 1 : null };
 }
 /** A data verb's price, on its owner: its site's AP (data/actions.json costs; rules 1.56: the shared order site
  * `figment_order`), and the resources its row names (`res`: Redraw's charge), through the cost hook. */

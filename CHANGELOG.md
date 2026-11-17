@@ -24,6 +24,11 @@ The game shows its version in the corner of the title screen and in every "Repor
   ringed with their word, for every action; a click on a tile or unit the pick can't take says why by the action box.
 - **The guard:** `packages/engine/test/picking.test.ts` (every pick step of every offered action, nine classes, eight
   patrons, items: its choices are what the reducer takes); `apps/web/e2e/picking.mjs` in the browser.
+- **Review fixes (rules 1.65 item 5108):** a Figment's orders and a technique's tiles keep the fog (a Hidden foe
+  leaves no gap in the outlined tiles); every pick aimed at a unit shades its reach (a Whisper as far as you see, a
+  thrown stim its 4 tiles, Bond its 6 or 9, a Figment's Strike round the Figment); the net gain of every mend (stims,
+  Tending, perks, prayers) is the first thing the hover says, with "no gain" when nothing changes; a click on an empty
+  tile while a unit pick is open says "Nobody there." by the action box.
 
 ## 0.31.2 — the known faults of 0.31.0 (rules 1.64)
 

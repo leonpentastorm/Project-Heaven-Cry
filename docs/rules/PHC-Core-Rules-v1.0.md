@@ -12045,7 +12045,30 @@ picking UI in the same change") is made a contract of the engine's action descri
     Evoke planner, the HEART panel and `aimOverlay`), which already draw reach, area and whom they touch.
 5107. **Needs a new primitive (listed, not built):** none for the contract. Seen while building: an enemy's sight
     range drawn for Hide (the Shadow audit's item F) needs a sight view per enemy; not part of this contract.
-5108. **Items 5100 to 5108 are rules 1.65's.**
+5108. **The review's fixes (0.31.5):**
+    1. **The fog, for every family (item 5102):** a Figment's or any owned unit's order and a technique's tile pick
+       are now worked out on the side's view (`fightSeenBy`), as a perk's are: a Hidden foe on a tile the side sees
+       makes no gap in the choices (its tile reads as free, as for the unit's own Move; the reducer refuses it on the
+       click), no unit mark and no word. Guarded by a fog case in `picking.test.ts`.
+    2. **Reach for every unit pick (item 5100):** a pick aimed at a unit shades its reach too: a perk, class move or
+       door verb its data reach (`reach.tiles`, a ladder too: Bond's 6 or 9; read for the shading through the action's
+       `reachTiles`, the gate stays `reachWhy`); a prayer its data range, else every tile the caster sees (the "you can
+       see" of `pickTarget`); a stim, a Shove and Pull free the tiles next to you, a thrown stim `stimThrowRange` and
+       Analyze `analyzeRange`, in sight; an attack its weapon's reach (`reachTiles`, as a technique's); a Figment's
+       order its row's `reach.tiles` round the Figment (`ownedVerbInfo().range`), a plain owned attack its weapon's
+       reach; anything else aimed at a unit, as far as the side sees. The guard asserts every aim step with choices
+       also sends a reach.
+    3. **The net gain, first and for every mend (item 5104):** whether an action heals or shields a unit is the
+       engine's own run on the copy, as the one mend reports it (`healUnit`'s `heal_given`, `grantShield`'s
+       `shield_grant`), for prayers, stims, Tending and perks alike; the gain is the FIRST note of the preview (the hover
+       line reads the first two). "No gain: your shield is already on them" only when the shield that stands is the
+       giver's own; else "no gain: a shield as big already stands (N)". Engine tests: a Health Whisper on a hurt, a full
+       and a Downed ally; Protection twice; a stim and a thrown stim; Tending's Mend.
+    4. **No silent click (item 5105):** while a unit pick is the open one (required, not yet made), a click on an empty
+       tile says "Nobody there." and the pick's prompt by the action box, and never picks a later tile step out of turn
+       (Guide's tile before its ally); a click an optional tile step can't take says the engine's refusal (a pile of
+       the step's own list out of reach stays picked, so its way there shows).
+5109. **Items 5100 to 5109 are rules 1.65's.**
 
 ### Rules 1.61 (0.30), cover beside you, the shot that shows, focus memory
 

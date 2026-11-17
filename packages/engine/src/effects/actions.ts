@@ -159,6 +159,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
     };
     if (g.res) d.res = Object.values(g.res).some(isNumberBlock) ? (h) => Object.fromEntries(Object.entries(g.res).map(([k, v]) => [k, holderNumber(h, v as any) ?? 0])) : { ...g.res }; // rules 1.33: a number block (a ladder: Mend cheaper from Empathy 9)
     if (typeof reach?.tiles === 'number' && !reach.beyond) d.range = reach.tiles; // (reach.beyond: the reach decides, not a plain range)
+    if (reach && reach.tiles != null) d.reachTiles = (h) => holderNumber(h, reach.tiles); // rules 1.65 item 5108.2: the reach's own number for this holder (a ladder too), for the shading
     if (g.pick) { d.pick = g.pick; if (g.pick_label) d.pickLabel = g.pick_label; }
     if (typeof g.site === 'string') d.site = g.site;
     if (g.prayer) d.prayer = g.prayer;
@@ -322,7 +323,7 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
   const lane = handlerOf(h.key)?.actions?.some((a) => a.id === d.id);
   const res = Object.fromEntries(Object.entries(cost.res || {}).filter(([, v]) => v > 0));
   return { id: h.key, actionId: d.id, itemId: h.itemId, kind: h.kind, label: d.label, text: d.text || h.info.text, ap, ...(Object.keys(res).length ? { res } : {}), uses: { per, n, left, label: usesLabel(per, n, Math.min(n, left)) },
-    target: d.target, range: d.range, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: tabOf(h, d), ...(subOf(h, d) ? { sub: subOf(h, d) } : {}), cls: h.info.classId,
+    target: d.target, range: d.range ?? d.reachTiles?.(h) ?? undefined, scope: d.scope, why, engine: !!lane || defaultEngine(h.info, d), tab: tabOf(h, d), ...(subOf(h, d) ? { sub: subOf(h, d) } : {}), cls: h.info.classId,
     arm: !!d.arm, armed: h.u?.armed?.[h.key], tier: h.tier,
     ...(d.pick ? { options: pickOptions(h, d), pickMulti: d.pickMulti || 1 } : {}), ...(d.pickLabel ? { pickLabel: d.pickLabel } : {}), ...(d.choices ? { choices: d.choices(h) } : {}), ...(d.thenTile ? { thenTile: true } : {}) };
 }

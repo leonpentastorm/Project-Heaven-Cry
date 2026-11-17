@@ -18,7 +18,7 @@
 // player's saved turn-card picks and the two-key hotkeys keep working.
 import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON, SOUL_RULES } from './data';
-import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange, pairs } from './combat';
+import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange, analyzeRange, pairs } from './combat';
 import { kindOf } from './objects';
 import { apFor, canPay, RESOURCES, resGive } from './effects/cost';
 import { eyesOn, seenByFoes, HIDE_WHY } from './tactics';
@@ -38,6 +38,7 @@ import { PILE, isPile } from './containers';
 import { orderable, ownedVerbs, ownedWhy, ownedVerbInfo, ownedAimChoices } from './owned';
 import { shieldTotal } from './effects/damage';
 import { tilesAround } from './kit';
+import { onHook } from './effects/hooks';
 
 // ---------- the types ----------
 /** The tab an action sits on. */
@@ -215,19 +216,33 @@ const seenUnits = (x: DescCtx, self = true) => x.seen.units.filter((v) => self |
 /** The tiles within n of the unit (a reach band with no penalty): the kit's square. */
 const reachWithin = (x: DescCtx, n: number): GridMarks['tiles'] => tilesAround(x.u.pos, n, x.cb).map((k) => ({ tile: k, kind: 'reach' as const }));
 /** Rules 1.65 (E2): a mend's net result on one unit, in words, from the engine's own run on a copy (before and after):
- * "30 → 32 (+2)", "stands again at 14 HP", "shield 0 → 12 (+12)"; `mends` (the action is a heal or a shield): an
- * unchanged unit reads "no gain" with why. null: nothing to say. */
-function mendWord(before: Unit | undefined, after: Unit | undefined, mends: { heal?: boolean; shield?: boolean } = {}): string | null {
+ * "30 → 32 (+2)", "stands again at 14 HP", "shield 0 → 12 (+12)"; `mends` (the run gave this unit a heal or a shield,
+ * through the one mend: mendsIn): an unchanged unit reads "no gain" with why. null: nothing to say. */
+function mendWord(before: Unit | undefined, after: Unit | undefined, mends: { heal?: boolean; shield?: boolean } = {}, by: string | null = null): string | null {
   if (!before || !after) return null;
   const s0 = Math.round(shieldTotal(before)), s1 = Math.round(shieldTotal(after)), h0 = Math.round(before.hp), h1 = Math.round(after.hp), out: string[] = [];
   if ((before.downed || before.dead) && !after.downed && !after.dead) out.push('stands again at ' + h1 + ' HP');
   else if (h1 > h0) out.push(h0 + ' → ' + h1 + ' (+' + (h1 - h0) + ')' + (h1 >= after.maxHp ? ' · full' : ''));
   if (s1 > s0) out.push('shield ' + s0 + ' → ' + s1 + ' (+' + (s1 - s0) + ')');
   if (out.length) return out.join(' · ');
-  if (mends.shield && s0 > 0) return 'no gain: your shield is already on them';
+  if (mends.shield && s0 > 0) {
+    // whose shield stands: the giver's own (the base shield's shieldBy, or a layer of theirs), else someone's as big
+    const mine = !!by && ((before as any).shieldBy === by || (before.shields || []).some((l) => l.by === by && l.n > 0));
+    return mine ? 'no gain: your shield is already on them' : 'no gain: a shield as big already stands (' + s0 + ')';
+  }
   if (mends.heal && h0 >= before.maxHp) return 'no gain: already at full HP';
   if (mends.heal || mends.shield) return 'no gain';
   return null;
+}
+/** Rules 1.65 (E2): the units a run on a copy mended, as the one mend reports them (effects/damage.ts healUnit's
+ * 'heal_given', grantShield's 'shield_grant'): whether the action is a heal or a shield for that unit is the engine's own
+ * run, never a guess from the item. Only while a preview runs inside mendsIn; nothing is written. */
+let MENDS: { heal: Set<string>; shield: Set<string> } | null = null;
+onHook('heal_given', (ctx: any) => { if (MENDS && ctx?.t) MENDS.heal.add(ctx.t.id); });
+onHook('shield_grant', (ctx: any) => { if (MENDS && ctx?.t) MENDS.shield.add(ctx.t.id); });
+function mendsIn<T>(run: () => T): { out: T; mended: (id: string) => { heal: boolean; shield: boolean } } {
+  const was = MENDS, m = { heal: new Set<string>(), shield: new Set<string>() }; MENDS = m;
+  try { const out = run(); return { out, mended: (id) => ({ heal: m.heal.has(id), shield: m.shield.has(id) }) }; } finally { MENDS = was; }
 }
 const mx = (p: Picks) => (Array.isArray(p.mods) && p.mods.length ? { mods: p.mods as string[] } : {});
 const safe = <T>(f: () => T, d: T): T => { try { return f(); } catch { return d; } };
@@ -499,7 +514,8 @@ const PHYSICAL: ActionSystem = {
     const t = parseTechId(d.id);
     if (t) {
       const cands = key === 'targetId' ? seenUnits(x, step.kind === 'ally') : [...seenTiles(x)];
-      const fcb = p.mods?.length ? fightWith(x.cb, p.mods) : x.cb;
+      // on the side's view (the fog): a unit it doesn't see never makes a gap in the choices (rules 1.65 item 5108.1)
+      const fcb = p.mods?.length ? fightWith(x.seen, p.mods) : x.seen;
       return cands.filter((k) => { const args = techArgs(t, { ...p, [step.key]: k }); return !!safe(() => previewTechnique(fcb, x.u, t.id, args, x.g), null as any)?.ok; });
     }
     // a basic action's units or tiles: the reducer itself on a copy (previewAction), of the engine's own list
@@ -509,6 +525,28 @@ const PHYSICAL: ActionSystem = {
   preview(x, d, p, action) {
     const t = parseTechId(d.id);
     if (t) return techPreviewOf(x, t, p);
+    // rules 1.65 item 5108.2: a basic action aimed at a unit shades where it reaches (its own range, the reducer's)
+    const out = basicPreview(x, d, p, action), reach = basicReach(x, d.id);
+    if (!reach.length) return out;
+    return { ...(out || {}), marks: { units: out?.marks?.units || [], tiles: [...(out?.marks?.tiles || []), ...reach] } };
+  },
+};
+/** Rules 1.65 item 5108.2: where a basic action aimed at a unit reaches from here, from the numbers its reducer checks: a
+ * stim and a Shove next to you (actions.json `pick` ..._adjacent; combat.ts stimOn, shove), a thrown stim within
+ * stimThrowRange you see, Analyze within analyzeRange you see, an attack its weapon's reach (reachTiles, as a technique's). */
+function basicReach(x: DescCtx, id: string): GridMarks['tiles'] {
+  const seen = (ts: GridMarks['tiles']) => { const s = seenTiles(x); return ts.filter((t) => s.has(t.tile)); };
+  if (['stim', 'shove', 'pullfree'].includes(id)) return reachWithin(x, 1);
+  if (id === 'stim_throw') return seen(reachWithin(x, stimThrowRange()));
+  if (id === 'analyze') return seen(reachWithin(x, analyzeRange(x.u)));
+  if (['melee', 'shot', 'aimed', 'burst', 'auto', 'paired', 'skill'].includes(id)) {
+    const mode: any = id === 'melee' ? 'melee' : id === 'aimed' ? 'aimed' : 'shot';
+    return [...safe(() => reachTiles(x.cb, x.u, mode), new Map<string, number>())].map(([k, band]) => ({ tile: k, kind: 'reach' as const, band }));
+  }
+  return [];
+}
+function basicPreview(x: DescCtx, d: ActionDescriptor, p: Picks, action: Action | null): ReturnType<NonNullable<ActionSystem['preview']>> {
+  {
     if (d.preview === 'attack' && p.targetId) {
       const tg = x.cb.units.find((v) => v.id === p.targetId); if (!tg || d.id === 'paired') return null;
       const pv: any = safe(() => withGame(x.g, () => previewAttack(x.cb, x.u, tg, (d.id === 'skill' ? 'shot' : d.id) as AttackMode)), null);
@@ -519,8 +557,8 @@ const PHYSICAL: ActionSystem = {
     { const say = basicSay(x, d, p); if (say) return { lines: [{ k: 'note', text: say }], marks: p.targetId ? { units: [{ id: p.targetId, tag: '', tone: 'target' }] } : {} }; }
     if (['move', 'sprint', 'disengage'].includes(d.id) && p.tile) { const mo: any = safe(() => moveOptions(x.g, x.cb, x.u.id, d.id as any, { mods: p.mods || null }), null); const tl = mo && mo.tiles[p.tile]; return tl ? { ap: tl.ap, lines: [{ k: 'cost', text: tl.ap + ' AP for ' + tl.tiles + (tl.tiles === 1 ? ' tile' : ' tiles') }] } : null; }
     void action; return null;
-  },
-};
+  }
+}
 /** Hide's row, with where to go (rules 1.56 Shadow 2.0 item 11): who sees you (`eyes`) and, when it is refused because
  * you are seen, the tiles this turn's Move reaches (moveOptions, the engine's own Move) from which Hide would work: out of
  * every enemy's eyes (seenByFoes, Hide's own test) with Hide's price still paid. Read on the viewer's fight (x.seen): an
@@ -794,12 +832,12 @@ const FAITH: ActionSystem = {
     const units: GridMarks['units'] = [...aim.units.filter((m) => seen.has(m.id) && !picked.includes(m.id)).map((m) => ({ id: m.id, tag: '', tone: m.tone })), ...picked.map((id) => ({ id, tag: '', tone: 'target' as const }))];
     // E2: a heal's or a shield's net gain on whom it goes to, from the answer itself run on a copy (no roll: what an
     // answer gives, never whether it comes)
+    // (the mend's line first: the hover line reads the first notes)
     if (pv.ok && picked.length && x.c) {
-      const effs: any[] = safe(() => prayerEntry(x.c, s.kind, s.id)?.entry?.effects || [], []), mends = { heal: effs.some((e) => e?.op === 'heal'), shield: effs.some((e) => e?.op === 'shield') };
-      if (mends.heal || mends.shield) {
-        const after = safe(() => previewOnCopy(x.g, x.cb, (c, sg, rng) => (prayerAnswerOn(sg, c, rng, x.u.id, s.kind, s.id, args) ? null : c)), null);
-        if (after) for (const m of units) { if (m.tone !== 'target') continue; const w = mendWord(x.cb.units.find((v) => v.id === m.id), after.units.find((v) => v.id === m.id), mends); if (w) { m.tag = w; lines.push({ k: 'note', text: (x.cb.units.find((v) => v.id === m.id)?.name || m.id) + ': ' + w }); } }
-      }
+      const run = mendsIn(() => safe(() => previewOnCopy(x.g, x.cb, (c, sg, rng) => (prayerAnswerOn(sg, c, rng, x.u.id, s.kind, s.id, args) ? null : c)), null)), after = run.out;
+      const gain: PreviewLine[] = [];
+      if (after) for (const m of units) { if (m.tone !== 'target') continue; const w = mendWord(x.cb.units.find((v) => v.id === m.id), after.units.find((v) => v.id === m.id), run.mended(m.id), x.u.id); if (w) { m.tag = w; gain.push({ k: 'note', text: (x.cb.units.find((v) => v.id === m.id)?.name || m.id) + ': ' + w }); } }
+      lines.unshift(...gain);
     }
     const tiles: GridMarks['tiles'] = [...aim.reach.map((k) => ({ tile: k, kind: 'reach' as const })), ...aim.area.map((k) => ({ tile: k, kind: 'area' as const }))];
     return { ok: pv.ok, why: pv.ok ? null : pv.why || 'Not now.', ap: pv.ap, lines, marks: { units, tiles } };
@@ -926,9 +964,21 @@ const OWNED: ActionSystem = {
   choices(x, d, step, p) {
     // rules 1.65: each candidate through ownedAimChoices (runDataVerb's and runOwned's own gates)
     const key = aimKind(step); if (!key) return undefined; void p;
-    const [, owned, verb] = d.id.split(':'), o = x.cb.units.find((v) => v.id === owned); if (!o) return undefined;
+    // on the side's view (the fog): a hidden unit's tile reads as free, as it does for the unit's own Move; the reducer
+    // refuses it on the click (rules 1.65 item 5108.1)
+    const [, owned, verb] = d.id.split(':'), o = x.seen.units.find((v) => v.id === owned); if (!o) return undefined;
     const cands = key === 'targetId' ? seenUnits(x, false).filter((id) => id !== owned) : [...seenTiles(x)];
-    return safe(() => withGame(x.g, () => ownedAimChoices(x.g, x.cb, x.u, o, verb, key, cands, (cb, v) => Object.keys(moveOptions(x.g, cb, v.id, 'move').tiles))), undefined);
+    return safe(() => withGame(x.g, () => ownedAimChoices(x.g, x.seen, x.u, o, verb, key, cands, (cb, v) => Object.keys(moveOptions(x.g, cb, v.id, 'move').tiles))), undefined);
+  },
+  preview(x, d, p) {
+    // rules 1.65 item 5108.2: where the owned unit's verb reaches from where IT stands (a data verb's reach.tiles round it;
+    // a plain attack its weapon's reach), and whom the aim goes at
+    const [, owned, verb] = d.id.split(':'), o = x.seen.units.find((v) => v.id === owned); if (!o) return null;
+    const dv = ownedVerbInfo(x.cb, x.u, o, verb), tiles: GridMarks['tiles'] = [];
+    if (dv && dv.pick !== 'none' && dv.pick !== 'tile' && dv.range != null) tiles.push(...tilesAround(o.pos, dv.range, x.cb).map((k) => ({ tile: k, kind: 'reach' as const })));
+    else if (!dv && verb !== 'move') for (const [k, band] of safe(() => reachTiles(x.cb, o, (verb === 'melee' ? 'melee' : verb === 'aimed' ? 'aimed' : 'shot') as any), new Map<string, number>())) tiles.push({ tile: k, kind: 'reach', band });
+    const units: GridMarks['units'] = p.targetId && x.seen.units.some((v) => v.id === p.targetId) ? [{ id: p.targetId, tag: '', tone: dv?.pick === 'ally' ? 'target' : 'harm' }] : [];
+    return { marks: { units, tiles } };
   },
   send(x, d, p) {
     const [, owned, verb] = d.id.split(':');
@@ -1037,19 +1087,25 @@ export function previewDescriptor(g: GameState, unitId: string, id: string, pick
     if (aim.kind === 'tile') {
       out.marks.tiles.push(...aimChoices.map((k) => ({ tile: k, kind: 'choice' as const })));
       if (!out.marks.tiles.some((t) => t.kind === 'reach')) out.marks.tiles.push(...aimChoices.map((k) => ({ tile: k, kind: 'reach' as const })));
-    } else out.marks.units.push(...aimChoices.map((uid) => ({ id: uid, tag: '', tone: 'choice' as const })));
+    } else {
+      out.marks.units.push(...aimChoices.map((uid) => ({ id: uid, tag: '', tone: 'choice' as const })));
+      // rules 1.65 item 5108.2: a unit pick with no range of its own reaches as far as the side sees (a unit it can't see
+      // is never a choice)
+      if (!out.marks.tiles.some((t) => t.kind === 'reach')) out.marks.tiles.push(...[...seenTiles(x)].map((k) => ({ tile: k, kind: 'reach' as const })));
+    }
   }
   if (picks.tile) out.marks.tiles.push({ tile: picks.tile, kind: 'pick' });
   if (action && out.ok) {
-    const vd = safe(() => previewAction(g, action, x.by), { ok: false, why: 'Not now.', ap: 0, g: null } as any);
+    const run = mendsIn(() => safe(() => previewAction(g, action, x.by), { ok: false, why: 'Not now.', ap: 0, g: null } as any)), vd = run.out;
     out.ok = vd.ok; out.why = vd.ok ? null : vd.why; if (vd.ok) out.ap = vd.ap; out.action = vd.ok ? action : null;
     // E2: a heal's or a shield's gain on the picked unit, from the reducer's own run on the copy (a prayer says its own,
     // from its answer: FAITH.preview)
+    // (the mend's line first: the hover line reads the first notes)
     if (vd.ok && vd.g && d.preview !== 'prayer') for (const uid of [picks.targetId, picks.allyId].filter(Boolean) as string[]) {
       if (!x.seen.units.some((v) => v.id === uid)) continue;
-      const w = mendWord(x.cb.units.find((v) => v.id === uid), vd.g.combat?.units.find((v: Unit) => v.id === uid)); if (!w) continue;
+      const w = mendWord(x.cb.units.find((v) => v.id === uid), vd.g.combat?.units.find((v: Unit) => v.id === uid), run.mended(uid), x.u.id); if (!w) continue;
       const m = out.marks.units.find((v) => v.id === uid && v.tone !== 'choice'); if (m) m.tag = m.tag ? m.tag + ' · ' + w : w; else out.marks.units.push({ id: uid, tag: w, tone: 'target' });
-      out.lines.push({ k: 'note', text: (x.cb.units.find((v) => v.id === uid)?.name || uid) + ': ' + w });
+      out.lines.unshift({ k: 'note', text: (x.cb.units.find((v) => v.id === uid)?.name || uid) + ': ' + w });
     }
   }
   if (!out.ok && !need && !out.why) out.why = 'Not now.';

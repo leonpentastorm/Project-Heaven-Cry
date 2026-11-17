@@ -257,6 +257,9 @@ export interface ActionDef {
   uses?: { per: UseScope; n: number };
   target: ActionTarget;
   range?: number; needsSight?: boolean;
+  /** Rules 1.65 item 5108.2 (filled by the engine from a data verb's `reach.tiles`, a ladder too): how far it reaches for
+   * this holder, for the picking overlay's shading only (the gate is the reach itself: reachWhy). */
+  reachTiles?: (h: Holder) => number | null;
   /** Short help text for the card (defaults to the item's text). */
   text?: string;
   /** false hides the action; a string greys it out with that reason; true (or undefined) shows it. */

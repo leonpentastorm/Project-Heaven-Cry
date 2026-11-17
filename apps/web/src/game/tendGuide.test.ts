@@ -41,3 +41,23 @@ describe('0.28.3: Guide on the fight screen', () => {
     expect(g2.combat.units.find((u: any) => u.id === al.id).pos).toBe(to);
   });
 });
+
+// Rules 1.65 item 5108.4 (the review): a click on an empty tile while a unit pick is open is refused by the action box,
+// never a silent no-op.
+describe('rules 1.65: an empty tile while a unit pick is open', () => {
+  it('Bond selected, a click on an empty tile sets the refusal (pickWhy) in the pick\'s own words', () => {
+    const { g, mu } = fight();
+    const bond = 'pk:verb:tend.bond#tend_bond';
+    const fv = withGame(g, () => flowView(g, 'host', mu, { action: bond }))!;
+    expect(fv, 'Bond is on the flow').toBeTruthy();
+    const cb = g.combat, empty = [...fv.marks.reach].find((k) => !cb.units.some((u: any) => u.pos === k && !u.dead))!;
+    expect(empty, 'an empty tile in reach').toBeTruthy();
+    const patch = fv.click(null, empty)!;
+    expect(patch, 'not a silent no-op').toBeTruthy();
+    expect(patch.refused).toMatch(/^Nobody there\. /);
+    expect(patch.target).toBeUndefined();
+    // and the Whisper (Health) on its unit pick: the same
+    const fvH = withGame(g, () => flowView(g, 'host', mu, { action: ID }))!;
+    expect(fvH.click(null, empty)?.refused, 'Guide before its ally').toMatch(/^Nobody there\. /);
+  });
+});

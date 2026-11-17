@@ -1139,7 +1139,9 @@ export function prayerAim(g: GameState, who: string, kind: PrayerKind, id: strin
   const entry = pe.entry, target = entry.target || (kind === 'hymn' ? 'self_or_ally' : 'none'), r = prayerRadius(entry), range = prayerPickRange(entry);
   const all: string[] = []; for (let y = 0; y < cb.map.h; y++) for (let x = 0; x < cb.map.w; x++) all.push(x + ',' + y);
   if (target === 'tile') out.reach = all.filter((k) => unitSees(cb, u, k));
-  else if ((target === 'two_units' || target === 'two_allies') && range != null) out.reach = all.filter((k) => dist(u.pos, k) <= range);
+  // rules 1.65 item 5108.2: a prayer aimed at a unit reaches its data range, else as far as the caster sees (the "you can
+  // see" of pickTarget)
+  else if (target !== 'none' && target !== 'self') out.reach = range != null ? all.filter((k) => dist(u.pos, k) <= range) : all.filter((k) => unitSees(cb, u, k));
   const side = prayerSide(entry.effects) || (target === 'tile' ? 'enemies' : null);
   const onTiles = (tiles: string[]) => cb.units.filter((v) => !v.dead && tiles.includes(v.pos) && (side === 'allies' ? v.side === u.side : side === 'enemies' ? v.side !== u.side : true));
   let touched: Unit[] = [];

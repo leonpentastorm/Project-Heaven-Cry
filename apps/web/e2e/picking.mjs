@@ -6,6 +6,9 @@
 //     units ringed ("you can pick them");
 //   · the pointer on a legal tile or unit: the area it covers ("it covers this tile"), whom it touches, or the hover line;
 //   · a click on a tile or unit it can't take: the engine's refusal is a line by the action box ("✕ …"), nothing picked.
+// The review (rules 1.65 item 5108): each action must show the kinds it has (a unit pick its reach too; Vault's and
+// Douse's choices a strict subset of their reach), The Sky Answers' and Thunderclap's area is exactly 25 tiles, a mend's
+// hover line leads with its net gain, and an empty tile clicked while a unit pick is open says "Nobody there.".
 // Screenshots: picking-*.png (KEEP_SHOTS=1 keeps them).
 import { chromium, player, settle, pickAction, openGround, OUT } from './lib.mjs';
 const browser = await chromium.launch();
@@ -25,6 +28,9 @@ const dock = () => p.evaluate(() => (document.querySelector('.phc-cb-dock') || d
 /** The hover chip over a tile (z-index 30 inside a tile button): the engine's hover line. */
 const chip = () => p.evaluate(() => { const s = [...document.querySelectorAll('button.phc-tok span')].find((e) => e.style.zIndex === '30' && e.style.padding === '2px 6px' && (e.textContent || '').trim()); return s ? s.textContent.trim() : ''; });
 let charId;
+/** An empty tile next to me, in sight (a unit pick can't take it: "Nobody there."). */
+const emptyNear = async () => { const g = await G(), u = g.combat.units.find((v) => v.charId === charId), [x, y] = u.pos.split(',').map(Number), solid = new Set(g.combat.map.solid || []);
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [1, -1], [-1, 1], [2, 0], [0, 2]]) { const k = (x + dx) + ',' + (y + dy); if (!solid.has(k) && !g.combat.units.some((v) => v.pos === k && !v.dead) && !(g.combat.objects || []).some((o) => o.pos === k)) return k; } return null; };
 const me = async () => (await G()).combat.units.find((u) => u.charId === charId);
 async function toMe() {
   for (let i = 0; i < 30; i++) {
@@ -63,16 +69,21 @@ async function check(name, btn, o = {}) {
   await settle(p, 400);
   const reach = await tilesWith('in reach'), choice = await tilesWith('you can pick this tile'), units = await tilesWith('you can pick them');
   ok(name + ': selected, its reach or choices shown (reach ' + reach.length + ', tiles ' + choice.length + ', units ' + units.length + ')', reach.length + choice.length + units.length > 0);
+  // the review: each action shows the kinds it must (a unit pick its reach too), and its choices lie in its reach
+  for (const k of o.need || []) ok(name + ': it shows its ' + k + ' (' + ({ reach, choice, units })[k].length + ')', ({ reach, choice, units })[k].length > 0);
+  if (o.subset) ok(name + ': its choices (' + choice.length + ') are a strict subset of its reach (' + reach.length + ')', choice.length > 0 && choice.length < reach.length && choice.every((r) => reach.includes(r)));
   await snap(o.shot + '-1-select');
   // the pointer on a legal pick: the area it covers, whom it touches, or the engine's hover line
   // the legal pick nearest to the unit (a corner tile's area is cut by the map's edge)
   const at = (await me()).pos, near = (l) => [...l].sort((a, b) => { const d = (r) => { const [x, y] = keyOf(r).split(',').map(Number), [ux, uy] = at.split(',').map(Number); return Math.max(Math.abs(x - ux), Math.abs(y - uy)) || 99; }; return d(a) - d(b); })[0];
-  const pick = o.hoverUnit ? near(units) : near(choice) || near(units);
+  const map = (await G()).combat.map, inside = (r) => { if (!o.fit) return true; const [x, y] = keyOf(r).split(',').map(Number); return x >= o.fit && y >= o.fit && x < map.w - o.fit && y < map.h - o.fit; };
+  const pick = o.hoverUnit ? near(units) : near(choice.filter(inside)) || near(choice) || near(units);
   if (pick) {
     await tok(keyOf(pick)).hover(); await settle(p, 500);
     const cov = await tilesWith('it covers this tile'), line = await chip();
-    ok(name + ': on ' + pick + ', the area (' + cov.length + ' tiles) or the hover line ("' + line.slice(0, 50) + '")', cov.length > 0 || !!line);
-    if (o.area) ok(name + ': the area under the pointer is the data\'s ' + o.area + ' tiles or fewer at an edge (' + cov.length + ')', cov.length > 0 && cov.length <= o.area);
+    ok(name + ': on ' + pick + ', the area (' + cov.length + ' tiles) or the hover line ("' + line.slice(0, 60) + '")', cov.length > 0 || !!line);
+    if (o.area) ok(name + ': the area under the pointer is the data\'s ' + o.area + ' tiles (' + cov.length + ')', cov.length === o.area);
+    if (o.chip) ok(name + ': the hover line leads with ' + o.chip + ' ("' + line.slice(0, 70) + '")', o.chip.test(line));
     await snap(o.shot + '-2-hover');
   } else ok(name + ': a legal pick to hover', false);
   // a click on what it can't take: the refusal by the action box
@@ -110,23 +121,23 @@ ok('my turn', await toMe());
 ok('Hidden', (await act({ type: 'combat/hide', unitId: (await me()).id })) === null && !!(await me()).hidden);
 ok('walked to H11, beside the sandbags', await walkTo('7,10'));
 await act({ type: 'combat/end-turn', unitId: (await me()).id }); await toMe();
-await check('Vault', /^Vault/, { shot: 'vault', bad: async ({ choice }) => ['7,12', '5,10', '7,8'].find((k) => !choice.includes(ref(k))) });
-await check('Decoy', /^Decoy/, { shot: 'decoy', bad: '20,20' });
+await check('Vault', /^Vault/, { shot: 'vault', need: ['reach', 'choice'], subset: true, bad: async ({ choice }) => ['7,12', '5,10', '7,8'].find((k) => !choice.includes(ref(k))) });
+await check('Decoy', /^Decoy/, { shot: 'decoy', need: ['reach', 'choice'], bad: '20,20' });
 // a technique: a foe in sight; clicking yourself is refused in the engine's words
 await act({ type: 'sandbox/spawn', tier: 'soldier', weapon: 'combat_knife', at: ref('11,7'), name: 'Target' }); await settle(p, 400);
-await check('a technique (Shot)', /^Shot/, { shot: 'technique', hoverUnit: true, bad: async () => (await me()).pos });
-await check('a thrown stim', /^Throw a stim/, { shot: 'stim', hoverUnit: true });
+await check('a technique (Shot)', /^Shot/, { shot: 'technique', hoverUnit: true, need: ['reach', 'units'], bad: async () => (await me()).pos });
+await check('a thrown stim', /^Throw a stim/, { shot: 'stim', hoverUnit: true, need: ['reach', 'units'], chip: /no gain|→|stands again/, bad: emptyNear });
 // the FAITH tab: a Whisper, a Hymn with an area, the Miracle
-await check('a Whisper (Health)', /^Health/, { shot: 'whisper', hoverUnit: true });
-await check('a Hymn with an area (Thunderclap, radius 2)', /^Thunderclap/, { shot: 'hymn', area: 25, bad: async ({ reach, choice }) => { const out = await p.evaluate(() => [...document.querySelectorAll('button.phc-tok')].map((b) => b.getAttribute('aria-label') || '').filter((l) => l.includes('out of sight')).map((l) => l.split(' · ')[0])); return out[0] ? keyOf(out[0]) : null; } });
-await check('the Miracle (The Sky Answers, 5×5)', /The Sky Answers/, { shot: 'miracle', area: 25 });
+await check('a Whisper (Health)', /^Health/, { shot: 'whisper', hoverUnit: true, need: ['reach', 'units'], chip: /^[^·]*(no gain|→|stands again)/, bad: emptyNear });
+await check('a Hymn with an area (Thunderclap, radius 2)', /^Thunderclap/, { shot: 'hymn', area: 25, fit: 2, need: ['reach', 'choice'], bad: async ({ reach, choice }) => { const out = await p.evaluate(() => [...document.querySelectorAll('button.phc-tok')].map((b) => b.getAttribute('aria-label') || '').filter((l) => l.includes('out of sight')).map((l) => l.split(' · ')[0])); return out[0] ? keyOf(out[0]) : null; } });
+await check('the Miracle (The Sky Answers, 5×5)', /The Sky Answers/, { shot: 'miracle', area: 25, fit: 2, need: ['reach', 'choice'] });
 // Figments: Picture, then a Beast's Move
-await check('Picture', /^Picture/, { shot: 'picture', bad: '25,25' });
+await check('Picture', /^Picture/, { shot: 'picture', need: ['reach', 'choice'], bad: '25,25' });
 { const u = await me(), [x, y] = u.pos.split(',').map(Number); let made = null;
   const figs = async () => (await G()).combat.units.filter((v) => v.owned?.kind === 'figment' && !v.dead).length, n0 = await figs();
   for (const k of [x + ',' + (y + 1), (x - 1) + ',' + y, x + ',' + (y - 1), (x - 1) + ',' + (y + 1)]) { await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'beast', tile: k }); await settle(p, 300); if ((await figs()) > n0) { made = k; break; } }
   ok('a Beast pictured at ' + (made && ref(made)), !!made); await settle(p, 600); }
-await check('a Figment\'s Move', /Move/, { shot: 'figment-move', tab: 'figments', bad: '12,2' });
+await check('a Figment\'s Move', /Move/, { shot: 'figment-move', tab: 'figments', need: ['reach', 'choice'], bad: '12,2' });
 // Douse: to C2 (the lamp at M4 is 2 tiles off through the blockhouse wall)
 await act({ type: 'combat/end-turn', unitId: (await me()).id }); await toMe();
 // into the blockhouse (the lamp at M4 is seen from inside): to J5, open the door at K5, step in to L5
@@ -135,5 +146,5 @@ await act({ type: 'combat/end-turn', unitId: (await me()).id }); await toMe();
 { const e = await act({ type: 'combat/door', unitId: (await me()).id, tile: '10,4' }); await settle(p, 300); const dr = (await G()).combat.objects.find((o) => o.pos === '10,4'); ok('the blockhouse door opened (' + (e || (dr && dr.open ? 'open' : 'shut')) + ')', !!dr && !!dr.open); }
 ok('inside the blockhouse at L5, next to the lamp', await walkTo('11,4'));
 await act({ type: 'combat/end-turn', unitId: (await me()).id }); await toMe();
-await check('Douse', /^Douse/, { shot: 'douse', bad: '11,5' });
+await check('Douse', /^Douse/, { shot: 'douse', need: ['reach', 'choice'], subset: true, bad: '11,5' });
 await browser.close();

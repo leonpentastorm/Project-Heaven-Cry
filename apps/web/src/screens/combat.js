@@ -1936,7 +1936,7 @@ export class CombatLogic extends DCLogic {
     // The flow (game/actionFlow.ts): the click is the descriptor's next pick (a unit, a tile), if it is one of its choices.
     // A unit the open pick can't take is refused in the engine's words; the action stays picked (never an attack instead).
     // Rules 1.65: the refusal is a line by the action box (S.pickWhy, for this action), never a silent no-op.
-    if (this._flow && cur) { const patch = this._flow.click(u ? { id: u.id, side: u.side } : null, k); if (patch) return patch.refused ? this.setState({ pickWhy: { id: S.action, text: patch.refused } }) : this.setState({ ...patch, pickWhy: null }); }
+    if (this._flow && cur) { const patch = this._flow.click(u ? { id: u.id, side: u.side } : null, k); if (patch) { const { refused, ...rest } = patch; return refused ? this.setState({ ...rest, pickWhy: { id: S.action, text: refused } }) : this.setState({ ...rest, pickWhy: null }); } }
     // With a pad open, a foe clicked is the target the technique will take (the pad stays open).
     if (padOf(S.action) && u && u.side === 'foe') return this.setState({ target: u.id });
     if (u && u.side === 'foe') { const a = [...ATTACK_MODES, 'shove', 'analyze', 'skill', 'paired'].includes(S.action) ? S.action : plainAction(cur); this.setState({ target: u.id, readTile: null, action: a, ...this.tabFor(a) }); return; }

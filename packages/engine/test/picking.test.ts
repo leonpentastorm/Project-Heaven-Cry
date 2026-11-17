@@ -96,11 +96,109 @@ describe('rules 1.65: the picking contract', () => {
         if (any) bad.push(d.id + ': no choice marked, but ' + any + ' goes');
         continue;
       }
+      // the review's reach finding: an aim step with choices also sends where it reaches (shaded on select)
+      if (!m.reach.length) bad.push(d.id + ': choices but no reach');
       for (const k of m.choices) if (!goes(g, u.id, d, { ...p, [st.key]: k })) { bad.push(d.id + ': choice ' + k + ' is refused'); break; }
       const others = cands.filter((k) => !m.choices.includes(k)).sort((a, b) => dist(a, u.pos) - dist(b, u.pos)).slice(0, 3);
       for (const k of others) if (goes(g, u.id, d, { ...p, [st.key]: k })) { bad.push(d.id + ': ' + k + ' is not a choice, yet it goes'); break; }
     }
     expect(bad, name).toEqual([]);
     expect(tried, name + ': pick steps walked').toBeGreaterThan(0);
+  });
+});
+
+// Rules 1.65 item 5108.1 (the review's fog finding): a pick's choices are worked out on the side's view. A Hidden hostile
+// standing on a tile the side sees, inside a Figment's reach, makes no mark of any kind: no unit mark, no target or area
+// mark on its tile, and no gap in the choices (its tile reads as free, as it does for the unit's own Move; the reducer
+// refuses it on the click).
+describe('rules 1.65: the picking contract keeps the fog', () => {
+  it('a Hidden foe beside a Figment: no unit mark, no gap in its Move or Redraw choices', () => {
+    const f = fightWith([cls('trickster')], [{ at: '12,12' }], { level: 12 });
+    const me = f.unit(f.pc.id); me.pos = '5,5';
+    f.turn(me.id); f.act({ type: 'combat/perk', unitId: me.id, id: 'verb:picture', choice: 'beast', tile: '5,6' } as any);
+    const beast = f.cb.units.find((v: any) => v.owned?.kind === 'figment' && !v.dead)!;
+    expect(beast, 'a Beast pictured').toBeTruthy();
+    const foe = f.foe; foe.pos = '6,7'; foe.hidden = true;
+    const u = f.turn(me.id); u.ap = Math.max(u.ap, 6);
+    expect([...visibility(f.cb, 'pc').tiles], 'the foe\'s tile is in sight').toContain('6,7');
+    const ids = actionsFor(f.g, u.id, 'host').map((d) => d.id).filter((id) => id.startsWith('ow:' + beast.id + ':') && /:(move|figment_redraw)$/.test(id));
+    expect(ids.length, 'the Beast\'s Move or Redraw is offered').toBeGreaterThan(0);
+    for (const id of ids) {
+      const pv = previewDescriptor(f.g, u.id, id, {}, 'host')!;
+      const choice = pv.marks.tiles.filter((t) => t.kind === 'choice').map((t) => t.tile);
+      expect(pv.marks.units.map((m) => m.id), id + ': no mark on the hidden foe').not.toContain(foe.id);
+      expect(pv.marks.tiles.filter((t) => t.tile === '6,7' && (t.kind === 'area' || t.kind === 'target' as any)).length, id + ': no area on its tile').toBe(0);
+      // no gap: if the tiles round it are choices, so is its own
+      const round = ['5,7', '7,7', '6,8', '7,6'].filter((k) => choice.includes(k));
+      if (round.length >= 2) expect(choice, id + ': no hole on the hidden foe\'s tile').toContain('6,7');
+      // and the hover on it tells nothing of the foe
+      const hv = previewDescriptor(f.g, u.id, id, { tile: '6,7' }, 'host')!;
+      expect(hv.marks.units.map((m) => m.id), id + ': hovering its tile names no one').not.toContain(foe.id);
+      expect(JSON.stringify(hv.lines), id + ': no line names the foe').not.toContain(foe.name);
+    }
+  });
+});
+
+// Rules 1.65 items 5104, 5108.3 (E2, the review's finding): a heal's or a shield's net gain on whom it goes to, from the engine's own
+// run (the one mend's report), FIRST among the preview's notes (the hover line reads the first two), "no gain" with why.
+describe('rules 1.65: a mend says its net gain', () => {
+  const firstNote = (pv: any) => (pv.lines.find((l: any) => l.k === 'note' || l.k === 'odds') || {}).text || '';
+  const stage = (spec: CharSpec) => {
+    const f = fightWith([spec, { name: 'Ally', archetype: 'field_medic' }], [{ at: '12,12' }], { level: 12 });
+    const me = f.unit(f.pc.id), ally = f.pcs.find((u: any) => u.id !== me.id)!; me.pos = '5,5'; ally.pos = '4,5';
+    const u = f.turn(me.id); u.ap = 9; return { f, u, ally };
+  };
+  const FAITHFUL: CharSpec = { archetype: 'confessor', level: 12, attrs: { virtue: 10 }, skills: { faith: 10 } };
+  it('a Health Whisper: on a hurt ally the HP it brings, on a full one no gain, on a Downed one it stands again', () => {
+    const { f, u, ally } = stage(FAITHFUL);
+    ally.hp = ally.maxHp - 30;
+    let pv = previewDescriptor(f.g, u.id, 'pr:whisper:health', { targetId: ally.id }, 'host')!;
+    expect(pv.ok, pv.why || '').toBe(true);
+    expect(firstNote(pv).startsWith('Ally: ' + (ally.maxHp - 30) + ' → '), firstNote(pv)).toBe(true); expect(firstNote(pv)).toMatch(/^Ally: \d+ → \d+ \(\+\d+\)/);
+    expect(pv.marks.units.find((m) => m.id === ally.id)?.tag).toMatch(/→/);
+    ally.hp = ally.maxHp;
+    pv = previewDescriptor(f.g, u.id, 'pr:whisper:health', { targetId: ally.id }, 'host')!;
+    if (pv.ok) expect(firstNote(pv)).toBe('Ally: no gain: already at full HP'); else expect(pv.why).toBeTruthy();
+    ally.hp = 0; ally.downed = true;
+    pv = previewDescriptor(f.g, u.id, 'pr:whisper:health', { targetId: ally.id }, 'host')!;
+    if (pv.ok) expect(firstNote(pv)).toMatch(/^Ally: stands again at \d+ HP/); else expect(pv.why).toBeTruthy();
+  });
+  it('Protection twice: the second says your shield is already on them', () => {
+    const { f, u, ally } = stage(FAITHFUL);
+    let pv = previewDescriptor(f.g, u.id, 'pr:whisper:protection', { targetId: ally.id }, 'host')!;
+    expect(pv.ok, pv.why || '').toBe(true);
+    expect(firstNote(pv)).toMatch(/^Ally: shield 0 → \d+ \(\+\d+\)/);
+    // the first one on: what it said it gives stands on them, given by you (as grantShield leaves it)
+    const n = Number((firstNote(pv).match(/→ (\d+)/) || [])[1]); expect(n).toBeGreaterThan(0);
+    const a1: any = f.unit(ally.id); a1.shield = n; a1.shieldBy = u.id;
+    const u2 = u;
+    pv = previewDescriptor(f.g, u2.id, 'pr:whisper:protection', { targetId: ally.id }, 'host')!;
+    expect(pv.ok, pv.why || '').toBe(true);
+    expect(firstNote(pv)).toBe('Ally: no gain: your shield is already on them');
+    // someone else's shield as big: not "yours"
+    const a2: any = f.unit(ally.id); a2.shieldBy = 'someone-else'; a2.shield = 999;
+    pv = previewDescriptor(f.g, u2.id, 'pr:whisper:protection', { targetId: ally.id }, 'host')!;
+    expect(firstNote(pv)).toBe('Ally: no gain: a shield as big already stands (999)');
+  });
+  it('a stim on a hurt ally says what it heals, on a full one no gain (or the refusal)', () => {
+    const { f, u, ally } = stage({ archetype: 'field_medic' });
+    f.g.characters[f.pc.charId!].stims = 3;
+    ally.hp = ally.maxHp - 30;
+    let pv = previewDescriptor(f.g, u.id, 'stim', { targetId: ally.id }, 'host')!;
+    expect(pv.ok, pv.why || '').toBe(true);
+    expect(firstNote(pv)).toMatch(/^Ally: \d+ → \d+ \(\+\d+\)/);
+    ally.hp = ally.maxHp;
+    pv = previewDescriptor(f.g, u.id, 'stim', { targetId: ally.id }, 'host')!;
+    if (pv.ok) expect(firstNote(pv)).toBe('Ally: no gain: already at full HP'); else expect(pv.why).toBeTruthy();
+    pv = previewDescriptor(f.g, u.id, 'stim_throw', { targetId: ally.id }, 'host')!;
+    if (pv.ok) expect(firstNote(pv)).toBe('Ally: no gain: already at full HP'); else expect(pv.why).toBeTruthy();
+  });
+  it('Tending\'s Mend says what it heals first', () => {
+    const { f, u, ally } = stage(cls('bard'));
+    ally.hp = ally.maxHp - 30;
+    const id = actionsFor(f.g, u.id, 'host').find((d) => /tend_mend$/.test(d.id))!.id;
+    const pv = previewDescriptor(f.g, u.id, id, { targetId: ally.id }, 'host')!;
+    expect(pv.ok, pv.why || '').toBe(true);
+    expect(firstNote(pv)).toMatch(/^Ally: \d+ → \d+ \(\+\d+\)/);
   });
 });
