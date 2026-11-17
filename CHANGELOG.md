@@ -8,6 +8,32 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.6 — the outside reviewer's report (rules 1.66)
+
+An outside reviewer played live 0.31.5 for 90 minutes (a gunslinger and a Virtue Confessor who became a Chaplain,
+Survival to stop 10). Each lead reproduced through the real path, fixed at its cause (spec items 5200 to 5216).
+
+- **Can this enemy yield: one answer** (`yielding.ts canYield`, the list in `rules.json combat.yield`): surrender, Spare,
+  Clean Hands, the Mercy vow, Love Conquers and a Narrator's surrender all read it. A drone (a machine, a robot, a
+  turret, a boss, no_surrender) hit by a Spare blow is disabled, with no Clean Hands shield and no Mercy; the log and the
+  Spare toggle say so.
+- **Clean Hands** gives its shield at most twice a fight (`per_fight` 2, was once a turn); it is the base shield (the
+  larger stands). The reviewer's "+24 to 29 per spare" was Clean Hands itself (15% of max HP x Conscience's feed).
+- **The preview's AP is the price**, not the AP a trial run lost (a kill's AP back made "Shot · 0 AP").
+- **Mag Dump** spends the rounds of the rolls it makes: a target that falls to the first roll keeps 8 of 12 rounds in the
+  gun, and the Heat does not jump to the limit (golden costs-pad re-recorded on purpose: one line).
+- **Thrown items in the pack** (grenades, the flashbang, charges) are thrown from the Attack tab: one row each, a tile
+  pick with its reach, blast area and targets.
+- **The reward bar** opens the panel on the press, full width; the suite presses near both ends and checks every
+  reward card's corners.
+- **The GEAR tab's Stow** for the main hand, and "Stow the <weapon> first, then hold <item>" as one click under a
+  two-hander (the free Emanator can be held).
+- **Small fixes:** gear card numbers at one decimal; a reason said once; the run tally counts what armour, shields and
+  stims did; the summary marks the starting boon; the MP row names the MP focus in hand; who-rules-it marks only where
+  there is a Narrator ("Narrator's call"), unbuilt choices "Sealed: not yet issued."; "1 tile"; Esc closes the memory
+  dialog; "Saved games"; a Main menu button (⌂) beside Leave; the fight screen's split kept through a resize.
+- Not measured: a sparing Chaplain in the simulator (A3; no reference build holds Clean Hands at stage 1).
+
 ## 0.31.5 — the picking contract (rules 1.65)
 
 ### The art is in (0.31.5)

@@ -12207,3 +12207,8 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     it is now, always inside both zones' minimums (`clampWidth`), and the map zone keeps its cap that leaves the action
     zone its minimum; a resize redraws it. A split saved before (pixels only) keeps its pixels, clamped. No number
     changed.
+5216. **Not measured (A3).** A sparing Chaplain in the run simulator was not cheap: the reference Chaplain is built at
+    level 1 with no Conscience (Clean Hands needs Conscience 3), and stage 1 is played at levels 1 to 3, so a sparing
+    policy needs a new reference build that takes the perk, and a measure of 20 seeds before and after; left for the
+    lead. **Needs a new primitive: none** (no closed-list addition in rules 1.66; new exports are named in the hand-off).
+    Items 5200 to 5216 are rules 1.66's.
