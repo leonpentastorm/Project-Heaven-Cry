@@ -5,6 +5,7 @@ import { d20, type Unit } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 import { canYield } from '../src/yielding';
 import { togglesFor } from '../src/effects/actions';
+import { previewDescriptor } from '../src/descriptors';
 
 type F = ReturnType<typeof fightWith>;
 const open = (cb: any) => { cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] }; cb.objects = []; };
@@ -53,5 +54,16 @@ describe('A1: Clean Hands (item 5202)', () => {
       expect(f.unit(f.pc.id).shield).toBe(one); // the second does not add to the first
     }
     expect(f.cb.log.filter((l) => /keeps clean hands/.test(l)).length).toBe(2);
+  });
+});
+
+describe('D: the preview price (item 5203)', () => {
+  it('a Shot that would kill with Grim Reaper shows its price (2 AP), not the AP the trial run lost (0), and the reducer charges that price', () => {
+    const f = fight([{ weapon: 'service_pistol', perks: { grim_reaper: 'I' } }], [{}, {}]); sure(f.pc); f.unit(f.foe.id).hp = 1;
+    const none = previewDescriptor(f.g, f.pc.id, 'tq:main:shot', {})!; expect(none.ap).toBe(2); expect(none.cost).toBe('2 AP');
+    const pv = previewDescriptor(f.g, f.pc.id, 'tq:main:shot', { targetId: f.foe.id })!;
+    expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.cost).toBe('2 AP');
+    const before = f.unit(f.pc.id).ap; f.act({ unitId: f.pc.id, ...pv.action } as any);
+    expect(f.unit(f.foe.id).dead).toBe(true); expect(f.unit(f.pc.id).ap).toBe(before - 2 + 2); // charged 2, then the kill's +2
   });
 });

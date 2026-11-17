@@ -12121,3 +12121,8 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     5, Conscience 3, max HP 210: Clean Hands I 40, II 67, Saint's Shield 142 (Blessing power 1.24); level 7,
     Conscience 5, max HP 254: 57 / 94 / 217; level 9, Faith 7: 69 / 115 / 314. Saint's Shield and Conscience's feed
     are unchanged. PROVISIONAL.
+5203. **The preview shows the price (D).** Reproduced through `previewDescriptor`: a Shot at a 1-HP foe with Grim
+    Reaper showed "0 AP" (and "Shot · 0 AP" on the screen) and charged 2: the preview took the AP the trial run of the
+    action lost, and the kill's +2 AP back cancelled the price. The preview's AP is now the price function's: the row's
+    price (`priceOf`) before a target is picked, the system's own preview for the aimed action after; the trial run's
+    loss stands in only where no system priced the action and it is higher. No number changed.

@@ -1097,7 +1097,11 @@ export function previewDescriptor(g: GameState, unitId: string, id: string, pick
   if (picks.tile) out.marks.tiles.push({ tile: picks.tile, kind: 'pick' });
   if (action && out.ok) {
     const run = mendsIn(() => safe(() => previewAction(g, action, x.by), { ok: false, why: 'Not now.', ap: 0, g: null } as any)), vd = run.out;
-    out.ok = vd.ok; out.why = vd.ok ? null : vd.why; if (vd.ok) out.ap = vd.ap; out.action = vd.ok ? action : null;
+    out.ok = vd.ok; out.why = vd.ok ? null : vd.why; out.action = vd.ok ? action : null;
+    // rules 1.66 item 5203: the price is the price function's (the row's, or the system's preview for the aimed action),
+    // never the AP the trial run lost: a kill's AP back (Grim Reaper), a refund or a free follow-up made a Shot read
+    // "0 AP" and then charge 2 on confirm. The run's loss stands in only where no system priced it and it is higher.
+    if (vd.ok && !(extra && typeof extra.ap === 'number')) out.ap = Math.max(out.ap, vd.ap);
     // E2: a heal's or a shield's gain on the picked unit, from the reducer's own run on the copy (a prayer says its own,
     // from its answer: FAITH.preview)
     // (the mend's line first: the hover line reads the first notes)
