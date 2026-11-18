@@ -1,45 +1,77 @@
-# The 27 skill pages, read as a player (the lead, 18 Nov 2026): first two
+# The 27 skill pages, read as a player (the lead, 18 Nov 2026)
 
-Screenshots: `.check/capture/skills/NN-<id>.png` (run `KEEP_SHOTS=1 python tools/e2e.py capture-skills`).
-Read so far: Will Power (alpha) and Composure (beta), the pair Leon's Strain ruling is about. The other 25 are read
-at the start of the night run; add a row for each.
+Screenshots: `.check/capture/skills/NN-<id>.png` (`KEEP_SHOTS=1 python tools/e2e.py capture-skills`). Read: 19 of
+27, all nine alphas, six betas, four gammas. Not read (same template as their kind): Rumination, Improvisation,
+Camaraderie, Conscience (betas); Eloquence, Charisma, Insinuation, Authority (gammas).
 
-## What the pair shows
+Leon: "imagine how lost it is to put points into alphas and see 10000% mechanic while getting NOTHING from the
+betas and gammas." The pages prove it, with numbers.
 
-| Skill | Levels that give something felt | Busiest level | Things on the ladder in all |
-| --- | --- | --- | --- |
-| Will Power (alpha) | 9 of 10 (level 1 is a dash) | level 3: four things (a module slot, a free Pump a round, Overdraw, a perk) | about 24 |
-| Composure (beta) | 5 of 10 (1, 2, 4, 6, 8 are dashes) | level 5: two things | 6 |
+## 1. The count (levels 1 to 10 of each ladder as drawn)
 
-One attribute, the same price a point: the alpha hands out four times as much as its beta, and the beta is blank
-on half its levels. This is Leon's "10000% mechanic while getting NOTHING".
+"Felt" = the row shows something other than a dash. "Busiest" = the most separate things on one level.
 
-## Will Power: what to move (lead's proposal for lane 3)
+| Attribute | Alpha | Felt | Busiest | Beta | Felt | Gamma | Felt |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Endurance | Durability | 9 | L1: 5 things, L5: 4 | Pain Threshold | 5 | Senses | 5 |
+| Strength | Raw Power | 8 | L5: 2 | Guts | 5 | Intimidation | 5 |
+| Agility | Dexterity | 8 | L3: 4, L5: 3 | Athletics | 6 | Reaction Speed | 5 |
+| Perception | Ingenuity | 10 | L3: 8 (four new moves, Ghost Kill, Close Quarters, a perk), L5: 9, L7: 8 | Acuity | 5 | Vigilance | 5 |
+| Intelligence | Brain Power | 9 | L3: 3, L6: 3 | Rumination | not read | Eloquence | not read |
+| Expression | Visualization | 10 | L1: 6, L7: 4, L9: 3 | Improvisation | not read | Charisma | not read |
+| Insight | Empathy | 8 | L5: 2 | Camaraderie | not read | Insinuation | not read |
+| Determination | Will Power | 9 | L3: 4, L6: 4 | Composure | 5 | Lore Master | 5 |
+| Virtue | Faith | 7 | L5: 2 | Conscience | not read | Authority | not read |
 
-Today: +1 Strain limit and +1 tile reach and +1 design ready at 2, 4, 6, 8, 10; a module slot at 3, 6, 9; the free
-Pump and Overdraw at 3; Pure Heart at 5; "a held Outburst swells without Strain" at 7; forks at 4 and 6 (sealed);
-perks at 3, 5, 7, 9; Mastered at 10; and "every point": +10% Soul power, +10% mana syphoned, harder to save against.
+Every beta and gamma read has **exactly the same skeleton**: dashes at 1, 2, 4, 6, 8; a named passive plus a perk at
+3 and at 5; a perk at 7 and 9; Mastered at 10. Half the points a player puts in them show a dash. (They do give a
+per-point number, shown once in the EVERY POINT block above the ladder, where nobody connects it to the level.)
 
-- **Strain limit: off Will Power entirely** (Leon's ruling) and onto Composure's empty levels 1, 2, 4, 6, 8.
-- **Pure Heart** (once a fight, a Strain that would Mana Short is refused): a survival effect: to Composure 4.
-- **"A held Outburst swells without Strain"**: about holding steady: to Composure 6 or 8.
-- **Designs kept ready (+1 at 2, 4, 6, 8, 10)**: knowledge, not will: to Lore Master (the gamma: tones and designs).
-- **Outburst reach (+1 tile at 2, 4, 6, 8, 10)**: keep on Will Power, as its even levels' one thing.
-- **Module slots (3, 6, 9)**: keep on Will Power but not on a perk or fork level: move to 2 and 8 (two slots, not
-  three), or to Lore Master.
-- Will Power is then: 1 the door; 2 a module slot; 3 Overdraw and the free Pump as ONE named thing ("Overdraw") plus
-  the perk; 4 fork; 5 perk; 6 fork; 7 perk; 8 a module slot; 9 perk; 10 Mastered; reach on the even levels.
-- Composure is then: 1, 2 Strain limit; 3 perk (Poker Face moves to 2 per the spread ruling: then Strain at 1 only
-  and Poker Face at 2); 4 Pure Heart; 5 perk (Stand Still moves to 4 or 6); 6, 8 Strain limit and the swell; 10
-  Mastered. Every level felt.
+The alphas are the opposite and not alike: Ingenuity and Visualization dump six to nine things on single levels
+(Ingenuity's level 5 opens Still Breath, a bigger meter, Fade, Vault, Open Seam, Foul the Action, Pick, Douse and a
+perk); Faith and Empathy are thin for alphas (dashes at 1, 2, 8) because their real content lives in other files
+(prayers by Devotion, Tending by the Attuner) and the page does not show it.
 
-## Page faults on both (beyond the ladder)
+## 2. What that means for the ladder tables (lane 3)
 
-1. The page opens on a long quote and a paragraph of lore; the ladder is below the fold. Ladder first.
-2. YOUR DOOR is a six-line rules paragraph (Mana Short and Mana Shock explained inside a skill page). One line.
-3. "AT HIGH LEVELS", "GOOD FOR", "BAD FOR" are 2020 flavour: fold under "About this voice".
-4. The perk cards repeat tier I and tier II as two near-identical paragraphs: show tier I and "II: 4% becomes 12%".
-5. "PERKS · ONE STEP AT EACH MASTERY LEVEL" and "COMBO PERKS · EARNED, NOT CHOSEN" each carry an explainer sentence.
-6. Composure's box "Feeds Will Power / Needs Will Power and Composure" says nothing a new player can use.
-7. Composure's "BAD FOR" line uses a slur-like joke from the 2020 text: Leon to keep or cut.
-8. Combo perk "Twin Souls" and others say "the Narrator answers": hide Narrator-only combos in Survival.
+1. **Betas and gammas first.** Each needs three to five more felt levels. Sources, in order: its alpha's surplus;
+   the per-point gain shown on its level (Leon's ruling: every level lists it); the passives spread to 2 and 4.
+2. **Ingenuity and Visualization give things away in bulk.** Shadow's nineteen verbs arrive in three lumps (3, 5,
+   7). Spread them one or two a level across 2 to 9, and move the survival ones to Acuity (Still Breath, Close
+   Quarters) and the noticing ones to Vigilance (Read Intent). Visualization: one new shape a level instead of a
+   block at 1.
+3. **Durability's level 1 is a paragraph of five rules.** The door is one line; the shield rules belong on the
+   shield; Close Guard goes to Pain Threshold or level 2.
+4. **Faith's and Empathy's pages must show their real ladder**: the Whispers and Hymns a Faith level opens, the
+   Tending moves an Empathy level opens. Today a new player sees three dashes on the skill that defines the class.
+5. **The gamma's Call box is the best thing on any page** (a name, a cost, a six-row ladder). It is the model for
+   the whole page. But its steps 9 and 10 overlap (Leon), and "Checks and Asks: +1 each point" sits under it unnoticed.
+
+## 3. Page faults seen on all of them (for lane 1)
+
+1. A long quote and a lore paragraph come first; the ladder is below the fold on most pages. **Ladder first.**
+2. "YOUR DOOR" is three to six lines of rules on every alpha. One line.
+3. "EVERY POINT" is a separate block: per-point gains go on the levels.
+4. "AT 3 / 5 / 7 / 9 / 10" is a header that lists numbers the rows already show. Delete.
+5. "Feeds X / Needs X and Y" on every beta: says nothing. A chip with the number, or nothing at 0 points.
+6. Perk cards print tier I and tier II as two near-identical paragraphs. Show tier I, then only what II changes.
+7. Two explainer sentences ("At 3, 5, 7 and 9 points in..., take one step...", "5 points in every skill on the
+   card, then do the deed...") repeat on all 27 pages. Once, behind "?".
+8. Combo perks whose text says "the Narrator" (Twin Souls, Cold Read, Cultured, What Could Be, Bone Talk...) are
+   shown in Survival, where they cannot be earned. Hide them there.
+9. Dev text on a player page: Ingenuity level 9 reads "Parting Cut is listed here but not in the game yet."
+10. Units missing: "Enemies need 1 more to spot you while you sneak" (five times on Ingenuity), "sense ... 1 better".
+11. Header line "How you talk and notice: it rolls 1 better on checks" on every gamma: card style, "+1 on checks".
+12. "AT HIGH LEVELS / GOOD FOR / BAD FOR": 2020 flavour, some of it crude (Composure). Fold under "About this
+    voice", closed; Leon to keep or cut the crude lines.
+13. The ladder numbers its rows but nothing marks the level you own or the one you would buy next.
+
+## 4. Will Power and Composure (the pair of Leon's Strain ruling)
+
+Will Power today: +1 Strain limit, +1 tile reach and +1 design ready at 2, 4, 6, 8, 10; a module slot at 3, 6, 9;
+the free Pump and Overdraw at 3; Pure Heart at 5; "a held Outburst swells without Strain" at 7; forks at 4 and 6
+(sealed); perks at 3, 5, 7, 9; Mastered at 10. Composure: Poker Face at 3, Stand Still at 5, perks, Mastered.
+
+Proposal for lane 3: the Strain limit moves to Composure (1, 2, 4, 6, 8: Leon's ruling); Pure Heart to Composure 4;
+"swells without Strain" to Composure 6 or 8; designs kept ready to Lore Master; Will Power keeps the door, reach,
+two module slots (2 and 8), Overdraw with the free Pump as one named thing at 3, forks, perks, Mastered.
