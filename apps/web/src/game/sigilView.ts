@@ -426,7 +426,13 @@ function turretMarks(mark: (k: string, m: SgMark, note?: string) => void, cb: an
 }
 const nameOf = (cb: any, id: string) => cb.units.find((x: any) => x.id === id)?.name || 'them';
 /** What a click on a tile does while Evoking: the next choice, a new pattern, or a message for the player. */
-export function evokeClick(v: EvokeView | null, cb: any, u: any, k: string, choice: EvokeChoice): { pattern?: string; choice?: EvokeChoice; toast?: string } {
+/** A click the planner can't take (row 3 of the 0.31.10 playtest): the toast, and the aims picked so far dropped, so
+ * Confirm never stays lit on an earlier aim after a refused click. Your own tile says the engine's own refusal. */
+const refuse = (v: EvokeView, cb: any, u: any, k: string, choice: EvokeChoice, toast: string) => {
+  const why = u && k === u.pos ? (() => { try { return planEvoke(view(cb), u, v.tile, k).why || ''; } catch { return ''; } })() : '';
+  return { toast: why || toast, choice: { ...choice, aims: [], dest: null }, refused: true };
+};
+export function evokeClick(v: EvokeView | null, cb: any, u: any, k: string, choice: EvokeChoice): { pattern?: string; choice?: EvokeChoice; toast?: string; refused?: boolean } {
   const ownGlyph = (cb.glyphs || []).some((g: any) => g.pos === k && g.side === (u ? u.side : 'pc'));
   const inPattern = !!v && !!v.pattern && v.tiles[k]?.marks.some((m) => m.key === 'pat');
   if (!v || v.stage === 'none') return (cb.glyphs || []).some((g: any) => g.pos === k) ? { pattern: k, choice: {} } : { toast: 'Click a glyph of a Line.' };
@@ -443,7 +449,7 @@ export function evokeClick(v: EvokeView | null, cb: any, u: any, k: string, choi
     if (aims.length >= v.missilesNeeded) aims[aims.length - 1] = k; else aims.push(k);
     return { choice: { ...choice, aims, dest: null } };
   }
-  return { toast: 'Out of the area: pick a tinted tile, or yourself.' };
+  return refuse(v, cb, u, k, choice, 'Out of the area: pick a tinted tile, or yourself.');
 }
 
 // ---------- 9. placed magic ----------

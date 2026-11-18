@@ -635,7 +635,10 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   const emptyOk = !!(sp.spread || sp.push || sp.workings.length || sp.stay || sp.wait || sp.watch);
   // KIN (spec: Filter): you and your allies can't be picked; your own tile is the one exception (the self-target rule).
   const kinBars = (k: string) => sp.kin && k !== u.pos && cb.units.some((x) => x.pos === k && !x.dead && x.side === u.side);
-  const pickable = [u.pos, ...area.filter((k) => emptyOk || cb.units.some((x) => x.pos === k && !x.dead))].filter((k, i, s) => s.indexOf(k) === i && !(sp.push && k === u.pos) && !kinBars(k));
+  // item 5501 (0.31.12): the self-target rule heals, shields, blinks, hides or centres a Burst; a Line that would only
+  // harm you (a harmful Subject, no Boon, Working, Burst, KIN or placement) is no aim on your own tile
+  const harmsOnlyYou = sp.harmful && !sp.subjects.some(isBoonWord) && !sp.workings.length && !sp.spread && !sp.kin && !sp.stay && !sp.wait && !sp.watch;
+  const pickable = [u.pos, ...area.filter((k) => emptyOk || cb.units.some((x) => x.pos === k && !x.dead))].filter((k, i, s) => s.indexOf(k) === i && !((sp.push || harmsOnlyYou) && k === u.pos) && !kinBars(k));
   const aims = [aim, ...(opts.aims || []).slice(aim && opts.aims?.[0] === aim ? 1 : 0)].filter(Boolean) as string[];
   const needsAim = true;
   if (!aims.length) return { ...base, ok: false, why: 'Pick a target in the area (or yourself).', targets: [], needsAim, area, pickable, missiles: [], affected: [], fizzle: false };
@@ -646,6 +649,7 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   for (let i = 0; i < Math.min(nMiss, aims.length); i++) {
     const a = aims[i], self = a === u.pos;
     if (self && sp.push) return { ...base, ok: false, why: 'PUSH is refused on your own tile: a cone needs a way to face.', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
+    if (self && harmsOnlyYou) return { ...base, ok: false, why: 'Not on yourself: it would only hit you.', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
     if (!self && kinBars(a)) return { ...base, ok: false, why: 'KIN: you and your allies can\'t be picked (only your own tile).', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
     if (!self && !laneOf[a]) return { ...base, ok: false, why: 'Out of the area: pick a tinted tile' + (sp.reach ? '' : ' (Touch reaches 1 tile)') + ', or yourself.', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
     if (!self && !emptyOk && !cb.units.some((x) => x.pos === a && !x.dead)) return { ...base, ok: false, why: 'Pick a creature: only a Working, SPREAD or PUSH may land on empty ground.', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };

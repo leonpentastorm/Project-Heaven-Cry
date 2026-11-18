@@ -187,7 +187,7 @@ const SIGIL: Case[] = [
 ];
 const firstWord = (u: any, what: 'subject' | 'other'): string => { const ws: string[] = u.mg?.words || []; const subj = ws.find((w) => A.SIGIL_WORD?.[w]?.group === 'subject' || ['fire', 'frost', 'spark', 'force', 'mend', 'ward'].includes(w)) || ws[0]; return what === 'subject' ? subj : ws.find((w) => w !== subj && !(['fire', 'frost', 'spark', 'force', 'mend', 'ward', 'stone', 'venom'].includes(w))) || ws.find((w) => w !== subj) || subj; };
 function spell(g: any, u: any) {
-  pcs(g)[1].pos = '1,9';
+  pcs(g)[1].pos = '1,9'; foes(g)[1].pos = '1,6'; // item 5501: a foe in the Line's reach (your own tile is no aim for a harm-only Line)
   W(g, () => { const a = u.ap; u.ap = 99; u.pos = '2,6'; A.drawGlyph(g.combat, g.rng, u, firstWord(u, 'subject')); u.pos = '3,6'; A.drawGlyph(g.combat, g.rng, u, firstWord(u, 'other')); u.ap = a; });
   u.ap = 9;
 }

@@ -43,3 +43,31 @@ describe('row 2: perk steps and a fork open at the start are a level-up due', ()
     expect(v.levelUp).toBe(true);
   });
 });
+
+import { previewEvoke } from '../src';
+describe('row 3: Evoke never arms yourself with a Line that would only hit you', () => {
+  /** A Sigil caster on the end glyph of a SPARK · SEEK Line, a foe standing on the Line's far side. */
+  const line = (words: string[]) => {
+    const f = fightWith([{ archetype: 'sigilist', kit: 'sigil' }], [{}]);
+    f.cb.map = { ...f.cb.map, cover: [], full: [], solid: [] } as any; f.cb.objects = [];
+    f.pc.pos = '2,5'; f.foe.pos = '6,5'; f.foe.hp = f.foe.maxHp = 5000;
+    const u = f.turn(f.pc); u.ap = 9; const m = u.mg!; m.evoker = true; m.words = [...new Set([...words, 'spark', 'seek'])]; m.charge = 60; m.glyphAp = 1; m.maxWords = 4; m.flux = 0;
+    words.forEach((w, i) => { f.pc.pos = (3 - i) + ',5'; f.act({ type: 'combat/draw', unitId: f.pc.id, word: w, tile: (3 - i) + ',5' }); });
+    return f;
+  };
+  it('SPARK · SEEK aimed at your own tile is refused before anything is spent, and your tile is not a pick', () => {
+    const f = line(['spark', 'seek']), u = f.unit(f.pc.id), hp0 = u.hp;
+    const pv = withGame(f.g, () => previewEvoke(f.cb, u, u.pos, u.pos));
+    expect(pv.ok).toBe(false); expect(pv.pickable).not.toContain(u.pos);
+    expect(() => f.act({ type: 'combat/evoke', unitId: u.id, tile: u.pos, aim: u.pos } as any)).toThrow();
+    expect(f.unit(u.id).hp).toBe(hp0);
+    // the foe on the Line is still the pick
+    expect(withGame(f.g, () => previewEvoke(f.cb, u, u.pos, '6,5')).ok).toBe(true);
+  });
+  it('the self-target rule stands where it says so: a Boon, and a Burst centred on you', () => {
+    const f = line(['mend', 'condense']), u = f.unit(f.pc.id);
+    expect(withGame(f.g, () => previewEvoke(f.cb, u, u.pos, u.pos)).ok).toBe(true);
+    const g = line(['spark', 'spread']), v = g.unit(g.pc.id);
+    expect(withGame(g.g, () => previewEvoke(g.cb, v, v.pos, v.pos)).pickable).toContain(v.pos);
+  });
+});

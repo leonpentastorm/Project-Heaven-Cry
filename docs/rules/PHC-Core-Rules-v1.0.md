@@ -1689,7 +1689,7 @@ Every word answers one question:
 - **Across the Line:** you stand next to the glyphs **from the side** (not beyond either end). The area runs **straight across**, away from you, covering **the whole Line**: row 1 is the Line moved one step away from you, row 2 two steps, and so on, as deep as the range. The step is the perpendicular for a horizontal or vertical Line; for a diagonal Line it is the step north, south, east or west that leads away from you (the north or south one when both do), so the band has no gaps.
 - **The area is as wide as the whole Line** (Leon: even lengths included) and **as deep as the range**: the Reach word's range (+ the range bonus), or **1 tile for Touch**. Example: a Line on N15–Q15, standing on Q14: with SEEK, pick any target in N16–Q23; with no Reach word (Touch), only in N16–Q16.
 - **When you finish a Line you stand on the last glyph you drew**, an end, so the spell runs along the Line past the first glyph: **back the way you came**. To fire across it, or the other way, step off first. The preview draws the direction before you Evoke (Leon).
-- **You can always target yourself** (your own tile), whatever the Reach, even though your tile is never in the area: to heal, shield, blink or hide yourself, or to centre a burst on yourself. This is Touch's one exception (Leon: no RETURN word). A Burst centred on you covers you too: add KIN to keep yourself and your allies out of it (and QUICKEN always skips you). PUSH is refused on your own tile.
+- **You can always target yourself** (your own tile), whatever the Reach, even though your tile is never in the area: to heal, shield, blink or hide yourself, or to centre a burst on yourself. This is Touch's one exception (Leon: no RETURN word). A Burst centred on you covers you too: add KIN to keep yourself and your allies out of it (and QUICKEN always skips you). PUSH is refused on your own tile. *(0.31.12, item 5501: a Line that would only harm you is refused on your own tile.)*
 - **Picking the target.** Inside the area you pick a creature (or yourself); a Working, SPREAD or PUSH may pick an empty tile. A SEEK bolt leaves from the Line (from the far-end glyph when the area runs along it, from the glyph in the target's lane when it runs across) and stops at the first creature or full cover on its way: that is where it hits or bursts. The area only limits where you aim; a Burst may reach past it.
 - **On a Stack** (only with the two-glyph hook): the area is all around **you** (centred on where you stand, not on the Stack), out to the range, in sight (item 489).
 
@@ -12256,3 +12256,15 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     items, weapons, conditions, survival, actions and pressure; designer fields (note, source, rules, about, `*_note`,
     `*_about`), the `pending` and `retired` lists and shelved rows are exempt. Slide's text no longer repeats its AP and
     its once-a-turn: the row and its chips say them.
+
+### 0.31.12, the outside playtest's blockers (19 Nov 2026)
+
+Rows 1 to 8 of `docs/design/proposals/2026-11-18-outside-playtest/TRIAGE.md`. The item numbers start at 5501 so they
+do not meet a parallel lane's; the lead renumbers at the merge if needed.
+
+5501. **Your own tile is no aim for a Line that would only harm you** (row 3: a click on your own end glyph armed a
+    SPARK · SEEK at yourself, 64 damage). The self-target rule (Sigil magic, "You can always target yourself") is for
+    healing, shielding, blinking or hiding yourself and for centring a Burst on yourself. A Line whose Subjects harm
+    (an Element or an Affliction) with no Boon, no Working, no Burst (SPREAD), no KIN and nothing placed (STAY, WAIT,
+    WATCH) is refused on your own tile before anything is spent, and your tile is not offered as a pick. `sigil.ts
+    planEvoke`. Proof: `test/playtest-1118.test.ts` (the reducer's `combat/evoke`).

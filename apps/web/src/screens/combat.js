@@ -1992,7 +1992,7 @@ export class CombatLogic extends DCLogic {
     if (S.action === 'evoke') {
       const r = evokeClick(m.evTile ? m.evV || null : null, cb, cur, k, S.evc || {});
       if (r.pattern !== undefined) return (m.seenGlyph && m.seenGlyph(r.pattern)) ? this.setState({ glyphTile: r.pattern, evc: {}, sgToast: '' }) : undefined; // only a glyph you can see picks a pattern
-      if (r.choice) return this.setState({ evc: r.choice, sgToast: '' });
+      if (r.choice) return this.setState({ evc: r.choice, sgToast: r.refused ? r.toast || '' : '' }); // a refused click drops the aims (Confirm goes dark) and says why
       return this.setState({ sgToast: r.toast || '' });
     }
     if (S.action === 'outburst') return this.setState({ aim: k, obMode: 'snap' }); // a tile click means a snap at it
