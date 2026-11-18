@@ -123,3 +123,17 @@ that file's rows 1 to 16 FIRST** (self stim in a fight, unclaimed perk steps and
 self-hit, Second Wind missing, Parry without Durability, wrong prices and previews, Figment credit and log, and the
 rest), each reproduced before it is fixed, then the owed fixes. Lane 3 takes its balance notes (Rolling Start, the
 Beast, solo sustain). Lane 1 takes its text rows.
+
+## Added 18 Nov (Leon): the approach gets its own banner and the roam's music (lane 2)
+
+The approach before contact exists since 0.31.2 (rules 1.64: free movement until a foe sees you). Leon: "add a
+phase when you enter the combat node but have not found any enemy yet, with its own popup banner too, the first one
+every fight if the enemy do not see you at all, and make the songs the same as roam mode."
+- When a fight opens in the approach, the FIRST big banner is the approach's own (lead's word: "APPROACH", sub-line
+  "Unseen · moving is free"; words in `rules.json combat.cards`, PROVISIONAL), same component and hold as the others.
+  BATTLE START then shows at contact, as today. A fight that opens with the foes already seeing the squad shows
+  BATTLE START only.
+- Music: the approach plays the same calm track as FREE ROAM (one data field for "quiet phases"); the fight song
+  starts at contact with BATTLE START; after VICTORY the calm track returns for FREE ROAM.
+- The turn strip says the phase in one word while it lasts ("APPROACH" in place of "YOUR TURN" is NOT wanted: keep
+  YOUR TURN; the sub-line reads "Approach · unseen").
