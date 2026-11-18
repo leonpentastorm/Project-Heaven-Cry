@@ -82,3 +82,12 @@ Shadow's dark maps, Stalk and Silent; prayer and Figment effects; the vow pop-up
 Live version; per lane: shipped / on a wip branch / not started, with the reason; every call made for Leon (each
 reversible, one line); measures (clears, ceilings) before and after; what nobody has seen on screen; usage spent if
 known; the next three things.
+
+## Added 18 Nov: read the 27 skill pages as a player (before lanes 1 and 3)
+
+`.check/capture/skills/` holds one screenshot per skill's "?" page with the ladder open. Leon: "look at them and
+from a POV of a player imagine how lost it is to put points into alphas and see 10000% mechanic while getting
+NOTHING from the betas and gammas sometimes." The lead reads all 27 first and writes, per skill, two numbers into
+lane 3's file: how many of its ten levels give something a player can feel, and how many things its busiest level
+gives. Targets for lane 3's tables: no skill under 8 felt levels of 10; no level with more than two things; an
+attribute's three skills within 2 felt levels of each other. The alpha's surplus goes to its beta and gamma.
