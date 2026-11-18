@@ -38,6 +38,8 @@ proposals below are built and listed in the morning report so Leon can reverse t
    it and nothing renders it). Each way one line.
 5. Iron Heart as Leon ruled: once a fight, on reaching Mana Shock, relieve 2 Strain. Approved primitive: an event at
    the Mana Shock entry (`magic.ts` near 997) that a data row can listen to.
+5b. Rebuild the skill "?" page, the level-up screen and creation's Skills step to
+   `docs/design/handoffs/2026-11-18-skill-screens-redesign.md` (a ladder table, spend-first level-up, one-line rows).
 6. Then the lead reads the changed screens and the screens "still not read" in pass 2, fixes words directly, deploys.
 
 ## Lane 2, "A": owed fixes (0.31.12) — opus builder
