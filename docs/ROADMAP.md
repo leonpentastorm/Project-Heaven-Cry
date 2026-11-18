@@ -1,5 +1,28 @@
 # Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept current)
 
+> **18 Nov 2026 (newest): 0.31.10 IS LIVE.** Everything decided on 16 to 18 Nov, with the scouting documents, is in
+> `docs/design/handoffs/SESSION-TODO-2026-11-16.md` (read its sections Q to V first). The order Leon agreed:
+>
+> 1. **The whole-game wording pass** (to-do section U): a cheap agent screenshots every screen
+>    (`docs/design/handoffs/2026-11-18-screen-capture-plan.md`), the lead rewrites the words by CLAUDE.md "Say the core,
+>    once, and stop". With it: Iron Heart as ruled, the ladder layout, the 27 skills' rows in card style.
+> 2. **0.32 "class UI and effects"**, first the tables for Leon's edits (ladders with unlocks spread to the empty
+>    levels, the alphas' surplus moved into beta and gamma, the nine classes audited against their ladders, the 18
+>    shelved forks; `docs/design/proposals/2026-11-18-scout-attribute-tables.md`), the Strain ruling (Composure only,
+>    base 3), the Damage ways; then prayer effects, Figment effects, Shadow (dark maps, Douse, Prone, detect ranges,
+>    Stalk, Silent), the alarm, the calm track, the vow pop-up, the level-up banner, sounds
+>    (`docs/design/handoffs/2026-11-18-scout-owed-fixes.md`).
+> 3. **Items 2.0** (ask Leon before starting; `docs/design/proposals/2026-11-18-scout-items-2.0.md`): A (0.33) the
+>    system on today's art: one item card, families / forms / grades, the Forge reforge, Dexterity techniques on
+>    Pressure, hybrids, Heavy, armour readable; B (0.34) the content as art lands: family tables for melee, guns,
+>    shields, armour, modifiers, uniques, dead items given uses; C (0.35) Weapon Arts.
+> 4. **After:** the Faith artifact and chapel; advanced classes as attribute pairs with three-tier weapons; Roguelike
+>    and Campaign modes; the canvas at 1.0.
+>
+> Live history since 0.29.0: 0.30.0 (shields, the follow strike, forks, beta feeds), 0.31.0 (the field as turns,
+> banners, Dexterity melee, cover, the fight panel), 0.31.1 to 0.31.10 (victory panel, reward panel, the approach,
+> the picking contract, all art in, an outside reviewer's fixes, the wording rules). What follows below is older.
+
 > **0.29.0 "Balance 2.0" is live (16 Nov 2026; rules 1.56).** **Next:** merge and ship together the fight-tab settings (`origin/wip/lane-0.29-tabs`), a shield in either hand (`origin/wip/lane-shield-either-hand`) and the follow-strike design (`origin/wip/design-follow-strike`, a draft); Leon's rulings, the known faults, the consolidation pass and the number-fitting pass are listed in `docs/design/handoffs/START-HERE.md`. Balance 2.0 (Leon, 14 Nov 2026): every weapon measured against the plain rifle, outliers refitted, and the open class lines; see `docs/design/handoffs/SURVIVAL-PICKUP.md`.
 
 This is a list of leads, not a spec. Each item says where its design lives. Before building anything, read
