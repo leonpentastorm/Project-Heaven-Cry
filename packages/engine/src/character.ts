@@ -12,6 +12,7 @@ import techniquesJ from '../../../data/techniques.json';
 import figmentsJ from '../../../data/figments.json';
 const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
+import { allPendingDoorPicks } from './doorpicks';
 import { statOf, levelFactor, scaleOf, profileOf, pairOf } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 import { feedOf, showFeedNumber } from './effects/feed';
@@ -1335,9 +1336,10 @@ export const stepsEarned = (p: number) => [3, 5, 7, 9].filter((t) => p >= t).len
 export function stepsTaken(c: Character, skill: string) {
   return c.perks.filter((x) => PERK[x.id]?.tier === 'acquired' && PERK[x.id].skills.includes(skill)).reduce((n, x) => n + (x.tier === 'II' ? 2 : 1), 0);
 }
-/** Something waits on the level-up screen: points to spend, a class to earn (level 3), a perk step to take. */
+/** Something waits on the level-up screen: points to spend, a class to earn (level 3), a perk step to take, a fork to
+ * pick (rules 1.60; outside playtest 0.31.10 row 2: a fork open at creation went unasked). */
 export const levelUpDue = (c: Character | null | undefined): boolean =>
-  !!c && (c.unspent.skill + c.unspent.attr + c.unspent.core > 0 || (c.level >= 3 && !c.classId) || pendingPerkSteps(c).length > 0);
+  !!c && (c.unspent.skill + c.unspent.attr + c.unspent.core > 0 || (c.level >= 3 && !c.classId) || pendingPerkSteps(c).length > 0 || allPendingDoorPicks(c).length > 0);
 /** Skills with a perk step waiting, and the choices for each (a new Tier I, or an upgrade of a held Tier I). */
 export function pendingPerkSteps(c: Character) {
   const out: { skill: string; choices: { id: string; tier: 'I' | 'II' }[]; /** Steps owed in this skill (2+ after a jump). */ free: number }[] = [];

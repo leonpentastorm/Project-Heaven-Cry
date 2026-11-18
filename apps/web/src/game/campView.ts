@@ -61,6 +61,20 @@ export function campConfirm(v: LoadoutViewV, next = false): { open: ('weapon' | 
     go: (next ? 'Go on without ' : 'Start without ') + (open.length > 1 ? 'them' : 'it') };
 }
 
+/** Outside playtest 0.31.10 row 2: Start the run (Ready) with a level-up due (the engine's levelUpDue: points, a perk
+ * step, a fork) asks first; the safe answer (Escape and the backdrop included) opens Level up. Null: nothing to ask. */
+export function campLevelUpAsk(v: LoadoutViewV | null): { title: string; text: string; back: string; go: string } | null {
+  if (!v || v.ready || !v.levelUp) return null;
+  return { title: 'Level up first?', text: 'Perks or points are waiting.', back: 'Open Level up', go: 'Start without' };
+}
+let waivedLevel = '';
+/** Ask about a level-up due, then run `then` (the free-pick guard and Ready); `open` opens Level up. Asked once for the
+ * same character and seed. */
+export function levelUpGuard(v: LoadoutViewV | null, then: () => void, open: () => void): void {
+  const q = campLevelUpAsk(v), key = v ? v.me.id + ':' + v.seed : '';
+  if (!q || waivedLevel === key) { then(); return; }
+  void askConfirm({ title: q.title, body: q.text, confirm: q.go, cancel: q.back, danger: true }).then((go) => { if (go) { waivedLevel = key; then(); } else open(); });
+}
 /** Ask before moving on (the camp's header Next, the right panel's Ready) when a free pick is still open, in the house
  * dialog (dialog.tsx askConfirm; the safe answer, Escape and the backdrop included, is Go back and pick, which runs
  * `back`); `then` runs at once when nothing is open, or once the player goes on without. Once passed for the same open
