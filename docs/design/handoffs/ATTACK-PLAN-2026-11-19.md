@@ -115,3 +115,11 @@ So lane 3 designs the WHOLE system, per attribute, as one coherent sheet, and la
 6. The "Good for / Bad for" lines themselves come off the page face (they are design intent, and the page shows
    whether the skill delivers); the crude ones are not shown.
 Nothing of Items 2.0 or Weapon Arts starts before this is live.
+
+## Added 18 Nov: the outside playtest of 0.31.10 changes lane 2's order
+
+`docs/design/proposals/2026-11-18-outside-playtest/TRIAGE.md` (the reviewer's nine files beside it). **Lane 2 does
+that file's rows 1 to 16 FIRST** (self stim in a fight, unclaimed perk steps and fork at the start, the Evoke
+self-hit, Second Wind missing, Parry without Durability, wrong prices and previews, Figment credit and log, and the
+rest), each reproduced before it is fixed, then the owed fixes. Lane 3 takes its balance notes (Rolling Start, the
+Beast, solo sustain). Lane 1 takes its text rows.
