@@ -227,7 +227,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     }
     const rAp = reloadApOf(u, c, w, g), type = ammoName(u ? u.ammoType : c?.loadedType);
     const low = now > 0 && now < cap && now <= Math.max(1, Math.ceil(cap * 0.25));
-    const row: ResRow = { key: 'ammo', label: 'Ammo', value: now + ' / ' + cap + ' loaded' + (spareTxt ? ' · ' + spareTxt : ''), now, max: cap, kind: cap <= 12 ? 'pips' : 'bar', colour: RES_INK.body,
+    const row: ResRow = { key: 'ammo', label: 'Ammo', value: now + ' / ' + cap + (spareTxt ? ' · ' + (spareTxt.startsWith('spares:') ? 'plenty' : spare + (loose ? ' loose' : ' spare')) : ''), now, max: cap, kind: cap <= 12 ? 'pips' : 'bar', colour: RES_INK.body,
       sub: (w.name || wid) + (type ? ' · ' + type + ' rounds' : ''),
       hint: 'Rounds in the ' + (w.name || 'gun').toLowerCase() + '. ' + (spare > 0 ? 'Reload: ' + rAp + ' AP' + (loose ? ' (round by round from loose rounds).' : ' (a fresh ' + (w.reload_unit || 'magazine') + ').') : 'No spares left: pick some up, or switch weapons.') };
     // each gun's jam on its own ammo row (Hands 5d: the guns jam apart); Heat, which they pool, has its own row

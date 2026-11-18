@@ -316,7 +316,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   };
   const showRound = (round: number, mineToo: boolean) => {
     if (document.hidden) return;
-    const b: Banner = { id: 'r' + round + ':' + Date.now(), kind: 'round', kicker: 'AREA MAP', kickerColor: '#A3AEC2', name: 'ROUND ' + round + (mineToo ? ' · YOUR MOVE' : ' · THE SQUAD MOVES'), sub: 'Say one thing · spend your AP · end your turn',
+    const b: Banner = { id: 'r' + round + ':' + Date.now(), kind: 'round', kicker: 'AREA MAP', kickerColor: '#A3AEC2', name: 'ROUND ' + round + (mineToo ? ' · YOUR MOVE' : ' · THE SQUAD MOVES'), sub: '',
       stripe: '#FFFFFF', img: IMG['emblem-ahoc-seal'] || '', mine: mineToo, foe: false, hold: ROUND_HOLD };
     setBanner(b); cue('round');
     later(() => setBanner((x) => (x && x.id === b.id ? null : x)), (reducedMotion() ? 300 : 520) + b.hold);

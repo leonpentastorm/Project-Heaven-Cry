@@ -56,9 +56,9 @@ const head = (k: PerkCard) => ({ key: k.key, itemId: k.itemId, kind: k.kind, tie
 function ridesRow(k: PerkCard): ShelfRow {
   // The switches by name and where they are (the engine lists only the ones the tier held has).
   const where = [...new Set(k.switches.flatMap((t) => t.on.map((o) => RIDES_ON[o] || 'on another action')))].join(' and ');
-  const names = [...new Set(k.switches.map((t) => '“' + t.label + '”'))], count = k.uses ? k.uses.label : '';
-  return { ...head(k), shelf: 'rides', line: where + (count ? ' · ' + count : ''),
-    detail: 'No button here. Its ' + (names.length > 1 ? 'switches ' + names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] + ' are ' : 'switch ' + names[0] + ' is ') + where + ': pick that action and ' + (names.length > 1 ? 'they show' : 'the switch shows') + ' under it. ' + k.text };
+  const count = k.uses ? ONCE[k.uses.per] || k.uses.label : '';
+  return { ...head(k), shelf: 'rides', line: count || where,
+    detail: k.text };
 }
 /** An ALWAYS ON row from the engine's state: used, what it last did, its limit, ready, waiting for its trigger, or on. */
 function alwaysRow(k: PerkCard): ShelfRow {

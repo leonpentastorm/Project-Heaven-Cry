@@ -298,7 +298,7 @@
 <sc-for list="{{mg.sig.stats}}" as="r"><div style="display: flex; justify-content: space-between; gap: 6px; font-size: 13px; border-bottom: 1px solid #1C2536; padding: 4px 0"><span style="color: #A3AEC2">{{r.k}}</span><span style="text-align: right">{{r.v}}</span></div></sc-for>
 </div>
 <div aria-label="Study" data-study="1" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F">
-<div style="display: flex; align-items: baseline; gap: 8px"><span style="font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: #8BDEEE">{{mg.st.text}}</span><span style="margin-left: auto; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: #A3AEC2">{{mg.st.next}}</span></div>
+<div style="display: flex; align-items: baseline; gap: 8px"><span style="font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: #8BDEEE" tip="{{mg.st.tip}}">{{mg.st.text}} ?</span><span style="margin-left: auto; font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: #A3AEC2">{{mg.st.next}}</span></div>
 <div role="meter" aria-label="Study toward the next word" aria-valuemin="0" aria-valuemax="{{mg.st.meterMax}}" aria-valuenow="{{mg.st.meterNow}}" style="height: 8px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{mg.st.fill}}"></div></div>
 <span style="font-size: 13px; line-height: 1.4; color: #A3AEC2">{{mg.st.line}}</span>
 <div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-if value="{{mg.st.canLearn}}"><button type="button" data-learn-open="pick" onClick="{{mg.st.openPick}}" style="min-height: 32px; padding: 0 12px; border-radius: 8px; border: 0; background: #8BDEEE; color: #0A0D13; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">{{mg.st.learnLabel}}</button></sc-if><sc-if value="{{mg.st.canFree}}"><button type="button" data-learn-open="free" onClick="{{mg.st.openFree}}" style="min-height: 32px; padding: 0 12px; border-radius: 8px; border: 1px solid #8BDEEE; background: transparent; color: #8BDEEE; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer">{{mg.st.freeLabel}}</button></sc-if></div>
@@ -615,7 +615,7 @@
 </div>
 <label style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #C9D3E3; cursor: pointer">
 <input type="checkbox" checked="{{pickRoll}}" onChange="{{togglePick}}" style="width: 20px; height: 20px; accent-color: #E7EBF3">
-Let the Narrator pick a roll for whatever I send <span style="color: #A3AEC2">(it chooses the skills; the engine rolls)</span>
+Narrator picks the roll
 </label></sc-if>
 </div>
 </main>

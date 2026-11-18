@@ -1325,7 +1325,8 @@ export class CombatLogic extends DCLogic {
     // The strip turns over: the acting unit first, then who comes next (each slides to its new place).
     // An unseen hostile's place in the order is an opaque mark (the engine's fog): a card with nothing on it.
     const ordU = cb.order.map((id) => cb.units.find((u) => u.id === id) || (isUnseenId(id) ? { id, side: 'foe', unseen: true, hp: 1, maxHp: 1 } : null)).filter((u) => u && !u.dead), actId = cur ? cur.id : cb.window?.queue[0]?.unitId ?? cb.order[cb.turn], ci = Math.max(0, ordU.findIndex((u) => u.id === actId));
-    const rotU = [...ordU.slice(ci), ...ordU.slice(0, ci)];
+    const rotAll = [...ordU.slice(ci), ...ordU.slice(0, ci)], nUnseen = rotAll.filter((u) => u.unseen).length, firstUn = rotAll.findIndex((u) => u.unseen);
+    const rotU = nUnseen > 1 ? rotAll.filter((u, i) => !u.unseen || i === firstUn).map((u) => (u.unseen ? { ...u, count: nUnseen } : u)) : rotAll; // the unseen are one chip: "3 unseen"
     this.flipInit(rotU.map((u) => u.id).join(','));
     const sn = (u) => !u.unseen;
     const initiative = rotU.map((u, idx) => ({ tag: cb.over ? '' : idx === 0 ? 'NOW' : idx === 1 ? 'NEXT' : '', hasTag: !cb.over && idx < 2, // rules 1.62 item 4906: the field has turns too
@@ -1338,7 +1339,7 @@ export class CombatLogic extends DCLogic {
           hpChip: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + w + '%; background: #FFFFFF', hpFill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + w + '%; background: #F65157' + (kn ? '' : '; opacity: 0.6') }; })(),
       // an unseen hostile keeps its face and its initials to itself (the turn card's '?', below; review fix: the bar showed them)
       ...(() => { const sn = !u.unseen, fc = sn ? faceOf(u) : ''; return { zoom: zoomer(this, fc, sn ? u.name : 'Unseen hostile', 'portrait'), hasImg: !!fc, noImg: !fc, img: fc, short: sn ? u.short : '?' }; })(),
-      key: u.id, name: sn(u) ? u.name + (u.downed ? ' (down)' : u.surrendered ? ' (surrendered)' : '') : 'Unseen hostile', init: u.init,
+      key: u.id, name: sn(u) ? u.name + (u.downed ? ' (down)' : u.surrendered ? ' (surrendered)' : '') : u.count > 1 ? u.count + ' unseen' : 'Unseen hostile', init: u.init,
       // A click on a portrait shows that unit on the map (the camera goes there); an unseen hostile gives nothing away.
       show: () => { if (!sn(u) || u.dead) return; if (this._overview) this.toggleOverview(u.pos); else CAM.follow([u.pos], 'ask'); },
       showLabel: sn(u) ? 'Show ' + u.name + ' on the map' : 'Unseen hostile: not on the map', cantShow: !sn(u) || !!u.dead,
@@ -1449,7 +1450,7 @@ export class CombatLogic extends DCLogic {
     }
     // A read-only Perks row (rules 1.14: RIDES AN ACTION and ALWAYS ON): its whole card to read, and no Confirm.
     const pkiE = isPerkInfo(S.action) && mineTurn ? (() => { const sh = pkShelves(); return [...sh.rides, ...sh.always].find((r) => PKI + r.key === S.action) || null; })() : null;
-    if (pkiE) { sel.name = pkiE.name + ' · ' + SHELF_LABEL[pkiE.shelf]; sel.text = pkiE.detail; sel.extra = 'Nothing to confirm: this one is here to read.'; }
+    if (pkiE) { sel.name = pkiE.name + ' · ' + SHELF_LABEL[pkiE.shelf]; sel.text = pkiE.detail; sel.extra = ''; }
     // A technique (rules 1.12): its name and cost, what to pick next, then the engine's preview in words: each roll's
     // odds and damage, its notes, Momentum now → after, each unit's Pressure and state, any save and its TN.
     // A Call: its name, cost and reach; what to pick next; then the engine's preview: its notes, the save and its TN.
@@ -1516,7 +1517,7 @@ export class CombatLogic extends DCLogic {
       // one fact, one place (Leon, live 0.24.0): with the HEART panel up (the Outbursts tab, an Outburst held) Strain and the
       // held Outburst are the panel's; the unit panel doesn't repeat them
       res: null, // ownRes() below, once the tab is settled
-      line: 'AP ' + Math.round(myU.ap * 10) / 10 + ' · Movement ' + myU.movement + ' · Stims ' + mc.stims,
+      line: 'AP ' + Math.round(myU.ap * 10) / 10 + ' · Move ' + myU.movement + ' · Stims ' + mc.stims,
       // Classes 3.0 step 10: the reaction pips beside AP (the engine's reactionView), and the Bond strip (bondView) once
       // the resource rows are settled below (it takes the Ledger's row as its end bar)
       react: reactionPipsVals(cb, myU, mc), bonds: { show: false },
