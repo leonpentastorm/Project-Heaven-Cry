@@ -149,3 +149,17 @@ all foes too." Two things, both in lane 2, built and tested together with the ap
 2. **The alarm** (already owed): when a fight is joined, every foe group on the map is alerted and comes; ambushers
    keep their rule; the log says it once. Measure stage-1 clears before and after with `simRun`.
 Test through the reducer: the last foe falls and the fight is over in the same action, with unexplored fog on the map.
+
+## Added 18 Nov (Leon): menu text is tiny, and hover boxes repeat the card (lane 1)
+
+"All text in our menus is TINY and sometimes they have a hover box but the text in the hover box is the same text
+at the same size, really really useless." (Seen on the level-up screen's Dexterity fork cards: the tooltip of
+"Converging Fire" prints the card's own paragraph again, same size.) Lane 1, with the screens redesign:
+1. **One type scale for menus**, set in one place (CSS variables), checked at 1280x720 and 1600x900: body text of
+   cards, rows and tooltips at least 15 px, secondary lines at least 13 px, nothing a player must read under 13 px.
+   Sweep every menu screen (level-up, the "?" pages, creation, camp, shop, Forge, sheet tabs, the fight's panels).
+2. **A hover box never repeats what is already on screen.** If the card shows the full text, it has no tooltip. A
+   tooltip exists only to add what the face does not hold (the full text of a name shown short, a number's parts),
+   and its text is larger or equal, never smaller. Remove every tooltip that duplicates its own card; add a test
+   that a tooltip's text differs from its anchor's visible text.
+3. The lead checks both in the screenshot pass before 0.31.11 ships.
