@@ -179,8 +179,8 @@ at the same size, really really useless." (Seen on the level-up screen's Dexteri
    is surplus: it goes to the beta or gamma whose promise it serves, or it goes.
 4. **Every beta and gamma has this shape:** four perks of two tiers each, and four perk steps at 3 / 5 / 7 / 9, so
    the player chooses which to keep (eight tiers on offer, four steps). Consolidate perks here: defence and combat
-   support go to the beta; talk, role-play and quality of life go to the gamma. 10 is Mastered. Lead's call for
-   Leon to reverse: levels 1, 2, 4, 6, 8 keep their per-point gain shown on the level (and the gamma its Call
+   support go to the beta; talk, role-play and quality of life go to the gamma. 10 is Mastered. Confirmed by Leon
+   (18 Nov): levels 1, 2, 4, 6, 8 keep their per-point gain shown on the level (and the gamma its Call
    steps); the named passives at 3 and 5 become two of the four perks.
 5. **The Strain limit:** 3 at Composure 0, +1 at Composure 1, 2, 4, 6 and 8, so 8 at Composure 10. Will Power gives
    none. (This replaces "+2 a step" above.)
