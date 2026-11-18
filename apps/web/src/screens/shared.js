@@ -59,11 +59,11 @@ export const doorOfBeta = (id) => { const k = ENGINE_SKILL[id]; if (!k || !k.fee
 export function roadMap(id) {
   const k = ENGINE_SKILL[id] || {}, un = k.unlocks || {}, ep = (SK[id] && SK[id].ep) || {}, rows = rowsOf(id), fi = feedRowIdx(id);
   const top = Math.max(1, ...Object.keys(un).map(Number).filter((n) => n > 0));
-  const head = rows.filter((r, j) => j !== fi && (r.at === 'each' || fromOf(r.at))).map((r) => (fromOf(r.at) > 1 ? r.text.replace(/\.$/, '') + ' (from ' + fromOf(r.at) + ' points).' : r.text));
+  const head = rows.filter((r, j) => j !== fi && (r.at === 'each' || fromOf(r.at))).map((r) => (fromOf(r.at) > 1 ? r.text + ' (from ' + fromOf(r.at) + ')' : r.text));
   const forks = (() => { try { return doorForkView(null, id); } catch { return null; } })();
   const steps = Array.from({ length: top }, (_, i) => {
     const n = i + 1, lines = [];
-    rows.forEach((r, j) => { if (j !== fi && rowPoints(r.at, top).includes(n)) lines.push({ key: 'r' + j, kind: 'row', at: r.at, text: fromOf(r.at) ? r.text.replace(/\.$/, '') + ', and more each point from here.' : r.text }); });
+    rows.forEach((r, j) => { if (j !== fi && rowPoints(r.at, top).includes(n)) lines.push({ key: 'r' + j, kind: 'row', at: r.at, text: r.text }); });
     const u = un[n], m = u ? Number(u.mastery) || 0 : 0;
     const fs = u && u.category === 'Fork' && forks ? forks.steps.find((x) => x.at === n) : null;
     if (fs) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + fs.options.map((o) => o.name).join(' or ') + (fs.offered ? '' : ' · sealed') });
@@ -123,9 +123,10 @@ export const headLine = (id) => { const h = roadMap(id).head; return h.length ? 
 /** What the point after `p` gives, as one line: that step's lines, else what every point gives ('' past the top). */
 export const nextLine = (id, p) => {
   const r = roadMap(id), s = r.steps[(p || 0)]; if (!s) return '';
-  const mine = (l) => l.kind === 'row' || l.kind === 'unlock' || l.kind === 'more' || l.kind === 'fork';
-  const own = s.lines.filter(mine).map((l) => l.text), extra = s.lines.filter((l) => !mine(l)).map((l) => l.text);
-  return [...(own.length ? own : r.head), ...extra].join(' · ');
+  // card style: what the point opens (its named unlock, then its rows), at most two pieces, so the card never cuts
+  const rank = { unlock: 0, more: 1, fork: 0, row: 2 };
+  const own = s.lines.filter((l) => l.kind in rank).sort((x, y) => rank[x.kind] - rank[y.kind]).map((l) => l.text), extra = s.lines.filter((l) => !(l.kind in rank)).map((l) => l.text);
+  return [...(own.length ? own : r.head), ...extra].slice(0, 2).join(' · ');
 };
 /** What each point of a skill gives, in one line (the attribute page's skill cards): the head line's texts. */
 export const perPoint = (id) => roadMap(id).head.join(' · ') || (SK[id] && SK[id].summary) || '';

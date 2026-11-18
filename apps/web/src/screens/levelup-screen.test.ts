@@ -146,7 +146,7 @@ describe('level-up screen', () => {
     expect([...el.querySelectorAll('.phc-lu-ceil')].map((x) => x.textContent)).toEqual(['ceiling 8 at this level', 'ceiling 8 at this level', 'ceiling 8 at this level']);
     // every attribute: what the next point gives (the creation step's line)
     const per = el.querySelector('.phc-lu-attrcol[data-attr="perception"]')!;
-    expect(per.querySelector('.phc-lu-attr-next')!.textContent).toMatch(/^Next point \(\d\): \+2 tiles of vision, \+(10|3)% critical damage, −10% critical damage taken\.$/);
+    expect(per.querySelector('.phc-lu-attr-next')!.textContent).toMatch(/^\+2 tiles of vision · \+(10|3)% critical damage · −10% critical damage taken$/);
     expect(el.querySelectorAll('.phc-lu-attr-next').length).toBe(9);
     // Agility is at the ceiling: its +1 is off and the engine's reason is beside it
     const agi = el.querySelector('.phc-lu-attrcol[data-attr="agility"]')!;
@@ -156,7 +156,7 @@ describe('level-up screen', () => {
     // every skill: its slot in words and what its next point gives, from the road map (rules 1.54 item 4119)
     const dex = el.querySelector('.phc-lu-skill[data-skill="dexterity"]')!, dp = (G.characters[c0.id].skills as any).dexterity || 0;
     expect(dex.querySelector('.phc-lu-slot')!.textContent).toBe('FIGHT');
-    expect(dex.querySelector('.phc-lu-next')!.textContent).toBe('Next point (' + (dp + 1) + '): ' + nextLine('dexterity', dp));
+    expect(dex.querySelector('.phc-lu-next')!.textContent).toBe('At ' + (dp + 1) + ': ' + nextLine('dexterity', dp));
     expect(dex.querySelector('.phc-lu-next')!.getAttribute('data-next-at')).toBe(String(dp + 1));
     expect([...agi.querySelectorAll('.phc-lu-slot')].map((x) => x.textContent)).toEqual(['FIGHT', 'SURVIVE', 'TALK · NOTICE']);
     expect(el.querySelectorAll('.phc-lu-next').length).toBe(27); expect(el.querySelectorAll('.phc-lu-give').length).toBe(0);
