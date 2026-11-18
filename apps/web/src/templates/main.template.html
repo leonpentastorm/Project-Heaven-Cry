@@ -476,7 +476,7 @@
 </sc-if>
 
 <section aria-label="Prayers" style="display: flex; flex-direction: column; gap: 6px">
-<span style="font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: #D36A90">{{fa.prayHead}} · WHISPERS</span>
+<span style="font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: #D36A90">{{fa.prayHead}}</span>
 <sc-for list="{{fa.whispers}}" as="b">
 <button type="button" data-prayer="{{b.key}}" onClick="{{b.click}}" aria-pressed="{{b.pressed}}" aria-label="{{b.aria}}" tip="{{b.why}}" style="{{b.style}}">
 <img src="{{b.icon}}" alt="" style="grid-row: span 3; width: 32px; height: 32px">

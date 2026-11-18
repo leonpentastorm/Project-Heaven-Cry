@@ -42,7 +42,7 @@ export function faithTabVals(sc, g, c) {
       const pv = missing ? null : previewPrayer(g, c.id, b.kind, b.id, args);
       ready = !!pv && pv.ok; verdict = missing || (pv.ok ? (pv.effectText || 'Ready.') : pv.why || 'Not now.');
     }
-    return { key: b.key, icon: b.icon, name: b.name, text: b.text + (narr && story ? ' In the story, the Narrator rules where it lands.' : ''), meta: b.ap + ' · ' + b.gate + ' · ' + b.odds, warn: b.warn || '', hasWarn: !!b.warn, why: why || '', hasWhy: !!why,
+    return { key: b.key, icon: b.icon, name: b.name, text: b.text, meta: b.ap + (b.odds && b.odds !== 'SURE' ? ' · ' + b.odds.replace(/^TN /, 'roll ').replace(/^OVERREACH · TN /, 'overreach, roll ') : ''), warn: b.warn || '', hasWarn: !!b.warn, why: why || '', hasWhy: !!why,
       off: !!why, pressed: open ? 'true' : 'false', style: btnStyle(open, !!why, FAITH_INK),
       aria: b.name + ' (' + b.kind + ')' + (why ? ': ' + why : needs ? ': choose, then confirm' : ''),
       click: () => { if (why) return toast(why); if (!needs) return pray(b, {}); sc.setState({ faOpen: open ? null : b.key, faPick: null }); },
@@ -83,7 +83,7 @@ export function faithTabVals(sc, g, c) {
     // Rules 1.6.2: the gate and the price in the heading, beside the words (the gold is light only).
     miracleHead: '✦ MIRACLE · AT DEVOTION ' + GATE.miracle + ' · ONCE A SESSION · COSTS ' + MIRACLE_COST_LEVELS + ' LEVELS',
     hymnHead: P.hymnText || 'HYMNS', // rules 1.22: the wait between Hymns, in the heading
-    prayHead: story ? 'PRAY · THE STORY' : 'PRAY', anyOpen: all.some((b) => S.faOpen === b.key),
+    prayHead: 'WHISPERS', anyOpen: all.some((b) => S.faOpen === b.key),
   };
 }
 

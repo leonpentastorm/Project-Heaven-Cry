@@ -843,12 +843,10 @@ const FAITH: ActionSystem = {
     if (beliefOf(c).kind !== 'faithful' && (c.skills?.faith || 0) < FAITH_MIN) return [];
     const v: any = safe(() => faithView(g, c.id), null); if (!v) return [];
     const row = (kind: string, id: string, name: string, text: string, p: any, tier: number) => {
-      const gate = kind === 'whisper' ? (p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? 12) : 'ANYONE') : kind === 'miracle' ? 'FAITH ' + MIRACLE_FAITH + ' · DEVOTION ' + (p.gate ?? GATE.miracle)
-        : p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? '?') : 'HYMN ' + ['', 'I', 'II', 'III', 'IV'][tier] + ' · DEVOTION ' + (p.gate ?? '?');
-      const odds = prayOdds(p), warn = p.mode === 'overreach' && p.overreach ? 'Overreach: TN ' + p.overreach.tn + ' · a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP'
+      const odds = prayOdds(p), dice = p.mode !== 'standing' && !!p.roll, warn = p.mode === 'overreach' && p.overreach ? 'Overreach: roll ' + p.overreach.tn + ' or lose ' + DEVOTION_XP.overreachMiss + ' Devotion'
         : kind === 'miracle' ? 'Lowers your Devotion by ' + MIRACLE_COST_LEVELS + ' levels (' + GATE.miracle + ' → ' + (GATE.miracle - MIRACLE_COST_LEVELS) + '), after it lands' : '';
-      const label = (kind === 'miracle' ? '✦ ' : '') + name + (kind === 'whisper' ? '' : ' · ' + (kind === 'miracle' ? 'MIRACLE' : gate.replace(/ · DEVOTION \d+$/, '')));
-      return D(prayId(kind, id), 'faith', label, p.ap, p.ap + ' AP · ' + odds, gate + ' · ' + odds + '. ' + text + (warn ? ' ' + warn + '.' : ''), p.ok ? null : p.why || 'Not now.', { picks: prayPicks(p.target || 'none', p.targets || []), preview: 'prayer', sub: PRAYER_SUB[kind] });
+      const label = (kind === 'miracle' ? '✦ ' : '') + name;
+      return D(prayId(kind, id), 'faith', label, p.ap, p.ap + ' AP' + (dice ? ' · ' + odds : ''), (dice ? odds + '. ' : '') + text + (warn ? ' · ' + warn : ''), p.ok ? null : p.why || 'Not now.', { picks: prayPicks(p.target || 'none', p.targets || []), preview: 'prayer', sub: PRAYER_SUB[kind] });
     };
     return [...v.whispers.map((w: any) => row('whisper', w.id, w.name, w.text, w.preview, 0)), ...v.hymns.map((h: any) => row('hymn', h.key, h.name, h.text, h.preview, h.tier)), ...(v.miracle ? [row('miracle', v.miracle.id, v.miracle.name, v.miracle.text, v.miracle.preview, 4)] : [])];
   },
@@ -859,11 +857,11 @@ const FAITH: ActionSystem = {
   preview(x, d, p) {
     const s = parsePrayId(d.id)!, args = { ...(p.targetId ? { targetId: p.targetId } : {}), ...(p.targetId2 ? { targetId2: p.targetId2 } : {}), ...(p.tile ? { tile: p.tile } : {}) };
     const pv: any = safe(() => previewPrayer(x.g, x.u.id, s.kind, s.id, args), null); if (!pv) return null;
-    const lines: PreviewLine[] = [{ k: 'cost', text: prayOdds(pv) }]; // (the odds are in its name too: SURE, TN 12 · 55%)
+    const lines: PreviewLine[] = pv.mode !== 'standing' && pv.roll ? [{ k: 'cost', text: prayOdds(pv) }] : []; // a roll is named only where one happens
     if (pv.effectText) lines.push({ k: 'note', text: pv.effectText });
-    if (pv.mode === 'overreach' && pv.overreach) lines.push({ k: 'save', text: 'Overreach: you ask above your standing. TN ' + pv.overreach.tn + '; a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP.' });
-    else if (pv.mode === 'dice' && pv.roll) lines.push({ k: 'save', text: 'By dice: d20 ' + (pv.roll.mod >= 0 ? '+ ' : '− ') + Math.abs(pv.roll.mod) + ' against TN ' + pv.roll.tn + '.' });
-    else lines.push({ k: 'save', text: s.kind === 'miracle' ? 'By standing: no roll. After it lands, your Devotion falls ' + MIRACLE_COST_LEVELS + ' levels.' : 'By standing: no roll.' });
+    if (pv.mode === 'overreach' && pv.overreach) lines.push({ k: 'save', text: 'Overreach: roll ' + pv.overreach.tn + ' or lose ' + DEVOTION_XP.overreachMiss + ' Devotion' });
+    else if (pv.mode === 'dice' && pv.roll) lines.push({ k: 'save', text: 'd20 ' + (pv.roll.mod >= 0 ? '+ ' : '− ') + Math.abs(pv.roll.mod) + ' vs ' + pv.roll.tn });
+    else lines.push({ k: 'save', text: s.kind === 'miracle' ? 'No roll · Devotion falls ' + MIRACLE_COST_LEVELS + ' levels' : 'No roll' });
     // rules 1.65: where it reaches and what it covers, from its data (prayerAim); whom it touches, fogged
     const aim = safe(() => prayerAim(x.g, x.u.id, s.kind, s.id, args), { reach: [], area: [], units: [] } as ReturnType<typeof prayerAim>);
     const seen = new Set(x.seen.units.map((v) => v.id)), picked = [p.targetId, p.targetId2].filter(Boolean) as string[];

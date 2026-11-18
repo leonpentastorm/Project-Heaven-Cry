@@ -25,10 +25,10 @@ export function pickTiles(cb: any, m: PickMarks | null | undefined, side: 'pc' |
   const T = (k: string) => (out[k] ||= { layer: '', marks: [], note: '' });
   const note = (t: SgTile, w: string) => { t.note += (t.note ? ' · ' : '') + w; };
   const inReach = new Set(m.reach);
-  for (const k of inReach) { if (m.choice.has(k)) continue; const t = T(k); t.layer = 'background: ' + rgba(ink, 0.06) + '; outline: 1px dashed ' + rgba(ink, 0.55) + '; outline-offset: -2px'; note(t, 'in reach'); }
+  for (const k of inReach) { if (m.choice.has(k)) continue; const t = T(k); t.layer = 'background: ' + rgba(ink, 0.06) + '; outline: 1px dashed ' + rgba(ink, 0.55) + '; outline-offset: -2px'; }
   // a choice is drawn over its reach: its card says both (rules 1.65: reach, then the open pick's choices inside it)
-  for (const k of m.choice) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.12) + '; outline: 2px solid ' + rgba(ink, 0.85) + '; outline-offset: -2px'; if (inReach.has(k)) note(t, 'in reach'); note(t, 'you can pick this tile'); }
-  for (const k of m.area) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.3) + '; outline: 2px solid ' + ink + '; outline-offset: -2px'; note(t, 'it covers this tile'); }
+  for (const k of m.choice) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.12) + '; outline: 2px solid ' + rgba(ink, 0.85) + '; outline-offset: -2px'; note(t, 'click to aim'); }
+  for (const k of m.area) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.3) + '; outline: 2px solid ' + ink + '; outline-offset: -2px'; }
   const at = (id: string) => (cb.units || []).find((y: any) => y.id === id && !y.dead) || (cb.units || []).find((y: any) => y.id === id);
   for (const id of m.choiceUnits) {
     const x = at(id); if (!x) continue; const t = T(x.pos);
