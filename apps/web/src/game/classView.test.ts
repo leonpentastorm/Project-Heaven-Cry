@@ -16,10 +16,10 @@ describe('classView', () => {
   it('attribute progress to the next rank (5, 8)', () => {
     const c = charWith({ classId: 'marksman', level: 4 }); setAttr(c, 'marksman', 4);
     const s = attributeProgress(c, 'marksman')!;
-    expect(s.total).toBe(4); expect(s.rank).toBe(1); expect(s.next).toBe(5); expect(s.nextLine).toBe('Rank II at Agility 5 · 1 to go and level 6 · 2 to go');
+    expect(s.total).toBe(4); expect(s.rank).toBe(1); expect(s.next).toBe(5); expect(s.nextLine).toBe('Rank II: Agility 5 (1 to go) · level 6 (2 to go)');
     setAttr(c, 'marksman', 8); expect(attributeProgress(c, 'marksman')!.rank).toBe(1); // the attribute alone isn't enough (rules 1.11)
-    expect(attributeProgress(c, 'marksman')!.nextLine).toBe('Rank II at Agility 5 ✓ and level 6 · 2 to go');
-    c.level = 6; expect(attributeProgress(c, 'marksman')!.nextLine).toBe('Rank III at Agility 8 ✓ and level 12 · 6 to go');
+    expect(attributeProgress(c, 'marksman')!.nextLine).toBe('Rank II: Agility 5 ✓ · level 6 (2 to go)');
+    c.level = 6; expect(attributeProgress(c, 'marksman')!.nextLine).toBe('Rank III: Agility 8 ✓ · level 12 (6 to go)');
     c.level = 12; setAttr(c, 'marksman', 4);
     expect(s.skills.map((x: any) => x.id)).toEqual(CLASS.marksman.skills);
     expect(s.label).toBe('AGILITY 4'); expect(s.ink).toBe('#E3BF51'); // the attribute's ink

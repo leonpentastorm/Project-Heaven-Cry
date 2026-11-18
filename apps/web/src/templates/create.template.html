@@ -194,7 +194,7 @@
 <div class="phc-pt-grid">
 <sc-for list="{{families}}" as="c" hint-placeholder-count="3">
 <section class="phc-pt-fam" data-family="{{c.key}}" aria-label="{{c.name}}">
-<div style="{{c.headStyle}}"><h2 style="margin: 0; {{c.nameStyle}}">{{c.name}}</h2><span style="font-size: 13px; color: #A3AEC2; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap" tip="{{c.about}}">{{c.about}}</span></div>
+<div style="{{c.headStyle}}"><h2 style="margin: 0; {{c.nameStyle}}" tip="{{c.about}}">{{c.name}}</h2></div>
 <div class="phc-pt-attrs">
 <sc-for list="{{c.attrs}}" as="a" hint-placeholder-count="3">
 <div data-attr="{{a.key}}" role="group" aria-label="{{a.name}} and its three skills" style="{{a.boxStyle}}">

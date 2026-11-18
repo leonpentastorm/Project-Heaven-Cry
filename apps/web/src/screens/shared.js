@@ -25,9 +25,9 @@ export const mod = (p) => (p <= 0 ? -2 : p - 1);
 export const checkMod = (skillId, p) => checkModOf(skillId, p || 0);
 /** What one more point of an attribute gives, in the game's numbers (creation, level up, the attribute page). */
 export const ATTR_GIVES = {
-  endurance: '+15 max HP, +10% chance to ignore an injury', strength: '+10% physical damage, +5 kg carried', agility: '+0.5 tile of movement an AP, +1 Initiative',
-  perception: '+2 tiles of vision, +' + Math.round(CRIT_PER_PERCEPTION * 100) + '% critical damage, −10% critical damage taken', intelligence: '+10% Sigil power, a longer Line every 2 points', expression: '+10% elemental damage, glyphs 0.1 AP cheaper',
-  insight: '+10% healing given, Soul magic costs 5% less MP, +25 max MP', determination: '+5% Soul power, +75 max MP, +10% mana syphoned', virtue: 'Hymns come back a little sooner', // rules 1.24: Max MP is Determination's and Insight's
+  endurance: '+15 max HP · +10% to ignore an injury', strength: '+10% physical damage · +5 kg carried', agility: '+0.5 tile of movement an AP · +1 Initiative',
+  perception: '+2 tiles of vision · +' + Math.round(CRIT_PER_PERCEPTION * 100) + '% critical damage · −10% critical damage taken', intelligence: '+10% Sigil power · +1 Line length every 2 points', expression: '+10% elemental damage · glyphs 0.1 AP cheaper',
+  insight: '+10% healing given · −5% Soul magic MP cost · +25 max MP', determination: '+5% Soul power · +75 max MP · +10% mana syphoned', virtue: 'Hymns return sooner', // rules 1.24: Max MP is Determination's and Insight's
 };
 /** A skill's place under its attribute, in words: the first is how you fight, the second how you survive, the third how
  *  you talk and notice (the third rolls checks one better than the others, which the roll shown already counts). */
@@ -229,7 +229,7 @@ export function attrPageVals(self) {
   }
   return { apOpen: true, closeAttrPage, ap: {
     title: a.name + ': attribute', kicker: fam.toUpperCase() + ' · ATTRIBUTE', name: a.name, about: a.fx ? a.fx + '.' : '',
-    gives: String(ATTR_GIVES[id] || '').split(', ').map((t) => ({ text: t.charAt(0).toUpperCase() + t.slice(1) })),
+    gives: String(ATTR_GIVES[id] || '').split(' · ').map((t) => ({ text: t.charAt(0).toUpperCase() + t.slice(1) })),
     rule: 'A skill can\'t be higher than the attribute above it: ' + a.name + ' is the ceiling of ' + skills.map((k) => k.name).join(', ').replace(/, ([^,]*)$/, ' and $1') + '.',
     skills: skills.map((k) => ({ key: k.id, name: k.name, img: k.img, slot: slotLine(k.slot), give: perPoint(k.id), summary: k.summary,
       open: () => self.setState({ attrPage: null, epccg: k.id }), label: k.name + ': open its page',

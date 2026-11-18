@@ -92,7 +92,7 @@ describe('the attribute page', () => {
     for (const a of D.attrs as any[]) {
       const h = holder({ attrPage: a.id }), v = attrPageVals(h);
       expect(v.apOpen).toBe(true);
-      expect(v.ap.gives.map((g: any) => g.text.toLowerCase()).join(', ')).toBe((ATTR_GIVES as any)[a.id].toLowerCase());
+      expect(v.ap.gives.map((g: any) => g.text.toLowerCase()).join(' · ')).toBe((ATTR_GIVES as any)[a.id].toLowerCase());
       expect(v.ap.skills).toHaveLength(3);
       expect(v.ap.skills.map((k: any) => k.slot)).toEqual([slotLine('alpha'), slotLine('beta'), slotLine('gamma')]);
       for (const k of v.ap.skills) { expect(k.give).toBe(perPoint(k.key)); expect(k.give.length).toBeGreaterThan(0); }

@@ -141,7 +141,7 @@ export class LevelUpLogic extends DCLogic {
           const now = cb.ladder.find((x) => x.now), nx = cb.ladder.find((x) => x.n > p);
           return { hasCall: true, callName: cb.name.toUpperCase(), call: [p > 0 ? cb.now : '', now ? 'Now: ' + now.what : 'Opens at 1 point: ' + cb.ladder[0].what, nx && p > 0 ? 'At ' + nx.n + ': ' + nx.what : ''].filter(Boolean).join(' · '),
             callStyle: 'font-size: 13px; line-height: 1.4; color: #E7EBF3; padding: 4px 8px; border-radius: 6px; border: 1px solid ' + ink + '; background: rgba(255, 255, 255, 0.03)' }; })(),
-        hasWhy: !!(why && c.unspent.skill && p < 10), hasNext: !!nxt, next: 'Next point (' + np + '): ' + nxt, nextAt: np, fig: figLevelUp(s.id, p),
+        hasWhy: !!(why && c.unspent.skill && p < 10), hasNext: !!nxt, next: 'At ' + np + ': ' + nxt, nextAt: np, fig: figLevelUp(s.id, p),
         // rules 1.60 (the forks): this skill's door's fork steps reached and the next (game/forkView.ts, the engine's doorForkView)
         ...(() => { const fk = forkLevelUp(c, s.id, p, g.phase === 'combat', () => this.setState({ forkArm: Date.now() })); return { hasFork: !!fk, fork: fk ? { ...fk, fold: foldVals('levelup:fork:' + s.id, { redraw: () => this.setState({ foldTick: Date.now() }) }) } : { steps: [], head: '', headStyle: '', runsOn: '', fold: foldVals('levelup:fork:none') } }; })(), // 0.31.0: the fork card closes (the shared fold), under its skill
         marks: steps.map((t) => ({ key: t.n, label: t.step === 'mastered' ? '★' : t.step, title: (t.step === 'mastered' ? 'Mastered: ' + t.perks.map((q) => q.name).join('') : t.step + ': a perk step, ' + t.perks.map((q) => q.name).join(' or ')) + ' at ' + t.n + ' points',
@@ -163,9 +163,9 @@ export class LevelUpLogic extends DCLogic {
         nameStyle: 'font-size: 16px; font-weight: 700; letter-spacing: 0.14em; color: ' + ink,
         style: 'display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; border-top: 3px solid ' + ink,
         attrs: D.attrs.filter((a) => a.core === k).map((a) => { const aw = canRaise(c, 'attr', a.id), v = c.attrs[a.id] || 1;
-          return { key: a.id, name: a.name, val: v, pips: dia(10, v, a.ink).map((d, i) => (i >= cap ? { style: d.style + '; opacity: 0.35' } : d)), cap: 'Its skills go up to ' + v + '.',
+          return { key: a.id, name: a.name, val: v, pips: dia(10, v, a.ink).map((d, i) => (i >= cap ? { style: d.style + '; opacity: 0.35' } : d)), cap: 'Skills up to ' + v,
             // What a point gives (the creation step's lines), and the change before the point is placed.
-            next: v >= 10 ? 'At 10, the top. Each point gave: ' + ATTR_GIVES[a.id] + '.' : v >= cap ? 'At ' + v + ', the ' + ceil + '. Each point: ' + ATTR_GIVES[a.id] + '.' : 'Next point (' + (v + 1) + '): ' + ATTR_GIVES[a.id] + '.',
+            next: v >= 10 ? 'Top · ' + ATTR_GIVES[a.id] : v >= cap ? 'Capped at ' + v + ' · ' + ATTR_GIVES[a.id] : ATTR_GIVES[a.id],
             open: () => this.setState({ epccg: null, attrPage: a.id }), openLabel: a.name + ': what it gives', openStyle: 'padding: 0; border: 0; background: none; font-family: inherit; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + a.ink,
             canRaise: !!c.unspent.attr, blocked: !!aw, why: nice(aw), hasWhy: !!(aw && c.unspent.attr && v < 10), raise: () => act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: a.id }), raiseStyle: raiseStyle(!aw, a.ink), raiseLabel: 'Raise ' + a.name,
             nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + a.ink, valStyle: 'font-size: 20px; font-weight: 700; line-height: 1; color: ' + a.ink,
@@ -196,7 +196,7 @@ export class LevelUpLogic extends DCLogic {
       sig: prog ? prog.skills.map((s) => ({ key: s.id, name: s.name, pts: s.pts, style: 'font-size: 13px; font-weight: 700; color: ' + ATTR[SK[s.id].attr].ink })) : [],
       total: prog ? prog.label : '', totalStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.14em; color: ' + (prog ? prog.ink : '#A3AEC2'), nextLine: prog ? prog.nextLine : '',
       bar: prog ? 'height: 100%; border-radius: 99px; background: ' + (prog.ink) + '; width: ' + prog.pct + '%' : '',
-      movesHead: k ? 'MOVES · RANK II AT ' + (ATTR[k.attribute]?.name || k.attribute).toUpperCase() + ' 5 AND LEVEL 6, RANK III AT 8 AND LEVEL 12' : '',
+      movesHead: '',
       ranks, closest, hasClosest: closest.length > 0,
       // Advanced classes are shelved (Class Roster Revision 3): one quiet line, nothing to learn.
       advNote: ADVANCED_SHELVED, hasAdvNote: !!c.classId && !advancedLive(),
@@ -206,7 +206,7 @@ export class LevelUpLogic extends DCLogic {
     const allDone = !left && !c.unspent.attr && !choosing && !steps.length;
     return {
       ...epccgVals(this, (id) => c.skills[id] || 0, c), ...lightboxVals(this), zoomPc: zoomer(this, c.portrait, c.name, 'portrait'), pc: c.portrait, name: c.name,
-      kicker: 'LEVEL ' + c.level + ' · ' + c.xp.toLocaleString() + ' XP', title: c.name + (choosing ? ' reaches level ' + c.level : ' grows'), hpChip: 'MAX HP ' + maxHp(c),
+      kicker: 'LEVEL ' + c.level + ' · ' + c.xp.toLocaleString() + ' XP', title: choosing ? c.name + ' reaches level ' + c.level : 'Level ' + c.level, hpChip: 'MAX HP ' + maxHp(c),
       pointChip: left ? '◆ ' + left + ' SKILL POINT' + (left > 1 ? 'S' : '') : '✓ SKILL POINTS SPENT', pointChipStyle: chip(!left),
       stepChip: owed ? '◆ ' + owed + ' PERK STEP' + (owed > 1 ? 'S' : '') : '✓ NO PERK STEPS', stepChipStyle: chip(!steps.length),
       classChip: c.classId ? '✓ ' + k.name.toUpperCase() + ' ' + ROMAN_RANK[rank] : c.level >= 3 ? '◆ CHOOSE A CLASS' : 'CLASS AT LEVEL 3', classChipStyle: chip(!!c.classId || c.level < 3), hasClassIcon: !!c.classId, classIcon: em.icon,
@@ -221,7 +221,7 @@ export class LevelUpLogic extends DCLogic {
       // Take back what this visit spent (points and perk steps), until a fight or a class settles it.
       canRevert: !canRevertLevelUp(g, c), revert: () => act({ type: 'levelup/revert', charId: c.id }),
       revertStyle: 'min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #A3AEC2; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer',
-      done: () => go(homeScreen(g), { levelupChar: null }), doneLabel: g.phase === 'combat' ? (allDone ? 'Done · back to the fight' : 'Back to the fight (finish later)') : g.run && g.run.state !== 'over' ? (allDone ? 'Done · back to the map' : 'Back to the map (finish later)') : allDone ? 'Done · back to the story' : 'Back to the story (finish later)',
+      done: () => go(homeScreen(g), { levelupChar: null }), doneLabel: g.phase === 'combat' ? (allDone ? 'Done · back to the fight' : 'Finish later') : g.run && g.run.state !== 'over' ? (allDone ? 'Done · back to the map' : 'Finish later') : allDone ? 'Done · back to the story' : 'Finish later',
       doneStyle: 'min-height: 44px; padding: 0 18px; border-radius: 12px; border: 0; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; ' + (allDone ? 'background: #6FEA77; color: #0A0D13' : 'background: #1C2536; color: #E7EBF3'),
     };
   }

@@ -99,7 +99,7 @@ export function attributeProgress(c: any, clsId: string) {
   const an = attrName(k.attribute);
   return { skills, total, rank, next, attribute: k.attribute, attributeName: an, ink: ATTR_INK[k.attribute] || '#E7EBF3', label: an.toUpperCase() + ' ' + total,
     pct: next ? Math.max(0, Math.min(100, Math.round((total - prev) / (next - prev) * 100))) : 100,
-    nextLine: next ? 'Rank ' + ROMAN_RANK[rank + 1] + ' at ' + an + ' ' + next + (total < next ? ' · ' + (next - total) + ' to go' : ' ✓') + ' and level ' + nextLevel + (lv < nextLevel ? ' · ' + (nextLevel - lv) + ' to go' : ' ✓') : 'Top rank' };
+    nextLine: next ? 'Rank ' + ROMAN_RANK[rank + 1] + ': ' + an + ' ' + next + (total < next ? ' (' + (next - total) + ' to go)' : ' ✓') + ' · level ' + nextLevel + (lv < nextLevel ? ' (' + (nextLevel - lv) + ' to go)' : ' ✓') : 'Top rank' };
 }
 
 const RES_WORD: Record<string, string> = { guard: 'Guard', momentum: 'Momentum', heat: 'Heat', marks: 'Marks', toxins: 'Toxin doses', shadow: 'Shadow', flux: 'Flux', supplies: 'Supplies', mp: 'MP', strain: 'Strain', devotion: 'Devotion', ledger: 'the Ledger' }; // (rules 1.33: the Mender's)

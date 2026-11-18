@@ -50,10 +50,8 @@
 <section aria-label="Level up" class="phc-stagger" style="min-width: 0; display: flex; flex-direction: column; gap: 16px">
 
 <div class="phc-lu-guide" style="display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F">
-<span style="display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline"><span style="font-size: 13px; letter-spacing: 0.16em; color: #A3AEC2">{{spendHead}}</span><span class="phc-lu-spend" style="font-size: 15px; font-weight: 700; color: #FFFFFF">{{spend}}</span><span class="phc-lu-ceiling" style="font-size: 13px; color: #C9D3E3; margin-left: auto">{{ceil}}</span></span>
+<span style="display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline"><span style="font-size: 13px; letter-spacing: 0.16em; color: #A3AEC2" tip="{{rules}}">{{spendHead}} ?</span><span class="phc-lu-spend" style="font-size: 15px; font-weight: 700; color: #FFFFFF">{{spend}}</span><span class="phc-lu-ceiling" style="font-size: 13px; color: #C9D3E3; margin-left: auto">{{ceil}}</span></span>
 <sc-if value="{{hasSteps}}" hint-placeholder-val="{{true}}"><div class="phc-lu-steps-panel" aria-label="Perk steps" style="display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center"><span style="font-size: 13px; letter-spacing: 0.16em; color: #FFFFFF">{{stepsHead}}</span><sc-for list="{{steps}}" as="st" hint-placeholder-count="2"><button type="button" class="phc-lu-jump" data-skill="{{st.key}}" onClick="{{st.go}}" style="{{st.style}}">{{st.name}} ›</button></sc-for></div></sc-if>
-<span style="font-size: 13px; line-height: 1.5; color: #A3AEC2">{{rules}}</span>
-<span aria-hidden="true" style="display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: #A3AEC2"><span><span style="color: #6FEA77; font-weight: 700">✓ TIER I / II</span> yours</span><span><span style="color: #FFFFFF; font-weight: 700">Take</span> a step is waiting</span><span><span style="color: #7F8BA1; font-weight: 700">LOCKED</span> until the next step</span><span><span style="color: #F2C46A; font-weight: 700">★</span> the Mastered perk</span></span>
 </div>
 
 <sc-for list="{{tree}}" as="co" hint-placeholder-count="3">

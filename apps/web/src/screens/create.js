@@ -171,7 +171,7 @@ export function _setSkill(st, id, v, extra = 0) {
   if (need > left) return no((left <= 0 ? 'No Skill points left' : k.name + ' ' + v + ' takes ' + pts(need, 'Skill') + ' and you have ' + left) + ': lower another skill first.');
   if (aNeed > d.attrLeft) return no(k.name + ' ' + v + ' needs ' + at.name + ' ' + v + '. ' + (d.attrLeft <= 0 ? 'No Attribute points left' : 'That takes ' + pts(aNeed, 'Attribute') + ' and you have ' + d.attrLeft) + ': lower another attribute first.');
   return { ok: true, skills: { ...st.skills, [id]: v }, aSet: { ...d.attr, [k.attr]: Math.max(was, v) }, what: k.name + ' ' + p + ' → ' + v + (aNeed ? ' and ' + at.name + ' ' + was + ' → ' + v : ''),
-    text: aNeed ? k.name + ' ' + v + ' needs ' + at.name + ' ' + v + ': ' + pts(aNeed, 'Attribute') + ' spent.' : k.name + ' ' + v + ': ' + pts(need, 'Skill') + ' spent.' };
+    text: aNeed ? at.name + ' raised to ' + v + ' for ' + k.name : k.name + ' ' + v + ': ' + pts(need, 'Skill') + ' spent.' };
 }
 /** Set an attribute to v. It is never lowered below a skill under it: that is refused, with the skill to lower first. */
 export function _setAttr(st, id, v, extra = 0) {
@@ -198,14 +198,14 @@ export function _resetAttr(st, id, extra = 0) {
     text: at.name + ' reset: ' + [sBack ? pts(sBack, 'Skill') : '', aBack ? pts(aBack, 'Attribute') : ''].filter(Boolean).join(' and ') + ' back.' };
 }
 /** What still has to be placed before Lock in, in plain words ('' when every point is placed). */
-export function _pointsTodo(d) {
+export function _pointsTodo(d, withPlace = true) {
   const sLeft = SKILL_PTS - d.spent, out = [];
   const high = D.attrs.filter((a) => d.attr[a.id] > ATTR_CAP);
   if (high.length) out.push(listOf(high.map((a) => a.name + ' is ' + d.attr[a.id])) + ': no attribute above ' + ATTR_CAP + ' at creation, so lower ' + (high.length === 1 ? 'it' : 'them') + '.');
   if (sLeft < 0) out.push(pts(-sLeft, 'Skill') + ' too many: lower a skill.');
   if (d.attrLeft < 0) out.push(pts(-d.attrLeft, 'Attribute') + ' too many: lower an attribute.');
   const place = [sLeft > 0 ? pts(sLeft, 'Skill') : '', d.attrLeft > 0 ? pts(d.attrLeft, 'Attribute') : ''].filter(Boolean);
-  if (place.length) out.push('Still to place: ' + place.join(' and ') + '.');
+  if (withPlace && place.length) out.push('Still to place: ' + place.join(' and ') + '.');
   return out.join(' ');
 }
 const HIST_MAX = 60;
@@ -385,7 +385,7 @@ export class CreateLogic extends DCLogic {
         const raise = () => this.pointsDo((st, x) => _setAttr(st, a.id, derive(st.skills, st.aSet, x).attr[a.id] + 1, x)), lower = () => this.pointsDo((st, x) => _setAttr(st, a.id, derive(st.skills, st.aSet, x).attr[a.id] - 1, x));
         return {
           key: a.id, name: a.name.toUpperCase(), val: v, open: () => this.setState({ attrPage: a.id }), openLabel: a.name + ': what it gives and what reads it',
-          next: v < ATTR_CAP ? 'Next point: ' + ATTR_NEXT[a.id] + '.' : 'At ' + ATTR_CAP + ', the most at creation. Each point: ' + ATTR_NEXT[a.id] + '.',
+          next: v < ATTR_CAP ? ATTR_NEXT[a.id] : 'Top at creation (' + ATTR_CAP + ') · ' + ATTR_NEXT[a.id],
           up: raise, down: lower, keys: arrows(raise, lower), upOff: up.ok ? 'false' : 'true', downOff: dn.ok ? 'false' : 'true',
           upAria: up.ok ? 'Raise ' + a.name + ' from ' + v + ' to ' + (v + 1) + ' for 1 Attribute point. Gives ' + ATTR_NEXT[a.id] + '.' : 'Raise ' + a.name + ', now ' + v + '. Not possible: ' + up.text,
           downAria: dn.ok ? 'Lower ' + a.name + ' from ' + v + ' to ' + (v - 1) + '. 1 Attribute point back.' : 'Lower ' + a.name + ', now ' + v + '. Not possible: ' + dn.text,
@@ -400,9 +400,9 @@ export class CreateLogic extends DCLogic {
             const p = S.skills[s.id] || 0, m = checkMod(s.id, p), m1 = checkMod(s.id, p + 1), up2 = _setSkill(now, s.id, p + 1, extra), dn2 = _setSkill(now, s.id, p - 1, extra);
             const give = nextLine(s.id, p), [tag, slot] = SLOT_WORD[s.slot], lifts = up2.ok && p + 1 > v;
             const inc = () => this.pointsDo((st, x) => _setSkill(st, s.id, (st.skills[s.id] || 0) + 1, x), s.id), dec = () => this.pointsDo((st, x) => _setSkill(st, s.id, (st.skills[s.id] || 0) - 1, x), s.id);
-            return { ...s, key: s.id, pts: p, tag, need: lifts ? 'TAKES ' + a.name.toUpperCase() + ' TO ' + (p + 1) : '', hasNeed: lifts,
+            return { ...s, key: s.id, pts: p, tag, need: lifts ? 'Needs ' + a.name + ' ' + (p + 1) : '', hasNeed: lifts,
               // One line: what the next point gives (the road map's step at points + 1; rules 1.54 item 4119).
-              line: p < ATTR_CAP ? 'Next point: ' + give : 'At ' + ATTR_CAP + ', the most at creation.', nextAt: p < ATTR_CAP ? p + 1 : 0,
+              line: p < ATTR_CAP ? give : 'Top at creation (' + ATTR_CAP + ')', nextAt: p < ATTR_CAP ? p + 1 : 0,
               lineTitle: s.name + ': ' + s.summary + ' ' + slot + '. ' + headLine(s.id),
               modChip: fmt(m), modTitle: 'Roll ' + fmt(m) + (p < ATTR_CAP ? ' now, ' + fmt(m1) + ' with the next point' : ''), face: s.img, open: () => this.setState({ epccg: s.id, hover: s.id }), openLabel: s.name + ': what each point gives (its EPCCG entry)',
               inc, dec, keys: arrows(inc, dec), incOff: up2.ok ? 'false' : 'true', decOff: dn2.ok ? 'false' : 'true',
@@ -424,18 +424,18 @@ export class CreateLogic extends DCLogic {
       numStyle: 'font-size: 20px; font-weight: 700; white-space: nowrap; color: ' + (n < 0 ? '#F65157' : n === 0 ? '#6FEA77' : '#FFFFFF'),
       pips: Array.from({ length: total }, (_, i) => ({ key: i, style: 'width: 8px; height: 8px; border-radius: 2px; box-sizing: border-box; ' + (i < total - Math.max(0, n) ? 'background: #5A6781' : 'background: #FFFFFF') })) });
     const meters = [meter('SKILL POINTS', left, SKILL_PTS, ''), meter('ATTRIBUTE POINTS', der.attrLeft, attrTotal, extra ? '+' + extra + ' from Mind Without Fog' : '')];
-    const todo = _pointsTodo(der), pointsDone = !todo;
+    const todo = _pointsTodo(der, false), pointsDone = !_pointsTodo(der);
     const hist = S.hist || [], lastWhat = hist.length ? hist[hist.length - 1].what : '';
     const note = S.note && S.note.text ? S.note : { kind: 'tip', text: 'Press › on the skills you want. A skill can\'t be higher than the attribute above it: go past it and the Attribute points are spent for you.' };
     const points = {
-      meters, todo: pointsDone ? '✓ Every point is placed. Go on to Traits when you like.' : '◆ ' + todo, todoStyle: 'font-size: 14px; font-weight: 600; line-height: 1.35; color: ' + (pointsDone ? '#6FEA77' : '#FFFFFF'),
+      meters, todo: pointsDone ? '✓ Every point is placed. Go on to Traits when you like.' : (todo ? '◆ ' + todo : ''), todoStyle: 'font-size: 14px; font-weight: 600; line-height: 1.35; color: ' + (pointsDone ? '#6FEA77' : '#FFFFFF'),
       note: (note.kind === 'no' ? '✗ ' : note.kind === 'ok' ? '✓ ' : '') + note.text, noteStyle: 'margin: 0; min-height: 20px; font-size: 14px; line-height: 20px; font-weight: 600; color: ' + (note.kind === 'no' ? '#F65157' : note.kind === 'ok' ? '#E7EBF3' : '#A3AEC2'),
       undo: () => this.pointsUndo(), noUndo: !hist.length, undoAria: hist.length ? 'Undo the last change: ' + lastWhat : 'Undo: nothing to undo yet',
       resetAll: () => this.pointsDo(() => (der.spent || der.attrSpent ? { ok: true, skills: {}, aSet: {}, applied: null, what: 'everything reset', text: 'Everything reset: all ' + SKILL_PTS + ' Skill points and ' + attrTotal + ' Attribute points are yours to place.' } : no('Nothing is placed yet.'))),
     };
     const hv = SK[S.hover] || D.skills[0], hp = S.skills[hv.id] || 0;
     const detail = { zoom: zoomer(this, hv.img, hv.name, 'skill', hv.quiet), img: hv.img, name: hv.name.toUpperCase(), attr: ATTR[hv.attr].name, mod: 'roll ' + fmt(checkMod(hv.id, hp)) + (hp === 0 ? ' untrained' : ''), quiet: hv.quiet,
-      next: hp < ATTR_CAP ? 'Next point (' + (hp + 1) + '): ' + nextLine(hv.id, hp) : 'At ' + ATTR_CAP + ', the most at creation.', key: hv.id,
+      next: hp < ATTR_CAP ? 'At ' + (hp + 1) + ': ' + nextLine(hv.id, hp) : 'Top at creation (' + ATTR_CAP + ')', key: hv.id,
       nameStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + ATTR[hv.attr].ink,
       style: 'display: flex; align-items: center; gap: 14px; min-height: 100px; box-sizing: border-box; padding: 10px 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ATTR[hv.attr].ink };
     // Class Roster Revision 3: level 3 offers the class of the highest attribute (every tied one).
