@@ -142,7 +142,7 @@ describe('the log: a player reads only the lines about what their side saw', () 
     expect(log.some((l) => / moves to /.test(l) && /Farzul|unseen/i.test(l))).toBe(false); // the walk in the fog: gone
     expect(log).toContain('Something unseen shoots Cy from somewhere unseen: 5 damage.');
     expect(log.length).toBe(s.cb.log.length - 1);
-    expect(log[0]).toMatch(/^Initiative: .*something unseen/); expect(log[0]).toContain('Qorsa'); // the opening names the unseen as unseen
+    expect(log[0]).toMatch(/^Initiative: .*\d+ unseen/); expect(log[0]).toContain('Qorsa'); // the opening names the unseen as unseen
   });
   it('a real fight\'s opening: a hostile set up Hidden is unseen in the initiative line', () => {
     const s = fogScene(), raw = s.cb.log[0];
