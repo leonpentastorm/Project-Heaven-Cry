@@ -137,3 +137,15 @@ every fight if the enemy do not see you at all, and make the songs the same as r
   starts at contact with BATTLE START; after VICTORY the calm track returns for FREE ROAM.
 - The turn strip says the phase in one word while it lasts ("APPROACH" in place of "YOUR TURN" is NOT wanted: keep
   YOUR TURN; the sub-line reads "Approach · unseen").
+
+## Added 18 Nov (Leon): no walking the fog before VICTORY (lane 2, with the approach banner)
+
+"That coupled with a fix for whatever makes you have to walk all the fog before victory shows up even if you kill
+all foes too." Two things, both in lane 2, built and tested together with the approach banner and music:
+1. **Reproduce first:** a Survival fight with two foe groups; kill every foe the squad has seen. Find which is
+   true: (a) foes are still alive in the fog and nothing sends them at the squad (then it is the alarm below), or
+   (b) every foe is dead and VICTORY still waits (a bug in the end-of-fight check or in the banner's wait on fog /
+   effects: fix it so the fight ends the moment the last foe falls, wherever the squad stands).
+2. **The alarm** (already owed): when a fight is joined, every foe group on the map is alerted and comes; ambushers
+   keep their rule; the log says it once. Measure stage-1 clears before and after with `simRun`.
+Test through the reducer: the last foe falls and the fight is over in the same action, with unexplored fog on the map.
