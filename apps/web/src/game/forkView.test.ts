@@ -12,8 +12,8 @@ describe('the fork card (game/forkView.ts)', () => {
   it('Durability 4, nothing picked: one step still to do, both options with their rules and a Choose button; picking is confirmed once', () => {
     const c = ch({ durability: 4 }); let renders = 0;
     const card = forkCard(c, 'durability', { rerender: () => { renders++; } })!;
-    expect(card.pending).toBe(true); expect(card.head).toMatch(/STILL TO DO/);
-    const st = card.steps[0]; expect(st.head).toMatch(/CHOOSE ONE · STILL TO DO/);
+    expect(card.pending).toBe(true); expect(card.head).toMatch(/FORKS/);
+    const st = card.steps[0]; expect(st.head).toBe('Fork at 4: choose one');
     expect(st.opts.map((o) => o.key)).toEqual(['fork.guard.provoke', 'fork.guard.cover_them']);
     for (const o of st.opts) { expect(o.canPick).toBe(true); expect(o.text.length).toBeGreaterThan(20); expect(o.icon).toBeTruthy(); }
     sent.length = 0; st.opts[1].pick(); expect(sent).toEqual([]); expect(renders).toBe(1);
@@ -25,15 +25,15 @@ describe('the fork card (game/forkView.ts)', () => {
     const c = ch({ durability: 5 }, { durability: ['fork.guard.provoke'] });
     expect(forkChipsLine(c, 'durability')).toBe('Forks: Provoke');
     const card = forkCard(c, 'durability', { inFight: true })!;
-    expect(card.steps[0].head).toMatch(/CHOSEN · KEPT FOR GOOD/); expect(card.steps[1].head).toMatch(/OPENS AT 6/);
+    expect(card.steps[0].head).toBe('Fork at 4: chosen'); expect(card.steps[1].head).toBe('Fork at 6');
     expect(forkChipsLine(ch({ durability: 6 }, { durability: ['fork.guard.provoke'] }), 'durability')).toBe('Forks: Provoke · 1 fork still to do (out of a fight)');
     const lu = forkLevelUp(ch({ durability: 6 }), 'durability', 6, true)!;
-    expect(lu.steps.map((s) => s.head)).toEqual(['DURABILITY 4 · CHOOSE ONE · STILL TO DO', 'DURABILITY 6 · CHOOSE ONE · STILL TO DO']);
+    expect(lu.steps.map((s) => s.head)).toEqual(['Fork at 4: choose one', 'Fork at 6: choose one']);
     expect(lu.steps[0].opts[0].label).toBe('After the fight');
   });
   it('a step not offered yet says it is sealed (a player line, rules 1.66 item 5212), and offers no button', () => {
     const card = forkCard(ch({ ingenuity: 10 }), 'ingenuity')!;
-    expect(card.steps.every((s) => /NOT OFFERED YET/.test(s.head) && s.opts.every((o) => !o.canPick))).toBe(true);
+    expect(card.steps.every((s) => /not offered yet/.test(s.head) && s.opts.every((o) => !o.canPick))).toBe(true);
     expect(card.steps[0].why).toBe('Sealed: not yet issued.');
   });
   it('an option not built yet shows its rule in words, never the data\'s designer note (no id, no rules number, no N-item)', () => {

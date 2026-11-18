@@ -35,7 +35,7 @@ export function forkCard(c: any, door: string, o: { inFight?: boolean; only?: nu
   const ink = inkOf(v.skill), skillName = (SKILL as any)[v.skill]?.name || v.skill;
   const steps = v.steps.filter((s) => !o.only || o.only.includes(s.at)).map((s) => {
     const state = s.pending ? 'pending' : s.picked ? 'picked' : !s.offered ? 'off' : 'locked';
-    const head = skillName.toUpperCase() + ' ' + s.at + ' · ' + (state === 'pending' ? 'CHOOSE ONE · STILL TO DO' : state === 'picked' ? 'CHOSEN · KEPT FOR GOOD' : state === 'off' ? 'NOT OFFERED YET' : 'OPENS AT ' + s.at);
+    const head = 'Fork at ' + s.at + (state === 'pending' ? ': choose one' : state === 'picked' ? ': chosen' : state === 'off' ? ': not offered yet' : '');
     // an option not built yet shows its rule in words like any other (its data `why` is a designer's note, never a player's line)
     const opts = s.options.map((op) => {
       const can = s.pending && op.built, armKey = c.id + '|' + op.id, armed = ARMED === armKey;
@@ -59,7 +59,7 @@ export function forkCard(c: any, door: string, o: { inFight?: boolean; only?: nu
   if (!steps.length) return null;
   const chosen = v.steps.filter((s) => s.picked).length, toPick = v.pending, later = v.steps.filter((s) => s.open && !s.offered).length;
   const summary = ['Forks', chosen ? chosen + ' chosen' : '', toPick ? toPick + ' to pick' : '', later ? later + ' coming in a later version' : '', !chosen && !toPick && !later ? 'none open yet' : ''].filter(Boolean).join(' · ');
-  return { key: door, door, head: (v.name === skillName ? skillName : v.name + ' · ' + skillName).toUpperCase() + ' · FORKS' + (v.pending ? ' · ' + v.pending + ' STILL TO DO' : ''),
+  return { key: door, door, head: (v.name === skillName ? skillName : v.name + ' · ' + skillName).toUpperCase() + ' · FORKS',
     headStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + (v.pending ? WHITE : ink), runsOn: v.runsOn ? 'Every option runs on ' + v.runsOn + '.' : '', steps, pending: v.pending > 0, chips: forkChipsLine(c, door),
     chosen, toPick, summary, summaryStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: ' + (toPick ? WHITE : chosen ? ink : MUTED) };
 }
