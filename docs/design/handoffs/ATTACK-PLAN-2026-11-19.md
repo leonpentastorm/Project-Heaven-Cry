@@ -163,3 +163,26 @@ at the same size, really really useless." (Seen on the level-up screen's Dexteri
    and its text is larger or equal, never smaller. Remove every tooltip that duplicates its own card; add a test
    that a tooltip's text differs from its anchor's visible text.
 3. The lead checks both in the screenshot pass before 0.31.11 ships.
+
+## Leon's rulings of 18 Nov evening (they override lane 3's and lane 4's wording above)
+
+1. **Rite in the Field** (replaces the tone-change proposal): every 5 kills in a fight (every 3 at tier II), the
+   next Crystallise costs 0 AP and gives a mana core without taking mana out of the air.
+2. **The Call's ladder** (replaces "reaches everyone in range"): each gamma's Call can be used once a turn. It costs
+   3 AP; from 5 points 2 AP; from 9 points 1 AP. At 10: a Call may be paid with your reaction instead, and you may
+   make one more Call that turn for 1 AP. (Steps of reach and strength that the ladder has today: the lead fits
+   them around these costs in lane 3.)
+3. **Every alpha has this shape:** 1 the door (grants the mechanic); 2 a small verb; 3 a perk step; 4 fork one;
+   5 a big verb; 6 a perk step; 7 a perk step; 8 fork two; 9 a perk step; 10 Mastered. This MOVES the alpha's
+   perk steps from 3 / 5 / 7 / 9 to 3 / 6 / 7 / 9 and its second fork from 6 to 8: a save that holds a step or a
+   fork keeps it (lane 4 writes the migration and a test with an old save). Everything else an alpha gives today
+   is surplus: it goes to the beta or gamma whose promise it serves, or it goes.
+4. **Every beta and gamma has this shape:** four perks of two tiers each, and four perk steps at 3 / 5 / 7 / 9, so
+   the player chooses which to keep (eight tiers on offer, four steps). Consolidate perks here: defence and combat
+   support go to the beta; talk, role-play and quality of life go to the gamma. 10 is Mastered. Lead's call for
+   Leon to reverse: levels 1, 2, 4, 6, 8 keep their per-point gain shown on the level (and the gamma its Call
+   steps); the named passives at 3 and 5 become two of the four perks.
+5. **The Strain limit:** 3 at Composure 0, +1 at Composure 1, 2, 4, 6 and 8, so 8 at Composure 10. Will Power gives
+   none. (This replaces "+2 a step" above.)
+6. Still the lead's pick unless Leon says otherwise: the names "APPROACH" and "Stalk", "Fight unsworn" in the vow
+   pop-up, the 2020 "Bad for" lines off the page.
