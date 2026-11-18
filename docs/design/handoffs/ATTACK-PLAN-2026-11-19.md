@@ -91,3 +91,27 @@ NOTHING from the betas and gammas sometimes." The lead reads all 27 first and wr
 lane 3's file: how many of its ten levels give something a player can feel, and how many things its busiest level
 gives. Targets for lane 3's tables: no skill under 8 felt levels of 10; no level with more than two things; an
 attribute's three skills within 2 felt levels of each other. The alpha's surplus goes to its beta and gamma.
+
+## Leon's ruling on lane 3's scope (18 Nov, after the skill pages were read)
+
+"Those good for / bad for lines are what the skill needs to actually deliver. Remove them if you want but the
+design structure of alpha-beta-gamma needs to be there; add more perks, change perks and removing perks is on the
+table; the whole class and skill system needs to be coherent and with all the forks in 0.32 before more complex
+stuff like Items 2.0 and Arts can be fitted."
+
+So lane 3 designs the WHOLE system, per attribute, as one coherent sheet, and lanes 4 and 5 build it as 0.32:
+1. **Each skill's promise comes first.** For each of the 27, write one line from its EPCCG text and its "Good for /
+   Bad for" lines (data/skills.json, docs/lore/EPCCG-Player-Character-Creation-Guide.md): who this skill is for and
+   what it must let them do. Every level, perk, fork and Call of that skill is then judged against that line: it
+   serves the promise, or it moves to the skill whose promise it serves, or it goes.
+2. **The structure stays:** alpha = the door (how you fight), beta = how you survive in that door (it feeds the
+   door and keeps you alive), gamma = how you talk, notice and command (its Call, and it removes its door's tax).
+   One attribute's three skills read as one kit: a player who buys all three gets a whole playstyle.
+3. **Perks are on the table:** the two perks of a skill, the Mastered perk and the combo perks may be changed,
+   replaced, added to or removed (ids kept where a save holds them; a removed perk a save holds becomes its
+   replacement). A perk must do something a ladder level does not.
+4. **All forks:** every alpha's four options built or replaced with ones that can be built; none left sealed.
+5. **Classes:** each base class's six moves give what the ladder cannot (the best user of the door).
+6. The "Good for / Bad for" lines themselves come off the page face (they are design intent, and the page shows
+   whether the skill delivers); the crude ones are not shown.
+Nothing of Items 2.0 or Weapon Arts starts before this is live.
