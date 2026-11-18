@@ -506,3 +506,10 @@ at it", NOT Leon's ruling (once a fight, on reaching Mana Shock, relieve 2 Strai
 64 unlock lines). (4) Section U, the whole-game wording pass. (5) Nobody looked at 0.31.8 or 0.31.9 on screen.
 - **0.31.10 live (17 Nov):** no Survival node gives MP back (fight, Elite, cache, vault, Boss all 0); the mana
   forecast sits above the small map (z-index; not seen on screen). A Rest still restores MP: ask Leon.
+
+## W. 18 Nov: where the current plan lives
+
+This file is the record of rulings up to 17 Nov night. From 18 Nov the working documents are
+`TAKEOVER-2026-11-18.md` (state, commands, how Leon works) and `ATTACK-PLAN-2026-11-19.md` (the five lanes and every
+ruling of 18 Nov: the skill system's scope, the outside playtest's triage, the approach banner and music, no
+fog-walk before VICTORY). Live: 0.31.10. Nothing is scheduled until Leon says "schedule it".

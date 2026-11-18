@@ -1,5 +1,7 @@
 # Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept current)
 
+> **Taking over? Read `docs/design/handoffs/TAKEOVER-2026-11-18.md`, then `ATTACK-PLAN-2026-11-19.md` beside it.**
+>
 > **18 Nov 2026 (newest): 0.31.10 IS LIVE.** Everything decided on 16 to 18 Nov, with the scouting documents, is in
 > `docs/design/handoffs/SESSION-TODO-2026-11-16.md` (read its sections Q to V first). The order Leon agreed:
 >

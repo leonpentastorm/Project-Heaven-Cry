@@ -1,5 +1,7 @@
 # Start here (14 Nov 2026)
 
+> **Taking over? `TAKEOVER-2026-11-18.md` in this folder is the short, current pick-up note; then `ATTACK-PLAN-2026-11-19.md`.**
+>
 > **18 Nov 2026 (newest): 0.31.10 IS LIVE** (`backup/live-0.31.10`, `backup/live-0.31.9`). Read `SESSION-TODO-2026-11-16.md` in this folder (sections Q to V) and the top of `docs/ROADMAP.md` before anything below: they are the current state, the rulings and the order of work. The release tree is the worktree on branch `release/0.31`; the deploy steps are in that to-do's history and `tools/deploy_site.py`. Everything under this line is older.
 
 > **16 Nov 2026 (newest): 0.29.0 IS LIVE.** https://project-heaven-cry.leonpentastorm.workers.dev serves 0.29.0 (`assets/index-CS0sQSbu.js`); `main` = `develop` = 98772514; `backup/live-0.29.0` pushed. What shipped: `CHANGELOG.md` 0.29.0 (rules 1.56, "Balance 2.0": the nine doors, mods as data and as rewards, special rounds by calibre, variants as data, the melee profile). 0.28.3 was the version before. Where anything below says 0.29.0 is not deployed or live is 0.28.x, it is older.
