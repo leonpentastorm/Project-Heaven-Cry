@@ -1827,7 +1827,7 @@ export class CombatLogic extends DCLogic {
     // The backpack (rules 1.9, World Play: Gear in a fight): hands, light armour, the pack and the unit's ammo, each row
     // with its action and the engine's cost (game/backpack.ts); greyed with the engine's reason off-turn or AP short.
     const canPack = !!myU && !!myU.charId && !myU.companion && !cb.over;
-    const bpV = canPack && S.bp ? backpackView(g, cb, myU, !!(mineTurn && cur && myU.id === cur.id), holding ? lockMsg : '') : null;
+    const bpV = canPack && S.bp ? backpackView(g, cb, myU, !!(mineTurn && cur && myU.id === cur.id), holding ? lockMsg : '', getState().me.id) : null;
     // The Backpack button sits in your unit card beside your name (Leon, 9 Nov 2026: one labelled button there, none by
     // the AP bar); on short windows, where the card folds into the one-line bar, the bar carries it. Lit while open.
     const bpBtn = (h) => 'display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: ' + h + 'px; padding: 0 10px 0 8px; border-radius: 7px; border: 1px solid ' + (S.bp ? '#FFFFFF' : '#3A4760') + '; background: ' + (S.bp ? '#1C2536' : 'transparent') + '; color: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer';

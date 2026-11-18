@@ -426,8 +426,8 @@ function basicPicks(x: DescCtx, id: string): PickStep[] {
     case 'cover': case 'cover-off': return [{ key: 'tile', kind: 'tile', prompt: 'Click an object with HP.', choices: objectsOf(x.seen).filter((o: any) => o.hp != null && o.hp > 0 && !(o.rig && o.side && o.side !== x.side)).map((o: any) => o.pos) }];
     case 'door': return [{ key: 'tile', kind: 'tile', prompt: 'Click an adjacent door.', choices: objectsOf(x.seen).filter((o: any) => kindOf(o).door && dist(x.u.pos, o.pos) <= 1).map((o: any) => o.pos) }];
     case 'pickup': return [{ key: 'tile', kind: 'tile', prompt: 'Click a pile next to you.', optional: true, choices: pileTiles(x) }, { key: 'take', kind: 'custom', renderer: 'pile', prompt: 'Untick what to leave on the ground.', optional: true }];
-    case 'stim': return [{ key: 'targetId', kind: 'ally', prompt: 'Click an adjacent ally.', choices: allyIds(x, true) }];
-    case 'stim_throw': return [{ key: 'targetId', kind: 'ally', prompt: 'Click an ally you can see, within ' + stimThrowRange() + ' tiles.', choices: allyIds(x, true) }]; // (the range: the reducer's, through PHYSICAL.choices)
+    case 'stim': return [{ key: 'targetId', kind: 'ally', prompt: 'Click yourself or an adjacent ally.', choices: allyIds(x, true) }];
+    case 'stim_throw': return [{ key: 'targetId', kind: 'ally', prompt: 'Click yourself or an ally you can see, within ' + stimThrowRange() + ' tiles.', choices: allyIds(x, true) }]; // (the range: the reducer's, through PHYSICAL.choices)
     case 'pullfree': return [{ key: 'targetId', kind: 'unit', prompt: 'Click whom to pull free.', optional: true, choices: pullFreeTargets(x.cb, x.u).map((v) => v.id) }];
     case 'analyze': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile, or a glyph or trace to read (dashed).', choices: foeIds(x) }];
     case 'paired': case 'shot': case 'aimed': case 'melee': case 'burst': case 'auto': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile to target it.', choices: others(x) }];

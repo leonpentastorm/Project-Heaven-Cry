@@ -9,6 +9,7 @@
 import { dotJoin } from './dotJoin';
 import { WEAPON, ITEM, magazineSize, packOf, twoHands, isPlotItem, gearCost, isLightArmour, GEAR, calName, type GearOp, FOCUS_IDS, withGame } from '@engine';
 import { magGearId, roundsGearId, torsoGearId } from './gearIcons';
+import { verdictOf } from './actionFlow';
 
 export interface BpAct { key: string; label: string; cost: string; off: boolean; why: string; action: any }
 /** item: the item (or derived gear id: rounds-<calibre>, mag:<weapon>, armour:<class>) the row is, for its icon (gearIcons.ts); absent when there is none. */
@@ -25,13 +26,13 @@ const typed = (n: number, cap: number, t?: string | null) => n + '/' + cap + (t 
 
 /** The backpack panel for a fighter: `mine` (it is this player's unit's turn) decides whether anything can be pressed;
  * `hold` is why a turn that is yours can't act yet (the other turns still playing out on screen), shown as the reason. */
-export function backpackView(g: any, cb: any, u: any, mine: boolean, hold = ''): Backpack | null {
+export function backpackView(g: any, cb: any, u: any, mine: boolean, hold = '', me: string | null = null): Backpack | null {
   if (!g || !cb || !u || !u.charId || u.companion) return null;
   const c = g.characters?.[u.charId]; if (!c) return null;
-  return withGame(g, () => build(g, cb, u, c, mine, hold));
+  return withGame(g, () => build(g, cb, u, c, mine, hold, me));
 }
 
-function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Backpack {
+function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string, me: string | null): Backpack {
   const reason = cb.over ? 'The fight is over.' : !mine ? 'Not your turn.' : hold ? hold : u.downed ? 'Downed.' : '';
   // A row's own refusal is written on it, not only in the tooltip (a tooltip never shows on touch): the plan's reason
   // in place of the cost, or the cost and "Needs N AP." when AP is short. The panel-wide reason sits above the rows.
@@ -108,7 +109,13 @@ function build(g: any, cb: any, u: any, c: any, mine: boolean, hold: string): Ba
   for (const [id, n] of Object.entries(u.throwables || {})) if ((n as number) > 0) ammo.push({ key: 'thr-' + id, tag: 'THROWABLE', name: n + ' × ' + nameOf(id), sub: 'Throw it from the Attack tab.', note: '', acts: [], item: id });
   if ((u.parts ?? 0) > 0) ammo.push({ key: 'parts', tag: 'PARTS', name: u.parts + ' spare parts', sub: 'Field Repair uses one.', note: '', acts: [], item: 'spare_parts' });
   if (u.mg && (u.mg.cores ?? 0) > 0) ammo.push({ key: 'cores', tag: 'CORES', name: u.mg.cores + ' mana ' + (u.mg.cores === 1 ? 'core' : 'cores'), sub: 'Swap a core from the Sigils tab.', note: '', acts: [], item: 'standard_core' });
-  if ((c.stims ?? 0) > 0) ammo.push({ key: 'stims', tag: 'STIMS', name: c.stims + ' stim ' + (c.stims === 1 ? 'injector' : 'injectors'), sub: 'Stim an ally from the Utility tab.', note: '', acts: [], item: 'stim_injector' });
+  // Outside playtest 0.31.10 row 1: Use is the engine's own Stim aimed at yourself (its descriptor and the reducer's
+  // verdict, the cost the reducer takes); an ally is stimmed from the Utility tab.
+  if ((c.stims ?? 0) > 0) {
+    const v = verdictOf(g, uid, me, 'stim', { targetId: uid }), why = reason || (v && !v.ok ? v.why || '' : v ? '' : 'Not now.');
+    const use: BpAct = { key: 'stim-self', label: 'Use', cost: v ? v.ap + ' AP' : '', off: !!why || !v?.action, why, action: v && v.ok ? v.action : null };
+    ammo.push({ key: 'stims', tag: 'STIMS', name: c.stims + ' stim ' + (c.stims === 1 ? 'injector' : 'injectors'), sub: 'On an ally: the Utility tab.', note: '', acts: [use], item: 'stim_injector' });
+  }
   return { who: c.name, ap: u.ap ?? 0, reason, sections: [
     { key: 'hands', title: 'HANDS', rows: [main, off], empty: '' },
     { key: 'armour', title: 'ARMOUR', rows: armour, empty: 'Nothing worn. A light piece (' + GEAR.light_armour_max_kg + ' kg or less) goes on for 1 AP.' },
