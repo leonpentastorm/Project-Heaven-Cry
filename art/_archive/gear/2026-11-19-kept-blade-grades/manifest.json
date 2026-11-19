@@ -2218,6 +2218,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-knuckledusters--celestial",
+      "path": "art/icons/gear/weapon-knuckledusters--celestial.png",
+      "sha256": "69ac5562924b5671ecebc12399733a2535313a9457b1b5af9737abab3bbf527c",
+      "label": "Knuckledusters — Celestial",
+      "family": "weapon-knuckledusters",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-knuckledusters--celestial.png",
+        "sha256": "3511c882b7431c565ca09895068834dfa2785a4031f52e1671989430b25e9d7e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-knuckledusters--celestial.png",
+        "sha256": "69ac5562924b5671ecebc12399733a2535313a9457b1b5af9737abab3bbf527c"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-knuckledusters--celestial.txt",
+        "sha256": "6becb517846d231db828ebf5468815e562182b36efca4081abb2ecfc122f49a5"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-knuckledusters.png",
+          "sha256": "739f0487a4696800a0b0ac3979352df8cc595446a0d6f235cbcb5045d0fb245e"
+        },
+        {
+          "path": "art/icons/gear/weapon-knuckledusters--relic.png",
+          "sha256": "d3724818c60bc6770dcc780e8e632c0e22af6c71d502577bbaa2be43efb4ed37"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-knuckledusters--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-knuckledusters--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-knuckledusters--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-knuckledusters--celestial.png"
+      },
+      "export_hashes": {
+        "256": "a182d0847423c06cf0d170619185364004928652eb84f4c31f9af18c038f2615",
+        "128": "83bae369bbe3cbb2f48166d2776b773755067ef62f317d3f94685275224d5efb",
+        "64": "8fe23995067ac2d59423187afdd46bba188aba27bb7d9a8364470cae0114d837",
+        "32": "06823289126b34116cbde55edbd6fd578e7a18e9577e714673473803b26f8911"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-knuckledusters",
+      "outline": {
+        "solid_alpha_iou": 0.9353993428419333,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 52
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
