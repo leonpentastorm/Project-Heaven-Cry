@@ -2776,6 +2776,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-evoker--fine",
+      "path": "art/icons/gear/focus-evoker--fine.png",
+      "sha256": "54b2dd5032763c3094eb81368d6608f0fd734e43de5856187820842564e10039",
+      "label": "Evoker — Fine",
+      "family": "focus-evoker",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-evoker--fine.png",
+        "sha256": "f380547b16eaa721679f23c1a73e5defd38953f1b0da1677276028edb514d8a4"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-evoker--fine.png",
+        "sha256": "54b2dd5032763c3094eb81368d6608f0fd734e43de5856187820842564e10039"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-evoker--fine.txt",
+        "sha256": "39b7a1280f04f1964898c7103622e96aa5c16ad111e906c222802c43dd06901c"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/focus-evoker.png",
+          "sha256": "3947d21607b863bf71949ab13c1a7667ca3cb5a006314d082516daaa1ee076f4"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-evoker--fine.png",
+        "128": "art/icons/gear/exports/128/focus-evoker--fine.png",
+        "64": "art/icons/gear/exports/64/focus-evoker--fine.png",
+        "32": "art/icons/gear/exports/32/focus-evoker--fine.png"
+      },
+      "export_hashes": {
+        "256": "d1d0c264b9e0d1d24fa7e4719990aecd9e20e5e2515822c35006a53bc541e415",
+        "128": "2a780b8ec04c3eab2d5da28e0c21195426dcda57a21e1e119def4422897c6c3e",
+        "64": "2f922a1e341fbbd12133a3b32094b13c3702d5d53510db989a537a2ccaba3be1",
+        "32": "2b0164ce3e1ffe11dd8477e7cb98e40dab7b5513f44144dc1683fa13331951a2"
+      },
+      "grade": "fine",
+      "standard_id": "focus-evoker",
+      "outline": {
+        "solid_alpha_iou": 0.985391678320861,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 13
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
