@@ -782,6 +782,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-war_hammer",
+      "path": "art/icons/gear/weapon-war_hammer.png",
+      "sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f",
+      "label": "War hammer",
+      "family": "05-hammers",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-war_hammer.png",
+        "sha256": "5955f12f77948ba8f69d4d5623fef99fdf214640ff0a5b3c623a8da5af604246"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-war_hammer.png",
+        "sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-war_hammer.txt",
+        "sha256": "2b712f5e14d4be982af410663cffa3e3878f3d0fcb901d64a60aea44649597df"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-maul.png",
+          "sha256": "50f0d5620bd8dd5a51d0e676e69ebad5e586a47a01634ac17ac96d7a26da8dac"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_hammer.png",
+        "128": "art/icons/gear/exports/128/weapon-war_hammer.png",
+        "64": "art/icons/gear/exports/64/weapon-war_hammer.png",
+        "32": "art/icons/gear/exports/32/weapon-war_hammer.png"
+      },
+      "export_hashes": {
+        "256": "5b9530a94d9b89d199714b7a35b1f95fb6704a53073ba12cf4e0d6f7ab68c2ee",
+        "128": "94209be994400058c0a516e6332870910b5968267ae5358362010ad9c15d9b25",
+        "64": "92a46d62ae41fd49590c0dfa1b95c3dec3d189c0ef3456ce431149fe707de911",
+        "32": "22e08666e8a059fcad2c2a28a697b6a40464a03adedaa6d092572ee96150d9b4"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

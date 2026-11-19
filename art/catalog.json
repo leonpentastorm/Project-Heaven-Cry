@@ -18970,6 +18970,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-war_hammer": {
+      "label": "War hammer",
+      "path": "art/icons/gear/weapon-war_hammer.png",
+      "sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_hammer.png",
+        "128": "art/icons/gear/exports/128/weapon-war_hammer.png",
+        "64": "art/icons/gear/exports/64/weapon-war_hammer.png",
+        "32": "art/icons/gear/exports/32/weapon-war_hammer.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-war_hammer.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+      "brief_number": 14,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {
