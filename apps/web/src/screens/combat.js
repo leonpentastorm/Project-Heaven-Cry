@@ -1,6 +1,6 @@
 // Combat, ported from design/canvas-build/combat.logic.js onto the engine's fight: real initiative, the grid,
 // path arrows with their AP cost, real hit odds, and every action checked by the engine. Enemies act on their own.
-import { dotJoin } from '../game/dotJoin';
+import { dotJoin, unsaid } from '../game/dotJoin';
 import { narratedRoom, ADJ_MARKS } from '@engine';
 import { shellVals } from './shell';
 import { DCLogic } from '../dc/runtime';
@@ -1607,6 +1607,8 @@ export class CombatLogic extends DCLogic {
         + (b.on ? 'border: 1px solid ' + SIGIL_GLOW + '; background: #13303A; color: #E7EBF3; box-shadow: 0 0 6px rgba(79, 200, 223, 0.4)' : b.ok ? 'border: 1px solid #1F4A55; background: transparent; color: #8BDEEE' : 'border: 1px dashed #2A3A48; background: transparent; color: #A3AEC2') }));
     sel.strokeBtns = pad.strokeBtns;
     // The HEART panel at the top of the Outbursts tab while holding: its buttons run the moves at once (Release picks the aim).
+    // row 14 (outside playtest 0.31.10): the extra line never repeats the text above it (a refused door move's reason was both)
+    sel.extra = unsaid(sel.text, sel.extra);
     // rules 1.65: a click the open pick can't take, refused in the engine's words, by the action box (after every panel's own words)
     if (flow && S.pickWhy && S.pickWhy.id === S.action) sel.extra = '✕ ' + S.pickWhy.text + (sel.extra ? ' · ' + sel.extra : '');
     if (encoreLend > 0) { sel.name += ' · FREE · ENCORE'; sel.extra = ((sel.extra || '') + ' Encore: this repeat is lent ' + encoreLend + ' AP.').trim(); }
