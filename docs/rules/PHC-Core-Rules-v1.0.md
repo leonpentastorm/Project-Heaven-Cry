@@ -12268,3 +12268,12 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     (an Element or an Affliction) with no Boon, no Working, no Burst (SPREAD), no KIN and nothing placed (STAY, WAIT,
     WATCH) is refused on your own tile before anything is spent, and your tile is not offered as a pick. `sigil.ts
     planEvoke`. Proof: `test/playtest-1118.test.ts` (the reducer's `combat/evoke`).
+5502. **Parry rolls with what the Guard door gives** (row 5: a Durability 7 tank holding Guard parried with d20 +2, not
+    +9). A parry is a melee roll: an item's `roll_with` (Durability's door: Durability in place of the weapon's skill
+    while holding Guard, when higher) chooses its skill as it does a melee attack's (`combat.ts rollWithPick`, asked
+    through `attack_preview` as the other previews ask). The shield's +2 is added as before. `physical/melee/answers.ts`.
+    Recorded on purpose: `builds-allin` (the all-in tank at level 9 now parries the vermin's blow) and 4 replays of 29.
+    **Retort is unchanged and needs a ruling to change:** Parry and Retort answer the same blow, and a unit makes one
+    reaction an event (rules 1.28), so with both switched on Parry answers first (it is the earlier phase, before the
+    damage) and Retort waits; switched off in the Answer list, Parry leaves the blow to Retort. Proof:
+    `test/playtest-1118.test.ts` (the foe's blow through `resolveAttack`).

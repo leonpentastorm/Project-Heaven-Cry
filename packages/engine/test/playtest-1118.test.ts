@@ -88,3 +88,30 @@ describe('row 4: Second Wind (Durability 5) is on the combat bar and heals', () 
     expect(again.available).toBe(false);
   });
 });
+
+import { resolveAttack, mod } from '../src';
+import { physFight, rig } from './helpers/physfight';
+describe('row 5: Parry while holding Guard', () => {
+  /** A Durability 7 tank (Dexterity 1) with Parry, a maul-wielding Soldier next to it; the foe's blow through resolveAttack. */
+  function fight(answers?: string[]) {
+    const f = physFight([{ weapon: 'hand_wraps', known: ['parry'], skills: { durability: 7, dexterity: 1, athletics: 0, raw_power: 0 } }], [{ tier: 'soldier', weapon: 'maul' }]);
+    f.cb.objects = []; f.put(f.pcs[0], 'C5'); const a = f.cb.units.find((u) => u.side === 'foe')!; f.put(a, 'D5'); a.hp = a.maxHp = 900;
+    const t = f.unit(f.pcs[0].id); t.hp = t.maxHp; t.armour = 0; t.res!.guard = 3;
+    if (answers) (f.char(f.pcs[0]) as any).phys.answers = answers;
+    f.cb.round = 1; rig({ hit: true, die: 12 }); f.turn(a);
+    f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(a.id), f.unit(t.id), 'melee', null, { noAp: true })); rig(null);
+    return { f, t: f.unit(t.id), a: f.unit(a.id) };
+  }
+  it('the parry rolls with Durability (the Guard door), not the weapon skill', () => {
+    const { f } = fight(['parry']);
+    const line = f.cb.log.find((l) => / parries/.test(l))!;
+    expect(line).toBeTruthy();
+    const dur = mod(7);
+    expect(line).toContain('+' + dur + ' ');
+  });
+  it('with Parry switched off, Retort answers the blow (the one reaction a unit an event: rules 1.28)', () => {
+    const { f, a } = fight(['retort']);
+    expect(f.cb.log.some((l) => / parries/.test(l))).toBe(false);
+    expect(f.cb.log.join(' ')).toMatch(/Retort/); expect(a.hp).toBeLessThan(900);
+  });
+});
