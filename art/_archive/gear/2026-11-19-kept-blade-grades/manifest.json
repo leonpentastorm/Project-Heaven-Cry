@@ -1850,6 +1850,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hand_wraps--masterwork",
+      "path": "art/icons/gear/weapon-hand_wraps--masterwork.png",
+      "sha256": "12c9d7d375cb28fd13efaa025bc4649de50e583b260cc41f500ff6aae6e2875a",
+      "label": "Hand Wraps — Masterwork",
+      "family": "weapon-hand_wraps",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hand_wraps--masterwork.png",
+        "sha256": "dd264cab3ed8477e8b3d60f4866abf5648759d01f7921354f60490f68a0d9eda"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hand_wraps--masterwork.png",
+        "sha256": "12c9d7d375cb28fd13efaa025bc4649de50e583b260cc41f500ff6aae6e2875a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hand_wraps--masterwork.txt",
+        "sha256": "e5e7f2030c1daa171d5b822fe9a556ef0f1ba03d69295d6be73a329ffe0803dc"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-hand_wraps.png",
+          "sha256": "275174226eca2cc49f2db8a64a0d553d4d591dc244b2b053fcab2dcd11fce994"
+        },
+        {
+          "path": "art/icons/gear/weapon-hand_wraps--fine.png",
+          "sha256": "a1054ffaf848814599a63dd4c66ac56bda9b96ee61ac7071315d141fab72c021"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hand_wraps--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-hand_wraps--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-hand_wraps--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-hand_wraps--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "60290d7c4bada79cb541928486797b80f4a2b17a0ad4ab8b4931ba5f908023e1",
+        "128": "ccade4febc78ca51f993ba5fa927578ba61f59320a43035f4e200f78019187d7",
+        "64": "a113e26a1c88e0db32e641b7645627f184aa470ed9f8fa3e409854262e1d6523",
+        "32": "beb105707fd7586240ab0bb15b50264e80a9b00160511a1e83d8dac8e1d009f4"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-hand_wraps",
+      "outline": {
+        "solid_alpha_iou": 0.9824841817500386,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 21
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

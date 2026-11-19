@@ -21205,6 +21205,42 @@
         "different_pixels_32": 8,
         "different_pixels_64": 12
       }
+    },
+    "weapon-hand_wraps--masterwork": {
+      "label": "Hand Wraps — Masterwork",
+      "path": "art/icons/gear/weapon-hand_wraps--masterwork.png",
+      "sha256": "12c9d7d375cb28fd13efaa025bc4649de50e583b260cc41f500ff6aae6e2875a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hand_wraps--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-hand_wraps--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-hand_wraps--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-hand_wraps--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hand_wraps--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.5",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-hand_wraps",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9824841817500386,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 21
+      }
     }
   },
   "survival_art": {
