@@ -3144,6 +3144,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-emanator--relic",
+      "path": "art/icons/gear/focus-emanator--relic.png",
+      "sha256": "ff48778e5c5e48d0a51da9e396bf2bc866f574e2cf52be144b2f8c4d8b7845ad",
+      "label": "Emanator — Relic",
+      "family": "focus-emanator",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-emanator--relic.png",
+        "sha256": "48ce1caebf5cfb17da8a1548a564bdeb80b7703cda4efc33e2e3fee3ca82f3e5"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-emanator--relic.png",
+        "sha256": "ff48778e5c5e48d0a51da9e396bf2bc866f574e2cf52be144b2f8c4d8b7845ad"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-emanator--relic.txt",
+        "sha256": "af5eb2188633fac73d3db1b838e7f0e6a34ebba7e457421cc86c573ef061a88b"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/focus-emanator.png",
+          "sha256": "4fcd240a5ebe70b3c72cc08a8de1203f83e19382d4fd119b06a4ccd32e728bd5"
+        },
+        {
+          "path": "art/icons/gear/focus-emanator--masterwork.png",
+          "sha256": "fb47dd64b85624c108ac22c7565869f152be38babd834164a3c051b45566c8ea"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-emanator--relic.png",
+        "128": "art/icons/gear/exports/128/focus-emanator--relic.png",
+        "64": "art/icons/gear/exports/64/focus-emanator--relic.png",
+        "32": "art/icons/gear/exports/32/focus-emanator--relic.png"
+      },
+      "export_hashes": {
+        "256": "1d557f6cb54ff5036b354e129403bd04b057dbb973017ec49b2995471c881e90",
+        "128": "2efef345d2bab7377d79e33a8840eb9360ec3ebf695f11996cc16bbdf2fc0b35",
+        "64": "9849f14640d530c1cb181dae40fea8338a22c0864b83ce0fff4b891d6acecbcf",
+        "32": "87029f7bb6973b8f437e57c8a712e2bec39820376f99a74a2f750b06e69c2500"
+      },
+      "grade": "relic",
+      "standard_id": "focus-emanator",
+      "outline": {
+        "solid_alpha_iou": 0.9818302516742488,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 17
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
