@@ -6,6 +6,8 @@
     {
       "id": "vermin",
       "name": "Vermin",
+      "notice": 0,
+      "vision": 12,
       "hp": 15,
       "defense": 10,
       "attack_bonus": 0,
@@ -36,6 +38,8 @@
     {
       "id": "minion",
       "name": "Minion",
+      "notice": 0,
+      "vision": 12,
       "hp": 70,
       "defense": 10,
       "attack_bonus": 1,
@@ -65,6 +69,8 @@
     {
       "id": "soldier",
       "name": "Soldier",
+      "notice": 2,
+      "vision": 12,
       "hp": 140,
       "defense": 11,
       "attack_bonus": 3,
@@ -98,6 +104,8 @@
     {
       "id": "elite",
       "name": "Elite",
+      "notice": 4,
+      "vision": 12,
       "hp": 240,
       "defense": 12,
       "attack_bonus": 5,
@@ -137,6 +145,8 @@
     {
       "id": "boss",
       "name": "Boss",
+      "notice": 6,
+      "vision": 12,
       "hp": 820,
       "defense": 13,
       "attack_bonus": 6,

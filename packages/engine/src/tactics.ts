@@ -210,7 +210,8 @@ export function sightOf(cb: Combat, u: Unit, by?: Unit | null): [SightWord, Sigh
 }
 
 // ---------- combat Hidden (spec: Helpful states; rules 1.3) ----------
-export const TIER_NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
+/** An enemy's notice by tier (enemies.json `notice`; rules 1.76: one copy, read by the spot roll, sigil.ts and the story). */
+export const TIER_NOTICE: Record<string, number> = Object.fromEntries(Object.values(ENEMY).map((t) => [t.id, t.notice ?? 0]));
 /** THE one test of an enemy's eyes on a unit: v, of the other side, up and not itself Hidden, sees the tile (range,
  * light, line of sight). at: a tile the unit would stand on (the Hide spots, rules 1.56 Shadow 2.0 item 11). */
 const eyeOn = (cb: Combat, u: Unit, v: Unit, at: string, walls?: Set<string>) => v.side !== u.side && alive(v) && !v.hidden && unitSees(cb, v, at, walls, u);

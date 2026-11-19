@@ -43,7 +43,7 @@ import { instanceMods, advancedActive, bindGame, boundGame, heldOfChar, emit as 
 import { surrender as yieldUnit, canYield } from './tactics';
 import { deedGrant } from './deeds';
 import { condSkillMod, STORY_CARRY, CORE_ITEM } from './magic';
-import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
+import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, TIER_NOTICE, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
 import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy, packKindOf, shieldLineNow, isShieldId, treatLimb } from './character';
@@ -2461,7 +2461,8 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
 
 // ---------- overworld rounds (spec: Overworld rounds) ----------
 /** How hard an enemy is to slip past: its notice bonus (Vigilant) and the TN of the Ingenuity check to stay hidden. */
-export const NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
+/** An NPC's notice by tier: the tier rows' (tactics.ts TIER_NOTICE, from enemies.json; rules 1.76, one copy). */
+export const NOTICE: Record<string, number> = TIER_NOTICE;
 export const ROUND_AP = 6;
 export const apLeft = (g: GameState, c: Character) => g.story.ap?.[c.id] ?? ROUND_AP;
 function spendAp(g: GameState, c: Character, n: number) { (g.story.ap ||= {})[c.id] = Math.max(0, Math.round((apLeft(g, c) - n) * 10) / 10); } // Glyph AP comes in tenths

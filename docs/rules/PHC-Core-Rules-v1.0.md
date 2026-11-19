@@ -12566,7 +12566,9 @@ every item is `adjudication: engine`.
       are dark; the AHOC base, the city and the field are lit. On a dark map sight off a lit tile is halved (rules body,
       Vision: the one `litAt`); the lights are the setting's props (`layout.props`: lamps, terminals) and the objects'
       own `light` radius (`objects.json`: a lamp 3, a fire 2, a terminal 1), a unit's carried light and magic light.
-      PROVISIONAL: the clears are measured before and after (the lane's report).
+      Every dark setting holds at least one lamp: the works' and the rim's lamps are **1 to 2** (they were 0 to 1; the
+      shrine's stay 1 to 2), so no fight is pitch black (a gunner that walked the works with no light ran dry before the
+      shop: the Survival guard, GUARD-36). PROVISIONAL: the clears are measured before and after (the lane's report).
 6401. **Douse on a dark map** (item 1973 stands: a lamp): Douse's reach and its effect name an object word read by the
       one `objects.ts objectIs` (a kind id or a field of the kind's row): today `lamp`, the kind. Widening Douse to every
       light (a fire, a terminal's glow) is one data change, Leon's call (a terminal would break): the word `light` (the
@@ -12599,3 +12601,6 @@ every item is `adjudication: engine`.
 6406. **Silent** (to-do F) is not built here: its rule needs a ruling first (the standing rule, shadow-spec 2.6, a silent
       attack lets its target roll to spot you; to-do F, acting from Hidden gives your tile away while you stay Hidden).
 6407. **Case** (`shadow.json pending`) is not built: it needs a read-out of a unit's kit and rolled loot for a side.
+6408. **An enemy's notice and its eyes are its tier's numbers** (one copy; the scout's audit, item 14c): each tier row of
+      `enemies.json` carries `notice` (minion 0, soldier 2, elite 4, boss 6: the spot roll's bonus, the story's notice
+      range and its TN, the Sigil pattern's passive) and `vision` (12 tiles for every tier). Nothing changes in play.

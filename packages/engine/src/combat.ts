@@ -605,7 +605,7 @@ export function unitFromEnemy(id: string, name: string, tierId: string, weaponId
     pos, hp: n.hp, maxHp: n.hp, def: n.defense, armour: n.armour, attack: n.attack_bonus, weapon: w.id, movement: t.movement,
     init: rollD20(rng).die + n.attack_bonus, agility: 1, ap: 0, bank: 0, ammo: w.magazine ?? 0, heat: 0, jammed: false, shotsThisTurn: 0,
     downed: false, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
-    injuries: [], bleed: 0, dazedNext: 0, injResist: 10 * ((t.endurance || 1) - 1), hand: 'right', vision: 12, sensory: 0, strength: n.attack_bonus,
+    injuries: [], bleed: 0, dazedNext: 0, injResist: 10 * ((t.endurance || 1) - 1), hand: 'right', vision: t.vision, sensory: 0, strength: n.attack_bonus,
     mags: w.magazine == null ? undefined : w.reload === 'loose' ? [] : Array(t.spare_mags ?? 2).fill(w.magazine), loose: w.reload === 'loose' ? (t.spare_mags ?? 2) * (w.magazine || 0) : 0,
     ...(t.techniques && (t.techniques.melee?.length || t.techniques.ranged?.length) ? { techs: [...(t.techniques.melee || []), ...(t.techniques.ranged || [])] } : {}),
     ...(t.calls?.length ? { calls: [...t.calls], callLevel: t.call_level || 1 } : {}), // rules 1.13: an officer's Calls

@@ -38264,7 +38264,11 @@
         "32": "art/icons/shadow/exports/32/slip.png",
         "24": "art/icons/shadow/exports/24/slip.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-slip/slip.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-slip/slip.svg",
+      "data_ids": [
+        "slip",
+        "verb:shadow.stalk"
+      ]
     },
     "shadow-mark": {
       "label": "Wick \u2014 Mark (group mark and Operative rank I move)",
