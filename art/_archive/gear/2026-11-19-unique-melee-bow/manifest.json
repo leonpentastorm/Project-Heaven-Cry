@@ -270,6 +270,72 @@
       "grade": "unique",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-windfall",
+      "path": "art/icons/gear/weapon-windfall.png",
+      "sha256": "0c8c2c0a6ca5b9326d8ca6010eb7e4bff6e495741d64596ad89abe005a018042",
+      "label": "Windfall (recurve bow)",
+      "family": "unique-windfall",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-windfall.png",
+        "sha256": "f9a82b59166543b5559fc4b5e74d42b25949a6ac1204746a05c301894afd70ff"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/masters/v1/weapon-windfall.png",
+        "sha256": "0c8c2c0a6ca5b9326d8ca6010eb7e4bff6e495741d64596ad89abe005a018042"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-windfall.txt",
+        "sha256": "eb32503d4294c39ac1842f6c7312e1e8e1d9c94884b93264708f4489f951ad11"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-afterword.png",
+          "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-recurve_bow.png",
+          "sha256": "99d911d23e02069a19152df8e8229e9ebaf2f90dd19d2c47900a2c9145df905e"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/recurve_bow.png",
+          "sha256": "38450bda81b1155d1241e29ba0be3c92546d92f8efb6f3c4da0c80d362e13932"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-recurve_bow.png",
+          "sha256": "99d911d23e02069a19152df8e8229e9ebaf2f90dd19d2c47900a2c9145df905e"
+        },
+        {
+          "path": "art/icons/weapons/recurve_bow.svg",
+          "sha256": "23fc6f44979210ba82bbd5a502e3cffc9255619edcb8b2f312d30c80343f675e"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-windfall.png",
+        "128": "art/icons/gear/exports/128/weapon-windfall.png",
+        "64": "art/icons/gear/exports/64/weapon-windfall.png",
+        "32": "art/icons/gear/exports/32/weapon-windfall.png"
+      },
+      "export_hashes": {
+        "256": "9f8e063f6847d15c6dc5a213a50061c72ddf0e0d2e11f496117e8b49c2bbd53b",
+        "128": "f52a076e499dc1e215dbf966f3318c25b12ed635991654b8005318c6bc252947",
+        "64": "316b3e33f5866d7a7324c20c621c5347b773484c6744ab7e0fac4010bee37029",
+        "32": "4d262db4aef4082c5afa25b5c167c3da30ac7acf532ec0ea93d78e288252db9b"
+      },
+      "grade": "unique",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

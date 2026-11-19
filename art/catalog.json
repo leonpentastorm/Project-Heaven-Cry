@@ -19787,6 +19787,32 @@
       "collection": "2026-11-19-unique-melee-bow",
       "grade": "unique",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-windfall": {
+      "label": "Windfall (recurve bow)",
+      "path": "art/icons/gear/weapon-windfall.png",
+      "sha256": "0c8c2c0a6ca5b9326d8ca6010eb7e4bff6e495741d64596ad89abe005a018042",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-windfall.png",
+        "128": "art/icons/gear/exports/128/weapon-windfall.png",
+        "64": "art/icons/gear/exports/64/weapon-windfall.png",
+        "32": "art/icons/gear/exports/32/weapon-windfall.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-windfall.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": 15,
+      "collection": "2026-11-19-unique-melee-bow",
+      "grade": "unique",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

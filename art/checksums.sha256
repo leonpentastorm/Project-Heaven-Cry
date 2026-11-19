@@ -1504,19 +1504,20 @@ cdfee57748224e91a01110a08420de365a1088e1cfcf76c7ba482faf4765dec0  art/_archive/g
 c484d6954baf9430e4ec784f796418e8c3a5b0d65b84ecb00bf969835b4728e4  art/_archive/gear/2026-11-19-repaint-continuation/references/previous-exports/64/weapon-mandestra_drum_gun.png
 65d635e4ab99412b2a6b8bd9f5ba5337d0e81be334d408878d48b89f12ddee7f  art/_archive/gear/2026-11-19-repaint-continuation/references/previous-exports/64/weapon-smetanita_thumper.png
 4b6b1ef35939c18621e7e723a61d6f2fd78001a0352a060aa76f70b94e3ced56  art/_archive/gear/2026-11-19-repaint-continuation/source-brief.md
-ce5287e7fa38fc3862a2f32605212cfb894a84c7619b05b29853175d2077415e  art/_archive/gear/2026-11-19-unique-melee-bow/HANDOFF.md
+8bb4a5a7e4490f0700d5626bee18bd779e4acb974d24ba073b3d5db5f36b9530  art/_archive/gear/2026-11-19-unique-melee-bow/HANDOFF.md
 a6aab1ee6083d9f034206bbbd5043db54de65452e04ea115d7e588b5ee604071  art/_archive/gear/2026-11-19-unique-melee-bow/attempts/weapon-breath_of_morning/v1/prompt.txt
 11bf3fe842ea1a7de5095065cf0cd786fef5bf76bd20947ea680fb064374f2f8  art/_archive/gear/2026-11-19-unique-melee-bow/attempts/weapon-breath_of_morning/v1/source.png
 eb617c9a7deefbef2470da5e005e1e77831a97c7590f818fcbc3356be8fd9e5a  art/_archive/gear/2026-11-19-unique-melee-bow/claim.json
 d9375c9935aaea7c780163e588f673b6125ebd84555253c73e270650d0a8043f  art/_archive/gear/2026-11-19-unique-melee-bow/generation-failures/weapon-grandmothers_teeth.json
 25d8d69736cd7ca611ecba8ed9898c76e39aa71084be9079f234b0f584de58c1  art/_archive/gear/2026-11-19-unique-melee-bow/generation-failures/weapon-last_crossing.json
 acfafc7cd7d5c951c55185a5105b3fcb4f04ac6fcbb51da8df23544e8b9d3ade  art/_archive/gear/2026-11-19-unique-melee-bow/generation-failures/weapon-reveille.json
-c8d53fe9f27779f8104cfe150394965c192fd24cba67e5741fc9630fd1df6116  art/_archive/gear/2026-11-19-unique-melee-bow/manifest.json
+baddeea99447e96c0da9c6f2c126a1ee59e90e8266d877a98f51492228403e5a  art/_archive/gear/2026-11-19-unique-melee-bow/manifest.json
 29dec27166fa680a325c323cd79bcf75aa86f6f5ad25b7bd71331b7d631227c5  art/_archive/gear/2026-11-19-unique-melee-bow/masters/v1/weapon-breath_of_morning.png
 3adbfc3da9d765e5580be4c619648ede148e24b5121085ceb417949aadb1c77c  art/_archive/gear/2026-11-19-unique-melee-bow/masters/v1/weapon-last_sentence.png
 61f16f9834e97f058e58b29ae62d5683be586cccf2135a4e39521742f31431a0  art/_archive/gear/2026-11-19-unique-melee-bow/masters/v1/weapon-owed_in_full.png
 5b6430682e10a9339eea82bea1342bce8543355b194409beb076d472476ddf38  art/_archive/gear/2026-11-19-unique-melee-bow/masters/v1/weapon-rearguard.png
-d9f1fb9dac2f98d6c97adc1cdf0d8d6466a3f20ad75eb4bd2ad32cb70ef1352f  art/_archive/gear/2026-11-19-unique-melee-bow/progress.json
+0c8c2c0a6ca5b9326d8ca6010eb7e4bff6e495741d64596ad89abe005a018042  art/_archive/gear/2026-11-19-unique-melee-bow/masters/v1/weapon-windfall.png
+0463da41a9d0ac35f6ad2fa6d53cb59fb8345bbf3511101a276a0f80d92f6d3d  art/_archive/gear/2026-11-19-unique-melee-bow/progress.json
 492caa40ab50519b5c0acab26200e6b27634b383315b17b4dfb4fcae213c1df8  art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-breath_of_morning.txt
 c24713c78fe0dd99eddba2771f3b45e96b5d6821bab8ea0e3bbe887ac76710b3  art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-grandmothers_teeth.txt
 9fe5b8263778cbc98e87d5be7033f56419004ac5d95ca405f9ebdbccef4a5b48  art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-last_crossing.txt
@@ -1525,7 +1526,7 @@ c24713c78fe0dd99eddba2771f3b45e96b5d6821bab8ea0e3bbe887ac76710b3  art/_archive/g
 8ea1d4a534e97abece65a75d83b9c6f9080fe44abc6fce384119ea6c10797afe  art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-rearguard.txt
 c26d9102ae14eb798fbaa639fd6ba2bedefbcc418773ffac3b216fce31b8d65f  art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-reveille.txt
 eb32503d4294c39ac1842f6c7312e1e8e1d9c94884b93264708f4489f951ad11  art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-windfall.txt
-24863a6a3807d2c2398d5980a554681c7316abde911bd03273b06b2d8a4dcbc2  art/_archive/gear/2026-11-19-unique-melee-bow/queue.json
+74e4278d2c707b719500776e20cf8085763e3a0c6f8ecb58a2d9e6d2a187afaa  art/_archive/gear/2026-11-19-unique-melee-bow/queue.json
 4b161e5511247906d07467797a1cf8b4463429e8d887473d0844b1ca957aee77  art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/adamantile_greatsword.png
 7b8efe72fd8c57c71e44cde023b49775f2f5f014de442caac2bc2a1484d6f040  art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/glaive.png
 9bed6d9a7a94150c7c553c86f1a86785dd3392744606da13d7500f627cb0bd3c  art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/hand_wraps.png
@@ -1542,11 +1543,14 @@ a530a35fb3f89cee4e0e3c9615c10f79c41b5c511f37ddb82e99b21d1c84bf90  art/_archive/g
 879a4ea85304423f53fd906b85589940f51c06a2f6c35cdee44e88c683ba1725  art/_archive/gear/2026-11-19-unique-melee-bow/reviews/unique-owed_in_full-64px.png
 6b7c0609773c47ef73b3f94473df6a15d6e3e47d91a2123529c2276ac2b0f386  art/_archive/gear/2026-11-19-unique-melee-bow/reviews/unique-rearguard-32px.png
 781e8f8f9fdadbcced75d51d2d831455af50ce1ca5e7288e679323c6802881d1  art/_archive/gear/2026-11-19-unique-melee-bow/reviews/unique-rearguard-64px.png
+e3ac7e7ee3769f575269a0b489618ed42efe809e7fd18a10c1c8a0416f6c7bd7  art/_archive/gear/2026-11-19-unique-melee-bow/reviews/unique-windfall-32px.png
+b637a8581183dd7c2852883b5aaa7a2d64fbf1767e109fc295436cfabc192f76  art/_archive/gear/2026-11-19-unique-melee-bow/reviews/unique-windfall-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-19-unique-melee-bow/source-brief.md
 bc3a8cc42b0aaf5fdae25fcb6c6f93b5fa4189e9eac621530ef54b28dd2fdd6a  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-breath_of_morning.png
 06576b1f3b25e6d9b92dfb98300bb4726aaf58041e60b8898156a06100324016  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-last_sentence.png
 725c9dba48348c0ccce625052eef53fd045ec618fe32fbbe0574efc23843f8dd  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-owed_in_full.png
 2c50102a8d476a28c74fd6c1ab5ff12dbd2abdaa8ce271a0921c7fd377271c3c  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-rearguard.png
+f9a82b59166543b5559fc4b5e74d42b25949a6ac1204746a05c301894afd70ff  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-windfall.png
 8b257cb2e0ca18d4620a9c101f55520211333ff60b53157b49c50dab52ba6cd2  art/_archive/icons/perks/2026-11-12/both-hands.png
 bee60137688c6ac3615d3935ce9aadbb1937bc223cbcb791fa92572044cf2380  art/_archive/icons/perks/2026-11-12/exports/128/both-hands.png
 97cd6b0da1b3ba216fd374b114e5c0d403031407319cf465fc28e3ca1b39e4f6  art/_archive/icons/perks/2026-11-12/exports/256/both-hands.png
@@ -4862,7 +4866,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-db807b117aff7023a2007adfce362c047a04999739b5ed9cb1acaf962745fce1  art/catalog.json
+37a7edb4ed7fec72ff603d696251b14bc7c496e249b65ddc5186433f015764df  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6679,6 +6683,7 @@ d70fd206edcab39bd7d0b829510b66f6196d5afb093d587b68edacb0293ac5b4  art/icons/gear
 01ddd209d50fa6433f92d3699a0ec2507835a272f59e5ce7fc9a1ef2b977bd7d  art/icons/gear/exports/128/weapon-war_pick.png
 4140008361b8e36984a2d8fd5b0e529954c7ed185d998b680644469455167557  art/icons/gear/exports/128/weapon-weighted_gloves.png
 8fc9649e9c7b19a87a937764f18197d853c58ec69f5ea01c77ccc0c1a117fb9f  art/icons/gear/exports/128/weapon-whisper_smg.png
+f52a076e499dc1e215dbf966f3318c25b12ed635991654b8005318c6bc252947  art/icons/gear/exports/128/weapon-windfall.png
 6f15050aec83d6749baa99e6b0de9fc2cb42247a06f991d508120595e7f44d16  art/icons/gear/exports/256/ammo-armor_piercing.png
 c03500cccfedbcbc1e09252b67a76eb1b7e056c5f6cfcd5c3510b613f023d735  art/icons/gear/exports/256/ammo-enhanced.png
 f5b62004b605942171b5647ae84a58d73194940a44250257f6bb3ae8bc2c9eea  art/icons/gear/exports/256/ammo-hollow_point.png
@@ -6895,6 +6900,7 @@ d56cfe7a45b64cd0bcce3fc13e5f1f44a1fc3251219fb14a5bd16e28079ec9d3  art/icons/gear
 e39d252c2ced127dbc25760de284fe14c71d0844f81667020e08327e35606c89  art/icons/gear/exports/256/weapon-war_pick.png
 3a03f9bb561e05696b2dfb0b04381ffc5983a8d6abb1f4ae453a90469867052c  art/icons/gear/exports/256/weapon-weighted_gloves.png
 3f97138a567c5ef903b21df3d619e2b311d7c39ddb254efe533efa016d605260  art/icons/gear/exports/256/weapon-whisper_smg.png
+9f8e063f6847d15c6dc5a213a50061c72ddf0e0d2e11f496117e8b49c2bbd53b  art/icons/gear/exports/256/weapon-windfall.png
 d5fd3f74fa1c3551380b2c7a8b610aa88a2169b98b8a9d371c83dbaf63571872  art/icons/gear/exports/32/ammo-armor_piercing.png
 a16cc34e80508dae3c5303558be8812c1975a7f6509442aba005c66db9c39ec2  art/icons/gear/exports/32/ammo-enhanced.png
 6f4f0cce36d7ad63bc6c16f59f127619fa13a8d22ca489dec8c597fab9175dc2  art/icons/gear/exports/32/ammo-hollow_point.png
@@ -7111,6 +7117,7 @@ a848efbaae711aa43040266c76cc8d273f0bf7927aa1dec9431d46d94c967018  art/icons/gear
 d76f286c44eab0f7a0f2fc6bef2b33bbebfde19cc6c60efbcb1a9e8f23e2717c  art/icons/gear/exports/32/weapon-war_pick.png
 57a1614702ef9396069438a843ad6bee66941e9738fb5fde085c261ba4ada075  art/icons/gear/exports/32/weapon-weighted_gloves.png
 b01e2de349193db50b07df281bbec8d8907532f8ef053c4d3eaed8f3f35f7931  art/icons/gear/exports/32/weapon-whisper_smg.png
+4d262db4aef4082c5afa25b5c167c3da30ac7acf532ec0ea93d78e288252db9b  art/icons/gear/exports/32/weapon-windfall.png
 d63db1e659bb13228898eacf57cba243b6f608e844a28abac7c66d3debced0ee  art/icons/gear/exports/64/ammo-armor_piercing.png
 c06ede8d6e6e652b29a9fae8294b5ee07e6d1cd4332f8d57458307ea058e90b4  art/icons/gear/exports/64/ammo-enhanced.png
 5db299ac0767b250d979760046a6bd5184ea812dd1a99a9be719e9fa9df73eb1  art/icons/gear/exports/64/ammo-hollow_point.png
@@ -7327,6 +7334,7 @@ be23c61670a54060026a41cf2701d6da20edb7fb8f09e2fc2187b4e1b84f885a  art/icons/gear
 73b6e7786c1a7c0cc7f9f33b68c8ae3602c86a75cedebe696f4ce567365d97af  art/icons/gear/exports/64/weapon-war_pick.png
 6a371f69334481951d74a757d7f443a07d0f246a393e53d91fe16d8623fdb9ad  art/icons/gear/exports/64/weapon-weighted_gloves.png
 7aa1e3d6702ba2dfe5b3685b7e8d5a1817cad08a67e7a86bb6a3d4463622b6bf  art/icons/gear/exports/64/weapon-whisper_smg.png
+316b3e33f5866d7a7324c20c621c5347b773484c6744ab7e0fac4010bee37029  art/icons/gear/exports/64/weapon-windfall.png
 e5c096f0816f62ee9e2a86cacb9741a5c73d21dc35dea0f6c66f8d55a9b27a84  art/icons/gear/focus-attuner.png
 4fcd240a5ebe70b3c72cc08a8de1203f83e19382d4fd119b06a4ccd32e728bd5  art/icons/gear/focus-emanator.png
 3947d21607b863bf71949ab13c1a7667ca3cb5a006314d082516daaa1ee076f4  art/icons/gear/focus-evoker.png
@@ -7493,6 +7501,7 @@ c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f  art/icons/gear
 bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7  art/icons/gear/weapon-war_pick.png
 a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a  art/icons/gear/weapon-weighted_gloves.png
 b916756013c04cb3db56a413db970873a054e1964531142606f77e5a26138765  art/icons/gear/weapon-whisper_smg.png
+0c8c2c0a6ca5b9326d8ca6010eb7e4bff6e495741d64596ad89abe005a018042  art/icons/gear/weapon-windfall.png
 4d54bffc4ae6d60781b17d3b63da4826e71cf3e5fd8d0058159a1ea1f70ed018  art/icons/modules/README.md
 013474857238abee2b8d64082fec3f896d10eb268ff34fcccb40c6669523db5a  art/icons/modules/exports/128/module-anchor.png
 fdfd5ff99cf4d25802e604a3bf3ae90863e6bc574c5b367e2183c99d3e70a8e3  art/icons/modules/exports/128/module-at_once.png

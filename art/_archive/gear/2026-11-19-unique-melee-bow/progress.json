@@ -5,14 +5,14 @@
     "weapon-last_sentence",
     "weapon-owed_in_full",
     "weapon-breath_of_morning",
-    "weapon-rearguard"
+    "weapon-rearguard",
+    "weapon-windfall"
   ],
   "remaining": [
     "weapon-grandmothers_teeth",
     "weapon-last_crossing",
-    "weapon-reveille",
-    "weapon-windfall"
+    "weapon-reveille"
   ],
   "production_approved": false,
-  "updated_utc": "2026-11-19T07:32:38.209788+00:00"
+  "updated_utc": "2026-11-19T07:34:18.024471+00:00"
 }
