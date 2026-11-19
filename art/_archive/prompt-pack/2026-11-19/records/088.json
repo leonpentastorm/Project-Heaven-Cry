@@ -1,0 +1,60 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 216,
+  "title": "`blessed_aim`: Blessed Aim (condition sign)",
+  "path": "art/icons/conditions/blessed-aim.png",
+  "notes": "- **Save as:** `art/icons/conditions/blessed-aim.png`. **Mode:** white-ink sign. It must look different from `art/icons/conditions/canticle-rising.png`.\n- **Shows:** the status strip, as a helping condition (a blessing on your aim).\n- **Must read at 16 px as:** a reticle with one small mark above it.",
+  "paint": "A bold circular reticle: a thick ring with four short inward tick marks at top, bottom, left and right, and a small solid dot in the centre. Above the ring, centred and touching its top, sits one small rounded drop-shaped blessing mark, a single teardrop of light pointing downward onto the reticle, with two tiny short ticks on each side of it. Nothing else. Keep the reticle large so it reads at 16 px; no cross, no rays, no halo ring around the whole.",
+  "status": "review-candidate",
+  "n": 88,
+  "kind": "sign",
+  "refs": [
+    "art/icons/boons/edge.png",
+    "art/icons/conditions/hidden.png",
+    "art/icons/conditions/marked.png",
+    "art/icons/conditions/canticle-rising.png"
+  ],
+  "label": "Blessed Aim (condition sign)",
+  "sha256": "c8dacad0b7d275dc00816f5ea4078bdf4b9b450efef4f7cd3c913401496c4191",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "sign",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/088-blessed-aim.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/conditions/exports/256/blessed-aim.png",
+    "128": "art/icons/conditions/exports/128/blessed-aim.png",
+    "64": "art/icons/conditions/exports/64/blessed-aim.png",
+    "48": "art/icons/conditions/exports/48/blessed-aim.png",
+    "44": "art/icons/conditions/exports/44/blessed-aim.png",
+    "32": "art/icons/conditions/exports/32/blessed-aim.png",
+    "24": "art/icons/conditions/exports/24/blessed-aim.png",
+    "16": "art/icons/conditions/exports/16/blessed-aim.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:216",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a scene: Wick does not appear. One subject, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 16 px beside a word on a status strip and at 48 px on a card: silhouette first, two interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nA bold circular reticle: a thick ring with four short inward tick marks at top, bottom, left and right, and a small solid dot in the centre. Above the ring, centred and touching its top, sits one small rounded drop-shaped blessing mark, a single teardrop of light pointing downward onto the reticle, with two tiny short ticks on each side of it. Nothing else. Keep the reticle large so it reads at 16 px; no cross, no rays, no halo ring around the whole.\nOne crisp standalone symbol with generous transparent margin. No Wick. Use only the requested components.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "condition_icons",
+  "id": "cond-blessed-aim",
+  "source_sha256": "099943fdce5c9527e1c92dcd9aab246ad4eade62f02957061eff86886b22a051",
+  "export_sha256": {
+    "256": "c16672edd708df4d841607da866fa53d695372f9fa1d3d3651ff3749b982cbe0",
+    "128": "71c6d12d1b8d949079c7b3dc120329e75f8b1a59246391e0c6c25f57d2530d82",
+    "64": "1abb9f1476d403c190b2f1322e61b0fc56f561a330c2e9295a95e8be93cf5d1b",
+    "48": "9d5794f18560cccf8fca0518552b973d777c4c2322617fef6407ce1ce7b2f440",
+    "44": "33b2132488154033a903f526a6ae780c4e7de8232bceb73316348356b06cb88d",
+    "32": "4aba1803f01d57314df422403cae6fe322fb072612f60be573f80869e694d52a",
+    "24": "4e99c2aa4c69cc1a0fed6c6cf590701a3561c17fa818e5c8f5a83adc6ce8367f",
+    "16": "f3e021e2b9e93bbb6e74ebca8c3d3c5a02382ef11e8a47314b4c9bb7dd684f2b"
+  }
+}

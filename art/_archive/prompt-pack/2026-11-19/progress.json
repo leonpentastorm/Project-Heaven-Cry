@@ -1,9 +1,9 @@
 {
-  "updated": "19 November 2026 at 10:38 UTC+7",
+  "updated": "19 November 2026 at 10:47 UTC+7",
   "source_baseline": "2020b5c2aa620ec17103b7c11669f643342ed68f",
   "listed": 88,
-  "delivered": 44,
-  "eligible_remaining": 43,
+  "delivered": 53,
+  "eligible_remaining": 34,
   "held": [
     9
   ],
@@ -51,10 +51,7 @@
     76,
     77,
     78,
-    79
-  ],
-  "pending_in_order": [
-    66,
+    79,
     80,
     81,
     82,
@@ -63,7 +60,10 @@
     85,
     86,
     87,
-    88,
+    88
+  ],
+  "pending_in_order": [
+    66,
     4,
     5,
     6,
@@ -98,8 +98,6 @@
     36,
     37
   ],
-  "unreviewed_drafts_on_disk": [
-    84
-  ],
+  "unreviewed_drafts_on_disk": [],
   "image_generation_quota": null
 }

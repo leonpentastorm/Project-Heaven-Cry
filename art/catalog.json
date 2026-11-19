@@ -10975,6 +10975,223 @@
       },
       "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:121",
       "ink": "#FFFFFF"
+    },
+    "pull-together": {
+      "label": "Pull Together",
+      "path": "art/icons/perks/pull-together.png",
+      "sha256": "00a9266adc70f2aa4f498c09cd67a0df0c2b761b4d449749ff855a33dd7a24a6",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/080-pull-together.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/pull-together.png",
+        "128": "art/icons/perks/exports/128/pull-together.png",
+        "64": "art/icons/perks/exports/64/pull-together.png",
+        "56": "art/icons/perks/exports/56/pull-together.png",
+        "48": "art/icons/perks/exports/48/pull-together.png",
+        "44": "art/icons/perks/exports/44/pull-together.png",
+        "40": "art/icons/perks/exports/40/pull-together.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:131",
+      "ink": "#FFFFFF"
+    },
+    "quiet-thread": {
+      "label": "Quiet Thread",
+      "path": "art/icons/perks/quiet-thread.png",
+      "sha256": "ca41f0ec6cd435eca5c477086275ed91a3da1a79c49e21f857a57165e0767151",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/081-quiet-thread.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/quiet-thread.png",
+        "128": "art/icons/perks/exports/128/quiet-thread.png",
+        "64": "art/icons/perks/exports/64/quiet-thread.png",
+        "56": "art/icons/perks/exports/56/quiet-thread.png",
+        "48": "art/icons/perks/exports/48/quiet-thread.png",
+        "44": "art/icons/perks/exports/44/quiet-thread.png",
+        "40": "art/icons/perks/exports/40/quiet-thread.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:141",
+      "ink": "#FFFFFF"
+    },
+    "veiled-insult": {
+      "label": "Veiled Insult (a new picture, started from Sweet Talker)",
+      "path": "art/icons/perks/veiled-insult.png",
+      "sha256": "2fab0b7e3b0f805e995336025e8f9a55b72c5258d77924c87461f5c8e8c18c1b",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/082-veiled-insult.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/veiled-insult.png",
+        "128": "art/icons/perks/exports/128/veiled-insult.png",
+        "64": "art/icons/perks/exports/64/veiled-insult.png",
+        "56": "art/icons/perks/exports/56/veiled-insult.png",
+        "48": "art/icons/perks/exports/48/veiled-insult.png",
+        "44": "art/icons/perks/exports/44/veiled-insult.png",
+        "40": "art/icons/perks/exports/40/veiled-insult.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:151",
+      "ink": "#FFFFFF"
+    },
+    "righteous": {
+      "label": "Righteous",
+      "path": "art/icons/perks/righteous.png",
+      "sha256": "310e273c7ef4393a308877a6681038c372587316c5c725eab7fd8578a7b51d70",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/084-righteous.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/righteous.png",
+        "128": "art/icons/perks/exports/128/righteous.png",
+        "64": "art/icons/perks/exports/64/righteous.png",
+        "56": "art/icons/perks/exports/56/righteous.png",
+        "48": "art/icons/perks/exports/48/righteous.png",
+        "44": "art/icons/perks/exports/44/righteous.png",
+        "40": "art/icons/perks/exports/40/righteous.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:176",
+      "ink": "#FFFFFF"
+    },
+    "foresight": {
+      "label": "Foresight",
+      "path": "art/icons/perks/foresight.png",
+      "sha256": "bb88565e3a5d2f674f85330ff8301c465f18030595c1d0f3c8408a6b8bd6e330",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/085-foresight.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/foresight.png",
+        "128": "art/icons/perks/exports/128/foresight.png",
+        "64": "art/icons/perks/exports/64/foresight.png",
+        "56": "art/icons/perks/exports/56/foresight.png",
+        "48": "art/icons/perks/exports/48/foresight.png",
+        "44": "art/icons/perks/exports/44/foresight.png",
+        "40": "art/icons/perks/exports/40/foresight.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:186",
+      "ink": "#FFFFFF"
+    },
+    "five-stars": {
+      "label": "Five Stars",
+      "path": "art/icons/perks/five-stars.png",
+      "sha256": "1858f8e71575d353be83a4b6e8409d98a7b77692c8234aacb95d581515704bec",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/086-five-stars.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/five-stars.png",
+        "128": "art/icons/perks/exports/128/five-stars.png",
+        "64": "art/icons/perks/exports/64/five-stars.png",
+        "56": "art/icons/perks/exports/56/five-stars.png",
+        "48": "art/icons/perks/exports/48/five-stars.png",
+        "44": "art/icons/perks/exports/44/five-stars.png",
+        "40": "art/icons/perks/exports/40/five-stars.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:196",
+      "ink": "#FFFFFF"
+    },
+    "commanding-voice": {
+      "label": "Commanding Voice",
+      "path": "art/icons/perks/commanding-voice.png",
+      "sha256": "8839b950cf609f5a9fb985b4e740dd571664b846eef5334ae9711d6f9007b8fb",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/087-commanding-voice.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/commanding-voice.png",
+        "128": "art/icons/perks/exports/128/commanding-voice.png",
+        "64": "art/icons/perks/exports/64/commanding-voice.png",
+        "56": "art/icons/perks/exports/56/commanding-voice.png",
+        "48": "art/icons/perks/exports/48/commanding-voice.png",
+        "44": "art/icons/perks/exports/44/commanding-voice.png",
+        "40": "art/icons/perks/exports/40/commanding-voice.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:206",
+      "ink": "#FFFFFF"
     }
   },
   "illustrations": {
@@ -42668,6 +42885,38 @@
       },
       "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:165",
       "ink": "#FFFFFF"
+    },
+    "cond-blessed-aim": {
+      "label": "Blessed Aim (condition sign)",
+      "path": "art/icons/conditions/blessed-aim.png",
+      "sha256": "c8dacad0b7d275dc00816f5ea4078bdf4b9b450efef4f7cd3c913401496c4191",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "sign",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/088-blessed-aim.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/conditions/exports/256/blessed-aim.png",
+        "128": "art/icons/conditions/exports/128/blessed-aim.png",
+        "64": "art/icons/conditions/exports/64/blessed-aim.png",
+        "48": "art/icons/conditions/exports/48/blessed-aim.png",
+        "44": "art/icons/conditions/exports/44/blessed-aim.png",
+        "32": "art/icons/conditions/exports/32/blessed-aim.png",
+        "24": "art/icons/conditions/exports/24/blessed-aim.png",
+        "16": "art/icons/conditions/exports/16/blessed-aim.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:216",
+      "ink": "#FFFFFF"
     }
   },
   "fork_icons": {
@@ -43107,13 +43356,13 @@
       "previous_sha256": "42f9b2513d0a9c08ce8a11335b79a2d53d2fa228058df7f459e70048857b8477"
     },
     "fork-prayer-held_breath": {
-      "label": "Held Breath",
+      "label": "Swift Psalm (replaces the existing picture)",
       "path": "art/icons/forks/prayer-held-breath.png",
-      "sha256": "f7384ceef75e7b85ffa834583c16538bef529febcb9204aeceaa5567192ede41",
+      "sha256": "e61ffe7d28c4a204715ad416f49167e419c707e5eecd37363b845ecacd5add3f",
       "format": "png",
       "mode": "wick",
       "tint": "virtue",
-      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #",
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:165",
       "slot": true,
       "status": "review-candidate",
       "production_approved": false,
@@ -43122,18 +43371,27 @@
       "background": "transparent",
       "implementation_ready": false,
       "ink": "#FFFFFF",
-      "collection": "nine-doors-0.30",
+      "collection": "prompt-pack-2026-11-19",
       "request_key": "0.30/fork.prayer.held_breath",
       "exports": {
+        "256": "art/icons/forks/exports/256/prayer-held-breath.png",
         "128": "art/icons/forks/exports/128/prayer-held-breath.png",
         "64": "art/icons/forks/exports/64/prayer-held-breath.png",
+        "56": "art/icons/forks/exports/56/prayer-held-breath.png",
         "48": "art/icons/forks/exports/48/prayer-held-breath.png",
         "44": "art/icons/forks/exports/44/prayer-held-breath.png",
+        "40": "art/icons/forks/exports/40/prayer-held-breath.png",
         "32": "art/icons/forks/exports/32/prayer-held-breath.png",
         "24": "art/icons/forks/exports/24/prayer-held-breath.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/fork-prayer-held_breath/fork-prayer-held_breath.png",
-      "previous_sha256": "f247e74c13d8eb0d3c54b42f193c1de9e041597db2c3948d57fc486de8e0f0a0"
+      "previous_path": "art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/prayer-held-breath.png",
+      "previous_sha256": "f7384ceef75e7b85ffa834583c16538bef529febcb9204aeceaa5567192ede41",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/083-prayer-held-breath.png",
+      "upscaled": false
     },
     "fork-momentum-rolling_start": {
       "label": "Rolling Start",

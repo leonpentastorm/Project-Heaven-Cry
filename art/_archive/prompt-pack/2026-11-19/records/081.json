@@ -1,0 +1,59 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 141,
+  "title": "`quiet_thread`: Quiet Thread",
+  "path": "art/icons/perks/quiet-thread.png",
+  "notes": "- **Save as:** `art/icons/perks/quiet-thread.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** a bond that stays slack and unseen, with Wick hidden at its end.",
+  "paint": "A thin single line laid in a lazy S-curve slack across the frame from left to right, drawn as a bold but narrow white thread with one loose loop in it. At the far right end it reaches a small half-hidden Wick, only his head and one shoulder showing, tucked behind a rounded wall-corner cut by the frame edge, peeking out with one eye. At the left end the thread attaches to a small ring. The thread has slack; nothing about it is pulled tight. Quiet, still, a lot of empty space around the line.",
+  "status": "review-candidate",
+  "n": 81,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "previousPaint": "A thin single line laid in a lazy S-curve slack across the frame from left to right, drawn as a bold but narrow white thread with one loose loop in it. At the far right end it reaches a small half-hidden Wick, only his flame head and one shoulder showing, tucked behind a rounded wall-corner cut by the frame edge, peeking out with one eye. At the left end the thread attaches to a small ring. The thread has slack; nothing about it is pulled tight. Quiet, still, a lot of empty space around the line.",
+  "label": "Quiet Thread",
+  "sha256": "ca41f0ec6cd435eca5c477086275ed91a3da1a79c49e21f857a57165e0767151",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/081-quiet-thread.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/quiet-thread.png",
+    "128": "art/icons/perks/exports/128/quiet-thread.png",
+    "64": "art/icons/perks/exports/64/quiet-thread.png",
+    "56": "art/icons/perks/exports/56/quiet-thread.png",
+    "48": "art/icons/perks/exports/48/quiet-thread.png",
+    "44": "art/icons/perks/exports/44/quiet-thread.png",
+    "40": "art/icons/perks/exports/40/quiet-thread.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:141",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nA thin single line laid in a lazy S-curve slack across the frame from left to right, drawn as a bold but narrow white thread with one loose loop in it. At the far right end it reaches a small half-hidden Wick, only his head and one shoulder showing, tucked behind a rounded wall-corner cut by the frame edge, peeking out with one eye. At the left end the thread attaches to a small ring. The thread has slack; nothing about it is pulled tight. Quiet, still, a lot of empty space around the line.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perks",
+  "id": "quiet-thread",
+  "source_sha256": "718d5f0a3e81d47d084f5715cc4f2b63748ed63824bbea20f5223d64d3d8e495",
+  "export_sha256": {
+    "256": "22288ef11200ef06692dbe43d0b6b1bc19a594272d2c1d8ae97b245cfebe60f2",
+    "128": "195604739fd7d1a0a169454480438dfb426f9c8d0b57f9c90fa9fb93d1e7b3de",
+    "64": "ec8775784cde7927e136f92b15ebcc41ba8e6973cd37b40a371144c2e15fd63a",
+    "56": "3db2b1374b7b56febc2c3ce6125aa898b5c8025220e637a8f7370f006ee8ed3b",
+    "48": "6da9b302d04a34476ed582318797c1e532e11fcd8b4fbd8acccb218c90c40dc7",
+    "44": "3fb21b9a88cdc10ec637f013543ec2eaf0a59251a3222076dd1f32fdf77d6544",
+    "40": "af0dcfc0a8d763e40782123c3e792066b3f8d2da2fcb2af0294b5815a2547c7a"
+  }
+}

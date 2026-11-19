@@ -1,0 +1,59 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 151,
+  "title": "`veiled_insult`: Veiled Insult (a new picture, started from Sweet Talker)",
+  "path": "art/icons/perks/veiled-insult.png",
+  "notes": "- **Existing file to attach (the starting point):** `art/icons/perks/sweet-talker.png` (a rose and heart eyes). **Save as:** `art/icons/perks/veiled-insult.png` (a new file; `sweet-talker.png` is only the start image and is left as it is, do not overwrite it).\n- **What changes:** start from that picture and keep its composition. Make the rose barbed (thorns on the stem, a thorn-edged petal rim) and the eyes sly (half-lidded, one eyebrow lifted, a thin smirk), not heart-shaped. The compliment should read as a blade in flowers. Nothing sweet remains.\n- **Shows:** perk card.",
+  "paint": "Take the attached Sweet Talker icon and redraw it as Wick offering a single rose toward the right with a charming bow, but the rose is barbed: the stem carries three sharp curved thorns and the outer petals end in small jagged points, and a thin sharp blade-like leaf curls from the stem like a hidden dagger. Wick's eyes are sly: two half-closed lids with one eyebrow raised and a lopsided narrow smile, no hearts anywhere. Same line weight and size as the attached icon.",
+  "status": "review-candidate",
+  "n": 82,
+  "kind": "wick",
+  "refs": [
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "label": "Veiled Insult (a new picture, started from Sweet Talker)",
+  "sha256": "2fab0b7e3b0f805e995336025e8f9a55b72c5258d77924c87461f5c8e8c18c1b",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/082-veiled-insult.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/veiled-insult.png",
+    "128": "art/icons/perks/exports/128/veiled-insult.png",
+    "64": "art/icons/perks/exports/64/veiled-insult.png",
+    "56": "art/icons/perks/exports/56/veiled-insult.png",
+    "48": "art/icons/perks/exports/48/veiled-insult.png",
+    "44": "art/icons/perks/exports/44/veiled-insult.png",
+    "40": "art/icons/perks/exports/40/veiled-insult.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:151",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nTake the attached Sweet Talker icon and redraw it as Wick offering a single rose toward the right with a charming bow, but the rose is barbed: the stem carries three sharp curved thorns and the outer petals end in small jagged points, and a thin sharp blade-like leaf curls from the stem like a hidden dagger. Wick's eyes are sly: two half-closed lids with one eyebrow raised and a lopsided narrow smile, no hearts anywhere. Same line weight and size as the attached icon.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perks",
+  "id": "veiled-insult",
+  "source_sha256": "fc3abab2480e25ba3411245653c22fed90c3971d7dc96f97ef6fdeea564df90d",
+  "export_sha256": {
+    "256": "41f3d5795c63ddafcea09acbd77a5474d33d78116f8bdbed35d5d297353f9676",
+    "128": "64da6e9914845838f524575f08cc29b6599377524169caed4f0aebe940c4a363",
+    "64": "938e7aab7d03a71e916e4d4c470889c87481237dacabb7789644ea45b7011bf3",
+    "56": "5fe4df32e35ef580ce8f45c621ca9922cf95b3b14be0c08c24eb815216b5785d",
+    "48": "e1aaef7900108e6fdb86bf083ff067ac55857fb9f4b288c23f8b93a817a5c440",
+    "44": "dba621cf35e1f645f27b4f016a16410e47980e7a2dc7dadb55a0c2ddb2427fc1",
+    "40": "f1cf62918c59b49e539a5d75ebe6ca8ef9924206f88a13b5117248ce07cd5a27"
+  }
+}

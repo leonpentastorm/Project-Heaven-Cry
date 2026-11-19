@@ -1,0 +1,58 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 206,
+  "title": "`commanding_voice`: Commanding Voice",
+  "path": "art/icons/perks/commanding-voice.png",
+  "notes": "- **Save as:** `art/icons/perks/commanding-voice.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** a voice nothing can shut, a gag ring shattering.",
+  "paint": "Wick shouting with his mouth wide open, head thrown slightly back, a bold set of four sound-arcs leaving his mouth to the right, growing in size, completely unbroken. Around his throat a thick ring (a binding band) is shown cracking and exploding outward into five sharp white shards, scattering clear of his neck. The sound-arcs pass through the empty space where the ring was. Loud, strong, open, with the shattered ring just left of the arcs.",
+  "status": "review-candidate",
+  "n": 87,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "label": "Commanding Voice",
+  "sha256": "8839b950cf609f5a9fb985b4e740dd571664b846eef5334ae9711d6f9007b8fb",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/087-commanding-voice.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/commanding-voice.png",
+    "128": "art/icons/perks/exports/128/commanding-voice.png",
+    "64": "art/icons/perks/exports/64/commanding-voice.png",
+    "56": "art/icons/perks/exports/56/commanding-voice.png",
+    "48": "art/icons/perks/exports/48/commanding-voice.png",
+    "44": "art/icons/perks/exports/44/commanding-voice.png",
+    "40": "art/icons/perks/exports/40/commanding-voice.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:206",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick shouting with his mouth wide open, head thrown slightly back, a bold set of four sound-arcs leaving his mouth to the right, growing in size, completely unbroken. Around his throat a thick ring (a binding band) is shown cracking and exploding outward into five sharp white shards, scattering clear of his neck. The sound-arcs pass through the empty space where the ring was. Loud, strong, open, with the shattered ring just left of the arcs.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perks",
+  "id": "commanding-voice",
+  "source_sha256": "2474554c88fb9b6833ca5875f06c11145288d5df40b6a88df436c7e0979f7e41",
+  "export_sha256": {
+    "256": "2dd75a7370b38b7c39f8bca1e5334cbb959a39864d96d8cc455c802713d19e4a",
+    "128": "7446cf8b86ad1c21aef5ada73557bc611797e72fb69f3d7bb00a16b6458fcd2c",
+    "64": "b31ec474512c5902fa1fe18a910b6c5b3d4edba9c5b3b93f396fb20942bb2905",
+    "56": "72494eac0a449edabf0ce345b48a844f726846744860c70fd163db566c54a2b9",
+    "48": "f70260be20e05e1d5c0825af82410e94936404617ce59ec990dd9cb4b115e3e4",
+    "44": "731e728c2da54c93463bdd3962029a4961a0800520ce536b8eeb3fd578e8b3df",
+    "40": "b92012c855dc532ba1a03f9e70b98eb01c9b2c22d34f0753eced84600bc301c0"
+  }
+}

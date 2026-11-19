@@ -3148,7 +3148,7 @@ e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4  art/_archive/p
 c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/perks/wick/replaced/2026-11-16/shrug-it-off.png
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
-f2dbbe2cda78a50f44e96aca0a1d9ec980204e216d56544bfc495269724df38c  art/_archive/prompt-pack/2026-11-19/HANDOFF.md
+e21f7cb9e3d80d9112cf2c7d4bd8060fd006afae89656adf76c8692bba32ecfd  art/_archive/prompt-pack/2026-11-19/HANDOFF.md
 68259168b9a0bdae8a3725b16edcad094e0e80af839d777b654c3bf731e5ad24  art/_archive/prompt-pack/2026-11-19/SPEC-UPDATE.md
 42a0e8ba7980eb8a1ecd3dd51f6d182223f46348b05e4fb7a8ac67b00229387b  art/_archive/prompt-pack/2026-11-19/asset-build-check.txt
 53a796e2821165185750f766accc3da9c9ecf119e0d266871323fbac659f13e9  art/_archive/prompt-pack/2026-11-19/checkpoint.py
@@ -3157,7 +3157,7 @@ ba25f7da2445b248a4efaf13548568d050b5498880abacba727a07bb9da5d6a9  art/_archive/p
 511fd38b01466ed926bbe01c691179ceee67707a9c3432545e98ad8a1b107d1c  art/_archive/prompt-pack/2026-11-19/generate-ink.js
 9db4e9db8ae2e42ef9b0b82236a9a2152ab9a2a8b868bd00e229e57fd32f86ac  art/_archive/prompt-pack/2026-11-19/generate-painted.js
 6aff4dfe18ef2c3233f77511408659cdd60a0fa38229c7aa4ec4a2d915c7c9db  art/_archive/prompt-pack/2026-11-19/generation-failures/failure-53-1795057558567.json
-2e36ea090232cd8c347f4e78cf4ba250e44a7f52f412b7916d485cd0f34c1613  art/_archive/prompt-pack/2026-11-19/manifest.json
+7e990fd06bfd23f82d18ae3bb67251d4ad8d7c16ffcef47966b35c62e1588636  art/_archive/prompt-pack/2026-11-19/manifest.json
 8b1b2c5d3cc564cfaadb5eb38bbfe4935f8f2c9ad71a78c138973727db01790c  art/_archive/prompt-pack/2026-11-19/native/001-fight-approach.png
 589b79858daac86a32585c03e930ccf1d30728c968c98a7a56311867f170c8a4  art/_archive/prompt-pack/2026-11-19/native/002-level-up.png
 4cd5ea974fe4ac72f747c0081a8756f24f51bce043542753aad14678758a75b3  art/_archive/prompt-pack/2026-11-19/native/003-second-wind.png
@@ -3202,8 +3202,18 @@ f084c8a5697c7d448bde25d316e55ce0877b768b39d85d858a174a17b6954d59  art/_archive/p
 121f688e9a57cb68b03bcc40214d524c25c5f74d6e44e6f36c69ed90d35d0b08  art/_archive/prompt-pack/2026-11-19/native/077-hand-off.png
 1b76f67b70da0ddc405442e66304ad089cdd233d01763e5b638df44d2c9de0bc  art/_archive/prompt-pack/2026-11-19/native/078-nobody-left-behind.png
 66a96f3b061d816a88fe5344bab29473e23be613e51e62a83647e3d3e9ee9d0c  art/_archive/prompt-pack/2026-11-19/native/079-steady-hands.png
+20c2924dceed9ded18c3fda5e0322ab9ccebc824ae6d9d2259fda2560cb09253  art/_archive/prompt-pack/2026-11-19/native/080-pull-together.png
+718d5f0a3e81d47d084f5715cc4f2b63748ed63824bbea20f5223d64d3d8e495  art/_archive/prompt-pack/2026-11-19/native/081-quiet-thread.png
+fc3abab2480e25ba3411245653c22fed90c3971d7dc96f97ef6fdeea564df90d  art/_archive/prompt-pack/2026-11-19/native/082-veiled-insult.png
+1e0d6d0d57c7570382f1963b85f11d74bd71de118fe2892a3903ac145adf831f  art/_archive/prompt-pack/2026-11-19/native/083-prayer-held-breath.png
+f200a875c854e656f6c6a022d535e31bda4a0c81d63d86524818156c6f9097b6  art/_archive/prompt-pack/2026-11-19/native/084-righteous.png
+43e00364ba59fe731fa6af29aee27120b8bb6758f6c5fe21bdf2acd12585265c  art/_archive/prompt-pack/2026-11-19/native/085-foresight.png
+0af556f8e46d5992525dd9c40f90219c4b98ba39477e98c176f3c07b87112162  art/_archive/prompt-pack/2026-11-19/native/086-five-stars.png
+2474554c88fb9b6833ca5875f06c11145288d5df40b6a88df436c7e0979f7e41  art/_archive/prompt-pack/2026-11-19/native/087-commanding-voice.png
+099943fdce5c9527e1c92dcd9aab246ad4eade62f02957061eff86886b22a051  art/_archive/prompt-pack/2026-11-19/native/088-blessed-aim.png
 80afc58a078d43d61ce90b8ed199c3e62501073ac7632d973e2176c2a4a1763a  art/_archive/prompt-pack/2026-11-19/order.json
-3b22f509242cdf339e948aade8e28c5c582d5d54ff97800701b8ac22561f38a3  art/_archive/prompt-pack/2026-11-19/progress.json
+042a050d1148a07bda28957bbae5844a2ae068e840b6d07ebc819c2ded384859  art/_archive/prompt-pack/2026-11-19/package.py
+1b005d87d25b22fc27002042ff3609198b8182eb6530d601cf5a812af9474854  art/_archive/prompt-pack/2026-11-19/progress.json
 44c674e1ed4c420e8c25089983ff470823ab664b73b4bfa763766547b23eaa1c  art/_archive/prompt-pack/2026-11-19/queue.json
 632b19c6566cf0e63e8381e3daed8d495bcbe99c0dfc5b4eae038bb2d603a5ac  art/_archive/prompt-pack/2026-11-19/records/001.json
 c29e9c09a0e12d8b03754eebcafe9c6510800e83da06caca6b7e734223229e21  art/_archive/prompt-pack/2026-11-19/records/002.json
@@ -3249,6 +3259,15 @@ b272c026fe8b832e73ba5f03a8f2508e633e9172e65112edd8c8ee8c36d0af3a  art/_archive/p
 b42babeaf41f91897c7f3e117616dc1f7b4c75d9494b3fd5d376cf82ef3199dc  art/_archive/prompt-pack/2026-11-19/records/077.json
 138ff9db8848d4d6e652f66fb92663583a49940cbb23b3058b5c1fd489caa68a  art/_archive/prompt-pack/2026-11-19/records/078.json
 2112ca1a86368d0138d867b7e59d39bef94cfcef78158a4d368181dd56b17bac  art/_archive/prompt-pack/2026-11-19/records/079.json
+226ba495d302047089396595ede84157d38e2551a3071fc0fc83c2e42950638f  art/_archive/prompt-pack/2026-11-19/records/080.json
+ffab9f9b890f07148bcfb4cba64614bbfa1552334f2b9ee03af54ac62bdc1789  art/_archive/prompt-pack/2026-11-19/records/081.json
+359bb17c6c9dc3e749b010d4447143912be1fff79776ff627b1cb7b0d6c30478  art/_archive/prompt-pack/2026-11-19/records/082.json
+38447c72dd0dc52097039b42b900d9550f0c68d3b9c9c94412c665ad5d011992  art/_archive/prompt-pack/2026-11-19/records/083.json
+01f0ff22c2fac674585a782a4b449673d131925e34c0106e5ab277b1b4596a1b  art/_archive/prompt-pack/2026-11-19/records/084.json
+b33819d140358e46386b03017ee92a50db4a26aea4a880d0105226fcf8962482  art/_archive/prompt-pack/2026-11-19/records/085.json
+977cb372ac58966396b8acea9029b69971bdf5d50f41cffbcfec79d673db34f4  art/_archive/prompt-pack/2026-11-19/records/086.json
+dbba8082c3b2febb8e428a08ef4629c342b69e97b429cb41953f9ccf750be302  art/_archive/prompt-pack/2026-11-19/records/087.json
+a52448130faa8de921e2911e011e5d88904c1ccb16901adf99dfe4d7bf6a78fe  art/_archive/prompt-pack/2026-11-19/records/088.json
 706c1e2614359b270fbd339f933eb7ff0161879588277a8922f5811e5212626c  art/_archive/prompt-pack/2026-11-19/references/ahoc-kit.jpg
 b3566a9ee1d8207cea1af44f1dd29e090708f457163d69b597eb710203c72ee1  art/_archive/prompt-pack/2026-11-19/references/city-kit.jpg
 c15b93b648eb0d7a4123c70852c81293fcca2833bdbe8ca058e7121010166a81  art/_archive/prompt-pack/2026-11-19/references/field-kit.jpg
@@ -3274,12 +3293,20 @@ f5303f81deda7bbc51d9e0818db01b393dcbda59cea19bef1e76087541af7903  art/_archive/p
 a4f650bddbc5f8e1b55930c4b36adb0266753e772c8508b5e16567d20c60fc6c  art/_archive/prompt-pack/2026-11-19/review/batch-65-66-67-70.jpg
 8054f92f9e48f1c10fe7a982e3547d2ed548adf1031e767cfce10b0aa7c8f4b8  art/_archive/prompt-pack/2026-11-19/review/batch-72-73-74-76-77-78.jpg
 a2c38562390d6c7725d0bcae52868ea1ae50f3af0f8e21d590fb4a9933309688  art/_archive/prompt-pack/2026-11-19/review/batch-75-79.jpg
+a6acbd3f18cf0b0b1fa61692a3a749e222d581621143ef5b6668e5c1be80a3b4  art/_archive/prompt-pack/2026-11-19/review/batch-80-81-82-83-84-85-86-87-88.jpg
+52488ccd4c2b7bef2fe36fdd0550c0a65cf1ec6d128d5e2008288291fdf623e6  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/128/prayer-held-breath.png
 607641f797531168f6a1361ced5ef9627f61597391cc8178ded58c4de641b5f2  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/128/soul-blood-price.png
+b1b4d905f140c09d6057f6bfe411316f6a8e78b87798f50214faef2ecb58fec4  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/24/prayer-held-breath.png
 bc35cd2702ac914b236d6a80d52aef872b910620ac4b8e6dc0b08ff5e6d2b15b  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/24/soul-blood-price.png
+6ce0d2cf43bd3ce638f45ad5ad6d641f48a4eef002ddc28094f75f5483be3ed5  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/32/prayer-held-breath.png
 1151600b46ef9cf530679f451b68be5beb541448f142a9abbbb9d84c5e47b019  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/32/soul-blood-price.png
+00760f22a79f40115ca4c8bdca86293aa127e8bf75898fc00e98e6e79bf80734  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/44/prayer-held-breath.png
 5306a80fecc105efb4024c3ff27b9915a27e4cab015719c7d736329c41b15bb5  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/44/soul-blood-price.png
+8e35aef005855da0a7f6357fe397f15a0061cd818e661acee8cb1b6ef77a287b  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/48/prayer-held-breath.png
 4f550e5c820567c1e6ad91c7846b8de91bf32744084270549a81de65f5fa7067  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/48/soul-blood-price.png
+2be570a47e784bcbfe91f31d2c76471fa4e1e271ca9267c83e06b8ca5ebff75a  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/64/prayer-held-breath.png
 d34ea32893e6a1b0d8e7ea3b7cd272ebfcba45ab44f9ecdab6cf3ec7d73ce170  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/64/soul-blood-price.png
+f7384ceef75e7b85ffa834583c16538bef529febcb9204aeceaa5567192ede41  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/prayer-held-breath.png
 0c4dae6ac582284c0b6fd3df4cfb4dba50fb972f16f1a731154aeea9f2ee6e65  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/soul-blood-price.png
 dbe1781a6e42dc6d8950297cc5a6b25a3438b799b1b4bda0e7f4b061304ae30e  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/perks/exports/128/jury-rig.png
 79530ccb730c7fe92d8ef5e6bf150b39771d02c387563f90bf4af7beb37ee325  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/perks/exports/128/talks-broke-down.png
@@ -4627,7 +4654,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-fda787798e5e0efb52fbccf38618df52d98193f1d39c31ffd28ea23cd037ba5e  art/catalog.json
+f6c808a6d467bb62e01af97bfce056ea1d752ad7e4e927d037d259bfdcefe24e  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -5024,6 +5051,7 @@ ac8094fdf99f2b430256168c30e96c21a829b91ec17bec77567eb71d4032e566  art/icons/call
 f4bcfd657520e61ccd84200f617a8e243bd9d44bfacf50ad0f4094f830a615c9  art/icons/calls/warn.png
 20838d0654d14b71311dfe97627663e8287bc6fa69d1eed38b31d1287850adbf  art/icons/conditions/augment-offline.png
 347fb62b5ab05b96b2339e329000e92cd48823c49f40d9d3b8b14d26b2f25754  art/icons/conditions/bleeding.png
+c8dacad0b7d275dc00816f5ea4078bdf4b9b450efef4f7cd3c913401496c4191  art/icons/conditions/blessed-aim.png
 8c675cb94ceb81858f90df7d773acbe82828b946ad97e1cbc260e82ab5170584  art/icons/conditions/blinded.png
 9bd49d2b54f9055c90fab73a4475dca4d0fd0fe2f34d63e47cd511c92e2d09d2  art/icons/conditions/bonded.png
 a0df86157a059b974fcf93d34293dbfb9152c1b3683f14461f1510d1cd083e8f  art/icons/conditions/braced.png
@@ -5049,6 +5077,7 @@ aa7b2f277b0cbbb3eec594e07b24477ede5d62588307fe49a5af09956cc887aa  art/icons/cond
 b31134acf7aa1116f63fd953d890e928046a9f09691dd3ed2e5908ef678d1578  art/icons/conditions/emplaced.png
 3c474d1fe4d7f2ac39d591d4ac810acdd2099e7b95b9a7fae06e3a3cb31cb67a  art/icons/conditions/exports/128/augment-offline.png
 69a65ac19dfafeb08da39461fac7992197485de492e381ad96b50a3e77a128cb  art/icons/conditions/exports/128/bleeding.png
+71c6d12d1b8d949079c7b3dc120329e75f8b1a59246391e0c6c25f57d2530d82  art/icons/conditions/exports/128/blessed-aim.png
 3927a8d675742cfa918642f502b909653ea7c05de0963e7fccca83cf7d04d652  art/icons/conditions/exports/128/blinded.png
 9720817a502e603405927d82cf7a6ce3c75939791754e59d4771a5158bea4cfd  art/icons/conditions/exports/128/bonded.png
 f3887b3f53085e33535ed0718eb68beae8635513327ad110c55a6834c53a5a86  art/icons/conditions/exports/128/braced.png
@@ -5119,6 +5148,7 @@ c8b928fe9ecf73a7b97cccd97eb692f08d24f117fc1a3d9b90a5b90357d555cf  art/icons/cond
 a304a9a0fcd8e8d5fda6a710252a6a37b5a4891172c8e206882b7238b2a6416f  art/icons/conditions/exports/128/weakened.png
 ef282c96327faf1e83c209c840f785da246dbdd648c4d8bcf16c3671e445344d  art/icons/conditions/exports/128/withdrawing.png
 5d797dcf28de54aa70d329c0d6b6838998d443bbe38b3938772c455e37d59617  art/icons/conditions/exports/128/witnessed.png
+f3e021e2b9e93bbb6e74ebca8c3d3c5a02382ef11e8a47314b4c9bb7dd684f2b  art/icons/conditions/exports/16/blessed-aim.png
 dac41c5e89746dc8b981bbb27170738dbd5b058b2ee2fec5feae044ccb7abe61  art/icons/conditions/exports/16/darkened.png
 11a13c3f40d3e1839f1476da568a61d1d677cfd37c0c4f8b4040165260156aff  art/icons/conditions/exports/16/free-move-spent.png
 f8c3ea2c8257d96f813d6601be4a50d450bd64b4f9c328ae2722d346f9f1f3a8  art/icons/conditions/exports/16/given-edge.png
@@ -5130,6 +5160,7 @@ f8c3ea2c8257d96f813d6601be4a50d450bd64b4f9c328ae2722d346f9f1f3a8  art/icons/cond
 e89dc6fd26c74573644b11326fe3b98e7aa0655266239fcbfdf64af80a589700  art/icons/conditions/exports/16/swinging.png
 52326f336da3fb6d67bb448cdade2b74183e229391d3f369975e35a159b35d7a  art/icons/conditions/exports/24/augment-offline.png
 0a5da21fde359ddc4b4f7afddaf7546d8eef6e8c528f475ebf6702f5f4bb6f69  art/icons/conditions/exports/24/bleeding.png
+4e99c2aa4c69cc1a0fed6c6cf590701a3561c17fa818e5c8f5a83adc6ce8367f  art/icons/conditions/exports/24/blessed-aim.png
 424e87ef6c563932382135a20d973699d8b3f6c5ea9a63c2bea99a77905337c5  art/icons/conditions/exports/24/blinded.png
 38cdab392c6240ba30d579eef61ce831809203559871cf65c4be5d4718d87bbf  art/icons/conditions/exports/24/bonded.png
 fb1b5eca9b4434b9d22de1229e8602b4cf065bb4774831725fb82aff9a7aee36  art/icons/conditions/exports/24/braced.png
@@ -5200,6 +5231,7 @@ debe683e09b5a7454761221c73e7e9e7c3c0988f1aeb3e284babfc03aa548c9c  art/icons/cond
 1e24ab8cad17dace582c5b13fc84b1c399ffaa71e5784d19687c91cdcf1e4fd4  art/icons/conditions/exports/24/weakened.png
 ed12d3fad873724433f523e4643a110f9375dfc23563fa76270bec1a8176e074  art/icons/conditions/exports/24/withdrawing.png
 159503abf174400155cd0534862583c6c18958c7bfd89a174758be98742cf357  art/icons/conditions/exports/24/witnessed.png
+c16672edd708df4d841607da866fa53d695372f9fa1d3d3651ff3749b982cbe0  art/icons/conditions/exports/256/blessed-aim.png
 22d27bf0d16d800889e2bd78dfc91c1f4eab0febade91beb7aa4da8659a6c1ed  art/icons/conditions/exports/256/darkened.png
 43965805ea8c1f441726c66e4edfd6546a67277b0e1357c8baae52cdf99b6bcd  art/icons/conditions/exports/256/free-move-spent.png
 90ed6772d0e5210652b6c90b87110901f00f86b69780c8321168f10ad2dca4f6  art/icons/conditions/exports/256/given-edge.png
@@ -5211,6 +5243,7 @@ ed12d3fad873724433f523e4643a110f9375dfc23563fa76270bec1a8176e074  art/icons/cond
 61b0c961d32b4f5ea336aa63f1abc296c7e31b538c9aa1c7b931709559f0e8d2  art/icons/conditions/exports/256/swinging.png
 57248710119321439889ad7519f3b7338528adcb397496c58c59d67e798413a8  art/icons/conditions/exports/32/augment-offline.png
 2ac51a892181bfe1ce4c70b0b89b91d9541acdc21ce327058f872a4d75309b2e  art/icons/conditions/exports/32/bleeding.png
+4aba1803f01d57314df422403cae6fe322fb072612f60be573f80869e694d52a  art/icons/conditions/exports/32/blessed-aim.png
 1bdea427726132fb962650a6835acf0c0e679a3f9b69e01cb25afa71e485535d  art/icons/conditions/exports/32/blinded.png
 820e0840295a1a67d14cea98da51da9dde5ebcfe0915fbbdfa5ceac191bf3638  art/icons/conditions/exports/32/bonded.png
 b863de293086f6e757e04a46c6d3b045acc8911af899f883009af1e92e378da1  art/icons/conditions/exports/32/braced.png
@@ -5283,6 +5316,7 @@ a53d39b5ee08bbbcab517098f46a4427c849a4ffb23578fe1d7eae909b916c6c  art/icons/cond
 5aa4aa35616d41376e17184bb0a2690cdf39647b0634a96a492729464a9d0a76  art/icons/conditions/exports/32/witnessed.png
 377eeb4bd10e76c392dd1a4c8d397916eb8454f8479badc6beb6fb41a56c02b8  art/icons/conditions/exports/44/augment-offline.png
 aaf30730967806ce506e19fad31ce8e2626d1faa178ac95e6765c9abf6dd8e45  art/icons/conditions/exports/44/bleeding.png
+33b2132488154033a903f526a6ae780c4e7de8232bceb73316348356b06cb88d  art/icons/conditions/exports/44/blessed-aim.png
 87e053528171b3569ac544dce3cab8e7cd0de9b815ed67e555dbb94a4712b5cf  art/icons/conditions/exports/44/blinded.png
 e80e8370d6fffce9f754192214c9e432dbc65b80e3f813c09a1da1f2175f3f54  art/icons/conditions/exports/44/bonded.png
 fabd7b387197572937761e95a4296721999fde475e0b85f73a93364605a06e8a  art/icons/conditions/exports/44/braced.png
@@ -5355,6 +5389,7 @@ b4955b0860007facaa55163f5d26ada0927139aaa3c0298f441a49487707387c  art/icons/cond
 57757b1541bf59d52677be81f9d0c04a97863a0e3330daefae0711c5765c6fe2  art/icons/conditions/exports/44/witnessed.png
 ff2e0d6d40903a3376e6ca66b1e18474dfd680c7fefe8bb7761e5f629945d5aa  art/icons/conditions/exports/48/augment-offline.png
 0b32ca9f9d0d8f43bd5afc199f387ad7bcfe0590e85ea607edbc24482b517017  art/icons/conditions/exports/48/bleeding.png
+9d5794f18560cccf8fca0518552b973d777c4c2322617fef6407ce1ce7b2f440  art/icons/conditions/exports/48/blessed-aim.png
 e749c320e81f326ca0a4acab3a14129ae9ab71f815ecdbad3ccd4e758c23bd1c  art/icons/conditions/exports/48/blinded.png
 937a29566e7063dbbeae3c4a0d54d49565f488b7f30a8ae56261c3ecb3cc13c3  art/icons/conditions/exports/48/bonded.png
 c4a8ec79295337dce96559508a251a677fa0f8598d458e01f545b2f25c8a4070  art/icons/conditions/exports/48/braced.png
@@ -5427,6 +5462,7 @@ fddaf7d304d158b1776c7b1643d09c70e394862c03f16c81e6fa2019efa1bdf4  art/icons/cond
 ffd993f9573c39818d860306f9894f7d53c7fdb0f48124cd5c89d8bbf8aae33e  art/icons/conditions/exports/48/witnessed.png
 2c1e7afd3aaad9444db2e70a7bb5916fb91a41e480d88be492a98938160f5229  art/icons/conditions/exports/64/augment-offline.png
 e1b3ee8f032a03302d66c65373b2032ee6ea246ac7681b78233e8dc7f120267f  art/icons/conditions/exports/64/bleeding.png
+1abb9f1476d403c190b2f1322e61b0fc56f561a330c2e9295a95e8be93cf5d1b  art/icons/conditions/exports/64/blessed-aim.png
 8e03ca4c119d0080b39aaede8d617ece1156c00ff329631957c989cbbc2a396a  art/icons/conditions/exports/64/blinded.png
 918a35bdbea5b931b9ab7d3507ad5aa74e8453fa4352af14eb43a52c452be9a6  art/icons/conditions/exports/64/bonded.png
 5277258aff92900bc96d14049ab19fd1ef09a1c30952ae3b03b8419795a5c17e  art/icons/conditions/exports/64/braced.png
@@ -5994,7 +6030,7 @@ b569a562d00a2ac5ba08705bf42117ac6c6777a86a1b36eafafd9cd4c467adf2  art/icons/fork
 c0c53f8991900078253c00b72cd8874f23fac9f018759e8bee3373542e584fc7  art/icons/forks/exports/128/momentum-rolling-start.png
 5006a2bec2832c55a3154dc1918bce07729baa7a7a21a6e4368a50114da960ee  art/icons/forks/exports/128/momentum-spill.png
 c97e600fcbb2f8c19817dd018aaa7de7357911e8b9843cfaf945143c25968c60  art/icons/forks/exports/128/prayer-benediction.png
-52488ccd4c2b7bef2fe36fdd0550c0a65cf1ec6d128d5e2008288291fdf623e6  art/icons/forks/exports/128/prayer-held-breath.png
+7316cea268d86d23af81e847b3bb618da7775c3db9766bb867e5ddb6f1ce1e1a  art/icons/forks/exports/128/prayer-held-breath.png
 31c5aee4d76041365adf6c10fdaffa9e46c9f504d73090b31cd07d89827e00ef  art/icons/forks/exports/128/prayer-round-of-blessings.png
 faaaa89ca6f7885926e0dd16e736bfcb1e626c660d473f6b43f3d38a7298f053  art/icons/forks/exports/128/prayer-steadfast.png
 105f11d162818b3e45e2d9cccee3e76e20fd5699925e49a7490b818e85ffa7b9  art/icons/forks/exports/128/pressure-converging-fire.png
@@ -6030,7 +6066,7 @@ f6db8f9ed8f6c54274b797f958a8cc1179ff8752c1c15b2717a89f278fc4d5b5  art/icons/fork
 82735c0de83c0acc5fa468d318d8809f6e6c2f4fcabd1279fc4cd86376c79d5a  art/icons/forks/exports/24/momentum-rolling-start.png
 3dcccaab1775e58f659cf4a7a4cc444134b08f0a312877aff042182f7a7eb281  art/icons/forks/exports/24/momentum-spill.png
 61bab0092001db0de564ee248f6290ba29f3a27070fd8f52fc834becf8268d16  art/icons/forks/exports/24/prayer-benediction.png
-b1b4d905f140c09d6057f6bfe411316f6a8e78b87798f50214faef2ecb58fec4  art/icons/forks/exports/24/prayer-held-breath.png
+2712f9350bc377dee8a31fb327169d75e96e9cefabb5fdead0a4f30b30db7d0e  art/icons/forks/exports/24/prayer-held-breath.png
 3bcf5a6c7c4944d364a9864f109239455ab1350c32aa9bc73d08d6f6da53837c  art/icons/forks/exports/24/prayer-round-of-blessings.png
 c73b2933253bb5822cf34bd6e5a584326f33386e415673ba80536aa95ae269bc  art/icons/forks/exports/24/prayer-steadfast.png
 5ea69084bbcf6463f8b4416055c63b3219b64d60dff033112ca5e1d8cf338beb  art/icons/forks/exports/24/pressure-converging-fire.png
@@ -6057,6 +6093,7 @@ d2fd54dad592c3c396c8a1a473301a559bee24f9fcbe19f9a1525bb67563d57f  art/icons/fork
 98c88c3295528a0d711cbdd32db84cc46313c6536704b8ecd2cb45d410d8d34a  art/icons/forks/exports/256/figment-many-hands.png
 2c5b384ffc4220ff40955c73166bdef311b34f5dcce3c07d355c7a7c912bc39b  art/icons/forks/exports/256/figment-masterwork.png
 0c79503a3942538847394677c1f1dd8d95fddfc9e790d9bdadf023e67e71083e  art/icons/forks/exports/256/figment-sharp-light.png
+2c35173fe03e5abfe398e4e1ec15aefcf5b4de537875dc2d69f084bcdb7c9693  art/icons/forks/exports/256/prayer-held-breath.png
 9a6379fb0a3d022eefe1f57616426b7cc552905fb8a1502fefdf91c63e569f4e  art/icons/forks/exports/256/soul-blood-price.png
 8f6ffe7b996092e505259dcb47ebaaa8ee34d7f5f06019e5947478ad63481e3e  art/icons/forks/exports/32/figment-hard-light.png
 b2bf586af2acf5d235a11db8c02a310a3452644e7370e9d7efcbcbecfda5c31a  art/icons/forks/exports/32/figment-many-hands.png
@@ -6071,7 +6108,7 @@ f24e432df58e0a15473866c435305b6eab9249a7301f2a0d70285fd517e1b6a5  art/icons/fork
 ed6638b651a64fe351ec140964b916f771a139d813751d9087387f891c5f2e60  art/icons/forks/exports/32/momentum-rolling-start.png
 ecaedd0a453d86ab66f154aa033eb265c16cf4604c64f1ad1cf33770b14aed06  art/icons/forks/exports/32/momentum-spill.png
 c17bf6325c87a93bdd41d32b5e0e260c65d375b616bb21aa9b03638e632a4acb  art/icons/forks/exports/32/prayer-benediction.png
-6ce0d2cf43bd3ce638f45ad5ad6d641f48a4eef002ddc28094f75f5483be3ed5  art/icons/forks/exports/32/prayer-held-breath.png
+d19fd4b4b6d1463b324b61ac329a9da562b6c7b19d5c31a89c427c3419fe2a17  art/icons/forks/exports/32/prayer-held-breath.png
 821ce7ae3c77ea053d9aa83531164d4e942429adc35bd5e244b404038b4ffd85  art/icons/forks/exports/32/prayer-round-of-blessings.png
 416b134c8fb75ecc99f2ea022fe90b2820094a256f453988b6647f14f1622056  art/icons/forks/exports/32/prayer-steadfast.png
 feab3962ebb8a0a07d384fa43c170873be87ad5bd175f23e0fb71662012512db  art/icons/forks/exports/32/pressure-converging-fire.png
@@ -6098,6 +6135,7 @@ a43dc42240542d18a459dc799571090db1fba32852ecf2fc062f63cd9c7fd884  art/icons/fork
 0ae7e7161613c683fc70068876ffc32a22e7a3a17a688b2660b70a575a2e3462  art/icons/forks/exports/40/figment-many-hands.png
 4899b48455367279df398e251c51e4d26f635dc3bf2a11409f77e8e8dc36f308  art/icons/forks/exports/40/figment-masterwork.png
 fa0bc95b291fa97aaa2f62d1c1c4460ad1376a896b3f526ce15f32287b400089  art/icons/forks/exports/40/figment-sharp-light.png
+297505ec4052a39f0cdd6afe8a917551848d8bb059f0ac808279c1ba4c935665  art/icons/forks/exports/40/prayer-held-breath.png
 975cc67d74cf79788e71ea7dfefd2068c2c8df1394ffb790067add4751211924  art/icons/forks/exports/40/soul-blood-price.png
 ae051a2c09d8aa5cbca1971c99fec451827227d2476c4a0421c0795dcb6faf63  art/icons/forks/exports/44/figment-hard-light.png
 0dffae7c150548d00226cc29247642ad56473b6381ec715e485ecba9bfc54736  art/icons/forks/exports/44/figment-many-hands.png
@@ -6112,7 +6150,7 @@ e2ba5ae3ff86b40de4127ae941ac07bece877358b060cc28ad91a40ec55b18b0  art/icons/fork
 6af22617a597c8cbc01861e24cf0f05b6843a4b4f18d94a1f15b24da2bdb8575  art/icons/forks/exports/44/momentum-rolling-start.png
 c7f596c225829d44d441e5d0d48462f0255348185b33282112e09e59cdde44df  art/icons/forks/exports/44/momentum-spill.png
 303761e2188181a2e0ea02b7b0c7b994b2d61bc04fbf3baa9d74e8ca42fec6ed  art/icons/forks/exports/44/prayer-benediction.png
-00760f22a79f40115ca4c8bdca86293aa127e8bf75898fc00e98e6e79bf80734  art/icons/forks/exports/44/prayer-held-breath.png
+7958cd9642c650ae502050934b70d966cf03d01b0769e387f226c76db7ce7fbd  art/icons/forks/exports/44/prayer-held-breath.png
 0206ccb216a1d89b3e9a3d6089acdab2dcfdaea02bc6bad436b6ed9e15f8fc62  art/icons/forks/exports/44/prayer-round-of-blessings.png
 9675520588e84972f9cb07ebada29266cc7d6b7bf530aaa17de092d541b4d669  art/icons/forks/exports/44/prayer-steadfast.png
 c099d5420f1c3170222ad4465a1f808a58f3b7024266fafd85e9f6ce3e137977  art/icons/forks/exports/44/pressure-converging-fire.png
@@ -6148,7 +6186,7 @@ efd1763c58ca4cf2faa67a4ff3e351c15b067f746e41845226ae34c68184d922  art/icons/fork
 b7199fb953d3c537b8f87535a3ce0e103835c75da80ea8c4364e54d4d8f6ca55  art/icons/forks/exports/48/momentum-rolling-start.png
 486c86b2d66dcd77dffab12b17ceeafb4c98f57a3f050b489f553f22411dcd53  art/icons/forks/exports/48/momentum-spill.png
 71123d2759834cac032fe08c357ab6cbe12f67cbd8ef8d0609b76b79aaa0c199  art/icons/forks/exports/48/prayer-benediction.png
-8e35aef005855da0a7f6357fe397f15a0061cd818e661acee8cb1b6ef77a287b  art/icons/forks/exports/48/prayer-held-breath.png
+6c8ddce2747aea86b81a4dc12764b5d92e7cfb8de16f85857ae00e87cb27e856  art/icons/forks/exports/48/prayer-held-breath.png
 7c8eed0f6655a8b413594353f5c52167a3d09a5e3169cd2a51009fe34907fd5e  art/icons/forks/exports/48/prayer-round-of-blessings.png
 75a8dcda7a2e8a716b8d11a3b4a3a83cefc7a7c8edf0c38b6184296e99f3a0a4  art/icons/forks/exports/48/prayer-steadfast.png
 c6d34562168a11bc2922779196181fe557aea3a1938622f05e78b995ecf83205  art/icons/forks/exports/48/pressure-converging-fire.png
@@ -6175,6 +6213,7 @@ b8d2f08fd6e760c1405eb833991b406dbd7679872315b32110f27313ff93e92f  art/icons/fork
 0c75ad6de682343f7ab103a039ed123f467961f84286029a10ee6fd3dccbf4fe  art/icons/forks/exports/56/figment-many-hands.png
 281e2dd90d19d5937ab9558e52802ad5303636efee1a123010ac87b597a46e9f  art/icons/forks/exports/56/figment-masterwork.png
 8b90a61a1c08d4ad7c0036b606740897e993d3d61905886823d773519df0b38f  art/icons/forks/exports/56/figment-sharp-light.png
+725e8fe15794b16bd529ffedc7b66a37f6051d5aa35cff1a1f6c4079e9e0b579  art/icons/forks/exports/56/prayer-held-breath.png
 245fe26d7a429dd087fbb5d7d0bce13073f76134443f53a4a593ef8decd071f6  art/icons/forks/exports/56/soul-blood-price.png
 d9d23c0ddad98e7fdecbeed532795693dcbd3e71dd7a6824795918271e70de35  art/icons/forks/exports/64/figment-hard-light.png
 9abfa0154adb029e0e09b03b76721f0db1b8e43c5b1e2ef1c245ebd6d0c85209  art/icons/forks/exports/64/figment-many-hands.png
@@ -6189,7 +6228,7 @@ d9d23c0ddad98e7fdecbeed532795693dcbd3e71dd7a6824795918271e70de35  art/icons/fork
 a4673bc2474652410f6920b66f58d87d8c0fed9a14aefd1bbcd34da2835a861d  art/icons/forks/exports/64/momentum-rolling-start.png
 522fad645bac63ae5fde542e51a19c5fd730ef971ee1f1afe0314f53c114f631  art/icons/forks/exports/64/momentum-spill.png
 a80a7690588d27c1492feeed252251ef6d290e2fa9b6d17ddc4e210c60fbde0c  art/icons/forks/exports/64/prayer-benediction.png
-2be570a47e784bcbfe91f31d2c76471fa4e1e271ca9267c83e06b8ca5ebff75a  art/icons/forks/exports/64/prayer-held-breath.png
+fc547b3806a451e78322edc58f36603726c1180fd28490e63092ac6f6e90258c  art/icons/forks/exports/64/prayer-held-breath.png
 dfaaf167de48c765de296d7822dbb65d878a522f2bcc82a0277bd364d210df44  art/icons/forks/exports/64/prayer-round-of-blessings.png
 274a7906366b5253f391a455e61740477e44a38628d566f4e01253e8704789af  art/icons/forks/exports/64/prayer-steadfast.png
 1faa30369374588c6e762dca654622bce89a53d32b7df767a98ff45ffe12fdcf  art/icons/forks/exports/64/pressure-converging-fire.png
@@ -6225,7 +6264,7 @@ b6f4891dad40eda24e8b1552abcdb0b5287f2188844f889be4cf9ab5e1145689  art/icons/fork
 0f3ffe3184be9fbbc63f1446b2a40952cddabcdb194cc8598d49fb282284c2d9  art/icons/forks/momentum-rolling-start.png
 35621f7c902bd1b3b7bf944306f28d70109825b707921fda010b909dcc84b9ee  art/icons/forks/momentum-spill.png
 273394fe61923747f67563b9a33773814cc1a5e5efe73ac5348b6ba3c70b212f  art/icons/forks/prayer-benediction.png
-f7384ceef75e7b85ffa834583c16538bef529febcb9204aeceaa5567192ede41  art/icons/forks/prayer-held-breath.png
+e61ffe7d28c4a204715ad416f49167e419c707e5eecd37363b845ecacd5add3f  art/icons/forks/prayer-held-breath.png
 31c59b220419f28413700d522f075308c73389500d0262ab9d7e37fc593f4c15  art/icons/forks/prayer-round-of-blessings.png
 d7f7777324395de6b5f8aff1f27a6ef633c72366298bc5a1f4bd9157a186efb8  art/icons/forks/prayer-steadfast.png
 cf5bd97cf68425918f990a45f51e75233047fc55a93949a1275628ad7fb9260e  art/icons/forks/pressure-converging-fire.png
@@ -8354,6 +8393,7 @@ f055a642081c161af6fb01e3ffce2fdf67f699ede5464c8749944ac143582896  art/icons/perk
 6c50eb5cd85dc41ca01d375c83a35e8e88007a51d72f99ded2c657fe67943acb  art/icons/perks/clean-hands.png
 2cfa28262ce2c4f2a00fe272e22b0fded31ef90957d5ef97c46ca4b95bad1971  art/icons/perks/closing-argument.png
 f0faaeef5b7c690023e00cfd7c7eee9ca05d940c082c2acd65d3feb58399d271  art/icons/perks/cold-read.png
+8839b950cf609f5a9fb985b4e740dd571664b846eef5334ae9711d6f9007b8fb  art/icons/perks/commanding-voice.png
 8d10c11cca353fcff23934b335ceed2ec13a8e429352766b0d1a0f9011e3cc6c  art/icons/perks/crowd-pleaser.png
 3c35d4fb0f080f598a2597130982abd47b8f946933354e38ee176e28a8f1d182  art/icons/perks/cultured.png
 0570ff79ffea9d9fbfbaa27508e74dda524583af8b430d0c2dc9d18a50d2eed8  art/icons/perks/cut-in.png
@@ -8383,6 +8423,7 @@ edf4392381705b0c1ad9058f4b36398a0639d540d53e1514fc8e17033920bfa2  art/icons/perk
 c91e4970e2b31f252dcdae4bf1f42329178e7b69a9270f76f47474914db4665b  art/icons/perks/exports/128/clean-hands.png
 aa49536d07612d974cb1a5a2f023b01326cea24b204c1e4f9ccffb58117d706c  art/icons/perks/exports/128/closing-argument.png
 24d569978b142b4dd4e83105025eb848a4c412f0b91d4499c29d1bd75a9ce6eb  art/icons/perks/exports/128/cold-read.png
+7446cf8b86ad1c21aef5ada73557bc611797e72fb69f3d7bb00a16b6458fcd2c  art/icons/perks/exports/128/commanding-voice.png
 841c387431483a98cbc2415a069435d4892291dbce741c90f84b1c44c8bf9a3b  art/icons/perks/exports/128/crowd-pleaser.png
 c88835cae4080e20c8422356f002e929b141368853542509cb8f8864cb7d9c5b  art/icons/perks/exports/128/cultured.png
 ef4861d2fec0d63a6ec88c41a1cb4630bc81eeb7b0f6929ab0419417e26e9a3b  art/icons/perks/exports/128/cut-in.png
@@ -8398,9 +8439,11 @@ e614adf614fda676b8507a082f7192bc8778b6aeedf6e32bffbb4f6531f99100  art/icons/perk
 de635441a88d52230abfbc03359f1682a40bf51b4bb9c2e10b82f546ae4e823b  art/icons/perks/exports/128/field-repair.png
 55d505e9a692c2b5cce89d9b433b26a85c6bb6d387a2b94cd353a7ed6cb9e39f  art/icons/perks/exports/128/field-surgeon.png
 cdb80df4d3c4a6535276a36122006cf4b311889b718c8d15da246154340114b0  art/icons/perks/exports/128/fire-sermon.png
+3f1891d8a6f6bf1e8ac9a809151b3b8dda43dd806cc951c45b3af679ec9dc120  art/icons/perks/exports/128/five-stars.png
 8dcb4a29490c5a418de9ac7ec51eaad837d8ad76f9ee2059e25b0fb5070fc2f9  art/icons/perks/exports/128/flat-line.png
 482df872d9e102bcaadf0ed63d92160da89c11bd3c04c917ed436779481884e3  art/icons/perks/exports/128/footnote.png
 7503d54dfdceaf1fb3e075be7242b4bfbb6a98918689542f93a6c752c89f84a3  art/icons/perks/exports/128/foreseen.png
+2f112e442a33bc8e591ec0d48beaa048a6678515adad89aa075b66cd6e601890  art/icons/perks/exports/128/foresight.png
 4bc2eb250070c646be04d021195afcb1d593f676307817b265f055ed932dde1e  art/icons/perks/exports/128/got-you-in-my-sight.png
 a413dd579e8cf6b65a2f1ea9c2c030e6b420bd18c8fb193312a345e995cc8acf  art/icons/perks/exports/128/grapple.png
 fc2d79636a7f2768fc512a6d10cb5c63e3844dd6822f15bf378fc1cf8bb284f0  art/icons/perks/exports/128/grim-reaper.png
@@ -8442,8 +8485,10 @@ d7481fc144b69e45bdc6c1e1b61ccbfde29e2e21e8cb76f44170ed91569bf1ff  art/icons/perk
 a67496398e58adda5617d12a7bf15bce9e864516479cec5d1ee145e749dd847a  art/icons/perks/exports/128/point-man.png
 8fa0804161130e345a6e0e43a13d090145530b41508c9018cb7c2d9a871cd0eb  art/icons/perks/exports/128/poker-face.png
 5cb835795b4ccf5cc28f1380692d6ddab6ba3fc9954ae7a208d82d6e8387218a  art/icons/perks/exports/128/proven-formula.png
+5823c12ac8784ba007debb0f21e36b83b1ad58dc060ea31ce75cc6d598d543cd  art/icons/perks/exports/128/pull-together.png
 500dece84110e6565aa79652bb858efb5fc82d1357a046745787c1034f03d66e  art/icons/perks/exports/128/pure-heart.png
 aac7c58c66cc968946bc5d9bc80f47fbe802d6f977c9ed640d854c3a2f7fad73  art/icons/perks/exports/128/quick-read.png
+195604739fd7d1a0a169454480438dfb426f9c8d0b57f9c90fa9fb93d1e7b3de  art/icons/perks/exports/128/quiet-thread.png
 4a88837dfaf11253c3a451830cfc79df3083033053aef36b6d36367039dd474d  art/icons/perks/exports/128/rally-cry.png
 ef143db1aac6c7c680b9ed8dc3ae084d14d806b60bf8eb3606006c0527f22c27  art/icons/perks/exports/128/read-the-air.png
 d0d24a7f3b5118b2e3bca4ab10d6eeb15acd0b59acf4fe539d4704bfd7baffe4  art/icons/perks/exports/128/read-them.png
@@ -8451,6 +8496,7 @@ c917ceedce0dd35620c5b22afe6121981724d0a95b041ad34c41acfda3577b9d  art/icons/perk
 4fa11b6109866811d0acb45392c66b6b8328e9e61fdf6a5b1cc9d85e997fbc32  art/icons/perks/exports/128/recitation.png
 10609c2c73bc017c46ca1f3ff085649c48ad11278f8dc252f62e0a3f44775b27  art/icons/perks/exports/128/red-line.png
 6dd684c4fb5e8c4c02cd5f29b37541d45a8a855cd096b8f59a6578554da5b6dd  art/icons/perks/exports/128/resonance.png
+e821d187605914c8b05b6189165c0b1610d12ba03d764e8d324b8a7130a99284  art/icons/perks/exports/128/righteous.png
 08d41829e99dcdd96e8072a0ac0bca4d821a97f9b6fd690fc9bce36e1a22635a  art/icons/perks/exports/128/rite-in-the-field.png
 55fa670c6636a850ee3aa4e7fb30333bd7969748b92587b158e67efa23166abb  art/icons/perks/exports/128/roll-with-it.png
 dc5b02e2c2399bac61285866af7654c0f6e4eb117be9807724a0c817e137e273  art/icons/perks/exports/128/rounding-up.png
@@ -8494,6 +8540,7 @@ ebb78d44b19cc5753dddf5ac452e25e5b61193da8c0681fe1478e0eeea14883b  art/icons/perk
 724713703d2fff46567e3f731da18f3c4177d4b8c46d26a942c8b8ef7927bbba  art/icons/perks/exports/128/untouchable.png
 b43db165b2910a9d4ab8718373808c37bc99790d7382fbd249bdc490784c0efd  art/icons/perks/exports/128/used-to-the-pain.png
 294f7534c37f3aebd4657084596f9b66fc8511758275a0422d55c61e089ddd1d  art/icons/perks/exports/128/vanishing-act.png
+64da6e9914845838f524575f08cc29b6599377524169caed4f0aebe940c4a363  art/icons/perks/exports/128/veiled-insult.png
 e712c2a4f2c947ff846c292f33183327bc4e0727bdbeddec98162ca5d032f09e  art/icons/perks/exports/128/verse-of-war.png
 20a63cd68f4477744b7d0bb678e6af66893f4524ba511b0d0ed2a86cea1b784d  art/icons/perks/exports/128/walking-wounded.png
 93d32e937ce2f4234cf37c0703c79802217fce752d4f6c8f1ff9970acb460866  art/icons/perks/exports/128/wall-run.png
@@ -8519,6 +8566,7 @@ bfb71c3fdf32af720a5222325cb0d650e0179cd5c526e377c451527920879d19  art/icons/perk
 ecdb1609f437a4835b64beec1542cd206e79986765ed0073307f40dd5b54e69a  art/icons/perks/exports/256/clean-hands.png
 277888946194803622d7b7a92304cdf579c2f76709f367ff9e878ae78dbd33d1  art/icons/perks/exports/256/closing-argument.png
 ba11b022b3b9688b59d8a95ce1ddcaac7bc60d736afafc01294ab6b8e1f87b5d  art/icons/perks/exports/256/cold-read.png
+2dd75a7370b38b7c39f8bca1e5334cbb959a39864d96d8cc455c802713d19e4a  art/icons/perks/exports/256/commanding-voice.png
 128aeb3dc62cd1de9a971c76fb089c5918bbcca06f9292266eff3424ff39cda9  art/icons/perks/exports/256/crowd-pleaser.png
 baa54b024b6e995b65decfc691a59a8378b91d516ecacc51ab643fd4630c471a  art/icons/perks/exports/256/cultured.png
 fff083375a8482b1242fdd08f3af2f27aae5a8229eb52f155d6b82c287e9e628  art/icons/perks/exports/256/cut-in.png
@@ -8534,9 +8582,11 @@ d8e8e201d0d2d7ee680c5f8caedb4e70af51429cd69e9bdd4083d110360bb89e  art/icons/perk
 6464d3241897006ae0281d8547fc6548c35de458a466626e2aef3b3b05ba0014  art/icons/perks/exports/256/field-repair.png
 384e1b0bc99fb083aad18a8811aebae03fc7ba94f7674602661a878fe8c3b28e  art/icons/perks/exports/256/field-surgeon.png
 6e13b410bea332ab62994d8bb683292d9377279ed91ddd53c4d202d8cac6fc5d  art/icons/perks/exports/256/fire-sermon.png
+c58077c1e90201840cfe1fe3d5e2a7aa4539ef19fcbb43c6aefdbd0a0e16f219  art/icons/perks/exports/256/five-stars.png
 82fa2ce5092864353c51e51cc6b9611e1720594bb7cd1e5f1d175093d9899604  art/icons/perks/exports/256/flat-line.png
 a2edf3cafeb95a4b8bd7f06ad581e6b03428ab1340c1f7e0e125219037e9a84a  art/icons/perks/exports/256/footnote.png
 2d6e950df9b43007a6e43d4b048bca826304f332b1865f74a0ae1df8a29a1888  art/icons/perks/exports/256/foreseen.png
+d0d6dfd9a94ef2239829aef9c222f3334a13797edd3bc3a0495711c0da2a7a52  art/icons/perks/exports/256/foresight.png
 bd4eb74012343af65326f87467619b30c9bff0c40483372917cd7f1588e0f1c3  art/icons/perks/exports/256/got-you-in-my-sight.png
 0b54226c4a831735f5ac000b3e3679d9495f1e3eba869cda6f53990f9dd72164  art/icons/perks/exports/256/grapple.png
 dabcd4a98a9fc94e488065e9c9cdc0ed660afaa0c0843c82e736275172424aa8  art/icons/perks/exports/256/grim-reaper.png
@@ -8578,8 +8628,10 @@ fd3d891d09f88f6ae0610fdef29de3a67cdb1e84ffa485a821109bf02dd32e02  art/icons/perk
 9364e1b5b02d4e2672a21c41f6d2df5cb250ecb9173f29a1816468aecc692957  art/icons/perks/exports/256/point-man.png
 d8c554f97a90d454ab51650389ec5218463e40cbfc5a078398547034fb382053  art/icons/perks/exports/256/poker-face.png
 113c37eedfa796c845adda20515509fd4754d1708d0011b2835c0407745dc496  art/icons/perks/exports/256/proven-formula.png
+d26c7399b689204ec6afdfda055de470589734aaba6d2ffb338c1eeac6ca5700  art/icons/perks/exports/256/pull-together.png
 54b1a3952ff6847bebd28530972a6fda63b1cd8e04ff9e7f77b5161990b2ada3  art/icons/perks/exports/256/pure-heart.png
 7a141f20be12786efd69d31e3796278f8366de3b3d644d54552be26db0288c19  art/icons/perks/exports/256/quick-read.png
+22288ef11200ef06692dbe43d0b6b1bc19a594272d2c1d8ae97b245cfebe60f2  art/icons/perks/exports/256/quiet-thread.png
 63d9be2ebf26b3f2e75b3dbb9f79aad0cabd8cf26d19bb9f6dcdf31197a3379e  art/icons/perks/exports/256/rally-cry.png
 8f577b0ac6bf4482fff14f547949b60daacd4dac880fb555a98e723d53d1ac9d  art/icons/perks/exports/256/read-the-air.png
 5890477cb4fb81443e6935aebda38a7ba5eb4385c9575b5bad3be59936ad6ec1  art/icons/perks/exports/256/read-them.png
@@ -8587,6 +8639,7 @@ d8c554f97a90d454ab51650389ec5218463e40cbfc5a078398547034fb382053  art/icons/perk
 2d265a575caa36dd563c097ab37561e5e904a0e875c7d2ebd8be83789eb07de8  art/icons/perks/exports/256/recitation.png
 679d1a0d71c8d2c6bed685d315494d1831f0b5a6e74de9c4d298a1c638c0c4e4  art/icons/perks/exports/256/red-line.png
 0a8fb6d083920fc80b573d65b7bd73caf99ec4bd878e53b3d72ddc1b437f06ee  art/icons/perks/exports/256/resonance.png
+c808f1dd49da59257e974857614179b0bf38c3a3f8bc0b076231aab31eec63c3  art/icons/perks/exports/256/righteous.png
 7314167e544187ede5a3ad922701b92112d6d3573ac6ed8c773784b894e52d31  art/icons/perks/exports/256/rite-in-the-field.png
 9e635aa7f19fd274dc9e9247f75b03d1340369504f1ffc93b83c656327ed53bc  art/icons/perks/exports/256/roll-with-it.png
 a09c7c5c75d26e3059c8192f1c97a9546837a220d0399488e0f84635986e9015  art/icons/perks/exports/256/rounding-up.png
@@ -8630,6 +8683,7 @@ c5cb8930560616e42fa84d046ef62230c149cd76b99642699ffab32bf96c2fef  art/icons/perk
 94aa74a9b2ff04c94226d7d769926beeab4eeb515f35e71104a6b42ea5892646  art/icons/perks/exports/256/untouchable.png
 fc8565c7988a001144607892765faef833b9bd0e5ed648b4fc090bf740dda4da  art/icons/perks/exports/256/used-to-the-pain.png
 ec82b2b0f3cbbf4ef2f349f6a638f3fb258bf9388c3f75acbf8cb15a1b38832b  art/icons/perks/exports/256/vanishing-act.png
+41f3d5795c63ddafcea09acbd77a5474d33d78116f8bdbed35d5d297353f9676  art/icons/perks/exports/256/veiled-insult.png
 f2efdc8bd16c3062b29675af795ff179d981ea52e3ffceb3f627b3204e71f62a  art/icons/perks/exports/256/verse-of-war.png
 0596633fdf1f42b6e04ef0c165bb269403414c76b26d8b0ee508683602dad060  art/icons/perks/exports/256/walking-wounded.png
 7df30bef08396a8c514a5cb5224e3fb7dcdc9e1b9264346f3511542867fd1378  art/icons/perks/exports/256/wall-run.png
@@ -8673,6 +8727,7 @@ fb4d40556004382bf1e77a115b1e03713002bb8c3d86445ba11c9f3df1acff4e  art/icons/perk
 07c4f4ecf219ee6368ee9806d72b6905cd0f7394e7726a0f675b64d49618bd71  art/icons/perks/exports/40/clean-hands.png
 4f6abae9de0dbb325fdc9baf995d2fcf8f62fbfdff1a506fd9052c4e21f3a6d6  art/icons/perks/exports/40/closing-argument.png
 219eb11c7e233fb06e7bfe96eff87fd88a1d77c8c7441a505b0a72f44e2623c0  art/icons/perks/exports/40/cold-read.png
+b92012c855dc532ba1a03f9e70b98eb01c9b2c22d34f0753eced84600bc301c0  art/icons/perks/exports/40/commanding-voice.png
 f9715fa79b2019eab0adcc73a50810e0ac40e2109e64ed337cab520bde4df853  art/icons/perks/exports/40/crowd-pleaser.png
 ecac6eaf6f16a1f32ccbacfaf0a5f66c3e7138d079de7650aa59a360b1c52cd8  art/icons/perks/exports/40/cultured.png
 3960a503d0207789f70d6fdb9c52b7c4b96f739cf7a0887e9e8b87db3b33c5a4  art/icons/perks/exports/40/cut-in.png
@@ -8688,9 +8743,11 @@ e47aeceb8ca4e139c909de75d159790cdb14f9fc98d8f72868aebb8d30fe6801  art/icons/perk
 1567dd9c207730c171eb0ef63b1676a6971940e3b1fe4d283a3b77d2966c3a34  art/icons/perks/exports/40/field-repair.png
 e7eb1d84598941b9bb277fcd631d1c1675d6ce671a8926f27207d6a206523f60  art/icons/perks/exports/40/field-surgeon.png
 a93c584d1598f236ba9f352ed04d55a8b0289998143c46775c4bfc626d53ffcf  art/icons/perks/exports/40/fire-sermon.png
+aea8fe30b3f36957649311af5b3ca758b90e0a762484673347613710118b5933  art/icons/perks/exports/40/five-stars.png
 64dbd77647624307c21d5deb32b534d0ba01c4358ce558a2548cf93ef7507313  art/icons/perks/exports/40/flat-line.png
 57bec1cbe26b3d4a8ff165176a68762695ad42e00c05286448937d47ff26f404  art/icons/perks/exports/40/footnote.png
 6e709fbcc40228e9c378998e719f31658edfd16c5ff8265714cda6e2317bb8ec  art/icons/perks/exports/40/foreseen.png
+538495d3da1428a784d2229648113c1319c62e977df2ddb3d1abddde43cefecd  art/icons/perks/exports/40/foresight.png
 d4eb665e6029d9b55fd8602ad105f7dac4c555a38df71de05f67017a9450f73c  art/icons/perks/exports/40/got-you-in-my-sight.png
 104024d576c7124c98e74dfc9080f226ab1cf9041ee67473296c64ae85acb067  art/icons/perks/exports/40/grapple.png
 2dcb3726c0a9b76debaa434aa5a5370bb07e9e3a2f000a3ccf9b8461160eed27  art/icons/perks/exports/40/grim-reaper.png
@@ -8732,8 +8789,10 @@ e7fe0bed82111925b6d9d8e8d1ef8d884fd7aba2c12c5332e9a2db89630f1151  art/icons/perk
 e8f1ad3d7dbc9bb0d5f6c7d3dfcb5f4dcb9c17058e205cf7b99d27d4647b6fb4  art/icons/perks/exports/40/point-man.png
 399f9103aaa2e7563ee0dc27596339943053cb4167fe11a09f7d1be241220396  art/icons/perks/exports/40/poker-face.png
 95482d949db5a68b96d25716a573d96e0a41cd897ad18a4f46f22fb49c1fcd8b  art/icons/perks/exports/40/proven-formula.png
+7f8a022447b50abdc47840bd679f2fc39e479a85721be086cab09f335e18276f  art/icons/perks/exports/40/pull-together.png
 43818cc12898a6ef76e980903112f4e81c5f4b9fd9516187ae96f7977b303d01  art/icons/perks/exports/40/pure-heart.png
 921b848a47a4469502f7a5ba3680a34354162cd03b418c9bef9008c9c35ac1a8  art/icons/perks/exports/40/quick-read.png
+af0dcfc0a8d763e40782123c3e792066b3f8d2da2fcb2af0294b5815a2547c7a  art/icons/perks/exports/40/quiet-thread.png
 d1fd3aea09bd277820e0de940ae67c4f89c1913c701fb9452a0c91a062cc5731  art/icons/perks/exports/40/rally-cry.png
 80b2019b46cd4675055a76549a49ee4695d191609bec5c3a3c87485ac2f9b6d0  art/icons/perks/exports/40/read-the-air.png
 12a50a50fd1e3fc5e7cfe7e3aa130788331333a88637148b5006da2d8e712e3d  art/icons/perks/exports/40/read-them.png
@@ -8741,6 +8800,7 @@ ff4afa577189e6e1fca089d889b3b2598732372f63f8ec653e9fecbf9799a578  art/icons/perk
 de9a94d797a491edddaa1991ad40a1f25316add88080705b914f85562cdd96fe  art/icons/perks/exports/40/recitation.png
 8e6fa19dd7bc45061a05fc1b179167d307dc772183850ba910a59dcf7aa2ccc4  art/icons/perks/exports/40/red-line.png
 79bc96df7ea510c222a544abcd6e7bda3a303bdbefc775c825669054250d6d83  art/icons/perks/exports/40/resonance.png
+befa943d099915be3b3a2a1725d1ad41be145d32825b0a0b7f7751730033eed6  art/icons/perks/exports/40/righteous.png
 5053790a2b7427bd2d84173c7f8d016bae2c2c3055115378208a370711d0d974  art/icons/perks/exports/40/rite-in-the-field.png
 2349aa85685877005179709763feaa723babbbdf0f07e9a5030c0db31c92b7ae  art/icons/perks/exports/40/roll-with-it.png
 dd41ee76b3bf026979b7449b90dd170c4b10e9dddfbd3da00317533b03bafccb  art/icons/perks/exports/40/rounding-up.png
@@ -8784,6 +8844,7 @@ ce2ca2e590c320a7677669163ec7b384d84239c1776c2acc5953d05471b3594c  art/icons/perk
 f8d1006a9ca8316b17eeb149718a5192a86a1aeac096ef14c5b670281599aaf0  art/icons/perks/exports/40/untouchable.png
 b4936400dd7638381e14b7fc8b1fe2346b4f9ed4949fa3a72556e0b2055c9f1b  art/icons/perks/exports/40/used-to-the-pain.png
 a00ee8c58969618a502daf3869ac852639d64744fc1ae70bd7c135c47a867340  art/icons/perks/exports/40/vanishing-act.png
+f1cf62918c59b49e539a5d75ebe6ca8ef9924206f88a13b5117248ce07cd5a27  art/icons/perks/exports/40/veiled-insult.png
 1ceb23cf930295eca7e12097f5af6c5d61b46d98da78133c98228d57b7a8eee3  art/icons/perks/exports/40/verse-of-war.png
 c91b1b87bac090563649b1d541628d4ead83499a79cd0bb260d514a7d220f292  art/icons/perks/exports/40/walking-wounded.png
 d2f88b7e962487d81620f737ed16fa739c2babfa1fefe2b52365345db2b0a46c  art/icons/perks/exports/40/wall-run.png
@@ -8809,6 +8870,7 @@ ea2a0f2b3b71b3173cbd0e852975ef5b64c9e8987c6faf3591e2eacd5574d0f8  art/icons/perk
 b0c7637a31e714553fffdb1abb9b5a0171984e1f49268af2a5e655c355dba17d  art/icons/perks/exports/44/clean-hands.png
 8b6bb36f4e302d1b91de0f113a683707eb10b69a0f351d97f23a96461e339395  art/icons/perks/exports/44/closing-argument.png
 f3b82316e05dd376f63b55cbe2300ab63dcf5add4e279cf8867e34892311e553  art/icons/perks/exports/44/cold-read.png
+731e728c2da54c93463bdd3962029a4961a0800520ce536b8eeb3fd578e8b3df  art/icons/perks/exports/44/commanding-voice.png
 2d1ff271318a1ef0c8cc2c108ef213bcd3f78cdd254f239fa250b847eb4e2f7d  art/icons/perks/exports/44/crowd-pleaser.png
 8a84c21b8180a59b76b37e0b23d631e68cd39eed96bd6b33fce768a851fc93a4  art/icons/perks/exports/44/cultured.png
 55ae58440e31268f5746da3fed030f39af7b8c61b90dcc830750ddc89cfdcfa8  art/icons/perks/exports/44/cut-in.png
@@ -8824,9 +8886,11 @@ cccac4dd6df7a83dd71d555db825913871d0d35abf69952fd1641587793dab9c  art/icons/perk
 ffb988c49bb39b78d7bae28a60cf077a56236ec550cb2cb72dca3057e023fa9e  art/icons/perks/exports/44/field-repair.png
 3dd35e229fe64af7dfdde1176e13963fc5c2e3443657adcc44632504f5d61ae2  art/icons/perks/exports/44/field-surgeon.png
 5c5bd69e5a5f2087240867f1909be68bf433dd4981c7a893e89bc362b2905c9a  art/icons/perks/exports/44/fire-sermon.png
+23fd1e25bba54d08a83bef462e24036fcc3affa9b10a4401650be5e95551775a  art/icons/perks/exports/44/five-stars.png
 f33585e585f3750f0af3112f6e3d886fe0b3b22e74c1162572efd1664060777c  art/icons/perks/exports/44/flat-line.png
 703158718572d0159e5eaf8d1ef90aedbe1fc699f9e6483d3b1fdc1e6eb40080  art/icons/perks/exports/44/footnote.png
 eb34fd7c048e5fd4ae7c2a753a5dd4085832ed8b86eef322c5c0d4db1c8853c3  art/icons/perks/exports/44/foreseen.png
+ac59bcc99b2b8edcd873ca3d51aaeabd587f81ff5d9d9ad7e79f78547b0b600b  art/icons/perks/exports/44/foresight.png
 432975d1d45330452af3253f541b6d7b4b8387397b79566b64e7d4965e9b150f  art/icons/perks/exports/44/got-you-in-my-sight.png
 4691c0b5d63d5f264d7aaf57024325031ab73f00ad7967b6bfed8c29f01d1569  art/icons/perks/exports/44/grapple.png
 1060bd8c08c2235b002d9ee0f0ce6ea85dea3c20efe2e17cf16618e49fa1f62d  art/icons/perks/exports/44/grim-reaper.png
@@ -8868,8 +8932,10 @@ a4f19165ea3f355347cde981a5ea38b9e45a93d8ca855758421c820f9eca107d  art/icons/perk
 2f68f86091a81eada4e5e32c7c4adc4d0d118ec6b7fe34b913d55d43221488a7  art/icons/perks/exports/44/point-man.png
 b2fe7bb95caca810572de7cde4c7cc62364a789bdac30047b5234d860c6abaf4  art/icons/perks/exports/44/poker-face.png
 095eb5ca4ffbbdfe88ce9b764a30c849024dfd612f9e02409c755300fb46ea97  art/icons/perks/exports/44/proven-formula.png
+a6670be8814142390c4339b31c8c7147229604cbb8b86136d17c31d52e518eeb  art/icons/perks/exports/44/pull-together.png
 443ef8cf7542ac5eabb45fad056a7af4df800d0b9bd2a97602fdfc6df15efe47  art/icons/perks/exports/44/pure-heart.png
 de4bc798e9597548c38647936f858b42332a4c6d54c360892be552c0cc826033  art/icons/perks/exports/44/quick-read.png
+3fb21b9a88cdc10ec637f013543ec2eaf0a59251a3222076dd1f32fdf77d6544  art/icons/perks/exports/44/quiet-thread.png
 4b6a483f58a5b0838ded73fc417563629a7cf4ef4c5f96423ed73f559abe4a49  art/icons/perks/exports/44/rally-cry.png
 a09a54e4c45884c57a1b9259b82332e98c2f44b35f087f7707a4beef153e2134  art/icons/perks/exports/44/read-the-air.png
 bb10c65583ab76178b4e6064a0b01cdcdd1919855b4828165ee78c5c59082d1e  art/icons/perks/exports/44/read-them.png
@@ -8877,6 +8943,7 @@ bb10c65583ab76178b4e6064a0b01cdcdd1919855b4828165ee78c5c59082d1e  art/icons/perk
 cd97374865e35292c79925571182841ae6885876eced266074b5553439b519ca  art/icons/perks/exports/44/recitation.png
 d03d9fa893de0475d01d0254142f885e843950771ce79dcd68f224c218d97b71  art/icons/perks/exports/44/red-line.png
 d36b649057c0d524f2bc820fcbaab1fc751362fa47ea5513a72ec3d19113fc19  art/icons/perks/exports/44/resonance.png
+8d41f9a4c8bb0c3370e0eedbc89fb84bb65e23c67ac31b1420727b263a073809  art/icons/perks/exports/44/righteous.png
 e40a374b465cc736a2c8c44e6222f7c5ef728c0edd923f54a0fd368f96ececf8  art/icons/perks/exports/44/rite-in-the-field.png
 ef970c6b4cff2c2b459b01d2a370fdd59a19c81263f75e9ae536371f29b10fa9  art/icons/perks/exports/44/roll-with-it.png
 18bb66d829079c06c81e91c60acd97e6b93985842e8cfacb5d5c3d3e6b943b4c  art/icons/perks/exports/44/rounding-up.png
@@ -8920,6 +8987,7 @@ b7c5ed6f2405d3e87dbe098b576e2bce7c85cebd8ddbff12b84a39c55007ede2  art/icons/perk
 499e808d92e8ad06eed35d0a6b7ed1fc5fc490f7556ee614f4c3b7810a0aaf52  art/icons/perks/exports/44/untouchable.png
 ea948c70ef8a9b48c5a45467b83ce84d5ee179ccc4f629ee95971baaf6449f06  art/icons/perks/exports/44/used-to-the-pain.png
 2d5b90b3403c0ea8bc31a4c0ea300543c64a1e2818a00d1a675bfd4cbaa05673  art/icons/perks/exports/44/vanishing-act.png
+dba621cf35e1f645f27b4f016a16410e47980e7a2dc7dadb55a0c2ddb2427fc1  art/icons/perks/exports/44/veiled-insult.png
 e4f635366c99b1d0711324cf6b8be30381a119f836c4c369aa22133591fcefa5  art/icons/perks/exports/44/verse-of-war.png
 284902f970b0989bca4dafc13cc6f9b481416f865e9980e496aefc02c142191d  art/icons/perks/exports/44/walking-wounded.png
 0e12771e68f39e11712d242b984135ea9768a74c45d8358e44ad5596c91d2b3c  art/icons/perks/exports/44/wall-run.png
@@ -8945,6 +9013,7 @@ a9056df54237d0f5fedfb5744b61440e77cc151b86df6d557731b99c43793132  art/icons/perk
 9cd5079ee300dd26a81b25fba2bf31df88c30172e8096bd3a43c198b33188675  art/icons/perks/exports/48/clean-hands.png
 6603e9a037243eba11738234b9ffdb8eb54c0dde126b8f8d69da189d26cc754f  art/icons/perks/exports/48/closing-argument.png
 8c66c57b5889245dddccc1e6dfda633efb3a29df25dc1381b72e9785e15a2f97  art/icons/perks/exports/48/cold-read.png
+f70260be20e05e1d5c0825af82410e94936404617ce59ec990dd9cb4b115e3e4  art/icons/perks/exports/48/commanding-voice.png
 4656305ead4befab5fd80366711da0fba21b5b10bd92ce7ef57335312f031e16  art/icons/perks/exports/48/crowd-pleaser.png
 c87c0e2dac7d0aa1989e5d4aefaa947585dd27ee4781cc3b6aad1b48e0d270d3  art/icons/perks/exports/48/cultured.png
 504598625ff8a43ba2b0ac6a674ac9e859cffe47799abc433a5fb97b0fcd06a2  art/icons/perks/exports/48/cut-in.png
@@ -8960,9 +9029,11 @@ f943dde16c17427a0a24af8eb9e7cd782243b49b9345770b01bb01ea960014da  art/icons/perk
 ce51ec1c0115581818b03b8295bcf4a73fd64972d5fc8dbf541abe55a9449ff2  art/icons/perks/exports/48/field-repair.png
 61faa586105ff3426f04a4a02fb74470570b1ed83773b8e2566f44141c9a74a9  art/icons/perks/exports/48/field-surgeon.png
 5cb1d5de5da921a23bc8a6e84cb3f3f6bf7ba3876175c1b4a3ea61d936852a0a  art/icons/perks/exports/48/fire-sermon.png
+ad0bfe86d9fb943be8c6da4209eeff5ef55c54dccd8b28fbbc28b2463b9649b8  art/icons/perks/exports/48/five-stars.png
 d2bbde5f771dfe445c0915bcc0c21b7503baf280ccfd5aba668bc718f5ee95a6  art/icons/perks/exports/48/flat-line.png
 8953eb25deebfb65fdad60bf68ff919686aa8b061a507422b983a5c766a02f27  art/icons/perks/exports/48/footnote.png
 58e7dd685969917e96cdcfaaa13edbba2b0c4d22ff237c40a2248a4f00903535  art/icons/perks/exports/48/foreseen.png
+5989364a41e0afeb65f700b30eff56ad0ea167204c0fd2d6956d8472db5634b8  art/icons/perks/exports/48/foresight.png
 f2e629d613a6fac3b8df4892572bc76b1aee842be4b1ecdfbb6a86d05fef4541  art/icons/perks/exports/48/got-you-in-my-sight.png
 3752f6445bfb8709b9cacfb2f4b70daeb62e4b8706ffd54c863ebf178364b924  art/icons/perks/exports/48/grapple.png
 f75900bd9d1bea72f6f4d4ca33b662f3f4ecdfe24188a59f1d9c6cc8c87e7492  art/icons/perks/exports/48/grim-reaper.png
@@ -9004,8 +9075,10 @@ c7f81ea265ca41f3a2f9578ae33462a612f7ca30ffda154be4db71d8c34d2af6  art/icons/perk
 48260bb548517a291cf5deb1ff3810e21cad366fbbddaa8ff0cf09c6edbbac89  art/icons/perks/exports/48/point-man.png
 5fd315956b51e13a3feae737a4ad118afa366eb2d817870249642d385206c6f0  art/icons/perks/exports/48/poker-face.png
 2278100c2a571161d98d496a72ea26f11af626b8ac7596a5a7ce956787e3ddc5  art/icons/perks/exports/48/proven-formula.png
+3455a9561dd0d56a661b35c5a2925373a98c5d2fda2b6022926d5e00774cff93  art/icons/perks/exports/48/pull-together.png
 7ba6bac61e354a39916f00280dd70c3f61a9ddfb9662a3bcb43b3e10798c97d4  art/icons/perks/exports/48/pure-heart.png
 57e4dca78a3228eb41725821a8b3c685f63750c9d08ea589f3b2834393dfad5d  art/icons/perks/exports/48/quick-read.png
+6da9b302d04a34476ed582318797c1e532e11fcd8b4fbd8acccb218c90c40dc7  art/icons/perks/exports/48/quiet-thread.png
 848dafa8be1a495ad07254b8682784c60035cb04078a60d096f60d34373b6dd6  art/icons/perks/exports/48/rally-cry.png
 75e690a02c4ecb3bc6499e89fd328f600a0bcc6e2b74da22a315c064f2ff3db5  art/icons/perks/exports/48/read-the-air.png
 8b54b7f50628689ba6c4e9bcc4b203843623dbe5d3781bcb0e5180ecb125ce71  art/icons/perks/exports/48/read-them.png
@@ -9013,6 +9086,7 @@ d6fbb2fdddfa49ecf6898b0ba92740ac4b1f81e6276fae1a798544f9cd700798  art/icons/perk
 15ac28db3cf886b719d9f8c79cefb8e82abab3a23ae8109e4735028882af1294  art/icons/perks/exports/48/recitation.png
 5bddfef4ec2d09e0ff89f1b8ae74a6b851c8ba9a6642d843e3148771a32e1c6e  art/icons/perks/exports/48/red-line.png
 5a96900e5cee82561222879f37bdc3ea096180c352a4c28dd0e525a256dfccc1  art/icons/perks/exports/48/resonance.png
+7126c8713e6ef32962ca5ae00bd80380ff2b1d075265718f0e6ebc5b63ac15d9  art/icons/perks/exports/48/righteous.png
 f1e6f189dbd423c3ce91b1192664b43f799742ca92e5eebc63d0a6799bcf1d27  art/icons/perks/exports/48/rite-in-the-field.png
 4e593e8613f64ef23ac9d80b7ffa5f91d5369287cc73a0dcb69dc4d185aec28d  art/icons/perks/exports/48/roll-with-it.png
 e1fab0bfccffaa7eb29e82292fd096ddc127a41c0232a09f9d36feee770fe7a7  art/icons/perks/exports/48/rounding-up.png
@@ -9056,6 +9130,7 @@ e155bf584c7b43635a95c67cbe81605a2df241f691fa0b7e190f5246a2f84fcf  art/icons/perk
 cd3a53a1ff5e0a20a758d5f93abd0af422302c4b74136a478e79fb5d885e77af  art/icons/perks/exports/48/untouchable.png
 ace074ccbcad51e9146266a6b7fa1be74a1fe0066e0215d114a399355b855dc6  art/icons/perks/exports/48/used-to-the-pain.png
 5bfb43bb3ba6ff830e6c9bca76daca04d7481e560fe7724a3f78400169ec74fa  art/icons/perks/exports/48/vanishing-act.png
+e1aaef7900108e6fdb86bf083ff067ac55857fb9f4b288c23f8b93a817a5c440  art/icons/perks/exports/48/veiled-insult.png
 6797f89a65814e62b7040620d3067a94ddf473540d60d8cb9b80f3dbe9ac6087  art/icons/perks/exports/48/verse-of-war.png
 5f882f25866d00f1b9bef86c8e7387ab68941d3d0bed6a5cd55ce0b3d75b0a71  art/icons/perks/exports/48/walking-wounded.png
 52c294ff0fcfa7900c0619b142708d61aa4f7c72e1e856b85fbd6e00f322b2b2  art/icons/perks/exports/48/wall-run.png
@@ -9081,6 +9156,7 @@ f540c56ebe6856b1ce02ad1b9bc898ec71bfa5aeef19579f83aaeea62fcb3c9c  art/icons/perk
 8951c65fe23c2d060a1d4fe70c4a68821e9d3e8fcd03ba7ccaed7ea663129617  art/icons/perks/exports/56/clean-hands.png
 cfafb1b9ce763645c4f477065317f2e8936e9161127731f88bcf2828edb58b61  art/icons/perks/exports/56/closing-argument.png
 fe4987b3300cc5c8d109c814c2911d2d2807814a07daa963806ee50767c33637  art/icons/perks/exports/56/cold-read.png
+72494eac0a449edabf0ce345b48a844f726846744860c70fd163db566c54a2b9  art/icons/perks/exports/56/commanding-voice.png
 586ff0e64b9ebf18d575d7abb7480255cce7795db6bbd05eab5743898dff1bcb  art/icons/perks/exports/56/crowd-pleaser.png
 9c2fa3db427d0128b26b21c5f9b808330789844b23babfb4c694924d795fa101  art/icons/perks/exports/56/cultured.png
 021fc2ef2fdbc698a0305bb72a828f2810243227e13ffb6e3b1cd08953ae7256  art/icons/perks/exports/56/cut-in.png
@@ -9096,9 +9172,11 @@ c7c0627e4853122b7fe0c286987a42fa288f2cbdaeb472d3de627143b6854877  art/icons/perk
 1cd66048ca18810efff2ec74109b4be4b33f0ca20c07a25edca01dcf9bd0e2e4  art/icons/perks/exports/56/field-repair.png
 2f67ba25ac3f797cf31a7fdf3983849f725e8aeeff2114b6513d3f436dfc36a5  art/icons/perks/exports/56/field-surgeon.png
 206dc185bd663aa7bdfc8448997244d09af8d5268734b489a5329c543897dcea  art/icons/perks/exports/56/fire-sermon.png
+425f4c4624594a58f954cc6d884daca3c66fc81a662415916786a8b273d4c097  art/icons/perks/exports/56/five-stars.png
 c149df6ec07e3d4c26c94155e4de7b14dc009ea86e6194020ff726b1ddb303b8  art/icons/perks/exports/56/flat-line.png
 48d050e023db695ccc9f663f035cba515b137427746fb737065347661d5131d5  art/icons/perks/exports/56/footnote.png
 f92cded0c68a435e4e96037d401611794b250ca8b2b759525a61806f9076539a  art/icons/perks/exports/56/foreseen.png
+3beef974f6a68781579b6abb018e5ab17a82423d1f0b5eab153a1a8eab61d497  art/icons/perks/exports/56/foresight.png
 60c095d2acd6da67743fcbd67f0ba9f6bda30ddc1ffcd549ad53a7275e739edf  art/icons/perks/exports/56/got-you-in-my-sight.png
 bad4d141c1ad2fc4d1dfdb136b0d3ea6725ac8dd5b1e4fedce1f8d23dba896fb  art/icons/perks/exports/56/grapple.png
 8ab1f07c2276cb841a60f5c870e3cd15d097f865eac4ddd866a98b5b03739e57  art/icons/perks/exports/56/grim-reaper.png
@@ -9140,8 +9218,10 @@ d5eddb4373bf3d7a595183cd5fe9c031e95fc2720026b54b887a784e84bb7432  art/icons/perk
 43e2e85650fb95341afe73fe7f2fb767302985e92cc356843edb2953a1c0e832  art/icons/perks/exports/56/point-man.png
 e43c99fb827ff562fc0b5b49c8eb0cf1891680ce3e9e7ff86fca93c85838936d  art/icons/perks/exports/56/poker-face.png
 96a4ae28a123ede4b3d3cd2bf4bcc3cc955f3ea313c31252506904abed29f2e7  art/icons/perks/exports/56/proven-formula.png
+db045e92d5205bea4f993166aea8fbd341660a6b87432172a785f4490fda6436  art/icons/perks/exports/56/pull-together.png
 5eba3fd9d6ebc9cce8fb43f97d4b3fc8abf415890724f5cffc034bc9f3d14dcc  art/icons/perks/exports/56/pure-heart.png
 68ed344b3d3f01b670fb5cc6a6b04d1f081963f1f3adb7622069dbf91d45729b  art/icons/perks/exports/56/quick-read.png
+3db2b1374b7b56febc2c3ce6125aa898b5c8025220e637a8f7370f006ee8ed3b  art/icons/perks/exports/56/quiet-thread.png
 2f7960b6438d1a8114a2a86b0eff6a1594ad7a96e2c2c9ad5a9b31355d548dc7  art/icons/perks/exports/56/rally-cry.png
 299e518ab95dd3b06a2c31cb89ae08f02e7d7c8b3a678cd18e8cd2234a253337  art/icons/perks/exports/56/read-the-air.png
 1a9fef1330307fe41d8149f8170f9edbb3f990bdc89536bdc8ba0beccad22161  art/icons/perks/exports/56/read-them.png
@@ -9149,6 +9229,7 @@ daedd698760328ca9ed2189bb8d710150d1d868515d2e7e0aa9a903769dad3a2  art/icons/perk
 9d83826c803195d10b23b81c9e878d5f75437662f9fde92275c844e4c52659a3  art/icons/perks/exports/56/recitation.png
 7fa019f4615e1cf93c7ad6f90402789c1fd90092d58ccfe2d3cdb5b3eb413558  art/icons/perks/exports/56/red-line.png
 b0c3ff3297653277bc112080f7dea3c71156b725f09ae81275fff6e08f90395c  art/icons/perks/exports/56/resonance.png
+73dcddffce3b7dee337d5114f056f50252419c50b1de317cea71fa9d06cdd7f5  art/icons/perks/exports/56/righteous.png
 b4d7a9f061fb126e73053f4bcf6a0ec978b5d4275f548c72ff125e4ffe8523d4  art/icons/perks/exports/56/rite-in-the-field.png
 620d5d413948aaf5d1c9ddfec685e17affd8c49e06f9b024b0d7fc7be4a23cf1  art/icons/perks/exports/56/roll-with-it.png
 543d497416a97147545a748d802654967ce17c2370290e68b33a663bffc7c06b  art/icons/perks/exports/56/rounding-up.png
@@ -9192,6 +9273,7 @@ e7da6d44327d8a5b80c3ad2bbea0479695f7f4552bbe9b6c1c6e753eed85af5d  art/icons/perk
 01c9296c981763316f753bef6b62dec33d7c919dd698034d76d2e1990eea0f49  art/icons/perks/exports/56/untouchable.png
 02b6efcfc656f8c77a0bac735f40c9bb71cd51f05ca9d76e0ed6ad134f5db265  art/icons/perks/exports/56/used-to-the-pain.png
 e93d98cf9fcf82b33ac09e294708e8e72086a6bc6f0c14c76df6e90cfeb3262a  art/icons/perks/exports/56/vanishing-act.png
+5fe4df32e35ef580ce8f45c621ca9922cf95b3b14be0c08c24eb815216b5785d  art/icons/perks/exports/56/veiled-insult.png
 77b42e93c858d627e4021a242bb734c5bf4c22da3be87816688ee3e3d3502060  art/icons/perks/exports/56/verse-of-war.png
 0780b0994bacde76fad2eda99529f6b135e0931280017880fb41e14ca63c78fd  art/icons/perks/exports/56/walking-wounded.png
 6b3d1f29c92df1e9dfb94823e5828c91177f1b722a0fa2cbefa7df42c9c657a1  art/icons/perks/exports/56/wall-run.png
@@ -9217,6 +9299,7 @@ c186c77c3029b7f1a2ab5776fc06572a809ab9e49711734ef3739796efc00501  art/icons/perk
 a9fe91e5f82f7fee23117052766501fcefe314cb58a0f3704664545d5af43493  art/icons/perks/exports/64/clean-hands.png
 24ffae4f620d3f37ab7a9f9b9ba6392067e522f7cacacbfb861e8dea320d75d0  art/icons/perks/exports/64/closing-argument.png
 d2b37baf5ecc0843ac4adb2cf46092575008bab948d64cafed3a320028079f0f  art/icons/perks/exports/64/cold-read.png
+b31ec474512c5902fa1fe18a910b6c5b3d4edba9c5b3b93f396fb20942bb2905  art/icons/perks/exports/64/commanding-voice.png
 fd539f431738f1b0ea4f92b12e8a8004ce1abeef78e89ca849064fced295bea2  art/icons/perks/exports/64/crowd-pleaser.png
 2374261ba0188ac7b89c9b8aa70bb3aafcb8c1bb727f8998461218ba9674c319  art/icons/perks/exports/64/cultured.png
 c0fd8c4c590c4d33b1bf1deb77d0fef98a99f0a32ab877b929e375fb6e10a7b1  art/icons/perks/exports/64/cut-in.png
@@ -9232,9 +9315,11 @@ d86b5253c0a05ca0500b21052198a27f5f10585a156481d36aaf05ab8d1d84db  art/icons/perk
 298a5efc2555a1dd3e133c8f01dd60dc8b16a70f9f10204b426dc790d53d8dff  art/icons/perks/exports/64/field-repair.png
 fa6de87d0a1d73475800a1c279b11be45286cbee5c6d1e39bb586d15b7e5c70c  art/icons/perks/exports/64/field-surgeon.png
 35a5a0bc32ea6d7c7c832ae90c1d83cd5b401365ae699a9c20ce3d5778462079  art/icons/perks/exports/64/fire-sermon.png
+36fc1e3fc7989aae8006ce17a8629d0ee4af9f506ca7d1936a9f0d2420a862ea  art/icons/perks/exports/64/five-stars.png
 4d294609329cd71d049f81923832160bf605034c0c0b8ea3d34abe8c5a56261f  art/icons/perks/exports/64/flat-line.png
 e148282fffc891b93ae4bda46d5f080669e07e2fd81227fc470215e101ae8539  art/icons/perks/exports/64/footnote.png
 ff9ad125a40c86e334140ddd173c9c1fbb1a8d3ddd67d881039ad204ceda661c  art/icons/perks/exports/64/foreseen.png
+f9885dbcd06228e17aafcfd45e6583ce9e94107609e87ee60644e4b1adb2e534  art/icons/perks/exports/64/foresight.png
 d80c3ad5a043d116f86c5610422da6e89f376037b705c668660eff1ecb65d2cf  art/icons/perks/exports/64/got-you-in-my-sight.png
 70c22169ef6dca4adef12565fb0ccc76b96957eec534db095e16046f601e7b1f  art/icons/perks/exports/64/grapple.png
 e73de9f01853029eca3a582293431afdd79017bfb3bf448df2213f954a1aef94  art/icons/perks/exports/64/grim-reaper.png
@@ -9276,8 +9361,10 @@ a3d1efb97d81dfe84ee927428a9f9701c81b1e70f028c4e3a91dad3fb1b7013f  art/icons/perk
 918d134b1699f34928d7bb68a8e5068f7d68cfe5e9fb434c398a3fbb9206a82e  art/icons/perks/exports/64/point-man.png
 3afb2483efa882cc65701c592e35561fc65ac2c4e135890ae9a9ddc805c03f31  art/icons/perks/exports/64/poker-face.png
 5c2883729e99ef3ad03a8fd6371e2ee51bfd784d15de367661a06d8a22416a46  art/icons/perks/exports/64/proven-formula.png
+83d0f5bffacef91bdbcc8b8ad2b462df11c849d3b595333eff8d15ee5573d63b  art/icons/perks/exports/64/pull-together.png
 cbcf816ca28b1c6715fc88eeabc3757df7aa95828e8d7ca414de00a2ec67ea6c  art/icons/perks/exports/64/pure-heart.png
 b65543536ca6fa295bf13913fa3c7e990f2d636f1266a2237f9615bf2cedb462  art/icons/perks/exports/64/quick-read.png
+ec8775784cde7927e136f92b15ebcc41ba8e6973cd37b40a371144c2e15fd63a  art/icons/perks/exports/64/quiet-thread.png
 e5cbf72216cabea50b5d161ef9c61417f6379859288f3a27a3c10b56b5ecec85  art/icons/perks/exports/64/rally-cry.png
 d5326a6e7e28ee3e52e8358be0401edbdee3b154dcd9f9d4fc6ab3276893fe96  art/icons/perks/exports/64/read-the-air.png
 6008a31bed5ea8d36ad3be31c5c39ff6657342f2733ba781c4e85f017061735d  art/icons/perks/exports/64/read-them.png
@@ -9285,6 +9372,7 @@ b0a1b11e292211168caaeba25d9fe23e1e6af77f82a6fa3b6b907b39c602fbbf  art/icons/perk
 4d15ef05a7f104f9d9939300bac60241245915295480c9daf95ac05bf9b4d074  art/icons/perks/exports/64/recitation.png
 5bb92ff230f6773529e7669cb35c5366459c888d70762398051a258b894bd4b9  art/icons/perks/exports/64/red-line.png
 80efad87811df2e299cee50b5feeb8b157ede4a56c13736aa3635794116693c7  art/icons/perks/exports/64/resonance.png
+76883afb3cfe93779123e5d0ccd7f815ca451ed66d5853dd09d0368c435c839e  art/icons/perks/exports/64/righteous.png
 e02205d1e28e94656aa4c8be962a33372ec44563093fc7bc0130574f496cf86e  art/icons/perks/exports/64/rite-in-the-field.png
 48afc4943bddf9df4f38aaa61c8f5e11bbff916564698e081a0aea24f09026bc  art/icons/perks/exports/64/roll-with-it.png
 3b9cb1a924a2281e5f2ee4958d35d62bc746365b2529df8a723d578baddeea32  art/icons/perks/exports/64/rounding-up.png
@@ -9328,6 +9416,7 @@ c666d11130c8537098da9f3a9e884d945c6439576cb4f07496db852a98da783a  art/icons/perk
 9c747306df6ddae85f141ed1a0ce2860f266129f4e04bc7c241ced2d943d90d3  art/icons/perks/exports/64/untouchable.png
 7e095c6d77da5c536f711d161e11e1f31f1caa94d98c28412d4617cd58df32be  art/icons/perks/exports/64/used-to-the-pain.png
 bd68464abc398b5013106499d106c34adeb10c8788190b376c634890712009a7  art/icons/perks/exports/64/vanishing-act.png
+938e7aab7d03a71e916e4d4c470889c87481237dacabb7789644ea45b7011bf3  art/icons/perks/exports/64/veiled-insult.png
 3c1468b5ca412a0154aadb76ae0254623d3630397c3ec5e1f98fa43f2b4b7333  art/icons/perks/exports/64/verse-of-war.png
 c7ff17364ba06b77ed73accf34fa999c83d3387a7784882c6b39f095e411f410  art/icons/perks/exports/64/walking-wounded.png
 c867ebbcc9ddfe78bdeda9ecb2c69da5b319da05dfd38c1ed2d0c5ce59685b5b  art/icons/perks/exports/64/wall-run.png
@@ -9339,9 +9428,11 @@ fb994298398acc535b283428d95ac5c23f5623dbecdfd90cb844f9feb2571b04  art/icons/perk
 2997d49dc479521afe99742a7ab0a0da869fc77fea3a2d997a0288d9a2fa3bb6  art/icons/perks/field-repair.png
 e12f6c9406f1aa817722ccd55beeedcbb7c03302d717b297067c71b376985a9e  art/icons/perks/field-surgeon.png
 9d5727d5e12a36d36ccd654e1117eff3723afae104e1b9253ba9c2947601f88c  art/icons/perks/fire-sermon.png
+1858f8e71575d353be83a4b6e8409d98a7b77692c8234aacb95d581515704bec  art/icons/perks/five-stars.png
 e8624b84c299255559a7cbecd1dd81c863477de942ced2f1bbef5673a60c6f16  art/icons/perks/flat-line.png
 449bdb3c4952e9900712164a7c5d347b19929b604a36eafc71b4f0463425bc64  art/icons/perks/footnote.png
 f5c0caebb5ab4c3e0b4d08ab3cd0120bdcf2e9a0c1fece315ff0adbda8f0c7e2  art/icons/perks/foreseen.png
+bb88565e3a5d2f674f85330ff8301c465f18030595c1d0f3c8408a6b8bd6e330  art/icons/perks/foresight.png
 1206dad25818b3b74649c4a0e89993cf04eb1d54923a70500f79cc9635e19a44  art/icons/perks/got-you-in-my-sight.png
 e5828948b6f6969d7a9062a857bcf0763a862824b921c16b559691fbbc7de319  art/icons/perks/grapple.png
 1af37818f9a89684c17918e4a8ef0114a205649e077bc39cec4b46097e651743  art/icons/perks/grim-reaper.png
@@ -9383,8 +9474,10 @@ d903c5b52fafa3ce40fc7b1f04fd695b879f73a81d51fdc2e03e09490816951c  art/icons/perk
 d7bd3a7f36644c20a977e476c32befeda385d6f983f48bf988348c2f083cb0bd  art/icons/perks/point-man.png
 21a5e056c093d0734b81dfb141af08bde7bb5db3b13b181785248bc3a96be435  art/icons/perks/poker-face.png
 147d1aa2218dce378c719d1a94554fa61e9741fd4d35d7bc1ad5739caed38752  art/icons/perks/proven-formula.png
+00a9266adc70f2aa4f498c09cd67a0df0c2b761b4d449749ff855a33dd7a24a6  art/icons/perks/pull-together.png
 ed3ffaee1d542a530c62dea8e8d9699fd086119fd0630ec5b67dbf7721c97711  art/icons/perks/pure-heart.png
 085ebbc277c3fce774f2d68b5ee8796c35cd2b328c9154ac5cf6faa515fb63d2  art/icons/perks/quick-read.png
+ca41f0ec6cd435eca5c477086275ed91a3da1a79c49e21f857a57165e0767151  art/icons/perks/quiet-thread.png
 be1c96b1364db87643416cfd75171a5c528d142919e6838a1a449d78bf79f015  art/icons/perks/rally-cry.png
 145d5c241e428c929c7067710f564d0bf82c3fc8a05ee7347a4bdcb7dd597605  art/icons/perks/read-the-air.png
 6ade00b5968d5025ab10180e289a08b1aa4ef967f2c032baebd38bde7f0b46be  art/icons/perks/read-them.png
@@ -9392,6 +9485,7 @@ be1c96b1364db87643416cfd75171a5c528d142919e6838a1a449d78bf79f015  art/icons/perk
 3ef23b2f678a293c4785deeda9159105b7f677f629b7a7e894934dc1261acd8a  art/icons/perks/recitation.png
 9998a9892e26b748e7fe5982dde860a293717f434f338a14be6ec22d9d784f9e  art/icons/perks/red-line.png
 e736baca3eb373483ad9de8920d4a3fc8f6442a65ca0807b2222ac93bc73a0ff  art/icons/perks/resonance.png
+310e273c7ef4393a308877a6681038c372587316c5c725eab7fd8578a7b51d70  art/icons/perks/righteous.png
 b0cc974c9e15790c1d1cfae0a5fed26c845eff2e84a03a7b890e970def12c597  art/icons/perks/rite-in-the-field.png
 53174d3432e8764758296d4c6b986eaaaba9d71130417e8e4548ad972451ae35  art/icons/perks/roll-with-it.png
 2a203f3bc83ffdeb15c2441a1e4a8aed048927efcf83a3a21e0fb82338211346  art/icons/perks/rounding-up.png
@@ -9435,6 +9529,7 @@ a4dc08eda9a781cd7709a7983d7ca5315f91eb41c3882903405b6bd6d355a0fa  art/icons/perk
 d30e604e9f11680d507ec6fa119be20e4c47bca3200dc2b7c70fa41315d72c9a  art/icons/perks/untouchable.png
 aeea9d63e98ee791a428ff6988ea92a3f737a99cdf2659d6e2abb288fd2b2706  art/icons/perks/used-to-the-pain.png
 bfa39f947dfa51314ee4fb4f9c8e1623a73558a190bd114eb4bc516c3223a9e2  art/icons/perks/vanishing-act.png
+2fab0b7e3b0f805e995336025e8f9a55b72c5258d77924c87461f5c8e8c18c1b  art/icons/perks/veiled-insult.png
 931c200b1a129c131f93ef0414fb7b805ec34d877b6042ff5bd2dadbdb9f3c5c  art/icons/perks/verse-of-war.png
 783a18fa21c352858a570e715812fcc9fc8a2c4f6ac89fef7e68fa772f87dbc4  art/icons/perks/walking-wounded.png
 0ec9d2022d26a4d0e8b94f57ca50777117503738e82e8cc9896f3de9f49ba6fa  art/icons/perks/wall-run.png
