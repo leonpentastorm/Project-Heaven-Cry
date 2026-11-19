@@ -3454,6 +3454,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-visualizer--celestial",
+      "path": "art/icons/gear/focus-visualizer--celestial.png",
+      "sha256": "475e1317dc23756fde42078aefb99f2dc48029a76129537cbc10493cb6f938f1",
+      "label": "Visualizer — Celestial",
+      "family": "focus-visualizer",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-visualizer--celestial.png",
+        "sha256": "90dda3e83794510714209958e58729baa7d8296ef4ee14b1589312514bb8ab40"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-visualizer--celestial.png",
+        "sha256": "475e1317dc23756fde42078aefb99f2dc48029a76129537cbc10493cb6f938f1"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-visualizer--celestial.txt",
+        "sha256": "dd7422b3b504d1ac15fc8812877254f197c901e7e8203ecd86709c90ad0721b2"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/focus-visualizer.png",
+          "sha256": "b0184fad79241f59ef9f6afd4ef1e696b48c29e03ce6c9e76cbea1b36ca3f1ac"
+        },
+        {
+          "path": "art/icons/gear/focus-visualizer--relic.png",
+          "sha256": "892736cc5922cc883cc73240ce95dddf433f73935fc7c2ef5c83763fc9f34bbc"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-visualizer--celestial.png",
+        "128": "art/icons/gear/exports/128/focus-visualizer--celestial.png",
+        "64": "art/icons/gear/exports/64/focus-visualizer--celestial.png",
+        "32": "art/icons/gear/exports/32/focus-visualizer--celestial.png"
+      },
+      "export_hashes": {
+        "256": "3e75f28465374774d185068897e2da45df8b2e1691fd0a572beb48256d344984",
+        "128": "12be21f2ade26027dd523b61a232e9870ae5ff21f1406331d0443734a40cf513",
+        "64": "c67bdd8a91b7a85024e917dace6bc31f285165db370f970a424a6c4bff680eeb",
+        "32": "ce5823811f760111318d4331a52479e74b2bc1e4843bd31665de08900acf4fff"
+      },
+      "grade": "celestial",
+      "standard_id": "focus-visualizer",
+      "outline": {
+        "solid_alpha_iou": 0.9376624416811838,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 15,
+        "different_pixels_64": 61
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
