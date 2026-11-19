@@ -23797,6 +23797,42 @@
         "different_pixels_32": 12,
         "different_pixels_64": 28
       }
+    },
+    "armour-combat_gloves--masterwork": {
+      "label": "Combat Gloves — Masterwork",
+      "path": "art/icons/gear/armour-combat_gloves--masterwork.png",
+      "sha256": "370cf94d1ebc9c5698a95f71d95f1769c6a2bf723381d71c3418ef078eb37fb4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-combat_gloves--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-combat_gloves--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-combat_gloves--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-combat_gloves--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-combat_gloves--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-combat_gloves",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9672960949085516,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 34
+      }
     }
   },
   "survival_art": {
