@@ -119,7 +119,8 @@
     "armour-night_goggles--masterwork",
     "armour-night_goggles--relic",
     "armour-night_goggles--celestial",
-    "armour-gas_mask--fine"
+    "armour-gas_mask--fine",
+    "armour-gas_mask--masterwork"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -129,13 +130,12 @@
     "weapon-war_axe--masterwork",
     "weapon-war_axe--relic",
     "weapon-war_axe--celestial",
-    "armour-gas_mask--masterwork",
     "armour-gas_mask--relic",
     "armour-gas_mask--celestial"
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T14:26:10.366559+00:00",
+  "updated_utc": "2026-11-19T14:28:39.359576+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3
 }

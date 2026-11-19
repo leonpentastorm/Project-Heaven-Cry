@@ -7282,6 +7282,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-gas_mask--masterwork",
+      "path": "art/icons/gear/armour-gas_mask--masterwork.png",
+      "sha256": "fb1322e661e8a595fa9895f3241601786aca0b7ea73b5d0017a3a6391c54226a",
+      "label": "Gas Mask — Masterwork",
+      "family": "armour-gas_mask",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-gas_mask--masterwork.png",
+        "sha256": "3284085fa59ea7e53bdb30326facb50d59ceab945e451db895b39eef4d512843"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-gas_mask--masterwork.png",
+        "sha256": "fb1322e661e8a595fa9895f3241601786aca0b7ea73b5d0017a3a6391c54226a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-gas_mask--masterwork.txt",
+        "sha256": "4634f9b3dece2cd57340b18c2d2275cf00dca42d159765097e3ab7a941094720"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-gas_mask--masterwork/v1/source.png",
+          "sha256": "042664d1889b0af45e88d9bf2bfa6ebd82dfaacb806b328113a07d9ea2078597"
+        },
+        {
+          "path": "art/icons/gear/armour-gas_mask.png",
+          "sha256": "a633011fa2fed3defd33228d8dce7475d39060df9c779a1a9ebf0beab46ef98e"
+        },
+        {
+          "path": "art/icons/gear/armour-gas_mask--fine.png",
+          "sha256": "4664ec483ef8c24344c5765d5ff106ceb849dc1382707fe0bf21c569dd0248f7"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-gas_mask--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-gas_mask--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-gas_mask--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-gas_mask--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "b1ef0593c4da3baff7384b9c95b61f00cfc54062d59c0f49d9e170e3d41a9787",
+        "128": "463a47b393a2bcb1b904b44268a430b20d928284b7f756ebf901306ffb438f42",
+        "64": "40796039d80dabb438e0bf8821fbf47f5dba2af4ffff6c69038cd86d3be3afdd",
+        "32": "650a67069ef8b7a53b5d27fbf45fef5aeaeaed5391137e807c81a321291e1964"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-gas_mask",
+      "outline": {
+        "solid_alpha_iou": 0.9769706831520037,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 25
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

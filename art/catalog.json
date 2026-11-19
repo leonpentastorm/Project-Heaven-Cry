@@ -26033,6 +26033,42 @@
         "different_pixels_32": 1,
         "different_pixels_64": 12
       }
+    },
+    "armour-gas_mask--masterwork": {
+      "label": "Gas Mask — Masterwork",
+      "path": "art/icons/gear/armour-gas_mask--masterwork.png",
+      "sha256": "fb1322e661e8a595fa9895f3241601786aca0b7ea73b5d0017a3a6391c54226a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-gas_mask--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-gas_mask--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-gas_mask--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-gas_mask--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-gas_mask--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-gas_mask",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9769706831520037,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 25
+      }
     }
   },
   "survival_art": {
