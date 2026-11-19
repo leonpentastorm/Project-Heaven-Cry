@@ -6834,6 +6834,7 @@ Shadow Step perk are untouched).
 7. **Ghost Kill** (item 4336; opens at **Ingenuity 3**, item 4342). With Ingenuity 3: an attack that drops a foe, made
    while no enemy's eyes reach your tile and you are not Marked, sinks you back into Hidden after the action (the same
    entry: no fresh ambush; once a turn). It is checked after a Break's reveal, and its mark never outlives the action.
+   The eyes are counted as the attack is made, the victim's among them (item 5505).
    The lead's ruling (16 Nov 2026): too much for a 1-point dip; everything else of the door stays at Ingenuity 1.
 8. **Seen on the map** (item 4337). Each of these moments carries an effect from its data row (`fx`): going Hidden,
    Shadow gained and lost, a Break, Tag, Ghost Kill; a Hidden token darkens to its outline over a pool of shadow, with
@@ -12297,3 +12298,10 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     the effects only: the same actions). The core runner's `deal` (`effects/core.ts`, an item's own action) still emits
     no `hurt`: its text is said by the action's line. Proof: `test/playtest-1118.test.ts` (a foe's blow through
     `resolveAttack` destroys a Volatile Figment; its burst drops the foe; the tally gives the owner the damage and the kill).
+5505. **Ghost Kill counts the eyes as the attack is made** (row 11: a melee kill in plain sight sank the Operative back
+    into Hidden, while the Shadow meter's Eye said Seen). Item 7's "made while no enemy's eyes reach your tile" is read
+    at the attack's roll, the victim alive and its eyes counted (the one sight test, `tactics.ts sightOf`, word
+    `in_view`): a foe that sees you as you kill it saw the kill. It was read only after the action, with the victim
+    dead, so a lone victim's eyes never counted. Data only (`skills.json ingenuity.unlocks.3`: a mark on `attack_roll`,
+    the condition's `no_flag`, both marks cleared after the action and at the turn's start). Proof:
+    `test/playtest-1118.test.ts` (melee and shots through the reducer's `combat/attack`).

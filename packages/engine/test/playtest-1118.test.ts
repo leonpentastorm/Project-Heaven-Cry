@@ -156,3 +156,29 @@ describe('row 8: a Figment\'s damage and kills are its owner\'s, and Volatile\'s
     expect(t.other.dealt).toBe(0);
   });
 });
+
+describe('row 11: Ghost Kill only when no enemy\'s eyes reach you as the attack is made (the victim\'s too)', () => {
+  /** An Ingenuity 3 Operative and two minions: the victim next to it (eyes open), the other far off and blind. */
+  const fight = (o: { hidden?: boolean; victimBlind?: boolean } = {}) => {
+    const f = fightWith([{ weapon: 'hellraiser_service_rifle', skills: { ingenuity: 3 }, attrs: { perception: 3 } }], [{ tier: 'minion' }, { tier: 'minion' }]);
+    const t = f.foes[0], w = f.foes[1]; w.pos = '14,8'; w.vision = 1;
+    const u = f.turn(f.pc); f.unit(u.id).pos = '1,4'; t.pos = o.hidden ? '3,4' : '2,4';
+    if (o.hidden) { t.vision = 1; f.act({ type: 'combat/hide', unitId: u.id } as any); if (!f.unit(u.id).hidden) throw new Error('could not hide'); if (!o.victimBlind) f.unit(t.id).vision = 12; }
+    f.unit(t.id).hp = 1; f.unit(u.id).attack = 60;
+    return { f, u: f.unit(u.id), t: f.unit(t.id) };
+  };
+  it('a melee kill in plain sight (the victim sees you; nobody else does) leaves you revealed', () => {
+    const { f, u, t } = fight();
+    f.act({ type: 'combat/attack', unitId: u.id, targetId: t.id, mode: 'melee' } as any);
+    expect(f.unit(t.id).hp).toBeLessThanOrEqual(0);
+    expect(f.unit(u.id).hidden).toBeFalsy(); expect(f.cb.log.some((l: string) => /Ghost Kill/.test(l))).toBe(false);
+  });
+  it('from Hidden, with the victim\'s eyes on your tile, no Ghost Kill; with no eyes on you at all, Ghost Kill', () => {
+    const seen = fight({ hidden: true });
+    seen.f.act({ type: 'combat/attack', unitId: seen.u.id, targetId: seen.t.id, mode: 'shot' } as any);
+    expect(seen.f.unit(seen.t.id).hp).toBeLessThanOrEqual(0); expect(seen.f.unit(seen.u.id).hidden).toBeFalsy();
+    const dark = fight({ hidden: true, victimBlind: true });
+    dark.f.act({ type: 'combat/attack', unitId: dark.u.id, targetId: dark.t.id, mode: 'shot' } as any);
+    expect(dark.f.unit(dark.t.id).hp).toBeLessThanOrEqual(0); expect(dark.f.unit(dark.u.id).hidden).toBe(true);
+  });
+});

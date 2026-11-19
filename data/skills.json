@@ -2441,6 +2441,16 @@
             },
             {
               "op": "mark",
+              "flag": "ghost_eyes",
+              "when": "attack_roll",
+              "if": {
+                "self_sight": [
+                  "in_view"
+                ]
+              }
+            },
+            {
+              "op": "mark",
               "flag": "ghost",
               "when": "hit",
               "if": {
@@ -2454,6 +2464,7 @@
               "when": "acted",
               "if": {
                 "flag": "ghost",
+                "no_flag": "ghost_eyes",
                 "self_sight": [
                   "out_of_view"
                 ],
@@ -2486,7 +2497,20 @@
             },
             {
               "op": "mark",
+              "flag": "ghost_eyes",
+              "clear": true,
+              "when": "acted",
+              "priority": 120
+            },
+            {
+              "op": "mark",
               "flag": "ghost",
+              "clear": true,
+              "when": "turn_start"
+            },
+            {
+              "op": "mark",
+              "flag": "ghost_eyes",
               "clear": true,
               "when": "turn_start"
             }
