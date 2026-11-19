@@ -1,0 +1,9 @@
+{
+  "id": "weapon-sabre--fine",
+  "code": "moderation_blocked",
+  "http_status": 400,
+  "request_id": "57eefb09-720e-4b9d-ab5f-774c985e4f27",
+  "moderation_stage": "output",
+  "categories": ["illicit"],
+  "message": "Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 57eefb09-720e-4b9d-ab5f-774c985e4f27. safety_violations=[illicit]."
+}

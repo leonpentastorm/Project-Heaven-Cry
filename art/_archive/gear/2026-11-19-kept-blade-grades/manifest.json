@@ -60,6 +60,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_gladius--fine",
+      "path": "art/icons/gear/weapon-legion_gladius--fine.png",
+      "sha256": "0526866522450e260e5859dd8569dc1e460f85607075f6568d005c0afb336fa0",
+      "label": "Legion Gladius — Fine",
+      "family": "weapon-legion_gladius",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-legion_gladius--fine.png",
+        "sha256": "311c91c10613e9c5dd271814f606bc2b4dcb2929e6606dd3aa26d9892a3b4c3c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-legion_gladius--fine.png",
+        "sha256": "0526866522450e260e5859dd8569dc1e460f85607075f6568d005c0afb336fa0"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-legion_gladius--fine.txt",
+        "sha256": "b8af2c77669cca1457660678deff2697ec760a41b42c2e8155a8914fbd654060"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-legion_gladius.png",
+          "sha256": "28e96e7333bce563f97911b40b91750c9a6b578573f85c2438e4e045a5c6cd92"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_gladius--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_gladius--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_gladius--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_gladius--fine.png"
+      },
+      "export_hashes": {
+        "256": "f10ccb5be5f0b2c9f56ee6ff9744aa8c40cb70dea8d44087517c3b0978519dd3",
+        "128": "b40f2367ee4ec322614cdf19c64751f05347c83935e5b0a22e6fb580a0a0cb0f",
+        "64": "907770d5ab4228628fda10962f094bd62c00cca83201b31f80b50144fbb74dd3",
+        "32": "7f225d2bea490fd13636d985226df0ff476efc219953b1196463fc4a1ddd2dbd"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-legion_gladius",
+      "outline": {
+        "solid_alpha_iou": 0.9858661180472515,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 6
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

@@ -1,0 +1,4 @@
+{
+  "id": "weapon-combat_knife--masterwork",
+  "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID c920259d-0598-458e-877f-dc106f4f0c58. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+}
