@@ -2301,7 +2301,12 @@ export function displace(cb: Combat, rng0: Rng | null | undefined, u: Unit, to: 
       path.push(k); at = k;
     }
   }
-  if (o.preview || !path.length) { res.path = path; res.moved = path.length; if (path.length) res.to = path[path.length - 1]; return res; }
+  if (o.preview || !path.length) {
+    res.path = path; res.moved = path.length; if (path.length) res.to = path[path.length - 1];
+    // rules 1.78 item 6605: driven into what stands next to it, it was still moved against it ('displaced', held where it stood)
+    if (!o.preview && res.blockedAt) emit(cb, 'displaced', { u, by: o.by, from, to: from, path: [], how: o.source, kind: o.how, stoppedBy: res.stoppedBy, blockedAt: res.blockedAt, tile: res.blockedAt, cb, rng });
+    return res;
+  }
   // 2. It goes. The effect first (the screen slides it there), then the tiles act on it.
   const last = path[path.length - 1];
   const ev: any = o.fx === false ? null : emitFx(cb, 'shove', { ...(o.by && !(o.fx && o.fx.magic) ? { unit: o.by.id } : {}), target: u.id, from, to: last, ok: true, ...(path.length > 1 ? { path: [from, ...path] } : {}), ...(o.how === 'pull' ? { pull: true } : {}), ...(o.source ? { source: o.source } : {}), ...(o.fx || {}) }); // source: what did it (a screen draws a Launch's flight only for the Launch)
@@ -2326,7 +2331,7 @@ export function displace(cb: Combat, rng0: Rng | null | undefined, u: Unit, to: 
   res.path = path.slice(0, entered); res.moved = entered; res.to = u.pos;
   if (ev && entered < path.length) { ev.to = path[entered - 1]; if (ev.path) ev.path = [from, ...res.path]; } // a trap or a hazard ended it short
   // 'displaced' {u, by, from, to, path, how, kind, stoppedBy, blockedAt}: after it was moved (Breaching Strike reads where it ended).
-  emit(cb, 'displaced', { u, by: o.by, from, to: res.to, path: res.path, how: o.source, kind: o.how, stoppedBy: res.stoppedBy, blockedAt: res.blockedAt, cb, rng });
+  emit(cb, 'displaced', { u, by: o.by, from, to: res.to, path: res.path, how: o.source, kind: o.how, stoppedBy: res.stoppedBy, blockedAt: res.blockedAt, ...(res.blockedAt ? { tile: res.blockedAt } : {}), cb, rng });
   sightCheck(cb);
   return res;
 }

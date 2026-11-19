@@ -4,6 +4,7 @@
 //   item 6602  NULL unmakes a Figment on the tiles it covers (figments-spec rule 12; sigils.json null.dispel)
 //   item 6603  the fight joined is an effects event (the alarm's, joined: true) at the first character the foes learn of
 //   item 6604  aim marks on a Bonded ally: at the Bonder's turn start, each seen enemy aiming at a Bonded ally is Read
+//   item 6605  the Breaker's Into the Wall: a foe it drives into a wall, the edge or a body takes the slam, the body too
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { CLASS_MOVE_POOL, applyDamage, setDevotionXp, devotionThreshold, zonesAt, type Unit, type Action } from '../src';
@@ -102,5 +103,31 @@ describe('item 6604: who aims at a Bonded ally is read (bonds-spec section 2 rul
     const aims = foes.map((u: any) => withGame(h.s.g, () => enemyIntent(h.cb(), u)).targetId === gun);
     expect(aims.some(Boolean)).toBe(true); // the yard puts someone on the Bonded ally
     foes.forEach((u: any, i: number) => { expect(condOn(u, 'read'), u.name).toBe(aims[i]); if (aims[i]) expect(u.readIntent?.targetId).toBe(gun); });
+  });
+});
+
+describe('item 6605: Into the Wall (momentum-2.0 item 15, P13)', () => {
+  function shoveRig(cls: string | null, behind: 'edge' | 'body' | 'none') {
+    const f = fightWith([{ name: 'Breaker', level: 5, ...(cls ? { classId: cls } : {}) }], [{ at: 'F6' }, { at: 'G6' }], { level: 5 });
+    const me = f.pc, [a, b] = f.foes;
+    if (behind === 'edge') { me.pos = '1,5'; a.pos = '0,5'; b.pos = '9,9'; }
+    else if (behind === 'body') { me.pos = '4,5'; a.pos = '5,5'; b.pos = '6,5'; }
+    else { me.pos = '4,5'; a.pos = '5,5'; b.pos = '9,9'; }
+    for (const u of f.foes) { u.hp = u.maxHp = 500; u.armour = 0; u.strength = -30; u.athleticsPts = 0; u.conds = {}; }
+    const u = f.turn(me); u.ap = 6; u.strength = 30;
+    const hp = () => f.foes.map((x) => f.unit(x.id).hp);
+    const was = hp(); f.act({ type: 'combat/shove', unitId: me.id, targetId: a.id } as Action, 'host');
+    const now = hp(); return { f, lost: was.map((h, i) => h - now[i]), a: a.id };
+  }
+  it("a Breaker shoving a foe against the map's edge: the foe takes the slam (and lands Prone, as any blocked Shove)", () => {
+    const r = shoveRig('fighter', 'edge'); expect(r.lost[0]).toBeGreaterThan(0); expect(r.lost[1]).toBe(0);
+    expect(r.f.cb.log.some((l) => /Into the Wall/.test(l))).toBe(true);
+  });
+  it('into another foe: both take the same slam', () => {
+    const r = shoveRig('fighter', 'body'); expect(r.lost[0]).toBeGreaterThan(0); expect(r.lost[1]).toBe(r.lost[0]);
+  });
+  it('a push with room behind it, and anyone not a Breaker, deal no slam', () => {
+    expect(shoveRig('fighter', 'none').lost).toEqual([0, 0]);
+    expect(shoveRig(null, 'body').lost).toEqual([0, 0]);
   });
 });

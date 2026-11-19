@@ -88,6 +88,8 @@ export const TRIGGERS: Record<string, Trigger> = {
   save: { hook: 'save', actor: by, target: t_, self: 'target', about: 'a save is rolled' },
   moved: { hook: 'moved', actor: u_, self: 'actor', about: 'a unit finished a move of its own' },
   forced_move: { hook: 'forced_move', actor: by, target: u_, self: 'target', about: 'a unit is about to be pushed, pulled, thrown or teleported' },
+  // rules 1.78 item 6605 (momentum-2.0 P13): the mover's side after a forced move, for what it was driven into
+  displaced: { hook: 'displaced', actor: by, target: u_, self: 'actor', about: 'a unit the holder moved by force has landed, or was held where it stood by what is in the way (test it with stopped_by; the tile that stopped it is the tile of the event)' },
   heal: { hook: 'heal_in', actor: by, target: t_, self: 'target', about: 'a unit is about to be healed' },
   heal_given: { hook: 'heal_given', actor: by, target: t_, self: 'actor', about: 'a heal landed' },
   shield: { hook: 'shield_grant', actor: by, target: t_, self: 'target', about: 'a shield is about to be given' },
@@ -199,6 +201,9 @@ P('no_flag', 'string', 'the item\'s flag is not set', (ev, v) => !flags(ev)[v]);
 P('self_alive', 'bool', 'the holder is (or is not) up: not Downed, dead or surrendered', (ev, v) => (!ev.self.dead && !ev.self.downed && !ev.self.surrendered) === v);
 // P6's two (rev4-primitives.md: a door verb's reach and its effects): the actor or the target is (or is not) up
 for (const who of ['actor', 'target'] as Who[]) P(who + '_alive', 'bool', 'the ' + who + ' is (or is not) up: not Downed, dead or surrendered', (ev, v) => { const u = unitOf(ev, who); return !!u && (!u.dead && !u.downed && !u.surrendered) === v; });
+// rules 1.78 item 6605 (momentum-2.0 P13): what stopped a forced move short (displaced: combat.ts displace's stoppedBy)
+const STOPPED_WORDS = ['edge', 'object', 'unit'];
+P('stopped_by', 'words', 'a forced move was stopped short by one of these: edge (the edge of the map), object (a wall, cover or a thing on the tile), unit (another unit, standing there)', (ev, v) => { const s = ev.ctx.stoppedBy; const w = s && typeof s === 'object' ? 'unit' : s; return typeof w === 'string' && list(v).includes(w); }, STOPPED_WORDS);
 P('open', 'bool', 'nothing has stopped it yet: not cancelled, and (would_drop) not floored', (ev, v) => (!ev.ctx.cancel && ev.ctx.floor == null) === v);
 P('amount_above', 'number', 'the event\'s amount (damage, a heal) is over this', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) > v);
 P('amount_share_below', 'number', 'the event\'s amount is under this share of the holder\'s max HP', (ev, v) => (ev.ctx.dmg ?? ev.ctx.n ?? 0) / ev.self.maxHp < v);

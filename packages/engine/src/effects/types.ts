@@ -116,7 +116,7 @@ export const HOOK_ABOUT: Record<HookName, string> = {
   save: 'a save is rolled: items may add to it, change its TN, or pass or fail it outright',
   cond_landed: 'a condition landed on a unit',
   cond_end: 'a condition ended on a unit',
-  displaced: 'a unit was moved by someone else, after it landed (where it ended, what stopped it)',
+  displaced: 'a unit was moved by someone else, after it landed, or held where it stood by what is in the way (where it ended, what stopped it; tile: the tile that stopped it)',
   heal_given: 'a heal landed (who healed whom, how much)',
   heal_in: 'a unit is about to be healed (the amount may change)',
   shield_grant: 'a shield is about to be given (the amount may change)',

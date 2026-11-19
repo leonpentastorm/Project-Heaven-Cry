@@ -13197,3 +13197,15 @@ Every new number here is PROVISIONAL and a data field.
     (`condition read`, `targets {side: foe, seen: true, aims_at: "tied:bond"}`), no new piece. The screen draws the
     enemies a side has read aiming at one unit as one red crosshair on that unit's tile with their count ("◎ 2"); the
     arrow on each enemy is unchanged. The text of Threads says so.
+6605. **Into the Wall (the Breaker; momentum-2.0 item 15; closes item 4409's P13):** a Breaker's gain. An enemy the
+    Breaker moves by force (a Shove, Launch, any push of its own) into the map's edge, a wall or cover, or another unit
+    takes a slam where it stops (`amounts.slam` base **12**, the melee profile, PROVISIONAL: the draft's 0.5 of the
+    plain blow); the unit it is driven into takes the same slam, whoever it is. A Shove that is blocked still drives it
+    into what stands behind it (the forced move is refused where it stands; the slam lands and it falls Prone as before).
+    One collision rule: what stopped a forced move is `displace`'s own result (`stoppedBy`, `blockedAt`), read by the item
+    ops through the trigger `displaced` (the hook that existed, now also raised when the move is refused at the first
+    tile) and the predicate `stopped_by` (edge, object, unit); the body hit is the event's tile (`targets {of: tile}`).
+    Breaching Strike keeps its own code (moving it onto this row moves the golden tables: not this revision).
+6606. **Hurl (the Breaker; momentum-2.0 item 16, P14) is not built:** it needs the object op's `hurl` (a lift and a throw
+    to a second tile: one action with two tile picks), the objects' `loose` field and Throw Down's landing for a held
+    small foe; none is an existing piece. Listed for the lead.
