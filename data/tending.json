@@ -809,6 +809,15 @@
                 "target": "ally"
               },
               "say": "{self} draws {target} in along the Bond{then}."
+            },
+            {
+              "op": "use",
+              "target": "target",
+              "if": {
+                "target": "ally",
+                "target_within": 1
+              },
+              "say": "{self} draws on the Bond; {target} is already at their side."
             }
           ],
           "why": {

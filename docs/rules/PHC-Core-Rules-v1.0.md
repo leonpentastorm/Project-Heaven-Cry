@@ -12586,3 +12586,8 @@ PROVISIONAL (where a vow changes out of a Survival run).
     a node whose kind's row in `survival.json` says `vow_change` (the rest); out of a run, any time out of a fight
     (PROVISIONAL: the lead's call for Leon). An old save has no standing vow: the fight asks, as before. The device's
     own store and the client's auto-swear are gone.
+5706. **Tug on an ally already at your side says so** (data only, `tending.json tend.tug`): the ally branch's pull goes
+    nowhere when the ally stands next to the Mender, and a `use` row (if the target is an ally within 1 tile) says
+    "{self} draws on the Bond; {target} is already at their side." No number changes.
+5707. **The NOW PLAYING credit never covers a panel** (web, every screen): a one-line chip at the top edge's middle,
+    opened by the pointer to the artist and the reason (it was a card over the bottom of the left panel).

@@ -57,6 +57,14 @@ describe('rules 1.72: the effects lane\'s engine events', () => {
     const ev = since(t.cb(), n).filter((e) => e.k === 'stance' && e.what === 'untie');
     expect(ev.map((e) => [e.unit, e.target, e.how])).toEqual([[me().id, al().id, 'bond']]);
   });
+  it('5706: Tug on an ally already beside the Mender says so (tending.json, the ally branch say); a far ally is drawn in', () => {
+    const t = tend(), al = () => t.pcs()[1];
+    t.act('verb:tend.bond', { targetId: al().id });
+    let n = t.cb().log.length; t.act('verb:tend.tug', { targetId: al().id });
+    expect(t.cb().log.slice(n).join(' ')).toMatch(/already at their side/);
+    al().pos = '7,3'; n = t.cb().log.length; t.act('verb:tend.tug', { targetId: al().id });
+    expect(t.cb().log.slice(n).join(' ')).toMatch(/draws Ally in along the Bond/); expect(t.cb().log.slice(n).join(' ')).not.toMatch(/already/);
+  });
   it('5702: a storm prayer\'s hurt carries its element', () => {
     const h = holy('old_overcast'), n = lastN(h.f.cb);
     h.pray('hymn', 'lightning_rod', { targetId: h.foe.id });
