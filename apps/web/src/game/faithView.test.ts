@@ -22,7 +22,7 @@ describe('faith views', () => {
     expect(hymnHeadText(null)).toBe('HYMNS');
     const { g, c } = game({ kind: 'faithful', patron: 'mother_ember' }, 5); c.attrs = { ...c.attrs, virtue: 5 };
     const v = faithView(g, c.id)!, p = faithPanel(v)!;
-    expect(v.cooldowns.hymnCooldown).toBe(4); expect(p.hymnText).toBe('HYMNS · EVERY 4 ROUNDS · READY'); // Faith 5 and Virtue 5: 9 − 3.75 − 1.25
+    expect(v.cooldowns.hymnCooldown).toBe(4); expect(p.hymnText).toBe('HYMNS · ready'); // Faith 5 and Virtue 5: 9 − 3.75 − 1.25
     expect(v.vows.length).toBe(6); for (const x of v.vows) expect(x.fulfilledWhen.length, x.id).toBeGreaterThan(10);
   });
   it('odds: a d20 plus a modifier against a TN; a 1 always misses, a 20 always hits', () => {

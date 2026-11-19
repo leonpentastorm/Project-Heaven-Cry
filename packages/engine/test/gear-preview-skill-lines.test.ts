@@ -79,7 +79,7 @@ describe('the gear preview names the skill a weapon hits with and what its damag
     expect(Math.round((k - 1) * 100)).toBeLessThan(0);
     expect(at({ agility: 7 }, gun)).toBe('+0% (Agility)');
     expect(at({ agility: 10 }, gun)).toBe('+' + Math.round((top - 1) * 100) + '% (Agility)');
-    expect(at({ strength: 7 }, 'maul')).toBe('Strength · +0%');
+    expect(at({ strength: 7 }, 'maul')).toBe('+0% (Strength)');
   });
   it('the magazine reads rounds, a middle dot, the calibre', () => {
     const f = fightWith([{ weapon: 'decrkm_smg', skills: SKILLS }], [{ tier: 'soldier', classic: true }]);

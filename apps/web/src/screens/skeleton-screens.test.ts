@@ -76,7 +76,7 @@ describe('the "?" skill page', () => {
     }
     expect(slotLine('alpha')).toBe('How you fight');
     expect(slotLine('beta')).toBe('How you survive');
-    expect(slotLine('gamma')).toBe('How you talk and notice: it rolls 1 better on checks');
+    expect(slotLine('gamma')).toBe('How you talk and notice · +1 on checks');
   });
   it('the attribute in its header opens the attribute page', () => {
     const h = holder({ epccg: 'dexterity' });

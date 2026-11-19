@@ -31,7 +31,7 @@ export const ATTR_GIVES = {
 };
 /** A skill's place under its attribute, in words: the first is how you fight, the second how you survive, the third how
  *  you talk and notice (the third rolls checks one better than the others, which the roll shown already counts). */
-export const SLOT_WORD = { alpha: ['FIGHT', 'How you fight'], beta: ['SURVIVE', 'How you survive'], gamma: ['TALK · NOTICE', 'How you talk and notice (it rolls checks 1 better than other skills)'] };
+export const SLOT_WORD = { alpha: ['FIGHT', 'How you fight'], beta: ['SURVIVE', 'How you survive'], gamma: ['TALK · NOTICE', 'How you talk and notice · +1 on checks'] };
 export const SLOT_ORDER = { alpha: 0, beta: 1, gamma: 2 };
 // ---------- the skill road map (rules 1.54 item 4119; ui-screens "Skill texts on the three skill screens") ----------
 // A skill's gains are rows tied to points (skills.json per_point.rows, numbers already filled by the engine's data
@@ -207,7 +207,7 @@ export function lightboxVals(self) {
 
 // ---------- EPCCG "?" pop-up (ported verbatim from epccg.logic.js) ----------
 /** The skill page's header: the skill's place under its attribute, in words. */
-export const slotLine = (slot) => (slot === 'gamma' ? 'How you talk and notice: it rolls 1 better on checks' : (SLOT_WORD[slot] || ['', ''])[1]);
+export const slotLine = (slot) => (slot === 'gamma' ? 'How you talk and notice · +1 on checks' : (SLOT_WORD[slot] || ['', ''])[1]);
 const SAVE_NAME = { body: 'Body', brain: 'Brain', heart: 'Heart' };
 const AP_BLANK = { title: '', kicker: '', name: '', gives: [], skills: [], reads: [], hasReads: false, boxStyle: '', nameStyle: '', about: '' };
 /** The attribute page (opened from an attribute's name on the creation and level-up screens, and from a skill page):
