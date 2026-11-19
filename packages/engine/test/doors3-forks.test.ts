@@ -47,7 +47,7 @@ describe('the forks as data (N1): two steps a door, at 4 and 8 of its alpha skil
       expect(at, s.id).toEqual([4, 8]);
       expect(s.forks.length, s.id).toBe(at.length);
       for (const st of s.forks) expect(st.at, s.id + ': a fork row names no point of its own; the schedule does').toBeUndefined();
-      for (const [i, st] of s.forks.entries()) for (const o of st.of) expect(FK[o], o).toMatchObject({ door: s.id, step: at[i] });
+      for (const st of s.forks) for (const o of st.of) { expect(FK[o], o).toMatchObject({ door: s.id }); expect((FK[o] as any).step, o + ': its points are the schedule, no copy (m7)').toBeUndefined(); }
     }
   });
   it('a step opens at its points, and only when both of its options are built; the view says which are missing', () => {

@@ -9,7 +9,6 @@
       "name": "Provoke",
       "kind": "verb",
       "door": "durability",
-      "step": 4,
       "icon": "fork.guard.provoke",
       "requires": [
         {
@@ -92,7 +91,6 @@
       "name": "Cover Them",
       "kind": "verb",
       "door": "durability",
-      "step": 4,
       "icon": "fork.guard.cover_them",
       "requires": [
         {
@@ -169,7 +167,6 @@
       "name": "Stand Fast",
       "kind": "verb",
       "door": "durability",
-      "step": 8,
       "icon": "fork.guard.stand_fast",
       "requires": [
         {
@@ -192,7 +189,6 @@
       "name": "Drive",
       "kind": "verb",
       "door": "durability",
-      "step": 8,
       "icon": "fork.guard.drive",
       "requires": [
         {
@@ -248,7 +244,6 @@
       "name": "Light Fingers",
       "kind": "verb",
       "door": "ingenuity",
-      "step": 4,
       "icon": "fork.shadow.light_fingers",
       "requires": [
         {
@@ -303,7 +298,6 @@
       "name": "Lend the Dark",
       "kind": "verb",
       "door": "ingenuity",
-      "step": 4,
       "icon": "fork.shadow.lend_the_dark",
       "requires": [
         {
@@ -361,7 +355,6 @@
       "name": "Lightkiller",
       "kind": "verb",
       "door": "ingenuity",
-      "step": 8,
       "icon": "fork.shadow.lightkiller",
       "requires": [
         {
@@ -402,7 +395,6 @@
       "name": "Spotter",
       "kind": "verb",
       "door": "ingenuity",
-      "step": 8,
       "icon": "fork.shadow.spotter",
       "requires": [
         {
@@ -456,7 +448,6 @@
       "name": "Keep the Thread",
       "kind": "verb",
       "door": "empathy",
-      "step": 4,
       "icon": "fork.tend.keep_the_thread",
       "requires": [
         {
@@ -487,7 +478,6 @@
       "name": "Short Thread",
       "kind": "verb",
       "door": "empathy",
-      "step": 4,
       "icon": "fork.tend.short_thread",
       "requires": [
         {
@@ -541,7 +531,6 @@
       "name": "Shared Pulse",
       "kind": "verb",
       "door": "empathy",
-      "step": 8,
       "icon": "fork.tend.shared_pulse",
       "requires": [
         {
@@ -590,7 +579,6 @@
       "name": "Long Thread",
       "kind": "verb",
       "door": "empathy",
-      "step": 8,
       "icon": "fork.tend.long_thread",
       "requires": [
         {
@@ -652,7 +640,6 @@
       "name": "Round of Blessings",
       "kind": "verb",
       "door": "faith",
-      "step": 4,
       "icon": "fork.prayer.round_of_blessings",
       "requires": [
         {
@@ -724,7 +711,6 @@
       "name": "Steadfast",
       "kind": "verb",
       "door": "faith",
-      "step": 4,
       "icon": "fork.prayer.steadfast",
       "requires": [
         {
@@ -758,7 +744,6 @@
       "name": "Benediction",
       "kind": "verb",
       "door": "faith",
-      "step": 8,
       "icon": "fork.prayer.benediction",
       "requires": [
         {
@@ -799,7 +784,6 @@
       "name": "Swift Psalm",
       "kind": "verb",
       "door": "faith",
-      "step": 8,
       "icon": "fork.prayer.held_breath",
       "requires": [
         {
@@ -823,7 +807,6 @@
       "name": "Rolling Start",
       "kind": "verb",
       "door": "raw_power",
-      "step": 4,
       "icon": "fork.momentum.rolling_start",
       "requires": [
         {
@@ -865,7 +848,6 @@
       "name": "Grindstone",
       "kind": "verb",
       "door": "raw_power",
-      "step": 4,
       "icon": "fork.momentum.grindstone",
       "requires": [
         {
@@ -914,7 +896,6 @@
       "name": "Spill",
       "kind": "verb",
       "door": "raw_power",
-      "step": 8,
       "icon": "fork.momentum.spill",
       "requires": [
         {
@@ -962,7 +943,6 @@
       "name": "Headlong",
       "kind": "verb",
       "door": "raw_power",
-      "step": 8,
       "icon": "fork.momentum.headlong",
       "requires": [
         {
@@ -1039,7 +1019,6 @@
       "name": "Converging Fire",
       "kind": "verb",
       "door": "dexterity",
-      "step": 4,
       "icon": "fork.pressure.converging_fire",
       "requires": [
         {
@@ -1097,7 +1076,6 @@
       "name": "Walk It In",
       "kind": "verb",
       "door": "dexterity",
-      "step": 4,
       "icon": "fork.pressure.walk_it_in",
       "requires": [
         {
@@ -1137,7 +1115,6 @@
       "name": "Through the Gap",
       "kind": "verb",
       "door": "dexterity",
-      "step": 8,
       "icon": "fork.pressure.through_the_gap",
       "requires": [
         {
@@ -1229,7 +1206,6 @@
       "name": "Lockdown",
       "kind": "verb",
       "door": "dexterity",
-      "step": 8,
       "icon": "fork.pressure.lockdown",
       "requires": [
         {
@@ -1289,7 +1265,6 @@
       "name": "Overflux",
       "kind": "verb",
       "door": "brain_power",
-      "step": 4,
       "icon": "fork.sigil.overflux",
       "requires": [
         {
@@ -1326,7 +1301,6 @@
       "name": "Clean Vent",
       "kind": "verb",
       "door": "brain_power",
-      "step": 4,
       "icon": "fork.sigil.clean_vent",
       "requires": [
         {
@@ -1400,7 +1374,6 @@
       "name": "Written in Advance",
       "kind": "verb",
       "door": "brain_power",
-      "step": 8,
       "icon": "fork.sigil.written_in_advance",
       "requires": [
         {
@@ -1470,7 +1443,6 @@
       "name": "Running Script",
       "kind": "verb",
       "door": "brain_power",
-      "step": 8,
       "icon": "fork.sigil.running_script",
       "requires": [
         {
@@ -1539,7 +1511,6 @@
       "name": "Ride the Edge",
       "kind": "verb",
       "door": "will_power",
-      "step": 4,
       "icon": "fork.soul.ride_the_edge",
       "requires": [
         {
@@ -1575,7 +1546,6 @@
       "name": "Slow Burn",
       "kind": "verb",
       "door": "will_power",
-      "step": 4,
       "icon": "fork.soul.slow_burn",
       "requires": [
         {
@@ -1643,7 +1613,6 @@
       "name": "Blood Price",
       "kind": "verb",
       "door": "will_power",
-      "step": 8,
       "icon": "fork.soul.blood_price",
       "requires": [
         {
@@ -1696,7 +1665,6 @@
       "name": "Clean Break",
       "kind": "verb",
       "door": "will_power",
-      "step": 8,
       "icon": "fork.soul.clean_break",
       "requires": [
         {
@@ -1733,7 +1701,6 @@
       "name": "Hard Light",
       "kind": "verb",
       "door": "visualization",
-      "step": 4,
       "icon": "fork.figment.hard_light",
       "requires": [
         {
@@ -1791,7 +1758,6 @@
       "name": "Sharp Light",
       "kind": "verb",
       "door": "visualization",
-      "step": 4,
       "icon": "fork.figment.sharp_light",
       "requires": [
         {
@@ -1877,7 +1843,6 @@
       "name": "Many Hands",
       "kind": "verb",
       "door": "visualization",
-      "step": 8,
       "icon": "fork.figment.many_hands",
       "requires": [
         {
@@ -1914,7 +1879,6 @@
       "name": "Masterwork",
       "kind": "verb",
       "door": "visualization",
-      "step": 8,
       "icon": "fork.figment.masterwork",
       "requires": [
         {

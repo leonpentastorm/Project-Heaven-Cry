@@ -3592,7 +3592,9 @@ if _FK is not None:
                 if not _r: errors.append(f"{_w}.{_f.get('id')}: '{_o}' is no forks.json row"); continue
                 if _o in _named: errors.append(f"{_w}: '{_o}' is in two steps")
                 _named[_o] = (_sid, _f.get("at"))
-                if _r.get("door") != _sid or _r.get("step") != _f.get("at"): errors.append(f"forks:{_o}: its door and step are {_sid} and {_f.get('at')} (skills.json forks)")
+                if _r.get("door") != _sid: errors.append(f"forks:{_o}: its door is {_sid} (skills.json forks)")
+                # its step is derived (skills.json ladder.alpha.forks by the step's place in skills.json forks): no copy here (m7)
+                if "step" in _r: errors.append(f"forks:{_o}: no `step` field: a fork's points are skills.json ladder.alpha.forks (rules 1.70 item 5537)")
             if str(_f.get("at")) not in (_s.get("unlocks") or {}): errors.append(f"skills:{_sid}.unlocks: a row at {_f.get('at')} says the fork (its text is the choice)")
     for _id, _r in _rows.items():
         _w = f"forks:{_id}"
