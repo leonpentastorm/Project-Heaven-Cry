@@ -153,6 +153,7 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **The angle (spec 4969 b):** a gunner whose every target is under fire walks up to 4 tiles for a shot at one nobody attacks, cover first. `591270294`, spec 6707.
 - **The bait:** a Vermin or Minion walks into a seen held lane to draw the shot while a stronger ally holds out of it until the bait has acted. `591270294`, spec 6708.
 - **Enemy Guard:** a row's `guard` gives Durability's door (plates, soak, Pressure on Guard, the Guard technique); the Heartfire elite has 3 plates. `591270294`, spec 6710.
+- **Gating and the re-record:** no state written for a switched-off block (`a10729f25`); costs-outburst and 24 of 29 replays re-recorded on purpose, each named with the block that moved it (`cc5e74fae`, spec 6714). Survival stage 1 at 40 seeds: solo_gunner 31 to 30, four 38 to 38, mixed 30 to 31 (spec 6713).
 
 ### 0.32: needs a primitive (lead to rule)
 
