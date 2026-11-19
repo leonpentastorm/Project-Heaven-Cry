@@ -5,6 +5,7 @@ import hashlib
 import json
 import shutil
 import sys
+import textwrap
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -87,7 +88,9 @@ def reviews(queue, manifest):
                 sheet.paste(image, (x+(220-size)//2, y), image)
                 label = Path(p).stem
                 label = label.partition('-')[2]
-                draw.text((x+7, y+size+8), label, font=font, fill='white')
+                label = label.replace('_', ' ')
+                for row, line in enumerate(textwrap.wrap(label, width=26)):
+                    draw.text((x+7, y+size+8+row*14), line, font=font, fill='white')
             sheet.save(folder / f'{family}-{size}px.png')
 
 

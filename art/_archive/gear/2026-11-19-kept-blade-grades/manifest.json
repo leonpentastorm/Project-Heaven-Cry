@@ -5988,6 +5988,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-work_gloves--fine",
+      "path": "art/icons/gear/armour-work_gloves--fine.png",
+      "sha256": "57ea734a7df3bc18ac5d05578bff45d8a71b2ca9b57308077d17cdcbc8d1ed73",
+      "label": "Work Gloves — Fine",
+      "family": "armour-work_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-work_gloves--fine.png",
+        "sha256": "4c5f9d3802bd49db2bd14f3d472d21c19de3c67c73b6813ee4a75fd82feb5e7b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-work_gloves--fine.png",
+        "sha256": "57ea734a7df3bc18ac5d05578bff45d8a71b2ca9b57308077d17cdcbc8d1ed73"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-work_gloves--fine.txt",
+        "sha256": "b304c3f3a4d9879caddd3204829849cfb266a7e6e5f51013d8cb393ab18eca2a"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-work_gloves--fine/v1/source.png",
+          "sha256": "fcf30919451ea05f8e96bc69457d28b39bfa8e5e58c7a40ae782c9a5c9cb5fee"
+        },
+        {
+          "path": "art/icons/gear/armour-work_gloves.png",
+          "sha256": "4ad6c1706c2db4051f02d71ec41d3e878c23c5be12661864a81d80888f6b12c6"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-work_gloves--fine.png",
+        "128": "art/icons/gear/exports/128/armour-work_gloves--fine.png",
+        "64": "art/icons/gear/exports/64/armour-work_gloves--fine.png",
+        "32": "art/icons/gear/exports/32/armour-work_gloves--fine.png"
+      },
+      "export_hashes": {
+        "256": "e74f0ef46085d1cc1590dbe1c689a73772b34361dd26377d3404f0fe2ca31be1",
+        "128": "fd3757583e973c4ea2aff39e0a4796cff630584cbe58dfd457626a634cbe48cb",
+        "64": "456c462945366296250c9f546d49f29cc149578f0ae5bea5fbea42bb3dd1b0d7",
+        "32": "826b7c1d7b6b43b1fb714368e7003624d4bfcb394266980251301b5eba20d763"
+      },
+      "grade": "fine",
+      "standard_id": "armour-work_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9799393550573766,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 22
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
