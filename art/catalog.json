@@ -18788,6 +18788,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "weapon-combat_knife--relic": {
+      "label": "Combat Knife Relic",
+      "path": "art/icons/gear/weapon-combat_knife--relic.png",
+      "sha256": "307dc24a5f2beaf30cb51945170de0f47f37240fb5a3da66b18cd0755c73684b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/weapon-combat_knife.png",
+      "source_path": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-combat_knife--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-combat_knife--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-combat_knife--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-combat_knife--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {
