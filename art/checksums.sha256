@@ -3149,7 +3149,7 @@ c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/p
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
 c5630823fbf32dfde1071f93792f0c18870047ea5263c0f506170979eba461a3  art/_archive/prompt-pack/2026-11-19-file-08/HANDOFF.md
-7e7fa887f363a2bf509e0968ed0e1cce1fe9868a5fab20d02c16399b56c9fbb5  art/_archive/prompt-pack/2026-11-19-file-08/PROGRESS.md
+73654080219ce6cd819f7bb781fb87efa5a28e884ae9162672662eac40ef65c6  art/_archive/prompt-pack/2026-11-19-file-08/PROGRESS.md
 167bd7c5cc4a2d634677b314f2886d451a46db413fcc1edf92e523b1b5f318bf  art/_archive/prompt-pack/2026-11-19-file-08/VALIDATION.md
 65e0f2f479dd82de836865c8d74cc2293c226c4b87bb05bfb0462fa6f7a84245  art/_archive/prompt-pack/2026-11-19-file-08/WORK-CLAIMS.md
 6e108a32d34139c0ec094844a34ef4b2ccce467d23c032de9a32655b00dcb73b  art/_archive/prompt-pack/2026-11-19-file-08/archive-proof.py
@@ -3290,6 +3290,8 @@ c876db4c2fa3d27e004ecedc1e3cf00e487192679da660579a98b28f30b9d7cf  art/_archive/p
 cd8057a6a37340b2549d911bbc327c4919d2e1ebdca13bda64540faf773d79c9  art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--relic.png
 c0039a2a7c0303c026b6e52924faa3f4f8fcc9f613cdb9ee109c92d3ede7e0ff  art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--fine.json
 4f4572d343110e0ede8d5bba17ead87f6c18044d572ae213147bf196397aca74  art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--fine.png
+706390f6f6ea47aa5d17885721433e4d4e6b84163275e338866dfc8743ae097a  art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--masterwork.json
+4380bb2c51e747fec1f43d8ad79139a6c49f5a7b09bed79f3c382d9a328fec07  art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--masterwork.png
 95b649cd00fed62bc8bdd6a335000517fbe5ea794f0017ec333867a5b3c6251f  art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--celestial.json
 25e294e27325adaf305d52e69dcf1f79148b895118ee8ca961cc65b5d0c96d10  art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--celestial.png
 a9cad02f24c260346320d4354038a61f442f8ad778e9dcb879072aac19c97b7e  art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--fine.json
@@ -3396,7 +3398,7 @@ d0c7775b5c19b84e5a1178cb913136e6c9ae915b5d603b26d9d4263173e4e0a7  art/_archive/p
 631b0dba5b3438b904f21bd8372e6f46d4cbb1231aee94d10cca63c709373291  art/_archive/prompt-pack/2026-11-19-file-08/fix-master-borders.py
 e4d9c67eb8e12f883c1ebcf100164c82b0004c3ee87d96e97cfe2be192cd2901  art/_archive/prompt-pack/2026-11-19-file-08/prepare-candidates.py
 2678055aa8e23339cc42b936185239698d11810f7ccd821e8f751b73224d6112  art/_archive/prompt-pack/2026-11-19-file-08/register-grade.py
-73b6d37de94ec9affd1dfc8a942b52a19c508708170585afd2c8318ada4563d2  art/_archive/prompt-pack/2026-11-19-file-08/review/complete-proof-progress.jpg
+0f7264f269025aefbfb4a81febfe15848236476760b2912ab4e9f72aac6b4d4b  art/_archive/prompt-pack/2026-11-19-file-08/review/complete-proof-progress.jpg
 ad1c63c5da9e8985fa216f1022b6e3787608f15e5c7a9c429b134c8b895ecc39  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-proof-retry.jpg
 684ad11905fdb53ebd4323ff5a36881197c747a37cc5d765a7c1bcf58f1d543f  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-proof-retry.json
 044c57bbbfeb998d681132071f5a52f10e225cee796a0e98fdbe17325e53e73a  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-shape-proof.jpg
