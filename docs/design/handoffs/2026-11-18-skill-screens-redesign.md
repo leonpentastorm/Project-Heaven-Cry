@@ -132,7 +132,9 @@ void. The "?" page is now, top to bottom:
 
 1. **The skill's portrait, name, attribute, and its voice:** the quote and the lore paragraph, open, in Spectral, at
    reading size (the largest text on the page). "At high levels", "Good for" and "Bad for" are lore and stay on the
-   face in the skill's own voice (the crude 2020 lines: Leon keeps or cuts each; until he says, they stay).
+   face in the skill's own voice, **every line as written** (Leon, 19 Nov: "nothing crude about them, your vision is
+   one without humour and personality. Our players are not toddlers, they are respectable adults"). No line of the
+   2020 text is cut, softened or hidden, here or anywhere.
 2. **One line of what it does** (the door line, or the skill's one line) and, for a gamma, its Call in one row.
 3. **Folded, closed by default, each remembering its state:** "What each level gives" (the ladder table of section
    1, unchanged inside), "Perks" (the rows of section 4), "Forks" (alphas). A player who wants numbers opens them

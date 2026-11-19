@@ -186,3 +186,11 @@ at the same size, really really useless." (Seen on the level-up screen's Dexteri
    none. (This replaces "+2 a step" above.)
 6. Still the lead's pick unless Leon says otherwise: the names "APPROACH" and "Stalk", "Fight unsworn" in the vow
    pop-up, the 2020 "Bad for" lines off the page.
+
+## Leon, 19 Nov: the "Good for / Bad for" lines stay, all of them, as written
+
+"Nothing crude about them, your vision is one without humour and personality. Our players are not toddlers, they
+are respectable adults." This voids every earlier line in this plan, the takeover note and the skill-pages read that
+calls those lines crude, takes them off the page or leaves them for Leon to cut (lane 3 scope item 6, the open
+question on "Bad for"). They are lore, they are on the face of the "?" page, and nobody edits them for tone. The
+same holds for all 2020 text and the game's humour: the wording pass shortens rules text, never the voice.
