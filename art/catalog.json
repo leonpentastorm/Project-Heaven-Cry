@@ -20117,6 +20117,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "armour-ballistic_helmet--masterwork": {
+      "label": "Armour-Ballistic Helmet Masterwork",
+      "path": "art/icons/gear/armour-ballistic_helmet--masterwork.png",
+      "sha256": "d941ec5615da03fd7246def003d2cb32ce1226fdfd6167c18f70bd0ba17e187a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/armour-ballistic_helmet.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-ballistic_helmet--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-ballistic_helmet--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-ballistic_helmet--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-ballistic_helmet--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-ballistic_helmet--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {
