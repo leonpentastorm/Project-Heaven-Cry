@@ -35,10 +35,10 @@
     "weapon-weighted_gloves",
     "shield-spiked_buckler",
     "shield-boss_shield",
-    "shield-ram_plate"
+    "shield-ram_plate",
+    "shield-deflector"
   ],
   "remaining": [
-    "shield-deflector",
     "shield-bulwark_screen",
     "shield-barrier_wall",
     "armour-assault_helm",
@@ -58,5 +58,5 @@
   ],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T04:02:20.010052+00:00"
+  "updated_utc": "2026-11-19T04:03:59.802696+00:00"
 }

@@ -19204,6 +19204,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "shield-deflector": {
+      "label": "Deflector",
+      "path": "art/icons/gear/shield-deflector.png",
+      "sha256": "435212a51f37ca10799a6a65d78d44ef837e15a6c2f1921a34662fe93fbd88e4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-deflector.png",
+        "128": "art/icons/gear/exports/128/shield-deflector.png",
+        "64": "art/icons/gear/exports/64/shield-deflector.png",
+        "32": "art/icons/gear/exports/32/shield-deflector.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+      "brief_number": 4,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

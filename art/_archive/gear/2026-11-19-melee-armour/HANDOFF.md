@@ -1,6 +1,6 @@
 # Files05 and07 — 19 November gear handoff
 
-Branch: `art/2026-11-19-melee-armour`, from develop `2020b5c2`. **22/39 Standard paintings delivered.** Next: `shield-deflector`. Exact remaining order is progress.json / queue.json.
+Branch: `art/2026-11-19-melee-armour`, from develop `2020b5c2`. **23/39 Standard paintings delivered.** Next: `shield-bulwark_screen`. Exact remaining order is progress.json / queue.json.
 
 This worker claims file05 (19 melee) and file07 (6 shields +14 armour). Another GPT owns files01–04. Files06/08/09/10 are unclaimed by this worker. No work on the other GPT’s files, title screen, old icons or pet.
 

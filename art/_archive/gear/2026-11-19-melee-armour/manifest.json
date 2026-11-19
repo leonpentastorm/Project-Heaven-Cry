@@ -1332,6 +1332,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-deflector",
+      "path": "art/icons/gear/shield-deflector.png",
+      "sha256": "435212a51f37ca10799a6a65d78d44ef837e15a6c2f1921a34662fe93fbd88e4",
+      "label": "Deflector",
+      "family": "07-shields",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png",
+        "sha256": "981d7ba5269c8a312538f46ac4bfc41098a1537ca27a533a18dd4c9a2e5c3c69"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-deflector.png",
+        "sha256": "435212a51f37ca10799a6a65d78d44ef837e15a6c2f1921a34662fe93fbd88e4"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/shield-deflector.txt",
+        "sha256": "70e4e3031917346be9caefdba96cd5e4699eb02ca2c907d8e1518b60870319f4"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/shield-buckler.png",
+          "sha256": "1aeb92d2b419c48978476f314468c35639a89abe0732b5edf8cdbcc4d8510b9b"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-deflector.png",
+        "128": "art/icons/gear/exports/128/shield-deflector.png",
+        "64": "art/icons/gear/exports/64/shield-deflector.png",
+        "32": "art/icons/gear/exports/32/shield-deflector.png"
+      },
+      "export_hashes": {
+        "256": "41e370aedffa13eeb648d7995f498ae076b6b43680eec98cbc6000af78b00834",
+        "128": "86964cc7fc1962565ef30397ddf0737500261e8851bea0fb6f3b66f9b59f8335",
+        "64": "fe6b636bfd561f55ad0cc926c8e4fda0bd995a0726bd2cf9891ddc392ee0e492",
+        "32": "aed0ae2b797bf8990b111fcb1c4a2ae898bf51c7afda7093a8506f3f2d6b2c9a"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
