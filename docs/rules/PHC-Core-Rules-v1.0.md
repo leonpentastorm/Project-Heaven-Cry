@@ -13231,3 +13231,11 @@ Every new number here is PROVISIONAL and a data field.
     its text. The list is read from the door verb files by the screen data (`design/canvas-build/build.py
     skill_passives`), so a new passive verb shows with no code. The Open Hand's stance picture keeps no place: it waits
     for a reader of standing modifiers in a fight (item 5612; the engine pieces lane's).
+6610. **No `per_stage` uses scope (item 5010 a):** no data row asks for one; the only stage-keyed count is the Mender's story
+    Triage in a run, kept in code under a `per_campaign` key carrying the run and the stage (item 5001). The scope is
+    added when a data row needs it.
+6611. **Stand Behind Me is not built (its icon has no move):** the written design is Guard 2.0's item 9 (Durability 3,
+    on the Bastion path of item 18: "while you are Braced or Walled, allies next to you on the side away from the
+    shooter have half cover from you"; it needs a condition row that gives its unit cover, the draft's P10) and, in the
+    three-layers draft, the Bulwark's rank III ceiling ("a ranged attack on one ally directly behind you lands on your
+    plates"). The two disagree; the lead rules which, and the paths fork, before it is built.
