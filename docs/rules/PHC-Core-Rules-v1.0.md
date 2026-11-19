@@ -13224,3 +13224,10 @@ Every new number here is PROVISIONAL and a data field.
     Judged row is labelled "Judged"). One general reader, no item named in code: a rider spent for the turn (Smite once
     a turn) drops off the line. A rider that rolls (an Atheist's Smite) is rolled on the copy: the line can differ from
     what the real attack's roll gives.
+6609. **A door's passive steps are on its skill's page (closes item 5612's "five Tending passives"):** a skill's "?" page
+    lists, inside its Perks fold under the perks, the door's passive steps ("ALWAYS ON"): every door verb of that skill
+    with no action of its own (today Empathy's Threads, Two Bonds, Three Bonds and the Mender's One More Bond), one row
+    each with its picture (by its item key, the catalog's `data_ids`), where it comes (at n points, a class rank) and
+    its text. The list is read from the door verb files by the screen data (`design/canvas-build/build.py
+    skill_passives`), so a new passive verb shows with no code. The Open Hand's stance picture keeps no place: it waits
+    for a reader of standing modifiers in a fight (item 5612; the engine pieces lane's).

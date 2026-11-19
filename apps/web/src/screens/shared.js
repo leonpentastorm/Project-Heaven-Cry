@@ -14,7 +14,7 @@ import { foldVals } from '../game/fold';
 import { shieldBlock } from '../game/shieldLook';
 import { kitSprite } from '../game/kitMap';
 import { figmentFaceOf } from '../game/figmentIcons';
-import { bigOf } from '../game/doorArt';
+import { bigOf, moveIconOf } from '../game/doorArt';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 
 export const D = PD;
@@ -301,7 +301,7 @@ export function attrPageVals(self) {
   } };
 }
 const CALL_BLANK = { has: false, name: '', tip: '', now: '', inkStyle: '' }, FOLD_BLANK = { open: false, expanded: 'false', chev: '▸', toggle: () => {}, headStyle: '', chevStyle: '', id: '' };
-const EP_BLANK = { zoom: () => {}, openAttr: () => {}, attrName: '', attrLabel: '', attrStyle: '', slot: '', line: '', steps: [], ladderFold: FOLD_BLANK, perksFold: FOLD_BLANK, forksFold: FOLD_BLANK, call: CALL_BLANK, feed: { has: false, text: '', style: '' }, ptsLine: '', inkStyle: '', title: '', name: '', img: '', alt: '', pictured: '', speaker: '', intro: '', loreRows: [], loreStyle: '', loreHeadStyle: '', foldHeadStyle: '', quote: [], perks: [], perkHelp: '', m: {}, combos: [], hasCombos: false, forks: [], hasForks: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
+const EP_BLANK = { zoom: () => {}, openAttr: () => {}, attrName: '', attrLabel: '', attrStyle: '', slot: '', line: '', steps: [], ladderFold: FOLD_BLANK, perksFold: FOLD_BLANK, forksFold: FOLD_BLANK, call: CALL_BLANK, feed: { has: false, text: '', style: '' }, ptsLine: '', inkStyle: '', title: '', name: '', img: '', alt: '', pictured: '', speaker: '', intro: '', loreRows: [], loreStyle: '', loreHeadStyle: '', foldHeadStyle: '', quote: [], perks: [], passives: [], hasAlwaysOn: false, perkHelp: '', m: {}, combos: [], hasCombos: false, forks: [], hasForks: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
 export const epBtnStyle = (ink, extra) => 'display: grid; place-items: center; width: 28px; height: 28px; flex: none; padding: 0; border-radius: 50%; border: 1px solid ' + ink + '; background: rgba(10, 13, 19, 0.85); color: ' + ink + '; font-family: inherit; font-size: var(--fs-body); font-weight: 700; line-height: 1; cursor: pointer' + (extra ? '; ' + extra : '');
 export const epRgba = (hex, a) => 'rgba(' + [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ') + ', ' + a + ')';
 export function masteredVals(self, m, ink, skillName, pts) {
@@ -411,6 +411,11 @@ export function epccgVals(self, ptsOf, who, opt) {
     loreRows: [['high', 'At high levels:', e.high], ['good', 'Good for:', e.good], ['bad', 'Bad for:', e.bad]].filter((x) => x[2]).map(([key, head, text]) => ({ key, head, text })),
     loreHeadStyle: "font-family: 'Chakra Petch', sans-serif; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; color: " + ink,
     perks: e.perks.map((p) => perkRow(p.id, { held: heldOf(p.id), ink })),
+    // rules 1.78 item 6609: the door's passive steps (a door verb with no action: Threads, Two Bonds), one row each, its
+    // picture by the item key (doorArt.ts moveIconOf), where it comes (at n points, a class rank)
+    passives: (e.passives || []).map((p) => { const icon = moveIconOf(p.key); return { key: p.key, name: p.name, text: p.text, at: p.at, icon, has: !!icon, none: !icon,
+      zoom: icon ? zoomer(self, bigOf(icon), p.name, 'icon', p.text) : () => {}, alt: p.name + ' (Wick)', atStyle: 'flex: none; font-size: var(--fs-sub); font-weight: 700; color: ' + ink }; }),
+    hasAlwaysOn: (e.passives || []).length > 0,
     // the two rules every page shared, said once at the top of the perk fold
     perkHelp: ((L) => 'A perk step at ' + L.perk_steps.slice(0, -1).join(', ') + ' and ' + L.perk_steps[L.perk_steps.length - 1] + ' points: a perk at I, or I raised to II. At ' + L.mastered + ': the Mastered perk.')(ladderSchedule(s.id))
       + (combos.length ? ' A combo perk: 5 points in every skill on its card, then its deed.' : ''),

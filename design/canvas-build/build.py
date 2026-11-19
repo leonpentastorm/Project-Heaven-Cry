@@ -51,7 +51,8 @@ def epccg(x):
     e = x["epccg"]
     out = {"entry": e["entry"], "speaker": e["speaker"], "portrait": e["portrait"], "img": BLOBS["char-" + e["portrait_id"]],
            "quote": e["quote"], "intro": e["intro"], "high": e["high_levels"],
-           "good": e["good_for"], "bad": e["bad_for"], "perks": skill_perks(x["id"]), "mastered": skill_mastered(x["id"]), "combos": skill_combos(x["id"])}
+           "good": e["good_for"], "bad": e["bad_for"], "perks": skill_perks(x["id"]), "mastered": skill_mastered(x["id"]), "combos": skill_combos(x["id"]),
+           "passives": skill_passives(x["id"])}
     # What a point gives is the skill's per_point.rows (rules 1.54 item 4119). The web game reads them from the engine's
     # skill data (shared.js roadMap); the canvas prototype has no engine, so its boards get the rows here.
     if not WEB:
@@ -76,6 +77,27 @@ def skill_mastered(sid):
     p = next(p for p in load("perks.json")["items"] if p["tier"] == "mastered" and p["skills"] == [sid])
     return {"id": p["id"], "name": p["name"], "flavour": p["flavour"], "text": p["text"], "meta": perk_meta(p),
             "icon": BLOBS.get("wick-perk-" + p["id"].replace("_", "-"), "")}
+
+# The door verb files (the engine's DATA_VERBS sources: effects/collect.ts) whose verbs are passive steps of a door.
+DOOR_VERB_FILES = ["shadow.json", "tending.json", "pressure.json", "figments.json"]
+
+def skill_passives(sid):
+    """Rules 1.78 item 6609: the door's passive steps (a verb of this skill's door with no action of its own), in the
+    data's order, each with the points or the class rank that gives it; the "?" page lists them under its perks."""
+    classes = {c["id"]: c["name"] for c in load("classes.json")["base"]}
+    out = []
+    for f in DOOR_VERB_FILES:
+        for v in load(f).get("items") or []:
+            if v.get("kind") != "verb" or v.get("door") != sid or any(e.get("op") == "grant_action" for e in v.get("effects") or []):
+                continue
+            at = []
+            for r in v.get("requires") or []:
+                if "skill" in r:
+                    at.append("at " + str(r.get("min", 1)))
+                elif "class" in r:
+                    at.append(classes.get(r["class"], r["class"]) + " rank " + ["I", "II", "III"][max(0, min(2, r.get("rank", 1) - 1))])
+            out.append({"key": "verb:" + v["id"], "name": v["name"], "text": v.get("text", ""), "at": " · ".join(at)})
+    return out
 
 def perk_icon(pid):
     return BLOBS.get("wick-perk-" + pid.replace("_", "-"), "")
