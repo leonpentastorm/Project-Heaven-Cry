@@ -3149,7 +3149,7 @@ c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/p
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
 e16b1b9f0a6185650e9a6ebc90823bb8ee9e6d5f368eda4209102829a61aa34b  art/_archive/prompt-pack/2026-11-19-file-08/HANDOFF.md
-e59f2353fa2bd89bbad99d5f1479c63abe80d0761646068c260b1fe8063cc94a  art/_archive/prompt-pack/2026-11-19-file-08/PROGRESS.md
+45a7f51267820b1f85478f6aa388b7bfeec6aa3be17b8951e6e60c9fe94cfb88  art/_archive/prompt-pack/2026-11-19-file-08/PROGRESS.md
 ccec8f731406f049f2f3ad3d315a19837a65d26086414c216cfcb6f0d116e15b  art/_archive/prompt-pack/2026-11-19-file-08/WORK-CLAIMS.md
 0f4451f582801b83b6bd059a2ff4a825f69b4d0f35ce8d2b4496b99857f8867c  art/_archive/prompt-pack/2026-11-19-file-08/archive-proof.py
 d0ee01f59bd9808b243b6bacde9273f9ee693a908f1353177d3c4139a0a26272  art/_archive/prompt-pack/2026-11-19-file-08/candidate-manifest.json
@@ -3218,6 +3218,8 @@ d504c45899231e14fec5b0984c04a7da411dbdce7f17f4901566233bb4a086eb  art/_archive/p
 f769cd682eaf69e3fbc1fb87d9dcbcccc475263de9c3671955724715b1b71569  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--relic.png
 df621317a2e60a5cf606f22bd3fe65d9268f2442abbfabf340c423b8b2e291fb  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--fine.json
 ef0d5a3b085b93c468686c80d1dd2fa340d653a9ab019c18d584618eb7f93808  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--fine.png
+93075791e5294b5c979429de029b10d55cdede298b5f3b21802d8f4b7f20c739  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--masterwork.json
+e4fdcac8db51fdb998d1b8931fb29305aa02e2a7246f972f2a1ff5887a843c69  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--masterwork.png
 8a2691a61b5b0cbef184c1e380887c8c978371c2130859fbb430e28801a1b231  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--celestial.json
 3c182e574a9bdc5cfa18a77109f3f814d9c341ec9d1674a87b42225f3836d8a1  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--celestial.png
 e58dbfff9c0b71c9b00f2c68b89991b420c65a15435d46b9f993366afe505964  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--fine.json
@@ -3228,7 +3230,7 @@ a25d818351d0b8191c1d209601f5c7f405d92df9b7f7c86318fd09a89ce11001  art/_archive/p
 d0c7775b5c19b84e5a1178cb913136e6c9ae915b5d603b26d9d4263173e4e0a7  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--relic.png
 f9307eb11bcc329ddf4eed66160ed73b58522145e4a19ffcd0fdbb55f78f1c6e  art/_archive/prompt-pack/2026-11-19-file-08/prepare-candidates.py
 97572aca9153c2c97d5e5768a011589a3e367ea5235156c3c13e5cc55e483635  art/_archive/prompt-pack/2026-11-19-file-08/register-grade.py
-254af88f57928ebed3c562eeacb9c10eae890c42e4c9cc1a2436124a4a899ad2  art/_archive/prompt-pack/2026-11-19-file-08/review/complete-proof-progress.jpg
+efa93234432ec03d32a5d9d8a8216923e1e69a73e7a698ad566d6bc93b7c05a9  art/_archive/prompt-pack/2026-11-19-file-08/review/complete-proof-progress.jpg
 ad1c63c5da9e8985fa216f1022b6e3787608f15e5c7a9c429b134c8b895ecc39  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-proof-retry.jpg
 684ad11905fdb53ebd4323ff5a36881197c747a37cc5d765a7c1bcf58f1d543f  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-proof-retry.json
 044c57bbbfeb998d681132071f5a52f10e225cee796a0e98fdbe17325e53e73a  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-shape-proof.jpg
