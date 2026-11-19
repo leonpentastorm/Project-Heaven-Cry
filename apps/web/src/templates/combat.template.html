@@ -393,7 +393,7 @@
 </div>
 </sc-if>
 <sc-if value="{{field.show}}" hint-placeholder-val="{{false}}">
-<div data-phc-field="" role="region" aria-label="The field" style="position: fixed; top: 76px; left: 50%; transform: translateX(-50%); z-index: 13; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-top: 3px solid #6FEA77">
+<div data-phc-field="" role="region" aria-label="The field" style="position: fixed; bottom: 16px; left: 24px; max-width: min(600px, calc(100vw - 48px)); z-index: 13; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-top: 3px solid #6FEA77">
 <span data-phc-field-head="" style="font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.18em; color: #6FEA77">{{field.head}}</span>
 <span data-phc-field-ground="" style="font-size: var(--fs-sub); color: #C9D3E3">{{field.ground}}</span>
 <sc-if value="{{field.canTake}}" hint-placeholder-val="{{false}}"><button type="button" class="phc-cb-act" data-phc-field-take="" onClick="{{field.take}}" style="min-height: 36px; padding: 0 14px; border-radius: 8px; border: 1px solid #232D3F; background: #1C2536; color: #E7EBF3; font-family: inherit; font-weight: 700; cursor: pointer">Take all</button></sc-if>

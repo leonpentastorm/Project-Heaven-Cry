@@ -384,7 +384,7 @@ function gmDeskVals(self, g, label) {
   return { show: true, head: 'YOUR TURN, NARRATOR · ' + (WORK_HEAD[w.kind] || 'the story').toUpperCase(), note: w.redo ? 'The room asked for it again: ' + w.redo : w.note || '',
     hint: 'Write what happens. Call a check when the outcome is in doubt: the engine rolls it, and the players see the TN and the sum.',
     ooc: (g.story.oocAsk || []).map((q, i) => ({ key: 'q' + i, text: q.name + ' asks: ' + q.text })), hasOoc: !!(g.story.oocAsk || []).length,
-    title: st.title || '', onTitle: (e) => set({ title: e.target.value }), sceneTitle: g.story.scene.title || '',
+    title: st.title || '', onTitle: (e) => set({ title: e.target.value }), sceneTitle: g.story.scene.title ? 'Scene title (optional; now: ' + g.story.scene.title + ')' : 'Scene title (optional)',
     text: st.text || '', onText: (e) => set({ text: e.target.value }),
     rulings: rulings.map((r) => { const who = g.characters[r.charId], no = said[r.id] === 'no';
       return { key: r.id, text: (who ? who.name + ': ' : '') + r.text, yesPressed: no ? 'false' : 'true', noPressed: no ? 'true' : 'false',

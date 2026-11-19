@@ -95,7 +95,7 @@ function Summary({ s }: { s: SummaryV }) {
             <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{m.name}</span>
             <span style={{ fontSize: 'var(--fs-body)', color: ink.muted }}>Level <span style={{ color: ink.white }}>{m.level}</span> · {m.classLine}</span>
             <span style={{ fontSize: 'var(--fs-body)', color: '#DCE2EC' }}>Boons: {m.boons}</span>
-            {m.mine ? <button type="button" data-phc-keep={m.id} onClick={() => keep(m.id)} style={{ ...btn(false), marginTop: 6 }}>Keep {m.name} as a draft (level {m.level})</button> : null}
+            {m.mine ? <button type="button" data-phc-keep={m.id} onClick={() => keep(m.id)} style={{ ...btn(false), marginTop: 6 }} aria-label={"Keep " + m.name + " as a draft at level " + m.level}>Keep as a draft</button> : null}
           </div>
         ))}
       </div>

@@ -199,7 +199,7 @@ export class LevelUpLogic extends DCLogic {
       // stays one line that opens the centred class chooser (0.31.11 item C: the choice lives in TO CHOOSE)
       fold: choosing && !c.classId ? { ...foldVals('levelup:class', { byRule: true, redraw }), open: false, folded: true, expanded: 'false', chev: '▸', toggle: () => this.setState({ chooser: 'class', armPerk: null }) }
         : foldVals('levelup:class', { byRule: !!c.classId, redraw }),
-      line: c.classId ? k.name + ' ' + ROMAN_RANK[rank] + (prog && prog.nextLine ? ' · ' + prog.nextLine : '') : choosing ? 'Class: choose it from TO CHOOSE' : 'Class at level 3',
+      line: c.classId ? k.name + ' ' + ROMAN_RANK[rank] + (prog && prog.nextLine ? ' · ' + prog.nextLine : '') : choosing ? 'Class: open the Class chip above' : 'Class at level 3',
     };
     // ---------- TO CHOOSE (docs/design/handoffs/2026-11-18-skill-screens-redesign.md section 4 item 5): one chip a choice
     // waiting, in a fixed order (Class, then forks, then perk steps, each named with its skill); a chip opens its chooser

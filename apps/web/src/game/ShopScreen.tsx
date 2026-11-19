@@ -121,7 +121,9 @@ export function ShopScreen() {
   const portrait = v.face.portraitPending ? (v.face.fallback ? art('char-' + v.face.fallback) : '') : art(v.face.portrait);
   const backdrop = v.face.backdropPending ? (v.face.backdropFallback ? art('ill-' + v.face.backdropFallback) : '') : art(v.face.backdrop);
   let body: React.ReactNode;
-  if (tab === 'always') body = v.shelves.map((s) => <section key={s.shelf} data-phc-shelf={s.shelf}>{shelfHead(s.name)}<div style={GRID}>{s.cards.map((c) => card(c))}</div></section>);
+  // 0.33 polish: short shelves share a row (the one Ammunition card stood alone in its row): each shelf is as wide as
+  // its cards ask, and wraps to the next row when there is no room
+  if (tab === 'always') body = <div data-phc-shelves="" style={{ display: 'flex', flexWrap: 'wrap', columnGap: 16 }}>{v.shelves.map((s) => <section key={s.shelf} data-phc-shelf={s.shelf} style={{ flex: Math.max(1, s.cards.length) + ' 1 ' + (Math.max(1, s.cards.length) * 276 - 16) + 'px', minWidth: 0 }}>{shelfHead(s.name)}<div style={GRID}>{s.cards.map((c) => card(c))}</div></section>)}</div>;
   else if (tab === 'gear') body = <section data-phc-shelf="gear">{shelfHead("Today's gear", 'One of each')}<div style={GRID}>{v.gear.map((c) => card(c, c.rare))}</div></section>;
   else if (tab === 'upgrade') { // rules 1.46 the grade step; rules 1.50 the Repair shelf (the services the engine registered, by service)
     const svc = (sv: ShopViewV['services'][number]) => <UpgradeCard key={sv.key} s={sv} onFocus={() => sv.id && setFocus({ id: sv.id, rarity: (sv.rarity || 'standard') as Rarity })} />;
