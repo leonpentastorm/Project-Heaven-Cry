@@ -1,21 +1,55 @@
-# File 08 grade continuation
+# Image quota handoff — 19 November 2026
 
-Branch: `art/2026-11-19-grade-proof`. Source Standards are retained from develop `2020b5c2a`; no Standard is replaced. The later develop update at `c22cc8f7bd` changed tests, not this art brief.
+**Paused on an actual image usage limit. All completed work is pushed on `art/2026-11-19-grade-proof`.** There are **58 registered review-candidate grade masters and 232 game-size exports** on this branch. The verified project snapshot is **229/871 pictures (26.3%)**: 150 base/unique candidates + 79 distinct grade candidates across both workers.
 
-52 registered review-candidate masters (the following six sets, three kept shield sets, Quiver, Utility Belt, Armoured Belt, Drifter Fine, Crossbow Fine and Repeating Crossbow Fine/Masterwork): Katana, Combat Knife, Sabre, Legion Gladius, Recurve Bow and Longbow, each Fine/Masterwork/Relic/Celestial. Each has 256/128/64/32 RGBA exports and a catalog entry. Sources and exact prompts are in `drafts/`; registration records are in `delivered/`. No candidate is production-approved or implementation-ready.
+The image service returned HTTP 429 `usage_limit_reached` on Ballistic Helmet Relic. It reported reset epoch `1795142739`: **20 November 2026 at 09:45:39 Vietnam time**, or 02:45:39 UTC. Exact response: [quota response](drafts/ballistic-helmet-relic-quota-response.json); machine-readable reset: [QUOTA.json](QUOTA.json). No more image requests were made after that error. A worker with available usage can take over the released jobs after recording its claim; the same exhausted account should wait for its reset.
 
-[Inventory-size comparison](review/finish-candidates-small.jpg) · [Current native proof sheet](review/complete-proof-progress.jpg) · [Contour measurements](candidate-manifest.json)
+## Resume here
 
-Leon repeatedly instructed continuous work. The worker therefore continued review candidates without treating the proof-sheet approval gate as a reason to stop. Visual review accepts resampling and contour drift for artistic review; it does not certify the brief's exact-outline requirement. The Sabre shifts its guard and blade curve. Bow fittings and limb curves drift, especially the Longbow upper fitting: 55/135/162/178 differing solid-mask pixels at 64 px across its four grades. Recurve has 35/53/70/70. These deviations remain an approval risk and are recorded in catalog notes. Uniform scaling and translation for canvas alignment are the only preparation; no creative geometry modification or forced alpha mask is used.
+**Ten pictures are released for takeover:**
 
-Earlier rejected Fine attempts and their measurements remain archived. Selected Katana Fine uses `fine-retry`. Drifter Fine is registered; Drifter Masterwork returned HTTP 400 `moderation_blocked` (response in `drafts/drifter-masterwork-service-response.json`). Its dependent grades are pending. No actual image quota error has occurred.
+| Standard | Still to generate | Existing predecessor |
+| --- | --- | --- |
+| `armour-ballistic_helmet` | Relic, then Celestial | Masterwork is already registered |
+| `armour-night_goggles` | Fine, Masterwork, Relic, Celestial | Standard |
+| `armour-gas_mask` | Fine, Masterwork, Relic, Celestial | Standard |
 
-Current claimed work: `armour-field_helmet`, `armour-ballistic_helmet`, `armour-night_goggles`, `armour-gas_mask`, all four grades (sixteen pictures). Crossbow Masterwork and Repeating Crossbow Relic returned service moderation blocks; dependent grades remain pending. Check WORK-CLAIMS and the shared coordination issue before rendering any other IDs: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Claims for the three overlapping kept blades were published here first; the other worker was asked to release them and reuse these candidates. The other worker acknowledged release of the overlapping three blades; their alternatives are archived and excluded from distinct counts. Their `kemizuchi_duelling_blade`, `adamantile_greatsword`, `ork_machete`, `hatchet`, `war_axe`, `glaive`, `lance`, `maul` grades stay with them. Do not count their duplicate Combat Knife Fine twice.
+[Exact restart prompts and delivery commands](RESTART-PROMPTS.md) · [Remaining job records](claim.json) · [All claims and other available work](../../../briefs/prompts-2026-11-19/WORK-CLAIMS.md)
 
-Last project-wide deduplicated count: at least206/871 candidate masters = previous baseline150 +these52 +at least4 confirmed new peer grades. Drafts, rejected renders and exports do not increase this count. Recheck branch tips before reporting a newer total. Other remaining glove/focus and armour grade sets have not been claimed by this worker; check the live shared issue before reserving exact IDs.
+Read the shared mailbox https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 and publish your exact reservation before rendering. The other worker retains its eight blade/hafted IDs; their unfinished work is not released by this handoff. There are also 132 other existing-Standard grade pictures listed as available at this checkpoint, making 142 available including these ten. Check for newer claims first.
 
-Workflow: claim exact IDs and push first; generate one image at a time from Standard plus preceding grade; visually inspect; archive and push per picture. `archive-proof.py` reads `/workspace/work/prompt-pack-08/current-grade.json`. `prepare-candidates.py` aligns complete sets and creates the comparison. `register-grade.py ID TIER` refuses existing paths and publishes one candidate with exports; rehash, commit and push each. Stop only on an actual quota or genuine unresolved blocker and leave exact response and next work here.
+## Completed on this branch
 
-All archived source/candidate/reference paths and catalog provenance have been normalized to repository-relative paths after the other worker spotted an absolute source_path. Image bytes are unchanged. The eight other-agent blade/hafted IDs above are reserved; use the shared issue to coordinate. Latest successful checks: original gear preservation validator, validate_art scoped to mind-without-fog, and web asset build. All52 grade masters and208 exports pass explicit clear-border/hash/portable-provenance checks. Three alpha-1 edge contacts were fixed by a one-pixel frame guard; previous masters and exports are retained in border-revisions. Run validate-grade-delivery.py after further additions.
+All four finishes are registered for Katana, Combat Knife, Sabre, Legion Gladius, Recurve Bow, Longbow, Buckler, Riot Shield, Pavise, Quiver, Utility Belt, Armoured Belt and Field Helmet: 13 sets, 52 pictures.
 
-Current exact claims and132 available existing-Standard grade pictures for another agent are listed in art/briefs/prompts-2026-11-19/WORK-CLAIMS.md. This supersedes historical counts and reservations.
+Partial sets add six: Drifter Fine; Crossbow Fine; Repeating Crossbow Fine/Masterwork; Ballistic Helmet Fine/Masterwork. Do not redraw these delivered pictures.
+
+Masters: `art/icons/gear/<stem>--<grade>.png`. Exports: `art/icons/gear/exports/{256,128,64,32}/`. Catalog entries have `status: review-candidate`, `production_approved: false`, `implementation_ready: false`. Native sources, prompts and references are in `drafts/`, selected preparation masters in `candidate-masters/`, per-picture records in `delivered/`.
+
+[Inventory-size comparison](review/finish-candidates-small.jpg) · [Native proof sheet](review/complete-proof-progress.jpg) · [Measurements](candidate-manifest.json) · [Live delivered count](PROGRESS.md)
+
+## Coordination and count
+
+The duplicate blade work was resolved in issue comment 7004125558. This branch's 12 Combat Knife/Sabre/Legion Gladius candidates are canonical on both branches. The other worker's three earlier overlapping renders are archived alternatives and excluded from counts.
+
+The other worker owns `kemizuchi_duelling_blade`, `adamantile_greatsword`, `ork_machete`, `hatchet`, `war_axe`, `glaive`, `lance`, `maul`, four grades each. At peer commit `842b27720cab4cc3c535efecc082c8884baf88eb`, its catalog has 33 grade keys: 12 shared imports and 21 exclusive candidates. Those 21 are Kemizuchi, Adamantile, Hatchet, Glaive and Lance four each, plus Ork Fine. Its remaining eleven stay reserved unless it releases them.
+
+The grade union is 58 + 33 - 12 = 79; add the previously audited 150 base/unique pictures for 229/871. This is a commit-pinned snapshot; the other worker may publish more afterward. [Exact count and peer-exclusive IDs](COUNT-SNAPSHOT.json). Never count exports, rejected trials, source experiments, shared imports or archived alternatives again.
+
+## Review limits and preserved work
+
+Leon instructed continuous work, so these remain review candidates while artistic approval and the proof-sheet gate are pending. The brief's exact-outline requirement has not passed. Local contour changes are measured and retained, including the Longbow upper fitting and limb curve, Sabre guard/blade curve, and Pavise rear prop. Review at 32/64 px before approving. No approval is invented.
+
+Standards from develop `2020b5c2a` remain unchanged. The later develop `c22cc8f7bd` update was tests only, not an art-brief change. Uniform scaling/translation aligns native renders to the Standard canvas; no creative warping or forced Standard alpha is used. Three shield masters needed a one-pixel transparent frame guard for alpha-1 edge residue; their earlier master/export bytes are retained in `border-revisions/`.
+
+All source/candidate/reference paths are repository-relative. New renders use image_gen; scripts perform technical framing, exports, registration, measurements and contact sheets.
+
+Drifter Masterwork, Crossbow Masterwork and Repeating Crossbow Relic separately returned `moderation_blocked`. Their eight dependent/pending grade pictures remain recorded, distinct from today's quota stop. Exact responses are in `drafts/`; preserve them. The user's 0.30 holds still apply, including the Scrap Turret portrait. Other pack branches retain their own blocked/reference-dependent jobs; this handoff does not release or redefine those.
+
+## Checks and continuation workflow
+
+Run from repository root. `archive-proof.py /path/to/metadata.json` archives a native render and exact prompt without overwriting a source. `prepare-candidates.py` prepares the existing sets and small-size review. `register-grade.py ID TIER` refuses an existing destination and creates the master, catalog binding and four exports. Rehash, commit and push each picture. Existing images stay preserved.
+
+Run `validate-grade-delivery.py` after additions. The 58 masters and 232 exports pass hash, portable source, native-dimension, candidate-status and clear-border checks. Original gear preservation checks passed; current catalog-integrity and web-asset checks are recorded in [VALIDATION.md](VALIDATION.md). Restore the generated tracked web asset index after a check-only build; do not mix it into the art delivery.
+
+Use a normal continuation branch and push; preserve both workers' catalog/checksum entries during integration. Develop has not been changed by this lane.

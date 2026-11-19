@@ -3148,11 +3148,14 @@ e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4  art/_archive/p
 c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/perks/wick/replaced/2026-11-16/shrug-it-off.png
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
-c5630823fbf32dfde1071f93792f0c18870047ea5263c0f506170979eba461a3  art/_archive/prompt-pack/2026-11-19-file-08/HANDOFF.md
+550e3e5ccd0c1a96ce54dc9c53dc56010ff3394b565d3b2689960b0ad6d6af1f  art/_archive/prompt-pack/2026-11-19-file-08/COUNT-SNAPSHOT.json
+9941454c2ae64c5c4630a8c43eda6b433ad538e3eb628308aaa03d073ee6da95  art/_archive/prompt-pack/2026-11-19-file-08/HANDOFF.md
 8746e0de163d0724ce314f5399e4c35bd5e44510a9647bfa178ab97d6fed4600  art/_archive/prompt-pack/2026-11-19-file-08/PROGRESS.md
-167bd7c5cc4a2d634677b314f2886d451a46db413fcc1edf92e523b1b5f318bf  art/_archive/prompt-pack/2026-11-19-file-08/VALIDATION.md
-65e0f2f479dd82de836865c8d74cc2293c226c4b87bb05bfb0462fa6f7a84245  art/_archive/prompt-pack/2026-11-19-file-08/WORK-CLAIMS.md
-6e108a32d34139c0ec094844a34ef4b2ccce467d23c032de9a32655b00dcb73b  art/_archive/prompt-pack/2026-11-19-file-08/archive-proof.py
+2f6b091f6cdcb57568848cace98793185c1df5daffb7e7d6d7fb3680490ab4d1  art/_archive/prompt-pack/2026-11-19-file-08/QUOTA.json
+c4a62083554dc7f424f399ec8c7095e59a07f7e4a7e6c71e806f556369254796  art/_archive/prompt-pack/2026-11-19-file-08/RESTART-PROMPTS.md
+8f8f4feb68a3edddf81be70b3cf035b9546339c9cbc70634e1e6c0de1889c0ca  art/_archive/prompt-pack/2026-11-19-file-08/VALIDATION.md
+738672ae6d6292b809d65b6f5e9f12cfbab87d1b3012b9d9c5fb4949ad231ba7  art/_archive/prompt-pack/2026-11-19-file-08/WORK-CLAIMS.md
+e61a8f16385ae4fe72f51611293043d8577a0a7cb8c86b3b383afb701beeefec  art/_archive/prompt-pack/2026-11-19-file-08/archive-proof.py
 a893f3ea4b1023b19164334712a9ae65c53cc9d15b20fbe6c0a826ba7da6f3e7  art/_archive/prompt-pack/2026-11-19-file-08/border-revisions/shield-buckler--celestial/exports/128/shield-buckler--celestial.png
 b80ac6598ad8df14a5e45039b3f0653e2072cd24e7c48b4ba331bf2575b14003  art/_archive/prompt-pack/2026-11-19-file-08/border-revisions/shield-buckler--celestial/exports/256/shield-buckler--celestial.png
 89ff6377d1500d9ca7e90fbb95173a49c7c9e704cc784fcd70bf8dcfc5318179  art/_archive/prompt-pack/2026-11-19-file-08/border-revisions/shield-buckler--celestial/exports/32/shield-buckler--celestial.png
@@ -3233,7 +3236,7 @@ a51ad4a6e04ecf8a9ae5d27a775933bcae317c6953755dbe3e0bc8007d364cc0  art/_archive/p
 3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--fine.png
 e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--masterwork.png
 307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png
-93a92181a2d23ed9f24e0b7b0cb56d306feee237d680c1677b33c9e1ffa35058  art/_archive/prompt-pack/2026-11-19-file-08/claim.json
+41c944f7ffc54ecbecb586ac9d90ca58a3b58049f2ae1fc4a6e75b0fa169e25f  art/_archive/prompt-pack/2026-11-19-file-08/claim.json
 5f01e39ea47868e3ba5e3f24420470a467c3125877a03deaa1eca0780fe85a0f  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-armoured_belt--celestial.json
 64414e5f7eba7e890a2fcd95ce21cb2e6c5cfee7de06a4cae04adf05ff90d00d  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-armoured_belt--fine.json
 38a2a00beec2120e8d0d8d96b52b665180f5ded8768c8d8af409eac641349a97  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-armoured_belt--masterwork.json
@@ -3424,7 +3427,7 @@ ad1c63c5da9e8985fa216f1022b6e3787608f15e5c7a9c429b134c8b895ecc39  art/_archive/p
 684ad11905fdb53ebd4323ff5a36881197c747a37cc5d765a7c1bcf58f1d543f  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-proof-retry.json
 044c57bbbfeb998d681132071f5a52f10e225cee796a0e98fdbe17325e53e73a  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-shape-proof.jpg
 67e35e50ce8e6072ad9df1a5def5498615f64a3d7830f700740973f1f7127937  art/_archive/prompt-pack/2026-11-19-file-08/review/finish-candidates-small.jpg
-dd4f068524f86c38b96d67fcd5ceff7caecac92d589b91659230f2fd3a98cfe6  art/_archive/prompt-pack/2026-11-19-file-08/validate-grade-delivery.py
+4d3bbac319fe93cbff7478a3ba0b995d5bbda9378cb3017b60be05cf1715cfe3  art/_archive/prompt-pack/2026-11-19-file-08/validate-grade-delivery.py
 913e777dd59440282c65e02d72b6d6b54670a0ed67959614ea00d99729ec9846  art/_archive/skills/poc4-palette-v3/README.md
 f2378cba014d8bf49dd90a127189b471157bfaacb53aee2f30e1dff08375712e  art/_archive/skills/poc4-palette-v3/generation-briefs.json
 dce5d7fb8be4f153780e3144c12f0c82d117da4d2dea8516f0f4f374210076d8  art/_archive/skills/poc4-palette-v3/manifest.json
@@ -4749,7 +4752,7 @@ c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/briefs/pro
 d35c91984152452f0484e327db6e6dadf34deaeab105bddf9b0dc9e4601323dd  art/briefs/prompts-2026-11-19/09-heavy-and-strange.md
 4b6b1ef35939c18621e7e723a61d6f2fd78001a0352a060aa76f70b94e3ced56  art/briefs/prompts-2026-11-19/10-rifle-analogues.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/briefs/prompts-2026-11-19/README.md
-1fd7651f459fc2b50e11f592a9525f8d1082d4c8824acbf6ef635efc42a65d77  art/briefs/prompts-2026-11-19/WORK-CLAIMS.md
+dc80cb3ca189233cc7b0c6fe5c4681050b00cb1426913fb0ea9f35627cabdae0  art/briefs/prompts-2026-11-19/WORK-CLAIMS.md
 f6f2606114fcf8dc1cc8f542b552748665e7aa25580ba9b66917e94fd647c44b  art/briefs/title-screen.md
 dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/title-screen/gaze-guide.jpg
 621ac2546d6520ab704ab84af7429b5f30c32309707fbe3d59ea7e5dec0bd0e5  art/briefs/title-screen/ref-spellsword-soul.webp

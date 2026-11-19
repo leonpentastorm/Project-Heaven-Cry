@@ -13,6 +13,7 @@ for p in rows:
  assert not Path(a['source_path']).is_absolute() and Path(a['source_path']).is_file(),p
  assert Path(a['standard_path']).is_file(),p
  assert hashlib.sha256(Path(a['path']).read_bytes()).hexdigest()==a['sha256']==r['sha256'],p
+ assert hashlib.sha256(Path(r['candidate']).read_bytes()).hexdigest()==r['sha256'],p
  assert hashlib.sha256(Path(a['source_path']).read_bytes()).hexdigest()==r['source_sha256'],p
  assert list(Image.open(a['source_path']).size)==a['native_dimensions'],p
  assert set(a['exports'])=={'256','128','64','32'},p

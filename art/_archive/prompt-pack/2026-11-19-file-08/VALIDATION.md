@@ -1,5 +1,9 @@
-# Technical checks
+# Final technical checks — 58 grade candidates
 
-52 candidate masters and208 RGBA exports pass validate-grade-delivery.py: catalog/delivery hashes, source checksums, repository-relative source paths, native dimensions, candidate flags and clear outer borders. All151 original gear bindings and13 follow-ups also pass validate_gear_art.py.
+- `validate-grade-delivery.py`: PASS for 58 registered masters and 232 RGBA exports. Catalog/delivery/prepared-master hashes agree; native source hashes and dimensions agree; source paths are repository-relative; candidate flags are preserved; all outer borders are transparent.
+- `tools/validate_gear_art.py`: original 151 gear bindings and 13 Survival follow-ups passed preservation, source and export checks. Standards remain unchanged.
+- `tools/validate_art.py --asset mind-without-fog`: PASS for full catalog metadata, 12,208 file checksums, export references and palette rules, with the named anchor's white-ink/alpha pixel checks. The grade validator separately checked the actual new gear images.
+- `npm run assets`: PASS, 3,335 web assets built. The generated tracked web asset index was restored after this check-only build.
+- `git diff --check`: PASS.
 
-Earlier full catalog integrity/palette validation with mind-without-fog pixel scope and web asset build passed at24 new grades. Later additions require a final refreshed build before integration. No outline pass or artistic approval is asserted.
+These are technical checks. Artistic approval, the proof-sheet approval gate and an exact-outline pass remain pending. Contour differences are retained in candidate-manifest.json and the small-size sheet. Three shield edge-residue corrections and all prior bytes are preserved in border-revisions.

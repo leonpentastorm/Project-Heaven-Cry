@@ -1,17 +1,64 @@
 {
   "branch": "art/2026-11-19-grade-proof",
   "shared_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "items": [
-    "armour-field_helmet",
-    "armour-ballistic_helmet",
-    "armour-night_goggles",
-    "armour-gas_mask"
-  ],
+  "items": [],
   "tiers": [
     "fine",
     "masterwork",
     "relic",
     "celestial"
   ],
-  "candidate_only": true
+  "candidate_only": true,
+  "status": "paused-quota-released-for-takeover",
+  "active_items": [],
+  "remaining_jobs": [
+    {
+      "id": "armour-ballistic_helmet",
+      "tier": "relic"
+    },
+    {
+      "id": "armour-ballistic_helmet",
+      "tier": "celestial"
+    },
+    {
+      "id": "armour-night_goggles",
+      "tier": "fine"
+    },
+    {
+      "id": "armour-night_goggles",
+      "tier": "masterwork"
+    },
+    {
+      "id": "armour-night_goggles",
+      "tier": "relic"
+    },
+    {
+      "id": "armour-night_goggles",
+      "tier": "celestial"
+    },
+    {
+      "id": "armour-gas_mask",
+      "tier": "fine"
+    },
+    {
+      "id": "armour-gas_mask",
+      "tier": "masterwork"
+    },
+    {
+      "id": "armour-gas_mask",
+      "tier": "relic"
+    },
+    {
+      "id": "armour-gas_mask",
+      "tier": "celestial"
+    }
+  ],
+  "reset_vietnam": "2026-11-20T09:45:39+07:00",
+  "previous_items": [
+    "armour-field_helmet",
+    "armour-ballistic_helmet",
+    "armour-night_goggles",
+    "armour-gas_mask"
+  ],
+  "claimed_items": []
 }
