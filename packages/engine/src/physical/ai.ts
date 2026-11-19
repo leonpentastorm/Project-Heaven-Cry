@@ -70,15 +70,19 @@ enemyStep({
 // The log says so (the block's lines). Never an ordered enemy (a Command decides) nor a player's unit.
 type Fill = (k: string) => boolean;
 const coverAt = (cb: Combat, u: Unit, k: string) => atCover(cb, { ...u, pos: k } as Unit); // Pressure's own cover test (pressure.ts), on a tile
-function coverWalk(cb: Combat, u: Unit, maxTiles: number, apLeft: number, ok: Fill): string | null {
+/** THE walk to cover under fire: the covered tile within maxTiles (and apLeft of walking AP) that ok() allows, the
+ * fewest foes' eyes on it first, then the nearest (o.near: false, any tile of the walk alike: Shift's short slide), then
+ * the first by its key; with the eyes on it. Pressure's Broken and Suppressed enemies (below) and the technique Shift's
+ * own AI (physical/ranged/sets.ts) walk by it. */
+export function coverWalk(cb: Combat, u: Unit, maxTiles: number, apLeft: number, ok: Fill, o: { near?: boolean } = {}): { to: string; eyes: number } | null {
   const P = paths(cb, u.pos, u.id), foes = foesOf(cb, u);
-  let best: string | null = null, bs = Infinity;
+  let best: string | null = null, bs = Infinity, be = 0;
   for (const [k, tiles] of Object.entries(P.dist)) {
     if (k === u.pos || tiles <= 0 || tiles > maxTiles || apForTiles(tiles, u.bank, u.movement) > apLeft || !coverAt(cb, u, k) || !ok(k)) continue;
-    const eyes = foes.filter((v) => unitSees(cb, v, k, undefined, u)).length, sc = eyes * 100 + tiles;
-    if (sc < bs || (sc === bs && best != null && k < best)) { bs = sc; best = k; }
+    const eyes = foes.filter((v) => unitSees(cb, v, k, undefined, u)).length, sc = eyes * 100 + (o.near === false ? 0 : tiles);
+    if (sc < bs || (sc === bs && best != null && k < best)) { bs = sc; best = k; be = eyes; }
   }
-  return best;
+  return best == null ? null : { to: best, eyes: be };
 }
 onHook('enemy_action_start', (ctx: any, cb: Combat) => {
   const u: Unit = ctx.u, PA = ENEMY_AI.pressure;
@@ -91,7 +95,7 @@ onHook('enemy_action_start', (ctx: any, cb: Combat) => {
   if (s === 'broken') {
     short(0); // it holds where it gets to this turn
     if (here) return;
-    const to = canMove ? coverWalk(cb, u, Infinity, apFor(cb, u), () => true) : null;
+    const to = canMove ? coverWalk(cb, u, Infinity, apFor(cb, u), () => true)?.to ?? null : null;
     if (to) { line('broken_cover'); if (!moveUnit(cb, u, to, ctx.rng)) { ctx.skip = true; return; } }
     if (!u.prone && toggleProne(cb, u) === null) { A.take('per_turn', 1, 'ai:down'); line('broken_prone'); ctx.skip = true; }
     else if (u.prone) A.take('per_turn', 1, 'ai:down');
@@ -102,6 +106,6 @@ onHook('enemy_action_start', (ctx: any, cb: Combat) => {
   const w = WEAPON[u.weapon]; if (!w) return;
   const melee = isMelee(w), left = apFor(cb, u) - attackApCost(w, melee ? 'melee' : 'shot');
   const seen = foesOf(cb, u, { seenBySide: u.side }), reach = melee ? 1 : effectiveRange(w), walls = sightBlockers(cb);
-  const to = coverWalk(cb, u, PA.suppressed_cover_tiles, left, (k) => seen.some((v) => dist(k, v.pos) <= reach && lineOfSight(cb, k, v.pos, false, walls)));
+  const to = coverWalk(cb, u, PA.suppressed_cover_tiles, left, (k) => seen.some((v) => dist(k, v.pos) <= reach && lineOfSight(cb, k, v.pos, false, walls)))?.to ?? null;
   if (to) { line('suppressed_cover'); if (!moveUnit(cb, u, to, ctx.rng)) ctx.skip = true; }
 });

@@ -3165,13 +3165,17 @@ export function enemyPreference(cb: Combat, u: Unit, pcs: Unit[]): { order: Unit
  * shot at the healer from where it stands takes the shortest walk to a tile that has one, if it can still fire this
  * turn after it. Never a melee enemy (it does not run through the squad), never when Taunted, ordered or afraid of
  * the healer, once a turn. Pure: the tile, or null. */
+/** How far an enemy's shot may reach for its eyes at a target (rules 1.76 item 6403): without limit when a friend of its
+ * side already sees the target (the squad's shared sight), else its own sight range to the target's tile (eyeReach).
+ * The firing-position searches (enemyHuntTile, enemyCloseTile, enemyAngleTile) read it. */
+const aimEyes = (cb: Combat, u: Unit, t: Unit): number => (cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, t.pos, undefined, t)) ? Infinity : eyeReach(cb, u, t.pos, t));
 function enemyHuntTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], targets: { t: Unit; healer: boolean }[], stood?: Set<string>): { tile: string; mark: Unit } | null {
   if (mode !== 'shot' || healerFocus(u) < 1 || tauntedBy(u) || moveBlock(u)) return null;
   const mark = healerMark(cb, u); if (!mark || !pcs.includes(mark)) return null; // (a False Image it was fooled by stands in pcs in the healer's place: it shoots that)
   if (targets.some((x) => x.t === mark)) return null; // it has the shot already (or the healer is too well covered to be worth it: then it stays on its target)
   if (condSource(u, 'fear') === mark.id || u.call?.cowed?.by === mark.id) return null;
   const w = WEAPON[u.weapon], P = paths(cb, u.pos, u.id), walls = sightBlockers(cb), left = u.ap - attackApCost(w, 'shot');
-  const eyes = cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, mark.pos, undefined, mark)) ? Infinity : eyeReach(cb, u, mark.pos, mark); // rules 1.76 item 6403: the one sight range
+  const eyes = aimEyes(cb, u, mark); // rules 1.76 item 6403: the one sight range
   const reach = Math.min(effectiveRange(w), eyes), taken = new Set(pcs.map((t) => t.pos));
   let best: string | null = null, bs = Infinity;
   for (const [k, tiles] of Object.entries(P.dist)) {
@@ -3208,7 +3212,7 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
   // A shot needs eyes on the target as well as a weapon that reaches (the attack is refused otherwise): from a tile, its
   // own sight (halved into the dark), unless someone else on its side already sees the target. Without this an enemy
   // 13 or 14 tiles off with a long gun counted its own tile as a firing position, was refused the shot, and never moved.
-  const eyes = new Map(pcs.map((t) => [t.id, cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, t.pos, undefined, t)) ? Infinity : eyeReach(cb, u, t.pos, t)] as [string, number])); // rules 1.76 item 6403
+  const eyes = new Map(pcs.map((t) => [t.id, aimEyes(cb, u, t)] as [string, number])); // rules 1.76 item 6403
   const score0 = (k: string, tiles: number) => { const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
     const sees = pcs.some((t) => dist(k, t.pos) <= Math.min(reach, eyes.get(t.id)!) && lineOfSight(cb, k, t.pos, false, walls));
     // (a tile with a line on someone is as good as any other such tile: a shooter doesn't creep closer with its spare AP)
@@ -3258,7 +3262,7 @@ function enemyAngleTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[]
   const w = WEAPON[u.weapon], P = paths(cb, u.pos, u.id), walls = sightBlockers(cb), left = apFor(cb, u) - attackApCost(w, 'shot'), taken = new Set(pcs.map((t) => t.pos));
   let best: { tile: string; mark: Unit } | null = null, bs = Infinity;
   for (const mark of marks) {
-    const eyes = cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, mark.pos, undefined, mark)) ? Infinity : eyeReach(cb, u, mark.pos, mark); // rules 1.76 item 6403: the one sight range
+    const eyes = aimEyes(cb, u, mark); // rules 1.76 item 6403: the one sight range
     const reach = Math.min(effectiveRange(w), eyes);
     for (const [k, tiles] of Object.entries(P.dist)) {
       if (k === u.pos || taken.has(k) || stood?.has(k) || tiles <= 0 || tiles > A.max_tiles || apForTiles(tiles, u.bank, u.movement) > left) continue;

@@ -21,6 +21,7 @@ import { AMMO_TYPES, ammoId } from '../../tactics';
 import { TECHNIQUE, weaponProps } from '../data';
 import { foesOf, alliesOf } from '../../kit';
 import { setBraced } from '../../unitstate';
+import { coverWalk } from '../ai';
 
 /** A technique's number outside a Tech (the hooks): the same key its handler's t.num reads. */
 function num(id: string, k: string, fb: number): number { const v = TECHNIQUE[id]?.numbers?.[k]; return typeof v === 'number' ? v : fb; }
@@ -278,9 +279,10 @@ technique({
   // under fire, slide to the covered tile the fewest enemies can see
   ai(t) {
     if (!pressureOf(t.u) || !atCover(t.cb, t.u) || moveBlock(t.u)) return 0;
-    const seen = (k: string) => foesOf(t.cb, t.u).filter((v) => unitSees(t.cb, v, k, undefined, t.u)).length, now = seen(t.u.pos);
-    const best = stepsWithin(t, shiftTiles(t)).filter((x) => coveredAt(t, x.to)).map((x) => ({ to: x.to, n: seen(x.to) })).sort((a, b) => a.n - b.n || (a.to < b.to ? -1 : 1))[0];
-    return best && best.n < now ? { score: 6, args: { tile: best.to } } : 0;
+    // the one walk to cover (physical/ai.ts coverWalk): Shift's tiles, its walk free of AP, onto a tile nobody stands on
+    const now = foesOf(t.cb, t.u).filter((v) => unitSees(t.cb, v, t.u.pos, undefined, t.u)).length;
+    const best = coverWalk(t.cb, t.u, shiftTiles(t), Infinity, (k) => !t.cb.units.some((v) => v !== t.u && !v.dead && v.pos === k), { near: false });
+    return best && best.eyes < now ? { score: 6, args: { tile: best.to } } : 0;
   },
 });
 
