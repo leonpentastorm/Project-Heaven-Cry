@@ -241,7 +241,7 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 
 - **The Operative clears.** Unseen Hand (an attack from Hidden rolls with Ingenuity when higher) and the Recommended rifle: solo 0 → 13, four 0 → 22. `bcfa7cf6a`, rules 1.81 items 6900-6901.
 - **The Outburst peak measured as one Release** (the 0.32 rise was a second, Mana Short Release in the window); the contract band set to what is measured; **the map 16 tiles up to 10 units** (four Breakers 6 → 14, four Bulwarks 11 → 17). `cf981b944`, items 6903-6904.
-- **The guard's bar** to the measured share (25 of 40, bar 55%). Item 6905, the fit's last commit.
+- **The guard's bar** to the measured share (25 of 40, bar 55%). Item 6905, `88c73cff1`; the account `docs/design/handoffs/0.32-FIT.md`.
 
 - **Solo sustain: the Mender.** Every door's Recommended kit now clears stage 1 solo 10 times in 40 or more except the Sigilist (Leon's ruling); the tank kit 25, the gunner 35. Owed: the Mender solo, 10 of 40 with 16 stalled: its revolver runs dry and the Empathy sheet fists at -2; with a 40-round cap the stalls end 3 won, 13 lost (rules 1.81 item 6907). [M] [partly; measured 20 Nov 2026] [0.32-FIT.md]
 - **Simulator bot policy for the Sigilist.** Owed: the Line from cover and a stand-off under Suppress (bot); the Operative is fitted (below). [M] [open; measured 19 Nov 2026] [0.32-MEASURES.md section 4]
