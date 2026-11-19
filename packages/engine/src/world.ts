@@ -758,8 +758,9 @@ export function worldView(v: GameState) {
   const s: any = v.story;
   if (s.hazards) s.hazards = s.hazards.filter((h: Hazard) => !h.hidden);
   delete s.triggers; delete s.events;
-  if (s.npcs) s.npcs = s.npcs.map((n: Npc) => stripNpc(n));
-  if (s.zoneNpcs) s.zoneNpcs = Object.fromEntries(Object.entries(s.zoneNpcs).map(([k, l]: any) => [k, l.map(stripNpc)]));
+  // Rules 1.84 (item 7201): a lurking person is not in a player's view at all (the screen hid it; the view carried it).
+  if (s.npcs) s.npcs = s.npcs.filter((n: Npc) => !n.hidden).map((n: Npc) => stripNpc(n));
+  if (s.zoneNpcs) s.zoneNpcs = Object.fromEntries(Object.entries(s.zoneNpcs).map(([k, l]: any) => [k, l.filter((n: Npc) => !n.hidden).map(stripNpc)]));
   const cache = (o: MapObject) => (o.items && !isPile(o) ? { ...o, items: [], itemCount: o.items.length } : o); // a pile is open (rules 1.9)
   if (s.objects) s.objects = s.objects.map(cache);
   if (s.zoneObjects) s.zoneObjects = Object.fromEntries(Object.entries(s.zoneObjects).map(([k, l]: any) => [k, l.filter((o: MapObject) => !o.hidden).map(cache)]));
