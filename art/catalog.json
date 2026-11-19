@@ -19709,6 +19709,32 @@
       "collection": "2026-11-19-unique-melee-bow",
       "grade": "unique",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-owed_in_full": {
+      "label": "Owed in Full (Kemizuchi duelling blade)",
+      "path": "art/icons/gear/weapon-owed_in_full.png",
+      "sha256": "61f16f9834e97f058e58b29ae62d5683be586cccf2135a4e39521742f31431a0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-owed_in_full.png",
+        "128": "art/icons/gear/exports/128/weapon-owed_in_full.png",
+        "64": "art/icons/gear/exports/64/weapon-owed_in_full.png",
+        "32": "art/icons/gear/exports/32/weapon-owed_in_full.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-owed_in_full.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": 4,
+      "collection": "2026-11-19-unique-melee-bow",
+      "grade": "unique",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

@@ -2,17 +2,17 @@
   "status": "drawing",
   "target": 8,
   "delivered": [
-    "weapon-last_sentence"
+    "weapon-last_sentence",
+    "weapon-owed_in_full"
   ],
   "remaining": [
     "weapon-grandmothers_teeth",
     "weapon-last_crossing",
-    "weapon-owed_in_full",
     "weapon-reveille",
     "weapon-breath_of_morning",
     "weapon-rearguard",
     "weapon-windfall"
   ],
   "production_approved": false,
-  "updated_utc": "2026-11-19T07:22:59.973110+00:00"
+  "updated_utc": "2026-11-19T07:26:58.803004+00:00"
 }

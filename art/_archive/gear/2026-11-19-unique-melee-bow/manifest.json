@@ -68,6 +68,72 @@
       "grade": "unique",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-owed_in_full",
+      "path": "art/icons/gear/weapon-owed_in_full.png",
+      "sha256": "61f16f9834e97f058e58b29ae62d5683be586cccf2135a4e39521742f31431a0",
+      "label": "Owed in Full (Kemizuchi duelling blade)",
+      "family": "unique-owed_in_full",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-owed_in_full.png",
+        "sha256": "725c9dba48348c0ccce625052eef53fd045ec618fe32fbbe0574efc23843f8dd"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/masters/v1/weapon-owed_in_full.png",
+        "sha256": "61f16f9834e97f058e58b29ae62d5683be586cccf2135a4e39521742f31431a0"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-owed_in_full.txt",
+        "sha256": "762bdfe0d5e57df5fe35e32acd56d4af070412e84d424c9777768dd01dd2c429"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-afterword.png",
+          "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_duelling_blade.png",
+          "sha256": "f6f112ac6072666b6c00c65ecbb96c3caf5bbf486df51d56c8e46165521c8e2d"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/kemizuchi_duelling_blade.png",
+          "sha256": "affc7baedc7b8b4e595bcb7689eef21f010e66499122d32cda8ef03aa3882517"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_duelling_blade.png",
+          "sha256": "f6f112ac6072666b6c00c65ecbb96c3caf5bbf486df51d56c8e46165521c8e2d"
+        },
+        {
+          "path": "art/icons/weapons/kemizuchi_duelling_blade.svg",
+          "sha256": "e90c0a70c14e3827ce08a54e78f5ec8a0a170f9c6f372bed07e3c69e073960ac"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-owed_in_full.png",
+        "128": "art/icons/gear/exports/128/weapon-owed_in_full.png",
+        "64": "art/icons/gear/exports/64/weapon-owed_in_full.png",
+        "32": "art/icons/gear/exports/32/weapon-owed_in_full.png"
+      },
+      "export_hashes": {
+        "256": "012072d835ebe963a1387bdf905e75d3349003476aadc70badcd0e9d178423f5",
+        "128": "0b818e3d78ab5a107bdfe7f3a3bf616d3c5b0bce1f03c8667c4230314f52cffa",
+        "64": "2a1d3260c90afbaa2832a57cee43fb7d6fbe96bacd6f3d541d9bd3daf83cd15b",
+        "32": "ab72c2a7f6778e4a5bab609be85a717b162c4d38746fb4d579e2ec21cb68c944"
+      },
+      "grade": "unique",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
