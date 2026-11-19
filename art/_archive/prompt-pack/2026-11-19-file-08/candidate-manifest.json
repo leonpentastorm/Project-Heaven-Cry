@@ -286,5 +286,37 @@
     "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--celestial.png",
     "size64_mask_differing_pixels": 18,
     "sha256": "e048c79f1561903a03ae2a8795e4f7d160bf5df2343001bfb0e5d5590e311dee"
+  },
+  {
+    "id": "shield-pavise",
+    "tier": "fine",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--fine.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--fine.png",
+    "size64_mask_differing_pixels": 11,
+    "sha256": "0a324cbce1be733637503c5582749d9cb4bca528f3994d0d1c26601ba8eb08f1"
+  },
+  {
+    "id": "shield-pavise",
+    "tier": "masterwork",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--masterwork.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--masterwork.png",
+    "size64_mask_differing_pixels": 32,
+    "sha256": "14d30548905ce9568b501b31669ae73bb8f651cff0e99be98d80993dee3d844c"
+  },
+  {
+    "id": "shield-pavise",
+    "tier": "relic",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--relic.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--relic.png",
+    "size64_mask_differing_pixels": 53,
+    "sha256": "6301e0a8f3c62f555cb075a780a9b5416670081c6f9381c59db966b41cb77033"
+  },
+  {
+    "id": "shield-pavise",
+    "tier": "celestial",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--celestial.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--celestial.png",
+    "size64_mask_differing_pixels": 69,
+    "sha256": "464183d32b6f9d0fa32e75ac92c6823e02a7cf2b7ee419c953656e4f5ea3e785"
   }
 ]
