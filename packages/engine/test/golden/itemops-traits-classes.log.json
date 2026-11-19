@@ -53,7 +53,7 @@
 "class/defender@III/taken-bloodied": "Tester 1's plate hardens: 1 Guard, 4 damage stopped. / Far soldier fires at Tester 1: d20 10 −3 = 7 vs 14 · hit, 0 damage · no damage",
 "class/defender@III/taken-blow": "Tester 1's plate hardens: 1 Guard, 1 damage stopped. / Soldier strikes Tester 1: d20 10 −3 = 7 vs 14 · hit, 0 damage · no damage",
 "class/defender@III/taken-crit": "Tester 1 sets against the blow: the critical lands as an ordinary hit (Set Against the Blow). / Tester 1's plate hardens: 1 Guard, 4 damage stopped. / Far soldier fires at Tester 1: d20 20 −3 = 17 vs 14 · CRITICAL, 0 damage · injury resisted (d100 28 ≤ 80%) · no damage",
-"class/defender@III/taken-fire": "Tester 1's plate hardens: 1 Guard, 7.5 damage stopped.",
+"class/defender@III/taken-fire": "Tester 1's plate hardens: 1 Guard, 10.5 damage stopped.",
 "class/defender@III/taken-lethal": "Tester 1's plate hardens: 1 Guard, 4 damage stopped. / Far soldier fires at Tester 1: d20 10 −3 = 7 vs 14 · hit, 0 damage · no damage",
 "class/defender@III/taken-then-turn": "Tester 1's plate hardens: 1 Guard, 4 damage stopped. / Far soldier fires at Tester 1: d20 10 −3 = 7 vs 14 · hit, 0 damage · no damage",
 "class/defender@III/taken-twice": "Tester 1's plate hardens: 1 Guard, 4 damage stopped. / Far soldier fires at Tester 1: d20 10 −3 = 7 vs 14 · hit, 0 damage · no damage / Tester 1 has felt Spite (hurt by Soldier): it can be poured in now. / Soldier strikes Tester 1: d20 10 −3 = 7 vs 14 · hit, 1 damage",
