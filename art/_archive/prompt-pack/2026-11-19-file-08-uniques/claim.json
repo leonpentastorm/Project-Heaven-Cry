@@ -3,17 +3,9 @@
   "baseline_source": "2020b5c2aa620ec17103b7c11669f643342ed68f",
   "baseline_delivered": 138,
   "claimed": [
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
     8,
     10,
     11,
-    15,
     17,
     19,
     20,
@@ -70,5 +62,22 @@
       "develop",
       "2020b5c2aa620ec17103b7c11669f643342ed68f"
     ]
-  ]
+  ],
+  "peer": {
+    "branch": "art/2026-11-19-unique-melee-bow",
+    "sha": "435ee788ef47abf4ac2906045b088e4baf66abc9",
+    "claimed": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      15
+    ],
+    "delivered": [
+      1
+    ]
+  }
 }
