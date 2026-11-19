@@ -22105,6 +22105,42 @@
         "different_pixels_32": 12,
         "different_pixels_64": 38
       }
+    },
+    "focus-visualizer--relic": {
+      "label": "Visualizer — Relic",
+      "path": "art/icons/gear/focus-visualizer--relic.png",
+      "sha256": "892736cc5922cc883cc73240ce95dddf433f73935fc7c2ef5c83763fc9f34bbc",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-visualizer--relic.png",
+        "128": "art/icons/gear/exports/128/focus-visualizer--relic.png",
+        "64": "art/icons/gear/exports/64/focus-visualizer--relic.png",
+        "32": "art/icons/gear/exports/32/focus-visualizer--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-visualizer--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.5",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "focus-visualizer",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9413075869121471,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 18,
+        "different_pixels_64": 57
+      }
     }
   },
   "survival_art": {
