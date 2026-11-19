@@ -242,6 +242,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_leaf_dagger",
+      "path": "art/icons/gear/weapon-legion_leaf_dagger.png",
+      "sha256": "c074f9aa7dc085ce042244859c3e1e7c004b2070e0fa7c7af2cc22183ba946db",
+      "label": "Legion leaf-dagger",
+      "family": "05-legion-blades",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_leaf_dagger.png",
+        "sha256": "5e5f7c73b4a37ae47866b5669929b7760a43adac2cb83a9089f0da4541610715"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-legion_leaf_dagger.png",
+        "sha256": "c074f9aa7dc085ce042244859c3e1e7c004b2070e0fa7c7af2cc22183ba946db"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-legion_leaf_dagger.txt",
+        "sha256": "d6950b740902cbace6972c71d1720fe273d256dac1d812d99ab7fccd0027f9d4"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-legion_gladius.png",
+          "sha256": "28e96e7333bce563f97911b40b91750c9a6b578573f85c2438e4e045a5c6cd92"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_leaf_dagger.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_leaf_dagger.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_leaf_dagger.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_leaf_dagger.png"
+      },
+      "export_hashes": {
+        "256": "c39eead9d11c1abb27f096a33013ea1510e1ae8f6cecc14067a4030060c4878e",
+        "128": "6b3ea8b46c5effb586a11a05324ac2378d83f51e29c03b31cd3d9a7dcd9cd6d1",
+        "64": "2dbd00725d2bc784f913a04a20820723ca5b6eb95fe84b84d6c52b56877ebba6",
+        "32": "7536ee90bec6a9d36ca5ac8533f7cf85dbf3e0997a38023f7cf101af644f6b52"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
