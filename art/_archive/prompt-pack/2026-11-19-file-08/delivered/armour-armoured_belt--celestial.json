@@ -1,0 +1,16 @@
+{
+  "id": "armour-armoured_belt",
+  "tier": "celestial",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--celestial.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--celestial.png",
+  "size64_mask_differing_pixels": 17,
+  "sha256": "2a541fb480af4f997dc3fa56928d9005227fa12a5a280bd02006ca4861680b4a",
+  "path": "art/icons/gear/armour-armoured_belt--celestial.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/armour-armoured_belt--celestial.png",
+    "128": "art/icons/gear/exports/128/armour-armoured_belt--celestial.png",
+    "64": "art/icons/gear/exports/64/armour-armoured_belt--celestial.png",
+    "32": "art/icons/gear/exports/32/armour-armoured_belt--celestial.png"
+  },
+  "source_sha256": "c876db4c2fa3d27e004ecedc1e3cf00e487192679da660579a98b28f30b9d7cf"
+}
