@@ -2094,6 +2094,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-knuckledusters--masterwork",
+      "path": "art/icons/gear/weapon-knuckledusters--masterwork.png",
+      "sha256": "6b4920a5b67bf8513253d4199ac31e96480dedec450d8c0b00f54e0408d2f69a",
+      "label": "Knuckledusters — Masterwork",
+      "family": "weapon-knuckledusters",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-knuckledusters--masterwork.png",
+        "sha256": "edb0e68a2609f7292c17cbb93736407860b5e85a4148d7f85727154dc60b15da"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-knuckledusters--masterwork.png",
+        "sha256": "6b4920a5b67bf8513253d4199ac31e96480dedec450d8c0b00f54e0408d2f69a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-knuckledusters--masterwork.txt",
+        "sha256": "c264bf9d38980ca2a8bb39ba2250246c38e4d55ead9be24d501f4079a4062826"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-knuckledusters.png",
+          "sha256": "739f0487a4696800a0b0ac3979352df8cc595446a0d6f235cbcb5045d0fb245e"
+        },
+        {
+          "path": "art/icons/gear/weapon-knuckledusters--fine.png",
+          "sha256": "463a052d3c916476751aa76c8bb694418a8cd9fb81fe6e6414707dbfe5196be8"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-knuckledusters--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-knuckledusters--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-knuckledusters--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-knuckledusters--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "aa5abea1dcf65751d7c6fbe6e86b34211504bcb43ed5155ecb206d017f1741b9",
+        "128": "c6c4853aa99fef2348d7d29c58c31e689bfb52a90e87834932fce3791395bc85",
+        "64": "968d0e5e6efd18ede256729b72af3b975978432f12a6bee8e3606ccf082cf27b",
+        "32": "808659f6f7e59c54f5d44ccf12c69b03b266e3db9f7e519b07cdcbfc006dd75e"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-knuckledusters",
+      "outline": {
+        "solid_alpha_iou": 0.9639047672420235,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 29
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
