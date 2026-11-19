@@ -1516,6 +1516,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-assault_helm",
+      "path": "art/icons/gear/armour-assault_helm.png",
+      "sha256": "c171a27223a1bf4a108f774695087d2fc3d2074789e196f0661a740013f20e0a",
+      "label": "Assault helm",
+      "family": "07-helmets",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-assault_helm.png",
+        "sha256": "d7e99abd9f31709a2a5a20f29506169f81fbb8a7bfd48d9f50789b90896b91e5"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-assault_helm.png",
+        "sha256": "c171a27223a1bf4a108f774695087d2fc3d2074789e196f0661a740013f20e0a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-assault_helm.txt",
+        "sha256": "54760a740ba4b1ecec9bbe8ea567331a0e05792c98655e6927219559fb9c7162"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-ballistic_helmet.png",
+          "sha256": "7358ee39e955f8f5362faee1f96608313272f0cc164d0c7ca6b22c5755460d2f"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-assault_helm.png",
+        "128": "art/icons/gear/exports/128/armour-assault_helm.png",
+        "64": "art/icons/gear/exports/64/armour-assault_helm.png",
+        "32": "art/icons/gear/exports/32/armour-assault_helm.png"
+      },
+      "export_hashes": {
+        "256": "13607f68b4362963a9d3d7385c4b62f3b4433996b196896ae2f941bc37aecd84",
+        "128": "d724f9bc30ad7704feabce337382ec4a5857fabcff41a52612f629b6fe9a80d6",
+        "64": "7fcfffc97bdb969db04b0e1959fd76d2ed5760bad646e425fa5b6002ac5f6cac",
+        "32": "0626b89e343eefe753920d095181f8b3095c1f2377e7931d6b348baf37d4f009"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

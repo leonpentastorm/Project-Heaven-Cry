@@ -38,10 +38,10 @@
     "shield-ram_plate",
     "shield-deflector",
     "shield-bulwark_screen",
-    "shield-barrier_wall"
+    "shield-barrier_wall",
+    "armour-assault_helm"
   ],
   "remaining": [
-    "armour-assault_helm",
     "armour-cowl",
     "armour-hood",
     "armour-blackout_hood",
@@ -58,5 +58,5 @@
   ],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T04:08:51.796993+00:00"
+  "updated_utc": "2026-11-19T04:12:59.121103+00:00"
 }

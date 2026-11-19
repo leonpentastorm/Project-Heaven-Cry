@@ -19282,6 +19282,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "armour-assault_helm": {
+      "label": "Assault helm",
+      "path": "art/icons/gear/armour-assault_helm.png",
+      "sha256": "c171a27223a1bf4a108f774695087d2fc3d2074789e196f0661a740013f20e0a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-assault_helm.png",
+        "128": "art/icons/gear/exports/128/armour-assault_helm.png",
+        "64": "art/icons/gear/exports/64/armour-assault_helm.png",
+        "32": "art/icons/gear/exports/32/armour-assault_helm.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-assault_helm.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+      "brief_number": 7,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {
