@@ -20013,6 +20013,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "armour-field_helmet--masterwork": {
+      "label": "Armour-Field Helmet Masterwork",
+      "path": "art/icons/gear/armour-field_helmet--masterwork.png",
+      "sha256": "4f934ce70e51f20b44717b4981315404c067bbb666135b223843d2c05b66ea9c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/armour-field_helmet.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_helmet--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-field_helmet--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-field_helmet--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-field_helmet--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {

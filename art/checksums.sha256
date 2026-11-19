@@ -3149,7 +3149,7 @@ c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/p
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
 c5630823fbf32dfde1071f93792f0c18870047ea5263c0f506170979eba461a3  art/_archive/prompt-pack/2026-11-19-file-08/HANDOFF.md
-a2358f594627aad008116817b0134425d6945fe35a4aaf7c51eb71e4dde3eb39  art/_archive/prompt-pack/2026-11-19-file-08/PROGRESS.md
+eef9024bd95c9b27e6c7c80182a3d81732894f676ebc54e9f5a4e0afd94b23ee  art/_archive/prompt-pack/2026-11-19-file-08/PROGRESS.md
 167bd7c5cc4a2d634677b314f2886d451a46db413fcc1edf92e523b1b5f318bf  art/_archive/prompt-pack/2026-11-19-file-08/VALIDATION.md
 65e0f2f479dd82de836865c8d74cc2293c226c4b87bb05bfb0462fa6f7a84245  art/_archive/prompt-pack/2026-11-19-file-08/WORK-CLAIMS.md
 6e108a32d34139c0ec094844a34ef4b2ccce467d23c032de9a32655b00dcb73b  art/_archive/prompt-pack/2026-11-19-file-08/archive-proof.py
@@ -3237,6 +3237,7 @@ e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/_archive/p
 38a2a00beec2120e8d0d8d96b52b665180f5ded8768c8d8af409eac641349a97  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-armoured_belt--masterwork.json
 f02a4e7bf5afa53ff2d445f9f508436eb28399ddc5977493ef44e8cbfd8f56f5  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-armoured_belt--relic.json
 1c7f08d7f171f007637009648a0ccedadb7a72c1e9e09e2fe2da7e553b316064  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-field_helmet--fine.json
+5f0f5eaec1dbfb89501a91a1820454e943644be1b6311424a0449cf158e98a7d  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-field_helmet--masterwork.json
 8e78250bbb559a5ba87331cba2f7c40885c6c69d65af6e5832eb10851e52fc8c  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--celestial.json
 a7dcf66a9748fd80a7dfea39c1e708e986ae23798a192c904eecb81aac58dcd3  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--fine.json
 0feef76328b7604059e30833c683a11ffdf06757f56fb961c0f0790f93bc8140  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--masterwork.json
@@ -4744,7 +4745,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-680b02e673ef995fca23629c12113775a0684ba7cc1245d7489122db08343bce  art/catalog.json
+ba112488b9f22345654fbff88a304398a81e99709778bd0d2eeb80246fe817db  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6309,6 +6310,7 @@ fb960809ab40e72d1ceb6c00a35824825eb38dadfb660993bd789e6b459d7056  art/icons/gear
 66dc7cda8639e28a20fc66538026fe2eb4880e85be90e3508ed73d3671b57b25  art/icons/gear/armour-combat_gloves.png
 ba426f025a3b38a93adca821a970134edb9ecabb89498f09ee28f6e117d8083e  art/icons/gear/armour-field_boots.png
 c551b2ca49415108740f97fe14f2b7c65708ba645f8c30fa7f6d7524b6d990ab  art/icons/gear/armour-field_helmet--fine.png
+4f934ce70e51f20b44717b4981315404c067bbb666135b223843d2c05b66ea9c  art/icons/gear/armour-field_helmet--masterwork.png
 d32379fb535b312e867f35936b1b3dbbc1c4ae28cbd4ad8a8394a70bb2c75fe8  art/icons/gear/armour-field_helmet.png
 a633011fa2fed3defd33228d8dce7475d39060df9c779a1a9ebf0beab46ef98e  art/icons/gear/armour-gas_mask.png
 bf6aa28766f45a090f5289c830c5638b78a1b54fc8034dda83eca4e4d839bf96  art/icons/gear/armour-heavy_boots.png
@@ -6354,6 +6356,7 @@ bf8db6cf89acae7215cc2deb5eaa959cead7cf954537bcf4bd5692ba03fd5b6d  art/icons/gear
 ce41eca2ce571e5c264f0a771bf25668526c1fe519e5e88cdd4b1f76693ffaeb  art/icons/gear/exports/128/armour-combat_gloves.png
 32882675c9b96404b35f336c28be56e0bed7c10d6a23ff24736ff115c881d2ca  art/icons/gear/exports/128/armour-field_boots.png
 e1e7e99b913fb1519a4611ba9e95ec836461509fb855c1bd6f893ac3b0e7d657  art/icons/gear/exports/128/armour-field_helmet--fine.png
+0a3c26c2d8a51b7c4f05bce6979854583706adfb39e48c75632438c9037edb3c  art/icons/gear/exports/128/armour-field_helmet--masterwork.png
 0e0549e6fc384287bf6367fd3be9bf7f188ce81cd895b9bfbecc9fb9052fb592  art/icons/gear/exports/128/armour-field_helmet.png
 ea679057093317edce546a59e11d282f21e914e751213e0402084eab9ce3da6a  art/icons/gear/exports/128/armour-gas_mask.png
 88c4b22682c34ad7def1ad5afc2baed74839e487fc6a2986e095791415b56cf6  art/icons/gear/exports/128/armour-heavy_boots.png
@@ -6580,6 +6583,7 @@ d00ccb5b8261ae1a55cb22d1b875b86bf9da75664a8df70db966371f00a78c6b  art/icons/gear
 4e0f5ea9b88da79aec5f7a0987fbca9b0b2e1234eafcf87479f7e2cb862c40ca  art/icons/gear/exports/256/armour-combat_gloves.png
 b4477adcb1ce25ed620561ca7fedd6adcfd00476b45fb41578e5d712acb5109e  art/icons/gear/exports/256/armour-field_boots.png
 834b07709b2d7caf2afe9b93c4b2108637a668a05871ce83daed2aa5ccc783f1  art/icons/gear/exports/256/armour-field_helmet--fine.png
+425c7bfb49b016c3050569709260853b96cb7e5d9ac69cc75e089760ad0f32d0  art/icons/gear/exports/256/armour-field_helmet--masterwork.png
 1be4d0f7df12b5ad6cab96ca9094458d4fcae8219215f0dc83b39f05e473c406  art/icons/gear/exports/256/armour-field_helmet.png
 edb14e46a0b4db9f5f604848b7270331e7c5e0ea370e6265d890b87491953a20  art/icons/gear/exports/256/armour-gas_mask.png
 935ef2ee67aa881186beba0c03396c8444dba53a007a7b2a0ee72c4c97eac226  art/icons/gear/exports/256/armour-heavy_boots.png
@@ -6806,6 +6810,7 @@ ac7b68c7387030334a8c0a6d56808934cce9d7279cbd34639af63da69cad732f  art/icons/gear
 023c424b2e6497438ff3de636ce4d5818a6ef2550aafe5fea3b1440cff6fd20a  art/icons/gear/exports/32/armour-combat_gloves.png
 48d7b6f7c17868f211eadf218c37614da5a5583ff125975e1c95cd0a57d7c4cc  art/icons/gear/exports/32/armour-field_boots.png
 bc2a7e237cea7d126a0ae14dcd78982871736ad2d6aea3b683967ab3f33116c5  art/icons/gear/exports/32/armour-field_helmet--fine.png
+c08076a412f49f7db5ac5200269c9dbcd5b9e8ec515ffca1f1daa4dc569c9630  art/icons/gear/exports/32/armour-field_helmet--masterwork.png
 a8f8bf8ec9f65c6ee81218607fa04f94ae0aa1bf2cf9d6a341c6d68b9d0b723c  art/icons/gear/exports/32/armour-field_helmet.png
 7d74c0381b4e18ddd980722c0763c6a84f2f346244f85ab5b06ea9656b275d2d  art/icons/gear/exports/32/armour-gas_mask.png
 010a116a0234bb017485504b6446f3c68e5e6aaf8fc47dee0889b35cca8e88f0  art/icons/gear/exports/32/armour-heavy_boots.png
@@ -7032,6 +7037,7 @@ c26d6c05f894b2949e94eb4abd60af0d2f1e7c0b6a712fdbcb5a72ff123cd7b7  art/icons/gear
 3cc977c0ae589b1c0a630a246988d8e5a419a8bee42b95a6a136ff4258baac6d  art/icons/gear/exports/64/armour-combat_gloves.png
 5cd45ceb947fb6bfa30022e6209c54f9af8ebab962f60fdaf4df89990d909aa9  art/icons/gear/exports/64/armour-field_boots.png
 4b3dd678a3d96fabdea1a951cb9dca30d94473cd1bd279468cb6c43eefe88d4c  art/icons/gear/exports/64/armour-field_helmet--fine.png
+9f36709b8ce33359067cb2675b3b3cc1e96f854d1d4ffb15cb8dd9c857a80f52  art/icons/gear/exports/64/armour-field_helmet--masterwork.png
 089993162bad5b14edd90dc65eeedf3045caafe407d5bf9c87fea33be35318e6  art/icons/gear/exports/64/armour-field_helmet.png
 bd810824fdad2a7f14fec085725d33902782986992a875de3f5efaef0f53c905  art/icons/gear/exports/64/armour-gas_mask.png
 3702018bf27796aef1d8ed966598319a8a6b004b50f393565a76816d61383604  art/icons/gear/exports/64/armour-heavy_boots.png
