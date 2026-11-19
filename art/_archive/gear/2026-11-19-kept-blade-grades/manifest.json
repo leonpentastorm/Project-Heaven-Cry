@@ -1912,6 +1912,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hand_wraps--relic",
+      "path": "art/icons/gear/weapon-hand_wraps--relic.png",
+      "sha256": "e438f18f6f6aafbf6b6b445637f11eeb271dcb7d6b4ab1b27c359851b4b9b6ac",
+      "label": "Hand Wraps — Relic",
+      "family": "weapon-hand_wraps",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hand_wraps--relic.png",
+        "sha256": "c29e0ed99414cdd4748e8287f66a0edb703bfbaae3156cff1945fb8c9ef3f716"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hand_wraps--relic.png",
+        "sha256": "e438f18f6f6aafbf6b6b445637f11eeb271dcb7d6b4ab1b27c359851b4b9b6ac"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hand_wraps--relic.txt",
+        "sha256": "6a6e8fc9afe8b823b6853f263f5e5f1b8db3240b7d215ceb3c3edf2438f41f12"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-hand_wraps.png",
+          "sha256": "275174226eca2cc49f2db8a64a0d553d4d591dc244b2b053fcab2dcd11fce994"
+        },
+        {
+          "path": "art/icons/gear/weapon-hand_wraps--masterwork.png",
+          "sha256": "12c9d7d375cb28fd13efaa025bc4649de50e583b260cc41f500ff6aae6e2875a"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hand_wraps--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-hand_wraps--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-hand_wraps--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-hand_wraps--relic.png"
+      },
+      "export_hashes": {
+        "256": "eff293278837d19847ca13d681116dca460347d3ccb730aad7e0cec0eff4aec5",
+        "128": "1a16f515e2fb44392ce6a6bd49060ba76be8d5b1b4064b1179f0bd9e2618079d",
+        "64": "a6720b0fbef09ee6488f2fc5460359e0216975bb0bc8f7caccad720861728084",
+        "32": "58080483b81a638bfaaf4bfbf7701a7d6269df873c5276fb4df188eda5285df4"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-hand_wraps",
+      "outline": {
+        "solid_alpha_iou": 0.977314954211311,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 25
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
