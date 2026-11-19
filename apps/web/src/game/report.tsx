@@ -11,6 +11,7 @@ import { isPriced, providerInfo } from '../narrator/providers';
 import { GAME_VERSION } from '../version';
 import { tipProps } from './actionTip';
 import { runReport } from './runReport';
+import { netReport } from './netStats';
 
 // ---------- open from anywhere (the screens' buttons) ----------
 let which: 'report' | 'spend' | null = null;
@@ -35,6 +36,7 @@ export function buildReport(what: string, withSave: boolean) {
     voice: { ...voiceState(), prefs: voicePrefs() }, rerollCopies: reportBefores(),
     game: withSave ? g : g && { code: g.code, v: g.v, phase: g.phase, players: g.players, scene: g.story?.scene, await: g.story?.await, work: g.story?.work, narrator: g.narrator, lastLines: g.story?.entries.slice(-12) },
     run: g?.run ? runReport(g as any) : undefined, // rules 1.47: a Survival room's run (seed, stages, fights' tallies, builds)
+    net: netReport(), // 0.33: the room link's delay, each action's parts (netStats.ts)
     narratorCalls: recentExchanges(), log: recentLogs(),
   };
   let json = JSON.stringify(report, null, 1);

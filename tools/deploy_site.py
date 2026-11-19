@@ -1,69 +1,67 @@
-"""Upload the built web game (apps/web/dist) to the Workers KV namespace the Worker serves it from.
+"""Deploy the game (0.33 on): one command. The site's files are Workers Static Assets, uploaded by `wrangler deploy`
+with the Worker and its room Durable Objects, so the site and the rooms always go live together and roll back together.
 
-Why KV and not Workers static assets: static-asset uploads use a short-lived upload token, which some proxies
-replace with the account token; KV writes use the account token itself. Only files whose content changed since
-the last deploy are uploaded (a manifest of hashes lives in KV under __manifest), which keeps a redeploy to a
-handful of writes (the free plan allows 1,000 KV writes a day).
+    python tools/deploy_site.py            check the build, then deploy (needs `npx wrangler login` once, or
+                                           CLOUDFLARE_API_TOKEN with Workers Scripts edit rights)
+    python tools/deploy_site.py --build    npm run build first
+    python tools/deploy_site.py --dry-run  check the build and let wrangler bundle it without uploading anything
 
-Usage: python3 tools/deploy_site.py   (needs network access to api.cloudflare.com with an API token that can
-edit Workers KV; set CLOUDFLARE_API_TOKEN unless a proxy injects it)
+What it checks before anything is sent (Cloudflare's limits for Workers Static Assets on the Workers Paid plan, read
+from developers.cloudflare.com/workers/platform/limits on 20 Nov 2026: 100,000 files a version, 25 MiB a file):
+apps/web/dist exists with index.html and the _headers file, has fewer files than the limit, and no file over 25 MiB.
+wrangler itself uploads only the files whose content changed since the live version.
+
+Before 0.33 this script uploaded the site to the KV namespace 03c97e375a064e49a506ee40c0717de3 by hand (a manifest
+of hashes under __manifest). That namespace is left as it is for one release: it is the 0.32 rollback (docs/HANDOFF.md,
+Deploy). Rooms (their saves and views) are in the Durable Objects, which a deploy never touches.
 """
-import base64, hashlib, json, mimetypes, os, pathlib, subprocess, sys, tempfile
+import pathlib, shutil, subprocess, sys
 
-ACCOUNT = "0ccc1209e3e871897b9ab6feeef79210"
-NAMESPACE = "03c97e375a064e49a506ee40c0717de3"
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 DIST = ROOT / "apps/web/dist"
-API = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT}/storage/kv/namespaces/{NAMESPACE}"
-TOKEN = os.environ.get("CLOUDFLARE_API_TOKEN")
-TYPES = {".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".html": "text/html; charset=utf-8", ".webp": "image/webp",
-         ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml", ".json": "application/json", ".ico": "image/x-icon"}
+SERVER = ROOT / "apps/server"
+MAX_FILES = 100_000          # Workers Paid plan (the Free plan: 20,000)
+MAX_FILE = 25 * 1024 * 1024  # 25 MiB, both plans
+WARN_FILE = 20 * 1024 * 1024 # say so when a file comes near the limit
 
-def curl(args, data=None, missing_ok=False):
-    cmd = ["curl", "-sS", "--fail-with-body"] + (["-H", "Authorization: Bearer " + TOKEN] if TOKEN else []) + args
-    if data is not None:
-        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".json") as f:
-            json.dump(data, f); name = f.name
-        cmd += ["-H", "Content-Type: application/json", "--data-binary", "@" + name]
-    out = subprocess.run(cmd, capture_output=True, text=True)
-    if out.returncode and missing_ok and "key not found" in out.stdout:
-        return "{}"
-    if out.returncode:
-        sys.exit("Cloudflare API error: " + out.stdout[:500] + out.stderr[:300])
-    return out.stdout
 
-def main():
-    if not (DIST / "index.html").exists():
-        sys.exit("Build first: npm run build")
-    try:
-        manifest = json.loads(curl([API + "/values/__manifest"], missing_ok=True) or "{}")
-        if "errors" in manifest: manifest = {}
-    except json.JSONDecodeError:
-        manifest = {}
-    files = {str(p.relative_to(DIST)).replace(os.sep, "/"): p for p in DIST.rglob("*") if p.is_file()}
-    new_manifest, todo = {}, []
-    for key, path in sorted(files.items()):
-        data = path.read_bytes()
-        h = hashlib.sha256(data).hexdigest()[:20]
-        new_manifest[key] = h
-        if manifest.get(key) != h:
-            todo.append({"key": key, "value": base64.b64encode(data).decode(), "base64": True,
-                         "metadata": {"ct": TYPES.get(path.suffix, mimetypes.guess_type(key)[0] or "application/octet-stream")}})
-    batch, size = [], 0
-    def flush():
-        nonlocal batch, size
-        if batch:
-            curl(["-X", "PUT", API + "/bulk"], batch); print(f"uploaded {len(batch)} files")
-        batch, size = [], 0
-    for item in todo:
-        if size + len(item["value"]) > 60_000_000 or len(batch) >= 5000: flush()
-        batch.append(item); size += len(item["value"])
-    flush()
-    stale = [k for k in manifest if k not in new_manifest and k != "__manifest"]
-    if stale:
-        curl(["-X", "POST", API + "/bulk/delete"], stale); print(f"removed {len(stale)} old files")
-    curl(["-X", "PUT", API + "/bulk"], [{"key": "__manifest", "value": json.dumps(new_manifest)}])
-    print(f"site: {len(todo)} changed, {len(files) - len(todo)} unchanged")
+def tool(name):
+    return shutil.which(name + ".cmd") or shutil.which(name) or name
+
+
+def check_dist(dist=DIST):
+    """The build is there and inside the limits. Returns (files, bytes, notes); exits with the reason if not."""
+    if not (dist / "index.html").exists():
+        sys.exit("No build: run `npm run build` first (or pass --build).")
+    if not (dist / "_headers").exists():
+        sys.exit("apps/web/dist/_headers is missing (it comes from apps/web/public/_headers): rebuild.")
+    files = [p for p in dist.rglob("*") if p.is_file()]
+    if len(files) > MAX_FILES:
+        sys.exit(f"{len(files)} files: over the {MAX_FILES} a Worker version may hold.")
+    sizes = [(p, p.stat().st_size) for p in files]
+    over = [f"{p.relative_to(dist).as_posix()} ({n / 1048576:.1f} MiB)" for p, n in sizes if n > MAX_FILE]
+    if over:
+        sys.exit("Over the 25 MiB a file may be: " + ", ".join(over))
+    notes = [f"{p.relative_to(dist).as_posix()} is {n / 1048576:.1f} MiB (the limit is 25 MiB)" for p, n in sizes if n > WARN_FILE]
+    return len(files), sum(n for _, n in sizes), notes
+
+
+def main(argv):
+    if "--build" in argv:
+        subprocess.run([tool("npm"), "run", "build"], cwd=ROOT, check=True)
+    n, size, notes = check_dist()
+    print(f"site: {n} files, {size / 1048576:.0f} MiB")
+    for w in notes:
+        print("note:", w)
+    dry = "--dry-run" in argv
+    cmd = [tool("npx"), "wrangler", "deploy"] + (["--dry-run", "--outdir", str(ROOT / ".check/deploy-dry")] if dry else [])
+    r = subprocess.run(cmd, cwd=SERVER)
+    if r.returncode:
+        sys.exit(r.returncode)
+    if not dry:
+        print("Deployed. Next: the backup branch (git branch backup/live-<version> main; git push origin backup/live-<version>)"
+              " and the smoke suites against the live site (docs/HANDOFF.md, Deploy).")
+
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

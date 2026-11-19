@@ -26,6 +26,7 @@ import { NarratorVoice } from './game/narratorVoice';
 import { onVoice } from './game/voice';
 import { poke } from './game/store';
 import { PlaytestTools } from './game/report';
+import { NetLine } from './game/NetLine';
 import { Tips } from './game/tips';
 import { StoryScroll } from './game/storyScroll';
 import { FxLayer } from './game/fx/FxLayer';
@@ -119,6 +120,7 @@ export function App() {
       {st.role && <ModeCentre game={st.game || null} screen={st.screen} />}
       {st.role && <MissionLayer game={st.game || null} screen={st.screen} />}
       <PlaytestTools />
+      {st.role && <NetLine game={st.game || null} role={st.role} />}
       <Tips />
       {/* The settings cog (every header's ⚙) and the in-game dialogs (never the browser's confirm/prompt/alert). */}
       <SettingsHost />
