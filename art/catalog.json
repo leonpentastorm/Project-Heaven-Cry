@@ -19126,6 +19126,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "shield-spiked_buckler": {
+      "label": "Spiked buckler",
+      "path": "art/icons/gear/shield-spiked_buckler.png",
+      "sha256": "cdb395c131f9003a42f4c412da035f3a2801a2c963033c4edf39d0f94a384fcf",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-spiked_buckler.png",
+        "128": "art/icons/gear/exports/128/shield-spiked_buckler.png",
+        "64": "art/icons/gear/exports/64/shield-spiked_buckler.png",
+        "32": "art/icons/gear/exports/32/shield-spiked_buckler.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-spiked_buckler.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+      "brief_number": 1,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

@@ -1168,6 +1168,60 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-spiked_buckler",
+      "path": "art/icons/gear/shield-spiked_buckler.png",
+      "sha256": "cdb395c131f9003a42f4c412da035f3a2801a2c963033c4edf39d0f94a384fcf",
+      "label": "Spiked buckler",
+      "family": "07-shields",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-spiked_buckler.png",
+        "sha256": "d5266a8b194d1b285c695b02b594484989848822cbb75320e7be8c196095583b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-spiked_buckler.png",
+        "sha256": "cdb395c131f9003a42f4c412da035f3a2801a2c963033c4edf39d0f94a384fcf"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/shield-spiked_buckler.txt",
+        "sha256": "9e27328432c166e94a1174f6d199846dc4e59219d89da80627b338981ddec356"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/shield-buckler.png",
+          "sha256": "1aeb92d2b419c48978476f314468c35639a89abe0732b5edf8cdbcc4d8510b9b"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-spiked_buckler.png",
+        "128": "art/icons/gear/exports/128/shield-spiked_buckler.png",
+        "64": "art/icons/gear/exports/64/shield-spiked_buckler.png",
+        "32": "art/icons/gear/exports/32/shield-spiked_buckler.png"
+      },
+      "export_hashes": {
+        "256": "7f2396c86d6ccfc45a06f349c1dd68ad7d3967db7b734b2f1a9f418d4c43a79d",
+        "128": "5f60bf6206b00591e170d08e68226a13528d2fce084614063467278f44b93285",
+        "64": "367d8d952fb9b987b1df1e166e168c9bf94258aef3f3fd8d50379626598e0283",
+        "32": "db35c9d5986dd791ee55ef37d69abfcf7d5bea9b9665ea654819bede66109185"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false,
+      "technical_note": "UI exports have a one-pixel transparent guard, matching existing gear pipeline. Pre-guard derivatives retained; native source/master unchanged."
     }
   ]
 }

@@ -137,7 +137,13 @@ def export(asset_id, source):
     for size in SIZES:
         path = target.parent / f'exports/{size}/{target.name}'
         path.parent.mkdir(parents=True, exist_ok=True)
-        image.resize((size, size), Image.Resampling.LANCZOS).save(path)
+        exported = image.resize((size, size), Image.Resampling.LANCZOS)
+        # A shield fills85% of the frame; Lanczos can reach the32px border.
+        # Match the existing gear delivery's one-pixel transparent UI guard.
+        alpha = exported.getchannel('A')
+        ImageDraw.Draw(alpha).rectangle((0, 0, size-1, size-1), outline=0, width=1)
+        exported.putalpha(alpha)
+        exported.save(path)
         exports[str(size)] = rel(path)
     asset = {
         'label': job['label'], 'path': rel(target), 'sha256': sha(target),
