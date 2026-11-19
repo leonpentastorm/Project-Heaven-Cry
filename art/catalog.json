@@ -19360,6 +19360,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "armour-blackout_hood": {
+      "label": "Blackout hood",
+      "path": "art/icons/gear/armour-blackout_hood.png",
+      "sha256": "b9c6cb8fe201b0d9e8dfb84a2b9059fae5501ef2b87c0f9fe863cf9b3571413c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-blackout_hood.png",
+        "128": "art/icons/gear/exports/128/armour-blackout_hood.png",
+        "64": "art/icons/gear/exports/64/armour-blackout_hood.png",
+        "32": "art/icons/gear/exports/32/armour-blackout_hood.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-blackout_hood.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+      "brief_number": 10,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

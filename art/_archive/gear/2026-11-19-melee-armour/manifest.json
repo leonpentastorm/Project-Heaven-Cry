@@ -1675,6 +1675,63 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-blackout_hood",
+      "path": "art/icons/gear/armour-blackout_hood.png",
+      "sha256": "b9c6cb8fe201b0d9e8dfb84a2b9059fae5501ef2b87c0f9fe863cf9b3571413c",
+      "label": "Blackout hood",
+      "family": "07-hood",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-blackout_hood.png",
+        "sha256": "31be0cab9ee0c770dea414d692a4cf5a9b258d48b26ba7745b86cef542a4ae99"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-blackout_hood.png",
+        "sha256": "b9c6cb8fe201b0d9e8dfb84a2b9059fae5501ef2b87c0f9fe863cf9b3571413c"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-blackout_hood.txt",
+        "sha256": "84c98f75ca902406ed731b932a357031c90a45a13860786d04019ed78d13cd88"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-gas_mask.png",
+          "sha256": "a633011fa2fed3defd33228d8dce7475d39060df9c779a1a9ebf0beab46ef98e"
+        },
+        {
+          "path": "art/icons/gear/armour-torso_class1_light.png",
+          "sha256": "993f7915c6be69db181495b5a8f185813e0ffa40a3e5deb9f5ad1fbd4ef5207f"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-blackout_hood.png",
+        "128": "art/icons/gear/exports/128/armour-blackout_hood.png",
+        "64": "art/icons/gear/exports/64/armour-blackout_hood.png",
+        "32": "art/icons/gear/exports/32/armour-blackout_hood.png"
+      },
+      "export_hashes": {
+        "256": "8dd0fbb15fde212b31de6dbde7d49773139763d864b6a76a5d30e91702cb8c3b",
+        "128": "4e17cbec12b6155e9e3a4700fa5394d5b4e99eb5b4c48fe80740f95a22f89140",
+        "64": "1b98420e9e6e380742b6c8a33f6ad1b5499b5424922facb6833e3cb29ea60cea",
+        "32": "1f6d4cb3bbb7de78c083a787cd8f082bad40884d803ce515cca2aad2b57b57d3"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
