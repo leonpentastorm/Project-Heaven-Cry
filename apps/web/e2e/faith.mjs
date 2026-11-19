@@ -61,7 +61,7 @@ ok('the gate marks are faith light (var(--faith-light) = #F2C46A)', await panel.
 ok('likes and taboos, in words with their marks', /✓ HEAL/.test(txt) && /✕ BETRAY/.test(txt));
 ok('7 Whispers (rules 1.21: Rebuke is the seventh), 3 Hymns, the Miracle', (await panel.locator('[data-prayer^="whisper:"]').count()) === 7 && (await panel.locator('[data-prayer^="hymn:"]').count()) === 3 && (await panel.locator('[data-prayer^="miracle:"]').count()) === 1);
 ok('a Hymn shows AP, gate and odds', /3 AP/.test(await panel.locator('[data-prayer^="hymn:"]').first().textContent()));
-ok('an overreach shows its TN and the cost in Devotion XP', /OVERREACH · TN \d+/.test(txt) && /Overreach: roll \d+ or lose 3 Devotion/.test(txt));
+ok('an overreach shows its roll and the cost in Devotion', /overreach, roll \d+/.test(txt) && /Overreach: roll \d+ or lose 3 Devotion/.test(txt));
 ok('the Miracle is disabled with its reason', /✕ A Miracle needs Faith 7/.test(await panel.locator('[data-prayer^="miracle:"]').textContent()));
 // A targeted Whisper opens the party chips, then Pray (the reducer answers once implementer 1's rules land).
 const wBtns = panel.locator('[data-prayer^="whisper:"]');

@@ -1,5 +1,5 @@
 <sc-if value="{{epOpen}}" hint-placeholder-val="{{false}}">
-<div role="dialog" aria-modal="true" aria-label="{{ep.title}}" style="position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; background: rgba(5, 7, 11, 0.86)">
+<div role="dialog" aria-modal="true" aria-label="{{ep.title}}" style="position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 12px; background: rgba(5, 7, 11, 0.86)">
 <article class="phc-ep-box" style="{{ep.boxStyle}}">
 <header class="phc-ep-headrow" style="display: flex; align-items: center; gap: 4px 14px; flex-wrap: wrap">
 <h2 style="{{ep.nameStyle}}">{{ep.name}}</h2><span class="phc-ep-line-tag" style="font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2"><button type="button" class="phc-ep-attr" onClick="{{ep.openAttr}}" aria-label="{{ep.attrLabel}}" style="{{ep.attrStyle}}">{{ep.attrName}}</button> · {{ep.slot}}</span><sc-if value="{{ep.feed.has}}" hint-placeholder-val="{{false}}"><span class="phc-ep-feed" style="{{ep.feed.style}}">{{ep.feed.text}}</span></sc-if>
@@ -10,7 +10,7 @@
 <button type="button" onClick="{{ep.zoom}}" aria-label="Enlarge {{ep.pictured}}" style="{{zoomBtn}}"><img src="{{ep.img}}" alt="{{ep.alt}}" style="display: block; width: 150px; height: 188px; object-fit: cover; border-radius: 10px; background: #000; border: 1px solid #232D3F"></button>
 <figcaption style="font-size: var(--fs-sub); line-height: 1.35; color: #A3AEC2">{{ep.pictured}}</figcaption>
 </figure>
-<div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<div style="flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 6px">
 <blockquote class="phc-ep-quote" style="{{ep.quoteStyle}}">
 <sc-for list="{{ep.quote}}" as="q" hint-placeholder-count="2"><p style="{{q.style}}">{{q.text}}</p></sc-for>
 <footer style="font-size: var(--fs-sub); color: #A3AEC2">{{ep.speaker}}</footer>

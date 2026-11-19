@@ -263,11 +263,12 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     const th = chips.find((c) => c.id === 'call.threaten');
     ok(at + 'Threaten is 1 AP at 5 points and shows its save: ' + th.meta + ' · ' + th.save, /^1 AP/.test(th.meta) && /^Heart save, TN \d+$/.test(th.save));
     await panel().locator('button[data-call="call.threaten"]').click(); await settle(p, 300);
-    // Rules 1.65: the one pick overlay draws the reach as a tile layer and says it in the tile's name ("in reach", or
-    // "you can pick" for a choice); every tile the engine's preview sent is marked, and no other.
+    // Rules 1.65: the one pick overlay draws the reach as a tile layer (a reach tile its dashed edge, a choice its solid
+    // one; the wording pass took the words "in reach" off the tiles' names); every tile the engine's preview sent is
+    // marked, and no other.
     const reach = await p.evaluate(() => {
       const pk = window.__phc.pick || { reach: [], choice: [] }, want = new Set([...pk.reach, ...pk.choice]);
-      const marked = [...document.querySelectorAll('button.phc-tok')].filter((b) => /in reach|you can pick/.test(b.getAttribute('aria-label') || '')).map((b) => (b.getAttribute('aria-label') || '').split(' ')[0]);
+      const marked = [...document.querySelectorAll('button.phc-tok')].filter((b) => [...b.querySelectorAll('span[aria-hidden="true"]')].some((s) => { const cs = getComputedStyle(s); return (cs.outlineStyle === 'dashed' && cs.outlineWidth === '1px') || (cs.outlineStyle === 'solid' && cs.outlineWidth === '2px'); })).map((b) => (b.getAttribute('aria-label') || '').split(' ')[0]);
       return { n: marked.length, want: want.size };
     });
     ok(at + 'the grid shows the Call\'s reach (' + reach.n + ' tiles marked, the engine sent ' + reach.want + ')', reach.n > 20 && reach.n === reach.want);

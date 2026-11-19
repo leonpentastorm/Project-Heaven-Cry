@@ -186,6 +186,7 @@ export class LevelUpLogic extends DCLogic {
       ...D.skills.flatMap((s) => forkPend(s.id).map((f) => ({ key: 'fork:' + s.id + ':' + f.at, kind: 'fork', skill: s.id, at: f.at, text: 'Fork · ' + s.name }))),
       ...pendingPerkSteps(c).map((x) => ({ key: 'perk:' + x.skill, kind: 'perk', skill: x.skill, text: (x.free > 1 ? x.free + ' perk steps' : 'Perk step') + ' · ' + nameOf(x.skill) })),
     ];
+    if (this.state.chooser && !queue.some((q) => q.key === this.state.chooser)) queueMicrotask(() => this.setState({ chooser: null, armPerk: null }));
     const cur = queue.find((q) => q.key === this.state.chooser) || null, openCh = (key) => this.setState({ chooser: key, armPerk: null });
     const toChoose = queue.map((q) => ({ key: q.key, kind: q.kind, text: q.text, open: () => openCh(q.key), expanded: cur && cur.key === q.key ? 'true' : 'false',
       style: 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; white-space: nowrap; border: 1px solid #FFFFFF; '
@@ -213,16 +214,14 @@ export class LevelUpLogic extends DCLogic {
       ch.forkOpts = fk && fk.steps[0] ? fk.steps[0].opts.map((o) => ({ ...o, cost: '', hasCost: false })) : [];
     }
     const left = c.unspent.skill, attrLeft = c.unspent.attr;
-    const owed = pendingPerkSteps(c).reduce((n, x) => n + (x.free || 1), 0); // steps owed, not skills (a 2→5 jump owes two)
-    const forksOwed = D.skills.reduce((n, s) => n + forkPend(s.id).length, 0);
     const allDone = queue.length === 0; // Done is lit when the strip is empty (unspent points keep)
     const budgetChip = (n, word, ink) => ({ key: word, text: n + ' ' + word, style: 'padding: 4px 12px; border-radius: 999px; font-size: var(--fs-body); font-weight: 700; white-space: nowrap; border: 1px solid ' + (n ? '#FFFFFF' : '#2E3A50') + '; color: ' + (n ? '#FFFFFF' : ink) });
     return {
       ...epccgVals(this, (id) => c.skills[id] || 0, c, { noNarrator: !!g.run }), ...lightboxVals(this), zoomPc: zoomer(this, c.portrait, c.name, 'portrait'), pc: c.portrait, name: c.name,
       kicker: c.xp.toLocaleString() + ' XP', title: 'LEVEL ' + c.level, hpChip: 'MAX HP ' + maxHp(c),
       // the header is the budget, always in view: what is left to spend (the rules behind its "?")
-      budget: [budgetChip(left, 'Skill', '#7F8BA1'), budgetChip(attrLeft, 'Attribute', '#7F8BA1'), budgetChip(owed, owed === 1 ? 'Perk step' : 'Perk steps', '#7F8BA1'),
-        ...(forksOwed ? [budgetChip(forksOwed, forksOwed === 1 ? 'Fork' : 'Forks', '#7F8BA1')] : [])],
+      // points to spend; the perk steps and forks are the TO CHOOSE strip's chips (said once)
+      budget: [budgetChip(left, 'Skill', '#7F8BA1'), budgetChip(attrLeft, 'Attribute', '#7F8BA1')],
       spend: [left ? left + ' Skill point' + (left > 1 ? 's' : '') : '', attrLeft ? attrLeft + ' Attribute point' + (attrLeft > 1 ? 's' : '') : ''].filter(Boolean).join(' · ') || 'Nothing to spend',
       choosing, classCards, pick, cls,
       famTabs, tree, toChoose, hasToChoose: toChoose.length > 0, ch,

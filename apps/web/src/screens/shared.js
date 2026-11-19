@@ -414,7 +414,7 @@ export function epccgVals(self, ptsOf, who, opt) {
       chips: c.skills.map((k, i) => ({ plus: i > 0, label: k.name + ' ' + k.min,
         style: 'padding: 2px 10px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; white-space: nowrap; border: 1px solid ' + k.ink + '; color: ' + k.ink + (k.id === s.id ? '; background: ' + epRgba(k.ink, 0.16) : '') })) })),
     forks, hasForks: forks.length > 0,
-    boxStyle: 'width: min(1200px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; padding: 16px 22px; border-radius: 16px; background: #10151F; border: 1px solid #232D3F; border-top: 4px solid ' + ink,
+    boxStyle: 'width: min(1200px, 100%); max-height: calc(100vh - 24px); overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; padding: 12px 22px; border-radius: 16px; background: #10151F; border: 1px solid #232D3F; border-top: 4px solid ' + ink,
     nameStyle: "margin: 0; font-family: 'Spectral', serif; font-size: 30px; font-weight: 600; line-height: 1.1; color: " + ink,
     quoteStyle: 'margin: 0; display: flex; flex-direction: column; gap: 6px; padding: 2px 0 2px 16px; border-left: 3px solid ' + ink,
   } };

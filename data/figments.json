@@ -81,6 +81,7 @@
       "actions": ["move"], "verbs": ["figment_stare", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-eye", "glyph": "◉",
+      "short": "Flying eye: {=hp} HP · sees {=vision} tiles, in the dark, for your side · Stare keeps a foe seen",
       "text": "A floating eye: {=hp} HP, Defense {=defense}, {=movement} tiles an AP, flying. It sees {=vision} tiles, in the dark too, for your whole side. Stare: one unit it sees stays seen by your side until your next turn, Hidden or not.",
       "adjudication": "engine", "provisional": true
     },
@@ -91,6 +92,7 @@
       "actions": ["move"], "verbs": ["figment_press", "figment_redraw", "figment_cash_in", "let_go"], "effects": [{ "op": "immunity", "to": "knockback" }],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-wall", "glyph": "▮",
+      "short": "Movable full cover: {=hp} HP, armour {=armour} · blocks moves and sight · Press shoves a foe",
       "text": "Movable cover: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tile an AP. Full cover; it blocks movement and sight for both sides and nothing pushes it. Press: it shoves an enemy next to it away.",
       "adjudication": "engine", "provisional": true
     },
@@ -101,6 +103,7 @@
       "actions": ["move"], "verbs": ["figment_strike", "figment_pounce", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-beast", "glyph": "◆",
+      "short": "Fast striker: {=hp} HP, {=movement} tiles an AP · Pounce: a run and a strike that can knock Prone",
       "text": "A fast striker: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tiles an AP. Strike is a melee attack with its claws; Pounce runs a short straight line and strikes, and a hit knocks the target Prone unless it passes a Body save.",
       "adjudication": "engine", "provisional": true
     },
@@ -111,6 +114,7 @@
       "actions": ["move"], "verbs": ["figment_cut", "figment_redraw", "figment_cash_in", "let_go"], "hold": { "reaction": "attack" },
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-blade", "glyph": "✦",
+      "short": "Floating blade: {=hp} HP · Cuts a foe beside it · Hold: Cuts the first foe a round to pass it",
       "text": "A floating blade: {=hp} HP, Defense {=defense}, {=movement} tiles an AP. Cut strikes an enemy next to it. Hold: the first enemy each round to enter or leave a tile next to it is Cut, and that spends one of your reactions.",
       "adjudication": "engine", "provisional": true
     },
@@ -137,6 +141,7 @@
       "actions": ["move"], "verbs": ["figment_interpose", "figment_redraw", "figment_cash_in", "let_go"],
       "effects": [{ "op": "redirect", "when": "taking", "share": 0.5, "if": { "target": "ally", "target_within": 1, "by_hit": true }, "limit": { "per": "per_round", "n": 1 } }],
       "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-ward", "glyph": "⛉",
+      "short": "Bodyguard: {=hp} HP · takes {=effects.0.share|pct}% of the first hit a round on an ally beside it",
       "text": "A bodyguard: {=hp} HP, Defense {=defense}, armour {=armour}, {=movement} tiles an AP. The first hit each round on an ally next to it lands {=effects.0.share|pct}% of it on the Ward. Interpose: it steps to a free tile next to an ally.", "adjudication": "engine", "provisional": true
     },
     {
@@ -145,6 +150,7 @@
       "hp": 20, "defense": "owner", "armour": 0, "attack_bonus": 0, "movement": "owner", "weapon": "fists",
       "actions": ["move"], "verbs": ["figment_burst", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-husk", "glyph": "◌",
+      "short": "A hollow second you: {=hp} HP · lures like a Double · Bursts on everyone beside it",
       "text": "A hollow second you: {=hp} HP, your Defense, your pace. It lures as a Double does. Burst: it bursts on everyone next to it, both sides, and is gone (no charge back, no Snap).", "adjudication": "engine", "provisional": true
     },
     {
@@ -155,6 +161,7 @@
       "actions": ["move"], "verbs": ["figment_fix", "figment_redraw", "figment_cash_in", "let_go"],
       "auto": { "verb": "figment_fix", "target": "nearest_foe" },
       "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-sentinel", "glyph": "⌖",
+      "short": "Mana turret: {=hp} HP, armour {=armour}, sees {=vision} tiles · Fixes the nearest foe each turn",
       "text": "A turret of mana: {=hp} HP, Defense {=defense}, armour {=armour}; it does not walk. It sees {=vision} tiles. At each of your turn starts it Fixes the nearest enemy on your AP; Fix: its shot now, at an enemy it sees.", "adjudication": "engine", "provisional": true
     }
   ],

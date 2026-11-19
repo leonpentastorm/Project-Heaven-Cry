@@ -207,8 +207,10 @@ describe('level-up screen', () => {
     const { el, root } = await mount();
     expect(el.querySelector('button[data-raise="core"]')).toBeNull();
     expect(el.textContent).not.toMatch(/Core point|its Core|Core points|\d Core\b/);
-    const owed = pendingPerkSteps(G.characters[c0.id]).reduce((n, x: any) => n + (x.free || 1), 0);
-    expect([...el.querySelectorAll('.phc-lu-budget [data-budget]')].map((x) => x.textContent).slice(0, 3)).toEqual(['1 Skill', '1 Attribute', owed + (owed === 1 ? ' Perk step' : ' Perk steps')]);
+    // the budget is the points; the perk steps waiting are the strip's chips, said once (one chip a skill, its count on it)
+    expect([...el.querySelectorAll('.phc-lu-budget [data-budget]')].map((x) => x.textContent)).toEqual(['1 Skill', '1 Attribute']);
+    const owed = pendingPerkSteps(G.characters[c0.id]);
+    expect([...el.querySelectorAll('.phc-lu-tc[data-kind="perk"]')].map((x) => x.textContent)).toEqual(owed.map((x: any) => '◆ ' + (x.free > 1 ? x.free + ' perk steps' : 'Perk step') + ' · ' + (SKILL as any)[x.skill].name));
     expect(el.querySelector('.phc-lu-ceiling')!.textContent).toBe('Attributes: ceiling 8 at this level (9 from level 6, 10 from level 9)');
     expect(el.querySelector('.phc-lu-rules')!.getAttribute('data-tip-text')).toMatch(/can't be higher than the attribute above it/);
     // every attribute: what the next point gives
