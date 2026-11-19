@@ -66,7 +66,6 @@ describe('P2: the resource predicate\'s at: "limit" (rules 1.70 item 5543)', () 
 });
 
 // ---------------------------------------------------------------------------------------------- P4, P5
-import { resolveAttack as hit } from '../src';
 import { physFight, rig } from './helpers/physfight';
 import { loseReactions } from '../src/tactics';
 
@@ -103,10 +102,12 @@ describe('P5: react()\'s refusals read before Parry rolls (rules 1.70 item 5546)
     f.cb.objects = []; f.put(f.pcs[0], 'C5'); const a = f.cb.units.find((u) => u.side === 'foe')!; f.put(a, 'D5'); a.hp = a.maxHp = 900; a.attack = 60;
     const t = f.unit(f.pcs[0].id); t.hp = t.maxHp; t.armour = 0;
     (f.char(f.pcs[0]) as any).phys.answers = ['parry'];
-    f.cb.round = 1; f.turn(a);
+    // the blow is the foe's own, in its turn: the reducer's combat/end-turn hands the turn to the enemy AI (m8, the real path)
+    f.cb.order = [t.id, a.id]; f.cb.round = 1; f.turn(t);
     withGame(f.g, () => loseReactions(f.cb, f.unit(t.id), 1)); // one of its two spent: the last is the held shot's when it holds one
     if (held) f.unit(t.id).overwatch = 'melee' as any;
-    rig({ hit: true, die: 12 }); f.bound(() => hit(f.cb, f.g.rng, f.unit(a.id), f.unit(t.id), 'melee', null, { noAp: true })); rig(null);
+    rig({ hit: true, die: 12 }); f.act({ type: 'combat/end-turn', unitId: t.id } as any); rig(null);
+    expect(f.cb.log.some((l: string) => l.startsWith(a.name + ' ') && /: d20 /.test(l)), 'the foe swung in its own turn').toBe(true);
     return f.cb.log.filter((l: string) => / parries/.test(l)).length;
   }
   it('with its last reaction free, the Parry is rolled', () => { expect(blowOn(false)).toBe(1); });
