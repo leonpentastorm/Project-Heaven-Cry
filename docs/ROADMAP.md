@@ -158,7 +158,7 @@ Tests only (`packages/engine/test/balance/`): no engine source, no data, no game
 
 ### Enemy AI (`wip/0.32-ai`; hand-off `docs/design/handoffs/0.32-ENEMY-AI.md`; spec rules 1.79, items 6700 to 6714)
 
-- **The side's memory past the round (spec 4969 a).** Built and OFF (`rules.json combat.focus_memory.carry` 0): any carry from 0.25 moves the defence-measure guard (the idle pair's first Down 4.2 rounds at most; measured 5). The lead to rule: refit the guard, or keep it off. [S] [built, off; 19 Nov 2026] [rules 1.79 item 6703]
+- **The side's memory past the round (spec 4969 a).** Built and OFF (`rules.json combat.focus_memory.carry` 0): any carry from 0.25 moves the defence-measure guard (the idle pair's first Down 4.2 rounds at most; measured 5). Waiting on Leon 24 (lead's pick: off). [S] [built, off; 19 Nov 2026] [rules 1.79 item 6703]
 - **The Read does not foresee the Pressure moves.** The intent (Trickster's Read, `enemyIntent`) still names the attack a Broken or Suppressed enemy would make, not its cover move. [S] [not built] [rules 1.79]
 - **The bait reads Overwatch and held lanes only,** not a Retort or other Answer (no AI reads Answers before acting). [M] [not built] [rules 1.79 item 6709]
 - **Enemy door verbs:** Slam, Challenge, Retort, Last Plate, Tag, Ghost Kill, Stalk, Tug, Snap, a Figment order, prayers. Blocked: see the needs-a-primitive list. [L] [not built] [rules 1.79 item 6711]
@@ -179,7 +179,7 @@ Tests only (`packages/engine/test/balance/`): no engine source, no data, no game
 - **Pray from holy ground** (prayer-2.0 item 17): needs the seat (P3) on a `hallowed` zone. [M] [not built] [spec 6607]
 - **NULL on a Figment, the enemy's weighing** (figments-spec section 8: charge x 4); the unmaking is built. [S] [not built] [spec 6602]
 - **Breaching Strike onto Into the Wall's row** (its per-perk code retired; moves the golden tables, so a re-record on purpose). [S] [open] [spec 6605]
-- **Stand Behind Me:** two written designs disagree (Guard 2.0 item 9 against the three-layers Bulwark III ceiling); the lead rules first. [S] [needs a ruling] [spec 6611]
+- **Stand Behind Me:** two written designs disagree (Guard 2.0 item 9 against the three-layers Bulwark III ceiling): Waiting on Leon 23 (lead's pick: the second, as the Bulwark's rank III move). [S] [needs a ruling] [spec 6611]
 - **Hallow and Into the Wall icons** (ART-REQUESTS 0g) and the hallowed ground's own look on the map (drawn as any data zone today). [S] [open] [spec 6605, 6607]
 
 #### Built in 0.32 (not yet live)
@@ -192,19 +192,19 @@ Tests only (`packages/engine/test/balance/`): no engine source, no data, no game
 - **Hallow** (the Chaplain's hallowed ground; zone kinds are data). `7f20b1261`, spec 6607.
 - **What rides on a hit on the attack card** ("On a hit: Smite, Judged"). `6f6f796d8`, spec 6608.
 - **A door's passive steps on the skill page** (the Tending pictures placed). `5a1f6b50d`, spec 6609.
-- **The Open Hand's stance picture on the token card's standing line** (each to-hit term names its item; the picture by catalog `data_ids`). Integration, spec 6613.
+- **The Open Hand's stance picture on the token card's standing line** (each to-hit term names its item; the picture by catalog `data_ids`). `dac6f60a6`, spec 6613.
 
 ### 0.32: needs a primitive (ruled by the lead 19 Nov 2026; built by the engine-pieces lane, `docs/design/handoffs/0.32-ENGINE-PIECES.md`, rules 1.77)
 
 What is left of the list (the built ones are under "Built in 0.32" below):
 
-- **A per-unit surprise in the approach** (Tremor I, Shoot First I/II stay Narrator-only). The per-unit sit-out exists (`Unit.waitRound`); no rule makes a character Surprised when ambushed: a balance rule, designed in the report, not built. [M] [open; checked in code 19 Nov 2026] [rules 1.77 item 6517 c]
+- **A per-unit surprise in the approach** (Tremor I, Shoot First I/II stay Narrator-only). The per-unit sit-out exists (`Unit.waitRound`); no rule makes a character Surprised when ambushed: a balance rule, designed in the report, not built: Waiting on Leon 22. [M] [open; checked in code 19 Nov 2026] [rules 1.77 item 6517 c]
 - **An action gated by a held item** (Field Repair as Improvisation's fourth perk): see the Mind owed item above. [M] [open] [rules 1.77 item 6517 b]
 - **A class-only multiplier** (the Figments door 119 and the Rigger 123 against 130 and 150). Not in the lead's ruling list. [gaps report; Balance 2.0]
 - **Not approved, left as they are:** a story `acted` (Index II across story and fight), bare fists in the glove family and a thrown Relic property (Items 2.0). [rules 1.77 item 6516]
 - **P14, the object op's `hurl`** (lift a loose object or a held small foe next to you and throw it at a second tile: an action with two tile picks; the objects' `loose` field), for Hurl; Grenadier's Arm's per-perk throw would move onto it. [M] [open] [leftovers, spec 6606]
 - **The seat (P3) on a zone** (praying from holy ground, Hallow). [M] [open] [leftovers, spec 6607]
-- **An enemy step that weighs a held item action** by a want in its data (one general step for every door verb: Slam, Challenge, Retort, Tag, Ghost Kill, Tug, Snap, a Figment order). An enemy can hold the items (`u.held`); no AI step runs them. [Enemy AI, rules 1.79 item 6711]
+- **An enemy step that weighs a held item action** by a want in its data (one general step for every door verb: Slam, Challenge, Retort, Tag, Ghost Kill, Tug, Snap, a Figment order), run through the player's action path (`runPerkAction`). APPROVED by the lead (0.32 integration); not built: the only Guard-holding row (the Heartfire elite, Durability 3) is below Slam's gate (Durability 5), so giving it Slam needs a number changed first (a balance call), and holding `skill:durability.1` also gives its melee roll with Durability, a second behaviour. An `enemyStep` registration (as `physical/ai.ts`) plus a row field is the shape. [M] [approved, open] [Enemy AI, rules 1.79 item 6711]
 - **A faith block on an enemy row** (patron and Devotion), so `faith.ts` can let an enemy pray a Whisper. [Enemy AI, 6711]
 
 #### Built in 0.32 (not yet live; the engine-pieces lane, rules 1.77 items 6500-6515)
@@ -318,7 +318,10 @@ Direct questions. Where the lead gave a recommendation, it is built as stated un
 18. **Leftover branches and folders.** May I delete `phc-figments2` (`design/figments-2`) and the ~25 non-git leftover folders? [TAKEOVER State]
 19. **Athletics "Defense from 1".** Not built: it moves the enemy yardstick (`test/balance/step1-fit`). Build it and refit the yardstick, or drop it? [0.32-LANE-BODY.md]
 20. **The quad Bulwark.** Its stage-1 clears fell 10 to 4 of 40 (Reactive Plate and Last Plate gone; the solo Bulwark 22 to 24). Accept, or give the Bulwark something back? [0.32-LANE-BODY.md]
-21. **Silent and the reveal on attack** (rules 1.77 item 6517 a): your later word (acting from Hidden gives your tile away while you stay Hidden; a Silent attack does not) against the rules still standing: the body's "any attack reveals you unless the weapon is silent", the Break's reveal at the action's end (item 1953), Vanish II's roll when an attack reveals you, Parting Cut's re-hide, the Silent module. Which of them change? [open; from the engine-pieces lane 19 Nov 2026]
+21. **Silent against the standing rules** (rules 1.77 item 6517 a). The lead ruled your later word: a silent attack from Hidden keeps your tile unknown (acting from Hidden gives your tile away while you stay Hidden; a Silent attack does not). That clashes with rules still standing: the Break's reveal at the action's end (item 1953), Vanish II's roll when an attack reveals you, Parting Cut's re-hide and the Silent Outburst module (and the body's "any attack reveals you unless the weapon is silent"). Which rule stands? The lead gives no pick: the two are your words against standing rules. Not built until you answer. [open; engine-pieces lane 19 Nov 2026]
+22. **Surprise.** When a fight is joined against a squad that saw no attacker, do those characters lose their first turn (the design in `docs/design/handoffs/0.32-ENGINE-PIECES.md` item 16: `waitRound` from a `rules.json combat.surprise` flag at `joinFight`; Tremor I answers it, Shoot First keeps 3 or 4 AP)? Lead's pick: yes, for both sides, built behind a data flag (not built yet). [rules 1.77 item 6517 c]
+23. **Stand Behind Me.** Two written designs disagree: half cover for allies behind a Braced or Walled Bulwark (Guard 2.0 item 9; needs a condition row that gives cover), or a ranged attack on the ally directly behind you lands on your plates (the three-layers draft's Bulwark rank III ceiling). Which? Lead's pick: the second, as the Bulwark's rank III move. [rules 1.78 item 6611]
+24. **Enemy fire memory carried into the next round** (rules 1.79 item 6703; `rules.json combat.focus_memory.carry`, built and off): any carry from 0.25 fails the idle-pair bound in `test/balance/defence-measure` (first Down at round 5 against 4.2). Keep it off? Lead's pick: off.
 
 Answered on 19 Nov (verification file): carry weight (nothing changes); camp budget (stays 300); ceilings (a relative measure, not a hard line, so "all-in 7/1/1 builds sit over every ceiling" is not a fault by itself); Operative and Sigilist 0 of 40 (the bot's policy).
 
