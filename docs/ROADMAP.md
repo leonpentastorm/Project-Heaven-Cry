@@ -138,6 +138,17 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **m10** dead code and module-private helpers. `0f4e9523a`.
 - **The Emanator stowed** says so on the Strain row (Step 3e). `079f78e2f`.
 
+### Simulator (`wip/0.32-sim`; results and commands `docs/design/handoffs/0.32-MEASURES.md`)
+
+Tests only (`packages/engine/test/balance/`): no engine source, no data, no game number changed.
+
+#### Built in 0.32 (not yet live)
+
+- **The Sigilist's run policy** (`run-policies.ts sigilRun`): no step beside a blade (the pistol, Clean Vent first); small game shot, not drawn for; the Line as long as the target needs and the turn pays; the core swapped before a Line; Overclock when Max Sigil words is under four; the opt-in `noCover` Line placement in `policies.ts sigil` (off for the contract). [the simulator lane's commit]
+- **The Operative's policy** (`door-policies.ts operative`): Shadow built to two before a Break (a Break that drops a foe at once), Tag, Stalk, Fade, a better unseen angle, the gun when it can't hide. [the simulator lane's commit]
+- **The doors' 0.32 picks as data** (`door-builds.ts DOOR_PICKS`: forks at 4 and 8, the four-perk betas and gammas; the Mender buys Pull Together for Tug); Grapple and Throw Down (Breaker), Flush Out (Skirmisher), Shield (Mender), Name the Sinner and the sparing Chaplain. [the simulator lane's commit]
+- **New builds and measures:** the Operative with the rack's rifle, revolver, and knife and pistol; the sparing Chaplain; the two-shield wall at ranks I to III, Drive, the follow strike and Afterword, the beta feeds, guns with mods fitted (`measures-032.ts`); the Reflex rush (`defence-measure.ts`); the Beast at level 1 and the Figment forks (`figments-measure.test.ts FIG_032`); the Shadow window in turns and HP removed a character-turn (`party-fit.ts`); `PF_TRACE=1` turn logs. [the simulator lane's commit]
+
 ### 0.32: needs a primitive (lead to rule)
 
 One line each, with the rule that needs it. Nothing here is built; each waits for the lead's approval after a look at `docs/ENGINE-HOOKS.md`.
@@ -187,19 +198,19 @@ One line each, with the rule that needs it. Nothing here is built; each waits fo
 ### Fun and balance pass
 
 - **Solo sustain and the tank's camp kit.** The tank kit clears 7 of 20 (Hand wraps, buckler), the mixed squad 8 of 20 in the simulator; gunner, tank and Mender starve solo. Fit it (camp budget stays 300, ruled 19 Nov). [M] [open; from documents only] [SESSION-TODO D, Q2g; TRIAGE]
-- **Simulator bot policy for the Operative and Sigilist.** Their all-in builds clear stage 1 on 0 of 40 seeds. Leon ruled 19 Nov: this is the bot's policy, not the class (Leon and a friend tested the Sigilist: about Outburst level). Fix the bot; change no class number because of it. [M] [open; checked in code 19 Nov 2026] [verification: Leon's rulings]
-- **Simulator builds missing.** The knife-and-pistol build and a sparing Chaplain (A3). [S] [not built; checked in code 19 Nov 2026] [CHANGELOG 0.31.6; verification]
+- **Simulator bot policy for the Operative and Sigilist.** Rebuilt in the simulator lane (`0.32-MEASURES.md`): Sigilist 0 → 2 solo, 0 → 3 quad; Operative still 0 / 0 (3 solo with the rack's rifle). Owed: the Sigilist's Line from cover and a stand-off under Suppress (bot); the Operative's to-hit at Dexterity 0 is a ruling (Shadow gives no to-hit but Tag's +1). [M] [partly; measured 19 Nov 2026] [0.32-MEASURES.md section 4]
+- **Name the Sinner as played costs the solo Chaplain** (15 → 11 of 40, Elites and Bosses only; 5 when it named every nearest foe): a better rule for when to name. [S] [open; measured 19 Nov 2026] [0.32-MEASURES.md]
+- **Reflex, the follow strike's −2 and the feeds' 0.01 measure nothing** (identical with each at 0): check that the off switch reaches each, or that Reflex fires at all. [S] [open; measured 19 Nov 2026] [0.32-MEASURES.md]
 - **Ceilings with mods fitted.** Guns reach 162-195% against the 145% line. Leon ruled 19 Nov: ceilings are a relative measure of the effort a class puts in and the fun it gives back, not a hard line; fit with that in mind. [M] [open; from documents only] [SESSION-TODO D; 0.29.0 known]
 - **Class lines.** Figments door 119 and Rigger 123 against 130 and 150 (needs a class-only multiplier primitive); Skirmisher 159 against 145; Hymn 138 against 150; the healer stall at level 20. [M] [open; from documents only] [START-HERE Balance 2.0 4]
-- **Reflex.** A measure tool exists (`defence-measure.ts reflexRow`); no fitted result. [S] [partly; checked in code 19 Nov 2026] [verification]
 - **The Dexterity melee line as a whole.** Sabre and katana are over 165% all-in at level 10. [S-M] [open; from documents only] [spec 5527]
 - **Shape's free Pump** stays at +0.12 until the Outburst peak band is refitted. [S-M] [open; from documents only] [SESSION-TODO V]
-- **0.30's PROVISIONAL numbers never fitted.** Two shields' doubled Guard (measured at rank I only); the Bulwark's pool by rank (II and III); the follow strike's -2; Afterword; the feeds' 0.01; Drive's -2 and plate-back. [M] [open; checked in code 19 Nov 2026] [CHANGELOG 0.30.0; verification]
+- **0.30's PROVISIONAL numbers never fitted.** Now measured (`0.32-MEASURES.md`, `measures-032.ts`): two shields at ranks I to III, Drive's −2 and plate-back, the follow strike's −2, Afterword, the feeds' 0.01. Owed: the fit. [M] [measured, not fitted; 19 Nov 2026] [CHANGELOG 0.30.0]
 - **Balance 2.0 leftovers.** The rifle contract holds 4 guns plus greatsword and sabre (guns-measure covers all guns separately); the repair rate of 10% is nearly free; the XP and stage fit is PROVISIONAL because the simulator never makes or sells materials; level 3 before the first Boss on only 42% of routes. [L] [open; checked in code 19 Nov 2026] [START-HERE; SURVIVAL-PICKUP; verification]
 
 ### End of release
 
-- **Measures against the baseline.** The nine doors' stage-1 clears, solo and in four; Outburst steady and peak; the Figment ceiling; the Breaker blade line (182% against about 145); Shadow's window. [L] [open; from documents only] [proposals 2.10]
+- **Measures against the baseline.** Done on `wip/0.32-sim` before the fit (`docs/design/handoffs/0.32-MEASURES.md`); re-run after the fit. [L] [partly; 19 Nov 2026] [proposals 2.10]
 - **Consolidation pass** over everything added since 0.29 (rule 4); leftovers still in code from waves 2 and 3 include `COUNTED_ORDER` (containers.ts) and `_OWNER_USE_TYPES` (validate.py); wave 3 SHOULD-FIX items not yet checked one by one. Report in `docs/design/proposals/`. [L] [open; from documents only] [wave2-rulings; wave3]
 - **Whole-game screenshot pass.** `capture-skills` covers only the skill pages; camp, path map, node kinds, rewards, fight tabs, victory, field, summary and settings were never read at 1600x900 (the `capture-all` draft was removed, `13cfaad7e`). Covers what nobody has seen in a browser: the field kit's Treat buttons, plate chips, shop icons, banners in motion, the field's three rounds, the status strip's group marks, the place card with its picture, the approach line in real play, the vault-chest reward, the mana forecast over the map. [M] [open; from documents only] [SESSION-TODO K, O, U, V]
 - **One full browser run.** Includes the Throw row's check, written and never run. [M] [open; from documents only] [spec 5534]

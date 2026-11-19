@@ -215,11 +215,14 @@ export const mender: Policy = (x) => {
 };
 
 // ---------------------------------------------------------------------------------------------- Chaplain
+/** Measured switch (0.32): `sinner` names a sinner before the Hymn (CH_SINNER=0 leaves it out). */
+export const CHAPLAIN = { sinner: ((globalThis as any).process?.env || {}).CH_SINNER !== '0' };
 export const chaplain: Policy = (x) => {
   if (x.c?.classId && once(x, 'canticle')) { const s = verb(x, 'class:guardian.canticle', 'canticle'); if (s) return s; }
   // 0.32 (Faith 2: Name the Sinner, a Whisper that Judges; prayers deal more to a Judged foe): the nearest foe not yet
-  // Judged is named first, once a turn, when the AP still pays the Hymn after (3)
-  if (x.u.ap >= 4 && once(x, 'sinner')) for (const t of [...x.foes].filter((f) => !f.conds?.judged).sort((a, b) => dist(x.u.pos, a.pos) - dist(x.u.pos, b.pos))) { const s = verb(x, 'skill:faith.2', 'name_the_sinner', { targetId: t.id }); if (s) return s; }
+  // Judged is named first, once a turn, when the AP still pays the Hymn after (3); only an Elite or a Boss (measured:
+  // naming every nearest foe cost the solo Chaplain 15 to 5 clears of 40; it pays only on a foe that lives for rounds)
+  if (CHAPLAIN.sinner && x.u.ap >= 4 && once(x, 'sinner')) for (const t of [...x.foes].filter((f) => !f.conds?.judged && (f.tier === 'elite' || f.tier === 'boss')).sort((a, b) => dist(x.u.pos, a.pos) - dist(x.u.pos, b.pos))) { const s = verb(x, 'skill:faith.2', 'name_the_sinner', { targetId: t.id }); if (s) return s; }
   return prayer({ ...x, opts: { ...(x.opts || {}), hymn: 'damage', whisper: 'rebuke' } });
 };
 /** 0.32: the SPARING Chaplain. It prays only when it is needed: an Elite or a Boss in the fight, three foes or more, or
