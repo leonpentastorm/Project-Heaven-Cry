@@ -238,7 +238,8 @@
       "path": "mg.charge"
     },
     "cores": {
-      "name": "spare cores",
+      "name": "cores",
+      "one": "core",
       "on": "unit",
       "path": "mg.cores"
     },

@@ -75,7 +75,7 @@ export const hasCost = (action: string, field = 'ap'): boolean => typeof verbOf(
  * 'reload_both', 'break'); any other name is itself. What the `cost` hook's ctx.action carries. */
 export const actionName = (action: string): string => VERBS[action]?.site || action;
 
-interface ResDef { name: string; on: 'unit' | 'character'; path: string; whole?: boolean;
+interface ResDef { name: string; /** the name of one (a cost or a need of 1: "1 core") */ one?: string; on: 'unit' | 'character'; path: string; whole?: boolean;
   /** Its most, a path on the same holder (MP: mg.mpMax): a gain stops there. */ max?: string;
   /** A path on the holder that must be set for it to be given at all, or a list of paths of which one must be (MP: mg.emanator or mg.attuner, an MP focus in hand: rules 1.33). */ needs?: string | string[];
   /** A named setter (registered with setResSetter) that gives it instead of the plain path: Pressure's addPressureTo. */ setter?: string }
@@ -238,8 +238,9 @@ export function whyNot(cb: Combat | null | undefined, u: Unit, p: Priced | numbe
 export function resWhyNot(res: Record<string, number> | undefined, u: Unit | null | undefined, c?: Character | null): string | null {
   for (const [id, n] of Object.entries(res || {})) {
     if (!(n > 0)) continue; const d = RESOURCES[id]; if (!d) throw new Error('Unknown resource "' + id + '" (data/actions.json resources).');
-    if (!u && d.on === 'unit') return 'Only in a fight (it costs ' + n + ' ' + d.name + ').';
-    const have = resLeft(u, id, c); if (have < n) return needs(n, d.name, undefined, Math.floor(have)); // 0.28.3: "Needs 24 MP (you have 10)."
+    const word = n === 1 && d.one ? d.one : d.name;
+    if (!u && d.on === 'unit') return 'Only in a fight (it costs ' + n + ' ' + word + ').';
+    const have = resLeft(u, id, c); if (have < n) return needs(n, word, undefined, Math.floor(have)); // 0.28.3: "Needs 24 MP (you have 10)."
   }
   return null;
 }

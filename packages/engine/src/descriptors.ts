@@ -365,7 +365,7 @@ export const PK = 'pk:';
 export const perkId = (e: { id: string; actionId: string }) => PK + e.id + '#' + e.actionId;
 export function parsePerkId(id: string | null | undefined): { id: string; actionId: string } | null { if (!id || !id.startsWith(PK)) return null; const [k, a] = id.slice(PK.length).split('#'); return { id: k, actionId: a }; }
 /** What an entry costs besides AP, from the cost site's figures (0.28.3, rules 1.55 item 46: "24 MP"). */
-const perkResText = (e: PerkActionEntry): string[] => Object.entries(e.res || {}).map(([k, n]) => n + ' ' + (RESOURCES[k]?.name || k));
+const perkResText = (e: PerkActionEntry): string[] => Object.entries(e.res || {}).map(([k, n]) => n + ' ' + ((n === 1 && RESOURCES[k]?.one) || RESOURCES[k]?.name || k)); // a cost of 1 names one ("1 core")
 export const perkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : [priceOf(e) + ' AP', ...perkResText(e)].join(' · ')) + (e.uses.label ? ' · ' + e.uses.label : '');
 /** An on/off policy pair names the one in force; Eye of the Storm reads ARMED once armed. */
 export function perkState(e: PerkActionEntry): { tag: string; why: string | null } {

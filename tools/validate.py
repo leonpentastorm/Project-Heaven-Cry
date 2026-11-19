@@ -1054,8 +1054,10 @@ if "actions" in data:
         if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character") or not isinstance(r.get("path"), str) or not r.get("path"):
             errors.append(f"actions: resources.{rid} needs a name, on (unit or character) and a path")
         # Classes 3.0 batch row: the item op `resource` gives any row through effects/cost.ts resGive
-        for _k in (set(r) - {"name", "on", "path", "whole", "max", "needs", "setter"}) if isinstance(r, dict) else []:
-            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, on, path, whole, max, needs, setter)")
+        for _k in (set(r) - {"name", "one", "on", "path", "whole", "max", "needs", "setter"}) if isinstance(r, dict) else []:
+            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, one, on, path, whole, max, needs, setter)")
+        if isinstance(r, dict) and "one" in r and not (isinstance(r["one"], str) and r["one"]):
+            errors.append(f"actions: resources.{rid}.one must be the name of one (a cost of 1: '1 core', never '1 cores')")
         for _k in ("max", "needs", "setter"):
             if isinstance(r, dict) and _k == "needs" and isinstance(r.get(_k), list) and r[_k] and all(isinstance(x, str) and x for x in r[_k]): continue # rules 1.33: one of several paths (an MP focus: mg.emanator, mg.attuner)
             if isinstance(r, dict) and _k in r and not (isinstance(r[_k], str) and r[_k]):
