@@ -5244,6 +5244,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-trauma_plate--fine",
+      "path": "art/icons/gear/armour-trauma_plate--fine.png",
+      "sha256": "31b6f89d1c19b3f1817ecac11eb5b99ef3ccdcceb8226758626e2ed417b9817b",
+      "label": "Trauma Plate — Fine",
+      "family": "armour-trauma_plate",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-trauma_plate--fine.png",
+        "sha256": "522e5a447369f25458d76c0990a1f1daf4c1b0bebe54eaf470bbc3adebf8ee86"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-trauma_plate--fine.png",
+        "sha256": "31b6f89d1c19b3f1817ecac11eb5b99ef3ccdcceb8226758626e2ed417b9817b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-trauma_plate--fine.txt",
+        "sha256": "5fede95e10858ae6b757f742945c04c0d1476243cf7795ad2b5f2fbf071d433f"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-trauma_plate--fine/v1/source.png",
+          "sha256": "e73463f7b823c4f9ae2251d8ebf3ef29996317cd552185c31c5206c19d1e1858"
+        },
+        {
+          "path": "art/icons/gear/armour-trauma_plate.png",
+          "sha256": "34cbf6f62a75b1718185be1bcc9eba105ad8fae3bac0b9e3bfb522e777a0a767"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-trauma_plate--fine.png",
+        "128": "art/icons/gear/exports/128/armour-trauma_plate--fine.png",
+        "64": "art/icons/gear/exports/64/armour-trauma_plate--fine.png",
+        "32": "art/icons/gear/exports/32/armour-trauma_plate--fine.png"
+      },
+      "export_hashes": {
+        "256": "4e659ae318cbc9c4c7215a6ddb0074d54751f2a3f1e1dc6ed244b935ceb81254",
+        "128": "1d38a7cf6c56cd48ab317a3a9aacfc9e4e8134392cfe7d0dad9ddfa1d2b87cd9",
+        "64": "635de7c8855138849bf6d76d57158ed3e864a1120bafaef693eacb2dbd78f53e",
+        "32": "5779e2fec0284f00cfe3e11464c66390404754adc7dbcbd0fa3eb812c0a6de06"
+      },
+      "grade": "fine",
+      "standard_id": "armour-trauma_plate",
+      "outline": {
+        "solid_alpha_iou": 0.9928362582371931,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 0,
+        "different_pixels_64": 9
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
