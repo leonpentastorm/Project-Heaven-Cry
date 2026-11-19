@@ -1,7 +1,7 @@
 # File 08 unique inventory paintings
 
-Updated 19 November 2026 at 14:26 UTC+7. Branch `art/2026-11-19-unique-gear`.
-**7 of 23 uniques delivered across the verified branches. 145 of 215 base pictures and uniques. 145 of 871 across the pack.**
+Updated 19 November 2026 at 14:28 UTC+7. Branch `art/2026-11-19-unique-gear`.
+**8 of 23 uniques delivered across the verified branches. 146 of 215 base pictures and uniques. 146 of 871 across the pack.**
 This branch delivered 6. The 138-candidate baseline predates both unique branches.
 These independent unique paintings have been brought forward while the grade proof is open.
 The six uniques with missing or unapproved references still depend on those references.
@@ -11,13 +11,13 @@ The six uniques with missing or unapproved references still depend on those refe
 | 01 · Last Sentence (great blade) | `art/icons/gear/weapon-last_sentence.png` | delivered on unique-melee-bow |
 | 02 · Grandmother's Teeth (scrap cutter) | `art/icons/gear/weapon-grandmothers_teeth.png` | claimed on unique-melee-bow |
 | 03 · Last Crossing (polearm) | `art/icons/gear/weapon-last_crossing.png` | claimed on unique-melee-bow |
-| 04 · Owed in Full (Kemizuchi duelling blade) | `art/icons/gear/weapon-owed_in_full.png` | claimed on unique-melee-bow |
+| 04 · Owed in Full (Kemizuchi duelling blade) | `art/icons/gear/weapon-owed_in_full.png` | delivered on unique-melee-bow |
 | 05 · Reveille (maul) | `art/icons/gear/weapon-reveille.png` | claimed on unique-melee-bow |
 | 06 · Breath of Morning (hand wraps) | `art/icons/gear/weapon-breath_of_morning.png` | claimed on unique-melee-bow |
 | 07 · Rearguard (Legion short sword) | `art/icons/gear/weapon-rearguard.png` | claimed on unique-melee-bow |
 | 08 · In Triplicate (Legion bullpup) | `art/icons/gear/weapon-in_triplicate.png` | claimed, awaiting render or review |
 | 09 · Second Thunder (magnum revolver) | `art/icons/gear/weapon-second_thunder.png` | awaiting reference approval or a missing reference |
-| 10 · Encore (two-shot derringer) | `art/icons/gear/weapon-encore.png` | claimed, awaiting render or review |
+| 10 · Encore (two-shot derringer) | `art/icons/gear/weapon-encore.png` | service declined the render |
 | 11 · Homecoming (harpoon gun) | `art/icons/gear/weapon-homecoming.png` | claimed, awaiting render or review |
 | 12 · First Light (precision rifle) | `art/icons/gear/weapon-first_light.png` | awaiting reference approval or a missing reference |
 | 13 · Night Watch (pump shotgun) | `art/icons/gear/weapon-night_watch.png` | awaiting reference approval or a missing reference |
@@ -32,7 +32,7 @@ The six uniques with missing or unapproved references still depend on those refe
 | 22 · Spring Air (respirator) | `art/icons/gear/armour-spring_air.png` | delivered for review |
 | 23 · The Long Road (boots) | `art/icons/gear/armour-long_road.png` | delivered for review |
 
-The melee-and-bow branch owns entries 01–07 and 15. An overlapping local render batch was stopped before any of those entries was delivered here. The counts include its verified progress at `435ee788e`. [Melee and bow handoff](https://github.com/leonpentastorm/Project-Heaven-Cry/tree/art/2026-11-19-unique-melee-bow/art/_archive/gear/2026-11-19-unique-melee-bow)
+The melee-and-bow branch owns entries 01–07 and 15. An overlapping local render batch was stopped before any of those entries was delivered here. The counts include its verified progress at `14cc28717`. [Melee and bow handoff](https://github.com/leonpentastorm/Project-Heaven-Cry/tree/art/2026-11-19-unique-melee-bow/art/_archive/gear/2026-11-19-unique-melee-bow)
 
 Deliveries include the exact native sources, contact sheets, stable archive hashes and 256/128/64/32 px PNG exports.
 The art catalogue marks each new master as a review candidate. No grades are implied.
