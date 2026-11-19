@@ -2528,6 +2528,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-iron_mitts--fine",
+      "path": "art/icons/gear/weapon-iron_mitts--fine.png",
+      "sha256": "4b264b157b726fbc1e9e46fea9fff3fd71efdce6f75e62a1d732c2f16ed96fe2",
+      "label": "Iron Mitts — Fine",
+      "family": "weapon-iron_mitts",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-iron_mitts--fine.png",
+        "sha256": "3d8affa99b30ce5c924f0cb2c6183ab30a13304c0a76daf0567e6498429437c1"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-iron_mitts--fine.png",
+        "sha256": "4b264b157b726fbc1e9e46fea9fff3fd71efdce6f75e62a1d732c2f16ed96fe2"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-iron_mitts--fine.txt",
+        "sha256": "e3647cf381d7a55dc8f20d05e8a291b246534a79624f892c30b2f5fe64a29785"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-iron_mitts.png",
+          "sha256": "026003405fcfc8c519a886c370f5e6f0728ff8eb586cba7871225cd62e46b71a"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-iron_mitts--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-iron_mitts--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-iron_mitts--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-iron_mitts--fine.png"
+      },
+      "export_hashes": {
+        "256": "b4f986c90997f3aca36a8822d03654df6a69038f2cc0abb9918b3d92ad02b2a5",
+        "128": "e498e5bcecf2ceb3a034485cb662d158f9f8afff892d904355b54009c2bddac2",
+        "64": "2cc60b5bda1ecd1655320d7d46e55c82fe5aafa2be50c9795d62fc9c5d8e7d97",
+        "32": "e30cd837724ecec8e17f758fad734ab78055ce518280cacb53fa508d7f82cf39"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-iron_mitts",
+      "outline": {
+        "solid_alpha_iou": 0.99348979073117,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 5
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
