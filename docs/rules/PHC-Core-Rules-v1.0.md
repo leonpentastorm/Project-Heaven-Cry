@@ -12396,3 +12396,13 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     delay in place of display none), and only its signs take a click; the rest of the card still lets clicks through to
     the tiles under it, and a click on a sign enlarges only (the tile is not picked). Proof:
     `apps/web/src/screens/zoom-text.test.ts`; the browser suite `fight-panel.mjs` reads the card's visibility now.
+5527. **The Kemizuchi duelling blade and strikers on the melee line** (owed fix; the line is
+    `rules.json balance.ceilings.melee.allin` **165**% of the plain rifle): measured with `melee-measure` (masterwork,
+    24 turns a cell, levels 1 / 5 / 10 / 20), the all-in duelling blade peaked at 209% (damage 24) and the strikers at
+    181% (damage 21), over their peers (katana 175, sabre 171, gladius 160, striking gloves 146). Both weapon rows'
+    `damage` is now **19** (PROVISIONAL, as the rows are): all in, blade 130 / 146 / 162 / 145%, strikers 118 / 142 /
+    161 / 138%; normal share, blade 101 / 113 / 128 / 135% (the katana 98 / 109 / 144 / 141%: the blade's Lunge reach
+    is what it pays for), strikers 88 / 119 / 133 / 143% (still the best glove). Prices unchanged. **Recorded on
+    purpose:** `weapons`, `costs-weapons`, `rules-weapons` (and its log): the two weapons' lines only (10 lines each).
+    The Dexterity melee line as a whole (the sabre and katana over 165 at level 10 all in) is the lead's balance item,
+    not changed here.
