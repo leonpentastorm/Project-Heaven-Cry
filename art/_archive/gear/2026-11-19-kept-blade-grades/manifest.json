@@ -2714,6 +2714,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-iron_mitts--celestial",
+      "path": "art/icons/gear/weapon-iron_mitts--celestial.png",
+      "sha256": "5daebc14c08468590297b1feded7bdbb1ac74eef69b7231612d4a67229c35aa4",
+      "label": "Iron Mitts — Celestial",
+      "family": "weapon-iron_mitts",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-iron_mitts--celestial.png",
+        "sha256": "3b4cd867ecc3d8f377115094829626f0b88e32f6a9bec7d2ce0e8f1612a812a7"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-iron_mitts--celestial.png",
+        "sha256": "5daebc14c08468590297b1feded7bdbb1ac74eef69b7231612d4a67229c35aa4"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-iron_mitts--celestial.txt",
+        "sha256": "3e91782e3990932e29ff36c7c9bd5cda0aad375cf8b2a692ad837ccde96fce31"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-iron_mitts.png",
+          "sha256": "026003405fcfc8c519a886c370f5e6f0728ff8eb586cba7871225cd62e46b71a"
+        },
+        {
+          "path": "art/icons/gear/weapon-iron_mitts--relic.png",
+          "sha256": "989b085e949628f57711c3e7713e690c91a5710a98ba8eb82773722ffab39f3d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-iron_mitts--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-iron_mitts--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-iron_mitts--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-iron_mitts--celestial.png"
+      },
+      "export_hashes": {
+        "256": "4cacfbe5d12a3c95b184a1bdd7c946d35b00a98ff8f6d035f91353c547f0f832",
+        "128": "b9f54cae9b191f558dfd09662f44ffc2cbdc33ec09fd59db1900c5c445e5fa17",
+        "64": "f342e867df53bd0d786b4cd86682655e780c27ba7112f8d76003d5c3969825d6",
+        "32": "f83095636b8a8be13a6cc8af4cc53977076d6633351727b955faf9ed3378129d"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-iron_mitts",
+      "outline": {
+        "solid_alpha_iou": 0.9762687528515069,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 24
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
