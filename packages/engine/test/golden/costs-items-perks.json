@@ -51,6 +51,8 @@
 "item/perk/shrug_it_off@II/taken-fire": "P1 res.guard0>1 res.momentum3>2",
 "item/perk/shrug_it_off@II/taken-soul": "P1 res.guard0>1 res.momentum3>2",
 "item/perk/spoon_feed@achieved/action/spoon_feed": "P1 ap9>7 | short: Needs 2 AP. | again: P1 ap9>7 | next: P1 ap9>7 | later: P1 ap9>7",
+"item/perk/still_standing@I/taken-low": "P1 res.momentum3>2; F2 ammo24>23 ap0>7 heat0>1",
+"item/perk/still_standing@II/taken-low": "P1 res.momentum3>2; F2 ammo24>23 ap0>7 heat0>1",
 "item/perk/supreme_command@ultimate/action/supreme_command": "P2 ap6>2 | short: free P2 ap6>2 | again: NO It's Squadmate's turn. | next: NO Used this fight. | later: NO Used this fight.",
 "item/perk/supreme_command@ultimate/action/supreme_command/then-blow": "P1 ap9>7 res.momentum3>4",
 "item/perk/the_voice@achieved/action/the_voice": "- | short: free | again: NO Used until the next session. | next: NO Used until the next session. | later: NO Used until the next session.",

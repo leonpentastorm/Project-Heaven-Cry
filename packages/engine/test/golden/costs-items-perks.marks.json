@@ -51,6 +51,8 @@
 "item/perk/shrug_it_off@II/taken-fire": "P1 ps.perk:shrug_it_off.flags.answer0>true uses.perk:shrug_it_off|per_round.n0>1 uses.perk:shrug_it_off|per_round.s0>r1",
 "item/perk/shrug_it_off@II/taken-soul": "P1 ps.perk:shrug_it_off.flags.answer0>true uses.perk:shrug_it_off|per_round.n0>1 uses.perk:shrug_it_off|per_round.s0>r1",
 "item/perk/spoon_feed@achieved/action/spoon_feed": "P1 faith.acted0>true faith.apMark6>7; F1 ps.perk:spoon_feed.feed.allies0>pc-c3 ps.perk:spoon_feed.feed.by0>pc-c1",
+"item/perk/still_standing@I/taken-low": "P1 uses.perk:still_standing|per_combat.n0>1 uses.perk:still_standing|per_combat.s0>c; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
+"item/perk/still_standing@II/taken-low": "P1 uses.perk:still_standing|per_combat.n0>1 uses.perk:still_standing|per_combat.s0>c; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "item/perk/supreme_command@ultimate/action/supreme_command": "P1 faith.acted0>true faith.apMark6>9 uses.perk:supreme_command#supreme_command|per_combat.n0>1 uses.perk:supreme_command#supreme_command|per_combat.s0>c",
 "item/perk/supreme_command@ultimate/action/supreme_command/then-blow": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true ps.skill:ingenuity.1.flags.struck0>true ps.skill:ingenuity.3.flags.ghost_eyes0>true",
 "item/perk/the_voice@achieved/action/the_voice": "P1 faith.acted0>true faith.apMark6>9; C1 uses.perk:the_voice#the_voice|per_session.n0>1 uses.perk:the_voice#the_voice|per_session.s0>S1",
