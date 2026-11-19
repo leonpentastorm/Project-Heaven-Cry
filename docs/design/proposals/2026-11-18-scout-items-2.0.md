@@ -1,4 +1,4 @@
-# Scout: Items 2.0 ground truth (sections L, M, N, P of SESSION-TODO-2026-11-16)
+# Scout: Items 2.0 ground truth (sections L, M, N, P of SESSION-TODO-2026-11-16, archived)
 
 Scouted 18 Nov 2026 in worktree E:/phc-wt/rel030 (branch release/0.31, live 0.31.10). Read-only; nothing changed. Facts only; every one carries a file and line, or a data id. Lines are as of this worktree.
 

@@ -1,3 +1,5 @@
+Owed work: docs/ROADMAP.md (the only list). Anything below that reads as a to-do is history unless the roadmap carries it. Live is 0.31.11 (19 Nov 2026); older live-version lines below are history.
+
 # Classes 3.0: the mission, and how to carry it on with Opus alone
 
 > **16 Nov 2026 (newest): 0.29.0 IS LIVE.** https://project-heaven-cry.leonpentastorm.workers.dev serves 0.29.0 (`assets/index-CS0sQSbu.js`); `main` = `develop` = 98772514; `backup/live-0.29.0` pushed. What shipped: `CHANGELOG.md` 0.29.0 (rules 1.56, "Balance 2.0": the nine doors, mods as data and as rewards, special rounds by calibre, variants as data, the melee profile). 0.28.3 was the version before. Where anything below says 0.29.0 is not deployed or live is 0.28.x, it is older.

@@ -1,3 +1,5 @@
+ARCHIVED 19 Nov 2026. Owed work is in docs/ROADMAP.md only. Kept as the record of rulings and of what happened.
+
 # Attack plan for the night of 19 Nov 2026 (starts 02:04, after the usage reset; Leon asleep)
 
 Leon, 18 Nov: "make attack plan and set an auto implement plan with all the fork, and auto start as much stuff as

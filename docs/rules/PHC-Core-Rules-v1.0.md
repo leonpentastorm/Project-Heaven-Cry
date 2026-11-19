@@ -12392,7 +12392,7 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     stood at the start only). The fix is the alarm (item 5521). Proof: `test/fog-victory.test.ts` (a run fight joined
     from the approach, unexplored tiles on the map, the last foe dropped by a `combat/attack`: the field is open in that
     same action).
-5521. **The alarm** (owed fix; ATTACK-PLAN-2026-11-19 lane 2): when a fight opened in the approach (item 5008) is
+5521. **The alarm** (owed fix; archived ATTACK-PLAN-2026-11-19 lane 2): when a fight opened in the approach (item 5008) is
     joined, every foe group on the map learns where each character not Hidden stands now (`combat.ts joinFight` →
     `raiseAlarm`, writing the foe side's `seenAt`, which `knownTile` and `enemySearchTile` already read), so a group that
     never saw the squad comes for it, where before it searched the tiles the squad started on. A Hidden character stays
