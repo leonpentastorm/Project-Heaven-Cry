@@ -7,7 +7,7 @@ ARCHIVE = Path(__file__).resolve().parent
 STAGE = Path("/workspace/work/prompt-pack-06")
 REPAINTS = {
     1: "Frontier hand cannon",
-    2: "Decrkm SMG and autopistol",
+    2: "Decrkm SMG",
     3: "Legion PDW",
     6: "Mandestra drum gun",
     7: "Mandestra drum gun",
@@ -56,6 +56,9 @@ for job in jobs:
     lines.append(f"| {n:02} | {job['title']} | {status} |")
 lines += ["", "Check the source brief's Attach line for the exact repaint requirement. "
           "Recheck develop and active art branches before resuming. Preserve the approved family references.",
+          "The Decrkm Auto-Pistol repaint is available for review on the separate "
+          "[File 10 branch](https://github.com/leonpentastorm/Project-Heaven-Cry/tree/art/2026-11-19-reference-repaints). "
+          "The Decrkm Carbine still needs the corresponding SMG repaint.",
           "The archive contains render sources, visual checks, hashes and invocation failures."]
 (ARCHIVE / "HANDOFF.md").write_text("\n".join(lines)+"\n")
 print(lines[3])

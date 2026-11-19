@@ -7,7 +7,7 @@ The submitted prompts describe fictional Project Heaven Cry inventory art.
 | No. | Candidate | Status |
 | --- | --- | --- |
 | 01 | Snub revolver (Revolvers, close) | awaiting File 10 repaint of Frontier hand cannon |
-| 02 | Decrkm carbine (Decrkm automatics, long) | awaiting File 10 repaint of Decrkm SMG and autopistol |
+| 02 | Decrkm carbine (Decrkm automatics, long) | awaiting File 10 repaint of Decrkm SMG |
 | 03 | Legion marksman rifle (Legion automatics, long) | awaiting File 10 repaint of Legion PDW |
 | 04 | Whisper pistol (Whisper, close) | delivered as a review candidate |
 | 05 | Whisper carbine (Whisper, long) | delivered as a review candidate |
@@ -25,4 +25,5 @@ The submitted prompts describe fictional Project Heaven Cry inventory art.
 | 17 | Arbalest (Crossbows, long) | image service declined this render |
 
 Check the source brief's Attach line for the exact repaint requirement. Recheck develop and active art branches before resuming. Preserve the approved family references.
+The Decrkm Auto-Pistol repaint is available for review on the separate [File 10 branch](https://github.com/leonpentastorm/Project-Heaven-Cry/tree/art/2026-11-19-reference-repaints). The Decrkm Carbine still needs the corresponding SMG repaint.
 The archive contains render sources, visual checks, hashes and invocation failures.
