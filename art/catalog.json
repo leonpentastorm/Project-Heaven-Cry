@@ -19776,6 +19776,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "armour-utility_belt--fine": {
+      "label": "Armour-Utility Belt Fine",
+      "path": "art/icons/gear/armour-utility_belt--fine.png",
+      "sha256": "0e8c6867918be1364e99bf4a1338e7f2b8b2e70a0475ec1557d06c2243eb865d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/armour-utility_belt.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-utility_belt--fine.png",
+        "128": "art/icons/gear/exports/128/armour-utility_belt--fine.png",
+        "64": "art/icons/gear/exports/64/armour-utility_belt--fine.png",
+        "32": "art/icons/gear/exports/32/armour-utility_belt--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {

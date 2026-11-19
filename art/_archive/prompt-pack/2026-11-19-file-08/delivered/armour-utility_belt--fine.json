@@ -1,0 +1,16 @@
+{
+  "id": "armour-utility_belt",
+  "tier": "fine",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--fine.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-utility_belt--fine.png",
+  "size64_mask_differing_pixels": 30,
+  "sha256": "0e8c6867918be1364e99bf4a1338e7f2b8b2e70a0475ec1557d06c2243eb865d",
+  "path": "art/icons/gear/armour-utility_belt--fine.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/armour-utility_belt--fine.png",
+    "128": "art/icons/gear/exports/128/armour-utility_belt--fine.png",
+    "64": "art/icons/gear/exports/64/armour-utility_belt--fine.png",
+    "32": "art/icons/gear/exports/32/armour-utility_belt--fine.png"
+  },
+  "source_sha256": "c63597d7a93cd39af44996a5a0bdbab5763a2fba35dab646a10a523af63ce95e"
+}
