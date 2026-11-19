@@ -76,13 +76,18 @@ export function tieLayerVals(cb: any, o: { turnOf?: string | null; hotTo?: strin
 export const EYE_LINE = { width: 1.5, opacity: 0.8, dash: '4 3' };
 export function eyeLines(cb: any, meId: string, eyes: string[], ink: string): TieLineVals[] {
   const me = cb?.units?.find((u: any) => u.id === meId); if (!me || !me.pos) return [];
+  return eyeLinesAt(cb, me.pos, meId, eyes, ink);
+}
+/** The same eye lines to a tile (rules 1.76 item 6404, the shadow sightline: from each enemy whose eyes would reach you
+ * standing there). `to` names the end for the DOM (a unit id, or the tile). Presentation only. */
+export function eyeLinesAt(cb: any, tile: string, to: string, eyes: string[], ink: string): TieLineVals[] {
   const out: TieLineVals[] = [];
   for (const id of eyes) {
-    const v = cb.units.find((u: any) => u.id === id); if (!v || !v.pos) continue;
-    const [ax, ay] = at(v.pos), [bx, by] = at(me.pos), x1 = centre(ax), y1 = centre(ay), x2 = centre(bx), y2 = centre(by), len = Math.hypot(x2 - x1, y2 - y1);
+    const v = cb?.units?.find((u: any) => u.id === id); if (!v || !v.pos) continue;
+    const [ax, ay] = at(v.pos), [bx, by] = at(tile), x1 = centre(ax), y1 = centre(ay), x2 = centre(bx), y2 = centre(by), len = Math.hypot(x2 - x1, y2 - y1);
     if (len < RIM * 2) continue;
     const ux = (x2 - x1) / len, uy = (y2 - y1) / len;
-    out.push({ key: 'eyes:' + id + ':' + meId, kind: 'eyes', side: 'foe', from: id, to: meId, x1: Math.round(x1 + ux * RIM), y1: Math.round(y1 + uy * RIM), x2: Math.round(x2 - ux * RIM), y2: Math.round(y2 - uy * RIM),
+    out.push({ key: 'eyes:' + id + ':' + to, kind: 'eyes', side: 'foe', from: id, to, x1: Math.round(x1 + ux * RIM), y1: Math.round(y1 + uy * RIM), x2: Math.round(x2 - ux * RIM), y2: Math.round(y2 - uy * RIM),
       ink, dash: EYE_LINE.dash, width: EYE_LINE.width, opacity: EYE_LINE.opacity, cls: '', mark: false });
   }
   return out;

@@ -6,7 +6,7 @@
 //  · a shot with the Break toggle from Hidden: one `shadow` term on the preview, the meter spent, the shooter revealed.
 // Every action through its real button, except the Break shot, sent as the attack card sends it (its toggle id in mods).
 // Screenshots: e2e/shots/shadow-*.png.
-import { chromium, player, click, BASE, OUT, settle } from './lib.mjs';
+import { chromium, player, click, BASE, OUT, settle, hostAs, lockIn } from './lib.mjs';
 import { tipOf } from './lib.mjs';
 const browser = await chromium.launch();
 const host = await player(browser, 'host');
@@ -139,4 +139,95 @@ ok('revealed: my token drawn plainly again (' + op + ')', op === 1);
 const log = ((await G()).combat.log || []).map((l) => (typeof l === 'string' ? l : l.text || '')).join('\n');
 ok('the log says so', /breaks from the shadows/.test(log));
 await snap('03-break');
+
+// ---------- 4. The shadow sightline on a dark map (rules 1.76 items 6400-6404): M813's outpost, a Phantom, two foes ----------
+// The scripted Narrator places the Phantom by the south hall's lamp (I9) and starts a fight with two unaware Soldiers 9 tiles
+// east. Standing in the lamp's light both see it; Prone (8 tiles: 12 less Prone's 4) neither does; Hide, then Douse the
+// lamp: the tile goes dark and the watched tiles shrink. Every number is the engine's (the watched tiles are Hide's row).
+{
+  const SH = process.env.SHADOW_SHOTS ? process.env.SHADOW_SHOTS.replace(/\/?$/, '/') : '';
+  const p = await player(browser, 'host', { campaigns: ['m813'] });
+  await p.setViewportSize({ width: 1600, height: 1000 });
+  const snapP = async (n, keep) => { await p.screenshot({ path: OUT + 'shadow-' + n + '.png' }); if (SH && keep) await p.screenshot({ path: SH + keep + '.png' }); };
+  await hostAs(p, 'Leon');
+  await click(p, 'Create a character');
+  await p.getByPlaceholder('What the squad calls you').fill('Wren');
+  await p.locator('main button[aria-pressed]').first().click();
+  await click(p, 'Next ›');
+  await p.locator('button', { hasText: /^All-in$/ }).first().click({ timeout: 5000 }).catch(() => {});
+  await p.locator('button', { hasText: 'Phantom' }).first().click();
+  await p.locator('button', { hasText: /^Use .* ›$/ }).first().click();
+  await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›');
+  await lockIn(p, { timeout: 30000 });
+  await p.waitForFunction(() => Object.keys(window.__phc.getState().game?.characters || {}).length > 0, null, { timeout: 30000 });
+  await p.evaluate(() => window.__phc.setNarrator({ scripted: true }));
+  await click(p, 'Start session');
+  await p.waitForSelector('.phc-story', { timeout: 30000 });
+  await p.waitForFunction(() => window.__phc.getState().game.story.entries.some((e) => e.kind === 'narration'), null, { timeout: 30000 });
+  const actP = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; } catch (e) { return String(e.message || e); } }, a);
+  const GP = () => p.evaluate(() => window.__phc.getState().game);
+  const wren = await p.evaluate(() => Object.keys(window.__phc.getState().game.characters)[0]);
+  await actP({ type: 'narrator/turn', turn: { narration: 'The squad reaches the outpost: no power, two work lamps.', travel: 'outpost' } });
+  await p.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 30000 }).catch(() => {});
+  await actP({ type: 'narrator/turn', turn: { narration: 'Wren slips down to the south hall, under the work lamp.', moves: [{ charId: wren, to: 'G11' }] } });
+  await p.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 30000 }).catch(() => {});
+  const fe = await actP({ type: 'narrator/turn', turn: { narration: 'Two guards come through the east door.', combat: { name: 'South hall', enemies: [{ name: 'Guard One', tier: 'soldier', weapon: 'service_pistol', at: 'P9', unaware: true }, { name: 'Guard Two', tier: 'soldier', weapon: 'service_pistol', at: 'P11', unaware: true }] } } });
+  ok('the Narrator\'s fight in the outpost (' + (fe || 'started') + ')', !fe);
+  await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
+  for (let i = 0; i < 20; i++) { // to my turn (the host ends the guards' turns: it is their Narrator)
+    const cb = (await GP()).combat, cur = cb.units.find((u) => u.id === cb.order[cb.turn]);
+    if (cur && cur.charId === wren) break;
+    if (cur) await actP({ type: 'combat/end-turn', unitId: cur.id });
+    await settle(p, 250);
+  }
+  await settle(p, 1200);
+  for (let i = 0; i < 3; i++) { if (!(await p.locator('[data-phc-cutin]').count())) break; await p.mouse.click(1590, 990); await settle(p, 380); }
+  const cbP = async () => (await GP()).combat;
+  const meP = async () => (await cbP()).units.find((u) => u.charId === wren);
+  let w = await meP();
+  ok('a dark map (the outpost) with the Phantom at G11 (' + w.pos + ') and two foes', !!(await cbP()).map.dark && w.pos === '6,10' && (await cbP()).units.filter((u) => u.side === 'foe').length === 2);
+  // the switch: on by default with the SHADOW tab open
+  await p.locator('#phc-tab-shadow').click(); await settle(p, 300);
+  const tog = p.locator('[data-sightline-toggle]');
+  ok('the SIGHTLINE switch is on the map, on with the SHADOW tab open', (await tog.count()) === 1 && (await tog.getAttribute('data-sightline-toggle')) === '1');
+  const watched = () => p.evaluate(() => document.querySelectorAll('[data-sightline]').length);
+  const twice = () => p.evaluate(() => document.querySelectorAll('[data-sightline="2"]').length);
+  const read = async () => ((await p.locator('[data-sightline-read]').first().textContent().catch(() => '')) || '').trim();
+  const lines = () => p.locator('[data-tie-kind="eyes"]').count();
+  const tileAt = (r) => p.locator('button.phc-tok[aria-label^="' + r + ' ·"]').first();
+  await p.mouse.move(5, 5); await settle(p, 200);
+  const w0 = await watched();
+  ok('watched tiles are shaded (' + w0 + ', ' + (await twice()) + ' by both guards)', w0 > 0 && (await twice()) > 0);
+  ok('the read-out says who sees me where I stand: "' + (await read()) + '"', /G11 · seen here by Guard (One|Two) and Guard (One|Two)/.test(await read()));
+  ok('a line from each guard that sees me (' + (await lines()) + ')', (await lines()) === 2);
+  await tileAt('B2').hover(); await settle(p, 250);
+  ok('hovering a tile behind the north wall: "' + (await read()) + '"', /B2 · unseen here/.test(await read()) && /sightline: unseen here/.test((await tileAt('B2').getAttribute('aria-label')) || ''));
+  await p.mouse.move(5, 5); await settle(p, 200);
+  await snapP('04-sightline-dark-two-foes', 'sightline-dark-two-foes');
+  // Prone at the edge of their reach (rules 1.76 item 6402)
+  await actP({ type: 'combat/prone', unitId: w.id }); await settle(p, 500);
+  w = await meP();
+  const w1 = await watched();
+  ok('Prone: the watched tiles shrink (' + w0 + ' -> ' + w1 + ') and I am unseen where I lie: "' + (await read()) + '"', !!w.prone && w1 < w0 && /G11 · unseen here/.test(await read()));
+  await snapP('05-prone-edge', 'prone-at-the-edge');
+  // Hide (out of every guard's eyes now), then Douse the lamp at I9
+  let er = await actP({ type: 'combat/hide', unitId: w.id }); await settle(p, 400);
+  w = await meP();
+  ok('Hide from Prone (' + (er || 'hidden') + ')', !er && !!w.hidden);
+  await snapP('06-douse-before', 'douse-before');
+  const lampBefore = (await cbP()).objects.some((o) => o.kind === 'lamp' && o.pos === '8,8');
+  er = await actP({ type: 'combat/perk', unitId: w.id, id: 'verb:shadow.douse', tile: '8,8' }); await settle(p, 500);
+  const lampAfter = (await cbP()).objects.some((o) => o.kind === 'lamp' && o.pos === '8,8');
+  ok('Douse: the lamp at I9 goes out (' + (er || 'doused') + ') and my tile is dark', !er && lampBefore && !lampAfter && /· dark/.test((await tileAt('G11').getAttribute('aria-label')) || ''));
+  await actP({ type: 'combat/prone', unitId: w.id }); await settle(p, 400); // stand up: in the dark their eyes reach 6 tiles
+  await p.mouse.move(5, 5); await settle(p, 200);
+  const w2 = await watched();
+  ok('standing again in the dark: fewer tiles watched than in the light (' + w0 + ' -> ' + w2 + '), unseen here: "' + (await read()) + '"', w2 < w0 && /G11 · unseen here/.test(await read()));
+  await snapP('07-douse-after', 'douse-after');
+  await tog.click(); await settle(p, 250);
+  ok('the switch turns it off: no shading, no read-out', (await p.locator('[data-sightline]').count()) === 0 && (await p.locator('[data-sightline-read]').count()) === 0);
+  await tog.click(); await settle(p, 150);
+  ok('no page errors' + (p.errors?.length ? ': ' + p.errors.slice(0, 2).join(' | ') : ''), !(p.errors?.length));
+  await p.context().close();
+}
 await browser.close();
