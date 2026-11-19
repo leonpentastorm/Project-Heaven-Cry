@@ -3038,7 +3038,13 @@
     "keep_line": "the same tall dark rubber gas mask in three-quarter front view, two large squared amber-grey goggle lenses in thick bevelled frames, broad central nose ridge and protruding lower snout with two horizontal vent slots, two large olive round cheek filter drums with radial spokes and central caps, crossed brown crown straps and rectangular brass buckles. Preserve lens tint, olive filter colour, both canister shapes and spokes, all vents, harness routes, buckles, seams and precise upright silhouette. No face or wearer; no new tubes.",
     "status": "pending",
     "production_approved": false,
-    "depends_on": "armour-gas_mask--masterwork"
+    "depends_on": "armour-gas_mask--masterwork",
+    "last_attempt": {
+      "result": "usage_limit_reached",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/armour-gas_mask--relic.json",
+      "reset_utc": "2026-11-20T03:19:14Z",
+      "resets_at": 1795144754
+    }
   },
   {
     "id": "armour-gas_mask--celestial",

@@ -1,3 +1,16 @@
+# Usage-limit handoff — 19 November 2026
+
+Current branch: `art/2026-11-19-kept-blade-grades`. Own119/128 selected grade candidates are pushed; peer58 are imported with originals/versioned alpha cleanup. Combined pinned count327/871 (150 previously audited base/unique +119 exclusive own grades +58 peer grades). Exports/shared imports/alternatives never count again.
+
+Actual own image limit on Gas Mask Relic: reset **20 November2026 10:19:14 Bangkok /03:19:14 UTC**, epoch1795144754. Do not call image_gen earlier. Exact response and progress: `art/_archive/gear/2026-11-19-kept-blade-grades/`. Next reserved work: Gas Mask Relic then Celestial (2). Seven earlier Ork/War Axe grades stay rejected/dependent; do not repeatedly resubmit. Other peer eight rejected/dependent grades also stay blocked. Night Goggles4 and Gas MaskFine/Masterwork are delivered; do not redraw.
+
+FREE after checking the latest issue3: Ballistic Helmet Relic/Celestial2; kept guns24 (parlour_pistol, lever_carbine, sawn_off, coach_gun, legion_bullpup, whisper_smg), heavy8 (hellraiser_rotary,purifier_flamer), powered8 (ork_rip_saw,hellraiser_servo_fist), thrown4 (throwing_knives). Publish an exact claim before drawing. New Standard-grade work requires current source/claim checks; gun repaints and unique dependencies have separate recorded blockers.
+
+Shared channel https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Complete tomorrow instructions: `art/_archive/gear/2026-11-19-kept-blade-grades/TOMORROW.md`. All candidates remain unapproved; keep develop untouched.
+
+---
+Historical snapshots below; latest channel/queue takes precedence.
+
 # Live head-accessory claim — 19 November 2026
 
 Shared channel: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7011687307 . This worker owns128 exact IDs in art/_archive/gear/2026-11-19-kept-blade-grades/queue.json,113 delivered plus7 earlier blocked/dependent plus8 newly claimed head-accessory grades: armour-night_goggles and armour-gas_mask, all four grades each. Branch art/2026-11-19-kept-blade-grades. All52 earlier armour grades delivered.

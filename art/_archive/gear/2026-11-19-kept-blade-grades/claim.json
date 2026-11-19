@@ -180,5 +180,7 @@
   "peer_canonical_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
   "target": 128,
   "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7011687307",
-  "latest_implementer_commit": "c22cc8f7bd27fb73fb99cebea7b3ef2b57748454"
+  "latest_implementer_commit": "c22cc8f7bd27fb73fb99cebea7b3ef2b57748454",
+  "handoff_status": "paused at actual usage limit; Gas Mask Relic/Celestial remain reserved for continuation after reset; all119 delivered IDs must be skipped",
+  "next_reset_utc": "2026-11-20T03:19:14Z"
 }

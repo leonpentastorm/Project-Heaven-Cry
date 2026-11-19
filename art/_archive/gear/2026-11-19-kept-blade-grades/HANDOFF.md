@@ -1,5 +1,7 @@
 # Gear grade candidates
 
+**Actual image quota stop:** `usage_limit_reached` on `armour-gas_mask--relic`. Reset: **2026-11-20 10:19:14 Bangkok time** (`2026-11-20T03:19:14Z`, epoch 1795144754). Do not request an image before this timestamp. The failed request produced no image. Exact response: [art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/armour-gas_mask--relic.json](generation-failures/armour-gas_mask--relic.json).
+
 **119/128 grade candidates delivered** on `art/2026-11-19-kept-blade-grades`. Shared mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . See claim.json for this lane’s current Standards. Released overlapping blades reuse12 peer candidates, with3 local alternatives archived.
 
 Leon requested continuous candidate production; proof approval is not fabricated. All candidates remain review-candidate, production_approved:false, implementation_ready:false, with outline.review_required:true. Exact outline is measured, never asserted unless the masks match. Per-image registration is uniform scaling/translation only, without warp, silhouette masks, filled pixels or code-drawn substitutes. The generated native remains untouched.

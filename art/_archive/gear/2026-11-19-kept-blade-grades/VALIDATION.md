@@ -1,0 +1,8 @@
+# Final quota-stop validation —19November2026
+
+- Own lane validator passed all119 selected masters and476exports, exact source/master/prompt/reference/export hashes, catalog bindings, candidate flags, progress and32/64pxreview sheets. No --complete assertion:9pending jobs remain.
+- Peer import validator with --check-catalog passed all58 selected masters,232exports,58native sources,570preserved peer files and versioned originals. Current master clear margin minimum81px; export1px. Only alpha<8 changed; all RGB/solid-alpha unchanged. Catalog/post-application report is coordination/peer-import-v2/VALIDATION.json.
+- Quota/progress checks passed: actual429usage_limit_reached on Gas Mask Relic, reset1795144754, no resulting image or delivered ID.119/128delivered;9pending. Pending2quota-continuation and7prior rejected/dependent are classified separately.
+- Latest developc22cc8f7b is already an ancestor; no new develop art specification found by final fetch. Separate previous melee/armour, repaint-continuation, unique-melee/bow and briefs-complete local branches matched their remote SHAs. Original worktree was clean.
+- `tools/validate_art.py --asset mind-without-fog` cannot complete in this sparse worktree: `FAIL: Missing file: art/portraits/world/new-faces/ivara-drenn.png`. This omitted historical file is not a newly deleted asset. No whole-library pixel pass or full web build is asserted. Checksum rehasher preserved4889unchanged omitted HEAD entries rather than inventing materialized-byte checks.
+- Final diff whitespace check passed. Clean worktree/remote equality are checked after final handoff push. Artistic approval and exact-outline review remain open; no runtime grade selection is claimed.

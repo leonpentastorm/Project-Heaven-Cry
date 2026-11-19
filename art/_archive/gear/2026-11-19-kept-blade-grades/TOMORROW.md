@@ -1,0 +1,29 @@
+# Continue after the image reset
+
+Start from `art/2026-11-19-kept-blade-grades`, workspace `/workspace/PHC-art-2026-11-19`. Read `HANDOFF.md`, `progress.json`, `queue.json`, `claim.json`, current `art/AGENTS.md`, the guide/gear rules, current full file08 brief, and issue3 before drawing. User authorized continuous candidate production and push after every image, without batch approval pauses. Develop remains untouched.
+
+## Exact pause and next images
+
+This session actually received HTTP429 `usage_limit_reached` on `armour-gas_mask--relic`. Reset epoch1795144754 is **20 November2026 10:19:14 Bangkok /03:19:14 UTC**. Raw failure is in `generation-failures/armour-gas_mask--relic.json`. No Relic image exists. Do not retry before reset; a usage failure is not a moderation rejection. The two remaining independent/dependent continuation jobs are Gas Mask Relic then Celestial. Their exact prompts and references are committed in queue.json; Standard and selected Masterwork are present. Keep lenses amber-grey and filters olive; inlay on cheek plates around filters, ornament on strap buckle, just one old repair, all additions inside silhouette. Do not move the inlay onto the centre of the nose.
+
+119/128 exclusive lane candidates delivered; nine pending = these two plus seven earlier rejected/dependent jobs. Ork Masterwork and War Axe Fine were moderation-blocked; their higher five grades depend on those. Do not repeatedly resubmit rejected requests. Preserve raw errors and avoid claims that these are merely quota-blocked. The peer separately has eight rejected/dependent Drifter/Crossbow/Repeating Crossbow grades.
+
+## Draw and deliver
+
+Fetch latest implementer and art branches safely; integrate required upstream updates normally on this separate art branch. Never force-push. Check issue3 and current catalog for duplicates before each new claim. Do not redraw delivered IDs or discard earlier versions. One image_gen request at a time; inspect references, generate/edit using image_gen, show the result in chat, inspect it, preserve every selected/unselected source, export, validate, commit and push before next generation. Technical scripts never paint replacement artwork. All grade candidates remain `review-candidate`, `production_approved:false`, `implementation_ready:false`; exact-outline drift is measured and still needs artistic review. User authorized proceeding without fabricating approval of the Standard/proof gate.
+
+Use `python3 tools/art/export_nov19_grades.py --id ID --source ABS_NATIVE_PNG`, then `python3 tools/validate_nov19_grades.py --asset ID` and `git diff --check`. Commit/push exact files. Never run --complete while recorded blocked jobs remain. The exporter preserves native,1024RGBA master,256/128/64/32 exports, exact selected prompt/reference hashes, review sheets and durable status. Prior creative correction attempts live under attempts/; retain them. The private delivery helper may aid recovery but committed queue/specifications are authoritative. Once a post-reset image succeeds, exporter moves prior quota data to quota_history. On another limit, record its exact new reset and stop early requests.
+
+## Other agent's delivered work
+
+Peer branch `art/2026-11-19-grade-proof`, pinned676764cfd29663c386e3b79538eef046153cedd3, is stopped. Its58 native sources,58 selected candidates and232exports were independently audited. This branch imports all58 (46 new catalog entries plus12 previously shared canonical blades) and removes only alpha<8 residue. Original native/candidate/production/export/metadata bytes are versioned under coordination/peer-import-v2; solid alpha and RGB are unchanged; current strict master margin minimum81px, export minimum1px. Validate via `python3 tools/art/import_peer_grades.py --validate --check-catalog`. Do not rerun imported legacy prepare/register commands over v2. Two unselected trial JSONs had absolute paths; original records and four portable mappings are retained. Post-catalog report is VALIDATION.json. Peer's own reset09:45:39 Bangkok differs from this session's10:19:14 reset.
+
+## Free work and accurate counts
+
+WORK-CLAIMS.md lists exact free lanes at this handoff: Ballistic Helmet Relic/Celestial2 plus kept guns24/heavy8/powered8/thrown4=44. Recheck live issue3 and claim exactIDs before extending the queue. Other new Standard grades may be available after verifying actual delivered source and all current claims. Do not take a repaint/unique dependency whose source is rejected or an explicit0.30 hold.
+
+Combined pinned count is327/871:150 previously audited base/unique +119 exclusive own grades +58peer grades. Remaining544 is whole-pack work, not all available independent tasks. Shared12 imports, archived3 overlap alternatives, corrected attempts and exports do not add drawings. See coordination/COUNT-SNAPSHOT.json and historical baseline evidence. This run pushed15 further selected candidates from own104 to119, including completion of the already-rendered Combat Gloves Celestial; it also imported peer work, which is not a new drawing.
+
+## Validation and integration limits
+
+Targeted own119 and peer58 hash/provenance/pixel checks are required; checksum rehasher preserves omitted skip-worktree entries only when unchanged in HEAD. This sparse checkout cannot verify omitted historical artwork, including art/portraits/world/new-faces/ivara-drenn.png; a full-library pixel pass/full npm asset build is not asserted. Artistic approval and exact-outline consistency still need review; metadata implementation_ready:false is not a builder gate, and grade-aware UI resolver selection remains a separate implementation task. Keep old source/manifests and all other lanes intact. Finish with diff check, push, clean worktree and matching remote SHA; update issue3 and handoff with actual results only.

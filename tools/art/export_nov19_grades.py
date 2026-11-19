@@ -104,7 +104,13 @@ def update_handoff(queue,progress):
         blocked = expanded
     done = set(progress['delivered'])
     ready = [j['id'] for j in queue if j['status']=='pending' and j['id'] not in blocked and (not j.get('depends_on') or j['depends_on'] in done)]
+    quota = progress.get('image_quota', {})
+    quota_text = (f'**Actual image quota stop:** `{quota["type"]}` on `{quota["asset_id"]}`. '
+                  f'Reset: **{quota["reset_bangkok"]} Bangkok time** (`{quota["reset_utc"]}`, epoch {quota["resets_at"]}). '
+                  'Do not request an image before this timestamp. The failed request produced no image. '
+                  f'Exact response: [{quota["response_path"]}]({Path(quota["response_path"]).relative_to(rel(BASE))}).\n\n') if quota else ''
     (BASE/'HANDOFF.md').write_text('# Gear grade candidates\n\n'
+        + quota_text +
         f'**{len(progress["delivered"])}/{len(queue)} grade candidates delivered** on `art/2026-11-19-kept-blade-grades`. '
         'Shared mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . '
         'See claim.json for this lane’s current Standards. Released overlapping blades reuse12 peer candidates, with3 local alternatives archived.\n\n'
@@ -195,6 +201,8 @@ def export(asset_id, source):
     job['status'] = 'delivered'
     dump(BASE / 'queue.json', queue)
     progress = json.loads((BASE / 'progress.json').read_text())
+    if progress.get('image_quota'):
+        progress.setdefault('quota_history', []).append({**progress.pop('image_quota'), 'resolved_by_successful_export': asset_id})
     progress.update(status='drawing', delivered=[j['id'] for j in queue if j['status']=='delivered'],
                     remaining=[j['id'] for j in queue if j['status']=='pending'],
                     updated_utc=datetime.now(timezone.utc).isoformat())

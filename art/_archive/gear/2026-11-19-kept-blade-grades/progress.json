@@ -1,6 +1,6 @@
 {
   "target": 128,
-  "status": "drawing",
+  "status": "paused-image-usage-limit",
   "delivered": [
     "weapon-kemizuchi_duelling_blade--fine",
     "weapon-kemizuchi_duelling_blade--masterwork",
@@ -135,7 +135,19 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T14:28:39.359576+00:00",
+  "updated_utc": "2026-11-19T14:30:35.336933+00:00",
   "reused_peer_candidates": 12,
-  "archived_overlap_alternatives": 3
+  "archived_overlap_alternatives": 3,
+  "image_quota": {
+    "type": "usage_limit_reached",
+    "http_status": 429,
+    "asset_id": "armour-gas_mask--relic",
+    "resets_at": 1795144754,
+    "reset_utc": "2026-11-20T03:19:14Z",
+    "reset_bangkok": "2026-11-20 10:19:14",
+    "timezone": "Asia/Bangkok",
+    "returned_resets_in_seconds": 46205,
+    "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/armour-gas_mask--relic.json",
+    "retry_not_before_epoch": 1795144754
+  }
 }
