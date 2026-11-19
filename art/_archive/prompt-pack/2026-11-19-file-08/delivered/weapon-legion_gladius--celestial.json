@@ -1,0 +1,16 @@
+{
+  "id": "legion_gladius",
+  "tier": "celestial",
+  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--celestial.png",
+  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--celestial.png",
+  "size64_mask_differing_pixels": 15,
+  "sha256": "f16ae5c5c8c941d50083344a7d0538d2ba8da103998ed8af164dd2bfe875e30b",
+  "path": "art/icons/gear/weapon-legion_gladius--celestial.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-legion_gladius--celestial.png",
+    "128": "art/icons/gear/exports/128/weapon-legion_gladius--celestial.png",
+    "64": "art/icons/gear/exports/64/weapon-legion_gladius--celestial.png",
+    "32": "art/icons/gear/exports/32/weapon-legion_gladius--celestial.png"
+  },
+  "source_sha256": "c40734a6b609ca85419f791822721f92a24fe40da5d922d004942688323426da"
+}
