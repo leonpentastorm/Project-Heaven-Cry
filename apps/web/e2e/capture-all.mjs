@@ -537,7 +537,7 @@ await step('the Narrator\'s desk', async () => {
 // found unshown (a held Bond, a held Figment); any other state not reached is noted in index.md and fails nothing
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 ok('pictures taken at both sizes: ' + done.length, done.length > 0 && done.length % 2 === 0);
-ok('the Mender's picture shows a Bond held', !skipped.some((x) => /^Mender: the Bond/.test(x)));
+ok("the Mender's picture shows a Bond held", !skipped.some((x) => /^Mender: the Bond/.test(x)));
 ok('the Figment picture shows a Figment held', !skipped.some((x) => /^Rigger: Picture/.test(x)));
 console.log('done');
 await browser.close();

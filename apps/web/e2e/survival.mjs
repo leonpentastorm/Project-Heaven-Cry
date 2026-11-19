@@ -851,7 +851,7 @@ const both = async (name) => { await shot(name + '-1280'); await p.setViewportSi
 const cid0 = Object.keys(g.characters)[0], offer = r.boons[cid0];
 const cards = await p.locator('[data-phc-boons="' + cid0 + '"] [data-phc-boon]').allTextContents();
 ok('the boon pick: three large cards, each its name, its sentence with its number from data and its worth (' + offer.join(', ') + ')', cards.length === 3 && offer.length === 3
-  && cards.every((t) => /\d/.test(t) && /Room \d|No room used/.test(t)) /* 0.31.11 wording: 'Room N' */ && await p.locator('[data-phc-boons] [data-phc-boon] [data-phc-boon-icon]').count() === 3); // 0.28.1: the artist's icon
+  && cards.every((t) => /\d/.test(t) && /Uses \d+ of your boon room|Uses no boon room/.test(t)) /* 0.32 B10 wording: 'Uses N of your boon room' */ && await p.locator('[data-phc-boons] [data-phc-boon] [data-phc-boon-icon]').count() === 3); // 0.28.1: the artist's icon
 await both('survival-boon-pick');
 await p.locator('[data-phc-boon="' + offer[0] + '"]').click();
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'tile', null, { timeout: 30000 });
