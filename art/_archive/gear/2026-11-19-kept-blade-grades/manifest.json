@@ -6852,6 +6852,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-heavy_boots--relic",
+      "path": "art/icons/gear/armour-heavy_boots--relic.png",
+      "sha256": "da9b5d9f48e4cd58f270c2dbcca71e260dd9d76dea4d756af9064feeaa6b19f4",
+      "label": "Heavy Boots — Relic",
+      "family": "armour-heavy_boots",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-heavy_boots--relic.png",
+        "sha256": "c494134407b12bc986217c7566e384c2f0d414742d292bd434dbddf1dde6859e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-heavy_boots--relic.png",
+        "sha256": "da9b5d9f48e4cd58f270c2dbcca71e260dd9d76dea4d756af9064feeaa6b19f4"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-heavy_boots--relic.txt",
+        "sha256": "2b76cee731fa8b1268ec0c5b9d16656f54ca26ef909cea92525eb52264ead33e"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-heavy_boots.png",
+          "sha256": "bf6aa28766f45a090f5289c830c5638b78a1b54fc8034dda83eca4e4d839bf96"
+        },
+        {
+          "path": "art/icons/gear/armour-heavy_boots--masterwork.png",
+          "sha256": "ca9b7c5a495350690fdda4a4c8ef4de5cf7a07f1c2390deebe3e56d1426707c7"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-heavy_boots--relic.png",
+        "128": "art/icons/gear/exports/128/armour-heavy_boots--relic.png",
+        "64": "art/icons/gear/exports/64/armour-heavy_boots--relic.png",
+        "32": "art/icons/gear/exports/32/armour-heavy_boots--relic.png"
+      },
+      "export_hashes": {
+        "256": "a293ba02281132b4c0d61dc81539d11550fa01779e9f9c90974e9d02fb8a9fb8",
+        "128": "956e97068f51d7b151745c1ef37b7844a6a3697712e815e44cf70c10a9b5ec5f",
+        "64": "34afa0aa72d9f136c7b069943622ff870bb010313a1ad3efdd833e3c4bb644d4",
+        "32": "879fca37c7cd9aeafba6d0b398b561a8e1f16e6d8df380ecb69a237b93a3446e"
+      },
+      "grade": "relic",
+      "standard_id": "armour-heavy_boots",
+      "outline": {
+        "solid_alpha_iou": 0.9740368592123282,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 14,
+        "different_pixels_64": 27
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
