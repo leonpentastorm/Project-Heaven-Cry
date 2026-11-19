@@ -204,6 +204,72 @@
       "grade": "unique",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-rearguard",
+      "path": "art/icons/gear/weapon-rearguard.png",
+      "sha256": "5b6430682e10a9339eea82bea1342bce8543355b194409beb076d472476ddf38",
+      "label": "Rearguard (Legion short sword)",
+      "family": "unique-rearguard",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-rearguard.png",
+        "sha256": "2c50102a8d476a28c74fd6c1ab5ff12dbd2abdaa8ce271a0921c7fd377271c3c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/masters/v1/weapon-rearguard.png",
+        "sha256": "5b6430682e10a9339eea82bea1342bce8543355b194409beb076d472476ddf38"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-rearguard.txt",
+        "sha256": "8ea1d4a534e97abece65a75d83b9c6f9080fe44abc6fce384119ea6c10797afe"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-afterword.png",
+          "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-legion_gladius.png",
+          "sha256": "28e96e7333bce563f97911b40b91750c9a6b578573f85c2438e4e045a5c6cd92"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/legion_gladius.png",
+          "sha256": "df913834c210299f3dabaf933e315906831c6f6c6a0f4e848e967a343cd593bc"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-legion_gladius.png",
+          "sha256": "28e96e7333bce563f97911b40b91750c9a6b578573f85c2438e4e045a5c6cd92"
+        },
+        {
+          "path": "art/icons/weapons/legion_gladius.svg",
+          "sha256": "68de0e45bc9efcce25361ac5caba75e5f3441846443bf5882a68e671593c6f9e"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-rearguard.png",
+        "128": "art/icons/gear/exports/128/weapon-rearguard.png",
+        "64": "art/icons/gear/exports/64/weapon-rearguard.png",
+        "32": "art/icons/gear/exports/32/weapon-rearguard.png"
+      },
+      "export_hashes": {
+        "256": "d9a53705674dc03fba00ced0993c950dcce3ffd6775234cadd85ec5a83670081",
+        "128": "624d6461a522e2ac1c9df7e18de1c4eb1602cdb320f25fe68f711be1f4e7f729",
+        "64": "7def4f44b4b423ab77e308d4e56cdbe2adb40d31ecb81976072740fab4cd498a",
+        "32": "f7a325db83467f2445608c5eb3b9b627b981de8f91ce4f84845a55691ae6d5c5"
+      },
+      "grade": "unique",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
