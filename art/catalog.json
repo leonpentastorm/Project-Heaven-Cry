@@ -18762,6 +18762,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-legion_rank_sword": {
+      "label": "Legion rank sword",
+      "path": "art/icons/gear/weapon-legion_rank_sword.png",
+      "sha256": "6ad097ad14d652ea9a959762fc71c939ed7b6575b6e430956f7663808ab15c3d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_rank_sword.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_rank_sword.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_rank_sword.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_rank_sword.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_rank_sword.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+      "brief_number": 6,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {
