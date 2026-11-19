@@ -1,0 +1,1 @@
+This draft closely reproduces the older lancet ornament, raised front arch and separate-looking grip. The new silhouette should be plain, with a tiny bead, a continuous stock and a single thin gold line.

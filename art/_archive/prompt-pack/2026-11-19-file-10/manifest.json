@@ -1,0 +1,57 @@
+[
+  {
+    "n": 4,
+    "id": "decrkm_autopistol",
+    "title": "Decrkm auto-pistol",
+    "path": "art/icons/gear/weapon-decrkm_autopistol.png",
+    "refs": [
+      "art/icons/gear/weapon-decrkm_autopistol.png"
+    ],
+    "paint": "A full-size select-fire burst machine pistol with a fold-down front grip. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width. Silhouette, kept exactly: a steel pistol with an open-top slide that shows the barrel; a short three-port compensator on the muzzle; an enlarged trigger guard; a small metal front grip hinged in front of the trigger guard and folded down, pointing to the ground; a long 20-round magazine reaching well below the grip; an exposed hammer. Materials: dark gunmetal, black grip panels, worn bright edges. Maker's touch: one small brass pin through the slide.\nAt 32 px: a pistol with a long magazine and a little grip hanging under its front.",
+    "repaint": true,
+    "span": 0.8,
+    "label": "Decrkm auto-pistol",
+    "sha256": "bd817971baa23d1ae9a9d380966e069851cca646be589bf8c95daec46b16c175",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-decrkm_autopistol.png",
+      "128": "art/icons/gear/exports/128/weapon-decrkm_autopistol.png",
+      "64": "art/icons/gear/exports/64/weapon-decrkm_autopistol.png",
+      "32": "art/icons/gear/exports/32/weapon-decrkm_autopistol.png"
+    },
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-10/native/04-weapon-decrkm_autopistol.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "brief_number": 25,
+    "origin": "brief",
+    "implementation_ready": false,
+    "collection": "prompt-pack-2026-11-19-file-10",
+    "previous_path": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/weapon-decrkm_autopistol.png",
+    "previous_sha256": "7e349cb915ee1c555f7faba91f2f4161a8ff541e004c561efde1bf32b2eb0a44",
+    "previous_exports": {
+      "256": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/256/weapon-decrkm_autopistol.png",
+      "128": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/128/weapon-decrkm_autopistol.png",
+      "64": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/64/weapon-decrkm_autopistol.png",
+      "32": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/32/weapon-decrkm_autopistol.png"
+    },
+    "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-decrkm_autopistol.png",
+    "previous_native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_sha256": "0dc24fa07279e25f9ebacf13f240bbf01bcc6494ba67a9d77e275bfe8236a98b",
+    "export_sha256": {
+      "256": "1f227713327cfe128d3d51b647f7d9021af2eabc1588ad026b97d93f8ba7d381",
+      "128": "b3f9cd8131569b2491059f943921d999fc22154adae3f6df54693cf35e0b306a",
+      "64": "35a2e4e1ce988c9bf626a39c909c26c026eb995f7d85bf782136f623e517ff89",
+      "32": "a9cbb5844167a4db23c409c89637f13162e5809bb5daea928779e664f0737309"
+    },
+    "generator_prompt": "One isolated fictional game inventory painting for Project Heaven Cry RPG. A stylized, nonfunctional prop, shown in one single exterior perspective, no schematic or inset. Heavenprint hand-painted gouache, bold contour, visible angular brushwork, crisp focal edge, medium dark shadows, upper-left warm ivory highlights, wear kept within the object. First reference is brushwork only. Remaining refs are fictional RPG family icons; use their brushwork, palette and scale. Decrkm Auto-Pistol game icon repaint. Static chunky dark steel outline, level with the front facing right. A short squared front extension, an extra small hinged handle visually descending at the front, a long narrow straight rectangular tail extending down from the primary grip, and one little rear spur. One small plain brass dot near the top. Well-worn charcoal metal and matte black handle surfaces. Keep the packed frontal silhouette and modest warm edge highlights. Single exterior object. On a true transparent 1024 square with clear margins, no stage or cast shadow. No print, letters, numbers, people, logos, insignia, flare, smoke, backdrop or colored frame. One clear silhouette readable at 32 px."
+  }
+]
