@@ -81,7 +81,7 @@ technique({
       if (t.preview || !canAnswer(t.cb, t.u, 'parry', att) || !canReact(t.cb, t.u, answerKind('parry'))) return;
       // Rules 1.70 item 5546 (P5): what react() would refuse after the roll (the blow already answered, the last
       // reaction kept for a held shot, a window an item cancels) is read first: such a Parry is not rolled, said or tried.
-      if (reactRefusal(t.cb, t.u, answerOpts(t, att))) return;
+      if (reactRefusal(t.cb, t.u, answerOpts(t, att), true)) return; // a probe: listeners change nothing
       // The lead's ruling of 19 Nov 2026 (amends item 5530): one Parry try a round per unit (techniques.json parry
       // numbers.tries_a_round), won or lost: a lost Parry still spends no reaction, but the unit does not roll another
       // Parry that round. One cell of the counters primitive (effects/uses.ts, scope per_round), taken before the roll.

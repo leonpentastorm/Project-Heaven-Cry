@@ -120,7 +120,7 @@ export const HOOK_ABOUT: Record<HookName, string> = {
   heal_given: 'a heal landed (who healed whom, how much)',
   heal_in: 'a unit is about to be healed (the amount may change)',
   shield_grant: 'a shield is about to be given (the amount may change)',
-  reaction_window: 'a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it',
+  reaction_window: 'a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it (a probe, ctx.probe: asked before a roll by tactics.ts reactRefusal; a listener only sets cancel then)',
   reaction: 'a reaction is being made (tactics.ts react(), rules 1.28): {u, kind (attack, move, protect), event, payer}; it fires before the reaction resolves',
   enemy_action_start: 'an enemy is about to act (an item may open a window or make it skip)',
   sight_change: 'after a move, the units each side stopped or started seeing (only computed while someone listens)',
