@@ -1743,7 +1743,11 @@ export class CombatLogic extends DCLogic {
         const rows = mePanel.res.rows.map((r) => ({ ...r, now: (rows0.find((x) => x.key === r.key) || {}).now }));
         const { open, folded } = meterFolds(rows, mem, cb.name + '|' + (cb.map && cb.map.id) + '|' + cb.order.join(','));
         // (a zero meter with a warning, RELOAD CORE or EMPTY, never folds: game/fold.ts meterFolds; it takes no fold click)
-        mePanel.res.rows = open.map((r) => ({ ...r, tip: (r.sub ? r.sub + '. ' : '') + r.hint, zero: r.now != null && r.now <= 0 && !r.warn && !r.pin,
+        // 0.31.11 (lead's ruling on the 1600x900 check): MP first, and a focus in the pack (STOWED: the Visualizer, the Evoker's charge)
+        // is a state, not a meter in play: its rows go after the others, so MP is the first meter under HP in the card's box
+        // and MP leads the meters, as the 0.31.1 layout says ("the meters, MP first among them, show under HP")
+        const stowedLast = (l) => [...l.filter((r) => r.key === 'mp'), ...l.filter((r) => r.key !== 'mp' && r.warn !== 'STOWED'), ...l.filter((r) => r.key !== 'mp' && r.warn === 'STOWED')];
+        mePanel.res.rows = stowedLast(open).map((r) => ({ ...r, tip: (r.sub ? r.sub + '. ' : '') + r.hint, zero: r.now != null && r.now <= 0 && !r.warn && !r.pin,
           fold: r.now != null && r.now <= 0 && !r.warn && !r.pin ? () => { foldMeter(r.key, true); redraw(); } : () => {} }));
         mePanel.res.has = open.length > 0 || folded.length > 0;
         mePanel.res.hasFolded = folded.length > 0; mePanel.res.foldedN = '+' + folded.length;
