@@ -1,5 +1,5 @@
 <div style="min-height: 100vh; background: #0A0D13; color: #E7EBF3; font-family: 'Chakra Petch', sans-serif; display: flex; flex-direction: column">
-<header class="phc-drop-in phc-lu-head" style="display: flex; align-items: center; gap: 14px; padding: 12px 28px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
+<header class="phc-drop-in phc-lu-head" style="display: flex; align-items: center; gap: 14px; padding: 8px 28px; border-bottom: 1px solid #232D3F; flex-wrap: wrap">
 <button type="button" onClick="{{zoomPc}}" aria-label="Enlarge {{name}}" style="{{zoomBtn}}"><img src="{{pc}}" alt="{{name}}" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #E7EBF3; background: #000"></button>
 <div style="display: flex; flex-direction: column"><span style="font-size: 26px; font-weight: 700; letter-spacing: 0.08em; line-height: 1.05">{{title}}</span><span style="font-size: var(--fs-sub); color: #A3AEC2">{{kicker}}</span></div>
 <div class="phc-lu-budget" aria-label="To spend" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center"><sc-for list="{{budget}}" as="b" hint-placeholder-count="3"><span data-budget="{{b.key}}" style="{{b.style}}">{{b.text}}</span></sc-for><span class="phc-lu-rules" tabindex="0" tip="{{rules}}" aria-label="How points work" style="display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid #A3AEC2; font-size: var(--fs-sub); font-weight: 700; color: #A3AEC2; cursor: help">?</span></div>
@@ -54,7 +54,7 @@
 <sc-for list="{{tree}}" as="co" hint-placeholder-count="1">
 <section class="phc-lu-core" role="tabpanel" data-core="{{co.key}}" aria-label="{{co.label}}" style="{{co.style}}">
 <sc-for list="{{co.attrs}}" as="at" hint-placeholder-count="3">
-<div class="phc-lu-attrcol" data-attr="{{at.key}}" style="min-width: 0; display: flex; flex-direction: column; gap: 4px">
+<div class="phc-lu-attrcol" data-attr="{{at.key}}" style="min-width: 0; display: flex; flex-direction: column; gap: 2px">
 <div class="phc-lu-row phc-lu-attrrow" style="padding: 2px 2px 2px 4px">
 <button type="button" class="phc-lu-attrname" data-attr-page="{{at.key}}" onClick="{{at.open}}" aria-label="{{at.openLabel}}" style="{{at.openStyle}}">{{at.name}}</button><span style="{{at.valStyle}}">{{at.val}}</span>
 <sc-if value="{{at.canRaise}}" hint-placeholder-val="{{false}}"><button type="button" class="phc-lu-raise" data-raise="attr" onClick="{{at.raise}}" disabled="{{at.blocked}}" aria-label="{{at.raiseLabel}}" style="{{at.raiseStyle}}">+1</button></sc-if>
@@ -67,15 +67,15 @@
 <div class="{{s.cls}}" data-skill="{{s.key}}" style="{{s.style}}">
 <div class="phc-lu-row">
 <img src="{{s.img}}" alt="" style="width: 28px; height: 35px; object-fit: cover; border-radius: 4px; background: #000; flex: none">
-<span style="display: flex; flex-direction: column; flex: 0 0 150px; min-width: 0"><span style="{{s.nameStyle}}">{{s.name}}</span><span class="phc-lu-slot" style="{{s.tagStyle}}">{{s.tag}}</span></span>
+<span style="display: flex; flex-direction: column; flex: 0 0 140px; min-width: 0"><span style="{{s.nameStyle}}">{{s.name}}</span><span class="phc-lu-slot" style="{{s.tagStyle}}">{{s.tag}}</span></span>
 <span class="phc-lu-pts" style="flex: none; min-width: 22px; text-align: center; font-size: 22px; font-weight: 700">{{s.pts}}</span>
 <sc-if value="{{s.canRaise}}" hint-placeholder-val="{{false}}"><button type="button" class="phc-lu-raise" data-raise="skill" onClick="{{s.raise}}" disabled="{{s.blocked}}" aria-label="{{s.raiseLabel}}" style="{{s.raiseStyle}}">+1</button></sc-if>
 <sc-if value="{{s.hasNext}}" hint-placeholder-val="{{true}}"><span class="phc-lu-next" data-next-at="{{s.nextAt}}" style="font-size: var(--fs-body); line-height: 1.35; color: #E7EBF3">{{s.next}}</span></sc-if>
 <sc-if value="{{s.hasFlash}}" hint-placeholder-val="{{false}}"><span class="phc-lu-gain" style="flex: none; font-size: var(--fs-body); font-weight: 700; color: #6FEA77">✓ {{s.flash}}</span></sc-if>
+<sc-if value="{{s.hasWhy}}" hint-placeholder-val="{{false}}"><span class="phc-lu-why" style="flex: none; display: inline-flex; align-items: center; gap: 8px"><span style="font-size: var(--fs-sub); font-weight: 600; color: #FFFFFF; white-space: nowrap">{{s.why}}</span><sc-if value="{{s.hasFix}}"><button type="button" class="phc-lu-fix" onClick="{{s.fix}}" style="{{s.fixStyle}}">{{s.fixLabel}}</button></sc-if></span></sc-if>
 <sc-if value="{{s.hasChip}}" hint-placeholder-val="{{false}}"><button type="button" class="phc-lu-chip" onClick="{{s.toggleChoice}}" aria-expanded="{{s.chipExpanded}}" style="{{s.chipStyle}}">{{s.chip}}</button></sc-if>
 <button type="button" onClick="{{s.help}}" aria-label="What is {{s.name}}? Its levels" style="{{s.helpStyle}}">?</button>
 </div>
-<sc-if value="{{s.hasWhy}}" hint-placeholder-val="{{false}}"><div class="phc-lu-why" style="display: flex; align-items: center; gap: 10px; padding-left: 38px"><span style="font-size: var(--fs-sub); font-weight: 600; color: #FFFFFF">{{s.why}}</span><sc-if value="{{s.hasFix}}"><button type="button" class="phc-lu-fix" onClick="{{s.fix}}" style="{{s.fixStyle}}">{{s.fixLabel}}</button></sc-if></div></sc-if>
 <sc-if value="{{s.choiceOpen}}" hint-placeholder-val="{{false}}"><div class="phc-lu-choicebox" style="display: flex; flex-direction: column; gap: 8px; padding: 4px 0 4px 38px">
 <sc-if value="{{s.hasPerkChoice}}"><div class="phc-lu-pair" aria-label="Perk step"><sc-for list="{{s.perkChoice}}" as="pk" hint-placeholder-count="2"><div class="phc-lu-perk" data-perk="{{pk.key}}" style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; border: 1px solid #FFFFFF; background: #1C2536">
 <span style="display: flex; align-items: center; gap: 8px"><img data-zoom="{{pk.name}}" data-zoom-text="{{pk.text}}" class="phc-icon" src="{{pk.icon}}" alt="" style="width: 32px; height: 32px; object-fit: contain; flex: none"><span style="font-size: var(--fs-body); font-weight: 700">{{pk.name}}</span><span style="margin-left: auto; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; color: #A3AEC2">{{pk.tier}}</span></span>

@@ -125,7 +125,7 @@ describe('level-up screen', () => {
     // Dexterity 5 with no perks: a white chip, two steps waiting; nothing to choose until it is opened
     const dex = () => el.querySelector('.phc-lu-skill[data-skill="dexterity"]')!;
     expect(dex().classList.contains('phc-lu-step')).toBe(true);
-    expect(dex().querySelector('.phc-lu-chip')!.textContent).toBe('◆ 2 perk steps · Fork waiting');
+    expect(dex().querySelector('.phc-lu-chip')!.textContent).toBe('◆ 2 perk steps · Fork');
     expect(dex().querySelectorAll('button.phc-lu-choice').length).toBe(0);
     await React.act(async () => { (dex().querySelector('.phc-lu-chip') as HTMLButtonElement).click(); });
     const choices = dex().querySelectorAll('.phc-lu-pair .phc-lu-perk button.phc-lu-choice');
@@ -134,7 +134,7 @@ describe('level-up screen', () => {
     // a step taken: one left
     await React.act(async () => { (choices[0] as HTMLButtonElement).click(); });
     expect(G.characters[c0.id].perks.length).toBe(1);
-    expect(dex().querySelector('.phc-lu-chip')!.textContent).toBe('◆ Perk step · Fork waiting');
+    expect(dex().querySelector('.phc-lu-chip')!.textContent).toBe('◆ Perk step · Fork');
     // points: the +1 spends through the engine; the row then says what was gained
     await React.act(async () => { (el.querySelector('[data-fam="mind"]') as HTMLButtonElement).click(); });
     expect([...el.querySelectorAll('.phc-lu-core')].map((x) => x.getAttribute('data-core'))).toEqual(['mind']);
@@ -150,7 +150,7 @@ describe('level-up screen', () => {
     const c0 = setup((c) => { c.level = 6; c.classId = 'marksman'; c.attrs.endurance = 6; c.skills.durability = 4; c.perks = []; c.unspent = { skill: 0, attr: 0, core: 0 } as any; });
     const { el, root } = await mount();
     const row = () => el.querySelector('.phc-lu-skill[data-skill="durability"]')!;
-    expect(row().querySelector('.phc-lu-chip')!.textContent).toMatch(/Fork waiting$/);
+    expect(row().querySelector('.phc-lu-chip')!.textContent).toMatch(/Fork$/);
     await React.act(async () => { (row().querySelector('.phc-lu-chip') as HTMLButtonElement).click(); });
     const opts = [...row().querySelectorAll('[data-fork-opt]')];
     expect(opts.length).toBe(2);

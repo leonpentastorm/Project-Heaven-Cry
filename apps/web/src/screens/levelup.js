@@ -49,7 +49,7 @@ const BADGE_INK = { engine: '#E7EBF3', both: '#C9D3E3', narrator: '#A3AEC2' };
 const badgeStyle = (v) => 'flex: none; padding: 1px 8px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; border: 1px ' + (v === 'narrator' ? 'dashed' : 'solid') + ' ' + BADGE_INK[v] + '; color: ' + BADGE_INK[v];
 ensureStyle('phc-levelup', [
   '.phc-lu-head{position:sticky;top:0;z-index:5;background:#0A0D13}',
-  '.phc-lu-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:20px;padding:14px 28px 24px;align-items:start}',
+  '.phc-lu-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,300px);gap:20px;padding:8px 28px 24px;align-items:start}',
   '.phc-lu-class{position:sticky;top:96px}',
   '.phc-lu-pick{display:flex;flex-direction:column;gap:14px;padding:24px 32px 0}',
   '.phc-lu-pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(max(280px,calc((100% - 24px) / 3)),1fr));gap:12px}',
@@ -132,25 +132,25 @@ export class LevelUpLogic extends DCLogic {
         fixStyle: 'flex: none; min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; border: 1px solid ' + a.ink + '; background: transparent; color: ' + a.ink,
         hasNext: !!nxt, next: nxt, nextAt: p + 1,
         // a waiting perk step or fork: a white chip on the row; it opens that choice inline, under the row
-        hasChip: waits > 0, chip: '◆ ' + (x ? (x.free > 1 ? x.free + ' perk steps' : 'Perk step') : '') + (x && fp.length ? ' · ' : '') + (fp.length ? (fp.length > 1 ? fp.length + ' forks' : 'Fork') : '') + ' waiting',
+        hasChip: waits > 0, chip: '◆ ' + (x ? (x.free > 1 ? x.free + ' perk steps' : 'Perk step') : '') + (x && fp.length ? ' · ' : '') + (fp.length ? (fp.length > 1 ? fp.length + ' forks' : 'Fork') : ''),
         chipExpanded: open ? 'true' : 'false', toggleChoice: () => this.setState({ choice: open ? null : s.id }),
         chipStyle: 'flex: none; min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.04em; cursor: pointer; white-space: nowrap; border: 1px solid #FFFFFF; background: ' + (open ? '#FFFFFF; color: #0A0D13' : 'transparent; color: #FFFFFF'),
         choiceOpen: open && waits > 0, hasPerkChoice: open && !!x, perkChoice: x ? (ACQUIRED[s.id] || []).filter((pk) => x.choices.some((y) => y.id === pk.id)).map((pk) => perkCard(pk, x)) : [],
         hasForkChoice: open && !!fk, forkSteps: fk ? fk.steps : [],
         hasFlash: !!fl, flash: fl, fig: ((f) => (f.has && f.state === 'new' ? f : { has: false, forms: [] }))(figLevelUp(s.id, p)), // the Figments a point just opened, with their icons
         nameStyle: 'font-size: var(--fs-body); font-weight: 700; line-height: 1.15; color: ' + ink, tagStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; color: ' + ink,
-        style: 'display: flex; flex-direction: column; gap: 6px; padding: 6px 10px; border-radius: 10px; background: #0A0D13; border: 1px solid ' + (waits ? '#FFFFFF' : '#232D3F') + '; border-left: 3px solid ' + ink };
+        style: 'display: flex; flex-direction: column; gap: 4px; padding: 1px 8px; border-radius: 10px; background: #0A0D13; border: 1px solid ' + (waits ? '#FFFFFF' : '#232D3F') + '; border-left: 3px solid ' + ink };
     };
     const cap = attrCapAt(c.level), ceil = ceilingLine(c.level);
     const waitingIn = (k) => D.skills.some((s) => famOf[s.attr] === k && (pend[s.id] || forkPend(s.id).length));
     const fam = ['body', 'mind', 'soul'].includes(this.state.fam) ? this.state.fam : ['body', 'mind', 'soul'].find(waitingIn) || 'body';
     const famTabs = ['body', 'mind', 'soul'].map((k) => { const on = k === fam, w = D.skills.filter((s) => famOf[s.attr] === k).reduce((n, s) => n + (pend[s.id] ? pend[s.id].free || 1 : 0) + forkPend(s.id).length, 0);
       return { key: k, name: k.toUpperCase(), selected: on ? 'true' : 'false', pick: () => this.setState({ fam: k }), hasWait: w > 0, wait: '◆ ' + w,
-        style: 'min-height: 40px; padding: 0 18px; border-radius: 10px 10px 0 0; font-family: inherit; font-size: var(--fs-body); font-weight: 700; letter-spacing: 0.14em; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; border: 1px solid ' + (on ? D.core[k] : '#232D3F') + '; border-bottom: 0; background: ' + (on ? '#10151F' : 'transparent') + '; color: ' + (on ? D.core[k] : '#A3AEC2') }; });
+        style: 'min-height: 34px; padding: 0 18px; border-radius: 10px 10px 0 0; font-family: inherit; font-size: var(--fs-body); font-weight: 700; letter-spacing: 0.14em; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; border: 1px solid ' + (on ? D.core[k] : '#232D3F') + '; border-bottom: 0; background: ' + (on ? '#10151F' : 'transparent') + '; color: ' + (on ? D.core[k] : '#A3AEC2') }; });
     const tree = [fam].map((k) => {
       const ink = D.core[k];
       return { key: k, name: k.toUpperCase(), label: k.charAt(0).toUpperCase() + k.slice(1), ceil,
-        style: 'display: flex; flex-direction: column; gap: 10px; padding: 12px 14px; border-radius: 0 12px 12px 12px; background: #10151F; border: 1px solid ' + ink,
+        style: 'display: flex; flex-direction: column; gap: 6px; padding: 8px 12px; border-radius: 0 12px 12px 12px; background: #10151F; border: 1px solid ' + ink,
         attrs: D.attrs.filter((a) => a.core === k).map((a) => { const aw = canRaise(c, 'attr', a.id), v = c.attrs[a.id] || 1;
           return { key: a.id, name: a.name.toUpperCase(), val: v, cap: 'Skills up to ' + v,
             next: v >= 10 ? 'Top' : ATTR_GIVES[a.id],

@@ -24,7 +24,7 @@ for (const [w, h] of [[1600, 900], [1280, 720]]) {
     const file = w + '-' + String(n).padStart(2, '0') + '-' + id + '.png';
     try {
       await p.locator('[data-skill="' + id + '"] [data-skill-face]').click(); await settle(p, 350);
-      await p.evaluate(() => { const f = document.querySelector('.phc-ep-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); await settle(p, 200);
+      await p.evaluate(() => { const f = document.querySelector('.phc-ep-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); await p.mouse.move(w - 4, 4); await settle(p, 250); // the pointer off the icons (one under it grows on hover)
       const look = await p.evaluate(() => { const box = document.querySelector('[role="dialog"] article');
         return { rows: document.querySelectorAll('.phc-ep-road .phc-ep-step').length, wide: box ? box.scrollWidth > box.clientWidth + 1 : true }; });
       await p.screenshot({ path: OUTD + '/' + file });

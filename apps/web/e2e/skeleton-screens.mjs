@@ -168,7 +168,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     ok(at + 'every attribute row says what a point gives', L.next.length === 3 && L.next.some((t) => /\+15 max HP/.test(t)) && L.next.some((t) => /\+0\.5 tile of movement an AP/.test(t)));
     ok(at + 'every skill row says what its next point gives, and its slot in words (' + L.slots.join(', ') + ')', L.gives === 9 && L.slots.join() === 'FIGHT,SURVIVE,TALK · NOTICE');
     ok(at + 'Endurance 8 is at the ceiling: +1 off, with the engine\'s reason on its row: ' + L.why, L.off === true && /^Endurance 9 opens at level 6/.test(L.why));
-    ok(at + 'the header is the budget and stays in view when the page scrolls: ' + L.budget, /\d Skill · \d Attribute · \d Perk steps?/.test(L.budget) && L.headIn);
+    ok(at + 'the header is the budget and stays in view when the page scrolls: ' + L.budget, /\d+ Skill · \d+ Attribute · \d+ Perk steps?/.test(L.budget) && L.headIn);
     ok(at + 'no sideways page scroll (' + await sideways(p) + ' px over)', (await sideways(p)) <= 1);
     await p.screenshot({ path: SHOTS + '/levelup-' + W + '.png' });
     for (const f of ['mind', 'soul']) { await p.locator('[data-fam="' + f + '"]').click(); await settle(p, 200); await p.screenshot({ path: SHOTS + '/levelup-' + W + '-' + f + '.png' }); }

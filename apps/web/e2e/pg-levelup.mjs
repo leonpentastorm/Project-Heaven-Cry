@@ -172,7 +172,7 @@ const sk = await p.locator('.phc-lu-jump').first().getAttribute('data-skill');
 await p.locator('.phc-lu-jump').first().click(); await settle(p, 400);
 ok('a perk-step jump opens that choice and puts the keyboard on its Take button', await p.evaluate(() => !!document.activeElement && document.activeElement.classList.contains('phc-lu-choice')));
 const row = p.locator('.phc-lu-skill[data-skill="' + sk + '"]');
-ok('the row with a step waiting carries a white chip (' + await row.locator('.phc-lu-chip').textContent() + ')', /^◆ .*waiting$/.test(await row.locator('.phc-lu-chip').textContent()));
+ok('the row with a step waiting carries a white chip (' + await row.locator('.phc-lu-chip').textContent() + ')', /^◆ .*(Perk step|perk steps)/.test(await row.locator('.phc-lu-chip').textContent()));
 const choiceAria = await row.locator('button.phc-lu-choice').evaluateAll((bs) => bs.map((b) => b.getAttribute('aria-label') || ''));
 ok('every Take / Upgrade button names its perk and skill, its visible words first (' + choiceAria[0] + ')', choiceAria.length > 0 && choiceAria.every((a) => /^(Take · Tier I|Upgrade · Tier II): .+ \(.+\)$/.test(a)) && new Set(choiceAria).size === choiceAria.length);
 ok('…the choices are cards side by side, what each does on its face', (await row.locator('.phc-lu-pair .phc-lu-perk [data-perk-text]').count()) === choiceAria.length && await row.locator('.phc-lu-pair .phc-lu-perk [data-perk-text]').first().isVisible());
@@ -190,7 +190,7 @@ ok('a perk step taken from the row\'s own choice (' + sk + ': ' + took + ')', !!
   await p.locator('.phc-lu-attrcol[data-attr="intelligence"] button[data-raise="attr"]').click(); await settle(p, 200);
   await p.locator('.phc-lu-skill[data-skill="brain_power"] button[data-raise="skill"]').click(); await settle(p, 200); }
 await snap('levelup-after');
-await p.getByRole('button', { name: /Back to the story/ }).click().catch(() => {}); await settle(p, 600);
+await p.locator('button.phc-lu-done').click(); await settle(p, 600); // Done or Finish later: back to the story either way
 ok('back on the story screen the ♪ button is there again', (await p.locator('[data-phc-float="music"]').count()) === 1 && await p.locator('[data-phc-float="music"]').isVisible());
 ok('no page errors', p.errors.length === 0);
 if (p.errors.length) console.log(p.errors);

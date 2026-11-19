@@ -56,7 +56,8 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
     return { fams, attrs: attrs.length, skills: document.querySelectorAll('[data-skill]').length, under, cut, hMin: Math.min(...hs), hMax: Math.max(...hs), words: document.querySelector('[data-points]').innerText };
   });
   ok(at + 'Body, Mind and Soul as headings; 9 attributes; 27 skills, each three under their attribute', lay.fams.join() === 'BODY,MIND,SOUL' && lay.attrs === 9 && lay.skills === 27 && lay.under);
-  ok(at + 'no name is cut short' + (lay.cut.length ? ' (' + lay.cut.join(', ') + ')' : '') + '; every skill row one height (' + lay.hMin + '–' + lay.hMax + ')', !lay.cut.length && lay.hMax - lay.hMin <= 1);
+  // (a skill's line is never cut now, so a card is as tall as its line: the rows are no longer one height)
+  ok(at + 'no name is cut short' + (lay.cut.length ? ' (' + lay.cut.join(', ') + ')' : '') + ' (rows ' + lay.hMin + '–' + lay.hMax + ' px)', !lay.cut.length);
   // (Proficiency's own line names the Sigil Core, the thing a mage loads: that is not a Core point.)
   const stray = lay.words.replace(/Sigil Core|core charges?/gi, '').match(/\bcores?\b|rules \d|today's rule|[a-z]_[a-z]/i);
   ok(at + 'nothing on the step says Core, and nothing reads like a rules reference or an id' + (stray ? ' (' + stray[0] + ')' : ''), !stray);
@@ -78,7 +79,7 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   ok(at + 'Dexterity 1 fits under Agility 1: ' + await note(), (await note()) === '✓ Dexterity 1: 1 Skill point spent.' && (await val('attr', 'agility')) === '1');
   ok(at + 'the next point is marked as taking the attribute up before the click', (await text('[data-skill-need="dexterity"]')) === '· Needs Agility 2');
   for (let i = 0; i < 3; i++) await up('skill', 'dexterity').click();
-  ok(at + 'Dexterity past Agility spends the Attribute points: ' + await note(), (await note()) === '✓ Dexterity 4 needs Agility 4: 1 Attribute point spent.' && (await val('skill', 'dexterity')) === '4' && (await val('attr', 'agility')) === '4');
+  ok(at + 'Dexterity past Agility spends the Attribute points: ' + await note(), (await note()) === '✓ Agility raised to 4 for Dexterity' && (await val('skill', 'dexterity')) === '4' && (await val('attr', 'agility')) === '4');
   ok(at + 'both budgets moved (' + await budgets() + ')', (await budgets()) === '6 LEFT OF 10 | 7 LEFT OF 10');
   ok(at + 'the header chip agrees', /6 SKILL · 7 ATTRIBUTE LEFT/.test(await p.locator('header').first().innerText()));
   // The attribute won't drop under its skill.
@@ -104,7 +105,7 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   ok(at + 'every stepper has a label', await p.evaluate(() => [...document.querySelectorAll('[data-points] button:not([tabindex="-1"])')].every((b) => (b.getAttribute('aria-label') || b.textContent || '').trim().length > 3)));
   // The shot: a skill just driven past its attribute, the status line saying so.
   await up('skill', 'dexterity').click();
-  ok(at + 'one more: ' + await note(), (await note()) === '✓ Dexterity 5 needs Agility 5: 1 Attribute point spent.');
+  ok(at + 'one more: ' + await note(), (await note()) === '✓ Agility raised to 5 for Dexterity');
   await p.evaluate(() => window.scrollTo(0, 0)); await p.mouse.move(W - 4, H - 4); await settle(p, 250);
   await p.screenshot({ path: SHOTS + '/creation-points-' + W + '.png' });
   // The whole step in one picture: the budget bar is held in its place for it (a full-page capture draws a sticky bar mid-page).
@@ -118,7 +119,7 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   ok(at + 'Agility reset: ' + await note(), (await note()) === '✓ Agility reset: 6 Skill points and 3 Attribute points back.' && (await val('attr', 'agility')) === '1' && (await budgets()) === '10 LEFT OF 10 | 10 LEFT OF 10');
   // A pip sets a value in one click.
   await p.locator('[data-skill="faith"] .phc-pip').nth(2).click();
-  ok(at + 'a pip sets Faith to 3 in one click: ' + await note(), (await note()) === '✓ Faith 3 needs Virtue 3: 2 Attribute points spent.');
+  ok(at + 'a pip sets Faith to 3 in one click: ' + await note(), (await note()) === '✓ Virtue raised to 3 for Faith');
   // No Attribute points left.
   for (let i = 0; i < 6; i++) await up('attr', 'endurance').click();
   for (let i = 0; i < 2; i++) await up('attr', 'strength').click();
@@ -136,7 +137,7 @@ await p.locator('[data-trait="mind_without_fog"] button').last().click();
 await step('Skills');
 ok('Mind Without Fog shows its 2 extra Attribute points (' + await budgets() + '; ' + await text('[data-budget-note]') + ')', (await budgets()) === '7 LEFT OF 10 | 2 LEFT OF 12' && (await text('[data-budget-note]')) === '+2 from Mind Without Fog');
 await up('skill', 'faith').click();
-ok('and they can be spent: ' + await note(), (await note()) === '✓ Faith 4 needs Virtue 4: 1 Attribute point spent.');
+ok('and they can be spent: ' + await note(), (await note()) === '✓ Virtue raised to 4 for Faith');
 await p.screenshot({ path: SHOTS + '/creation-points-1440-fog.png' });
 // The road map (rules 1.54 item 4119): Will Power's "?" shows ten rows, its own points lit, no line twice in a row.
 await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 200);
