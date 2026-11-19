@@ -1569,6 +1569,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-cowl",
+      "path": "art/icons/gear/armour-cowl.png",
+      "sha256": "a9d1a28e40f4433587bdd8aa3fd9d8c1617a11bf1f42ac8de4f49821ab3d7efa",
+      "label": "Cowl",
+      "family": "07-hood",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-cowl.png",
+        "sha256": "b40dbe4976c9746bd33b9fbaf12d41b0211d1fe1f85f9942b3b1c3d555502ce4"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-cowl.png",
+        "sha256": "a9d1a28e40f4433587bdd8aa3fd9d8c1617a11bf1f42ac8de4f49821ab3d7efa"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-cowl.txt",
+        "sha256": "cf9e415c27fcd1ac15afa8f6fc68f30f5fc4ddda6e1ea7891a384bfe6a19778d"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-torso_class1_light.png",
+          "sha256": "993f7915c6be69db181495b5a8f185813e0ffa40a3e5deb9f5ad1fbd4ef5207f"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-cowl.png",
+        "128": "art/icons/gear/exports/128/armour-cowl.png",
+        "64": "art/icons/gear/exports/64/armour-cowl.png",
+        "32": "art/icons/gear/exports/32/armour-cowl.png"
+      },
+      "export_hashes": {
+        "256": "0840bf333fc5e6091b74d11fc64f10a42eefbf6a31cc217235e75fbe7abddad2",
+        "128": "55e54e63a7acfd2389d7945a3929af86491db72615b47c90e38facda0d74d50f",
+        "64": "a5291cad5ed0b2279ed48b7908ae81dba7ba84e84e53cd584bf5d9f49f0dac76",
+        "32": "d62ba1486cdebaddf3fa2f9a1877f25b7cfe6778875fd42ca88b898b19732acf"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
