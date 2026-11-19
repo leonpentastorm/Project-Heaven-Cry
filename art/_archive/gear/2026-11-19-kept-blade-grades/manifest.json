@@ -2404,6 +2404,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-kemizuchi_strikers--relic",
+      "path": "art/icons/gear/weapon-kemizuchi_strikers--relic.png",
+      "sha256": "2111cb87ed1720475ea897477f0b9396ed4b0a2da656a0250eb6f43a2c7cd5ab",
+      "label": "Kemizuchi Strikers — Relic",
+      "family": "weapon-kemizuchi_strikers",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-kemizuchi_strikers--relic.png",
+        "sha256": "bc75dea5cc575b230269a4a1313dbd22012b82179383b8b7d1f9d852b41ef75e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-kemizuchi_strikers--relic.png",
+        "sha256": "2111cb87ed1720475ea897477f0b9396ed4b0a2da656a0250eb6f43a2c7cd5ab"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-kemizuchi_strikers--relic.txt",
+        "sha256": "54c48c49452980e1de8bae4b1b768d006abae276747ba16e873cb9cf167f22dc"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_strikers.png",
+          "sha256": "d4e4963718ef806fee94a92b1ec4f59d5ed9fe34de8aec489caf0ec669c83512"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_strikers--masterwork.png",
+          "sha256": "e48e3383dbdedd48bec6b2ddf93b6d64a8d266f7d3bcf5f5a8af905534a62a76"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_strikers--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_strikers--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_strikers--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_strikers--relic.png"
+      },
+      "export_hashes": {
+        "256": "e645a5464610bad6f591c587ea2c15b386e2337d9fdc995f9df4bdb7c6ebddbe",
+        "128": "c8ea2c416d467cd1393e4acf86fe0bda610e9b24eae6e938e50c5d187fdb8e23",
+        "64": "15d8644eee8922f9ffd3ecb4ae8918632f9bf4c6eeb1f27f3791f781311f2127",
+        "32": "064754021b9979180c387da2632c73c5c80760fd369855eb64047a1461003325"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-kemizuchi_strikers",
+      "outline": {
+        "solid_alpha_iou": 0.9599268353915861,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 44
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
