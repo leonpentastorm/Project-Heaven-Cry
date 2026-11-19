@@ -12447,6 +12447,15 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     blow (it beats the attack's total and the hit is halved). A Parry that fails is still rolled and said ("it gets
     through"), but no reaction is spent and the blow is not marked answered, so Retort (its Answer switched on, Guard
     held, Durability 3) may then answer the same blow when it lands. `physical/melee/answers.ts`.
+    **Amended (the lead's ruling, 19 Nov 2026): one Parry try a round per unit.** A lost Parry still spends no
+    reaction (so Retort may answer), but that unit rolls no other Parry until the next round, won or lost
+    (`techniques.json` parry `numbers.tries_a_round`: 1; one cell of the counters primitive, `effects/uses.ts` scope
+    `per_round`, taken before the roll). Proof: `test/playtest-1118.test.ts` (a second blow in the same round through
+    `resolveAttack` rolls no Parry; the next round rolls one). **Not built (needs a new primitive):** the refusals that
+    `tactics.ts react` makes after its gate (the event already answered, the last reaction kept for a held shot, a
+    `reaction_window` cancel) are still decided after the d20: a won Parry that `react` then refuses is rolled and
+    dropped unsaid. Deciding them first needs a read-only form of `react`'s refusals (one function `react` itself
+    calls), which is an addition to the exported surface.
 5531. **After a Finisher the chain is locked to every action that builds or spends Momentum** (the lead's ruling on
     row 15d). The lock is read from data: an item's action whose id the technique data places in a melee group (a
     technique row's id, or `techniques.json rules.group_actions`) is refused after a Finisher this turn, as a melee

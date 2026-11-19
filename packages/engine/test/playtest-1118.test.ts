@@ -125,6 +125,14 @@ describe('row 5: Parry while holding Guard', () => {
     expect(won.f.cb.log.some((l) => / parries: .* the hit is halved/.test(l))).toBe(true);
     expect(won.f.cb.log.join(' ')).not.toMatch(/Retort/); expect(won.a.hp).toBe(900);
   });
+  it('the ruling of 19 Nov (item 5530 amended): one Parry try a round; after a lost Parry the next blow that round rolls none, the next round may', () => {
+    const { f, t, a } = fight(['parry'], 60); // the first blow: a Parry rolled and lost
+    const parries = () => f.cb.log.filter((l) => / parries/.test(l)).length;
+    expect(parries()).toBe(1);
+    const blow = () => { rig({ hit: true, die: 12 }); f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(a.id), f.unit(t.id), 'melee', null, { noAp: true })); rig(null); };
+    blow(); expect(parries()).toBe(1); // the same round: no second roll
+    f.cb.round = 2; blow(); expect(parries()).toBe(2); // a new round: one try again
+  });
 });
 
 import { applyCond } from '../src';

@@ -1288,7 +1288,7 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "When a melee attack hits you: roll your attack skill against the attacker's roll. If you win, the hit does half damage. A shield in a hand adds +{=numbers.shield_bonus} to your roll (once, however many you hold). Uses your reaction.",
+      "text": "When a melee attack hits you: roll your attack skill against the attacker's roll. If you win, the hit does half damage. A shield in a hand adds +{=numbers.shield_bonus} to your roll (once, however many you hold). Uses your reaction only if you win; {=numbers.tries_a_round} try a round, won or lost.",
       "trigger": "a melee attack hits you",
       "lines": [
         {
@@ -1312,7 +1312,8 @@
         "ally_reach": 1,
         "shield_bonus": 2,
         "halve": 0.5,
-        "light_momentum": 1
+        "light_momentum": 1,
+        "tries_a_round": 1
       },
       "adjudication": "engine",
       "provisional": true,

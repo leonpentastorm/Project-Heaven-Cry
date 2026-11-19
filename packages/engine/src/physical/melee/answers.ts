@@ -5,7 +5,8 @@ import { technique, strike, canStrike, answer, canAnswer, landed, stop, onHook, 
 import type { Tech } from './shared';
 import type { StrikeOpts } from '../types';
 import { say, alive, active, dist, rollWithPick, weaponVia, type Unit } from '../../combat';
-import { emit } from '../../effects/hooks';
+import { emit, boundGame } from '../../effects/hooks';
+import { uses } from '../../effects/uses';
 import { canReact } from '../../tactics';
 import { answerKind } from '../core';
 import { mod, holdsShield } from '../../character';
@@ -78,6 +79,10 @@ technique({
       // first, under the same gate an Answer has (answer(): canAnswer, canReact); a failed Parry is said and spends
       // nothing, so the blow stays unanswered and Retort may still answer it.
       if (t.preview || !canAnswer(t.cb, t.u, 'parry', att) || !canReact(t.cb, t.u, answerKind('parry'))) return;
+      // The lead's ruling of 19 Nov 2026 (amends item 5530): one Parry try a round per unit (techniques.json parry
+      // numbers.tries_a_round), won or lost: a lost Parry still spends no reaction, but the unit does not roll another
+      // Parry that round. One cell of the counters primitive (effects/uses.ts, scope per_round), taken before the roll.
+      if (!uses({ key: 'technique:parry', u: t.u, c: null, cb: t.cb, g: boundGame() }).take('per_round', t.num('tries_a_round', 1))) return;
       ctx.parried = true;
       const shield = shieldInOffHand(t) ? t.num('shield_bonus', 2) : 0, // with any weapon (Leon's ruling, 10 Nov 2026)
          bonus = attackSkill(t, att) + shield;
