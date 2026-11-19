@@ -1785,6 +1785,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-sight_visor",
+      "path": "art/icons/gear/armour-sight_visor.png",
+      "sha256": "477c0f52e43494ba1432e0d9f0964cbc28cd7c5454367c531bbb9aff367b26a0",
+      "label": "Sight visor",
+      "family": "07-optics",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-sight_visor.png",
+        "sha256": "0c6d54ea2c93e0e57eba30b77d97df0558efe80100217aaf48c053fdde49bc21"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-sight_visor.png",
+        "sha256": "477c0f52e43494ba1432e0d9f0964cbc28cd7c5454367c531bbb9aff367b26a0"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-sight_visor.txt",
+        "sha256": "c05766c233a1b96ee1ace0f047d29da59d63a9fbdd3bd584bf3dfc61f2b00a19"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-night_goggles.png",
+          "sha256": "87b18113df301af7e4ac7d5e21afef5e251aafc32624c3a5a9b29370a41af813"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sight_visor.png",
+        "128": "art/icons/gear/exports/128/armour-sight_visor.png",
+        "64": "art/icons/gear/exports/64/armour-sight_visor.png",
+        "32": "art/icons/gear/exports/32/armour-sight_visor.png"
+      },
+      "export_hashes": {
+        "256": "ac64fccb231b1b7e604eb58c830f38d4570ae8b487e86b3df9b9f81f32838169",
+        "128": "3a3d1f1d91cbf38728870c2f88b6388bc2f01f8df9195308119c3c1747b44a81",
+        "64": "f874974ce63368b7699333c77f3db9a5b0f84d749d7b1456f82cd48967fb2d43",
+        "32": "bf0cfda30633c5a318b7cc51723c63730079c71ee9fab33f9ab5556bd384fd78"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
