@@ -123,8 +123,6 @@ suite again when the disk was full under it.
 
 ### `rules`: rules and screens (fights play at the test pace)
 
-- `capture-skills.mjs`: screenshots only: each of the 27 skill "?" pages from creation's Skills step, the ladder open, at 1600×900, into `.check/capture/skills` (for the lead's wording pass); one check per page captured.
-- `capture-all.mjs`: screenshots only (a draft): every screen and state of the game at 1600×900 into `.check/capture/` with an index of where each screen's words are edited, for the wording pass; it fails when a state could not be reached.
 - `old-save.mjs`: a save from before 0.19.0 holding perks that were renamed since (Grapple, Origami Hands) and one that never existed: the game opens it, shows the renamed perks, and does not crash.
 - `creation-points.mjs`: character creation's points step: nine attributes under Body, Mind and Soul, each with its three skills; both budgets always in view; a skill raised past its attribute spends the Attribute points for it and says so; a refusal says what is short and what to do; Undo, one attribute's reset, Reset all; the steppers by keyboard; Mind Without Fog's 2 extra Attribute points. At 1440×900, 1280×720 and 1024×768 with no sideways scroll.
 - `creation-layout.mjs`: character creation's card layout (Leon, 8 Nov): at most two archetypes, three traits and two patrons a row at any width; every card in a grid the same height, long text scrolling inside its card; a god's art opens large; picking another archetype or origin moves nothing; no sideways scroll at phone width.
@@ -172,6 +170,7 @@ suite again when the disk was full under it.
 
 ### `anim`: animation and time (real speed)
 
+- `capture-skills.mjs`: screenshots only: each of the 27 skill "?" pages from creation's Skills step, the ladder open, at 1600×900, into `.check/capture/skills` (for the lead's wording pass); one check per page captured.
 - `two-players.mjs`: host opens a room, both make characters through the creation screens, the session starts, both speak, the Narrator calls a check (rolled on the dice table), a fight runs to the end on the grid with each player acting through their own action panel (both screens show the turn banners and the effects), the story resumes, Level up opens. Each of those is a named check.
 - `turn-order.mjs`: a long enemy phase (Leon, 11 Nov 2026): every hostile's moves play in full and in order, the player's HP falls when a hit plays (never ahead of it), and YOUR TURN comes only after the last hostile effect has played. Everything is recorded in the page as it happens.
 - `camera.mjs`: the camera (roadmap 2c) on the 26 × 26 Proving Ground, at real speed: the map's window keeps the usual tile size and follows the play; the player drags it, moves it with the keys, jumps back with Home, sees the whole map with M and uses the small map; what plays off screen raises an arrow at the window's edge. Then the area map's own camera. Read through `window.__phcCamera()`. Shots with `SHOTS=dir`: `camera-<width>-*.png`.
