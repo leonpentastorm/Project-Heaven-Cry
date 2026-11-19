@@ -3,7 +3,7 @@ from pathlib import Path
 from PIL import Image,ImageDraw
 import numpy as np
 A=Path(__file__).parent
-ids=('katana','combat_knife','sabre','legion_gladius')
+ids=('katana','combat_knife','sabre','legion_gladius','recurve_bow','longbow')
 tiers=('fine','masterwork','relic','celestial')
 manifest=[]
 out=Image.new('RGB',(840,150*len(ids)),'#10151F')
