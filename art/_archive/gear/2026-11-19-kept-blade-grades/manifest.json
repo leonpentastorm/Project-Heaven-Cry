@@ -2,5 +2,64 @@
   "collection": "2026-11-19-kept-blade-grades",
   "status": "review-candidate",
   "production_approved": false,
-  "assets": []
+  "assets": [
+    {
+      "id": "weapon-kemizuchi_duelling_blade--fine",
+      "path": "art/icons/gear/weapon-kemizuchi_duelling_blade--fine.png",
+      "sha256": "ac864ea22d5aadf5e0978cd0369b126f3cbbbc3730d02a5eba3be782a4497808",
+      "label": "Kemizuchi Duelling Blade — Fine",
+      "family": "weapon-kemizuchi_duelling_blade",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-kemizuchi_duelling_blade--fine.png",
+        "sha256": "2a201a78d87554accb4a6b1780791c7379ad50e07c12cf2b6e4ece46bdd03c84"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-kemizuchi_duelling_blade--fine.png",
+        "sha256": "ac864ea22d5aadf5e0978cd0369b126f3cbbbc3730d02a5eba3be782a4497808"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-kemizuchi_duelling_blade--fine.txt",
+        "sha256": "8e1f867e859bd6d8ffcf6232730166b878ffef7d2faed5cd5eec6184ce073b51"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_duelling_blade.png",
+          "sha256": "f6f112ac6072666b6c00c65ecbb96c3caf5bbf486df51d56c8e46165521c8e2d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_duelling_blade--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_duelling_blade--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_duelling_blade--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_duelling_blade--fine.png"
+      },
+      "export_hashes": {
+        "256": "693ee3d4e79f4f0d031ece446c55c7f86820eae1d94006a9a96173e4984fa80c",
+        "128": "54b7bda18fc1126c13e6c4a2610b6aca28c352e0dc1a582ebb360474155fe2ba",
+        "64": "6b30671171750d7c637ce44dab91baa4bacacd270dc9d55145ff233ca1d5fdba",
+        "32": "c3c11a2244eb700935bc530787bcaa0df05fc8e8f3af5b4f2c3cd42e0b815e79"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-kemizuchi_duelling_blade",
+      "outline": {
+        "solid_alpha_iou": 0.9128803180745434,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 21
+      },
+      "status": "review-candidate",
+      "production_approved": false
+    }
+  ]
 }
