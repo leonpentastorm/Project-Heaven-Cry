@@ -99,7 +99,7 @@
 "weapon/breacher_tube/shot/boss": "pv 273.375 a17 c1.71 | hit P1 ammo1>0 ap9>7",
 "weapon/breacher_tube/shot/elite": "pv 273.375 a17 c1.71 | hit P1 ammo1>0 ap9>7 // P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1 | crit P1 ammo1>0 ap9>7",
 "weapon/breacher_tube/shot/minion": "pv 273.375 a0 c1.71 | hit P1 ammo1>0 ap9>7",
-"weapon/breacher_tube/shot/soldier": "pv 273.375 a9 c1.71 | hit P1 ammo1>0 ap9>7 // P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true ps.skill:raw_power.5.out0>true shotsThisTurn0>1 | crit P1 ammo1>0 ap9>7",
+"weapon/breacher_tube/shot/soldier": "pv 273.375 a9 c1.71 | hit P1 ammo1>0 ap9>7 // P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1 | crit P1 ammo1>0 ap9>7",
 "weapon/breacher_tube/shot/vermin": "pv 273.375 a0 c1.71 | hit P1 ammo1>0 ap9>7; F1 res.momentum1>0",
 "weapon/brigade_auto_shotgun/aimed/soldier": "pv 99.409 a9 c1.71 | hit P1 ammo12>11 ap9>6 heat0>1",
 "weapon/brigade_auto_shotgun/shot-at-6/soldier": "pv 59.645 a9 c1.71 | hit P1 ammo12>11 ap9>7 heat0>1",
