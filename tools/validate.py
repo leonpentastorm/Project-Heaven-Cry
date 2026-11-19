@@ -2167,7 +2167,7 @@ def check_pred(k, v, w):
     elif a == "tie" and not ((isinstance(v, str) and v in (p.get("values") or [])) or (isinstance(v, dict) and v.get("kind") in (p.get("values") or []) and v.get("as", "any") in ("from", "to", "any") and v.get("side", "any") in ("foe", "ally", "any") and set(v) <= {"kind", "as", "side"})): errors.append(f"{w}: `if.{k}` is a tie kind ({p.get('values')}) or {{kind, as: from or to, side}}")
     elif a == "hold" and not _hold_ok(v, p): errors.append(f"{w}: `if.{k}` is {{slot: hand or person, door: {p.get('values')}}} or {{slot, item: <id>}}, and / or {{hands: {{props: [weapon properties], only: bool}}, body: {{armour_at_most: {_ARMOUR_NAMES} or a class number}}}}")
     elif a == "skill" and not (isinstance(v, dict) and v and all(sk in known["skill"] and isinstance(n, int) for sk, n in v.items())): errors.append(f"{w}: `if.{k}` maps skills to points ({{empathy: 5}})")
-    elif a == "limit" and not (isinstance(v, dict) and (v.get("per") in LIMIT_SCOPES or isinstance(v.get("cooldown"), (int, float))) and set(v) <= {"per", "n", "key", "each", "cooldown"}): errors.append(f"{w}: `if.{k}` is a limit ({{per, n?, key?, each?}} or {{cooldown}})")
+    elif a == "limit" and not (isinstance(v, dict) and (v.get("per") in LIMIT_SCOPES or isinstance(v.get("cooldown"), (int, float))) and set(v) <= {"per", "n", "key", "shared", "each", "cooldown"}): errors.append(f"{w}: `if.{k}` is a limit ({{per, n?, key?, shared?, each?}} or {{cooldown}})")
     elif a == "res" and not (isinstance(v, dict) and v and all(isinstance(b, dict) and b and set(b) <= {"at_least", "at_most", "at"} and all(isinstance(b[x], (int, float)) and not isinstance(b[x], bool) for x in ("at_least", "at_most") if x in b) and b.get("at", "max") in ("max", "limit") and r in (p.get("values") or []) for r, b in v.items())): errors.append(f"{w}: `if.{k}` maps resources ({p.get('values')}) to bounds {{at_least: n, at_most: n, at: max | limit}} (rules 1.60, N10; rules 1.70 P2)")
     elif a in ("zone", "tie", "hold", "skill", "limit", "res"): pass
     elif p.get("values") and not all(x in p["values"] for x in vals): errors.append(f"{w}: `if.{k}` takes only {p['values']}")
@@ -2308,6 +2308,7 @@ def check_trigger_effect(e, w):
     lim = e.get("limit")
     if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or "reaction" in lim or (lim.get("per") in LIMIT_SCOPES and isinstance(lim.get("n", 1), int)))):
         errors.append(f"{w}: an item op's limit is {{ per: {sorted(LIMIT_SCOPES)}, n }}, {{ cooldown: rounds }} or {{ reaction: 1 or 2, kind }}")
+    if isinstance(lim, dict) and "shared" in lim and not (isinstance(lim["shared"], str) and lim["shared"] and "key" not in lim): errors.append(f"{w}: a limit's shared is a counter name, in place of key (rules 1.77 item 6504)")
 # Classes 3.0 P5, the standing aura: a stat_mod with `targets` and no `when` (statQuery answers it for every unit of the
 # set while its holder stands): a well-formed set centred on the holder, a numeric value.
 def check_aura(o, w):
@@ -2501,7 +2502,12 @@ if TRIG:
     if _SHR and _brk:
         _per = {p.get("of"): p.get("value") for e in _brk.get("effects") or [] if isinstance(e.get("value"), dict) for p in e["value"].get("per") or []}
         if _per != {"res:shadow": _SHR.get("per_point"), "event:ambush": _SHR.get("ambush_bonus"), "target:marked": _SHR.get("marked_bonus")}: errors.append("skills:ingenuity.1: the Break's term must read rules.json shadow per_point, ambush_bonus, marked_bonus")
-        if any((e.get("limit") or {}).get("key") == "gain" and (e["limit"].get("n") != _SHR.get("door_gains_per_turn")) for e in _door.get("effects") or []): errors.append("skills:ingenuity.1: the gains' shared limit is rules.json shadow.door_gains_per_turn")
+        if any((e.get("limit") or {}).get("shared") == "shadow_gain" and (e["limit"].get("n") != _SHR.get("door_gains_per_turn")) for e in _door.get("effects") or []): errors.append("skills:ingenuity.1: the gains' shared limit is rules.json shadow.door_gains_per_turn")
+        # rules 1.77 item 6504: Stalk's gain counts under the same shared limit, of the same size
+        _stk = next((x for x in (data.get("shadow") or {}).get("items") or [] if x.get("id") == "shadow.stalk"), None)
+        for _g in (_stk or {}).get("effects") or []:
+            for _e in _g.get("effects") or []:
+                if _e.get("op") == "resource" and ((_e.get("limit") or {}).get("shared") != "shadow_gain" or _e["limit"].get("n") != _SHR.get("door_gains_per_turn")): errors.append("shadow:shadow.stalk: its gain counts under the door's shared limit shadow_gain, n rules.json shadow.door_gains_per_turn (rules 1.77 item 6504)")
     _op = next((m for b in base if b.get("id") == "infiltrator" for m in b.get("gain") or [] if m.get("id") == "tradecraft"), None)
     if _SHR and _op and not any(e.get("op") == "resource" and e.get("when") == "combat_start" and e.get("value") == _SHR.get("operative_start") for e in _op.get("effects") or []): errors.append("classes:infiltrator.tradecraft: its combat_start Shadow is rules.json shadow.operative_start")
     # skills.json unlocks marked `item` are run as items (effects/collect.ts SKILL_ITEMS)

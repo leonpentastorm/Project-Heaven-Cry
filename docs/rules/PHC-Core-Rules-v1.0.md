@@ -13190,3 +13190,9 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       the predicate `target_aimed` on `cond_incoming`). Called Out (rules 1.60 item 4619; item 5602 completed): the foe
       you name with Challenge is Taunted with no save (no roll at all); every other foe in reach still saves. Its card
       reads "the foe you name is Taunted with no save" again.
+6504. **A limit shared across items** (`limit.shared`: one counter of the holder's, named, that every item naming it
+      counts under; in place of `key`) and **the negation of the resource bound** (the predicates `self_not_res`,
+      `actor_not_res`, `target_not_res`: the bounds of `self_res` not met; no new bound). Stalk (item 6405 completed):
+      its +1 Shadow counts toward the Shadow door's two gains a turn (`shared: shadow_gain`, the door's three gains
+      too); it is refused, before anything is paid, when your Shadow is full (`self_not_res {shadow: {at: limit}}`) and
+      when the turn's two gains are already made (`uses_left`), each in words.

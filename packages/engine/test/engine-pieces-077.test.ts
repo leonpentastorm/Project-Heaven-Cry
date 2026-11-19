@@ -4,7 +4,11 @@
 // number is read from data.
 import { describe, it, expect } from 'vitest';
 import { PERK, condOn, actionsFor } from '../src';
-import { fightWith } from './helpers/perkfight';
+import { fightWith, withGame } from './helpers/perkfight';
+import { applyCond } from '../src/magic';
+import { resOf } from '../src/tactics';
+import { makeObject } from '../src/objects';
+import { allVerbs } from '../src/effects/collect';
 
 const tierFx = (id: string, t: string) => (PERK as any)[id].tiers[t].effects;
 
@@ -53,5 +57,31 @@ describe('the action\'s target on cond_apply (item 6503): Called Out spares the 
       expect(part(named.name)).not.toMatch(/save d20/); expect(part(other.name)).toMatch(/save d20/);
       expect(f.cb.log.some((l: string) => /calls out .*no save/.test(l))).toBe(true);
     }
+  });
+});
+
+describe("a shared limit and the negated resource bound (item 6504): Stalk under the door's two gains, refused at a full meter", () => {
+  const STALK = () => (allVerbs() as any[]).find((v) => v.id === 'shadow.stalk');
+  const sneak = () => {
+    const f = fightWith([{ skills: { ingenuity: 5 }, attrs: { perception: 5 } }], [{}]);
+    f.cb.objects = [makeObject('c1', 'crate', '1,4'), makeObject('c2', 'crate', '3,4')]; const foe = f.unit(f.foe.id); foe.pos = '14,9'; foe.vision = 1;
+    const u = f.turn(f.pc); f.unit(u.id).pos = '1,5'; f.unit(u.id).ap = 9;
+    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(u.id), 'hidden', undefined, undefined, { skipSave: true }));
+    (f.unit(u.id).res ||= {}).shadow = 0;
+    return { f, id: u.id };
+  };
+  const stalk = (f: any, id: string) => f.act({ type: 'combat/perk', unitId: id, id: 'verb:shadow.stalk' } as any);
+  it('refused at a full meter, in words, nothing paid', () => {
+    const { f, id } = sneak(); const u = f.unit(id); u.res.shadow = u.resMax.shadow; const ap = u.ap;
+    expect(() => stalk(f, id)).toThrow(/full/); expect(f.unit(id).ap).toBe(ap);
+  });
+  it('Stalk and a cover-to-cover move fill the two a turn: the turn ended Hidden gives no third', () => {
+    const cap = STALK().effects[0].effects[0].limit.n;
+    const { f, id } = sneak(); stalk(f, id); expect(resOf(f.unit(id), 'shadow')).toBe(1);
+    f.act({ type: 'combat/move', unitId: id, to: '2,5' } as any); expect(resOf(f.unit(id), 'shadow')).toBe(cap);
+    f.act({ type: 'combat/end-turn', unitId: id } as any); expect(resOf(f.unit(id), 'shadow')).toBe(cap);
+    // the same turn without Stalk: the turn ended Hidden is the second gain
+    const b = sneak(); b.f.act({ type: 'combat/move', unitId: b.id, to: '2,5' } as any); b.f.act({ type: 'combat/end-turn', unitId: b.id } as any);
+    expect(resOf(b.f.unit(b.id), 'shadow')).toBe(cap);
   });
 });

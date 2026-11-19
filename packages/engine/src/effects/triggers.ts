@@ -299,6 +299,7 @@ const resMeets = (ev: Ev, u: Unit | null, v: any): boolean => !!u && !!v && type
   if (b?.at === 'limit' && n < resLimitOf(u, id, u === ev.self ? ev.h.c : charOfUnit(u))) return false; // rules 1.70 item 5543 (P2)
   return true;
 });
+for (const who of ['self', 'actor', 'target'] as Who[]) P(who + '_not_res', 'res', who + ' does not have resources within these bounds (the negation of ' + who + '_res, rules 1.77 item 6504: {shadow: {at: "limit"}} is a meter not yet full)', (ev, v) => !!unitOf(ev, who) && !resMeets(ev, unitOf(ev, who), v), () => Object.keys(RESOURCES));
 for (const who of ['self', 'actor', 'target'] as Who[]) P(who + '_res', 'res', who + ' has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: "max" | "limit"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter\'s most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit)', (ev, v) => resMeets(ev, unitOf(ev, who), v), () => Object.keys(RESOURCES));
 P('self_has_res', 'words', 'the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)', (ev, v) => list(v).every((id) => resNow(ev, id) >= 1), () => Object.keys(RESOURCES));
 P('self_lacks_res', 'words', 'the holder has none of one of these resources (as self_has_res)', (ev, v) => list(v).some((id) => resNow(ev, id) < 1), () => Object.keys(RESOURCES));
@@ -661,13 +662,16 @@ export function selectUnits(ev: Ev, t: TargetSet): Unit[] {
 
 // ============================================================================================== the limit
 /** `limit`: { per: a scope of effects/uses.ts (per_turn, per_round, per_combat, per_scene, per_session, per_rest), n,
- * key? (a second counter on the same item: "<item key>#<key>"), each?: "target" | "actor" (a counter per unit) } or
+ * key? (a second counter on the same item: "<item key>#<key>"), shared? (rules 1.77: one counter of the holder's that
+ * every item naming it counts under: "shared:<name>"), each?: "target" | "actor" (a counter per unit) } or
  * { cooldown: rounds }, or (rules 1.28) { reaction: n, kind: attack | move | protect }: the effect IS a reaction, made
  * through tactics.ts react() (it spends n of the holder's reactions, and none answers what it does). */
 export const LIMIT_SCOPES = ['per_turn', 'per_round', 'per_combat', 'per_scene', 'per_session', 'per_rest'];
 function limitOk(ev: Ev, lim: any, take: boolean): boolean {
   if (!lim) return true;
-  const h = { ...ev.h, u: ev.self, cb: ev.cb }, key = lim.key ? ev.h.key + '#' + withChoice(String(lim.key), ev) : undefined; // rules 1.33: a key may name the pick ({choice})
+  // rules 1.33: a key may name the pick ({choice}); rules 1.77 item 6504: `shared` names a counter every item of the
+  // holder that names it counts under (Stalk's gain under the Shadow door's two a turn), not the item's own
+  const h = { ...ev.h, u: ev.self, cb: ev.cb }, key = typeof lim.shared === 'string' ? 'shared:' + lim.shared : lim.key ? ev.h.key + '#' + withChoice(String(lim.key), ev) : undefined;
   const who = lim.each === 'target' ? ev.target : lim.each === 'actor' ? ev.actor : null;
   const U = who ? uses(h).on(who) : uses(h);
   if (lim.peek) take = false; // read only: another effect (op use) spends it
