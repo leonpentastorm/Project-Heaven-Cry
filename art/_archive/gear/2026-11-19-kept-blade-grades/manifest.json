@@ -4434,6 +4434,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-torso_class3_heavy--celestial",
+      "path": "art/icons/gear/armour-torso_class3_heavy--celestial.png",
+      "sha256": "e4323a7eb8698f456d7e35e75fb6f75b7b7d5d2f42adb9299d8cf3099fa78f5b",
+      "label": "Heavy Armour — Celestial",
+      "family": "armour-torso_class3_heavy",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-torso_class3_heavy--celestial.png",
+        "sha256": "6e334cfd14b17ba338cf244b2ffc82971acf46963fc1919b876df01a773c77b2"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-torso_class3_heavy--celestial.png",
+        "sha256": "e4323a7eb8698f456d7e35e75fb6f75b7b7d5d2f42adb9299d8cf3099fa78f5b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-torso_class3_heavy--celestial.txt",
+        "sha256": "23ac5a2350aaa6ca7636cb0625f1874136753ee136a4d2c66578ec136ce1bdd8"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-torso_class3_heavy.png",
+          "sha256": "8240c5b8ec6b2d169cc8a52ac2c0b7192cd06137f9ac3c75e5b2c4d436b0b3c9"
+        },
+        {
+          "path": "art/icons/gear/armour-torso_class3_heavy--relic.png",
+          "sha256": "f0abe69dc372d03fb184ad4ea6a87958e69521e97f088cd6eeceb4f9c9af4624"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-torso_class3_heavy--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-torso_class3_heavy--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-torso_class3_heavy--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-torso_class3_heavy--celestial.png"
+      },
+      "export_hashes": {
+        "256": "1a0d4d13f9d7b3202d3a47bb79c17221457b2992da8e1644ba23470db8212d4b",
+        "128": "869699d8067613a1c7e6aef98461c940f0681e68309fc51d4f49a99bf49f02dc",
+        "64": "f799f39cd2bea9654f33a88970edf8176dcb91eb6fd50256f51e7e34e2f2eab8",
+        "32": "db80a2b8b6a50fe21c21cf18d89f1135c1d27e94cda60357c132ea3d8e36f9af"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-torso_class3_heavy",
+      "outline": {
+        "solid_alpha_iou": 0.975859623010105,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 28
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
