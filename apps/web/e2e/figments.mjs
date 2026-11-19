@@ -94,15 +94,15 @@ const tokLabel = await p.evaluate((name) => { const b = [...document.querySelect
 ok('a Figment\'s token reads as ' + meName + '\'s (' + tokLabel.slice(0, 90) + ')', tokLabel.includes(meName + '\'s Figment'));
 
 // ---------- 0.32: an order shown (Redraw: the maker's command, the Figment comes apart and reforms; never a shove's thud) ----------
-{ const tR = await free(wall.pos);
+let redrawSpent = 0;
+{ const tR = await free(wall.pos), cR = (await me()).mg.vcharge;
   await p.evaluate(() => { const W = (window.__e2eWatch ||= {}); W.order = { up: null }; const mo = new MutationObserver(() => { if (W.order.up == null && document.querySelector('[data-phc-fig-order]')) W.order.up = performance.now(); }); mo.observe(document.documentElement, { childList: true, subtree: true }); });
   const er = await act({ type: 'combat/owned', unitId: u.id, owned: wall.id, verb: 'figment_redraw', tile: tR });
   const seen = await p.waitForFunction(() => window.__e2eWatch.order.up != null, null, { timeout: 8000 }).then(() => true, () => false);
   if (seen) { await pause(p, 150); await p.screenshot({ path: OUT + 'figments-redraw.png' }).catch(() => {}); }
-  const logT = (await G()).combat.log.join('
-');
+  const logT = (await G()).combat.log.join(' ');
   ok('0.32: Redraw is shown (the order mark on the map) and said in the log (' + (er || 'done') + ')', !er && seen && /comes apart and reforms/.test(logT));
-  u = await me(); }
+  u = await me(); redrawSpent = cR - u.mg.vcharge; }
 
 // ---------- Let go: half its charge back ----------
 const c0 = u.mg.vcharge, eg = await act({ type: 'combat/owned', unitId: u.id, owned: hound.id, verb: 'let_go' });
@@ -113,6 +113,6 @@ ok('Let go: the Hound is unmade and half its charge comes back (' + c0 + ' → '
 await act({ type: 'sandbox/stop' }).catch(() => {});
 await p.waitForFunction(() => window.__phc.getState().screen !== 'combat', null, { timeout: 30000 }).catch(() => {});
 const g2 = await G();
-ok('the fight\'s end: no Figment stands; the spent charge stays spent (' + g2.characters[cid].visCharge + ')', !(g2.combat?.units || []).some((x) => x.owned?.kind === 'figment' && !x.dead) && g2.characters[cid].visCharge === 4);
+ok('the fight\'s end: no Figment stands; the spent charge stays spent (' + g2.characters[cid].visCharge + ')', !(g2.combat?.units || []).some((x) => x.owned?.kind === 'figment' && !x.dead) && g2.characters[cid].visCharge === 4 - redrawSpent); // (0.32: less the Redraw's own charge, spent above)
 ok('no page errors (' + errors.join(' | ').slice(0, 200) + ')', errors.length === 0);
 await browser.close();

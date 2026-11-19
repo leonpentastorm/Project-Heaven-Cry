@@ -141,9 +141,11 @@ if (mate) {
   await host.evaluate(() => { const W = (window.__e2eWatch ||= {}); W.tend = { up: null }; const mo = new MutationObserver(() => { if (W.tend.up == null && document.querySelector('[data-phc-bond-heal],[data-phc-bond-tend]')) W.tend.up = performance.now(); }); mo.observe(document.documentElement, { childList: true, subtree: true }); });
   r = await perk('class:medic.triage', { actionId: 'triage', targetId: m.id });
   { const seen = await host.waitForFunction(() => window.__e2eWatch.tend.up != null, null, { timeout: 8000 }).then(() => true, () => false);
-    if (seen && process.env.SHOTS_C3) { await settle(host, 120); await host.screenshot({ path: process.env.SHOTS_C3 + 'mender-bond-heal-pulse.png' }); }
-    const r0 = r;
-    ok('0.32: a heal through the Bond runs down the line to the tended token (' + (r0 || 'shown') + ')', !!r0 || seen);
+    if (seen && process.env.SHOTS_C3) { await host.screenshot({ path: process.env.SHOTS_C3 + 'mender-bond-heal-pulse.png' }); }
+    // a Triage on a squadmate at full HP heals nothing (no event to draw): then a Shield through the Bond, which always lands
+    let r0 = r, seen2 = seen;
+    if (!seen) { r0 = await perk('verb:tend.shield', { targetId: m.id }); seen2 = await host.waitForFunction(() => window.__e2eWatch.tend.up != null, null, { timeout: 8000 }).then(() => true, () => false); if (seen2 && process.env.SHOTS_C3) { await host.screenshot({ path: process.env.SHOTS_C3 + 'mender-bond-tend-pulse.png' }); } }
+    ok('0.32: Tending through the Bond runs down the line to the tended token (' + (r0 || 'shown') + ')', !r0 && seen2);
     const ties = await host.evaluate(() => [...document.querySelectorAll('[data-token-ties]')].map((e) => e.textContent));
     ok('0.32: the token card says what each end is Bonded to (' + ties.join(' | ').slice(0, 80) + ')', ties.some((t) => /Bonded to /.test(t || ''))); }
   g = await G(); u = await unit(me);
