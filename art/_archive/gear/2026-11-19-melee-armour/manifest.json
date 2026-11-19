@@ -1385,6 +1385,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-bulwark_screen",
+      "path": "art/icons/gear/shield-bulwark_screen.png",
+      "sha256": "56e0aec15b0b546122ee1565b8b1dc246e7a0ef0df4fcba68bab9bdeb4966dc0",
+      "label": "Bulwark screen",
+      "family": "07-shields",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-bulwark_screen.png",
+        "sha256": "643adb704e78fa71f8106ee942b6412a4a89aa6631a5560b1c602eae76ad5337"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-bulwark_screen.png",
+        "sha256": "56e0aec15b0b546122ee1565b8b1dc246e7a0ef0df4fcba68bab9bdeb4966dc0"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/shield-bulwark_screen.txt",
+        "sha256": "ee24c8350ac772adcaebafb42efd9b93ba8633d11b699b6314d2ab4d1d95e234"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/shield-riot_shield.png",
+          "sha256": "be50f5e0eae8c794f4ba47ebc2e9d8d19f7a8a8cde211262e39c655d9195e8f0"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-bulwark_screen.png",
+        "128": "art/icons/gear/exports/128/shield-bulwark_screen.png",
+        "64": "art/icons/gear/exports/64/shield-bulwark_screen.png",
+        "32": "art/icons/gear/exports/32/shield-bulwark_screen.png"
+      },
+      "export_hashes": {
+        "256": "061a13c6afc0c4591d7a967912316f4de4fa68b37779f063869b1230107aaea6",
+        "128": "c2771c62753c2d46c730615da6594c720ffcba7bede9d128192c18a68da84aa9",
+        "64": "6bfc564827b67b254e825c5a09a405a298c6d2238d0cac0d8b41d42ee63d31ba",
+        "32": "b9944febdaf49294d33aebba157aab2a49455fb6033d5f571e42a4a51ebe9a18"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
