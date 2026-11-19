@@ -3203,6 +3203,7 @@ e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/_archive/p
 307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png
 a7dcf66a9748fd80a7dfea39c1e708e986ae23798a192c904eecb81aac58dcd3  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--fine.json
 0feef76328b7604059e30833c683a11ffdf06757f56fb961c0f0790f93bc8140  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--masterwork.json
+10920e4c9d9cb308d6674241c40fd118ea05e44d3eaac938adf607c12494a151  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--relic.json
 6eb9da0a9240399d9e104b1415e3e38108a63f3d12d924af19633f102cc67046  art/_archive/prompt-pack/2026-11-19-file-08/delivered/quiver-quiver--celestial.json
 65c4bec7e3b39fd76beca6150b91cbfced0c450c154e589c5b69f2924b2e001b  art/_archive/prompt-pack/2026-11-19-file-08/delivered/quiver-quiver--fine.json
 b4cd9b873a4c251a18eb59fe34fd695388dbed323088ea1e5e75303d94366a0a  art/_archive/prompt-pack/2026-11-19-file-08/delivered/quiver-quiver--masterwork.json
@@ -4687,7 +4688,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-ac27cc80e874bc55348bbc418247e9178a4a2fdab59e32c249b4c78f0d074359  art/catalog.json
+35b16fc9a8ca0030b757fd62c75f974ec04a9cd91f6af64d2840afd5d73f2c1c  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6263,6 +6264,7 @@ e89e958a8111b23300a6bc1a9cbabcc089e50ed980659f45d39ddebdd726978a  art/icons/gear
 34cbf6f62a75b1718185be1bcc9eba105ad8fae3bac0b9e3bfb522e777a0a767  art/icons/gear/armour-trauma_plate.png
 0e8c6867918be1364e99bf4a1338e7f2b8b2e70a0475ec1557d06c2243eb865d  art/icons/gear/armour-utility_belt--fine.png
 ca3eabccd2d49b9ca2a000c6fa56ebd70286b4966954797d10d812e57dc35235  art/icons/gear/armour-utility_belt--masterwork.png
+c55e8306ea8c66f9d90baca18092a176ea91cbfdf281b31aaed1b49f8b934f56  art/icons/gear/armour-utility_belt--relic.png
 4bb4cedeb68f51fde7c8749b6b0f34e1f4af6522504e5e1c38bd580a9d79f498  art/icons/gear/armour-utility_belt.png
 4ad6c1706c2db4051f02d71ec41d3e878c23c5be12661864a81d80888f6b12c6  art/icons/gear/armour-work_gloves.png
 6b36ced3d972b8948d483738127c3d6df3be4803cc0b1e37e0798b2cae257ca9  art/icons/gear/augment-prosthetic_arm.png
@@ -6301,6 +6303,7 @@ a408b52c26c21749fee2ed47bcab1c0e8b1e4c328943b3e10e8eb8cdcef21e41  art/icons/gear
 d100177d750f5126ec68f3f55ad007c95262470e23cc64eb133963f2d0c1a21a  art/icons/gear/exports/128/armour-trauma_plate.png
 13c74d395909df8c3ba8efcd0f0cc86ab93a096c8f5e859495c015ff74b81544  art/icons/gear/exports/128/armour-utility_belt--fine.png
 279cdd7f70b77e3f398f8991a64883b3081cf27d22d0a15a5fd32fbc9251a0d3  art/icons/gear/exports/128/armour-utility_belt--masterwork.png
+63e8b25dc74949d747845024622212c2907803257c964528eba0777227df9e27  art/icons/gear/exports/128/armour-utility_belt--relic.png
 ab2ccc29b2802afefb109140020c9894c5ce62ce0bd7e508b75fdc982034feba  art/icons/gear/exports/128/armour-utility_belt.png
 bf009566eefb8693ab941503b05ceff2db7d49520d5d1a27daf082804c1072e3  art/icons/gear/exports/128/armour-work_gloves.png
 979b607df26b9b33c5d516478a878916686723bced4b6b7ce1fe07f44062f2c4  art/icons/gear/exports/128/augment-prosthetic_arm.png
@@ -6520,6 +6523,7 @@ efb83ae644678c65d9d4742a7f741b88d3055ff28498e5f0530e7592ac9f1e15  art/icons/gear
 cb236c34839ddf069f706842205d351fdf95e98e76958a6343502d307caf89bb  art/icons/gear/exports/256/armour-trauma_plate.png
 afdb2ffd4380b523b9edc5f954f680d9766c993342e1e6036fe21b16fbee1d5a  art/icons/gear/exports/256/armour-utility_belt--fine.png
 ae2d9ab47efcec61bd42721222a111af54b8c802ec2aec3c48ef1880173725f7  art/icons/gear/exports/256/armour-utility_belt--masterwork.png
+1f40a821674f21cad017e81e37efefaa2228ab2542d222cdc412d2eb0a86072d  art/icons/gear/exports/256/armour-utility_belt--relic.png
 c5eaf89758b80f877489de5c1fe301e88ceee67f5681c79f480e6ad5b190cf8b  art/icons/gear/exports/256/armour-utility_belt.png
 3d0bc15619db0e8ef832a1b5dd538e2987f8b9eb08068a392db000f39fa508f9  art/icons/gear/exports/256/armour-work_gloves.png
 22bf52845b0e95cbf6320fa85adfcc8e0c72016afd9bcf68fdcec1f4ecd1ddc5  art/icons/gear/exports/256/augment-prosthetic_arm.png
@@ -6739,6 +6743,7 @@ fcfe1ecfe5b1a1abdcecb4cedc1405d75c2c164cbcb1d2afb20c4abcf825e57b  art/icons/gear
 9379e494e331bb65fb5c51d5007d14da3780b49f9dcb41ac546072af52976d05  art/icons/gear/exports/32/armour-trauma_plate.png
 320e3967175621cc2186c6e09ed5fd8b1a1b373f928b307073e9045e498ccd8e  art/icons/gear/exports/32/armour-utility_belt--fine.png
 d60e052e955de6949d10126662702b2947f3c47400e098b77795c06d74d8c25d  art/icons/gear/exports/32/armour-utility_belt--masterwork.png
+9afc1376f9581f1bf11c7218ec77b45c1e29e5931b266cbaff137a41d2810a24  art/icons/gear/exports/32/armour-utility_belt--relic.png
 cf2b0a7bbf0b1e2789efc4a1aafe1f0b6d6dba49bfb84bdfe1fe955ac8b627f4  art/icons/gear/exports/32/armour-utility_belt.png
 d058f96fa3ecadef6b4e17d0c02ef12d0064e5a09076d59bec17543b5037a88a  art/icons/gear/exports/32/armour-work_gloves.png
 4136d4b0da34a2ccde26da484c41f251667b12017e0ee4b6802cd2c07928bf17  art/icons/gear/exports/32/augment-prosthetic_arm.png
@@ -6958,6 +6963,7 @@ c3637e233564ec2fa10b3cdaf527feda763b08ef5b03ffda82dc7c5e878e412f  art/icons/gear
 d55f127cffcf294a4468daf063dcf967f71231a69aab5947e499f09467a8ec8b  art/icons/gear/exports/64/armour-trauma_plate.png
 8f70bdf36e516dd6e4a1c2307d8b6d119224ca39b85279fd9e5627f9052eef1c  art/icons/gear/exports/64/armour-utility_belt--fine.png
 e56b5b405f250911f15d17f1af6dae4eae3afe63c539e1a8d2e8dfa835a31de0  art/icons/gear/exports/64/armour-utility_belt--masterwork.png
+fd188cec25c191b3cf8ef0fb505ad7813f44101dfa13776f910fdcb8e952efb3  art/icons/gear/exports/64/armour-utility_belt--relic.png
 dc31287e32b7bfc7b358541107bd0ece6c1f95b2bdd380f353d959b24f32f5dc  art/icons/gear/exports/64/armour-utility_belt.png
 21f2ebcacface62caa3a23804840521f6bfb6f03d7c88d5debd21e9035128fcd  art/icons/gear/exports/64/armour-work_gloves.png
 704ab659a60a1b69f7e5809985213e2b05ae4e01b731ef1af73e99340e79e64b  art/icons/gear/exports/64/augment-prosthetic_arm.png
