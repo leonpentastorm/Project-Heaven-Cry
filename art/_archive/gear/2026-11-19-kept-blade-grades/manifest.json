@@ -6608,6 +6608,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-field_boots--relic",
+      "path": "art/icons/gear/armour-field_boots--relic.png",
+      "sha256": "774069ff6bb4b5b24572dba5824d54893b2a257c28def59ecceec0cb3a1a5943",
+      "label": "Field Boots — Relic",
+      "family": "armour-field_boots",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-field_boots--relic.png",
+        "sha256": "99b29fa9b5e3dbe9c7f388deb1422780e4c394532919fce47c198d28f81da3f6"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-field_boots--relic.png",
+        "sha256": "774069ff6bb4b5b24572dba5824d54893b2a257c28def59ecceec0cb3a1a5943"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-field_boots--relic.txt",
+        "sha256": "59fc1eec5f74902d6eeefb5c5bcfa99170cd5cd935879d2cf04b19aed5f64d59"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-field_boots.png",
+          "sha256": "ba426f025a3b38a93adca821a970134edb9ecabb89498f09ee28f6e117d8083e"
+        },
+        {
+          "path": "art/icons/gear/armour-field_boots--masterwork.png",
+          "sha256": "710d3360af8b41ca01b04fd35227c2d05fb69862d0c2cca64242a6a4f54b0d72"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_boots--relic.png",
+        "128": "art/icons/gear/exports/128/armour-field_boots--relic.png",
+        "64": "art/icons/gear/exports/64/armour-field_boots--relic.png",
+        "32": "art/icons/gear/exports/32/armour-field_boots--relic.png"
+      },
+      "export_hashes": {
+        "256": "8e0d3fe3dd4e0312037c8f09b35d26b6c4845416a7270e2dd7e3d91f8e567b04",
+        "128": "5e6db0c04aef34ad14f324f4c1b0230759d563190c0005ed1b1eaa575d35ce4f",
+        "64": "5d50c600f55baa15c83b4b9d1fde136cf3d8597689b34d900a79b8c4a58adeda",
+        "32": "9974d0c81be8d592265e58f2fdc56581b7cdbe70fa4c1ebe8d9460ce06d63076"
+      },
+      "grade": "relic",
+      "standard_id": "armour-field_boots",
+      "outline": {
+        "solid_alpha_iou": 0.9783402523326242,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 30
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
