@@ -12485,3 +12485,24 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     enlarge request (its name and text) and the lightbox shows the glyph large where a picture would be.
 5534. **The Throw row's browser check** is a step of `apps/web/e2e/picking.mjs` (a frag grenade from the pack: the
     Throw row on the Attack tab, its reach, its blast under the pointer, a tile past its range refused). Not yet run.
+
+### Rules 1.71 (0.32), the gaps lane: owed player-facing faults (19 Nov 2026)
+
+5600. **A melee preview's Momentum is the technique run as a hit** (piece G1, approved by the lead; answers item 5503's
+    "not built"): the Momentum line of a technique's preview ("Momentum a → b") is read from the technique itself, run
+    on the dry run's copy of the fight with the acting unit's own attacks hitting (`preview.ts dryRun`, option `asHit`;
+    the copy's `Combat.asHit`, read at the one hit decision in `combat.ts resolveAttack`). Every hit-time op counts as
+    the action counts it (Rolling Start's +1, the Breaker's +2 against the Shaken, Charge's run), with no second
+    formula. Only the fight screen's descriptor preview reads it (`descriptors.ts techPreviewOf`); the enemy's choice
+    keeps `previewTechnique`'s own line. Proof: `packages/engine/test/gaps-032.test.ts` (the preview's line equals the
+    reducer's Momentum after the same Charge hits).
+5601. **A price of 1 names one** (TRIAGE row 10's "1 spare cores with 5 held"): a resource row may give the name of one
+    (`data/actions.json resources.<id>.one`); a price or a need of 1 reads it ("Load the Visualizer · 1 AP · 1 core";
+    "Needs 1 core (you have 0)."). The cores row reads "cores" / "core": the count of spare cores is the meter's and
+    the sheet's, never a price's. The forks picked at the camp's Level up show on the MAGIC tab (checked in the browser
+    on 0.31.11). Proof: `packages/engine/test/gaps-032.test.ts`.
+5602. **Called Out's card says the rule as it runs** (TRIAGE row 13): Challenge taunts every foe within 2 with its save,
+    the named foe included; Called Out then puts Taunted on the named foe with no save, so it is Taunted even when its
+    save holds (`doors3-reshape.test.ts`, every save passing). The card reads "the foe you name is Taunted even if its
+    save holds". Sparing the named foe the Challenge's own roll needs the action's target on the `cond_apply` event (an
+    addition to the closed lists; not built).

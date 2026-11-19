@@ -275,6 +275,9 @@ export interface Combat { /** Rules 1.47: the effects a run's fight keeps for it
   reacting?: { unit: string; kind: string };
   /** The toggles the player set on the action being resolved (combat/attack mods…); set and cleared by the reducer. */
   mods?: string[];
+  /** A dry run's copy only (preview.ts PreviewOpts.asHit, G1 of 0.32): this unit's own attacks hit, so the preview reads what
+   * a hit gives (the Momentum a Charge really reaches). Never set on a live fight. */
+  asHit?: string;
   /** The overworld's throwaway fight state (storyCb): per-turn item counters live in the story instead. */
   overworld?: boolean;
   /** Each side's sight at the last check, for the sight_change hook (only kept while someone listens). */
@@ -1530,7 +1533,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   emit(cb, 'attack_roll', rc);
   const roll = rc.die, total = roll + pv.toHit;
   const crit = roll === 20 || roll >= rc.critMin, fumble = roll === 1 && !rc.noFumble;
-  const hit = rc.hit ?? (!fumble && (crit || total >= pv.need));
+  const hit = rc.hit ?? (cb.asHit === att.id || (!fumble && (crit || total >= pv.need))); // a dry run asked as a hit (preview.ts asHit)
   // Tuned (Improvisation 5): the main hand's gun never jams, so its natural 1 is only a miss and its Heat only Heat
   const tuned = !melee && mode !== 'thrown' && canJam(w) && neverJams(cb, att);
   if (mode === 'thrown') { if (fumble) stagger(att); } // a thrown weapon: no round, no Heat, no Recoil for the next shot
