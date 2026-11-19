@@ -37,7 +37,9 @@ describe('G1: a Charge previews the Momentum it really reaches (Rolling Start\'s
     const b = make(); rig({ hit: true, die: 12 });
     expect(b.f.tech('charge', { targetId: b.f.foe.id })).toBeNull();
     const after = b.f.momentum(b.f.unit(b.u.id)); rig(null);
-    expect(after).toBeGreaterThan(1);
+    // rules 1.73 item 5805: Rolling Start's free Charge is gone, so the Opener pays 1 and its hit builds 1: a preview that
+    // skipped the hit-time op would read 1 → 0
+    expect(after).toBe(1);
     expect(line).toBe('Momentum 1 → ' + after);
   });
 });
