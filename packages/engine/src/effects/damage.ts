@@ -17,7 +17,7 @@ import { emit, harmHeld } from './hooks';
 import { noteTended } from './mending';
 import { rawHidden, setDowned } from '../unitstate';
 import { canYield, YIELD } from '../yielding';
-import { ELEMENTAL_CAP } from '../character';
+import { ELEMENTAL_CAP } from '../data';
 
 /** Tending others (rules 1.5, calming the heart): magic.ts sets f; a heal, stim, shield or cleanse given calls it. */
 export const tendHook: { f: ((cb: Combat | null, by: Unit | null, t: Unit) => void) | null } = { f: null };

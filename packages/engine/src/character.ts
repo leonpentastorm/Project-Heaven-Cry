@@ -3,7 +3,7 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { numberOf } from './datatext';
 import patronsJ from '../../../data/patrons.json';
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES, ladderSchedule } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES, ladderSchedule, ELEMENTAL_CAP } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem, instanceMods } from './effects/collect';
 import { statQuery, setRankRule, setHandsRule, type HandInstance } from './effects/hooks';
 import type { StatId } from './effects/stats';
@@ -1136,10 +1136,7 @@ const cap60 = (x: number) => Math.max(0, Math.min(0.6, x));
 export const critTakenPct = (c: Character) => cap60(fx(c, 'crit_taken', 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'analysis'))); // rules 1.13: Acuity's (the skill with the id 'analysis'); it was Durability's
 /** Elemental damage taken: −10% × Pain Threshold. Below 0 it is damage taken extra (Paper, Oil in My Mind: +10% at
  * Pain Threshold 0), so only the 60% cap applies, not the floor. */
-/** Rules 1.70 item 5540 (Leon, 19 Nov 2026): the most elemental damage taken off, every source together (rules.json
- * combat.elemental_taken_cap): the one copy, read by the sheet, the blow (effects/damage.ts) and Scar Tissue. */
-export const ELEMENTAL_CAP: number = Number((RULES as any).combat?.elemental_taken_cap);
-if (!(ELEMENTAL_CAP > 0 && ELEMENTAL_CAP <= 1)) throw new Error('data/rules.json combat.elemental_taken_cap is missing');
+
 /** Pain Threshold's elemental resistance a point (skills.json per_point.numbers.elemental_taken), then what items add,
  * held under the cap. */
 export const elementalTakenPct = (c: Character) => Math.max(-1, Math.min(ELEMENTAL_CAP, fx(c, 'elemental_taken', (SKILL as any).pain_threshold.per_point.numbers.elemental_taken * P(c, 'pain_threshold'))));
