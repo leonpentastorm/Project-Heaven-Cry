@@ -264,12 +264,13 @@ export function parseTechId(a: string | null | undefined): { hand: 'main' | 'off
   return { hand: hand as any, id, ...(itemS != null ? { item: /^\d+$/.test(itemS) ? Number(itemS) : itemS } : {}) };
 }
 /** What a technique's text lets you choose beyond its property line (args.opt). The first with '' is sent when nothing
- * is picked. */
-export const TECH_OPTIONS: Record<string, [string, string, string][]> = {
+ * is picked. A fourth entry names the property line (techniques.json `lines` props) the option needs: it is offered only
+ * with a weapon that has that line for the technique (row 15 of the outside playtest: Leave it in on a Maul). */
+export const TECH_OPTIONS: Record<string, ([string, string, string] | [string, string, string, string])[]> = {
   called_shot: [['leg', 'LEG', 'Slowed on a hit.'], ['arm', 'ARM', 'Its weapon is lowered on a hit.'], ['head', 'HEAD', 'Dazed on a hit.']],
-  run_through: [['', 'KEEP IT', 'Pull the weapon back after the thrust.'], ['leave', 'LEAVE IT IN', 'Only with a Reach weapon: you leave the weapon in the target and are unarmed. The target stays Pinned until the weapon is pulled out.']],
-  bash: [['', 'DAZE', 'The target is Dazed.'], ['push', 'PUSH', 'With a Heavy weapon: the target is pushed 2 tiles instead.']],
-  trip: [['', 'TRIP', 'The target goes Prone.'], ['grapple', 'GO DOWN WITH IT', 'With bare hands, on a target next to you: you go Prone with it, and it is Grappled as well.']],
+  run_through: [['', 'KEEP IT', 'Pull the weapon back after the thrust.'], ['leave', 'LEAVE IT IN', 'Only with a Reach weapon: you leave the weapon in the target and are unarmed. The target stays Pinned until the weapon is pulled out.', 'reach']],
+  bash: [['', 'DAZE', 'The target is Dazed.'], ['push', 'PUSH', 'With a Heavy weapon: the target is pushed 2 tiles instead.', 'heavy']],
+  trip: [['', 'TRIP', 'The target goes Prone.'], ['grapple', 'GO DOWN WITH IT', 'With bare hands, on a target next to you: you go Prone with it, and it is Grappled as well.', 'bare']],
   raise_shield: [['1', 'TURN 1', '1 Momentum becomes 1 Guard.'], ['2', 'TURN 2', '2 Momentum become 2 Guard.'], ['', 'ALL', 'All your Momentum becomes Guard, as much as the pool holds.']],
   drag: [['', 'AUTO', 'Pull it to you, or swap places when it is next to you.'], ['pull', 'PULL', 'Pull it toward you.'], ['swap', 'SWAP', 'Change places with it.']],
 };
@@ -306,13 +307,17 @@ export function techHelp(e: { id: string; text: string; line?: string | null }):
   return (t.needs ? t.needs + ' ' : '') + t.text + (t.line ? ' With this weapon: ' + t.line : '') + (why1 ? ' (' + why1 + ')' : '');
 }
 /** A technique's pick steps by what it aims at, then its line and its options. */
-function techPicks(x: DescCtx, e: { id: string; choices?: { prop: string; text: string }[] }): PickStep[] {
+/** The property lines a technique has with this weapon (the pad entry's choices, else its default line's props). */
+const linePropsOf = (e: { id: string; line?: string | null; choices?: { prop: string; text: string }[] }): string[] =>
+  e.choices?.length ? e.choices.map((c) => c.prop) : (((TECHNIQUE as any)[e.id]?.lines || []) as any[]).filter((l) => l.text === e.line).flatMap((l) => l.props || []);
+function techPicks(x: DescCtx, e: { id: string; line?: string | null; choices?: { prop: string; text: string }[] }): PickStep[] {
   const aim = aimOf(e.id), out: PickStep[] = [];
   if (aim === 'enemy' || aim.startsWith('enemy')) out.push({ key: 'targetId', kind: 'enemy', prompt: 'Click an enemy on the map.', choices: others(x) });
   if (aim === 'ally') out.push({ key: 'allyId', kind: 'ally', prompt: 'Click an ally on the map.', choices: allyIds(x) });
   if (aim === 'tile' || aim.endsWith('+tile')) out.push({ key: 'tile', kind: 'tile', prompt: aim === 'enemy+tile' ? 'Now click the tile.' : 'Click a tile on the map.' });
   if (e.choices && e.choices.length > 1) out.push({ key: 'line', kind: 'option', prompt: 'Which line applies.', optional: true, options: e.choices.map((c) => ({ id: c.prop, label: c.prop.toUpperCase(), text: c.text })) });
-  const o = TECH_OPTIONS[e.id]; if (o) out.push({ key: 'opt', kind: 'option', prompt: 'Choose how.', optional: true, options: o.map(([id, label, text]) => ({ id, label, text })) });
+  const props = linePropsOf(e), o = (TECH_OPTIONS[e.id] || []).filter((r) => !r[3] || props.includes(r[3]));
+  if (o.length > 1) out.push({ key: 'opt', kind: 'option', prompt: 'Choose how.', optional: true, options: o.map(([id, label, text]) => ({ id, label, text })) });
   return out;
 }
 
@@ -931,7 +936,7 @@ const MAGIC: ActionSystem = {
         const ap0 = designAp(mg, designs[0]);
         out.push(D('outburst', 'outbursts', 'Outburst', ap0, designs.length === 1 ? 'Begin ' + ap0 + ' AP' : designs.length + ' designs',
           'Begin a design and hold it at stage 0 (2 AP, or 1 AP with the Swift module). Pump it up a stage at a time, to stage 4 (1 AP each), then Release it (1 AP). Or Snap it: Begin and Release in one go for 3 AP, at ×' + stageMult(0) + '.' + (mg.emanator ? '' : ' With no Emanator in hand it draws on the air: no MP cost, but +' + SOUL_RULES.cycle.no_emanator_strain + ' Strain.'), null,
-          { picks: [{ key: 'design', kind: 'option', renderer: 'design-cards', prompt: 'Pick a design.', optional: true, options: designs.map((d) => ({ id: d.id, label: d.name })) }, { key: 'mode', kind: 'option', prompt: 'Begin (hold it) or Snap (Begin and Release now).', optional: true, options: [{ id: 'begin', label: 'Begin' }, { id: 'snap', label: 'Snap' }] }, { key: 'aim', kind: 'tile', prompt: 'Snap: hover to preview, click a tile to aim.', when: { key: 'mode', is: 'snap' }, optional: true }], toggleOn: 'combat/outburst', preview: 'outburst' }));
+          { picks: [{ key: 'design', kind: 'option', renderer: 'design-cards', prompt: 'Pick a design.', optional: true, options: designs.map((d) => ({ id: d.id, label: d.name })) }, { key: 'mode', kind: 'option', renderer: 'begin-snap', prompt: 'Begin (hold it) or Snap (Begin and Release now).', optional: true, options: [{ id: 'begin', label: 'Begin' }, { id: 'snap', label: 'Snap' }] }, { key: 'aim', kind: 'tile', prompt: 'Snap: hover to preview, click a tile to aim.', when: { key: 'mode', is: 'snap' }, optional: true }], toggleOn: 'combat/outburst', preview: 'outburst' }));
       }
       if (held) {
         const pp: any = safe(() => previewPump(cb, u), { ok: false, why: 'Not now.', ap: SPELL_AP.pump } as any);

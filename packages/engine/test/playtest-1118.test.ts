@@ -200,3 +200,15 @@ describe('row 12: the Primed boon starts the door\'s meter a step up (Momentum t
     }
   });
 });
+
+describe('row 15: menu faults', () => {
+  const optsOf = (weapon: string, tech: string) => {
+    const f = physFight([{ weapon, known: [tech] }], [{ at: 'D5' }]); f.put(f.pcs[0], 'C5'); const u = f.turn(f.pcs[0]);
+    const d = withGame(f.g, () => actionsFor(f.g, u.id, 'host')).find((x) => x.id.startsWith('tq:main:' + tech));
+    return d ? (d.picks.find((p: any) => p.key === 'opt')?.options || []).map((o: any) => o.id) : null;
+  };
+  it('(a) Run Through offers "Leave it in" only with a weapon that has a Reach line', () => {
+    const maul = optsOf('maul', 'run_through'); expect(maul).not.toBeNull(); expect(maul).not.toContain('leave');
+    expect(optsOf('glaive', 'run_through')).toContain('leave');
+  });
+});

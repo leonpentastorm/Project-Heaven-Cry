@@ -12312,3 +12312,11 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     stands: data only (`survival.json boon.primed`). The fight's other Momentum start (the door's 1 and the stat
     `momentum_start`) is unchanged. Proof: `test/playtest-1118.test.ts` (each door's meter at the first turn, with and
     without Primed).
+5507. **A choice the weapon can't take is not offered** (row 15: Run Through offered Leave it in on a Maul, and the
+    Confirm then refused it). A technique's option that needs a property line (Run Through's Leave it in: Reach; Bash's
+    Push: Heavy; Trip's Go down with it: Bare) is offered only with a weapon that has that line for the technique; with
+    one option left there is no choice step (`descriptors.ts TECH_OPTIONS`, `techPicks`). Proof:
+    `test/playtest-1118.test.ts` (the Maul's and the Glaive's Run Through steps).
+5508. **Begin and Snap are one row** (row 15): the Outburst action's Begin-or-Snap step is drawn by the screen's own
+    footer row (the step's renderer), so the action box no longer adds a second pair of chips. Proof:
+    `apps/web/src/screens/combat-heart.test.ts`.

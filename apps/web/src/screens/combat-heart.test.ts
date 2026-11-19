@@ -139,6 +139,15 @@ describe('the Outbursts tab (rules 1.5)', () => {
     expect(String(r.turnPanels[0].sel.extra || '')).not.toMatch(/Strain \d|MP \d/);
   });
 
+  it('row 15 (outside playtest 0.31.10): Begin and Snap are one row, the footer row; the flow adds no second pair of chips', () => {
+    soulFight('heart-d');
+    const L = new CombatLogic({}) as any;
+    L.setState({ action: 'outburst', design: 'fb' });
+    const r = L.renderVals(), T = r.turnPanels[0];
+    expect(r.turnPanels[0].pad.beginLabel).toMatch(/^Begin/);
+    expect((T.sel.toggles || []).map((t: any) => t.label)).not.toEqual(expect.arrayContaining([expect.stringMatching(/^(Begin|Snap)/)]));
+  });
+
   it('renders: the panel and the design cards bind in the real template', async () => {
     const { u } = soulFight('heart-c');
     const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
