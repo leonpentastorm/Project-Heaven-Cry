@@ -91,6 +91,22 @@ for (const [w, h] of SIZES) {
   await q.setViewportSize({ width: w, height: h }); await settle(q, 300);
   const chips = await q.locator('.phc-lu-tochoose .phc-lu-tc').evaluateAll((bs) => bs.map((b) => b.getAttribute('data-kind')));
   ok(w + ': three or more choices waiting in the strip, Class first (' + chips.join(', ') + ') ' + await shoot(q, 'levelup-three-waiting', w), chips.length >= 3 && chips[0] === 'class');
+  // item B (0.31.11): the label whole and outside the scroller, every shown chip whole inside the strip, the strip clear
+  // of the MAX HP chip, and the chips that do not fit counted on '+N more' (a fail at 1280 is a fail of the suite)
+  const strip = await q.evaluate(() => {
+    const r = (e) => e && e.getBoundingClientRect(), lab = document.querySelector('.phc-lu-tc-label'), box = document.querySelector('.phc-lu-tc-scroll'), hp = document.querySelector('.phc-lu-hp'), more = document.querySelector('.phc-lu-tc-more'), all = document.querySelector('.phc-lu-tochoose');
+    const L = r(lab), B = r(box), H = r(hp), A = r(all), bad = [];
+    if (!L || !B || !H || !A) return { bad: ['missing piece'], hidden: 0, more: '' };
+    if (box.contains(lab)) bad.push('label inside the scroller');
+    if (lab.scrollWidth > lab.clientWidth + 1 || L.left < A.left - 0.5 || L.right > B.left + 0.5) bad.push('label clipped');
+    const chips = [...box.querySelectorAll('.phc-lu-tc')], shown = chips.filter((b) => getComputedStyle(b).visibility !== 'hidden');
+    for (const b of shown) { const c = r(b); if (c.left < B.left - 0.5 || c.right > B.right + 0.5 || b.scrollWidth > b.clientWidth + 1) bad.push('chip cut: ' + b.textContent.trim()); }
+    if (A.right > H.left + 0.5 || (more && r(more).right > H.left + 0.5)) bad.push('strip under the MAX HP chip');
+    const hidden = chips.length - shown.length;
+    if (hidden && (!more || !more.textContent.includes('+' + hidden + ' more'))) bad.push('hidden chips with no +N more');
+    return { bad, hidden, more: more ? more.textContent.trim() : '' };
+  });
+  ok(w + ': the TO CHOOSE strip: label whole, chips whole, clear of MAX HP' + (strip.hidden ? ', ' + strip.more : '') + (strip.bad.length ? ' (' + strip.bad.join('; ') + ')' : ''), strip.bad.length === 0);
   await q.locator('.phc-lu-tc[data-kind="perk"]').first().click(); await q.locator('.phc-lu-chooser[data-chooser="perk"]').waitFor({ timeout: 30000 });
   const cw = await q.evaluate(() => [...document.querySelectorAll('.phc-lu-chooser .phc-perk-row')].filter((r) => [...r.querySelectorAll('.phc-perk-t1, .phc-perk-t2, .phc-perk-name')].some((c) => c.getBoundingClientRect().height > (parseFloat(getComputedStyle(c).lineHeight) || 20) * 1.5)).map((r) => r.getAttribute('data-perk')));
   ok(w + ': a perk step chooser open, its rows one line each (' + cw.join(', ') + ') ' + await shoot(q, 'levelup-perk-chooser', w), (await q.locator('.phc-lu-chooser .phc-perk-row').count()) >= 2 && (w !== 1280 || cw.length === 0));
