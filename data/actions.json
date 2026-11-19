@@ -312,6 +312,12 @@
       "on": "unit",
       "path": "mg.strain",
       "setter": "strain"
+    },
+    "flux": {
+      "name": "Flux",
+      "on": "unit",
+      "path": "mg.flux",
+      "setter": "flux"
     }
   },
   "costs": {

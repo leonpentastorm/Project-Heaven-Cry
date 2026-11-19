@@ -117,6 +117,17 @@ export function resMaxOf(u: Unit | null | undefined, id: string, c?: Character |
   const d = RESOURCES[id]; if (!d?.max) return Infinity;
   const x = cell({ ...d, path: d.max }, holderOfRes(d, u, c)); return x && x.o[x.k] != null ? Number(x.o[x.k]) : Infinity;
 }
+/** Rules 1.70 item 5543 (P2, `at: "limit"`): a resource's limit for a unit, where it differs from its most (Strain may
+ * stand over its limit; Flux overloads past it). Registered by the system that owns the meter (magic.ts: Strain's
+ * mg.strainLimit, Flux's fluxMaxOf). */
+const LIMITS: Record<string, (u: Unit) => number> = {};
+/** Register a resource's limit for a unit (rules 1.70, P2): the meter's owner says it. */
+export function setResLimit(id: string, fn: (u: Unit) => number): void { LIMITS[id] = fn; }
+/** A resource's limit for this unit (rules 1.70, P2): the registered reader, else its most (resMaxOf). */
+export function resLimitOf(u: Unit | null | undefined, id: string, c?: Character | null): number {
+  if (!u) return Infinity;
+  return LIMITS[id] ? LIMITS[id](u) : resMaxOf(u, id, c);
+}
 /** Is a row's `needs` met on its holder (one path set, or one of a list; a row with no `needs`: always)? */
 const needsMet = (d: ResDef, root: any): boolean => !d.needs || (Array.isArray(d.needs) ? d.needs : [d.needs]).some((p) => { const x = cell({ ...d, path: p }, root); return !!x && !!x.o[x.k]; });
 /** GIVE (or with a negative n take) a resource of data/actions.json `resources` to a unit outside an action's price

@@ -29,7 +29,7 @@ import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
 import { grantGoods, lootToPack } from './containers';
 import { itemWords, wordCostMods, immune, mendShown } from './effects/core';
-import { price, priced, costOf, whyNot, canPay, pay, refund, apFor, resGive, setResSetter } from './effects/cost';
+import { price, priced, costOf, whyNot, canPay, pay, refund, apFor, resGive, setResSetter, setResLimit } from './effects/cost';
 import { masteredWords } from './sigilgrowth';
 import { tilesIn, rngOf } from './kit';
 import { feedOf, showFeedNumber } from './effects/feed';
@@ -960,6 +960,17 @@ setResSetter('strain', (cb, u, n, _by, why) => {
   if (n > 0) addStrain(cb, rngOf(), u, n, why || 'an item'); else easeStrain(cb, u, -n, why || 'an item');
   return m.strain - was;
 });
+/** Rules 1.70 item 5543 (P2): Strain's limit is the heart's (`at: "limit"`). */
+setResLimit('strain', (u) => u.mg?.strainLimit ?? Infinity);
+/** Rules 1.70 item 5542 (P1): Flux is a resource row (data/actions.json resources.flux, setter "flux"): a gain goes
+ * through the one Flux function (flux(): the overload past the limit), a loss takes it down, never under 0. Returns what
+ * really changed (an overload empties the Evoker). A unit with no Evoker has no Flux to change. */
+setResSetter('flux', (cb, u, n) => {
+  const m = u.mg; if (!cb || !m || !n) return 0; const was = m.flux || 0;
+  if (n > 0) { const out = flux(cb, rngOf(), u, n); if (out) say(cb, u.name + ':' + out + '.'); } else m.flux = Math.max(0, was + n);
+  return m.flux - was;
+});
+setResLimit('flux', (u) => (u.mg ? fluxMaxOf(u) : Infinity));
 /** Rules 1.56 (the Mana Shock): it lasts while Strain is over the limit (MagicUnit.shock); asked wherever Strain falls
  * and at the turn's end (a limit that rose). */
 function shockEnds(cb: Combat, u: Unit): boolean {

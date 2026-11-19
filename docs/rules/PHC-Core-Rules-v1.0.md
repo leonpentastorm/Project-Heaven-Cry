@@ -12485,3 +12485,72 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     enlarge request (its name and text) and the lightbox shows the glyph large where a picture would be.
 5534. **The Throw row's browser check** is a step of `apps/web/e2e/picking.mjs` (a frag grenade from the pack: the
     Throw row on the Attack tab, its reach, its blast under the pointer, a tile past its range refused). Not yet run.
+
+### Rules 1.70 (0.32 step 1), the shared pieces of the attribute rework (19 Nov 2026)
+
+The ruling layer is `docs/design/proposals/2026-11-19-attribute-proposals.md` (sections 1, 2, 5, 6 and section 3 item
+10). These items build what all nine attributes stand on; each attribute's own content is its own step. Every number
+here is PROVISIONAL.
+
+5535. **The Call's price is one table** (`calls.json rules.price`; ruling layer section 2 items 2 and 3). By the
+    speaker's points in the Call's gamma skill: **3 AP** from 1 point, **2 AP** from 5, **1 AP** from 9. **Each Call
+    once a turn**; at **10 points twice a turn**, and **on your own turn a Call may be paid with your reaction** (the
+    reaction is spent in place of the AP, through `react()`). Off your turn a Call as a reaction works where it works
+    today (helping Calls only), now **from 10 points** (it was 9), for no AP, once a round. The old free first Call at
+    10 and the 0-AP reaction at 9 are gone. The price goes through the one cost site (`call_cost`, then `price` at the
+    site `call`). PROVISIONAL.
+5536. **The Call's strength steps are at 1, 4 and 8 points** (they were 1, 3 and 7), for all nine Calls (ruling layer
+    section 2 item 1). Each Call's step numbers are unchanged here (Rally's and Brief's re-step is their attributes'
+    step). PROVISIONAL.
+5537. **The ladder schedule is one table** (`skills.json ladder`, by the skill's slot; ruling layer section 1). Alpha:
+    perk steps at **3, 6, 7 and 9** points, forks at **4 and 8**, the Mastered perk at 10. Beta and gamma: perk steps at
+    **3, 5, 7 and 9**, the Mastered perk at 10; a beta or gamma will have four perks of two tiers (its four steps keep
+    four of the eight tiers). The engine (`stepsEarned`, the fork steps of `doorpicks.ts`), the level-up screen and the
+    "?" page read this one table; the code works for a skill with two perks or four. Mastery levels (M1 to M4 at 3, 5,
+    7, 9: Overreach and the skills' named unlocks) are unchanged. A save keeps every perk step it holds: an alpha that
+    took a step at 5 under the old schedule keeps it, and a new one is owed only when 3, 6, 7, 9 owes more than it holds.
+    Each alpha's second fork moves from 6 to 8 points (its unlock row moves with it; a save keeps a fork it picked).
+5538. **Old saves: one free re-pick of a beta's or gamma's perk steps** (ruling layer section 2 item 5). Each skill whose
+    perks or named passives change carries a table in data (`skills.json` row `perk_remap`: `rev`, `perks` old id to new
+    id or null, `passives` unlock points to the perk that replaces it); a character carries a stamp per skill
+    (`Character.perkRev`). On load, a character whose stamp is under the table's rev, with 3 or more points in that skill,
+    holds the mapped perks (its old perks, then the old passives it had, in that order, as far as its perk steps reach:
+    no passive is grandfathered above the step count) and is offered one free re-pick of that skill's steps in the
+    level-up screen's TO CHOOSE strip. Taking the re-pick gives the steps back to choose again, the preselection marked;
+    keeping it closes it. A character made after the table carries the stamp and is offered nothing. Nothing is written
+    for a skill with no table (a save loads as it was).
+5539. **The Strain limit** (Leon's ruling, ruling layer section 3 item 10): **3, +1 at Composure 1, 2, 4, 6 and 8** (8
+    at Composure 8 and over); Will Power gives none (it was 3 + half of Will Power, times Composure's feed). One number
+    block, `soul_modules.json strain.limit`, read by `character.ts strainLimit`; items still add (stat `strain_limit`).
+    PROVISIONAL; to be measured (the Outburst's steady and peak) before 0.32 ships.
+5540. **Elemental resistance** (Leon's ruling of 19 Nov, ruling layer section 6): **Pain Threshold gives +6% a point**
+    (60% at 10); the cap on elemental damage taken off is **80%** (it was 60%), one number in data
+    (`rules.json combat.elemental_taken_cap`), read by one function wherever the cap applies (the sheet, the blow, the
+    Scar-share perk). Pain Threshold alone never passes 60%; today no armour or gear gives elemental resistance (the
+    other sources are two traits, 10% each), so nobody passes 70% until Items 2.0's armour work. The "?" page's
+    `(max)` follows the engine's value. PROVISIONAL. *Open for the lead:* the 0.32 brief says gear may take it to 100%;
+    Leon's words and the ruling layer say the cap is 80% in all; built as 80% in all.
+5541. **Forms known** (ruling layer section 5): Visualization's forms are learned, under their own door id
+    `figment_forms`: **2 forms of your choice at Visualization 1, +1 at each of 2 to 9** (all ten at 9), chosen on the
+    level-up screen and kept for good. No form is opened by a level or a fork any more; Visualization's forks (Hard
+    Light and the rest) are Expression's step. A save keeps every form it had open (the old ladder's fixed forms, its
+    fork picks and kept forms) and counts them against its forms known; a form over the count is kept outside it, never
+    lost (stamp `figRev` 2). PROVISIONAL.
+5542. **Flux is a resource row** (P1): `actions.json resources.flux` (`mg.flux`, setter `flux`): a gain goes through the
+    one Flux function (`magic.ts flux`: the overload at the limit), a loss takes it down to 0. Its limit is the Evoker's
+    (`fluxMaxOf`).
+5543. **`at: "limit"`** (P2): the resource predicate's bound `{<resource>: {at: "limit"}}` holds when the resource is at
+    or over its limit: Strain's limit (`mg.strainLimit`), Flux's (`fluxMaxOf`), else the resource's most (`at: "max"`).
+5544. **The target-aware price** (P3): the `cost` trigger names a target: the action's target unit, else the owned unit
+    an order is given to (a Figment's order), else the target id the price was asked with. `target` predicates read it.
+5545. **Stat `seen_range`** (P4): tiles added to (or, negative, taken from) the range at which other units' eyes see
+    this unit. Asked only when something in the fight answers it.
+5546. **A reaction's refusals are read before a roll** (P5; completes item 5530's "Not built"): `tactics.ts
+    reactRefusal` is the one read-only form of `react()`'s refusals (the event already answered, the last reaction kept
+    for a held shot, a `reaction_window` cancel, no reaction to spend); `react()` calls it. Parry asks it before its d20:
+    a Parry `react()` would refuse is not rolled, said or counted against its one try a round.
+5547. **A data reference to a technique rule** (P6): a number block's `of` may name `tech_rule:<path>`, a value of
+    `techniques.json rules` (one resolver, `datatext.ts dataRef`, also used to fill a text that binds such a block).
+    Cover Them's Guard cost reads `tech_rule:guard.interpose_cost` (one copy of the interpose cost).
+5548. **Browser suites that fail only beside others** run one at a time (`apps/web/e2e/groups.json serial`: fx-room,
+    magic, title, resources, capture-skills, picking).

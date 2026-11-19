@@ -1060,8 +1060,8 @@ if "actions" in data:
             if isinstance(r, dict) and _k == "needs" and isinstance(r.get(_k), list) and r[_k] and all(isinstance(x, str) and x for x in r[_k]): continue # rules 1.33: one of several paths (an MP focus: mg.emanator, mg.attuner)
             if isinstance(r, dict) and _k in r and not (isinstance(r[_k], str) and r[_k]):
                 errors.append(f"actions: resources.{rid}.{_k} must be a path (a setter: its name)")
-        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion", "strain"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap); rules 1.69 item 5453: strain (magic.ts: addStrain up, easeStrain down)
-            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion, strain)")
+        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion", "strain", "flux"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap); rules 1.69 item 5453: strain (magic.ts: addStrain up, easeStrain down); rules 1.70 item 5542: flux (magic.ts: flux() up, down to 0)
+            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion, strain, flux)")
 
 # Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
 # prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.
@@ -2147,7 +2147,7 @@ def check_pred(k, v, w):
     elif a == "hold" and not _hold_ok(v, p): errors.append(f"{w}: `if.{k}` is {{slot: hand or person, door: {p.get('values')}}} or {{slot, item: <id>}}, and / or {{hands: {{props: [weapon properties], only: bool}}, body: {{armour_at_most: {_ARMOUR_NAMES} or a class number}}}}")
     elif a == "skill" and not (isinstance(v, dict) and v and all(sk in known["skill"] and isinstance(n, int) for sk, n in v.items())): errors.append(f"{w}: `if.{k}` maps skills to points ({{empathy: 5}})")
     elif a == "limit" and not (isinstance(v, dict) and (v.get("per") in LIMIT_SCOPES or isinstance(v.get("cooldown"), (int, float))) and set(v) <= {"per", "n", "key", "each", "cooldown"}): errors.append(f"{w}: `if.{k}` is a limit ({{per, n?, key?, each?}} or {{cooldown}})")
-    elif a == "res" and not (isinstance(v, dict) and v and all(isinstance(b, dict) and b and set(b) <= {"at_least", "at_most", "at"} and all(isinstance(b[x], (int, float)) and not isinstance(b[x], bool) for x in ("at_least", "at_most") if x in b) and b.get("at", "max") == "max" and r in (p.get("values") or []) for r, b in v.items())): errors.append(f"{w}: `if.{k}` maps resources ({p.get('values')}) to bounds {{at_least: n, at_most: n, at: max}} (rules 1.60, N10)")
+    elif a == "res" and not (isinstance(v, dict) and v and all(isinstance(b, dict) and b and set(b) <= {"at_least", "at_most", "at"} and all(isinstance(b[x], (int, float)) and not isinstance(b[x], bool) for x in ("at_least", "at_most") if x in b) and b.get("at", "max") in ("max", "limit") and r in (p.get("values") or []) for r, b in v.items())): errors.append(f"{w}: `if.{k}` maps resources ({p.get('values')}) to bounds {{at_least: n, at_most: n, at: max | limit}} (rules 1.60, N10; rules 1.70 P2)")
     elif a in ("zone", "tie", "hold", "skill", "limit", "res"): pass
     elif p.get("values") and not all(x in p["values"] for x in vals): errors.append(f"{w}: `if.{k}` takes only {p['values']}")
 # rules 1.57 (A2): the swell's condition slot (soul_modules.json cycle.swell.unless) is an `if` block of the item ops'

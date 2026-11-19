@@ -37,7 +37,7 @@ import patronsJ from '../../../../data/patrons.json';
 import { TECHNIQUES, PHYS_RULES as TECH_RULES, techGroupOf, techSystemOf } from '../physical/data';
 import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
-import { loseAp, weaponOwnSite, resMaxOf } from './cost';
+import { loseAp, weaponOwnSite, resMaxOf, resLimitOf } from './cost';
 import { resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
 import { gainEcho } from './echo';
 import { doorFeed } from './feed';
@@ -280,16 +280,17 @@ P('path_tiles_at_most', 'number', 'the move (its priced walk: ctx.tiles) is at m
 // Rules 1.60 (N10, approved by the lead 16 Nov 2026): the resource-amount predicate. {<resource>: {at_least: n, at_most: n,
 // at: "max"}} on the holder, the event's actor or its target; every resource named must meet every bound given. `max`
 // is the resource's own most for that unit (effects/cost.ts resMaxOf: Pressure's cap by tier, a class meter's resMax, a
-// row's max path). (`at: "limit"`, a named stat such as the Strain limit, comes with Strain as a resource row: N3b.)
+// row's max path). Rules 1.70 item 5543 (P2): `at: "limit"`, the resource at or over its limit (cost.ts resLimitOf).
 const resAmt = (ev: Ev, u: Unit | null, id: string): number => (!u ? 0 : u.resMax?.[id] != null || !RESOURCES[id] ? resOf(u, id) : resLeft(u, id, u === ev.self ? ev.h.c : charOfUnit(u)));
 const resMeets = (ev: Ev, u: Unit | null, v: any): boolean => !!u && !!v && typeof v === 'object' && Object.entries(v).every(([id, b]: [string, any]) => {
   const n = resAmt(ev, u, id);
   if (typeof b?.at_least === 'number' && n < b.at_least) return false;
   if (typeof b?.at_most === 'number' && n > b.at_most) return false;
   if (b?.at === 'max' && n < resMaxOf(u, id, u === ev.self ? ev.h.c : charOfUnit(u))) return false;
+  if (b?.at === 'limit' && n < resLimitOf(u, id, u === ev.self ? ev.h.c : charOfUnit(u))) return false; // rules 1.70 item 5543 (P2)
   return true;
 });
-for (const who of ['self', 'actor', 'target'] as Who[]) P(who + '_res', 'res', who + ' has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: "max"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter\'s most)', (ev, v) => resMeets(ev, unitOf(ev, who), v), () => Object.keys(RESOURCES));
+for (const who of ['self', 'actor', 'target'] as Who[]) P(who + '_res', 'res', who + ' has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: "max" | "limit"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter\'s most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit)', (ev, v) => resMeets(ev, unitOf(ev, who), v), () => Object.keys(RESOURCES));
 P('self_has_res', 'words', 'the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)', (ev, v) => list(v).every((id) => resNow(ev, id) >= 1), () => Object.keys(RESOURCES));
 P('self_lacks_res', 'words', 'the holder has none of one of these resources (as self_has_res)', (ev, v) => list(v).some((id) => resNow(ev, id) < 1), () => Object.keys(RESOURCES));
 P('patron', 'words', 'the holder is Faithful to one of these patrons (patrons.json ids)', (ev, v) => { const id = patronIdOf(ev.h.c || charOfUnit(ev.self)); return !!id && list(v).includes(id); }, PATRON_IDS);
