@@ -13450,7 +13450,7 @@ aiRouteRisk`); their per-turn marks are `uses()` cells on the unit. **Every numb
 6802. **Not in the desk yet** (owed, `docs/ROADMAP.md`): voice hooks, NPCs, objects, hazards, triggers, loot, XP and
     the other optional fields of the Narrator's turn; the Narrator's private view of hidden things in the story
     (traps, hidden NPCs: the host sees what the players see); a fight made up on the spot (only the campaign's
-    prepared fights). The AI Narrator's turn has them all; the desk sends only what it shows.
+    prepared fights). The AI Narrator's turn has them all; the desk sends only what it shows. **Settled by rules 1.84** (items 7200 to 7205).
 
 ### Rules 1.81 (fit), the fun-and-balance fit of 0.32 (20 Nov 2026)
 
@@ -13497,3 +13497,44 @@ Survival) and the range measures; the account is `docs/design/handoffs/0.32-FIT.
     has no weapon skill (-2 to hit with the fists); with a 40-round cap the stalls end 3 won, 13 lost: not slow wins.
     Every door's Recommended kit clears stage 1 solo 10 times in 40 or more but the Sigilist's (2; Leon's ruling: the
     bot's limit).
+
+### Rules 1.84 (the human Narrator), the Narrator lane of 0.33 (20 Nov 2026)
+
+Settles rules 1.80 item 6802 (what the desk did not send, and what the Narrator's seat could not see).
+
+7200. **The Narrator's seat sees what the story hides.** The seat is the host of a room in "I'll narrate", outside a
+    Survival run and the Proving Ground (neither has a Narrator): the engine's `narratorSeat`. The view the seat gets
+    (`viewFor`) keeps what every player's view takes out: the scene's voice hooks with their TN and their truth (true,
+    partial, misleading), hidden objects (unspotted traps), lurking people, hidden hazards, triggers, what people want
+    and know before anyone asked, caches' contents and what a person drops. Every other view is unchanged; with the AI
+    Narrator the host is a player like the others and sees none of it. In a fight the seat already saw the whole field
+    (rules 1.80). **Call made for Leon:** the seat sees all of it, including when the host also plays a character of
+    their own (the Narrator knows the secrets anyway; a host who wants a blind character should let the AI narrate).
+7201. **A lurker is not in a player's view.** A person placed hidden (lurking) is now taken out of the view a player's
+    screen receives, as hidden objects and hazards already were; before, the screen hid the token but the data carried
+    it. Once revealed (a sense, a spot, the Narrator's update) it is in every view.
+7202. **The desk sends the whole turn.** Under the narration, the scene title, the checks, the rulings and the prepared
+    fight, the desk shows every other field of the AI Narrator's turn, grouped (the scene, people and places, XP and loot,
+    what happens to them, a fight made up on the spot, missions, memory, more): voice hooks, people and enemies (place,
+    move, update, remove; hidden), objects, hazards, triggers, things on the ground, XP, loot, Echo, Karma, deeds,
+    magic learned, conditions, harm, rests, days, travel, missions and the rest. The fields are the AI's own tool
+    (`submit_turn`) read as a form: its types, its fixed choices and its descriptions, so a field added to the AI's
+    turn shows on the desk with no other change; what the desk sends is that tool's input, through the same action
+    (`narrator/turn`), checked by the engine field by field the same way. An empty field is left out. A list entry
+    starts with each fixed choice at its first value. A field whose shape the tool leaves open (a spawn list, a drop
+    table) is written as JSON. A prepared fight picked on the desk wins over one made up on the spot.
+7203. **The left panel on the Narrator's screen.** A Narrator with no character of their own has the **Narrator's notes**
+    in the left panel, never a guest's character sheet (it showed the first guest's sheet, as if it were the host's):
+    the party (name, level, HP, player), the scene's voice hooks with TN, truth and who heard each, the checks waiting,
+    who lurks and where, hidden objects and hazards, triggers, and what people want and know. A Narrator who also plays
+    keeps their own sheet, with the notes above it. The right panel and the desk in the middle are unchanged: every
+    mode keeps both side panels (rules 1.54 item 11).
+7204. **The Narrator's map.** On the seat's area map a lurker's token, a hidden object and a hidden hazard's tiles are
+    drawn with a dashed violet mark, and their tile says HIDDEN FROM THE PLAYERS.
+7205. **The desk's first fields are labelled** (SCENE TITLE, optional, a new title opens a new scene; YOUR NARRATION):
+    the first field was an unlabelled empty box (playtest shot 1280-161).
+7206. Proof: `packages/engine/test/narrator-seat.test.ts` (the seat's view and the players' through the reducer),
+    `apps/web/src/narrator/desk.test.ts` (the desk's fields are the tool's, once; the desk's turn applied by the
+    reducer), `apps/web/e2e/narrate.mjs` (two browsers: the host narrates a hook, a lurker, a hidden trap and XP from the
+    desk; the host's notes and map show them, the guest's screen and view do not; a check asked and rolled by the
+    engine).
