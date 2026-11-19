@@ -422,6 +422,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-long_draw",
+      "path": "art/icons/gear/weapon-long_draw.png",
+      "sha256": "fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4",
+      "label": "Long draw",
+      "family": "05-draw-blades",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png",
+        "sha256": "c4d822422be9e1415fd055784be8781bbe3ed8bef6af84c56203d5ea10c516d5"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-long_draw.png",
+        "sha256": "fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-long_draw.txt",
+        "sha256": "62659ba2b957738ae7629463ca78e5b7809371f052f9892653a0ce7d7c4d70c7"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-katana.png",
+          "sha256": "59588dba217985563b09c144f62b048cf3b0bc3465873e692ad8df403144fe58"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-long_draw.png",
+        "128": "art/icons/gear/exports/128/weapon-long_draw.png",
+        "64": "art/icons/gear/exports/64/weapon-long_draw.png",
+        "32": "art/icons/gear/exports/32/weapon-long_draw.png"
+      },
+      "export_hashes": {
+        "256": "d62ad20b5819e2722ca64e58f8a3cf39530a889b3c38018e7c4715c1ccd132d6",
+        "128": "add586d102e4a602d8fe3502305bc588a466be40c7b755c96529cb9a5fda799f",
+        "64": "44289994607d37d6432c7d187458e369d91e33a4a6d7421b7a8be6ce7d19f333",
+        "32": "7e87cdcaa84baff32e3b96339643265860fb6758e100fb8889a1521c37117475"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
