@@ -64,7 +64,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     const line = (await ep.locator('.phc-ep-line-tag').innerText()).replace(/\s+/g, ' ');
     ok(at + 'the "?" page says the attribute and the slot in words: ' + line, /^\w+ · TALK · NOTICE$/.test(line) && !/[αβγ]|Body|Mind|Soul/.test(line));
     // what a point gives: the road map (rules 1.54 item 4119), ten rows, no line twice in a row
-    await ep.evaluate((el) => { const f = el.querySelector('.phc-ep-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); await settle(p, 250); // open by default; a saved fold may have closed it
+    await ep.evaluate((el) => { const f = el.querySelector('.phc-ep-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); await settle(p, 250); // closed by default (Leon, 19 Nov: the lore is the face): open it
     const road = await ep.evaluate((el) => { const st = [...el.querySelectorAll('.phc-ep-road .phc-ep-step')]; return { n: st.length, rep: st.filter((s) => { const t = [...s.querySelectorAll('.phc-ep-row')].map((x) => x.textContent); return new Set(t).size !== t.length; }).length }; });
     ok(at + '…and what each point gives, as ten rows (' + road.n + ', ' + road.rep + ' with a line twice)', road.n === 10 && road.rep === 0);
     await p.screenshot({ path: SHOTS + '/skillpage-' + W + '.png' });
@@ -186,7 +186,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     ok('level up: Endurance\'s name opens the Endurance page', (await p.locator('.phc-attr-page h2').innerText()) === 'Endurance');
     await p.screenshot({ path: SHOTS + '/levelup-attribute-page.png' });
     await p.locator('.phc-attr-close').click(); }
-  await p.locator('button.phc-lu-done').click(); await settle(p, 500);
+  await p.locator('button.phc-lu-later').click(); await settle(p, 500); // Finish later (Done is lit only when nothing waits)
 
   // ----- 5. the fight -----
   // every tab up: a class, a patron, words and designs known (no focus in hand: the tabs still show)

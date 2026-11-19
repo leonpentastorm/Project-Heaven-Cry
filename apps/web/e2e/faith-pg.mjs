@@ -255,7 +255,7 @@ if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-hymn.png' });
 // An overreach: Gather the Clouds (Hymn III, gate 7) at Devotion 5: TN 16; the limits reset so the cooldown allows it.
 await act({ type: 'sandbox/faith', charId: cid, reset: true });
 await p.locator('[role="tabpanel"] [data-act="pr:hymn:old_overcast.gather_the_clouds"]').click(); await pause(p, 250);
-ok('Gather the Clouds is an overreach (TN 16, a miss costs 3 Devotion XP)', /OVERREACH · TN 16/.test(await p.locator('aside').first().textContent()) && /a miss costs 3 Devotion XP/.test(await p.locator('aside').first().textContent()));
+ok('Gather the Clouds is an overreach (TN 16, roll 16 or lose 3 Devotion)', /OVERREACH · TN 16/.test(await p.locator('aside').first().textContent()) && /Overreach: roll 16 or lose 3 Devotion/.test(await p.locator('aside').first().textContent()));
 const c0 = (await G()).characters[cid], dv0 = c0.devotion, xp0 = c0.devotionXp, n2 = (await G()).combat.log.length;
 ok('the tools\' Devotion 5 is the level-5 threshold (' + xp0 + ' XP)', xp0 === 102);
 await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();

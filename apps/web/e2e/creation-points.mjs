@@ -146,7 +146,12 @@ ok('Will Power raised to 2 (' + await val('skill', 'will_power') + ')', (await v
 await p.evaluate(() => window.scrollTo(0, 0)); await p.mouse.move(1276, 716); await settle(p, 150);
 if (process.env.LANE_SHOTS) await p.screenshot({ path: process.env.LANE_SHOTS + '/D-roadmap-creation-skills.png' });
 await p.locator('[data-skill="will_power"] [data-skill-face]').click(); await settle(p, 350);
-// the ladder is open by default (a fold saved closed is opened)
+// the lore is the face (Leon, 19 Nov): the quote, the lore paragraph, At high levels, Good for, Bad for, open; the three
+// folds closed; with them closed the face fits 1280x720 without scrolling inside the panel
+{ const face = await p.evaluate(() => { const box = document.querySelector('[role="dialog"] article');
+    return { lore: !!document.querySelector('.phc-ep-lore .phc-ep-quote') && !!document.querySelector('.phc-ep-intro'), rows: [...document.querySelectorAll('.phc-ep-lorerow')].map((r) => r.getAttribute('data-lore')).join(),
+      folds: ['.phc-ep-fold', '.phc-ep-perks-fold'].map((s) => document.querySelector(s)?.getAttribute('aria-expanded')).join(), scroll: box.scrollHeight - box.clientHeight }; });
+  ok('Will Power\'s "?" leads with the lore (' + face.rows + '), its folds closed (' + face.folds + '), the face fits 1280x720 (' + face.scroll + ' px to scroll)', face.lore && face.rows === 'high,good,bad' && face.folds === 'false,false' && face.scroll <= 1); }
 await p.evaluate(() => { const f = document.querySelector('.phc-ep-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); await settle(p, 200);
 const road = await p.evaluate(() => { const steps = [...document.querySelectorAll('.phc-ep-road .phc-ep-step')];
   return { n: steps.map((s) => s.getAttribute('data-step')).join(), next: steps.filter((s) => s.getAttribute('data-state') === 'next').map((s) => s.getAttribute('data-step')).join(),

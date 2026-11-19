@@ -1121,7 +1121,7 @@
           ],
           "ap_cost": null,
           "text": "You have {=tiers.I.effects.0.value|abs} AP less on your first turn of each fight. When you kill or knock out an enemy on your own turn, you gain {=tiers.I.effects.1.value} AP. Once every 3 turns.",
-          "short": "{=tiers.I.effects.0.value} AP on your first turn · a kill on your turn: +{=tiers.I.effects.1.value} AP, every 3 turns",
+          "short": "{=tiers.I.effects.0.value} AP first turn · a kill on your turn: +{=tiers.I.effects.1.value} AP, every 3 turns",
           "effects": [
             {
               "op": "stat_mod",
@@ -1148,7 +1148,7 @@
           ],
           "ap_cost": null,
           "text": "When you kill or knock out an enemy on your own turn, you gain {=tiers.II.effects.0.value} AP. Once every 3 turns. Each time you do, every enemy who sees it makes a Heart save or is Afraid of you.",
-          "short": "No first-turn cost · kills frighten (Heart save)",
+          "short": "Kills frighten · no first-turn cost",
           "effects": [
             {
               "op": "stat_mod",
@@ -1219,7 +1219,7 @@
           ],
           "ap_cost": 2,
           "text": "Threaten someone with one specific, physical detail. Outside a fight they answer one question truthfully, or refuse and are Shaken; the Narrator plays the answer. In a fight it costs {=tiers.I.ap_cost} AP: one enemy within 8 tiles who can see you makes a Heart save or is Shaken.",
-          "short": "Threaten: one true answer or Shaken · in a fight {=tiers.I.ap_cost} AP, one foe",
+          "short": "Threaten: a true answer or Shaken · fight: {=tiers.I.ap_cost} AP, one foe",
           "effects": [
             {
               "op": "narrator",
@@ -1242,7 +1242,7 @@
           ],
           "ap_cost": 2,
           "text": "Threaten a whole group with one specific, physical detail. Outside a fight their leader answers one question truthfully for all of them, or they refuse and are all Shaken; the Narrator plays the answer. In a fight it costs {=tiers.II.ap_cost} AP: every enemy within 8 tiles who can see you makes a Heart save or is Shaken.",
-          "short": "A whole group · in a fight, every foe in range",
+          "short": "A whole group · fight: every foe in range",
           "effects": [
             {
               "op": "narrator",
@@ -3439,7 +3439,7 @@
           ],
           "ap_cost": null,
           "text": "In every scene, the Narrator tells you one detail that is out of place. When a fight starts, you spot one hidden trap or one enemy's weak point for free.",
-          "short": "Each scene: one detail out of place · fight start: one trap or weak point",
+          "short": "Each scene: a detail out of place · fight start: a trap or weak point",
           "effects": [
             {
               "op": "narrator",
@@ -3456,7 +3456,7 @@
           ],
           "ap_cost": null,
           "text": "In every scene, the Narrator tells you two details that are out of place, and whether they are connected. When a fight starts, you spot two hidden traps or enemy weak points for free.",
-          "short": "Two of each, and whether they connect",
+          "short": "Two of each, connected or not",
           "effects": [
             {
               "op": "narrator",
@@ -4348,7 +4348,7 @@
           ],
           "ap_cost": null,
           "text": "Say one sentence that means one thing to the enemy and another to your squad. The squad gets +{=tiers.I.effects.1.value} on the action you hinted at; the Narrator decides which roll that is. In a fight, once per round and for 0 AP, name an enemy within 8 tiles: each squad member's next attack on it gets +2 until your next turn.",
-          "short": "A coded sentence: squad +{=tiers.I.effects.1.value} on the hinted action · in a fight, on one foe",
+          "short": "Coded sentence: squad +{=tiers.I.effects.1.value} on the hinted action · fight: one foe",
           "effects": [
             {
               "op": "narrator",
