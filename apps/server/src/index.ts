@@ -135,6 +135,7 @@ export class Room extends DurableObject<Env> {
         this.keep('save', m.state);
       } else if (m.t === 'err' && typeof m.pid === 'string') {
         const out: any = { t: 'err', message: m.message, nonce: m.nonce };
+        if (typeof m.hostMs === 'number') out.hostMs = m.hostMs;
         if (typeof m.nonce === 'string') { const at = this.acts.get(m.nonce); if (at != null) { out.leg = Date.now() - at; this.acts.delete(m.nonce); } }
         const s = JSON.stringify(out);
         for (const g of this.ctx.getWebSockets(m.pid)) post(g, s);

@@ -265,7 +265,7 @@ function runHost(a: Action, by: string, nonce: string | null) {
   } catch (e) {
     const msg = e instanceof RuleError ? e.message : 'Something went wrong: ' + String((e as Error)?.message || e);
     if (!(e instanceof RuleError)) console.error(e);
-    if (by === S.me.id) toast(msg); else conn?.send({ t: 'err', pid: by, message: msg, nonce });
+    if (by === S.me.id) toast(msg); else conn?.send({ t: 'err', pid: by, message: msg, nonce, hostMs: Math.round(performance.now() - t0) });
     return;
   }
   const prev = S.game;

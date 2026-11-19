@@ -24,7 +24,7 @@ async function relay() {
   const u = new URL(BASE), wsBase = (u.protocol === 'https:' ? 'wss://' : 'ws://') + u.host;
   const code = 'ZZ' + Array.from(crypto.randomBytes(4), (b) => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b % 32]).join('');
   const open = (q) => new Promise((res, rej) => { const ws = new WebSocket(`${wsBase}/room/${code}/ws?${q}`); ws.got = []; ws.onmessage = (e) => ws.got.push(JSON.parse(e.data)); ws.onopen = () => res(ws); ws.onerror = () => rej(new Error('socket error: ' + q)); });
-  const host = await open('pid=h1&name=H&role=host&token=t1');
+  const host = await open('pid=h1&name=H&role=host&token=stall-host-token-0001');
   // A player who has gone without a word: the handshake, then it never reads again (so it never answers a close).
   let dead = null;
   if (u.protocol === 'http:') {
@@ -50,6 +50,42 @@ async function relay() {
   guest.send(JSON.stringify({ t: 'sync', v: 3 })); await wait(200);
   check(guest.got.some((m) => m.t === 'view' && m.resync && m.state.v === 4), 'host away, the guest behind: the room sends the view it kept');
   guest.close(); dead?.destroy();
+}
+
+// ---------- A2. the room's 0.33 rules, through the real room ----------
+async function rules033() {
+  const u = new URL(BASE), wsBase = (u.protocol === 'https:' ? 'wss://' : 'ws://') + u.host;
+  const code = 'ZY' + Array.from(crypto.randomBytes(4), (b) => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[b % 32]).join('');
+  const sock = (q) => { const ws = new WebSocket(`${wsBase}/room/${code}/ws?${q}`); ws.got = []; ws.raw = [];
+    ws.closed = new Promise((res) => { ws.onclose = (e) => res(e.code); });
+    ws.onmessage = (e) => { ws.raw.push(e.data); try { ws.got.push(JSON.parse(e.data)); } catch { /* */ } };
+    ws.ready = new Promise((res) => { ws.onopen = () => res(true); ws.onerror = () => res(false); }); return ws; };
+  // (Node's WebSocket may not finish a close the room starts at once after the handshake: a refused link is one that is
+  // closing or closed and was sent nothing, its code when the close event came)
+  const firstClose = (ws, ms = 1500) => Promise.race([ws.closed, wait(ms).then(() => (ws.readyState >= 2 ? 'closing' : 'open') + ' ' + ws.raw.length)]);
+  const short = sock('pid=h9&name=H&role=host&token=short');
+  const sc = await firstClose(short); check(sc === 4001 || sc === 'closing 0', 'a host link with a short token does not claim a room (closed ' + sc + ')');
+  const host = sock('pid=h9&name=H&role=host&token=rules-host-token-0001'); await host.ready;
+  check(/^open/.test(await firstClose(host, 500)), 'a host link with a proper token claims it');
+  const seat = 'seat-token-aaaaaaaaaa', other = 'seat-token-bbbbbbbbbb';
+  const g1 = sock('pid=g9&name=G&role=guest&token=' + seat); await g1.ready; await wait(200); g1.close(); await wait(300);
+  const thief = sock('pid=g9&name=G&role=guest&token=' + other);
+  const tc = await firstClose(thief); check(tc === 4003 || tc === 'closing 0', 'another browser with the same player id is refused the seat (closed ' + tc + ')');
+  const g2 = sock('pid=g9&name=G&role=guest&token=' + seat); await g2.ready;
+  check(/^open/.test(await firstClose(g2, 500)), 'the seat token of its own comes back in');
+  g2.send('{"t":"ping"}'); await wait(300);
+  check(g2.raw.includes('{"t":"pong"}'), 'the room answers the ping with a pong');
+  g2.send(JSON.stringify({ t: 'act', action: { type: 'x' }, nonce: 'n9' })); await wait(250);
+  check(host.got.some((m) => m.t === 'act' && m.nonce === 'n9'), 'the action reaches the host with its nonce');
+  host.send(JSON.stringify({ t: 'view', pid: 'g9', state: { v: 7, code }, ack: 'n9', hostMs: 5 })); await wait(250);
+  const ans = g2.got.find((m) => m.t === 'view' && m.ack === 'n9');
+  check(!!ans && ans.hostMs === 5 && typeof ans.leg === 'number' && ans.leg >= 0, 'the answer comes back with ack, hostMs and the leg of the room (' + JSON.stringify(ans && { leg: ans.leg, hostMs: ans.hostMs }) + ')');
+  // written together later (coalesced): with everyone gone the room still has the last view for the guest
+  host.send(JSON.stringify({ t: 'view', pid: 'g9', state: { v: 8, code } })); await wait(150);
+  host.close(); g2.close(); await wait(500);
+  const g3 = sock('pid=g9&name=G&role=guest&token=' + seat); await g3.ready; await wait(400);
+  check(g3.got.some((m) => m.t === 'view' && m.state.v === 8), 'the room kept the latest view for a guest coming back (held, then written as everyone left)');
+  g3.close();
 }
 
 // ---------- B and C. two browsers ----------
@@ -169,7 +205,7 @@ async function browsers() {
   } finally { await browser.close(); }
 }
 
-if (PARTS.includes('A')) await relay();
+if (PARTS.includes('A')) { await relay(); await rules033(); }
 if (/[BC]/.test(PARTS)) await browsers();
 log(failed ? 'RESULT FAIL (' + failed + ')' : 'RESULT OK');
 process.exit(process.exitCode || (failed ? 1 : 0));

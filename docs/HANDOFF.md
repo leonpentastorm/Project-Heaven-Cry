@@ -74,7 +74,15 @@ e2e quirks:
 - **Timing flakes:** `slate.mjs` (the turn card closes itself after 2 s; the test hovers it) and `sandbox-mp.mjs` (two browsers, wave timing) sometimes fail on a slow machine; rerun once before investigating.
 - Combat tests wait for the other turns to finish playing before acting (`pickAction()` opens the right tab first).
 
-Deploy (Leon or whoever he asks; never from a feature branch): `npm run build`, then `python3 tools/deploy_site.py` (changed site files to KV) and `npx wrangler deploy` in `apps/server`. It needs a **Cloudflare API token with Workers and Workers KV edit rights** in `CLOUDFLARE_API_TOKEN` (unless a proxy injects it); static-asset uploads are avoided on purpose (see the script's docstring).
+Deploy (Leon or whoever he asks; never from a feature branch). **From 0.33 the site is Workers Static Assets**, uploaded with the Worker by `wrangler deploy` (it was Workers KV before):
+
+1. On `main` at the release: `npm run assets`, `python3 design/canvas-build/build.py --web`, then **`python tools/deploy_site.py --build`** (or `npm run deploy`). That one command builds the client, checks `apps/web/dist` against Cloudflare's limits (Workers Paid plan: 100,000 files a version, 25 MiB a file; the biggest file today is the voice model's 21.6 MB `.wasm`, the script says when one passes 20 MiB) and the `_headers` file being there, then runs `npx wrangler deploy` in `apps/server`. wrangler uploads only the files whose content changed. It needs `npx wrangler login` once on the machine (or `CLOUDFLARE_API_TOKEN` with Workers Scripts edit rights); no KV rights any more. `--dry-run` checks and bundles without uploading.
+2. The backup branch: `git branch backup/live-<version> main` and push it (the live-backups rule).
+3. The smoke suites against the live site: `python tools/e2e.py two-players reconnect --base https://project-heaven-cry.leonpentastorm.workers.dev`.
+
+Rooms (their saves, views and seats) live in the `Room` Durable Objects; a deploy never touches them (no migration was added: the class and its `v1` tag are as they were).
+
+**Rollback.** `npx wrangler deployments list` in `apps/server`, then `npx wrangler rollback <version-id>` to the version before (a Worker version carries its own static assets; Cloudflare keeps the last 100 versions, those under 30 days old). Rolling back to 0.32.0 or older brings back the KV-served Worker: the KV namespace `03c97e375a064e49a506ee40c0717de3` still holds 0.32.0's files and **must be kept, untouched, until 0.34 is live** (delete it then, with the binding gone from every version that could be rolled back to). If `wrangler rollback` refuses (it does when a Durable Object migration or a deleted binding lies between the two versions), check out `backup/live-<version>` and deploy it the way that version did (0.32.0 and older: `python3 tools/deploy_site.py` of that branch uploads to KV, then `npx wrangler deploy`).
 
 ## Branches and versions
 

@@ -124,6 +124,17 @@ await shot(host, '18-after-fight');
 const lvl = host.locator('button', { hasText: /Level up|Earn your class/ });
 log('level button', await lvl.count());
 if (await lvl.count()) { await lvl.first().click(); await settle(host, 300); await shot(host, '19-levelup'); }
+// 0.33: the delay reading. The guest's ping line names the last action and its parts (the host's ack, the room's leg);
+// the host's names its own time answering a guest.
+const gLine = await guest.locator('[data-phc-netline]').textContent().catch(() => ''), hLine = await host.locator('[data-phc-netline]').textContent().catch(() => '');
+log('guest line:', gLine); log('host line:', hLine);
+ok('the guest\'s ping line reads the room and the last action in parts', /LINK · room \d+ ms/.test(gLine) && /last action .*room–host .*host /.test(gLine));
+ok('the host\'s ping line reads its time answering a guest', /answering a guest \d+ ms/.test(hLine));
+// 0.33 hosting: the site is Workers Static Assets with the _headers file's cache rules; a path with no file is the game
+const hdr = await guest.evaluate(async () => { const a = await fetch('/assets/banner-fight-field.webp'), i = await fetch('/'), spa = await fetch('/no/such/page');
+  return { asset: a.status + ' ' + a.headers.get('cache-control'), index: i.status + ' ' + i.headers.get('cache-control'), spa: spa.status + ' ' + (spa.headers.get('content-type') || ''), nosniff: i.headers.get('x-content-type-options') }; });
+log('headers', JSON.stringify(hdr));
+ok('static assets: art cached a day, index.html revalidated, any other path is the game, nosniff', /^200 .*max-age=86400/.test(hdr.asset) && /^200 .*max-age=0/.test(hdr.index) && /^200 text\/html/.test(hdr.spa) && hdr.nosniff === 'nosniff');
 log('host errors', host.errors); log('guest errors', guest.errors);
 // (the same filter as the other suites: a resource the test server doesn't have is not a page error)
 const errs = [...host.errors, ...guest.errors].filter((e) => !/Failed to load resource|favicon|youtube|ERR_|net::/i.test(e));

@@ -50,9 +50,9 @@ def main(argv):
     if "--build" in argv:
         subprocess.run([tool("npm"), "run", "build"], cwd=ROOT, check=True)
     n, size, notes = check_dist()
-    print(f"site: {n} files, {size / 1048576:.0f} MiB")
+    print(f"site: {n} files, {size / 1048576:.0f} MiB", flush=True)
     for w in notes:
-        print("note:", w)
+        print("note:", w, flush=True)
     dry = "--dry-run" in argv
     cmd = [tool("npx"), "wrangler", "deploy"] + (["--dry-run", "--outdir", str(ROOT / ".check/deploy-dry")] if dry else [])
     r = subprocess.run(cmd, cwd=SERVER)
