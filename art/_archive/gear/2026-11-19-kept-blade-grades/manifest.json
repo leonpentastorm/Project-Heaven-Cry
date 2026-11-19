@@ -6488,6 +6488,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-field_boots--fine",
+      "path": "art/icons/gear/armour-field_boots--fine.png",
+      "sha256": "03507d0e63d6300e089a6c04154da70a00ec086476c62fc555ac771e116b9889",
+      "label": "Field Boots — Fine",
+      "family": "armour-field_boots",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-field_boots--fine.png",
+        "sha256": "3afa943810a2fad4510cd737099cd0584dd22fa33161e237a1aa19d76a17aa70"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-field_boots--fine.png",
+        "sha256": "03507d0e63d6300e089a6c04154da70a00ec086476c62fc555ac771e116b9889"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-field_boots--fine.txt",
+        "sha256": "3aaaae78a6822fc613601ab77a56d5db55ff5c9a0ce1ec8683a24ffd9dbbc282"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-field_boots.png",
+          "sha256": "ba426f025a3b38a93adca821a970134edb9ecabb89498f09ee28f6e117d8083e"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_boots--fine.png",
+        "128": "art/icons/gear/exports/128/armour-field_boots--fine.png",
+        "64": "art/icons/gear/exports/64/armour-field_boots--fine.png",
+        "32": "art/icons/gear/exports/32/armour-field_boots--fine.png"
+      },
+      "export_hashes": {
+        "256": "f4b3f809c479ea73f7dc7265b9b78a940540971485ccdc5c92e1b1ab1126b531",
+        "128": "044c3004c345608756bdc9c734511c6c2f2188897a90d5b961bd363c1055df37",
+        "64": "85b361130e97ecb395a92ed3a6ff2927e4d3db70b3d732faa0728e243a747714",
+        "32": "0a580b7b0e2877326e656f0bc1265d30a2924fd67f55e74e36de275564a79056"
+      },
+      "grade": "fine",
+      "standard_id": "armour-field_boots",
+      "outline": {
+        "solid_alpha_iou": 0.9892060898392697,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 14
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
