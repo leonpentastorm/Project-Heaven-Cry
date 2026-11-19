@@ -1,5 +1,89 @@
 [
   {
+    "n": 9,
+    "id": "lumeri_votive_torch",
+    "title": "Votive torch",
+    "path": "art/icons/gear/weapon-lumeri_votive_torch.png",
+    "refs": [
+      "art/icons/gear/weapon-purifier_flamer.png",
+      "art/icons/weapons/purifier_flamer.svg"
+    ],
+    "paint": "A pistol-sized flamer for one hand: a small lancet-windowed nozzle fed by a flask clipped under the grip. Pose: side profile turned slightly toward the viewer, nozzle to the right, level, about 80% of the canvas width like a pistol. Silhouette: a short brass nozzle shaped like a votive lamp, a round fuel flask under the frame, a coiled feed line, a small contained pilot flame at the tip. Materials: ivory-painted steel, gold bands, brass nozzle. Accent: Lumeri gold #F2C46A; the pilot flame small and contained.\nAt 32 px: a round flask under the grip and a lamp nozzle, no barrel.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.8,
+    "label": "Votive torch",
+    "sha256": "2f96a16ad9215078e6c285fe573f14ac50777cd5dfd6b43fcf4885bc3e5ce122",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-lumeri_votive_torch.png",
+      "128": "art/icons/gear/exports/128/weapon-lumeri_votive_torch.png",
+      "64": "art/icons/gear/exports/64/weapon-lumeri_votive_torch.png",
+      "32": "art/icons/gear/exports/32/weapon-lumeri_votive_torch.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-09",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/09-weapon-lumeri_votive_torch.png",
+    "source_sha256": "12125e93aaf48727111ea31f70b3b1dd28fa998e7f4b5fa51d24626389f571cb",
+    "export_sha256": {
+      "256": "85ef98e9bf78f2af1a799ef14057781ee33b44bf581307853ca2373066f19c1a",
+      "128": "29181eb58796856b6cbb2beed1647a99669e63154bd631bfb7f3d30f985c9b7e",
+      "64": "4c074a8d5a921b15a9ee59f744db1e45da74e8565929eeb9314ecb751102674d",
+      "32": "b500d50e6e0cda9b487508c8a28ae2605b440065ac6ade2f37ef432bdda43481"
+    },
+    "generator_prompt": "Paint a single fictional nonfunctional video-game inventory icon for Project Heaven Cry, a fantasy role-playing game. It is concept art of an imagined prop. Use one exterior, slightly three-quarter view only. Hand-painted opaque Heavenprint gouache, bold readable contour, angular scuffed brushstrokes and selective hatching, charcoal shadows, upper-left ivory highlights and restrained accent paint. The first reference shows only brushwork and materials. Any item reference is a fictional prop in the same game, for family color and scale. Lumeri Votive Torch, a wholly invented lamp-like fantasy gadget. A palm-sized polished brass lancet lantern points right, with a single pinprick of warm candlelight inside its recessed window. Below the ivory-painted sculpted handle sits one rounded brass-and-ivory flask next to a decorative coil. This is an isolated magical prop. Pale warm ivory, muted gold banding and worn charcoal recesses. Level, three-quarter side view with the lantern at right, no external flame. Square 1024 PNG on true transparent alpha with ample margins. Legible as one silhouette at 32 pixels. No lettering, insignia, numbers, logos, people, background, dimension marks, inset diagrams or view of interior parts."
+  },
+  {
+    "n": 10,
+    "id": "lumeri_cathedral_burner",
+    "title": "Cathedral burner",
+    "path": "art/icons/gear/weapon-lumeri_cathedral_burner.png",
+    "refs": [
+      "art/icons/gear/weapon-purifier_flamer.png",
+      "art/icons/weapons/purifier_flamer.svg"
+    ],
+    "paint": "The wall of fire made into architecture: a two-tank backpack burner with a long lance nozzle. Pose: the tank pack upright behind, the lance diagonal in front, drawn together as one object, about 90% of the canvas width. Silhouette: two tall tanks shaped like twin spires side by side with lancet arches, heavy hoses to a long straight lance ending in a lancet-arched nozzle with a brass collar, a small pilot flame at the tip. Materials: ivory-painted steel, gold banding, brass head. Accent: Lumeri gold #F2C46A.\nAt 32 px: two spire tanks and a lance much longer than the purifier's.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.89,
+    "label": "Cathedral burner",
+    "sha256": "217dc4cca2f8fea118e707d8e36c66c583ed55d3212aeed5dc99e87d01516338",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-lumeri_cathedral_burner.png",
+      "128": "art/icons/gear/exports/128/weapon-lumeri_cathedral_burner.png",
+      "64": "art/icons/gear/exports/64/weapon-lumeri_cathedral_burner.png",
+      "32": "art/icons/gear/exports/32/weapon-lumeri_cathedral_burner.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-09",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/10-weapon-lumeri_cathedral_burner.png",
+    "source_sha256": "363e1d2f2ed194c538398652efcee6e0b186fc7a9bea6473a9cfca72a560d53f",
+    "export_sha256": {
+      "256": "6bc6063c30092b730936b907582431837320f274548e1d73746b25ffeca8a039",
+      "128": "78fed6bf5077e5ba9fbbfd60a5c35339e6285828f54750e008a2f334f3b5ba94",
+      "64": "1c88f8839cb8252e31cad9d7c1b4bf8bd0eb4b30f3e3f8764acd46c4165dcfdf",
+      "32": "a11c2c9967ce0d8ac18b7508d271d1ffe2868e80e34be078383455d930ad436d"
+    },
+    "generator_prompt": "Paint a single fictional nonfunctional video-game inventory icon for Project Heaven Cry, a fantasy role-playing game. It is concept art of an imagined prop. Use one exterior, slightly three-quarter view only. Hand-painted opaque Heavenprint gouache, bold readable contour, angular scuffed brushstrokes and selective hatching, charcoal shadows, upper-left ivory highlights and restrained accent paint. The first reference shows only brushwork and materials. Any item reference is a fictional prop in the same game, for family color and scale. Lumeri Cathedral Burner, a prop based on twin cathedral towers. Two tall ivory cylinders with sculptural pointed tops sit together on one backplate. A long dark lance crosses the front diagonally, ending at upper right in a big lancet-window brass lantern head with a tiny stationary ember inside. Two dark curved decorative lines connect the ensemble. Whole object only. Ivory ceramic finish, restrained antique gold shoulders. Bold at icon size, no hand, no fire outside the lantern. Square 1024 PNG on true transparent alpha with ample margins. Legible as one silhouette at 32 pixels. No lettering, insignia, numbers, logos, people, background, dimension marks, inset diagrams or view of interior parts."
+  },
+  {
     "n": 11,
     "id": "ork_snarl_knife",
     "title": "Snarl knife",
