@@ -315,3 +315,29 @@ describe('rules 1.70: the TO CHOOSE strip carries an old save\'s re-pick (item 5
     await React.act(async () => { root.unmount(); });
   });
 });
+
+describe('0.32 B12: no empty icon box, no raw perk id', () => {
+  it('the perk chooser: every row has a picture (its art, else its initials mark in the attribute ink); the dashed "?" box is gone', async () => {
+    setup((c) => { c.level = 3; c.xp = 250; c.skills.pain_threshold = ladderSchedule('pain_threshold').perk_steps[0]; c.perks = []; });
+    const { el, root } = await mount();
+    const chip = el.querySelector('.phc-lu-tc[data-kind="perk"]') as HTMLButtonElement | null;
+    expect(chip).toBeTruthy();
+    await React.act(async () => { chip!.click(); });
+    const rows = [...el.querySelectorAll('.phc-lu-chooser .phc-perk-row')];
+    expect(rows.length).toBeGreaterThan(0);
+    for (const r of rows) { const img = r.querySelector('img.phc-icon'); expect(img, r.getAttribute('data-perk')!).toBeTruthy(); expect(img!.getAttribute('src')).toBeTruthy(); }
+    expect(el.querySelector('.phc-lu-chooser .phc-perk-row span[aria-hidden="true"][style*="dashed"]')).toBeNull();
+    root.unmount();
+  });
+  it('an old save\'s re-pick names a removed perk by its old name (skills.json perk_remap.names) and shows pictures on both cards', async () => {
+    setup((c) => { c.level = 3; c.xp = 250; c.skills.pain_threshold = 3; c.perks = [{ id: 'scar_tissue', tier: 'I' }]; c.perkRepick = { pain_threshold: [{ id: 'scar_tissue', tier: 'I' }] }; });
+    const { el, root } = await mount();
+    const chip = el.querySelector('.phc-lu-tc[data-kind="repick"]') as HTMLButtonElement;
+    await React.act(async () => { chip.click(); });
+    const keep = el.querySelector('[data-fork-opt="keep"]')!, again = el.querySelector('[data-fork-opt="again"]')!;
+    expect(keep.textContent).toContain('Keep these perks: ' + (SKILL as any).pain_threshold.perk_remap.names.scar_tissue + ' I.');
+    expect(keep.textContent).not.toContain('scar_tissue');
+    for (const x of [keep, again]) expect(x.querySelector('img')!.getAttribute('src')).toBeTruthy();
+    root.unmount();
+  });
+});

@@ -13,7 +13,8 @@
 // waiting: one click takes it), locked (until the next step), and the Mastered perk. Every number is the engine's
 // (canRaise, pendingPerkSteps, the character's perks); one click is one engine action, as before.
 import { DCLogic } from '../dc/runtime';
-import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, epRgba, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, roadMap, nextLine, ceilingLine, perkRow } from './shared';
+import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, epRgba, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, roadMap, nextLine, ceilingLine, perkRow, perkNameOf } from './shared';
+import { iconOr } from '../game/markIcon';
 import { CLASS, PERKS, attrCapAt, attrCapLevel, canRaise, raiseNeed, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, ADVANCED_SHELVED, doorForkView, allPendingDoorPicks, pendingRepicks, PERK as ENGINE_PERK } from '@engine';
 import { act, getState, go, homeScreen } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
@@ -248,10 +249,13 @@ export class LevelUpLogic extends DCLogic {
         pick: () => act({ type: 'door/pick', charId: c.id, door: cur.door, option: o.id }) }));
     } else if (ch.isFork && cur.kind === 'repick') {
       // rules 1.70 item 5538: keep what the save holds now, or choose the skill's perk steps again (the old ones marked)
-      const names = cur.held.map((h) => ((ENGINE_PERK[h.id] || {}).name || h.id) + ' ' + h.tier).join(', ') || 'none';
+      const names = cur.held.map((h) => perkNameOf(h.id) + ' ' + h.tier).join(', ') || 'none';
+      // 0.32 B12: never an empty picture: the first perk held (its art or its mark), and the skill's own portrait
+      const keepIcon = cur.held.length ? perkRow(cur.held[0].id, { ink: ATTR[SK[cur.skill].attr].ink }).icon : iconOr(SK[cur.skill].img, nameOf(cur.skill), ATTR[SK[cur.skill].attr].ink);
+      const againIcon = iconOr(SK[cur.skill].img, nameOf(cur.skill), ATTR[SK[cur.skill].attr].ink);
       ch.forkOpts = [
-        { key: 'keep', name: 'Keep', text: 'Keep these perks: ' + names + '.', icon: '', cost: '', hasCost: false, canPick: true, label: 'Keep', btnStyle: chBtn, pick: () => act({ type: 'levelup/perk-repick', charId: c.id, skill: cur.skill, keep: true }) },
-        { key: 'again', name: 'Choose again', text: 'Give these perk steps back and choose them again (what you hold now is marked).', icon: '', cost: '', hasCost: false, canPick: true, label: 'Choose again', btnStyle: chBtn, pick: () => act({ type: 'levelup/perk-repick', charId: c.id, skill: cur.skill }) },
+        { key: 'keep', name: 'Keep', text: 'Keep these perks: ' + names + '.', icon: keepIcon, cost: '', hasCost: false, canPick: true, label: 'Keep', btnStyle: chBtn, pick: () => act({ type: 'levelup/perk-repick', charId: c.id, skill: cur.skill, keep: true }) },
+        { key: 'again', name: 'Choose again', text: 'Give these perk steps back and choose them again (what you hold now is marked).', icon: againIcon, cost: '', hasCost: false, canPick: true, label: 'Choose again', btnStyle: chBtn, pick: () => act({ type: 'levelup/perk-repick', charId: c.id, skill: cur.skill }) },
       ];
     } else if (ch.isFork) {
       // two columns: icon, name, the one line, the cost line if any, Choose (the fork view arms, then confirms)

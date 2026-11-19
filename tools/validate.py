@@ -3562,7 +3562,7 @@ for _s in items("skills"):
         if isinstance(_m, int) and 1 <= _m <= 4 and (_l.get("perk_steps") or [None] * 4)[_m - 1] != int(_pts): errors.append(f"skills:{_s.get('id')}.unlocks.{_pts}: mastery {_m} says a perk step, and the {_s.get('slot')} schedule has its step {_m} at {(_l.get('perk_steps') or [None] * 4)[_m - 1]} (set mastery 0: rules 1.70 item 5537)")
         if _m == 5 and _l.get("mastered") != int(_pts): errors.append(f"skills:{_s.get('id')}.unlocks.{_pts}: the Mastered row is at the schedule's mastered ({_l.get('mastered')})")
 # rules 1.70 item 5538: a skill's perk_remap (old saves' re-pick): {rev: n >= 1, perks: {old perk id: a perk of this skill
-# or null}, passives: {unlock points: a perk of this skill}}; the targets are acquired perks of the same skill
+# or null}, passives: {unlock points: a perk of this skill}, names: {removed old id: its old name}}; the targets are acquired perks of the same skill
 _PK = {x.get("id"): x for x in items("perks") if isinstance(x, dict)}
 for _s in items("skills"):
     _t = _s.get("perk_remap")
@@ -3571,7 +3571,10 @@ for _s in items("skills"):
     # the migration (character.ts migrateCharacterPerks) skips an alpha: a table there would never be read (m6, the 0.32 merge)
     if _s.get("slot") == "alpha": errors.append(f"{_w}: an alpha skill takes no perk_remap (the old-save re-pick skips alphas: rules 1.70 item 5538)"); continue
     _own = lambda pid: pid in _PK and _PK[pid].get("tier") == "acquired" and _s.get("id") in (_PK[pid].get("skills") or [])
-    if not (isinstance(_t, dict) and isinstance(_t.get("rev"), int) and _t["rev"] >= 1 and set(_t) <= {"rev", "perks", "passives", "note"}): errors.append(f"{_w}: {{rev: n >= 1, perks?, passives?, note?}}"); continue
+    if not (isinstance(_t, dict) and isinstance(_t.get("rev"), int) and _t["rev"] >= 1 and set(_t) <= {"rev", "perks", "passives", "names", "note"}): errors.append(f"{_w}: {{rev: n >= 1, perks?, passives?, names?, note?}}"); continue
+    # 0.32 B12: names {old perk id: its old name}: a removed perk's name, for an old save's re-pick to say what it held
+    for _o, _nm in (_t.get("names") or {}).items():
+        if _o not in (_t.get("perks") or {}) or _o in _PK or not (isinstance(_nm, str) and _nm): errors.append(f"{_w}.names.{_o}: a removed perk of this table's perks, with its old name")
     for _o, _n in (_t.get("perks") or {}).items():
         if _n is not None and not _own(_n): errors.append(f"{_w}.perks.{_o}: maps to {_n!r}, not an acquired perk of {_s.get('id')} (or null)")
     for _pts, _n in (_t.get("passives") or {}).items():

@@ -15,6 +15,7 @@ import { shieldBlock } from '../game/shieldLook';
 import { kitSprite } from '../game/kitMap';
 import { figmentFaceOf } from '../game/figmentIcons';
 import { bigOf, moveIconOf } from '../game/doorArt';
+import { iconOr } from '../game/markIcon'; // 0.32 B12: an icon slot with no art shows its name's mark, never an empty box
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 
 export const D = PD;
@@ -189,12 +190,17 @@ const FORKROW_TPL = '<div class="phc-fork-row" data-fork-opt="{{X.key}}" style="
 const PERK_OF = {}; ENGINE_PERKS.forEach((p) => { PERK_OF[p.id] = p; });
 const PERK_ART = {}; D.skills.forEach((s) => { s.ep.perks.forEach((p) => { PERK_ART[p.id] = p.icon; }); if (s.ep.mastered) PERK_ART[s.ep.mastered.id] = s.ep.mastered.icon; });
 const cap1 = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : '');
+/** A perk's name by its id: the perk's own, else a removed perk's old name kept in its skill's remap table (skills.json
+ *  perk_remap.names: an old save's re-pick names what it held), else the id in words. */
+export const perkNameOf = (id) => (PERK_OF[id] && PERK_OF[id].name) || Object.values(ENGINE_SKILL).map((k) => k && k.perk_remap && k.perk_remap.names && k.perk_remap.names[id]).find(Boolean) || cap1(String(id || '').replace(/_/g, ' '));
+/** A perk's ink: its first skill's attribute colour (the mark of a perk with no art yet). */
+const perkInk = (p) => { const k = p && p.skills && SK[p.skills[0]], a = k && ATTR[k.attr]; return (a && a.ink) || '#E7EBF3'; };
 /** One perk's row. `o.held`: 'I' | 'II' | '' (the pips); `o.ink`: the skill's ink; `o.act`: { label, click, aria } for a
  *  chooser's one button; `o.why`: the reason a chooser's row is not legal (it is dimmed); `o.on`: the row picked. */
 export function perkRow(id, o = {}) {
   const p = PERK_OF[id] || { name: id, tiers: {} }, T = p.tiers || {}, s1 = cap1((T.I && T.I.short) || ''), s2 = cap1((T.II && T.II.short) || '');
-  const held = o.held === 'II' ? 2 : o.held === 'I' ? 1 : 0, ink = o.ink || '#E7EBF3', icon = PERK_ART[id] || '', act = o.act || null;
-  return { key: id, name: p.name, icon, has: !!icon, none: !icon, alt: p.name + ' perk icon (Wick)', zoomText: cap1((T.I && T.I.text) || p.text || ''),
+  const held = o.held === 'II' ? 2 : o.held === 'I' ? 1 : 0, ink = o.ink || perkInk(p), icon = iconOr(PERK_ART[id], p.name, ink), act = o.act || null;
+  return { key: id, name: p.name, icon, has: true, none: false, alt: p.name + ' perk icon (Wick)', zoomText: cap1((T.I && T.I.text) || p.text || ''),
     s1, s2, hasS2: !!s2, held: held ? (held === 2 ? 'II' : 'I') : 'none', stateLabel: held === 2 ? 'Tier II' : held ? 'Tier I' : 'Not taken',
     pips: [0, 1].map((i) => ({ key: i, style: 'display: block; width: 9px; height: 9px; transform: rotate(45deg); box-sizing: border-box; ' + (i < held ? 'background: ' + ink : 'border: 1px solid #5A6781') })),
     why: o.why || '', hasWhy: !!o.why, hasBtn: !!act, actLabel: act ? act.label : '', act: act ? act.click : () => {}, actAria: act ? act.aria || act.label : '',
@@ -309,7 +315,7 @@ export function masteredVals(self, m, ink, skillName, pts) {
   const corner = (v, h) => ({ style: 'position: absolute; ' + v + ': -5px; ' + h + ': 26px; width: 9px; height: 9px; transform: rotate(45deg); background: ' + ink + '; box-shadow: 0 0 0 3px #0C1018' });
   return {
     name: m.name, flavour: '“' + m.flavour + '”', text: m.text, meta: m.meta + ' · Automatic at 10 points',
-    icon: m.icon, has: !!m.icon, none: !m.icon, zoom: m.icon ? zoomer(self, m.icon, m.name, 'perk', m.text) : () => {}, alt: m.name + ' Mastered perk icon (Wick)',
+    icon: iconOr(m.icon, m.name, ink), has: true, none: false, zoom: m.icon ? zoomer(self, m.icon, m.name, 'perk', m.text) : () => {}, alt: m.name + ' Mastered perk icon (Wick)',
     kicker: '◆  MASTERED PERK · ' + skillName.toUpperCase() + ' 10  ◆', locked, lockLabel: locked ? 'LOCKED · ' + skillName.toUpperCase() + ' ' + pts + ' / 10' : '',
     pips: Array.from({ length: 10 }, (_, i) => ({ style: 'width: 8px; height: 8px; transform: rotate(45deg); box-sizing: border-box; ' + (i < pts ? 'background: ' + ink : 'border: 1px solid ' + epRgba(ink, 0.45)) })),
     corners: [corner('top', 'left'), corner('top', 'right'), corner('bottom', 'left'), corner('bottom', 'right')],
@@ -413,15 +419,15 @@ export function epccgVals(self, ptsOf, who, opt) {
     perks: e.perks.map((p) => perkRow(p.id, { held: heldOf(p.id), ink })),
     // rules 1.78 item 6609: the door's passive steps (a door verb with no action: Threads, Two Bonds), one row each, its
     // picture by the item key (doorArt.ts moveIconOf), where it comes (at n points, a class rank)
-    passives: (e.passives || []).map((p) => { const icon = moveIconOf(p.key); return { key: p.key, name: p.name, text: p.text, at: p.at, icon, has: !!icon, none: !icon,
-      zoom: icon ? zoomer(self, bigOf(icon), p.name, 'icon', p.text) : () => {}, alt: p.name + ' (Wick)', atStyle: 'flex: none; font-size: var(--fs-sub); font-weight: 700; color: ' + ink }; }),
+    passives: (e.passives || []).map((p) => { const art = moveIconOf(p.key), icon = iconOr(art, p.name, ink); return { key: p.key, name: p.name, text: p.text, at: p.at, icon, has: true, none: false,
+      zoom: art ? zoomer(self, bigOf(icon), p.name, 'icon', p.text) : () => {}, alt: p.name + ' (Wick)', atStyle: 'flex: none; font-size: var(--fs-sub); font-weight: 700; color: ' + ink }; }),
     hasAlwaysOn: (e.passives || []).length > 0,
     // the two rules every page shared, said once at the top of the perk fold
     perkHelp: ((L) => 'A perk step at ' + L.perk_steps.slice(0, -1).join(', ') + ' and ' + L.perk_steps[L.perk_steps.length - 1] + ' points: a perk at I, or I raised to II. At ' + L.mastered + ': the Mastered perk.')(ladderSchedule(s.id))
       + (combos.length ? ' A combo perk: 5 points in every skill on its card, then its deed.' : ''),
     m: masteredVals(self, e.mastered, ink, s.name),
     hasCombos: combos.length > 0,
-    combos: combos.map((c) => ({ name: c.name, text: c.text, deed: c.deed, icon: c.icon, has: !!c.icon, none: !c.icon,
+    combos: combos.map((c) => ({ name: c.name, text: c.text, deed: c.deed, icon: iconOr(c.icon, c.name, (c.skills[0] && c.skills[0].ink) || ink), has: true, none: false,
       zoom: c.icon ? zoomer(self, c.icon, c.name, 'perk', c.text) : () => {}, alt: c.name + ' combo perk icon (Wick)',
       segs: c.skills.map((k) => ({ style: 'flex: 1; height: 4px; background: ' + k.ink })),
       chips: c.skills.map((k, i) => ({ plus: i > 0, label: k.name + ' ' + k.min,

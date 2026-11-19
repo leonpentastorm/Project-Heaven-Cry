@@ -596,6 +596,7 @@
           "used_to_the_pain": "second_wind",
           "scar_tissue": "numb"
         },
+        "names": { "used_to_the_pain": "Used to the Pain", "scar_tissue": "Scar Tissue" },
         "passives": {
           "3": "numb",
           "5": "still_standing"
@@ -1130,6 +1131,7 @@
         "perks": {
           "iron_stomach": "steady"
         },
+        "names": { "iron_stomach": "Iron Stomach" },
         "passives": {
           "3": "steady",
           "5": "point_man"
@@ -3275,6 +3277,7 @@
         "perks": {
           "burden_of_proof": "objection"
         },
+        "names": { "burden_of_proof": "Burden of Proof" },
         "passives": {
           "3": "objection",
           "5": "opening_argument"
@@ -4374,6 +4377,7 @@
           "soulmate": "pull_together",
           "rally_cry": "steady_hands"
         },
+        "names": { "soulmate": "Soulmate", "rally_cry": "Rally Cry" },
         "passives": {
           "3": "hand_off",
           "5": "nobody_left_behind"
@@ -4526,6 +4530,7 @@
           "sweet_talker": "veiled_insult",
           "double_meaning": "between_the_lines"
         },
+        "names": { "sweet_talker": "Sweet Talker", "double_meaning": "Double Meaning" },
         "passives": {
           "3": "between_the_lines",
           "5": "veiled_insult"
@@ -4928,6 +4933,7 @@
         "perks": {
           "you_get_used_to_it": "poker_face"
         },
+        "names": { "you_get_used_to_it": "You Get Used to It" },
         "passives": {
           "3": "poker_face",
           "5": "stand_still"
@@ -5093,6 +5099,7 @@
         "perks": {
           "old_tongue": "old_tales"
         },
+        "names": { "old_tongue": "Old Tongue" },
         "passives": {
           "3": "old_tales",
           "5": "lore_ward"
@@ -5684,6 +5691,7 @@
         "perks": {
           "real_power": "rank_has_privileges"
         },
+        "names": { "real_power": "Real Power" },
         "passives": {
           "3": "rank_has_privileges",
           "5": "five_stars"
