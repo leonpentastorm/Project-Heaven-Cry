@@ -77,7 +77,7 @@ export { spawnOwned, unmakeOwned, ownedBy, runOwned, orderable, ownedVerbs, addO
 export * from './figments';
 export * from './doorpicks';
 // Action descriptors (engine review 4, finding 3): one description of every action a unit can take, one preview, one send.
-export { actionsFor, standingModsFor, previewDescriptor, sendDescriptor, registerActions, nextStep, stepOn, GROUP_ORDER, isLegacyUnit, TQ, TPAD, TWATCH, techId, parseTechId, TECH_OPTIONS, techOpt, techHelp, techParts, ORDER_THINGS, orderMax,
+export { actionsFor, standingModsFor, kitSeenFor, previewDescriptor, sendDescriptor, registerActions, nextStep, stepOn, GROUP_ORDER, isLegacyUnit, TQ, TPAD, TWATCH, techId, parseTechId, TECH_OPTIONS, techOpt, techHelp, techParts, ORDER_THINGS, orderMax,
   PR, prayId, parsePrayId, oddsPct, prayOdds, PK, perkId, parsePerkId, perkCost, perkState, perkText,
   type ActionDescriptor, type TechParts, type DescGroup, type PickStep, type PickKind, type PickOption, type Picks, type DescCost, type DescriptorPreview, type PreviewLine, type GridMarks, type ActionSystem, type DescCtx } from './descriptors';
 export { tilesN } from './log'; // rules 1.66 item 5213: '1 tile', '3 tiles'

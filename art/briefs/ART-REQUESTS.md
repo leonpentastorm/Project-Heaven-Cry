@@ -121,6 +121,8 @@ shows its group's mark (Slip).
 | id | where | direction |
 | --- | --- | --- |
 | `shadow-verb:shadow.stalk` | Stalk (rules 1.76 item 6405: 2 AP, once a turn, from Hidden, +1 Shadow) on the SHADOW tab | Wick crouched still in deep shadow, eyes on a distant figure, a wisp of shadow gathering round it |
+| `shadow-verb:shadow.case` | Case (rules 1.77 item 6514: 1 AP, an enemy that can't see you is Cased, its kit shown) on the SHADOW tab, group Mark | Wick peering from cover at a distant figure, a small ledger of its gear sketched beside it |
+| `cond:cased` | the Cased condition's chip (rules 1.77 item 6514) | the same ledger mark, small, as a status chip |
 ### 0e. The Body lane of 0.32: new perks (requested 19 Nov 2026; rules 1.73)
 
 Wick perk icons, white flat ink, 1024 × 1024, transparent, the STYLE-LOCK applies (master: `art/icons/traits/mind-without-fog.png`),

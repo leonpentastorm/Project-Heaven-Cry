@@ -3237,6 +3237,18 @@ onHook('on_hit', (ctx: any, cb: Combat) => {
   if (att.hidden) cb.lastSeen = { ...cb.lastSeen, [t.side]: { ...cb.lastSeen?.[t.side], [att.id]: att.pos } };
 });
 onHook('cond_end', (ctx: any) => { const u: Unit = ctx.u; if (u?.readIntent?.cond && u.readIntent.cond === ctx.id) delete u.readIntent; });
+/** Rules 1.77 item 6514: THE read-out of a unit's kit for a side (Shadow's Case): its weapon, its rounds (in the weapon,
+ * spare magazines), its armour and what it carries to throw, while it bears a condition whose row reveals `kit` (the row
+ * `cased`) given by a unit of that side. null otherwise. (Its loot is rolled only as it falls: nothing to show before.) */
+export interface KitView { weapon: string; rounds: string | null; armour: number; throwables: string[] }
+export function kitOf(cb: Combat, u: Unit, side: string): KitView | null {
+  const id = Object.keys(u.conds || {}).find((k) => (u.conds![k] || 0) > 0 && condDef(k)?.mods.kit), by = id ? cb.units.find((x) => x.id === u.condBy?.[id]) : null;
+  if (!id || !by || by.side !== side) return null;
+  const w = WEAPON[u.weapon], mag = w?.magazine;
+  const rounds = mag != null ? u.ammo + '/' + mag + ((u.mags || []).length ? ' and ' + (u.mags || []).length + ' spare' : '') : null;
+  const throwables = Object.entries(u.throwables || {}).filter(([, n]) => n > 0).map(([t, n]) => (WEAPON[t]?.name || ITEM[t]?.name || t) + (n > 1 ? ' x' + n : ''));
+  return { weapon: w?.name || u.weapon, rounds, armour: u.armour || 0, throwables };
+}
 /** Rules 1.23: the reason an intent gives when the enemy goes for the squad's healer. */
 export const HEALER_WHY = ': it goes for whoever is mending the squad';
 /** Rules 1.25: the reason an intent gives for each way an enemy chooses its target. */

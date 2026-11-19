@@ -2046,7 +2046,7 @@ COND_READS = {
     "fear": ["attack_mod:not_vs_source"], "shaken": ["stat_mod:save_heart"], "marked": ["attack_mod:marker_squad_vs_self"], "grappled": ["attack_mod:not_vs_source"], "taunted": ["attack_mod:not_vs_source"],
     "suppressed": ["stat_mod:ap"], "withdrawing": ["stat_mod:defense"], "corroded": ["stat_mod:defense"], "quickened": ["stat_mod:ap"],
     "sharpened": ["attack_mod:next_attack", "damage_mult:next_attack"], "hopeful": ["attack_mod:next_attack"], "scorned": ["attack_mod:vs_source"],
-    "guarded": ["stat_mod:defense"], "inspired": ["attack_mod:own_attacks"], "read": ["reveal:intent"],
+    "guarded": ["stat_mod:defense"], "inspired": ["attack_mod:own_attacks"], "read": ["reveal:intent"], "cased": ["reveal:kit"],
     "exposed": ["stat_mod:defense"], "off_balance": ["stat_mod:ap"],  # Classes 3.0 step 6 (Shadow, rules 1.32)
     # rules 1.33: the feelings given along a Bond (bonds-spec.md 5.1)
     "given_rage": ["stat_mod:defense"], "foe_rage": ["stat_mod:defense"], "given_fear": ["attack_mod:own_attacks", "stat_mod:defense"],
@@ -2074,6 +2074,7 @@ def cond_reads(c):
         if e.get("op") == "skill_mod_tag" and isinstance(e.get("value"), (int, float)): out.append("skill_mod_tag:" + str(e.get("tag")))
         if e.get("op") == "damage_mult" and e.get("context") == "next_attack": out.append("damage_mult:next_attack")
         if e.get("op") == "reveal" and e.get("what") == "intent": out.append("reveal:intent")
+        if e.get("op") == "reveal" and e.get("what") == "kit": out.append("reveal:kit")
     return sorted(out)
 cond_names = set()
 for c in items("conditions"):

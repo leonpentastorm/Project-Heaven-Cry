@@ -9,6 +9,7 @@ import { applyCond } from '../src/magic';
 import { resOf } from '../src/tactics';
 import { makeObject } from '../src/objects';
 import { allVerbs } from '../src/effects/collect';
+import CONDS from '../../../data/conditions.json';
 
 const tierFx = (id: string, t: string) => (PERK as any)[id].tiers[t].effects;
 
@@ -238,5 +239,25 @@ describe('Numb I reads the limb injuries the engine carries (item 6513)', () => 
   it('without Numb an injured arm is -2 to hit and a leg halves Movement; with Numb I the first limb (the arm) holds nothing back, the second (the leg) does', () => {
     expect(hurt(false)).toEqual({ arm: -2, halved: true });
     expect(hurt(true)).toEqual({ arm: 0, halved: true });
+  });
+});
+
+describe("reveal what: kit (item 6514): Shadow's Case", () => {
+  it('Case on an enemy that cannot see you: Cased, its kit read out for your side only, a Lift on it 1 AP cheaper', async () => {
+    const { kitSeenFor } = await import('../src');
+    const f = fightWith([{ skills: { ingenuity: 3 }, attrs: { perception: 3 } }], [{}]);
+    f.cb.objects = []; const foe = f.unit(f.foe.id); foe.pos = '6,5'; foe.vision = 1;
+    const u = f.turn(f.pc); f.unit(u.id).pos = '2,5'; f.unit(u.id).ap = 9;
+    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(u.id), 'hidden', undefined, undefined, { skipSave: true }));
+    expect(kitSeenFor(f.g, foe.id, 'pc')).toBeNull();
+    const ap = f.unit(u.id).ap; f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:shadow.case', targetId: foe.id } as any);
+    expect(f.unit(u.id).ap).toBe(ap - (allVerbs() as any[]).find((v) => v.id === 'shadow.case').effects[0].ap);
+    expect(condOn(f.unit(foe.id), 'cased')).toBe(true);
+    const k = kitSeenFor(f.g, foe.id, 'pc')!; expect(k.weapon).toBeTruthy(); expect(typeof k.armour).toBe('number');
+    expect(kitSeenFor(f.g, foe.id, 'foe')).toBeNull();
+    f.unit(u.id).pos = '5,5'; f.unit(u.id).ap = 9; const before = f.unit(u.id).ap;
+    f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:shadow.lift', targetId: foe.id } as any);
+    const liftAp = (allVerbs() as any[]).find((v) => v.id === 'shadow.lift').effects[0].ap, cut = (CONDS as any).items.find((r: any) => r.id === 'cased').effects[1].value;
+    expect(before - f.unit(u.id).ap).toBe(liftAp + cut);
   });
 });

@@ -13244,3 +13244,11 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       built. The stat `numb_limbs` (how many of a unit's first limb injuries carry no penalty; `character.ts penalLimbs`)
       is read by all three. Numb I and II (rules 1.73 item 5827 completed): one injured limb, the first, no longer holds
       you back; a second still does. Numb is `adjudication: engine` (its tier II keeps its critical rule).
+6514. **`reveal what: "kit"`** (the condition table's `kit` mod; the one read-out `combat.ts kitOf(cb, unit, side)`,
+      the client's `kitSeenFor(g, unitId, side)`): while a unit bears a condition whose row reveals `kit`, given by a
+      unit of a side, that side sees its weapon, its rounds (in the weapon and spare), its armour and what it carries to
+      throw. Its loot is rolled only as it falls (rules 1.54): there is nothing to show before. **Case** (item 1966 and
+      6407 completed; `shadow.json shadow.case`, group Mark, Ingenuity 3): 1 AP, an enemy within 8 tiles you see that
+      can't see you is Cased (condition row `cased`, until the fight ends): your side reads its kit on its token card,
+      and a Lift on it by your side costs 1 AP less (the row's `cost_mod` at Lift's site; any of your side's Lifts,
+      PROVISIONAL). Every number PROVISIONAL.
