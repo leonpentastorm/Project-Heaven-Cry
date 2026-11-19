@@ -1,0 +1,16 @@
+{
+  "id": "recurve_bow",
+  "tier": "relic",
+  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--relic.png",
+  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--relic.png",
+  "size64_mask_differing_pixels": 70,
+  "sha256": "9724bff8e385745dd42df18f7094ea446face0d3c47d23700bda03d1593d67e6",
+  "path": "art/icons/gear/weapon-recurve_bow--relic.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-recurve_bow--relic.png",
+    "128": "art/icons/gear/exports/128/weapon-recurve_bow--relic.png",
+    "64": "art/icons/gear/exports/64/weapon-recurve_bow--relic.png",
+    "32": "art/icons/gear/exports/32/weapon-recurve_bow--relic.png"
+  },
+  "source_sha256": "93d89ec60cceefca94ccce173a1f2f9eed448a91dded7459f833d00239473a79"
+}

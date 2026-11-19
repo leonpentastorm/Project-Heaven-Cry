@@ -19100,6 +19100,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Bow fittings and limb contours drift, particularly the Longbow upper fitting; artistic approval and an exact-outline pass remain pending."
+    },
+    "weapon-recurve_bow--relic": {
+      "label": "Recurve Bow Relic",
+      "path": "art/icons/gear/weapon-recurve_bow--relic.png",
+      "sha256": "9724bff8e385745dd42df18f7094ea446face0d3c47d23700bda03d1593d67e6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/weapon-recurve_bow.png",
+      "source_path": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-recurve_bow--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-recurve_bow--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-recurve_bow--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-recurve_bow--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Bow fittings and limb contours drift, particularly the Longbow upper fitting; artistic approval and an exact-outline pass remain pending."
     }
   },
   "survival_art": {
