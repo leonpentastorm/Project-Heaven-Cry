@@ -4616,6 +4616,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-torso_class4_assault--relic",
+      "path": "art/icons/gear/armour-torso_class4_assault--relic.png",
+      "sha256": "4409e72ef1c07f02771b6785dd25659b6416456438a05337aa274c1a478fdb7b",
+      "label": "Assault Armour — Relic",
+      "family": "armour-torso_class4_assault",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-torso_class4_assault--relic.png",
+        "sha256": "00c598bb3b677e49c43c1e6e1adbb54b3c4b146a260930ae0c41de885287c61c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-torso_class4_assault--relic.png",
+        "sha256": "4409e72ef1c07f02771b6785dd25659b6416456438a05337aa274c1a478fdb7b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-torso_class4_assault--relic.txt",
+        "sha256": "af7ba5ba61861a7ff7b6e58c83f02d85722f993531ed957a3485fdc1a25b13d7"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-torso_class4_assault--relic/v1/source.png",
+          "sha256": "04c06237d6ad9551b914f56cab671ae211e89de4434feb47734e8749d38c096a"
+        },
+        {
+          "path": "art/icons/gear/armour-torso_class4_assault.png",
+          "sha256": "e89e958a8111b23300a6bc1a9cbabcc089e50ed980659f45d39ddebdd726978a"
+        },
+        {
+          "path": "art/icons/gear/armour-torso_class4_assault--masterwork.png",
+          "sha256": "e681d87a74d8cf86c58c332507531c4a6e77a9876ca215533cd7779c7f2c8592"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-torso_class4_assault--relic.png",
+        "128": "art/icons/gear/exports/128/armour-torso_class4_assault--relic.png",
+        "64": "art/icons/gear/exports/64/armour-torso_class4_assault--relic.png",
+        "32": "art/icons/gear/exports/32/armour-torso_class4_assault--relic.png"
+      },
+      "export_hashes": {
+        "256": "af00408ccfb87c9a9df04fddb4aa43b6fcfd271677697171dffcf5d1776bf9f6",
+        "128": "a08b3736b380f0ae13e9a41424ec80e791d298c23f893e474c2e29ebaafb6d85",
+        "64": "85f3bb8e5cdd2a9b406a33149cb143cf1b7b927f67eae3ebaf0737c502aa0b66",
+        "32": "795c854edb0ffcdbcc3f8ccc1dfb21b7a35a8bf985720eb4ba9ae274e2fcd430"
+      },
+      "grade": "relic",
+      "standard_id": "armour-torso_class4_assault",
+      "outline": {
+        "solid_alpha_iou": 0.9713808721992582,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 42
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
