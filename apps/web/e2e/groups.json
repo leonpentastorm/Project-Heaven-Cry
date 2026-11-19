@@ -11,5 +11,6 @@
   "cutins", "combat-speed", "faith-pg", "combat-portraits", "heart", "feelings40", "magic", "sigil14", "sigil15",
   "sigil15-strokes", "sigil15-growth", "sandbox-mp", "slate", "slate-music", "slate-stamp", "slate-title", "title", "resources", "fight-cards",
   "turn-card-side", "capture-skills"
- ]
+ ],
+ "serial": ["fx-room", "magic", "title", "resources", "capture-skills", "picking"]
 }

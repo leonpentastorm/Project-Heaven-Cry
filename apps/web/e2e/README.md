@@ -27,6 +27,9 @@ three at a time, prints one line a suite, and stops the server. Logs: `.check/e2
   about 25 times faster (`game/combatSpeed.ts`, the hidden `test` speed).
 - `anim`: suites that look at an animation part-way through, or at how long something takes. They run at the
   player's real speed.
+- `serial`: suites (each also in `rules` or `anim`) that pass alone and fail beside others (seen in 0.31.12: fx-room,
+  magic, title, resources, capture-skills, picking's Throw row and Douse). With `--jobs` above 1 the runner plays the
+  others in parallel first, then these one at a time.
 - `all` is `rules` + `anim`. `smoke` is a few of them. `sweep` is `fx-sweep` with its whole table (everywhere else
   `fx-sweep` plays its real-speed, counts, fog and glyph parts; counts fires one weapon of every effects family at real
   speed and checks what the screen drew against what the engine spent, with a picture of each mid-flight in

@@ -10,7 +10,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const DIR = fileURLToPath(new URL('../e2e/', import.meta.url));
-const G = JSON.parse(readFileSync(DIR + 'groups.json', 'utf8')) as { smoke: string[]; rules: string[]; anim: string[] };
+const G = JSON.parse(readFileSync(DIR + 'groups.json', 'utf8')) as { smoke: string[]; rules: string[]; anim: string[]; serial?: string[] };
 const SUITES = readdirSync(DIR).filter((f) => f.endsWith('.mjs') && f !== 'lib.mjs').map((f) => f.slice(0, -4)).sort();
 const src = (n: string) => readFileSync(DIR + n + '.mjs', 'utf8');
 const README = readFileSync(DIR + 'README.md', 'utf8');
@@ -22,6 +22,9 @@ describe('the browser suites (apps/web/e2e)', () => {
     expect(G.rules.filter((n) => G.anim.includes(n)), 'in both rules and anim').toEqual([]);
     expect([...G.rules, ...G.anim, ...G.smoke].filter((n) => !SUITES.includes(n)), 'named in a group, and there is no such file').toEqual([]);
     expect(new Set([...G.rules, ...G.anim]).size).toBe(G.rules.length + G.anim.length);
+  });
+  it('every suite named serial (run one at a time) is in rules or anim', () => {
+    expect((G.serial || []).filter((n) => !G.rules.includes(n) && !G.anim.includes(n))).toEqual([]);
   });
   it('smoke is small, and made of suites that are in a group', () => {
     expect(G.smoke.length).toBeGreaterThan(0);

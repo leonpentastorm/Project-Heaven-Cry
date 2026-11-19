@@ -80,6 +80,9 @@ E2E = os.path.join(ROOT, 'apps/web/e2e')
 G = json.load(open(os.path.join(E2E, 'groups.json')))
 # `anim` runs at real speed: those suites check animation or time. `rules` plays fights at the test pace (FAST=1).
 ANIM, RULES = G['anim'], G['rules']
+# `serial`: suites (each also in rules or anim) that pass alone and fail beside others; a run with --jobs > 1 plays the
+# rest in parallel first, then these one at a time.
+SERIAL = G.get('serial', [])
 GROUPS = {'smoke': G['smoke'], 'anim': ANIM, 'rules': RULES, 'all': RULES + ANIM, 'sweep': ['fx-sweep']}
 # fx-sweep plays these parts; asked for as `sweep`, it plays everything (the table too).
 SWEEP_SHORT = 'real,counts,fog,glyphs'
@@ -91,6 +94,7 @@ def group_errors():
     errs += [f'{n} is in both "rules" and "anim"' for n in RULES if n in ANIM]
     errs += [f'"{g}" names {n}, and there is no apps/web/e2e/{n}.mjs' for g, ns in GROUPS.items() for n in ns if n not in files]
     errs += [f'"smoke" names {n}, which is in neither "rules" nor "anim"' for n in G['smoke'] if n not in RULES and n not in ANIM]
+    errs += [f'"serial" names {n}, which is in neither "rules" nor "anim"' for n in SERIAL if n not in RULES and n not in ANIM]
     return errs
 
 args = sys.argv[1:]
@@ -248,14 +252,18 @@ failed, flaky, again, rerun = [], [], [], []
 t_all = time.time()
 try:
     parallel = max(1, jobs) > 1 and len(names) > 1
-    with ThreadPoolExecutor(max_workers=max(1, jobs)) as ex:
-        for r in ex.map(run, names):
-            if r['good']: line('ok', r); continue
-            if r['lost']: again.append(r); line('lost', r, f" · the room server stopped under it, or the disk was full ({free_mb()} MB free); it runs again at the end"); continue
-            if parallel and not no_retry: again.append(r); line('retry', r, ' · failed beside the others, it runs again alone at the end'); continue
-            failed.append(r['name']); line('FAIL', r)
-            for l in why(r): print('     ' + l)
-            print(f"     full log: .check/e2e/{r['name']}.log")
+    together, alone = [n for n in names if n not in SERIAL], [n for n in names if n in SERIAL]
+    def results():
+        with ThreadPoolExecutor(max_workers=max(1, jobs)) as ex:
+            yield from ex.map(run, together)
+        for n in alone: yield run(n)  # (groups.json serial: one at a time, after the others)
+    for r in results():
+        if r['good']: line('ok', r); continue
+        if r['lost']: again.append(r); line('lost', r, f" · the room server stopped under it, or the disk was full ({free_mb()} MB free); it runs again at the end"); continue
+        if parallel and r['name'] not in SERIAL and not no_retry: again.append(r); line('retry', r, ' · failed beside the others, it runs again alone at the end'); continue
+        failed.append(r['name']); line('FAIL', r)
+        for l in why(r): print('     ' + l)
+        print(f"     full log: .check/e2e/{r['name']}.log")
     for first in again:
         n = first['name']
         try: os.replace(os.path.join(ROOT, '.check/e2e', n + '.log'), os.path.join(ROOT, '.check/e2e', n + '.first.log'))
