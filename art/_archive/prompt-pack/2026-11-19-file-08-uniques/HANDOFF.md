@@ -1,8 +1,8 @@
 # File 08 unique inventory paintings
 
-Updated 19 November 2026 at 14:25 UTC+7. Branch `art/2026-11-19-unique-gear`.
-**6 of 23 uniques delivered across the verified branches. 144 of 215 base pictures and uniques. 144 of 871 across the pack.**
-This branch delivered 5. The 138-candidate baseline predates both unique branches.
+Updated 19 November 2026 at 14:26 UTC+7. Branch `art/2026-11-19-unique-gear`.
+**7 of 23 uniques delivered across the verified branches. 145 of 215 base pictures and uniques. 145 of 871 across the pack.**
+This branch delivered 6. The 138-candidate baseline predates both unique branches.
 These independent unique paintings have been brought forward while the grade proof is open.
 The six uniques with missing or unapproved references still depend on those references.
 
@@ -26,7 +26,7 @@ The six uniques with missing or unapproved references still depend on those refe
 | 16 · Return Clause (Ward shield) | `art/icons/gear/shield-return_clause.png` | awaiting reference approval or a missing reference |
 | 17 · Outpost Wall (Guard shield) | `art/icons/gear/shield-outpost_wall.png` | delivered for review |
 | 18 · Grudge Plate (Strike shield) | `art/icons/gear/shield-grudge_plate.png` | awaiting reference approval or a missing reference |
-| 19 · Red Thread (worn gloves) | `art/icons/gear/armour-red_thread_gloves.png` | draft needs correction |
+| 19 · Red Thread (worn gloves) | `art/icons/gear/armour-red_thread_gloves.png` | delivered for review |
 | 20 · Hearth Coat (vest, outer torso) | `art/icons/gear/armour-hearth_coat.png` | delivered for review |
 | 21 · Lucky Dent (helmet) | `art/icons/gear/armour-lucky_dent.png` | delivered for review |
 | 22 · Spring Air (respirator) | `art/icons/gear/armour-spring_air.png` | delivered for review |

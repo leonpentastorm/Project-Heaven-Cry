@@ -41,6 +41,48 @@
     "generator_prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. One single object, lit from the upper left, with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background, square 1024 x 1024 PNG with alpha; the object fills about 80 to 85% of the canvas, inside the central 90%. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The object is a fictional nonfunctional prop from Project Heaven Cry, shown only from one exterior view. This is a unique item, one of a kind: it keeps the silhouette of its family so that at 32 px it still reads as that kind of weapon or armour, and it carries one story detail and one impossible material, painted with the richness of an heirloom, not the gilding of a parade piece. One accent colour (given below), as a muted local paint or a contained light inside the outline, never a bloom. The silhouette must be bold and readable at 64 px in a shop grid and 32 px in a backpack row. The item:\n\nA unique Guard shield of the Thousand World Legion's frontier outposts, front view, standing on its ground edge, about 85% of the canvas height: a tall, wide board shield with a centre ridge and a folded prop leg showing behind it, in olive-grey painted steel over dark boards, plain and mass-produced, one faded pale stripe across the top. The impossible material: its foot and its prop leg have grown roots of dark iron, thick and coiled tight against the bottom edge, gripping nothing, as if the shield took root the first night it was planted and never quite let go; the roots stay inside a neat silhouette at the base. The story detail: a long row of short scratched notches along the right edge, one for each night it held a line, the newest still bright. Heavy, dented, cared for. Accent: none, the pale stripe.\nAvoid: soil, grass or a ground plane, numerals for the notches, an emblem, a riot-shield viewport, leaves.\n\nIt must read unmistakably as an isolated tall shield in frontal view, connected dense iron roots curl tightly around its bottom rim and folded brace with no separate ground plane. One subtle off-white line across its top."
   },
   {
+    "n": 19,
+    "id": "red_thread_gloves",
+    "title": "Red Thread (worn gloves)",
+    "path": "art/icons/gear/armour-red_thread_gloves.png",
+    "refs": [
+      "art/icons/gear/armour-work_gloves.png",
+      "art/icons/gear/armour-combat_gloves.png",
+      "art/icons/armour/work_gloves.svg"
+    ],
+    "paint": "A unique pair of fitted field gloves, shown side by side as one object, front view, no hands inside: supple dark leather with light padding at the knuckles, neat stitching, short cuffs. The impossible material: one red thread #D879AF that has no end: it runs out of the right glove's index fingertip, loops once across the gap between the pair, and goes into the left glove's cuff, where it is stitched into the seam and comes out again at its fingertip, a single unbroken loop binding the two. The story detail: a small empty thread spool clipped at the right cuff, polished by use. Warm, tidy, fond.\nAvoid: hearts, a knot shaped like a heart, hands or skin, a loose thread end, a glow, any lettering.",
+    "span": 0.85,
+    "dependency": null,
+    "label": "Red Thread (worn gloves)",
+    "sha256": "7ad75afd0c8a3b2f2eae1b72a71ce56adb7a36b8a9ab330effc6d73665e01310",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-red_thread_gloves.png",
+      "128": "art/icons/gear/exports/128/armour-red_thread_gloves.png",
+      "64": "art/icons/gear/exports/64/armour-red_thread_gloves.png",
+      "32": "art/icons/gear/exports/32/armour-red_thread_gloves.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-08-uniques",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/19-armour-red_thread_gloves.png",
+    "source_sha256": "b23d882950cfb6a2917a444b45d3bcd7c828cb0968763e52da718c2e1bf4992a",
+    "export_sha256": {
+      "256": "fc3b73851a6ab85c2d821cdc30e8476c8b0e11fdbed514441110871799c2064b",
+      "128": "425fef04e69c02c2fb49902352a5a260de92ceb83e971bbd5dd0f2950455c4ef",
+      "64": "1fad1f0d61f654597eb967381517d43c1214dd8b071deb3e1bf893ce72d92bfa",
+      "32": "b87aacb86cfd4d1048bd138844f5d51072e738788e044933d5d7c1555383f51c"
+    },
+    "generator_prompt": "One local surface edit to this fictional inventory art, preserving the glove shapes. Keep the two diagonal pink threads crossing between the cuffs and fingers. The two finger-end pink stitch groups are presently on the tallest fingers. Move each pink attachment onto the shorter inner finger immediately next to the glove's small inward-facing thumb, closer to the center gap. Remove the original pink stitches from the two tall middle fingers. Keep both cuff attachments and the little spool right where they are. Only the short top segments of the red thread move with their new stitched attachment points. Empty leather gloves, neutral hand-painted RPG icon, transparent background and clear margins."
+  },
+  {
     "n": 20,
     "id": "hearth_coat",
     "title": "Hearth Coat (vest, outer torso)",
