@@ -93,18 +93,20 @@ export function cue(name: Cue) {
 
 // ---------- what a banner and a cut-in show ----------
 /** What a banner is: a unit's turn, the area map's round, or one of the fight's banners (rules 1.62 item 4900). */
-type CardKind = 'turn' | 'round' | 'fight' | 'victory' | 'defeat' | 'field';
-/** The fight's big banners (BATTLE START, VICTORY, DEFEAT, FREE ROAM): drawn in the middle of the screen. */
-const BIG: CardKind[] = ['fight', 'victory', 'defeat', 'field'];
+type CardKind = 'turn' | 'round' | 'approach' | 'fight' | 'victory' | 'defeat' | 'field';
+/** The fight's big banners (APPROACH, BATTLE START, VICTORY, DEFEAT, FREE ROAM): drawn in the middle of the screen. */
+const BIG: CardKind[] = ['approach', 'fight', 'victory', 'defeat', 'field'];
 /** Rules 1.62 item 4900: the fight's banners' words and the least time each is fully on screen (data). */
-const CARDS: { hold_ms: number; joined: { name: string; fog?: string }; won: { name: string }; lost: { name: string };
+const CARDS: { hold_ms: number; approach: { name: string; sub: string }; joined: { name: string; fog?: string }; won: { name: string }; lost: { name: string };
   end: { hold_ms: number; sound_gap_ms: number; won: { sounds: string[] }; lost: { sounds: string[] }; felled: string; rounds: string; close: string } } = (RULES as any).combat.cards;
 /** 0.31.1: the end panel (VICTORY or DEFEAT) holds the screen; while it is pending or up, a run's field (its bar, its leave
  *  vote) and the fight-over dialog are hidden (html[data-phc-end-card], the CSS below), so nothing comes before it. */
 const END_FLAG = 'data-phc-end-card';
 const setEndFlag = (on: boolean) => { if (typeof document === 'undefined') return; ensureCss(); if (on) document.documentElement.setAttribute(END_FLAG, ''); else document.documentElement.removeAttribute(END_FLAG); };
-/** A turn's round in words: on a run fight's field its round of its rounds (rules 1.62 item 4906), else ROUND n. */
+/** A turn's round in words: before contact the approach's line (rules item 5522: no round passes yet); on a run fight's
+ * field its round of its rounds (rules 1.62 item 4906), else ROUND n. */
 const roundWords = (cb: any, round: number): string => { const f = cb && cb.field && typeof cb.field === 'object' ? cb.field : null;
+  if (cb && cb.approach) return String((RULES as any).combat.approach.line).toUpperCase();
   return f && round >= f.from ? roundLabel({ round: round - f.from + 1, of: f.of }).toUpperCase() : 'ROUND ' + round; };
 interface Banner { id: string; kind: CardKind; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number; k?: number;
   /** the slab behind (default: red for a hostile, else white), the mark before the kicker, the sign drawn with no picture */
@@ -150,6 +152,12 @@ function fightCard(g: GameState, cb: any, meId: string): Banner {
   const fog = (cb.order as string[]).some((id) => isUnseenId(id));
   return { id: 'f' + Date.now(), kind: 'fight', kicker: cb.name, kickerColor: '#FFFFFF', name: CARDS.joined.name, sub: [setting, who, fog ? CARDS.joined.fog || '' : ''].filter(Boolean).join(' · '),
     stripe: '#F65157', slab: '#F65157', mark: '', glyph: '!', glyphArt: ART('banner-fight-start'), img: b && !b.unseen ? b.img : '', mine: false, foe: false, hold: CARDS.hold_ms };
+}
+/** APPROACH (rules item 5522): a fight that opens with no foe seeing the squad (Combat.approach) shows this first; BATTLE
+ * START follows at contact. Its words are the data's (rules.json combat.cards.approach). */
+function approachCard(cb: any): Banner {
+  return { id: 'a' + Date.now(), kind: 'approach', kicker: cb.name, kickerColor: '#FFFFFF', name: CARDS.approach.name, sub: CARDS.approach.sub,
+    stripe: '#FFFFFF', slab: '#A3AEC2', mark: '', glyph: '◌', glyphArt: ART('banner-fight-approach'), img: '', mine: false, foe: false, hold: CARDS.hold_ms };
 }
 /** VICTORY or DEFEAT: the fight's name and, in a Survival run, the line of what follows (data/survival.json run.after_fight);
  *  its lines read what the engine holds now: a run's fight record (rules 1.44 kills, rounds), else the fight's own units
@@ -355,7 +363,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     if (stream && !cb.over) liveFights.current.add(stream);
     // FIGHT: at once (it plays over the combat-in), before the first turn's banner, which waits for it.
     if (newFight && stream && begun.current === stream && cb.round === 1 && carded(game!, cb)) {
-      begun.current = null; if (!cb.approach) showCard(fightCard(game!, cb, meId)); else unjoined.current = stream; // rules 1.64 item 5008: not yet joined: BATTLE START waits for contact
+      begun.current = null; if (!cb.approach) showCard(fightCard(game!, cb, meId)); else { unjoined.current = stream; showCard(approachCard(cb)); } // rules 1.64 item 5008: not yet joined: APPROACH now (rules item 5522), BATTLE START waits for contact
     }
     // Rules 1.64 item 5008: contact joins the fight: BATTLE START now
     if (stream && unjoined.current === stream && !cb.approach && carded(game!, cb)) { unjoined.current = null; showCard(fightCard(game!, cb, meId)); }
@@ -673,4 +681,4 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
 }
 
 /** For tests: what a banner and a cut-in would show for a unit. */
-export const _test = { bannerFor, cutFor, estMs, fightCard, endCard, fieldCard, bigTotal, CARDS };
+export const _test = { bannerFor, cutFor, estMs, approachCard, fightCard, endCard, fieldCard, bigTotal, roundWords, CARDS };

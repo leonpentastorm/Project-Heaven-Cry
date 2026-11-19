@@ -50,6 +50,7 @@ describe('the fight\'s big banners (rules 1.62 item 4900)', () => {
     g = apply(g, { type: 'run/move', node: reachable((g as any).run).find((n: any) => n.kind === 'fight')!.id } as any, 'host');
     expect(g.phase).toBe('combat');
     await draw(g);
+    expect((g.combat as any).approach).toBeFalsy(); // PHC-0003's first fight opens seen: BATTLE START only, no APPROACH (rules item 5522)
     const b = big(el); expect(b?.getAttribute('data-phc-card')).toBe('fight');
     expect(b!.textContent).toContain(CARDS.joined.name); expect(b!.style.pointerEvents).toBe('none');
     // still fully up just before the end of its slide in and its hold, at the slowest pace
@@ -84,10 +85,16 @@ describe('the fight\'s big banners (rules 1.62 item 4900)', () => {
     await draw(g!);
     const seen: string[] = []; const watch = async (ms: number) => { for (let t = 0; t < ms / 250; t++) { await React.act(async () => { vi.advanceTimersByTime(250); }); const k = big(el)?.getAttribute('data-phc-card'); if (k && seen[seen.length - 1] !== k) seen.push(k); } };
     await watch(4000); expect(seen).not.toContain('fight');
+    // rules item 5522: the approach's own banner comes first, its words the data's, held as the others
+    expect(seen[0]).toBe('approach');
+    const ab = _test.approachCard(g!.combat); expect(ab.name).toBe(CARDS.approach.name); expect(ab.sub).toBe(CARDS.approach.sub); expect(ab.hold).toBe(CARDS.hold_ms);
+    // the turn strip's sub-line while it lasts: YOUR TURN stays, the round reads the approach's line
+    expect(_test.roundWords(g!.combat, 1)).toBe(String((RULES as any).combat.approach.line).toUpperCase());
     const pc = () => (g!.combat as any).units.find((u: any) => u.side === 'pc');
     for (let i = 0; i < 10 && (g!.combat as any).approach; i++) g = apply(g!, { type: 'combat/end-turn', unitId: pc().id } as any, 'host');
     expect((g!.combat as any).approach).toBeUndefined();
-    await draw(g!); await watch(3000); expect(seen).toContain('fight');
+    await draw(g!); await watch(3000); expect(seen).toContain('fight'); expect(seen.indexOf('fight')).toBeGreaterThan(seen.indexOf('approach'));
+    expect(_test.roundWords(g!.combat, 1)).toBe('ROUND 1');
     await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
   }, 60_000);
   it('with the effects clock on, the first field turn banner waits for VICTORY and FREE ROAM (they come first, it after them)', async () => {

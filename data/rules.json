@@ -416,8 +416,9 @@
   },
   "combat": {
     "cards": {
-      "about": "Rules 1.62 item 4900: the fight's big banners in the middle of the screen (apps/web/src/game/turnIntro.tsx draws them): `hold_ms`, the least time each is fully on screen (the combat speed never shortens it); the words of each (`joined.fog`: BATTLE START's line when a hostile in the fight is out of the party's sight, rules 1.62 item 4902). The field's banner is survival.json run.after_fight.field.",
+      "about": "Rules 1.62 item 4900: the fight's big banners in the middle of the screen (apps/web/src/game/turnIntro.tsx draws them): `hold_ms`, the least time each is fully on screen (the combat speed never shortens it); the words of each (`approach`: the first banner of a fight that opens with no foe seeing the squad, rules item 5522, BATTLE START following at contact; `joined.fog`: BATTLE START's line when a hostile in the fight is out of the party's sight, rules 1.62 item 4902). The field's banner is survival.json run.after_fight.field.",
       "hold_ms": 1250,
+      "approach": { "name": "APPROACH", "sub": "Unseen · moving is free", "provisional": true },
       "joined": { "name": "BATTLE START", "fog": "Hostiles still in the fog" },
       "won": { "name": "VICTORY" },
       "lost": { "name": "DEFEAT" },
@@ -440,7 +441,7 @@
       "quiet": ["combat/move", "combat/end-turn", "combat/decline"],
       "acts_log": "moves to act: the fight is joined, and acts on its turn.",
       "passes_max": 3,
-      "line": "Not yet joined: walking is free until contact",
+      "line": "Approach · unseen",
       "joined_log": "Contact: the fight is joined.",
     "alarm_log": "Alarm: every hostile on the map comes for you.",
       "provisional": true

@@ -12357,3 +12357,13 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     26 → 26 of 40; duo SIM-1 to 20, 17 → 17; four 15 → 14; mixed 16 → 17 (74 → 74 of 100). Replays unchanged (29 of
     29; no run fight in them). Proof: `test/fog-alarm.test.ts` (through the reducer: a free walk off the start, contact
     by passes, the foe side knows the squad's tile now, the line once; the farthest foe closes in).
+5522. **The approach gets its own banner** (Leon, 18 Nov: "add a phase when you enter the combat node but have not found
+    any enemy yet, with its own popup banner too, the first one every fight if the enemy do not see you at all"): a
+    fight that opens in the approach (item 5008) shows the big banner **APPROACH**, sub-line "Unseen · moving is free"
+    (`rules.json combat.cards.approach`, PROVISIONAL), first, the same component and hold as the others
+    (`apps/web turnIntro.tsx approachCard`); BATTLE START then shows at contact, as before. A fight that opens with a foe
+    seeing the squad shows BATTLE START only. The turn strip keeps YOUR TURN; while the approach lasts its sub-line (and
+    a turn banner's) reads `combat.approach.line`, now "Approach · unseen" in place of the round. Its mark is the glyph ◌
+    until the white-ink sign `banner-fight-approach` is drawn (`art/briefs/ART-REQUESTS.md` 0c). Proof:
+    `apps/web/src/game/turnIntro-banners.test.tsx` (through the reducer: an unseen fight's first big card is APPROACH,
+    BATTLE START after contact; PHC-0003's seen fight shows BATTLE START only).
