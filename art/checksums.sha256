@@ -3169,6 +3169,7 @@ f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff  art/_archive/p
 3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--fine.png
 e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--masterwork.png
 307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png
+961f6dac31eb70e64c9ad50242d410ea93acc7b3065f9a0f37c80b43f806c4f3  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-combat_knife--celestial.json
 da7b6ed8bfc762745ad0e9388be1e5a362352770e43d03d00e33fbc476b93a85  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-combat_knife--fine.json
 b21058413d711cb910cc5ec1c9bdf688edabf3db92333c23ae3f6da5a7abb9d0  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-combat_knife--masterwork.json
 8a3ea887aa0a78726357e43e888c022633d5e2e401ea21def548b7a95ca6ebe4  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-combat_knife--relic.json
@@ -4552,7 +4553,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-e64005aca657c9320066a1aca846344953c5061c672ba073842b7f098f032f0f  art/catalog.json
+fcf0c64de837b9407efe0791e3166745bf077f375845374423ce1902bfd7153d  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6256,6 +6257,7 @@ d085e06a11ae4413f5d433bf645c3b9d5844c174745d18a1e0df6a0c014367ba  art/icons/gear
 319e230179887f8db9572fe2ba02923d42fa344a9e2939529cb7f6346f53bb3e  art/icons/gear/exports/128/weapon-brigade_auto_shotgun.png
 34866e14ccd7657851525feedf3393e800ca081908f2aeaca41041758c06463a  art/icons/gear/exports/128/weapon-ccec_marksman_rifle.png
 e85a591573128ae362e625b4ab71c3c44d0b78aad41866288ef9f7b4292ef9f4  art/icons/gear/exports/128/weapon-coach_gun.png
+5629008fe1bf6a50e0bd83893026f6eeebdb7627fe3c68cb606b2b17de164dcd  art/icons/gear/exports/128/weapon-combat_knife--celestial.png
 663f2165a8b408161c1fcfb82d71367efe934bd16138e01bc8b319f1d817e2bd  art/icons/gear/exports/128/weapon-combat_knife--fine.png
 adab0911c9c69d1111e51b38612090cd91106516110ac166da73983be45f7c22  art/icons/gear/exports/128/weapon-combat_knife--masterwork.png
 56d639d0755cae11ec59b0a613750e4dca52e8949682f77098e00ae8bfa2289a  art/icons/gear/exports/128/weapon-combat_knife--relic.png
@@ -6436,6 +6438,7 @@ f60dbbfdd7e0bd7278cb92eaa41b1bd954921ef67d0bf4fde1f0df6ffd5fc563  art/icons/gear
 92fa796dcc2bee4b8889cdfff3fd6b049b805f533239ae906285c633e19d3571  art/icons/gear/exports/256/weapon-brigade_auto_shotgun.png
 713e3888f7aef27dd8e056b8ece7e5bb6c352ea2184ef2e00d058415390f266e  art/icons/gear/exports/256/weapon-ccec_marksman_rifle.png
 25cbe91e58a0d507c07ef0ec0dfdfd87f23194bd3822cf17cee53fa1a24cc9ab  art/icons/gear/exports/256/weapon-coach_gun.png
+b469363c8f74fec0801aa23fba31fd3c5000f6aa34e88c79daa42d659fdfcca8  art/icons/gear/exports/256/weapon-combat_knife--celestial.png
 f4ab79610a10a94bb5132f8c00ab4194880486960d7a4a935c4473ded756b13c  art/icons/gear/exports/256/weapon-combat_knife--fine.png
 023fe6fa4c3102fecbd79ba5e9b81deb9aecc41ce03ee67324bc8f51295dc5ac  art/icons/gear/exports/256/weapon-combat_knife--masterwork.png
 21fe8b40fc970ccfe87d762a8710eb295887ff10b386d62e8f69d936ed3f6705  art/icons/gear/exports/256/weapon-combat_knife--relic.png
@@ -6616,6 +6619,7 @@ fd5fc131fdcb8d3a9e4dc781851cb2c3e7de94ae36c3e0eed61e59d555f38791  art/icons/gear
 cfc1aa2ec250b91181f140c4ac38c3d8765de2f3bb9d7ee338ed233d72ff8930  art/icons/gear/exports/32/weapon-brigade_auto_shotgun.png
 1bf85acc806ff7914e0353a973e696724b3a96ca16d08f17cc1512704ec334c8  art/icons/gear/exports/32/weapon-ccec_marksman_rifle.png
 900ea5a9c16a605cfa65a9b7700a8f5cbb7f9db963949f06e1bd7283f201df3e  art/icons/gear/exports/32/weapon-coach_gun.png
+9dc1402b4ef2d3271fd341b8a75d840b11141f253b31a01a6d2f19e9db471a7d  art/icons/gear/exports/32/weapon-combat_knife--celestial.png
 b0be2e331324186eb28829fdcf983ceb206d8eafc74e28ab4e34edec7e881917  art/icons/gear/exports/32/weapon-combat_knife--fine.png
 8a96c255bd1944448c0b9af24d97adc89fb15e1732dcb6cc5cd4a1217d08e96f  art/icons/gear/exports/32/weapon-combat_knife--masterwork.png
 4790c4572a545c19fc459541f62d744c1360e62687c9a380f1d6fccc4b845dff  art/icons/gear/exports/32/weapon-combat_knife--relic.png
@@ -6796,6 +6800,7 @@ c76770b7050bd32c42accd8741bfc93e87d8b8d7ed8320606692afc2cb24fdd5  art/icons/gear
 973fcbd6732076d3503c3217d80f71e4ea78543aa80fa1b5ba5f885693a616e5  art/icons/gear/exports/64/weapon-brigade_auto_shotgun.png
 d08ff0e89e9e3727a7b906a52b3ac576ce95a35cd04dd32fe8a30b9d5acd124d  art/icons/gear/exports/64/weapon-ccec_marksman_rifle.png
 7e7855b75a91e3eb4654fd471b2361f867bce8c005092c01a0433c3e43bce8b6  art/icons/gear/exports/64/weapon-coach_gun.png
+306193c0190b77c681b00e5856d8bf0b2ffa4112802ace5a5cf673695fbb027a  art/icons/gear/exports/64/weapon-combat_knife--celestial.png
 43421f6c0927a0286a21b39791808bb6c6cf4f8bb387e851de844ad840058eaf  art/icons/gear/exports/64/weapon-combat_knife--fine.png
 26ece035227902fade36adbee9a2209005f84fdbe8a01e6de8220678b0432ae1  art/icons/gear/exports/64/weapon-combat_knife--masterwork.png
 8e6c9e4ec6176f6da0879e74e94e420cf173a9cc4b0e4d17c8f66973526dc3d9  art/icons/gear/exports/64/weapon-combat_knife--relic.png
@@ -6940,6 +6945,7 @@ da212443b07ddc1acc0bf3045dbad1fbcad6989521e731bf43ec318ddefa7334  art/icons/gear
 d66b69b6d49fcbe995e91a25afd5765a741ca3e4cb92dda3b6bbdf262bbfc574  art/icons/gear/weapon-brigade_auto_shotgun.png
 b7b78f5e26d3dd0b6b4af59a29183ceefc1674c3f3cf0c7a1826f08f8fe9b357  art/icons/gear/weapon-ccec_marksman_rifle.png
 e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5  art/icons/gear/weapon-coach_gun.png
+2ab19d7ce0c09973488c7db7de3e8e600a19f7be0fad6b8c971d4094e161af57  art/icons/gear/weapon-combat_knife--celestial.png
 f28790fe4f8599f15cf52239a86074aaf8f6cd388a3af1bb143fdb59f46e25e2  art/icons/gear/weapon-combat_knife--fine.png
 4222b0d6fef781f9703e9c928450b5b7631f3c977c55ca4fbebe1861bbbcdd09  art/icons/gear/weapon-combat_knife--masterwork.png
 307dc24a5f2beaf30cb51945170de0f47f37240fb5a3da66b18cd0755c73684b  art/icons/gear/weapon-combat_knife--relic.png

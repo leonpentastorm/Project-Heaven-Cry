@@ -1,0 +1,16 @@
+{
+  "id": "combat_knife",
+  "tier": "celestial",
+  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.png",
+  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--celestial.png",
+  "size64_mask_differing_pixels": 16,
+  "sha256": "2ab19d7ce0c09973488c7db7de3e8e600a19f7be0fad6b8c971d4094e161af57",
+  "path": "art/icons/gear/weapon-combat_knife--celestial.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-combat_knife--celestial.png",
+    "128": "art/icons/gear/exports/128/weapon-combat_knife--celestial.png",
+    "64": "art/icons/gear/exports/64/weapon-combat_knife--celestial.png",
+    "32": "art/icons/gear/exports/32/weapon-combat_knife--celestial.png"
+  },
+  "source_sha256": "981dd851ac71828d106fc6e5cd0b9c268b69a58962830aa08522bda3265274da"
+}
