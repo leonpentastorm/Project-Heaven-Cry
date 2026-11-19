@@ -82,7 +82,7 @@ function Stepper({ c, charId, big }: { c: LoadoutCardV; charId: string; big?: bo
     </div>
   );
 }
-const Why = ({ c }: { c: LoadoutCardV }) => <span data-phc-camp-why="" style={{ fontSize: 13, lineHeight: 1.35, color: c.why ? I.muted : I.ok, ...wrap }}>{c.why || '✓ You can take this'}</span>;
+const Why = ({ c }: { c: LoadoutCardV }) => <span data-phc-camp-why="" style={{ fontSize: 13, lineHeight: 1.35, color: c.why ? I.muted : I.ok, ...wrap }}>{c.why || ''}</span>;
 
 /** A free pick (the free weapon or focus; rules 1.55 item 49): FREE where a price would be (in green, with the word), and a
  * button that says what pressing it does: Take (free), Swap to this (free), or ✓ YOURS (press again to put it back). */
@@ -138,7 +138,7 @@ function ShelfCard({ c, charId, tag, compare }: { c: LoadoutCardV; charId: strin
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 'auto' }}>
         <span style={{ display: 'flex', flexDirection: 'column' }}>
           <span data-phc-camp-price="" style={{ fontSize: 20, fontWeight: 700, color: I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{c.price}</span>
-          <span style={{ fontSize: 13, color: I.muted, letterSpacing: '0.06em' }}>CREDITS{c.per > 1 ? ' · ' + c.per + ' ROUNDS' : ''}</span>
+          <span style={{ fontSize: 13, color: I.muted, letterSpacing: '0.06em' }}>CREDITS{c.per > 1 ? ' · for ' + c.per : ''}</span>
         </span>
         <Stepper c={c} charId={charId} big />
       </div>
@@ -261,7 +261,7 @@ export function LoadoutScreen() {
       <PlaceBar marks={{ 'data-phc-camp-bar': '' }} name="The camp" backdrop={campBackdrop()} sub={<span data-phc-camp-help="">{campHelp(v)}</span>}
         tabs={<nav aria-label="What to do at the camp" data-phc-camp-checklist="" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', padding: '10px 0' }}>
           {checks.map((k) => <CheckChip key={k.key} k={k} on={() => open(k.key)} mark={k.key === 'weapon' ? { 'data-phc-camp-step': '1' } : k.key === 'boon' ? { 'data-phc-camp-step': '2', ...(step === 2 ? { 'aria-current': 'step' } : {}) } : undefined} />)}
-          <span style={{ alignSelf: 'center', fontSize: 13, color: I.muted }}>used <span data-phc-camp-used="">{v.spent}</span> · what you don't spend, you keep</span>
+          <span style={{ alignSelf: 'center', fontSize: 13, color: I.muted }}>used <span data-phc-camp-used="">{v.spent}</span> · unspent credits stay with you</span>
         </nav>}
         actions={<>
           {!v.boon.chosen && !v.ready && v.boon.cards.length ? (
@@ -304,8 +304,8 @@ export function LoadoutScreen() {
                   <div key={a.id} data-phc-camp-family={a.id} data-phc-camp-cards={(a.again ? 1 : 0) + (a.better ? 1 : 0)} style={{ minWidth: 0 }}>
                     <span style={{ ...kick, display: 'block', marginBottom: 8 }}>{a.name.toUpperCase()}</span>
                     <div className="phc-camp-pair" role="group" aria-label={a.name}>
-                      {a.again ? <ShelfCard c={a.again} charId={charId} tag="ANOTHER ONE" /> : null}
-                      {a.better ? <ShelfCard c={a.better} charId={charId} tag="THE BETTER ONE" compare={a.better.compare} /> : null}
+                      {a.again ? <ShelfCard c={a.again} charId={charId} tag="FREE" /> : null}
+                      {a.better ? <ShelfCard c={a.better} charId={charId} tag="" compare={a.better.compare} /> : null}
                     </div>
                   </div>))}
               </div>

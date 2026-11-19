@@ -44,7 +44,7 @@ export function campChecklist(v: LoadoutViewV): CampCheckV[] {
   return out;
 }
 /** The one sentence of help under the camp's title. */
-export const campHelp = (v: LoadoutViewV): string => 'Before the run: take one free weapon' + (v.freePicks.focus.offered ? ', one free focus' : '') + ' and spend your budget on anything else.';
+export const campHelp = (_v: LoadoutViewV): string => ''; // the three steps under it say it (wording pass 2, section 11)
 /** What a free pick's button says: the one taken, a swap, or the first take. */
 export function freeAction(c: LoadoutCardV, v: LoadoutViewV, slot: 'weapon' | 'focus'): string {
   if (c.picked) return '✓ YOURS';

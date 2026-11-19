@@ -23,7 +23,7 @@ const title: React.CSSProperties = { margin: 0, fontFamily: "'Spectral', serif",
 function BoonPick({ b }: { b: BoonPickV }) {
   return (
     <section data-phc-boons={b.charId} aria-label={'Boons for ' + b.name} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <span style={kick}>{(b.mine ? 'YOUR BOON · ' : '') + b.name.toUpperCase()} · BOON ROOM {b.worth}{!b.canPick ? ' · ' + b.name.toUpperCase() + '\'S PLAYER PICKS' : !b.mine ? ' · YOU MAY PICK FOR THEM' : ''}</span>
+      <span style={kick}>{(b.mine ? '' : b.name.toUpperCase() + ' · ')}Boon room {b.worth}{!b.canPick ? ' · ' + b.name.toUpperCase() + '\'S PLAYER PICKS' : !b.mine ? ' · YOU MAY PICK FOR THEM' : ''}</span>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: 14 }}>
         {b.cards.map((c) => (
           <button key={c.id} type="button" data-phc-boon={c.id} data-phc-why={c.why ? '' : undefined} aria-disabled={!b.canPick || c.why ? 'true' : undefined}
@@ -114,7 +114,7 @@ export function StageScreen() {
     <div data-phc-stage-screen={v.state} style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', background: 'radial-gradient(ellipse at 50% 0%, #141B28 0%, #0A0D13 70%)', color: ink.text, fontFamily: "'Chakra Petch', sans-serif", boxSizing: 'border-box' }}>
       {v.summary ? <div style={{ padding: '18px 20px 32px' }}><Summary s={v.summary} /></div> : <>
         {/* the place header (PlaceBar, the visibility standard): the stage cleared, your credits, the button that moves on */}
-        <PlaceBar role={<span data-phc-cleared="">STAGE {v.stage} CLEARED</span>} name={v.state === 'boon' ? 'Pick a boon for the rest of the run' : 'Pick the next tile'}
+        <PlaceBar role={<span data-phc-cleared="">STAGE {v.stage} CLEARED</span>} name={v.state === 'boon' ? 'Pick a boon' : 'Pick the next tile'}
           money={mine ? <BarNumber label="CREDITS" n={mine.credits} mark={{ 'data-phc-bar-credits': '' }} /> : null} actions={<MoveOn />}
           foot={v.waiting ? <span data-phc-waiting="" style={{ fontSize: 14, color: ink.white }}>{v.waiting}</span> : null} />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 22, padding: '18px 20px 32px' }}>

@@ -3351,7 +3351,7 @@ function runAction(g: GameState, a: Action, by: string) {
         const pack = packOf(c!).map((x) => ({ ...x })), got = o!.materials!.flatMap((m) => lineGoods(m.item, m.n)); // rules 1.54 (Core Rules item 4111): whole, through grantGoods
         grantGoods(c!, pack, got);
         c!.pack = pack;
-        took = c!.name + ' takes the materials: ' + got.map((it) => itemLabel(it)).join(', ') + '.';
+        took = c!.name + ': ' + got.map((it) => '+' + itemLabel(it).replace(' × ', ' ')).join(' · ');
       } else {
         const w = o!.weapons[Number(a.choice)]; if (!w) fail('No such weapon in the pick.');
         const pack = packOf(c!).map((x) => ({ ...x }));

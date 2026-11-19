@@ -146,7 +146,7 @@ function rebuild(c: Character, p: LoadoutPick): string | null {
     } else if (it?.focus) { for (let i = 0; i < q; i++) add([focusEntry(l.id)]); }
     else add(lineGoods(l.id, l.per * q));
   }
-  if (spent > LOADOUT.budget) return 'Over the budget by ' + (spent - LOADOUT.budget) + ' credits (' + spent + ' of ' + LOADOUT.budget + ').';
+  if (spent > LOADOUT.budget) return (spent - LOADOUT.budget) + ' over budget';
   const kg = carriedKg(c).total, lim = carryLimit(c);
   if (kg > lim) return 'Too heavy: ' + c.name + ' would carry ' + kg + ' kg of ' + lim + ' kg.';
   c.credits = LOADOUT.budget - spent;

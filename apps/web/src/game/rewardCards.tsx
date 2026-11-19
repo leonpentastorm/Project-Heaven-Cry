@@ -30,7 +30,7 @@ export function Offer({ o, minH }: { o: OfferV; minH?: number }) {
   const m = o.materials, cols = m ? 1 + o.cards.length : o.cards.length;
   return (
     <div data-phc-offer={o.charId} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 12, background: ink.panel, border: '1px solid ' + ink.line }}>
-      <span style={kick}>{o.mine ? 'YOUR PICK · ' + o.name.toUpperCase() : o.name.toUpperCase() + (o.canPick ? ' · YOU MAY PICK FOR THEM' : ' IS PICKING')}</span>
+      <span style={kick}>{o.mine ? 'PICK ONE' : o.name.toUpperCase() + (o.canPick ? ' · YOU MAY PICK FOR THEM' : ' IS PICKING')}</span>
       {o.canPick ? <>
         <div data-tip-avoid="[data-phc-pick-materials], [data-phc-pick]" style={{ display: 'grid', gridTemplateColumns: 'repeat(' + cols + ', minmax(0, 1fr))', gap: 10 }}>
           {m ? (
@@ -44,8 +44,7 @@ export function Offer({ o, minH }: { o: OfferV; minH?: number }) {
                   <span style={{ flex: 1, minWidth: 0, fontSize: 14 }}>{l.name}</span>
                   <b style={{ fontSize: 18, fontVariantNumeric: 'tabular-nums' }}>× {l.n}</b>
                 </span>))}
-              <span style={{ fontSize: 13, color: ink.muted }}>Sells for {m.sells} credits</span>
-              <span style={takeBtn}>Take the materials</span>
+              <span style={takeBtn}>Take</span>
             </button>) : null}
           {o.cards.map((c) => (
             <button key={c.i} type="button" data-phc-pick={c.i} {...tipProps(c.tip)} onClick={() => act({ type: 'run/pick', charId: o.charId, choice: c.i })}

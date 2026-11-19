@@ -63,7 +63,7 @@ function Card({ c, qty, setQty, onFocus, onBuy, big }: { c: ShopCardV; qty: numb
       <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 8, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span data-phc-price="" style={{ fontSize: 26, fontWeight: 700, color: I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{total.toLocaleString('en')}</span>
-          <span style={{ fontSize: 13, color: I.muted, letterSpacing: '0.08em' }}>CREDITS{c.per > 1 ? ' · ' + c.per * qty + ' ROUNDS' : qty > 1 ? ' · ' + qty + ' OF THEM' : ''}</span>
+          <span style={{ fontSize: 13, color: I.muted, letterSpacing: '0.08em' }}>CREDITS{c.per > 1 ? ' · for ' + c.per * qty : qty > 1 ? ' · for ' + qty : ''}</span>
         </div>
         {c.qtyMax > 1 && !sold ? (
           <div role="group" aria-label="How many" style={{ display: 'flex', alignItems: 'center', border: '1px solid #3B475D', borderRadius: 10 }}>
@@ -75,7 +75,7 @@ function Card({ c, qty, setQty, onFocus, onBuy, big }: { c: ShopCardV; qty: numb
         <button type="button" data-phc-buy={c.key} disabled={sold} onClick={onBuy}
           style={{ marginLeft: 'auto', minHeight: 42, padding: '0 16px', borderRadius: 10, border: 0, background: sold ? I.raised : why ? 'transparent' : I.text, outline: why && !sold ? '1px solid #3B475D' : 'none', color: sold ? I.muted : why ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: sold ? 'default' : 'pointer' }}>Buy</button>
       </div>
-      <span data-phc-status="" style={{ minHeight: 18, fontSize: 13, fontWeight: sold ? 700 : 500, color: sold ? I.white : why ? I.muted : I.ok }}>{sold ? 'Sold to ' + c.sold : why ? why : '✓ You can buy this'}</span>
+      <span data-phc-status="" style={{ minHeight: 18, fontSize: 13, fontWeight: sold ? 700 : 500, color: sold ? I.white : why ? I.muted : I.ok }}>{sold ? 'Sold to ' + c.sold : why ? why : ''}</span>
     </article>
   );
 }
@@ -96,7 +96,7 @@ function Compare({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rari
       {cmp.rows.map((r) => (
         <div key={r.key} data-phc-cmp={r.key} style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 13, alignItems: 'baseline', paddingTop: 6, borderTop: '1px solid ' + I.line }}>
           <span style={{ color: I.muted }}>{r.label.replace(/ \(.*\)$/, '')}</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{r.held}</span>
-          <span style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{r.next}{r.diff && r.diff !== 'same' ? <span style={{ marginLeft: 6, fontSize: 13, color: r.diff === 'better' ? I.ok : I.muted }}>{r.diff === 'better' ? '▲ better' : '▼ worse'}</span> : r.diff === 'same' ? <span style={{ marginLeft: 6, fontSize: 13, color: I.muted }}>= same</span> : null}</span>
+          <span style={{ fontWeight: 700, fontVariantNumeric: 'tabular-nums' }}>{r.next}{r.diff && r.diff !== 'same' ? <span style={{ marginLeft: 6, fontSize: 13, color: r.diff === 'better' ? I.ok : I.muted }}>{r.diff === 'better' ? '▲' : '▼'}</span> : r.diff === 'same' ? <span style={{ marginLeft: 6, fontSize: 13, color: I.muted }}>= same</span> : null}</span>
         </div>
       ))}
     </div>
@@ -129,7 +129,7 @@ export function ShopScreen() {
     body = <>
       <section data-phc-shelf="repair">{shelfHead('Repair', 'Back to full durability')}{repairs.length ? <div style={GRID}>{repairs.map(svc)}</div>
         : <p data-phc-repair-empty="" style={{ fontSize: 15, color: I.muted, lineHeight: 1.6, maxWidth: 560, marginBottom: 28 }}>Everything you carry is in full repair.</p>}</section>
-      <section data-phc-shelf="upgrade">{shelfHead('Upgrade', 'One upgrade per visit')}{grades.length ? <div style={GRID}>{grades.map(svc)}</div>
+      <section data-phc-shelf="upgrade">{shelfHead('Upgrade', '1 a visit')}{grades.length ? <div style={GRID}>{grades.map(svc)}</div>
         : <p data-phc-upgrade-empty="" style={{ fontSize: 15, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>You carry no weapon or focus that can be upgraded.</p>}</section>
     </>;
   }

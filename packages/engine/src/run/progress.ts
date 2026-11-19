@@ -84,9 +84,9 @@ function here(g: GameState): { r: RunState; n: NonNullable<ReturnType<typeof run
 const notHere = (want: string) => 'You are not at ' + want + '.';
 /** The first stage whose picks reach grade `to` (rewards.ceiling), for "Masterwork upgrades open in stage 2." */
 const opensIn = (to: Rarity): number => { for (let s = 1; s <= 99; s++) if (LADDER.indexOf(stageCeiling(s)) >= LADDER.indexOf(to)) return s; return 99; };
-const gradeOpens = (to: Rarity) => GRADE_WORD[to] + ' upgrades open in stage ' + (to === 'relic' ? Math.max(GRADE_UP.relic_from_stage, opensIn(to)) : opensIn(to)) + '.';
+const gradeOpens = (to: Rarity) => 'Opens in stage ' + (to === 'relic' ? Math.max(GRADE_UP.relic_from_stage, opensIn(to)) : opensIn(to));
 /** Where a carried thing is, in a card's words. */
-const whereWord = (where: GearWhere) => (typeof where === 'number' ? 'In your pack' : where === 'main' ? 'In your hand' : where === 'off' ? 'In your off hand' : where === 'quiver:0' ? 'Your worn quiver' : 'Your spare quiver');
+const whereWord = (where: GearWhere) => (typeof where === 'number' ? 'In your pack' : where === 'main' ? 'In hand' : where === 'off' ? 'In your off hand' : where === 'quiver:0' ? 'Your worn quiver' : 'Your spare quiver');
 /** Rules 1.43: a visit begins as the party enters a safe node; the Forge rolls its stock, the Crossroads its trades, the
  * shrine its patron, each from the run's seed through the node's own stream (rule 12). */
 export function openVisit(g: GameState, n: { id: string; kind: string }): RunVisit {
@@ -506,7 +506,7 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
       if (!props.length) out.push({ group: 'relic', key: 'relic:' + where, label: nameOf(it.id) + ': Relic upgrade', detail: at, price: GRADE_UP.price.relic, why: gate || upgradeProblem(g, c, base), action: { type: 'run/upgrade', charId, ...base } });
       for (const p of props) out.push({ group: 'relic', key: 'relic:' + where + ':' + p, label: nameOf(it.id) + ': Relic, ' + relicRow(p)!.name, detail: relicRow(p)!.text + ' Uses ' + worthOf(p) + ' boon room; you have ' + capRoom(c) + '.', price: GRADE_UP.price.relic, why: upgradeProblem(g, c, { ...base, prop: p }), action: { type: 'run/upgrade', charId, ...base, prop: p } });
     } else if (to) {
-      out.push({ group: 'grade', key: 'grade:' + where, label: nameOf(it.id) + ': ' + word(it.rarity) + ' to ' + word(to), detail: at + (to !== 'relic' && k === 'forge' && gradePrice(to, 'shop') > gradePrice(to, 'forge') ? ' · ' + (gradePrice(to, 'shop') - gradePrice(to, 'forge')) + ' less than a shop' : ''), price: to === 'relic' ? GRADE_UP.price.relic : gradePrice(to, k as GradePlace), why: upgradeProblem(g, c, base), action: { type: 'run/upgrade', charId, ...base } });
+      out.push({ group: 'grade', key: 'grade:' + where, label: nameOf(it.id) + ': ' + word(it.rarity) + ' → ' + word(to), detail: at, price: to === 'relic' ? GRADE_UP.price.relic : gradePrice(to, k as GradePlace), why: upgradeProblem(g, c, base), action: { type: 'run/upgrade', charId, ...base } });
       if (chitAt(c) >= 0 && to !== 'relic') out.push({ group: 'grade', key: 'chit:' + where, label: nameOf(it.id) + ': ' + word(it.rarity) + ' to ' + word(to) + ', with a chit', detail: at, price: 0, why: upgradeProblem(g, c, { ...base, chit: true }), action: { type: 'run/upgrade', charId, ...base, chit: true } });
     }
   }

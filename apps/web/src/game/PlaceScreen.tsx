@@ -26,7 +26,7 @@ const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing
 const GRID: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16, marginBottom: 28 };
 /** The words over each group of cards (the engine names the group; the client its heading and its note). */
 const HEAD: Record<string, [string, string]> = {
-  grade: ['Upgrade', 'One upgrade per visit'], repair: ['Repair', 'Back to full durability'], relic: ['Relic upgrade', 'Pick one property. It stays on the weapon.'],
+  grade: ['Upgrade', '1 a visit'], repair: ['Repair', 'Back to full durability'], relic: ['Relic upgrade', 'Pick one property. It stays on the weapon.'],
   forge: ['Mods and armour', 'Made for what your squad carries'], mod: ['Mod fitting', 'The armourer fits a mod to a gun you carry, or takes one off, for a fee'], fit: ['Armour fitting', 'Lets you wear heavier armour'],
   train: ['Training', ''], shrine: ['Blessings', 'Take one'], trade: ['Trades', 'One each, or walk on'],
 };
@@ -75,7 +75,7 @@ function ChoiceCard({ x, big }: { x: PlaceCardV; big?: boolean }) {
         </span>
         <span style={{ marginLeft: 'auto', minHeight: 40, padding: '0 16px', display: 'inline-grid', placeItems: 'center', borderRadius: 10, background: o.why ? 'transparent' : I.text, outline: o.why ? '1px solid #3B475D' : 'none', color: o.why ? I.muted : I.ground, fontWeight: 700, fontSize: 15 }}>Take it</span>
       </span>
-      <span data-phc-status="" style={{ minHeight: 18, fontSize: 13, color: o.why ? I.muted : I.ok }}>{o.why || '✓ You can take this'}</span>
+      <span data-phc-status="" style={{ minHeight: 18, fontSize: 13, color: o.why ? I.muted : I.ok }}>{o.why || ''}</span>
     </button>
   );
 }
