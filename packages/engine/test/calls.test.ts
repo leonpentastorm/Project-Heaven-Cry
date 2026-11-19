@@ -36,6 +36,8 @@ function fight(specs: PhysSpec[], foes: FoeSpec[] = [{}], seed?: string) {
 }
 const speaker = (skill: string, pts: number, more: PhysSpec = {}): PhysSpec => ({ ...more, skills: { ...(more.skills || {}), [skill]: pts } });
 
+/** Rally's steps' numbers (calls.json; rules 1.74 item 6043). */
+const RALLY: any[] = (CALLSJ as any).items.find((x: any) => x.id === 'call.rally').steps.map((s: any) => s.numbers);
 describe('the data', () => {
   it('has nine Calls, one for each gamma skill, read from the skill data', () => {
     expect(CALLS.length).toBe(9);
@@ -104,7 +106,7 @@ describe('the ladder', () => {
     const ap = f.pc.ap;
     expect(f.cpv('call.rally', { targetId: f.pcs[1].id, react: true }).ap).toBe(0);
     expect(f.call('call.rally', { targetId: f.pcs[1].id, react: true }, f.pc)).toBeNull();
-    expect(f.pc.ap).toBe(ap); expect(reactionsUsed(f.cb, f.pc)).toBe(1); expect(f.pcs[1].ap).toBe(8); // step 3's 2 AP, and on its own turn the AP lands now
+    expect(f.pc.ap).toBe(ap); expect(reactionsUsed(f.cb, f.pc)).toBe(1); expect(f.pcs[1].ap).toBe(6 + RALLY[2].ap); // step 3's AP (rules 1.74 item 6043: from calls.json), and on its own turn the AP lands now
     expect(f.fx('call').pop()).toMatchObject({ unit: f.pc.id, reaction: true });
     expect(f.call('call.rally', { targetId: f.pcs[2].id, react: true }, f.pc)).toMatch(/One Call as a reaction a round/);
     expect(f.call('call.rally', { targetId: f.pcs[2].id }, f.pc)).toMatch(/turn/); // not its turn: only as a reaction
@@ -172,8 +174,8 @@ describe('AP a Call gives', () => {
   });
   it('goes through the +3 cap and the turn\'s 9', () => {
     const f = fight([speaker('charisma', CALL_RULES.steps_at[2]), {}]); f.unit(f.pcs[1].id).apNext = 2; // banked from a perk
-    expect(f.call('call.rally', { targetId: f.pcs[1].id })).toBeNull(); expect(f.pcs[1].apNext).toBe(4); // 2 + Rally's 2
-    f.next(); expect(f.pcs[1].ap).toBe(9); expect(f.cb.log.some((l) => /1 lost to the \+3 cap/.test(l))).toBe(true);
+    expect(f.call('call.rally', { targetId: f.pcs[1].id })).toBeNull(); expect(f.pcs[1].apNext).toBe(2 + RALLY[2].ap); // 2 + Rally's step 3
+    f.next(); expect(f.pcs[1].ap).toBe(9); expect(f.cb.log.some((l) => l.includes((2 + RALLY[2].ap - 3) + ' lost to the +3 cap'))).toBe(true);
   });
 });
 
@@ -229,8 +231,9 @@ describe('Order (Authority)', () => {
 });
 
 describe('Rally (Charisma)', () => {
-  it('step 1: 1 AP; step 2: and 1 Pressure shed; step 3: 2 AP and 1 Pressure shed', () => {
-    for (const [pts, ap, shed] of [[1, 1, 0], [4, 1, 1], [8, 2, 1]] as const) {
+  it('the three steps (rules 1.74 item 6043, re-stepped stronger: 2 AP; 2 AP and 1 Pressure shed; 3 AP and 1 Pressure shed), from calls.json', () => {
+    expect(RALLY.map((s: any) => [s.ap, s.pressure])).toEqual([[2, 0], [2, 1], [3, 1]]);
+    for (const [pts, ap, shed] of [[1, RALLY[0].ap, RALLY[0].pressure], [4, RALLY[1].ap, RALLY[1].pressure], [8, RALLY[2].ap, RALLY[2].pressure]] as const) {
       const f = fight([speaker('charisma', pts), {}]); f.press(f.pcs[1], 2);
       expect(f.call('call.rally', { targetId: f.pcs[1].id })).toBeNull();
       expect(f.pcs[1].apNext, 'points ' + pts).toBe(ap); expect(f.pressure(f.pcs[1]), 'points ' + pts).toBe(2 - shed);
@@ -507,7 +510,7 @@ describe('enemies', () => {
     const f = fight([{}], [{ tier: 'boss' }, { tier: 'soldier' }]); f.unit(f.pc.id).conds = { shaken: 3 }; f.press(f.foes[1], 2); f.turn(f.foe);
     const p = withGame(f.g, () => calls.aiCall(f.cb, f.foe)); expect(p).toMatchObject({ id: 'call.rally', args: { targetId: f.foes[1].id } });
     expect(withGame(f.g, () => calls.useCall(f.cb, f.foe, p!.id, p!.args, f.g.rng))).toBeNull();
-    expect(f.foes[1].apNext).toBe(1); expect(f.pressure(f.foes[1])).toBe(1); expect(f.foe.ap).toBe(6 - calls.callBaseAp(5)); // level 5: 2 AP, step 2
+    expect(f.foes[1].apNext).toBe(RALLY[1].ap); expect(f.pressure(f.foes[1])).toBe(2 - RALLY[1].pressure); expect(f.foe.ap).toBe(6 - calls.callBaseAp(5)); // level 5: 2 AP, step 2
   });
 });
 

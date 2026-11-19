@@ -1710,7 +1710,59 @@
               "surface": "combat"
             },
             {
-              "ref": "infiltrator.field_fix"
+              "id": "quick_sketch",
+              "name": "Quick Sketch",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Once a turn, Picture costs {=effects.0.value|abs} AP less (never under {=effects.0.min})",
+              "effects": [
+                {
+                  "op": "cost_mod",
+                  "when": "cost",
+                  "if": {
+                    "action": [
+                      "picture"
+                    ]
+                  },
+                  "value": -1,
+                  "min": 1,
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "sketch",
+                    "peek": true
+                  },
+                  "label": "Quick Sketch"
+                },
+                {
+                  "op": "use",
+                  "when": "acted",
+                  "if": {
+                    "action": [
+                      "picture"
+                    ]
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "sketch"
+                  }
+                }
+              ],
+              "source": "rules 1.74 item 6045: replaces Field Fix (Improvisation's Field Repair does its work; Field Fix goes back to the move pool, its key kept)",
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "trickster",
+              "new": true,
+              "fantasy_tags": [
+                "figment",
+                "tempo"
+              ],
+              "attributes": [
+                "expression"
+              ],
+              "status": "active",
+              "surface": "combat"
             }
           ]
         },
@@ -1726,16 +1778,7 @@
                 "charge": 2,
                 "reach": 1
               },
-              "amounts": {
-                "repair": {
-                  "kind": "heal",
-                  "base": 15,
-                  "profile": "repair",
-                  "text": "a repair, not a heal",
-                  "provisional": true
-                }
-              },
-              "text": "{=ap_cost} AP, beside a wreck: +{=numbers.charge} Visualizer charge, once a wreck · or release a Figment, charge back · or repair a machine or Figment for {=amounts.repair.base}",
+              "text": "{=ap_cost} AP, beside a wreck: +{=numbers.charge} Visualizer charge, once a wreck",
               "effects": [
                 {
                   "op": "grant_action",
@@ -1743,9 +1786,7 @@
                   "ap": 1,
                   "uses": "at_will",
                   "pick": [
-                    "wreck",
-                    "reclaim",
-                    "repair"
+                    "wreck"
                   ],
                   "pick_label": "What to salvage"
                 }
@@ -1763,7 +1804,8 @@
                 "expression"
               ],
               "status": "active",
-              "surface": "combat"
+              "surface": "combat",
+              "source": "rules 1.74 item 6045: trimmed to the wreck (Cash in does Reclaim, Field Repair the repair)"
             },
             {
               "id": "overclock",
@@ -5092,10 +5134,11 @@
         "attributes": [
           "expression"
         ],
-        "status": "active",
+        "status": "shelved",
         "surface": "combat",
         "origin_rank": "II",
-        "future_home": "Rigger (Classes 3.0 step 8; figments-spec.md 4): it left the Operative in rules 1.32, its key stays"
+        "future_home": "Rigger (Classes 3.0 step 8; figments-spec.md 4): it left the Operative in rules 1.32, its key stays",
+        "shelved_by": "rules 1.74 item 6045: the Rigger rank I move is Quick Sketch (Improvisation 3 gives Field Repair)"
       }
     ],
     "revision_2_classes": [

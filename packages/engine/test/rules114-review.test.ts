@@ -39,16 +39,16 @@ function playRounds(s: S, charId: string, rounds: number, each?: (round: number,
 // ============================================================================================ the cooldown, attacked
 describe('the AP perks\' cooldown holds through real turns', () => {
   it('Talks Broke Down: +2 AP on turns 1, 4 and 7 over eight real rounds, a squadmate\'s talk counts, and a save and reload in the middle changes nothing', () => {
-    const s = storyWith([{ perks: { talks_broke_down: 'I' } }, {}]), me = s.chars[0].id;
+    const s = storyWith([{ perks: { talks_broke_down: 'II' } }, {}]), me = s.chars[0].id;
     storyCheck(s, s.chars[1].id, ['charisma'], { auto: 'success' }); // the squadmate talks, not the holder
     startFight(s, [{ at: 'P6' }]);
     const aps = playRounds(s, me, 8, (round) => { if (round === 2 || round === 5) s.g = JSON.parse(JSON.stringify(s.g)); });
     expect(aps).toEqual([8, 6, 6, 8, 6, 6, 8, 6]);
   });
-  it('a lost talk (Tier I): 2 AP less on turns 1, 4 and 7, not on the turns between', () => {
-    const s = storyWith([{ perks: { talks_broke_down: 'I' } }]), me = s.chars[0].id;
+  it('a lost talk costs nothing (rules 1.74 item 6043: Parley dropped the penalty), at either tier', () => {
+    const s = storyWith([{ perks: { talks_broke_down: 'II' } }]), me = s.chars[0].id;
     storyCheck(s, me, ['charisma'], { auto: 'fail' }); startFight(s, [{ at: 'P6' }]);
-    expect(playRounds(s, me, 7)).toEqual([4, 6, 6, 4, 6, 6, 4]);
+    expect(playRounds(s, me, 7)).toEqual([6, 6, 6, 6, 6, 6, 6]);
   });
   it('a new fight starts with the cooldown ready; inside one fight it never comes back early', () => {
     const s = storyWith([{ traits: ['forlorn_hope'] }]), me = s.chars[0].id;
@@ -67,7 +67,7 @@ describe('the AP perks\' cooldown holds through real turns', () => {
     expect(playRounds(s, me, 3, closeIn)).toEqual([6, 8, 6]);
   });
   it('two holders in one squad: each has its own cooldown, and neither lends the other a turn', () => {
-    const s = storyWith([{ perks: { talks_broke_down: 'I' } }, { perks: { talks_broke_down: 'I' } }]), [a, b] = s.chars.map((c) => c.id);
+    const s = storyWith([{ perks: { talks_broke_down: 'II' } }, { perks: { talks_broke_down: 'II' } }]), [a, b] = s.chars.map((c) => c.id);
     storyCheck(s, a, ['charisma'], { auto: 'success' }); startFight(s, [{ at: 'P6' }]);
     const seen: Record<string, number[]> = { [a]: [], [b]: [] };
     for (let guard = 0; guard < 40 && cbOf(s).round <= 4; guard++) { const u = active(s); seen[u.charId!].push(u.ap); endTurn(s); }
@@ -112,7 +112,7 @@ describe('the AP perks\' cooldown holds through real turns', () => {
     expect(pc().uses?.['trait:rabbits_foot#ap-gain|cooldown']?.n).toBe(g.combat!.round); // the cooldown cell holds the round the AP landed in
   });
   it('an old save (a fight saved before the cooldown existed): the perk is simply ready, then cools down', () => {
-    const s = storyWith([{ perks: { talks_broke_down: 'I' } }]), me = s.chars[0].id;
+    const s = storyWith([{ perks: { talks_broke_down: 'II' } }]), me = s.chars[0].id;
     storyCheck(s, me, ['charisma'], { auto: 'success' }); startFight(s, [{ at: 'P6' }]);
     const aps = playRounds(s, me, 5, (round, u) => { if (round === 2) { delete u.uses?.['perk:talks_broke_down#ap-gain|cooldown']; s.g = JSON.parse(JSON.stringify(s.g)); } });
     // Turn 1 +2 (as every turn was, before). The save is opened on turn 2 with no cooldown stored: turn 3 pays, then 4 and 5 wait.

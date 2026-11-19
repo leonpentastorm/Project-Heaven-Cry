@@ -117,9 +117,11 @@ describe('Talks Broke Down', () => {
   // Rules 1.14 (the AP perks' cooldown): +2 on the first turn and then once every 3 turns (it was every turn).
   /** The holder's turn in round r (the fight may have opened on their turn already: the cooldown starts fresh). */
   const turnIn = (f: ReturnType<typeof talk>, r: number) => { if (r === 1) { const us = f.unit(f.pc.id).uses || {}; delete us['perk:talks_broke_down#ap-gain|cooldown']; delete us['perk:talks_broke_down#ap-pen|cooldown']; } f.cb.round = r; return f.turn(f.pc).ap; };
-  it('I: a won argument before the fight, +2 AP on turns 1, 4 and 7; a lost one, −2 on the same turns', () => {
-    const w = talk('I', true); expect([1, 2, 3, 4, 5, 6, 7].map((r) => turnIn(w, r))).toEqual([8, 6, 6, 8, 6, 6, 8]);
-    const l = talk('I', false); expect([1, 2, 3, 4].map((r) => turnIn(l, r))).toEqual([4, 6, 6, 4]);
+  // rules 1.74 item 6043: the perk is Parley now; its tier I is the talk itself, the fight half is tier II's, no lost-talk penalty
+  it('II: a won argument before the fight, +2 AP on turns 1, 4 and 7; a lost one costs nothing; tier I gives no fight AP', () => {
+    const w = talk('II', true); expect([1, 2, 3, 4, 5, 6, 7].map((r) => turnIn(w, r))).toEqual([8, 6, 6, 8, 6, 6, 8]);
+    const l = talk('II', false); expect([1, 2, 3, 4].map((r) => turnIn(l, r))).toEqual([6, 6, 6, 6]);
+    const i = talk('I', true); expect([1, 2, 3, 4].map((r) => turnIn(i, r))).toEqual([6, 6, 6, 6]);
   });
   it('II: no penalty, and the first enemy in initiative hesitates (−1 AP in round 1)', () => {
     const l = talk('II', false); expect(l.turn(l.pc).ap).toBe(6);
@@ -129,7 +131,7 @@ describe('Talks Broke Down', () => {
     w.cb.round = 2; fs.hesitated = false; expect(w.turn(w.unit(first.id)).ap).toBe(6);
   });
   it('no dialogue check before the fight: nothing', () => {
-    const f = fightAfter([{ perks: { talks_broke_down: 'I' } }], [{ at: 'P6' }], (s) => storyCheck(s, s.chars[0].id, ['athletics'], { auto: 'success' }));
+    const f = fightAfter([{ perks: { talks_broke_down: 'II' } }], [{ at: 'P6' }], (s) => storyCheck(s, s.chars[0].id, ['athletics'], { auto: 'success' }));
     expect(f.turn(f.pc).ap).toBe(6);
   });
 });

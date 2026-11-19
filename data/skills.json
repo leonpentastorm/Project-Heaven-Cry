@@ -3636,6 +3636,22 @@
       "door_focus_line": "Your Visualizer is in your pack, not in a hand: open the Backpack and draw it to Picture.",
       "door_tab": "figments",
       "door_title": "FIGMENTS · PICTURED",
+      "forks": [
+        {
+          "id": "a",
+          "of": [
+            "fork.figment.hard_light",
+            "fork.figment.sharp_light"
+          ]
+        },
+        {
+          "id": "b",
+          "of": [
+            "fork.figment.many_hands",
+            "fork.figment.masterwork"
+          ]
+        }
+      ],
       "per_point": {
         "source": "rules 1.34: the elemental line went with rules 1.26's slope; Visualization is Figments' door",
         "numbers": {
@@ -3674,12 +3690,23 @@
           "name": "Figments",
           "category": "Active Skill",
           "mastery": 0,
-          "text": "The door, its whole loop, smaller: Picture (a Figment built of mana) in the forms you know, chosen from all ten, one held; projection range four tiles plus your Visualization. Needs the Visualizer (figments.json).",
-          "player": "With the Visualizer: Picture a form you know (two of your choice) · one held · Glimmer · Redraw · Cash in",
+          "text": "The door, its whole loop, smaller: Picture (a Figment built of mana) in the forms you know, chosen from all ten, one held; Redraw and Let go; Glimmer. Projection range four tiles plus your Visualization. Needs the Visualizer (figments.json).",
+          "player": "With the Visualizer: Picture a form you know (two of your choice) · one held · Glimmer · Redraw · Let go",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
           "source": "rules 1.34 (figments-spec.md section 4)"
+        },
+        "2": {
+          "name": "Cash in",
+          "category": "Active Skill",
+          "mastery": 0,
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.74 item 6040 (moved from 1)",
+          "text": "The small verb of the door opens: Cash in (unmake a Figment of yours on purpose; all its made charge goes back into the core).",
+          "player": "New move: Cash in (all its charge back)",
+          "effects": []
         },
         "3": {
           "name": "Mastery 1",
@@ -3697,6 +3724,17 @@
           "adjudication": "engine",
           "provisional": true
         },
+        "4": {
+          "name": "Fork: Hard Light or Sharp Light",
+          "category": "Fork",
+          "mastery": 0,
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.74 item 6041",
+          "text": "The door's first fork, what your Figments are made of: Hard Light (they take less damage, and one destroyed gives you AP) or Sharp Light (their strikes hit harder, and a kill frees an order). Chosen once, kept for good; it changes every form you know.",
+          "player": "Choose: Hard Light or Sharp Light",
+          "effects": []
+        },
         "5": {
           "name": "Two held",
           "category": "Active Skill",
@@ -3707,6 +3745,20 @@
           "adjudication": "engine",
           "provisional": true,
           "source": "rules 1.34: replaces Paint the Field (nine doors 15.5: replace when Figments are built)"
+        },
+        "6": {
+          "name": "Mastery 2",
+          "mastery": 2,
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "visualization",
+              "choice": "perk_step"
+            }
+          ],
+          "adjudication": "engine",
+          "source": "rules 1.74 item 6040 (the step moved from 5)"
         },
         "7": {
           "name": "Mastery 3",
@@ -3722,12 +3774,28 @@
           ],
           "adjudication": "engine"
         },
+        "8": {
+          "name": "Fork: Many Hands or Masterwork",
+          "category": "Fork",
+          "mastery": 0,
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.74 item 6041",
+          "text": "The door's second fork, how you hold them: Many Hands (one more held, and Picture costs less charge) or Masterwork (name one Figment your Masterwork: it hits truer, takes less, and one order to it a round is free). Chosen once, kept for good.",
+          "player": "Choose: Many Hands or Masterwork",
+          "effects": []
+        },
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "A destroyed Figment no longer Snaps. A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "player": "A destroyed Figment no longer Snaps",
-          "effects": [],
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "visualization",
+              "choice": "perk_step"
+            }
+          ],
           "adjudication": "engine"
         },
         "10": {
@@ -3867,26 +3935,23 @@
           "provisional": true
         },
         "5": {
-          "name": "Tuned",
-          "category": "Passive",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "The weapon in your main hand never jams and never breaks.",
-          "player": "Main-hand weapon never jams or breaks",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "immunity",
-              "to": "weapon_jam_and_break",
-              "context": "the weapon in your main hand"
+              "op": "perk_choice",
+              "skill": "proficiency",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine",
-          "provisional": true,
-          "item": true
+          "source": "rules 1.74: the free passive Tuned is now a perk (tuned)"
         },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
@@ -3899,8 +3964,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "effects": [],
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "proficiency",
+              "choice": "perk_step"
+            }
+          ],
           "adjudication": "engine"
         },
         "10": {
@@ -3917,6 +3988,13 @@
           "adjudication": "engine",
           "resist_echo": 2
         }
+      },
+      "perk_remap": {
+        "rev": 1,
+        "passives": {
+          "5": "tuned"
+        },
+        "note": "rules 1.74 item 6044: Tuned became a perk (Field Repair stays the free unlock at 3: rules 1.74 item 6042)"
       },
       "overreach": {
         "from_points": 5,
@@ -3998,48 +4076,37 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Smooth",
-          "category": "Conversation Quirk",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "A failed lie doesn't get exposed straight away; the listener is only suspicious.",
-          "player": "A failed lie only raises suspicion",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "narrator",
-              "note": "Narrator treats failed lies as suspicion, not exposure"
-            },
             {
               "op": "perk_choice",
               "skill": "charisma",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "narrator"
+          "adjudication": "engine",
+          "source": "rules 1.74: the free passive Smooth is now a perk (smooth)"
         },
         "5": {
-          "name": "Parley",
-          "category": "Combat Starter",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Before a fight, one attempt to talk the enemy down. On a success, the leader stands down, or the rank-and-file walk away.",
-          "player": "Before a fight: talk the enemy down",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "parley",
-              "ap": 0,
-              "uses": "per_combat"
-            },
-            {
-              "op": "narrator",
-              "note": "Narrator sets the TN by disposition"
+              "op": "perk_choice",
+              "skill": "charisma",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "engine",
+          "source": "rules 1.74: the free passive Parley is now a perk (talks_broke_down)"
         },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
@@ -4052,8 +4119,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "effects": [],
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "charisma",
+              "choice": "perk_step"
+            }
+          ],
           "adjudication": "engine"
         },
         "10": {
@@ -4070,6 +4143,14 @@
           "adjudication": "engine",
           "resist_echo": 2
         }
+      },
+      "perk_remap": {
+        "rev": 1,
+        "passives": {
+          "3": "smooth",
+          "5": "talks_broke_down"
+        },
+        "note": "rules 1.74 item 6044: Smooth and Parley became perks (Parley is Talks Broke Down's id)"
       },
       "overreach": {
         "from_points": 5,

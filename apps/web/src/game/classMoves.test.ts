@@ -37,12 +37,12 @@ describe('pickers for the new moves (buttons only)', () => {
   it('Field Fix: three jobs, none meaning the first that applies (the Breaker\'s Shove picker left with the move, rules 1.60 R3)', () => {
     const f = fightWith([cls('fighter', 3)], [{}]);
     const u = f.turn(f.pc); expect(entries(f, u).some((x) => x.actionId === 'class_shove')).toBe(false);
-    const g = fightWith([cls('trickster', 5), {}], [{}]); // rules 1.34: Field Fix is the Rigger's
-    const w = g.turn(g.pcs[0]), ff = entries(g, w).find((x) => x.actionId === 'field_fix')!;
-    const F = pickerFor(ff, ctx(g, w))!;
-    expect((F.fields[0] as any).options.map((o: any) => o.id)).toEqual(['clear_jam', 'restore_durability', 'repair']);
-    expect(buildArgs(F, {}, ctx(g, w))).toEqual({});
-    expect(buildArgs(F, { choice: ['clear_jam'] }, ctx(g, w))).toEqual({ choice: 'clear_jam' });
+    const g = fightWith([cls('trickster', 5), {}], [{}]); // rules 1.74 item 6045: Field Fix left the Rigger (Quick Sketch); Salvage's picker is a wreck alone
+    const w = g.turn(g.pcs[0]);
+    expect(entries(g, w).some((x) => x.actionId === 'field_fix')).toBe(false);
+    const sv = entries(g, w).find((x) => x.actionId === 'salvage')!;
+    const S = pickerFor(sv, ctx(g, w))!;
+    expect(((S.fields[0] as any)?.options || []).map((o: any) => o.id)).not.toContain('reclaim');
   });
   it('Sabotage, False Image, Sleight, Silver Tongue, Rally, Vanish, Unstoppable, Eye of the Storm and the toggles: the grid target or a plain button', () => {
     const plain = ['sabotage', 'sabotage_object', 'rig', 'false_image', 'sleight', 'sleight_image', 'silver_tongue', 'rally', 'vanish', 'unstoppable', 'eye_of_the_storm', 'shrug_on', 'shrug_off', 'duck_on', 'duck_off'];

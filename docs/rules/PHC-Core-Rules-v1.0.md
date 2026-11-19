@@ -12647,3 +12647,39 @@ its Mastered perk at 10; a beta or gamma gives its per-point gain on every level
 6025. **The Sigilist's moves.** Rank I: Barrage and Core Change (kept). Rank II: **Backdraft** replaces Overcharge (the
     ladder gives Overclock at 2): when your Evoker overloads, every foe next to you takes its damage too (true damage, a flat amount block on the overload's amount, so it grows with your level as every character's flat damage does);
     Bleed the Flux (kept). Rank III: Payload and Stored Spell (kept). PROVISIONAL.
+
+**Expression (Visualization, Improvisation, Charisma; the Rigger)** (the ruling layer's section 5 and 5b stand in
+place of the Expression sheet's sections 2 and 3)
+
+6040. **Visualization's ladder** (alpha, the door Figments; forms are learned, rules 1.70 item 5541): **1** Figments
+    (Picture, Redraw, Let go; Glimmer; 2 forms known; 1 held) · **2** Cash in (moved from 1: the verb row's `requires`,
+    read on the owner's sheet) · **3** a perk step · **4** fork one (Hard Light or Sharp Light) · **5** a second
+    Figment held · **6** a perk step · **7** a perk step and a third held · **8** fork two (Many Hands or Masterwork) ·
+    **9** a perk step · **10** Solid Image. Per point: +1 form known (2 to 9), +1 tile reach, +1 Figment to hit. The
+    old No Snap at 9 is gone (no fork takes it: ruling layer 5b). PROVISIONAL.
+6041. **Visualization's forks** (they upgrade every form you know; ruling layer 5b). **Hard Light** (4): your Figments
+    take 30% less damage; one destroyed gives you +1 AP next turn (once a round). **Sharp Light** (4): your Figments'
+    strikes deal +20% damage; after one drops a foe, your next Figment order costs 0 AP. **Many Hands** (8): +1 Figment
+    held; Picture costs 1 charge less (never under 1). **Masterwork** (8): 0 AP, once a turn, name one Figment you hold
+    your Masterwork (a tie kind `masterwork`, one at a time; naming another moves it): it has +2 to hit and takes 25%
+    less damage, and once a round one order to it costs 0 AP. PROVISIONAL.
+6042. **Improvisation** (beta): every level −10% ambush damage taken and its feed (Figment HP). Perks: **Tuned** (I: the
+    main-hand weapon never jams or breaks, as the old passive; II: and a core swap costs 1 AP less), **Jury-Rig** (I: a
+    Figment of yours destroyed gives +1 AP next turn, once a round, none with Hard Light, whose own AP stands; II: and +1
+    Visualizer charge; the old broken-weapon use is moot under Tuned and goes), **Hot-Swap** (kept). **Field Repair
+    stays the free unlock at 3** (its perk form, gated by holding it, waits on a primitive: the lane's hand-off), so
+    Improvisation has three perks for now. Mastered: Overhaul (kept). PROVISIONAL.
+6043. **Charisma** (gamma): every level +1 on Charisma checks, +1 tile Rally reach. The Call **Rally** is re-stepped
+    stronger (ruling layer section 2 item 4): **1** +2 AP to an ally · **4** +2 AP and 1 Pressure less · **8** +3 AP and
+    1 Pressure less. Perks: **Smooth** (I: a failed lie only raises suspicion; II: and once a scene a lie found out can
+    be walked back with a second check), **Parley** (id `talks_broke_down`; I: before a fight, one attempt to talk the
+    enemy down; II: a fight out of a talk won gives +2 AP on your first turn and every third after, and the first enemy
+    to act hesitates in round 1; the lost-talk penalty is gone), **Crowd Pleaser** (kept), **Showman** (I: Picture costs
+    1 charge less, never under 1; II: and once a turn one Figment order costs 0 AP). Mastered: Everyone's Friend (kept).
+    PROVISIONAL.
+6044. **Old saves:** Improvisation's free Tuned (5), and Charisma's Smooth (3) and Parley (5), are preselected perks in
+    the one re-pick; a held Talks Broke Down is Parley at its tier.
+6045. **The Rigger's moves.** Rank I: the Double (kept); **Quick Sketch** replaces Field Fix (once a turn, Picture costs
+    1 AP less, never under 1; Field Fix goes back to the move pool, its key kept). Rank II: **Salvage** trimmed to the
+    wreck (+2 Visualizer charge beside a wreck, once a wreck; Cash in and Field Repair do the rest); Redline (kept).
+    Rank III: Sleight and Scrap Sentinel (kept). The Rigger's Hands kept. PROVISIONAL.

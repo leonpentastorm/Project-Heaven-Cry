@@ -61,8 +61,8 @@ describe('the fork card (game/forkView.ts)', () => {
   });
   it('the sheet lists the doors reached, the ones with a pick to make first; an option\'s icon falls back to its door\'s skill', () => {
     const cards = forkCards(ch({ durability: F[1], dexterity: F[0], empathy: F[0], visualization: F[0] }, { durability: ['fork.guard.provoke', 'fork.guard.drive'] }));
-    // Visualization has no forks since rules 1.70 (its forms are a door of their own): no card for it
-    expect(cards.map((x) => x.door)).toEqual(['dexterity', 'empathy', 'durability']);
+    // rules 1.74 item 6041: Visualization's forks (Hard Light or Sharp Light at 4) have a card again; its forms are a door of their own
+    expect(cards.map((x) => x.door)).toEqual(['dexterity', 'visualization', 'empathy', 'durability']);
     expect(forkIconOf('fork.none.such', 'durability')).toBeTruthy();
   });
 });

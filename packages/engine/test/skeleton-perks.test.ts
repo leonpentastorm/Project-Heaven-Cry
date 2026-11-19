@@ -28,7 +28,7 @@ describe('the data of the pass', () => {
     // rules 1.70 item 5537 / rules 1.74: an alpha has two perks, a beta or gamma two or four (the 0.32 lanes give each four)
     const per: Record<string, number> = {}; for (const p of PERKS as any[]) if (p.tier === 'acquired') per[p.skills[0]] = (per[p.skills[0]] || 0) + 1;
     expect(Object.keys(per).length).toBe(27);
-    for (const [s, n] of Object.entries(per)) expect(n, s).toBe((SKILL as any)[s].slot === 'alpha' ? 2 : per[s] === 4 ? 4 : 2);
+    for (const [s, n] of Object.entries(per)) { if ((SKILL as any)[s].slot === 'alpha') expect(n, s).toBe(2); else { expect(n, s).toBeGreaterThanOrEqual(2); expect(n, s).toBeLessThanOrEqual(4); } } // rules 1.74: Improvisation has three (Field Repair stays a free unlock)
     expect(PERKS.length).toBe((PERKS as any[]).filter((p) => p.tier !== 'acquired').length + Object.values(per).reduce((a, b) => a + b, 0));
   });
   it('every acquired and Mastered perk carries its skill\'s slot (skill_greek)', () => {
@@ -48,7 +48,7 @@ describe('the data of the pass', () => {
     const name = (s: string, n: string) => (SKILL as any)[s].unlocks[n].name;
     expect([name('raw_power', '3'), name('raw_power', '5'), name('camaraderie', '3'), name('composure', '5')]).toEqual(['Heavy Hands', 'Follow Through', 'Hand-Off', 'Stand Still']);
     expect(P.read_them.skills).toEqual(['analysis']); expect(P.read_them.tiers.I.text).toMatch(/less damage to your side/); // rules 1.74 item 6004: Read Them is an Acuity perk
-    expect((SKILL as any).proficiency.unlocks['5'].text).toMatch(/never jams and never breaks/);
+    expect(P.tuned.tiers.I.text).toMatch(/never jams and never breaks/); // rules 1.74 item 6042: Tuned is an Improvisation perk
   });
   it('traits name the skills by what they mean now, and no trait or perk text keeps an old skill name', () => {
     const T: Record<string, any> = Object.fromEntries((TRAITS as any[]).map((t) => [t.id, t]));
@@ -124,7 +124,7 @@ describe('Quick Draw, Tuned, Hand-Off, Stand Still (unlocks)', () => {
   });
   it('Tuned: the weapon in your main hand never stays jammed and never breaks; without it a fumble jams', () => {
     const run = (pts: number) => {
-      const f = physFight([{ weapon: 'service_pistol', skills: { proficiency: pts, dexterity: 4 } }], [{ at: 'F7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'F7'); f.turn(f.pc);
+      const f = physFight([{ weapon: 'service_pistol', skills: { proficiency: pts, dexterity: 4 }, perks: pts >= 5 ? { tuned: 'I' } : {} }], [{ at: 'F7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'F7'); f.turn(f.pc); // rules 1.74 item 6042: Tuned is a perk
       const u = f.unit(f.pc.id); u.maxDur = 100; u.dur = 1; rig({ die: 1 });
       withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.pc, f.foe, 'shot', f.char(f.pc), { noAp: true }));
       return f;

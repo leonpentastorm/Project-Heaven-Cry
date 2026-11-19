@@ -2686,6 +2686,16 @@
         "on_end": "none"
       },
       {
+        "id": "masterwork",
+        "about": "Rules 1.74 item 6041 (Visualization's fork Masterwork): the holder's one named Figment (from: the holder). At most one; it ends when the Figment goes down or the fight ends.",
+        "max": 1,
+        "ends_on": [
+          "to_down",
+          "combat_end"
+        ],
+        "on_end": "none"
+      },
+      {
         "id": "bond",
         "max": 0,
         "mark": "bonded",

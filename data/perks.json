@@ -2232,12 +2232,33 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: A broken weapon works one more time: use One more time to make a last shot or strike with it, at the weapon's usual AP. After that it stays broken until it is repaired. II: A broken weapon works one more time: use One more time to make a last shot or strike with it, at the weapon's usual AP. After that it stays broken until it is repaired. Your Field Repair also restores twice as much on drones.",
+      "text": "I: When a Figment of yours is destroyed, you have {=tiers.I.effects.0.value} more AP on your next turn (once a round; with Hard Light, its own AP stands instead). II: When a Figment of yours is destroyed, you have {=tiers.II.effects.0.value} more AP on your next turn (once a round; with Hard Light, its own AP stands instead), and your Visualizer gets {=tiers.II.effects.1.value} charge back.",
       "effects": [
         {
-          "op": "extra_use",
-          "context": "broken weapon or device",
-          "value": 1
+          "op": "grant_ap",
+          "when": "downed",
+          "if": {
+            "target": "ally",
+            "target_kind": [
+              "figment"
+            ],
+            "target_tied": {
+              "kind": "owned",
+              "as": "to"
+            },
+            "no_door_pick": [
+              "fork.figment.hard_light"
+            ]
+          },
+          "value": 1,
+          "bank": true,
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "key": "jury"
+          },
+          "label": "Jury-Rig",
+          "say": "{self} salvages the moment: +1 AP next turn (Jury-Rig)."
         }
       ],
       "tiers": {
@@ -2249,13 +2270,34 @@
             }
           ],
           "ap_cost": null,
-          "text": "A broken weapon works one more time: use One more time to make a last shot or strike with it, at the weapon's usual AP. After that it stays broken until it is repaired.",
-          "short": "A broken weapon fires or strikes one more time",
+          "text": "When a Figment of yours is destroyed, you have {=tiers.I.effects.0.value} more AP on your next turn (once a round; with Hard Light, its own AP stands instead).",
+          "short": "A Figment of yours destroyed: +{=tiers.I.effects.0.value} AP next turn",
           "effects": [
             {
-              "op": "extra_use",
-              "context": "broken weapon or device",
-              "value": 1
+              "op": "grant_ap",
+              "when": "downed",
+              "if": {
+                "target": "ally",
+                "target_kind": [
+                  "figment"
+                ],
+                "target_tied": {
+                  "kind": "owned",
+                  "as": "to"
+                },
+                "no_door_pick": [
+                  "fork.figment.hard_light"
+                ]
+              },
+              "value": 1,
+              "bank": true,
+              "limit": {
+                "per": "per_round",
+                "n": 1,
+                "key": "jury"
+              },
+              "label": "Jury-Rig",
+              "say": "{self} salvages the moment: +1 AP next turn (Jury-Rig)."
             }
           ]
         },
@@ -2267,19 +2309,56 @@
             }
           ],
           "ap_cost": null,
-          "text": "A broken weapon works one more time: use One more time to make a last shot or strike with it, at the weapon's usual AP. After that it stays broken until it is repaired. Your Field Repair also restores twice as much on drones.",
-          "short": "Field Repair restores twice as much on drones",
+          "text": "When a Figment of yours is destroyed, you have {=tiers.II.effects.0.value} more AP on your next turn (once a round; with Hard Light, its own AP stands instead), and your Visualizer gets {=tiers.II.effects.1.value} charge back.",
+          "short": "And +{=tiers.II.effects.1.value} Visualizer charge",
           "effects": [
             {
-              "op": "extra_use",
-              "context": "broken weapon or device",
-              "value": 1
+              "op": "grant_ap",
+              "when": "downed",
+              "if": {
+                "target": "ally",
+                "target_kind": [
+                  "figment"
+                ],
+                "target_tied": {
+                  "kind": "owned",
+                  "as": "to"
+                },
+                "no_door_pick": [
+                  "fork.figment.hard_light"
+                ]
+              },
+              "value": 1,
+              "bank": true,
+              "limit": {
+                "per": "per_round",
+                "n": 1,
+                "key": "jury"
+              },
+              "label": "Jury-Rig",
+              "say": "{self} salvages the moment: +1 AP next turn (Jury-Rig)."
             },
             {
-              "op": "power_mult",
-              "action": "field_repair",
-              "value": 2,
-              "context": "vehicles and drones"
+              "op": "resource",
+              "when": "downed",
+              "if": {
+                "target": "ally",
+                "target_kind": [
+                  "figment"
+                ],
+                "target_tied": {
+                  "kind": "owned",
+                  "as": "to"
+                }
+              },
+              "resource": "vcharge",
+              "value": 1,
+              "limit": {
+                "per": "per_round",
+                "n": 1,
+                "key": "jury_charge"
+              },
+              "label": "Jury-Rig"
             }
           ],
           "replaces_tier_I": true,
@@ -2292,7 +2371,8 @@
         "tech",
         "repair"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6042 (the old broken-weapon use is moot under Tuned; its handler retired)"
     },
     {
       "id": "hot_swap",
@@ -2355,6 +2435,93 @@
         "weapons"
       ],
       "provisional": true
+    },
+    {
+      "id": "tuned",
+      "name": "Tuned",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "proficiency"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "proficiency",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: The weapon in your main hand never jams and never breaks. II: The weapon in your main hand never jams and never breaks, and loading a fresh core costs {=tiers.II.effects.1.value|abs} AP less.",
+      "effects": [
+        {
+          "op": "immunity",
+          "to": "weapon_jam_and_break",
+          "context": "the weapon in your main hand"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "proficiency",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "The weapon in your main hand never jams and never breaks.",
+          "short": "Main-hand weapon never jams or breaks",
+          "effects": [
+            {
+              "op": "immunity",
+              "to": "weapon_jam_and_break",
+              "context": "the weapon in your main hand"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "proficiency",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "The weapon in your main hand never jams and never breaks, and loading a fresh core costs {=tiers.II.effects.1.value|abs} AP less.",
+          "short": "And a core swap costs {=tiers.II.effects.1.value|abs} AP less",
+          "effects": [
+            {
+              "op": "immunity",
+              "to": "weapon_jam_and_break",
+              "context": "the weapon in your main hand"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "swap_core"
+                ]
+              },
+              "value": -1,
+              "min": 1,
+              "label": "Tuned"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "tech",
+        "gear"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6042 (was the Improvisation 5 passive)"
     },
     {
       "id": "got_you_in_my_sight",
@@ -4706,7 +4873,7 @@
     },
     {
       "id": "talks_broke_down",
-      "name": "Talks Broke Down",
+      "name": "Parley",
       "tier": "acquired",
       "perk_type": "combat_starter",
       "skills": [
@@ -4722,21 +4889,11 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. When it breaks out of a talk your squad lost, you have 2 AP less on those turns instead. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after. II: When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. Whenever a fight breaks out of a talk, won or lost, the first enemy to act hesitates: it has 1 AP less in round 1. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
+      "text": "I: Before a fight, for no AP: one attempt to talk the enemy down. On a success, the leader stands down, or the rank-and-file walk away. (The fight that may follow is tier II's.) II: Before a fight, for no AP: one attempt to talk the enemy down. When a fight breaks out of a talk your squad won, you have {=tiers.II.effects.1.value} more AP on your first turn, and again every third turn after it (Once every 3 turns.); whenever a fight breaks out of a talk, the first enemy to act hesitates in round 1. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
       "effects": [
         {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": 2,
-          "when": "combat began after the squad won a dialogue check",
-          "duration": "combat"
-        },
-        {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": -2,
-          "when": "combat began after a failed dialogue check",
-          "duration": "combat"
+          "op": "narrator",
+          "note": "Narrator sets the TN by disposition."
         }
       ],
       "tiers": {
@@ -4748,22 +4905,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. When it breaks out of a talk your squad lost, you have 2 AP less on those turns instead. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
-          "short": "Fight after a talk won: +{=tiers.I.effects.0.value} AP, every 3 turns · lost: {=tiers.I.effects.1.value} AP",
+          "text": "Before a fight, for no AP: one attempt to talk the enemy down. On a success, the leader stands down, or the rank-and-file walk away. (The fight that may follow is tier II's.)",
+          "short": "Before a fight: talk the enemy down",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 2,
-              "when": "combat began after the squad won a dialogue check",
-              "duration": "combat"
-            },
-            {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": -2,
-              "when": "combat began after a failed dialogue check",
-              "duration": "combat"
+              "op": "narrator",
+              "note": "Narrator sets the TN by disposition."
             }
           ]
         },
@@ -4775,22 +4922,19 @@
             }
           ],
           "ap_cost": null,
-          "text": "When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. Whenever a fight breaks out of a talk, won or lost, the first enemy to act hesitates: it has {=tiers.II.effects.1.value|abs} AP less in round 1. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
-          "short": "No loss cost · first foe to act {=tiers.II.effects.1.value} AP in round one",
+          "text": "Before a fight, for no AP: one attempt to talk the enemy down. When a fight breaks out of a talk your squad won, you have {=tiers.II.effects.1.value} more AP on your first turn, and again every third turn after it (Once every 3 turns.); whenever a fight breaks out of a talk, the first enemy to act hesitates in round 1. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
+          "short": "And a fight out of a talk won: +{=tiers.II.effects.1.value} AP; the first foe hesitates",
           "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator sets the TN by disposition."
+            },
             {
               "op": "stat_mod",
               "stat": "ap",
               "value": 2,
               "when": "combat began after the squad won a dialogue check",
               "duration": "combat"
-            },
-            {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": -1,
-              "target": "one_enemy",
-              "when": "round 1"
             }
           ],
           "replaces_tier_I": true,
@@ -4803,7 +4947,8 @@
         "ap",
         "social"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6043 (renamed Parley: it absorbs the Charisma 5 passive; the lost-talk penalty is dropped)"
     },
     {
       "id": "crowd_pleaser",
@@ -4885,6 +5030,207 @@
         "crowd"
       ],
       "provisional": true
+    },
+    {
+      "id": "smooth",
+      "name": "Smooth",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "charisma"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "charisma",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: A failed lie doesn't get you exposed straight away; the listener is only suspicious. II: A failed lie only makes the listener suspicious, and once a scene a lie that is found out can be walked back with a second check.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "A failed lie by this character makes the listener suspicious, not sure."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "charisma",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "A failed lie doesn't get you exposed straight away; the listener is only suspicious.",
+          "short": "A failed lie only raises suspicion",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "A failed lie by this character makes the listener suspicious, not sure."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "charisma",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "A failed lie only makes the listener suspicious, and once a scene a lie that is found out can be walked back with a second check.",
+          "short": "And once a scene, walk a lie back",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "A failed lie makes the listener suspicious, not sure; once a scene, a lie found out can be walked back with a second Charisma check."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "social"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6043 (was the Charisma 3 passive)"
+    },
+    {
+      "id": "showman",
+      "name": "Showman",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "charisma"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "charisma",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Picture costs {=tiers.I.effects.0.value|abs} charge less (never under {=tiers.I.effects.0.min}). II: Picture costs {=tiers.II.effects.0.value|abs} charge less (never under {=tiers.II.effects.0.min}), and once a turn one Figment order costs {=tiers.II.effects.1.set} AP.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "verb:picture#picture"
+            ]
+          },
+          "res": "vcharge",
+          "value": -1,
+          "min": 1,
+          "label": "Showman"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "charisma",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Picture costs {=tiers.I.effects.0.value|abs} charge less (never under {=tiers.I.effects.0.min}).",
+          "short": "Picture costs {=tiers.I.effects.0.value|abs} charge less",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "verb:picture#picture"
+                ]
+              },
+              "res": "vcharge",
+              "value": -1,
+              "min": 1,
+              "label": "Showman"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "charisma",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Picture costs {=tiers.II.effects.0.value|abs} charge less (never under {=tiers.II.effects.0.min}), and once a turn one Figment order costs {=tiers.II.effects.1.set} AP.",
+          "short": "And once a turn one Figment order costs {=tiers.II.effects.1.set} AP",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "verb:picture#picture"
+                ]
+              },
+              "res": "vcharge",
+              "value": -1,
+              "min": 1,
+              "label": "Showman"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "figment_order"
+                ]
+              },
+              "set": 0,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "show",
+                "peek": true
+              },
+              "label": "Showman"
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "figment_order"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "show"
+              }
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "figment",
+        "social"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6043"
     },
     {
       "id": "shared_breath",

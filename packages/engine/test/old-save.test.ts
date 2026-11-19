@@ -322,7 +322,7 @@ describe('rules 1.56: a 0.28.2 Rigger keeps its forms through the forks, mid-fig
     let g = apply(g0, { type: 'player/online', id: 'host', online: true } as any, 'host');
     const c = g.characters.c1; expect(c.figRev).toBe(FIG_REV);
     for (const f of ['double', 'snare', 'hand', 'eye', 'wall', 'beast', 'blade']) expect(formsOf(c)).toContain(f);
-    expect(pendingDoorPicks(c, 'visualization')).toEqual([]);
+    expect(pendingDoorPicks(c, 'visualization').filter((x: any) => !JSON.stringify(x).includes('fork.figment.'))).toEqual([]); // rules 1.74 item 6041: only the new forks are owed, never a form
     expect(pictureOptions(c).map((o) => o.id)).toEqual(expect.arrayContaining(['d:hound', 'd:lookout', 'eye', 'wall', 'beast', 'blade']));
     const pc = g.combat.units.find((u: any) => u.charId === 'c1'), wall = g.combat.units.find((u: any) => u.owned?.kind === 'figment' && u.name === 'Wall');
     const before = pc.ap;
@@ -334,9 +334,9 @@ describe('rules 1.56: a 0.28.2 Rigger keeps its forms through the forks, mid-fig
     const g0 = load(NAME); // the client's load door, and nothing after it
     const c = g0.characters.c1; expect(c.figRev).toBe(FIG_REV);
     for (const f of ['double', 'snare', 'hand', 'eye', 'wall', 'beast', 'blade']) expect(formsOf(c)).toContain(f);
-    expect(pendingDoorPicks(c, 'visualization')).toEqual([]);
+    expect(pendingDoorPicks(c, 'visualization').filter((x: any) => !JSON.stringify(x).includes('fork.figment.'))).toEqual([]); // rules 1.74 item 6041: only the new forks are owed, never a form
     expect(pictureOptions(c).map((o) => o.id)).toEqual(expect.arrayContaining(['d:hound', 'd:lookout']));
-    const v: any = viewFor(g0, 'host'); expect(formsOf(v.characters.c1)).toEqual(formsOf(c)); expect(pendingDoorPicks(v.characters.c1, 'visualization')).toEqual([]);
+    const v: any = viewFor(g0, 'host'); expect(formsOf(v.characters.c1)).toEqual(formsOf(c)); expect(pendingDoorPicks(v.characters.c1, 'visualization').filter((x: any) => !JSON.stringify(x).includes('fork.figment.'))).toEqual([]);
     // a door/pick sent from that view is refused for the right reason (nothing open), not after a late migration
     expect(() => apply(g0, { type: 'door/pick', charId: 'c1', door: 'visualization', option: 'ward' } as any, 'host')).toThrow();
   });

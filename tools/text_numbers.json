@@ -1,6 +1,6 @@
 {
  "what": "tools/text_numbers.py: the text-number guard. allow = bare numbers that are right to have no field, each with its reason; baseline = the bare numbers of 12 Nov 2026 not yet bound to a field with a {placeholder} (key: how many times), which may only shrink.",
- "ceiling": 1133,
+ "ceiling": 1122,
  "allow": {
   "actions:extinguish:text:10": "Burning's 10 a turn: conditions.json burning (an amounts block the engine reads); a placeholder reads only its own item",
   "actions:hide:text:19": "the ambush's critical range 19-20 (the engine's Hidden ambush, a rule of combat with no field on this action)",
@@ -18,7 +18,8 @@
   "perks:grim_reaper:tiers.I.short:3": "the AP cooldown's 3 turns: perks.json rules.ap_cooldown.turns (perks/cooldown.ts AP_COOLDOWN_TURNS), the file's rule block, not this item's field",
   "perks:overruled:tiers.I.short:3": "the AP cooldown's 3 turns: perks.json rules.ap_cooldown.turns (perks/cooldown.ts AP_COOLDOWN_TURNS), the file's rule block, not this item's field",
   "perks:sweet_talker:tiers.I.short:3": "the AP cooldown's 3 turns: perks.json rules.ap_cooldown.turns (perks/cooldown.ts AP_COOLDOWN_TURNS), the file's rule block, not this item's field",
-  "perks:talks_broke_down:tiers.I.short:3": "the AP cooldown's 3 turns: perks.json rules.ap_cooldown.turns (perks/cooldown.ts AP_COOLDOWN_TURNS), the file's rule block, not this item's field"
+  "perks:talks_broke_down:text:3": "the AP cooldown's 3 turns: perks.json rules.ap_cooldown.turns (perks/cooldown.ts AP_COOLDOWN_TURNS), the file's rule block, not this item's field (Parley, rules 1.74 item 6043)",
+  "perks:talks_broke_down:tiers.II.text:3": "the AP cooldown's 3 turns: perks.json rules.ap_cooldown.turns (perks/cooldown.ts AP_COOLDOWN_TURNS), the file's rule block, not this item's field (Parley, rules 1.74 item 6043)"
  },
  "baseline": {
   "calls:call.order:steps.1.text:1": 1,
@@ -462,14 +463,8 @@
   "perks:sweet_talker:tiers.I.text:2": 2,
   "perks:sweet_talker:tiers.I.text:3": 2,
   "perks:sweet_talker:tiers.II.text:3": 1,
-  "perks:talks_broke_down:text:1": 2,
-  "perks:talks_broke_down:text:2": 3,
-  "perks:talks_broke_down:text:3": 2,
-  "perks:talks_broke_down:tiers.I.text:2": 2,
-  "perks:talks_broke_down:tiers.I.text:3": 1,
+  "perks:talks_broke_down:text:1": 1,
   "perks:talks_broke_down:tiers.II.text:1": 1,
-  "perks:talks_broke_down:tiers.II.text:2": 1,
-  "perks:talks_broke_down:tiers.II.text:3": 1,
   "perks:the_name_they_whisper:text:2": 1,
   "perks:the_voice:text:0": 1,
   "perks:the_voice:text:8": 1,

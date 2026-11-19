@@ -384,13 +384,15 @@ function salvageTarget(h: Holder, way: string): Unit | null {
   if (way === 'reclaim') return [...figmentsOf(cb, u)].reverse().find((t) => near.includes(t)) || null;
   return near.filter((t) => !t.dead && t.side === u.side && repairable(t) && (t.hp < t.maxHp || t.downed)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0] || null;
 }
+/** Salvage's ways: its data's pick (rules 1.74 item 6045: the wreck alone). */
+const SALVAGE_WAYS: string[] = ((rawItem('class:trickster.salvage')?.effects || [])[0]?.pick as string[]) || ['wreck'];
 register({
   id: 'trickster.salvage', claims: 'all',
   actions: [{
-    id: 'salvage', label: 'Salvage', scope: ['combat'], target: 'none', ap: 'data', pick: ['wreck', 'reclaim', 'repair'], pickLabel: 'What to salvage',
+    id: 'salvage', label: 'Salvage', scope: ['combat'], target: 'none', ap: 'data', pick: SALVAGE_WAYS, // rules 1.74 item 6045: the ways are the data's (the wreck alone) pickLabel: 'What to salvage',
     text: 'Next to you: charge from a wreck, one of your Figments let go with all its charge back, or a repair.',
     preview: (h, args) => {
-      const way = args.choice || 'wreck', t = salvageTarget(h, way);
+      const way = args.choice || 'wreck'; if (!SALVAGE_WAYS.includes(way)) return { ok: false, why: 'Salvage takes a wreck.' }; const t = salvageTarget(h, way);
       if (!t) return { ok: false, why: way === 'wreck' ? 'No wreck next to you (or salvaged already).' : way === 'reclaim' ? 'No Figment of yours next to you.' : 'Nothing of your side next to you needs a repair.' };
       if (way === 'wreck' && !h.u!.mg?.vcarry) return { ok: false, why: 'No Visualizer to charge.' };
       return { targets: [t.id], lines: ['Salvage: ' + way + ' (' + t.name + ').'] };

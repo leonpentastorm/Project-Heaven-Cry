@@ -33,7 +33,7 @@ describe('figments: the data', () => {
     expect(ladderAt(1)).toMatchObject({ held: 1, designs: 0, traits: 0 });
     expect(ladderAt(3)).toMatchObject({ designs: 2, traits: 1 });
     expect(ladderAt(5)).toMatchObject({ held: 2, designs: 3 });
-    expect(ladderAt(7)).toMatchObject({ held: 3, traits: 2 }); expect(ladderAt(9).noSnap).toBe(true); expect(ladderAt(10).designs).toBe(5);
+    expect(ladderAt(7)).toMatchObject({ held: 3, traits: 2 }); expect(ladderAt(9).noSnap).toBe(false); expect(ladderAt(10).designs).toBe(5); // rules 1.74 item 6040: No Snap at 9 is gone
     expect(F.forms.length).toBe(10);
     const known = (p: number) => formsKnown({ skills: { visualization: p } } as any);
     expect([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(known)).toEqual([0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10]);

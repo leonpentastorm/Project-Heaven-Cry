@@ -4859,6 +4859,7 @@
         "values": [
           "verse",
           "owned",
+          "masterwork",
           "bond"
         ]
       },
@@ -4868,6 +4869,7 @@
         "values": [
           "verse",
           "owned",
+          "masterwork",
           "bond"
         ]
       },
@@ -4917,6 +4919,7 @@
         "values": [
           "verse",
           "owned",
+          "masterwork",
           "bond"
         ]
       },
@@ -4930,6 +4933,7 @@
         "values": [
           "verse",
           "owned",
+          "masterwork",
           "bond"
         ]
       },
@@ -4939,6 +4943,7 @@
         "values": [
           "verse",
           "owned",
+          "masterwork",
           "bond"
         ]
       },
@@ -4948,6 +4953,7 @@
         "values": [
           "verse",
           "owned",
+          "masterwork",
           "bond"
         ]
       },
@@ -5170,7 +5176,11 @@
           "fork.soul.ride_the_edge",
           "fork.soul.slow_burn",
           "fork.soul.blood_price",
-          "fork.soul.clean_break"
+          "fork.soul.clean_break",
+          "fork.figment.hard_light",
+          "fork.figment.sharp_light",
+          "fork.figment.many_hands",
+          "fork.figment.masterwork"
         ]
       },
       "no_door_pick": {
@@ -5208,7 +5218,11 @@
           "fork.soul.ride_the_edge",
           "fork.soul.slow_burn",
           "fork.soul.blood_price",
-          "fork.soul.clean_break"
+          "fork.soul.clean_break",
+          "fork.figment.hard_light",
+          "fork.figment.sharp_light",
+          "fork.figment.many_hands",
+          "fork.figment.masterwork"
         ]
       },
       "answer_on": {

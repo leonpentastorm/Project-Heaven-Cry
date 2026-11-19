@@ -1449,6 +1449,315 @@
       "adjudication": "engine",
       "provisional": true,
       "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+    },
+    {
+      "id": "fork.figment.hard_light",
+      "name": "Hard Light",
+      "kind": "verb",
+      "door": "visualization",
+      "step": 4,
+      "icon": "fork.figment.hard_light",
+      "requires": [
+        {
+          "door_pick": "fork.figment.hard_light"
+        }
+      ],
+      "text": "Your Figments take {=effects.0.value|less}% less damage · one destroyed gives you +{=effects.1.value} AP next turn (once a round)",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "if": {
+            "target": "ally",
+            "target_kind": [
+              "figment"
+            ],
+            "target_tied": {
+              "kind": "owned",
+              "as": "to"
+            }
+          },
+          "value": 0.7,
+          "label": "Hard Light"
+        },
+        {
+          "op": "grant_ap",
+          "when": "downed",
+          "if": {
+            "target": "ally",
+            "target_kind": [
+              "figment"
+            ],
+            "target_tied": {
+              "kind": "owned",
+              "as": "to"
+            }
+          },
+          "value": 1,
+          "bank": true,
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "key": "hard"
+          },
+          "label": "Hard Light",
+          "say": "{self}'s light holds its shape as it breaks: +1 AP next turn (Hard Light)."
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6041 (ruling layer section 5b: forms are learned, forks upgrade every form you know)"
+    },
+    {
+      "id": "fork.figment.sharp_light",
+      "name": "Sharp Light",
+      "kind": "verb",
+      "door": "visualization",
+      "step": 4,
+      "icon": "fork.figment.sharp_light",
+      "requires": [
+        {
+          "door_pick": "fork.figment.sharp_light"
+        }
+      ],
+      "text": "Your Figments' strikes deal +{=effects.0.value|more}% damage · after one drops a foe, your next Figment order costs {=effects.2.set} AP",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "ally",
+            "actor_kind": [
+              "figment"
+            ],
+            "actor_tied": {
+              "kind": "owned",
+              "as": "to"
+            },
+            "hostile": true
+          },
+          "value": 1.2,
+          "label": "Sharp Light"
+        },
+        {
+          "op": "mark",
+          "when": "downed",
+          "if": {
+            "actor": "ally",
+            "actor_kind": [
+              "figment"
+            ],
+            "actor_tied": {
+              "kind": "owned",
+              "as": "to"
+            },
+            "target": "foe"
+          },
+          "flag": "encore",
+          "label": "Sharp Light"
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "figment_strike",
+              "figment_pounce",
+              "figment_cut",
+              "figment_stare",
+              "figment_order"
+            ],
+            "flag": "encore"
+          },
+          "set": 0,
+          "label": "Sharp Light"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "figment_strike",
+              "figment_pounce",
+              "figment_cut",
+              "figment_stare",
+              "figment_order"
+            ],
+            "flag": "encore"
+          },
+          "flag": "encore",
+          "clear": true,
+          "priority": 120
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6041 (ruling layer section 5b: forms are learned, forks upgrade every form you know)"
+    },
+    {
+      "id": "fork.figment.many_hands",
+      "name": "Many Hands",
+      "kind": "verb",
+      "door": "visualization",
+      "step": 8,
+      "icon": "fork.figment.many_hands",
+      "requires": [
+        {
+          "door_pick": "fork.figment.many_hands"
+        }
+      ],
+      "text": "+{=effects.0.value} Figment held · Picture costs {=effects.1.value|abs} charge less (never under {=effects.1.min})",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ties_max:owned",
+          "value": 1
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "verb:picture#picture"
+            ]
+          },
+          "res": "vcharge",
+          "value": -1,
+          "min": 1,
+          "label": "Many Hands"
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6041 (ruling layer section 5b: forms are learned, forks upgrade every form you know)"
+    },
+    {
+      "id": "fork.figment.masterwork",
+      "name": "Masterwork",
+      "kind": "verb",
+      "door": "visualization",
+      "step": 8,
+      "icon": "fork.figment.masterwork",
+      "requires": [
+        {
+          "door_pick": "fork.figment.masterwork"
+        }
+      ],
+      "text": "{=effects.0.ap} AP, once a turn: name a Figment you hold your Masterwork · it has +{=effects.1.value} to hit and takes {=effects.2.value|less}% less damage · once a round one order to it costs {=effects.3.set} AP",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "masterwork",
+          "ap": 0,
+          "uses": "per_turn",
+          "reach": {
+            "tiles": 99,
+            "side": "ally",
+            "if": {
+              "target_kind": [
+                "figment"
+              ],
+              "target_tied": {
+                "kind": "owned",
+                "as": "to"
+              }
+            },
+            "why": {
+              "target_kind": "Only a Figment of yours.",
+              "target_tied": "Only a Figment of yours."
+            }
+          },
+          "effects": [
+            {
+              "op": "tie",
+              "kind": "masterwork",
+              "clear": "all"
+            },
+            {
+              "op": "tie",
+              "kind": "masterwork",
+              "target": "target",
+              "say": "{self} names {target} the Masterwork."
+            }
+          ]
+        },
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "if": {
+            "actor": "ally",
+            "actor_tied": {
+              "kind": "masterwork",
+              "as": "to"
+            }
+          },
+          "value": 2,
+          "label": "Masterwork"
+        },
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "if": {
+            "target": "ally",
+            "target_tied": {
+              "kind": "masterwork",
+              "as": "to"
+            }
+          },
+          "value": 0.75,
+          "label": "Masterwork"
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "figment_strike",
+              "figment_pounce",
+              "figment_cut",
+              "figment_stare",
+              "figment_order"
+            ],
+            "target_tied": {
+              "kind": "masterwork",
+              "as": "to"
+            }
+          },
+          "set": 0,
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "key": "master",
+            "peek": true
+          },
+          "label": "Masterwork"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "figment_strike",
+              "figment_pounce",
+              "figment_cut",
+              "figment_stare",
+              "figment_order"
+            ],
+            "target_tied": {
+              "kind": "masterwork",
+              "as": "to"
+            }
+          },
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "key": "master"
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6041 (ruling layer section 5b: forms are learned, forks upgrade every form you know)"
     }
   ]
 }

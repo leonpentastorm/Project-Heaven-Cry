@@ -122,7 +122,7 @@ describe('Got You in My Sight on the area map', () => {
 
 describe('Talks Broke Down: the Narrator says whether the fight came from the talk', () => {
   const talkThenFight = (fromTalk: boolean | undefined, rounds = 0) => {
-    const s = storyWith([{ perks: { talks_broke_down: 'I' } }]); const c = s.chars[0];
+    const s = storyWith([{ perks: { talks_broke_down: 'II' } }]); const c = s.chars[0]; // rules 1.74 item 6043: the fight half is Parley's tier II
     s.act({ type: 'narrator/turn', turn: { narration: 'Talk.', checks: [{ charId: c.id, skills: ['charisma'], tn: 8, stakes: 'Calm them', tags: ['dialogue'] }] } } as any);
     s.g.rng.state = rngFor(19).state; const ck = s.g.checks.find((k) => !k.done)!; s.act({ type: 'check/roll', checkId: ck.id }); s.act({ type: 'check/accept', checkId: ck.id } as any);
     for (let i = 0; i < rounds; i++) s.g.story.round++;

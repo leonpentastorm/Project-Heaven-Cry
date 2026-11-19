@@ -10,6 +10,7 @@ import {
 } from '../src';
 import { makeObject } from '../src/objects';
 import { endCond } from '../src/magic';
+import { classMoveKeys } from '../src/effects/collect';
 import { perkActionsFor } from '../src/effects/actions';
 import actionsJ from '../../../data/actions.json';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
@@ -195,23 +196,10 @@ describe('Infiltrator', () => {
     const op = run(cls('infiltrator', 8, { level: 12 })), other = run({ attrs: { perception: 8 } });
     expect(op.first).toBe(0); expect(op.second).toBe(other.first); expect(other.first).toBeGreaterThan(0);
   });
-  it('Field Fix (now the Rigger\'s, rules 1.34): clear a squadmate\'s jam, restore their weapon, repair a machine; nothing to fix is refused', () => {
-    const f = fightWith([cls('trickster', 5), { traits: ['factory_made'] }], [{ at: 'P11' }]);
-    const [i, a] = f.pcs; at(f, i, '4,2'); at(f, a, '5,2');
-    let u = f.turn(i); f.unit(a.id).jammed = true;
-    perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id, choice: 'clear_jam' });
-    expect(f.unit(a.id).jammed).toBe(false); expect(f.unit(u.id).ap).toBe(4);
-    const al = f.unit(a.id); al.maxDur = al.maxDur || 100; al.dur = 10;
-    perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id, choice: 'restore_durability' });
-    expect(f.unit(a.id).dur).toBeGreaterThan(10);
-    f.cb.round++; u = f.turn(u); f.unit(a.id).hp = 30;
-    perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id, choice: 'repair' });
-    expect(f.unit(a.id).hp).toBeGreaterThan(30);
-    f.unit(a.id).hp = f.unit(a.id).maxHp; f.unit(a.id).dur = f.unit(a.id).maxDur;
-    expect(() => perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id })).toThrow(/Nothing to fix/);
+  it('Field Fix left the Rigger for the move pool (rules 1.74 item 6045: Quick Sketch takes its place), its key kept and shelved', () => {
+    expect(classMoveKeys({ perks: [], traits: [], cls: 'trickster', rank: 3 } as any).map((x) => x.key)).not.toContain('class:infiltrator.field_fix');
+    expect(itemInfo('class:infiltrator.field_fix')).toBeTruthy();
   });
-  // Rules 1.74 item 6011: Sabotage is the Operative's machine work: Pick, Disable and Rig need the class at rank II (Hijack
-  // at rank III), and Disable and Rig cost it no Shadow. The old Sabotage actions (stun, break, a rig with a Pin) are gone.
   it('Sabotage: Pick, Disable and Rig belong to the Operative (rank II), Hijack at rank III; Ingenuity alone opens none', () => {
     const held = (spec: CharSpec) => { const f = fightWith([spec], [{}]); return withGame(f.g, () => perkActionsFor({ u: f.unit(f.pc.id), cb: f.cb, g: f.g }, 'combat')).map((e: any) => e.itemId); };
     const op2 = held(cls('infiltrator', 5, { level: 6, skills: { ingenuity: 5 } })), op3 = held(cls('infiltrator', 8, { level: 12, skills: { ingenuity: 5 } })), door9 = held({ skills: { ingenuity: 9 }, attrs: { perception: 9 } });

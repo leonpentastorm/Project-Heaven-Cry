@@ -672,7 +672,7 @@ _OWNED_TS = (pathlib.Path(__file__).resolve().parent.parent / "packages/engine/s
 _OWNER_USES_M = re.search(r"const OWNER_USES\b[^\n]*\{\n(.*?)\n\};", _OWNED_TS, re.S)
 _OWNER_USE_TYPES = tuple(re.findall(r"^\s*'([a-z]+/[a-z_]+)'\s*:", _OWNER_USES_M.group(1), re.M)) if _OWNER_USES_M else ()
 if not _OWNER_USE_TYPES: errors.append("tools/validate.py: owned.ts OWNER_USES not found (the item uses an owned unit runs)")
-_DV_KEYS = {"id", "name", "icon", "site", "text", "provisional", "reach", "effects", "attack", "on_hit", "dash", "unmake", "refund_share", "use", "res", "amounts"}
+_DV_KEYS = {"id", "name", "icon", "site", "text", "provisional", "reach", "effects", "attack", "on_hit", "dash", "unmake", "refund_share", "use", "res", "amounts", "requires"}  # requires: rules 1.74 item 6040 (read by figments.ts on the owner's sheet)
 _DV_REACH = {"tiles", "side", "eyes", "tile", "beside"}
 _DVIDS = set()
 for _v in _FJ.get("verbs") or []:

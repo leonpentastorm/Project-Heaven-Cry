@@ -99,7 +99,7 @@
           "text": "An ally gains {=steps.0.numbers.ap} AP: this turn if they have not acted yet this round, on their next turn if they have.",
           "short": "+{=.numbers.ap} AP to an ally",
           "numbers": {
-            "ap": 1,
+            "ap": 2,
             "pressure": 0
           }
         },
@@ -108,7 +108,7 @@
           "text": "An ally gains {=steps.1.numbers.ap} AP and loses {=steps.1.numbers.pressure} Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
           "short": "+{=.numbers.ap} AP and {=.numbers.pressure} Pressure less",
           "numbers": {
-            "ap": 1,
+            "ap": 2,
             "pressure": 1
           }
         },
@@ -117,13 +117,14 @@
           "text": "An ally gains {=steps.2.numbers.ap} AP and loses {=steps.2.numbers.pressure} Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
           "short": "+{=.numbers.ap} AP and {=.numbers.pressure} Pressure less",
           "numbers": {
-            "ap": 2,
+            "ap": 3,
             "pressure": 1
           }
         }
       ],
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6043 (re-stepped stronger: ruling layer section 2 item 4)"
     },
     {
       "id": "call.brief",

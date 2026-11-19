@@ -75,7 +75,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `actor_lacks` | ids | actor has none of these conditions | none yet |
 | `actor_tier` | words | actor's tier is one of these (vermin, minion, soldier, elite, boss) | none yet |
 | `actor_not_tier` | words | actor's tier is none of these | none yet |
-| `actor_kind` | words | actor's kind is one of these (human, robot, crawler, ork…), or an owned unit's record kind (figment, machine: owned.ts ownedRecord) | `mirage` (perks.json) |
+| `actor_kind` | words | actor's kind is one of these (human, robot, crawler, ork…), or an owned unit's record kind (figment, machine: owned.ts ownedRecord) | `fork.figment.sharp_light` (forks.json) |
 | `actor_not_kind` | words | actor's kind is none of these (as actor_kind) | none yet |
 | `actor_within` | number | actor stands within this many tiles of the holder | `nothing_left_to_fear` (perks.json) |
 | `actor_sight` | words | actor's sight to the other side: seen, unseen, in_view, out_of_view (tactics.ts sightOf; any of the words named) | none yet |
@@ -87,7 +87,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `target_lacks` | ids | target has none of these conditions | `launch` (classes.json) |
 | `target_tier` | words | target's tier is one of these (vermin, minion, soldier, elite, boss) | `breaching_strike` (perks.json) |
 | `target_not_tier` | words | target's tier is none of these | `charge_carries` (classes.json) |
-| `target_kind` | words | target's kind is one of these (human, robot, crawler, ork…), or an owned unit's record kind (figment, machine: owned.ts ownedRecord) | none yet |
+| `target_kind` | words | target's kind is one of these (human, robot, crawler, ork…), or an owned unit's record kind (figment, machine: owned.ts ownedRecord) | `fork.figment.hard_light` (forks.json) |
 | `target_not_kind` | words | target's kind is none of these (as target_kind) | none yet |
 | `target_within` | number | target stands within this many tiles of the holder | `ward` (figments.json) |
 | `target_sight` | words | target's sight to the other side: seen, unseen, in_view, out_of_view (tactics.ts sightOf; any of the words named) | `take_the_weight` (classes.json) |
@@ -121,7 +121,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `by_cover` | words | the move started (from) and / or ended (to) next to standing cover, or (here) the holder stands next to it now: every word named must hold | `shadow_step` (perks.json) |
 | `self_in_zone` | zone | self stands in a zone of this kind (a kind, or {kind, owner: self, side or any}) | none yet |
 | `target_in_zone` | zone | target stands in a zone of this kind (a kind, or {kind, owner: self, side or any}) | `sanctuary` (classes.json) |
-| `actor_tied` | tie | actor is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it) | `mirage` (perks.json) |
+| `actor_tied` | tie | actor is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it) | `fork.figment.sharp_light` (forks.json) |
 | `target_tied` | tie | target is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit's end of it) | `take_the_weight` (classes.json) |
 | `self_holds` | hold | the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; and / or (rules 1.56, P15) {hands: {props: [..], only: true (every hand empty or holding a thing with all of them; a focus never) or false (one hand holds one)}, body: {armour_at_most: an armour class name (none, light, medium…) or number}}; every part named must hold; a unit with no character holds nothing; holds also reads door: any (any focus), which only recipes use: it is not a value here | `ledger` (classes.json) |
 | `self_lacks_gear` | hold | the holder does not have it (as self_holds) | none yet |
@@ -148,7 +148,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `not_patron` | words | the holder is not Faithful to any of these patrons (an Atheist is none of them) | `smite` (classes.json) |
 | `answered` | bool | a prayer of the holder's is (or is not) answered now (faith.ts prayerAnswered: the prayer door open, Faith and not Silenced; the Faithful always, an Atheist rolls the Whisper's TN; a preview rolls nothing). Put it last in `if`: it rolls | `smite` (classes.json) |
 | `door_pick` | words | the holder picked one of these fork options (data/forks.json ids, door/pick: rules 1.60, N2) | `durability` (skills.json) |
-| `no_door_pick` | words | the holder picked none of these fork options (as door_pick) | `durability` (skills.json) |
+| `no_door_pick` | words | the holder picked none of these fork options (as door_pick) | `jury_rig` (perks.json) |
 | `answer_on` | string | the holder keeps this item Answer switched on: the character's Answer list (phys.answers, set by phys/answers) names it, or it keeps none (every Answer on). Share a Hit (rules 1.33) | `fork.guard.cover_them` (forks.json) |
 
 ### Ops (29)
@@ -319,10 +319,10 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 
 | hook | what for | payload fields | fired at | heard at (first) | item-op trigger |
 | --- | --- | --- | --- | --- | --- |
-| `combat_start` | the fight begins: items set up their state, initiative order is known | `order` | combat.ts:1715 | classes/i.ts:560 (+44) | `combat_start` |
+| `combat_start` | the fight begins: items set up their state, initiative order is known | `order` | combat.ts:1715 | classes/i.ts:560 (+43) | `combat_start` |
 | `round_start` | a new round begins (after the last unit of the round acted) | `round` | combat.ts:1871 | calls/rules.ts:109 (+14) | `round_start` |
 | `turn_start_pre` | a unit's turn is about to begin: its AP are being counted (grants and penalties) | `u`, `grants`, `penalties` | combat.ts:1736 | calls/rules.ts:93 (+30) | `turn_ap` |
-| `turn_start` | a unit's turn has begun | `u` | combat.ts:1782 | classes/i.ts:254 (+55) | `turn_start` |
+| `turn_start` | a unit's turn has begun | `u` | combat.ts:1782 | classes/i.ts:254 (+54) | `turn_start` |
 | `turn_end` | a unit's turn ends, before the turn passes | `u` | combat.ts:1859 | calls/rules.ts:101 (+32) | `turn_end` |
 | `move_cost` | a walk is priced before it is paid (free steps, a cheaper or dearer move, no opportunity strikes) | `u`, `from`, `to`, `route`, `tiles`, `how`, `ap`, `skipOA`, `skipOW`, `free`, `mods`, `preview` | combat.ts:1976 | classes/i.ts:308 (+16) |  |
 | `move_step` | a walking unit enters a tile (a step may be stopped; held shots and traps read it) | `u`, `from`, `at`, `i`, `route`, `how`, `stop`, `skipOW`, `noWatch`, `flush`, `forced`, `technique` | combat.ts:2003 (+2) | classes/j.ts:237 (+11) |  |
@@ -349,11 +349,11 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `reaction_window` | a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it | `reactor`, `mover`, `kind`, `id`, `spend`, `cancel`, `at` | tactics.ts:162 | classes/i.ts:255 (+5) |  |
 | `reaction` | a reaction is being made (tactics.ts react(), rules 1.28): {u, kind (attack, move, protect), event, payer}; it fires before the reaction resolves | `u`, `kind`, `event`, `payer` | tactics.ts:148 | none | `reaction` |
 | `enemy_action_start` | an enemy is about to act (an item may open a window or make it skip) | `u`, `step`, `skip` | combat.ts:2894 | calls/rules.ts:81 (+5) |  |
-| `sight_change` | after a move, the units each side stopped or started seeing (only computed while someone listens) | `side`, `lost`, `gained` | combat.ts:2055 | perks/c.ts:367 |  |
+| `sight_change` | after a move, the units each side stopped or started seeing (only computed while someone listens) | `side`, `lost`, `gained` | combat.ts:2055 | perks/c.ts:324 |  |
 | `sees` | a side's sight of a unit is decided: items may make it seen or unseen | `side`, `t`, `by`, `seen`, `sensed` | combat.ts:1120 | calls/rules.ts:85 (+4) |  |
 | `object_destroyed` | an object on the grid was destroyed | `obj`, `by` | classes/k.ts:927 (+1) | deeds.ts:179 (+3) |  |
 | `reload` | a reload is made (its AP, the hand, tactical or speed) | `u`, `ap`, `special`, `quiver`, `both`, `tactical`, `hand` | classes/i.ts:202 (+3) | classes/i.ts:222 (+3) | `reload` |
-| `jam_clear` | a jam is being cleared (its AP, whether the heat is kept) | `u`, `ap`, `keepHeat`, `hand` | combat.ts:2805 (+2) | perks/c.ts:365 |  |
+| `jam_clear` | a jam is being cleared (its AP, whether the heat is kept) | `u`, `ap`, `keepHeat`, `hand` | combat.ts:2805 (+2) | perks/c.ts:322 |  |
 | `swap` | a weapon swap is priced (declared; the item ops trigger `swap` listens here) | `u`, `c`, `from`, `mod`, `ap` | game.ts:2060 | classes/k.ts:1162 (+1) | `swap` |
 | `stood_up` | a prone unit stood up | `u` | combat.ts:2340 | none |  |
 | `glyph_cost` | a Sigil glyph is priced: its AP, charge and Flux; also every preview | `u`, `word`, `ap`, `charge`, `flux`, `preview`, `tile`, `fail` | sigil.ts:75 | classes/i.ts:629 (+11) | `glyph_cost` |
@@ -416,7 +416,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `xp_grant` | XP is about to be granted (the amount may change) | `c`, `source`, `amount` | game.ts:1433 | perks/e.ts:770 (+1) |  |
 | `notice` | an NPC on the area map may notice a character (its range) | `c`, `npc`, `range`, `dark`, `ignore` | game.ts:2745 | perks/a.ts:312 (+5) |  |
 | `stay_hidden` | a character tries to stay hidden from an NPC: modifier and TN | `c`, `npc`, `mod`, `tn` | game.ts:2756 | perks/a.ts:313 (+5) |  |
-| `world_move_cost` | a move on the area map is priced (sneaking costs extra) | `c`, `u`, `tiles`, `how`, `extra`, `preview` | actions.ts:218 (+1) | perks/c.ts:487 |  |
+| `world_move_cost` | a move on the area map is priced (sneaking costs extra) | `c`, `u`, `tiles`, `how`, `extra`, `preview` | actions.ts:218 (+1) | perks/c.ts:444 |  |
 | `karma_award` | Karma is about to be awarded (its multiplier) | `c`, `amount`, `unlawful`, `mult`, `why` | game.ts:1296 | perks/f.ts:720 (+3) |  |
 | `action_refuse` | an item may refuse an action before it is done (a shove, an Overwatch) | `u`, `a`, `fail` | game.ts:2937 | perks/e.ts:911 (+1) |  |
 | `evoke_reach` | how far from its Line a caster may Evoke | `u`, `pattern`, `reach` | sigil.ts:590 (+1) | classes/k.ts:793 |  |
@@ -477,7 +477,7 @@ amount = (base + flat) x Stat x Level x own multipliers x (1 + target bonuses, c
 
 Level tables: `deal` (20 levels), `scale` (20 levels), `mend` (20 levels), `reference_hp` (20 levels). Systems with a dial (`output.systems`): `sigil_damage`, `sigil_boon`, `outburst_damage`, `outburst_heal`, `outburst_shield`, `prayer_damage`, `prayer_mend`, `kit`, `magic_heal`. Rule-owned amount blocks (`output.amounts`, key `rule:<name>`): `flux_overload`, `school_rider`.
 
-An `amounts` block (on any item; `data/CONVENTIONS.md` "Amount blocks") uses the fields: `kind`, `base`, `per`, `profile`, `tech`, `provisional`, `type`, `text`, `armour`, `heal_kind`, `min_pct`, `door`, `element`, `mults`.
+An `amounts` block (on any item; `data/CONVENTIONS.md` "Amount blocks") uses the fields: `kind`, `base`, `per`, `profile`, `tech`, `provisional`, `type`, `armour`, `heal_kind`, `min_pct`, `door`, `element`, `text`, `mults`.
 
 ### Cost sites (42) and priced actions
 
@@ -1594,8 +1594,8 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `duck` | `unit`, `from`, `to`, `by`, `out`, `cover` | classes/rev3.ts:231 | 1 |
 | `evoke` | `unit`, `at`, `shape`, `tiles`, `area`, `src`, `impact`, `targets`, `words`, `element`, `stay`, `side`, `missiles`, `placed`, `fizzle`, `facing`, `by`, `targetAt`, `backlash`, `dir`, `fusion`, `fused`, `design`, `school` | classes/i.ts:768 | 9 |
 | `explode` | `at`, `radius`, `what`, `element`, `charges`, `shake`, `tiles` | classes/j.ts:519 | 7 |
-| `eye_storm` | `unit`, `at` | classes/rev3.ts:535 | 1 |
-| `eye_storm_spent` | `unit`, `at`, `riderStage` | classes/rev3.ts:542 | 1 |
+| `eye_storm` | `unit`, `at` | classes/rev3.ts:537 | 1 |
+| `eye_storm_spent` | `unit`, `at`, `riderStage` | classes/rev3.ts:544 | 1 |
 | `feed` | `unit`, `at`, `word`, `glyph`, `stage`, `mult` | magic.ts:1273 | 1 |
 | `felt` | `unit`, `char`, `feeling`, `name`, `family`, `why` | feelings.ts:68 | 1 |
 | `field` | `id`, `tiles`, `words`, `element`, `side`, `by`, `rounds` | sigil.ts:1194 | 1 |
@@ -1635,7 +1635,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `outburst` | `unit`, `at`, `design`, `school`, `hold`, `stage`, `form`, `tone`, `element`, `watch` | classes/k.ts:1494 | 2 |
 | `overload` | `unit`, `at` | classes/i.ts:101 | 2 |
 | `overwatch` | `unit`, `target`, `from`, `at`, `mode`, `id` | combat.ts:2085 | 2 |
-| `perk` | `unit`, `target`, `from`, `to`, `id` | perks/c.ts:307 | 3 |
+| `perk` | `unit`, `target`, `from`, `to`, `id` | perks/c.ts:264 | 3 |
 | `pickup` | `unit`, `at`, `items` | combat.ts:2675 | 1 |
 | `pile` | `at`, `id`, `count`, `why` | combat.ts:2476 | 2 |
 | `practice` | `unit`, `gain`, `total` | magic.ts:1703 | 1 |
@@ -1644,7 +1644,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `pump` | `unit`, `at`, `stage`, `mult`, `free`, `max`, `tone`, `manifest`, `overflow`, `form`, `mp`, `feeling`, `overdraw` | classes/k.ts:539 | 5 |
 | `release` | `unit`, `at`, `to`, `school`, `form`, `tone`, `element`, `stage`, `body`, `targets`, `area`, `wild`, `air`, `design`, `school2`, `option`, `mult`, `riderStage`, `reaction`, `resonance`, `felt`, `does` | classes/k.ts:1555 | 3 |
 | `reload` | `unit`, `at`, `weapon`, `cat`, `how`, `dur`, `left`, `ammo`, `cap`, `noDrop`, `rounds`, `tactical`, `hand`, `element` | classes/i.ts:203 | 7 |
-| `repair` | `unit`, `target`, `at`, `dur` | classes/rev3.ts:400 | 7 |
+| `repair` | `unit`, `target`, `at`, `dur` | classes/rev3.ts:402 | 6 |
 | `residue` | `unit`, `tiles`, `feeling`, `family`, `kind`, `side`, `rounds` | magic.ts:1688 | 1 |
 | `residue_tick` | `unit`, `at`, `feeling`, `kind`, `when` | magic.ts:1731 | 1 |
 | `resonance` | `unit`, `at`, `with`, `bonus`, `perk` | magic.ts:1540 | 2 |

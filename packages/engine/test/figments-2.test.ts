@@ -87,8 +87,11 @@ describe('the orders on today\'s forms and the caster\'s orders (slice 2)', () =
     f.order(u, e, 'figment_redraw', { tile: (3 + n) + ',4' }); u = f.unit(u.id);
     expect(f.unit(e.id).pos).toBe((3 + n) + ',4'); expect(u.mg!.vcharge).toBe(ch - VERB.figment_redraw.res.vcharge); expect(6 - u.ap).toBe(ORDER);
   });
-  it('Cash in: all its made charge back (Let go: half); the descriptor path offers it and sends it', () => {
-    const f = figFight([{ skills: { visualization: 1 }, weapon: 'service_pistol', forms: [] }]); let u = f.turn(f.pc);
+  it('Cash in: all its made charge back (Let go: half); the descriptor path offers it and sends it (from Visualization 2: rules 1.74 item 6040)', () => {
+    const one = figFight([{ skills: { visualization: 1 }, weapon: 'service_pistol', forms: [] }]); let w = one.turn(one.pc);
+    one.picture(w, 'double', '3,4'); w = one.unit(w.id);
+    expect(actionsFor(one.g, w.id).find((x) => x.id === 'ow:' + one.figments(w)[0].id + ':figment_cash_in')?.available).not.toBe(true);
+    const f = figFight([{ skills: { visualization: 2 }, weapon: 'service_pistol', forms: [] }]); let u = f.turn(f.pc);
     f.picture(u, 'double', '3,4'); u = f.unit(u.id); const ch = u.mg!.vcharge!, d = f.figments(u)[0];
     const row = actionsFor(f.g, u.id).find((x) => x.id === 'ow:' + d.id + ':figment_cash_in')!;
     expect(row.available).toBe(true); expect(row.cost.ap).toBe(ORDER); expect(row.group).toBe('figments');

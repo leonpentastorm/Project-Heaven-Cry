@@ -316,8 +316,15 @@ lands. All are Wick icons in the trait/perk style (white flat ink, 1024 x 1024, 
 | MD8 | **Opening Argument** (Eloquence perk, `opening_argument`) | No icon (fallback) | Wick at a lectern facing a line of armed foes before the first shot | Perk icon | `art/icons/perks/` |
 | MD9 | **Thinking Aloud** (Eloquence perk, `thinking_aloud`) | No icon (fallback) | Wick calling to an ally while his gloved hand finishes a glyph | Perk icon | `art/icons/perks/` |
 | MD10 | **Backdraft** (Sigilist rank II, `class:mage.backdraft`) | No icon (fallback) | An Evoker bursting in Wick's hand, the blast throwing back the foes beside him | Class move icon, the 5 section's style | `art/icons/classes/` |
-
-Retired with their verbs (rules 1.74 item 6001; the catalog keeps the files, their `data_ids` emptied): `shadow-foul`,
+| MD11 | **Tuned** (Improvisation perk, `tuned`) | No icon (fallback) | Wick's hand on a sidearm's slide, a small spanner tucked behind the ear | Perk icon | `art/icons/perks/` |
+| MD12 | **Smooth** (Charisma perk, `smooth`) | No icon (fallback) | Wick mid-lie, one eyebrow up, a listener's frown softening | Perk icon | `art/icons/perks/` |
+| MD13 | **Showman** (Charisma perk, `showman`) | No icon (fallback) | Wick with a flourish of the Visualizer glove, a Figment taking a bow | Perk icon | `art/icons/perks/` |
+| MD14 | **Hard Light** (Visualization fork at 4, `fork.figment.hard_light`) | No placeholder | A Figment's edge solid as glass, a blow cracking on it | The 5c fork style | `art/icons/forks/` (catalog `fork_icons`, id `fork-figment-hard_light`) |
+| MD15 | **Sharp Light** (Visualization fork at 4, `fork.figment.sharp_light`) | No placeholder | A Figment's claws drawn in bright cutting lines | The 5c fork style | `art/icons/forks/` (`fork-figment-sharp_light`) |
+| MD16 | **Many Hands** (Visualization fork at 8, `fork.figment.many_hands`) | No placeholder | Wick with four pictured figures around him, the glove's light thin | The 5c fork style | `art/icons/forks/` (`fork-figment-many_hands`) |
+| MD17 | **Masterwork** (Visualization fork at 8, `fork.figment.masterwork`) | No placeholder | One Figment drawn finer than the rest, a signature at its foot | The 5c fork style | `art/icons/forks/` (`fork-figment-masterwork`) |
+| MD18 | **Quick Sketch** (Rigger rank I, `class:trickster.quick_sketch`) | No icon (fallback) | Wick dashing a Figment out in three quick strokes | Class move icon, the 5 section's style | `art/icons/classes/` |
+Renamed: Talks Broke Down is shown as Parley (its icon stands). Retired with their verbs (rules 1.74 item 6001; the catalog keeps the files, their `data_ids` emptied): `shadow-foul`,
 `shadow-plant`, `shadow-vault`. Renamed perks keep their icons: Eyes in the Back is shown as Cold Spine, Detective's Eye
 as The Tell (Vigilance now). K5 Light Fingers, K6 Lend the Dark and K7 Lightkiller are built (rules 1.74 item 6003);
 Lightkiller's direction stands (Wick in a small ring of darkness). K25 to K28 (the Sigil forks) are built (rules 1.74

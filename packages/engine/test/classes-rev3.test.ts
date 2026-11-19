@@ -30,7 +30,7 @@ describe('the nine classes (data)', () => {
     const all = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves));
     expect(all.length).toBe(54);
     expect(all.filter((m: any) => m.new).length).toBe(27); // rules 1.74: + Backdraft; rules 1.60: + Read the Swing; the 20 new moves and Run and Gun (rules 1.30); rules 1.31: Ward and Smite in, Command out; less Field Fix (to the move pool, rules 1.32); rules 1.33: the Ledger and Take the Weight; rules 1.34: Salvage, Overclock, Scrap Turret in, Silver Tongue out
-    expect(all.filter((m: any) => m.ref && !ADVANCED[m.ref.split('.')[0]]).length).toBe(23); // 28 old base moves; rules 1.74: Overcharge out (Backdraft); rules 1.31: Will Shield out (Ward); rules 1.33: Stim Throw and Field Surgery out (everyone's); rules 1.34: Blind and Slow and Rewrite leave the Rigger, Field Fix is its ref
+    expect(all.filter((m: any) => m.ref && !ADVANCED[m.ref.split('.')[0]]).length).toBe(22); // 28 old base moves; rules 1.74: Overcharge out (Backdraft), Field Fix out (Quick Sketch); rules 1.31: Will Shield out (Ward); rules 1.33: Stim Throw and Field Surgery out (everyone's); rules 1.34: Blind and Slow and Rewrite leave the Rigger, Field Fix is its ref
     expect(all.filter((m: any) => m.ref && ADVANCED[m.ref.split('.')[0]]).length).toBe(5); // rules 1.60: Lingering Dread left the Breaker; was 6 old advanced moves (Called Shot left the Skirmisher, rules 1.30, and came to the Operative, rules 1.32)
   });
   it('a reused move keeps its old key: Bard\'s Triage is class:medic.triage; a new move is under its class', () => {
@@ -46,7 +46,7 @@ describe('the nine classes (data)', () => {
   it('every move in the catalogue carries origin, fantasy_tags, attributes and status; 11 + 58 are shelved', () => {
     const moves = Object.values(CLASS_MOVE_POOL);
     for (const m of moves) { expect(m.origin).toBeTruthy(); expect(m.fantasy_tags?.length).toBeGreaterThan(0); expect(m.attributes?.length).toBeGreaterThan(0); expect(['active', 'shelved']).toContain(m.status); }
-    expect(moves.filter((m) => !ADVANCED[m.origin] && m.status === 'shelved').length).toBe(15); // rules 1.74: + Overcharge (Backdraft took its place); + Field Fix (rules 1.32); rules 1.34: + Silver Tongue, Blind and Slow, Rewrite, − Field Fix (the Rigger's)
+    expect(moves.filter((m) => !ADVANCED[m.origin] && m.status === 'shelved').length).toBe(16); // rules 1.74: + Overcharge (Backdraft took its place), + Field Fix (Quick Sketch); + Field Fix (rules 1.32); rules 1.34: + Silver Tongue, Blind and Slow, Rewrite, − Field Fix (the Rigger's)
     expect(moves.filter((m) => ADVANCED[m.origin] && m.status === 'shelved').length).toBe(58); // rules 1.60: + Lingering Dread (the Shade's again); Called Shot is the Operative's (rules 1.32)
   });
 });

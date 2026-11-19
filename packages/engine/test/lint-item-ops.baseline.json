@@ -162,7 +162,6 @@
    "demolitionist",
    "grenadiers_arm",
    "gun_nut",
-   "jury_rig",
    "nothing_gets_past",
    "old_school",
    "one_shot",
@@ -283,9 +282,9 @@
    "composure.5",
    "dexterity.5",
    "iron_grip",
-   "proficiency.5",
    "raw_power.3",
-   "raw_power.5"
+   "raw_power.5",
+   "tuned"
   ],
   "perks/skills.ts": [
    "proven_formula",
@@ -302,9 +301,9 @@
   "classes/rev3.ts": 8,
   "perks/a.ts": 42,
   "perks/b.ts": 45,
-  "perks/c.ts": 53,
+  "perks/c.ts": 45,
   "perks/d.ts": 49,
-  "perks/e.ts": 48,
+  "perks/e.ts": 47,
   "perks/f.ts": 101,
   "perks/g.ts": 50,
   "perks/h.ts": 22,
