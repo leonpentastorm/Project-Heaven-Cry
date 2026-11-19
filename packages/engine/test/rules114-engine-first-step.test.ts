@@ -52,10 +52,11 @@ describe('the 19 relabels (item 1101)', () => {
     for (const id of A_PERKS) expect(perkOf(id).adjudication, id).toBe('engine');
     for (const id of A_TRAITS) expect(traitOf(id).adjudication, id).toBe('engine');
   });
-  it('the labels of the 180: 128 engine, 45 hybrid, 7 narrator (rules 1.14 left 119, 46, 15; the truth pass of 12 Nov 2026, spec item 1514, moved fifteen; rules 1.56 moved Long Dark and Many-Eyed Dream to engine)', () => {
+  it('the labels of the 184: 129 engine, 47 hybrid, 8 narrator (rules 1.73, the Strength step; rules 1.14 left 119, 46, 15; the truth pass of 12 Nov 2026, spec item 1514, moved fifteen; rules 1.56 moved Long Dark and Many-Eyed Dream to engine)', () => {
     const all = [...PERKS, ...TRAITS], n = (l: string) => all.filter((x) => x.adjudication === l).length;
-    expect(all.length).toBe(180);
-    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([128, 45, 7]);
+    // rules 1.73 (the Strength step): +Steady, Point Man, Marrow Talk (hybrid), +Unflinching, Stare Down (engine), -Iron Stomach (engine); Bone Talk hybrid -> narrator
+    expect(all.length).toBe(184);
+    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([129, 47, 8]);
   });
   it('no relabelled card still hands a rule to the Narrator: Talks Broke Down gives its timing rule, Verse of War has no audit', () => {
     for (const t of ['I', 'II']) { expect(perkOf('talks_broke_down').tiers[t].text).not.toMatch(/Narrator/); expect(perkOf('talks_broke_down').tiers[t].text).toMatch(/same story round .* or the round after/); }
@@ -168,13 +169,14 @@ describe('Verse of War: no audit (item 1111)', () => {
 describe('the AP perks\' cooldown: once every 3 of the holder\'s turns (items 1102 to 1105)', () => {
   it('the number is 3, in the data, flagged provisional', () => { expect(AP_COOLDOWN_TURNS).toBe(3); expect((perksJ as any).rules.ap_cooldown).toMatchObject({ turns: 3, provisional: true }); });
   it('every card it covers says so in plain words', () => {
-    for (const id of ['grim_reaper', 'got_you_in_my_sight', 'overruled', 'talks_broke_down', 'sweet_talker']) for (const t of ['I', 'II']) expect(perkOf(id).tiers[t].text, id + ' ' + t).toMatch(/Once every 3 turns\./);
+    for (const id of ['got_you_in_my_sight', 'overruled', 'talks_broke_down', 'sweet_talker']) for (const t of ['I', 'II']) expect(perkOf(id).tiers[t].text, id + ' ' + t).toMatch(/Once every 3 turns\./);
+    for (const t of ['I', 'II']) expect(perkOf('grim_reaper').tiers[t].text).not.toMatch(/\bAP\b|Once every 3 turns/); // rules 1.73 item 5817: its AP rows are cut
     expect(perkOf('war_footing').text).toMatch(/Once every 3 turns\./);
     expect(traitOf('forlorn_hope').text).toMatch(/Once every 3 turns\./); expect(traitOf('rabbits_foot').text).toMatch(/Vengeful: .*Once every 3 turns\./);
     for (const x of [...['grim_reaper', 'got_you_in_my_sight', 'overruled', 'talks_broke_down', 'sweet_talker', 'war_footing'].map(perkOf), traitOf('forlorn_hope'), traitOf('rabbits_foot')]) expect(x.text).not.toMatch(/provisional|engine|revision|cooldown/i);
   });
 
-  it('Grim Reaper: a kill on turns 1 and 4 gives +2 AP; kills on turns 2 and 3 give nothing; the log says when it is ready', () => {
+  it('Grim Reaper left the AP cooldown (rules 1.73 item 5817): kills on turns 1 to 4 give no AP and nothing cools down', () => {
     const f = fightWith([{ perks: { grim_reaper: 'II' } }], [{ at: 'F4' }, { at: 'F5' }, { at: 'F6' }, { at: 'F7' }]); open(f.cb);
     f.unit(f.pc.id).ps = {}; const gains: number[] = [];
     f.foes.forEach((v) => { v.sv = { body: 50, brain: 50, heart: 50 } as any; });
@@ -183,9 +185,7 @@ describe('the AP perks\' cooldown: once every 3 of the holder\'s turns (items 11
       f.act({ type: 'combat/attack', unitId: u.id, targetId: foe.id, mode: 'shot' } as any);
       expect(f.unit(foe.id).dead).toBe(true); gains.push(f.unit(u.id).ap - before);
     }
-    expect(gains[0] - gains[1]).toBe(2); expect(gains[2]).toBe(gains[1]); expect(gains[3]).toBe(gains[0]);
-    expect(logHas(f.cb, /Grim Reaper is cooling down\. Ready again in 2 turns\./)).toBe(true);
-    expect(logHas(f.cb, /Grim Reaper is cooling down\. Ready again next turn\./)).toBe(true);
+    expect(new Set(gains).size).toBe(1); expect(logHas(f.cb, /Grim Reaper is cooling down/)).toBe(false);
   });
 
   it('Got You in My Sight: +2 AP for an enemy that hides on turns 1 and 4 only; the sneak-attack penalty has its own 3 turns', () => {

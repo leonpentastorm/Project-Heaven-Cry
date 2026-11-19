@@ -79,23 +79,9 @@ register({
   brief: () => null,
 });
 
-// ---------- Iron Stomach (Guts β) ----------
-// I: Nausea and Fear last at most 1 round on you. II: immune (the generic immunity op cancels them before the save).
-// Story: II auto-passes checks the Narrator tags fear, nausea, gore or horror, and a story Fear or Nausea on you ends at
-// once; I: they end at the next scene or check.
-const FEARISH = ['fear', 'nausea', 'gore', 'horror', 'disgust'];
+// Iron Stomach (Guts) is folded into Steady II (rules 1.73 item 5811): its one round is data (cond_rounds); its story half
+// and its Tier II immunity are gone (the Mastered perk is the Fear immunity; item ops run in a fight).
 const storyShake = (h: Holder, ids: string[]) => { if (!h.c || !h.g) return; for (const id of storyConds(h.g, h.c)) if (ids.includes(id)) setStoryCond(h.g, h.c, id, 'scene', true); };
-register({
-  id: 'iron_stomach', // Tier I's one round is data (engine foundations 3); the story's checks stay here
-  on: {
-    check_build: (ctx, h) => { if (ctx.c === h.c && tierII(h)) storyShake(h, ['fear', 'nausea']); },
-    check_post: (ctx, h) => { if (ctx.c !== h.c || !tierII(h)) return; const tg: string[] = ctx.ck.tags || []; if (tg.some((x) => FEARISH.includes(x)) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('Iron Stomach'); } },
-    check_result: (ctx, h) => { if (ctx.c === h.c) storyShake(h, ['fear', 'nausea']); },
-    scene_change: (_ctx, h) => storyShake(h, ['fear', 'nausea']),
-    story_cond_apply: (ctx, h) => { if (ctx.c === h.c && tierII(h) && (ctx.id === 'fear' || ctx.id === 'nausea')) { ctx.cancel = true; ctx.why = 'Iron Stomach'; } },
-  },
-  brief: (h) => (tierII(h) ? 'never nauseated or frightened (tag fear checks: auto-pass)' : 'shakes off nausea and fear at once'),
-});
 
 // Grapple became Iron Grip and Breaching Strike became a passive (rules 1.13): both are in perks/skeleton.ts.
 

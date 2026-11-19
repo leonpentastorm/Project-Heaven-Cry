@@ -67,17 +67,13 @@ describe('Lab Coat II out of a fight', () => {
   });
 });
 
-describe('Iron Stomach and Nothing Left to Fear in the story', () => {
-  it('Iron Stomach I: a story Fear ends at the next check; II: never lands, and fear-tagged checks pass', () => {
-    const s = storyWith([{ perks: { iron_stomach: 'I' } }]); const c = s.chars[0];
+describe('Steady and Nothing Left to Fear in the story', () => {
+  it('Steady II (Iron Stomach folded in, rules 1.73 item 5811): its one round is a fight rule; a story Fear still lands and stays to the scene end', () => {
+    const s = storyWith([{ perks: { steady: 'II' } }]); const c = s.chars[0];
     s.act({ type: 'narrator/turn', turn: { narration: 'A horror.', conditions: [{ target: c.id, id: 'fear' }] } } as any);
     expect(s.g.characters[c.id].persistentConds!.some((p) => p.id === 'fear')).toBe(true);
     storyCheck(s, c.id, ['athletics'], [], 10);
-    expect(s.g.characters[c.id].persistentConds!.some((p) => p.id === 'fear')).toBe(false);
-    const t = storyWith([{ perks: { iron_stomach: 'II' } }]); const d = t.chars[0];
-    t.act({ type: 'narrator/turn', turn: { narration: 'A horror.', conditions: [{ target: d.id, id: 'nausea' }] } } as any);
-    expect((t.g.characters[d.id].persistentConds || []).some((p) => p.id === 'nausea')).toBe(false);
-    expect(storyCheck(t, d.id, ['composure'], ['gore'], 1).roll!.ok).toBe(true);
+    expect(s.g.characters[c.id].persistentConds!.some((p) => p.id === 'fear')).toBe(true);
   });
   it('Nothing Left to Fear: a story Fear never lands; fear- or horror-tagged checks pass; an untagged one still rolls', () => {
     const s = storyWith([{ perks: { nothing_left_to_fear: 'mastered' } }]); const c = s.chars[0];
@@ -116,7 +112,7 @@ describe('Into the Dark, Shadow Step and Charge! on the area map', () => {
 });
 
 describe('Grim Reaper on the area map', () => {
-  it('a kill from the area map (the opening blow of the fight) counts', () => {
+  it('a kill from the area map (the opening blow of the fight) gives no AP any more (rules 1.73 item 5817: the AP rows cut)', () => {
     // truth pass 3: the expect below never ran (the opening shot missed with this seed and the test returned). The seed
     // is now searched for the first one whose opening shot kills the 1-HP drone, and the kill's AP is asserted.
     const once = (seed: number) => {
@@ -129,7 +125,7 @@ describe('Grim Reaper on the area map', () => {
     };
     let r = once(1); for (let seed = 2; !r.dead && seed < 80; seed++) r = once(seed);
     expect(r.dead).toBe(true);
-    expect(logHas(r.cb, /\+2 AP.*Grim Reaper|Grim Reaper.*\+2/)).toBe(true);
+    expect(logHas(r.cb, /\+2 AP.*Grim Reaper|Grim Reaper.*\+2/)).toBe(false);
   });
 });
 

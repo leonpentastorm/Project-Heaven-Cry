@@ -74,22 +74,21 @@ describe('Scar Tissue', () => {
   });
 });
 
-describe('Iron Stomach', () => {
-  it('Tier I: Fear and Nausea last at most 1 round', () => {
-    const f = fightWith([{ perks: { iron_stomach: 'I' } }]);
+describe('Steady (Guts; Iron Stomach folded in, rules 1.73 item 5811)', () => {
+  it('Tier II: Fear and Nausea last at most 1 round; Tier I (a rule for the Narrator) leaves their length alone', () => {
+    const f = fightWith([{ perks: { steady: 'II' } }]);
     withGame(f.g, () => { applyCond(f.cb, rng(), f.foe, f.pc, 'fear', 3, undefined, { skipSave: true }); applyCond(f.cb, rng(), f.foe, f.pc, 'nausea', undefined, undefined, { skipSave: true }); });
     expect(f.pc.conds!.fear).toBe(1); expect(f.pc.conds!.nausea).toBe(1);
+    const g = fightWith([{ perks: { steady: 'I' } }]);
+    withGame(g.g, () => { applyCond(g.cb, rng(), g.foe, g.pc, 'fear', 3, undefined, { skipSave: true }); });
+    expect(g.pc.conds!.fear).toBe(3);
   });
-  it('Tier II: immune (no save rolled); story Fear-tagged checks pass automatically', () => {
-    const f = fightWith([{ perks: { iron_stomach: 'II' } }]);
-    const out = withGame(f.g, () => applyCond(f.cb, rng(), f.foe, f.pc, 'nausea'));
-    expect(out).toMatch(/untouched/); expect(condOn(f.pc, 'nausea')).toBe(false);
-    const s = storyWith([{ perks: { iron_stomach: 'II' } }]);
-    expect(storyCheck(s, s.chars[0].id, ['composure'], { tags: ['horror'], tn: 20 }).roll()).toMatch(/SUCCESS \(AUTO\)/);
+  it('no tier is immune any more (the Mastered perk is the Fear immunity): Nausea lands on Tier II', () => {
+    const f = fightWith([{ perks: { steady: 'II' } }]);
+    withGame(f.g, () => applyCond(f.cb, rng(), f.foe, f.pc, 'nausea', undefined, undefined, { skipSave: true }));
+    expect(condOn(f.pc, 'nausea')).toBe(true);
   });
 });
-
-
 
 describe('Earthbreaker', () => {
   it('once per combat, 4 AP: everyone in the 3×3 takes melee damage and falls Prone; cover in it breaks', () => {

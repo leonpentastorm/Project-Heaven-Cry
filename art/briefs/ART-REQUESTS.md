@@ -101,6 +101,19 @@ White-ink signs, the same set and style as the fight banners' `banner-fight-star
 | `banner-fight-approach` | the APPROACH banner (a fight opened with no foe seeing the squad) | an eye half-closed or a footstep in fog: unseen, moving quietly |
 | `banner-level-up` | the LEVEL UP banner (any character of the room gains a level; any screen) | a rising chevron or a step mark climbing: growth, not a weapon |
 
+### 0d. The Body lane of 0.32: new perks (requested 19 Nov 2026; rules 1.73)
+
+Wick perk icons, white flat ink, 1024 × 1024, transparent, the STYLE-LOCK applies (master: `art/icons/traits/mind-without-fog.png`),
+the same set as the perks they sit beside on the skill page. Until drawn each shows the perk fallback the Perks tab already uses.
+Files go to `art/icons/perks/<id with dashes>.png` (catalog id `perk-<id>`). Steady (Guts) needs none: the Iron Stomach icon it absorbed is bound to it (`art/catalog.json` iron-stomach, data_id steady).
+
+| id | skill | what it must show | direction |
+| --- | --- | --- | --- |
+| `point_man` | Guts | Wick at the front of a file, a hand raised: the others hold behind him | one figure forward, two smaller outlines close behind; reads as "stand with me" |
+| `unflinching` | Guts | Wick taking a swing without blinking, Momentum's ring on him | a blade glancing off at the last moment; his eyes open |
+| `marrow_talk` | Intimidation | Wick leaning over a table, one finger on a bone | a soup bowl and a bone: the Papa's menace, courteous |
+| `stare_down` | Intimidation | Wick's stare across a room; the other figure frozen mid-step | two figures, a line of tension between the eyes |
+
 ### 2. Outburst feelings and modules
 
 | # | For | Status | What it must show | Direction | Goes to |

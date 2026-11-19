@@ -56,7 +56,7 @@
     {
       "id": "perk:grim_reaper",
       "tier": "II",
-      "trigger": "when you kill or knock out an enemy on your own turn"
+      "trigger": "when you drop an enemy on your own turn"
     },
     {
       "id": "perk:roll_with_it",
@@ -325,10 +325,6 @@
       "id": "trait:insomniac",
       "trigger": "while the squad rests",
       "standing": true
-    },
-    {
-      "id": "skill:raw_power.5",
-      "trigger": "when a Finisher of yours takes its target out"
     },
     {
       "id": "skill:camaraderie.3",

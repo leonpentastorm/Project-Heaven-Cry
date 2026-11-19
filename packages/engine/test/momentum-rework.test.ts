@@ -139,7 +139,7 @@ describe('4. walking costs Momentum', () => {
     const f = fight('sabre', ['shove'], { foes: [{ at: 'D5', weapon: 'sabre' }] }); weak(f.foe); f.pc.strength = 20;
     f.momentum(f.foe, 2); rig({ die: 15 });
     expect(f.tech('shove', { targetId: f.foe.id })).toBeNull();
-    expect(f.foe.pos).toBe(f.tile('F5')); expect(f.momentum(f.foe)).toBe(2);
+    expect(f.foe.pos).toBe(f.tile('E5')); expect(f.momentum(f.foe)).toBe(2); // rules 1.73 item 5804: Heavy Hands left Raw Power 3 (Iron Grip II now)
   });
   it('a Link\'s own move costs none: Sidestep, and Drag\'s step', () => {
     const f = fight('sabre', ['sidestep', 'drag'], { m: 2 }); weak(f.foe);
@@ -212,7 +212,7 @@ describe('7. no technique gives Momentum by its text, but Parry\'s Light line', 
   it('Feint, Shove, Trip and Drag that work give none; Flurry gives none; no text still promises it', () => {
     const f = fight('sabre', ['feint', 'shove'], { m: 0 }); weak(f.foe); f.pc.strength = 20; rig({ die: 15 });
     expect(f.tech('feint', { targetId: f.foe.id })).toBeNull(); expect(f.pc.setUp).toBeTruthy();
-    expect(f.tech('shove', { targetId: f.foe.id })).toBeNull(); expect(f.foe.pos).toBe(f.tile('F5'));
+    expect(f.tech('shove', { targetId: f.foe.id })).toBeNull(); expect(f.foe.pos).toBe(f.tile('E5')); // rules 1.73 item 5804: Heavy Hands left Raw Power 3 (Iron Grip II now)
     expect(f.momentum(f.pc)).toBe(0);
     const g = fight('sabre', ['trip', 'drag'], { m: 0 }); weak(g.foe);
     expect(g.tech('drag', { targetId: g.foe.id })).toBeNull(); expect(g.tech('trip', { targetId: g.foe.id })).toBeNull(); // (a natural 20 still saves: either way)

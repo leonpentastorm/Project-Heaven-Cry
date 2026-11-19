@@ -2,7 +2,7 @@
 // Rules 1.70 (0.32 step 1): the ladder schedule as data (item 5537), old saves' perk re-pick (item 5538), and an unspent
 // Attribute point carried from level 2 to 3 (the brief's H). Every change goes through the reducer (levelup/perk,
 // levelup/perk-repick, levelup/raise, narrator/turn) or the load door (migrateLoaded) on the repo's real old saves.
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { PERK, PERKS, SKILL, apply, migrateLoaded, ladderSchedule, ladderStepAt, stepsEarned, stepsTaken, pendingPerkSteps, pendingRepicks, levelUpDue, type Character } from '../src';
@@ -54,7 +54,10 @@ describe('the ladder schedule is one table (rules 1.70 item 5537)', () => {
 
 describe('old saves: the perk re-pick (rules 1.70 item 5538)', () => {
   const PT: any = SKILL.pain_threshold;
-  afterEach(() => { delete PT.perk_remap; });
+  // each test installs its own table: the data's tables (rules 1.73 and the other attribute steps) are set aside and put back
+  let kept: [any, any][] = [];
+  beforeEach(() => { kept = Object.values(SKILL as any).filter((k: any) => k.perk_remap).map((k: any) => [k, k.perk_remap]); for (const [k] of kept) delete k.perk_remap; });
+  afterEach(() => { delete PT.perk_remap; for (const [k, t] of kept) k.perk_remap = t; });
   it('with no table, a real old save loads as it was (nothing written)', () => {
     for (const name of ['save-develop-cb40e92-mid-fight', 'save-develop-cb40e92-after-fight', 'save-live-0.22.0-long-mid-fight']) {
       const once = migrateLoaded(raw(name)), again = JSON.stringify(migrateLoaded(JSON.parse(JSON.stringify(once))));
@@ -103,6 +106,20 @@ describe('old saves: the perk re-pick (rules 1.70 item 5538)', () => {
     const s = storyWith([{ skills: { pain_threshold: 5 } }]), c = s.g.characters[s.chars[0].id];
     expect(c.perkRev).toEqual({ pain_threshold: 1 });
     expect(migrateLoaded(JSON.parse(JSON.stringify(s.g))).characters[c.id].perkRepick).toBeUndefined();
+  });
+});
+
+describe('the Strength step\'s tables (rules 1.73 items 5810, 5815): an old save at Guts 5 and Intimidation 5', () => {
+  it('Iron Stomach becomes Steady at its tier, Point Man fills the next step; Intimidation keeps Bone Talk and gets Marrow Talk; one re-pick each', () => {
+    const s = storyWith([{ skills: { guts: 5, intimidation: 5 }, perks: { bone_talk: 'I' } }]), id = s.chars[0].id;
+    const old = JSON.parse(JSON.stringify(s.g)); delete old.characters[id].perkRev; delete old.characters[id].perkRepick;
+    old.characters[id].perks = [{ id: 'iron_stomach', tier: 'I' }, { id: 'bone_talk', tier: 'I' }]; // what a 0.31 save holds
+    const c: Character = migrateLoaded(old).characters[id];
+    const of = (sk: string) => c.perks.filter((x) => PERK[x.id]?.skills.includes(sk));
+    expect(of('guts')).toEqual([{ id: 'steady', tier: 'I' }, { id: 'point_man', tier: 'I' }]); // the mapped perk, then the 5-point passive (the 3-point one is Steady already)
+    expect(of('intimidation')).toEqual([{ id: 'bone_talk', tier: 'I' }, { id: 'marrow_talk', tier: 'I' }]);
+    expect(c.perks.some((x) => x.id === 'iron_stomach')).toBe(false);
+    expect(pendingRepicks(c).map((x) => x.skill).sort()).toEqual(['guts', 'intimidation']);
   });
 });
 

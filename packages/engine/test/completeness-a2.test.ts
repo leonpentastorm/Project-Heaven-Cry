@@ -47,22 +47,22 @@ describe('Eyes in the Back: an enemy\'s shot missed by the cover\'s margin hits 
   });
 });
 
-describe('Iron Stomach and Nothing Left to Fear in a fight (through the reducer)', () => {
+describe('Steady and Nothing Left to Fear in a fight (through the reducer)', () => {
   const fearThenFight = (specs: any[]) => {
     const s = storyWith(specs); const ids = s.chars.map((c) => c.id);
     for (const id of ids) s.act({ type: 'narrator/turn', turn: { narration: 'Dread.', conditions: [{ target: id, id: 'fear' }] } } as any);
     s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
     return s;
   };
-  it('Iron Stomach I: a Fear carried into the fight lasts 1 round; without it, its full length', () => {
-    const s = fearThenFight([{ perks: { iron_stomach: 'I' } }, {}]); const cb = s.g.combat!;
+  it('Steady II (Iron Stomach folded in, rules 1.73 item 5811): a Fear carried into the fight lasts 1 round; without it, its full length', () => {
+    const s = fearThenFight([{ perks: { steady: 'II' } }, {}]); const cb = s.g.combat!;
     const [me, mate] = cb.units.filter((u) => u.side === 'pc');
     expect(condOn(me, 'fear')).toBe(true); expect((me.conds as any).fear).toBe(1);
     expect((mate.conds as any).fear).toBeGreaterThan(1);
   });
-  it('Iron Stomach II: no Fear lands in the story or the fight', () => {
-    const s = fearThenFight([{ perks: { iron_stomach: 'II' } }]); const me = s.g.combat!.units.find((u) => u.side === 'pc')!;
-    expect(condOn(me, 'fear')).toBe(false);
+  it('Steady I has no fight half yet (its rule is for the Narrator): a Fear carried in runs its full length; no tier of it makes you immune', () => {
+    const s = fearThenFight([{ perks: { steady: 'I' } }]); const me = s.g.combat!.units.find((u) => u.side === 'pc')!;
+    expect(condOn(me, 'fear')).toBe(true); expect((me.conds as any).fear).toBeGreaterThan(1);
   });
   it('Nothing Left to Fear: the holder is never Afraid; an Afraid ally steadies at its turn start beside the holder', () => {
     const s = fearThenFight([{ perks: { nothing_left_to_fear: 'mastered' } }, {}]); const cb = s.g.combat!;

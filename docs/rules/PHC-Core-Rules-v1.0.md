@@ -2750,8 +2750,8 @@ Leon's rulings of 10 Nov 2026. Where an older line in this spec says otherwise (
 
 | Was | Is now | Skill | What it does |
 |---|---|---|---|
-| Shove (unlock at 3) | **Heavy Hands** | Raw Power | A melee technique of yours that pushes its target moves it 1 tile further. |
-| Break (unlock at 5) | **Follow Through** | Raw Power | When a Finisher of yours takes its target out, you are left with 1 Momentum. |
+| Shove (unlock at 3) | **Heavy Hands** | Raw Power | A melee technique of yours that pushes its target moves it 1 tile further. *Superseded by rules 1.73 item 5804: Iron Grip's Tier II.* |
+| Break (unlock at 5) | **Follow Through** | Raw Power | When a Finisher of yours takes its target out, you are left with 1 Momentum. *Superseded by rules 1.73 item 5808: the Breaker's Measured Blow.* |
 | Grapple (perk) | **Iron Grip** (`iron_grip`) | Raw Power | **I:** a target you have Bound or Grappled can't use Answers or reactions; attacks aimed at you have a 50% chance to hit it instead; when you move, it comes with you, into the tile you leave. **II:** each of your melee techniques that hits a target you hold gives you 1 Momentum (once a technique, never a Finisher), and Throw Down on it needs no Momentum. |
 | Origami Hands (perk) | **Both Hands** (`both_hands`) | Dexterity | **I:** after one of your melee techniques hits, your next shot that turn has no Recoil. **II:** and after one of your shots hits, you gain 1 Momentum, once a turn. |
 
@@ -12554,3 +12554,82 @@ here is PROVISIONAL.
     Cover Them's Guard cost reads `tech_rule:guard.interpose_cost` (one copy of the interpose cost).
 5548. **Browser suites that fail only beside others** run one at a time (`apps/web/e2e/groups.json serial`: fx-room,
     magic, title, resources, capture-skills, picking).
+
+### Rules 1.73 (Body), 0.32: Strength, Endurance and Agility reshaped (the Body lane, 19 Nov 2026)
+
+The ruling layer is `docs/design/proposals/2026-11-19-attribute-proposals.md` (sections 1, 2, 3 and 6); the sheets are
+`docs/design/proposals/2026-11-19-attribute-drafts/strength.md`, `endurance.md` and `agility.md`. Each skill takes the
+shape of rules 1.70 item 5537 (alpha: 1 door, 2 small verb, 3 perk step, 4 fork one, 5 big verb, 6 and 7 perk steps,
+8 fork two, 9 perk step, 10 Mastered; beta and gamma: the per-point gain on every level, four perks of two tiers, perk
+steps at 3, 5, 7 and 9, Mastered at 10). Every new number here is PROVISIONAL. Items 5800 to 5819 are Strength,
+5820 to 5839 Endurance, 5840 to 5859 Agility.
+
+**Strength (Raw Power, Guts, Intimidation; the Breaker)**
+
+5800. **Raw Power's ladder:** 1 the door (Momentum, shown on its level; any melee weapon still carries the meter: Raw
+    Power 1 does not gate it, the sheet's open item 2), 2 **Grapple**, 3 perk step, 4 fork one (Rolling Start or
+    Grindstone), 5 **Throw Down**, 6 and 7 perk steps, 8 fork two (Spill or Headlong, offered now), 9 perk step, 10
+    Earthbreaker. Its two perks (Keep Swinging, Iron Grip) fill the four steps. PROVISIONAL.
+5801. **The door's row at 1** (`skills.json raw_power.unlocks.1`): a named row with no effect of its own; the meter is
+    still `techniques.json rules.momentum`.
+5802. **Grapple is Raw Power 2's** with any melee weapon in the main hand or bare hands: the unlock is an item answering
+    the stat `technique:grapple` (the gloves still bring it below 2 points). It was Iron Grip's (no perk's technique any
+    more: `techniques.json grapple` has no `perk`). A gun in the main hand gives no Grapple. PROVISIONAL.
+5803. **Throw Down is Raw Power 5's** big verb with any melee weapon or bare hands (stat `technique:throw_down` from the
+    unlock; its rules unchanged: a held target, a Finisher). Launch stays the Breaker's (the sheet's open item 1).
+5804. **Heavy Hands moves into Iron Grip's Tier II** (its own number, `iron_grip.tiers.II.numbers.push_tiles`: a melee
+    technique's push goes 1 tile further). Iron Grip I: a held target can't use Answers or reactions, +6% melee damage
+    on a Grappled or Prone foe; II: +12% and also on Shaken or Afraid, and the longer push. Below Iron Grip II no push
+    is lengthened. PROVISIONAL.
+5805. **Rolling Start loses its free Charge** (ruling layer section 3 item 4): a Charge costs its Momentum again (the
+    fight's first Opener is still free); it keeps the 2-tile run and +1 Momentum on a Charge hit. A Breaker at x0 can't
+    Charge; the "Finisher, free Charge, Finisher" loop now runs only on kills (Measured Blow). Charge Carries stays +2 and
+    is measured (the sheet's open item 5).
+5806. **Spill** (fork two): a Finisher of yours that drops a foe carries the blow into one foe beside the fallen one, no
+    roll: an amount block `spill` (damage, melee profile, base 22, PROVISIONAL: Launch's base), dealt through `deal` on the
+    `kill` trigger to `targets {of: target, within: 1, side: foe, max: 1}`. Spill's own blow is no technique, so it never
+    spills again. (The overkill wording needed N21, not approved.)
+5807. **Headlong** (fork two): once a turn, while you hold 2 Momentum or more, a Charge's strike costs no AP (the run is
+    paid as usual) and takes 2 more Momentum (on top of the Opener's own price); a Charge paid so builds no Momentum of its
+    own (Charge Carries, Rolling Start: the content condition `headlong_paid`, on from the roll to the end of the action).
+    Built from `cost_mod` on `attack` (a peeked per-turn limit), `condition` and `resource` on `attack_roll` (the limit
+    taken). A Breaker's closing in (Barrel In's rule for any first melee attack after moving toward the foe) is not the
+    Charge's own build and still counts (for the lead). PROVISIONAL.
+5808. **Measured Blow** (the Breaker, rank III; Follow Through merged in, ruling layer section 3, the sheet's REPLACE): a
+    Finisher of yours that drops its target leaves you 1 Momentum, every time; once a fight, a Finisher that drops nobody
+    does too. Follow Through left Raw Power 5. PROVISIONAL.
+5809. **The Breaker's other moves** are kept as they were (Barrel In, Wind-up, Riposte, Read the Swing, Unstoppable; the
+    gains Charge Carries, Four Ways to Finish, Launch, Wrecker, Breach).
+5810. **Guts:** +1 Body save and its Momentum feed every point (unchanged); four perks: **Steady** (was the passive at 3;
+    Iron Stomach folded in), **Point Man** (the passive at 5), **Into the Dark** (kept), **Unflinching** (new); Mastered
+    Nothing Left to Fear. Old saves: `perk_remap` (Iron Stomach to Steady at its tier; Steady and Point Man as the passives
+    at 3 and 5) and one free re-pick (rules 1.70 item 5538).
+5811. **Steady:** I, Fear can't stop you moving or acting (you keep its penalty to hit); II, and Fear and Nausea last at
+    most 1 round on you (Iron Stomach I's row). Tier I's rule has no engine half yet (Fear's two refusals, its move toward
+    and its attack on the source, are typed in `combat.ts` and ask no stat): it is the Narrator's, op `narrator`. Iron
+    Stomach's immunity (its old Tier II) is gone: the Mastered perk is the Fear immunity. Its story half (a Fear ending at
+    the next check) went with its handler: item ops run in a fight.
+5812. **Point Man:** I, allies within 3 tiles roll Fear saves with your Guts (the Narrator's: a save's skill swap has no
+    piece); II, and +2 on their Heart saves (engine: `roll_mod` on `cond_incoming`, an ally within 3, a Heart condition).
+    PROVISIONAL 2.
+5813. **Unflinching:** I, while you hold 3 Momentum or more, melee attacks on you are at -1 to hit; II, every weapon
+    attack (shots too). `roll_mod` on `to_hit`. PROVISIONAL.
+5814. **Intimidation:** +1 Threaten reach and harder to shake off every point (unchanged); the Call as rules 1.70 (3 AP;
+    2 from 5; 1 from 9; steps at 1, 4, 8). Four perks: **Marrow Talk** (the passive at 3), **Stare Down** (the passive at
+    5), **Bone Talk** (kept, story only), **Grim Reaper** (reworked); Mastered The Name They Whisper. Old saves: Marrow
+    Talk and Stare Down as the passives at 3 and 5, one free re-pick.
+5815. **Marrow Talk:** I, a threat that fails in talk still leaves the target Shaken (-2 on their next roll against you;
+    the Narrator's); II, in a fight a foe that saves against your Threaten is still Shaken for 1 round (engine: a mark when
+    your Shaken is about to land on a foe on your turn, then `condition` on the Call's `acted` if it did not land).
+5816. **Stare Down:** I, when a fight starts the nearest enemy that can see you saves against your Intimidation or is
+    Stunned (it loses its first turn); II, and it is Shaken for 3 rounds whatever it rolls. Built on `combat_start` with
+    `targets {of: self, side: foe, sees: eyes, max: 1}` (the old grant_action never ran). The save is the condition's own
+    family (Stunned: Body). PROVISIONAL 3.
+5817. **Grim Reaper** (removes the door's tax): I, a hit from a Shaken or Afraid foe costs you no Momentum (the Momentum
+    the blow wore off is given back, when you held some and no plate took it); II, and when you drop an enemy on your own
+    turn, every enemy within 8 tiles whose eyes reach the fallen one saves (Heart) or is Afraid of you. The +2 AP on a
+    kill and the -1 AP on the first turn are cut (rule 15.7: no AP inside a turn). Data only (its handler went).
+    PROVISIONAL 8.
+5818. **Bone Talk** is story only: its 2 AP fight version (a copy of Threaten) is cut.
+5819. **Measures** (the Breaker, solo and in a squad, before and after) and the Breaker's blade line are reported in the
+    lane's hand-off (`docs/design/handoffs/0.32-LANE-BODY.md`); no number was fitted to a ceiling.

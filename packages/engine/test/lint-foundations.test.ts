@@ -105,7 +105,7 @@ describe('F6: the kit is the only home of the lane helpers (src/kit.ts)', () => 
     // walk by hand (the six aura items, Rally, Rally Cry, Grim Reaper, The Name They Whisper, Lingering Dread... see the
     // step 1a hand-off for why each could not move yet). Never raise one; lower it when a lane moves onto targets.
     const LEFT: Record<string, number> = { 'classes/i.ts': 10, 'classes/j.ts': 15, 'classes/k.ts': 20, 'perks/a.ts': 2, 'perks/b.ts': 9, 'perks/c.ts': 12, 'perks/d.ts': 7,
-      'perks/e.ts': 12, 'perks/f.ts': 17, 'perks/g.ts': 8, 'perks/h.ts': 4, 'perks/skeleton.ts': 1 };
+      'perks/e.ts': 11, 'perks/f.ts': 17, 'perks/g.ts': 8, 'perks/h.ts': 4, 'perks/skeleton.ts': 1 };
     const got: Record<string, number> = {};
     for (const h of hits(/\bcb!?\.units\.(?:filter|find|some|every|forEach)\b|\bof cb!?\.units\b/, (rel) => !/^(perks|classes)\//.test(rel))) { const f = h.split(':')[0]; got[f] = (got[f] || 0) + 1; }
     expect(got).toEqual(LEFT);

@@ -391,6 +391,9 @@
                 "actor": "self",
                 "mode": [
                   "charge"
+                ],
+                "self_lacks": [
+                  "headlong_paid"
                 ]
               }
             },
@@ -3532,9 +3535,20 @@
         "id": "finisher",
         "name": "Measured Blow",
         "ap_cost": 0,
-        "uses": "per_combat",
-        "text": "Once a fight: a Finisher returns {=effects.0.value} of the Momentum it spent",
+        "uses": "at_will",
+        "text": "A Finisher that drops its target leaves you {=effects.1.value} Momentum. Once a fight, any Finisher does.",
         "effects": [
+          {
+            "op": "mark",
+            "when": "kill",
+            "flag": "dropped",
+            "if": {
+              "actor": "self",
+              "tech_group": [
+                "finisher"
+              ]
+            }
+          },
           {
             "op": "resource",
             "when": "acted",
@@ -3543,17 +3557,48 @@
             "if": {
               "tech_group": [
                 "finisher"
-              ]
+              ],
+              "flag": "dropped"
+            },
+            "priority": 150,
+            "and": [
+              {
+                "op": "mark",
+                "flag": "dropped",
+                "clear": true
+              }
+            ],
+            "say": "{self} follows through (Measured Blow): +{gain} Momentum."
+          },
+          {
+            "op": "resource",
+            "when": "acted",
+            "resource": "momentum",
+            "value": 1,
+            "if": {
+              "tech_group": [
+                "finisher"
+              ],
+              "no_flag": "dropped"
             },
             "limit": {
               "per": "per_combat",
               "n": 1
             },
-            "priority": 150,
+            "priority": 140,
             "say": "{self} holds something back (Measured Blow): +{gain} Momentum."
+          },
+          {
+            "op": "mark",
+            "when": "turn_end",
+            "flag": "dropped",
+            "clear": true,
+            "if": {
+              "flag": "dropped"
+            }
           }
         ],
-        "source": "rules 1.60 item 4623 (R5): was the Breaker's own Finisher action; the door's Finishers are Cleave, Break, Coup and Launch",
+        "source": "rules 1.60 item 4623 (R5): was the Breaker's own Finisher action; the door's Finishers are Cleave, Break, Coup and Launch; rules 1.73 (Body), 0.32: the Strength step (item 5808): Follow Through (Raw Power 5) merged in",
         "adjudication": "engine",
         "provisional": true,
         "origin": "fighter",
@@ -3566,7 +3611,8 @@
         "attributes": [
           "strength"
         ],
-        "status": "active"
+        "status": "active",
+        "short": "A Finisher kill leaves you x{=effects.1.value} · once a fight, any Finisher"
       },
       {
         "id": "brace",

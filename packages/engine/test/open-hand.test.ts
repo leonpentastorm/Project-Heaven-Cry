@@ -6,10 +6,11 @@
 import { describe, it, expect } from 'vitest';
 import './helpers/yard16';
 import { actionsFor, previewDescriptor, sendDescriptor, archetypeWeapons, RACK, LOADOUT, WEAPON, ITEM } from '../src';
-import { fightWith } from './helpers/perkfight';
+import { fightWith, withGame } from './helpers/perkfight';
 import { dice } from './golden/harness';
 import { condOn } from '../src/magic';
 import { canReact } from '../src/tactics';
+import { unitSkill } from '../src/physical/core';
 
 const HIT = { die: 10, hit: true };
 /** A monk in these gloves next to one foe, on its turn. */
@@ -115,7 +116,9 @@ describe('the Open Hand: the glove family (rules 1.56, the unarmed fighter)', ()
     }
     const f = fightWith([{ archetype: 'monk', weapon: 'legion_gladius' }], [{ at: 'F6' }]); const u = f.turn(f.pc);
     const ids = actionsFor(f.g, u.id, 'host').map((d) => d.id);
-    expect(ids).not.toContain('tq:main:grapple'); expect(ids).not.toContain('tq:main:trip');
+    expect(ids).not.toContain('tq:main:trip');
+    // rules 1.73 item 5802: with a blade, Grapple comes only from Raw Power 2 (any melee weapon), never from the family
+    expect(ids.includes('tq:main:grapple')).toBe(withGame(f.g, () => unitSkill(u, 'raw_power')) >= 2);
   });
 
   it('the finesse gloves hit with Dexterity and grow with Agility; the force gloves with Raw Power and Strength', () => {

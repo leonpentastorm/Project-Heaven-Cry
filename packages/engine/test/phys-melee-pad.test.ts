@@ -11,8 +11,8 @@ const BUILT_HERE = ['charge', 'feint', 'draw_cut', 'ambush', 'sweep', 'bash', 's
   'sidestep', 'guard', 'shove', 'trip', 'drag', 'cleave', 'break', 'run_through', 'throw_down', 'parry', 'keep_back'];
 
 describe('the melee pad', () => {
-  it('there are 28 melee techniques and each has a handler', () => {
-    expect(MELEE.length).toBe(28);
+  it('there are 29 melee techniques and each has a handler', () => {
+    expect(MELEE.length).toBe(29); // rules 1.73 item 5802: Grapple is no perk's technique (Raw Power 2 gives it), so it counts here
     for (const id of BUILT_HERE) expect(MELEE, id).toContain(id);
     for (const id of MELEE) expect(phys.handlerOf(id), id).not.toBeNull();
   });

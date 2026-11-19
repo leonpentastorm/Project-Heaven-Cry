@@ -1010,27 +1010,47 @@
         "weapon:heavy"
       ],
       "unlocks": {
-        "3": {
-          "name": "Heavy Hands",
+        "1": {
+          "name": "Momentum",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "The door: Momentum, the number on your token. A plain melee hit and a Charge build it; a Strike or an Opener spends some; a Finisher (Coup, Cleave, Break) spends it all.",
+          "player": "Your door: Momentum. Hits build it, a Finisher spends it all",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.73 (Body), 0.32: the Strength step (item 5801)"
+        },
+        "2": {
+          "name": "Grapple",
           "category": "Combat Interaction",
-          "mastery": 1,
-          "text": "A melee technique of yours that pushes its target moves it {=unlocks.3.effects.0.tiles} tile further.",
-          "player": "Pushes go {=.effects.0.tiles} tile further",
+          "mastery": 0,
+          "text": "You know the technique Grapple with any melee weapon or bare hands: an enemy next to you saves (Body) or is Grappled.",
+          "player": "Grapple: a foe next to you saves or is Grappled",
           "effects": [
             {
-              "op": "knockback",
-              "tiles": 1,
-              "target": "target"
-            },
+              "op": "stat_mod",
+              "stat": "technique:grapple",
+              "value": 1
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "item": true,
+          "source": "rules 1.73 (Body), 0.32: the Strength step (item 5802)"
+        },
+        "3": {
+          "name": "Mastery 1",
+          "mastery": 1,
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "effects": [
             {
               "op": "perk_choice",
               "skill": "raw_power",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine",
-          "provisional": true,
-          "item": true
+          "adjudication": "engine"
         },
         "4": {
           "name": "Fork: Rolling Start or Grindstone",
@@ -1043,22 +1063,22 @@
           "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "5": {
-          "name": "Follow Through",
+          "name": "Throw Down",
           "category": "Combat Interaction",
           "mastery": 0,
-          "text": "When a Finisher of yours takes its target out, you are left with {=unlocks.5.effects.0.set} Momentum.",
-          "player": "A Finisher kill keeps {=.effects.0.set} Momentum",
+          "text": "You know the Finisher Throw Down with any melee weapon or bare hands: slam a foe you hold into the ground, Prone, the blow growing with your Momentum.",
+          "player": "Throw Down: a Finisher on a foe you hold, with any weapon",
           "effects": [
             {
-              "op": "resource",
-              "resource": "momentum",
-              "set": 1,
-              "when": "a Finisher of yours takes its target out"
+              "op": "stat_mod",
+              "stat": "technique:throw_down",
+              "value": 1
             }
           ],
           "adjudication": "engine",
           "provisional": true,
-          "item": true
+          "item": true,
+          "source": "rules 1.73 (Body), 0.32: the Strength step (item 5803)"
         },
         "7": {
           "name": "Mastery 3",
@@ -1077,7 +1097,7 @@
           "name": "Fork: Spill or Headlong",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's second fork, Spill or Headlong: not offered yet (Spill and Headlong are still to be built; data/forks.json).",
+          "text": "The door's second fork: choose Spill or Headlong, once, out of a fight, kept for good (data/forks.json).",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -1191,17 +1211,10 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Steady",
-          "category": "Passive",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Fear can't stop you moving or acting; you only keep its −2 to hit.",
-          "player": "Fear can't stop your moves or actions",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "fear_movement_immune",
-              "value": 1
-            },
             {
               "op": "perk_choice",
               "skill": "guts",
@@ -1211,16 +1224,14 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Point Man",
-          "category": "Passive",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Allies within {=unlocks.5.effects.0.value} tiles roll Fear saves with your Guts in place of their own.",
-          "player": "Allies within {=.effects.0.value} tiles save against Fear with your Guts",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "aura_fear_save_guts_tiles",
-              "value": 3
+              "op": "perk_choice",
+              "skill": "guts",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1316,6 +1327,17 @@
             "holo-streamers filming viral reels"
           ]
         ]
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "iron_stomach": "steady"
+        },
+        "passives": {
+          "3": "steady",
+          "5": "point_man"
+        },
+        "note": "rules 1.73 item 5810: Steady and Point Man (free at 3 and 5) became perks; Iron Stomach is folded into Steady"
       }
     },
     {
@@ -1343,47 +1365,27 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Marrow Talk",
-          "category": "Conversation Quirk",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Even a failed threat leaves the target Shaken: {=unlocks.3.numbers.next_roll} on their next roll against you.",
-          "player": "A failed threat still leaves them Shaken: {=.numbers.next_roll} on their next roll against you",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "condition",
-              "condition": "shaken",
-              "target": "target",
-              "when": "on_failed_threat"
-            },
             {
               "op": "perk_choice",
               "skill": "intimidation",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine",
-          "numbers": {
-            "next_roll": -2
-          }
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Stare Down",
-          "category": "Combat Starter",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Before initiative, one enemy that can see you makes a Heart save against Fear or loses its first turn.",
-          "player": "Before the first turn, one foe saves (Heart) or loses its first turn",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "stare_down",
-              "ap": 0,
-              "uses": "per_combat"
-            },
-            {
-              "op": "condition",
-              "condition": "stunned",
-              "target": "target",
-              "when": "on_failed_save_before_initiative"
+              "op": "perk_choice",
+              "skill": "intimidation",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1474,6 +1476,15 @@
         "bad_for": "upstanding middle-class citizens, anyone keeping an angelic image, heartbreakers.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {},
+        "passives": {
+          "3": "marrow_talk",
+          "5": "stare_down"
+        },
+        "note": "rules 1.73 item 5815: Marrow Talk and Stare Down (free at 3 and 5) became perks"
       }
     },
     {
