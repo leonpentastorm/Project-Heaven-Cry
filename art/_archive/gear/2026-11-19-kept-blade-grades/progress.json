@@ -59,7 +59,8 @@
     "focus-visualizer--masterwork",
     "focus-visualizer--relic",
     "focus-visualizer--celestial",
-    "focus-attuner--fine"
+    "focus-attuner--fine",
+    "focus-attuner--masterwork"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -69,13 +70,12 @@
     "weapon-war_axe--masterwork",
     "weapon-war_axe--relic",
     "weapon-war_axe--celestial",
-    "focus-attuner--masterwork",
     "focus-attuner--relic",
     "focus-attuner--celestial"
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T10:37:03.584378+00:00",
+  "updated_utc": "2026-11-19T10:38:38.580044+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3
 }

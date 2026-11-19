@@ -3574,6 +3574,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-attuner--masterwork",
+      "path": "art/icons/gear/focus-attuner--masterwork.png",
+      "sha256": "6e60057ed370c9a255905d12320800856bfb0fee7b6c9082065972d668d1b228",
+      "label": "Attuner — Masterwork",
+      "family": "focus-attuner",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-attuner--masterwork.png",
+        "sha256": "0bbd17a06062c2953e33a0add2d41dcfc3beb54090ebccda6708bf2e1b389cf8"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-attuner--masterwork.png",
+        "sha256": "6e60057ed370c9a255905d12320800856bfb0fee7b6c9082065972d668d1b228"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-attuner--masterwork.txt",
+        "sha256": "bc7ce9d5e673cc5d0cb4aada31925605874238bd01b31f35e8a74bc3416c98f6"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/focus-attuner.png",
+          "sha256": "e5c096f0816f62ee9e2a86cacb9741a5c73d21dc35dea0f6c66f8d55a9b27a84"
+        },
+        {
+          "path": "art/icons/gear/focus-attuner--fine.png",
+          "sha256": "ff24e000027fc14855fa7f0004a048883ccbff82788124172d6c2742382d99f1"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-attuner--masterwork.png",
+        "128": "art/icons/gear/exports/128/focus-attuner--masterwork.png",
+        "64": "art/icons/gear/exports/64/focus-attuner--masterwork.png",
+        "32": "art/icons/gear/exports/32/focus-attuner--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "f3df7525a9c51c73fd3a4a745c08b02cbc32d57c78c9707bf1dc5ecf7372fe4f",
+        "128": "712e3876350992be09d903f6e5b2d72c0e192c06ba3f116dc3ac44156cdb5cdc",
+        "64": "e088bf10cc26926de586a6984c89c6060829aec9e05b3d123f2b89534f908e9a",
+        "32": "96bba6c0ad4d1c5e8f9530a059d44233f97ce27a863367936aa83ee6b0301f91"
+      },
+      "grade": "masterwork",
+      "standard_id": "focus-attuner",
+      "outline": {
+        "solid_alpha_iou": 0.9687502276087606,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 39
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
