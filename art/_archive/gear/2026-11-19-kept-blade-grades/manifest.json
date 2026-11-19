@@ -188,6 +188,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-kemizuchi_duelling_blade--celestial",
+      "path": "art/icons/gear/weapon-kemizuchi_duelling_blade--celestial.png",
+      "sha256": "acfe9fe0ce9dc053380f45cecbb59bc63874c4171eb30c662c76c81dd9182262",
+      "label": "Kemizuchi Duelling Blade — Celestial",
+      "family": "weapon-kemizuchi_duelling_blade",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-kemizuchi_duelling_blade--celestial.png",
+        "sha256": "e3e403a10dff5db11da4aa8ac720edf008021ceb143ceb5da02afd6007928807"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-kemizuchi_duelling_blade--celestial.png",
+        "sha256": "acfe9fe0ce9dc053380f45cecbb59bc63874c4171eb30c662c76c81dd9182262"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-kemizuchi_duelling_blade--celestial.txt",
+        "sha256": "093093b187c9cc987174d8d525cb9320ce24c15506a76ac624dc5f63f760b5e5"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-kemizuchi_duelling_blade--celestial/v1/source.png",
+          "sha256": "df6c8b55e761c29e2413cb36187d439589ad1a2f2f2ca2212c0b752ab3ac1bc7"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_duelling_blade.png",
+          "sha256": "f6f112ac6072666b6c00c65ecbb96c3caf5bbf486df51d56c8e46165521c8e2d"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_duelling_blade--relic.png",
+          "sha256": "68300e9f5da67fec2732862411188df7395006385d30c3576c70be16869e76cb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_duelling_blade--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_duelling_blade--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_duelling_blade--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_duelling_blade--celestial.png"
+      },
+      "export_hashes": {
+        "256": "77350d0e08e363beead52fc902ba207f17da2216554a0c4a760a4202cb7552d6",
+        "128": "02e1b28ef45b65f8408bbc820460c664b17d4312e66197312d7db3725e17fff9",
+        "64": "4888c072d1c964f1991c2654a7c46afc73f3bf7bf97825c44b123a49b7656789",
+        "32": "97a3ff0dfe981fbe2f2afdc6daa28347fccd8b773b10f8a8186488372d4c8283"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-kemizuchi_duelling_blade",
+      "outline": {
+        "solid_alpha_iou": 0.8895332434719915,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 28
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

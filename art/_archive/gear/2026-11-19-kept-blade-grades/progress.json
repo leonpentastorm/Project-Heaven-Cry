@@ -4,10 +4,10 @@
   "delivered": [
     "weapon-kemizuchi_duelling_blade--fine",
     "weapon-kemizuchi_duelling_blade--masterwork",
-    "weapon-kemizuchi_duelling_blade--relic"
+    "weapon-kemizuchi_duelling_blade--relic",
+    "weapon-kemizuchi_duelling_blade--celestial"
   ],
   "remaining": [
-    "weapon-kemizuchi_duelling_blade--celestial",
     "weapon-adamantile_greatsword--fine",
     "weapon-adamantile_greatsword--masterwork",
     "weapon-adamantile_greatsword--relic",
@@ -39,7 +39,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T08:51:25.090965+00:00",
+  "updated_utc": "2026-11-19T08:54:32.413351+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3
 }

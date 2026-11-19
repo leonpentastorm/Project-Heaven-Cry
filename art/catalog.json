@@ -20233,6 +20233,42 @@
         "different_pixels_32": 5,
         "different_pixels_64": 19
       }
+    },
+    "weapon-kemizuchi_duelling_blade--celestial": {
+      "label": "Kemizuchi Duelling Blade — Celestial",
+      "path": "art/icons/gear/weapon-kemizuchi_duelling_blade--celestial.png",
+      "sha256": "acfe9fe0ce9dc053380f45cecbb59bc63874c4171eb30c662c76c81dd9182262",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_duelling_blade--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_duelling_blade--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_duelling_blade--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_duelling_blade--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-kemizuchi_duelling_blade--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.1",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-kemizuchi_duelling_blade",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.8895332434719915,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 28
+      }
     }
   },
   "survival_art": {
