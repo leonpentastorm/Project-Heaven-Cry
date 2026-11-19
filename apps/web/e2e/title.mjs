@@ -104,12 +104,16 @@ await p2.screenshot({ path: SHOTS + '/title-phone.png' });
   const clickable = await btn.click({ trial: true, timeout: 60000 }).then(() => true, () => false), ms = Date.now() - t0;
   const pre = await p4.evaluate(() => ({ ...(window.__phcPreload || {}) }));
   ok('cold cache, slow network: the main menu answers a click in ' + ms + ' ms (5,000 or less)', clickable && ms <= 5000);
-  ok('… before the art has loaded (' + pre.done + ' of ' + ((pre.first || 0) + (pre.rest || 0)) + ' pictures in)', pre.rest > 0 && pre.done < pre.first + pre.rest);
+  ok("… before the title's own art has loaded (" + pre.done + ' of ' + (pre.first || 0) + ' pictures in)', pre.first > 0 && pre.done < pre.first);
   await pause(p4, 600); await p4.screenshot({ path: SHOTS + '/title-cold.png' }); // (once the menu has slid in)
   const landed = await p4.waitForFunction(() => { const im = [...document.querySelectorAll('img.phc-layer-img')]; return im.length > 0 && im.every((x) => x.complete && x.naturalWidth > 0); }, null, { timeout: 30000 }).then(() => true, () => false);
   ok('the title\'s own layers land and swap in', landed);
-  const later = await p4.evaluate(() => window.__phcPreload?.done || 0);
-  ok('the rest keeps loading behind the title (' + pre.done + ' then ' + later + ')', later > pre.done);
+  // The roadmap's preloader: nothing else before the page has loaded, then only the next screens' art (the lobby's and
+  // creation's), never the whole library (3,000 files).
+  await p4.waitForFunction(() => window.__phcPreload?.ready && window.__phcPreload.done > window.__phcPreload.first, null, { timeout: 30000 }).catch(() => {});
+  const later = await p4.evaluate(() => ({ ...(window.__phcPreload || {}) }));
+  ok("after the page has loaded, the next screens' art loads behind the title (" + pre.done + ' then ' + later.done + ')', later.ready && later.done > pre.done);
+  ok("… only the next screens' art (" + later.rest + ' files queued, not the whole library)', later.rest > 0 && later.rest < 800);
   await c4.close();
 }
 console.log('errors', errors);

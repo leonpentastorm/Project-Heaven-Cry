@@ -46,42 +46,9 @@ const ITEMS = Object.values(ITEM).filter((it: any) => !isCarriedModifier(it.id))
 import { ART, zoneOf } from '../screens/shared';
 import { tipProps } from './actionTip';
 
-// ---------- starting it ----------
-/** From the title: open a fresh room and go straight into the Proving Ground with a test character (or the host's
- *  locked-in ones, if the room already has some). */
-export function startProvingGround(archetype?: string, opts: { friends?: boolean } = {}) {
-  hostRoom();
-  if (getState().role !== 'host') return;
-  // Standalone: opened from the title, so leaving it closes the room (friends who joined go back to the title).
-  act({ type: 'sandbox/start', ...(archetype ? { archetype } : {}), standalone: true });
-  if (opts.friends) openInvite();
-}
-// ---------- inviting friends (the room code, big) ----------
-let inviteShown = false;
-/** Show the invite card (the room code, a copy button and the shareable link). */
-export function openInvite() { inviteShown = true; poke?.(); }
-const closeInvite = () => { inviteShown = false; poke?.(); };
-export const inviteLink = (code: string) => location.origin + '/?room=' + code;
-/** From the room (host): the room's locked-in characters, or a test character when the host has none. */
-export const openProvingGround = (archetype?: string) => act({ type: 'sandbox/start', ...(archetype ? { archetype } : {}) });
-export const QUICK_ARCHETYPES = ['sharpshooter', 'bulwark', 'sigilist', 'mender', 'brawler', 'heavy_gunner'].filter((id) => ARCHETYPES.some((a) => a.id === id));
-/** Leave the Proving Ground (host): the room comes back as it was, and everyone returns to the room screen. */
-export function leaveProvingGround(ask = true) {
-  const st = getState(), sb = st.game?.sandbox;
-  // A guest leaves on their own: their fighter goes, and they land on the title.
-  if (st.role === 'guest') {
-    if (ask) { askConfirm({ title: 'Leave the Proving Ground?', body: 'Your fighter goes with you.', confirm: 'Leave' }).then((ok) => ok && leaveProvingGround(false)); return; }
-    act({ type: 'sandbox/leave' });
-    setTimeout(() => leaveRoom(), 250); // let the action reach the host first
-    return;
-  }
-  const standalone = !!sb?.standalone, others = (st.game?.players?.length || 1) > 1;
-  if (ask) { askConfirm({ title: 'Leave the Proving Ground?', body: standalone ? (others ? 'It closes for everyone.' : 'Back to the title screen.') : 'The room goes back to how it was before.', confirm: 'Leave' }).then((ok) => ok && leaveProvingGround(false)); return; }
-  act({ type: 'sandbox/end' });
-  // From the title: the room was only for the Proving Ground; it closes, and everyone goes to the title.
-  if (standalone) { const code = st.code; setTimeout(() => { leaveRoom(); if (code) forgetSession(code); }, others ? 250 : 0); return; }
-  if (getState().game?.phase === 'lobby') go('room');
-}
+// ---------- starting it (game/provingGround.ts) ----------
+export { startProvingGround, openInvite, inviteLink, openProvingGround, QUICK_ARCHETYPES, leaveProvingGround } from './provingGround';
+import { inviteOpen, closeInvite, inviteLink, leaveProvingGround, openInvite } from './provingGround';
 
 // ---------- look ----------
 const C = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', red: '#F65157', ok: '#6FEA77', white: '#FFFFFF', mp: '#5C9EFF', mind: '#4FC8DF', soul: '#AE9BFF', body: '#F2A54A' };
@@ -172,7 +139,7 @@ export function SandboxPanel({ game, meId, isHost, screen }: { game: GameState |
     {fighting && screen === 'combat' && <WaveBanner game={game!} />}
     {!!sb && screen === 'combat' && !!game!.combat?.over && sb.mode !== 'teams' && <WaveEnd game={game!} isHost={isHost} />}
     {!!sb && screen === 'combat' && !!game!.combat?.over && sb.mode === 'teams' && <TeamEnd game={game!} meId={meId} isHost={isHost} />}
-    {here && inviteShown && <InviteCard game={game!} />}
+    {here && inviteOpen() && <InviteCard game={game!} />}
     {here && !open && <button type="button" className="phc-sb-tab" onClick={() => { setOpen(true); sfx('slide'); }} aria-label="Open the Proving Ground tools"
       style={{ position: 'fixed', right: 0, top: '38%', zIndex: 46, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '12px 8px', borderRadius: '10px 0 0 10px', border: '1px solid ' + C.line, borderRight: 0, background: C.panel, color: C.text, fontFamily: UI, cursor: 'pointer', boxShadow: '0 6px 24px rgba(0,0,0,.5)' }}>
       <span style={{ fontSize: 'var(--fs-sub)', letterSpacing: '0.2em', color: C.muted }}>WAVE</span>

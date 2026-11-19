@@ -1,22 +1,9 @@
 // Routes between the screens. Each screen is a prototype template plus its logic (src/screens/*), rendered by the
 // Design Component runtime (src/dc/runtime.tsx). A thin bar shows the connection and any rule message.
 import React from 'react';
-import { makeScreen } from './dc/runtime';
-import { expand } from './screens/shared';
-import { getState, subscribe, takeOver, type Screen } from './game/store';
-import createT from './templates/create.template.html?raw';
-import roomT from './templates/room.template.html?raw';
-import mainT from './templates/main.template.html?raw';
-import combatT from './templates/combat.template.html?raw';
-import levelupT from './templates/levelup.template.html?raw';
-import ultimateT from './templates/ultimate.template.html?raw';
-import { CreateLogic } from './screens/create';
-import { RoomLogic } from './screens/room';
-import { MainLogic } from './screens/main';
-import { CombatLogic } from './screens/combat';
-import { expandLayout } from './game/combatLayout';
-import { LevelUpLogic } from './screens/levelup';
-import { UltimateLogic } from './screens/ultimate';
+import { getState, subscribe, takeOver, toast, type ClientState, type Screen } from './game/store';
+import { loadedScreen, loadScreen, loadedSandbox, loadSandbox } from './screenLoad';
+import { warmNext } from './game/preload';
 import { Music } from './game/music';
 import { Title } from './title/Title';
 import { installButtonSounds, sfx, sfxForLine, hasSfx, reducedMotion, onUiPrefs } from './game/sfx';
@@ -32,7 +19,6 @@ import { FxLayer } from './game/fx/FxLayer';
 import { TurnIntro, cue } from './game/turnIntro';
 import { CutInLayer } from './game/spotlight/CutInLayer';
 import { usePresence, presenceCls, COMBAT_IN_MS } from './game/presence';
-import { SandboxPanel } from './game/sandbox';
 import { playCreateMusic, stopCreateMusic } from './game/createMusic';
 import { MissionLayer } from './game/missionBoard';
 import { DialogHost } from './game/dialog';
@@ -40,24 +26,40 @@ import { SettingsHost } from './game/settings';
 import { leaveFlow } from './screens/shell';
 import { ModeCentre } from './game/modeCentre';
 
-const MAIN = makeScreen(expand(mainT), MainLogic as any);
-const SCREENS: Record<Screen, React.ComponentType<any>> = {
-  home: Title as any,
-  create: makeScreen(expand(createT), CreateLogic as any),
-  room: makeScreen(expand(roomT), RoomLogic as any),
-  main: MAIN,
-  combat: makeScreen(expandLayout(expand(combatT)), CombatLogic as any),
-  levelup: makeScreen(expand(levelupT), LevelUpLogic as any),
-  ultimate: makeScreen(expand(ultimateT), UltimateLogic as any),
-  run: MAIN, // rules 1.54: a run's screens are the play screen's middle (store.go sends 'run' to 'main')
-};
+/** The screen on show and the state it was drawn with. Each screen's code is its own chunk (screenLoad.ts): until the
+ *  next screen's chunk is in, the one on show stays, drawn from the state it last had (never a state meant for
+ *  another screen), so a screen change never flashes an empty page. The chunks a player can reach next are loaded
+ *  ahead of time (game/preload.ts warmNext), so the wait is normally nothing. */
+type Shown = { screen: Screen; tick: ClientState; C: React.ComponentType<any> };
+function useShownScreen(st: ClientState): Shown | null {
+  const [, bump] = React.useReducer((x: number) => x + 1, 0);
+  const shown = React.useRef<Shown | null>(null);
+  const C = loadedScreen(st.screen), sb = !!st.game?.sandbox;
+  const ready = C !== undefined && (!sb || !!loadedSandbox());
+  if (ready) shown.current = { screen: st.screen, tick: st, C: C || (Title as any) };
+  const want = ready ? null : st.screen + (sb ? '+sandbox' : '');
+  React.useEffect(() => {
+    if (!want) return;
+    let live = true, tries = 0;
+    const go = () => Promise.all([loadScreen(st.screen), sb ? loadSandbox() : null]).then(() => { if (live) bump(); }, (e) => {
+      if (!live) return;
+      if (++tries < 3) { setTimeout(go, 1500); return; }
+      console.error(e); toast('This screen could not load. Check the connection and reload the page.');
+    });
+    go();
+    return () => { live = false; };
+  }, [want]);
+  return shown.current;
+}
 
 onVoice(poke);
 installButtonSounds();
 export function App() {
   const st = React.useSyncExternalStore(subscribe, getState);
-  const Screen = SCREENS[st.screen];
-  const tr = useScreenTransition(st.screen, st.game?.phase);
+  const shown = useShownScreen(st), screen = shown?.screen ?? st.screen, Screen = shown?.C;
+  const tr = useScreenTransition(screen, st.game?.phase);
+  const Sandbox = st.game?.sandbox ? loadedSandbox() : null; // (the Proving Ground's tools: their own chunk, screenLoad.ts)
+  React.useEffect(() => { warmNext(screen); }, [screen]);
   // --- SOUNDS FROM LOG LINES (owned by the FX pass) ---
   // Combat and area-map sounds now come from the engine's presentation events, played by the effects layer (game/fx)
   // in sync with what is seen. Log lines only sound for a fight or a story that has no events at all: a save from
@@ -79,9 +81,9 @@ export function App() {
   // --- END SOUNDS FROM LOG LINES ---
   // A refused action gets the error sound.
   React.useEffect(() => { if (st.toast && !st.toast.ok) sfx('error'); }, [st.toast?.at]);
-  React.useEffect(() => { window.scrollTo(0, 0); }, [st.screen]);
+  React.useEffect(() => { window.scrollTo(0, 0); }, [screen]);
   // Character creation has its own theme, "Intake" (fades in on arrival, out on leaving).
-  React.useEffect(() => { if (st.screen === 'create') playCreateMusic(); else stopCreateMusic(); }, [st.screen]);
+  React.useEffect(() => { if (screen === 'create') playCreateMusic(); else stopCreateMusic(); }, [screen]);
   const n = st.game?.story.entries.length || 0;
   const bar = st.role && st.conn !== 'online' ? (st.conn === 'host-away' ? 'The host is offline. Your screen will update when they return.' : st.conn === 'replaced' ? 'Opened in another tab: the room is there now.' : st.conn === 'error' ? 'Can\'t join: ' + (st.connNote || 'connection refused') : 'Connecting to room ' + st.code + '…') : null;
   const barP = usePresence(bar), toastP = usePresence(st.toast);
@@ -93,12 +95,12 @@ export function App() {
     const f = () => { const h = document.querySelector('header'); setBarTop(h ? Math.max(0, Math.round(h.getBoundingClientRect().bottom)) : 0); };
     f(); window.addEventListener('resize', f); const t = setInterval(f, 800);
     return () => { window.removeEventListener('resize', f); clearInterval(t); };
-  }, [!!barP.shown, st.screen]);
+  }, [!!barP.shown, screen]);
   const guestAway = st.conn === 'host-away' && st.role === 'guest';
   return (
     <>
       {/* key: a fresh logic instance per screen and character, so local state never leaks between them */}
-      <div key={'w' + st.screen} ref={tr.wrap} className={tr.inCls || undefined}><Screen key={st.screen + (st.levelupChar || '')} tick={st} /></div>
+      <div key={'w' + screen} ref={tr.wrap} className={tr.inCls || undefined}>{shown && Screen && <Screen key={screen + (shown.tick.levelupChar || '')} tick={shown.tick} />}</div>
       {/* The screen that just left: a frozen copy playing its out animation (never clickable). */}
       <div ref={tr.ghostHolder} aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 55, pointerEvents: 'none', overflow: 'hidden', display: tr.ghost ? 'block' : 'none' }} />
       {tr.ghost === 'combat-in' && !reducedMotion() && <div aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 56, pointerEvents: 'none', overflow: 'hidden' }}>
@@ -110,14 +112,14 @@ export function App() {
       {st.role && <NarratorVoice game={st.game || null} />}
       {st.role && <VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
       {st.role === 'host' && <MemoryPanel game={st.game || null} isHost side="left" compact />}
-      {st.screen === 'main' && <StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} />}
-      {st.role && <FxLayer game={st.game || null} screen={st.screen} />}
-      {st.role && <TurnIntro game={st.game || null} meId={st.me.id} screen={st.screen} />}
+      {screen === 'main' && <StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} />}
+      {st.role && <FxLayer game={st.game || null} screen={screen} />}
+      {st.role && <TurnIntro game={st.game || null} meId={st.me.id} screen={screen} />}
       {/* Spotlight cut-ins (decision 113): torn eye strips over a blurred screen, z-index 64. */}
-      {st.role && <CutInLayer game={st.game || null} screen={st.screen} />}
-      {st.role && <SandboxPanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={st.screen} />}
-      {st.role && <ModeCentre game={st.game || null} screen={st.screen} />}
-      {st.role && <MissionLayer game={st.game || null} screen={st.screen} />}
+      {st.role && <CutInLayer game={st.game || null} screen={screen} />}
+      {st.role && Sandbox && <Sandbox game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={screen} />}
+      {st.role && <ModeCentre game={st.game || null} screen={screen} />}
+      {st.role && <MissionLayer game={st.game || null} screen={screen} />}
       <PlaytestTools />
       <Tips />
       {/* The settings cog (every header's ⚙) and the in-game dialogs (never the browser's confirm/prompt/alert). */}

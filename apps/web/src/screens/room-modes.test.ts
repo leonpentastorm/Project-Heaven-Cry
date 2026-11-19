@@ -20,7 +20,7 @@ vi.mock('../game/store', () => ({
 vi.mock('../game/actionTip', async (orig) => ({ ...(await orig() as any), openTipOn: (el: any) => openTipOn(el) }));
 vi.mock('../game/report', () => ({ openReport: () => {} }));
 vi.mock('../game/charfile', () => ({ importCharacter: async () => null }));
-vi.mock('../game/sandbox', () => ({ openProvingGround: () => {}, leaveProvingGround: () => {} }));
+vi.mock('../game/provingGround', () => ({ openProvingGround: () => {}, leaveProvingGround: () => {} }));
 const { RoomLogic } = await import('./room.js');
 const { modeCards, testPlay, newRoomPlay, radioKey } = await import('../game/modes');
 const vals = (state: any = {}) => { const L: any = new RoomLogic({}); L.state = { ...L.state, ...state }; return L.renderVals(); };
