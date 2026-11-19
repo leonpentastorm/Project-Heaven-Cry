@@ -189,15 +189,15 @@
     },
     {
       "id": "figment_stare", "name": "Stare", "site": "figment_stare", "reach": { "tiles": 8, "side": "foe", "eyes": true },
-      "effects": [{ "op": "condition", "condition": "watched", "target": "target", "skip_save": true }],
+      "effects": [{ "op": "condition", "condition": "watched", "target": "target", "skip_save": true, "say": "{self} stares at {target}: it stays seen.", "fx": { "k": "stance", "what": "figment_order", "word": "STARE" } }],
       "text": "One unit it sees stays seen by your side until your next turn, Hidden or not.", "provisional": true
     },
     {
-      "id": "figment_draw_fire", "name": "Draw fire", "icon": "order-draw-fire", "site": "figment_order", "effects": [{ "op": "condition", "condition": "taunted", "rounds": 1, "via": "visualization", "targets": { "of": "self", "within": 3, "side": "foe", "sees": "line" } }],
+      "id": "figment_draw_fire", "name": "Draw fire", "icon": "order-draw-fire", "site": "figment_order", "effects": [{ "op": "condition", "condition": "taunted", "rounds": 1, "via": "visualization", "targets": { "of": "self", "within": 3, "side": "foe", "sees": "line" }, "say": "{self} draws the enemies' fire.", "fx": { "k": "stance", "what": "figment_order", "word": "DRAW FIRE" } }],
       "text": "Every enemy within {=effects.0.targets.within} tiles that can see it makes a Heart save or is Taunted by it for {=effects.0.rounds} round.", "provisional": true
     },
     {
-      "id": "figment_press", "name": "Press", "icon": "order-press", "site": "figment_order", "reach": { "tiles": 1, "side": "foe" }, "effects": [{ "op": "displace", "how": "push", "tiles": 1, "target": "target" }],
+      "id": "figment_press", "name": "Press", "icon": "order-press", "site": "figment_order", "reach": { "tiles": 1, "side": "foe" }, "effects": [{ "op": "displace", "how": "push", "tiles": 1, "target": "target", "say": "{self} shoves {target}{then}.", "fx": { "k": "stance", "what": "figment_order", "word": "PRESS" } }],
       "text": "It shoves an enemy next to it {=effects.0.tiles} tile away.", "provisional": true
     },
     {
@@ -209,15 +209,15 @@
       "text": "It gives one of your own stims to an ally next to it: the stim's own heal, or a Downed ally stabilised.", "provisional": true
     },
     {
-      "id": "figment_filch", "name": "Filch", "icon": "", "site": "figment_order", "reach": { "tiles": 1, "side": "foe" }, "effects": [{ "op": "take", "save": "body", "via": "visualization", "target": "target" }],
+      "id": "figment_filch", "name": "Filch", "icon": "", "site": "figment_order", "reach": { "tiles": 1, "side": "foe" }, "effects": [{ "op": "take", "save": "body", "via": "visualization", "target": "target", "say": "{self} reaches for {target}'s kit{then}.", "fx": { "k": "stance", "what": "figment_order", "word": "FILCH" } }],
       "text": "It lifts a throwable (else a spare magazine) from an enemy next to it onto its own tile; a Body save keeps it.", "provisional": true
     },
     {
-      "id": "figment_interpose", "name": "Interpose", "icon": "order-interpose", "site": "figment_order", "reach": { "tile": true, "tiles": 3, "beside": "ally" }, "effects": [{ "op": "displace", "to": "tile", "tiles": 3 }],
+      "id": "figment_interpose", "name": "Interpose", "icon": "order-interpose", "site": "figment_order", "reach": { "tile": true, "tiles": 3, "beside": "ally" }, "effects": [{ "op": "displace", "to": "tile", "tiles": 3, "say": "{self} steps in beside an ally.", "fx": { "k": "stance", "what": "figment_step", "word": "INTERPOSE" } }],
       "text": "It steps to a free tile next to an ally, within {=reach.tiles} tiles of it.", "provisional": true
     },
     {
-      "id": "figment_burst", "name": "Burst", "icon": "order-burst", "site": "figment_order", "amounts": { "burst": { "kind": "damage", "base": 20, "profile": "figment", "type": "explosive", "provisional": true } }, "effects": [{ "op": "deal", "amount": "burst", "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" } }, { "op": "unmake" }],
+      "id": "figment_burst", "name": "Burst", "icon": "order-burst", "site": "figment_order", "amounts": { "burst": { "kind": "damage", "base": 20, "profile": "figment", "type": "explosive", "provisional": true } }, "effects": [{ "op": "deal", "amount": "burst", "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" }, "say": "{self} bursts.", "fx": { "k": "stance", "what": "figment_order", "word": "BURST" } }, { "op": "unmake" }],
       "text": "It bursts: {=amounts.burst.base} on every unit next to it, both sides, and it is gone (no charge back, no Snap).", "provisional": true
     },
     {
@@ -225,7 +225,7 @@
       "text": "Its shot now, at an enemy it sees within {=reach.tiles} tiles.", "provisional": true
     },
     {
-      "id": "figment_redraw", "name": "Redraw", "icon": "order-redraw", "site": "figment_order", "res": { "vcharge": 1 }, "reach": { "tile": true, "tiles": 4 }, "effects": [{ "op": "displace", "to": "tile", "tiles": 4 }],
+      "id": "figment_redraw", "name": "Redraw", "icon": "order-redraw", "site": "figment_order", "res": { "vcharge": 1 }, "reach": { "tile": true, "tiles": 4 }, "effects": [{ "op": "displace", "to": "tile", "tiles": 4, "say": "{self} comes apart and reforms.", "fx": { "k": "stance", "what": "figment_blink", "word": "REDRAW" } }],
       "text": "It comes apart and reforms on a free tile within {=reach.tiles} tiles of it ({=res.vcharge} charge).", "provisional": true
     },
     {

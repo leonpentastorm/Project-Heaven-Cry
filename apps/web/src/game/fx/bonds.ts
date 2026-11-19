@@ -44,17 +44,22 @@ export interface BondKit {
 
 /** The tie kind whose mark this condition is, when that kind draws a line on the map. */
 const markKind = (id: unknown) => tieKinds().find((k) => !!k.mark && k.mark === id && !!k.line?.ink) || null;
-export interface BondMoment { what: 'tie' | 'reach' | 'heal' | 'guide'; from: string; to: string; ink: string; side: 'ally' | 'foe' | null }
+export interface BondMoment { what: 'tie' | 'reach' | 'heal' | 'tend' | 'guide'; from: string; to: string; ink: string; side: 'ally' | 'foe' | null }
 /** What a Bond or Tending event is on screen (pure, for the tests): a tie made, a reach resisted, a heal down a tie, a
  *  guide; else null (the plain handler only). lines: the view's tie lines now; actor: whose turn it is; sideOf: a
  *  unit's side (a shove between two of one side is a Guide). */
 export function bondFxOf(e: Partial<FxEvent> & { k: string }, lines: TieLine[], actor: string | null, sideOf: (id: string) => string | null = () => null): BondMoment | null {
-  if (e.k === 'cond' && e.target) {
-    const k = markKind(e.id); if (!k) return null;
+  if (e.k === 'cond' && e.target && markKind(e.id)) {
+    const k = markKind(e.id)!;
     const t = lines.find((l) => l.kind === k.id && l.to === e.target && l.from === actor) || lines.find((l) => l.kind === k.id && l.to === e.target);
     const from = t ? t.from : actor; if (!from || from === e.target) return null;
     if (e.resisted) return { what: 'reach', from, to: String(e.target), ink: k.line!.ink, side: null };
     return { what: 'tie', from, to: String(e.target), ink: k.line!.ink, side: t ? t.side : null };
+  }
+  // 0.32: Tending down a Bond to an ally that is not a heal (a shield, Settle, Soothe): the pulse runs down the line too
+  if ((e.k === 'cond' || e.k === 'boon') && e.target && actor && actor !== e.target && !e.resisted) {
+    const t = lines.find((l) => l.from === actor && l.to === e.target && l.side === 'ally');
+    if (t) return { what: 'tend', from: actor, to: String(e.target), ink: t.ink, side: t.side };
   }
   if (e.k === 'heal' && e.target && actor && actor !== e.target) {
     const t = lines.find((l) => l.from === actor && l.to === e.target);
@@ -66,7 +71,7 @@ export function bondFxOf(e: Partial<FxEvent> & { k: string }, lines: TieLine[], 
 /** The extra beat a Bond moment holds the stage before the plain effect plays (ms at Fast). */
 export function bondExtraBeat(m: BondMoment | null): number {
   if (!m || reducedMotion()) return 0;
-  return m.what === 'tie' ? BOND_MS.cast + BOND_MS.travel : m.what === 'reach' ? BOND_MS.cast + BOND_MS.travel : m.what === 'heal' ? BOND_MS.pulse : BOND_MS.guide;
+  return m.what === 'tie' ? BOND_MS.cast + BOND_MS.travel : m.what === 'reach' ? BOND_MS.cast + BOND_MS.travel : m.what === 'heal' || m.what === 'tend' ? BOND_MS.pulse : BOND_MS.guide;
 }
 
 /** The standing tie line on the map (game/tieLayer.ts), drawn in from its from end. */
@@ -111,9 +116,9 @@ function part(a: Pt, b: Pt, ink: string, dash: string, ms: number, K: BondKit) {
 /** Wrap the condition, heal and shove handlers (after every other wrapper) with the Bond moments. */
 export function wrapBonds(H: Record<string, (e: FxEvent) => void>, K: BondKit) {
   KIT = K;
-  const base = { cond: H.cond, heal: H.heal, shove: H.shove };
+  const base = { cond: H.cond, heal: H.heal, shove: H.shove, boon: H.boon };
   const moment = (e: FxEvent) => { try { return bondFxOf(e, K.lines(), K.actor(), sideOf); } catch { return null; } };
-  for (const k of ['cond', 'heal', 'shove'] as const) {
+  for (const k of ['cond', 'heal', 'shove', 'boon'] as const) {
     const b = base[k]; if (!b) continue;
     H[k] = (e) => {
       const m = moment(e); if (!m || reducedMotion()) { b(e); return; }
@@ -141,11 +146,18 @@ export function wrapBonds(H: Record<string, (e: FxEvent) => void>, K: BondKit) {
         }, BOND_MS.cast + BOND_MS.travel);
         return;
       }
-      if (m.what === 'heal') {
-        // the pulse runs down the line, then the plain heal (its one +N) lands
+      if (m.what === 'heal' || m.what === 'tend') {
+        // the Tender's small wind-up toward its Bonded unit, the pulse runs down the line, then the plain effect (a
+        // heal's one +N, a shield's +N, the condition's word) lands, and the tended token answers in the line's ink
+        windUp(K, m.from, K.posOf(m.from), tp, BOND_MS.pulse * 0.6, true, m.ink);
         pulse(fp, tp, m.ink, BOND_MS.pulse);
         K.play('sg_command', fp, { rate: 1.4, gain: 0.3 });
-        after(() => { ring(tp, m.ink, 420, { from: 0.8, to: 1.25, width: 4 }); b(e); }, BOND_MS.pulse);
+        if (m.what === 'tend' && k === 'cond') K.play('soul_hold', tp, { rate: 1.5, gain: 0.35, delay: BOND_MS.pulse });
+        after(() => {
+          ring(tp, m.ink, 420, { from: 0.8, to: 1.25, width: 4 });
+          const tt = K.tokOf(m.to, K.posOf(m.to)); if (tt) anim(tt, [{ filter: 'none', translate: '0 0' }, { filter: 'brightness(1.4) drop-shadow(0 0 7px ' + m.ink + ')', translate: '0 -3px', offset: 0.35 }, { filter: 'none', translate: '0 0' }], { duration: 520, easing: 'ease-out' });
+          b(e);
+        }, BOND_MS.pulse);
         return;
       }
       // guide: the guide's small gesture and a faint thread, then the slide

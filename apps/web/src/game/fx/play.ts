@@ -17,7 +17,7 @@ import { wrapRanged, rangedBeat, rangedBatch, resetRanged, drawsOwnLoose } from 
 import { wrapTechFx, techPrepass, techExtraBeat } from './techniqueFx';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
-import { wrapFigments, figmentBeat, figmentExtraBeat, figOf, noteFigments } from './figments';
+import { wrapFigments, figmentBeat, figmentExtraBeat, figOf, noteFigments, figmentBatch } from './figments';
 import { leanIn, recoil } from './sigilBody';
 import { wrapBreaker, breakerBeat, noteBreaker } from './breaker';
 import { wrapPressure, pressureBeat, resetPressure } from './pressure';
@@ -1605,6 +1605,7 @@ export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number; 
   noteQueued(stream, Math.max(...evs.map((e) => e.n || 0)));
   if (opts.from == null) rangedBatch(evs, stream); // fx/ranged.ts: tag the batch's techniques in order (a new fight forgets the last)
   faithBatch(evs); // fx/faith.ts: each Chaplain moment tied to the unit it landed on (a data row's fx is sent at its holder)
+  figmentBatch(evs); // fx/figments.ts: a Figment's ordered move (Redraw, Interpose) marked from its row's fx
   silentBatch(evs); // fx/silent.ts: an HP change no event draws a number for gets its number (no silent heal or damage)
   // A Miracle is a fixed hold, never compressed or skipped (everyone in the room sees the god answer, even in a backlog
   // or a decided fight), and what follows it (its effects) starts as its cut-in lands: Leon's order, "the screen zooms

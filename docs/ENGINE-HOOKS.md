@@ -1709,10 +1709,10 @@ A data row may name an fx kind for its op; the client draws it if a module there
 | `rally` | `radius` | `classes:rally` | no | `fx/classes.ts` |
 | `shield` | `amount` | `perks:last_wall` | yes | `actionPickers.ts`, `camera.ts`, `faithArt.ts`, `faithView.ts`, `fx/faith.ts`, `fx/follow.ts`, `fx/play.ts`, `fx/soul.ts`, `sandbox.tsx` |
 | `smite` |  | `classes:smite` | no | `fx/faith.ts` |
-| `stance` | `what`, `word` | `items:open_hand`, `items:jab`, `items:palm`, `items:sweep` (+4) | yes | `camera.ts`, `fx/melee-techniques.ts`, `fx/openhand.ts`, `fx/ranged.ts`, `fx/shadow.ts` |
+| `stance` | `what`, `word` | `figments:figment_stare`, `figments:figment_draw_fire`, `figments:figment_press`, `figments:figment_filch` (+11) | yes | `camera.ts`, `fx/figments.ts`, `fx/melee-techniques.ts`, `fx/openhand.ts`, `fx/ranged.ts`, `fx/shadow.ts` |
 | `ward_seal` |  | `classes:ward` | no | `fx/faith.ts` |
 
-#### `stance` words from data (12; fx `{k: "stance", what, word}`)
+#### `stance` words from data (15; fx `{k: "stance", what, word}`)
 
 The client draws a stance by its `what` (a module naming it) or, failing that, the row's own `word` over the token.
 
@@ -1720,6 +1720,9 @@ The client draws a stance by its `what` (a module naming it) or, failing that, t
 | --- | --- | --- | --- |
 | `break` |  | `skills:shadow.break` | `fx/bonds.ts`, `fx/brass.ts`, `fx/breaker.ts`, `fx/melee-techniques.ts`, `fx/rangedParts.ts`, `fx/shadow.ts` |
 | `breath` | BREATH | `items:open_hand` | `feelingsView.ts`, `fx/feelings.ts`, `fx/openhand.ts` |
+| `figment_blink` | REDRAW | `figments:figment_redraw` | `fx/figments.ts` |
+| `figment_order` | STARE | `figments:figment_stare`, `figments:figment_draw_fire`, `figments:figment_press`, `figments:figment_filch` (+1) | `fx/figments.ts` |
+| `figment_step` | INTERPOSE | `figments:figment_interpose` | the generic word |
 | `ghost` |  | `skills:ingenuity` | `fx/shadow.ts` |
 | `jab` | JAB | `items:jab` | `fx/openhand.ts`, `fx/techniqueFx.ts`, `fx/techniqueParts.ts` |
 | `palm` | PALM | `items:palm` | `fx/openhand.ts` |

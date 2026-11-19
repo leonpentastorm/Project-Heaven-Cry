@@ -87,3 +87,21 @@ describe('figments on the fight map', () => {
     vi.advanceTimersByTime(3000); expect(g.layer.childElementCount).toBe(0);
   });
 });
+
+// 0.32 effects lane: an order from data (figments.json verbs' fx) and a Figment's ordered move.
+import { figmentBatch } from './figments';
+import FJ032 from '../../../../../data/figments.json';
+describe('0.32: Figment orders from data', () => {
+  it('every order row that runs ops says what it did and names a figment_* stance (so the order link and the word show)', () => {
+    for (const v of (FJ032 as any).verbs) {
+      if (!v.effects?.length) continue;
+      const first = v.effects[0];
+      expect(typeof first.say, v.id).toBe('string');
+      expect(first.fx?.k, v.id).toBe('stance'); expect(String(first.fx?.what), v.id).toMatch(/^figment_/); expect(first.fx?.word, v.id).toBeTruthy();
+    }
+  });
+  it('figmentBatch marks a shove of a Figment with the row\'s move (blink, step); a plain shove stays a shove', () => {
+    const evs: any[] = [{ k: 'shove', target: 'f1', from: '1,1', to: '3,1', ok: true }, { k: 'stance', target: 'f1', what: 'figment_blink' }, { k: 'shove', target: 'foe', from: '4,1', to: '5,1', ok: true }];
+    figmentBatch(evs); expect(evs[0]._how).toBe('figment_blink'); expect(evs[2]._how).toBeUndefined();
+  });
+});
