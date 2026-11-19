@@ -3760,6 +3760,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-torso_class1_light--fine",
+      "path": "art/icons/gear/armour-torso_class1_light--fine.png",
+      "sha256": "03794b424c2d28b532fdf59b23a753d47301589b2089a36e9df34029fca32401",
+      "label": "Light Armour — Fine",
+      "family": "armour-torso_class1_light",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-torso_class1_light--fine.png",
+        "sha256": "60cd25c012358adf8ca992e2ee3693ff744379649085070e9c0e3138f2cd952b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-torso_class1_light--fine.png",
+        "sha256": "03794b424c2d28b532fdf59b23a753d47301589b2089a36e9df34029fca32401"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-torso_class1_light--fine.txt",
+        "sha256": "92847abe9e1bc4eab3ee4ea1076ecb9850497713f5bb524717fdb7b010f72b0d"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-torso_class1_light.png",
+          "sha256": "993f7915c6be69db181495b5a8f185813e0ffa40a3e5deb9f5ad1fbd4ef5207f"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-torso_class1_light--fine.png",
+        "128": "art/icons/gear/exports/128/armour-torso_class1_light--fine.png",
+        "64": "art/icons/gear/exports/64/armour-torso_class1_light--fine.png",
+        "32": "art/icons/gear/exports/32/armour-torso_class1_light--fine.png"
+      },
+      "export_hashes": {
+        "256": "6b047768eda145c89b53210e964cd5a6549039f9226051b71cf7f1b87ee29ddd",
+        "128": "63b0addcfc76cf850b8e108640a36f285aba7d47396913e301d23cad29ac7b4b",
+        "64": "80a3393c3994aae91d0d791aa2271b3e825c2ba59cc2c1af050ab01451c4966d",
+        "32": "cc1cdf3cf98ffd804dda33fd33484eff71e81c3da912c6a84c01dca3ef7c0148"
+      },
+      "grade": "fine",
+      "standard_id": "armour-torso_class1_light",
+      "outline": {
+        "solid_alpha_iou": 0.9854136031280283,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 14
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

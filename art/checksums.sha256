@@ -1218,7 +1218,7 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-282797f43ff25d5d412035a5a58db72c99a69739c9f8ff1c67dba183338d02ca  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+ce71ede52d72e3bbb0538067945adad6ce5433fb6c04e6a3cc7d86057b6b7e05  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
 bf138c842a27a387f3f32bddca602e1f2d53ff21d66041340aae9d6d9f7ef123  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/focus-emanator--celestial/v1/prompt.txt
 afa5132f5305c2e27c525dea37fcac1a01f31c2bcb189263eb7c446a403d8a8a  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/focus-emanator--celestial/v1/source.png
 4ca0da8335e88d7b580d209efe15ba81c0da59442d8e0ceecbc41a28c7e32df2  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/focus-evoker--relic/v1/prompt.txt
@@ -1264,7 +1264,8 @@ b12143083cdfe3c5ceee491749c91166b76383cf92fafa2bb4789d5e336f14f7  art/_archive/g
 5bafd9566182f158985200353d0550461cfd9085f61188ef3bc81fe52c493c4d  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-ork_machete--masterwork.json
 f85847b07f42b0eaf1f645e351ca8a5bdc0a03f90b1a19d3eb10d8d9fefe7a6c  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-sabre--fine.json
 9e9bbb8dfef43cad55fe67a508994d3d5aba04f34c2298ca5792d8007429ca4c  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_axe--fine.json
-e7ea9a2bdaae13a92cc981551681b0d46f46fe45560c04b5e9075d856fbf8d00  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+8b5a0817e6d7f180e4ea1a60e1d4e18a6c48589a633eb601808693f4db36fad9  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+03794b424c2d28b532fdf59b23a753d47301589b2089a36e9df34029fca32401  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-torso_class1_light--fine.png
 00a5119141fa176934dd095939a54800537b80e26da982ed2ad5e14248f0dc1d  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-attuner--celestial.png
 ff24e000027fc14855fa7f0004a048883ccbff82788124172d6c2742382d99f1  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-attuner--fine.png
 6e60057ed370c9a255905d12320800856bfb0fee7b6c9082065972d668d1b228  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-attuner--masterwork.png
@@ -1329,7 +1330,7 @@ dab3bbbdf442bc217948fd60eee32f838a211d1eb1fe57e133a194b9c3d5e740  art/_archive/g
 876ce07be45081a7e7314efc77aead7926e1ade2d7a48c37f2d7dac89b8aa268  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--fine.png
 ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--masterwork.png
 9b36f752a3f17b24c47de7d956ab451043d216ca9d97ee734691013ea43c4ab9  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--relic.png
-d83fa6c0471184302ca762c1cffac95d5891a92dbc637739ffafe2945346635c  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+b8ca35dc113a3720e543f65d72a2fb52c6fa17e3f08888a23dec8a0253641a3f  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 3c46989b798cd078d9449c9b6545e384e8a3b1390a506bac6e912d68ff645cb2  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--celestial.txt
 7047a50aab10605977823d0fc534bafb15fd1ee5269ff15faf7ac47bfd594d6d  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--fine.txt
 3fd67ee62283e4aa8ac94a6f14c1d100890c870dd673bb5864cc850fa51ddc65  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--masterwork.txt
@@ -1462,7 +1463,9 @@ f31bd9e8a0540c7383f8310931a78e08efe28e692f5d7d9c470dbc59372d4a69  art/_archive/g
 9f68b7cbbd608181d6cca6fc54e49bf23085deb5286e7827370197db31d33ec8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--fine.txt
 e8081d259555e24814654d1db508a91e3c8ccb6805bca5ca00465c7ef0f6f70f  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--masterwork.txt
 bee7477a9e07b82ad229c32541939deea912fb45b3155a89d95d7db1a2a39834  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--relic.txt
-cc98a35bdb35a192a439ce71f41b9f9ead440f0af3ab77d04ca97fc543eaefd4  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+709847e8868cb751f0e0920e5fdbdd07b8b44c6141c8b350fd0647e4d4d2f8ed  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+e322ff88747939c2e95845ef99a06c050c6e0e4e6bf1ecdd474c1dc34d71be1f  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-torso_class1_light-32px.png
+c96379d16e217dd832484f96d6aa2c35daa0ad2d702741664ba74551f4104e5d  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-torso_class1_light-64px.png
 5bbc6038c5955b6192399b9dc964ec0a217a779e3049801e9bc3b8dab5d76f03  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/focus-attuner-32px.png
 1a49eb1a05bc4a0e8b69d23229d60376bbf0f2e8d2ad8eaec8c9443bb08b060e  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/focus-attuner-64px.png
 6eff88afcee83b7e101651cd6c50ce3761a860e6441847952f0f890e4c2df2e2  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/focus-emanator-32px.png
@@ -1500,6 +1503,7 @@ f4ff874513e502a05921a3a9a3ac0052b2cf1cfbdf6b1233f8926e2688d1bffd  art/_archive/g
 4cd98f23464d27f562303306087f908f96300772c21ec7526a9f613769887072  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-striking_gloves-32px.png
 164148724f5348be4591d959211521bdca8b69c8e6becb45d09ed8ec2c67e83b  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-striking_gloves-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-19-kept-blade-grades/source-brief.md
+60cd25c012358adf8ca992e2ee3693ff744379649085070e9c0e3138f2cd952b  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-torso_class1_light--fine.png
 4651db7fa73f312e37b6bb7828a4f88bb2650fd8037a6df2a205e84ed61d726c  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-attuner--celestial.png
 de65fc635449366cf2d871b1ecd5b29860ecc29c406eae54702df78bb7384483  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-attuner--fine.png
 0bbd17a06062c2953e33a0add2d41dcfc3beb54090ebccda6708bf2e1b389cf8  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-attuner--masterwork.png
@@ -5240,7 +5244,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-da67d4d40053f498d0201bdaba9a031aaf7a9f442463ff0f64cb94a2bffc1e7b  art/catalog.json
+387e56391a886b6765787a1abc9e3589ceff5fd41a79a3db85fc29b9809221f3  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6822,6 +6826,7 @@ da04bbb067c16ca0c133c96426d79b1cb0ca8c46ab3eb533b34a12017e7af6ed  art/icons/gear
 a4041379dedc8aa9b2468e69b5e6cf60021c4581dacf44837461c54a3ddc9b9a  art/icons/gear/armour-smiling_mask.png
 819496772c36e8eba62f4b709185feeca90f3d9db192af408d91fc26b77a18f2  art/icons/gear/armour-spotters_monocle.png
 694555171cd0bc70dd47e3fb1c2f33283f84790423e9eb464977fc37e4a4c265  art/icons/gear/armour-tactical_gloves.png
+03794b424c2d28b532fdf59b23a753d47301589b2089a36e9df34029fca32401  art/icons/gear/armour-torso_class1_light--fine.png
 993f7915c6be69db181495b5a8f185813e0ffa40a3e5deb9f5ad1fbd4ef5207f  art/icons/gear/armour-torso_class1_light.png
 668167f8973f2c10d039bad7d0a07d5db593d1722021fdc1b25ed2f5da29ef3d  art/icons/gear/armour-torso_class2_medium.png
 8240c5b8ec6b2d169cc8a52ac2c0b7192cd06137f9ac3c75e5b2c4d436b0b3c9  art/icons/gear/armour-torso_class3_heavy.png
@@ -6872,6 +6877,7 @@ f5ccf02ad8d9e6359281fa122dfc133863af8350bd6034b399314bafc58f590a  art/icons/gear
 494710c49f93bf4ce35bc655bd1fcedeebee76acaafe7d8595d8ef5f67dc68dd  art/icons/gear/exports/128/armour-smiling_mask.png
 b6e76777c5a72316bd8549160afe9cc97ded0da1bc3bfea11d50415017aaf761  art/icons/gear/exports/128/armour-spotters_monocle.png
 db4fac43c1167d9feb47e6e7bd17f2464aa96b7cd439c121ccd9827ad91d5806  art/icons/gear/exports/128/armour-tactical_gloves.png
+63b0addcfc76cf850b8e108640a36f285aba7d47396913e301d23cad29ac7b4b  art/icons/gear/exports/128/armour-torso_class1_light--fine.png
 335d9f4368f69bbc4b0ac847a9b5d81d9efa5fc2acc6c3ee55dc9226ab9f7f25  art/icons/gear/exports/128/armour-torso_class1_light.png
 b5b565872b26738b2fc75ad5a476a2bd17568a1dd909ad41210925bcb063a39c  art/icons/gear/exports/128/armour-torso_class2_medium.png
 a408b52c26c21749fee2ed47bcab1c0e8b1e4c328943b3e10e8eb8cdcef21e41  art/icons/gear/exports/128/armour-torso_class3_heavy.png
@@ -7162,6 +7168,7 @@ ac64fccb231b1b7e604eb58c830f38d4570ae8b487e86b3df9b9f81f32838169  art/icons/gear
 1f88e60c6b27398e7582476f7b7719c2c1fb3bd591dea563c49d2500eb0de31b  art/icons/gear/exports/256/armour-smiling_mask.png
 1a34055f8aac8ea5e9ecbd13b093cecb9d3ccc3ffc6966133a01e55da6af578d  art/icons/gear/exports/256/armour-spotters_monocle.png
 caf3fa0dd9dcac4a7e93efdb48122d4b4ffa85bbb739a108923cedb40b291226  art/icons/gear/exports/256/armour-tactical_gloves.png
+6b047768eda145c89b53210e964cd5a6549039f9226051b71cf7f1b87ee29ddd  art/icons/gear/exports/256/armour-torso_class1_light--fine.png
 efb83ae644678c65d9d4742a7f741b88d3055ff28498e5f0530e7592ac9f1e15  art/icons/gear/exports/256/armour-torso_class1_light.png
 49747f85783825db24fbfcc6b032bb59ad498c7baa4b3dafe5fc89463c9bd316  art/icons/gear/exports/256/armour-torso_class2_medium.png
 80db1864e218fc8f667365ddc9db105ef098693da281ba028397f25ebbb17b43  art/icons/gear/exports/256/armour-torso_class3_heavy.png
@@ -7452,6 +7459,7 @@ bf0cfda30633c5a318b7cc51723c63730079c71ee9fab33f9ab5556bd384fd78  art/icons/gear
 fa0346aff59805a3a3e425da7ba57bf06fefced4af88231be977f531d34c3334  art/icons/gear/exports/32/armour-smiling_mask.png
 0151d8359be9ee1a44cd90dac911b498e956045968a2c1a3f5734713ebb051c0  art/icons/gear/exports/32/armour-spotters_monocle.png
 3b85c0705acab9e5e75160b45b2cf3d2da78f3f944250f43db05d87a37479af5  art/icons/gear/exports/32/armour-tactical_gloves.png
+cc1cdf3cf98ffd804dda33fd33484eff71e81c3da912c6a84c01dca3ef7c0148  art/icons/gear/exports/32/armour-torso_class1_light--fine.png
 59a4fc6b4c6c64ed94504c9d2105cc2057c8af6e1a9fac10baa2e8f703b52b0b  art/icons/gear/exports/32/armour-torso_class1_light.png
 e246accc90ed96bdc43ff12469d99481be682902838a069acea321df4d0d4dd6  art/icons/gear/exports/32/armour-torso_class2_medium.png
 c684f30cffb06499ed24b68a302d49c253c11a9fbdac95b9a4ec399bb0de0871  art/icons/gear/exports/32/armour-torso_class3_heavy.png
@@ -7742,6 +7750,7 @@ f874974ce63368b7699333c77f3db9a5b0f84d749d7b1456f82cd48967fb2d43  art/icons/gear
 f4d36a415d8c620b18c7050b0af75748201858ee1444c0165f62ead7527fc4d3  art/icons/gear/exports/64/armour-smiling_mask.png
 49f64c0dedc7b1993281729e2fdbcb043fd74efc0d972376a7c5bfdb5523cd06  art/icons/gear/exports/64/armour-spotters_monocle.png
 ebdefccccd0375bb1b77aecbaea1bf10190bb057e356b440a1ec176cdd1bfc16  art/icons/gear/exports/64/armour-tactical_gloves.png
+80a3393c3994aae91d0d791aa2271b3e825c2ba59cc2c1af050ab01451c4966d  art/icons/gear/exports/64/armour-torso_class1_light--fine.png
 45ee1acfc6f8603c41cb5be631f9ef9a45ba9fa1c281a9f29b371b022ae253d4  art/icons/gear/exports/64/armour-torso_class1_light.png
 1444679cd083fa14b4bb80ad34cfe26cfb17622b6f50cc3854d4b69aaf0414d3  art/icons/gear/exports/64/armour-torso_class2_medium.png
 d3c49d0d06afd1dff779f04946dce896d4e445664721cd69d18cac8ff5c77386  art/icons/gear/exports/64/armour-torso_class3_heavy.png
