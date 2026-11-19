@@ -1604,11 +1604,22 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Allies within {=tiers.I.numbers.tiles} tiles roll Fear saves with your Guts in place of their own. II: Allies within {=tiers.II.effects.1.if.target_within} tiles roll Fear saves with your Guts in place of their own, and have {=tiers.II.effects.1.value|signed} on their Heart saves.",
+      "text": "I: Allies within {=tiers.I.effects.0.if.target_within} tiles roll Fear saves with your Guts in place of their own (when yours is better). II: Allies within {=tiers.II.effects.1.if.target_within} tiles roll Fear saves with your Guts in place of their own (when yours is better), and have {=tiers.II.effects.1.value|signed} on their Heart saves.",
       "effects": [
         {
-          "op": "narrator",
-          "note": "Allies within 3 tiles of this character roll Fear saves with its Guts in place of their own (no engine half yet: rules 1.73 item 5812, needs a save's skill swap)."
+          "op": "roll_with",
+          "when": "save",
+          "skill": "guts",
+          "if_higher": true,
+          "if": {
+            "target": "ally",
+            "target_within": 3,
+            "cond": [
+              "fear"
+            ],
+            "self_alive": true
+          },
+          "label": "Point Man"
         }
       ],
       "tiers": {
@@ -1620,17 +1631,25 @@
             }
           ],
           "ap_cost": null,
-          "text": "Allies within {=tiers.I.numbers.tiles} tiles roll Fear saves with your Guts in place of their own.",
-          "short": "Allies within {=tiers.I.numbers.tiles} tiles save against Fear with your Guts",
+          "text": "Allies within {=tiers.I.effects.0.if.target_within} tiles roll Fear saves with your Guts in place of their own (when yours is better).",
+          "short": "Allies within {=tiers.I.effects.0.if.target_within} tiles save against Fear with your Guts",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Allies within 3 tiles of this character roll Fear saves with its Guts in place of their own (no engine half yet: rules 1.73 item 5812, needs a save's skill swap)."
+              "op": "roll_with",
+              "when": "save",
+              "skill": "guts",
+              "if_higher": true,
+              "if": {
+                "target": "ally",
+                "target_within": 3,
+                "cond": [
+                  "fear"
+                ],
+                "self_alive": true
+              },
+              "label": "Point Man"
             }
-          ],
-          "numbers": {
-            "tiles": 3
-          }
+          ]
         },
         "II": {
           "requires": [
@@ -1640,12 +1659,23 @@
             }
           ],
           "ap_cost": null,
-          "text": "Allies within {=tiers.II.effects.1.if.target_within} tiles roll Fear saves with your Guts in place of their own, and have {=tiers.II.effects.1.value|signed} on their Heart saves.",
+          "text": "Allies within {=tiers.II.effects.1.if.target_within} tiles roll Fear saves with your Guts in place of their own (when yours is better), and have {=tiers.II.effects.1.value|signed} on their Heart saves.",
           "short": "And {=tiers.II.effects.1.value|signed} on their Heart saves",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Allies within 3 tiles of this character roll Fear saves with its Guts in place of their own (no engine half yet: rules 1.73 item 5812, needs a save's skill swap)."
+              "op": "roll_with",
+              "when": "save",
+              "skill": "guts",
+              "if_higher": true,
+              "if": {
+                "target": "ally",
+                "target_within": 3,
+                "cond": [
+                  "fear"
+                ],
+                "self_alive": true
+              },
+              "label": "Point Man"
             },
             {
               "op": "roll_mod",
@@ -1667,17 +1697,14 @@
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "fear",
         "support"
       ],
       "provisional": true,
-      "source": "rules 1.73 (Body), 0.32: the Strength step",
-      "numbers": {
-        "tiles": 3
-      }
+      "source": "rules 1.73 (Body), 0.32: the Strength step"
     },
     {
       "id": "unflinching",

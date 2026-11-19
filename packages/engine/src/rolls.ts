@@ -21,7 +21,8 @@ import rulesJ from '../../../data/rules.json';
 import type { Combat, Unit } from './combat';
 import { emitFx } from './combat';
 import { emit, hookUsed, charOfUnit } from './effects/hooks';
-import { RARITY, focusRarity } from './character';
+import { RARITY, focusRarity, mod } from './character';
+import { SKILL } from './data';
 import { d20, type Rng } from './rng';
 
 const R: any = (rulesJ as any).rolls || {}, LADDER: any = (rulesJ as any).resolution?.tn_ladder || {};
@@ -149,13 +150,30 @@ export function rollSave(cb: Combat, rng: Rng, s: SaveSpec): RollResult {
   if ((t as any).feelSaveNext && !sv.fail) { delete (t as any).feelSaveNext; return skip('auto', true, 'Defiance'); }
   if (sv.pass) return skip('auto', true, sv.why || '');
   if (sv.fail) return skip('no_save', false, sv.why || '');
-  const parts: RollPart[] = [{ add: s.mod, label: s.fam + ' save' }, ...(sv.saveAdd ? [{ add: sv.saveAdd, label: 'items' }] : [])];
+  // rules 1.77 item 6506: a roll_with on the save (Point Man: your Guts in place of an ally's own save) gives the best
+  // offered holder's skill modifier in place of the save's own, never on top of it (if_higher: only when it is higher)
+  const rw = saveRollWith(sv.rollWith, s.mod);
+  const parts: RollPart[] = [rw ? { add: rw.mod, label: rw.label } : { add: s.mod, label: s.fam + ' save' }, ...(sv.saveAdd ? [{ add: sv.saveAdd, label: 'items' }] : [])];
   const fa = s.via ? focusAccTerm(s.by, s.via) : null; // rules 1.43: a graded focus makes its door's forced saves harder
   const res = judge('save', rollD20(rng, { adv: s.adv }), parts, s.tn + (sv.tnAdd || 0) + (fa?.v || 0), { fam: s.fam, ...(s.lead ? { lead: s.lead } : {}) });
   if (s.fx !== false) rollFx(cb, res, t, { by: s.by, why: s.id });
   return res;
 }
 
+/** The best roll_with offer on a save (rules 1.77 item 6506): each offer names a skill (or a list) of its holder
+ * (`from`); its modifier stands in place of the save's own `own`. null: none offered, or none higher where it must be. */
+function saveRollWith(offers: { skill: string | string[]; ifHigher: boolean; label: string; from?: Unit }[] | undefined, own: number): { mod: number; label: string } | null {
+  let best: { mod: number; label: string } | null = null;
+  for (const o of offers || []) {
+    const c = charOfUnit(o.from); if (!c) continue;
+    for (const k of ([] as string[]).concat(o.skill || [])) {
+      if (!SKILL[k]) continue;
+      const m = mod(c.skills[k] || 0);
+      if ((!o.ifHigher || m > own) && (!best || m > best.mod)) best = { mod: m, label: SKILL[k].name + (o.label ? ' (' + o.label + ')' : '') };
+    }
+  }
+  return best;
+}
 /** Two rollers against each other: each a d20 + modifier, `a` first. `a` wins on the higher total; a tie goes to `b`
  * (the defender: data/rules.json resolution.opposed_check). No natural 1 or 20. Two dice are drawn, a's then b's. */
 export function contest(cb: Combat | null | undefined, rng: Rng, a: { by?: Unit | null; mod: number }, b: { by?: Unit | null; mod: number }, why = ''): { a: RollResult; b: RollResult; won: boolean; text: string } {

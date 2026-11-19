@@ -13200,3 +13200,8 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       Steady I (rules 1.73 item 5811 completed): Fear can't stop you attacking its source or moving toward it; Fear's
       to-hit penalty stays (the condition row's own). Steady is `adjudication: engine` now (its tier II keeps its
       Fear-and-Nausea cap).
+6506. **A save may roll with another skill** (op `roll_with` on the trigger `save`, the attack's ask: one place picks
+      the skill, `rolls.ts rollSave`): the save rolls with the HOLDER's modifier in that skill in place of the saver's
+      own save, never on top of it. Point Man I and II (rules 1.73 item 5812 completed): an ally within 3 tiles rolls its
+      Fear saves with your Guts in place of its own, when yours is better (`if_higher`; PROVISIONAL: "in place of" read
+      as never worse). The roll's read-out names it ("Guts (Point Man)"). Point Man is `adjudication: engine`.

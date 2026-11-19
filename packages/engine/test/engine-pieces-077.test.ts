@@ -3,7 +3,7 @@
 // rules each unlocked. Every rule goes through the reducer (the helpers' fight, a real action) or a real blow; every
 // number is read from data.
 import { describe, it, expect } from 'vitest';
-import { PERK, condOn, actionsFor, previewAttack } from '../src';
+import { PERK, condOn, actionsFor, previewAttack, saveAgainst } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 import { applyCond } from '../src/magic';
 import { resOf } from '../src/tactics';
@@ -103,5 +103,18 @@ describe('Fear reads a stat (item 6505): Steady I', () => {
     b.f.act({ type: 'combat/move', unitId: b.id, to: '3,5' } as any); expect(b.f.unit(b.id).pos).toBe('3,5');
     b.f.act({ type: 'combat/attack', unitId: b.id, targetId: b.f.foe.id, mode: 'shot' } as any);
     expect(b.f.cb.log.some((l: string) => /Afraid/.test(l))).toBe(false);
+  });
+});
+
+describe('a save may roll with another skill (item 6506): Point Man I', () => {
+  it('an ally within reach rolls its Fear save with the holder’s Guts; out of reach, or without the perk, its own save', () => {
+    const rw = (PERK as any).point_man.tiers.I.effects[0]; expect(rw.op).toBe('roll_with'); expect(rw.skill).toBe('guts');
+    const labels = (near: boolean, perk: boolean) => { const f = fightWith([{ name: 'Point', skills: { guts: 9 }, ...(perk ? { perks: { point_man: 'I' } } : {}) }, { name: 'Friend' }], [{ at: 'H6' }]);
+      const [pm, fr] = f.pcs; f.unit(pm.id).pos = '2,5'; f.unit(fr.id).pos = near ? '3,5' : '14,1';
+      const r = withGame(f.g, () => saveAgainst(f.cb, f.g.rng, f.foe, f.unit(fr.id), 'heart', 'fear'));
+      return r.parts.map((x: any) => x.label).join(' '); };
+    expect(labels(true, true)).toMatch(/Guts \(Point Man\)/);
+    expect(labels(false, true)).not.toMatch(/Guts/);
+    expect(labels(true, false)).not.toMatch(/Guts/);
   });
 });
