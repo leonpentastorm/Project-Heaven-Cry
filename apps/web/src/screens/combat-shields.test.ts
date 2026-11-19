@@ -49,12 +49,12 @@ describe('shields on the token and the card', () => {
     expect(hb.amount).toBe(80); expect(hb.rescaled).toBe(true); expect(hb.hpW).toBeCloseTo(200 / 280 * 100); expect(hb.shW).toBeCloseTo(80 / 280 * 100);
     expect(t.hpSeg).toBe(hb.segStyle); expect(t.hpFill).toContain('width: ' + hb.hpW + '%');
     expect(t.t.sh.lines.map((l: any) => [l.glyph, l.name, l.amount])).toEqual([[GLYPH.layer, 'Ward', '30'], [GLYPH.base, L.base.name, '50']]);
-    expect(t.t.sh.absorb).toBe('Absorbs up to 80 before HP'); expect(t.t.sh.head).toBe(L.head);
+    expect(t.t.sh.absorb).toBe('Stops up to 80 of a blow before HP'); expect(t.t.sh.head).toBe(L.head);
     // the rule line is your panel's and the target card's, never every hover card (it ran the card off the screen)
     // (0.31.0: on your panel the rule is behind the Shields fold's "?", never a paragraph)
     expect(t.t.sh.hasRule).toBe(false); expect(v.me.sh.hasRule).toBe(false); expect(v.me.hasShRule).toBe(true); expect(v.me.shRule).toBe(L.rule);
     expect(v.me.hb.hasSh).toBe(true); expect(v.me.hb.plus).toBe('+80'); expect(v.me.hb.shTip).toContain('Ward 30'); expect(v.me.shHead).toContain('80');
-    expect(v.me.sh.lines).toHaveLength(2); expect(v.me.sh.absorb).toBe('Absorbs up to 80 before HP');
+    expect(v.me.sh.lines).toHaveLength(2); expect(v.me.sh.absorb).toBe('Stops up to 80 of a blow before HP');
     expect(t.label).toContain(L.head + ': '); expect(t.label).toContain('Ward 30');
     // the chip and the status read every shield, never the base one alone (a friend's row once said +50 with 80 in front)
     // (0.31.0: never a chip of the status strip, never in the one-line summary: the HP bar's segment and its "+80" say it)
@@ -75,7 +75,7 @@ describe('shields on the token and the card', () => {
     const v = screen().renderVals(), t = tileOf(v, e), sv = shieldsView(G.combat as any, e);
     expect(sv.known).toBe(false);
     expect(t.t.sh.lines.map((l: any) => [l.name, l.amount])).toEqual([[L.base.name, 'STRONG']]);
-    expect(t.t.sh.absorb).toBe('Absorbs ' + sv.allWord + ' before HP'); expect(t.t.sh.absorb).not.toMatch(/\d/);
+    expect(t.t.sh.absorb).toBe('Stops a ' + sv.allWord + ' amount of a blow before HP'); expect(t.t.sh.absorb).not.toMatch(/\d/);
     expect(t.label).not.toContain('60');
     // its HP is not known: the bar holds only the segment, at the word's share of max HP
     expect(t.hasHp).toBe(true); expect(t.hpSeg).toContain('width: ' + (L.size.find((r: any) => r.word === 'strong').bar * 100).toFixed(2) + '%');
@@ -89,8 +89,8 @@ describe('shields on the token and the card', () => {
     expect(t.hasHpSh).toBe(true); expect(t.hpSeg).not.toContain('NaN'); expect(t.hasGuard).toBe(true);
     expect(t.t.sh.hasGuard).toBe(true); expect(t.t.sh.hasGuardLast).toBe(true); expect(t.t.sh.guardLine).toBe('Guard 3 plates, each soaks ' + sv.guard!.soak);
     // the headline is what an ordinary blow meets (a plate is kept back); the drop case is its own line
-    expect(t.t.sh.absorb).toBe('Absorbs up to ' + (20 + 2 * sv.guard!.soak) + ' before HP');
-    expect(t.t.sh.absorbDrop).toBe('up to ' + (20 + 3 * sv.guard!.soak) + ' against a blow that would drop it');
+    expect(t.t.sh.absorb).toBe('Stops up to ' + (20 + 2 * sv.guard!.soak) + ' of a blow before HP');
+    expect(t.t.sh.absorbDrop).toBe('Stops up to ' + (20 + 3 * sv.guard!.soak) + ' of a blow that would take it down');
     expect(v.me.sh.hasGuard).toBe(false); expect(v.me.sh.has).toBe(true);
   });
   it('the strip: a small shield still shows; the strip stops at the HP bar with a "+"; each pip pairs its ink with a glyph and a name', () => {

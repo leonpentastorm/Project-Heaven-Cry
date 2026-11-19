@@ -955,9 +955,9 @@
         "keep_unless_drop": "{keep} kept back for a reaction, unless the blow would drop the unit",
         "keep_always": "{keep} always kept back"
       },
-      "absorb": "Absorbs up to {n} before HP",
-      "absorb_size": "Absorbs {word} before HP",
-      "absorb_drop": "up to {n} against a blow that would drop it",
+      "absorb": "Stops up to {n} of a blow before HP",
+      "absorb_size": "Stops a {word} amount of a blow before HP",
+      "absorb_drop": "Stops up to {n} of a blow that would take it down",
       "chip": "+{n} SHIELD",
       "chip_size": "SHIELD · {word}",
       "vs": "The damage shown is before {what}: up to {n} is taken there first",

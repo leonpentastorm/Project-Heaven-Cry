@@ -79,9 +79,15 @@ describe('shieldsView: the shields a blow meets, in its order', () => {
     const s = scene(); const a = s.ally(); a.resMax = { ...(a.resMax || {}), guard: 5 }; a.res = { ...(a.res || {}), guard: 3 }; a.shield = 20;
     const v = shieldsView(s.f.cb, s.ally(), s.chap(), String);
     expect(v.guard).toMatchObject({ first: false, keep: 1 }); expect(v.guard!.how.startsWith(L.guard.after)).toBe(true);
-    expect(v.absorb).toBe('Absorbs up to ' + (20 + 2 * v.guard!.soak) + ' before HP');
-    expect(v.absorbDrop).toBe('up to ' + (20 + 3 * v.guard!.soak) + ' against a blow that would drop it');
+    expect(v.absorb).toBe('Stops up to ' + (20 + 2 * v.guard!.soak) + ' of a blow before HP');
+    expect(v.absorbDrop).toBe('Stops up to ' + (20 + 3 * v.guard!.soak) + ' of a blow that would take it down');
     expect(v.chip).toBe('+20 SHIELD'); expect(v.vs).toContain(String(20 + 2 * v.guard!.soak));
+  });
+  it('0.32 B7: one plate, kept back, no shield: the ordinary blow\'s line (a 0) is not said, only what it stops of a blow that would take it down', () => {
+    const s = scene(); const a = s.ally(); a.resMax = { ...(a.resMax || {}), guard: 5 }; a.res = { ...(a.res || {}), guard: 1 }; a.shield = 0;
+    const v = shieldsView(s.f.cb, s.ally(), s.chap(), String);
+    expect(v.blow).toBe(0); expect(v.absorb).toBe(''); expect(v.vs).toBe('');
+    expect(v.absorbDrop).toBe('Stops up to ' + v.guard!.soak + ' of a blow that would take it down');
   });
 });
 
