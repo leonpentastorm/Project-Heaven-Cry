@@ -119,3 +119,18 @@ opus pass checks each against `figments.ts` and `ENGINE-HOOKS.md`, rewrites the 
 AP (Hard Light removes the Snap outright, so the two do not stack to a gain: Hard Light holders get the AP only);
 the Rigger's Scrap Sentinel stays (a free turret outside the forms known); a save keeps every form it has open and
 counts them against its forms known, never losing one.
+
+### 5b. The lead's rulings after the buildability check (19 Nov; commit ebd66a34 rewrote the Expression sheet)
+
+No new piece is approved for Visualization; each option takes its buildable form (numbers PROVISIONAL):
+- **Hard Light:** "Figments take -30% damage · +1 AP next turn when one is destroyed" (the damage cut is the same
+  toughness as +40% HP and needs no `owned_hp` stat; the AP is Jury-Rig's row and shares its once-a-turn limit, so
+  the two never stack). No `snap` immunity is added.
+- **Sharp Light:** "+20% Figment strike damage · after a Figment drops a foe, your next Figment order costs 0 AP".
+- **Many Hands:** as designed (+1 held; Picture -1 charge, named on Picture's own action).
+- **Masterwork:** "your Masterwork has +2 to hit and takes -25% damage · once a round one order to it costs 0 AP".
+  The free order uses the approved target-aware price, which must resolve the ordered Figment; "+1 trait on a
+  standing Figment" is not built.
+- **Forms known get their own door id** (`figment_forms`), apart from the forks' picks, with a save migration.
+- The level-1 Beast reads 90% of the rifle per AP on arithmetic (108% with Sharp Light): under the door line. The
+  measure is re-run in lane 4 before anything is turned.
