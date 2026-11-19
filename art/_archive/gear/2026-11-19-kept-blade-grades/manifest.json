@@ -6914,6 +6914,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-heavy_boots--celestial",
+      "path": "art/icons/gear/armour-heavy_boots--celestial.png",
+      "sha256": "ee10e97abb59341c1553448622b52968637a8011c1a329b51d5edb826e1a88ac",
+      "label": "Heavy Boots — Celestial",
+      "family": "armour-heavy_boots",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-heavy_boots--celestial.png",
+        "sha256": "9d0d1a8f9a7a5ed426f76d2b14671677eaed9fa58bc7802565fbee99e4466b5a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-heavy_boots--celestial.png",
+        "sha256": "ee10e97abb59341c1553448622b52968637a8011c1a329b51d5edb826e1a88ac"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-heavy_boots--celestial.txt",
+        "sha256": "fe7af4e1a13a56f6741851cff08be17445b1d054734294a78ed4dd3c32b71122"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-heavy_boots.png",
+          "sha256": "bf6aa28766f45a090f5289c830c5638b78a1b54fc8034dda83eca4e4d839bf96"
+        },
+        {
+          "path": "art/icons/gear/armour-heavy_boots--relic.png",
+          "sha256": "da9b5d9f48e4cd58f270c2dbcca71e260dd9d76dea4d756af9064feeaa6b19f4"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-heavy_boots--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-heavy_boots--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-heavy_boots--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-heavy_boots--celestial.png"
+      },
+      "export_hashes": {
+        "256": "86982866afec0fdd4e852dcb38ec52f9ad73521f31f80ba3ecd7434e216f0101",
+        "128": "934a0f09bb2f2e6ecb86e56ee5ce502bec0a58d3289b94c1fcabdcb76839eccd",
+        "64": "129fb20b22a725b20fd0726f22bc12b664358cbec6a34baf3a72e2a951c1610c",
+        "32": "a6cfc28db6ee50f7fa42be2085f63399d4c9cbdeac39656dfd058de31b4e12df"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-heavy_boots",
+      "outline": {
+        "solid_alpha_iou": 0.9726587735836618,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 15,
+        "different_pixels_64": 35
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

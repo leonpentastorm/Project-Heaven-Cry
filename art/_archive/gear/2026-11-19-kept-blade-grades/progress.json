@@ -113,7 +113,8 @@
     "armour-field_boots--celestial",
     "armour-heavy_boots--fine",
     "armour-heavy_boots--masterwork",
-    "armour-heavy_boots--relic"
+    "armour-heavy_boots--relic",
+    "armour-heavy_boots--celestial"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -122,12 +123,11 @@
     "weapon-war_axe--fine",
     "weapon-war_axe--masterwork",
     "weapon-war_axe--relic",
-    "weapon-war_axe--celestial",
-    "armour-heavy_boots--celestial"
+    "weapon-war_axe--celestial"
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T14:13:20.313697+00:00",
+  "updated_utc": "2026-11-19T14:15:08.834554+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3
 }
