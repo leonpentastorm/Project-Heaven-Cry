@@ -20521,6 +20521,42 @@
         "different_pixels_32": 3,
         "different_pixels_64": 10
       }
+    },
+    "weapon-hatchet--relic": {
+      "label": "Hatchet — Relic",
+      "path": "art/icons/gear/weapon-hatchet--relic.png",
+      "sha256": "032d4c14c77fe8900b89eed9f1be78e08aeb2b09ec02e96e07fcbe90fb30b05d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hatchet--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-hatchet--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-hatchet--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-hatchet--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hatchet--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.2",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-hatchet",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9515423775357166,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 26
+      }
     }
   },
   "survival_art": {

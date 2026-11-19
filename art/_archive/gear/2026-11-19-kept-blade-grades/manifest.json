@@ -680,6 +680,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hatchet--relic",
+      "path": "art/icons/gear/weapon-hatchet--relic.png",
+      "sha256": "032d4c14c77fe8900b89eed9f1be78e08aeb2b09ec02e96e07fcbe90fb30b05d",
+      "label": "Hatchet — Relic",
+      "family": "weapon-hatchet",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hatchet--relic.png",
+        "sha256": "e1382976279c736ba445ab48662ae28476fcd4a344639ec794a66b4b5a938f2b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hatchet--relic.png",
+        "sha256": "032d4c14c77fe8900b89eed9f1be78e08aeb2b09ec02e96e07fcbe90fb30b05d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hatchet--relic.txt",
+        "sha256": "f2f3554d20e4a850bddb3787837a7ccedc63ce2b8dcb4ebcb1ddea946ef17c1b"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-hatchet--relic/v1/source.png",
+          "sha256": "155fd2f115bdedcb7e2957e9a6d2e7faed5465872405d8b1ce252a6d900566bd"
+        },
+        {
+          "path": "art/icons/gear/weapon-hatchet.png",
+          "sha256": "a69bacdfb22ca5070e0e1a1edd6697ba40992bb95dc0851be4b4d35dc72947ac"
+        },
+        {
+          "path": "art/icons/gear/weapon-hatchet--masterwork.png",
+          "sha256": "e7a29e3f0b8dd972bb981d3a215f36436240d918c82f5e4c2449e7d1d9ae8d90"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hatchet--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-hatchet--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-hatchet--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-hatchet--relic.png"
+      },
+      "export_hashes": {
+        "256": "cdc317ec02b4401fd324c72dc103a097efae6abd0bf0c733ed09a007258834aa",
+        "128": "24b270bb7746ff3c03209bd14c4bb42ff80bffd80f0c7ecd8c28749b51e0b7d7",
+        "64": "bf5ace5121861d83e3e45b87494ecdce74c45bca1a456ff8c86562c0d5cdce7b",
+        "32": "e80e4bba93a6388a0fd8bfec72a2ec3f60b2baea9652300883253ec800270ea0"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-hatchet",
+      "outline": {
+        "solid_alpha_iou": 0.9515423775357166,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 26
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
