@@ -1,0 +1,58 @@
+{
+  "file": "02",
+  "source": "02-skills-body.md",
+  "line": 59,
+  "title": "4. `stare_down`: Stare Down",
+  "path": "art/icons/perks/stare-down.png",
+  "notes": "- **Save as:** `art/icons/perks/stare-down.png`\n- **Mode:** Wick icon\n- **Shows in:** perk card and the combat bar's Stare Down action\n- **At icon size it must read as:** two eyes locked and a foe stopped mid-stride.",
+  "paint": "Wick on the left with his pixel-screen face turned straight toward a partial foe silhouette on the right (a hooded head and one shoulder, cut by the frame), one bold bright line of sight running from his screen across the frame to the foe's eye. The foe is caught mid-step: its front foot lifted and its body locked rigid, drawn with two short stillness ticks at the knee. The sight line is the strongest shape in the picture.\nAvoid: a literal eyeball, a laser beam with glow, a staring-contest face with eyebrows, a snake or hypnosis spiral, text.",
+  "status": "review-candidate",
+  "n": 41,
+  "kind": "wick",
+  "label": "Stare Down",
+  "sha256": "db977f8f689ada7534790422c1238dc3407996a8420edad050924d05fc0f940e",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/041-stare-down.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/stare-down.png",
+    "128": "art/icons/perks/exports/128/stare-down.png",
+    "64": "art/icons/perks/exports/64/stare-down.png",
+    "56": "art/icons/perks/exports/56/stare-down.png",
+    "48": "art/icons/perks/exports/48/stare-down.png",
+    "44": "art/icons/perks/exports/44/stare-down.png",
+    "40": "art/icons/perks/exports/40/stare-down.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/02-skills-body.md:59",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia or religions. The icon shows:\nWick on the left with his pixel-screen face turned straight toward a partial foe silhouette on the right (a hooded head and one shoulder, cut by the frame), one bold bright line of sight running from his screen across the frame to the foe's eye. The foe is caught mid-step: its front foot lifted and its body locked rigid, drawn with two short stillness ticks at the knee. The sight line is the strongest shape in the picture.\nAvoid: a literal eyeball, a laser beam with glow, a staring-contest face with eyebrows, a snake or hypnosis spiral, text.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perks",
+  "id": "stare-down",
+  "source_sha256": "cc21e84829bcd457d226e4f1747184ac5b71834408fd1d55e33c239ec2ca91b2",
+  "export_sha256": {
+    "256": "3bccd65b1690810b26e606e077dd4b7e10f84ab18fe78c3299de03e5f5f21ebb",
+    "128": "1c4e1edae187b2a3dc49dfc7e8ce1e54ccbde29af5743246a0a0a5c44d2d0056",
+    "64": "032e7c12cd44a98c155902d52de7eed32215d54d78b21dd1a17b8b3dd5dae4ec",
+    "56": "e47907fc347c801fccaf3f234a5dd433d202b5ddaec106d64944bbafc08b7d11",
+    "48": "100770925a13e7e5d3134078a548afb1c110b07e996121f08ab1c8bb1e34103c",
+    "44": "7fe7eb79ff37f7564ca24dea5efda0de2d2a6937a9193377ab87695e215287af",
+    "40": "c697be0a8caea12a1a1ec4bef4eaf54a68cdcbd2da8fd3caade211c05e707a03"
+  }
+}

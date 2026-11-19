@@ -1,0 +1,58 @@
+{
+  "file": "01",
+  "source": "01-today-and-gaps.md",
+  "line": 87,
+  "title": "`second_wind`: Second Wind (Pain Threshold perk and the combat action)",
+  "path": "art/icons/perks/second-wind.png",
+  "notes": "- **Mode:** Wick icon, 1024 x 1024 PNG, transparent.\n- **Save as:** `art/icons/perks/second-wind.png` (one picture, used by the combat bar action and the perk card).\n- **Shows:** the combat bar's Second Wind action and the Pain Threshold perk card.",
+  "paint": "Wick in the half-second after a hard blow, catching his breath: bent a little at the waist with one hand pressed flat to his ribs, and his back straightening again, the line from hips to head rising into an upright stance, the flame of his head burning taller than a moment ago. Two short curved ticks at his chest show the breath going in, kept inside the silhouette, not drawn as air. Feet planted a shoulder apart. The meaning is the body drawing itself back up for one more turn. At icon size it must read as a figure straightening with a hand at his side. Do not copy the boons Second Wind sign, a grimacing face with a brick, or a gust. Avoid: swirling wind lines, lungs or any anatomy, a heart, a plus sign, a cloud, sweat drops, text.",
+  "status": "review-candidate",
+  "n": 3,
+  "kind": "wick",
+  "label": "Second Wind (Pain Threshold perk and the combat action)",
+  "sha256": "261eedc84fc4f38d85382cfb090831fadfaff2f38649dc0ddeb2958d089ef5ef",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/003-second-wind.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/second-wind.png",
+    "128": "art/icons/perks/exports/128/second-wind.png",
+    "64": "art/icons/perks/exports/64/second-wind.png",
+    "56": "art/icons/perks/exports/56/second-wind.png",
+    "48": "art/icons/perks/exports/48/second-wind.png",
+    "44": "art/icons/perks/exports/44/second-wind.png",
+    "40": "art/icons/perks/exports/40/second-wind.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:87",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia or religions. The icon shows:\nWick in the half-second after a hard blow, catching his breath: bent a little at the waist with one hand pressed flat to his ribs, and his back straightening again, the line from hips to head rising into an upright stance, his rectangular screen head rising and pixel eyes opening with renewed resolve. Two short curved ticks at his chest show the breath going in, kept inside the silhouette, not drawn as air. Feet planted a shoulder apart. The meaning is the body drawing itself back up for one more turn. At icon size it must read as a figure straightening with a hand at his side. Do not copy the boons Second Wind sign, a grimacing face with a brick, or a gust. Avoid: swirling wind lines, lungs or any anatomy, a heart, a plus sign, a cloud, sweat drops, text.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n Show recovery through posture and pixel expression; retain the usual round chest lantern with a simple dark slit, no separate plus or external health glyph. Two tiny breath ticks inside the outer silhouette.\nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perks",
+  "id": "second-wind",
+  "source_sha256": "4cd5ea974fe4ac72f747c0081a8756f24f51bce043542753aad14678758a75b3",
+  "export_sha256": {
+    "256": "6103a476b7141c731a6f381ec6a0c423939d4602bfbc7a362be13e4bbad46337",
+    "128": "60ef9f4f2c1c07c015cbd54728714ef37b7833a52662ba4c069db693def100e8",
+    "64": "b4e1a4434d8dbe9f105e3e3b75ed78fcc140edb2feb36eb34600f631979ef0c7",
+    "56": "9afef9bf8329282a8b3a3c3148216c037c93ed2bded73184a7db8dd2cf415a75",
+    "48": "cee38591314922ee2457ebf1a9f986b0d9aab49f99bc914f156d46c3f40c1266",
+    "44": "bda8610f8f99194eaa6fc2c34e4781522284e16e84f5951c886f043fd3b0ca6c",
+    "40": "783a2fc0b2c622bb225298c2a37113bcd2d3a81f54cce05a99c499c3355ba112"
+  }
+}

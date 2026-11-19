@@ -1,0 +1,58 @@
+{
+  "file": "02",
+  "source": "02-skills-body.md",
+  "line": 115,
+  "title": "8. `still_standing`: Still Standing",
+  "path": "art/icons/perks/still-standing.png",
+  "notes": "- **Save as:** `art/icons/perks/still-standing.png`\n- **Mode:** Wick icon\n- **Shows in:** perk card and the combat bar's action\n- **At icon size it must read as:** a figure on one knee pushing himself up, not lying down and not yet standing.",
+  "paint": "Wick caught halfway between kneeling and standing: one knee still on the ground line, one foot planted, one fist pressed flat against the knee and the other arm hanging, his body hunched but his screen face lifted and facing forward. A thin short vertical line rises from his planted foot to his shoulder, as if he is being lifted from within. Nothing around him.\nAvoid: a heart or HP bar, a skull, a halo or wings, lying flat on the ground, blood, a medical plus.",
+  "status": "review-candidate",
+  "n": 45,
+  "kind": "wick",
+  "label": "Still Standing",
+  "sha256": "f765040625479ca72563323509f0476cf08d9c78132eb2f470dbf47651fd9bb6",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/045-still-standing.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/still-standing.png",
+    "128": "art/icons/perks/exports/128/still-standing.png",
+    "64": "art/icons/perks/exports/64/still-standing.png",
+    "56": "art/icons/perks/exports/56/still-standing.png",
+    "48": "art/icons/perks/exports/48/still-standing.png",
+    "44": "art/icons/perks/exports/44/still-standing.png",
+    "40": "art/icons/perks/exports/40/still-standing.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/02-skills-body.md:115",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia or religions. The icon shows:\nWick caught halfway between kneeling and standing: one knee still on the ground line, one foot planted, one fist pressed flat against the knee and the other arm hanging, his body hunched but his screen face lifted and facing forward. A thin short vertical line rises from his planted foot to his shoulder, as if he is being lifted from within. Nothing around him.\nAvoid: a heart or HP bar, a skull, a halo or wings, lying flat on the ground, blood, a medical plus.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perks",
+  "id": "still-standing",
+  "source_sha256": "90671e69eaf54e7eb065e3f77bb524060ed5c543f0aa174524f0141f52d11ae4",
+  "export_sha256": {
+    "256": "b2c2ea30e0e69b6b4d9c378223ce74c62be43985169c46c15f3f3f53a66a9536",
+    "128": "09e1b90c13fffd8ede3769b6097195acd2a0561b05e40db11cb61cd71c86eb3e",
+    "64": "4f755baa001c077c42758a5cdd46da1a5336a5316e7b2e1ac411352cca0edc06",
+    "56": "13e0e714b1e7ff6bb830c1d1c747ff123a1037109618c3cea3f9814773909863",
+    "48": "ddeff7352beafd9323bcd06b08bb04b4e5d8228cece98428459067e2340ae5c7",
+    "44": "e6f1a97bee34e6c60d29919823c95db40d546223fd86168187c3574dddcaa68e",
+    "40": "9516ac0155b968e40b60c2897a1932e70c3288a4ef503add36f81cb31960346d"
+  }
+}

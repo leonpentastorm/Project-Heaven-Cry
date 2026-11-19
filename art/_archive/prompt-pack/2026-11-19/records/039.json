@@ -1,0 +1,58 @@
+{
+  "file": "02",
+  "source": "02-skills-body.md",
+  "line": 35,
+  "title": "2. `unflinching`: Unflinching",
+  "path": "art/icons/perks/unflinching.png",
+  "notes": "- **Save as:** `art/icons/perks/unflinching.png`\n- **Mode:** Wick icon\n- **Shows in:** perk card\n- **At icon size it must read as:** a planted upright figure with short strokes sliding off him.",
+  "paint": "Wick standing square and planted, feet wide, chin up, his screen face level and steady, arms loose at his sides, not guarding. Three short slanted strokes arrive from the left and each skids off along his shoulder and ribs, bending away into the air beyond him; none of them dents his outline. A small forward chevron sits at his chest, pressing on.\nAvoid: a shield, crossed forearms, cracks in his body, a wall behind him, impact stars.",
+  "status": "review-candidate",
+  "n": 39,
+  "kind": "wick",
+  "label": "Unflinching",
+  "sha256": "7489d07898ec1e0ac8d2ec84051c7805404f3671a7748d05399bb662563fb7b7",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/039-unflinching.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/unflinching.png",
+    "128": "art/icons/perks/exports/128/unflinching.png",
+    "64": "art/icons/perks/exports/64/unflinching.png",
+    "56": "art/icons/perks/exports/56/unflinching.png",
+    "48": "art/icons/perks/exports/48/unflinching.png",
+    "44": "art/icons/perks/exports/44/unflinching.png",
+    "40": "art/icons/perks/exports/40/unflinching.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/02-skills-body.md:35",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia or religions. The icon shows:\nWick standing square and planted, feet wide, chin up, his screen face level and steady, arms loose at his sides, not guarding. Three short slanted strokes arrive from the left and each skids off along his shoulder and ribs, bending away into the air beyond him; none of them dents his outline. A small forward chevron sits at his chest, pressing on.\nAvoid: a shield, crossed forearms, cracks in his body, a wall behind him, impact stars.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perks",
+  "id": "unflinching",
+  "source_sha256": "766ed2d0d40fe0863ec0e4f7ed9a383166654c2649494e86c3c145427947205e",
+  "export_sha256": {
+    "256": "8722185a88815f7f862fbd1063573e2b13ce4d98f0cc95ed7e5bac9a31d68650",
+    "128": "ebb78d44b19cc5753dddf5ac452e25e5b61193da8c0681fe1478e0eeea14883b",
+    "64": "1455ccd1d75423409df91c022ea5ea1c5c2854d56263a43ac287cea58bc5b7fb",
+    "56": "643b7e975ab77e6f5c3e779e76cbd15ba52a48cf902cdf0e20da45d731474b02",
+    "48": "5c481332b730b78eba31b618c6ed9b4b5495b077f3ccdf43721608ef3137263b",
+    "44": "5cf4e77838eb8e13e667d4531e305b9e20b175d1de9407c67fc8c3691f4240d6",
+    "40": "ce2ca2e590c320a7677669163ec7b384d84239c1776c2acc5953d05471b3594c"
+  }
+}

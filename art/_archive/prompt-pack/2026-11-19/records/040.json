@@ -1,0 +1,58 @@
+{
+  "file": "02",
+  "source": "02-skills-body.md",
+  "line": 47,
+  "title": "3. `marrow_talk`: Marrow Talk",
+  "path": "art/icons/perks/marrow-talk.png",
+  "notes": "- **Save as:** `art/icons/perks/marrow-talk.png`\n- **Mode:** Wick icon\n- **Shows in:** perk card\n- **At icon size it must read as:** a quiet word leaving the speaker and landing as a shiver in someone else.",
+  "paint": "Wick leaning in close with his head tilted, one hand cupped beside his mouth as if speaking low; from the cup a thin straight line runs across the frame into the chest of a partial figure (a shoulder and half a head, cut by the right edge), whose outline is drawn with three small tremor ticks shivering at its edge. The line ends in a tiny sharp barb inside the listener's chest, like a splinter of bone.\nAvoid: a speech bubble, letters, a skull, a shouting open mouth, a pointing finger, a bone pile.",
+  "status": "review-candidate",
+  "n": 40,
+  "kind": "wick",
+  "label": "Marrow Talk",
+  "sha256": "41ab8eb745bd95bafe074f0a001a5dca84e2be34b4faee395353151bd0351436",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/040-marrow-talk.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/marrow-talk.png",
+    "128": "art/icons/perks/exports/128/marrow-talk.png",
+    "64": "art/icons/perks/exports/64/marrow-talk.png",
+    "56": "art/icons/perks/exports/56/marrow-talk.png",
+    "48": "art/icons/perks/exports/48/marrow-talk.png",
+    "44": "art/icons/perks/exports/44/marrow-talk.png",
+    "40": "art/icons/perks/exports/40/marrow-talk.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/02-skills-body.md:47",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia or religions. The icon shows:\nWick leaning in close with his head tilted, one hand cupped beside his mouth as if speaking low; from the cup a thin straight line runs across the frame into the chest of a partial figure (a shoulder and half a head, cut by the right edge), whose outline is drawn with three small tremor ticks shivering at its edge. The line ends in a tiny sharp barb inside the listener's chest, like a splinter of bone.\nAvoid: a speech bubble, letters, a skull, a shouting open mouth, a pointing finger, a bone pile.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perks",
+  "id": "marrow-talk",
+  "source_sha256": "7a82f5efbc7ed049163134ace2eb4eab383e065031f34882668f863025cf35f7",
+  "export_sha256": {
+    "256": "154ad957e0805c057c743f0012429e0df95be66b1c48c0be067186e6b14ee6c5",
+    "128": "2ce629e56e9a71a6c10425c2228aaca9a42f9abe0bff0aed7b7f2da5c44f91e5",
+    "64": "ffc016e5c4a2aaf7b0a4c8ecff4bfe7eb7ccdb0f146558bd528e9dd03ed70317",
+    "56": "b16a5ecf52bda665141d58f446986f9e03ad19750a72ad7c3376c6572b95d2a3",
+    "48": "803711df6718fbecffaeccb1596820e19c2cfe92bd925633b9d1497564eef403",
+    "44": "d22f61a2aa1b71c10ccce0233b60c240382573b75a66ee6ceae85d33719bbf8a",
+    "40": "4814acb9cc5896388f2cc9d34afe1271736cdee5dcead259a8cb8955ea1428e8"
+  }
+}

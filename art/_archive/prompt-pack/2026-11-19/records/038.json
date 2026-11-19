@@ -1,0 +1,58 @@
+{
+  "file": "02",
+  "source": "02-skills-body.md",
+  "line": 23,
+  "title": "1. `point_man`: Point Man",
+  "path": "art/icons/perks/point-man.png",
+  "notes": "- **Save as:** `art/icons/perks/point-man.png`\n- **Mode:** Wick icon\n- **Shows in:** perk card, level-up, skill page\n- **At icon size it must read as:** one figure out front, small shapes close behind him.",
+  "paint": "Wick striding forward at the very front, chest out, one arm swept back and open toward two small partial silhouettes (a shoulder and a head, cut by the lower edge of the frame) walking close at his back. A short bright arc runs from his lantern heart back over his shoulder to them: his nerve being passed back. The followers are plain cut shapes, no faces.\nAvoid: a crowd, a flag or banner, a pointing finger, a leader's crown, a shield wall.",
+  "status": "review-candidate",
+  "n": 38,
+  "kind": "wick",
+  "label": "Point Man",
+  "sha256": "d7bd3a7f36644c20a977e476c32befeda385d6f983f48bf988348c2f083cb0bd",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/038-point-man.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/point-man.png",
+    "128": "art/icons/perks/exports/128/point-man.png",
+    "64": "art/icons/perks/exports/64/point-man.png",
+    "56": "art/icons/perks/exports/56/point-man.png",
+    "48": "art/icons/perks/exports/48/point-man.png",
+    "44": "art/icons/perks/exports/44/point-man.png",
+    "40": "art/icons/perks/exports/40/point-man.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/02-skills-body.md:23",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia or religions. The icon shows:\nWick striding forward at the very front, chest out, one arm swept back and open toward two small partial silhouettes (a shoulder and a head, cut by the lower edge of the frame) walking close at his back. A short bright arc runs from his lantern heart back over his shoulder to them: his nerve being passed back. The followers are plain cut shapes, no faces.\nAvoid: a crowd, a flag or banner, a pointing finger, a leader's crown, a shield wall.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perks",
+  "id": "point-man",
+  "source_sha256": "f9504fba998b445338883fb1d7d08a4d7409a2e4620a1cdb640fabc717660195",
+  "export_sha256": {
+    "256": "9364e1b5b02d4e2672a21c41f6d2df5cb250ecb9173f29a1816468aecc692957",
+    "128": "a67496398e58adda5617d12a7bf15bce9e864516479cec5d1ee145e749dd847a",
+    "64": "918d134b1699f34928d7bb68a8e5068f7d68cfe5e9fb434c398a3fbb9206a82e",
+    "56": "43e2e85650fb95341afe73fe7f2fb767302985e92cc356843edb2953a1c0e832",
+    "48": "48260bb548517a291cf5deb1ff3810e21cad366fbbddaa8ff0cf09c6edbbac89",
+    "44": "2f68f86091a81eada4e5e32c7c4adc4d0d118ec6b7fe34b913d55d43221488a7",
+    "40": "e8f1ad3d7dbc9bb0d5f6c7d3dfcb5f4dcb9c17058e205cf7b99d27d4647b6fb4"
+  }
+}

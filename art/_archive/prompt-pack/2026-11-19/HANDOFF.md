@@ -1,0 +1,98 @@
+# November 19 art continuation
+
+Updated 19 November 2026 at 10:08 UTC+7. The 88 entries in files 01–04 have **14 delivered**, **73 to do** and **1 held**. Review candidates require visual approval.
+
+| File | Delivered | Total listed |
+| --- | ---: | ---: |
+| 01 | 3 | 37 |
+| 02 | 11 | 11 |
+| 03 | 0 | 21 |
+| 04 | 0 | 19 |
+
+## Pickup
+
+Read [the source pack](../../../briefs/prompts-2026-11-19/README.md), queue.json, order.json and progress.json. Commit 2020b5c2a includes the fourth prompt verification. The corrected prompts keep Wick's ceramic screen, lantern and capelet. Hand-Off shares retained guard, Darkened has white dashes, Warding Word has non-letter notches and the City Sigil mark has a chevron.
+
+Hold #164 still applies to the Scrap Turret portrait. Called Out is the active challenge modifier in data/classes.json and has its own November 19 depiction. Wind-up and Read the Swing have new exact paths. Preserve the separate November 16 delivery and the fully remade Breaker.
+
+Use image generation one image per prompt. Set functions.store keys phc19root to the checkout, phc19jobs to the queue and latest-<filename> to each source document. Evaluate generate-ink.js as a function and pass the next ink job IDs. Review 16/32/44/64 px sheets against #10151F. Review paint materials, map joins, firearm silhouettes and grip or part attachment visually. The generated source path is in scratch result-N.json. Preserve sources before a workspace restart.
+
+Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py deliver on the accepted IDs. Previous files and exports are archived when replaced. Finish with deliver.py verify, the asset build and repository art validation. The full validator currently stops at its fixed perk count once new perks exist. Restore generated app assets.json before committing art-only changes.
+
+## Remaining entries
+
+- 049 | File 03 | Hard Light (fork) | `art/icons/forks/figment-hard-light.png`
+- 050 | File 03 | Sharp Light (fork) | `art/icons/forks/figment-sharp-light.png`
+- 051 | File 03 | Many Hands (fork) | `art/icons/forks/figment-many-hands.png`
+- 052 | File 03 | Masterwork (fork) | `art/icons/forks/figment-masterwork.png`
+- 053 | File 03 | Field Repair | `art/icons/perks/field-repair.png`
+- 054 | File 03 | Tuned | `art/icons/perks/tuned.png`
+- 055 | File 03 | Jury-Rig | `art/icons/perks/jury-rig.png`
+- 056 | File 03 | Smooth | `art/icons/perks/smooth.png`
+- 057 | File 03 | Parley (id `talks_broke_down`) | `art/icons/perks/talks-broke-down.png`
+- 058 | File 03 | Showman | `art/icons/perks/showman.png`
+- 059 | File 03 | Quick Sketch | `art/icons/moves/quick-sketch.png`
+- 060 | File 03 | Index | `art/icons/perks/index.png`
+- 061 | File 03 | Proven Formula | `art/icons/perks/proven-formula.png`
+- 062 | File 03 | Objection! | `art/icons/perks/objection.png`
+- 063 | File 03 | Opening Argument | `art/icons/perks/opening-argument.png`
+- 064 | File 03 | Thinking Aloud | `art/icons/perks/thinking-aloud.png`
+- 065 | File 03 | Backdraft | `art/icons/moves/backdraft.png`
+- 066 | File 03 | Running Script (fork): replaces the existing picture | `art/icons/forks/sigil-running-script.png`
+- 067 | File 03 | Quick Read | `art/icons/perks/quick-read.png`
+- 068 | File 03 | Read Them | `art/icons/perks/read-them.png`
+- 069 | File 03 | Darkened (condition) | `art/icons/conditions/darkened.png`
+- 070 | File 04 | `soul_modules.second_school`: Two Schools | `art/icons/moves/two-schools.png`
+- 071 | File 04 | `poker_face`: Poker Face | `art/icons/perks/poker-face.png`
+- 072 | File 04 | `stand_still`: Stand Still | `art/icons/perks/stand-still.png`
+- 073 | File 04 | `lore_ward`: Warding Word | `art/icons/perks/lore-ward.png`
+- 074 | File 04 | `recitation`: Recitation | `art/icons/perks/recitation.png`
+- 075 | File 04 | `fork.soul.blood_price`: Blood Price (replaces the existing picture) | `art/icons/forks/soul-blood-price.png`
+- 076 | File 04 | `pure_heart`: Pure Heart (a new Wick icon in `perks/`) | `art/icons/perks/pure-heart.png`
+- 077 | File 04 | `hand_off`: Hand-Off | `art/icons/perks/hand-off.png`
+- 078 | File 04 | `nobody_left_behind`: Nobody Left Behind | `art/icons/perks/nobody-left-behind.png`
+- 079 | File 04 | `steady_hands`: Steady Hands | `art/icons/perks/steady-hands.png`
+- 080 | File 04 | `pull_together`: Pull Together | `art/icons/perks/pull-together.png`
+- 081 | File 04 | `quiet_thread`: Quiet Thread | `art/icons/perks/quiet-thread.png`
+- 082 | File 04 | `veiled_insult`: Veiled Insult (a new picture, started from Sweet Talker) | `art/icons/perks/veiled-insult.png`
+- 083 | File 04 | `fork.prayer.held_breath`: Swift Psalm (replaces the existing picture) | `art/icons/forks/prayer-held-breath.png`
+- 084 | File 04 | `righteous`: Righteous | `art/icons/perks/righteous.png`
+- 085 | File 04 | `foresight`: Foresight | `art/icons/perks/foresight.png`
+- 086 | File 04 | `five_stars`: Five Stars | `art/icons/perks/five-stars.png`
+- 087 | File 04 | `commanding_voice`: Commanding Voice | `art/icons/perks/commanding-voice.png`
+- 088 | File 04 | `blessed_aim`: Blessed Aim (condition sign) | `art/icons/conditions/blessed-aim.png`
+- 004 | File 01 | `move-draw-fire`: Called Out (Bulwark rank I, `class:defender.draw_fire`) | `art/icons/moves/draw-fire.png`
+- 005 | File 01 | `class:fighter.wind_up`: Wind-up (Breaker rank I) | `art/icons/moves/wind-up.png`
+- 006 | File 01 | `read_the_swing`: Read the Swing (Breaker rank II) | `art/icons/moves/read-the-swing.png`
+- 007 | File 01 | `mod_follow_guard`: Shield follow (mod) | `art/icons/gear/mod-follow_guard.png`
+- 008 | File 01 | `mod_afterword`: Afterword's edge (mod) | `art/icons/gear/mod-afterword.png`
+- 010 | File 01 | `kit-ahoc-ground-2`: AHOC ground 2 | `art/sprites/kit/ahoc/ground-2.png`
+- 011 | File 01 | `kit-shrine-ground-2`: Shrine ground 2 | `art/sprites/kit/shrine/ground-2.png`
+- 012 | File 01 | `kit-ahoc-dress-2`: AHOC dress 2 | `art/sprites/kit/ahoc/dress-2.png`
+- 013 | File 01 | `kit-rim-wall-corner`: Rim wall corner | `art/sprites/kit/rim/wall-corner.png`
+- 014 | File 01 | `kit-ahoc-poi`: Point of interest, ahoc | `art/sprites/kit/ahoc/poi.png`
+- 015 | File 01 | `kit-city-poi`: Point of interest, city | `art/sprites/kit/city/poi.png`
+- 016 | File 01 | `kit-field-poi`: Point of interest, field | `art/sprites/kit/field/poi.png`
+- 017 | File 01 | `kit-works-poi`: Point of interest, works | `art/sprites/kit/works/poi.png`
+- 018 | File 01 | `kit-shrine-poi`: Point of interest, shrine | `art/sprites/kit/shrine/poi.png`
+- 019 | File 01 | `kit-rim-poi`: Point of interest, rim | `art/sprites/kit/rim/poi.png`
+- 020 | File 01 | `kit-ahoc-sigil_wall`: Sigil wall, ahoc | `art/sprites/kit/ahoc/sigil_wall.png`
+- 021 | File 01 | `kit-city-sigil_wall`: Sigil wall, city | `art/sprites/kit/city/sigil_wall.png`
+- 022 | File 01 | `kit-field-sigil_wall`: Sigil wall, field | `art/sprites/kit/field/sigil_wall.png`
+- 023 | File 01 | `kit-works-sigil_wall`: Sigil wall, works | `art/sprites/kit/works/sigil_wall.png`
+- 024 | File 01 | `kit-shrine-sigil_wall`: Sigil wall, shrine | `art/sprites/kit/shrine/sigil_wall.png`
+- 025 | File 01 | `kit-rim-sigil_wall`: Sigil wall, rim | `art/sprites/kit/rim/sigil_wall.png`
+- 026 | File 01 | `kit-ahoc-sigil_mark`: Sigil mark, ahoc | `art/sprites/kit/ahoc/sigil_mark.png`
+- 027 | File 01 | `kit-city-sigil_mark`: Sigil mark, city | `art/sprites/kit/city/sigil_mark.png`
+- 028 | File 01 | `kit-field-sigil_mark`: Sigil mark, field | `art/sprites/kit/field/sigil_mark.png`
+- 029 | File 01 | `kit-works-sigil_mark`: Sigil mark, works | `art/sprites/kit/works/sigil_mark.png`
+- 030 | File 01 | `kit-shrine-sigil_mark`: Sigil mark, shrine | `art/sprites/kit/shrine/sigil_mark.png`
+- 031 | File 01 | `kit-rim-sigil_mark`: Sigil mark, rim | `art/sprites/kit/rim/sigil_mark.png`
+- 032 | File 01 | `kit-ahoc-pile`: Ground pile, ahoc | `art/sprites/kit/ahoc/pile.png`
+- 033 | File 01 | `kit-city-pile`: Ground pile, city | `art/sprites/kit/city/pile.png`
+- 034 | File 01 | `kit-field-pile`: Ground pile, field | `art/sprites/kit/field/pile.png`
+- 035 | File 01 | `kit-works-pile`: Ground pile, works | `art/sprites/kit/works/pile.png`
+- 036 | File 01 | `kit-shrine-pile`: Ground pile, shrine | `art/sprites/kit/shrine/pile.png`
+- 037 | File 01 | `kit-rim-pile`: Ground pile, rim | `art/sprites/kit/rim/pile.png`
+
+Unreviewed scratch renders currently on disk: 49, 50, 51, 52, 54, 56, 58.

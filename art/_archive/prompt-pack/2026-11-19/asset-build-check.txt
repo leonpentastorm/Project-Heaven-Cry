@@ -1,0 +1,5 @@
+
+> project-heaven-cry@0.31.10 assets
+> python3 tools/build_web_assets.py
+
+3233 assets -> apps/web/public/assets

@@ -1,0 +1,2 @@
+FAIL: Unexpected perks count
+OK: title-screen Part A; three 4096x2304 PNGs, layered PSD, manifest/hashes, previews, coverage and sample text contrast.
