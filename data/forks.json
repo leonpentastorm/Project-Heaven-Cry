@@ -84,7 +84,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "First foe to hit your plates each round is Taunted for {=effects.1.rounds} round, no save"
     },
     {
       "id": "fork.guard.cover_them",
@@ -160,7 +161,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "{=effects.0.and.0.value|abs} Guard and your reaction: the first ranged hit each round on an ally within {=effects.0.if.target_within} tiles lands on you"
     },
     {
       "id": "fork.guard.stand_fast",
@@ -182,7 +184,8 @@
       "effects": [],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Slam pushes nobody: every foe within {=numbers.within} tiles is Taunted for {=numbers.rounds} round and saves or is Off Balance"
     },
     {
       "id": "fork.guard.drive",
@@ -237,7 +240,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Slam pushes {=numbers.tiles} tiles · Off Balance save {=effects.0.value|signed} · each foe floored gives a plate (max {=effects.1.limit.n} a turn)"
     },
     {
       "id": "fork.shadow.light_fingers",
@@ -653,16 +657,11 @@
           "door_pick": "fork.momentum.rolling_start"
         }
       ],
-      "text": "Charge: {=effects.0.value|abs} tile shorter run · costs no Momentum · a hit builds {=effects.2.value} Momentum",
+      "text": "Charge: {=effects.0.value|abs} tile shorter run · a hit builds {=effects.1.value} Momentum",
       "effects": [
         {
           "op": "stat_mod",
           "stat": "tech_num:charge.min_run",
-          "value": -1
-        },
-        {
-          "op": "stat_mod",
-          "stat": "momentum_cost:charge",
           "value": -1
         },
         {
@@ -673,6 +672,9 @@
             "target": "foe",
             "mode": [
               "charge"
+            ],
+            "self_lacks": [
+              "headlong_paid"
             ]
           },
           "resource": "momentum",
@@ -682,7 +684,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward); rules 1.73 (Body), 0.32: the Strength step (item 5805): the free Charge is gone",
+      "short": "Charge: {=effects.0.value|abs} tile shorter run · a hit builds {=effects.1.value} Momentum"
     },
     {
       "id": "fork.momentum.grindstone",
@@ -730,7 +733,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Melee hit on a foe meleed in the last {=effects.1.rounds} rounds (by you or a Grindstone holder): +{=effects.0.value} Momentum"
     },
     {
       "id": "fork.momentum.spill",
@@ -744,16 +748,41 @@
           "door_pick": "fork.momentum.spill"
         }
       ],
-      "text": "A Finisher kill sends the overkill into the nearest other foe beside it, no roll",
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N21"
+      "text": "A Finisher that drops a foe carries on into one foe beside it, no roll (a blow that grows with your level)",
+      "effects": [
+        {
+          "op": "deal",
+          "when": "kill",
+          "amount": "spill",
+          "via": "raw_power",
+          "if": {
+            "actor": "self",
+            "tech_group": [
+              "finisher"
+            ]
+          },
+          "targets": {
+            "of": "target",
+            "within": 1,
+            "side": "foe",
+            "max": 1
+          },
+          "label": "Spill",
+          "say": "The blow carries on into {target} (Spill){then}."
+        }
       ],
-      "why": "A kill carries no overkill (on_kill has no `over`: N21, not approved). The cheaper wording (the Momentum spent × k to the foe behind) needs the Momentum a Finisher spent as a number, which no source carries (rules 1.60 item 4623).",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward); rules 1.73 (Body), 0.32: the Strength step (item 5806): built from kill, deal and targets (the overkill wording needed N21)",
+      "amounts": {
+        "spill": {
+          "kind": "damage",
+          "base": 22,
+          "profile": "melee",
+          "provisional": true
+        }
+      },
+      "short": "A Finisher kill: the blow carries into a foe beside it"
     },
     {
       "id": "fork.momentum.headlong",
@@ -767,17 +796,70 @@
           "door_pick": "fork.momentum.headlong"
         }
       ],
-      "text": "Once a turn: pay a Charge with {=numbers.momentum} Momentum instead of AP · builds no Momentum",
-      "numbers": {
-        "momentum": 2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [],
-      "why": "Its step is not offered (Spill waits on N21), so it is not built in this slice; it needs only approved pieces (N10, N23) and an optional price, built with Spill.",
+      "text": "Once a turn: a Charge costs no AP but {=effects.1.and.0.value|abs} more Momentum (you need {=effects.0.if.self_res.momentum.at_least}), and builds none",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "attack",
+          "set": 0,
+          "if": {
+            "own_turn": true,
+            "mode": [
+              "charge"
+            ],
+            "self_res": {
+              "momentum": {
+                "at_least": 2
+              }
+            }
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "headlong",
+            "peek": true
+          },
+          "label": "Headlong"
+        },
+        {
+          "op": "condition",
+          "when": "attack_roll",
+          "condition": "headlong_paid",
+          "skip_save": true,
+          "if": {
+            "own_turn": true,
+            "mode": [
+              "charge"
+            ],
+            "self_res": {
+              "momentum": {
+                "at_least": 1
+              }
+            },
+            "self_lacks": [
+              "headlong_paid"
+            ]
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "headlong"
+          },
+          "label": "Headlong",
+          "and": [
+            {
+              "op": "resource",
+              "resource": "momentum",
+              "value": -2
+            }
+          ],
+          "say": "{self} pays for the Charge in Momentum (Headlong)."
+        }
+      ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward); rules 1.73 (Body), 0.32: the Strength step (item 5807)",
+      "short": "Once a turn: a Charge costs Momentum, not AP, and builds none"
     },
     {
       "id": "fork.pressure.converging_fire",
@@ -834,7 +916,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Allies' Dexterity hits on a foe already hit that way this round: +{=effects.0.value} Pressure, once a round a foe"
     },
     {
       "id": "fork.pressure.walk_it_in",
@@ -873,7 +956,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "A Dexterity attack that misses still lays +{=effects.0.value} Pressure (once a turn per foe)"
     },
     {
       "id": "fork.pressure.through_the_gap",
@@ -964,7 +1048,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Once a turn, a Dexterity hit that caps a foe's Pressure: next move {=effects.3.value|abs} AP less, no opportunity attacks"
     },
     {
       "id": "fork.pressure.lockdown",
@@ -1023,7 +1108,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "A Dexterity hit that leaves a foe at its Pressure cap also Slows it for {=effects.1.rounds} round, no save"
     },
     {
       "id": "fork.sigil.overflux",

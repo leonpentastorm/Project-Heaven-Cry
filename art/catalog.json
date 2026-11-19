@@ -7017,7 +7017,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "used_to_the_pain",
+      "data_id": "second_wind",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "D",
@@ -7041,7 +7041,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "scar_tissue",
+      "data_id": "numb",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "D",
@@ -7243,7 +7243,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "iron_stomach",
+      "data_id": "steady",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "D",
@@ -31435,9 +31435,7 @@
         "24": "art/icons/moves/exports/24/follow-through.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-follow-through/follow-through.svg",
-      "data_ids": [
-        "skill:raw_power.5"
-      ]
+      "data_ids": []
     },
     "move-heavy-hands": {
       "label": "Wick \u2014 Heavy Hands",
@@ -31472,9 +31470,7 @@
         "24": "art/icons/moves/exports/24/heavy-hands.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-heavy-hands/heavy-hands.svg",
-      "data_ids": [
-        "skill:raw_power.3"
-      ]
+      "data_ids": []
     },
     "move-the-charge-carries": {
       "label": "Wick \u2014 The Charge Carries",
@@ -31928,9 +31924,7 @@
         "24": "art/icons/moves/exports/24/quick-draw.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-quick-draw/quick-draw.svg",
-      "data_ids": [
-        "skill:dexterity.5"
-      ]
+      "data_ids": []
     },
     "move-speed-load": {
       "label": "Speed Load",

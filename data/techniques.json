@@ -2895,20 +2895,26 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Grab an enemy next to you: it saves (Body) or is Grappled until it breaks free. No damage. Given by the perk Iron Grip.",
+      "text": "Grab an enemy next to you: it saves (Body) or is Grappled until it breaks free. No damage. Raw Power gives it with any melee weapon or bare hands.",
       "lines": [],
       "free": false,
       "comes_with": [
         "open_hand"
       ],
-      "comes_while": {"hands": {"props": ["open_hand"], "only": true}},
+      "comes_while": {
+        "hands": {
+          "props": [
+            "open_hand"
+          ],
+          "only": true
+        }
+      },
       "home": [],
       "particular": false,
       "numbers": {},
       "adjudication": "engine",
       "provisional": true,
-      "aim": "enemy",
-      "perk": "iron_grip"
+      "aim": "enemy"
     },
     {
       "id": "shield_wall",

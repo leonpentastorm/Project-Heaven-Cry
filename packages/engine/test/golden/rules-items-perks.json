@@ -10,7 +10,6 @@
 "item/perk/iron_grip@II/blow-primed": "n1  || n1  || n1  || n1  || n1 ",
 "item/perk/judgement_day@mastered/action/judgement/then-blow": "n1  || n1  || n1  || n1  || n1 ",
 "item/perk/last_wall@mastered/taken-low": "n1  || n1  || n1  || n1  || n1 ",
-"item/perk/scar_tissue@II/taken-crit": "n2  || n2  || n3 P1 bleed0>3 || n2  || n3 P1 bleed0>3",
 "item/perk/still_water@mastered/taken": "n1  || n1  || n1  || n1  || n1 ",
 "item/perk/still_water@mastered/taken-crit": "n2  || n2  || n3 P2 bleed0>3 || n2  || n3 P2 bleed0>3",
 "item/perk/still_water@mastered/taken-low": "n1  || n1  || n1  || n1  || n1 ",
@@ -18,5 +17,6 @@
 "item/perk/vanishing_act@mastered/action/vanishing_act": "n0 P1 +hidden",
 "item/perk/vanishing_act@mastered/action/vanishing_act/then-blow": "n1 P1 -hidden || n1 P1 -hidden || n1 P1 -hidden || n1 P1 -hidden || n1 P1 -hidden",
 "item/perk/vanishing_act@mastered/action/vanishing_act/then-shot": "n1 P1 -hidden || n1 P1 -hidden || n1 P1 -hidden || n1 P1 -hidden || n1 P1 -hidden",
+"item/perk/walking_wounded@mastered/taken-low": "n1  || n1  || n1  || n1  || n1 ",
 "item/perk/wall_run@II/action/wall_strike": "n1 P1 3,6>3,7 || n1 P1 3,6>3,7 || n1 P1 3,6>3,7 || n1 P1 3,6>3,7 || n1 P1 3,6>3,7"
 }

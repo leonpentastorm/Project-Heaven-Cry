@@ -100,13 +100,13 @@ describe('the Perks tab: items used from another action are read-only (Leon, 9 N
     expect(catalogue(f.cb, f.u, c, { g: f.g }).some((e) => e.action.startsWith(PKI))).toBe(false);
   });
   it('the rows come after the buttons, switches before passives (the shelves\' order)', () => {
-    const c = charWith({ perks: [{ id: 'used_to_the_pain', tier: 'I' }, { id: 'the_twin_pays', tier: 'mastered' }, { id: 'earthbreaker', tier: 'mastered' }] }), f = fight(c);
+    const c = charWith({ perks: [{ id: 'breaching_strike', tier: 'I' }, { id: 'the_twin_pays', tier: 'mastered' }, { id: 'earthbreaker', tier: 'mastered' }] }), f = fight(c);
     const rows = (actionGroups(f.cb, f.u, c, { g: f.g }).find((x) => x[3] === 'perks')?.[1] || []) as any[];
-    expect(rows.map((r) => r[0])).toEqual([pkId({ id: 'perk:earthbreaker', actionId: 'earthbreaker' }), PKI + 'perk:the_twin_pays', PKI + 'perk:used_to_the_pain']);
+    expect(rows.map((r) => r[0])).toEqual([pkId({ id: 'perk:earthbreaker', actionId: 'earthbreaker' }), PKI + 'perk:the_twin_pays', PKI + 'perk:breaching_strike']);
   });
   it('on an enemy\'s turn the list is that enemy\'s, and its passives are not shown: no Perks tab to read', () => {
-    const c = charWith({ perks: [{ id: 'used_to_the_pain', tier: 'I' }] }), f = fight(c), foe: any = f.cb.units.find((x: any) => x.side === 'foe');
-    foe.held = { perks: [{ id: 'last_wall', tier: 'mastered' }, { id: 'used_to_the_pain', tier: 'I' }], traits: ['pain_eater'] };
+    const c = charWith({ perks: [{ id: 'breaching_strike', tier: 'I' }] }), f = fight(c), foe: any = f.cb.units.find((x: any) => x.side === 'foe');
+    foe.held = { perks: [{ id: 'last_wall', tier: 'mastered' }, { id: 'breaching_strike', tier: 'I' }], traits: ['pain_eater'] };
     f.cb.turn = f.cb.order.indexOf(foe.id);
     expect(actionGroups(f.cb, foe, null, { g: f.g }).some((x) => x[3] === 'perks')).toBe(false);
   });

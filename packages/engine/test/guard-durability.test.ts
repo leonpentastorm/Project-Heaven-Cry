@@ -143,13 +143,13 @@ describe('3. Guard soaks', () => {
     f.bound(() => applyDamage(f.cb, f.pc, 8, { type: 'soul', by: f.pc })); expect(guard(f)).toBe(3);
     const hp = f.pc.hp; f.bound(() => applyDamage(f.cb, f.pc, 25, { type: 'trap', shield: false })); expect(guard(f)).toBe(1); expect(hp - f.pc.hp).toBe(25 - 2 * G.soak); // 2 points soak, 1 kept
   });
-  it('a unit that holds the Defender\'s Reactive Plate spends Guard through the plate, once', () => {
+  it('a rank III Bulwark holds no Reactive Plate any more (rules 1.73 item 5837): its Guard soaks as anyone\'s, and still takes less than none', () => {
     const base = hit(fight([{ dur: 0 }]), undefined, 'melee');
     const f = physFight([{ weapon: 'sabre', classId: 'defender', level: 12, attrs: { endurance: 8 }, skills: { durability: 3, athletics: 4 } }], [{ tier: 'elite' }]);
     f.cb.objects = []; f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.turn(f.pc); f.pc.hp = f.pc.maxHp; guard(f as any, f.pc, 5);
-    expect(f.bound(() => phys.holds(f.pc, 'class:defender.reactive_plate'))).toBe(true);
+    expect(f.bound(() => phys.holds(f.pc, 'class:defender.reactive_plate'))).toBe(false);
     f.pc.armour = 0; const lost = hit(f as any, undefined, 'melee');
-    expect(f.cb.log.filter((l) => /plate hardens/.test(l)).length).toBe(1); expect(f.cb.log.some((l) => /Guard takes/.test(l))).toBe(false);
+    expect(f.cb.log.filter((l) => /plate hardens/.test(l)).length).toBe(0);
     expect(lost).toBeLessThan(base);
   });
 });

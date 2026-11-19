@@ -120,34 +120,8 @@ export function pettyGate(h: Holder, target: Unit | Character | null | undefined
 
 // ======================================================================================================== PERKS
 
-// ---------- Grim Reaper (Intimidation γ) ----------
-// I: −1 AP on your first turn of each fight; a kill or a KO (a subdued foe) of an enemy on your own turn gives +2 AP at
-// once, once every 3 of your turns (the AP perks' cooldown, ./cooldown.ts; the +3 cap and the 9 ceiling hold). II: no first-turn penalty; same +2; every enemy who sees
-// the kill saves (Heart, vs 12 + your Intimidation strength) against Fear, with you as its source. A kill on someone
-// else's turn (Overwatch, a reaction) gives nothing. Area map fights count the same (the first-turn penalty is a fight's).
-function reaperKill(h: Holder, victim: Unit, rng: Rng) {
-  const u = h.u, cb = h.cb; if (!u || !cb || victim.side === u.side) return;
-  // The area map keeps its once-a-turn limit; in a fight the cooldown decides (and the turn's use is still counted, so
-  // the perk card says "Used this turn").
-  if (overworld(cb) ? uses(h).take('per_turn', 1, h.key + '#ap') : cdFire(h, 'gain', cb.round)) {
-    if (overworld(cb)) { grantAp(cb, u, 2, { max: Infinity }); say(cb, u.name + ' +2 AP (Grim Reaper).'); } else { uses(h).take('per_turn', 1, h.key + '#ap'); grantPerkAp(cb, u, 2, 'Grim Reaper'); }
-  }
-  if (tierII(h) && !overworld(cb)) {
-    for (const f of cb.units) if (f.side !== u.side && alive(f) && f !== victim && unitSees(cb, f, victim.pos)) say(cb, u.name + '\'s kill (Grim Reaper)' + applyCond(cb, rng, u, f, 'fear', undefined, 'heart', { via: 'intimidation' }) + '.');
-  }
-}
-register({
-  id: 'grim_reaper', claims: 'all',
-  on: {
-    turn_start_pre: (ctx, h) => {
-      if (ctx.u !== h.u || !inFight(h)) return; const st = stateOf(h); cdTick(h);
-      if (!st.firstDone) { st.firstDone = true; if (!tierII(h)) pushAp(ctx, -1, 'Grim Reaper: first turn'); }
-    },
-    on_kill: (ctx, h) => { if (ctx.by === h.u && ctx.ownTurn) reaperKill(h, ctx.victim, rngOf(h, ctx)); },
-    on_surrender: (ctx, h) => { if (ctx.why === 'subdued' && ctx.by === h.u && h.cb && h.u && ownTurn(h.cb, h.u)) reaperKill(h, ctx.t, rngOf(h, ctx)); },
-  },
-  brief: () => null,
-});
+// Grim Reaper (Intimidation) is data since rules 1.73 item 5817 (perks.json): a Shaken or Afraid foe's hit costs no
+// Momentum; II, a kill on your own turn frightens the foes who see it. Its AP rows went (rule 15.7: no AP inside a turn).
 
 // ---------- Overruled! (Eloquence γ) ----------
 // I: +2 AP at the start of your turn while a Left Brain Debuff you inflicted is on a living enemy (once, however many);

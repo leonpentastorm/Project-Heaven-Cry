@@ -101,7 +101,79 @@
           "threshold": 5,
           "moves": [
             {
-              "ref": "adamantile_knight.unbroken"
+              "id": "retort",
+              "name": "Retort",
+              "ap_cost": 0,
+              "uses": "reaction",
+              "text": "An Answer: a foe hits you in melee while you hold Guard: {=effects.0.and.0.value|abs} Guard and your reaction throw {=amounts.retort.per.0.value|pct}% of the blow back at it (its armour applies)",
+              "short": "Answer: a melee hit on your Guard: throw {=amounts.retort.per.0.value|pct}% of it back",
+              "amounts": {
+                "retort": {
+                  "kind": "damage",
+                  "base": 0,
+                  "per": [
+                    {
+                      "of": "event:amount",
+                      "value": 0.5
+                    }
+                  ],
+                  "type": "physical",
+                  "armour": "full",
+                  "provisional": true
+                }
+              },
+              "effects": [
+                {
+                  "op": "deal",
+                  "when": "damaged",
+                  "if": {
+                    "actor": "foe",
+                    "by_hit": true,
+                    "self_has_res": [
+                      "guard"
+                    ],
+                    "self_alive": true,
+                    "answer_on": "retort",
+                    "mode": [
+                      "melee"
+                    ]
+                  },
+                  "amount": "retort",
+                  "target": "actor",
+                  "limit": {
+                    "reaction": 1,
+                    "kind": "attack"
+                  },
+                  "label": "Retort",
+                  "and": [
+                    {
+                      "op": "resource",
+                      "resource": "guard",
+                      "value": -1
+                    }
+                  ],
+                  "fx": {
+                    "k": "guard_move",
+                    "move": "retort"
+                  },
+                  "say": "{self} throws the blow back at {actor}{then} (Retort)."
+                }
+              ],
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "defender",
+              "new": true,
+              "fantasy_tags": [
+                "guard",
+                "tank",
+                "counter"
+              ],
+              "attributes": [
+                "endurance"
+              ],
+              "status": "active",
+              "surface": "combat",
+              "source": "rules 1.73 (Body), 0.32: the Endurance step (item 5836): replaces Unbroken; Retort left Durability's door"
             },
             {
               "id": "shrug_it_off",
@@ -157,7 +229,45 @@
           "threshold": 8,
           "moves": [
             {
-              "ref": "defender.reactive_plate"
+              "id": "reforge",
+              "name": "Reforge",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "At the start of your turn, if you hold {=effects.0.if.self_res.guard.at_most} Guard or none, gain {=effects.0.value} Guard",
+              "short": "Turn start with {=effects.0.if.self_res.guard.at_most} Guard or none: +{=effects.0.value} Guard",
+              "effects": [
+                {
+                  "op": "resource",
+                  "when": "turn_start",
+                  "resource": "guard",
+                  "value": 2,
+                  "if": {
+                    "self_res": {
+                      "guard": {
+                        "at_most": 1
+                      }
+                    },
+                    "self_alive": true
+                  },
+                  "label": "Reforge",
+                  "say": "{self} hammers the plates back into place: +{gain} Guard (Reforge)."
+                }
+              ],
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "defender",
+              "new": true,
+              "fantasy_tags": [
+                "guard",
+                "tank",
+                "sustain"
+              ],
+              "attributes": [
+                "endurance"
+              ],
+              "status": "active",
+              "surface": "combat",
+              "source": "rules 1.73 (Body), 0.32: the Endurance step (item 5837): replaces Reactive Plate"
             },
             {
               "id": "anchor",
@@ -391,6 +501,9 @@
                 "actor": "self",
                 "mode": [
                   "charge"
+                ],
+                "self_lacks": [
+                  "headlong_paid"
                 ]
               }
             },
@@ -984,7 +1097,7 @@
           "name": "Break Them",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Rout costs you {=effects.0.value|abs} AP less on your turn (never under {=effects.0.min}).",
+          "text": "Rout costs you {=effects.0.value|abs} AP less on your turn (never under {=effects.0.min}), and every save a foe makes against you is harder by {=effects.1.value.per.0.value} for each Pressure on it (at most {=effects.1.value.max}).",
           "effects": [
             {
               "op": "cost_mod",
@@ -996,6 +1109,26 @@
                   "rout"
                 ],
                 "own_turn": true
+              }
+            },
+            {
+              "op": "roll_mod",
+              "when": "save",
+              "roll": "tn",
+              "label": "Break Them",
+              "value": {
+                "base": 0,
+                "per": [
+                  {
+                    "of": "target:pressure",
+                    "value": 1
+                  }
+                ],
+                "max": 2
+              },
+              "if": {
+                "actor": "self",
+                "target": "foe"
               }
             }
           ],
@@ -1010,7 +1143,9 @@
             "agility"
           ],
           "status": "active",
-          "surface": "combat"
+          "surface": "combat",
+          "short": "Rout {=effects.0.value|abs} AP less · foes save harder for each Pressure on them",
+          "source": "rules 1.73 (Body), 0.32: the Agility step (item 5856): Shaken Nerves moved in from Dexterity 3"
         }
       ],
       "ranks": {
@@ -1025,7 +1160,7 @@
               "name": "Hold the Lane",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Held shots cost {=effects.0.value|abs} AP less (min {=effects.0.min})",
+              "text": "Held shots cost {=effects.0.value|abs} AP less (min {=effects.0.min}) · a held shot that misses still adds {=effects.1.value} Pressure (once a turn a foe)",
               "effects": [
                 {
                   "op": "cost_mod",
@@ -1037,9 +1172,31 @@
                       "watch"
                     ]
                   }
+                },
+                {
+                  "op": "resource",
+                  "when": "miss",
+                  "label": "Hold the Lane",
+                  "resource": "pressure",
+                  "value": 1,
+                  "target": "target",
+                  "if": {
+                    "actor": "self",
+                    "rolled_with": [
+                      "dexterity"
+                    ],
+                    "hostile": true,
+                    "own_turn": false
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "each": "target"
+                  },
+                  "say": "{self}'s near miss keeps {target}'s head down."
                 }
               ],
-              "source": "rules 1.60 item 4626 (R8): was Speed Loader, which repeated Speed Load (Dexterity 3); the id is kept so saves load",
+              "source": "rules 1.60 item 4626 (R8): was Speed Loader, which repeated Speed Load (Dexterity 3); the id is kept so saves load; rules 1.73 (Body), 0.32: the Agility step (item 5855): Near Miss moved in from Dexterity 3",
               "adjudication": "engine",
               "provisional": true,
               "origin": "marksman",
@@ -1052,7 +1209,8 @@
                 "agility"
               ],
               "status": "active",
-              "surface": "combat"
+              "surface": "combat",
+              "short": "Held shots {=effects.0.value|abs} AP less · a held miss still presses"
             }
           ]
         },
@@ -3532,9 +3690,20 @@
         "id": "finisher",
         "name": "Measured Blow",
         "ap_cost": 0,
-        "uses": "per_combat",
-        "text": "Once a fight: a Finisher returns {=effects.0.value} of the Momentum it spent",
+        "uses": "at_will",
+        "text": "A Finisher that drops its target leaves you {=effects.1.value} Momentum. Once a fight, any Finisher does.",
         "effects": [
+          {
+            "op": "mark",
+            "when": "kill",
+            "flag": "dropped",
+            "if": {
+              "actor": "self",
+              "tech_group": [
+                "finisher"
+              ]
+            }
+          },
           {
             "op": "resource",
             "when": "acted",
@@ -3543,17 +3712,48 @@
             "if": {
               "tech_group": [
                 "finisher"
-              ]
+              ],
+              "flag": "dropped"
+            },
+            "priority": 150,
+            "and": [
+              {
+                "op": "mark",
+                "flag": "dropped",
+                "clear": true
+              }
+            ],
+            "say": "{self} follows through (Measured Blow): +{gain} Momentum."
+          },
+          {
+            "op": "resource",
+            "when": "acted",
+            "resource": "momentum",
+            "value": 1,
+            "if": {
+              "tech_group": [
+                "finisher"
+              ],
+              "no_flag": "dropped"
             },
             "limit": {
               "per": "per_combat",
               "n": 1
             },
-            "priority": 150,
+            "priority": 140,
             "say": "{self} holds something back (Measured Blow): +{gain} Momentum."
+          },
+          {
+            "op": "mark",
+            "when": "turn_end",
+            "flag": "dropped",
+            "clear": true,
+            "if": {
+              "flag": "dropped"
+            }
           }
         ],
-        "source": "rules 1.60 item 4623 (R5): was the Breaker's own Finisher action; the door's Finishers are Cleave, Break, Coup and Launch",
+        "source": "rules 1.60 item 4623 (R5): was the Breaker's own Finisher action; the door's Finishers are Cleave, Break, Coup and Launch; rules 1.73 (Body), 0.32: the Strength step (item 5808): Follow Through (Raw Power 5) merged in",
         "adjudication": "engine",
         "provisional": true,
         "origin": "fighter",
@@ -3566,7 +3766,8 @@
         "attributes": [
           "strength"
         ],
-        "status": "active"
+        "status": "active",
+        "short": "A Finisher kill leaves you x{=effects.1.value} · once a fight, any Finisher"
       },
       {
         "id": "brace",
@@ -3700,7 +3901,8 @@
         "attributes": [
           "endurance"
         ],
-        "status": "active"
+        "status": "shelved",
+        "shelved_by": "rules 1.73 item 5837: replaced on the Bulwark by Reforge (shelved, kept for saves and the move pool)"
       },
       {
         "adjudication": "engine",
@@ -6708,7 +6910,8 @@
           "attributes": [
             "endurance"
           ],
-          "status": "active"
+          "status": "shelved",
+          "shelved_by": "rules 1.73 item 5836: replaced on the Bulwark by Retort (shelved; the Adamantile Knight keeps its row)"
         }
       ],
       "shelved": true,

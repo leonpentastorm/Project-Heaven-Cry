@@ -1,23 +1,18 @@
 // Skeleton 2.0 (rules 1.13), the perk and unlock pass: the items that were replaced or became passives.
-//   Raw Power 3 · Heavy Hands      a melee technique's push moves its target 1 tile further
-//   Raw Power 5 · Follow Through   a Finisher that takes its target out leaves you 1 Momentum
-//   Iron Grip I/II (perk)          replaces Grapple: the technique Grapple, and a held target can't react (rules 1.56)
-//   Dexterity 5 · Quick Draw       the first attack of a fight with a weapon drawn for it costs no AP
+//   Iron Grip I/II (perk)          a held target can't react (rules 1.56); II: a melee technique's push goes further
+//                                  (Heavy Hands, rules 1.73 item 5804; Follow Through is the Breaker's Measured Blow, data)
 //   Improvisation 5 · Tuned        the weapon in your main hand never jams and never breaks
 //   Camaraderie 3 · Hand-Off       once a round an adjacent ally uses your Defense against one attack
 //   Composure 5 · Stand Still      until you first act in a fight: −2 to hit you, and the first miss gives a free attack
 // Every number here is PROVISIONAL (spec section 14).
 //
-// Wired in physical/core.ts: Heavy Hands (forceMove asks 'push_tiles'), Quick Draw (apFor names its technique in
-// 'attack_preview').
+// Wired in physical/core.ts: Iron Grip II's push (forceMove asks 'push_tiles').
 import { register, stateOf, has, type Holder } from '../effects';
 import { charOfUnit } from '../effects/hooks';
-import { type Combat, type Unit, dist, alive, emitFx, checkOver, previewAttack, resolveAttack, isMelee } from '../combat';
+import { type Combat, type Unit, dist, alive, checkOver, previewAttack, resolveAttack, isMelee } from '../combat';
 import { WEAPON } from '../data';
-import { resGain, resOf } from '../tactics';
 import { condSource } from '../magic';
-import { TECHNIQUE, techGroupOf, actionTechOf } from '../physical/data';
-import { ensureMomentum } from '../physical/core';
+import { num } from '../effects/num';
 import { overworld, say } from '../kit';
 
 const tierII = (h: Holder) => h.tier === 'II';
@@ -26,49 +21,23 @@ const peek = (h: Holder): Record<string, any> => (h.u?.ps?.[h.key] as any) || {}
 /** Does `u` hold `t`: Grappled by it, or Bound by it (physical/melee: Bind's state, Throw Down's own test). */
 export const holds = (u: Unit, t: Unit): boolean => alive(t) && dist(u.pos, t.pos) <= 1 && (condSource(t, 'grappled') === u.id || u.tech?.bind?.target === t.id);
 const heldOf = (cb: Combat, u: Unit): Unit[] => cb.units.filter((t) => t !== u && holds(u, t));
-/** +1 Momentum for a unit with a melee weapon in a hand, shown on its meter. Returns what it gained. */
-function giveMomentum(cb: Combat, u: Unit, silent = false): number {
-  ensureMomentum(u); const was = resOf(u, 'momentum'), got = resGain(u, 'momentum', 1);
-  if (got && !silent) emitFx(cb, 'momentum', { unit: u.id, now: resOf(u, 'momentum'), was });
-  return got;
-}
-
-// ---------- Raw Power · Heavy Hands (Mastery 1) ----------
-// A melee technique of yours that pushes moves its target 1 tile further: the answer to the core's 'push_tiles' query
-// (W1), so the technique's card, its preview and the push itself agree.
-register({ id: 'raw_power.3', kind: 'skill', claims: 'all', stat: (_h, stat, ctx) => (stat === 'push_tiles' && ctx?.system === 'melee' ? 1 : 0), brief: () => null });
 
 // Keep Swinging (Raw Power; `breaching_strike`): written in data only since rules 1.56 (Balance 2.0; data/perks.json).
 // Breaching Strike's wall-slam is in docs/design/move-pool.md.
 
-// ---------- Raw Power · Follow Through (Mastery 2) ----------
-// A Finisher that takes its target out (an enemy dropped or killed during it) leaves you 1 Momentum: given when the
-// action is done, after the Finisher has spent the meter.
-register({
-  id: 'raw_power.5', kind: 'skill', claims: 'all',
-  on: {
-    on_downed: (ctx, h) => { if (h.u && ctx.by === h.u && ctx.ownTurn && ctx.victim?.side !== h.u.side) stateOf(h).out = true; },
-    turn_start: (ctx, h) => { if (ctx.u === h.u && peek(h).out) stateOf(h).out = false; },
-    action_done: (ctx, h) => {
-      if (ctx.u !== h.u || !h.u || !h.cb) return; const st = stateOf(h), out = st.out; st.out = false;
-      if (!out || techGroupOf(actionTechOf(ctx.a)) !== 'finisher' || !alive(h.u)) return; // a Finisher by THE reading (Launch included)
-      if (giveMomentum(h.cb, h.u)) say(h.cb, h.u.name + ' follows through: 1 Momentum kept (Follow Through).');
-    },
-  },
-  brief: () => null,
-});
-
 // =====================================================================================================================
-// Iron Grip (Raw Power; replaces Grapple; rules 1.56, Balance 2.0). A target you hold is one you have Grappled (Bind
+// Iron Grip (Raw Power; rules 1.56, Balance 2.0; rules 1.73 item 5804). A target you hold is one you have Grappled (Bind
 // with bare hands, Trip's Bare line) or Bound (Bind with a weapon). This handler keeps the two parts the item ops have no
-// piece for: the technique Grapple (the answer to 'technique:grapple') and the forbid (a held target's every reaction
-// window is cancelled). Its damage step is data (data/perks.json, effects 1). The old redirect, drag and Tier II's
-// Momentum went (docs/design/move-pool.md). Pressure Point and Keep Their Heads Down (Dexterity; `both_hands`,
-// `running_reload`) are data only.
+// piece for: the forbid (a held target's every reaction window is cancelled) and Tier II's longer push (Heavy Hands: the
+// answer to the core's 'push_tiles' for a melee technique, its tiles the tier's `numbers.push_tiles`), so the
+// technique's card, its preview and the push agree. Grapple itself is Raw Power 2's (skills.json, stat technique:grapple).
+// Its damage step is data (data/perks.json, effects 1). The old redirect, drag and Tier II's Momentum went
+// (docs/design/move-pool.md). Pressure Point and Keep Their Heads Down (Dexterity; `both_hands`, `running_reload`) are
+// data only.
 // =====================================================================================================================
 register({
   id: 'iron_grip', claims: ['forbid'],
-  stat: (_h, stat) => (stat === 'technique:grapple' ? 1 : 0),
+  stat: (h, stat, ctx) => (stat === 'push_tiles' && ctx?.system === 'melee' ? num(h, 'push_tiles') : 0),
   on: {
     reaction_window: (ctx, h) => {
       const r: Unit | undefined = ctx.reactor; if (!h.u || !r || ctx.cancel || !alive(h.u) || !holds(h.u, r)) return;
@@ -78,23 +47,8 @@ register({
   brief: () => null,
 });
 
-// ---------- Dexterity · Quick Draw (Mastery 2) ----------
-// Once per combat, the first attack you make with a weapon you draw for it (a technique that draws: Draw Cut, Snap
-// Shot) costs 0 AP. The cost is zeroed where the core asks for a technique's AP ('attack_preview' with the technique's
-// id, W2), so the card, the check and the charge agree; it is used up when such a technique has been used.
-const draws = (id: any) => !!TECHNIQUE[id]?.needs?.stowed;
-register({
-  id: 'dexterity.5', kind: 'skill', claims: 'all',
-  on: {
-    attack_preview: (ctx, h) => { if (ctx.att === h.u && h.cb && !overworld(h.cb) && draws(ctx.tech) && !peek(h).drawn) ctx.ap = 0; },
-    action_done: (ctx, h) => {
-      const u = h.u, cb = h.cb, a = ctx.a; if (!u || !cb || ctx.u !== u || a?.type !== 'combat/technique' || overworld(cb) || !draws(a.id)) return;
-      const st = stateOf(h); if (st.drawn) return; st.drawn = true;
-      say(cb, u.name + ' had it out before anyone saw (Quick Draw).');
-    },
-  },
-  brief: () => null,
-});
+// Quick Draw (once a fight, the first attack with a weapon drawn for it costs no AP) is data since rules 1.73 item 5852:
+// Speed Load II (perks.json speed_load), a cost_mod on the attack's preview and its use on the roll.
 
 // ---------- Improvisation · Tuned (Mastery 2) ----------
 // The weapon in your main hand never jams and never breaks (PROVISIONAL reading of "the weapon you maintain", spec 14).

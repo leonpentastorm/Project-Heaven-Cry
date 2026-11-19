@@ -21,9 +21,9 @@ const LAUNCH = row('launch').effects[0];
 const SK = { athletics: 6, raw_power: 6, dexterity: 6 };
 type F = ReturnType<typeof fight>;
 /** A Breaker (or, cls null, a classless fighter) on C5, foes where given (default one next to it on D5), its turn. */
-function fight(o: { weapon?: string; known?: string[]; foes?: { at: string; tier?: string }[]; m?: number; cls?: string | null; level?: number; perks?: Record<string, string> } = {}) {
+function fight(o: { weapon?: string; known?: string[]; foes?: { at: string; tier?: string }[]; m?: number; cls?: string | null; level?: number; perks?: Record<string, string>; attrs?: Record<string, number> } = {}) {
   const foes = o.foes || [{ at: 'D5' }];
-  const f = physFight([{ weapon: o.weapon || 'sabre', known: o.known || [], skills: SK, ...(o.perks ? { perks: o.perks } : {}), classId: o.cls === undefined ? 'fighter' : o.cls, level: o.level ?? 3 } as any], foes.map((x) => ({ tier: x.tier || 'elite', ...x })) as any);
+  const f = physFight([{ weapon: o.weapon || 'sabre', known: o.known || [], skills: SK, ...(o.perks ? { perks: o.perks } : {}), ...(o.attrs ? { attrs: o.attrs } : {}), classId: o.cls === undefined ? 'fighter' : o.cls, level: o.level ?? 3 } as any], foes.map((x) => ({ tier: x.tier || 'elite', ...x })) as any);
   f.cb.objects = [];
   f.put(f.pc, 'C5'); foes.forEach((x, i) => { const u = f.put(f.foes[i], x.at); u.hp = u.maxHp = 900; });
   f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1;
@@ -198,13 +198,14 @@ describe('Keep Swinging counts every Breaker Finisher by its group: Cleave, Brea
 });
 
 // The 0.29 consolidation (MF1): ONE reading of "is a Finisher" (physical/data.ts techGroupOf): a Launch that drops its
-// foe is a Finisher for Follow Through (Raw Power 5) and ends the melee chain, as Cleave, Break and Coup do.
-describe('a Launch kill is a Finisher everywhere: Follow Through and the end of the chain', () => {
-  for (const how of ['cleave', 'break', 'coup', 'launch']) it(how + ': Follow Through keeps 1 Momentum and the chain has ended', () => {
-    const f = fight({ m: 3 }); weak(f.foe); f.foe.hp = 1; rig({ hit: true, die: 12 });
+// foe is a Finisher for Measured Blow's follow-through (rules 1.73 item 5808: Follow Through left Raw Power 5 for the
+// Breaker's rank III) and ends the melee chain, as Cleave, Break and Coup do.
+describe('a Launch kill is a Finisher everywhere: Measured Blow and the end of the chain', () => {
+  for (const how of ['cleave', 'break', 'coup', 'launch']) it(how + ': a rank III Breaker follows through (x1) and the chain has ended', () => {
+    const f = fight({ m: 3, level: 12, attrs: { strength: 8 } }); weak(f.foe); f.foe.hp = 1; rig({ hit: true, die: 12 });
     if (how === 'launch') launch(f, f.foe); else f.tech(how, { targetId: f.foe.id });
     rig(null);
-    expect(f.cb.log.some((l: any) => /Follow Through/.test(typeof l === 'string' ? l : l?.text || ''))).toBe(true);
+    expect(f.cb.log.some((l: any) => /follows through \(Measured Blow\)/.test(typeof l === 'string' ? l : l?.text || ''))).toBe(true);
     expect(chainOf(f.cb, f.unit(f.pc.id)).ended).toBe(true);
   });
 });

@@ -20,19 +20,22 @@ const hold = (f: F, t: Unit, by: Unit = f.pc) => { const x = f.unit(t.id); x.con
 
 describe('the data of the pass', () => {
   const P = PERK as Record<string, any>;
-  it('the replaced perks have new ids and the old ones are gone; there are still 106 perks, two acquired a skill', () => {
+  it('the replaced perks have new ids and the old ones are gone; an alpha has two acquired perks, a beta or gamma two or four (rules 1.73: four once its attribute is reworked)', () => {
     expect(P.grapple).toBeUndefined(); expect(P.origami_hands).toBeUndefined();
     expect(P.iron_grip.name).toBe('Iron Grip'); expect(P.iron_grip.skills).toEqual(['raw_power']);
     expect(P.both_hands.name).toBe('Pressure Point'); expect(P.both_hands.skills).toEqual(['dexterity']); // rules 1.56: the id stays, the perk is new
-    expect(PERKS.length).toBe(106);
     const per: Record<string, number> = {}; for (const p of PERKS as any[]) if (p.tier === 'acquired') per[p.skills[0]] = (per[p.skills[0]] || 0) + 1;
-    expect(Object.keys(per).length).toBe(27); expect(Object.values(per).every((n) => n === 2)).toBe(true);
+    expect(Object.keys(per).length).toBe(27);
+    for (const [sk, n] of Object.entries(per)) expect([2, 4], sk).toContain((SKILL as any)[sk].slot === 'alpha' ? n + 2 : n); // an alpha: exactly two
+    for (const sk of ['guts', 'intimidation', 'pain_threshold', 'sensory']) expect(per[sk], sk).toBe(4); // rules 1.73 items 5810, 5815 (Strength), 5826, 5832 (Endurance)
+    expect(P.iron_stomach).toBeUndefined(); // folded into Steady (rules 1.73 item 5811)
   });
   it('every acquired and Mastered perk carries its skill\'s slot (skill_greek)', () => {
     for (const p of PERKS as any[]) if (p.tier === 'acquired' || p.tier === 'mastered') expect(p.skill_greek, p.id).toBe((SKILL as any)[p.skills[0]].slot);
   });
   it('no alpha or beta perk gives or takes AP in the turn any more (15.7); the own-cost discounts stay', () => {
-    const gone = ['used_to_the_pain', 'into_the_dark', 'rally_cry', 'clean_hands', 'many_hands', 'walking_wounded', 'you_get_used_to_it']; // rules 1.56: blueprint is Wake of the Kill (1 AP on a Figment's kill: the doc's ruling, spec item 4215)
+    const gone = ['into_the_dark', // rules 1.73: Used to the Pain is removed
+       'rally_cry', 'clean_hands', 'many_hands', 'walking_wounded', 'you_get_used_to_it']; // rules 1.56: blueprint is Wake of the Kill (1 AP on a Figment's kill: the doc's ruling, spec item 4215)
     for (const id of gone) {
       const p = P[id], fx = [...(p.effects || []), ...(p.tiers?.I?.effects || []), ...(p.tiers?.II?.effects || [])];
       expect(fx.some((e: any) => e.op === 'stat_mod' && e.stat === 'ap'), id).toBe(false);
@@ -43,7 +46,8 @@ describe('the data of the pass', () => {
   it('Dead Signal is Acuity\'s (id analysis); the unlocks carry their new names', () => {
     expect(P.dead_signal.skills).toEqual(['analysis', 'ingenuity']); expect(P.dead_signal.requires[0]).toEqual({ skill: 'analysis', min: 5 });
     const name = (s: string, n: string) => (SKILL as any)[s].unlocks[n].name;
-    expect([name('raw_power', '3'), name('raw_power', '5'), name('analysis', '5'), name('camaraderie', '3'), name('composure', '5')]).toEqual(['Heavy Hands', 'Follow Through', 'Read Them', 'Hand-Off', 'Stand Still']);
+    // rules 1.73 items 5802-5804: Raw Power 2 is Grapple, 5 Throw Down; Heavy Hands is Iron Grip II's, Follow Through the Breaker's
+    expect([name('raw_power', '2'), name('raw_power', '5'), name('analysis', '5'), name('camaraderie', '3'), name('composure', '5')]).toEqual(['Grapple', 'Throw Down', 'Read Them', 'Hand-Off', 'Stand Still']);
     expect((SKILL as any).analysis.unlocks['5'].text).toMatch(/deal 15% less damage/);
     expect((SKILL as any).proficiency.unlocks['5'].text).toMatch(/never jams and never breaks/);
   });
@@ -70,21 +74,16 @@ describe('the data of the pass', () => {
   it('every effect of the pass is run by the engine or named for the Narrator (no gap)', () => { expect(coverageGaps()).toEqual([]); });
 });
 
-describe('Heavy Hands and Follow Through (Raw Power 3 and 5)', () => {
-  it('Heavy Hands answers the push query: a melee technique\'s push is 1 tile longer, from 3 points; a shot\'s push is not', () => {
-    const ask = (pts: number, system = 'melee') => { const f = physFight([{ weapon: 'sabre', skills: { raw_power: pts } }]); return withGame(f.g, () => statQuery({ u: f.pc, cb: f.cb }, 'push_tiles', { tech: 'shove', system }).add); };
-    expect(ask(3)).toBe(1); expect(ask(2)).toBe(0); expect(ask(5, 'ranged')).toBe(0);
+describe('Heavy Hands and Follow Through moved (rules 1.73 items 5804, 5808)', () => {
+  it('Iron Grip II answers the push query: a melee technique push is 1 tile longer; Tier I, no perk or a shot push is not', () => {
+    const ask = (perks: any, system = 'melee') => { const f = physFight([{ weapon: 'sabre', skills: { raw_power: 9 }, perks }]); return withGame(f.g, () => statQuery({ u: f.pc, cb: f.cb }, 'push_tiles', { tech: 'shove', system }).add); };
+    expect(ask({ iron_grip: 'II' })).toBe((PERK as any).iron_grip.tiers.II.numbers.push_tiles); expect(ask({ iron_grip: 'II' })).toBe(1);
+    expect(ask({ iron_grip: 'I' })).toBe(0); expect(ask({})).toBe(0); expect(ask({ iron_grip: 'II' }, 'ranged')).toBe(0);
   });
-  it('Follow Through: a Finisher that takes its target out leaves 1 Momentum; one that doesn\'t leaves none; below 5 points, none', () => {
-    const run = (pts: number, hp: number) => {
-      const f = physFight([{ weapon: 'sabre', known: ['coup'], skills: { raw_power: pts, dexterity: 6 } }], [{ at: 'D5' }]);
-      f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.unit(f.foe.id).hp = hp; f.unit(f.foe.id).maxHp = 500; f.turn(f.pc); f.momentum(f.pc, 3); rig({ hit: true });
-      expect(f.tech('coup', { targetId: f.foe.id })).toBeNull();
-      return { m: f.momentum(f.pc), f };
-    };
-    const kill = run(5, 1); expect(kill.m).toBe(1); expect(logHas(kill.f, /Follow Through/)).toBe(true);
-    expect(run(5, 500).m).toBe(0);
-    expect(run(4, 1).m).toBe(0);
+  it('Follow Through is gone from Raw Power 5: a Finisher kill leaves a non-Breaker no Momentum', () => {
+    const f = physFight([{ weapon: 'sabre', known: ['coup'], skills: { raw_power: 9, dexterity: 6 } }], [{ at: 'D5' }]);
+    f.put(f.pc, 'C5'); f.put(f.foe, 'D5'); f.unit(f.foe.id).hp = 1; f.unit(f.foe.id).maxHp = 500; f.turn(f.pc); f.momentum(f.pc, 3); rig({ hit: true });
+    expect(f.tech('coup', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(0); expect(logHas(f, /Follow Through|follows through/)).toBe(false);
   });
 });
 
@@ -111,13 +110,12 @@ describe('Iron Grip (replaces Grapple)', () => {
 // (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Both Hands (replaces Origami Hands)'
 
 describe('Quick Draw, Tuned, Hand-Off, Stand Still (unlocks)', () => {
-  it('Quick Draw: the first attack of a fight with a weapon drawn for it costs 0 AP (asked with the technique\'s id); then full price', () => {
+  it('Quick Draw (Speed Load II since rules 1.73 item 5852): the first attack of a fight with a weapon drawn for it costs 0 AP (asked with the technique\'s id); Dexterity 5 alone, or Tier I, gives none', () => {
     const cost = (f: F, tech: string) => withGame(f.g, () => emit(f.cb, 'attack_preview', { att: f.pc, tgt: f.pc, mode: 'shot', melee: false, ap: 2, reach: 1, terms: [], fail: null, free: false, preview: true, volleyCost: true, tech, cb: f.cb, mods: [] })).ap;
-    const f = physFight([{ weapon: 'sabre', skills: { dexterity: 5 } }]); f.turn(f.pc);
+    const f = physFight([{ weapon: 'sabre', skills: { dexterity: 1, reaction_speed: 5 }, perks: { speed_load: 'II' } }]); f.turn(f.pc);
     expect(cost(f, 'snap_shot')).toBe(0); expect(cost(f, 'draw_cut')).toBe(0); expect(cost(f, 'shot')).toBe(2);
-    withGame(f.g, () => emit(f.cb, 'action_done', { u: f.pc, a: { type: 'combat/technique', id: 'snap_shot', item: 0 }, cb: f.cb }));
-    expect(cost(f, 'snap_shot')).toBe(2); expect(logHas(f, /Quick Draw/)).toBe(true);
-    const low = physFight([{ weapon: 'sabre', skills: { dexterity: 4 } }]); low.turn(low.pc); expect(cost(low, 'snap_shot')).toBe(2);
+    const dex = physFight([{ weapon: 'sabre', skills: { dexterity: 9 } }]); dex.turn(dex.pc); expect(cost(dex, 'snap_shot')).toBe(2);
+    const one = physFight([{ weapon: 'sabre', skills: { reaction_speed: 5 }, perks: { speed_load: 'I' } }]); one.turn(one.pc); expect(cost(one, 'snap_shot')).toBe(2);
   });
   it('Tuned: the weapon in your main hand never stays jammed and never breaks; without it a fumble jams', () => {
     const run = (pts: number) => {
@@ -174,27 +172,28 @@ describe('Read Them (Acuity 5; was Weak Point)', () => {
 });
 
 describe('the hooks wired into the core (physical/core.ts)', () => {
-  it('Heavy Hands in play: a Shove pushes 2 tiles at Raw Power 3 and 1 tile at 2; the card shows the same tile', () => {
-    const run = (pts: number) => {
-      const f = physFight([{ weapon: 'sabre', known: ['shove'], skills: { raw_power: pts, athletics: 4 } }], [{ at: 'D7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'D7'); f.turn(f.pc); weak(f, f.foe);
+  it('Iron Grip II in play: a Shove pushes 2 tiles with it and 1 tile without (Raw Power 9 alone adds none); the card shows the same tile', () => {
+    const run = (perks: any) => {
+      const f = physFight([{ weapon: 'sabre', known: ['shove'], skills: { raw_power: 9, athletics: 4 }, perks }], [{ at: 'D7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'D7'); f.turn(f.pc); weak(f, f.foe);
       const pv = f.pv('shove', { targetId: f.foe.id }); expect(f.tech('shove', { targetId: f.foe.id })).toBeNull();
       expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.unit(f.foe.id).pos }]);
       return f.unit(f.foe.id).pos === f.tile('F7') ? 2 : f.unit(f.foe.id).pos === f.tile('E7') ? 1 : 0;
     };
-    expect(run(3)).toBe(2); expect(run(2)).toBe(1);
+    expect(run({ iron_grip: 'II' })).toBe(2); expect(run({ iron_grip: 'I' })).toBe(1); expect(run({})).toBe(1);
   });
-  it('Quick Draw in play: the first Snap Shot of a fight costs 0 AP on the card and in the charge; the second costs its 2', () => {
-    const fight = (pts: number) => {
-      const f = physFight([{ weapon: 'sabre', known: ['snap_shot'], skills: { dexterity: pts } }], [{ at: 'F7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'F7'); f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 900; f.turn(f.pc);
+  it('Quick Draw in play (Speed Load II): the first Snap Shot of a fight costs 0 AP on the card and in the charge; the next costs its 2', () => {
+    const fight = (perks: any) => {
+      const f = physFight([{ weapon: 'sabre', known: ['snap_shot'], skills: { dexterity: 5, reaction_speed: 5 }, perks }], [{ at: 'F7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'F7'); f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 900; f.turn(f.pc);
       const c: any = f.char(f.pc); c.pack = [...(c.pack || []), { id: 'service_pistol', name: 'service_pistol', qty: 1, kind: 'weapon', weapon: 'service_pistol', loaded: 12 }];
       return f;
     };
     const stowed = (f: F, w: string) => (f.char(f.pc) as any).pack.findIndex((x: any) => x.weapon === w);
-    const f = fight(5); rig({ hit: true, die: 12 });
+    const f = fight({ speed_load: 'II' }); rig({ hit: true, die: 12 });
     expect(f.pv('snap_shot', { targetId: f.foe.id, item: stowed(f, 'service_pistol') }).ap).toBe(0);
     expect(f.tech('snap_shot', { targetId: f.foe.id, item: stowed(f, 'service_pistol') })).toBeNull(); expect(f.pc.ap).toBe(6);
+    expect(logHas(f, /Quick Draw/)).toBe(true);
     expect(f.pv('snap_shot', { targetId: f.foe.id, item: stowed(f, 'sabre') }).ap).toBeGreaterThan(0); // used up for the fight
-    const low = fight(4); expect(low.pv('snap_shot', { targetId: low.foe.id, item: stowed(low, 'service_pistol') }).ap).toBe(2);
+    const low = fight({}); expect(low.pv('snap_shot', { targetId: low.foe.id, item: stowed(low, 'service_pistol') }).ap).toBe(2);
   });
 });
 
@@ -210,12 +209,12 @@ describe('Siege Engine reaches the techniques', () => {
   });
 });
 
-describe('Grapple is a technique (Leon, 10 Nov 2026): Iron Grip gives it on the pad', () => {
-  it('with Iron Grip the pad lists Grapple, a Link at 1 AP; without it, not', () => {
-    const mk = (perks: any) => { const f = physFight([{ weapon: 'sabre', skills: { raw_power: 4 }, perks } as any], [{ at: 'D7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'D7'); f.turn(f.pc); return f; };
+describe('Grapple is a technique (Leon, 10 Nov 2026): Raw Power 2 gives it on the pad (rules 1.73 item 5802)', () => {
+  it('at Raw Power 2 the pad lists Grapple, a Link at 1 AP, with any melee weapon; at 1, not, Iron Grip or not', () => {
+    const mk = (pts: number, perks: any = {}) => { const f = physFight([{ weapon: 'sabre', skills: { raw_power: pts }, perks } as any], [{ at: 'D7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'D7'); f.turn(f.pc); return f; };
     const ids = (f: F) => f.pad().flatMap((g: any) => g.entries.map((e: any) => e.id));
-    const yes = mk({ iron_grip: 'I' }), no = mk({});
-    expect(ids(yes)).toContain('grapple'); expect(ids(no)).not.toContain('grapple');
+    const yes = mk(2), no = mk(1), perkOnly = mk(1, { iron_grip: 'I' });
+    expect(ids(yes)).toContain('grapple'); expect(ids(no)).not.toContain('grapple'); expect(ids(perkOnly)).not.toContain('grapple');
     const e = yes.pad().flatMap((g: any) => g.entries).find((x: any) => x.id === 'grapple'); expect(e.ap).toBe(1); expect(e.group).toBe('link');
     const foe = yes.unit(yes.foe.id); foe.sv = { body: -50, brain: 0, heart: 0 } as any;
     expect(yes.tech('grapple', { targetId: yes.foe.id })).toBeNull();

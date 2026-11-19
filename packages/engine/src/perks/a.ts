@@ -13,7 +13,6 @@ import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { key, xy, dist, alive, unitSees, litAt, moveBlockers, objectsOf, damageObject, resolveAttack, attackDamage, isMelee, refOf, keyOf as refKey, emitFx, fxFell, checkOver, previewAttack } from '../combat';
 import { ARMOUR, mod, packOf, maxHp as maxHpOf } from '../character';
-import { ELEMENTAL_CAP } from '../data';
 import { WEAPON, SKILL } from '../data';
 import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily, unitStrength } from '../magic';
 import { die, d20, type Rng } from '../rng';
@@ -52,50 +51,12 @@ const baseMove = (c: Character) => 1 + 0.5 * ((c.attrs.agility || 1) - 1) + (ARM
 
 // ---------- Used to the Pain (Pain Threshold β): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
-// ---------- Scar Tissue (Pain Threshold β) ----------
-// Each wound (a hit that takes HP) this combat: +5% Elemental damage reduction, up to 25% (II: 40%). The total with the
-// derived Elemental damage taken stays within the 60% cap (spec: Derived stats). II, PROVISIONAL (plan 6, Scar Tissue 2):
-// "limb damage" is Injury resistance: each stack adds +5 points to the d100 injury resistance, up to +40.
-// Its numbers are its data's (engine foundations 3): each stack is effects[0].value, up to effects[0].max (the count of
-// stacks is max / value); II's Injury resistance per stack is effects[1].value in points of the d100.
-const scarStack = (h: Holder) => h.info.effects[0] as { value: number; max: number };
-register({
-  id: 'scar_tissue', claims: 'all',
-  on: {
-    on_damaged: (ctx, h) => {
-      if (ctx.t !== h.u || !isHit(ctx.src) || !inFight(h)) return;
-      const { value, max } = scarStack(h), st = stateOf(h), cap = Math.round(max / value); if ((st.n || 0) >= cap) return;
-      st.n = (st.n || 0) + 1;
-      const inj = h.info.effects[1]; if (inj?.type === 'limb') { st.base ??= h.u!.injResist || 0; h.u!.injResist = st.base + Math.round(inj.value * 100) * st.n; }
-    },
-    damage_in: (ctx, h) => {
-      if (ctx.phase !== 'reduce' || ctx.t !== h.u || !ELEMENTAL_TYPES.has(ctx.src?.dmgType || '')) return;
-      const n = stateOf(h).n || 0; if (!n) return;
-      const { value, max } = scarStack(h);
-      const e = Math.min(ELEMENTAL_CAP, h.u!.elemTaken || 0), room = Math.max(0, 1 - (1 - ELEMENTAL_CAP) / (1 - e)), s = Math.min(n * value, max, room); // the one cap (rules 1.70 item 5540)
-      ctx.dmg = ctx.dmg * (1 - s);
-    },
-  },
-  brief: () => null,
-});
+// Scar Tissue (Pain Threshold) is removed (rules 1.73 item 5826: it repeated the per-point elemental row); a save holding it
+// gets Numb at the same tier (skills.json pain_threshold.perk_remap).
 
-// ---------- Iron Stomach (Guts β) ----------
-// I: Nausea and Fear last at most 1 round on you. II: immune (the generic immunity op cancels them before the save).
-// Story: II auto-passes checks the Narrator tags fear, nausea, gore or horror, and a story Fear or Nausea on you ends at
-// once; I: they end at the next scene or check.
-const FEARISH = ['fear', 'nausea', 'gore', 'horror', 'disgust'];
+// Iron Stomach (Guts) is folded into Steady II (rules 1.73 item 5811): its one round is data (cond_rounds); its story half
+// and its Tier II immunity are gone (the Mastered perk is the Fear immunity; item ops run in a fight).
 const storyShake = (h: Holder, ids: string[]) => { if (!h.c || !h.g) return; for (const id of storyConds(h.g, h.c)) if (ids.includes(id)) setStoryCond(h.g, h.c, id, 'scene', true); };
-register({
-  id: 'iron_stomach', // Tier I's one round is data (engine foundations 3); the story's checks stay here
-  on: {
-    check_build: (ctx, h) => { if (ctx.c === h.c && tierII(h)) storyShake(h, ['fear', 'nausea']); },
-    check_post: (ctx, h) => { if (ctx.c !== h.c || !tierII(h)) return; const tg: string[] = ctx.ck.tags || []; if (tg.some((x) => FEARISH.includes(x)) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('Iron Stomach'); } },
-    check_result: (ctx, h) => { if (ctx.c === h.c) storyShake(h, ['fear', 'nausea']); },
-    scene_change: (_ctx, h) => storyShake(h, ['fear', 'nausea']),
-    story_cond_apply: (ctx, h) => { if (ctx.c === h.c && tierII(h) && (ctx.id === 'fear' || ctx.id === 'nausea')) { ctx.cancel = true; ctx.why = 'Iron Stomach'; } },
-  },
-  brief: (h) => (tierII(h) ? 'never nauseated or frightened (tag fear checks: auto-pass)' : 'shakes off nausea and fear at once'),
-});
 
 // Grapple became Iron Grip and Breaching Strike became a passive (rules 1.13): both are in perks/skeleton.ts.
 

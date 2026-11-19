@@ -100,14 +100,6 @@
           {
             "at": "each from 2",
             "text": "Guard technique: +{=per_point.numbers.guard_per_point} plate"
-          },
-          {
-            "at": "at 3",
-            "text": "Challenge · Retort · Set Against the Blow"
-          },
-          {
-            "at": "at 5",
-            "text": "Slam · Last Plate"
           }
         ]
       },
@@ -122,7 +114,7 @@
           "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your melee attacks (a shield's own strike and its follow included) roll with Durability's modifier in place of the weapon's own skill when Durability's is higher (never added on top: the tank hits through its door); a gun, a bow or a throw rolls with its own skill. The blow's damage still grows with the weapon's own attribute, never with Durability. Set Against the Blow (Durability {=unlocks.1.effects.1.if.self_skill.durability}): while you hold Guard, a critical hit on you lands as an ordinary hit (its critical multiplier is taken out) and leaves no injury. Close Guard (an Answer): while you hold Guard, {=unlocks.1.effects.3.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it. Retort (Durability {=unlocks.1.effects.5.if.self_skill.durability}, an Answer): a foe hits you in melee while you hold Guard: {=unlocks.1.effects.5.and.0.value|abs} Guard and your reaction throw {=unlocks.1.amounts.retort.per.0.value|pct}% of the blow back at it (its armour applies). Challenge (Durability {=unlocks.1.effects.6.if.self_skill.durability}): {=unlocks.1.effects.6.ap} AP and {=unlocks.1.effects.6.res.guard} Guard, named at one foe you see within {=unlocks.1.effects.6.reach.tiles} tiles: every foe you see within {=unlocks.1.effects.6.effects.0.targets.within} tiles makes a Heart save or is Taunted (a Boss too: it is never forced to attack you, but it is worse at hitting anyone else). Last Plate (Durability {=unlocks.1.effects.4.if.self_skill.durability}): once a fight, a blow that would drop you leaves you on {=unlocks.1.effects.4.value} HP and breaks every plate. Slam (Durability {=unlocks.1.effects.7.if.self_skill.durability}): {=unlocks.1.effects.7.ap} AP and {=unlocks.1.effects.7.res.guard} Guard: every foe next to you is pushed {=unlocks.1.effects.7.effects.1.tiles} tile (a Boss holds its ground) and makes a Body save or is Off Balance.",
+          "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your melee attacks (a shield's own strike and its follow included) roll with Durability's modifier in place of the weapon's own skill when Durability's is higher (never added on top: the tank hits through its door); a gun, a bow or a throw rolls with its own skill. The blow's damage still grows with the weapon's own attribute, never with Durability. Challenge (Durability {=unlocks.1.effects.1.if.self_skill.durability}): {=unlocks.1.effects.1.ap} AP and {=unlocks.1.effects.1.res.guard} Guard, named at one foe you see within {=unlocks.1.effects.1.reach.tiles} tiles: every foe you see within {=unlocks.1.effects.1.effects.0.targets.within} tiles makes a Heart save or is Taunted (a Boss too: it is never forced to attack you, but it is worse at hitting anyone else). Slam (Durability {=unlocks.1.effects.2.if.self_skill.durability}): {=unlocks.1.effects.2.ap} AP and {=unlocks.1.effects.2.res.guard} Guard: every foe next to you is pushed {=unlocks.1.effects.2.effects.1.tiles} tile (a Boss holds its ground) and makes a Body save or is Off Balance.",
           "player": "plates soak hits · melee rolls with Durability when higher",
           "effects": [
             {
@@ -139,142 +131,6 @@
               "if_higher": true
             },
             {
-              "op": "damage_mult",
-              "when": "dealing",
-              "if": {
-                "actor": "foe",
-                "target": "self",
-                "crit": true,
-                "by_hit": true,
-                "self_has_res": [
-                  "guard"
-                ],
-                "self_skill": {
-                  "durability": 3
-                }
-              },
-              "value": 1,
-              "label": "Set Against the Blow",
-              "fx": {
-                "k": "guard_move",
-                "move": "crit_turned"
-              },
-              "say": "{self} sets against the blow: the critical lands as an ordinary hit (Set Against the Blow).",
-              "and": [
-                {
-                  "op": "mark",
-                  "flag": "crit_turned"
-                }
-              ],
-              "replaces": "critical"
-            },
-            {
-              "op": "cancel",
-              "when": "injury",
-              "if": {
-                "actor": "foe",
-                "flag": "crit_turned"
-              },
-              "label": "Set Against the Blow",
-              "why": "Set Against the Blow",
-              "and": [
-                {
-                  "op": "mark",
-                  "flag": "crit_turned",
-                  "clear": true
-                }
-              ]
-            },
-            {
-              "op": "redirect",
-              "when": "taking",
-              "if": {
-                "target": "ally",
-                "target_within": 1,
-                "actor": "foe",
-                "by_hit": true,
-                "self_has_res": [
-                  "guard"
-                ],
-                "self_alive": true,
-                "answer_on": "close_guard"
-              },
-              "share": 0.25,
-              "label": "Close Guard",
-              "fx": {
-                "k": "guard_move",
-                "move": "close_guard"
-              },
-              "say": "{self} takes part of the blow on {target} (Close Guard).",
-              "type": "physical"
-            },
-            {
-              "op": "floor",
-              "when": "would_drop",
-              "if": {
-                "by_hit": true,
-                "open": true,
-                "self_skill": {
-                  "durability": 5
-                }
-              },
-              "value": 1,
-              "limit": {
-                "per": "per_combat",
-                "n": 1,
-                "key": "last_plate"
-              },
-              "label": "Last Plate",
-              "and": [
-                {
-                  "op": "resource",
-                  "resource": "guard",
-                  "value": "zero"
-                }
-              ],
-              "fx": {
-                "k": "guard_move",
-                "move": "last_plate"
-              },
-              "say": "{self} holds on the last plate: {=unlocks.1.effects.4.value} HP, every plate broken (Last Plate)."
-            },
-            {
-              "op": "deal",
-              "when": "damaged",
-              "if": {
-                "actor": "foe",
-                "melee": true,
-                "by_hit": true,
-                "self_has_res": [
-                  "guard"
-                ],
-                "self_alive": true,
-                "self_skill": {
-                  "durability": 3
-                },
-                "answer_on": "retort"
-              },
-              "amount": "retort",
-              "target": "actor",
-              "limit": {
-                "reaction": 1,
-                "kind": "attack"
-              },
-              "label": "Retort",
-              "and": [
-                {
-                  "op": "resource",
-                  "resource": "guard",
-                  "value": -1
-                }
-              ],
-              "fx": {
-                "k": "guard_move",
-                "move": "retort"
-              },
-              "say": "{self} throws the blow back at {actor}{then} (Retort)."
-            },
-            {
               "op": "grant_action",
               "action": "guard_challenge",
               "label": "Challenge",
@@ -288,11 +144,11 @@
               ],
               "if": {
                 "self_skill": {
-                  "durability": 3
+                  "durability": 2
                 }
               },
               "why": {
-                "self_skill": "Challenge needs Durability {=unlocks.1.effects.6.if.self_skill.durability}."
+                "self_skill": "Challenge needs Durability {=unlocks.1.effects.1.if.self_skill.durability}."
               },
               "reach": {
                 "tiles": 2,
@@ -338,7 +194,7 @@
                 }
               },
               "why": {
-                "self_skill": "Slam needs Durability {=unlocks.1.effects.7.if.self_skill.durability}."
+                "self_skill": "Slam needs Durability {=unlocks.1.effects.2.if.self_skill.durability}."
               },
               "effects": [
                 {
@@ -435,45 +291,20 @@
                   }
                 }
               ]
-            },
-            {
-              "op": "mark",
-              "when": "turn_end",
-              "flag": "crit_turned",
-              "clear": true,
-              "if": {
-                "flag": "crit_turned"
-              },
-              "label": "Set Against the Blow"
-            },
-            {
-              "op": "mark",
-              "when": "hit",
-              "flag": "crit_turned",
-              "clear": true,
-              "if": {
-                "actor": "foe",
-                "target": "self",
-                "flag": "crit_turned"
-              },
-              "label": "Set Against the Blow"
             }
           ],
-          "amounts": {
-            "retort": {
-              "kind": "damage",
-              "base": 0,
-              "per": [
-                {
-                  "of": "event:amount",
-                  "value": 0.5
-                }
-              ],
-              "type": "physical",
-              "armour": "full",
-              "provisional": true
-            }
-          }
+          "source": "rules 1.73 (Body), 0.32: the Endurance step (item 5821): Set Against the Blow, Close Guard, Retort and Last Plate left the door"
+        },
+        "2": {
+          "name": "Challenge",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "You can Challenge: Guard spent to make every foe you see close by save or be Taunted (the door's own verb, on Guard).",
+          "player": "Challenge: foes close by save or are Taunted",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.73 (Body), 0.32: the Endurance step (item 5822; the verb is unlocks.1 effect 1, its key kept for Called Out)"
         },
         "3": {
           "name": "Mastery 1",
@@ -499,46 +330,15 @@
           "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "5": {
-          "name": "Second Wind",
+          "name": "Slam",
           "category": "Active Skill",
           "mastery": 0,
-          "text": "{=unlocks.5.effects.0.ap} AP, once per combat: recover {=unlocks.5.amounts.heal.per.0.value|pct}% of your max HP.",
-          "player": "{=.effects.0.ap} AP, once a fight: heal {=.amounts.heal.per.0.value|pct}% max HP",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "second_wind",
-              "label": "Second Wind",
-              "ap": 2,
-              "uses": "per_combat",
-              "scope": [
-                "combat"
-              ],
-              "effects": [
-                {
-                  "op": "mend",
-                  "when": "acted",
-                  "amount": "heal",
-                  "say": "Second Wind{then}."
-                }
-              ]
-            }
-          ],
-          "amounts": {
-            "heal": {
-              "kind": "heal",
-              "base": 0,
-              "per": [
-                {
-                  "of": "self:max_hp",
-                  "value": 0.25
-                }
-              ],
-              "heal_kind": "perk"
-            }
-          },
+          "text": "You can Slam: Guard spent to push every foe next to you away and knock it Off Balance (the door's big verb, on Guard).",
+          "player": "Slam: push every foe beside you, Off Balance",
+          "effects": [],
           "adjudication": "engine",
-          "item": true
+          "provisional": true,
+          "source": "rules 1.73 (Body), 0.32: the Endurance step (item 5822)"
         },
         "7": {
           "name": "Mastery 3",
@@ -678,17 +478,10 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Numb",
-          "category": "Passive",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Ignore the penalty from one injured limb (arm or leg injury).",
-          "player": "One injured limb no longer slows you",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "ignored_limb_injuries",
-              "value": 1
-            },
             {
               "op": "perk_choice",
               "skill": "pain_threshold",
@@ -698,17 +491,14 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Still Standing",
-          "category": "AP Mod",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "When you drop to 0 HP, take one more turn with {=unlocks.5.effects.0.ap} AP before you fall Downed.",
-          "player": "When your HP runs out: one more turn with {=.effects.0.ap} AP before you fall Downed",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "still_standing",
-              "ap": 3,
-              "uses": "per_combat"
+              "op": "perk_choice",
+              "skill": "pain_threshold",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -799,6 +589,18 @@
         "bad_for": "anyone who still likes their limbs and doesn't want to lose one because they \"forgot fire is hot.\"",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "used_to_the_pain": "second_wind",
+          "scar_tissue": "numb"
+        },
+        "passives": {
+          "3": "numb",
+          "5": "still_standing"
+        },
+        "note": "rules 1.73 item 5826: Numb and Still Standing (free at 3 and 5) became perks; Used to the Pain maps to Second Wind, Scar Tissue to Numb"
       }
     },
     {
@@ -827,41 +629,27 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Read the Air",
-          "category": "Conversation Quirk",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Learn one physical tell of an NPC you're close to (pulse, sweat, scent). +{=unlocks.3.effects.1.value} on your next social roll against them.",
-          "player": "{=.effects.1.value} on your next social roll against someone close",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "narrator",
-              "note": "Narrator supplies the tell"
-            },
-            {
-              "op": "skill_mod_tag",
-              "tag": "social:next_roll_vs_target",
-              "value": 2
-            },
             {
               "op": "perk_choice",
               "skill": "sensory",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Tremor",
-          "category": "Combat Starter",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Nothing moving on the ground within your Vision range can ambush you: you act in the surprise round.",
-          "player": "Act in the surprise round against anything moving on the ground in sight",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "act_in_surprise_round",
-              "ap": 3,
-              "uses": "per_combat"
+              "op": "perk_choice",
+              "skill": "sensory",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -953,6 +741,15 @@
         "bad_for": "death metal fans, people who can't take the cold, elves of every kind.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {},
+        "passives": {
+          "3": "read_the_air",
+          "5": "tremor"
+        },
+        "note": "rules 1.73 item 5832: Read the Air and Tremor (free at 3 and 5) became perks"
       }
     },
     {
@@ -1010,27 +807,47 @@
         "weapon:heavy"
       ],
       "unlocks": {
-        "3": {
-          "name": "Heavy Hands",
+        "1": {
+          "name": "Momentum",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "The door: Momentum, the number on your token. A plain melee hit and a Charge build it; a Strike or an Opener spends some; a Finisher (Coup, Cleave, Break) spends it all.",
+          "player": "Your door: Momentum. Hits build it, a Finisher spends it all",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.73 (Body), 0.32: the Strength step (item 5801)"
+        },
+        "2": {
+          "name": "Grapple",
           "category": "Combat Interaction",
-          "mastery": 1,
-          "text": "A melee technique of yours that pushes its target moves it {=unlocks.3.effects.0.tiles} tile further.",
-          "player": "Pushes go {=.effects.0.tiles} tile further",
+          "mastery": 0,
+          "text": "You know the technique Grapple with any melee weapon or bare hands: an enemy next to you saves (Body) or is Grappled.",
+          "player": "Grapple: a foe next to you saves or is Grappled",
           "effects": [
             {
-              "op": "knockback",
-              "tiles": 1,
-              "target": "target"
-            },
+              "op": "stat_mod",
+              "stat": "technique:grapple",
+              "value": 1
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "item": true,
+          "source": "rules 1.73 (Body), 0.32: the Strength step (item 5802)"
+        },
+        "3": {
+          "name": "Mastery 1",
+          "mastery": 1,
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "effects": [
             {
               "op": "perk_choice",
               "skill": "raw_power",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine",
-          "provisional": true,
-          "item": true
+          "adjudication": "engine"
         },
         "4": {
           "name": "Fork: Rolling Start or Grindstone",
@@ -1043,22 +860,22 @@
           "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "5": {
-          "name": "Follow Through",
+          "name": "Throw Down",
           "category": "Combat Interaction",
           "mastery": 0,
-          "text": "When a Finisher of yours takes its target out, you are left with {=unlocks.5.effects.0.set} Momentum.",
-          "player": "A Finisher kill keeps {=.effects.0.set} Momentum",
+          "text": "You know the Finisher Throw Down with any melee weapon or bare hands: slam a foe you hold into the ground, Prone, the blow growing with your Momentum.",
+          "player": "Throw Down: a Finisher on a foe you hold, with any weapon",
           "effects": [
             {
-              "op": "resource",
-              "resource": "momentum",
-              "set": 1,
-              "when": "a Finisher of yours takes its target out"
+              "op": "stat_mod",
+              "stat": "technique:throw_down",
+              "value": 1
             }
           ],
           "adjudication": "engine",
           "provisional": true,
-          "item": true
+          "item": true,
+          "source": "rules 1.73 (Body), 0.32: the Strength step (item 5803)"
         },
         "7": {
           "name": "Mastery 3",
@@ -1077,7 +894,7 @@
           "name": "Fork: Spill or Headlong",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's second fork, Spill or Headlong: not offered yet (Spill and Headlong are still to be built; data/forks.json).",
+          "text": "The door's second fork: choose Spill or Headlong, once, out of a fight, kept for good (data/forks.json).",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -1191,17 +1008,10 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Steady",
-          "category": "Passive",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Fear can't stop you moving or acting; you only keep its −2 to hit.",
-          "player": "Fear can't stop your moves or actions",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "fear_movement_immune",
-              "value": 1
-            },
             {
               "op": "perk_choice",
               "skill": "guts",
@@ -1211,16 +1021,14 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Point Man",
-          "category": "Passive",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Allies within {=unlocks.5.effects.0.value} tiles roll Fear saves with your Guts in place of their own.",
-          "player": "Allies within {=.effects.0.value} tiles save against Fear with your Guts",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "aura_fear_save_guts_tiles",
-              "value": 3
+              "op": "perk_choice",
+              "skill": "guts",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1316,6 +1124,17 @@
             "holo-streamers filming viral reels"
           ]
         ]
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "iron_stomach": "steady"
+        },
+        "passives": {
+          "3": "steady",
+          "5": "point_man"
+        },
+        "note": "rules 1.73 item 5810: Steady and Point Man (free at 3 and 5) became perks; Iron Stomach is folded into Steady"
       }
     },
     {
@@ -1343,47 +1162,27 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Marrow Talk",
-          "category": "Conversation Quirk",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Even a failed threat leaves the target Shaken: {=unlocks.3.numbers.next_roll} on their next roll against you.",
-          "player": "A failed threat still leaves them Shaken: {=.numbers.next_roll} on their next roll against you",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "condition",
-              "condition": "shaken",
-              "target": "target",
-              "when": "on_failed_threat"
-            },
             {
               "op": "perk_choice",
               "skill": "intimidation",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine",
-          "numbers": {
-            "next_roll": -2
-          }
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Stare Down",
-          "category": "Combat Starter",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Before initiative, one enemy that can see you makes a Heart save against Fear or loses its first turn.",
-          "player": "Before the first turn, one foe saves (Heart) or loses its first turn",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "stare_down",
-              "ap": 0,
-              "uses": "per_combat"
-            },
-            {
-              "op": "condition",
-              "condition": "stunned",
-              "target": "target",
-              "when": "on_failed_save_before_initiative"
+              "op": "perk_choice",
+              "skill": "intimidation",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1474,6 +1273,15 @@
         "bad_for": "upstanding middle-class citizens, anyone keeping an angelic image, heartbreakers.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {},
+        "passives": {
+          "3": "marrow_talk",
+          "5": "stare_down"
+        },
+        "note": "rules 1.73 item 5815: Marrow Talk and Stare Down (free at 3 and 5) became perks"
       }
     },
     {
@@ -1504,14 +1312,6 @@
           {
             "at": "each",
             "text": "Shooting techniques: harder to save against"
-          },
-          {
-            "at": "at 3",
-            "text": "Near Miss · Shaken Nerves"
-          },
-          {
-            "at": "at 5",
-            "text": "Flush Out: can leave a foe Afraid"
           }
         ]
       },
@@ -1546,73 +1346,9 @@
           "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "Pressure is Dexterity's door: every hit you roll with Dexterity presses its target, a gun's, a bow's, a thrown knife's, a light blade's or a Dexterity glove's alike (a glove whose blows roll with Dexterity counts). A ranged hit adds Pressure (the first on each target each turn); a blow rolled with Dexterity adds {=unlocks.1.effects.3.value} (at most {=unlocks.1.effects.3.limit.n} on a target a turn) and does not shed your own; a blow rolled with anything else sheds your own. Slide is yours from the first point (its own card). From Dexterity {=unlocks.1.effects.0.if.self_skill.dexterity}, Near Miss: an attack of yours rolled with Dexterity off your own turn (a held shot: Overwatch, Deny, Cover Me, Dead to Rights; a Riposte) that misses still adds {=unlocks.1.effects.0.value} Pressure (once a turn for each target): your lane holds even when the round or the blade goes wide; and Shaken Nerves: every save a foe makes against you is harder by {=unlocks.1.effects.1.value.per.0.value} for each Pressure pip on it (at most {=unlocks.1.effects.1.value.max}). From Dexterity {=unlocks.1.effects.2.if.self_skill.dexterity}, Flush Out: your Flush also makes its target save (Heart) or be Afraid of you for {=unlocks.1.effects.2.rounds} round: it won't come at you or shoot at you; and its blade twin: a Pressed foe (Pressure {=unlocks.1.effects.4.if.target_res.pressure.at_least} or more) you hit with a blow rolled with Dexterity saves the same way or is Afraid of you for {=unlocks.1.effects.4.rounds} round (once a turn; never an Elite or a Boss: only a Flush frightens those).",
+          "text": "Pressure is Dexterity's door: every hit you roll with Dexterity presses its target, a gun's, a bow's, a thrown knife's, a light blade's or a Dexterity glove's alike (a glove whose blows roll with Dexterity counts). A ranged hit adds Pressure (the first on each target each turn); a blow rolled with Dexterity adds {=unlocks.1.effects.0.value} (at most {=unlocks.1.effects.0.limit.n} on a target a turn) and does not shed your own; a blow rolled with anything else sheds your own. Slide and Flush Out are its verbs (their own cards, at the levels the ladder shows).",
           "player": "Dexterity hits add Pressure · Slide",
           "effects": [
-            {
-              "op": "resource",
-              "when": "miss",
-              "label": "near_miss",
-              "resource": "pressure",
-              "value": 1,
-              "target": "target",
-              "if": {
-                "actor": "self",
-                "rolled_with": [
-                  "dexterity"
-                ],
-                "hostile": true,
-                "own_turn": false,
-                "self_skill": {
-                  "dexterity": 3
-                }
-              },
-              "limit": {
-                "per": "per_turn",
-                "n": 1,
-                "each": "target"
-              },
-              "say": "{self}'s near miss keeps {target}'s head down."
-            },
-            {
-              "op": "roll_mod",
-              "when": "save",
-              "roll": "tn",
-              "label": "shaken nerves",
-              "value": {
-                "base": 0,
-                "per": [
-                  {
-                    "of": "target:pressure",
-                    "value": 1
-                  }
-                ],
-                "max": 2
-              },
-              "if": {
-                "actor": "self",
-                "target": "foe",
-                "self_skill": {
-                  "dexterity": 3
-                }
-              }
-            },
-            {
-              "op": "condition",
-              "when": "acted",
-              "condition": "fear",
-              "rounds": 1,
-              "via": "dexterity",
-              "target": "target",
-              "if": {
-                "action": [
-                  "flush"
-                ],
-                "self_skill": {
-                  "dexterity": 5
-                }
-              }
-            },
             {
               "op": "resource",
               "when": "hit",
@@ -1635,55 +1371,26 @@
                 "each": "target"
               },
               "say": "{self} keeps {target} on the back foot."
-            },
-            {
-              "op": "condition",
-              "when": "hit",
-              "label": "flush_out_blade",
-              "condition": "fear",
-              "rounds": 1,
-              "via": "dexterity",
-              "target": "target",
-              "if": {
-                "actor": "self",
-                "hostile": true,
-                "melee": true,
-                "target_alive": true,
-                "rolled_with": [
-                  "dexterity"
-                ],
-                "target_not_tier": [
-                  "elite",
-                  "boss"
-                ],
-                "target_res": {
-                  "pressure": {
-                    "at_least": 2
-                  }
-                },
-                "self_skill": {
-                  "dexterity": 5
-                }
-              },
-              "limit": {
-                "per": "per_turn",
-                "n": 1
-              }
             }
-          ]
+          ],
+          "source": "rules 1.73 (Body), 0.32: the Agility step (item 5841): Near Miss went to Hold the Lane, Shaken Nerves to Break Them, the Flush rider and its blade twin into Flush Out"
+        },
+        "2": {
+          "name": "Slide",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "You can Slide: dive to the nearest cover, no opportunity attacks, and shed your own Pressure (the door's verb, pressure.json).",
+          "player": "Slide: dive to cover and shed Pressure",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.73 (Body), 0.32: the Agility step (item 5842)"
         },
         "3": {
-          "name": "Speed Load",
-          "category": "AP Mod",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Reloading costs {=unlocks.3.effects.0.value|abs} AP less.",
-          "player": "Reload costs {=.effects.0.value|abs} AP less",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "ap_cost:reload",
-              "value": -1
-            },
             {
               "op": "perk_choice",
               "skill": "dexterity",
@@ -1703,23 +1410,15 @@
           "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "5": {
-          "name": "Quick Draw",
-          "category": "AP Mod",
+          "name": "Flush Out",
+          "category": "Active Skill",
           "mastery": 0,
-          "text": "Once per combat, your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs 0 AP.",
-          "player": "Once a fight: your first attack with a weapon you draw costs no AP",
-          "effects": [
-            {
-              "op": "cost_mod",
-              "action": "attack_with_a_drawn_weapon",
-              "value": "zero",
-              "uses": "per_combat",
-              "context": "Draw Cut, Snap Shot"
-            }
-          ],
+          "text": "You can Flush Out: a Pressed foe you see saves or is Afraid of you, and loses Pressure (the door's verb, pressure.json; soldiers and below).",
+          "player": "Flush Out: a Pressed foe saves or is Afraid of you",
+          "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "item": true
+          "source": "rules 1.73 (Body), 0.32: the Agility step (item 5843)"
         },
         "7": {
           "name": "Mastery 3",
@@ -1856,17 +1555,10 @@
       ],
       "unlocks": {
         "3": {
-          "name": "Vault",
-          "category": "Combat Interaction",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Move over cover and obstacles at no extra movement cost.",
-          "player": "Cross cover at no extra movement",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "ignore_obstacle_move_cost",
-              "value": 1
-            },
             {
               "op": "perk_choice",
               "skill": "athletics",
@@ -1876,15 +1568,14 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Untouchable",
-          "category": "Active Skill",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "While wearing no torso armour (Class 0), attacks against you roll twice and take the worse result.",
-          "player": "No torso armour: attacks on you roll twice, take the worse",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "disadvantage",
-              "context": "attacks_against_self:armor_class_0"
+              "op": "perk_choice",
+              "skill": "athletics",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1976,6 +1667,15 @@
         "bad_for": "slow-living types, high nobility, heavy-armour users.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {},
+        "passives": {
+          "3": "wall_run",
+          "5": "untouchable"
+        },
+        "note": "rules 1.73 item 5846: Vault (now Wall Run's Tier I) and Untouchable (free at 3 and 5) became perks; Catch moved here from Reaction Speed"
       }
     },
     {
@@ -2004,18 +1704,10 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Shoot First",
-          "category": "Combat Starter",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "You act in the surprise round even when your side is the one surprised.",
-          "player": "Act in the surprise round, even when surprised",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "grant_action",
-              "action": "act_in_surprise_round",
-              "ap": 3,
-              "uses": "per_combat"
-            },
             {
               "op": "perk_choice",
               "skill": "reaction_speed",
@@ -2025,20 +1717,17 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Cut In",
-          "category": "Conversation Quirk",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Once per scene, interrupt an NPC mid-sentence or mid-action to act first: grab, draw, leave, or speak.",
-          "player": "Once a scene: cut in and act first",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "cut_in",
-              "ap": 0,
-              "uses": "per_scene"
+              "op": "perk_choice",
+              "skill": "reaction_speed",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "engine"
         },
         "7": {
           "name": "Mastery 3",
@@ -2126,6 +1815,15 @@
         "bad_for": "calm people, people who need to save face, anyone who doesn't want to look like they're on speed.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {},
+        "passives": {
+          "3": "shoot_first",
+          "5": "cut_in"
+        },
+        "note": "rules 1.73 item 5850: Shoot First and Cut In (free at 3 and 5) became perks; Catch left for Athletics (its step comes back)"
       }
     },
     {

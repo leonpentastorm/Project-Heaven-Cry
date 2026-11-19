@@ -2750,8 +2750,8 @@ Leon's rulings of 10 Nov 2026. Where an older line in this spec says otherwise (
 
 | Was | Is now | Skill | What it does |
 |---|---|---|---|
-| Shove (unlock at 3) | **Heavy Hands** | Raw Power | A melee technique of yours that pushes its target moves it 1 tile further. |
-| Break (unlock at 5) | **Follow Through** | Raw Power | When a Finisher of yours takes its target out, you are left with 1 Momentum. |
+| Shove (unlock at 3) | **Heavy Hands** | Raw Power | A melee technique of yours that pushes its target moves it 1 tile further. *Superseded by rules 1.73 item 5804: Iron Grip's Tier II.* |
+| Break (unlock at 5) | **Follow Through** | Raw Power | When a Finisher of yours takes its target out, you are left with 1 Momentum. *Superseded by rules 1.73 item 5808: the Breaker's Measured Blow.* |
 | Grapple (perk) | **Iron Grip** (`iron_grip`) | Raw Power | **I:** a target you have Bound or Grappled can't use Answers or reactions; attacks aimed at you have a 50% chance to hit it instead; when you move, it comes with you, into the tile you leave. **II:** each of your melee techniques that hits a target you hold gives you 1 Momentum (once a technique, never a Finisher), and Throw Down on it needs no Momentum. |
 | Origami Hands (perk) | **Both Hands** (`both_hands`) | Dexterity | **I:** after one of your melee techniques hits, your next shot that turn has no Recoil. **II:** and after one of your shots hits, you gain 1 Momentum, once a turn. |
 
@@ -12720,3 +12720,175 @@ every item is `adjudication: engine`.
 6408. **An enemy's notice and its eyes are its tier's numbers** (one copy; the scout's audit, item 14c): each tier row of
       `enemies.json` carries `notice` (minion 0, soldier 2, elite 4, boss 6: the spot roll's bonus, the story's notice
       range and its TN, the Sigil pattern's passive) and `vision` (12 tiles for every tier). Nothing changes in play.
+### Rules 1.73 (Body), 0.32: Strength, Endurance and Agility reshaped (the Body lane, 19 Nov 2026)
+
+The ruling layer is `docs/design/proposals/2026-11-19-attribute-proposals.md` (sections 1, 2, 3 and 6); the sheets are
+`docs/design/proposals/2026-11-19-attribute-drafts/strength.md`, `endurance.md` and `agility.md`. Each skill takes the
+shape of rules 1.70 item 5537 (alpha: 1 door, 2 small verb, 3 perk step, 4 fork one, 5 big verb, 6 and 7 perk steps,
+8 fork two, 9 perk step, 10 Mastered; beta and gamma: the per-point gain on every level, four perks of two tiers, perk
+steps at 3, 5, 7 and 9, Mastered at 10). Every new number here is PROVISIONAL. Items 5800 to 5819 are Strength,
+5820 to 5839 Endurance, 5840 to 5859 Agility.
+
+**Strength (Raw Power, Guts, Intimidation; the Breaker)**
+
+5800. **Raw Power's ladder:** 1 the door (Momentum, shown on its level; any melee weapon still carries the meter: Raw
+    Power 1 does not gate it, the sheet's open item 2), 2 **Grapple**, 3 perk step, 4 fork one (Rolling Start or
+    Grindstone), 5 **Throw Down**, 6 and 7 perk steps, 8 fork two (Spill or Headlong, offered now), 9 perk step, 10
+    Earthbreaker. Its two perks (Keep Swinging, Iron Grip) fill the four steps. PROVISIONAL.
+5801. **The door's row at 1** (`skills.json raw_power.unlocks.1`): a named row with no effect of its own; the meter is
+    still `techniques.json rules.momentum`.
+5802. **Grapple is Raw Power 2's** with any melee weapon in the main hand or bare hands: the unlock is an item answering
+    the stat `technique:grapple` (the gloves still bring it below 2 points). It was Iron Grip's (no perk's technique any
+    more: `techniques.json grapple` has no `perk`). A gun in the main hand gives no Grapple. PROVISIONAL.
+5803. **Throw Down is Raw Power 5's** big verb with any melee weapon or bare hands (stat `technique:throw_down` from the
+    unlock; its rules unchanged: a held target, a Finisher). Launch stays the Breaker's (the sheet's open item 1).
+5804. **Heavy Hands moves into Iron Grip's Tier II** (its own number, `iron_grip.tiers.II.numbers.push_tiles`: a melee
+    technique's push goes 1 tile further). Iron Grip I: a held target can't use Answers or reactions, +6% melee damage
+    on a Grappled or Prone foe; II: +12% and also on Shaken or Afraid, and the longer push. Below Iron Grip II no push
+    is lengthened. PROVISIONAL.
+5805. **Rolling Start loses its free Charge** (ruling layer section 3 item 4): a Charge costs its Momentum again (the
+    fight's first Opener is still free); it keeps the 2-tile run and +1 Momentum on a Charge hit. A Breaker at x0 can't
+    Charge; the "Finisher, free Charge, Finisher" loop now runs only on kills (Measured Blow). Charge Carries stays +2 and
+    is measured (the sheet's open item 5).
+5806. **Spill** (fork two): a Finisher of yours that drops a foe carries the blow into one foe beside the fallen one, no
+    roll: an amount block `spill` (damage, melee profile, base 22, PROVISIONAL: Launch's base), dealt through `deal` on the
+    `kill` trigger to `targets {of: target, within: 1, side: foe, max: 1}`. Spill's own blow is no technique, so it never
+    spills again. (The overkill wording needed N21, not approved.)
+5807. **Headlong** (fork two): once a turn, while you hold 2 Momentum or more, a Charge's strike costs no AP (the run is
+    paid as usual) and takes 2 more Momentum (on top of the Opener's own price); a Charge paid so builds no Momentum of its
+    own (Charge Carries, Rolling Start: the content condition `headlong_paid`, on from the roll to the end of the action).
+    Built from `cost_mod` on `attack` (a peeked per-turn limit), `condition` and `resource` on `attack_roll` (the limit
+    taken). A Breaker's closing in (Barrel In's rule for any first melee attack after moving toward the foe) is not the
+    Charge's own build and still counts (for the lead). PROVISIONAL.
+5808. **Measured Blow** (the Breaker, rank III; Follow Through merged in, ruling layer section 3, the sheet's REPLACE): a
+    Finisher of yours that drops its target leaves you 1 Momentum, every time; once a fight, a Finisher that drops nobody
+    does too. Follow Through left Raw Power 5. PROVISIONAL.
+5809. **The Breaker's other moves** are kept as they were (Barrel In, Wind-up, Riposte, Read the Swing, Unstoppable; the
+    gains Charge Carries, Four Ways to Finish, Launch, Wrecker, Breach).
+5810. **Guts:** +1 Body save and its Momentum feed every point (unchanged); four perks: **Steady** (was the passive at 3;
+    Iron Stomach folded in), **Point Man** (the passive at 5), **Into the Dark** (kept), **Unflinching** (new); Mastered
+    Nothing Left to Fear. Old saves: `perk_remap` (Iron Stomach to Steady at its tier; Steady and Point Man as the passives
+    at 3 and 5) and one free re-pick (rules 1.70 item 5538).
+5811. **Steady:** I, Fear can't stop you moving or acting (you keep its penalty to hit); II, and Fear and Nausea last at
+    most 1 round on you (Iron Stomach I's row). Tier I's rule has no engine half yet (Fear's two refusals, its move toward
+    and its attack on the source, are typed in `combat.ts` and ask no stat): it is the Narrator's, op `narrator`. Iron
+    Stomach's immunity (its old Tier II) is gone: the Mastered perk is the Fear immunity. Its story half (a Fear ending at
+    the next check) went with its handler: item ops run in a fight.
+5812. **Point Man:** I, allies within 3 tiles roll Fear saves with your Guts (the Narrator's: a save's skill swap has no
+    piece); II, and +2 on their Heart saves (engine: `roll_mod` on `cond_incoming`, an ally within 3, a Heart condition).
+    PROVISIONAL 2.
+5813. **Unflinching:** I, while you hold 3 Momentum or more, melee attacks on you are at -1 to hit; II, every weapon
+    attack (shots too). `roll_mod` on `to_hit`. PROVISIONAL.
+5814. **Intimidation:** +1 Threaten reach and harder to shake off every point (unchanged); the Call as rules 1.70 (3 AP;
+    2 from 5; 1 from 9; steps at 1, 4, 8). Four perks: **Marrow Talk** (the passive at 3), **Stare Down** (the passive at
+    5), **Bone Talk** (kept, story only), **Grim Reaper** (reworked); Mastered The Name They Whisper. Old saves: Marrow
+    Talk and Stare Down as the passives at 3 and 5, one free re-pick.
+5815. **Marrow Talk:** I, a threat that fails in talk still leaves the target Shaken (-2 on their next roll against you;
+    the Narrator's); II, in a fight a foe that saves against your Threaten is still Shaken for 1 round (engine: a mark when
+    your Shaken is about to land on a foe on your turn, then `condition` on the Call's `acted` if it did not land).
+5816. **Stare Down:** I, when a fight starts the nearest enemy that can see you saves against your Intimidation or is
+    Stunned (it loses its first turn); II, and it is Shaken for 3 rounds whatever it rolls. Built on `combat_start` with
+    `targets {of: self, side: foe, sees: eyes, max: 1}` (the old grant_action never ran). The save is the condition's own
+    family (Stunned: Body). PROVISIONAL 3.
+5817. **Grim Reaper** (removes the door's tax): I, a hit from a Shaken or Afraid foe costs you no Momentum (the Momentum
+    the blow wore off is given back, when you held some and no plate took it); II, and when you drop an enemy on your own
+    turn, every enemy within 8 tiles whose eyes reach the fallen one saves (Heart) or is Afraid of you. The +2 AP on a
+    kill and the -1 AP on the first turn are cut (rule 15.7: no AP inside a turn). Data only (its handler went).
+    PROVISIONAL 8.
+5818. **Bone Talk** is story only: its 2 AP fight version (a copy of Threaten) is cut.
+5819. **Measures** (the Breaker, solo and in a squad, before and after) and the Breaker's blade line are reported in the
+    lane's hand-off (`docs/design/handoffs/0.32-LANE-BODY.md`); no number was fitted to a ceiling.
+
+**Endurance (Durability, Pain Threshold, Senses; the Bulwark)**
+
+5820. **Durability's ladder:** 1 the door (Guard: the technique with any weapon, Brace, melee rolling with Durability
+    while you hold Guard when it is higher), 2 **Challenge**, 3 perk step, 4 fork one (Provoke or Cover Them), 5
+    **Slam**, 6 and 7 perk steps, 8 fork two (Stand Fast or Drive), 9 perk step, 10 Last Wall. Its two perks (Weight of
+    the Wall, Answer in Kind) fill the four steps. Per point: +1 plate held (to the pool's cap), the Guard technique +1
+    plate from 2, and melee rolling with Durability while holding Guard.
+5821. **The door's surplus left it:** Set Against the Blow to Numb II (item 5827), Close Guard to a Pain Threshold perk
+    (item 5829), Retort to the Bulwark's rank II (item 5836), Second Wind to a Pain Threshold perk (item 5829); **Last
+    Plate is cut** (ruling layer section 3 item 3: the fourth "survive at 0" in one attribute). The shield's rule (a
+    shield adds a plate to each gain) stays a per-point row of the door for now (its numbers are `techniques.json
+    rules.guard`'s; moving it into the shields' item text is left).
+5822. **Challenge opens at Durability 2** (was 3); Slam stays at 5. Both stay effects of `durability.unlocks.1` (Called
+    Out's key `skill:durability.1#guard_challenge` still matches); rows at 2 and 5 name them on the ladder.
+5823. **Durability's forks** are unchanged (built in 0.30); fork two is at 8 (rules 1.70 item 5537).
+5824. **Last Plate is gone.** A blow that would drop a tank drops it (Still Standing, Last Wall and Bite the Bullet stay).
+5825. **Pain Threshold:** per point +1% plate soak (its feed), **+6% elemental resistance** (rules 1.70 item 5540; 60% at
+    10, the cap 80% with gear), +2 max HP a level. Four perks: **Numb**, **Still Standing**, **Second Wind**, **Close
+    Guard**; Mastered Walking Wounded.
+5826. **Removed:** Used to the Pain (to Second Wind at its tier) and Scar Tissue (to Numb at its tier); Numb and Still
+    Standing were the passives at 3 and 5. Old saves: `perk_remap` and one free re-pick. A removed id named by a remap
+    table is kept on the sheet at load until the remap maps it (it was dropped first: the lane's finding, fixed in
+    `character.ts migrateCharacterItems`); under the skill's first step it is taken off.
+5827. **Numb:** I, one injured limb no longer holds you back (the Narrator's: injuries carry no limb penalty the engine
+    reads); II, and while you hold Guard a critical on you lands as an ordinary hit, with no injury (Set Against the
+    Blow's rows; its Durability 3 gate is gone: the perk is the gate).
+5828. **Still Standing:** I, when your HP runs out, one more turn with 3 AP before you fall Downed (once a fight); II, 5
+    AP (PROVISIONAL 5). No engine half yet: a "last turn" has no general piece (Bite the Bullet's is its own handler); the
+    Narrator's until one is approved.
+5829. **Second Wind:** I, 2 AP once a fight, heal 25% of your max HP; II, and +2 Guard (PROVISIONAL 2). **Close Guard:**
+    I, an Answer: while you hold Guard, 25% of a foe's blow on an ally next to you comes to you and your plates soak it;
+    II, 50% (PROVISIONAL). The answer key `close_guard` is kept.
+5830. **Second Wind as a perk** (ruling layer section 3 item 3): the solo Bulwark is measured before and after; the
+    fallback (Second Wind as the Bulwark's rank II) is not built.
+5831. **Senses:** per point +1 to sense the unseen and +1 Warn reach; the Call as rules 1.70. Four perks: **Read the
+    Air**, **Bedside Manner** (kept), **Wind on the Skin** (kept), **Tremor**; Mastered Skin Map.
+5832. **Read the Air** (the passive at 3): I, a physical tell of someone close: +2 on your next social roll against them;
+    II, +4 (PROVISIONAL). The Narrator's. Old saves: Read the Air and Tremor as the passives at 3 and 5.
+5833. **Tremor** (the passive at 5): I, nothing moving on the ground in your Vision surprises you (the Narrator's: the
+    approach has no per-unit surprise piece); II, and +2 Guard when a fight starts (engine, PROVISIONAL 2).
+5834. **The Bulwark:** Brace, Called Out, Shrug It Off and Anchor are kept.
+5835. *(reserved)*
+5836. **Retort** replaces Unbroken at rank II (`class:defender.retort`; Unbroken is shelved, the Adamantile Knight's):
+    an Answer, a foe's melee blow on you while you hold Guard: 1 Guard and your reaction throw 50% of it back (its
+    armour applies). Its answer key `retort` is kept; it no longer needs Durability 3.
+5837. **Reforge** replaces the Reactive Plate at rank III (`class:defender.reforge`; the Reactive Plate is shelved): at
+    the start of your turn, holding 1 Guard or none, +2 Guard (PROVISIONAL 2). A rank III Bulwark's plates are the
+    door's (its soak a plate, met after the shields).
+
+**Agility (Dexterity, Athletics, Reaction Speed; the Skirmisher)**
+
+5840. **Dexterity's ladder:** 1 the door (Pressure: each hit rolled with Dexterity presses), 2 **Slide**, 3 perk step, 4
+    fork one (Converging Fire or Walk It In), 5 **Flush Out**, 6 and 7 perk steps, 8 fork two (Through the Gap or
+    Lockdown), 9 perk step, 10 Trick Shot. Its two perks (Pressure Point, Keep Their Heads Down) fill the four steps. Per
+    point unchanged (+1 to hit with guns, light blades and throws, +2% critical damage, the throw's reach, harder saves).
+5841. **The door's surplus left it:** Near Miss to Hold the Lane (item 5855), Shaken Nerves to Break Them (item 5856),
+    the Flush rider and its blade twin into Flush Out (item 5843), Speed Load and Quick Draw to Reaction Speed's Speed
+    Load (item 5852; ruling layer section 3 item 6).
+5842. **Slide opens at Dexterity 2** (was 1; `pressure.json pressure.slide` requires).
+5843. **Flush Out** (`pressure.json pressure.flush_out`, Dexterity 5): 2 AP, once a turn: a Pressed foe (Pressure 2 or
+    more) you see within 8 tiles saves or is Afraid of you for 1 round, and loses the Take's Pressure
+    (`tech_rule:pressure.take_cost`). Soldiers and below only (never an Elite or a Boss). The Flush technique's own rider
+    and the blade twin are cut. PROVISIONAL 2 AP, 8 tiles.
+5844. **Dexterity's forks** are unchanged; fork two at 8 (rules 1.70 item 5537).
+5845. **Athletics:** per point +1 Defense (from 2, unchanged) and its Pressure feed. The sheet's "Defense from 1"
+    (PROVISIONAL) is **not built**: it moves the enemy table's yardstick (`test/balance/step1-fit`), a balance call for the
+    lead.
+5846. **Athletics' four perks:** **Wall Run** (Vault, the passive at 3, is its Tier I), **Untouchable** (the passive at
+    5), **Roll With It** (kept), **Catch** (moved from Reaction Speed); Mastered Never There. Old saves: Wall Run and
+    Untouchable as the passives at 3 and 5, one free re-pick; a Catch taken with a Reaction Speed step counts on Athletics
+    now (the Reaction Speed step comes back).
+5847. **Wall Run:** I (Vault), run over cover, low obstacles and gaps, and along walls, up to 2 such tiles in a row at no
+    extra movement; II, 4 tiles, and one attack mid-run (the old Tiers, its handler unchanged). Shadow's Vault is cut
+    (ruling layer section 2 item 7).
+5848. **Catch** is Athletics' (its tiers unchanged).
+5849. **Untouchable:** I, with no torso armour attacks on you roll twice and take the worse; II, in Light armour too
+    (PROVISIONAL). No engine half yet (a roll kept from two has no piece); the Narrator's until one is approved.
+5850. **Reaction Speed:** per point +1 Initiative and +1 Cue reach; the Call as rules 1.70. Four perks: **Shoot First**
+    (the passive at 3), **Cut In** (the passive at 5), **Speed Load** (new), **Rounding Up** (kept); Mastered Before the
+    Blink. Old saves: Shoot First and Cut In as the passives at 3 and 5, one free re-pick.
+5851. **Shoot First:** I, you act in the surprise round even when surprised, with 3 AP; II, 4 AP (PROVISIONAL). The
+    Narrator's (the approach has no per-unit surprise piece). **Cut In:** I, once a scene, cut in and act first; II,
+    twice a scene. The Narrator's.
+5852. **Speed Load:** I, a reload costs 1 AP less (`ap_cost:reload`); II, and once a fight your first attack with a
+    weapon you draw for it (Draw Cut, Snap Shot) costs no AP (Quick Draw, data now: a `cost_mod` on the attack's preview
+    with a peeked per-fight limit, its use taken on the roll). Dexterity no longer cheapens reloads or draws.
+5853. *(reserved)*
+5854. **The Skirmisher:** Fire Discipline, Special Ammo, Duck and Roll, Killzone and Run and Gun are kept; the gains
+    Reflex, Fire and Move, Relocated and Break Them stay.
+5855. **Hold the Lane** takes Near Miss: held shots cost 1 AP less (at least 1), and a held shot that misses still adds 1
+    Pressure (once a turn a foe; no Dexterity gate).
+5856. **Break Them** takes Shaken Nerves: Rout 1 AP less on your turn, and every save a foe makes against you is harder
+    by 1 for each Pressure on it (at most 2; no Dexterity gate).

@@ -315,8 +315,8 @@
       "provisional": true
     },
     {
-      "id": "used_to_the_pain",
-      "name": "Used to the Pain",
+      "id": "numb",
+      "name": "Numb",
       "tier": "acquired",
       "perk_type": "passive",
       "skills": [
@@ -332,11 +332,12 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: The first time you are hit in each fight: if that hit took less than 20% of your max HP, the next hit against you deals {=effects.0.value_pct|abs}% less damage. A heavier first hit gives you nothing. II: The first time you are hit in each fight: if that hit took less than 30% of your max HP, the next hit against you deals 40% less damage. A heavier first hit gives you nothing.",
+      "text": "I: One injured limb no longer holds you back. II: One injured limb no longer holds you back. While you hold Guard, a critical hit on you lands as an ordinary hit and leaves no injury.",
       "effects": [
-        {"op": "damage_mod", "value_pct": -25, "when": "taking", "if": {"flag": "hard", "by_hit": true, "actor": "foe", "amount_above": 0}, "and": [{"op": "mark", "flag": "hard", "clear": true}], "say": "{self} was ready for that one (Used to the Pain): {=.value_pct|abs}% less."},
-        {"op": "mark", "flag": "hard", "when": "damaged", "if": {"by_hit": true, "actor": "foe", "no_flag": "seen", "amount_share_below": 0.2}, "say": "{self} takes it in stride (Used to the Pain): the next hit deals {=effects.0.value_pct|abs}% less."},
-        {"op": "mark", "flag": "seen", "when": "damaged", "if": {"by_hit": true, "actor": "foe"}}
+        {
+          "op": "narrator",
+          "note": "One limb injury of this character's gives no penalty (no engine half yet: rules 1.73 item 5827, injuries carry no limb penalty the engine reads)."
+        }
       ],
       "tiers": {
         "I": {
@@ -347,12 +348,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "The first time you are hit in each fight: if that hit took less than 20% of your max HP, the next hit against you deals {=tiers.I.effects.0.value_pct|abs}% less damage. A heavier first hit gives you nothing.",
-          "short": "First hit under {=tiers.I.effects.1.if.amount_share_below|pct}% max HP: next hit −{=tiers.I.effects.0.value_pct|abs}%",
+          "text": "One injured limb no longer holds you back.",
+          "short": "One injured limb no longer holds you back",
           "effects": [
-            {"op": "damage_mod", "value_pct": -25, "when": "taking", "if": {"flag": "hard", "by_hit": true, "actor": "foe", "amount_above": 0}, "and": [{"op": "mark", "flag": "hard", "clear": true}], "say": "{self} was ready for that one (Used to the Pain): {=.value_pct|abs}% less."},
-            {"op": "mark", "flag": "hard", "when": "damaged", "if": {"by_hit": true, "actor": "foe", "no_flag": "seen", "amount_share_below": 0.2}, "say": "{self} takes it in stride (Used to the Pain): the next hit deals {=tiers.I.effects.0.value_pct|abs}% less."},
-            {"op": "mark", "flag": "seen", "when": "damaged", "if": {"by_hit": true, "actor": "foe"}}
+            {
+              "op": "narrator",
+              "note": "One limb injury of this character's gives no penalty (no engine half yet: rules 1.73 item 5827, injuries carry no limb penalty the engine reads)."
+            }
           ]
         },
         "II": {
@@ -363,30 +365,98 @@
             }
           ],
           "ap_cost": null,
-          "text": "The first time you are hit in each fight: if that hit took less than 30% of your max HP, the next hit against you deals {=tiers.II.effects.0.value_pct|abs}% less damage. A heavier first hit gives you nothing.",
-          "short": "Under {=tiers.II.effects.1.if.amount_share_below|pct}% · next hit −{=tiers.II.effects.0.value_pct|abs}%",
+          "text": "One injured limb no longer holds you back. While you hold Guard, a critical hit on you lands as an ordinary hit and leaves no injury.",
+          "short": "Holding Guard: a critical on you is an ordinary hit, no injury",
           "effects": [
-            {"op": "damage_mod", "value_pct": -40, "when": "taking", "if": {"flag": "hard", "by_hit": true, "actor": "foe", "amount_above": 0}, "and": [{"op": "mark", "flag": "hard", "clear": true}], "say": "{self} was ready for that one (Used to the Pain): {=.value_pct|abs}% less."},
-            {"op": "mark", "flag": "hard", "when": "damaged", "if": {"by_hit": true, "actor": "foe", "no_flag": "seen", "amount_share_below": 0.3}, "say": "{self} takes it in stride (Used to the Pain): the next hit deals {=tiers.II.effects.0.value_pct|abs}% less."},
-            {"op": "mark", "flag": "seen", "when": "damaged", "if": {"by_hit": true, "actor": "foe"}}
+            {
+              "op": "narrator",
+              "note": "One limb injury of this character's gives no penalty (no engine half yet: rules 1.73 item 5827)."
+            },
+            {
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "actor": "foe",
+                "target": "self",
+                "crit": true,
+                "by_hit": true,
+                "self_has_res": [
+                  "guard"
+                ]
+              },
+              "value": 1,
+              "label": "Numb",
+              "fx": {
+                "k": "guard_move",
+                "move": "crit_turned"
+              },
+              "say": "{self} sets against the blow: the critical lands as an ordinary hit (Numb).",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "crit_turned"
+                }
+              ],
+              "replaces": "critical"
+            },
+            {
+              "op": "cancel",
+              "when": "injury",
+              "if": {
+                "actor": "foe",
+                "flag": "crit_turned"
+              },
+              "label": "Numb",
+              "why": "Numb",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "crit_turned",
+                  "clear": true
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "flag": "crit_turned",
+              "clear": true,
+              "if": {
+                "flag": "crit_turned"
+              },
+              "label": "Numb"
+            },
+            {
+              "op": "mark",
+              "when": "hit",
+              "flag": "crit_turned",
+              "clear": true,
+              "if": {
+                "actor": "foe",
+                "target": "self",
+                "flag": "crit_turned"
+              },
+              "label": "Numb"
+            }
           ],
           "replaces_tier_I": true,
           "after": "I"
         }
       },
-      "adjudication": "engine",
-      "recovered": "recovered",
+      "adjudication": "hybrid",
+      "recovered": null,
       "tags": [
-        "survival",
+        "injury",
         "defense"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Endurance step"
     },
     {
-      "id": "scar_tissue",
-      "name": "Scar Tissue",
+      "id": "still_standing",
+      "name": "Still Standing",
       "tier": "acquired",
-      "perk_type": "passive",
+      "perk_type": "ap_mod",
       "skills": [
         "pain_threshold"
       ],
@@ -400,15 +470,11 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Each hit that wounds you in a fight gives you {=effects.0.value|pct}% less Elemental damage taken for the rest of that fight, up to 25%. II: Each hit that wounds you in a fight gives you {=effects.0.value|pct}% less Elemental damage taken and +{=effects.0.value|pct}% Injury resistance for the rest of that fight, up to 40% each.",
+      "text": "I: When your HP runs out, take one more turn with {=tiers.I.numbers.ap} AP before you fall Downed (once a fight). II: When your HP runs out, take one more turn with {=tiers.II.numbers.ap} AP before you fall Downed (once a fight).",
       "effects": [
         {
-          "op": "damage_reduction",
-          "type": "elemental",
-          "value": 0.05,
-          "per": "wound_taken_this_combat",
-          "max": 0.25,
-          "duration": "combat"
+          "op": "narrator",
+          "note": "Once a fight, when this character's HP runs out it takes one more turn (3 AP) before it falls Downed (no engine half yet: rules 1.73 item 5828, a last turn has no general piece)."
         }
       ],
       "tiers": {
@@ -420,16 +486,120 @@
             }
           ],
           "ap_cost": null,
-          "text": "Each hit that wounds you in a fight gives you {=tiers.I.effects.0.value|pct}% less Elemental damage taken for the rest of that fight, up to 25%.",
-          "short": "Each wounding hit: −{=tiers.I.effects.0.value|pct}% elemental damage taken, up to {=tiers.I.effects.0.max|pct}%",
+          "text": "When your HP runs out, take one more turn with {=tiers.I.numbers.ap} AP before you fall Downed (once a fight).",
+          "short": "HP out: one more turn with {=tiers.I.numbers.ap} AP, once a fight",
           "effects": [
             {
-              "op": "damage_reduction",
-              "type": "elemental",
-              "value": 0.05,
-              "per": "wound_taken_this_combat",
-              "max": 0.25,
-              "duration": "combat"
+              "op": "narrator",
+              "note": "Once a fight, when this character's HP runs out it takes one more turn (3 AP) before it falls Downed (no engine half yet: rules 1.73 item 5828, a last turn has no general piece)."
+            }
+          ],
+          "numbers": {
+            "ap": 3
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "pain_threshold",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "When your HP runs out, take one more turn with {=tiers.II.numbers.ap} AP before you fall Downed (once a fight).",
+          "short": "That turn has {=tiers.II.numbers.ap} AP",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, with 5 AP (no engine half yet: rules 1.73 item 5828)."
+            }
+          ],
+          "numbers": {
+            "ap": 5
+          },
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "survival"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Endurance step",
+      "numbers": {
+        "ap": 3
+      }
+    },
+    {
+      "id": "second_wind",
+      "name": "Second Wind",
+      "tier": "acquired",
+      "perk_type": "active_skill",
+      "skills": [
+        "pain_threshold"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "pain_threshold",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 2,
+      "uses": "per_combat",
+      "text": "I: {=tiers.I.effects.0.ap} AP, once a fight: heal {=amounts.heal.per.0.value|pct}% of your max HP. II: {=tiers.II.effects.0.ap} AP, once a fight: heal {=amounts.heal.per.0.value|pct}% of your max HP and gain {=tiers.II.effects.0.effects.1.value} Guard.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "second_wind",
+          "label": "Second Wind",
+          "ap": 2,
+          "uses": "per_combat",
+          "scope": [
+            "combat"
+          ],
+          "effects": [
+            {
+              "op": "mend",
+              "when": "acted",
+              "amount": "heal",
+              "say": "Second Wind{then}."
+            }
+          ]
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "pain_threshold",
+              "min": 3
+            }
+          ],
+          "ap_cost": 2,
+          "text": "{=tiers.I.effects.0.ap} AP, once a fight: heal {=amounts.heal.per.0.value|pct}% of your max HP.",
+          "short": "{=tiers.I.effects.0.ap} AP, once a fight: heal {=amounts.heal.per.0.value|pct}% max HP",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "second_wind",
+              "label": "Second Wind",
+              "ap": 2,
+              "uses": "per_combat",
+              "scope": [
+                "combat"
+              ],
+              "effects": [
+                {
+                  "op": "mend",
+                  "when": "acted",
+                  "amount": "heal",
+                  "say": "Second Wind{then}."
+                }
+              ]
             }
           ]
         },
@@ -440,25 +610,33 @@
               "min": 5
             }
           ],
-          "ap_cost": null,
-          "text": "Each hit that wounds you in a fight gives you {=tiers.II.effects.0.value|pct}% less Elemental damage taken and +{=tiers.II.effects.0.value|pct}% Injury resistance for the rest of that fight, up to 40% each.",
-          "short": "+{=tiers.II.effects.1.value|pct}% injury resistance too · up to {=tiers.II.effects.0.max|pct}% each",
+          "ap_cost": 2,
+          "text": "{=tiers.II.effects.0.ap} AP, once a fight: heal {=amounts.heal.per.0.value|pct}% of your max HP and gain {=tiers.II.effects.0.effects.1.value} Guard.",
+          "short": "And +{=tiers.II.effects.0.effects.1.value} Guard",
           "effects": [
             {
-              "op": "damage_reduction",
-              "type": "elemental",
-              "value": 0.05,
-              "per": "wound_taken_this_combat",
-              "max": 0.4,
-              "duration": "combat"
-            },
-            {
-              "op": "damage_reduction",
-              "type": "limb",
-              "value": 0.05,
-              "per": "wound_taken_this_combat",
-              "max": 0.4,
-              "duration": "combat"
+              "op": "grant_action",
+              "action": "second_wind",
+              "label": "Second Wind",
+              "ap": 2,
+              "uses": "per_combat",
+              "scope": [
+                "combat"
+              ],
+              "effects": [
+                {
+                  "op": "mend",
+                  "when": "acted",
+                  "amount": "heal",
+                  "say": "Second Wind{then}."
+                },
+                {
+                  "op": "resource",
+                  "when": "acted",
+                  "resource": "guard",
+                  "value": 2
+                }
+              ]
             }
           ],
           "replaces_tier_I": true,
@@ -468,10 +646,153 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "defense",
-        "stacking"
+        "survival",
+        "heal"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Endurance step",
+      "amounts": {
+        "heal": {
+          "kind": "heal",
+          "base": 0,
+          "per": [
+            {
+              "of": "self:max_hp",
+              "value": 0.25
+            }
+          ],
+          "heal_kind": "perk"
+        }
+      }
+    },
+    {
+      "id": "close_guard",
+      "name": "Close Guard",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "pain_threshold"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "pain_threshold",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: An Answer: while you hold Guard, {=tiers.I.effects.0.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it. II: An Answer: while you hold Guard, {=tiers.II.effects.0.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it.",
+      "effects": [
+        {
+          "op": "redirect",
+          "when": "taking",
+          "if": {
+            "target": "ally",
+            "target_within": 1,
+            "actor": "foe",
+            "by_hit": true,
+            "self_has_res": [
+              "guard"
+            ],
+            "self_alive": true,
+            "answer_on": "close_guard"
+          },
+          "share": 0.25,
+          "label": "Close Guard",
+          "fx": {
+            "k": "guard_move",
+            "move": "close_guard"
+          },
+          "say": "{self} takes part of the blow on {target} (Close Guard).",
+          "type": "physical"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "pain_threshold",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "An Answer: while you hold Guard, {=tiers.I.effects.0.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it.",
+          "short": "Answer: {=tiers.I.effects.0.share|pct}% of a blow on an ally beside you comes to you",
+          "effects": [
+            {
+              "op": "redirect",
+              "when": "taking",
+              "if": {
+                "target": "ally",
+                "target_within": 1,
+                "actor": "foe",
+                "by_hit": true,
+                "self_has_res": [
+                  "guard"
+                ],
+                "self_alive": true,
+                "answer_on": "close_guard"
+              },
+              "share": 0.25,
+              "label": "Close Guard",
+              "fx": {
+                "k": "guard_move",
+                "move": "close_guard"
+              },
+              "say": "{self} takes part of the blow on {target} (Close Guard).",
+              "type": "physical"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "pain_threshold",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "An Answer: while you hold Guard, {=tiers.II.effects.0.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it.",
+          "short": "{=tiers.II.effects.0.share|pct}% of the blow",
+          "effects": [
+            {
+              "op": "redirect",
+              "when": "taking",
+              "if": {
+                "target": "ally",
+                "target_within": 1,
+                "actor": "foe",
+                "by_hit": true,
+                "self_has_res": [
+                  "guard"
+                ],
+                "self_alive": true,
+                "answer_on": "close_guard"
+              },
+              "share": 0.5,
+              "label": "Close Guard",
+              "fx": {
+                "k": "guard_move",
+                "move": "close_guard"
+              },
+              "say": "{self} takes part of the blow on {target} (Close Guard).",
+              "type": "physical"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "guard",
+        "protect"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Endurance step"
     },
     {
       "id": "wind_on_the_skin",
@@ -621,6 +942,166 @@
         "social",
         "truth"
       ]
+    },
+    {
+      "id": "read_the_air",
+      "name": "Read the Air",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "sensory"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "sensory",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Learn one physical tell of someone you are close to (pulse, sweat, scent): {=tiers.I.numbers.bonus|signed} on your next social roll against them. II: Learn one physical tell of someone you are close to (pulse, sweat, scent): {=tiers.II.numbers.bonus|signed} on your next social roll against them.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "The Narrator supplies one physical tell of an NPC this character is close to; +2 on its next social roll against them."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "sensory",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Learn one physical tell of someone you are close to (pulse, sweat, scent): {=tiers.I.numbers.bonus|signed} on your next social roll against them.",
+          "short": "A tell: {=tiers.I.numbers.bonus|signed} on your next social roll against them",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "The Narrator supplies one physical tell of an NPC this character is close to; +2 on its next social roll against them."
+            }
+          ],
+          "numbers": {
+            "bonus": 2
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "sensory",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Learn one physical tell of someone you are close to (pulse, sweat, scent): {=tiers.II.numbers.bonus|signed} on your next social roll against them.",
+          "short": "{=tiers.II.numbers.bonus|signed}",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, +4."
+            }
+          ],
+          "numbers": {
+            "bonus": 4
+          },
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "social"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Endurance step",
+      "numbers": {
+        "bonus": 2
+      }
+    },
+    {
+      "id": "tremor",
+      "name": "Tremor",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "sensory"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "sensory",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Nothing moving on the ground within your Vision can take you by surprise: you act in the surprise round. II: Nothing moving on the ground within your Vision can take you by surprise, and you start each fight with {=tiers.II.effects.1.value} Guard.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "This character is never surprised by anything moving on the ground within its Vision (no engine half yet: rules 1.73 item 5833, the approach has no per-unit surprise piece)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "sensory",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Nothing moving on the ground within your Vision can take you by surprise: you act in the surprise round.",
+          "short": "You act in the surprise round against anything on the ground",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "This character is never surprised by anything moving on the ground within its Vision (no engine half yet: rules 1.73 item 5833, the approach has no per-unit surprise piece)."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "sensory",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Nothing moving on the ground within your Vision can take you by surprise, and you start each fight with {=tiers.II.effects.1.value} Guard.",
+          "short": "And +{=tiers.II.effects.1.value} Guard when a fight starts",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I."
+            },
+            {
+              "op": "resource",
+              "when": "combat_start",
+              "resource": "guard",
+              "value": 2,
+              "label": "Tremor",
+              "say": "{self} felt them coming: +{gain} Guard (Tremor)."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "start",
+        "guard"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Endurance step"
     },
     {
       "id": "breaching_strike",
@@ -827,7 +1308,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: You gain the technique Grapple (an enemy next to you makes a Body save or is Grappled). A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.I.effects.1.value_pct}% more damage to a Grappled or Prone enemy. II: You gain the technique Grapple (an enemy next to you makes a Body save or is Grappled). A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.II.effects.1.value_pct}% more damage to a Grappled, Prone, Shaken or Afraid enemy.",
+      "text": "I: A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.I.effects.1.value_pct}% more damage to a Grappled or Prone enemy. II: A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.II.effects.1.value_pct}% more damage to a Grappled, Prone, Shaken or Afraid enemy, and a melee technique of yours that pushes moves its target {=tiers.II.numbers.push_tiles} tile further.",
       "effects": [
         {
           "op": "forbid",
@@ -858,8 +1339,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "You gain the technique Grapple (an enemy next to you makes a Body save or is Grappled). A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.I.effects.1.value_pct}% more damage to a Grappled or Prone enemy.",
-          "short": "Grapple · held foes can't Answer or react · +{=tiers.I.effects.1.value_pct}% melee on Grappled, Prone",
+          "text": "A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.I.effects.1.value_pct}% more damage to a Grappled or Prone enemy.",
+          "short": "Held foes can't Answer or react · +{=tiers.I.effects.1.value_pct}% melee on Grappled, Prone",
           "effects": [
             {
               "op": "forbid",
@@ -880,7 +1361,10 @@
               },
               "value_pct": 6
             }
-          ]
+          ],
+          "numbers": {
+            "push_tiles": 0
+          }
         },
         "II": {
           "requires": [
@@ -890,8 +1374,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "You gain the technique Grapple (an enemy next to you makes a Body save or is Grappled). A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.II.effects.1.value_pct}% more damage to a Grappled, Prone, Shaken or Afraid enemy.",
-          "short": "+{=tiers.II.effects.1.value_pct}% · also on Shaken or Afraid",
+          "text": "A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.II.effects.1.value_pct}% more damage to a Grappled, Prone, Shaken or Afraid enemy, and a melee technique of yours that pushes moves its target {=tiers.II.numbers.push_tiles} tile further.",
+          "short": "+{=tiers.II.effects.1.value_pct}% · also Shaken, Afraid · pushes go {=tiers.II.numbers.push_tiles} tile further",
           "effects": [
             {
               "op": "forbid",
@@ -916,7 +1400,10 @@
             }
           ],
           "replaces_tier_I": true,
-          "after": "I"
+          "after": "I",
+          "numbers": {
+            "push_tiles": 1
+          }
         }
       },
       "adjudication": "engine",
@@ -926,7 +1413,8 @@
         "momentum",
         "damage"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Strength step (item 5804): Grapple is Raw Power 2; Heavy Hands moved into Tier II"
     },
     {
       "id": "into_the_dark",
@@ -1010,8 +1498,8 @@
       "provisional": true
     },
     {
-      "id": "iron_stomach",
-      "name": "Iron Stomach",
+      "id": "steady",
+      "name": "Steady",
       "tier": "acquired",
       "perk_type": "passive",
       "skills": [
@@ -1027,9 +1515,12 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Nausea and Fear last at most {=effects.0.max} round on you. II: You are immune to Nausea and Fear.",
+      "text": "I: Fear can't stop you moving or acting; you keep only its penalty to hit. II: Fear can't stop you moving or acting; you keep only its penalty to hit. Fear and Nausea last at most {=tiers.II.effects.1.max} round on you.",
       "effects": [
-        {"op": "cond_rounds", "max": 1, "when": "cond_incoming", "if": {"cond": ["nausea", "fear"]}}
+        {
+          "op": "narrator",
+          "note": "Fear can't stop this character moving or acting; it keeps only Fear's penalty to hit (no engine half yet: rules 1.73 item 5811, needs a stat Fear's two refusals ask)."
+        }
       ],
       "tiers": {
         "I": {
@@ -1040,10 +1531,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "Nausea and Fear last at most {=tiers.I.effects.0.max} round on you.",
-          "short": "Nausea and Fear last {=tiers.I.effects.0.max} round at most",
+          "text": "Fear can't stop you moving or acting; you keep only its penalty to hit.",
+          "short": "Fear can't stop your moves or actions",
           "effects": [
-            {"op": "cond_rounds", "max": 1, "when": "cond_incoming", "if": {"cond": ["nausea", "fear"]}}
+            {
+              "op": "narrator",
+              "note": "Fear can't stop this character moving or acting; it keeps only Fear's penalty to hit (no engine half yet: rules 1.73 item 5811, needs a stat Fear's two refusals ask)."
+            }
           ]
         },
         "II": {
@@ -1054,15 +1548,230 @@
             }
           ],
           "ap_cost": null,
-          "text": "You are immune to Nausea and Fear.",
-          "short": "Immune to Nausea and Fear",
+          "text": "Fear can't stop you moving or acting; you keep only its penalty to hit. Fear and Nausea last at most {=tiers.II.effects.1.max} round on you.",
+          "short": "Fear and Nausea last {=tiers.II.effects.1.max} round at most",
           "effects": [
             {
-              "op": "immunity",
-              "conditions": [
-                "nausea",
-                "fear"
-              ]
+              "op": "narrator",
+              "note": "Fear can't stop this character moving or acting; it keeps only Fear's penalty to hit (no engine half yet: rules 1.73 item 5811, needs a stat Fear's two refusals ask)."
+            },
+            {
+              "op": "cond_rounds",
+              "max": 1,
+              "when": "cond_incoming",
+              "if": {
+                "cond": [
+                  "nausea",
+                  "fear"
+                ]
+              }
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "resistance",
+        "fear"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Strength step"
+    },
+    {
+      "id": "point_man",
+      "name": "Point Man",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "guts"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "guts",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Allies within {=tiers.I.numbers.tiles} tiles roll Fear saves with your Guts in place of their own. II: Allies within {=tiers.II.effects.1.if.target_within} tiles roll Fear saves with your Guts in place of their own, and have {=tiers.II.effects.1.value|signed} on their Heart saves.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Allies within 3 tiles of this character roll Fear saves with its Guts in place of their own (no engine half yet: rules 1.73 item 5812, needs a save's skill swap)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "guts",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Allies within {=tiers.I.numbers.tiles} tiles roll Fear saves with your Guts in place of their own.",
+          "short": "Allies within {=tiers.I.numbers.tiles} tiles save against Fear with your Guts",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Allies within 3 tiles of this character roll Fear saves with its Guts in place of their own (no engine half yet: rules 1.73 item 5812, needs a save's skill swap)."
+            }
+          ],
+          "numbers": {
+            "tiles": 3
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "guts",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Allies within {=tiers.II.effects.1.if.target_within} tiles roll Fear saves with your Guts in place of their own, and have {=tiers.II.effects.1.value|signed} on their Heart saves.",
+          "short": "And {=tiers.II.effects.1.value|signed} on their Heart saves",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Allies within 3 tiles of this character roll Fear saves with its Guts in place of their own (no engine half yet: rules 1.73 item 5812, needs a save's skill swap)."
+            },
+            {
+              "op": "roll_mod",
+              "when": "cond_incoming",
+              "roll": "save",
+              "value": 2,
+              "if": {
+                "target": "ally",
+                "target_within": 3,
+                "cond_family": [
+                  "heart"
+                ],
+                "self_alive": true
+              },
+              "label": "Point Man"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "fear",
+        "support"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Strength step",
+      "numbers": {
+        "tiles": 3
+      }
+    },
+    {
+      "id": "unflinching",
+      "name": "Unflinching",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "guts"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "guts",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: While you hold {=tiers.I.effects.0.if.self_res.momentum.at_least} Momentum or more, melee attacks on you are at {=tiers.I.effects.0.value} to hit. II: While you hold {=tiers.II.effects.0.if.self_res.momentum.at_least} Momentum or more, weapon attacks on you, shots too, are at {=tiers.II.effects.0.value} to hit.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "value": -1,
+          "label": "Unflinching",
+          "if": {
+            "target": "self",
+            "actor": "foe",
+            "self_res": {
+              "momentum": {
+                "at_least": 3
+              }
+            },
+            "mode": [
+              "melee"
+            ]
+          }
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "guts",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "While you hold {=tiers.I.effects.0.if.self_res.momentum.at_least} Momentum or more, melee attacks on you are at {=tiers.I.effects.0.value} to hit.",
+          "short": "At x{=tiers.I.effects.0.if.self_res.momentum.at_least}+ Momentum: {=tiers.I.effects.0.value} to hit you in melee",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "to_hit",
+              "value": -1,
+              "label": "Unflinching",
+              "if": {
+                "target": "self",
+                "actor": "foe",
+                "self_res": {
+                  "momentum": {
+                    "at_least": 3
+                  }
+                },
+                "mode": [
+                  "melee"
+                ]
+              }
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "guts",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "While you hold {=tiers.II.effects.0.if.self_res.momentum.at_least} Momentum or more, weapon attacks on you, shots too, are at {=tiers.II.effects.0.value} to hit.",
+          "short": "Shots too",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "to_hit",
+              "value": -1,
+              "label": "Unflinching",
+              "if": {
+                "target": "self",
+                "actor": "foe",
+                "self_res": {
+                  "momentum": {
+                    "at_least": 3
+                  }
+                },
+                "damage": [
+                  "weapon"
+                ]
+              }
             }
           ],
           "replaces_tier_I": true,
@@ -1072,13 +1781,371 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "resistance"
+        "momentum",
+        "defense"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Strength step"
     },
     {
       "id": "grim_reaper",
       "name": "Grim Reaper",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "intimidation"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "intimidation",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: A hit from a Shaken or Afraid enemy costs you no Momentum. II: A hit from a Shaken or Afraid enemy costs you no Momentum. When you drop an enemy on your own turn, every enemy within {=tiers.II.effects.3.targets.within} tiles that sees it makes a Heart save or is Afraid of you.",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "taking",
+          "flag": "had",
+          "if": {
+            "target": "self",
+            "actor": "foe",
+            "by_hit": true,
+            "actor_has": [
+              "shaken",
+              "fear"
+            ],
+            "self_has_res": [
+              "momentum"
+            ],
+            "self_lacks_res": [
+              "guard"
+            ]
+          }
+        },
+        {
+          "op": "resource",
+          "when": "hit",
+          "resource": "momentum",
+          "value": 1,
+          "if": {
+            "target": "self",
+            "actor": "foe",
+            "flag": "had"
+          },
+          "label": "Grim Reaper",
+          "and": [
+            {
+              "op": "mark",
+              "flag": "had",
+              "clear": true
+            }
+          ],
+          "say": "{actor} is too shaken to knock the fight out of {self} (Grim Reaper)."
+        },
+        {
+          "op": "mark",
+          "when": "turn_start",
+          "flag": "had",
+          "clear": true,
+          "if": {
+            "flag": "had"
+          }
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "intimidation",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "A hit from a Shaken or Afraid enemy costs you no Momentum.",
+          "short": "A Shaken or Afraid foe's hit costs you no Momentum",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "taking",
+              "flag": "had",
+              "if": {
+                "target": "self",
+                "actor": "foe",
+                "by_hit": true,
+                "actor_has": [
+                  "shaken",
+                  "fear"
+                ],
+                "self_has_res": [
+                  "momentum"
+                ],
+                "self_lacks_res": [
+                  "guard"
+                ]
+              }
+            },
+            {
+              "op": "resource",
+              "when": "hit",
+              "resource": "momentum",
+              "value": 1,
+              "if": {
+                "target": "self",
+                "actor": "foe",
+                "flag": "had"
+              },
+              "label": "Grim Reaper",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "had",
+                  "clear": true
+                }
+              ],
+              "say": "{actor} is too shaken to knock the fight out of {self} (Grim Reaper)."
+            },
+            {
+              "op": "mark",
+              "when": "turn_start",
+              "flag": "had",
+              "clear": true,
+              "if": {
+                "flag": "had"
+              }
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "intimidation",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "A hit from a Shaken or Afraid enemy costs you no Momentum. When you drop an enemy on your own turn, every enemy within {=tiers.II.effects.3.targets.within} tiles that sees it makes a Heart save or is Afraid of you.",
+          "short": "A kill on your turn: foes who see it save or are Afraid",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "taking",
+              "flag": "had",
+              "if": {
+                "target": "self",
+                "actor": "foe",
+                "by_hit": true,
+                "actor_has": [
+                  "shaken",
+                  "fear"
+                ],
+                "self_has_res": [
+                  "momentum"
+                ],
+                "self_lacks_res": [
+                  "guard"
+                ]
+              }
+            },
+            {
+              "op": "resource",
+              "when": "hit",
+              "resource": "momentum",
+              "value": 1,
+              "if": {
+                "target": "self",
+                "actor": "foe",
+                "flag": "had"
+              },
+              "label": "Grim Reaper",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "had",
+                  "clear": true
+                }
+              ],
+              "say": "{actor} is too shaken to knock the fight out of {self} (Grim Reaper)."
+            },
+            {
+              "op": "mark",
+              "when": "turn_start",
+              "flag": "had",
+              "clear": true,
+              "if": {
+                "flag": "had"
+              }
+            },
+            {
+              "op": "condition",
+              "when": "kill",
+              "condition": "fear",
+              "via": "intimidation",
+              "if": {
+                "actor": "self",
+                "own_turn": true
+              },
+              "targets": {
+                "of": "target",
+                "within": 8,
+                "side": "foe",
+                "sees": "eyes"
+              },
+              "label": "Grim Reaper"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": "recovered",
+      "tags": [
+        "momentum",
+        "fear"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Strength step (item 5817): the door's tax off (no Momentum lost to a frightened foe); the AP rows cut"
+    },
+    {
+      "id": "marrow_talk",
+      "name": "Marrow Talk",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "intimidation"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "intimidation",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Even a failed threat leaves the target Shaken: {=tiers.I.numbers.next_roll} on their next roll against you. II: Even a failed threat leaves the target Shaken: {=tiers.II.numbers.next_roll} on their next roll against you. In a fight, a foe that saves against your Threaten is still Shaken for {=tiers.II.effects.1.rounds} round.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "A threat of this character's that fails in talk still leaves the target Shaken: -2 on their next roll against them."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "intimidation",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Even a failed threat leaves the target Shaken: {=tiers.I.numbers.next_roll} on their next roll against you.",
+          "short": "A failed threat still leaves them Shaken",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "A threat of this character's that fails in talk still leaves the target Shaken: -2 on their next roll against them."
+            }
+          ],
+          "numbers": {
+            "next_roll": -2
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "intimidation",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Even a failed threat leaves the target Shaken: {=tiers.II.numbers.next_roll} on their next roll against you. In a fight, a foe that saves against your Threaten is still Shaken for {=tiers.II.effects.1.rounds} round.",
+          "short": "In a fight: a saved Threaten still Shakes them {=tiers.II.effects.1.rounds} round",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "A threat of this character's that fails in talk still leaves the target Shaken: -2 on their next roll against them."
+            },
+            {
+              "op": "condition",
+              "when": "acted",
+              "condition": "shaken",
+              "target": "target",
+              "skip_save": true,
+              "rounds": 1,
+              "if": {
+                "action": [
+                  "call"
+                ],
+                "target": "foe",
+                "flag": "threatened",
+                "target_lacks": [
+                  "shaken"
+                ],
+                "target_alive": true
+              },
+              "label": "Marrow Talk",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "threatened",
+                  "clear": true
+                }
+              ],
+              "say": "{target} shrugged it off, but not all of it (Marrow Talk)."
+            },
+            {
+              "op": "mark",
+              "when": "cond_incoming",
+              "flag": "threatened",
+              "if": {
+                "actor": "self",
+                "target": "foe",
+                "cond": [
+                  "shaken"
+                ],
+                "own_turn": true
+              }
+            },
+            {
+              "op": "mark",
+              "when": "acted",
+              "flag": "threatened",
+              "clear": true,
+              "priority": 150,
+              "if": {
+                "flag": "threatened"
+              }
+            }
+          ],
+          "numbers": {
+            "next_roll": -2
+          },
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "social",
+        "fear"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Strength step",
+      "numbers": {
+        "next_roll": -2
+      }
+    },
+    {
+      "id": "stare_down",
+      "name": "Stare Down",
       "tier": "acquired",
       "perk_type": "combat_starter",
       "skills": [
@@ -1094,21 +2161,22 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: You have {=effects.0.value|abs} AP less on your first turn of each fight. When you kill or knock out an enemy on your own turn, you gain {=effects.1.value} AP. Once every 3 turns. II: When you kill or knock out an enemy on your own turn, you gain {=effects.1.value} AP. Once every 3 turns. Each time you do, every enemy who sees it makes a Heart save or is Afraid of you.",
+      "text": "I: When a fight starts, the nearest enemy that can see you saves against your Intimidation or is Stunned: it loses its first turn. II: When a fight starts, the nearest enemy that can see you saves against your Intimidation or is Stunned: it loses its first turn. Whatever it rolls, it is Shaken for {=tiers.II.effects.1.rounds} rounds.",
       "effects": [
         {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": -1,
-          "when": "first turn of combat"
-        },
-        {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": 2,
-          "when": "you KO or kill an enemy on your turn",
-          "limit": "ap_cooldown",
-          "duration": "this_turn"
+          "op": "condition",
+          "when": "combat_start",
+          "condition": "stunned",
+          "rounds": 1,
+          "via": "intimidation",
+          "targets": {
+            "of": "self",
+            "side": "foe",
+            "sees": "eyes",
+            "max": 1
+          },
+          "label": "Stare Down",
+          "say": "{self} stares {target} down{then}."
         }
       ],
       "tiers": {
@@ -1120,22 +2188,23 @@
             }
           ],
           "ap_cost": null,
-          "text": "You have {=tiers.I.effects.0.value|abs} AP less on your first turn of each fight. When you kill or knock out an enemy on your own turn, you gain {=tiers.I.effects.1.value} AP. Once every 3 turns.",
-          "short": "{=tiers.I.effects.0.value} AP first turn · a kill on your turn: +{=tiers.I.effects.1.value} AP, every 3 turns",
+          "text": "When a fight starts, the nearest enemy that can see you saves against your Intimidation or is Stunned: it loses its first turn.",
+          "short": "Fight start: one foe that sees you saves or loses its first turn",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": -1,
-              "when": "first turn of combat"
-            },
-            {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 2,
-              "when": "you KO or kill an enemy on your turn",
-              "limit": "ap_cooldown",
-              "duration": "this_turn"
+              "op": "condition",
+              "when": "combat_start",
+              "condition": "stunned",
+              "rounds": 1,
+              "via": "intimidation",
+              "targets": {
+                "of": "self",
+                "side": "foe",
+                "sees": "eyes",
+                "max": 1
+              },
+              "label": "Stare Down",
+              "say": "{self} stares {target} down{then}."
             }
           ]
         },
@@ -1147,23 +2216,37 @@
             }
           ],
           "ap_cost": null,
-          "text": "When you kill or knock out an enemy on your own turn, you gain {=tiers.II.effects.0.value} AP. Once every 3 turns. Each time you do, every enemy who sees it makes a Heart save or is Afraid of you.",
-          "short": "Kills frighten · no first-turn cost",
+          "text": "When a fight starts, the nearest enemy that can see you saves against your Intimidation or is Stunned: it loses its first turn. Whatever it rolls, it is Shaken for {=tiers.II.effects.1.rounds} rounds.",
+          "short": "And it is Shaken {=tiers.II.effects.1.rounds} rounds",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 2,
-              "when": "you KO or kill an enemy on your turn",
-              "limit": "ap_cooldown",
-              "duration": "this_turn"
+              "op": "condition",
+              "when": "combat_start",
+              "condition": "stunned",
+              "rounds": 1,
+              "via": "intimidation",
+              "targets": {
+                "of": "self",
+                "side": "foe",
+                "sees": "eyes",
+                "max": 1
+              },
+              "label": "Stare Down",
+              "say": "{self} stares {target} down{then}."
             },
             {
               "op": "condition",
-              "condition": "fear",
-              "target": "enemies_with_line_of_sight",
-              "when": "on a kill",
-              "save": "heart"
+              "when": "combat_start",
+              "condition": "shaken",
+              "rounds": 3,
+              "skip_save": true,
+              "targets": {
+                "of": "self",
+                "side": "foe",
+                "sees": "eyes",
+                "max": 1
+              },
+              "label": "Stare Down"
             }
           ],
           "replaces_tier_I": true,
@@ -1171,12 +2254,13 @@
         }
       },
       "adjudication": "engine",
-      "recovered": "recovered",
+      "recovered": null,
       "tags": [
-        "ap",
-        "fear"
+        "fear",
+        "start"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Strength step"
     },
     {
       "id": "bone_talk",
@@ -1196,7 +2280,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Threaten someone with one specific, physical detail. Outside a fight they answer one question truthfully, or refuse and are Shaken; the Narrator plays the answer. In a fight it costs 2 AP: one enemy within 8 tiles who can see you makes a Heart save or is Shaken. II: Threaten a whole group with one specific, physical detail. Outside a fight their leader answers one question truthfully for all of them, or they refuse and are all Shaken; the Narrator plays the answer. In a fight it costs 2 AP: every enemy within 8 tiles who can see you makes a Heart save or is Shaken.",
+      "text": "I: Threaten someone with one specific, physical detail: they answer one question truthfully, or refuse and are Shaken; the Narrator plays the answer. II: Threaten a whole group with one specific, physical detail: their leader answers one question truthfully for all of them, or they refuse and are all Shaken; the Narrator plays the answer.",
       "effects": [
         {
           "op": "narrator",
@@ -1217,9 +2301,9 @@
               "min": 3
             }
           ],
-          "ap_cost": 2,
-          "text": "Threaten someone with one specific, physical detail. Outside a fight they answer one question truthfully, or refuse and are Shaken; the Narrator plays the answer. In a fight it costs {=tiers.I.ap_cost} AP: one enemy within 8 tiles who can see you makes a Heart save or is Shaken.",
-          "short": "Threaten: a true answer or Shaken · fight: {=tiers.I.ap_cost} AP, one foe",
+          "ap_cost": null,
+          "text": "Threaten someone with one specific, physical detail: they answer one question truthfully, or refuse and are Shaken; the Narrator plays the answer.",
+          "short": "Name one physical detail: a true answer, or Shaken",
           "effects": [
             {
               "op": "narrator",
@@ -1240,9 +2324,9 @@
               "min": 5
             }
           ],
-          "ap_cost": 2,
-          "text": "Threaten a whole group with one specific, physical detail. Outside a fight their leader answers one question truthfully for all of them, or they refuse and are all Shaken; the Narrator plays the answer. In a fight it costs {=tiers.II.ap_cost} AP: every enemy within 8 tiles who can see you makes a Heart save or is Shaken.",
-          "short": "A whole group · fight: every foe in range",
+          "ap_cost": null,
+          "text": "Threaten a whole group with one specific, physical detail: their leader answers one question truthfully for all of them, or they refuse and are all Shaken; the Narrator plays the answer.",
+          "short": "A whole group: the leader answers for all",
           "effects": [
             {
               "op": "narrator",
@@ -1259,13 +2343,14 @@
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
+      "adjudication": "narrator",
       "recovered": null,
       "tags": [
         "social",
         "interrogation"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Strength step (item 5816): its 2 AP fight version is cut (a copy of Threaten)"
     },
     {
       "id": "wall_run",
@@ -1285,7 +2370,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: During a move you can run along walls, over low obstacles and across gaps, up to 2 such tiles in a row. The move must end on open floor. II: During a move you can run along walls, over low obstacles and across gaps, up to 4 such tiles in a row. With Wall Run strike you can attack once from the middle of the run; the move and the attack cost their usual AP. The move must end on open floor.",
+      "text": "I: Vault: during a move you run over cover, low obstacles and gaps, and along walls, up to {=tiers.I.effects.0.max_tiles} such tiles in a row, at no extra movement. The move must end on open floor. II: During a move you can run along walls, over low obstacles and across gaps, up to 4 such tiles in a row. With Wall Run strike you can attack once from the middle of the run; the move and the attack cost their usual AP. The move must end on open floor.",
       "effects": [
         {
           "op": "movement_mode",
@@ -1302,8 +2387,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "During a move you can run along walls, over low obstacles and across gaps, up to 2 such tiles in a row. The move must end on open floor.",
-          "short": "Run along walls, low cover and gaps, {=tiers.I.effects.0.max_tiles} tiles in a row",
+          "text": "Vault: during a move you run over cover, low obstacles and gaps, and along walls, up to {=tiers.I.effects.0.max_tiles} such tiles in a row, at no extra movement. The move must end on open floor.",
+          "short": "Vault: over cover, obstacles and gaps, {=tiers.I.effects.0.max_tiles} tiles in a row",
           "effects": [
             {
               "op": "movement_mode",
@@ -1339,7 +2424,8 @@
       "tags": [
         "mobility"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step (item 5847): Vault (Athletics 3) is its Tier I; Shadow's Vault is cut (ruling layer section 2 item 7)"
     },
     {
       "id": "roll_with_it",
@@ -1414,6 +2500,78 @@
         "dodge"
       ],
       "provisional": true
+    },
+    {
+      "id": "untouchable",
+      "name": "Untouchable",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "athletics"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "athletics",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: With no torso armour, attacks on you roll twice and take the worse. II: In Light armour or none, attacks on you roll twice and take the worse.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Attacks on this character roll twice and keep the worse while it wears no torso armour (no engine half yet: rules 1.73 item 5849, a roll kept from two has no piece)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "athletics",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "With no torso armour, attacks on you roll twice and take the worse.",
+          "short": "No torso armour: attacks on you roll twice, take the worse",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Attacks on this character roll twice and keep the worse while it wears no torso armour (no engine half yet: rules 1.73 item 5849, a roll kept from two has no piece)."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "athletics",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "In Light armour or none, attacks on you roll twice and take the worse.",
+          "short": "Light armour too",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, in Light armour too."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "defense",
+        "dodge"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step"
     },
     {
       "id": "both_hands",
@@ -1827,10 +2985,10 @@
       "provisional": true
     },
     {
-      "id": "catch",
-      "name": "Catch",
+      "id": "shoot_first",
+      "name": "Shoot First",
       "tier": "acquired",
-      "perk_type": "combat_interaction",
+      "perk_type": "combat_starter",
       "skills": [
         "reaction_speed"
       ],
@@ -1838,6 +2996,268 @@
       "requires": [
         {
           "skill": "reaction_speed",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: You act in the surprise round even when your side is the one surprised ({=tiers.I.numbers.ap} AP). II: You act in the surprise round even when your side is the one surprised ({=tiers.II.numbers.ap} AP).",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "This character acts in the surprise round even when surprised, with 3 AP (no engine half yet: rules 1.73 item 5851, the approach has no per-unit surprise piece)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "You act in the surprise round even when your side is the one surprised ({=tiers.I.numbers.ap} AP).",
+          "short": "Act in the surprise round, even when surprised",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "This character acts in the surprise round even when surprised, with 3 AP (no engine half yet: rules 1.73 item 5851, the approach has no per-unit surprise piece)."
+            }
+          ],
+          "numbers": {
+            "ap": 3
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "You act in the surprise round even when your side is the one surprised ({=tiers.II.numbers.ap} AP).",
+          "short": "That action has {=tiers.II.numbers.ap} AP",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, with 4 AP."
+            }
+          ],
+          "numbers": {
+            "ap": 4
+          },
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "start",
+        "initiative"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step",
+      "numbers": {
+        "ap": 3
+      }
+    },
+    {
+      "id": "cut_in",
+      "name": "Cut In",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "reaction_speed"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "reaction_speed",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Once a scene, interrupt someone mid-sentence or mid-action to act first: grab, draw, leave or speak. II: Twice a scene, interrupt someone mid-sentence or mid-action to act first: grab, draw, leave or speak.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Once a scene this character may interrupt an NPC mid-sentence or mid-action and act first."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a scene, interrupt someone mid-sentence or mid-action to act first: grab, draw, leave or speak.",
+          "short": "Once a scene: cut in and act first",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Once a scene this character may interrupt an NPC mid-sentence or mid-action and act first."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Twice a scene, interrupt someone mid-sentence or mid-action to act first: grab, draw, leave or speak.",
+          "short": "Twice a scene",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, twice a scene."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "social",
+        "initiative"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step"
+    },
+    {
+      "id": "speed_load",
+      "name": "Speed Load",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "reaction_speed"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "reaction_speed",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Reloading costs {=tiers.I.effects.0.value|abs} AP less. II: Reloading costs {=tiers.II.effects.0.value|abs} AP less, and once a fight your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs no AP.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap_cost:reload",
+          "value": -1
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Reloading costs {=tiers.I.effects.0.value|abs} AP less.",
+          "short": "Reload costs {=tiers.I.effects.0.value|abs} AP less",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:reload",
+              "value": -1
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Reloading costs {=tiers.II.effects.0.value|abs} AP less, and once a fight your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs no AP.",
+          "short": "Once a fight: your first drawn attack costs no AP",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:reload",
+              "value": -1
+            },
+            {
+              "op": "cost_mod",
+              "when": "attack",
+              "set": 0,
+              "if": {
+                "mode": [
+                  "draw_cut",
+                  "snap_shot"
+                ]
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "draw",
+                "peek": true
+              },
+              "label": "Quick Draw"
+            },
+            {
+              "op": "use",
+              "when": "attack_roll",
+              "if": {
+                "mode": [
+                  "draw_cut",
+                  "snap_shot"
+                ]
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "draw"
+              },
+              "say": "{self} had it out before anyone saw (Quick Draw)."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "ap",
+        "reload"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step"
+    },
+    {
+      "id": "catch",
+      "name": "Catch",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "athletics"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "athletics",
           "min": 3
         }
       ],
@@ -1863,7 +3283,7 @@
         "I": {
           "requires": [
             {
-              "skill": "reaction_speed",
+              "skill": "athletics",
               "min": 3
             }
           ],
@@ -1888,7 +3308,7 @@
         "II": {
           "requires": [
             {
-              "skill": "reaction_speed",
+              "skill": "athletics",
               "min": 5
             }
           ],
@@ -1919,7 +3339,8 @@
         "reaction",
         "grenades"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step (item 5848): moved from Reaction Speed to Athletics"
     },
     {
       "id": "sleight_of_hand",

@@ -1314,7 +1314,8 @@ export const PERK_RENAMED: Record<string, string> = { grapple: 'iron_grip', orig
 export function migrateCharacterItems(c: Character): string[] {
   const notes: string[] = [];
   // a perk or trait added at run time (effects/hooks.ts addItems: a mode's own items) is as known as the data's
-  const known = (id: string) => !!PERK[id] || !!rawItem('perk:' + id), knownTrait = (t: string) => TRAITS.some((d) => d.id === t) || !!rawItem('trait:' + t);
+  // rules 1.73 (the Body lane's finding): an id a skill's perk_remap names is kept here for migrateCharacterPerks to map
+  const known = (id: string) => !!PERK[id] || !!rawItem('perk:' + id) || inRemap(id), knownTrait = (t: string) => TRAITS.some((d) => d.id === t) || !!rawItem('trait:' + t);
   if ((c.perks || []).some((x) => !known(x.id))) {
     const out: Character['perks'] = [];
     for (const x of c.perks) {
@@ -1369,6 +1370,8 @@ export const levelUpDue = (c: Character | null | undefined): boolean =>
 /** A skill's remap table (skills.json row `perk_remap`: rev, perks old id -> new id or null, passives unlock points ->
  * the perk that replaces it), or null. Each attribute's step fills its skills' tables. */
 const remapOf = (s: any): { rev: number; perks?: Record<string, string | null>; passives?: Record<string, string> } | null => (s?.perk_remap && typeof s.perk_remap.rev === 'number' ? s.perk_remap : null);
+/** Is this old perk id one a skill's remap table maps (kept on the sheet at load until migrateCharacterPerks maps it)? */
+const inRemap = (id: string): boolean => (SKILLS as any[]).some((s) => { const t = remapOf(s); return !!t?.perks && id in t.perks; });
 /** The stamp a sheet made now carries: every skill with a table at its rev (none: no field, a sheet is as it was). */
 export function perkRevNow(): { perkRev?: Record<string, number> } {
   const m: Record<string, number> = {}; for (const s of SKILLS) { const t = remapOf(s); if (t) m[s.id] = t.rev; }
@@ -1387,7 +1390,8 @@ export function migrateCharacterPerks(c: Character): string[] {
   for (const s of SKILLS as any[]) {
     const t = remapOf(s); if (!t || (c.perkRev?.[s.id] ?? 0) >= t.rev) continue;
     c.perkRev = { ...(c.perkRev || {}), [s.id]: t.rev };
-    const p = P(c, s.id); if (s.slot === 'alpha' || p < ladderSchedule(s.id).perk_steps[0]) continue;
+    const p = P(c, s.id), gone = (id: string) => id in (t.perks || {}) && !PERK[id];
+    if (s.slot === 'alpha' || p < ladderSchedule(s.id).perk_steps[0]) { c.perks = c.perks.filter((x) => !gone(x.id)); continue; } // a removed id under the steps: nothing to map it into
     const map = t.perks || {}, mine = (id: string) => id in map || (PERK[id]?.tier === 'acquired' && PERK[id].skills.includes(s.id));
     const old = c.perks.filter((x) => mine(x.id)), pre: { id: string; tier: 'I' | 'II' }[] = [];
     for (const x of old) { const to = x.id in map ? map[x.id] : x.id; if (to && PERK[to] && !pre.some((y) => y.id === to)) pre.push({ id: to, tier: x.tier === 'II' ? 'II' : 'I' }); }

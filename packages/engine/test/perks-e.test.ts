@@ -48,26 +48,29 @@ function fightAfter(specs: any[], foes: any[], before: (s: ReturnType<typeof sto
 const charIds = (g: any) => Object.keys(g.characters);
 
 // ======================================================================================================== Grim Reaper
-describe('Grim Reaper', () => {
-  it('I: −1 AP on the first turn; a kill on your turn gives +2 AP at once, once a turn', () => {
+describe('Grim Reaper (rules 1.73 item 5817: the door’s tax off; the AP rows cut)', () => {
+  /** A melee blow from the foe on the PC, through the one attack path; the PC holds 2 Momentum first. */
+  const blow = (tier: string | null, shaken: boolean) => {
+    const f = fightWith([{ weapon: 'sabre', ...(tier ? { perks: { grim_reaper: tier } } : {}) }], [{ at: 'F6', weapon: 'sabre' }]); open(f.cb);
+    const u = f.unit(f.pc.id), foe = f.unit(f.foes[0].id); u.pos = '5,6'; foe.pos = '6,6'; u.hp = u.maxHp = 5000; sure(foe);
+    u.resMax = { ...(u.resMax || {}), momentum: 3 }; u.res = { ...(u.res || {}), momentum: 2 }; u.res.guard = 0;
+    if (shaken) withGame(f.g, () => applyCond(f.cb, rng(), u, foe, 'shaken', undefined, undefined, { skipSave: true }));
+    f.cb.turn = f.cb.order.indexOf(foe.id);
+    withGame(f.g, () => resolveAttack(f.cb, f.g.rng, foe, u, 'melee', null, { noAp: true }));
+    return { m: u.res!.momentum, f };
+  };
+  it('I: a Shaken foe’s hit costs you no Momentum; a calm foe’s, or one without the perk, does', () => {
+    const kept = blow('I', true); expect(kept.m).toBe(2); expect(logHas(kept.f.cb, /Grim Reaper/)).toBe(true);
+    expect(blow('I', false).m).toBeLessThan(2); expect(blow(null, true).m).toBeLessThan(2);
+  });
+  it('no AP from a kill and no first-turn penalty any more (rule 15.7)', () => {
     const f = fightWith([{ perks: { grim_reaper: 'I' } }], [{ at: 'F6' }, { at: 'G6' }]); open(f.cb);
-    f.unit(f.pc.id).ps = {}; let u = f.turn(f.pc); expect(u.ap).toBe(5); // a fresh first turn (the fight may have opened on it)
-    const [a, b] = f.foes; sure(f.unit(u.id)); f.unit(a.id).hp = 1; f.unit(b.id).hp = 1;
+    f.unit(f.pc.id).ps = {}; const u = f.turn(f.pc); expect(u.ap).toBe(6);
+    const [a] = f.foes; sure(f.unit(u.id)); f.unit(a.id).hp = 1;
     pcAct(f, { type: 'combat/attack', targetId: a.id, mode: 'shot' });
-    u = f.unit(u.id); expect(f.unit(a.id).dead).toBe(true); expect(u.ap).toBe(5 - 2 + 2);
-    pcAct(f, { type: 'combat/attack', targetId: b.id, mode: 'shot' });
-    expect(f.unit(u.id).ap).toBe(3); // the second kill this turn gives nothing
-    expect(logHas(f.cb, /Grim Reaper/)).toBe(true);
+    expect(f.unit(a.id).dead).toBe(true); expect(f.unit(u.id).ap).toBe(4);
   });
-  it('a kill off your turn gives nothing; the second turn has no penalty', () => {
-    const f = fightWith([{ perks: { grim_reaper: 'I' } }], [{ at: 'F6' }]); open(f.cb);
-    f.turn(f.pc); const u = f.turn(f.pc); expect(u.ap).toBe(6); expect(logHas(f.cb, /Grim Reaper: first turn/)).toBe(true);
-    const foe = f.foes[0]; f.unit(foe.id).hp = 1; sure(f.unit(u.id));
-    f.cb.turn = f.cb.order.indexOf(foe.id); // the enemy's turn: an Overwatch-style kill
-    withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(u.id), f.unit(foe.id), 'shot', null, { noAp: true }));
-    expect(f.unit(foe.id).dead).toBe(true); expect(f.unit(u.id).apNext || 0).toBe(0); expect(f.unit(u.id).ap).toBe(6);
-  });
-  it('II: no first-turn penalty; enemies who see the kill save against Fear (you are its source)', () => {
+  it('II: enemies who see a kill on your own turn save against Fear (you are its source)', () => {
     const f = fightWith([{ perks: { grim_reaper: 'II' } }], [{ at: 'F6' }, { at: 'G7' }]); open(f.cb);
     const u = f.turn(f.pc); expect(u.ap).toBe(6);
     const [a, b] = f.foes; sure(f.unit(u.id)); f.unit(a.id).hp = 1; weakSaves(f.unit(b.id));

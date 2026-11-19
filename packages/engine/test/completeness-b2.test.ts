@@ -71,23 +71,20 @@ describe('Grim Reaper from the area map (item 19)', () => {
     s.act({ type: 'world/act', charId: c.id, act: 'attack', targetId: n.id, mode: 'melee' } as any);
     return { s, c };
   };
-  it('a kill on the ambush that opens the fight is on your own turn: +2 AP (I and II)', () => {
+  it('a kill on the ambush that opens the fight gives no AP and takes none (rules 1.73 item 5817: the AP rows cut; I and II)', () => {
     const plain = ambush({});
     expect(plain.s.g.phase).toBe('combat');
     const ap0 = plain.s.g.combat!.units.find((u) => u.charId === plain.c.id)!.ap;
     for (const tier of ['I', 'II']) {
       const r = ambush({ perks: { grim_reaper: tier } }); const cb = r.s.g.combat!;
       expect(cb.units.find((u) => u.name === 'Sentry')?.dead).toBe(true);
-      expect(logHas(cb, /Grim Reaper/)).toBe(true);
-      // rules 1.62 item 4902: the ambush is the attacker's first turn of the fight (its own turn AP), so tier I's
-      // "1 AP less on your first turn of each fight" is taken there too
-      expect(cb.units.find((u) => u.charId === r.c.id)!.ap).toBe(ap0 + 2 - (tier === 'I' ? 1 : 0));
+      expect(cb.units.find((u) => u.charId === r.c.id)!.ap).toBe(ap0);
     }
   });
 });
 
 describe('Grim Reaper on a Shade\'s silent takedown (item 19)', () => {
-  it('no fight opens, and the +2 AP comes back to the area map with the AP left', () => {
+  it('no fight opens, and no AP comes back to the area map any more (rules 1.73 item 5817)', () => {
     const run = (perks: any) => {
       const s = storyWith([{ advancedClass: 'shade', level: 5, perks, weapon: 'combat_knife' }]); const c = s.chars[0], here = positionsOf(s.g)[c.id];
       const n = place(s, freeNear(s.g, here, 1), { name: 'Lone guard' }), t = npcsOf(s.g).find((x) => x.id === n.id)!;
@@ -104,7 +101,7 @@ describe('Grim Reaper on a Shade\'s silent takedown (item 19)', () => {
     const plain = run({}), reaper = run({ grim_reaper: 'I' });
     expect(plain.s.g.phase).toBe('story'); expect(storyHas(reaper.s.g, /Silent Kill/)).toBe(true);
     expect(reaper.s.g.phase).toBe('story');
-    expect(apLeft(reaper.s.g, reaper.s.g.characters[reaper.c.id])).toBe(apLeft(plain.s.g, plain.s.g.characters[plain.c.id]) + 2);
+    expect(apLeft(reaper.s.g, reaper.s.g.characters[reaper.c.id])).toBe(apLeft(plain.s.g, plain.s.g.characters[plain.c.id]));
   });
 });
 

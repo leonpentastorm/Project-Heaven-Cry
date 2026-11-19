@@ -219,12 +219,17 @@ describe('Guard, the second fork: Stand Fast and Drive (Slam\'s paired rows read
 // ============================================================================================ Momentum (Raw Power)
 describe('Momentum, the first fork: Rolling Start and Grindstone', () => {
   const charger = (picks: string[]) => physFight([{ weapon: 'sabre', known: ['charge'], skills: { raw_power: 4, athletics: 4 }, attrs: { strength: 4 }, level: 6, picks }], [{ at: '8,4', tier: 'elite' }]);
-  it('Rolling Start: a Charge from a 2-tile straight run (N23 tech_num), costs no Momentum and builds 1 on a hit', () => {
+  it('Rolling Start: a Charge from a 2-tile straight run (N23 tech_num) costs its Momentum (rules 1.73 item 5805: no free Charge) and builds 1 on a hit', () => {
+    const RS = FK['fork.momentum.rolling_start'];
+    expect(RS.effects.some((e: any) => String(e.stat).startsWith('momentum_cost:'))).toBe(false);
     const f = charger(['fork.momentum.rolling_start']); f.cb.objects = [];
     const u = f.turn(f.pc); f.put(u, '5,4'); f.put(f.foe, '8,4'); big(f, f.foe); f.unit(u.id).ap = 9; f.unit(u.id).openerUsed = true; f.momentum(u, 1);
     rig({ hit: true, die: 12 });
     expect(f.tech('charge', { targetId: f.foe.id })).toBeNull();
-    expect(f.momentum(f.unit(u.id))).toBe(1 + FK['fork.momentum.rolling_start'].effects[2].value);
+    expect(f.momentum(f.unit(u.id))).toBe(1 - 1 + RS.effects[1].value); // the Opener's 1, then the hit's build
+    const g = charger(['fork.momentum.rolling_start']); g.cb.objects = [];
+    const w = g.turn(g.pc); g.put(w, '5,4'); g.put(g.foe, '8,4'); big(g, g.foe); g.unit(w.id).ap = 9; g.unit(w.id).openerUsed = true; g.momentum(w, 0);
+    expect(g.tech('charge', { targetId: g.foe.id })).toMatch(/Needs 1 Momentum/); // at x0 the loop is closed
   });
   it('without it (Grindstone held), the 2-tile run is refused', () => {
     const f = charger(['fork.momentum.grindstone']); f.cb.objects = [];
@@ -238,6 +243,53 @@ describe('Momentum, the first fork: Rolling Start and Grindstone', () => {
       expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.unit(u.id))).toBe(1);
       expect(f.tech('cut', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.unit(u.id)), picks[0]).toBe(2 + extra);
     }
+  });
+});
+
+// ============================================================================================ Momentum's second fork (rules 1.73)
+describe('Momentum, the second fork at 8: Spill and Headlong (rules 1.73 items 5806, 5807)', () => {
+  const at8 = (picks: string[], foes: any[]) => physFight([{ weapon: 'sabre', known: ['coup', 'charge'], skills: { raw_power: 8, athletics: 4, dexterity: 6 }, attrs: { strength: 8 }, level: 12, picks }], foes);
+  it('the step is offered at 8 with both options built', () => {
+    const s = storyWith([{ skills: { raw_power: 8 }, attrs: { strength: 8 }, level: 12, picks: ['fork.momentum.grindstone'] }]), c = s.g.characters[s.chars[0].id];
+    const v = doorForkView(c, 'raw_power')!; expect(v.steps[1].offered).toBe(true); expect(v.steps[1].missing).toEqual([]);
+    s.act({ type: 'door/pick', charId: c.id, door: 'raw_power', option: 'fork.momentum.spill' } as Action);
+    expect(s.g.characters[c.id].doorPicks.raw_power).toEqual(['fork.momentum.grindstone', 'fork.momentum.spill']);
+  });
+  it('Spill: a Coup that drops its foe carries the blow into one foe beside it, no roll; without the pick, or with no kill, nothing', () => {
+    const run = (picks: string[], hp: number) => {
+      const f = at8(picks, [{ at: '6,4', tier: 'soldier' }, { at: '7,4', tier: 'soldier' }]); f.cb.objects = [];
+      const u = f.turn(f.pc); f.put(u, '5,4'); f.put(f.foes[0], '6,4'); f.put(f.foes[1], '7,4');
+      f.unit(f.foes[0].id).hp = hp; f.unit(f.foes[0].id).maxHp = 5000; big(f, f.foes[1]); f.unit(u.id).ap = 9; f.momentum(u, 3); rig({ hit: true, die: 12 });
+      expect(f.tech('coup', { targetId: f.foes[0].id })).toBeNull(); rig(null);
+      return { other: 9999 - f.unit(f.foes[1].id).hp, f };
+    };
+    const yes = run(['fork.momentum.spill'], 1);
+    expect(yes.other).toBeGreaterThan(0); expect(yes.f.cb.log.some((l: any) => /\(Spill\)/.test(String(l)))).toBe(true);
+    expect(run(['fork.momentum.headlong'], 1).other).toBe(0);
+    expect(run(['fork.momentum.spill'], 5000).other).toBe(0);
+  });
+  it('Headlong: once a turn a Charge’s strike costs no AP (its run is paid as usual) but 2 more Momentum, and builds none', () => {
+    const HL = FK['fork.momentum.headlong'];
+    const plain = at8(['fork.momentum.spill'], [{ at: '9,4', tier: 'elite' }]); plain.cb.objects = [];
+    const p0 = plain.turn(plain.pc); plain.put(p0, '5,4'); plain.put(plain.foe, '9,4'); plain.unit(p0.id).openerUsed = true; plain.momentum(p0, 5);
+    const full = plain.pv('charge', { targetId: plain.foe.id }).ap;
+    const f = at8(['fork.momentum.headlong'], [{ at: '9,4', tier: 'elite' }, { at: '9,8', tier: 'elite' }]); f.cb.objects = [];
+    const u = f.turn(f.pc); f.put(u, '5,4'); f.put(f.foes[0], '9,4'); f.put(f.foes[1], '9,8'); big(f, f.foes[0]); big(f, f.foes[1]);
+    f.unit(u.id).ap = 9; f.unit(u.id).openerUsed = true; f.momentum(u, 5); rig({ hit: true, die: 12 });
+    const pv = f.pv('charge', { targetId: f.foes[0].id }); expect(pv.ap).toBeLessThan(full);
+    expect(f.tech('charge', { targetId: f.foes[0].id })).toBeNull();
+    expect(f.unit(u.id).ap).toBe(9 - pv.ap); // the run only
+    expect(f.momentum(f.unit(u.id))).toBe(5 - 1 + HL.effects[1].and[0].value); // the Opener's 1 and Headlong's 2, nothing built
+    expect(condOn(f.unit(u.id), 'headlong_paid')).toBe(false); // the mark ends with the action
+    f.put(f.unit(u.id), '5,8'); f.momentum(f.unit(u.id), 5); f.unit(u.id).ap = 9;
+    expect(f.tech('charge', { targetId: f.foes[1].id })).toMatch(/Opener/); // a second Charge in a turn is no Opener: once a turn holds by itself
+  });
+  it('Headlong needs the Momentum: under it the Charge pays its AP as usual, and a Breaker\u2019s Charge Carries builds as usual', () => {
+    const f = at8(['fork.momentum.headlong'], [{ at: '9,4', tier: 'elite' }]); f.cb.objects = [];
+    const u = f.turn(f.pc); f.put(u, '5,4'); f.put(f.foe, '9,4'); big(f, f.foe); f.unit(u.id).ap = 9; f.unit(u.id).openerUsed = true; f.momentum(u, 1);
+    const plain = at8(['fork.momentum.spill'], [{ at: '9,4', tier: 'elite' }]); plain.cb.objects = [];
+    const p0 = plain.turn(plain.pc); plain.put(p0, '5,4'); plain.put(plain.foe, '9,4'); plain.unit(p0.id).openerUsed = true; plain.momentum(p0, 1);
+    expect(f.pv('charge', { targetId: f.foe.id }).ap).toBe(plain.pv('charge', { targetId: plain.foe.id }).ap);
   });
 });
 

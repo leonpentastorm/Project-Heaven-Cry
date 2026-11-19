@@ -3717,6 +3717,34 @@
       "source": "rules 1.60 slice C: the Momentum fork Grindstone (its mark)"
     },
     {
+      "id": "headlong_paid",
+      "name": "Headlong",
+      "label": "Headlong (this Charge was paid in Momentum)",
+      "kind": "state",
+      "side": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "This Charge was paid for in Momentum (Headlong): it builds none. It ends when the action does.",
+      "effects": [
+        {
+          "op": "cleanse",
+          "when": "acted",
+          "condition": "headlong_paid"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Strength step (item 5807): the Momentum fork Headlong (its mark)"
+    },
+    {
       "id": "in_your_sights",
       "name": "In Their Sights",
       "label": "In their sights (Converging Fire's mark)",

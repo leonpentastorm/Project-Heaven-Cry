@@ -121,6 +121,28 @@ shows its group's mark (Slip).
 | id | where | direction |
 | --- | --- | --- |
 | `shadow-verb:shadow.stalk` | Stalk (rules 1.76 item 6405: 2 AP, once a turn, from Hidden, +1 Shadow) on the SHADOW tab | Wick crouched still in deep shadow, eyes on a distant figure, a wisp of shadow gathering round it |
+### 0e. The Body lane of 0.32: new perks (requested 19 Nov 2026; rules 1.73)
+
+Wick perk icons, white flat ink, 1024 × 1024, transparent, the STYLE-LOCK applies (master: `art/icons/traits/mind-without-fog.png`),
+the same set as the perks they sit beside on the skill page. Until drawn each shows the perk fallback the Perks tab already uses.
+Files go to `art/icons/perks/<id with dashes>.png` (catalog id `perk-<id>`). Steady (Guts) needs none: the Iron Stomach icon it absorbed is bound to it (`art/catalog.json` iron-stomach, data_id steady); likewise Numb takes Scar Tissue's icon and Second Wind Used to the Pain's.
+
+| id | skill | what it must show | direction |
+| --- | --- | --- | --- |
+| `point_man` | Guts | Wick at the front of a file, a hand raised: the others hold behind him | one figure forward, two smaller outlines close behind; reads as "stand with me" |
+| `unflinching` | Guts | Wick taking a swing without blinking, Momentum's ring on him | a blade glancing off at the last moment; his eyes open |
+| `marrow_talk` | Intimidation | Wick leaning over a table, one finger on a bone | a soup bowl and a bone: the Papa's menace, courteous |
+| `stare_down` | Intimidation | Wick's stare across a room; the other figure frozen mid-step | two figures, a line of tension between the eyes |
+| `still_standing` | Pain Threshold | Wick on one knee, already rising, one hand on the ground | the last breath before the fall: grit, not glory |
+| `close_guard` | Pain Threshold | Wick's plated arm across a smaller figure beside him | the blow lands on his plates, not on the friend |
+| `read_the_air` | Senses | Wick close to someone, eyes on a bead of sweat at their temple | intimate distance, one detail picked out |
+| `tremor` | Senses | Wick's palm flat on the ground, lines of vibration coming in | the ground speaks first |
+| `untouchable` | Athletics | Wick leaning out of a blow's path, no armour, the blade passing through empty air | light, almost lazy; two ghost outlines of the swing |
+| `shoot_first` | Reaction Speed | Wick's pistol already up while the others are still turning | the first to move in a frozen room |
+| `cut_in` | Reaction Speed | Wick stepping across a speaker mid-sentence, one hand raised | a speech mark cut in half |
+| `speed_load` | Reaction Speed | Wick slapping a fresh magazine home, the empty one still falling | motion lines, one clean click |
+| verb `pressure.flush_out` (Dexterity 5) | Dexterity | a shot cracking past a crouched figure that bolts from cover | the Pressure door's verb set (`art/icons/moves/`, catalog `move-<id>`, as Slide) |
+| class moves `retort`, `reforge` (the Bulwark) | Durability | Retort: plates throwing a blow back; Reforge: a hammer on a plate | the move-icon set of the nine doors (`art/icons/moves/`, catalog `move-<id>`) |
 
 ### 2. Outburst feelings and modules
 

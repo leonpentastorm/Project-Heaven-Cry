@@ -67,17 +67,13 @@ describe('Lab Coat II out of a fight', () => {
   });
 });
 
-describe('Iron Stomach and Nothing Left to Fear in the story', () => {
-  it('Iron Stomach I: a story Fear ends at the next check; II: never lands, and fear-tagged checks pass', () => {
-    const s = storyWith([{ perks: { iron_stomach: 'I' } }]); const c = s.chars[0];
+describe('Steady and Nothing Left to Fear in the story', () => {
+  it('Steady II (Iron Stomach folded in, rules 1.73 item 5811): its one round is a fight rule; a story Fear still lands and stays to the scene end', () => {
+    const s = storyWith([{ perks: { steady: 'II' } }]); const c = s.chars[0];
     s.act({ type: 'narrator/turn', turn: { narration: 'A horror.', conditions: [{ target: c.id, id: 'fear' }] } } as any);
     expect(s.g.characters[c.id].persistentConds!.some((p) => p.id === 'fear')).toBe(true);
     storyCheck(s, c.id, ['athletics'], [], 10);
-    expect(s.g.characters[c.id].persistentConds!.some((p) => p.id === 'fear')).toBe(false);
-    const t = storyWith([{ perks: { iron_stomach: 'II' } }]); const d = t.chars[0];
-    t.act({ type: 'narrator/turn', turn: { narration: 'A horror.', conditions: [{ target: d.id, id: 'nausea' }] } } as any);
-    expect((t.g.characters[d.id].persistentConds || []).some((p) => p.id === 'nausea')).toBe(false);
-    expect(storyCheck(t, d.id, ['composure'], ['gore'], 1).roll!.ok).toBe(true);
+    expect(s.g.characters[c.id].persistentConds!.some((p) => p.id === 'fear')).toBe(true);
   });
   it('Nothing Left to Fear: a story Fear never lands; fear- or horror-tagged checks pass; an untagged one still rolls', () => {
     const s = storyWith([{ perks: { nothing_left_to_fear: 'mastered' } }]); const c = s.chars[0];
@@ -116,7 +112,7 @@ describe('Into the Dark, Shadow Step and Charge! on the area map', () => {
 });
 
 describe('Grim Reaper on the area map', () => {
-  it('a kill from the area map (the opening blow of the fight) counts', () => {
+  it('a kill from the area map (the opening blow of the fight) gives no AP any more (rules 1.73 item 5817: the AP rows cut)', () => {
     // truth pass 3: the expect below never ran (the opening shot missed with this seed and the test returned). The seed
     // is now searched for the first one whose opening shot kills the 1-HP drone, and the kill's AP is asserted.
     const once = (seed: number) => {
@@ -129,24 +125,24 @@ describe('Grim Reaper on the area map', () => {
     };
     let r = once(1); for (let seed = 2; !r.dead && seed < 80; seed++) r = once(seed);
     expect(r.dead).toBe(true);
-    expect(logHas(r.cb, /\+2 AP.*Grim Reaper|Grim Reaper.*\+2/)).toBe(true);
+    expect(logHas(r.cb, /\+2 AP.*Grim Reaper|Grim Reaper.*\+2/)).toBe(false);
   });
 });
 
 describe('triggers from an enemy, through the reducer', () => {
-  it('Used to the Pain: a hit from an enemy on its turn leaves the holder at +1 Pain (the trait\'s own log)', () => {
-    const f = fightWith([{ perks: { used_to_the_pain: 'I' } }], [{ at: 'C6', weapon: 'fists' }]);
-    const pc = f.pc, foe = f.foe; pc.pos = '5,5'; foe.pos = '6,5'; foe.attack = 60;
+  it('Grim Reaper (rules 1.73: Used to the Pain is removed): a Shaken enemy\'s hit on its turn costs the holder no Momentum (its own log)', () => {
+    const f = fightWith([{ perks: { grim_reaper: 'I' }, weapon: 'sabre' }], [{ at: 'C6', weapon: 'fists' }]);
+    const pc = f.pc, foe = f.foe; pc.pos = '5,5'; foe.pos = '6,5'; foe.attack = 60; pc.res = { ...(pc.res || {}), momentum: 2, guard: 0 }; pc.resMax = { ...(pc.resMax || {}), momentum: 3 };
+    foe.conds = { ...(foe.conds || {}), shaken: 3 } as any;
     const hp = pc.hp; enemyTurn(f, pc, foe);
-    expect(f.pc.hp).toBeLessThan(hp); expect(logHas(f.cb, /Used to the Pain/)).toBe(true);
+    expect(f.pc.hp).toBeLessThan(hp); expect(logHas(f.cb, /Grim Reaper/)).toBe(true); expect(f.pc.res!.momentum).toBe(2);
   });
-  it('Scar Tissue: each wound an enemy deals on its turn stacks the Elemental reduction (II: injury resistance too)', () => {
-    const f = fightWith([{ perks: { scar_tissue: 'II' } }], [{ at: 'C6', weapon: 'fists' }], { seed: 'SCAR' });
-    const pc = f.pc, foe = f.foe; pc.pos = '5,5'; foe.pos = '6,5'; foe.attack = 60; const ir = pc.injResist || 0;
-    enemyTurn(f, pc, foe);
-    const n = (f.pc.ps as any)['perk:scar_tissue']?.n || 0;
-    const st = (f.pc.ps as any)['perk:scar_tissue']; void ir;
-    expect(n).toBeGreaterThan(0); expect(f.pc.injResist).toBe(st.base + 5 * n);
+  it('Close Guard (rules 1.73: Scar Tissue is removed): an enemy\'s blow on its turn on an ally beside the holder comes partly to the holder', () => {
+    const f = fightWith([{ perks: { close_guard: 'I' }, skills: { durability: 3 } }, {}], [{ at: 'C6', weapon: 'maul' }]);
+    const [tank, mate] = f.pcs, foe = f.foe; tank.pos = '4,5'; mate.pos = '5,5'; foe.pos = '6,5'; foe.attack = 60; tank.res = { ...(tank.res || {}), guard: 3 };
+    const tc: any = f.g.characters[tank.charId!]; tc.phys = { ...(tc.phys || {}), answers: ['close_guard'] }; // Interpose off: it would take the whole blow
+    const th = tank.hp; enemyTurn(f, mate, foe);
+    expect(logHas(f.cb, /Close Guard/)).toBe(true); expect(f.unit(tank.id).hp + (f.unit(tank.id).res?.guard ?? 0)).toBeLessThan(th + 3);
   });
   it('Rally Cry: an enemy Downs an ally on its turn; the others bank AP', () => {
     const f = fightWith([{ perks: { rally_cry: 'I' } }, {}], [{ at: 'C6', weapon: 'fists' }]);

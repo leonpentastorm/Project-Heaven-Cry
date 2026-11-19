@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import './helpers/yard16';
 import { actionsFor, previewDescriptor, sendDescriptor, previewAttack, resolveAttack, gearPreview, isCarriedModifier } from '../src';
-import { usable } from '../src/physical/core';
+import { usable, unitSkill } from '../src/physical/core';
 import { fightWith, withGame } from './helpers/perkfight';
 import { dice } from './golden/harness';
 import ITEMSJ from '../../../data/items.json';
@@ -41,7 +41,9 @@ describe('P15: the family is what the hands hold (rules 1.56)', () => {
   });
   it('the leak is closed: the emanator gauntlet (a focus), a gun in the other hand: no Flurry, Trip or Grapple, no form chips', () => {
     const a = monk({ weapon: 'emanator_gauntlet' }), ha = ids(a.f, a.u);
-    for (const t of ['flurry', 'trip', 'grapple']) expect(ha).not.toContain('tq:main:' + t);
+    for (const t of ['flurry', 'trip']) expect(ha).not.toContain('tq:main:' + t);
+    // rules 1.73 item 5802: Grapple is Raw Power 2's with any melee weapon in the main hand, not the family's
+    expect(ha.includes('tq:main:grapple')).toBe(withGame(a.f.g, () => unitSkill(a.u, 'raw_power')) >= 2);
     const b = monk({ weapon: 'service_pistol', offHand: 'hand_wraps' }), hb = ids(b.f, b.u);
     for (const t of ['flurry', 'trip', 'grapple']) { expect(hb).not.toContain('tq:main:' + t); expect(hb).not.toContain('tq:off:' + t); }
     const shot = actionsFor(b.f.g, b.u.id, 'host').find((d) => d.toggleOn === 'combat/attack')!;

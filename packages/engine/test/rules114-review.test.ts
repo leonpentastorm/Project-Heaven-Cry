@@ -122,19 +122,19 @@ describe('the AP perks\' cooldown holds through real turns', () => {
 
 // ============================================================================================ the cards, checked again
 describe('the cards say what the game does', () => {
-  it('Grim Reaper II: the Fear comes with a kill on your own turn, every time, and the card says so', () => {
-    expect(perkOf('grim_reaper').tiers.II.text).toMatch(/on your own turn, you gain 2 AP\. Once every 3 turns\. Each time you do, every enemy who sees it makes a Heart save/);
+  it('Grim Reaper II: the Fear comes with a kill on your own turn, every time, and the card says so (rules 1.73 item 5817: no AP)', () => {
+    expect(perkOf('grim_reaper').tiers.II.text).toMatch(/When you drop an enemy on your own turn, every enemy within \d+ tiles that sees it makes a Heart save or is Afraid of you/);
     expect(perkOf('grim_reaper').text).not.toMatch(/a kill of yours/);
     const f = fightWith([{ perks: { grim_reaper: 'II' }, skills: { intimidation: 10 } }], [{ at: 'F4', classic: true }, { at: 'F5', classic: true }, { at: 'F6', classic: true }]); open(f.cb);
     f.turn(f.pc); f.pc.attack = 60; f.pc.ammo = 9;
     for (const v of f.foes) v.sv = { body: -50, brain: -50, heart: -50 } as any;
     const [a, b, c] = f.foes; a.hp = 1; b.hp = 1;
     f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: a.id, mode: 'shot' } as any);
-    f.unit(c.id).conds = {};
-    f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: b.id, mode: 'shot' } as any); // the second kill: no AP (the cooldown), the Fear all the same
+    f.unit(c.id).conds = {}; f.unit(c.id).pos = '12,4'; // rules 1.73 item 5817: within the card's reach of the kill
+    f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: b.id, mode: 'shot' } as any); // the second kill: the Fear all the same
     expect(f.unit(a.id).dead && f.unit(b.id).dead).toBe(true);
     expect(condOn(f.unit(c.id), 'fear')).toBe(true);
-    expect(f.cb.log.filter((l) => /\+2 AP \(Grim Reaper\)/.test(l)).length).toBe(1);
+    expect(f.cb.log.filter((l) => /\+2 AP \(Grim Reaper\)/.test(l)).length).toBe(0);
   });
   it('The Name They Whisper: a hybrid card names the judgement that is left (who is a stranger)', () => {
     expect(perkOf('the_name_they_whisper').adjudication).toBe('hybrid');
