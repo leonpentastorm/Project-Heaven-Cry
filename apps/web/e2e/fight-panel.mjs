@@ -11,6 +11,8 @@
 //   - the hovered tile does not cover its neighbour's effects (no lift of the whole tile)
 // Screenshots: .check/e2e/shots/fight-panel/ (before any fold change, and with everything opened), at both sizes.
 import { chromium, click, BASE, OUT, settle, player, hostAs, lockIn } from './lib.mjs';
+import { readFileSync } from 'node:fs';
+const FADE_SHADOW = JSON.parse(readFileSync(new URL('../../../data/shadow.json', import.meta.url), 'utf8')).items.find((x) => x.id === 'shadow.fade').effects[0].res.shadow; // rules 1.74 item 6011
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 
@@ -171,11 +173,12 @@ for (const [vw, vh] of (process.env.FP_NARR ? [] : [[1280, 720], [1600, 900]])) 
 
   // ---- U4: Hidden is HELPING, under HP ----
   await act(p, { type: 'sandbox/class', charId: cid, classId: 'infiltrator', rank: 3 });
-  await act(p, { type: 'sandbox/skill', charId: cid, skill: 'ingenuity', points: 7 }); // (Vanish: Fade for no Shadow, as in shadow.mjs)
+  await act(p, { type: 'sandbox/skill', charId: cid, skill: 'ingenuity', points: 7 }); // (rules 1.74 item 6011: Vanish no longer makes Fade free: its Shadow is set by hand below, as in shadow.mjs)
   await act(p, { type: 'combat/end-turn', unitId: u.id }); await toMe(p); await settle(p, 500); await dismissCut(p, vw, vh);
   u = await meU(p);
   const tabShadow = p.locator('#phc-tab-shadow');
   if (await tabShadow.count()) {
+    await p.evaluate(([id, n]) => { const cb = window.__phc.getState().game.combat; const x = cb.units.find((v) => v.id === id); (x.res ||= {}).shadow = n; }, [u.id, FADE_SHADOW]); // Fade's Shadow, from data
     await tabShadow.click(); await settle(p, 250);
     const fade = p.locator('[role="tabpanel"] button', { hasText: /^Fade/ }).first();
     if (await fade.count()) { await fade.click(); await settle(p, 250); const c = p.getByRole('button', { name: /^Confirm/ }).first(); if (await c.isEnabled().catch(() => false)) { await c.click(); await settle(p, 600); } }
