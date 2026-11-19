@@ -48,7 +48,7 @@ describe('rules item 5521: the alarm', () => {
     const d0 = near();
     // the squad holds still: end its turns; the foes have theirs
     for (let k = 0; k < 2 && g.combat && !g.combat.over && !g.combat.field; k++) g = apply(g, { type: 'combat/end-turn', unitId: pcId } as any, ownerOf(0));
-    if (!g.combat || g.combat.field || g.combat.over) return; // (they came and it was settled)
+    expect(!!g.combat && !g.combat.field && !g.combat.over, 'the fight is still on after two of the squad turns (the closing in can be measured)').toBe(true);
     const d1 = near();
     expect(Math.max(...d1)).toBeLessThan(Math.max(...d0)); // the farthest group closes in
   });

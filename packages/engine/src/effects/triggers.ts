@@ -23,7 +23,7 @@ import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, t
 import { holds, FOCUS_DOORS, handProps, gearAt, kindOfDoor, FOCUS_IDS } from '../character';
 import { applyDamage } from './damage';
 import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
-import { say, dist, displace, emitFx, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile, strikeRider } from '../combat';
+import { say, dist, displace, emitFx, fxFell, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile, strikeRider } from '../combat';
 import { WEAPON, SKILL } from '../data';
 import { magsOf, type PackItem } from '../character';
 import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
@@ -451,7 +451,7 @@ O('deal', ANY, true, ['amount', 'via', 'nonlethal', 'by'], 'deal an amount block
   // (an owned unit's owner); a row with no `say` of its own says the blow in a line
   if (r && !ev.preview && !r.prevented) {
     const dmg = r.downedHit ? 0 : r.amount, dropped = r.downedHit ? !!t.dead : t.hp === 0;
-    if (dmg > 0 || r.downedHit) { emitFx(ev.cb, 'hurt', { ...(from ? { unit: from.id } : {}), target: t.id, at: t.pos, dmg, why: 'item', killed: dropped }); if (dropped) emitFx(ev.cb, 'down', { unit: t.id, at: t.pos, dead: !!t.dead }); }
+    if (dmg > 0 || r.downedHit) { emitFx(ev.cb, 'hurt', { target: t.id, at: t.pos, dmg, why: type, killed: dropped, ...(from ? { by: from.id } : {}) }); if (dropped) fxFell(ev.cb, t); }
     if (!e.say && dmg > 0) say(ev.cb, label + ': ' + dmg + ' damage to ' + t.name + (t.hp === 0 ? (t.side === 'foe' ? ', down for good' : ', Downed') : '') + '.');
   }
   return ': ' + sent; // what reached the target, for a `say` with {then}

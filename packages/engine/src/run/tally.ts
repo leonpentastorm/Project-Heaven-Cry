@@ -11,14 +11,14 @@
 //     1.66 a weapon hit's `absorbed`, its armour and shield), not what was given. A stim's heal (`stim`) counts.
 //   - A `hurt` or a `heal` mostly carries no source: it is credited to the unit whose `turn` is open (the actor); damage
 //     or healing made while a foe's turn is open (a reaction, a bleed) is the fight's `other`, and a heal that no effect
-//     reports (the perk `mend` op, a Bond) is missing from `healed`. Since 0.31.12 an item's `deal` names its dealer
-//     (`unit`), and an owned unit's blows and kills (a Figment's) are its owner's.
+//     reports (the perk `mend` op, a Bond) is missing from `healed`. Since 0.31.12 a `hurt` that names its dealer
+//     (`by`: an item's `deal`, a weapon's), and an owned unit's blows and kills (a Figment's) are its owner's.
 import { fxTaps } from '../fxtap';
 import type { Combat, Unit } from '../combat';
 import { ownerOf } from '../owned';
 
 /** One event of the tape: the fields the tally reads, copied when the effect was emitted. */
-export interface TapeEv { k: string; unit?: string; target?: string; dmg?: number; hit?: boolean; amount?: number; absorbed?: number; heal?: number; dead?: boolean; surrendered?: boolean; object?: boolean }
+export interface TapeEv { k: string; unit?: string; target?: string; by?: string; dmg?: number; hit?: boolean; amount?: number; absorbed?: number; heal?: number; dead?: boolean; surrendered?: boolean; object?: boolean }
 /** What one character did in one fight (rules 1.47). `shots`/`hits`: weapon attacks made and landed (a Burst's rounds
  * count each); `absorbed`: damage its shield and armour soaked; `deaths`: Downs that were deaths. */
 export interface TallyRow { name: string; dealt: number; taken: number; healed: number; absorbed: number; kills: number; downs: number; deaths: number; shots: number; hits: number }
@@ -29,7 +29,7 @@ const KINDS = new Set(['turn', 'shot', 'melee', 'hurt', 'heal', 'leech', 'shield
 /** The few fields the tally reads, of one effect. */
 function slim(ev: { k: string; [x: string]: any }): TapeEv {
   const e: TapeEv = { k: ev.k };
-  for (const f of ['unit', 'target'] as const) if (typeof ev[f] === 'string') e[f] = ev[f];
+  for (const f of ['unit', 'target', 'by'] as const) if (typeof ev[f] === 'string') e[f] = ev[f];
   if (typeof ev.dmg === 'number') e.dmg = ev.dmg;
   if (typeof ev.amount === 'number') e.amount = ev.amount;
   if (typeof ev.absorbed === 'number') e.absorbed = ev.absorbed;
@@ -75,7 +75,7 @@ export function fightTally(tape: TapeEv[], units: Pick<Unit, 'id' | 'side' | 'na
       const me = row(e.unit); if (me) { me.shots++; if (e.hit) me.hits++; }
       damage(e.unit, e.target, e.hit ? e.dmg || 0 : 0);
       if (e.hit && e.absorbed) { const r = row(e.target); if (r) r.absorbed += e.absorbed; } // rules 1.66: armour and shield on a weapon hit
-    } else if (e.k === 'hurt') damage(e.unit || actor, e.target, e.dmg || 0); // an item's blow names its dealer (0.31.12); else the open turn's
+    } else if (e.k === 'hurt') damage(e.by || actor, e.target, e.dmg || 0); // a blow that names its dealer (`by`: an item's deal, a weapon's hurt); else the open turn's
     else if (e.k === 'heal' || e.k === 'leech') {
       const n = e.amount || 0, to = e.k === 'heal' ? e.target : e.unit, by = e.k === 'leech' ? e.unit : actor;
       if (side.get(to || '') !== 'pc') continue;

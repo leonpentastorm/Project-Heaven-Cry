@@ -135,24 +135,28 @@ describe('row 7: the Break toggle is never shown on when it can\'t be used', () 
   });
 });
 
-import { figFight } from './helpers/figfight';
-import { makeFigment } from '../src/figments';
-import { fightTally } from '../src';
+import { chooseNode, upTurn } from './helpers/survival';
 describe('row 8: a Figment\'s damage and kills are its owner\'s, and Volatile\'s blast is in the log', () => {
-  it('a Volatile Figment destroyed by a foe bursts on the foe beside it: logged, and the tally credits the owner', () => {
-    const f = figFight([{ skills: { visualization: 5 }, level: 5 }], [{ at: '12,8' }]);
-    const owner = f.pcs[0]; owner.pos = '3,5'; f.cb.tape = [];
-    const fig: any = withGame(f.g, () => makeFigment(f.cb, f.g.rng as any, owner, 'beast', ['volatile'], '4,5', { charge: 1 }));
-    expect(typeof fig).not.toBe('string');
-    const foe = f.foe; foe.pos = '5,5'; foe.hp = 5; foe.armour = 0; fig.hp = 1;
-    rig({ hit: true, die: 12 }); f.turn(foe);
-    const log0 = f.cb.log.length;
-    withGame(f.g, () => resolveAttack(f.cb, f.g.rng, foe, fig, 'melee', null, { noAp: true })); rig(null);
+  it('in a Survival fight a Volatile Figment pictured through the reducer is destroyed by a foe and bursts: logged, and the run\'s kept tally credits the owner', () => {
+    let g: any = startRun(survivalRoom('PHC-R8', [{ build: 'plain_gun', level: 1 }], { test: true }), 'PHC-R8');
+    const c = g.characters.c1; c.skills.visualization = 5; c.weapon = 'service_pistol'; c.offHand = { id: 'visualizer' };
+    c.pack = [...(c.pack || []), { id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: 3, kind: 'ammo' }];
+    g = apply(g, { type: 'figments/design', charId: 'c1', design: { id: 'v', name: 'Bomb', form: 'double', traits: ['volatile'] } } as any, 'host');
+    g = apply(g, { type: 'run/move', node: chooseNode(g, ['fight'])!.id } as any, 'host');
+    const pc = g.combat.units.find((u: any) => u.charId === 'c1'), picture = (tile: string) => apply(g, { type: 'combat/perk', unitId: pc.id, id: 'verb:picture', choice: 'd:v', tile } as any, 'host');
+    g = picture('2,7'); // the first act is contact (rules 1.64 item 5011): the fight is joined, the picture waits for the turn
+    g = upTurn(g, pc.id); g = picture('2,7');
+    const fig = g.combat.units.find((u: any) => u.owned?.kind === 'figment'); expect(fig?.ctrl).toBe('c1');
+    const [fx, fy] = fig.pos.split(',').map(Number), foe = g.combat.units.find((u: any) => u.side === 'foe' && !u.dead);
+    foe.pos = (fx + 1) + ',' + fy; foe.hp = 5; foe.armour = 0; fig.hp = 1; g.combat.turn = g.combat.order.indexOf(foe.id);
+    const log0 = g.combat.log.length;
+    rig({ hit: true, die: 12 }); withGame(g, () => resolveAttack(g.combat, g.rng, foe, fig, 'melee', null, { noAp: true })); rig(null); // the foe's blow (what its AI turn calls)
     expect(fig.hp).toBe(0); expect(foe.hp).toBe(0);
-    const lines = f.cb.log.slice(log0).join(' | ');
+    const lines = g.combat.log.slice(log0).join(' | ');
     expect(lines).toContain('Volatile: '); expect(lines).toContain('damage to ' + foe.name);
-    const t = fightTally(f.cb.tape as any, f.cb.units, f.cb.round, f.cb);
-    expect(t.chars[owner.charId!].dealt).toBeGreaterThan(0); expect(t.chars[owner.charId!].kills).toBe(1);
+    g = apply(g, { type: 'run/skip' } as any, 'host'); // the fight ends through the reducer: runFightOver keeps the tally
+    const t = g.run.stats.fights.at(-1).tally;
+    expect(t.chars.c1.dealt).toBeGreaterThan(0); expect(t.chars.c1.kills).toBeGreaterThanOrEqual(1);
     expect(t.other.dealt).toBe(0);
   });
 });

@@ -30,7 +30,7 @@ describe('the fight tally equals the effects it was made from', () => {
         const blow = e.k === 'shot' || e.k === 'melee' ? (e.hit ? e.dmg || 0 : 0) : e.k === 'hurt' ? e.dmg || 0 : 0;
         if ((e.k === 'shot' || e.k === 'melee') && e.unit && !e.object && ids.includes(e.unit)) { shots[e.unit] = (shots[e.unit] || 0) + 1; if (e.hit) hits[e.unit] = (hits[e.unit] || 0) + 1; }
         if (ids.includes(e.target)) taken[e.target] = (taken[e.target] || 0) + blow;
-        if (foe(e.target) && blow > 0) { const by = e.k === 'hurt' ? actor : e.unit; if (ids.includes(by)) dealt[by] = (dealt[by] || 0) + blow; else other += blow; }
+        if (foe(e.target) && blow > 0) { const by = e.k === 'hurt' ? e.by || actor : e.unit; if (ids.includes(by)) dealt[by] = (dealt[by] || 0) + blow; else other += blow; }
       }
       expect(Object.values(t.chars).reduce((n, c) => n + c.dealt, 0) + t.other.dealt).toBe(Object.values(dealt).reduce((n, v) => n + v, 0) + other);
       for (const [cid, row] of Object.entries(t.chars)) {
