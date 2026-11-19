@@ -1402,6 +1402,8 @@ c4911c66a238d11eca0128f58602af33ad68c4c85f1815a3cb2189ce1a88763a  art/_archive/g
 367d8d952fb9b987b1df1e166e168c9bf94258aef3f3fd8d50379626598e0283  art/_archive/gear/2026-11-19-melee-armour/technical-exports/v1-before-border-guard/64/shield-spiked_buckler.png
 9d8273cba84b696fb07affd2ce7b08a17fcc53105ca9c89610396333a3f13a17  art/_archive/gear/2026-11-19-melee-armour/web-build-check.json
 e19ebda9d64c0b3aabf38ada8c4bb1ed549d084efd6e077e159e7b3e266f94e9  art/_archive/gear/2026-11-19-melee-armour/weighted-gloves-reference-error.json
+85320725b8a7effa21e086fb8a68cdcf256870402d258a2498c13ad0990d0b82  art/_archive/gear/2026-11-19-repaint-continuation/HANDOFF.md
+e0c1c96b4b0f00c780e509e37b775aea3126b99019626f14e253926a65d6f208  art/_archive/gear/2026-11-19-repaint-continuation/claim.json
 8b257cb2e0ca18d4620a9c101f55520211333ff60b53157b49c50dab52ba6cd2  art/_archive/icons/perks/2026-11-12/both-hands.png
 bee60137688c6ac3615d3935ce9aadbb1937bc223cbcb791fa92572044cf2380  art/_archive/icons/perks/2026-11-12/exports/128/both-hands.png
 97cd6b0da1b3ba216fd374b114e5c0d403031407319cf465fc28e3ca1b39e4f6  art/_archive/icons/perks/2026-11-12/exports/256/both-hands.png
@@ -4656,6 +4658,7 @@ c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/briefs/pro
 d35c91984152452f0484e327db6e6dadf34deaeab105bddf9b0dc9e4601323dd  art/briefs/prompts-2026-11-19/09-heavy-and-strange.md
 4b6b1ef35939c18621e7e723a61d6f2fd78001a0352a060aa76f70b94e3ced56  art/briefs/prompts-2026-11-19/10-rifle-analogues.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/briefs/prompts-2026-11-19/README.md
+85320725b8a7effa21e086fb8a68cdcf256870402d258a2498c13ad0990d0b82  art/briefs/prompts-2026-11-19/WORK-CLAIMS.md
 f6f2606114fcf8dc1cc8f542b552748665e7aa25580ba9b66917e94fd647c44b  art/briefs/title-screen.md
 dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/title-screen/gaze-guide.jpg
 621ac2546d6520ab704ab84af7429b5f30c32309707fbe3d59ea7e5dec0bd0e5  art/briefs/title-screen/ref-spellsword-soul.webp

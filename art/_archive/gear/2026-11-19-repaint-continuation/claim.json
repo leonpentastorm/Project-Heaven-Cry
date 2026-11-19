@@ -1,0 +1,65 @@
+{
+  "updated_utc": "2026-11-19T06:21:23.048408+00:00",
+  "branch": "art/2026-11-19-repaint-continuation",
+  "scope": "File10 section1 unfinished Standard reference repaints ONLY",
+  "ids": [
+    "hellraiser_service_rifle",
+    "decrkm_smg",
+    "legion_pdw",
+    "mandestra_drum_gun",
+    "long_rifle",
+    "blackpoint_700",
+    "ccec_marksman_rifle",
+    "adamantile_battle_rifle",
+    "hellraiser_lmg",
+    "lumeri_scattergun",
+    "brigade_auto_shotgun",
+    "smetanita_thumper",
+    "breacher_tube",
+    "frontier_hand_cannon"
+  ],
+  "paths": [
+    "art/icons/gear/weapon-hellraiser_service_rifle.png",
+    "art/icons/gear/weapon-decrkm_smg.png",
+    "art/icons/gear/weapon-legion_pdw.png",
+    "art/icons/gear/weapon-mandestra_drum_gun.png",
+    "art/icons/gear/weapon-long_rifle.png",
+    "art/icons/gear/weapon-blackpoint_700.png",
+    "art/icons/gear/weapon-ccec_marksman_rifle.png",
+    "art/icons/gear/weapon-adamantile_battle_rifle.png",
+    "art/icons/gear/weapon-hellraiser_lmg.png",
+    "art/icons/gear/weapon-lumeri_scattergun.png",
+    "art/icons/gear/weapon-brigade_auto_shotgun.png",
+    "art/icons/gear/weapon-smetanita_thumper.png",
+    "art/icons/gear/weapon-breacher_tube.png",
+    "art/icons/gear/weapon-frontier_hand_cannon.png"
+  ],
+  "already_delivered_do_not_redraw": [
+    "service_pistol",
+    "magistrate_pistol",
+    "decrkm_autopistol"
+  ],
+  "claimed_count": 14,
+  "other_instance_reserved": [
+    "01",
+    "02",
+    "03",
+    "04",
+    "08"
+  ],
+  "free_for_other_agents": [
+    "06 remaining14",
+    "09 remaining8",
+    "10 section2 new maker-line forms15"
+  ],
+  "checked_refs": {
+    "origin/develop": "2020b5c2aa620ec17103b7c11669f643342ed68f",
+    "origin/art/prompt-pack-01-04-2026-11-19": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "origin/art/2026-11-19-grade-proof": "450a9c19e4e7cbd8f35eda62fe052e10fdb21477",
+    "origin/art/2026-11-19-gun-forms": "98fe25991944944c7261a29a11428f9e5e9e6d2d",
+    "origin/art/2026-11-19-heavy-and-strange": "c51fe4cc33b0dab7aaa5e47350ded60003e57871",
+    "origin/art/2026-11-19-reference-repaints": "95ea51f3e2d1e2a5ff8f966c37ed35ae4f77645a",
+    "origin/art/2026-11-19-melee-armour": "fb99282187819f5fedf48705ac2f8d4512d52337"
+  },
+  "status": "claimed-before-drawing"
+}
