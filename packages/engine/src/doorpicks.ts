@@ -32,14 +32,14 @@ export const doorPicksOf = (c: Character | null | undefined, door: string): stri
 export const doorKeptOf = (c: Character | null | undefined, door: string): string[] => [...((c as any)?.doorKept?.[door] || [])];
 
 /** A grant still open: its options not yet taken, and how many picks are left of it. */
-export interface DoorPending { door: string; grant: string; left: number; options: DoorOption[]; why: string }
+export interface DoorPending { door: string; /** the door's own name (its registration's), for a screen to print */ name: string; grant: string; left: number; options: DoorOption[]; why: string }
 /** The grants of this door with picks left, in order. Each taken option counts against the first grant (in order)
  * that offers it and still has room; a taken option no grant offers counts against none. */
 export function pendingDoorPicks(c: Character, door: string): DoorPending[] {
   const src = DOORS[door]; if (!src) return [];
   const grants = src.grants(c).map((g) => ({ ...g, used: 0 })), picked = doorPicksOf(c, door), taken = [...picked, ...doorKeptOf(c, door)];
   for (const t of picked) { const g = grants.find((x) => x.of.includes(t) && x.used < x.n); if (g) g.used++; }
-  return grants.filter((g) => g.used < g.n).map((g) => ({ door, grant: g.id, left: g.n - g.used, why: g.why,
+  return grants.filter((g) => g.used < g.n).map((g) => ({ door, name: src.name, grant: g.id, left: g.n - g.used, why: g.why,
     options: g.of.filter((o) => !taken.includes(o)).map((o) => src.option(o)).filter((o): o is DoorOption => !!o) }))
     .filter((p) => p.options.length > 0);
 }

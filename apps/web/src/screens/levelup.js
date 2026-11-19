@@ -208,7 +208,7 @@ export class LevelUpLogic extends DCLogic {
       ...(choosing ? [{ key: 'class', kind: 'class', text: 'Class' }] : []),
       ...D.skills.flatMap((s) => forkPend(s.id).map((f) => ({ key: 'fork:' + s.id + ':' + f.at, kind: 'fork', skill: s.id, at: f.at, text: 'Fork · ' + s.name }))),
       // rules 1.70 item 5541: a door's choice that is no fork step (Figment forms known: figment_forms), one chip a door
-      ...allPendingDoorPicks(c).filter((pd) => !String(pd.grant).startsWith('fork:')).map((pd) => ({ key: 'door:' + pd.door + ':' + pd.grant, kind: 'door', door: pd.door, pd, text: (pd.left > 1 ? pd.left + ' choices' : 'Choice') + ' · ' + (pd.door === 'figment_forms' ? 'Figment forms' : pd.door) })),
+      ...allPendingDoorPicks(c).filter((pd) => !String(pd.grant).startsWith('fork:')).map((pd) => ({ key: 'door:' + pd.door + ':' + pd.grant, kind: 'door', door: pd.door, pd, text: (pd.left > 1 ? pd.left + ' choices' : 'Choice') + ' · ' + (pd.name || pd.door) })), // the door's own name, from the pending pick (m5)
       // rules 1.70 item 5538: an old save's free re-pick of a skill's perk steps
       ...pendingRepicks(c).map((x) => ({ key: 'repick:' + x.skill, kind: 'repick', skill: x.skill, held: x.held, text: 'Re-pick · ' + nameOf(x.skill) })),
       ...pendingPerkSteps(c).map((x) => ({ key: 'perk:' + x.skill, kind: 'perk', skill: x.skill, text: (x.free > 1 ? x.free + ' perk steps' : 'Perk step') + ' · ' + nameOf(x.skill) })),
