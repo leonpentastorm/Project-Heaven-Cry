@@ -25,3 +25,17 @@ describe("grant_action tab (item 6501): the Tending verbs on Camaraderie's perks
     for (const name of ['Settle', 'Soothe', 'Tug', 'Guide']) { const d: any = rows.find((x: any) => x.name.startsWith(name)); expect(d, name).toBeTruthy(); expect(d.group, name).toBe('tend'); }
   });
 });
+
+describe('acted carries the Call id (item 6502): Read Intent reads a Spot from the action itself', () => {
+  it('a Spot on a foe Reads it; another Call at the same foe does not; Read Intent holds no mark on the price', () => {
+    const fx = (PERK as any).read_intent.tiers.I.effects; expect(fx.some((e: any) => e.op === 'mark')).toBe(false);
+    const call = (id: string) => {
+      const f = fightWith([{ skills: { vigilant: 10, intimidation: 5 }, perks: { read_intent: 'I' } }], [{ at: 'E6' }]);
+      const u = f.turn(f.pc); u.ap = 9; const n = f.cb.log.length;
+      f.act({ type: 'combat/call', unitId: u.id, id, targetId: f.foe.id } as any);
+      return { said: f.cb.log.length > n, read: condOn(f.foe, 'read') };
+    };
+    expect(call('call.spot')).toEqual({ said: true, read: true });
+    const other = call('call.threaten'); expect(other.said).toBe(true); expect(other.read).toBe(false);
+  });
+});

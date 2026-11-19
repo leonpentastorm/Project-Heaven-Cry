@@ -2782,10 +2782,11 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
  * through the price); range 4 + Analysis; line of sight; no roll. */
 export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'analyze', costOf('analyze', 'ap')).ap;
 /** THE door of the trigger `acted` (Classes 3.0 P2): a unit's own action succeeded. The reducer fires it once after each
- * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, tile, toggles, mode, ap, choice}
+ * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, id, tile, toggles, mode, ap, choice}
  * (choice, rules 1.33: the action's pick, as a felt feeling given by Inspire). */
-export function acted(cb: Combat, u: Unit, o: { action: string; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null }): void {
-  emit(cb, 'acted', { u, t: o.t || null, action: o.action, tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), cb });
+export function acted(cb: Combat, u: Unit, o: { action: string; id?: string | null; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null }): void {
+  // id (rules 1.77 item 6502): the action's own id when its name is a family (a Call: call.spot), read by `action_id`
+  emit(cb, 'acted', { u, t: o.t || null, action: o.action, ...(o.id ? { id: o.id } : {}), tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), cb });
 }
 /** How a unit's health reads on screen (rules 1.3; rules 1.55 item 29; `rules.json combat.health_look`): the one place
  * it is worked out. The squad's own and an Analyzed foe read exactly (`known`: the bar, `pct` 0 to 100, and the HP

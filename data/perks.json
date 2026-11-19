@@ -4188,31 +4188,8 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Your Spot also Reads its target: your side sees its next action until its turn ends. II: Your Spot also Reads its target, and a Spot on an enemy that can't see you gives {=tiers.II.effects.3.value} Shadow (once a turn).",
+      "text": "I: Your Spot also Reads its target: your side sees its next action until its turn ends. II: Your Spot also Reads its target, and a Spot on an enemy that can't see you gives {=tiers.II.effects.1.value} Shadow (once a turn).",
       "effects": [
-        {
-          "op": "mark",
-          "when": "cost",
-          "if": {
-            "action": [
-              "call"
-            ]
-          },
-          "flag": "spot",
-          "clear": true,
-          "priority": 10
-        },
-        {
-          "op": "mark",
-          "when": "cost",
-          "if": {
-            "action_id": [
-              "call.spot"
-            ]
-          },
-          "flag": "spot",
-          "priority": 20
-        },
         {
           "op": "condition",
           "when": "acted",
@@ -4220,7 +4197,9 @@
             "action": [
               "call"
             ],
-            "flag": "spot",
+            "action_id": [
+              "call.spot"
+            ],
             "target": "foe"
           },
           "condition": "read",
@@ -4243,36 +4222,15 @@
           "short": "Your Spot also Reads its target (its next action shown)",
           "effects": [
             {
-              "op": "mark",
-              "when": "cost",
-              "if": {
-                "action": [
-                  "call"
-                ]
-              },
-              "flag": "spot",
-              "clear": true,
-              "priority": 10
-            },
-            {
-              "op": "mark",
-              "when": "cost",
-              "if": {
-                "action_id": [
-                  "call.spot"
-                ]
-              },
-              "flag": "spot",
-              "priority": 20
-            },
-            {
               "op": "condition",
               "when": "acted",
               "if": {
                 "action": [
                   "call"
                 ],
-                "flag": "spot",
+                "action_id": [
+                  "call.spot"
+                ],
                 "target": "foe"
               },
               "condition": "read",
@@ -4291,32 +4249,9 @@
             }
           ],
           "ap_cost": null,
-          "text": "Your Spot also Reads its target, and a Spot on an enemy that can't see you gives {=tiers.II.effects.3.value} Shadow (once a turn).",
-          "short": "And a Spot on a foe that can't see you: +{=tiers.II.effects.3.value} Shadow",
+          "text": "Your Spot also Reads its target, and a Spot on an enemy that can't see you gives {=tiers.II.effects.1.value} Shadow (once a turn).",
+          "short": "And a Spot on a foe that can't see you: +{=tiers.II.effects.1.value} Shadow",
           "effects": [
-            {
-              "op": "mark",
-              "when": "cost",
-              "if": {
-                "action": [
-                  "call"
-                ]
-              },
-              "flag": "spot",
-              "clear": true,
-              "priority": 10
-            },
-            {
-              "op": "mark",
-              "when": "cost",
-              "if": {
-                "action_id": [
-                  "call.spot"
-                ]
-              },
-              "flag": "spot",
-              "priority": 20
-            },
             {
               "op": "condition",
               "when": "acted",
@@ -4324,7 +4259,9 @@
                 "action": [
                   "call"
                 ],
-                "flag": "spot",
+                "action_id": [
+                  "call.spot"
+                ],
                 "target": "foe"
               },
               "condition": "read",
@@ -4340,7 +4277,9 @@
                 "action": [
                   "call"
                 ],
-                "flag": "spot",
+                "action_id": [
+                  "call.spot"
+                ],
                 "target": "foe",
                 "target_sees_self": false
               },

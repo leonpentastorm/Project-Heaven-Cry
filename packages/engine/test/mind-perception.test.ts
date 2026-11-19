@@ -108,7 +108,7 @@ describe('Acuity: the perks (rules 1.74 items 6004, 6005)', () => {
 
 describe('Vigilance: Read Intent (rules 1.74 item 6009)', () => {
   it('II: a Spot on an enemy that cannot see you gives Shadow, once a turn; I gives none', () => {
-    const ri = (PERK.read_intent as any).tiers.II.effects[3];
+    const ri = (PERK.read_intent as any).tiers.II.effects[1]; // rules 1.77 item 6502: no marks on the price
     const spot = (tier: string) => {
       const f = fightWith([{ skills: { vigilant: 10 }, perks: { read_intent: tier } }], [{}, {}]); const [a, b] = f.foes; at(f, a, '6,4').vision = 1; at(f, b, '6,6').vision = 1;
       const u = f.turn(f.pc); at(f, u, '1,4'); setShadow(f, u, 0);

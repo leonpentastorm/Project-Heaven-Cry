@@ -13183,3 +13183,6 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
 6501. **A grant's tab** (`grant_action tab`: a door's tab, `shadow`, `tend` or `figments`): an item's action may sit on a
       door's tab instead of its item's (Perks, Class). The Tending verbs that moved onto Camaraderie's perks (rules 1.75
       item 6213: Raise, Settle, Soothe, Tug, Guide) carry `tab: tend` and show on the TEND tab again.
+6502. **`acted` carries the action's own id** when its name is a family (a Call: `call.spot`), so `action_id` reads it
+      on `acted` as on `cost`. Read Intent (rules 1.74 item 6009) reads "your Spot" from the action itself; its two
+      marks on the price (a flag set while prices were listed) are gone. Nothing a player sees changes.
