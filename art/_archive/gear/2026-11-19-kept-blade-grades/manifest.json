@@ -6360,6 +6360,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-combat_gloves--relic",
+      "path": "art/icons/gear/armour-combat_gloves--relic.png",
+      "sha256": "a790aa6f56a805c4911e5bed30784b027b77c36b00ae43049a657da8b0ce644a",
+      "label": "Combat Gloves — Relic",
+      "family": "armour-combat_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-combat_gloves--relic.png",
+        "sha256": "285df9dc499b0a39734a5020caff8b7e673bc046031bf2e1a4cd6f6694e48cf0"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-combat_gloves--relic.png",
+        "sha256": "a790aa6f56a805c4911e5bed30784b027b77c36b00ae43049a657da8b0ce644a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-combat_gloves--relic.txt",
+        "sha256": "08ef1a4508354a75a4764b47f47484f89d1f8e6629e744c974aae65c3ffdff11"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-combat_gloves--relic/v1/source.png",
+          "sha256": "3894c7196981148dbab801816e71d635b74d11c88097e734b6cca1be079a0b6b"
+        },
+        {
+          "path": "art/icons/gear/armour-combat_gloves.png",
+          "sha256": "66dc7cda8639e28a20fc66538026fe2eb4880e85be90e3508ed73d3671b57b25"
+        },
+        {
+          "path": "art/icons/gear/armour-combat_gloves--masterwork.png",
+          "sha256": "370cf94d1ebc9c5698a95f71d95f1769c6a2bf723381d71c3418ef078eb37fb4"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-combat_gloves--relic.png",
+        "128": "art/icons/gear/exports/128/armour-combat_gloves--relic.png",
+        "64": "art/icons/gear/exports/64/armour-combat_gloves--relic.png",
+        "32": "art/icons/gear/exports/32/armour-combat_gloves--relic.png"
+      },
+      "export_hashes": {
+        "256": "113664daf76acb5ce8e9fa42921c4517f6085e2ec346cc689a61caa5918790c2",
+        "128": "18487f28878e06935aa45d9fab7f11118d694dbb12cbe61f9dabe8837bddfbc7",
+        "64": "e9cd42a6d8a90b2979ff7e3c7309cfd55a161822cdee3294ee80bcd31e71190e",
+        "32": "36355cf66b8679c901a1ac7ddeb50342483114377f3bcf074d2965b7776737dd"
+      },
+      "grade": "relic",
+      "standard_id": "armour-combat_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9612236515681732,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 46
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
