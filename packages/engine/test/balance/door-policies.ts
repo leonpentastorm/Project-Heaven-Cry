@@ -39,7 +39,7 @@
 //               that is not Prone and not a Boss, when the AP still pays two plain blows after; Breath (1 AP) once a
 //               turn with an AP left that buys no blow. Never Jab, Palm or Snatch, never a Flurry with a form (the
 //               rules forbid it). (A first version put a form on every blow: 3% clears against 68% plain; a strawman.)
-import { previewPerkAction, previewAttack, techniquePad, TECHNIQUE, WEAPON, isMelee, dist, bindGame, paths, apForTiles, hideBlock, figmentsOf } from '../../src';
+import { previewPerkAction, previewAttack, previewTechnique, techniquePad, TECHNIQUE, WEAPON, isMelee, dist, bindGame, paths, apForTiles, hideBlock, figmentsOf, canStand, RULES } from '../../src';
 import { POLICIES, optimised, tank, gunner, prayer, plainCands, techCands, best, fixOrMove, type Policy, type Ctx, type Step } from './policies';
 import { sigilRun, outburstRun, rigger, tactical, withFallback, keepRange } from './run-policies';
 
@@ -74,7 +74,26 @@ export const bulwark: Policy = (x) => {
 };
 
 // ---------------------------------------------------------------------------------------------- Breaker
+/** 0.32 (Raw Power: Grapple at 2, Throw Down at 5; rules 1.73): with Momentum to spend, a foe it holds is thrown down
+ * (the Finisher, on a free tile beside it: the engine's preview picks the first it accepts); with 2 Momentum or more and
+ * the AP for the Grapple and the throw, a foe beside it that is not a Boss and is not held is Grappled (once a turn).
+ * Charge is never free since 0.32 (Rolling Start lost it): the optimised policy prices it as any technique. */
+const grappleThrow = (x: Ctx): Step | null => {
+  const u = x.u, mom = res(u, 'momentum'), max = u.resMax?.momentum ?? 0; if (!max) return null;
+  const tryT = (id: string, args: any) => { let pv: any; try { pv = W(x.g, () => previewTechnique(x.cb, u, id, args, x.g)); } catch { return null; } return pv?.ok && pv.ap <= u.ap ? { pv, step: ok(x, { action: { type: 'combat/technique', id, ...args }, kind: 'technique', label: TECHNIQUE[id]?.name || id }) } : null; };
+  const [ux, uy] = u.pos.split(',').map(Number), around = [-1, 0, 1].flatMap((dx) => [-1, 0, 1].map((dy) => (ux + dx) + ',' + (uy + dy))).filter((k) => k !== u.pos);
+  if (mom >= Math.min(3, max)) for (const t of x.foes) {
+    if (!t.conds?.grappled || dist(t.pos, u.pos) > 1) continue;
+    for (const k of around) { if (k !== t.pos && !W(x.g, () => canStand(x.cb, k, t))) continue; const r = tryT('throw_down', { targetId: t.id, tile: k }); if (r?.step) return r.step; }
+  }
+  if (mom >= 2 && once(x, 'grapple')) for (const t of x.foes) {
+    if (t.tier === 'boss' || t.conds?.grappled || dist(t.pos, u.pos) > 1) continue;
+    const r = tryT('grapple', { targetId: t.id }); if (r?.step && u.ap >= r.pv.ap + 2) return r.step;
+  }
+  return null;
+};
 export const breaker: Policy = (x) => {
+  { const g = grappleThrow(x); if (g) return g; }
   const mom = res(x.u, 'momentum'), max = x.u.resMax?.momentum ?? 0;
   if (!max || mom >= Math.min(3, max)) return optimised(x);
   // the chain first: the Finishers are left out until Momentum is 3 (or full)
@@ -91,28 +110,66 @@ export const skirmisher: Policy = (x) => {
   if (s && s.kind !== 'move') return s;
   const seen = x.foes.some((f) => W(x.g, () => previewAttack(x.cb, f, x.u, isMelee(WEAPON[f.weapon]) ? 'melee' : 'shot')).ok);
   if (x.u.ap >= 1 && seen && once(x, 'slide')) { const v = verb(x, 'verb:pressure.slide', 'slide'); if (v) return v; }
+  // 0.32 (Dexterity 5: Flush Out, 2 AP, a Pressed foe of Soldier tier or below saves or is Afraid): with the AP no shot
+  // pays for, once a turn, on the foe with the most Pressure
+  if (x.u.ap >= 2 && once(x, 'flush')) for (const t of [...x.foes].sort((a, b) => res(b, 'pressure') - res(a, 'pressure'))) { const v = verb(x, 'verb:pressure.flush_out', 'flush_out', { targetId: t.id }); if (v) return v; }
   return s;
 };
 
 // ---------------------------------------------------------------------------------------------- Operative
 const BREAK = ['skill:ingenuity.1#shadow.break'];
+/** The Operative's switches, measured (0.32 simulator lane): `breakAt` the Shadow it builds before a Break (capped by
+ * its meter's max; a Break that drops the foe is taken at any Shadow: a kill unseen is a Ghost Kill and +1 Shadow). */
+export const OP_STATS = { angleTry: 0, angleFound: 0 };
+export const OPERATIVE = { breakAt: Number(((globalThis as any).process?.env || {}).OP_BREAK_AT || 2) };
+/** The Operative (0.32 simulator lane; the 0.31.11 bot cleared stage 1 on 0 of 40 seeds: its turn logs showed it
+ * Breaking at 1 Shadow the turn it hid, missing half its Breaks at Dexterity 0 with a two-round pistol, and, seen with
+ * nothing to hide behind, reloading and shooting from where it stood):
+ *   Hidden: a Break that drops a foe is taken at once (Tag first when the AP pays both); else it builds Shadow to
+ *   OPERATIVE.breakAt (Stalk, once a turn; a turn ended Hidden; the cover-to-cover move is the engine's own) and then
+ *   Tags and Breaks on the foe that takes the most from it; with nothing to build (the meter full) it Breaks.
+ *   Seen: Fade (Ingenuity 5, 2 Shadow) when it has the Shadow; Hide where it stands when no foe sees it; else the
+ *   nearest tile within its AP no foe sees, walked to and hidden on; else (lit ground, no cover in reach) the gunner:
+ *   plain shooting, never standing still. Ghost Kill fires by itself. Never Lift, Decoy, Open Seam or Timing. */
 export const operative: Policy = (x) => {
   const u = x.u; if (!x.foes.length) return null;
-  const shotAp = (t: any) => W(x.g, () => previewAttack(x.cb, u, t, 'shot'));
+  const shotPv = (t: any) => W(x.g, () => previewAttack(x.cb, u, t, isMelee(WEAPON[u.weapon]) ? 'melee' : 'shot'));
+  const mode = isMelee(WEAPON[u.weapon]) ? 'melee' : 'shot';
   if (u.hidden) {
-    const sh = res(u, 'shadow'), tgts = x.foes.map((t) => ({ t, pv: shotAp(t) })).filter((q) => q.pv.ok).sort((a, b) => a.t.hp - b.t.hp);
+    const sh = res(u, 'shadow'), shMax = u.resMax?.shadow ?? sh;
+    const tgts = x.foes.map((t) => ({ t, pv: shotPv(t) })).filter((q) => q.pv.ok);
+    const SH: any = (RULES as any).shadow, mult = (t: any, n: number) => 1 + SH.per_point * n + SH.ambush_bonus + (t.conds?.marked ? SH.marked_bonus : 0); // the Break's multiplier (rules.json shadow), for the choice only
+    const breakOn = (q: any) => { if (!t0ok(q)) return null; return ok(x, { action: { type: 'combat/attack', targetId: q.t.id, mode, mods: BREAK }, kind: 'attack', label: 'Break' }); };
+    const t0ok = (q: any) => q && u.ap >= q.pv.ap;
+    const dmg = (q: any) => (q.pv.dmg ? Math.max(1, Math.floor(q.pv.dmg.total) - q.pv.dmg.armour) : 0);
     if (sh > 0 && tgts.length) {
-      const { t, pv } = tgts[0];
-      if (!t.conds?.marked && u.ap >= 1 + pv.ap && once(x, 'tag')) { const s = verb(x, 'verb:shadow.tag', 'tag', { targetId: t.id }); if (s) return s; }
-      const s = ok(x, { action: { type: 'combat/attack', targetId: t.id, mode: 'shot', mods: BREAK }, kind: 'attack', label: 'Break' }); if (s) return s;
+      const kill = tgts.filter((q) => dmg(q) * mult(q.t, sh) >= q.t.hp).sort((a, b) => b.pv.pct - a.pv.pct)[0];
+      const ready = sh >= Math.min(OPERATIVE.breakAt, shMax || 1) || x.cb.round >= 6;
+      const q = kill || (ready ? [...tgts].sort((a, b) => b.pv.pct * dmg(b) * mult(b.t, sh) - a.pv.pct * dmg(a) * mult(a.t, sh))[0] : null);
+      // a better angle first (once a turn): a tile it reaches with the Tag and the shot still paid, where no foe sees it
+      // and the shot is surer by a fifth (the foe's cover is the usual reason a Break missed)
+      if (q && x.memo.angle !== x.cb.round && q.pv.pct < 60) { OP_STATS.angleTry++;
+        x.memo.angle = x.cb.round;
+        const P = W(x.g, () => paths(x.cb, u.pos, u.id)), taken = new Set(x.cb.units.filter((v: any) => !v.dead && v.id !== u.id).map((v: any) => v.pos)), p0 = u.pos, a0 = u.ap;
+        const tiles = Object.entries(P.dist as Record<string, number>).filter(([k, n]) => n > 0 && !taken.has(k)).map(([k, n]) => ({ k, ap: apForTiles(n, u.bank || 0, u.movement) })).filter((v) => v.ap + q.pv.ap + 1 <= u.ap).sort((a, b) => a.ap - b.ap).slice(0, 60);
+        let bestT: any = null;
+        const h0 = u.hidden; for (const t of tiles) { u.pos = t.k; u.ap = a0 - t.ap; try { u.hidden = false; const blocked = W(x.g, () => hideBlock(x.cb, u)); u.hidden = h0; if (blocked) continue; const pv = shotPv(q.t); if (pv.ok && pv.pct >= q.pv.pct + 20 && (!bestT || pv.pct > bestT.pct)) bestT = { k: t.k, pct: pv.pct }; } finally { u.pos = p0; u.ap = a0; u.hidden = h0; } }
+        if (bestT) { OP_STATS.angleFound++; const s = ok(x, { action: { type: 'combat/move', to: bestT.k }, kind: 'move', label: 'a better angle, unseen' }); if (s) return s; }
+      }
+      if (q) {
+        if (!q.t.conds?.marked && u.ap >= 1 + q.pv.ap && once(x, 'tag')) { const s = verb(x, 'verb:shadow.tag', 'tag', { targetId: q.t.id }); if (s) return s; }
+        const s = breakOn(q); if (s) return s;
+      }
     }
-    if (sh === 0 && tgts.length && u.ap < 2 * (tgts[0]?.pv.ap || 2)) { // wait Hidden: Shadow at the turn's end; rules 1.76 item 6405: Stalk with the AP it has
+    if (tgts.length && sh < Math.max(1, shMax)) { // build: Stalk once a turn, then end the turn Hidden (+1)
       if (once(x, 'stalk')) { const s = verb(x, 'verb:shadow.stalk', 'stalk'); if (s) return s; }
       return null;
     }
+    if (!tgts.length) return gunner(x); // nothing in reach from here: walk (the gunner's walk)
     return gunner(x);
   }
-  // seen or in the open: Hide here, or walk to a tile no foe sees and Hide there
+  // seen: Fade, Hide here, or walk out of sight and Hide there; else shoot
+  if (res(u, 'shadow') >= 2 && once(x, 'fade')) { const s = verb(x, 'verb:shadow.fade', 'fade'); if (s) return s; }
   if (!W(x.g, () => hideBlock(x.cb, u))) { const s = ok(x, { action: { type: 'combat/hide' }, kind: 'setup', label: 'Hide' }); if (s) return s; }
   if (x.memo.hideWalk !== x.cb.round && u.ap >= 2) {
     x.memo.hideWalk = x.cb.round;
@@ -143,8 +200,10 @@ export const mender: Policy = (x) => {
   const hurt = [u, ...x.allies].filter((a) => a.downed || a.hp < a.maxHp * 0.6).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp);
   for (const a of hurt) {
     if (a.id === u.id) { const s = verb(x, 'verb:tend.mend_self', 'tend_mend_self'); if (s) return s; continue; }
-    if ((a.downed || a.hp < a.maxHp * 0.3) && dist(a.pos, u.pos) > 1 && once(x, 'tug:' + a.id)) { const s = verb(x, 'verb:tend.tug', 'tend_tug', { targetId: a.id }); if (s) return s; }
+    if ((a.downed || a.hp < a.maxHp * 0.3) && dist(a.pos, u.pos) > 1 && once(x, 'tug:' + a.id)) { const s = verb(x, 'perk:pull_together', 'tend_tug', { targetId: a.id }); if (s) return s; } // 0.32: Tug is Pull Together's (Camaraderie)
     const s = verb(x, 'verb:tend.mend', 'tend_mend', { targetId: a.id }); if (s) return s;
+    // 0.32 (Empathy 5: Shield): a Bonded ally it can't Mend this turn takes a shield (once a turn)
+    if (once(x, 'shield')) { const sh = verb(x, 'verb:tend.shield', 'tend_shield', { targetId: a.id }); if (sh) return sh; }
   }
   // Bonds: every ally, then the nearest foe that is not a machine
   for (const a of x.allies) if (once(x, 'bond:' + a.id) && x.memo['bonded:' + a.id] !== true) { const s = verb(x, 'verb:tend.bond', 'tend_bond', { targetId: a.id }); if (s) { x.memo['bonded:' + a.id] = true; return s; } }
@@ -158,7 +217,16 @@ export const mender: Policy = (x) => {
 // ---------------------------------------------------------------------------------------------- Chaplain
 export const chaplain: Policy = (x) => {
   if (x.c?.classId && once(x, 'canticle')) { const s = verb(x, 'class:guardian.canticle', 'canticle'); if (s) return s; }
+  // 0.32 (Faith 2: Name the Sinner, a Whisper that Judges; prayers deal more to a Judged foe): the nearest foe not yet
+  // Judged is named first, once a turn, when the AP still pays the Hymn after (3)
+  if (x.u.ap >= 4 && once(x, 'sinner')) for (const t of [...x.foes].filter((f) => !f.conds?.judged).sort((a, b) => dist(x.u.pos, a.pos) - dist(x.u.pos, b.pos))) { const s = verb(x, 'skill:faith.2', 'name_the_sinner', { targetId: t.id }); if (s) return s; }
   return prayer({ ...x, opts: { ...(x.opts || {}), hymn: 'damage', whisper: 'rebuke' } });
+};
+/** 0.32: the SPARING Chaplain. It prays only when it is needed: an Elite or a Boss in the fight, three foes or more, or
+ * someone of the party (itself included) under half its HP; else the gun (the gunner policy), the prayers kept. */
+export const chaplainSparing: Policy = (x) => {
+  const need = x.foes.some((f) => f.tier === 'elite' || f.tier === 'boss') || x.foes.length >= 3 || [x.u, ...x.allies].some((a) => a.hp < a.maxHp * 0.5);
+  return need ? chaplain(x) : gunner(x);
 };
 
 // ---------------------------------------------------------------------------------------------- the monk
@@ -185,7 +253,7 @@ export const monk: Policy = (x) => {
 
 // Every door's policy reloads tactically (rules 1.9: +1 AP, the magazine or speedloader kept in the pack), as a player
 // with a six-round revolver and few speedloaders does; refused (AP short), the speed reload.
-const T: Record<string, Policy> = { bulwark, breaker, skirmisher, operative, riggerRun, mender, chaplain, monk, sigilRunT: keepRange(sigilRun), outburstRunT: outburstRun };
+const T: Record<string, Policy> = { bulwark, breaker, skirmisher, operative, riggerRun, mender, chaplain, chaplainSparing, monk, sigilRunT: keepRange(sigilRun), outburstRunT: outburstRun };
 for (const [k, p] of Object.entries(T)) { const t = withFallback(tactical(p)); (t as any).after = (p as any).after; (POLICIES as any)[k] = t; }
 // the party fit's controls (party-fit.ts CONTROL) play the same sheet without its door, with the same dry-gun fallback
 Object.assign(POLICIES, { tankDry: withFallback(tactical(tank)), gunnerDry: withFallback(tactical(gunner)) });

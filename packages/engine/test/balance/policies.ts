@@ -36,7 +36,7 @@
 import {
   previewAttack, previewTechnique, techniquePad, paths, apForTiles, dist, alive, WEAPON, isMelee, bindGame,
   previewOutburst, previewPump, previewOutburstPlan, heartReach, planEvoke, glyphCost, glyphApOf, groundCap, canStand, dir8, SIGIL,
-  previewPrayer, patronOf, fulfilVow, WHISPERS, callPad, previewCall, lineOfSight, standable, TECHNIQUE, FEELING, weaponBraces,
+  previewPrayer, patronOf, fulfilVow, WHISPERS, callPad, previewCall, lineOfSight, standable, TECHNIQUE, FEELING, weaponBraces, coverBonus,
 } from '../../src';
 
 export type StepKind = 'attack' | 'technique' | 'move' | 'reload' | 'setup' | 'spell' | 'prayer' | 'call' | 'other';
@@ -282,12 +282,19 @@ export const sigil: Policy = (x) => {
     }
     return null;
   };
-  if (!o.along) { const ac = fitAcross(u.pos); if (ac && W(x.g, () => lineOfSight(x.cb, u.pos, tgt.pos))) { M.plan = { words: line.words, tiles: ac, i: 0, sid: null, est: line.est }; return sigil(x); } }
-  const here = fit(u.pos);
-  if (here && dist(u.pos, tgt.pos) <= range - 1 && W(x.g, () => lineOfSight(x.cb, u.pos, tgt.pos))) { M.plan = { words: line.words, tiles: here, i: 0, sid: null, est: line.est }; return sigil(x); }
-  { const inReach = dist(u.pos, tgt.pos) <= range - 1;
-    const s = moveTo(x, (k) => W(x.g, () => lineOfSight(x.cb, k, tgt.pos)), tgt, { pre: (k) => dist(k, tgt.pos) <= range - 1 && dist(k, tgt.pos) >= 3 && !!((!o.along && fitAcross(k)) || fit(k)), noClose: inReach });
-    if (s && M.roomMove !== x.cb.round) { M.roomMove = x.cb.round; return s; } }
+  // opts.noCover (the run's Sigil policy, 0.32 simulator lane; off for the contract and the golden tables): a SEEK bolt
+  // rolls against cover (rules 1.61 item 4960) from the Line's tiles, so a Line is only drawn where no tile of it gives
+  // the target cover; when none is in reach this turn, as before
+  const clear = (ts: string[] | null) => !!ts && (!o.noCover || ts.every((k) => !W(x.g, () => coverBonus(x.cb, k, tgt.pos))));
+  for (const pass of o.noCover ? [true, false] : [false]) {
+    const okT = (ts: string[] | null) => !!ts && (!pass || clear(ts));
+    if (!o.along) { const ac = fitAcross(u.pos); if (okT(ac) && W(x.g, () => lineOfSight(x.cb, u.pos, tgt.pos))) { M.plan = { words: line.words, tiles: ac, i: 0, sid: null, est: line.est }; return sigil(x); } }
+    const here = fit(u.pos);
+    if (okT(here) && dist(u.pos, tgt.pos) <= range - 1 && W(x.g, () => lineOfSight(x.cb, u.pos, tgt.pos))) { M.plan = { words: line.words, tiles: here, i: 0, sid: null, est: line.est }; return sigil(x); }
+    { const inReach = dist(u.pos, tgt.pos) <= range - 1;
+      const s = moveTo(x, (k) => W(x.g, () => lineOfSight(x.cb, k, tgt.pos)), tgt, { pre: (k) => dist(k, tgt.pos) <= range - 1 && dist(k, tgt.pos) >= 3 && (okT(!o.along ? fitAcross(k) : null) || okT(fit(k))), noClose: inReach || pass });
+      if (s && M.roomMove !== x.cb.round) { M.roomMove = x.cb.round; return s; } }
+  }
   return pistol();
 };
 /** Called by the runner after each action a Sigil policy took: the Line's progress. */

@@ -29,6 +29,10 @@ export const SQUADS: Record<string, string[]> = {
   healer: ['opt_gun', 'tank', 'mender', 'calls'], // a dedicated Soul healer in the caster's place
 };
 export const FIGHTS: Record<string, string[]> = { standard: ['soldier', 'soldier', 'soldier', 'elite'], elite: ['elite', 'elite', 'soldier', 'soldier'], boss: ['boss', 'soldier', 'soldier'] };
+/** 0.32: the rush, the standard fight's foes with blades (they cross a held line to strike: Reflex's Overwatch and a
+ * held line see them); a fight named here arms its foes with this weapon (the camp rack's free heavy blade). */
+FIGHTS.rush = FIGHTS.standard;
+export const FIGHT_ARMS: Record<string, string> = { rush: 'ork_machete' };
 /** Leon's targets (rules 1.15, "The fit"): rounds to win. */
 export const TARGET: Record<string, [number, number]> = { standard: [4, 6], elite: [6, 8], boss: [8, 10] };
 export interface FightRow { squad: string; fight: string; level: number; map: string; n: number; won: number; rounds: number; anyDown: number; downs: number; timeouts: number; errors: number; downBy: Record<string, number> }
@@ -170,7 +174,7 @@ export function reflexRow(level: number, variant: string, n: number, yard: numbe
     eff.value = on ? was : 0; let off = 0, taken = 0, turns = 0;
     try {
       for (let i = 0; i < n; i++) {
-        const r = runFight({ pcs: SQUADS.guns.map((b, k) => ({ build: b, variant: (k === 0 ? variant : 'normal') as any, level, ...(k === 0 ? { policy: 'watcher' } : {}) })), foes: FIGHTS[fight].map((t) => ({ tier: t })), map, seed: ['REFLEX', fight, level, map, i].join('-'), maxRounds: 12 });
+        const r = runFight({ pcs: SQUADS.guns.map((b, k) => ({ build: b, variant: (k === 0 ? variant : 'normal') as any, level, ...(k === 0 ? { policy: 'watcher' } : {}) })), foes: FIGHTS[fight].map((t) => ({ tier: t, ...(FIGHT_ARMS[fight] ? { weapon: FIGHT_ARMS[fight] } : {}) })), map, seed: ['REFLEX', fight, level, map, i].join('-'), maxRounds: 12 });
         errors += r.errors.length; const s = r.pcs[0]; off += s.offTurnDmg; taken += s.taken; turns += Math.max(1, s.turns);
       }
     } finally { eff.value = was; }

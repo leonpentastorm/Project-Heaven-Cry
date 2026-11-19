@@ -38,20 +38,68 @@ reg({ id: 'dex_knife', label: 'Dexterity knife', policy: 'breaker', weapon: 'com
 reg({ id: 'dex_monk', label: 'Dexterity monk', policy: 'monk', weapon: 'striking_gloves', ...DEX_MELEE, techniques: 'default',
   note: 'The All-in Deadeye sheet (Dexterity 7) with the striking gloves (the Open Hand): Pressure laid by its blows (rules 1.63). Class: Skirmisher.' });
 
-/** The all-in member of each door (survival-run.ts MEMBER rows). */
+// ---------------------------------------------------------------------------------------------- the 0.32 picks
+/** THE DOORS' PICKS (0.32 simulator lane): what a sensible player of each door takes on the 0.32 ladders, as data. The
+ * forks at 4 and 8 (data/forks.json ids; builds.ts takeForks takes a named fork first) and the perk steps in the door's
+ * beta and gamma skills (the four-perk lists of rules 1.73 to 1.75; builds.ts takePerks takes the first one offered of
+ * the list). Each door build is its base build with these picks (registered as door_<base>); the base builds, which the
+ * contract and the golden tables play, are not touched. Why each:
+ *   bulwark     Provoke (the first foe on the plates is Taunted: a solo tank wants the hits on its plates) then Drive
+ *               (Slam floors and gives plates back); Close Guard first (it left the door for Pain Threshold in 0.32: the
+ *               policy walks beside the lowest ally for it), then Second Wind.
+ *   breaker     Grindstone (a hit on a foe meleed last round builds Momentum: the chain on one target) then Spill (a
+ *               Finisher that drops a foe carries on); its base build's perks, Steady and Unflinching for the old ones.
+ *   skirmisher  Walk It In (a miss still presses) then Lockdown (a capped foe is Slowed); Roll With It.
+ *   operative   Light Fingers (the policy never Lifts, so either is free; Lend the Dark needs an ally) then Lightkiller
+ *               (Dimmed: foes must stand closer to see it); Got You in My Sight and Read Intent (Vigilant).
+ *   sigilist    Clean Vent (the Vent throws back the foes beside it: the policy's answer to blades) then Written in
+ *               Advance (a Line left over a turn hits harder: its Lines often are); its base build's perks.
+ *   rigger      Sharp Light (the strike policy) then Many Hands (one more held).
+ *   mender      Short Thread (Triage reaches further, the near Bond heals more) then Long Thread; Pull Together first
+ *               (0.32: Tug is a Camaraderie perk now, the healer build must buy it), then Steady Hands, Nobody Left Behind.
+ *   channeler   Slow Burn (Steady calms more: the heart at Strain limit 3) then Clean Break (a kill takes Strain off).
+ *   chaplain    Round of Blessings then Benediction (an answered Hymn: the party is surer to hit).
+ */
+export const DOOR_PICKS: Record<string, { base: string; forks: string[]; perks?: string[] }> = {
+  bulwark: { base: 'wall', forks: ['fork.guard.provoke', 'fork.guard.drive'], perks: ['close_guard', 'second_wind', 'numb', 'still_standing'] },
+  breaker: { base: 'opt_blade', forks: ['fork.momentum.grindstone', 'fork.momentum.spill'], perks: ['breaching_strike', 'iron_grip', 'steady', 'roll_with_it', 'unflinching'] },
+  skirmisher: { base: 'plain_gun', forks: ['fork.pressure.walk_it_in', 'fork.pressure.lockdown'], perks: ['roll_with_it', 'rounding_up'] },
+  operative: { base: 'phantom', forks: ['fork.shadow.light_fingers', 'fork.shadow.lightkiller'], perks: ['got_you_in_my_sight', 'read_intent'] },
+  sigilist: { base: 'sigil', forks: ['fork.sigil.clean_vent', 'fork.sigil.written_in_advance'] },
+  rigger: { base: 'rigger', forks: ['fork.figment.sharp_light', 'fork.figment.many_hands'] },
+  mender: { base: 'heartreader', forks: ['fork.tend.short_thread', 'fork.tend.long_thread'], perks: ['pull_together', 'steady_hands', 'nobody_left_behind', 'hand_off'] },
+  channeler: { base: 'outburst', forks: ['fork.soul.slow_burn', 'fork.soul.clean_break'] },
+  chaplain: { base: 'faith', forks: ['fork.prayer.round_of_blessings', 'fork.prayer.benediction'] },
+};
+for (const [door, p] of Object.entries(DOOR_PICKS)) { const b = BUILD[p.base]; reg({ ...b, id: 'door_' + p.base, label: b.label + ' (' + door + ', 0.32 picks)', forks: p.forks, ...(p.perks ? { perks: p.perks } : {}) }); }
+
+/** The all-in member of each door (survival-run.ts MEMBER rows). 0.32: each door's build carries its picks (DOOR_PICKS). */
 export const DOOR_MEMBERS: Record<string, any> = {
-  bulwark: { build: 'wall', variant: 'allin', level: 1, policy: 'bulwark' },
-  breaker: { build: 'opt_blade', variant: 'allin', level: 1, policy: 'breaker' },
-  skirmisher: { build: 'plain_gun', variant: 'allin', level: 1, policy: 'skirmisher' },
-  operative: { build: 'phantom', variant: 'allin', level: 1, policy: 'operative' },
-  sigilist: { build: 'sigil', variant: 'allin', level: 1, policy: 'sigilRunT' },
-  rigger: { build: 'rigger', variant: 'allin', level: 1, policy: 'riggerRun' },
-  mender: { build: 'heartreader', variant: 'allin', level: 1, policy: 'mender' },
-  channeler: { build: 'outburst', variant: 'allin', level: 1, policy: 'outburstRunT' },
-  chaplain: { build: 'faith', variant: 'allin', level: 1, policy: 'chaplain' },
+  bulwark: { build: 'door_wall', variant: 'allin', level: 1, policy: 'bulwark' },
+  breaker: { build: 'door_opt_blade', variant: 'allin', level: 1, policy: 'breaker' },
+  skirmisher: { build: 'door_plain_gun', variant: 'allin', level: 1, policy: 'skirmisher' },
+  operative: { build: 'door_phantom', variant: 'allin', level: 1, policy: 'operative' },
+  sigilist: { build: 'door_sigil', variant: 'allin', level: 1, policy: 'sigilRunT' },
+  rigger: { build: 'door_rigger', variant: 'allin', level: 1, policy: 'riggerRun' },
+  mender: { build: 'door_heartreader', variant: 'allin', level: 1, policy: 'mender' },
+  channeler: { build: 'door_outburst', variant: 'allin', level: 1, policy: 'outburstRunT' },
+  chaplain: { build: 'door_faith', variant: 'allin', level: 1, policy: 'chaplain' },
   monk: { build: 'opt_blade', variant: 'allin', level: 1, policy: 'monk', camp: 'hand_wraps' },
+  // 0.32: the sparing Chaplain (prays only when it is needed: chaplainSparing, door-policies.ts)
+  chaplain_sparing: { build: 'door_faith', variant: 'allin', level: 1, policy: 'chaplainSparing' },
+  // 0.32: the Living Wall with a shield in each hand at ranks I, II and III (levels 1, 6 and 12; tank-measure.ts measures
+  // rank I only): the camp's Buckler in the off hand, a second Buckler put in the main hand after the camp
+  wall_2sh_r1: { build: 'door_wall', variant: 'allin', level: 1, policy: 'bulwark', hands: { main: 'buckler' } },
+  wall_2sh_r2: { build: 'door_wall', variant: 'allin', level: 6, policy: 'bulwark', hands: { main: 'buckler' } },
+  wall_2sh_r3: { build: 'door_wall', variant: 'allin', level: 12, policy: 'bulwark', hands: { main: 'buckler' } },
   // rules 1.63 (0.31): the Dexterity melee builds (Pressure at arm's length)
   dex_knife: { build: 'dex_knife', variant: 'allin', level: 1, policy: 'breaker', camp: 'combat_knife' },
   dex_monk: { build: 'dex_monk', variant: 'allin', level: 1, policy: 'monk', camp: 'hand_wraps' },
+  // 0.32 simulator lane: the Operative with the camp's other free weapons (a player's own pick at the camp: the rack's
+  // free rifle or revolver in place of the Recommended Parlour pistol), and the knife and pistol (the knife from the
+  // camp, the pistol put in the off hand outside the reducer, as tank-measure.ts puts its second shield)
+  operative_rifle: { build: 'door_phantom', variant: 'allin', level: 1, policy: 'operative', camp: 'lever_carbine' },
+  operative_revolver: { build: 'door_phantom', variant: 'allin', level: 1, policy: 'operative', camp: 'drifter_revolver' },
+  operative_knife: { build: 'door_phantom', variant: 'allin', level: 1, policy: 'operative', camp: 'combat_knife', hands: { off: 'parlour_pistol' } },
 };
 export const DOORS = Object.keys(DOOR_MEMBERS);
