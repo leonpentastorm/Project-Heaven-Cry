@@ -5802,6 +5802,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-armoured_greaves--masterwork",
+      "path": "art/icons/gear/armour-armoured_greaves--masterwork.png",
+      "sha256": "fa3450ae9155e8f9908ec07d807eeafb463a325b26b26d2c0fd0b6d5dd1434b0",
+      "label": "Armoured Greaves — Masterwork",
+      "family": "armour-armoured_greaves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-armoured_greaves--masterwork.png",
+        "sha256": "6454d473ee780d6b74eddde1c3d787025089c0b87b4aa4ae939d1e7d4f457499"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--masterwork.png",
+        "sha256": "fa3450ae9155e8f9908ec07d807eeafb463a325b26b26d2c0fd0b6d5dd1434b0"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--masterwork.txt",
+        "sha256": "109c7d7ccd649f9b5ca60c47fa35ef9a7c9308c47c1c903dba426028fbf7b521"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-armoured_greaves.png",
+          "sha256": "fb960809ab40e72d1ceb6c00a35824825eb38dadfb660993bd789e6b459d7056"
+        },
+        {
+          "path": "art/icons/gear/armour-armoured_greaves--fine.png",
+          "sha256": "f93411441905437355171c2f6a64045a0cfe2099aaf24cf694d5dd7da311afa6"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-armoured_greaves--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-armoured_greaves--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-armoured_greaves--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-armoured_greaves--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "c6e8a9984412e5384aa78fd58f7d14bf921bae491d2ccd59b055a24caf27562c",
+        "128": "409e9b20085c017032191397d357434829944023a1ce5cbfca1bf6e052eda4c5",
+        "64": "312be11df2718cf03223604daa051ed74ac8d5bce8de700ae24e1652ab86af0d",
+        "32": "4ea12926d62fb874a97484a5c405657d3e20421e9092f8e919fc92526cd3ba0a"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-armoured_greaves",
+      "outline": {
+        "solid_alpha_iou": 0.9765022727651143,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
