@@ -1,0 +1,10 @@
+{
+  "n": 2,
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-drifter_revolver--fine.png",
+  "prompt": "Surface edit of the attached fictional Project Heaven Cry RPG inventory prop sprite for the Fine-grade proof. Keep the reference pose, angle, proportions, negative spaces, original alpha outline and canvas placement exactly fixed. Transfer only material and paint finish inside the existing silhouette. This is still the identical level right-facing Drifter inventory sprite. Only refine the surface. Even the existing dark steel one step lighter, brighten the edge of the octagonal shape gently, clean the existing walnut grip and brass surface, and add one fine line on the existing upper flat. Every exterior edge, all existing cutouts, the profile and every part remain the same. Keep Heavenprint opaque directional gouache. Output a complete picture of the original prop with its surface differences and true transparent alpha, no halo, background, text, or reference sheet.",
+  "refs": [
+    "/workspace/work/phc-prompt-pack-09/art/icons/gear/weapon-drifter_revolver.png",
+    "/workspace/work/phc-prompt-pack-09/art/portraits/world/new-faces/orren-vask.png"
+  ],
+  "path": "art/icons/gear/weapon-drifter_revolver.png"
+}
