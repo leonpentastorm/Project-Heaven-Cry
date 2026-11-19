@@ -360,6 +360,46 @@ function mpFocusLine(c) {
   return '';
 }
 
+/** "I'll narrate" (rules 1.80 item 6801): the Narrator's desk, on the host's own screen only, when the story waits for
+ *  the Narrator. The host writes the turn the AI Narrator would send (narrator/turn): the narration, the checks it
+ *  calls (who, which skill, the TN, the stakes), and an answer to each pending ruling (a perk or trait the story must
+ *  judge). The engine applies it as it applies the AI's: it rolls nothing here, and it checks every field. */
+const WORK_HEAD = { opening: 'the opening', round: 'the round', results: 'the results', combat_end: 'after the fight', epilogue: 'the epilogue' };
+function gmDeskVals(self, g, label) {
+  const st = self.state.gm || {}, set = (p) => self.setState({ gm: { ...(self.state.gm || {}), ...p } });
+  const chars = Object.values(g.characters).filter((x) => !x.dead);
+  const checks = st.checks || [], rulings = g.story.rulings || [], said = st.rulings || {};
+  const skills = Object.values(SK).map((k) => ({ value: k.id, label: k.name })).sort((a, b) => a.label.localeCompare(b.label));
+  const setCheck = (i, p) => set({ checks: checks.map((x, k) => (k === i ? { ...x, ...p } : x)) });
+  const text = String(st.text || '').trim();
+  // the campaign's prepared fights (its file's encounters), this zone's first: one starts with the turn
+  const encs = ((g.campaign && g.campaign.encounters) || []).filter((e) => e && e.enemies && e.enemies.length), zone = g.story.zone;
+  const enc = encs.find((e) => e.name === st.fight) || null;
+  const turn = () => ({ narration: text, ...(String(st.title || '').trim() ? { sceneTitle: String(st.title).trim().slice(0, 80) } : {}),
+    checks: checks.filter((x) => x.charId && x.skill).map((x) => ({ charId: x.charId, skills: [x.skill], tn: Number(x.tn), stakes: String(x.stakes || '').trim() || 'The Narrator asks for a check.' })),
+    perkRulings: rulings.map((r) => ({ id: r.id, accepted: said[r.id] !== 'no' })),
+    ...(enc ? { combat: { name: enc.name, difficulty: enc.difficulty, enemies: enc.enemies.map((f) => ({ ...f })) } } : {}) });
+  const w = g.story.work || {};
+  return { show: true, head: 'YOUR TURN, NARRATOR · ' + (WORK_HEAD[w.kind] || 'the story').toUpperCase(), note: w.redo ? 'The room asked for it again: ' + w.redo : w.note || '',
+    hint: 'Write what happens. Call a check when the outcome is in doubt: the engine rolls it, and the players see the TN and the sum.',
+    ooc: (g.story.oocAsk || []).map((q, i) => ({ key: 'q' + i, text: q.name + ' asks: ' + q.text })), hasOoc: !!(g.story.oocAsk || []).length,
+    title: st.title || '', onTitle: (e) => set({ title: e.target.value }), sceneTitle: g.story.scene.title || '',
+    text: st.text || '', onText: (e) => set({ text: e.target.value }),
+    rulings: rulings.map((r) => { const who = g.characters[r.charId], no = said[r.id] === 'no';
+      return { key: r.id, text: (who ? who.name + ': ' : '') + r.text, yesPressed: no ? 'false' : 'true', noPressed: no ? 'true' : 'false',
+        yes: () => set({ rulings: { ...said, [r.id]: 'yes' } }), no: () => set({ rulings: { ...said, [r.id]: 'no' } }) }; }),
+    hasRulings: rulings.length > 0,
+    checks: checks.map((x, i) => ({ key: 'c' + i, charId: x.charId, onChar: (e) => setCheck(i, { charId: e.target.value }), skill: x.skill, onSkill: (e) => setCheck(i, { skill: e.target.value }),
+      tn: String(x.tn), onTn: (e) => setCheck(i, { tn: Number(e.target.value) }), stakes: x.stakes || '', onStakes: (e) => setCheck(i, { stakes: e.target.value }),
+      remove: () => set({ checks: checks.filter((_, k) => k !== i) }) })),
+    chars: chars.map((x) => ({ value: x.id, label: x.name })), skills, tns: TN_LADDER.map((n) => ({ value: String(n), label: 'TN ' + n + ' · ' + label(n) })),
+    canAdd: chars.length > 0, addCheck: () => set({ checks: [...checks, { charId: chars[0] ? chars[0].id : '', skill: skills[0] ? skills[0].value : '', tn: TN_LADDER[1] ?? TN_LADDER[0], stakes: '' }] }),
+    hasFights: encs.length > 0, fight: st.fight || '', onFight: (e) => set({ fight: e.target.value }),
+    fights: [{ value: '', label: 'No fight' }, ...[...encs].sort((a, b) => (b.zone === zone) - (a.zone === zone)).map((e) => ({ value: e.name, label: 'Start the fight: ' + e.name + (e.zone === zone ? '' : ' (another zone)') }))],
+    sendOff: !text, sendTitle: text ? 'Send your turn: the story goes on' : 'Write the narration first',
+    send: () => { if (!text) return; act({ type: 'narrator/turn', turn: turn() }); self.setState({ gm: null }); } };
+}
+
 export class MainLogic extends DCLogic {
   constructor(props) {
     super(props);
@@ -441,7 +481,9 @@ export class MainLogic extends DCLogic {
     if (!g) return { ...lightboxVals(this), ...epccgVals(this), stream: [], order: [], tabs: [], coreTabs: [], sheetSkills: [], bars: [], barsA: [], barsB: [], echoV: { has: false, pips: [], sections: [] }, qb: { has: false, groups: [] }, sfc: { has: false, gauge: [], effects: [], movers: [] }, rp: { o: {}, on: {}, grip: {}, gripKey: {}, slots: [] }, pc: {} };
     // Rules 1.54 item 11: the right panel's modules and what the sheet hides are the mode's (data/modes.json, game/panels.ts).
     const PL = panelsOf(g), HIDES = new Set(PL.hides), RUN = !!g.run;
-    const mine = Object.values(g.characters).filter((c) => c.owner === me);
+    // "I'll narrate" (rules 1.80 item 6801): the Narrator's seat with no character of its own reads every character's sheet
+    const own = Object.values(g.characters).filter((c) => c.owner === me), gmSeat = isHost && g.settings.mode === 'human' && !RUN && !g.sandbox;
+    const mine = gmSeat && !own.length ? Object.values(g.characters) : own;
     const c = mine.find((x) => x.id === S.sel) || mine[0] || null;
     const P = (id) => (c ? c.skills[id] || 0 : 0), A = (id) => (c ? c.attrs[id] || 1 : 1);
     const playerOf = (pid) => g.players.find((p) => p.id === pid) || { name: '?', initials: '?', color: '#A3AEC2' };
@@ -875,8 +917,8 @@ export class MainLogic extends DCLogic {
       ...(SB ? [] : [{ key: 'narrator', img: IMG['wick-narrator-placeholder'], name: 'Narrator', player: 'AI', playerStyle: 'font-size: var(--fs-sub); letter-spacing: 0.12em; color: #A3AEC2', imgStyle: 'width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid #232D3F',
         state: busy ? 'THINKING…' : err ? 'STUCK' : 'AFTER ALL', stateStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + (busy ? '#FFFFFF' : err ? '#F65157' : '#A3AEC2'), zoom: zoomer(this, IMG['wick-narrator-placeholder'], 'The Narrator', 'portrait') }])];
     const iSpoke = g.story.spoken[me] != null;
-    const cantSpeak = !c || c.dead || g.phase !== 'story' || g.story.await !== 'players' || iSpoke || !!g.sandbox;
-    const why = !c ? 'You have no character in this session.' : g.phase !== 'story' ? 'A fight is on: go to Combat.' : g.sandbox ? 'The Proving Ground has no Narrator: gear up with the tools, move freely on the map, then start the fight.' : busy ? 'The Narrator is answering…' : err ? 'The Narrator is stuck; the host can retry.'
+    const cantSpeak = !c || (gmSeat && !own.length) || c.dead || g.phase !== 'story' || g.story.await !== 'players' || iSpoke || !!g.sandbox;
+    const why = !c ? 'You have no character in this session.' : gmSeat && !own.length ? 'You are the Narrator: you write at the desk when the story waits for you.' : g.phase !== 'story' ? 'A fight is on: go to Combat.' : g.sandbox ? 'The Proving Ground has no Narrator: gear up with the tools, move freely on the map, then start the fight.' : busy ? 'The Narrator is answering…' : err ? 'The Narrator is stuck; the host can retry.'
       : g.story.await === 'rolls' ? 'Waiting for the checks to be rolled.' : g.story.await === 'choices' ? 'Waiting for an Overreach choice.' : g.story.await === 'narrator' ? 'The Narrator is about to answer…'
       : c && (g.story.ended || {})[c.id] ? 'Turn ended. Waiting for the others.' : iSpoke ? apLeft(g, c) + ' AP left · End turn when done' : (c ? apLeft(g, c) : 0) + ' AP · one Say';
 
@@ -1520,7 +1562,9 @@ export class MainLogic extends DCLogic {
       ...shellVals(this, 'main'), ...narratorVals(this, g, { openArea: () => this.toggleArea(true) }),
       isHost, toCombat: () => { if (g.combat) go('combat'); }, noCombat: !g.combat,
       narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'),
-      thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],
+      // a human Narrator: the host writes at the desk below; everyone else sees the Narrator writing
+      thinking: busy || (g.settings.mode === 'human' && !!g.story.work && g.phase !== 'combat' && !gmSeat), thinkingText: g.settings.mode === 'human' ? host.name + ', the Narrator, is writing…' : 'The Narrator is writing…',
+      gm: gmSeat && !!g.story.work && g.phase !== 'combat' ? gmDeskVals(this, g, label) : { show: false, ooc: [], rulings: [], checks: [], chars: [], skills: [], tns: [] }, narratorImg: IMG['wick-narrator-placeholder'],
       echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabArms: S.tab === 'arms', ar: S.tab === 'arms' ? armsTabVals(this, g, c) : { has: false }, tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
       fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : c && c.unspent && c.unspent.skill + c.unspent.attr + c.unspent.core === 0 && pendingPerkSteps(c).length ? 'Level up' : 'Level up', // what is due (levelUpDue): points, or only a perk step (a skill at Mastery 1 from creation)

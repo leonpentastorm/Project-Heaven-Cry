@@ -34,7 +34,7 @@ const books = (p) => p.evaluate(() => { const s = window.__phc.getState(), g = s
   return { screen: s.screen, v: g && g.v, round: cb && cb.round, turn: cb && cb.turn, unit: cb && cb.order[cb.turn], over: !!(cb && cb.over),
     lock: dock && dock.getAttribute('data-lock'), fx: window.__phcFxDebug && window.__phcFxDebug(), net: window.__phc.net && window.__phc.net() }; });
 const myTurn = (p) => p.evaluate(() => { const s = window.__phc.getState(), g = s.game, cb = g && g.combat; if (!cb || cb.over) return cb && cb.over ? 'over' : 'none';
-  const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return (u && u.charId && g.characters[u.charId].owner === s.me.id ? 'mine' : 'other') + ':' + g.v; });
+  const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return (u && u.charId && g.characters[u.charId].owner === s.me.id ? 'mine' : 'other') + ':' + g.v + ':' + cb.round + '.' + cb.turn; });
 const hide = (p, on) => p.evaluate((on) => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => on }); Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => (on ? 'hidden' : 'visible') }); document.dispatchEvent(new Event('visibilitychange')); }, on);
 const hopsOn = (p) => p.addInitScript(() => { window.__phcHops = []; });
 const hopsOf = (p) => p.evaluate(() => window.__phcHops || []).catch(() => []);
@@ -97,13 +97,14 @@ async function fight(run, way) {
         const fast = way === 'fast' && k === 1;
         await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});
         // reconnect: once in each of the guest's turns (by version), the guest refreshes with the attack picked
-        if (way === 'reconnect' && k === 1 && reloadedThisTurn !== raw[1] && acts % 2 === 0) {
-          reloadedThisTurn = raw[1]; reloads++;
+        const turnKey = raw[1].split(':')[2];
+        if (way === 'reconnect' && k === 1 && reloadedThisTurn !== turnKey && guestActs % 2 === 0) {
+          reloadedThisTurn = turnKey; reloads++;
           await guest.reload(); await guest.waitForFunction(() => { const g = window.__phc.getState().game; return !!(g && g.combat); }, null, { timeout: 60000 }).catch(() => {});
           continue;
         }
         const conf = p.getByRole('button', { name: 'Confirm', exact: true });
-        try { if (await conf.isEnabled({ timeout: 30000 })) await conf.click({ timeout: 30000 }); else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 30000 }); acts++; if (k === 1) guestActs++; }
+        try { if ((await conf.count()) && await conf.isEnabled({ timeout: 30000 })) await conf.click({ timeout: 30000 }); else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 30000 }); acts++; if (k === 1) guestActs++; }
         catch (e) { log('      a click did not land (' + p.pname + '): ' + String(e.message).split('\n')[0]); }
         if (!fast) await settle(p, 60);
       }
@@ -128,6 +129,7 @@ const results = [];
 for (let r = 0; r < RUNS; r++) {
   const way = WAYS[(r + JOB) % WAYS.length], res = await fight(JOB * 1000 + r, way);
   results.push(res);
+  if (process.env.HOPS_OUT) { mkdirSync(process.env.HOPS_OUT, { recursive: true }); writeFileSync(process.env.HOPS_OUT + '/job' + JOB + '.json', JSON.stringify({ results }), 'utf8'); }
   log('run ' + res.run + ' ' + way + ': ' + (res.error ? 'ERROR ' + res.error : (res.stalled ? 'STALL' : 'no stall') + ', ' + (res.over ? 'ended on both screens' : 'NOT ended') + ', ' + res.acts + ' actions (' + res.guestActs + ' by the guest), '
     + res.reloads + ' refreshes, ' + res.hides + ' hides, ' + res.secs + ' s, resyncs ' + res.resyncs + ', settled ' + res.settled + (res.errors.length ? ', page errors ' + JSON.stringify(res.errors).slice(0, 300) : '')));
 }

@@ -126,6 +126,7 @@ suite again when the disk was full under it.
 
 ### `rules`: rules and screens (fights play at the test pace)
 
+- `narrate.mjs`: "I'll narrate" end to end (rules 1.80 item 6801): the host picks the human Narrator in the room, a guest plays; the Narrator's desk (host only, both side panels kept) tells the opening and calls a check at a TN of its own (the engine rolls it on the guest's screen), tells the results, refuses a ruling the story owes (Clean Hands: the use comes back), starts a prepared fight, and on the fight screen answers the guest's attempt with a check.
 - `old-save.mjs`: a save from before 0.19.0 holding perks that were renamed since (Grapple, Origami Hands) and one that never existed: the game opens it, shows the renamed perks, and does not crash.
 - `creation-points.mjs`: character creation's points step: nine attributes under Body, Mind and Soul, each with its three skills; both budgets always in view; a skill raised past its attribute spends the Attribute points for it and says so; a refusal says what is short and what to do; Undo, one attribute's reset, Reset all; the steppers by keyboard; Mind Without Fog's 2 extra Attribute points. At 1440×900, 1280×720 and 1024×768 with no sideways scroll.
 - `creation-layout.mjs`: character creation's card layout (Leon, 8 Nov): at most two archetypes, three traits and two patrons a row at any width; every card in a grid the same height, long text scrolling inside its card; a god's art opens large; picking another archetype or origin moves nothing; no sideways scroll at phone width.

@@ -74,6 +74,7 @@ export function narratorVals(self, g, opts) {
   const NS = st.narrator || {}, p = providerInfo(NS.provider), model = (MODELS.find((m) => m.id === NS.model) || {}).label || NS.model || p.defaultModel || '';
   const word = SB ? 'PROVING GROUND · ' + g.players.length + (g.players.length === 1 ? ' PLAYER' : ' PLAYERS')
     : err ? 'NARRATOR STUCK' : busy ? 'NARRATOR · THINKING…' : VS.speaking ? 'NARRATOR · SPEAKING' : loadingVoice ? 'NARRATOR · LOADING VOICE'
+    : g.settings && g.settings.mode === 'human' ? 'NARRATOR · ' + (isHost ? 'YOU' : (host.name || '').toUpperCase()) // "I'll narrate" (rules 1.80 item 6801): a person, no key
     : 'NARRATOR · ' + (isHost ? 'YOUR KEY' : (host.name || '').toUpperCase() + '’S KEY');
   // Below 1100 px the chip shrinks to its dot and this word (main.tsx's .phc-nw-short; review of the UI pass).
   const short = err ? 'STUCK' : busy ? 'THINKING…' : VS.speaking ? 'SPEAKING' : loadingVoice ? 'VOICE…' : 'NARRATOR';
