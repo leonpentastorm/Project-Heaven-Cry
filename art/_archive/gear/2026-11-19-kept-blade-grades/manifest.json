@@ -5434,6 +5434,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-trauma_plate--celestial",
+      "path": "art/icons/gear/armour-trauma_plate--celestial.png",
+      "sha256": "6b6b1b900592743b0736ce4f22e45bc8b6afb4e39d1780b89bfd3dc8c6af2dfe",
+      "label": "Trauma Plate — Celestial",
+      "family": "armour-trauma_plate",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-trauma_plate--celestial.png",
+        "sha256": "3d485403daf43689a054c1e45ec622cd67a87f51448af6f9a8a09abee99b3a58"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-trauma_plate--celestial.png",
+        "sha256": "6b6b1b900592743b0736ce4f22e45bc8b6afb4e39d1780b89bfd3dc8c6af2dfe"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-trauma_plate--celestial.txt",
+        "sha256": "8dafa1aaeb7a2f075aeb16726421660187c6f01ce85f6ab5a9da809d3eae8656"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-trauma_plate.png",
+          "sha256": "34cbf6f62a75b1718185be1bcc9eba105ad8fae3bac0b9e3bfb522e777a0a767"
+        },
+        {
+          "path": "art/icons/gear/armour-trauma_plate--relic.png",
+          "sha256": "318f35be25b1c6e990d9485770318ca274e55dd9400c412beebb77db6e929fe1"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-trauma_plate--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-trauma_plate--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-trauma_plate--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-trauma_plate--celestial.png"
+      },
+      "export_hashes": {
+        "256": "e931c2db77858c7d093d4a232646e4f6f339f8798e82ce1c2472843a87084a63",
+        "128": "3f5134224e1d31a2bc8d95c3df454e33c2a9438918c4ec6d0348bde13028649e",
+        "64": "4f176e8f4c938bbf73431b6bf22469e94d9f07026e02ba793f6a92562e44b7da",
+        "32": "c6333246249df6f36122e105b84ee0018c573f52ee48e7cfb57f262207b37721"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-trauma_plate",
+      "outline": {
+        "solid_alpha_iou": 0.9687022513583597,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 16,
+        "different_pixels_64": 15
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
