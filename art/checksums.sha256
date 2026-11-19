@@ -3149,11 +3149,13 @@ c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/p
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
 201d52d32fe4b6549c6a46b5c3e6eeeb4f8c065a4c8a845f13d3ded85b38fa11  art/_archive/prompt-pack/2026-11-19-file-06/HANDOFF.md
-8f11cddbc03d93af666bd041bcd36da326b1776014478ab1b88131e2114bdfef  art/_archive/prompt-pack/2026-11-19-file-06/WORK-CLAIMS.md
+7108fde04b3cd555883f7f9dee0fe6d8681ac9c686700de27e3254933c5dcff6  art/_archive/prompt-pack/2026-11-19-file-06/WORK-CLAIMS.md
 d2a60d54537ba6854b4c72a5891a24cd08f420a228c4a78789c5d114f9a12473  art/_archive/prompt-pack/2026-11-19-file-06/checkpoint.py
 a611f326709b3e54e4a31535b1ba0a37a9c3d8603484bd355cf71ba1b7cbac28  art/_archive/prompt-pack/2026-11-19-file-06/deliver.py
 725ab24eca2f42895556e20e6371864411b417d7b01a9b70247e8da36fcb42d4  art/_archive/prompt-pack/2026-11-19-file-06/generation-failures/failure-11-1795065002927.json
+0dd792d72979388d02fd7d53c29b4e2065d005f995e47c1ae544040c3e5c4810  art/_archive/prompt-pack/2026-11-19-file-06/generation-failures/failure-11-1795071755929.json
 c27b01829e948db094bcaa4a4ec57babe6f0ca3a351f299a563dcbcb549ba001  art/_archive/prompt-pack/2026-11-19-file-06/generation-failures/failure-17-1795064923149.json
+7f1eff0c85b4a1cbe205a296c73ea805acc7882cab7b205a1451a92f00dea339  art/_archive/prompt-pack/2026-11-19-file-06/generation-failures/failure-17-1795071852922.json
 c9d8910067fee313030d7f67b86b225b593930eecb2479689659684efbb6fd97  art/_archive/prompt-pack/2026-11-19-file-06/manifest.json
 4ba5d609aa7e38f60f5710cd6f2da4e2d0cdc647355dd6b298bf3d41ef1d9c4e  art/_archive/prompt-pack/2026-11-19-file-06/native/04-weapon-whisper_pistol.png
 4adb890b3f4a9f63d47a32c76a0d5f7c5b5615ab6778ce06c87398ed7cd4fd4f  art/_archive/prompt-pack/2026-11-19-file-06/native/05-weapon-whisper_carbine.png
@@ -3166,7 +3168,11 @@ d7ebd02d86943cd182693c38eb1fd9f1102fe159509928e7ce87c7263bb3a4bb  art/_archive/p
 577446105d3392847510a41e844c33fd1d52225b12dda0bf44c87073e6e563f9  art/_archive/prompt-pack/2026-11-19-file-06/rejected/11-stacked/REVIEW.md
 3bfb2ac0890a50a8b35669af373beb0f577e7cd7c9484099237bb4d02af15115  art/_archive/prompt-pack/2026-11-19-file-06/rejected/11-stacked/native.png
 826f9f24c6e0685a0d4d2b99c82733c69a727b15c91b1909b67f1c6802b09325  art/_archive/prompt-pack/2026-11-19-file-06/rejected/11-stacked/result.json
+3f5226c05bf4080858efdfc2e2fa5ee32f578f46f6ffdf3f6730c42eb9275d38  art/_archive/prompt-pack/2026-11-19-file-06/rejected/17-stock-and-string/REVIEW.md
+f097ac5673cf236324b8c907de2ca694b1b138732530f073d5a97a96572f2b58  art/_archive/prompt-pack/2026-11-19-file-06/rejected/17-stock-and-string/native.png
+768324ef0ac4f7acd280c03df368b299747fc503a93ef8dcb813d7917253368d  art/_archive/prompt-pack/2026-11-19-file-06/rejected/17-stock-and-string/result.json
 df86e04bbf56e4eaecae33dfa6b72040d62406455abd48dc5d83ada615b75ba8  art/_archive/prompt-pack/2026-11-19-file-06/review/batch-4-5-16.jpg
+9711d40c99a5a97b87264faad27c7ed12e6056fc6a5da3b384f9aae0b20a55c7  art/_archive/prompt-pack/2026-11-19-file-06/review/continuation-arbalest.jpg
 913e777dd59440282c65e02d72b6d6b54670a0ed67959614ea00d99729ec9846  art/_archive/skills/poc4-palette-v3/README.md
 f2378cba014d8bf49dd90a127189b471157bfaacb53aee2f30e1dff08375712e  art/_archive/skills/poc4-palette-v3/generation-briefs.json
 dce5d7fb8be4f153780e3144c12f0c82d117da4d2dea8516f0f4f374210076d8  art/_archive/skills/poc4-palette-v3/manifest.json

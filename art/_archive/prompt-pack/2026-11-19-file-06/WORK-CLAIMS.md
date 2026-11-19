@@ -11,6 +11,8 @@ Updated 19 November 2026. Source pack checked at develop `2020b5c2a`. This claim
 | `fowling_gun` | `art/icons/gear/weapon-fowling_gun.png` | Render the Standard with two long barrels side by side. The previous draft stacked them. |
 | `arbalest` | `art/icons/gear/weapon-arbalest.png` | Render the invented Frontier heavy-crossbow Standard for the inventory. |
 
+**Claim checkpoint.** The Fowling Gun request was declined by the image service. Arbalest returned a draft, but its two cord halves meet the stock at different points and it lacks the long shoulder stock. The service declined the corrected render. Both entries are pending, with zero active renders and no reported quota reset. This claim is paused and can be explicitly taken over. [Arbalest draft review](review/continuation-arbalest.jpg) · [Recorded service responses](generation-failures/)
+
 ## Available to the next agent
 
 | Work | Remaining | State |

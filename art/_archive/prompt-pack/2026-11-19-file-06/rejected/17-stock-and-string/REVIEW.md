@@ -1,0 +1,1 @@
+The two cord halves end at different points on opposite sides of the stock, and the rear lacks the long rifle-like walnut profile. The worn iron crescent, front stirrup and walnut materials are useful visual references.
