@@ -6,6 +6,7 @@ import { faithPanel, prayerButtons, prayAction, pickerFor, FAITH_INK, FAITH_GOLD
 import { accentOf, patronFace, patronMarkUri } from '../game/faithArt';
 import { zoomer } from './shared';
 import { act, toast } from '../game/store';
+import { uiMarkOf } from '../game/doorArt';
 
 const btnStyle = (on, off, ink = '#FFFFFF') => 'display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 2px 10px; align-items: center; text-align: left; width: 100%; padding: 8px 10px; border-radius: 10px; font-family: inherit; color: #E7EBF3; cursor: ' + (off ? 'default' : 'pointer')
   + '; ' + (off ? 'border: 1px dashed #2E3A50; background: transparent; opacity: 0.6' : on ? 'border: 1px solid ' + ink + '; background: #1C2536' : 'border: 1px solid #2E3A50; background: #10151F');
@@ -71,7 +72,7 @@ export function faithTabVals(sc, g, c) {
     likes: P.likes.map((t) => ({ key: t, t })), taboos: P.taboos.map((t) => ({ key: t, t })),
     meter, devotionLine: P.faithful ? P.devotionText : '', faithLine: 'FAITH ' + v.faith,
     // Rules 1.6.1: the XP toward the next level (its fill is faith light, always beside the words), the day, the cooldown, a grudge.
-    devotionText: P.devotionText, xpFillStyle: 'height: 100%; border-radius: 99px; width: ' + Math.round(P.xpFill * 100) + '%; background: var(--faith-light, ' + FAITH_GOLD + ')',
+    devotionText: P.devotionText, ...((m) => ({ devMark: m, hasDevMark: !!m }))(uiMarkOf('resource', 'devotion')), xpFillStyle: 'height: 100%; border-radius: 99px; width: ' + Math.round(P.xpFill * 100) + '%; background: var(--faith-light, ' + FAITH_GOLD + ')',
     xpNextText: P.xpNextText, dayText: P.dayText, hasCooldown: !!P.cooldown, cooldown: P.cooldown || '', hasGrudge: !!P.grudge, grudge: P.grudge || {},
     // Items 703 and 722: liked tags against their caps, so a capped tag's silence has a reason on screen.
     hasTagCaps: !!P.tagCaps, tagCaps: P.tagCaps?.text || '', tagCapsStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.12em; color: ' + (P.tagCaps?.capped ? '#E7EBF3' : '#A3AEC2'),

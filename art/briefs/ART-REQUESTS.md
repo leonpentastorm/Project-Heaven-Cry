@@ -72,6 +72,18 @@ Behind Me, Wind-up, Read the Swing, Hold the Lane, Scrap Sentinel, Follow, After
 `fork_icons`, `move-draw-fire`, `move-shove`, `move-lingering-dread`, `move-speed-loader`, `move-scrap-turret`,
 `cond-mana-shock` and `weapon-afterword` (all on the 0.30 list or held).
 
+**Delivered art and where it is drawn (0.32 gaps lane, spec item 5612).** Drawn now: the seven tone marks (`icon-tone-*`)
+on the MAGIC tab's tone chips; the XP mark on the sheet's XP bar, the credits mark in a run's squad panel, the Devotion
+mark on the FAITH tab; the camp's Ready sign (`camp-step-ready`) on the camp's Ready / Start the run button; the Open
+Hand's four forms (`move-jab`, `move-palm`, `move-sweep-form`, `move-snatch`, catalog `data_ids` `relic:open_hand#<form>`)
+on the attack's form chips. Still no place: the Open Hand's stance (`move-open-guard`: the fight shows no standing
+defensive modifier yet, spec item 5612), the five Tending passives (`tend-threads`, `tend-hold-down`, `tend-bonds-5`,
+`tend-bonds-8`, `tend-mender-bonds`: their `data_ids` now name their items; no screen lists a door's passive steps), and
+**Stand Behind Me** (`move-stand-behind-me`): it was drawn for Guard 2.0's Bastion path (design item 9 of
+`docs/design/proposals/2026-11-guard-2.0.md`: allies beside a Braced or Walled tank have half cover), which was never
+built, so no move in data carries it. **`move-draw-fire` is a placeholder for Called Out** (`class:defender.draw_fire`,
+the Bulwark's Challenge that costs no Guard and taunts the named foe): the picture still to make is Called Out's.
+
 ### 0b. Everything else without art, beyond the 0.30 list: ONE file (requested 17 Nov 2026, 0.31.1)
 
 **Everything the game shows without finished art that neither the 0.29 list nor the 0.30 list asks for is in

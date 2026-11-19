@@ -55,7 +55,7 @@
 </div></sc-if></sc-if>
 <sc-for list="{{barsB}}" as="b" hint-placeholder-count="2">
 <div style="display: grid; grid-template-columns: 40px minmax(0, 1fr) 96px; gap: 8px; align-items: center">
-<span style="{{b.labelStyle}}">{{b.label}}</span>
+<span style="{{b.labelStyle}}; display: inline-flex; align-items: center; gap: 3px"><sc-if value="{{b.hasMark}}" hint-placeholder-val="{{false}}"><img data-phc-res-mark="xp" src="{{b.mark}}" alt="" width="14" height="14" style="width: 14px; height: 14px; flex: none" /></sc-if>{{b.label}}</span>
 <div style="height: 8px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{b.fill}}"></div></div>
 <span style="font-size: var(--fs-sub); text-align: right; color: #C9D3E3">{{b.text}}</span>
 </div>
@@ -366,7 +366,7 @@
 <sc-if value="{{mg.b.hasOptions2}}"><span style="font-size: var(--fs-sub); letter-spacing: 0.1em; color: #A3AEC2">ITS WAY</span><div style="display: flex; flex-direction: column; gap: 4px"><sc-for list="{{mg.b.options2}}" as="o"><div data-way2="{{o.key}}" style="display: flex; align-items: center; gap: 10px"><button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" style="{{o.style}}; flex: none; min-width: 72px">{{o.label}}</button><sc-if value="{{o.text}}"><span style="font-size: var(--fs-body); line-height: 1.35; color: #C9D3E3">{{o.text}}</span></sc-if></div></sc-for></div></sc-if>
 </div>
 <span style="font-size: var(--fs-sub); letter-spacing: 0.1em; color: #A3AEC2">TONE</span>
-<div role="group" aria-label="Tone" style="display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{mg.b.tones}}" as="o"><button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" disabled="{{o.locked}}" tip="{{o.title}}" style="{{o.style}}">{{o.label}}</button></sc-for></div>
+<div role="group" aria-label="Tone" style="display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{mg.b.tones}}" as="o"><button type="button" data-phc-tone="{{o.key}}" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" disabled="{{o.locked}}" tip="{{o.title}}" style="{{o.style}}; display: inline-flex; align-items: center; gap: 5px"><sc-if value="{{o.hasMark}}" hint-placeholder-val="{{false}}"><img data-phc-tone-mark="{{o.key}}" src="{{o.mark}}" alt="" width="16" height="16" style="width: 16px; height: 16px; flex: none" /></sc-if>{{o.label}}</button></sc-for></div>
 <span style="font-size: var(--fs-sub); letter-spacing: 0.1em; color: #A3AEC2">SHAPE</span>
 <div role="group" aria-label="Shape" style="display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{mg.b.shapes}}" as="o"><button type="button" onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" disabled="{{o.locked}}" tip="{{o.title}}" style="{{o.style}}"><img src="{{o.icon}}" alt="" style="width: 16px; height: 16px">{{o.label}}</button></sc-for></div>
 <span style="font-size: var(--fs-sub); letter-spacing: 0.1em; color: #A3AEC2">{{mg.b.slotsText}}</span>
@@ -438,7 +438,7 @@
 <span style="display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: #D36A90"><span>{{fa.faithLine}}</span><sc-if value="{{fa.hasRule}}"><span style="color: #A3AEC2">{{fa.rule}}</span></sc-if></span>
 <sc-if value="{{fa.faithful}}">
 <section aria-label="Devotion" data-faith-devotion style="display: flex; flex-direction: column; gap: 6px; margin-top: 6px">
-<span data-devotion-label style="font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.16em; color: #D36A90">{{fa.devotionText}}</span>
+<span data-devotion-label style="display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.16em; color: #D36A90"><sc-if value="{{fa.hasDevMark}}" hint-placeholder-val="{{false}}"><img data-phc-res-mark="devotion" src="{{fa.devMark}}" alt="" width="16" height="16" style="width: 16px; height: 16px; flex: none" /></sc-if>{{fa.devotionText}}</span>
 <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center"><div aria-hidden="true" style="height: 4px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{fa.xpFillStyle}}"></div></div><span style="font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2">{{fa.xpNextText}}</span></div>
 <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
 <span tip="{{fa.witnessedTitle}}" style="{{fa.witnessedStyle}}"><img data-zoom="{{fa.witnessed.word}}" data-zoom-text="{{fa.witnessedTitle}}" src="{{fa.witnessed.icon}}" alt="" style="width: 14px; height: 14px">{{fa.witnessed.word}}</span>

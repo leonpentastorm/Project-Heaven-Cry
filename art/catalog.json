@@ -34632,7 +34632,10 @@
         "32": "art/icons/moves/exports/32/jab.png",
         "24": "art/icons/moves/exports/24/jab.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-jab/jab.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-jab/jab.svg",
+      "data_ids": [
+        "relic:open_hand#jab"
+      ]
     },
     "move-palm": {
       "label": "Wick \u2014 Palm",
@@ -34666,7 +34669,10 @@
         "32": "art/icons/moves/exports/32/palm.png",
         "24": "art/icons/moves/exports/24/palm.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-palm/palm.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-palm/palm.svg",
+      "data_ids": [
+        "relic:open_hand#palm"
+      ]
     },
     "move-sweep-form": {
       "label": "Wick \u2014 Sweep (form)",
@@ -34700,7 +34706,10 @@
         "32": "art/icons/moves/exports/32/sweep-form.png",
         "24": "art/icons/moves/exports/24/sweep-form.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-sweep-form/sweep-form.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-sweep-form/sweep-form.svg",
+      "data_ids": [
+        "relic:open_hand#sweep"
+      ]
     },
     "move-snatch": {
       "label": "Wick \u2014 Snatch",
@@ -34734,7 +34743,10 @@
         "32": "art/icons/moves/exports/32/snatch.png",
         "24": "art/icons/moves/exports/24/snatch.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-snatch/snatch.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-snatch/snatch.svg",
+      "data_ids": [
+        "relic:open_hand#snatch"
+      ]
     },
     "move-breath": {
       "label": "Wick \u2014 Breath",
@@ -39012,7 +39024,10 @@
         "32": "art/icons/tending/exports/32/threads.png",
         "24": "art/icons/tending/exports/24/threads.png",
         "16": "art/icons/tending/exports/16/threads.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.threads"
+      ]
     },
     "tend-hold-down": {
       "label": "Threads That Hold",
@@ -39040,7 +39055,10 @@
         "32": "art/icons/tending/exports/32/hold-down.png",
         "24": "art/icons/tending/exports/24/hold-down.png",
         "16": "art/icons/tending/exports/16/hold-down.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.hold_down"
+      ]
     },
     "tend-bonds-5": {
       "label": "Two Bonds",
@@ -39068,7 +39086,10 @@
         "32": "art/icons/tending/exports/32/bonds-5.png",
         "24": "art/icons/tending/exports/24/bonds-5.png",
         "16": "art/icons/tending/exports/16/bonds-5.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.bonds_5"
+      ]
     },
     "tend-bonds-8": {
       "label": "Three Bonds",
@@ -39096,7 +39117,10 @@
         "32": "art/icons/tending/exports/32/bonds-8.png",
         "24": "art/icons/tending/exports/24/bonds-8.png",
         "16": "art/icons/tending/exports/16/bonds-8.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.bonds_8"
+      ]
     },
     "tend-mender-bonds": {
       "label": "One More Bond",
@@ -39124,7 +39148,10 @@
         "32": "art/icons/tending/exports/32/mender-bonds.png",
         "24": "art/icons/tending/exports/24/mender-bonds.png",
         "16": "art/icons/tending/exports/16/mender-bonds.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.mender_bonds"
+      ]
     }
   },
   "condition_icons": {

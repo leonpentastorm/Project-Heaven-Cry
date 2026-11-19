@@ -12556,3 +12556,13 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
 5611. **The two keepers' names match their faces** (item 2914; the recommendation of 15 Nov 2026, built under "no answer
     means yes", Leon may reverse it): the Smetanita trader (`survival-keeper-works`, painted as a woman automaton) is
     Corra Vell; the rim chandler (`survival-keeper-rim`, a man) is Ivo Smetanin (`survival.json faces`). Names only.
+5612. **Delivered art is drawn where it has a place** (the lead's list; wiring only, every picture by its catalog id
+    through `apps/web/src/game/doorArt.ts`): the seven tone marks on the MAGIC tab's tone chips (`uiMarkOf('tone')`);
+    the XP mark on the sheet's XP bar, the Devotion mark on the FAITH tab, the credits mark in a run's squad panel
+    (`uiMarkOf('resource')`); the camp's Ready sign on the camp's Ready / Start the run button (`campStepIconOf`); the
+    Open Hand's four forms on the attack's form chips (catalog `data_ids` `relic:open_hand#<form>`, read by
+    `moveIconOf`). No place yet: the Open Hand's stance and every standing defensive modifier (the fight has no reader
+    of them: a to-hit term carries no source, and an item's own hooks cannot be asked inside a fight for one unit; a
+    general reader needs one of those, not built), the five Tending passives (their `data_ids` name their items; no
+    screen lists a door's passive steps), Stand Behind Me (Guard 2.0's Bastion path, never built: no move carries it).
+    `move-draw-fire` is Called Out's placeholder. `art/briefs/ART-REQUESTS.md` says so.
