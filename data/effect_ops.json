@@ -4802,6 +4802,10 @@
         "arg": "bool",
         "about": "the damage is (or is not) the unit's own doing (a Mana Short, an overload, Strain, Flux)"
       },
+      "target_behind": {
+        "arg": "bool",
+        "about": "the target stands on the tile directly behind the holder as seen from the actor (the holder between them: Stand Behind Me)"
+      },
       "hostile": {
         "arg": "bool",
         "about": "the actor and the target are (or are not) on different sides"

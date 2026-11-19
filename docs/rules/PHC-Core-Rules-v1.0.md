@@ -13546,3 +13546,10 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       **Whisper**: a Whisper reaches from any hallowed tile of your side's (anyone's Hallow of your side, not only your
       own; PROVISIONAL), a Hymn and a Miracle do not. Nothing else of the prayer moves (its area round the caster, its
       AP, its roll). One reader, `faith.ts prayerSeats`, used by the targets, the pick and the aim.
+7006. **Stand Behind Me** (Waiting on Leon 23, the lead's pick: the three-layers draft's Bulwark rank III ceiling;
+      **call made for Leon**; closes rules 1.78 item 6611): the Bulwark's rank III **ceiling move**, beside the rank's two
+      (its `ceiling` mark; the validator's two-a-rank rule counts the two without it: **call made for Leon**, the other
+      way is to fold it into Anchor). A ranged attack by a foe on the ally **directly behind you** (beside you, on the far
+      side from the shooter: the new predicate `target_behind`) lands on you instead, whole (the op `redirect`, share 1):
+      your plates take it as they take any hit. The log says "X takes the shot meant for Y (Stand Behind Me)." Guard 2.0
+      item 9's half-cover design is not built. Its picture is `move-stand-behind-me`.

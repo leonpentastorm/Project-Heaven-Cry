@@ -305,6 +305,46 @@
               ],
               "status": "active",
               "surface": "combat"
+            },
+            {
+              "id": "stand_behind_me",
+              "name": "Stand Behind Me",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "A ranged attack on the ally directly behind you (beside you, on the far side from the shooter) lands on you instead: your plates take it as they take any hit",
+              "effects": [
+                {
+                  "op": "redirect",
+                  "when": "taking",
+                  "share": 1,
+                  "if": {
+                    "actor": "foe",
+                    "target": "ally",
+                    "target_behind": true,
+                    "melee": false,
+                    "by_hit": true,
+                    "self_alive": true
+                  },
+                  "label": "Stand Behind Me",
+                  "say": "{self} takes the shot meant for {target} (Stand Behind Me)."
+                }
+              ],
+              "source": "rules 1.82 item 7006 (Waiting on Leon 23, the lead's pick: the three-layers draft's Bulwark rank III ceiling; a call made for Leon). A third move at rank III: its `ceiling` mark keeps it beside the rank's two moves (tools/validate.py)",
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "defender",
+              "new": true,
+              "fantasy_tags": [
+                "guard",
+                "tank",
+                "protect"
+              ],
+              "attributes": [
+                "endurance"
+              ],
+              "status": "active",
+              "surface": "combat",
+              "ceiling": true
             }
           ]
         }

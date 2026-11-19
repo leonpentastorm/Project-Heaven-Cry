@@ -250,7 +250,8 @@ for b in base:
         errors.append(f"class {b.get('id')}: skills should be {want}")
     for r in ("I", "II", "III"):
         ms = (b.get("ranks", {}).get(r) or {}).get("moves", [])
-        if len(ms) != 2:
+        # rules 1.82 item 7006: a rank III `ceiling` move (Stand Behind Me) is beside the rank's two, never one of them
+        if len([m for m in ms if not (r == "III" and m.get("ceiling"))]) != 2 or len([m for m in ms if m.get("ceiling")]) > (1 if r == "III" else 0):
             errors.append(f"class {b.get('id')}: rank {r} has {len(ms)} moves (two per rank)")
         for m in ms:
             if "ref" in m:

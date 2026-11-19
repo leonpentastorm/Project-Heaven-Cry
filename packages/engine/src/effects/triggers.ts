@@ -187,6 +187,13 @@ P('damage', 'words', 'the damage is of one of these kinds (' + DMG_WORDS.join(',
 P('not_damage', 'words', 'the damage is of none of these kinds (as damage; also a source type: strain, short)', (ev, v) => !list(v).some((w) => dmgIs(ev.ctx.src || ev.ctx, w)));
 P('by_hit', 'bool', 'the damage came (or did not come) from someone\'s blow, not a hazard, trap, Bleeding or Burning', (ev, v) => byHit(ev.ctx.src) === v);
 P('self_harm', 'bool', 'the damage is (or is not) the unit\'s own doing (a Mana Short, an overload, Strain, Flux)', (ev, v) => selfHarm(ev.ctx) === v);
+// rules 1.82 item 7006 (Stand Behind Me; new engine piece): the target stands on the tile directly behind the holder as
+// seen from the actor (the step from the actor toward the holder, taken once more past it): the holder is between them
+P('target_behind', 'bool', 'the target stands on the tile directly behind the holder as seen from the actor (the holder between them: Stand Behind Me)', (ev, v) => {
+  const a = ev.actor, t = ev.target, h = ev.self; if (!a?.pos || !t?.pos || !h?.pos || a === h || t === h) return !v;
+  const [ax, ay] = a.pos.split(',').map(Number), [hx, hy] = h.pos.split(',').map(Number), sx = Math.sign(hx - ax), sy = Math.sign(hy - ay);
+  return (t.pos === (hx + sx) + ',' + (hy + sy) && (sx !== 0 || sy !== 0)) === v;
+});
 P('hostile', 'bool', 'the actor and the target are (or are not) on different sides', (ev, v) => (!!ev.actor && !!ev.target && ev.actor.side !== ev.target.side) === v);
 P('cond', 'ids', 'the condition is one of these', (ev, v) => list(v).map(condId).includes(condId(ev.ctx.id)));
 P('cond_family', 'words', 'the condition\'s family is one of these (body, brain, heart)', (ev, v) => list(v).includes(ev.ctx.fam));
