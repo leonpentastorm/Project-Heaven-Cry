@@ -179,3 +179,15 @@ describe('the sheet reads its number blocks through the one resolver (item 6509)
     expect(strainLimit(c)).toBeGreaterThan(s0); expect(readyDesigns(c)).toBeGreaterThan(r0);
   });
 });
+
+describe('a fight-start registration (item 6510): the Primed boon gives its Momentum at combat_start again', () => {
+  it('the meter exists and holds the start plus the step before any turn is taken; the Primed row is combat_start', async () => {
+    const SV: any = (await import('../../../data/survival.json')).default;
+    const P = SV.boons.find((b: any) => b.id === 'boon.primed'), row = P.effects.find((e: any) => e.resource === 'momentum');
+    expect(row.when).toBe('combat_start'); expect(row.limit).toBeUndefined();
+    const sk = { raw_power: 3 };
+    const plain = fightWith([{ kit: 'soldier', weapon: 'maul', skills: sk } as any], [{ tier: 'soldier', at: 'O10' }]);
+    const primed = fightWith([{ kit: 'soldier', weapon: 'maul', relics: ['boon.primed'], skills: sk } as any], [{ tier: 'soldier', at: 'O10' }]);
+    expect((primed.pc as any).res.momentum - (plain.pc as any).res.momentum).toBe(row.value);
+  });
+});

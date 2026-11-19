@@ -1068,8 +1068,8 @@ if "actions" in data:
         if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character") or not isinstance(r.get("path"), str) or not r.get("path"):
             errors.append(f"actions: resources.{rid} needs a name, on (unit or character) and a path")
         # Classes 3.0 batch row: the item op `resource` gives any row through effects/cost.ts resGive
-        for _k in (set(r) - {"name", "one", "on", "path", "whole", "max", "needs", "setter", "made_after_start"}) if isinstance(r, dict) else []:
-            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, one, on, path, whole, max, needs, setter, made_after_start)")
+        for _k in (set(r) - {"name", "one", "on", "path", "whole", "max", "needs", "setter"}) if isinstance(r, dict) else []:
+            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, one, on, path, whole, max, needs, setter)")
         if isinstance(r, dict) and "one" in r and not (isinstance(r["one"], str) and r["one"]):
             errors.append(f"actions: resources.{rid}.one must be the name of one (a cost of 1: '1 core', never '1 cores')")
         for _k in ("max", "needs", "setter"):
@@ -2256,10 +2256,6 @@ def check_trigger_effect(e, w):
         if not o: errors.append(f"{w}: op '{x.get('op')}' does not run on a trigger (item_ops.ops)"); continue
         if t not in o["on"]: errors.append(f"{w}: op '{x.get('op')}' does not run on '{t}' (it runs on {o['on'][:6]}…)")
         if x.get("target") not in (None, "self", "actor", "target"): errors.append(f"{w}: an item op's target is self, actor or target")
-        # spec item 5607: a meter the fight's start makes after the items' combat_start ops (actions.json resources.<id>
-        # made_after_start) has nothing to take a combat_start resource op: give it at the holder's first turn_start
-        if t == "combat_start" and x.get("op") == "resource" and (((data.get("actions") or {}).get("resources") or {}).get(x.get("resource")) or {}).get("made_after_start"):
-            warns.append(f"{w}: a combat_start resource op on {x.get('resource')}, a meter made after the items' combat_start ops: it would be lost (give it at turn_start, once a fight)")
         for f in ("value", "value_pct", "max", "add", "set", "min", "at_least", "tiles", "rounds", "count", "share"):
             if f in x and not (isinstance(x[f], (int, float)) and not isinstance(x[f], bool)) and not (f == "value" and x.get("op") == "resource" and x[f] in ("all", "zero")):
                 if isinstance(x[f], dict): check_number_block(x[f], f"{w}: '{f}'")

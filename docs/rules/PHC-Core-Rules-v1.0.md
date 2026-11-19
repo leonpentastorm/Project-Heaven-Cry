@@ -13221,3 +13221,7 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
 6509. **The sheet reads its number blocks through the one resolver** (`effects/hooks.ts setSheetSource`, registered by
       `effects/triggers.ts` with `sourceOf`; `sheetSource(c)` for a character with no unit): `strainLimit` and
       `readyDesigns` no longer resolve `skill:` themselves. No number changes.
+6510. **A fight-start registration** (`combat.ts onFightStart`): what a system sets up on every unit as a fight starts
+      runs before the items' `combat_start` ops (the Momentum meter and its starting value, `physical/rules.ts`). The
+      Primed boon's Momentum is a `combat_start` op again (item 5506's real fix); item 5607's workaround is gone (the
+      `made_after_start` mark on `actions.json resources.momentum` and the validator's warning). No number changes.

@@ -1724,6 +1724,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   cb.objects = objs; cb.sigilV = SIGIL_REV; // a fresh fight: rules 1.4 glyphs only
   tieCompanions(cb); // Classes 3.0 P9: each companion is tied to its owner (the owned-unit record)
   sayInitiative(cb, ''); // (re-marked by sightQuietly when the set-up hides someone)
+  for (const f of FIGHT_START) f(cb); // rules 1.77 item 6510: the systems' meters exist before the items' combat_start ops
   // Items at the start of a fight: 'combat_start' {cb, order, rng} (order mutable: act in the surprise round, swap places).
   const cs: any = emit(cb, 'combat_start', { cb, order: [...cb.order], rng });
   if (Array.isArray(cs.order) && cs.order.length === cb.order.length && cs.order.every((id: string) => cb.order.includes(id))) cb.order = cs.order;
@@ -1734,6 +1735,11 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   return cb;
 }
 
+/** Rules 1.77 item 6510: what a system sets up on every unit as a fight starts, BEFORE the items' 'combat_start' ops run
+ * (a door's meter and its starting value: physical/rules.ts Momentum), so an item's op at the start finds it. A system
+ * registers once at load (it can't be called from here: combat.ts can't import it, a load cycle). */
+const FIGHT_START: ((cb: Combat) => void)[] = [];
+export const onFightStart = (f: (cb: Combat) => void): void => { FIGHT_START.push(f); };
 /** Start the active unit's turn: AP, heat cooldown, Downed death saves (spec: Downed and dying). */
 export function beginTurn(cb: Combat, rng: Rng) {
   const u = active(cb);
