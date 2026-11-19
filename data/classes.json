@@ -1245,21 +1245,41 @@
               "name": "Vanish",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Fade costs no Shadow",
+              "text": "Once a turn your Hide costs {=effects.0.set} AP",
               "effects": [
                 {
                   "op": "cost_mod",
                   "when": "cost",
-                  "res": "shadow",
-                  "value": -2,
                   "if": {
                     "action": [
-                      "verb:shadow.fade#fade"
+                      "hide"
                     ]
+                  },
+                  "set": 0,
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "vanish",
+                    "peek": true
+                  },
+                  "label": "Vanish"
+                },
+                {
+                  "op": "use",
+                  "when": "acted",
+                  "if": {
+                    "action": [
+                      "hide"
+                    ]
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "vanish"
                   }
                 }
               ],
-              "source": "rules 1.60 item 4628 (R10): was its own Hide out of view, which repeated Fade; the id is kept so saves load",
+              "source": "rules 1.74 item 6011: once a turn Hide costs 0 AP (it was Fade at no Shadow, which did nothing before Ingenuity 5); the id is kept so saves load",
               "adjudication": "engine",
               "provisional": true,
               "origin": "infiltrator",
@@ -1284,45 +1304,26 @@
             },
             {
               "id": "sabotage",
-              "amounts": {
-                "damage": {
-                  "kind": "damage",
-                  "base": 30,
-                  "profile": "flat",
-                  "type": "physical",
-                  "provisional": true
-                }
-              },
               "name": "Sabotage",
-              "ap_cost": 2,
+              "ap_cost": 0,
               "uses": "at_will",
-              "text": "{=ap_cost} AP: Stun a machine beside you for {=numbers.rounds} round, no save · or break a barricade · or rig your tile ({=effects.2.damage} damage, Pinned on a failed Body save)",
+              "text": "Pick, Disable and Rig are yours (Hijack too at rank III) · Disable and Rig cost you no Shadow",
               "effects": [
                 {
-                  "op": "grant_action",
-                  "action": "sabotage",
-                  "ap": 2,
-                  "uses": "at_will",
-                  "range": 1
-                },
-                {
-                  "op": "disable_machine",
-                  "duration_rounds": 1,
-                  "targets": [
-                    "machine",
-                    "turret",
-                    "drone",
-                    "barricade"
-                  ]
-                },
-                {
-                  "op": "rig_tile",
-                  "damage": 30,
-                  "condition": "pinned",
-                  "save": "body"
+                  "op": "cost_mod",
+                  "when": "cost",
+                  "if": {
+                    "action": [
+                      "verb:shadow.disable#disable",
+                      "verb:shadow.rig#rig"
+                    ]
+                  },
+                  "res": "shadow",
+                  "set": 0,
+                  "label": "Sabotage"
                 }
               ],
-              "adjudication": "hybrid",
+              "adjudication": "engine",
               "provisional": true,
               "origin": "infiltrator",
               "new": true,
@@ -1336,9 +1337,7 @@
               ],
               "status": "active",
               "surface": "combat",
-              "numbers": {
-                "rounds": 1
-              }
+              "source": "rules 1.74 item 6011: Pick, Disable, Rig (rank II) and Hijack (rank III) are the Operative's verbs (shadow.json requires the class); this move makes Disable and Rig cost no Shadow. The old Sabotage actions (stun, break, rig with a Pin) are gone: one copy, the verbs"
             }
           ]
         },
@@ -1362,26 +1361,15 @@
           "uses": "at_will",
           "numbers": {
             "start": 1,
-            "analyze_ap": 1,
             "gain": 1
           },
-          "text": "You start each fight with {=numbers.start} Shadow, and your Shadow holds one more than your Ingenuity gives. Your Analyze costs {=numbers.analyze_ap} AP and Reads its target: your side sees its next action. Once a turn, Analyzing an enemy that can't see you gives {=numbers.gain} Shadow.",
+          "text": "You start each fight with {=numbers.start} Shadow, and your Shadow holds one more than your Ingenuity gives. Your Analyze Reads its target: your side sees its next action. Once a turn, Analyzing an enemy that can't see you gives {=numbers.gain} Shadow.",
           "effects": [
             {
               "op": "resource",
               "resource": "shadow",
               "value": 1,
               "when": "combat_start"
-            },
-            {
-              "op": "cost_mod",
-              "when": "cost",
-              "set": 1,
-              "if": {
-                "action": [
-                  "analyze"
-                ]
-              }
             },
             {
               "op": "condition",
@@ -1426,7 +1414,8 @@
             "perception"
           ],
           "status": "active",
-          "surface": "combat"
+          "surface": "combat",
+          "source": "rules 1.74 item 6011: its Analyze price goes (Acuity's Quick Read owns it)"
         }
       ]
     },

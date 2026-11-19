@@ -67,9 +67,9 @@ export function classMarks(cb: any, side: 'pc' | 'foe' = 'pc', o: ClassMarkOpts 
   }
   // ---- Sabotage: a rigged tile (its own side only), barricades and turrets put out of action ----
   for (const ob of cb.objects || []) {
-    if (ob.rig && !ob.resolved) {
+    if ((ob.rig || (ob.laidBy && ob.kind === 'trap')) && !ob.resolved) { // the Operative's Rig verb lays it (rules 1.74 item 6011)
       if (ob.side && ob.side !== side) continue;
-      const own = units.find((u) => u.id === ob.owner), t = T(ob.pos), text = 'Rigged by ' + (own ? own.name : 'your side') + ': the next enemy to step here takes ' + (ob.damage || 30) + ' and may be Pinned (Body save). The enemy can\'t see it.';
+      const own = units.find((u) => u.id === ob.owner), t = T(ob.pos), text = 'Rigged by ' + (own ? own.name : 'your side') + ': the next enemy to step here takes ' + (ob.damage || 30) + ' damage and stops there. The enemy can\'t see it.';
       t.layer = (t.layer ? t.layer + '; ' : '') + 'box-shadow: inset 0 0 0 2px ' + RIG_INK + '; background: repeating-linear-gradient(-45deg, rgba(64, 186, 160, 0.18) 0 4px, transparent 4px 8px)';
       t.marks.push({ key: 'rig' + ob.id, text: '✱ RIG', title: text, style: badge(RIG_INK) + '; left: 1px; bottom: 1px' });
       note(ob.pos, text);

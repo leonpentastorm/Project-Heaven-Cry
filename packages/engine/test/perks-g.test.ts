@@ -108,12 +108,12 @@ describe('Detective\'s Eye', () => {
     const s = storyWith([{ perks: { detectives_eye: 'II' } }]);
     expect(brief(s.g, s.chars[0], 'perk:detectives_eye')).toMatch(/two out-of-place details/);
     const f = fightWith([{ perks: { detectives_eye: 'II' } }], [{ at: 'H6' }, { at: 'H8' }]);
-    expect(f.foes.filter((u) => u.weakPoint && u.analyzedBy).length).toBe(2);
-    expect(logHas(f.cb, /Detective's Eye.*(not connected|connected)/)).toBe(true);
+    expect(f.foes.filter((u) => condOn(u, 'read_them') && u.analyzedBy).length).toBe(2);
+    expect(logHas(f.cb, /The Tell.*(not connected|connected)/)).toBe(true);
   });
   it('I in combat: one enemy\'s weak point', () => {
     const f = fightWith([{ perks: { detectives_eye: 'I' } }], [{ at: 'H6' }, { at: 'H8' }]);
-    expect(f.foes.filter((u) => u.weakPoint).length).toBe(1);
+    expect(f.foes.filter((u) => condOn(u, 'read_them')).length).toBe(1);
   });
 });
 

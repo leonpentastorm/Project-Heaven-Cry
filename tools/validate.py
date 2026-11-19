@@ -2455,8 +2455,12 @@ if TRIG:
         return max([v for k, v in (_SHR.get("cap_by_points") or {}).items() if n >= int(k)] or [0])
     for _x in (data.get("shadow") or {}).get("items") or []:
         _g = next((e for e in _x.get("effects") or [] if isinstance(e, dict) and e.get("op") == "grant_action"), {})
-        _need = ((_x.get("requires") or [{}])[0] or {}).get("min", 0)
-        if ((_g.get("res") or {}).get("shadow") or 0) > _sh_cap(_need): errors.append(f"shadow:{_x.get('id')}: costs more Shadow than the cap at Ingenuity {_need}")
+        # rules 1.74 item 6011: a verb may be gated by a class (the Operative's: its cap adds operative_cap_add) as well as
+        # by Ingenuity points (the skill entry's min, wherever it stands in the list)
+        _req = [r for r in _x.get("requires") or [] if isinstance(r, dict)]
+        _need = next((r.get("min", 0) for r in _req if r.get("skill") == "ingenuity"), 0)
+        _add = (_SHR.get("operative_cap_add") or 0) if any(r.get("class") == "infiltrator" for r in _req) else 0
+        if ((_g.get("res") or {}).get("shadow") or 0) > _sh_cap(_need) + _add: errors.append(f"shadow:{_x.get('id')}: costs more Shadow than the cap at Ingenuity {_need}")
     def _walk_res(o, w):
         if isinstance(o, dict):
             if isinstance(o.get("of"), str) and o["of"].startswith("res:") and o["of"][4:] not in _RESIDS: errors.append(f"{w}: number block source {o['of']} names no actions.json resource")

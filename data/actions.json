@@ -212,8 +212,6 @@
       "tab": "utility",
       "type": "combat/analyze",
       "ap": 2,
-      "ap_quick": 1,
-      "quick_at": 3,
       "rule": "analyze",
       "site": "analyze",
       "pick": "enemy_in_range",

@@ -298,6 +298,24 @@ The level-up card, the sheet and the fight tab show them beside the option's rul
 | K31 | **Blood Price** (Outbursts's fork at 6, `fork.soul.blood_price`) | Placeholder in place (option not built yet) | Wick paying a pump of power with a drop of blood | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-blood_price`) |
 | K32 | **Clean Break** (Outbursts's fork at 6, `fork.soul.clean_break`) | Placeholder in place (option not built yet) | A great release and the heart easing after it | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-clean_break`) |
 
+### 5d. 0.32, the Mind lane (rules 1.74; requested 19 Nov 2026)
+
+New perks, fork options and class moves with no icon yet. Each shows the UI's existing fallback until its painting
+lands. All are Wick icons in the trait/perk style (white flat ink, 1024 x 1024, the STYLE-LOCK; master
+`art/icons/traits/mind-without-fog.png`), except the fork options (the 5c placeholders' style).
+
+| # | For | Status | What it must show | Direction | Goes to |
+| --- | --- | --- | --- | --- | --- |
+| MD1 | **Quick Read** (Acuity perk, `quick_read`) | No icon (fallback) | Wick glancing at a foe, a reading of it already pinned beside him | Perk icon, reads at 32 px | `art/icons/perks/` |
+| MD2 | **Read Them** (Acuity perk, `read_them`) | No icon (fallback) | A foe's blow arriving blunted on someone who has read it | Perk icon | `art/icons/perks/` |
+| MD3 | **Still Breath** (Acuity perk, `still_breath`) | No icon (fallback) | Wick pressed to cover, holding his breath, a searcher's gaze passing over | Perk icon | `art/icons/perks/` |
+| MD4 | **Read Intent** (Vigilance perk, `read_intent`) | The Shadow verb's picture `shadow-read-intent` is repointed to the perk (catalog data_ids); a perk-family icon still wanted | Wick pointing at a foe, its next move drawn ahead of it | Perk icon | `art/icons/perks/` |
+
+Retired with their verbs (rules 1.74 item 6001; the catalog keeps the files, their `data_ids` emptied): `shadow-foul`,
+`shadow-plant`, `shadow-vault`. Renamed perks keep their icons: Eyes in the Back is shown as Cold Spine, Detective's Eye
+as The Tell (Vigilance now). K5 Light Fingers, K6 Lend the Dark and K7 Lightkiller are built (rules 1.74 item 6003);
+Lightkiller's direction stands (Wick in a small ring of darkness).
+
 ## At risk in the balance pass
 
 The balance pass (`docs/design/proposals/2026-11-balance-pass.md`) will rewrite, merge or remove perks, traits and

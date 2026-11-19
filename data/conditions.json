@@ -569,6 +569,98 @@
       "source": "Classes 3.0 (rev4-primitives.md batch row read): Shadow's Read Intent, the Operative's Analyze, Bonds' aim read"
     },
     {
+      "id": "read_them",
+      "name": "Read Them",
+      "kind": "state",
+      "side": "hurts",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "Read: it deals {=effects.0.value|less}% less damage to the other side for the rest of the fight.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "self",
+            "hostile": true
+          },
+          "value": 0.85,
+          "label": "Read Them"
+        }
+      ],
+      "duration": {
+        "until": "fight_end"
+      },
+      "ends_on": [
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6004 (Acuity's Read Them: was Unit.weakPoint and effects/damage.ts READ_THEM)"
+    },
+    {
+      "id": "read_them_ii",
+      "name": "Read Them",
+      "kind": "state",
+      "side": "hurts",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "Read through: it deals {=effects.0.value|less}% less damage to the other side for the rest of the fight.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "self",
+            "hostile": true
+          },
+          "value": 0.75,
+          "label": "Read Them"
+        }
+      ],
+      "duration": {
+        "until": "fight_end"
+      },
+      "ends_on": [
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6004 (Acuity's Read Them: was Unit.weakPoint and effects/damage.ts READ_THEM)"
+    },
+    {
+      "id": "dimmed",
+      "name": "Dimmed",
+      "kind": "state",
+      "side": "helps",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "The dark closes in around you: enemies' eyes reach you from {=effects.0.value|abs} tiles less. Lasts {=duration.rounds} rounds.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "seen_range",
+          "value": -3
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6003 (Ingenuity's fork Lightkiller; stat seen_range, rules 1.70 item 5545)"
+    },
+    {
       "id": "judged",
       "name": "Judged",
       "kind": "state",

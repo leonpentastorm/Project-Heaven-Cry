@@ -7,6 +7,7 @@ import { PERKS, PERK, SKILL, TRAITS, emit, statQuery, previewAttack, resolveAtta
 import { d20 } from '../src/rng';
 import { physFight, rig } from './helpers/physfight';
 import { withGame } from './helpers/perkfight';
+import CONDJ from '../../../data/conditions.json';
 
 beforeEach(() => rig(null));
 type F = ReturnType<typeof physFight>;
@@ -24,9 +25,11 @@ describe('the data of the pass', () => {
     expect(P.grapple).toBeUndefined(); expect(P.origami_hands).toBeUndefined();
     expect(P.iron_grip.name).toBe('Iron Grip'); expect(P.iron_grip.skills).toEqual(['raw_power']);
     expect(P.both_hands.name).toBe('Pressure Point'); expect(P.both_hands.skills).toEqual(['dexterity']); // rules 1.56: the id stays, the perk is new
-    expect(PERKS.length).toBe(106);
+    // rules 1.70 item 5537 / rules 1.74: an alpha has two perks, a beta or gamma two or four (the 0.32 lanes give each four)
     const per: Record<string, number> = {}; for (const p of PERKS as any[]) if (p.tier === 'acquired') per[p.skills[0]] = (per[p.skills[0]] || 0) + 1;
-    expect(Object.keys(per).length).toBe(27); expect(Object.values(per).every((n) => n === 2)).toBe(true);
+    expect(Object.keys(per).length).toBe(27);
+    for (const [s, n] of Object.entries(per)) expect(n, s).toBe((SKILL as any)[s].slot === 'alpha' ? 2 : per[s] === 4 ? 4 : 2);
+    expect(PERKS.length).toBe((PERKS as any[]).filter((p) => p.tier !== 'acquired').length + Object.values(per).reduce((a, b) => a + b, 0));
   });
   it('every acquired and Mastered perk carries its skill\'s slot (skill_greek)', () => {
     for (const p of PERKS as any[]) if (p.tier === 'acquired' || p.tier === 'mastered') expect(p.skill_greek, p.id).toBe((SKILL as any)[p.skills[0]].slot);
@@ -43,8 +46,8 @@ describe('the data of the pass', () => {
   it('Dead Signal is Acuity\'s (id analysis); the unlocks carry their new names', () => {
     expect(P.dead_signal.skills).toEqual(['analysis', 'ingenuity']); expect(P.dead_signal.requires[0]).toEqual({ skill: 'analysis', min: 5 });
     const name = (s: string, n: string) => (SKILL as any)[s].unlocks[n].name;
-    expect([name('raw_power', '3'), name('raw_power', '5'), name('analysis', '5'), name('camaraderie', '3'), name('composure', '5')]).toEqual(['Heavy Hands', 'Follow Through', 'Read Them', 'Hand-Off', 'Stand Still']);
-    expect((SKILL as any).analysis.unlocks['5'].text).toMatch(/deal 15% less damage/);
+    expect([name('raw_power', '3'), name('raw_power', '5'), name('camaraderie', '3'), name('composure', '5')]).toEqual(['Heavy Hands', 'Follow Through', 'Hand-Off', 'Stand Still']);
+    expect(P.read_them.skills).toEqual(['analysis']); expect(P.read_them.tiers.I.text).toMatch(/less damage to your side/); // rules 1.74 item 6004: Read Them is an Acuity perk
     expect((SKILL as any).proficiency.unlocks['5'].text).toMatch(/never jams and never breaks/);
   });
   it('traits name the skills by what they mean now, and no trait or perk text keeps an old skill name', () => {
@@ -159,17 +162,26 @@ describe('Quick Draw, Tuned, Hand-Off, Stand Still (unlocks)', () => {
   });
 });
 
-describe('Read Them (Acuity 5; was Weak Point)', () => {
-  it('Analyze at 5 points marks the enemy; it then deals 15% less to the squad, and the squad deals it no more than before', () => {
-    const f = physFight([{ weapon: 'service_pistol', skills: { analysis: 5 } }], [{ at: 'F7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'F7'); f.turn(f.pc);
+describe('Read Them (Acuity perk since rules 1.74 item 6004; was the Acuity 5 passive, was Weak Point)', () => {
+  const row = (id: string) => (CONDJ as any).items.find((x: any) => x.id === id).effects[0].value;
+  it('Analyze with the perk marks the enemy Read Them; its blows on the squad are cut by the row, and the squad deals it no more than before', () => {
+    const f = physFight([{ weapon: 'service_pistol', skills: { analysis: 5 }, perks: { read_them: 'I' } }], [{ at: 'F7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'F7'); f.turn(f.pc);
     f.act({ type: 'combat/analyze', unitId: f.pc.id, targetId: f.foe.id } as any);
-    expect(f.foe.weakPoint).toBe(true);
-    expect(logHas(f, /Read Them: it deals 15% less damage to the squad/)).toBe(true); expect(logHas(f, /Weak Point|\+15%/)).toBe(false);
-    const pc = f.unit(f.pc.id); pc.hp = pc.maxHp = 1000;
-    withGame(f.g, () => applyDamage(f.cb, pc, 200, { by: f.foe, type: 'weapon', ranged: true }));
-    expect(1000 - f.pc.hp).toBe(170);
+    expect(condOn(f.foe, 'read_them')).toBe(true); expect(logHas(f, /Weak Point|\+15%/)).toBe(false);
+    const hit = withGame(f.g, () => previewAttack(f.cb, f.unit(f.foe.id), f.unit(f.pc.id), 'shot', { free: true }));
+    expect(hit.dmg!.mults.filter((m) => m.label === 'Read Them').map((m) => m.v)).toEqual([row('read_them')]);
     const pv = withGame(f.g, () => previewAttack(f.cb, f.pc, f.foe, 'shot', { free: true }));
-    expect(pv.dmg!.mults.some((m) => /Weak Point/.test(m.label))).toBe(false);
+    expect(pv.dmg!.mults.some((m) => /Weak Point|Read Them/.test(m.label))).toBe(false);
+  });
+  it('Analyze points alone mark nothing (the passive is a perk now); tier II puts on the stronger row', () => {
+    const f = physFight([{ weapon: 'service_pistol', skills: { analysis: 9 } }], [{ at: 'F7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'F7'); f.turn(f.pc);
+    f.act({ type: 'combat/analyze', unitId: f.pc.id, targetId: f.foe.id } as any);
+    expect(condOn(f.foe, 'read_them') || condOn(f.foe, 'read_them_ii')).toBe(false);
+    const g = physFight([{ weapon: 'service_pistol', skills: { analysis: 5 }, perks: { read_them: 'II' } }], [{ at: 'F7' }]); g.put(g.pc, 'C7'); g.put(g.foe, 'F7'); g.turn(g.pc);
+    g.act({ type: 'combat/analyze', unitId: g.pc.id, targetId: g.foe.id } as any);
+    expect(condOn(g.foe, 'read_them_ii')).toBe(true);
+    const hit = withGame(g.g, () => previewAttack(g.cb, g.unit(g.foe.id), g.unit(g.pc.id), 'shot', { free: true }));
+    expect(hit.dmg!.mults.filter((m) => m.label === 'Read Them').map((m) => m.v)).toEqual([row('read_them_ii')]);
   });
 });
 

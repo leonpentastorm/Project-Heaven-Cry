@@ -2429,23 +2429,28 @@
             }
           ]
         },
+        "2": {
+          "name": "Small verbs",
+          "category": "Active Skill",
+          "mastery": 0,
+          "adjudication": "engine",
+          "provisional": true,
+          "text": "The Shadow verbs of this rung open: Lift (take a grenade or a magazine from an adjacent foe) and Decoy (a noise that draws the searchers).",
+          "player": "New moves: Lift (steal), Decoy (noise)",
+          "effects": [],
+          "source": "rules 1.74 item 6000"
+        },
         "3": {
           "name": "Mastery 1",
           "category": "Combat Interaction",
           "mastery": 1,
-          "text": "A perk step in this skill. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=unlocks.3.effects.1.value}) instead of finding you outright. Ghost Kill: drop a foe while no enemy's eyes reach you and you sink back into Hidden (once a turn; not while Marked). The Shadow verbs of this rung open: Lift, Decoy, Read Intent and Cut the Strap.",
-          "player": "Close Quarters · Ghost Kill · New moves: Lift (steal), Decoy (noise), Read Intent (see next action), Cut the Strap (disarm)",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Ghost Kill: drop a foe while no enemy's eyes reach you and you sink back into Hidden (once a turn; not while Marked).",
+          "player": "Ghost Kill: a kill no enemy sees puts you back in Hidden (once a turn)",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "ingenuity",
               "choice": "tier_1"
-            },
-            {
-              "op": "close_roll",
-              "when": "spot",
-              "value": 4,
-              "label": "Close Quarters"
             },
             {
               "op": "mark",
@@ -2531,90 +2536,80 @@
           "name": "Fork: Light Fingers or Lend the Dark",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's first fork, Light Fingers or Lend the Dark: not offered yet (Light Fingers and Lend the Dark are still to be built; data/forks.json).",
+          "text": "The door's first fork: Light Fingers (Lift is cheaper, and an unseen Lift feeds your Shadow) or Lend the Dark (hide an unseen ally). Chosen once, kept for good.",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+          "source": "rules 1.74 item 6003",
+          "player": "Choose: Light Fingers or Lend the Dark"
         },
         "5": {
-          "name": "Mastery 2",
+          "name": "Fade",
           "category": "Active Skill",
           "mastery": 0,
-          "text": "Still Breath: spot rolls against you are {=unlocks.5.effects.0.value} while you stand next to cover. Your Shadow holds one more, and the Shadow verbs of this rung open: Fade, Vault, Open Seam, Foul the Action, Pick and Douse.",
-          "player": "Still Breath: {=.effects.0.value} to foes' spot rolls while you stand beside cover · Shadow holds more · New moves: Fade (slip back into Hidden), Vault (hop a barrier), Open Seam (lower Defense), Foul the Action (spoil a weapon), Pick (open or lock), Douse (put out a lamp)",
-          "effects": [
-            {
-              "op": "roll_mod",
-              "when": "spot",
-              "value": -2,
-              "if": {
-                "by_cover": [
-                  "here"
-                ]
-              },
-              "label": "Still Breath"
-            }
-          ],
           "adjudication": "engine",
-          "item": true
+          "provisional": true,
+          "text": "Your Shadow holds one more, and the big verb of the door opens: Fade (step to cover and go Hidden even while seen).",
+          "player": "Shadow holds more · New move: Fade (slip back into Hidden)",
+          "effects": [],
+          "source": "rules 1.74 item 6000"
         },
-        "7": {
-          "name": "Mastery 3",
-          "mastery": 3,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Shadow Run: once a turn, a move made Hidden from cover to cover costs {=unlocks.7.effects.1.value} AP less (at least {=unlocks.7.effects.1.min}). Your Shadow holds one more, and the Shadow verbs of this rung open: Timing, Rig, Plant and Disable.",
-          "player": "Shadow Run: a Hidden cover-to-cover move costs {=.effects.1.value|abs} AP less (min {=.effects.1.min}) · Shadow holds more · New moves: Timing (foe loses AP), Rig (set a trap), Plant (a tracker), Disable (stun a machine)",
+        "6": {
+          "name": "Mastery 2",
+          "category": "Active Skill",
+          "mastery": 2,
+          "adjudication": "engine",
+          "provisional": true,
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. The Shadow verb of this rung opens: Cut the Strap (disarm an adjacent foe).",
+          "player": "New move: Cut the Strap (disarm)",
           "effects": [
             {
               "op": "perk_choice",
               "skill": "ingenuity",
               "choice": "perk_step"
-            },
+            }
+          ],
+          "source": "rules 1.74 item 6000"
+        },
+        "7": {
+          "name": "Mastery 3",
+          "mastery": 3,
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Your Shadow holds one more, and the Shadow verb of this rung opens: Open Seam (lower a foe's Defense).",
+          "player": "Shadow holds more · New move: Open Seam (lower Defense)",
+          "effects": [
             {
-              "op": "cost_mod",
-              "when": "cost",
-              "value": -1,
-              "min": 1,
-              "if": {
-                "action": [
-                  "move"
-                ],
-                "self_has": [
-                  "hidden"
-                ],
-                "by_cover": [
-                  "here",
-                  "to"
-                ]
-              },
-              "limit": {
-                "per": "per_turn",
-                "n": 1,
-                "key": "run"
-              },
-              "label": "Shadow Run"
+              "op": "perk_choice",
+              "skill": "ingenuity",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine",
-          "item": true,
-          "provisional": true
+          "provisional": true,
+          "source": "rules 1.74 item 6000"
         },
         "8": {
           "name": "Fork: Lightkiller or Spotter",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's second fork, Lightkiller or Spotter: not offered yet (Lightkiller is still to be built; data/forks.json).",
+          "text": "The door's second fork: Lightkiller (once a fight, the dark closes in on you) or Spotter (your Marked foe takes an ambush from an ally). Chosen once, kept for good.",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+          "source": "rules 1.74 item 6003",
+          "player": "Choose: Lightkiller or Spotter"
         },
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. The Shadow verbs of this rung open: Parting Cut and Hijack.",
-          "player": "New move: Hijack (take control of a machine)",
-          "effects": [],
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. The Shadow verb of this rung opens: Timing (a foe loses AP).",
+          "player": "New move: Timing (foe loses AP)",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "ingenuity",
+              "choice": "perk_step"
+            }
+          ],
           "adjudication": "engine"
         },
         "10": {
@@ -2734,45 +2729,37 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Quick Read",
-          "category": "AP Mod",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Analyze costs 1 AP.",
-          "player": "Analyze costs {=.effects.0.value|abs} AP less",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "ap_cost:analyze",
-              "value": -1
-            },
             {
               "op": "perk_choice",
               "skill": "analysis",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "source": "rules 1.74: the free passive Quick Read is now a perk (quick_read)"
         },
         "5": {
-          "name": "Read Them",
-          "category": "Passive",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Enemies you've analyzed deal {=unlocks.5.effects.0.value_pct}% less damage to your whole squad.",
-          "player": "−{=.effects.0.value_pct}% damage from foes you have analysed",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "damage_reduction",
-              "value_pct": 15,
-              "target": "squad",
-              "source": "enemies you have analyzed"
+              "op": "perk_choice",
+              "skill": "analysis",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "source": "rules 1.74: the free passive Read Them is now a perk (read_them)"
         },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2785,8 +2772,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "effects": [],
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "analysis",
+              "choice": "perk_step"
+            }
+          ],
           "adjudication": "engine"
         },
         "10": {
@@ -2803,6 +2796,14 @@
           "adjudication": "engine",
           "resist_echo": 2
         }
+      },
+      "perk_remap": {
+        "rev": 1,
+        "passives": {
+          "3": "quick_read",
+          "5": "read_them"
+        },
+        "note": "rules 1.74 item 6010: Quick Read and Read Them became perks; Detective's Eye moved to Vigilance (The Tell)"
       },
       "overreach": {
         "from_points": 5,
@@ -2899,43 +2900,37 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Cold Spine",
-          "category": "Combat Starter",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "When a hidden enemy aims at you, you learn which direction it's in.",
-          "player": "Know which way a hidden foe aiming at you is",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "reveal_aimer_direction",
-              "value": 1
-            },
             {
               "op": "perk_choice",
               "skill": "vigilant",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine"
+          "adjudication": "engine",
+          "source": "rules 1.74: the free passive Cold Spine is now a perk (eyes_in_the_back)"
         },
         "5": {
-          "name": "The Tell",
-          "category": "Conversation Quirk",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "In any conversation, you notice concealed weapons and hostile intent.",
-          "player": "Notice hidden weapons and hostile intent in talk",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Narrator reveals concealed weapons and hostile intent to this player"
+              "op": "perk_choice",
+              "skill": "vigilant",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "narrator"
+          "adjudication": "engine",
+          "source": "rules 1.74: the free passive The Tell is now a perk (detectives_eye)"
         },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2948,8 +2943,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "effects": [],
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "vigilant",
+              "choice": "perk_step"
+            }
+          ],
           "adjudication": "engine"
         },
         "10": {
@@ -2966,6 +2967,14 @@
           "adjudication": "engine",
           "resist_echo": 2
         }
+      },
+      "perk_remap": {
+        "rev": 1,
+        "passives": {
+          "3": "eyes_in_the_back",
+          "5": "detectives_eye"
+        },
+        "note": "rules 1.74 item 6010: Cold Spine and The Tell folded into Eyes in the Back (Cold Spine) and Detective's Eye (The Tell)"
       },
       "overreach": {
         "from_points": 5,

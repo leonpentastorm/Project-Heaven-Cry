@@ -2031,7 +2031,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Once a turn, an attack you make while Hidden and holding Shadow costs {=tiers.I.effects.0.value|abs} AP less (never under {=tiers.I.effects.0.min}). II: {=tiers.II.effects.0.limit.n} times a turn, an attack you make while Hidden and holding Shadow costs {=tiers.II.effects.0.value|abs} AP less (never under {=tiers.II.effects.0.min}).",
+      "text": "I: Once a turn, an attack you make while Hidden and holding Shadow costs {=tiers.I.effects.0.value|abs} AP less (never under {=tiers.I.effects.0.min}). II: Once a turn, an attack you make while Hidden and holding Shadow costs {=tiers.II.effects.0.value|abs} AP less (never under {=tiers.II.effects.0.min}). Shadow Run: once a turn, a move you make Hidden from beside cover to beside cover costs {=tiers.II.effects.2.value|abs} AP less (never under {=tiers.II.effects.2.min}).",
       "effects": [
         {
           "op": "cost_mod",
@@ -2134,8 +2134,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "{=tiers.II.effects.0.limit.n} times a turn, an attack you make while Hidden and holding Shadow costs {=tiers.II.effects.0.value|abs} AP less (never under {=tiers.II.effects.0.min}).",
-          "short": "{=tiers.II.effects.0.limit.n} times a turn",
+          "text": "Once a turn, an attack you make while Hidden and holding Shadow costs {=tiers.II.effects.0.value|abs} AP less (never under {=tiers.II.effects.0.min}). Shadow Run: once a turn, a move you make Hidden from beside cover to beside cover costs {=tiers.II.effects.2.value|abs} AP less (never under {=tiers.II.effects.2.min}).",
+          "short": "And Shadow Run: a Hidden cover-to-cover move costs {=tiers.II.effects.2.value|abs} AP less",
           "effects": [
             {
               "op": "cost_mod",
@@ -2153,7 +2153,7 @@
               "min": 1,
               "limit": {
                 "per": "per_turn",
-                "n": 2,
+                "n": 1,
                 "key": "step",
                 "peek": true
               }
@@ -2172,9 +2172,33 @@
               },
               "limit": {
                 "per": "per_turn",
-                "n": 2,
+                "n": 1,
                 "key": "step"
               }
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "value": -1,
+              "min": 1,
+              "if": {
+                "action": [
+                  "move"
+                ],
+                "self_has": [
+                  "hidden"
+                ],
+                "by_cover": [
+                  "here",
+                  "to"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "run"
+              },
+              "label": "Shadow Run"
             }
           ],
           "replaces_tier_I": true,
@@ -2187,7 +2211,8 @@
         "shadow",
         "ap"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6002 (tier II: Shadow Run, moved from Ingenuity 7)"
     },
     {
       "id": "jury_rig",
@@ -2431,7 +2456,7 @@
     },
     {
       "id": "eyes_in_the_back",
-      "name": "Eyes in the Back",
+      "name": "Cold Spine",
       "tier": "acquired",
       "perk_type": "combat_starter",
       "skills": [
@@ -2447,7 +2472,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: You can't be flanked. Half cover next to you, and a shield you carry, protect you against ranged attacks from every direction. II: You and the allies next to you can't be flanked. Half cover next to any of you, and a carried shield, protect its owner against ranged attacks from every direction.",
+      "text": "I: When a hidden enemy aims at you, you learn which way it is. You can't be flanked: half cover next to you, and a shield you carry, protect you against ranged attacks from every direction. II: You and the allies next to you can't be flanked. Half cover next to any of you, and a carried shield, protect its owner against ranged attacks from every direction.",
       "effects": [
         {
           "op": "no_flank",
@@ -2464,8 +2489,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "You can't be flanked. Half cover next to you, and a shield you carry, protect you against ranged attacks from every direction.",
-          "short": "Can't be flanked · half cover and shields guard every side",
+          "text": "When a hidden enemy aims at you, you learn which way it is. You can't be flanked: half cover next to you, and a shield you carry, protect you against ranged attacks from every direction.",
+          "short": "Know a hidden aimer's direction · can't be flanked",
           "effects": [
             {
               "op": "no_flank",
@@ -2500,7 +2525,206 @@
       "tags": [
         "defense"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6007 (was Eyes in the Back; Vigilance's passive Cold Spine folded in)"
+    },
+    {
+      "id": "read_intent",
+      "name": "Read Intent",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "vigilant"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "vigilant",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Your Spot also Reads its target: your side sees its next action until its turn ends. II: Your Spot also Reads its target, and a Spot on an enemy that can't see you gives {=tiers.II.effects.3.value} Shadow (once a turn).",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "cost",
+          "if": {
+            "action": [
+              "call"
+            ]
+          },
+          "flag": "spot",
+          "clear": true,
+          "priority": 10
+        },
+        {
+          "op": "mark",
+          "when": "cost",
+          "if": {
+            "action_id": [
+              "call.spot"
+            ]
+          },
+          "flag": "spot",
+          "priority": 20
+        },
+        {
+          "op": "condition",
+          "when": "acted",
+          "if": {
+            "action": [
+              "call"
+            ],
+            "flag": "spot",
+            "target": "foe"
+          },
+          "condition": "read",
+          "target": "target",
+          "skip_save": true,
+          "label": "Read Intent",
+          "say": "{self} reads {target}'s next move."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "vigilant",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Your Spot also Reads its target: your side sees its next action until its turn ends.",
+          "short": "Your Spot also Reads its target (its next action shown)",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "flag": "spot",
+              "clear": true,
+              "priority": 10
+            },
+            {
+              "op": "mark",
+              "when": "cost",
+              "if": {
+                "action_id": [
+                  "call.spot"
+                ]
+              },
+              "flag": "spot",
+              "priority": 20
+            },
+            {
+              "op": "condition",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ],
+                "flag": "spot",
+                "target": "foe"
+              },
+              "condition": "read",
+              "target": "target",
+              "skip_save": true,
+              "label": "Read Intent",
+              "say": "{self} reads {target}'s next move."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "vigilant",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Your Spot also Reads its target, and a Spot on an enemy that can't see you gives {=tiers.II.effects.3.value} Shadow (once a turn).",
+          "short": "And a Spot on a foe that can't see you: +{=tiers.II.effects.3.value} Shadow",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "flag": "spot",
+              "clear": true,
+              "priority": 10
+            },
+            {
+              "op": "mark",
+              "when": "cost",
+              "if": {
+                "action_id": [
+                  "call.spot"
+                ]
+              },
+              "flag": "spot",
+              "priority": 20
+            },
+            {
+              "op": "condition",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ],
+                "flag": "spot",
+                "target": "foe"
+              },
+              "condition": "read",
+              "target": "target",
+              "skip_save": true,
+              "label": "Read Intent",
+              "say": "{self} reads {target}'s next move."
+            },
+            {
+              "op": "resource",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ],
+                "flag": "spot",
+                "target": "foe",
+                "target_sees_self": false
+              },
+              "resource": "shadow",
+              "value": 1,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "intent"
+              },
+              "label": "Read Intent",
+              "say": "{self} reads {target} unseen: Shadow {res:shadow}."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "detection",
+        "support"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6009 (was the Shadow verb Read Intent)"
     },
     {
       "id": "hold_the_stroke",
@@ -3406,61 +3630,61 @@
     },
     {
       "id": "detectives_eye",
-      "name": "Detective's Eye",
+      "name": "The Tell",
       "tier": "acquired",
       "perk_type": "passive",
       "skills": [
-        "analysis"
+        "vigilant"
       ],
-      "skill_greek": "beta",
+      "skill_greek": "gamma",
       "requires": [
         {
-          "skill": "analysis",
+          "skill": "vigilant",
           "min": 3
         }
       ],
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: In every scene, the Narrator tells you one detail that is out of place. When a fight starts, you spot one hidden trap or one enemy's weak point for free. II: In every scene, the Narrator tells you two details that are out of place, and whether they are connected. When a fight starts, you spot two hidden traps or enemy weak points for free.",
+      "text": "I: In any conversation you notice concealed weapons and hostile intent, and in every scene the Narrator tells you one detail that is out of place. When a fight starts, you spot one hidden trap or one enemy's weak point for free. II: In any conversation you notice concealed weapons and hostile intent, and in every scene the Narrator tells you two details that are out of place, and whether they are connected. When a fight starts, you spot two hidden traps or enemy weak points for free.",
       "effects": [
         {
           "op": "narrator",
-          "note": "In every scene, tell the player one detail that's out of place."
+          "note": "Reveal concealed weapons and hostile intent to this player in conversation; in every scene, tell them one detail that's out of place."
         }
       ],
       "tiers": {
         "I": {
           "requires": [
             {
-              "skill": "analysis",
+              "skill": "vigilant",
               "min": 3
             }
           ],
           "ap_cost": null,
-          "text": "In every scene, the Narrator tells you one detail that is out of place. When a fight starts, you spot one hidden trap or one enemy's weak point for free.",
-          "short": "Each scene: a detail out of place · fight start: a trap or weak point",
+          "text": "In any conversation you notice concealed weapons and hostile intent, and in every scene the Narrator tells you one detail that is out of place. When a fight starts, you spot one hidden trap or one enemy's weak point for free.",
+          "short": "Hidden weapons and intent · a detail a scene · a find at fight start",
           "effects": [
             {
               "op": "narrator",
-              "note": "In every scene, tell the player one detail that's out of place."
+              "note": "Reveal concealed weapons and hostile intent to this player in conversation; in every scene, tell them one detail that's out of place."
             }
           ]
         },
         "II": {
           "requires": [
             {
-              "skill": "analysis",
+              "skill": "vigilant",
               "min": 5
             }
           ],
           "ap_cost": null,
-          "text": "In every scene, the Narrator tells you two details that are out of place, and whether they are connected. When a fight starts, you spot two hidden traps or enemy weak points for free.",
+          "text": "In any conversation you notice concealed weapons and hostile intent, and in every scene the Narrator tells you two details that are out of place, and whether they are connected. When a fight starts, you spot two hidden traps or enemy weak points for free.",
           "short": "Two of each, connected or not",
           "effects": [
             {
               "op": "narrator",
-              "note": "In every scene, tell the player two out-of-place details and whether they're connected."
+              "note": "Reveal concealed weapons and hostile intent in conversation; in every scene, tell the player two out-of-place details and whether they're connected."
             }
           ],
           "replaces_tier_I": true,
@@ -3472,7 +3696,8 @@
       "tags": [
         "investigation"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6008 (was Acuity's Detective's Eye; Vigilance's passive The Tell folded in)"
     },
     {
       "id": "pattern_lock",
@@ -3555,6 +3780,317 @@
       "tags": [
         "defense"
       ]
+    },
+    {
+      "id": "quick_read",
+      "name": "Quick Read",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "analysis"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "analysis",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Analyze costs {=tiers.I.effects.0.value|abs} AP less. II: Analyze costs {=tiers.II.effects.0.value|abs} AP less, and your first Analyze each fight costs {=tiers.II.effects.1.set} AP.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap_cost:analyze",
+          "value": -1
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Analyze costs {=tiers.I.effects.0.value|abs} AP less.",
+          "short": "Analyze costs {=tiers.I.effects.0.value|abs} AP less",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:analyze",
+              "value": -1
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Analyze costs {=tiers.II.effects.0.value|abs} AP less, and your first Analyze each fight costs {=tiers.II.effects.1.set} AP.",
+          "short": "And your first Analyze each fight costs {=tiers.II.effects.1.set} AP",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:analyze",
+              "value": -1
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "analyze"
+                ]
+              },
+              "set": 0,
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "quick",
+                "peek": true
+              },
+              "label": "Quick Read"
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "analyze"
+                ]
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "quick"
+              }
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "analysis",
+        "ap"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6004 (was the Acuity 3 passive; tier II was Rumination's Index II, ruling layer section 2 item 7)"
+    },
+    {
+      "id": "read_them",
+      "name": "Read Them",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "analysis"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "analysis",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: An enemy you Analyze is Read Them: it deals {=numbers.I|less}% less damage to your side for the rest of the fight. II: An enemy you Analyze is Read Them: it deals {=numbers.II|less}% less damage to your side for the rest of the fight.",
+      "effects": [
+        {
+          "op": "condition",
+          "when": "acted",
+          "if": {
+            "action": [
+              "analyze"
+            ],
+            "target": "foe"
+          },
+          "condition": "read_them",
+          "target": "target",
+          "skip_save": true,
+          "label": "Read Them"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "An enemy you Analyze is Read Them: it deals {=numbers.I|less}% less damage to your side for the rest of the fight.",
+          "short": "A foe you Analyze deals {=numbers.I|less}% less damage to your side",
+          "effects": [
+            {
+              "op": "condition",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "analyze"
+                ],
+                "target": "foe"
+              },
+              "condition": "read_them",
+              "target": "target",
+              "skip_save": true,
+              "label": "Read Them"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "An enemy you Analyze is Read Them: it deals {=numbers.II|less}% less damage to your side for the rest of the fight.",
+          "short": "{=numbers.II|less}% less",
+          "effects": [
+            {
+              "op": "condition",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "analyze"
+                ],
+                "target": "foe"
+              },
+              "condition": "read_them_ii",
+              "target": "target",
+              "skip_save": true,
+              "label": "Read Them"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "analysis",
+        "defense"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6004 (was the Acuity 5 passive)",
+      "numbers": {
+        "I": 0.85,
+        "II": 0.75
+      }
+    },
+    {
+      "id": "still_breath",
+      "name": "Still Breath",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "analysis"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "analysis",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Foes' rolls to spot you are {=tiers.I.effects.0.value} while you stand next to cover. II: Foes' rolls to spot you are {=tiers.II.effects.0.value} while you stand next to cover. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=tiers.II.effects.1.value}) instead of finding you outright.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "spot",
+          "value": -2,
+          "if": {
+            "by_cover": [
+              "here"
+            ]
+          },
+          "label": "Still Breath"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Foes' rolls to spot you are {=tiers.I.effects.0.value} while you stand next to cover.",
+          "short": "{=tiers.I.effects.0.value} to foes' spot rolls while you stand by cover",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "spot",
+              "value": -2,
+              "if": {
+                "by_cover": [
+                  "here"
+                ]
+              },
+              "label": "Still Breath"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Foes' rolls to spot you are {=tiers.II.effects.0.value} while you stand next to cover. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=tiers.II.effects.1.value}) instead of finding you outright.",
+          "short": "And Close Quarters: a foe beside you must roll (+{=tiers.II.effects.1.value})",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "spot",
+              "value": -2,
+              "if": {
+                "by_cover": [
+                  "here"
+                ]
+              },
+              "label": "Still Breath"
+            },
+            {
+              "op": "close_roll",
+              "when": "spot",
+              "value": 4,
+              "label": "Close Quarters"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "stealth",
+        "defense"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6005 (was Ingenuity 5 Still Breath and Ingenuity 3 Close Quarters)"
     },
     {
       "id": "talks_broke_down",

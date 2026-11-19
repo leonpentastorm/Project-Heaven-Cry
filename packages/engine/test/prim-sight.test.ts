@@ -52,10 +52,10 @@ describe('P7: sight words', () => {
     const s = opsFight({ relics: ['test_sight_shroud'] }), su = pcs(s)[0]; W(s, () => turn(s, su, 0));
     expect(!!su.ps?.['relic:test_sight_shroud']?.flags?.spotted).toBe(W(s, () => sightOf(s.combat, su)[0] === 'seen'));
   });
-  // Rules 1.60 item 4628 (R10): Vanish is no action now (Fade made cheaper); the out-of-view gate is Fade's own door verb.
-  it('Vanish has no gate of its own now: it is a price on Fade (rules 1.60 R10)', () => {
+  // Rules 1.74 item 6011: Vanish is no action (rules 1.60 R10) and no gate of its own: a price on Hide, once a turn.
+  it('Vanish has no gate of its own: it is a price on Hide (rules 1.74 item 6011; was on Fade, rules 1.60 R10)', () => {
     const v = (CLASSES as any).base.find((b: any) => b.id === 'infiltrator').ranks.I.moves.find((m: any) => m.id === 'vanish');
     expect(v.effects.find((e: any) => e.op === 'grant_action')).toBeUndefined();
-    expect(v.effects[0]).toMatchObject({ op: 'cost_mod', when: 'cost', res: 'shadow' });
+    expect(v.effects[0]).toMatchObject({ op: 'cost_mod', when: 'cost', set: 0, if: { action: ['hide'] } });
   });
 });

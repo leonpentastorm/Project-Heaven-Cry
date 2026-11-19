@@ -16,12 +16,12 @@ import { mod, strengthOf } from '../character';
 import { alive, dist, isMelee, canJam, objectsOf, trapKnown } from '../combat';
 import { isTrap } from '../objects';
 import { HEARING } from '../tactics';
-import { applyCond } from '../magic';
-import { SKILL, WEAPON } from '../data';
+import { applyCond, condOn } from '../magic';
+import { SKILL, WEAPON, PERK } from '../data';
 import { npcsOf, sideRollMod } from '../game';
 import { foreseeVote } from '../game';
 import './briefs';
-import { overworld, say } from '../kit';
+import { overworld, say, rngOf } from '../kit';
 import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
 import { loseAp } from '../effects/cost';
 import { stagger } from '../unitstate';
@@ -156,14 +156,14 @@ register({
   brief: (h) => 'a demand for evidence: an accuser without any loses outright, no check' + (tierII(h) ? '; onlookers shift' : ''),
 });
 
-// ---------- Detective's Eye (Analysis 3/5): one out-of-place detail every scene (II: two, and whether connected) ----------
+// ---------- The Tell (id detectives_eye; Vigilance 3/5 since rules 1.74 item 6008): one out-of-place detail every scene (II: two, and whether connected) ----------
 // Story: owed every scene through perkLines (key perk:detectives_eye); the brief says when it is still owed.
 // Combat (PROVISIONAL, a new combat form): at the start of a fight the holder sees one hidden trap or one enemy's weak
 // point (as if Analyzed, without the AP); II: two, and the log says whether they're connected (same owner).
 function servedThisScene(h: Holder): number {
   const g = gOf(h); if (!g?.story || !h.c) return 0;
   const es: any[] = g.story.entries || []; let i = es.length - 1; while (i >= 0 && es[i].kind !== 'scene') i--;
-  return es.slice(i + 1).filter((e) => e.kind === 'voice' && e.charId === h.c!.id && /^DETECTIVE.S EYE/i.test(e.head || '')).length;
+  return es.slice(i + 1).filter((e) => e.kind === 'voice' && e.charId === h.c!.id && String(e.head || '').startsWith(String(PERK[h.itemId]?.name || '').toUpperCase() + ' ')).length;
 }
 register({
   id: 'detectives_eye',
@@ -174,10 +174,10 @@ register({
       const n = tierII(h) ? 2 : 1, found: { what: string; owner?: string }[] = [];
       for (const o of objectsOf(cb)) { if (found.length >= n) break; if (isTrap(o) && !trapKnown(o, 'pc')) { const k: any = o; if (k.side) (k.knownBy ||= []).push('pc'); else o.hidden = false; found.push({ what: 'a trap at ' + o.pos, owner: k.owner }); } }
       const foes = cb.units.filter((t) => t.side !== u.side && alive(t) && !t.analyzedBy && !t.companion).sort((a, b) => b.hp - a.hp || (a.id < b.id ? -1 : 1));
-      for (const t of foes) { if (found.length >= n) break; t.analyzedBy = u.name; t.weakPoint = true; found.push({ what: 'how ' + t.name + ' fights (read: it deals 15% less to the squad)', owner: t.id }); }
+      for (const t of foes) { if (found.length >= n) break; t.analyzedBy = u.name; if (!condOn(t, 'read_them_ii')) applyCond(cb, rngOf(h, ctx), u, t, 'read_them', undefined, undefined, { skipSave: true }); found.push({ what: 'how ' + t.name + ' fights (Read Them)', owner: t.id }); }
       if (!found.length) return;
       const linked = found.length === 2 && !!found[0].owner && found[0].owner === found[1].owner;
-      say(cb, u.name + '\'s eye catches what doesn\'t fit (Detective\'s Eye): ' + found.map((f) => f.what).join('; ') + (found.length === 2 ? (linked ? ' · connected' : ' · not connected') : '') + '.');
+      say(cb, u.name + '\'s eye catches what doesn\'t fit (' + (PERK[h.itemId]?.name || '') + '): ' + found.map((f) => f.what).join('; ') + (found.length === 2 ? (linked ? ' · connected' : ' · not connected') : '') + '.');
     },
   },
   brief: (h) => {

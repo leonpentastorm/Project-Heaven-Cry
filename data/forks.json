@@ -251,19 +251,48 @@
           "door_pick": "fork.shadow.light_fingers"
         }
       ],
-      "text": "Lift costs {=numbers.shadow} Shadow and takes anything the foe carries, straight to your pack",
-      "numbers": {
-        "shadow": 1
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N12"
+      "text": "Lift costs {=effects.0.value|abs} AP less · a Lift the foe can't see gives +{=effects.1.value} Shadow (once a turn)",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "verb:shadow.lift#lift"
+            ]
+          },
+          "value": -1,
+          "min": 1,
+          "label": "Light Fingers"
+        },
+        {
+          "op": "resource",
+          "when": "acted",
+          "if": {
+            "action": [
+              "lift"
+            ],
+            "target": "foe",
+            "target_sees_self": false
+          },
+          "resource": "shadow",
+          "value": 1,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "fingers"
+          },
+          "label": "Light Fingers",
+          "fx": {
+            "k": "stance",
+            "what": "shadow_gain"
+          },
+          "say": "{self} lifts it clean: Shadow {res:shadow}."
+        }
       ],
-      "why": "The take op takes a throwable or a magazine to the pile; taking anything carried into the pack needs its fields what and to (N12, not approved). The spec gives no cheaper wording that keeps the point.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6003 (the Mind lane of 0.32; Perception sheet section 3)"
     },
     {
       "id": "fork.shadow.lend_the_dark",
@@ -277,19 +306,51 @@
           "door_pick": "fork.shadow.lend_the_dark"
         }
       ],
-      "text": "{=numbers.ap} AP · {=numbers.shadow} Shadow · once a turn: an unseen ally within {=numbers.reach} tiles becomes Hidden",
-      "numbers": {
-        "ap": 1,
-        "shadow": 1,
-        "reach": 4
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [],
-      "why": "Its step is not offered (Light Fingers waits on N12), so it is not built in this slice; it needs only existing pieces (grant_action with reach, condition hidden on the target) once Light Fingers comes.",
+      "text": "{=effects.0.ap} AP · {=effects.0.res.shadow} Shadow · once a turn: an ally within {=effects.0.reach.tiles} tiles that no enemy sees becomes Hidden",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "lend_the_dark",
+          "ap": 1,
+          "res": {
+            "shadow": 1
+          },
+          "uses": "per_turn",
+          "reach": {
+            "tiles": 4,
+            "side": "ally",
+            "if": {
+              "target_sight": [
+                "out_of_view"
+              ],
+              "target_lacks": [
+                "hidden",
+                "marked"
+              ]
+            },
+            "why": {
+              "target_sight": "An enemy can see {target}.",
+              "target_lacks": "{target} is already Hidden, or Marked."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "hidden",
+              "target": "target",
+              "skip_save": true,
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
+              },
+              "say": "{self} lends {target} the dark{then}."
+            }
+          ]
+        }
+      ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6003 (the Mind lane of 0.32; Perception sheet section 3)"
     },
     {
       "id": "fork.shadow.lightkiller",
@@ -303,21 +364,34 @@
           "door_pick": "fork.shadow.lightkiller"
         }
       ],
-      "text": "Once a fight · {=numbers.ap} AP · {=numbers.shadow} Shadow: you and adjacent tiles go dark for {=numbers.rounds} rounds",
-      "numbers": {
-        "ap": 1,
-        "shadow": 2,
-        "rounds": 2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N9"
+      "text": "Once a fight · {=effects.0.ap} AP · {=effects.0.res.shadow} Shadow: you are Dimmed for {=effects.0.effects.0.rounds} rounds (foes must stand closer to see you)",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "lightkiller",
+          "ap": 1,
+          "res": {
+            "shadow": 2
+          },
+          "uses": "per_combat",
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "dimmed",
+              "rounds": 2,
+              "skip_save": true,
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
+              },
+              "say": "{self} kills the light around them{then}."
+            }
+          ]
+        }
       ],
-      "why": "The zone op may not lay the smoke kind (N9, not approved); the spec gives no cheaper wording.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6003 (the Mind lane of 0.32; Perception sheet section 3); seen_range, rules 1.70 item 5545"
     },
     {
       "id": "fork.shadow.spotter",

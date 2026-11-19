@@ -71,7 +71,8 @@ describe('the forks as data (N1): two steps a door, at 4 and 8 of its alpha skil
     expect(doorForkView(c, 'durability')!.steps[0]).toMatchObject({ picked: 'fork.guard.provoke', pending: false });
     expect(() => s.act({ type: 'door/pick', charId: id, door: 'durability', option: 'fork.guard.cover_them' } as Action)).toThrow(/No Durability choice is open/);
     c.skills.ingenuity = 10;
-    expect(() => s.act({ type: 'door/pick', charId: id, door: 'ingenuity', option: 'fork.shadow.lend_the_dark' } as Action)).toThrow(/No such choice/);
+    const shelf = (forksJ as any).items.find((x: any) => x.shelved); // rules 1.74: Ingenuity's options are built now; a shelved row, if any is left, is refused
+    if (shelf) { (c.skills as any)[shelf.door] = 10; expect(() => s.act({ type: 'door/pick', charId: id, door: shelf.door, option: shelf.id } as Action)).toThrow(/No such choice/); }
     c.skills.durability = FORK2('durability');
     expect(() => s.act({ type: 'door/pick', charId: id, door: 'durability', option: 'fork.pressure.lockdown' } as Action)).toThrow(/No such choice/);
     const f = fightWith([{ skills: { durability: 4 } }], [{}]);

@@ -139,7 +139,7 @@ describe('F3: an item action reads its AP from its data', () => {
       const [kind, id] = key.split(':'), tiers = kind === 'perk' && (PERK as any)[id]?.tiers ? Object.keys((PERK as any)[id].tiers) : [undefined];
       for (const tier of tiers) { const info = itemInfo(key, tier as any); if (info) expect(() => dataAp(info, d.id), key + '#' + d.id).not.toThrow(); }
     }
-    expect(n).toBeGreaterThan(80);
+    expect(n).toBeGreaterThan(75); // rules 1.74 item 6011: Sabotage's three actions left (its verbs are data)
   });
   it('RATCHET: the lane actions that still type a number the data also holds (never raise it)', () => {
     // An action whose literal AP equals its item's data AP should say ap: 'data'. What is left here is written by a

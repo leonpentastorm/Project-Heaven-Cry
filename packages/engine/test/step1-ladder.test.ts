@@ -2,7 +2,7 @@
 // Rules 1.70 (0.32 step 1): the ladder schedule as data (item 5537), old saves' perk re-pick (item 5538), and an unspent
 // Attribute point carried from level 2 to 3 (the brief's H). Every change goes through the reducer (levelup/perk,
 // levelup/perk-repick, levelup/raise, narrator/turn) or the load door (migrateLoaded) on the repo's real old saves.
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { PERK, PERKS, SKILL, apply, migrateLoaded, ladderSchedule, ladderStepAt, stepsEarned, stepsTaken, pendingPerkSteps, pendingRepicks, levelUpDue, type Character } from '../src';
@@ -54,7 +54,11 @@ describe('the ladder schedule is one table (rules 1.70 item 5537)', () => {
 
 describe('old saves: the perk re-pick (rules 1.70 item 5538)', () => {
   const PT: any = SKILL.pain_threshold;
-  afterEach(() => { delete PT.perk_remap; });
+  // These tests write their own table on Pain Threshold; the attributes' real tables (rules 1.74 and the other 0.32
+  // lanes) are set aside while they run and put back after, so each test sees one table: its own.
+  const ALL: any[] = Object.values(SKILL as any); let kept: [any, any][] = [];
+  beforeEach(() => { kept = ALL.filter((s) => s.perk_remap).map((s) => [s, s.perk_remap]); for (const [s] of kept) delete s.perk_remap; });
+  afterEach(() => { delete PT.perk_remap; for (const [s, t] of kept) s.perk_remap = t; });
   it('with no table, a real old save loads as it was (nothing written)', () => {
     for (const name of ['save-develop-cb40e92-mid-fight', 'save-develop-cb40e92-after-fight', 'save-live-0.22.0-long-mid-fight']) {
       const once = migrateLoaded(raw(name)), again = JSON.stringify(migrateLoaded(JSON.parse(JSON.stringify(once))));
