@@ -182,6 +182,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-broadback_sabre",
+      "path": "art/icons/gear/weapon-broadback_sabre.png",
+      "sha256": "1f2b6fda647cc87a2663bdf40753bf26ee337b3d4e051b7284bd6a1d7a66bef7",
+      "label": "Broadback sabre",
+      "family": "05-cavalry-blades",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-broadback_sabre.png",
+        "sha256": "17be737f3c5a31ff812f7ab1292d566d89a2aad30f53edbce73dbd019ca86580"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-broadback_sabre.png",
+        "sha256": "1f2b6fda647cc87a2663bdf40753bf26ee337b3d4e051b7284bd6a1d7a66bef7"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-broadback_sabre.txt",
+        "sha256": "cdb7f559b47055b99225ea3ca66187d90359c8125b2928b0c080d54cbddc96d7"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-sabre.png",
+          "sha256": "cd3bbe4eb898b4d4072305ead7f2d46ae038dc525c85b6965e0043b8ea18bb80"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-broadback_sabre.png",
+        "128": "art/icons/gear/exports/128/weapon-broadback_sabre.png",
+        "64": "art/icons/gear/exports/64/weapon-broadback_sabre.png",
+        "32": "art/icons/gear/exports/32/weapon-broadback_sabre.png"
+      },
+      "export_hashes": {
+        "256": "b68fbb7c2b81d6edb1672803c773730837afdc0288db0013d960154ae8c9ae6b",
+        "128": "970c0498a4aee6f04b6bad6c8462d814802ee2975f24bf29d57cd7d8c6fde1e0",
+        "64": "9d9b392bb85c355b7f5c3b8012e9119fdcdea0dd235d57a0fc73112aab0e1552",
+        "32": "e3e1b3bca132bf02b4cde30e7988955a100a145d35d2c22608e15229e307f134"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

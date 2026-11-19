@@ -18710,6 +18710,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-broadback_sabre": {
+      "label": "Broadback sabre",
+      "path": "art/icons/gear/weapon-broadback_sabre.png",
+      "sha256": "1f2b6fda647cc87a2663bdf40753bf26ee337b3d4e051b7284bd6a1d7a66bef7",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-broadback_sabre.png",
+        "128": "art/icons/gear/exports/128/weapon-broadback_sabre.png",
+        "64": "art/icons/gear/exports/64/weapon-broadback_sabre.png",
+        "32": "art/icons/gear/exports/32/weapon-broadback_sabre.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-broadback_sabre.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+      "brief_number": 4,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {
