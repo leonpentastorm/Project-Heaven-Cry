@@ -42,6 +42,7 @@ names. Nothing in this pack is final until Leon approves the delivered picture.
 | [`07-shields-armour.md`](07-shields-armour.md) | Items 2.0: 6 new shields (Strike and Ward families) and 14 new armour forms | 20 |
 | [`08-grades-and-uniques.md`](08-grades-and-uniques.md) | The grade method (base prompt G and 28 grade blocks: 7 item classes x 4 grades, reused for all 572 grade pictures); the proof sheet (8); the uniques: Leon's 3 shields and 8 PROPOSED concepts (11) | 47 (28 method blocks + 19 pictures) |
 | [`09-heavy-and-strange.md`](09-heavy-and-strange.md) | Items 2.0: the heavy and strange weapons as 10 PROPOSED families (launchers, rocket tubes, flamers, rotaries, anti-materiel, core, censer, powered blades, power gauntlets, thrown), 20 new forms, questions for Leon | 20 |
+| [`10-rifle-analogues.md`](10-rifle-analogues.md) | Leon's gun-analogue ruling (PROPOSED): the coverage table of 46 real-world patterns (internal note, generic words only), 5 new maker lines (G13 to G17, 15 forms) drawn as faithful patterns, 17 faithful repaints of existing guns, 10 redraw notes for 06 and 09, questions for Leon | 15 (+ 17 repaint lines, 10 redraw notes) |
 | **Total** | | **216 prompt blocks** (188 one-picture prompts + 28 reusable grade blocks) |
 
 The list names one more file, `10-rifle-analogues.md`, for Leon's gun-analogue ruling (section 4.3 of the list). It is not
