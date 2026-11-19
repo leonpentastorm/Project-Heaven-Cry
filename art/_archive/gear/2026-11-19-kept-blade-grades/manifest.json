@@ -1548,6 +1548,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-striking_gloves--fine",
+      "path": "art/icons/gear/weapon-striking_gloves--fine.png",
+      "sha256": "876ce07be45081a7e7314efc77aead7926e1ade2d7a48c37f2d7dac89b8aa268",
+      "label": "Striking Gloves — Fine",
+      "family": "weapon-striking_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-striking_gloves--fine.png",
+        "sha256": "e94ace484b24925f74e26bb90a82dda8275b3486381d8527d09003ce7770ff19"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--fine.png",
+        "sha256": "876ce07be45081a7e7314efc77aead7926e1ade2d7a48c37f2d7dac89b8aa268"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-striking_gloves--fine.txt",
+        "sha256": "e7cc350a9c8abdfc17408ee5da84ed86cb53e595e8a9cef78d1c18c1b95128e5"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-striking_gloves.png",
+          "sha256": "4e54720c6116953f5aa708040f4f083708ebaff75d8ee5ec794ffcb04c400576"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-striking_gloves--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-striking_gloves--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-striking_gloves--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-striking_gloves--fine.png"
+      },
+      "export_hashes": {
+        "256": "0c8e1a5066f07b84f9e57c9cbe5c4f9b93e61a778ee4be103a4f87c24cf5dd8d",
+        "128": "8b29455ab56b4dec9c8581c62be69fc213e745f1d82b879f9bd6c13e778f4fa2",
+        "64": "de6f68d6692b7da7b8c492b4c03e7876389d710f8e22668fbf13d3e70865e2cf",
+        "32": "e6f1eba29886126ad00ac2794fe5ae1b864b496f6860c45d61681e1d4fa89b2a"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-striking_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9893844674733172,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 9
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
