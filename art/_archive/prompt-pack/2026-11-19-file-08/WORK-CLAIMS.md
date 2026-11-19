@@ -13,3 +13,5 @@ Continuation now also claims finish trials for the existing Combat Knife, Sabre 
 The four grades for Katana, Combat Knife, Sabre and Legion Gladius have now been selected as 16 review-candidate masters after visual comparison at inventory size. All sources and measured edge differences are retained. This selection accepts resampling and modest contour drift for artistic review. It does not assert pixel-identical outlines.
 
 The next eight finish trials are recurve_bow and longbow, all four grades. This claim is also posted to the shared coordination issue https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 .
+
+Those eight are now registered and pushed as review candidates: this branch has 24 candidate masters, 96 game-size exports. Next claim is existing `weapon-crossbow` and `weapon-repeating_crossbow`, all four grades, eight pictures. Shared issue comment 7003710278 records it before rendering. No other IDs newly reserved here.
