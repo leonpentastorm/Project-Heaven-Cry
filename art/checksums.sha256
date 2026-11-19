@@ -1218,7 +1218,7 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-1fae2659755370b0045a1d82260a19cbb606a4a7ac82136b963946404776fcf6  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+7d0cec8ec4f5d269ac6a7f2ec97bad0d6253001f249f950a21845d8fb55a5510  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
 94945aad0e68ad8b22c52bed7d69da47d3c8ce6bbadae80767d8ff7013cdfd12  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-adamantile_greatsword--celestial/v1/prompt.txt
 64bf1707c8c64ae246dd44100a1a10f45c95aad399c447fd5eb4186d1eeb4ad5  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-adamantile_greatsword--celestial/v1/source.png
 d45a6560626c2b7ec9e72406ef8f6a74f765e4248c7e9327e77ced05dde82ce1  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-hatchet--relic/v1/prompt.txt
@@ -1256,7 +1256,7 @@ b12143083cdfe3c5ceee491749c91166b76383cf92fafa2bb4789d5e336f14f7  art/_archive/g
 5bafd9566182f158985200353d0550461cfd9085f61188ef3bc81fe52c493c4d  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-ork_machete--masterwork.json
 f85847b07f42b0eaf1f645e351ca8a5bdc0a03f90b1a19d3eb10d8d9fefe7a6c  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-sabre--fine.json
 9e9bbb8dfef43cad55fe67a508994d3d5aba04f34c2298ca5792d8007429ca4c  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_axe--fine.json
-3853dd9143cbbfcaccc7cc614fd1a7bfd4abce32eda9bf28a6464398bbb7ec35  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+73939eb9b8e6b4e178c54e6d0fca0af591bbf624f0f9d29bc301593462887415  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
 a24e91ff934ff8736e4c7ad06c1269ad72f6b2d2489fed0562ae191445b27994  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-adamantile_greatsword--celestial.png
 3f44cd6e14da21f9ebb345a08a290aff44d56fc53677dc4f69bb8352450a5730  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-adamantile_greatsword--fine.png
 ef6282e8f21698726a68e0efcf353b5e7195054adf284e6fe4bde5ad60d647d3  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-adamantile_greatsword--masterwork.png
@@ -1266,6 +1266,7 @@ e53ad5fa2cc91610366fa74c878df5a2e5287568e454c53a96917ed724c311e2  art/_archive/g
 a00449f33163357e868072d28487d2151531686a9bc7fa54f0e64d1a34edbbfe  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-glaive--fine.png
 9e566b53dffddd142c5ee26885b305806d2fb945f39e8acadbf944cd65a56a21  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-glaive--masterwork.png
 14e13257e7f6415a3e83b407c0e41c27fe22339cd9160c1a02ec7c26bf9d1985  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-glaive--relic.png
+a1054ffaf848814599a63dd4c66ac56bda9b96ee61ac7071315d141fab72c021  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hand_wraps--fine.png
 91c943a21b0a653afd7db59282df2b24d63b5f47d4e6b63a8b588e5bde6e3aac  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hatchet--celestial.png
 976dda359eb94adec3ddc828079cf2b65da366bd07d647d2acf1cfc71039f888  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hatchet--fine.png
 e7a29e3f0b8dd972bb981d3a215f36436240d918c82f5e4c2449e7d1d9ae8d90  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hatchet--masterwork.png
@@ -1289,7 +1290,7 @@ dab3bbbdf442bc217948fd60eee32f838a211d1eb1fe57e133a194b9c3d5e740  art/_archive/g
 876ce07be45081a7e7314efc77aead7926e1ade2d7a48c37f2d7dac89b8aa268  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--fine.png
 ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--masterwork.png
 9b36f752a3f17b24c47de7d956ab451043d216ca9d97ee734691013ea43c4ab9  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--relic.png
-66a7bc5293a0448faa4256db63eda9fa708cd7efbbe47b3ec417414b1d6f88b0  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+9ea35b1e82d658666a127fe5d2a47bca227d1b9dedda3d41f0ac550d7ae5088c  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 e49c7b76f7589a0d50eb30f9f56da3b0ea8642d4f3e4f377e9d6a58f9c1ab97b  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-attuner--celestial.txt
 a9eb1b72949cbdcc31f0d066a622a74cfe32a0f14999c907a4c26eaf15c5c119  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-attuner--fine.txt
 f4b69432ffcbab4f2ed3c13e1fa7b09c8b2e881e74f1ccc0e0672394249c1771  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-attuner--masterwork.txt
@@ -1370,13 +1371,15 @@ f31bd9e8a0540c7383f8310931a78e08efe28e692f5d7d9c470dbc59372d4a69  art/_archive/g
 9f68b7cbbd608181d6cca6fc54e49bf23085deb5286e7827370197db31d33ec8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--fine.txt
 e8081d259555e24814654d1db508a91e3c8ccb6805bca5ca00465c7ef0f6f70f  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--masterwork.txt
 bee7477a9e07b82ad229c32541939deea912fb45b3155a89d95d7db1a2a39834  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--relic.txt
-cfbba4a981178c68f79b396150bf7187cb172f25f5a8b7e4a4d459afb6d6dc12  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+e7d252a32cb09b410cefb59746a8509fbdfa4f42bc1a5cf796b68b90d4bb5682  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
 d370243b2815d9ab925f034018caecae2b3d779e9fc8327e8f687838fe39a61b  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-adamantile_greatsword-32px.png
 c64c6290c77325bca41d754a9f48b872ed214703cdfa665e58fd5d35dad84744  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-adamantile_greatsword-64px.png
 e60acd10879508f0f7ca3d94526f95f4ea38cf413e0b62129a6681490f81e52e  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-combat_knife-32px.png
 10bd191ec3b6b22ef8513066c663dc60ee43bfe3f74748dd82c8b5b7f83415a4  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-combat_knife-64px.png
 22847f5d0a698247c91ca72e3b7791bbb32bd8358d4df22345c06ea2a14970a1  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-glaive-32px.png
 c7f937710d4fa8323bd3dae2f0f26cca7e06dd202fff08057a2f48b881782170  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-glaive-64px.png
+0859e7cdbf2225131118d6a8d316f6bcae486256e2b9e9f5c2f455073f0b7a5d  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-hand_wraps-32px.png
+000c7ac90891d82f9d7a493a16b8d0b514172aa6e155db7ca691405f3f7642ed  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-hand_wraps-64px.png
 cf34503634eacef5499b228236627eb45534ccc37208f5e91c857a493ae983bd  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-hatchet-32px.png
 bc862f3b4a165bd9ec6b3141361df4d4b8e3d6bca0e74067018a8a17ea828cae  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-hatchet-64px.png
 f413d47e2cd42cce0e687267f5bdef725d79d26f00e9bc7d6ffa8862763418ae  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-kemizuchi_duelling_blade-32px.png
@@ -1401,6 +1404,7 @@ fc3546f6cf2c13247b094002ad7d910acb5517b33a6bfa82aa6e72fa6113b978  art/_archive/g
 90a4284a98cd705bfcbdde05785a77818c535f729b06b4327788cc82dfc75a13  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-glaive--fine.png
 c63953c150adf0e15c2a0ef6e6c619f98f5c06ea6c60ef93fbc248caa1326974  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-glaive--masterwork.png
 28941f1444713f9aaf6d67a2bb75ea8c179e2e8d0056404c7468b1c3f0c60489  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-glaive--relic.png
+16d7b6f1e572766e39f52c7b3df997d88c412a0613e04a33222bae3d97ef5548  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hand_wraps--fine.png
 4be95f14c57bee7c3d87841c9499be0a95d425df713a19c0badca3b6c2f13ece  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hatchet--celestial.png
 5caf62d198ac2e4a55310cced0781d0c57ceb461941c1c242f3f89a1499cbdcf  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hatchet--fine.png
 9248a26d314592328c8da2a5a6d474cdc326b0e150e92b65115ed3933da79924  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hatchet--masterwork.png
@@ -5100,7 +5104,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-4186ca3c7b114cbe5be39b7e6a78ff048bac1bcecd564928f3ee4d9dc94d71cb  art/catalog.json
+ee4c3512c4e354e3162e74a5ae0d0381638a8357fc468605c8e9bdf17e231588  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6870,6 +6874,7 @@ bbee170b0339ccdffb487efba14ab13de7c9ea75c4df9f490b5a095a540a7f3d  art/icons/gear
 8b23eb531b13a4d6bd52280dcd8aa3f1fb4b2d46a5ba43e86444dffe26a19ee8  art/icons/gear/exports/128/weapon-glaive--relic.png
 20ce774702c70a47def5f8429067ec120b8ac48f3cd8a645799709ce5a0586a2  art/icons/gear/exports/128/weapon-glaive.png
 a76ce7ab068c0a08f380d76949c23198a75162f54e09e59aab03622c1d39d139  art/icons/gear/exports/128/weapon-grand_staff.png
+00d5ca10ab258715070528ac2c49e8b82603b66a352b539fd17ec0cbaf25c80c  art/icons/gear/exports/128/weapon-hand_wraps--fine.png
 fe008b67c57bce7fc461757e4fd994f55ff2007085f7d4969c9c0303f10eb8ea  art/icons/gear/exports/128/weapon-hand_wraps.png
 57d9ad5b2d32aa0edbaa4d704d2f77ae750ad9cef97776fea49503eddfc61e45  art/icons/gear/exports/128/weapon-hatchet--celestial.png
 facc8437a4674a0e9bcc7a369f835664aafd1a91be6e66cb10bdacf93f25423b  art/icons/gear/exports/128/weapon-hatchet--fine.png
@@ -7128,6 +7133,7 @@ c42354e913190bdc41db95677a9208438651c97daf8d2b43f5a3f77e4517b3f9  art/icons/gear
 d902247081aa9ac762a1aef7c0ec39503e94d24a341efcb421ed33003d3dd355  art/icons/gear/exports/256/weapon-glaive--relic.png
 08614d5369f19eb475ce4805aacbdfc76a29b35a9bac3c048dc896e2c8976a4c  art/icons/gear/exports/256/weapon-glaive.png
 64a9c7a23fd40bfbb2d28c5ed207877844e4149cd90969a3f0bf6ec5841386c5  art/icons/gear/exports/256/weapon-grand_staff.png
+7f8703bb4e93a250056d40006f6ca810427cb6f03f4fb3feab53f66ac3de382f  art/icons/gear/exports/256/weapon-hand_wraps--fine.png
 b4d3f58a2287689e18c9e2071a59329ab28a700361780ab6daa18c1d58739452  art/icons/gear/exports/256/weapon-hand_wraps.png
 7bd6d2ec6b27533124a586d4b795a52efa77621aa05b5638edb71c57ba541c12  art/icons/gear/exports/256/weapon-hatchet--celestial.png
 7cd5f5c165446b239ff0cfab8bf2658bb6cb175f46278802ccb16db2611a9976  art/icons/gear/exports/256/weapon-hatchet--fine.png
@@ -7386,6 +7392,7 @@ c3ae4bd28d6971a7061289c2fe61d86d902a50ec7e5d67ff01432ca69c666863  art/icons/gear
 bee971ec9abdbe2aec05201117f115555a7bf3670d4b9608636381ffe5b5ba71  art/icons/gear/exports/32/weapon-glaive--relic.png
 1871c8736d8b34b2656cb6099a58b89d6f485dcd3e3d5741918381cceb6b0570  art/icons/gear/exports/32/weapon-glaive.png
 c9b0e638adeb967f87796bbc8029b8e2e8727931eae864a1a49fc2b18e8f478b  art/icons/gear/exports/32/weapon-grand_staff.png
+ac354d69b283bb692410a1696b16392df756bc91da6f483ceaa52608bde200dc  art/icons/gear/exports/32/weapon-hand_wraps--fine.png
 f4d1b108372e586d24bdaceb1cab8a7680eedcc744ed8e7733deb4f6370a0294  art/icons/gear/exports/32/weapon-hand_wraps.png
 daef0f7928dccf5e0708c4952d7a688dfde0dea2d65bd881ccd099b1abad41a9  art/icons/gear/exports/32/weapon-hatchet--celestial.png
 4baaa148e19f7210fb45a051d45c04b2c66560abd70f5c750b83c3c33ddea015  art/icons/gear/exports/32/weapon-hatchet--fine.png
@@ -7644,6 +7651,7 @@ d36dedf1749f86cc884c71b0f815c38a2a755989bbe0f6d3a77bd6c1a1500360  art/icons/gear
 693a9ba3b54a456beeb9662aaf7de6305d96a54efcc5bbe85cea6a54c8b75ce5  art/icons/gear/exports/64/weapon-glaive--relic.png
 7667861e03c7f1833659ee9f400910076156521b86119dbbef745d883b985d27  art/icons/gear/exports/64/weapon-glaive.png
 c2ee75b8627e4bdda98730176ffe69ca11815e69c8cfbe56f3b228b303a24d81  art/icons/gear/exports/64/weapon-grand_staff.png
+3dd088f5d21f93414bc1a6e6749f9b10a0de8aa421afc81d5b15b3840e281cce  art/icons/gear/exports/64/weapon-hand_wraps--fine.png
 1c529eb781c3dd4eecf37555960c650381d9ae21273cd2b614e30505ced1d94c  art/icons/gear/exports/64/weapon-hand_wraps.png
 cbb3e9e35151821d125d63235ee996c04370291963ca17006c60a99b7987df88  art/icons/gear/exports/64/weapon-hatchet--celestial.png
 a8410422ff6abe62a1d29ab54c5f5c2f90961e318960aff45a3ba1cb7dddc878  art/icons/gear/exports/64/weapon-hatchet--fine.png
@@ -7852,6 +7860,7 @@ a00449f33163357e868072d28487d2151531686a9bc7fa54f0e64d1a34edbbfe  art/icons/gear
 14e13257e7f6415a3e83b407c0e41c27fe22339cd9160c1a02ec7c26bf9d1985  art/icons/gear/weapon-glaive--relic.png
 c6e54c5d2f96f5c8dad00cbf0da2dc5bddb6aba60105ff52d8da91871818df1e  art/icons/gear/weapon-glaive.png
 50c5f9e9ecc5268e40bcf9784a32caf37d550ec1cf647ad8253f90c805b40281  art/icons/gear/weapon-grand_staff.png
+a1054ffaf848814599a63dd4c66ac56bda9b96ee61ac7071315d141fab72c021  art/icons/gear/weapon-hand_wraps--fine.png
 275174226eca2cc49f2db8a64a0d553d4d591dc244b2b053fcab2dcd11fce994  art/icons/gear/weapon-hand_wraps.png
 91c943a21b0a653afd7db59282df2b24d63b5f47d4e6b63a8b588e5bde6e3aac  art/icons/gear/weapon-hatchet--celestial.png
 976dda359eb94adec3ddc828079cf2b65da366bd07d647d2acf1cfc71039f888  art/icons/gear/weapon-hatchet--fine.png

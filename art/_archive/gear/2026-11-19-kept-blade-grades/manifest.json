@@ -1792,6 +1792,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hand_wraps--fine",
+      "path": "art/icons/gear/weapon-hand_wraps--fine.png",
+      "sha256": "a1054ffaf848814599a63dd4c66ac56bda9b96ee61ac7071315d141fab72c021",
+      "label": "Hand Wraps — Fine",
+      "family": "weapon-hand_wraps",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hand_wraps--fine.png",
+        "sha256": "16d7b6f1e572766e39f52c7b3df997d88c412a0613e04a33222bae3d97ef5548"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hand_wraps--fine.png",
+        "sha256": "a1054ffaf848814599a63dd4c66ac56bda9b96ee61ac7071315d141fab72c021"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hand_wraps--fine.txt",
+        "sha256": "cf0dcb90b7b649cab7047e30aed77893311b397052487b242ed7a840a0ffbe2f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-hand_wraps.png",
+          "sha256": "275174226eca2cc49f2db8a64a0d553d4d591dc244b2b053fcab2dcd11fce994"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hand_wraps--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-hand_wraps--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-hand_wraps--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-hand_wraps--fine.png"
+      },
+      "export_hashes": {
+        "256": "7f8703bb4e93a250056d40006f6ca810427cb6f03f4fb3feab53f66ac3de382f",
+        "128": "00d5ca10ab258715070528ac2c49e8b82603b66a352b539fd17ec0cbaf25c80c",
+        "64": "3dd088f5d21f93414bc1a6e6749f9b10a0de8aa421afc81d5b15b3840e281cce",
+        "32": "ac354d69b283bb692410a1696b16392df756bc91da6f483ceaa52608bde200dc"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-hand_wraps",
+      "outline": {
+        "solid_alpha_iou": 0.9836721915285451,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 12
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
