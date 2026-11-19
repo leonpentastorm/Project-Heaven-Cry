@@ -29,7 +29,7 @@ function grid(w = 16, h = 11) {
     (b as any).getBoundingClientRect = () => ({ left: x * 40, top: y * 40, width: 40, height: 40, right: x * 40 + 40, bottom: y * 40 + 40 });
     root.appendChild(b);
   }
-  layer = document.createElement('div'); document.body.appendChild(layer); setLayer(layer);
+  layer = document.createElement('div'); document.body.appendChild(layer); setLayer(layer as HTMLDivElement);
   const add = layer.appendChild.bind(layer); (layer as any).appendChild = (n: any) => { puts++; return add(n); };
 }
 const tileOfTok = (el: Element): string | null => { const b = el.closest('button.phc-tok'); const m = b?.getAttribute('aria-label')?.match(/^([A-Z]+\d+)/); return m ? m[1] : null; };

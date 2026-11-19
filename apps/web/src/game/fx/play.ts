@@ -928,7 +928,7 @@ const H: Record<string, Handler> = {
     const color = why === 'sigil' || why === 'elemental' || why === 'wall' ? SIGIL_INK : why === 'soul' ? SOUL_INK : undefined;
     if (why === 'burn') burst('flame', p, p.s * 0.9, 600, { color: '#F68A38', from: 0.5, to: 1.1 });
     if (why === 'bleed') decal(e.at, 'blood_' + (1 + Math.floor(Math.random() * 3)), '#7A0E16', 2600, 0.35);
-    if (e.element) elementImpact(p, e.element, why === 'soul' ? 'soul' : 'sigil', { power: why === 'acid' ? 0.4 : 0.55, quiet: true, decalKey: why === 'acid' ? null : e.at });
+    if (e.element) elementImpact(p, e.element, why === 'soul' ? 'soul' : 'sigil', { power: why === 'acid' ? 0.4 : 0.55, quiet: !e._prayer, decalKey: why === 'acid' ? null : e.at, sound: (s, o) => play(s, p, o) }); // a prayer's element is heard (fx/faith.ts prayerTies)
     else if (color) { squaresOrMotes(p, color, why === 'soul'); }
     if (why === 'acid') { bubbles(p, ELEMENTS.acid, 'sigil', 4, 900); play('stim', p, { gain: 0.4, rate: 1.2 }); }
     shake(tok, why === 'explosion' ? 1.6 : 0.8); flash(tok, color === SOUL_INK ? 'soul' : color ? 'magic' : 'hurt');
@@ -944,7 +944,7 @@ const H: Record<string, Handler> = {
     if (tok && !live) anim(tok, [{ filter: 'none', translate: '0 0', rotate: '0deg', opacity: 1 }, { ...fallen, opacity: 1, offset: 0.3 }, { ...fallen, opacity: 0.85, offset: 0.7 }, { ...fallen, opacity: 0 }], { duration: reducedMotion() ? 900 : 1700, easing: 'ease-out', fill: 'forwards' });
     else if (tok && !reducedMotion()) anim(tok, [{ filter: 'none', translate: '0 0', rotate: '0deg' }, { ...fallen, offset: 0.35 }, { ...fallen, offset: 0.85 }, { filter: 'none', translate: '0 0', rotate: '0deg' }], { duration: 1400, easing: 'ease-out' });
     dust({ x: p.x, y: p.y + p.s * 0.2 }, p.s);
-    floatText(e.dead ? 'DEAD' : 'DOWNED', p, HP, { delay: 150 });
+    floatText(e.dead ? 'DEAD' : e.surrendered ? 'SURRENDERS' : 'DOWNED', p, e.surrendered ? WHITE : HP, { delay: 150 }); // a surrender is not a fall (Love Conquers, a yield)
   },
   explode(e) { if (e.what === 'discharge') { discharge(SOUL_KIT, e); return; } explosion(e.at, e.radius || 1, e.what === 'fire' ? 'fire' : 'frag'); },
   object(e) { const p = at(e.at); if (!p) return; if (e.broken) { dust(p, p.s * 1.3); burst('smoke_soft', p, p.s, 700, { color: '#7F8BA1' }); play('body_fall', p, { rate: 0.8, delay: 90 }); floatText('BROKEN', p, MUTED, { small: true }); } },
@@ -1201,7 +1201,7 @@ Object.assign(H, soulHandlers(SOUL_KIT));
 // Outburst 4.0 (fx/feelings.ts): feelings felt and poured, residue, Revert, practice, Fuse, Linger, Thread.
 Object.assign(H, feelingHandlers(SOUL_KIT));
 // Blessing 2.0 (fx/faith.ts): prayers, Witnessed, interventions, Devotion, vows, the patron's lines and Miracles.
-Object.assign(H, faithHandlers({ ...SOUL_KIT, patronOfUnit: (id) => patronOfUnit(id), posOfChar: (charId) => { if (!charId) return undefined; for (const u of units.values()) if (u.charId === charId) return u.pos; return undefined; },
+Object.assign(H, faithHandlers({ ...SOUL_KIT, sideOf: (id) => unit(id)?.side || null, patronOfUnit: (id) => patronOfUnit(id), posOfChar: (charId) => { if (!charId) return undefined; for (const u of units.values()) if (u.charId === charId) return u.pos; return undefined; },
   nameOfChar: (charId) => (charId ? charNames.get(charId) : undefined), hurry: (ms) => hurryFx(ms) }));
 const NOTE = [1, 1.122, 1.26, 1.498, 1.682, 2];
 const hash = (s: string) => { let h = 0; for (const c of String(s || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
