@@ -4518,6 +4518,11 @@
         "self": "target",
         "about": "a unit is about to be pushed, pulled, thrown or teleported"
       },
+      "displaced": {
+        "hook": "displaced",
+        "self": "actor",
+        "about": "a unit the holder moved by force has landed, or was held where it stood by what is in the way (test it with stopped_by; the tile that stopped it is the tile of the event)"
+      },
       "heal": {
         "hook": "heal_in",
         "self": "target",
@@ -4877,6 +4882,15 @@
         "arg": "bool",
         "about": "the target is (or is not) up: not Downed, dead or surrendered"
       },
+      "stopped_by": {
+        "arg": "words",
+        "about": "a forced move was stopped short by one of these: edge (the edge of the map), object (a wall, cover or a thing on the tile), unit (another unit, standing there)",
+        "values": [
+          "edge",
+          "object",
+          "unit"
+        ]
+      },
       "open": {
         "arg": "bool",
         "about": "nothing has stopped it yet: not cancelled, and (would_drop) not floored"
@@ -4902,14 +4916,24 @@
         "arg": "zone",
         "about": "self stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
         "values": [
-          "sanctuary"
+          "sanctuary",
+          "hallowed"
+        ]
+      },
+      "actor_in_zone": {
+        "arg": "zone",
+        "about": "actor stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
+        "values": [
+          "sanctuary",
+          "hallowed"
         ]
       },
       "target_in_zone": {
         "arg": "zone",
         "about": "target stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
         "values": [
-          "sanctuary"
+          "sanctuary",
+          "hallowed"
         ]
       },
       "actor_tied": {
@@ -5472,6 +5496,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5518,6 +5543,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5564,6 +5590,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5614,6 +5641,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5716,6 +5744,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5764,6 +5793,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5811,6 +5841,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5859,6 +5890,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5909,6 +5941,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5955,6 +5988,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -6001,6 +6035,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -6058,6 +6093,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -6101,6 +6137,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -6147,6 +6184,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -6193,6 +6231,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -6236,6 +6275,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",

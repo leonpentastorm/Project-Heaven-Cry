@@ -736,7 +736,11 @@ function techPreviewOf(x: DescCtx, t: { hand: string; id: string; item?: string 
   for (const n of pv.notes || []) lines.push({ k: 'note', text: n });
   // G1 (0.32, spec item 5600): the Momentum it leaves is the technique itself run on a copy as a hit (preview.ts dryRun
   // asHit): every hit-time op (Rolling Start, the Breaker's +2, Charge's run) counts as the action counts it
-  if (pv.momentum && whole.ok) { const dr = safe(() => dryRun(x.g, fcb, x.u.id, (c, u, rng) => useTechnique(c, u, t.id, args, rng), { asHit: true }), null as any); if (dr && !dr.err && dr.u) pv.momentum = { ...pv.momentum, after: momentumOf(dr.u) }; }
+  // rules 1.78 item 6608: the same run lists what rides on a hit (Smite's blow): every item whose hit-time op ran (cb.riders)
+  const dr = whole.ok && (pv.momentum || (pv.attacks || []).length) ? safe(() => dryRun(x.g, fcb, x.u.id, (c, u, rng) => useTechnique(c, u, t.id, args, rng), { asHit: true }), null as any) : null;
+  if (pv.momentum && dr && !dr.err && dr.u) pv.momentum = { ...pv.momentum, after: momentumOf(dr.u) };
+  const riders: string[] = dr && !dr.err ? dr.cb.riders || [] : [];
+  if (riders.length) lines.push({ k: 'note', text: 'On a hit: ' + riders.join(', ') });
   if (pv.momentum) lines.push({ k: 'meter', text: 'Momentum ' + pv.momentum.now + ' → ' + pv.momentum.after + (pv.ends ? ' · ends your chain' : '') });
   if (pv.guard) lines.push({ k: 'meter', text: 'Guard ' + pv.guard.now + ' → ' + pv.guard.after });
   for (const q of pv.pressure || []) lines.push({ k: 'meter', text: name(q.unit) + ': Pressure ' + (q.add >= 0 ? '+' : '') + q.add + ' → ' + q.after + (q.state ? ' (' + (PRESS_STATE[q.state] ?? q.state) + ')' : '') + (q.onHit ? ' on a hit' : '') });

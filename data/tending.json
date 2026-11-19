@@ -38,7 +38,7 @@
           "min": 1
         }
       ],
-      "text": "With an Attuner in hand: {=numbers.share|pct}% of the damage you take goes to the enemies Bonded to you, split among them; you have +{=numbers.hit} on every roll to hit an enemy Bonded to you; when you heal yourself or a Bonded ally, each enemy Bonded to you takes {=numbers.echo|pct}% of the HP restored at the start of its next turn; your damage to enemies is {=numbers.per_bond|pct}% more for each Bond you hold; Tending you give a Bonded ally is ×{=numbers.through}. A Bonded ally going Down costs you {=numbers.down_mp} MP. You hold {=effects.0.value} Bond.",
+      "text": "With an Attuner in hand: {=numbers.share|pct}% of the damage you take goes to the enemies Bonded to you, split among them; you have +{=numbers.hit} on every roll to hit an enemy Bonded to you; when you heal yourself or a Bonded ally, each enemy Bonded to you takes {=numbers.echo|pct}% of the HP restored at the start of its next turn; your damage to enemies is {=numbers.per_bond|pct}% more for each Bond you hold; Tending you give a Bonded ally is ×{=numbers.through}. A Bonded ally going Down costs you {=numbers.down_mp} MP. At the start of each of your turns you read every enemy you see that means to strike an ally Bonded to you: your side sees what it will do. You hold {=effects.0.value} Bond.",
       "effects": [
         {
           "op": "stat_mod",
@@ -269,6 +269,18 @@
             ]
           },
           "max": 3
+        },
+        {
+          "op": "condition",
+          "when": "turn_start",
+          "condition": "read",
+          "skip_save": true,
+          "rounds": 1,
+          "targets": {
+            "side": "foe",
+            "seen": true,
+            "aims_at": "tied:bond"
+          }
         }
       ],
       "numbers": {

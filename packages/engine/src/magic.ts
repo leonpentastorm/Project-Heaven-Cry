@@ -56,10 +56,11 @@ export interface Zone { id: string; kind: 'field' | 'trap' | 'turret' | 'wall' |
   /** field: the Burst multiplier per tile; trap/turret: hidden, the sides that spotted it, triggers left, hp, def; element. */
   tileMult?: Record<string, number>; hidden?: boolean; spotted?: string[]; triggers?: number; hp?: number; def?: number; element?: string | null; kin?: boolean; dir?: [number, number]; reachMult?: number }
 // ---------- zones from data (Classes 3.0 P10) ----------
-/** The kinds of zone data may lay (op `zone`; predicates self_in_zone, target_in_zone): a closed list, one a user. */
-export const DATA_ZONE_KINDS = ['sanctuary'] as const;
-/** A kind of zone data may lay. */
-export type DataZoneKind = (typeof DATA_ZONE_KINDS)[number];
+/** The kinds of zone data may lay (op `zone`; predicates self_in_zone, actor_in_zone, target_in_zone): read from
+ * `rules.json zones.kinds` (rules 1.78 item 6607, P9: a new kind is a data row). */
+export const DATA_ZONE_KINDS: readonly string[] = (((RULES as any).zones?.kinds || []) as { id: string }[]).map((k) => k.id);
+/** A kind of zone data may lay (one of DATA_ZONE_KINDS). */
+export type DataZoneKind = string;
 /** THE door that lays a zone a unit owns on the fight (the op `zone`, a class move's own action): its id is the fight's
  * next glyph serial; it runs down with the others (sigilRoundTick: `rounds`) and ends at 0 or when its pool is spent. */
 export function makeZone(cb: Combat, by: Unit, o: { kind: Zone['kind']; tiles: string[]; rounds: number; mult?: number; words?: string[]; pool?: number }): Zone {
@@ -69,7 +70,13 @@ export function makeZone(cb: Combat, by: Unit, o: { kind: Zone['kind']; tiles: s
 }
 /** The zones of a kind a tile lies in, by their owner's relation to a unit (self: its own; side: its side's; any). */
 export function zonesAt(cb: Combat, tile: string, kind: string, owner: 'self' | 'side' | 'any' = 'any', to?: Unit | null): Zone[] {
-  return (cb.zones || []).filter((z) => z.kind === kind && z.tiles.includes(tile) && (owner === 'any' || !to ? true : owner === 'self' ? z.by === to.id : z.side === to.side));
+  const here = (cb.zones || []).filter((z) => z.kind === kind && z.tiles.includes(tile));
+  if (owner === 'any' || !to) return here;
+  if (owner === 'side') return here.filter((z) => z.side === to.side);
+  // self: rules 1.78 item 6601 (spec item 1908): one side's zones of a kind on a tile never stack: the first laid is the
+  // one that acts there (its owner's rows read it); a later one of the same kind acts only where the first does not lie
+  const first = here.find((z) => z.side === to.side);
+  return first && first.by === to.id ? [first] : [];
 }
 /** End zones (a holder's of a kind): returns how many ended. */
 export function endZones(cb: Combat, pick: (z: Zone) => boolean): number { const was = (cb.zones || []).length; cb.zones = (cb.zones || []).filter((z) => !pick(z)); return was - cb.zones.length; }

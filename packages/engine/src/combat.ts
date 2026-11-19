@@ -282,6 +282,9 @@ export interface Combat { /** Rules 1.47: the effects a run's fight keeps for it
   /** A dry run's copy only (preview.ts PreviewOpts.asHit, G1 of 0.32): this unit's own attacks hit, so the preview reads what
    * a hit gives (the Momentum a Charge really reaches). Never set on a live fight. */
   asHit?: string;
+  /** The same copy only (rules 1.78 item 6608): the items whose hit-time ops ran for the asHit unit's attack (their names,
+   * in order), what the attack preview lists as riding on a hit (Smite). Never set on a live fight. */
+  riders?: string[];
   /** The overworld's throwaway fight state (storyCb): per-turn item counters live in the story instead. */
   overworld?: boolean;
   /** Each side's sight at the last check, for the sight_change hook (only kept while someone listens). */
@@ -1869,7 +1872,10 @@ function remarkOpening(cb: Combat) { const at = cb.log.findIndex((l, i) => i < 4
 function joinFight(cb: Combat, rng: Rng) {
   delete cb.approach; cb.round = 1;
   sayInitiative(cb, APPROACH.joined_log + ' ');
-  raiseAlarm(cb);
+  const told = raiseAlarm(cb);
+  // rules 1.78 item 6603 (spec item 5010 c): the fight joined is an effects event (the alarm's, `joined`), over the first
+  // character the foes learned of (no tile: nobody was told; the screen still sounds it)
+  emitFx(cb, 'alarm', { joined: true, ...(told ? { at: told } : {}) });
   for (let i = 0; i < cb.order.length; i++) {
     cb.turn = i; const u = active(cb)!;
     if (u.dead || u.surrendered || (u.side === 'foe' && u.downed)) continue;
@@ -1880,14 +1886,15 @@ function joinFight(cb: Combat, rng: Rng) {
  * foe group on the map learns where each character not Hidden stands now (the foe side's seenAt, read by knownTile), so
  * a group that never saw the squad comes for it (enemySearchTile) instead of searching where the squad started. A Hidden
  * character stays unknown; the foes' own Hidden (ambushers) keep their rule. The log says it once (rules.json
- * combat.approach.alarm_log), when it told the foes anything. */
-function raiseAlarm(cb: Combat) {
-  let told = false;
+ * combat.approach.alarm_log), when it told the foes anything. Returns the first told character's tile (null: none). */
+function raiseAlarm(cb: Combat): string | null {
+  let told: string | null = null;
   for (const p of cb.units) {
     if (p.side !== 'pc' || !alive(p) || p.hidden) continue;
-    if (cb.seenAt?.foe?.[p.id] !== p.pos) { noteSeen(cb, 'foe', p.id, p.pos); told = true; }
+    if (cb.seenAt?.foe?.[p.id] !== p.pos) { noteSeen(cb, 'foe', p.id, p.pos); told ??= p.pos; }
   }
   if (told && APPROACH.alarm_log) say(cb, APPROACH.alarm_log);
+  return told;
 }
 /** Pass the turn to the next unit that can act; Downed PCs still get turns (death saves). o.newRound: the round ends with
  * this turn (rules 1.62 item 4906: a field opens on a new round). On a field (rules 1.62 item 4906) the round that would
@@ -2307,7 +2314,12 @@ export function displace(cb: Combat, rng0: Rng | null | undefined, u: Unit, to: 
       path.push(k); at = k;
     }
   }
-  if (o.preview || !path.length) { res.path = path; res.moved = path.length; if (path.length) res.to = path[path.length - 1]; return res; }
+  if (o.preview || !path.length) {
+    res.path = path; res.moved = path.length; if (path.length) res.to = path[path.length - 1];
+    // rules 1.78 item 6605: driven into what stands next to it, it was still moved against it ('displaced', held where it stood)
+    if (!o.preview && res.blockedAt) emit(cb, 'displaced', { u, by: o.by, from, to: from, path: [], how: o.source, kind: o.how, stoppedBy: res.stoppedBy, blockedAt: res.blockedAt, tile: res.blockedAt, cb, rng });
+    return res;
+  }
   // 2. It goes. The effect first (the screen slides it there), then the tiles act on it.
   const last = path[path.length - 1];
   const ev: any = o.fx === false ? null : emitFx(cb, 'shove', { ...(o.by && !(o.fx && o.fx.magic) ? { unit: o.by.id } : {}), target: u.id, from, to: last, ok: true, ...(path.length > 1 ? { path: [from, ...path] } : {}), ...(o.how === 'pull' ? { pull: true } : {}), ...(o.source ? { source: o.source } : {}), ...(o.fx || {}) }); // source: what did it (a screen draws a Launch's flight only for the Launch)
@@ -2332,7 +2344,7 @@ export function displace(cb: Combat, rng0: Rng | null | undefined, u: Unit, to: 
   res.path = path.slice(0, entered); res.moved = entered; res.to = u.pos;
   if (ev && entered < path.length) { ev.to = path[entered - 1]; if (ev.path) ev.path = [from, ...res.path]; } // a trap or a hazard ended it short
   // 'displaced' {u, by, from, to, path, how, kind, stoppedBy, blockedAt}: after it was moved (Breaching Strike reads where it ended).
-  emit(cb, 'displaced', { u, by: o.by, from, to: res.to, path: res.path, how: o.source, kind: o.how, stoppedBy: res.stoppedBy, blockedAt: res.blockedAt, cb, rng });
+  emit(cb, 'displaced', { u, by: o.by, from, to: res.to, path: res.path, how: o.source, kind: o.how, stoppedBy: res.stoppedBy, blockedAt: res.blockedAt, ...(res.blockedAt ? { tile: res.blockedAt } : {}), cb, rng });
   sightCheck(cb);
   return res;
 }

@@ -123,6 +123,17 @@ shows its group's mark (Slip).
 | `shadow-verb:shadow.stalk` | Stalk (rules 1.76 item 6405: 2 AP, once a turn, from Hidden, +1 Shadow) on the SHADOW tab | Wick crouched still in deep shadow, eyes on a distant figure, a wisp of shadow gathering round it |
 | `shadow-verb:shadow.case` | Case (rules 1.77 item 6514: 1 AP, an enemy that can't see you is Cased, its kit shown) on the SHADOW tab, group Mark | Wick peering from cover at a distant figure, a small ledger of its gear sketched beside it |
 | `cond:cased` | the Cased condition's chip (rules 1.77 item 6514) | the same ledger mark, small, as a status chip |
+
+### 0g. The leftovers lane of 0.32: two class moves (requested 19 Nov 2026; rules 1.78)
+
+Two Wick icons in the class-move style (`move-<item key>`, `art/icons/moves/`; directions from the Momentum 2.0 and
+Prayer 2.0 drafts). Until drawn the rows show their text only.
+
+| id | where | direction |
+| --- | --- | --- |
+| `move-class:fighter.into_the_wall` | Into the Wall (rules 1.78 item 6605: the Breaker's gain; a foe driven into a wall or a body takes a slam) | Wick pushing with both palms, a wall line at the far side |
+| `move-class:guardian.hallow` | Hallow (rules 1.78 item 6607: the Chaplain's gain; a Hymn that lays hallowed ground) | Wick pressing a palm to the ground, three lines rising |
+
 ### 0e. The Body lane of 0.32: new perks (requested 19 Nov 2026; rules 1.73)
 
 Wick perk icons, white flat ink, 1024 × 1024, transparent, the STYLE-LOCK applies (master: `art/icons/traits/mind-without-fog.png`),

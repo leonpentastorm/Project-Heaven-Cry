@@ -13271,3 +13271,78 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       no rule makes a character Surprised when it is ambushed; making one is a balance rule (who loses round 1), so it
       is written as a design in the report and not built. (d) **Athletics "Defense from 1"** stays from 2 (Waiting on
       Leon).
+
+### Rules 1.78 (leftovers), things designed before and never built (0.32, 19 Nov 2026)
+
+The leftovers lane of 0.32: items designed in earlier revisions and checked in code on 19 Nov
+(`docs/design/handoffs/2026-11-19-code-verification.md`). A later revision overrides the body and the earlier ones.
+Every new number here is PROVISIONAL and a data field.
+
+6600. **What this revision builds and leaves** (the lane's hand-off: `docs/design/handoffs/0.32-LEFTOVERS.md`).
+6601. **Two zones of one kind on a tile do not stack (closes item 1908):** where one side's zones of the same kind lie on
+    the same tile (two Chaplains' Sanctuaries), only the first laid acts there: its owner's rows read it and spend its
+    pool; a later one acts only on the tiles the first does not cover, and takes over when the first ends. Two sides'
+    zones never cancel each other. The rule is the one zone reader's (`magic.ts zonesAt`, owner `self`), for every zone
+    kind data lays.
+6602. **NULL unmakes a Figment (figments-spec rule 12; closes rules 1.34 section 7's first leftover):** a NULL Evoke
+    unmakes every Figment standing on the tiles it covers, anyone's (its maker's side too), with no refund, by the one
+    door that unmakes an owned unit (`owned.ts unmakeOwned`). What a word unmakes is its `dispel` list in data
+    (`sigils.json null.dispel` gains `figment`: an owned unit whose record kind is listed); the preview marks each
+    Figment as the rest ("⊘ FIGMENT"), and a NULL that only unmakes a Figment does not fizzle. The enemy caster's weighing
+    of NULL on a Figment (figments-spec section 8: its charge x 4) is not built; the enemy AI's weights are unchanged.
+6603. **The fight joined is an effects event (closes item 5010 c):** when contact joins a fight opened unseen (rules 1.64
+    item 5008), the engine emits the alarm's effects event with `joined` (no new kind), on the tile of the first
+    character the foes learned of (item 5521). The screen draws CONTACT! there with the alarm's rings and sound; it
+    shows no toast, since the BATTLE START card says the same.
+6604. **Aim marks on a Bonded ally (bonds-spec section 2 rule 8, closes rules 1.33's open aim read):** at the start of
+    each of a Bonder's turns, every enemy its side sees whose next action aims at an ally Bonded to it is Read (the
+    condition `read`: its intent is shown to the Bonder's side until that enemy's turn ends). A row of `tend.threads`
+    (`condition read`, `targets {side: foe, seen: true, aims_at: "tied:bond"}`), no new piece. The screen draws the
+    enemies a side has read aiming at one unit as one red crosshair on that unit's tile with their count ("◎ 2"); the
+    arrow on each enemy is unchanged. The text of Threads says so.
+6605. **Into the Wall (the Breaker; momentum-2.0 item 15; closes item 4409's P13):** a Breaker's gain. An enemy the
+    Breaker moves by force (a Shove, Launch, any push of its own) into the map's edge, a wall or cover, or another unit
+    takes a slam where it stops (`amounts.slam` base **12**, the melee profile, PROVISIONAL: the draft's 0.5 of the
+    plain blow); the unit it is driven into takes the same slam, whoever it is. A Shove that is blocked still drives it
+    into what stands behind it (the forced move is refused where it stands; the slam lands and it falls Prone as before).
+    One collision rule: what stopped a forced move is `displace`'s own result (`stoppedBy`, `blockedAt`), read by the item
+    ops through the trigger `displaced` (the hook that existed, now also raised when the move is refused at the first
+    tile) and the predicate `stopped_by` (edge, object, unit); the body hit is the event's tile (`targets {of: tile}`).
+    Breaching Strike keeps its own code (moving it onto this row moves the golden tables: not this revision).
+6606. **Hurl (the Breaker; momentum-2.0 item 16, P14) is not built:** it needs the object op's `hurl` (a lift and a throw
+    to a second tile: one action with two tile picks), the objects' `loose` field and Throw Down's landing for a held
+    small foe; none is an existing piece. Listed for the lead.
+6607. **Hallow (the Chaplain; prayer-2.0 item 16; closes item 4488's Hallow):** a Chaplain's gain, a Hymn of its own
+    (**2** AP, no MP or Strain; it starts the one Hymn wait, as Sanctuary does): a tile in sight within **6**, and every
+    tile within **1** of it, is hallowed ground for **3** rounds. The Chaplain and each ally who starts a turn on it carry
+    the patron's verse (the Canticle's verse rows, `canticle_<patron>`, an Atheist's `canticle_plain` by the Whisper's
+    roll) for **1** round, without the song; every enemy standing on it is at **-1** to hit. Built from the zone op (the
+    kind `hallowed`) and its predicates: zone kinds are data now (`rules.json zones.kinds`, the draft's P9: a new kind is
+    a row) and the zone predicates read the actor too (`actor_in_zone`, beside `self_in_zone` and `target_in_zone`).
+    Numbers PROVISIONAL (the draft's). Not built: praying a Whisper from holy ground (item 17: needs the seat, P3).
+6608. **What rides on a hit is on the attack card (Smite's chip; closes rules 1.71's open "riders in the attack
+    preview"):** a technique's preview runs the technique once more on a throwaway copy as a hit (the gaps lane's dry
+    run, `asHit`, already run for the Momentum it leaves) and lists, in one line "On a hit: ...", every item whose
+    hit-time effect ran for the attacker on that copy, by the row's label or the item's name (Smite's blow; Smite's
+    Judged row is labelled "Judged"). One general reader, no item named in code: a rider spent for the turn (Smite once
+    a turn) drops off the line. A rider that rolls (an Atheist's Smite) is rolled on the copy: the line can differ from
+    what the real attack's roll gives.
+6609. **A door's passive steps are on its skill's page (closes item 5612's "five Tending passives"):** a skill's "?" page
+    lists, inside its Perks fold under the perks, the door's passive steps ("ALWAYS ON"): every door verb of that skill
+    with no action of its own (today Empathy's Threads, Two Bonds, Three Bonds and the Mender's One More Bond), one row
+    each with its picture (by its item key, the catalog's `data_ids`), where it comes (at n points, a class rank) and
+    its text. The list is read from the door verb files by the screen data (`design/canvas-build/build.py
+    skill_passives`), so a new passive verb shows with no code. The Open Hand's stance picture keeps no place: it waits
+    for a reader of standing modifiers in a fight (item 5612; the engine pieces lane's).
+6610. **No `per_stage` uses scope (item 5010 a):** no data row asks for one; the only stage-keyed count is the Mender's story
+    Triage in a run, kept in code under a `per_campaign` key carrying the run and the stage (item 5001). The scope is
+    added when a data row needs it.
+6611. **Stand Behind Me is not built (its icon has no move):** the written design is Guard 2.0's item 9 (Durability 3,
+    on the Bastion path of item 18: "while you are Braced or Walled, allies next to you on the side away from the
+    shooter have half cover from you"; it needs a condition row that gives its unit cover, the draft's P10) and, in the
+    three-layers draft, the Bulwark's rank III ceiling ("a ranged attack on one ally directly behind you lands on your
+    plates"). The two disagree; the lead rules which, and the paths fork, before it is built.
+6612. **The lead approves the lane's four additions** (19 Nov 2026, the 0.32 integration): the trigger `displaced` on the
+      existing hook (also raised when a forced move is refused at its first tile) and the predicate `stopped_by` (item
+      6605); zone kinds as data (`rules.json zones.kinds`) and the predicate `actor_in_zone` (item 6607); `Combat.riders`,
+      a field set on dry-run copies only, beside `asHit` (item 6608). Each is now part of the engine's closed lists.

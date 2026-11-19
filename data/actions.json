@@ -264,6 +264,7 @@
       "class:guardian.canticle#canticle": "allowed",
       "class:guardian.drink_it_in#drink_off": "free",
       "class:guardian.drink_it_in#drink_on": "free",
+      "class:guardian.hallow#hallow": "allowed",
       "class:guardian.sanctuary#sanctuary": "allowed",
       "class:guardian.ward#ward": "allowed",
       "class:gunslinger.called_shot#called_shot": "free",
