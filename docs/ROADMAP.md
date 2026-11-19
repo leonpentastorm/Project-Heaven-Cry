@@ -138,6 +138,22 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **m10** dead code and module-private helpers. `0f4e9523a`.
 - **The Emanator stowed** says so on the Strain row (Step 3e). `079f78e2f`.
 
+### Enemy AI (`wip/0.32-ai`; hand-off `docs/design/handoffs/0.32-ENEMY-AI.md`; spec rules 1.79, items 6700 to 6714)
+
+- **The side's memory past the round (spec 4969 a).** Built and OFF (`rules.json combat.focus_memory.carry` 0): any carry from 0.25 moves the defence-measure guard (the idle pair's first Down 4.2 rounds at most; measured 5). The lead to rule: refit the guard, or keep it off. [S] [built, off; 19 Nov 2026] [rules 1.79 item 6703]
+- **The Read does not foresee the Pressure moves.** The intent (Trickster's Read, `enemyIntent`) still names the attack a Broken or Suppressed enemy would make, not its cover move. [S] [not built] [rules 1.79]
+- **The bait reads Overwatch and held lanes only,** not a Retort or other Answer (no AI reads Answers before acting). [M] [not built] [rules 1.79 item 6709]
+- **Enemy door verbs:** Slam, Challenge, Retort, Last Plate, Tag, Ghost Kill, Stalk, Tug, Snap, a Figment order, prayers. Blocked: see the needs-a-primitive list. [L] [not built] [rules 1.79 item 6711]
+- **Interpose for an enemy with Durability 3** (the Heartfire elite): not checked whether the Answer is usable for a unit whose techniques are its row's. [S] [not verified] [rules 1.79 item 6710]
+
+#### Built in 0.32 (not yet live)
+
+- **Enemies act on Pressure:** a Broken enemy reaches cover or drops Prone and stays down; a Suppressed one slides into cover and walks short; log lines from data. `591270294`, spec 6700-6702.
+- **Focus memory per enemy:** keeps its target for 2 rounds, turns on whoever hurt it since. `591270294`, spec 6705-6706.
+- **The angle (spec 4969 b):** a gunner whose every target is under fire walks up to 4 tiles for a shot at one nobody attacks, cover first. `591270294`, spec 6707.
+- **The bait:** a Vermin or Minion walks into a seen held lane to draw the shot while a stronger ally holds out of it until the bait has acted. `591270294`, spec 6708.
+- **Enemy Guard:** a row's `guard` gives Durability's door (plates, soak, Pressure on Guard, the Guard technique); the Heartfire elite has 3 plates. `591270294`, spec 6710.
+
 ### 0.32: needs a primitive (lead to rule)
 
 One line each, with the rule that needs it. Nothing here is built; each waits for the lead's approval after a look at `docs/ENGINE-HOOKS.md`.
@@ -161,22 +177,20 @@ One line each, with the rule that needs it. Nothing here is built; each waits fo
 - **A sheet-level reader of the one resolver for character.ts** (`strainLimit` and `readyDesigns` still resolve `skill:` inline: importing `effects/triggers.ts` from `character.ts` makes a load cycle; a setter registered by triggers.ts would fix it). [the merge's m4]
 - **`brakeGiven`, a new export of `effects/cost.ts`** (built in the merge for the healing brake: the give is counted after the action runs, from `effects/actions.ts`): the lead to approve it or move the count. [spec 5610]
 - **A class-only multiplier** (the Figments door 119 and the Rigger 123 against 130 and 150). [gaps report; Balance 2.0]
+- **An enemy step that weighs a held item action** by a want in its data (one general step for every door verb: Slam, Challenge, Retort, Tag, Ghost Kill, Tug, Snap, a Figment order). An enemy can hold the items (`u.held`); no AI step runs them. [Enemy AI, rules 1.79 item 6711]
+- **A faith block on an enemy row** (patron and Devotion), so `faith.ts` can let an enemy pray a Whisper. [Enemy AI, 6711]
 - **The effects step's own list:** none (`0.32-STEP2-EFFECTS-EVENTS.md`); its audit's "still open" rows are under Effects above.
 
 ### Big leftovers (designed, partly or not built; each shrunk to the owed part)
 
 - **Breaker's Into the Wall (P13) and Hurl (P14).** The `displaced` hook, Throw Down into an occupant and Grenadier's Arm exist; these two moves do not. [M] [partly; checked in code 19 Nov 2026] [CHANGELOG 0.29.0; verification]
-- **Enemies breaking under Pressure.** Suppressed/Broken take AP, Pressed drops a held shot, Rout runs on a failed save. Owed: the AI acting on Broken ("must reach cover or drop Prone"); no flee or cower. [M] [partly; checked in code 19 Nov 2026] [verification]
 - **Hallow (consecrated ground).** Nothing in engine or data. [L] [not built; checked in code 19 Nov 2026] [CHANGELOG 0.29.0]
 - **Bare fists in the glove family (P11).** Overlaps Items 2.0. [M] [not built; checked in code 19 Nov 2026] [CHANGELOG 0.29.0]
 - **Aim marks on a Bonded ally.** The engine read `aims_at: tied:<kind>` exists. Owed: a data row that uses it, and the display. [S] [partly; checked in code 19 Nov 2026] [verification]
 - **Smite's chip on the attack card.** Needs riders in the attack preview. [M] [not built; checked in code 19 Nov 2026] [verification]
 - **Two Sanctuaries on one tile still stack** (each halves). [S] [not built; checked in code 19 Nov 2026] [spec 1908]
 - **NULL on a Figment.** `nullCatch` takes glyphs, zones and sigil walls only. [M] [not built; checked in code 19 Nov 2026] [verification]
-- **Enemy squad plan against reactions.** Enemies avoid held lanes (`held_risk`). Owed: bait / two-mover plan. [L] [partly; checked in code 19 Nov 2026] [verification]
-- **Enemy versions of the doors.** Sigil and Outburst casters, physical techniques per tier, Momentum and Pressure for all exist. Owed: enemy Guard, Shadow, Bonds, Figments, prayers. [L] [partly; checked in code 19 Nov 2026] [verification]
-- **Enemy focus memory past the round.** This-round memory is built; carry it further. [M] [partly; checked in code 19 Nov 2026] [spec 4969(a)]
-- **Enemies moving for an angle on an unattacked character.** [M] [not built; checked in code 19 Nov 2026] [spec 4969(b)]
+- **Enemy versions of the doors.** Guard is built (0.32, rules 1.79). Owed: the door verbs and prayers (under Enemy AI above). [L] [partly; 19 Nov 2026] [rules 1.79 item 6711]
 - **Cover arc: a pillar outside the 45 degree arc counts nothing.** The arc is built (`rules.json arc_deg`); this is a design call, to rule before building. [S] [partly; checked in code 19 Nov 2026] [spec 4969(c)]
 - **Engine pieces not built:** a `per_stage` uses scope; a thrown Relic property; an fx event for "fight joined". Each needs the lead's approval first (CLAUDE.md, no rebuild). [M] [not built; checked in code 19 Nov 2026] [spec 5010; verification]
 - **"I'll narrate" in a room.** Human-mode code exists but picking it only shows "coming soon". Owed: the selection and the Narrator screen end to end, with the ruling buttons tested. [L] [partly; checked in code 19 Nov 2026] [SESSION-HANDOFF 6.2-6.3]
