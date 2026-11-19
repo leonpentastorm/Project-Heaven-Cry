@@ -47,7 +47,7 @@ const CSS = '.phc-camp ::-webkit-scrollbar{width:10px}.phc-camp ::-webkit-scroll
   + '.phc-camp .phc-camp-pair>*,.phc-camp .phc-camp-pick>*,.phc-camp .phc-camp-shelf>*{flex:0 1 270px;width:270px;min-width:min(250px,100%);max-width:100%}'
   + '.phc-camp-shelves{display:flex;flex-wrap:wrap;gap:4px 22px;align-items:flex-start}'
   + '.phc-camp-shelves>*{flex:0 1 auto;max-width:100%}'
-  + '.phc-camp-boons{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),340px));justify-content:center;gap:18px}'
+  + '.phc-camp-boons{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,168px),1fr));gap:14px;max-width:1020px;margin:0 auto;width:100%}'
   + '.phc-camp-carry{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px}'
   + '@media (max-width:700px){.phc-camp-carry{grid-template-columns:minmax(0,1fr)}}'
   // a stat row: label | value (| the better one's value); the label always shown, whole, wrapping
@@ -161,12 +161,12 @@ function BoonStep({ v, charId }: { v: LoadoutViewV; charId: string }) {
             <button key={k.id} type="button" role="radio" aria-checked={k.chosen ? 'true' : 'false'} data-phc-startboon={k.id} aria-disabled={off ? 'true' : undefined}
               {...tipProps(k.name + '. ' + k.text + ' ' + k.lineWord + '. ' + k.worthLine + '.' + (v.boon.why ? ' ' + v.boon.why : ''))}
               onClick={(e) => { if (off) openTipOn(e.currentTarget); else act({ type: 'run/boon', charId, choice: k.i } as any); }}
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, padding: '24px 20px 20px', minHeight: 420, minWidth: 0, borderRadius: 16,
+              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '18px 14px 14px', minHeight: 300, minWidth: 0, borderRadius: 16,
                 border: k.chosen ? '2px solid ' + I.white : '1px solid ' + (off ? I.line : '#3B475D'), background: k.chosen ? 'linear-gradient(180deg, rgba(44,56,78,.98) 0%, rgba(28,37,54,.98) 100%)' : 'linear-gradient(180deg, rgba(28,37,54,.94) 0%, rgba(16,21,31,.94) 100%)', color: I.text, fontFamily: 'inherit', textAlign: 'center', cursor: off ? 'default' : 'pointer' }}>
-              <span style={{ display: 'grid', placeItems: 'center', width: 96, height: 96, flexShrink: 0, borderRadius: '50%', border: '1px solid ' + k.ink, background: I.ground, color: I.white }} dangerouslySetInnerHTML={{ __html: boonIconSvg(k.id, 56) }} />
-              <span data-phc-camp-name="" style={{ fontFamily: "'Spectral', serif", fontSize: 26, fontWeight: 600, lineHeight: 1.15, ...wrap }}>{k.name}</span>
+              <span style={{ display: 'grid', placeItems: 'center', width: 72, height: 72, flexShrink: 0, borderRadius: '50%', border: '1px solid ' + k.ink, background: I.ground, color: I.white }} dangerouslySetInnerHTML={{ __html: boonIconSvg(k.id, 44) }} />
+              <span data-phc-camp-name="" style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600, lineHeight: 1.15, ...wrap }}>{k.name}</span>
               <span data-phc-line={k.line} style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.12em', color: k.ink }}>{k.lineWord.toUpperCase()}</span>
-              <span style={{ fontSize: 16, lineHeight: 1.5, color: '#DCE2EC', ...wrap }}>{k.text}</span>
+              <span style={{ fontSize: 15, lineHeight: 1.45, color: '#DCE2EC', ...wrap }}>{k.text}</span>
               <span style={{ marginTop: 'auto', fontSize: 'var(--fs-body)', color: I.white }}>{k.worthLine}</span>
               <span aria-hidden="true" data-phc-boon-choose={k.chosen ? 'chosen' : off ? 'off' : 'choose'} style={{ alignSelf: 'stretch', minHeight: 44, display: 'grid', placeItems: 'center', borderRadius: 10, fontSize: 15, fontWeight: 700, letterSpacing: '0.12em',
                 ...(k.chosen ? { background: 'transparent', border: '2px solid ' + I.ok, color: I.ok } : off ? { background: 'transparent', border: '1px solid ' + I.line, color: I.muted } : { background: I.text, color: I.ground, border: 0 }) }}>{k.chosen ? '✓ CHOSEN' : 'CHOOSE'}</span>
