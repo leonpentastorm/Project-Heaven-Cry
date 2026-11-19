@@ -1,0 +1,16 @@
+{
+  "id": "katana",
+  "tier": "masterwork",
+  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--masterwork.png",
+  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--masterwork.png",
+  "size64_mask_differing_pixels": 9,
+  "sha256": "63be464d4cc977c8fbc1beebaad6b59e29fb30c3de01f8292aa8c49f9f1d4be7",
+  "path": "art/icons/gear/weapon-katana--masterwork.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-katana--masterwork.png",
+    "128": "art/icons/gear/exports/128/weapon-katana--masterwork.png",
+    "64": "art/icons/gear/exports/64/weapon-katana--masterwork.png",
+    "32": "art/icons/gear/exports/32/weapon-katana--masterwork.png"
+  },
+  "source_sha256": "2f46fa0c21f03d2c664909774d23657cb9cc4c37b7ce2952f1297f87d1b1f8ae"
+}
