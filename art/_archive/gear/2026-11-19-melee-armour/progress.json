@@ -19,10 +19,10 @@
     "weapon-dock_cutter",
     "weapon-broadback_sabre",
     "weapon-legion_leaf_dagger",
-    "weapon-legion_rank_sword"
+    "weapon-legion_rank_sword",
+    "weapon-short_draw"
   ],
   "remaining": [
-    "weapon-short_draw",
     "weapon-long_draw",
     "weapon-kemizuchi_side_sword",
     "weapon-kemizuchi_sword_breaker",
@@ -58,5 +58,5 @@
   ],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T03:31:31.680144+00:00"
+  "updated_utc": "2026-11-19T03:34:22.537001+00:00"
 }

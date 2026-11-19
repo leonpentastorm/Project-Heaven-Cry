@@ -362,6 +362,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-short_draw",
+      "path": "art/icons/gear/weapon-short_draw.png",
+      "sha256": "1c03568b71751f093978788917e768c26df2a156e1f573a9dc0d262d6956d08f",
+      "label": "Short draw",
+      "family": "05-draw-blades",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-short_draw.png",
+        "sha256": "251886e2fa6aaee22e844d498239ef610edcec77d15ca25d062a1962eab8e082"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-short_draw.png",
+        "sha256": "1c03568b71751f093978788917e768c26df2a156e1f573a9dc0d262d6956d08f"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-short_draw.txt",
+        "sha256": "aaa3859af91cde95cffa25d66fe7fe94c278858151a39c459bf6ec11acceb992"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-katana.png",
+          "sha256": "59588dba217985563b09c144f62b048cf3b0bc3465873e692ad8df403144fe58"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-short_draw.png",
+        "128": "art/icons/gear/exports/128/weapon-short_draw.png",
+        "64": "art/icons/gear/exports/64/weapon-short_draw.png",
+        "32": "art/icons/gear/exports/32/weapon-short_draw.png"
+      },
+      "export_hashes": {
+        "256": "ef9a0acb77af528ca6ba1218801f74e9f99de88d47949f9cc01b2efe2f06c3f9",
+        "128": "1a9003c7c096eca6d338d8e5ce1508cee1938322c4bffb40dd5a35187e5b270f",
+        "64": "abcaf929a4a6ace1c84861ee5a15ae66537cfbfec71978ef2519305af10a8e95",
+        "32": "22f4731c492f90a4acaa5e1bb7b33d0ef6ba617920ce796cb31fe5b0a6b2f620"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
