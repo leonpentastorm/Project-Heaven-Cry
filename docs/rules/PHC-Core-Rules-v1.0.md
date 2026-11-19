@@ -12524,3 +12524,10 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     `canRaise`'s sentence is made from it and names the attribute ("Needs Endurance 4: an Attribute point first.").
     The level-up screen's "Raise <Attribute>" and its one reason are to read `raiseNeed`, not the sentence (the screen is
     the shared lane's file: a hand-off note). Proof: `packages/engine/test/gaps-032.test.ts` (the reducer's refusal).
+5607. **A Momentum op at the fight's start is warned of** (the Primed boon's workaround, item 5506): the Momentum meter
+    is made by the fight's start after the items' `combat_start` ops (a global listener runs after the items), so a
+    `combat_start` op on it would be lost. The real fix, making the meters before the items' ops, needs the fight's
+    start to call the physical lane (`combat.ts` cannot import `physical/core.ts` at load: a cycle) through a new
+    registration export, not approved: left for the lead. Meanwhile `data/actions.json resources.momentum` is marked
+    `made_after_start`, and the validator warns of any `combat_start` `resource` op on such a meter. Primed keeps its
+    `turn_start`, once a fight.

@@ -245,6 +245,7 @@
     },
     "momentum": {
       "name": "Momentum",
+      "made_after_start": true,
       "on": "unit",
       "path": "res.momentum"
     },
