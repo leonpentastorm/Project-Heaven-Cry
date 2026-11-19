@@ -1,5 +1,46 @@
 [
   {
+    "n": 17,
+    "id": "outpost_wall",
+    "title": "Outpost Wall (Guard shield)",
+    "path": "art/icons/gear/shield-outpost_wall.png",
+    "refs": [
+      "art/icons/gear/shield-pavise.png",
+      "art/icons/armour/pavise.svg"
+    ],
+    "paint": "A unique Guard shield of the Thousand World Legion's frontier outposts, front view, standing on its ground edge, about 85% of the canvas height: a tall, wide board shield with a centre ridge and a folded prop leg showing behind it, in olive-grey painted steel over dark boards, plain and mass-produced, one faded pale stripe across the top. The impossible material: its foot and its prop leg have grown roots of dark iron, thick and coiled tight against the bottom edge, gripping nothing, as if the shield took root the first night it was planted and never quite let go; the roots stay inside a neat silhouette at the base. The story detail: a long row of short scratched notches along the right edge, one for each night it held a line, the newest still bright. Heavy, dented, cared for. Accent: none, the pale stripe.\nAvoid: soil, grass or a ground plane, numerals for the notches, an emblem, a riot-shield viewport, leaves.",
+    "span": 0.85,
+    "dependency": null,
+    "label": "Outpost Wall (Guard shield)",
+    "sha256": "1ee609e8865419aac41880eb41a0e651c2e9a0c05fc40f5f9cf24fb75d8b8b42",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/shield-outpost_wall.png",
+      "128": "art/icons/gear/exports/128/shield-outpost_wall.png",
+      "64": "art/icons/gear/exports/64/shield-outpost_wall.png",
+      "32": "art/icons/gear/exports/32/shield-outpost_wall.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-08-uniques",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/17-shield-outpost_wall.png",
+    "source_sha256": "133ca8c3f98f6620c59b95bb974655d7fc2f26b3dc8e9ba9d8e45b942c967dfc",
+    "export_sha256": {
+      "256": "224f60667a0a530106716de6d4218fd784a445333f437175935a95ea0b717b72",
+      "128": "4441f1c9cc02678ac6fd08f9d5ab880db3ad545897b14cd62dab3870d50cac76",
+      "64": "6cec7b35a5abbe5cb52a304afcf45e105a3c497fe727e3e41a11e1aeb6ec5039",
+      "32": "5214a308f0f27963ab813650e2a6a945221342c4511a29f53e48037333f0aa6d"
+    },
+    "generator_prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. One single object, lit from the upper left, with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background, square 1024 x 1024 PNG with alpha; the object fills about 80 to 85% of the canvas, inside the central 90%. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The object is a fictional nonfunctional prop from Project Heaven Cry, shown only from one exterior view. This is a unique item, one of a kind: it keeps the silhouette of its family so that at 32 px it still reads as that kind of weapon or armour, and it carries one story detail and one impossible material, painted with the richness of an heirloom, not the gilding of a parade piece. One accent colour (given below), as a muted local paint or a contained light inside the outline, never a bloom. The silhouette must be bold and readable at 64 px in a shop grid and 32 px in a backpack row. The item:\n\nA unique Guard shield of the Thousand World Legion's frontier outposts, front view, standing on its ground edge, about 85% of the canvas height: a tall, wide board shield with a centre ridge and a folded prop leg showing behind it, in olive-grey painted steel over dark boards, plain and mass-produced, one faded pale stripe across the top. The impossible material: its foot and its prop leg have grown roots of dark iron, thick and coiled tight against the bottom edge, gripping nothing, as if the shield took root the first night it was planted and never quite let go; the roots stay inside a neat silhouette at the base. The story detail: a long row of short scratched notches along the right edge, one for each night it held a line, the newest still bright. Heavy, dented, cared for. Accent: none, the pale stripe.\nAvoid: soil, grass or a ground plane, numerals for the notches, an emblem, a riot-shield viewport, leaves.\n\nIt must read unmistakably as an isolated tall shield in frontal view, connected dense iron roots curl tightly around its bottom rim and folded brace with no separate ground plane. One subtle off-white line across its top."
+  },
+  {
     "n": 20,
     "id": "hearth_coat",
     "title": "Hearth Coat (vest, outer torso)",

@@ -1,7 +1,7 @@
 # File 08 unique inventory paintings
 
-Updated 19 November 2026 at 14:18 UTC+7. Branch `art/2026-11-19-unique-gear`.
-**4 of 23 uniques delivered. 142 of 215 base pictures and uniques. 142 of 871 across the pack.**
+Updated 19 November 2026 at 14:19 UTC+7. Branch `art/2026-11-19-unique-gear`.
+**5 of 23 uniques delivered. 143 of 215 base pictures and uniques. 143 of 871 across the pack.**
 The baseline was 138 delivered candidates across the live branches. The count is per requested master.
 These independent unique paintings have been brought forward while the grade proof is open.
 The six uniques with missing or unapproved references still depend on those references.
@@ -24,7 +24,7 @@ The six uniques with missing or unapproved references still depend on those refe
 | 14 · Unsaid (suppressed submachine gun) | `art/icons/gear/weapon-unsaid.png` | awaiting reference approval or a missing reference |
 | 15 · Windfall (recurve bow) | `art/icons/gear/weapon-windfall.png` | available |
 | 16 · Return Clause (Ward shield) | `art/icons/gear/shield-return_clause.png` | awaiting reference approval or a missing reference |
-| 17 · Outpost Wall (Guard shield) | `art/icons/gear/shield-outpost_wall.png` | claimed, awaiting render or review |
+| 17 · Outpost Wall (Guard shield) | `art/icons/gear/shield-outpost_wall.png` | delivered for review |
 | 18 · Grudge Plate (Strike shield) | `art/icons/gear/shield-grudge_plate.png` | awaiting reference approval or a missing reference |
 | 19 · Red Thread (worn gloves) | `art/icons/gear/armour-red_thread_gloves.png` | draft needs correction |
 | 20 · Hearth Coat (vest, outer torso) | `art/icons/gear/armour-hearth_coat.png` | delivered for review |

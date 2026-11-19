@@ -18724,6 +18724,29 @@
         1254
       ],
       "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/23-armour-long_road.png"
+    },
+    "shield-outpost_wall": {
+      "label": "Outpost Wall (Guard shield)",
+      "path": "art/icons/gear/shield-outpost_wall.png",
+      "sha256": "1ee609e8865419aac41880eb41a0e651c2e9a0c05fc40f5f9cf24fb75d8b8b42",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-outpost_wall.png",
+        "128": "art/icons/gear/exports/128/shield-outpost_wall.png",
+        "64": "art/icons/gear/exports/64/shield-outpost_wall.png",
+        "32": "art/icons/gear/exports/32/shield-outpost_wall.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-08-uniques",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/17-shield-outpost_wall.png"
     }
   },
   "survival_art": {
