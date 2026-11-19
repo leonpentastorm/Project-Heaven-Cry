@@ -19750,6 +19750,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "quiver-quiver--celestial": {
+      "label": "Quiver-Quiver Celestial",
+      "path": "art/icons/gear/quiver-quiver--celestial.png",
+      "sha256": "47fa630328ae1bdcdeb3874bef25ef610807d765c0a597fe5bd8583a21e482df",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/quiver-quiver.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/quiver-quiver--celestial.png",
+        "128": "art/icons/gear/exports/128/quiver-quiver--celestial.png",
+        "64": "art/icons/gear/exports/64/quiver-quiver--celestial.png",
+        "32": "art/icons/gear/exports/32/quiver-quiver--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {

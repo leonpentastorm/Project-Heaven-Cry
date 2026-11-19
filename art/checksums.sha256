@@ -3197,6 +3197,7 @@ a51ad4a6e04ecf8a9ae5d27a775933bcae317c6953755dbe3e0bc8007d364cc0  art/_archive/p
 3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--fine.png
 e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--masterwork.png
 307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png
+6eb9da0a9240399d9e104b1415e3e38108a63f3d12d924af19633f102cc67046  art/_archive/prompt-pack/2026-11-19-file-08/delivered/quiver-quiver--celestial.json
 65c4bec7e3b39fd76beca6150b91cbfced0c450c154e589c5b69f2924b2e001b  art/_archive/prompt-pack/2026-11-19-file-08/delivered/quiver-quiver--fine.json
 b4cd9b873a4c251a18eb59fe34fd695388dbed323088ea1e5e75303d94366a0a  art/_archive/prompt-pack/2026-11-19-file-08/delivered/quiver-quiver--masterwork.json
 f363dccbff402d646d00117755a2a17b656e63acfe0be0a3a27337641867a6cd  art/_archive/prompt-pack/2026-11-19-file-08/delivered/quiver-quiver--relic.json
@@ -4672,7 +4673,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-334c33c07738ca8c09e3fe3e9d2728d70dc6ee78e1f73badea0a30500ea2b621  art/catalog.json
+86774d8a40c4cbfd359d88a9f07872a36ae74e0bdfa7fa5245becc73e93e9ccd  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6340,6 +6341,7 @@ bf5ba502cfb151932dbca66a99224948b178237b569376f0edef506175815d1f  art/icons/gear
 5c3eb236e79e9b5fdd58667be1713d57fbd67bfc7340baffb81cfbc708b40cf6  art/icons/gear/exports/128/mod-underslung.png
 ef37f5bebdaa584b7c7b928257ee3a05f9e50d307a3e16e348283abff8ffaa5c  art/icons/gear/exports/128/mod-weighted.png
 a12b1eafc44f7ddebf1dba016cab74f48fabc886aacbb9a397f44d323dc19fcf  art/icons/gear/exports/128/mod-wrapped_grip.png
+735094c2e6a8491c1518249a0ca6bbb9f90715a5d4177c9ba76df07246542602  art/icons/gear/exports/128/quiver-quiver--celestial.png
 f3506b09d06ab10573804f43547b2b2f6039293eb4510f4a750779448a045a4b  art/icons/gear/exports/128/quiver-quiver--fine.png
 8e216146d6970891bed93ddc81430c22f90255485ccc9e163dfb24164c66365c  art/icons/gear/exports/128/quiver-quiver--masterwork.png
 667cf7785f50a18e41cce9e4bcd3ccca2a80f427e3c65d62f2e9c024ffb99550  art/icons/gear/exports/128/quiver-quiver--relic.png
@@ -6556,6 +6558,7 @@ d08400a6d6e1291bb4a2dfab707ae9ddf33af21f2ecf1ef7209e3421560b7735  art/icons/gear
 d89ad98ddb37f892da038e0b7538dec0e6987826b1b9cb9735ba0ab6219ca40e  art/icons/gear/exports/256/mod-underslung.png
 9c88995635ef07bdcd31dd1a4f437048e36d12d8d24819e314585f964e12f67d  art/icons/gear/exports/256/mod-weighted.png
 820576cb80a164dc5d9a7db8c20a6e361e9a36399bb4f731a86cc0de785bf42b  art/icons/gear/exports/256/mod-wrapped_grip.png
+aec2cf70b3d97eec147829fdcd7a23efec62b0940f2e97c2b62d18c0443d6498  art/icons/gear/exports/256/quiver-quiver--celestial.png
 997b7d045a658974973cf578a09f5129395dd1f337af20145939f72d77377c59  art/icons/gear/exports/256/quiver-quiver--fine.png
 f3561d55b8313c38e162da9c07b0ef5820d7044d4f73f754cf548871b2a31936  art/icons/gear/exports/256/quiver-quiver--masterwork.png
 bdffd50db3b45f0488f6477cac67edc1c7e55fb75a9ae112f1bb06ed1f83aec3  art/icons/gear/exports/256/quiver-quiver--relic.png
@@ -6772,6 +6775,7 @@ a5726e94c5113ebf7041dd9f7f3442bf463b6e891a772319fa083beadf5fe5a1  art/icons/gear
 0d9b779731b56e4d9e21506735b5ac37eb50271393985f452d1828f5c7df6b2a  art/icons/gear/exports/32/mod-underslung.png
 37c5f63f4893cdc7924cdb162bca2352348407a41acb231a2e589d066a3d60f7  art/icons/gear/exports/32/mod-weighted.png
 033aab01c67fa79f21eda84d322de663874a8afa31987d061d2920bcd2705c63  art/icons/gear/exports/32/mod-wrapped_grip.png
+ff8bcc0b7e9bb6cc1ded4bb629580e6f602e1526eb15e55348070aa83d88ba18  art/icons/gear/exports/32/quiver-quiver--celestial.png
 be72cc39f86d470e2fbdecf3d9f0be73b18a1231954674b42dcc4716602b7139  art/icons/gear/exports/32/quiver-quiver--fine.png
 b612d8eb02f8b23852ffe37a4c12ff53676d4e9a36d5f3a15778394480fc26bf  art/icons/gear/exports/32/quiver-quiver--masterwork.png
 9a38c290b675dba0f25ef2e09eb14bb3d2ea517ddbae0c2ddfb869f92d7d7667  art/icons/gear/exports/32/quiver-quiver--relic.png
@@ -6988,6 +6992,7 @@ a62f474063191e187980d98300946c7aa35c2b0b0a7d62fd2785a4f3840806ad  art/icons/gear
 f955e8cb4660a89d1bbb6172d3f2eae4afa8ca527c0b815d73869a1542b7c8ad  art/icons/gear/exports/64/mod-underslung.png
 4c767e84c591eb98db9d943aa73d32fa11e6c56de36bcdf0b8054705fe3ef4c8  art/icons/gear/exports/64/mod-weighted.png
 a75babda151bfca7fc982dccff9a1708069b9ecb001d83ce23e1fc4fba25c0eb  art/icons/gear/exports/64/mod-wrapped_grip.png
+ffb9ec898c76c7db5db5b67ce888a2d4bad4d5d09524b66526c2c28780da532e  art/icons/gear/exports/64/quiver-quiver--celestial.png
 82fbd6abfc5118006e8b2a682337f4f389bee5a3a23231d39e251297988c8d73  art/icons/gear/exports/64/quiver-quiver--fine.png
 5e3b2a2c3992d4f8bd9f2936caa7912cfe88d5c1523a80a08bcf4e345e3629f6  art/icons/gear/exports/64/quiver-quiver--masterwork.png
 59836b47800d13bf77fa03162b5e7942741145c5a6bffe406780ecf82392c110  art/icons/gear/exports/64/quiver-quiver--relic.png
@@ -7168,6 +7173,7 @@ bb367f3b4ce2ac71d8e3b5c98803dff28d8fa3571ecf26dee1cfaf0f6050ae77  art/icons/gear
 b676bc1c37e31c82560b503526a9f3babfc6482bf80abeacb4a50efa1f4264b6  art/icons/gear/mod-underslung.png
 f3875bed1e22d39cef30407e23a6d7a6f75a9f9dbc310e21ed96a16e3c601365  art/icons/gear/mod-weighted.png
 aa42b170778a02419c8a5e5f7965df59b47291e999470462d7cbba45a153310a  art/icons/gear/mod-wrapped_grip.png
+47fa630328ae1bdcdeb3874bef25ef610807d765c0a597fe5bd8583a21e482df  art/icons/gear/quiver-quiver--celestial.png
 4d7046e472e407c72f5215f2577b46361404ee362d264b49af1e4fa8c4261829  art/icons/gear/quiver-quiver--fine.png
 732033d222aa75af6d2184ce215e442518795154b023303d4a54b41be4beaad1  art/icons/gear/quiver-quiver--masterwork.png
 e9176bc24c9390cfd15e10211dbec981e805acb69f4a4f8f6a5b749e65c70313  art/icons/gear/quiver-quiver--relic.png
