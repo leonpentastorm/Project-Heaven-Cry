@@ -3198,6 +3198,7 @@ c8a69f7751b3fec7b9d03e25cf3917a187c40c54f14a6a6769beb69488397fb8  art/_archive/p
 f79666a9e76e859078270959899c95506e8f3b331871ae00fcd58bc95da03d54  art/_archive/prompt-pack/2026-11-19-file-08/delivered/shield-buckler--masterwork.json
 eb5e043153f2b50ce79051641753671f63650d67a172897c41dc951b3cbae812  art/_archive/prompt-pack/2026-11-19-file-08/delivered/shield-buckler--relic.json
 ffb2c677cb6ac189a5c5e8e6055af0c4fa3e6404dd38f129b89c9ec97e7d88a5  art/_archive/prompt-pack/2026-11-19-file-08/delivered/shield-pavise--fine.json
+fc64965a0ad2e9fd4253ddc89355e0c094ef98779842e9ad57d2916aa1659c60  art/_archive/prompt-pack/2026-11-19-file-08/delivered/shield-pavise--masterwork.json
 10ee95782a461c1210ac934812715d4a46828f093d3a3a397b62997f13f7e9ec  art/_archive/prompt-pack/2026-11-19-file-08/delivered/shield-riot_shield--celestial.json
 4d0800c4bd36f7e26abafe9e256bb451a442a55fb75515fbd30cda8e35cda512  art/_archive/prompt-pack/2026-11-19-file-08/delivered/shield-riot_shield--fine.json
 0926b7e949bcffdd919bfca6f7070fe55f689d2254b9e169fdc7dfbc1b0fbeb8  art/_archive/prompt-pack/2026-11-19-file-08/delivered/shield-riot_shield--masterwork.json
@@ -4654,7 +4655,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-4398e866162b187eac6d011acc3cae30c4711a2c8ec9d3fa31b779dbdb36a85e  art/catalog.json
+eae1d08de90063bf9e82502c2339d3ffa67dc23082efd8829fde94413fd0e0e8  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6341,6 +6342,7 @@ eda8e1b50f2936d0574ba8cc1d1892af30b27143236c22cc1083cd56a1587f19  art/icons/gear
 11b7dd9da16120bc3a27807640972d1f7925501642e55cf7b1228a72a40bf9f2  art/icons/gear/exports/128/shield-buckler--relic.png
 5da29b430a2cbcff6d3259072c5cc2f7692bdf92617305e116190621816d2f68  art/icons/gear/exports/128/shield-buckler.png
 8281a541f84cffa9f7bc17ce7213caf50a9f003e1a170fd26f7ccf53aba012ff  art/icons/gear/exports/128/shield-pavise--fine.png
+c59ecc55dd138bb54de9c24490bd5b44499967707f27aa90dea428263955ef72  art/icons/gear/exports/128/shield-pavise--masterwork.png
 8ffe9606cdec5f90be4c2e78c800d379bd9d1826f041f2ce5e325e627398d844  art/icons/gear/exports/128/shield-pavise.png
 f73b1198ebb536664e07bdb61815549039d5d141513b1b9b40b08f2acf4fddbf  art/icons/gear/exports/128/shield-riot_shield--celestial.png
 42648695e6daa4a35f0389e3a86857ec1d8eee467de4ad8b63f2d8b0d6f799b4  art/icons/gear/exports/128/shield-riot_shield--fine.png
@@ -6551,6 +6553,7 @@ b80ac6598ad8df14a5e45039b3f0653e2072cd24e7c48b4ba331bf2575b14003  art/icons/gear
 936fdcd9ec9e559489fed05f8c426c06946c9a2f195be8bcceaf794dcb59395d  art/icons/gear/exports/256/shield-buckler--relic.png
 3ac68d6e10db2fcb55a712ffb6cb348289c649e41fd953f44b7f824a47c5ff52  art/icons/gear/exports/256/shield-buckler.png
 d1ae715a62662c708311794f1da5cf2674e9ef7ba7254ada186c24015f0864c0  art/icons/gear/exports/256/shield-pavise--fine.png
+7a1793c3e0147facbe6305c1ad714909af2c6da544057df96953b53e0a0192d4  art/icons/gear/exports/256/shield-pavise--masterwork.png
 d3390c3806ded2f2c8837dd528e70d2bc1ddcd0be81832084e010f742612c9d1  art/icons/gear/exports/256/shield-pavise.png
 ec5b1c8e93c0b9d613b17fcc2362ac0af98bf6699809a7e2e2ec762c17d3c4e0  art/icons/gear/exports/256/shield-riot_shield--celestial.png
 ca877a5c1205463a61af24051fb26de827e559db8c136e0550d79664e1e5f9a3  art/icons/gear/exports/256/shield-riot_shield--fine.png
@@ -6761,6 +6764,7 @@ fb5741582634ed0cd10833ea51047863f2385ff93c29899db653b3c6d895f331  art/icons/gear
 21badf7ae2a116239e7070990e46f70737a24bed848ab53ff60e01a20de045ec  art/icons/gear/exports/32/shield-buckler--relic.png
 cb79e42fc5bf19a28158992fe3ea808e88af7a7cd327e2f1e568563438890e92  art/icons/gear/exports/32/shield-buckler.png
 1e30a5224027b92955f652faf43473a84355074d2e83c3df752c5bad164acb7d  art/icons/gear/exports/32/shield-pavise--fine.png
+6cf8698b37d5bf4c7331bb7190e76660912b2f7b846970e9c383b47a38ee00c7  art/icons/gear/exports/32/shield-pavise--masterwork.png
 1a931f3be31207d52077ba5b5e6dd198e0bbbf4a4b6cb1a36da0ffda9e5c15b9  art/icons/gear/exports/32/shield-pavise.png
 af128d8c344e847fb901e474baf225408120c29e607a076dc8022b65f5748065  art/icons/gear/exports/32/shield-riot_shield--celestial.png
 fe3064545729887a8ed3c38b7d5d9c84d49bbd9dd368c8fd09f7a5221bca2b46  art/icons/gear/exports/32/shield-riot_shield--fine.png
@@ -6971,6 +6975,7 @@ ea022e42c79c434486a1903306284347d7a306e195839f72c770907dcad22817  art/icons/gear
 f6187fb7d160eac9d6bbff461e36511cd660b21c86e5ef3d066ad349f161e232  art/icons/gear/exports/64/shield-buckler--relic.png
 84df09148172bfe9d931ee6612398798f5bf1e2e57aea7c4d5ed98ef83dffac9  art/icons/gear/exports/64/shield-buckler.png
 714a1cafd56300df8c786b2bea2a78a7d72d4d9f0ee0a77e3f2f5c0ca39e983d  art/icons/gear/exports/64/shield-pavise--fine.png
+efb2f1f5a174127b9a8455c73dd5dc202fbe560c6e8b4883ab17fc986dc49f8c  art/icons/gear/exports/64/shield-pavise--masterwork.png
 cb87f8956cd640e417df33bbdb6411ed430cf564906f20ce6c2a779d6fbd32a4  art/icons/gear/exports/64/shield-pavise.png
 2e8061962ffcdca2c21143e2b6a13869020b1d7e93364ed7fbeae724e4dc98d3  art/icons/gear/exports/64/shield-riot_shield--celestial.png
 3290109a4753688bf368511479f2aedbd46a5a418dd5ba0b92f977d7fe4273f1  art/icons/gear/exports/64/shield-riot_shield--fine.png
@@ -7145,6 +7150,7 @@ a96c7fb9105e64c51cb74549ef4a24d6e9e02dc817bc9307a8e5e3825fbd07ae  art/icons/gear
 8303dd322c7b90b7a1430e96d39efc10565f5dfc3782f054896b41286d09ead9  art/icons/gear/shield-buckler--relic.png
 1aeb92d2b419c48978476f314468c35639a89abe0732b5edf8cdbcc4d8510b9b  art/icons/gear/shield-buckler.png
 0a324cbce1be733637503c5582749d9cb4bca528f3994d0d1c26601ba8eb08f1  art/icons/gear/shield-pavise--fine.png
+14d30548905ce9568b501b31669ae73bb8f651cff0e99be98d80993dee3d844c  art/icons/gear/shield-pavise--masterwork.png
 5d4a3d9d3befae48f6fa549b634ad79ef864406fd5186a9e75ea6fd19aac4d52  art/icons/gear/shield-pavise.png
 e048c79f1561903a03ae2a8795e4f7d160bf5df2343001bfb0e5d5590e311dee  art/icons/gear/shield-riot_shield--celestial.png
 c764ee318837613db538aca7d9a638064e085117f81d2b9cf045b73631a5b7b1  art/icons/gear/shield-riot_shield--fine.png
