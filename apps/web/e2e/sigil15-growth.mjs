@@ -91,7 +91,7 @@ await closeTools();
 // 2. The sheet's MAGIC tab: study, Learn a word, chips with stars, inflections.
 await p.getByRole('tab', { name: 'MAGIC', exact: true }).click(); await pause(p, 300);
 const study = p.locator('[data-study]');
-ok('sheet: the study bar (' + (await study.innerText()).split('\n').slice(0, 2).join(' / ') + ')', new RegExp(s1 + ' STUDY').test(await study.innerText()) && /NEXT WORD AT \d+/.test(await study.innerText()));
+ok('sheet: the study bar (' + (await study.innerText()).split('\n').slice(0, 2).join(' / ') + ')', new RegExp('Study ' + s1 + ' / \d+').test(await study.innerText()) && /new word/.test(await study.innerText()));
 const fireCard = p.locator('[data-word-card="fire"]'), wardCard = p.locator('[data-word-card="ward"]');
 ok('sheet: FIRE is Practised, with a hollow star', /PRACTISED · 10 USES \/ 30/.test(await fireCard.innerText()) && (await fireCard.locator('img[alt="PRACTISED"]').count()) === 1);
 ok('sheet: WARD is Mastered, its inflection on', /MASTERED · 30 USES/.test(await wardCard.innerText()) && /INFLECTION ON · /.test(await wardCard.locator('[data-inflection]').innerText()));

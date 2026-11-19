@@ -62,10 +62,10 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
 
   // From scratch: drive a skill past its attribute.
   await p.locator('[data-points-reset]').click();
-  ok(at + 'Reset all gives every point back (' + await budgets() + ')', (await budgets()) === '10 LEFT OF 10 | 10 LEFT OF 10' && /Still to place: 10 Skill points and 10 Attribute points\./.test(await text('[data-points-todo]')));
+  ok(at + 'Reset all gives every point back (' + await budgets() + ')', (await budgets()) === '10 LEFT OF 10 | 10 LEFT OF 10' && (await text('[data-points-todo]')) === '');
   await up('skill', 'dexterity').click();
   ok(at + 'Dexterity 1 fits under Agility 1: ' + await note(), (await note()) === '✓ Dexterity 1: 1 Skill point spent.' && (await val('attr', 'agility')) === '1');
-  ok(at + 'the next point is marked as taking the attribute up before the click', (await text('[data-skill-need="dexterity"]')) === '· TAKES AGILITY TO 2');
+  ok(at + 'the next point is marked as taking the attribute up before the click', (await text('[data-skill-need="dexterity"]')) === '· Needs Agility 2');
   for (let i = 0; i < 3; i++) await up('skill', 'dexterity').click();
   ok(at + 'Dexterity past Agility spends the Attribute points: ' + await note(), (await note()) === '✓ Dexterity 4 needs Agility 4: 1 Attribute point spent.' && (await val('skill', 'dexterity')) === '4' && (await val('attr', 'agility')) === '4');
   ok(at + 'both budgets moved (' + await budgets() + ')', (await budgets()) === '6 LEFT OF 10 | 7 LEFT OF 10');
@@ -74,14 +74,14 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   await refused(down('attr', 'agility'));
   ok(at + 'lowering Agility under Dexterity is refused, naming the skill: ' + await note(), (await note()) === '✗ Agility can\'t drop to 3 while Dexterity is 4: lower Dexterity first.' && (await val('attr', 'agility')) === '4');
   // What the next point gives, on the screen.
-  ok(at + 'Agility shows what its next point gives', (await text('[data-attr-next="agility"]')) === 'Next point: +0.5 tile of movement an AP, +1 Initiative.');
+  ok(at + 'Agility shows what its next point gives', (await text('[data-attr-next="agility"]')) === '+0.5 tile of movement an AP · +1 Initiative');
   // The skill card (rules 1.54 item 4119): its portrait, its tag, its roll as a chip, and ONE line: what the next point gives.
   const card = await p.evaluate(() => { const k = document.querySelector('[data-skill="dexterity"]'), img = k.querySelector('[data-skill-face] img'), r = img.getBoundingClientRect();
     return { tag: k.querySelector('[data-skill-tag]').textContent, need: (k.querySelector('[data-skill-need]') || {}).textContent || '', mod: k.querySelector('[data-skill-mod]').textContent,
       lines: k.querySelectorAll('.phc-pt-line').length, nextAt: k.querySelector('[data-skill-next]').getAttribute('data-next-at'), next: k.querySelector('[data-skill-next]').textContent,
       face: img.complete && img.naturalWidth > 0, fw: Math.round(r.width), fh: Math.round(r.height), font: parseFloat(getComputedStyle(k.querySelector('[data-skill-next]')).fontSize) }; });
   ok(at + 'Dexterity\'s card: portrait ' + card.fw + '×' + card.fh + ', tag ' + card.tag + ', roll chip ' + card.mod + ', one next-point line for point ' + card.nextAt + ' at ' + card.font + ' px',
-    card.face && card.fw >= 44 && card.fh >= 56 && card.tag === 'FIGHT' && /TAKES AGILITY TO 5/.test(card.need) && card.mod === '+3' && card.lines === 1 && card.nextAt === '5' && /^Next point: \S/.test(card.next) && card.font >= 13);
+    card.face && card.fw >= 44 && card.fh >= 56 && card.tag === 'FIGHT' && /Needs Agility 5/.test(card.need) && card.mod === '+3' && card.lines === 1 && card.nextAt === '5' && /^\S/.test(card.next) && card.font >= 13);
   ok(at + 'every skill card has a portrait and one next-point line', await p.evaluate(() => [...document.querySelectorAll('[data-points] [data-skill]')].every((k) => k.querySelectorAll('[data-skill-face] img').length === 1 && k.querySelectorAll('[data-skill-next]').length === 1)));
   // Keyboard: Tab reaches the stepper, Enter presses it, the arrow keys step it; focus stays on the stepper.
   await down('skill', 'athletics').focus();
