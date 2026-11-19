@@ -52,49 +52,116 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **The NOW PLAYING credit never covers a panel** (a chip at the top edge, opened on hover). `a82b2ece3`, item 5707.
 - **PlaceScreen no longer imports `data/survival.json`** (the vow button asks the engine's `faithView` `vowChange`). `11a345ff6`.
 
-### Gaps (player-facing faults and small things no lane owned)
+### Gaps (player-facing faults and small things no lane owned; `wip/0.32-gaps` merged at `e52c9d90c`; report `docs/design/handoffs/BEFORE-ITEMS-2.0.md`)
 
-- **Forks at camp not shown in MAGIC (TRIAGE row 10).** Forks picked at camp do not show in the MAGIC tab (Visualization), and the tab shows "1 spare core" with 5 held. Reproduce first. [M] [open; from documents only] [TRIAGE row 10]
-- **"Called Out" says "no save" but the target still rolls one.** Data has `skip_save: true` (classes.json `draw_fire`); the cause is not found. [S] [open; from documents only] [TRIAGE row 13]
-- **"Needs Lore Master 1 (you have 1)".** The refusal text contradicts itself. [S] [open; from documents only] [TRIAGE row 13]
-- **Momentum preview shows "0 -> 0"** on a Charge that goes to 5. Hit-time ops (Rolling Start, the Breaker's +2, Charge's run) are skipped by the preview; fixing it needs a new primitive (lead approves first). [M] [open; from documents only] [TRIAGE row 7; spec 5503]
-- **Stale multiplier texts.** `feelings.json` has 5 texts with "to the multiplier"; the Damage school text says "x your Soul multiplier x the stage multiplier" (soul_modules.json:184, also :835). [S] [open; from documents only] [lead's review list]
-- **Pick-overlay tile notes use inconsistent wording.** [S] [open; from documents only] [lead's review list]
-- **"Raise <Attribute>" has no structured refusal reason;** `fog.ts` Initiative regex. [S] [open; from documents only] [lead's review list]
-- **The Primed boon fix is a workaround:** a data `turn_start` instead of `combat_start`. [S] [open; from documents only] [spec 5506]
-- **Barrel In shares the Lunge technique's action id** and needs its own `group_actions` row. [S] [open; from documents only] [spec 5531]
+- **Forks at camp not shown in MAGIC (TRIAGE row 10), the fork half.** The "1 spare cores" half is fixed (below); forks picked at camp not showing on the MAGIC tab was not reproduced. [M] [open; from documents only] [TRIAGE row 10]
+- **"Needs Lore Master 1 (you have 1)".** The refusal text contradicts itself; not touched by the gaps lane. [S] [open; from documents only] [TRIAGE row 13]
+- **The Primed boon fix is still a workaround** (a data `turn_start`): the real fix needs a registration export (combat.ts to the physical cycle); the validator now warns of a `combat_start` op on a meter made after it (`ed39a6e76`, spec 5607). [S] [partly; checked in code 19 Nov 2026] [spec 5506, 5607]
 - **Open guard's -2 shown in the fight.** It shows only on the glove card; the fight has no general display of carried defensive modifiers. [M] [open; checked in code 19 Nov 2026] [0cf490a26; verification]
-- **The field refuses minor actions on doubt.** `fieldRefusal` is a heuristic (game.ts:3994-4005, "the lead rules on it"); no per-action data flag. [M] [open; checked in code 19 Nov 2026] [START-HERE 15 Nov]
-- **Healing brake per giver.** `rules.json` brake is still `deferred`; its piece, the target-aware price, is on `release/0.32`, but nothing builds the brake. [M] [open; checked in code 19 Nov 2026] [spec 4640; verification]
 - **Small test faults.** `fx-sweep`'s nine real-speed cases are refused with "no place to stand"; `tending.json` Bond card numbers are copies with no validator tie; live-site suites time out at 30 s on page load. [S] [open; from documents only] [SESSION-HANDOFF 6.4-6.5]
-- **Tests that call inner functions** (rule 5): `helpers/perkfight` writes `doorPicks` directly; `survival-field-actions` calls `fieldRefusal`. Convert to real actions. [S] [open; from documents only] [wave2-rulings 4]
+- **Tests that call inner functions** (rule 5): `survival-field-actions` calls `fieldRefusal`. (`helpers/perkfight` sends forms and picks through door/pick: `ea20d6173`.) [S] [partly; from documents only] [wave2-rulings 4]
 - **The 0.30 review document for Leon's rulings** is not in the tree. Write it. [M] [open; from documents only] [SESSION-TODO D]
+- **The gaps lane's group F leftovers** (wave 3 SHOULD-FIX still open: 1 forced moves on a Boss typed per item, 7 Run and Gun's text, 8 `fx/guard.ts` `within` fallback, 11 `open-hand-2` `usable` and `shadow-2` `hideBlock` called directly, 14 `enemySearchTile` AI in code, 18 Launch's two copies of its AP; not checked 2, 10, 12, 17). [M] [open; checked by the gaps lane 19 Nov 2026] [BEFORE-ITEMS-2.0 group F]
 
-### Body / Mind / Soul attribute lanes (ruling layer: the proposals file)
+#### Built in 0.32 (not yet live)
 
-- **All nine attribute sheets, data first,** in the order Determination, Strength, Endurance, Agility, Perception, Intelligence, Expression, Insight, Virtue. [L] [open; from documents only] [proposals 4.2]
-- **All 36 fork options.** The 18 sealed ones: Momentum 6 (Spill, Headlong); Bonds 6 (Long Thread); Shadow 4/6 (Light Fingers, Lend the Dark, Lightkiller); Sigils 4/6, Outbursts 4/6, Prayer 4/6; Clean Break (unblocked by N3b). Each: data row, picking UI (rules 1.65), one card line, a reducer test, a measure where it changes damage. [L] [open; from documents only] [spec 4652-4660]
-- **Class audit.** Channeler first; 54 moves, 10 replaced or merged; the table goes to Leon. [L] [open; from documents only] [SESSION-TODO T]
-- **Alphas give too much.** Move the surplus to beta and gamma; one table for Leon. [M] [open; from documents only] [SESSION-TODO T]
-- **Leon-judged rulings 1-4 and 6-9** (proposals 3): Camaraderie takes the healing verbs and Touch is cut; machine sabotage becomes the Operative's only; Second Wind becomes a Pain Threshold perk and Last Plate is cut (measure the solo Bulwark); Rolling Start loses its free Charge; Speed Load and Quick Draw move to Reaction Speed and Flush Out becomes one 2 AP verb at Dexterity 5; Name the Sinner at Faith 2 and Answered Prayer is cut; Empathy's Mastered becomes Threads That Hold; Mercy and Open Hand move to Insinuation. [L] [open; from documents only] [proposals 3]
-- **Rite in the Field as Leon worded it.** Every 5 of your own kills (3 at tier II), the next Crystallise is free. The builder first checks Crystallise's air draw goes through the price. [M] [open; from documents only] [proposals 2.6]
-- **Visualization redesign.** Forks Hard Light / Sharp Light and Many Hands / Masterwork; re-measure the level-1 Beast; `held_most` 5 and `bodies` 7; measure Sharp Light and Wake of the Kill together; Masterwork's order through N20. [L] [open; from documents only] [proposals 5, 5b; expression.md 8]
-- **`unmakeOwned` leaves ties dangling.** It unties only `OWNED_TIE` (owned.ts:134), so masterwork and encore ties stay. Due when Masterwork is built. [S] [open; checked in code 19 Nov 2026] [expression.md]
-- **One owner per effect.** Analyze 0 AP is Quick Read II only; Rumination's Index II becomes +2 on the next Brain save; Vault belongs to Athletics and Shadow's Vault is cut; Ward shown as "Warding Word". [M] [open; from documents only] [proposals 2.7]
-- **Mastered perks that are Narrator-only.** Engine halves for the two the Intelligence sheet wrote, and the other Narrator-only Mastered perks (listed "for the next pass", no slot yet). [M] [open; from documents only] [proposals 2.8]
-- **Passives that never ran.** Rebuild or cut: Answered Prayer, Righteous, Five Stars, Mercy, Veiled Insult, Feel Their Pain, Nobody Left Behind's carry half, Opening Argument; grep every unlock for an effect with no reader. [M] [open; from documents only] [proposals 2.9]
-- **Per-sheet open items.** Agility: Flush Out numbers, measure the solo Skirmisher. Endurance: the Guard cap of 4 makes "+1 plate" dead for non-Bulwarks. Insight: the solo Mender measure, an old-save Empathy test. Perception: free Hide may push the Operative over Shadow's 125 window; Brain Power charge cut and Clean Vent. Strength: Charge Carries +2 or +1 (Breaker 206% at level 20). [M] [open; from documents only] [attribute drafts section 8]
+- **A resource price of 1 names one** ("Load the Visualizer · 1 core"). `4e010c1e4`, spec 5601.
+- **Called Out's card says what happens** ("Taunted even if its save holds"). `6bd9ca3e1`, spec 5602.
+- **The Momentum preview runs the technique as a hit** (G1). `a04d01adb`, spec 5600; test `gaps-032` (after the Body merge it reads 1 to 1: the free Charge is gone, `a046c8bfb`).
+- **Stale multiplier texts** (five feelings, the Damage school and Inverse). `62ede06b7`, spec 5603.
+- **Pick-overlay tile notes in one wording.** `1ccc52467`, spec 5604.
+- **The initiative line built per side; `fog.ts` parses no prose.** `683d87f50`, spec 5605.
+- **"Raise <Attribute>" from structure:** `raiseNeed` (`c04435ae3`, spec 5606); the level-up screen reads it and says the reason once (`8c5e68e39`, `f41f1ef01`).
+- **Barrel In has its own action id** (`barrel_in`, the old `lunge` an alias). `47bc77b9c`, spec 5608.
+- **The field reads a flag per action** (`actions.json field`, G3). `f11bdd754`, spec 5609; the merge added the new lanes' rows and a test that no row outlives its action (`5d3e35949`).
+- **The healing brake per giver.** Spec and data `a00837a90`; built at the one cost site with the price's target `d88e18704` (spec 5610; test `merge-032-review`).
+- **Keeper names match their faces.** `efb42f4fe`, spec 5611.
+- **Delivered art wired** (tone marks, XP / Devotion / credits marks, the camp's Ready sign, the Open Hand form chips). `00c51296e`, spec 5612.
+- **A focus taken out of the off hand is a focus in the pack** (reducer test for the four foci). `bc76d2f50`.
+
+### Body / Mind / Soul attribute lanes (ruling layer: the proposals file; merged into `release/0.32`: Body `a4a65ac53`, Mind `37cb8195c`, Soul `5d3e35949`; hand-offs `docs/design/handoffs/0.32-LANE-BODY.md`, `-MIND.md`, `-SOUL.md`)
+
+- **Class audit.** Channeler first; 54 moves, 10 replaced or merged; the table goes to Leon. (The lanes changed moves one by one: Measured Blow, Retort, Reforge, Vanish, Sabotage, Backdraft, Quick Sketch, Occult Library; the audit table itself was not written.) [L] [partly; from the hand-offs 19 Nov 2026] [SESSION-TODO T]
+- **Alphas give too much.** One table for Leon of what moved to beta and gamma (the lanes moved the rows; no table). [M] [partly; from the hand-offs] [SESSION-TODO T]
+- **Mastered perks that are Narrator-only.** Established Fact and Closing Argument have engine halves (Mind); the others are listed for the next pass: Poker Face I, Old Tales, Between the Lines I, Foresight I, Rank Has Privileges. [M] [partly; from the hand-offs] [proposals 2.8]
+- **Rite in the Field's "takes nothing from the air".** Only the 0 AP half is built: Crystallise's air draw is not on the price (a priced resource on the fight's mana meter needs a holder `on: fight` in the resource rows: see "needs a primitive"). [S] [partly; checked in code 19 Nov 2026] [spec 6207; proposals 2.6]
+- **Per-sheet open items.** Agility: measure the solo Skirmisher. Endurance: the Guard cap of 4 makes "+1 plate" dead for non-Bulwarks; the solo Bulwark's rank II Second Wind fallback is not built. Insight: the solo Mender measure. Perception: free Hide may push the Operative over Shadow's 125 window (Vanish's free Hide is unused by the policy). Strength: Charge Carries +2 or +1 (Breaker 206% at level 20). [M] [open; from the hand-offs] [attribute drafts section 8]
 - **Parting Cut** (Ingenuity 9), listed but not built. [M] [open; from documents only] [perception.md; 0.31.5 notes]
 - **Playtest balance notes for the tables.** Rolling Start; Razor Beast hits 47-50 at level 2; Channeler deals 152 damage for 32 MP; the Mender's to-hit and its unexplained enemy Bond. [M] [open; from documents only] [TRIAGE balance]
+- **The Tending verbs on Camaraderie's perks show on the Perks tab,** not the TEND tab (needs a grant_action `tab`: see "needs a primitive"). [S] [open; from the Soul hand-off] [rules 1.75]
+- **Field Repair stays a free unlock** (Improvisation has three perks; gating it by a held perk needs a piece). Parley's tier I talk-down is Narrator-only (a dead button under the handler). [S] [open; from the Mind hand-off] [rules 1.74]
+- **Visualization: re-measure the level-1 Beast; measure Sharp Light and Wake of the Kill together** (the measure picked no forks; no Beast-at-1 tool). [S] [open; from the Mind hand-off] [proposals 5, 5b]
+- **Five Stars II "rank-and-file only"** is built as every foe (needs a tier filter); **Warding Word "against a supernatural effect"** read as the next Brain or Heart save (PROVISIONAL). [S] [partly; from the Soul hand-off] [rules 1.75]
 
-### Shadow
+#### Built in 0.32 (not yet live)
 
-- **Dark maps** for shrine, works and rim; measure clears; then Douse works. [L] [open; from documents only] [scout-owed-fixes 14a/b]
-- **Prone lowers seen range** (`seen_range`). Enemy vision is still a typed 12 and the tier notice is typed in three places. [M] [open; from documents only] [scout 14c]
-- **Detect view.** Also answers spec 5107 (a sight view per enemy). Fix alongside: the wisps' hover tip never opens; hover lifts the whole tile stack; the hover card stays on focus-visible; tile verbs send no choices. [M] [open; from documents only] [scout 14f]
-- **Stalk.** 2 AP, +1 Shadow, from Hidden. [M] [open; from documents only] [scout 14d]
-- **Silent property.** Needs a design pass before a builder. [M] [open; from documents only] [scout 14e]
-- **Case (Shadow).** Not built; it sits in `shadow.json` under `pending`. [M] [not built; checked in code 19 Nov 2026] [verification]
+- **Strength** (rules 1.73 items 5800-5819): Raw Power's ladder (Grapple 2, Throw Down 5), Spill and Headlong, Rolling Start without its free Charge, Guts and Intimidation four perks each, Measured Blow merged. `dce438554`, re-record `2053d31cc`.
+- **Endurance** (5820-5837): Durability's ladder, Pain Threshold and Senses four perks each, Second Wind a perk, Last Plate cut, Retort and Reforge on the Bulwark. `8101214be`, re-record `747fc2ab1`.
+- **Agility** (5840-5856): Slide at 2, Flush Out one 2 AP verb at 5, Athletics (Wall Run with Vault) and Reaction Speed (Speed Load with Quick Draw) four perks each. `b6d18b890`, re-record `7d42b57cd`.
+- **Perception** (6000-6011): Ingenuity's ladder, Light Fingers, Lend the Dark, Lightkiller, Acuity and Vigilance four perks each, Vanish and Sabotage replaced, the Plant / Foul / Vault / Read Intent verbs cut. `e69aca52f`, re-record `c2737e3e3`.
+- **Intelligence** (6020-6025): Overclock at 2, the charge cut 3/5/9, four forks, Rumination and Eloquence four perks each, Backdraft. `7e550c0db`, re-record `feece135b`.
+- **Expression** (6040-6045): Cash in at 2, Hard Light / Sharp Light / Many Hands / Masterwork (tie kind `masterwork`), Improvisation and Charisma perks, Quick Sketch. `3a56c3ede`, re-record `5b318afe5`.
+- **Determination** (6200-6208): Will Power's ladder (Overdraw at 2), four forks, Composure and Lore Master four perks each, ready designs to Lore Master, the Strain-free swell to Composure 6, Rite in the Field's 0 AP half. `66bf26c65`, re-record `7bf7bb226`.
+- **Insight** (6210-6217): Empathy's ladder (Snap 2, Shield 5, Touch cut), Threads That Hold, Short and Long Thread, Camaraderie and Insinuation four perks each (the healing verbs moved into Camaraderie). `448b88a6d`, re-record `e1d0f3dd2`.
+- **Virtue** (6220-6225): Name the Sinner at 2 (Answered Prayer cut), four forks, Conscience and Authority four perks each. `a53523d02`, re-record `be2df6982`.
+- **All 36 fork options** built and offered (the Body, Mind and Soul lanes above; Spotter and the older ones were built before).
+- **Passives that never ran:** rebuilt or cut (Answered Prayer and Feel Their Pain cut; Righteous, Five Stars, Mercy, Veiled Insult rebuilt; Nobody Left Behind's carry cut; Opening Argument built). Mind and Soul lanes above.
+- **One owner per effect:** Quick Read II has Analyze at 0 AP, Index II +2 on the next Brain save, Shadow's Vault cut, Warding Word. Mind and Soul lanes above.
+- **One fix for the removed perks on old saves** (the three lanes each found `migrateCharacterItems` dropping a removed perk before `perk_remap`): `character.ts remapRow`. `37cb8195c`.
+- **The biggest all-in Release band set to what is measured** (spec 6226, PROVISIONAL). `5d3e35949`.
+
+### Shadow (`wip/0.32-shadow` merged at `43d49feae`; hand-off `docs/design/handoffs/0.32-LANE-SHADOW.md`)
+
+- **Detect view, the hover faults.** The sightline is built (below); the wisps' hover tip, hover lifting the whole tile stack, the hover card on focus-visible and tile verbs sending no choices were not checked. [M] [not verified; from the hand-off] [scout 14f]
+- **Stalk, the rest.** Built as data; not under the door's two gains a turn, and not refused at a full meter (both need a primitive: see below). [S] [partly; from the hand-off] [scout 14d]
+- **Silent property.** Shadow-spec 2.6 and to-do F disagree; needs a design pass before a builder. [M] [open] [scout 14e]
+- **Case (Shadow).** Not built; needs `reveal what: "kit"` and a side's read-out of a unit's kit (see below). [M] [not built; checked in code 19 Nov 2026] [verification]
+- **Sight checks still asked without the looked-at unit:** an ally's eyes on an ally (combat ~1361 and ~2868, faith, tactics 129, perks/d 115, perks/e 136, 726 and 845, physical/rules 80, classes/k 1336) and tile-only checks. The lead's call whether `seen_range` applies there. [S] [open; from the hand-off] [rules 1.70 item 5545]
+
+#### Built in 0.32 (not yet live)
+
+- **Dark maps** for shrine, works and rim (works and rim 1 to 2 lamps), Douse on a dark map, Prone's `seen_range`, one sight range (`eyeReach`), enemy notice and vision as tier data. `e45418996`, `9e6ebe053`, spec 6400-6408.
+- **The shadow sightline** on the map (who sees each tile, eye lines, the SIGHTLINE switch). `72e99c3e6`.
+- **Stalk** (2 AP, once a turn, from Hidden, +1 Shadow) as data. `e45418996`.
+
+#### The review of the shared step: fixes built in the merge (not yet live)
+
+- **M1** forms a legacy save kept outside the count are charged against the grant. `83ea69741`.
+- **M2** the looked-at unit named everywhere eyes are asked; Chain Smoker and Lowland Born on the one sight range. `90575110d`.
+- **m1** the once-a-turn Call cap for every Call paid in AP. `36f387321`.
+- **m2** `reactRefusal`'s probe: Killzone and Iron Grip change nothing on it. `b35b12ba8`.
+- **m4** (part) `formsKnown` through the one resolver. `b0e2a6ef2`.
+- **m5** the door's own name on its pending pick. `d7282ae13`.
+- **m6** no `perk_remap` on an alpha. `70df1bd54`.
+- **m7** forks.json rows carry no `step`. `6d983e010`.
+- **m8** the Parry probe test through the reducer. `0b1870444`.
+- **m10** dead code and module-private helpers. `0f4e9523a`.
+- **The Emanator stowed** says so on the Strain row (Step 3e). `079f78e2f`.
+
+### 0.32: needs a primitive (lead to rule)
+
+One line each, with the rule that needs it. Nothing here is built; each waits for the lead's approval after a look at `docs/ENGINE-HOOKS.md`.
+
+- **A limit key shared across items** (Stalk under the Shadow door's two gains a turn; `limit.key` is item-scoped). [Shadow, rules 1.76 item 6405]
+- **A below-max bound on `self_res`** (`{shadow: {below: "max"}}`), so Stalk is refused at a full meter. [Shadow, 6405]
+- **`reveal what: "kit"`** and a side's read-out of a unit's kit and rolled loot (Case; its Lift discount is the P3 cost trigger). [Shadow, Case]
+- **A stat Fear's typed refusals ask** (Steady I: Fear can't stop moves or actions). [Body, rules 1.73]
+- **A save's skill swap on `cond_incoming`** (Point Man I: allies save against Fear with your Guts). [Body]
+- **Injuries carrying a limb penalty the engine reads** (Numb I). [Body]
+- **A general "last turn" op** (Still Standing: one more turn at 0 HP; Bite the Bullet's handler, generalised). [Body]
+- **A per-unit surprise piece in the approach** (Tremor I, Shoot First I/II act in the surprise round; rules 1.64). [Body]
+- **A roll kept from two on `to_hit` / `attack_roll`** (Untouchable I/II: attacks roll twice, keep the worse). [Body]
+- **`acted` carrying a Call's id** (`ctx.id`, so `action_id` works on `acted`): Read Intent is built from a `mark` on the price today (a smell). [Mind, rules 1.74 item 6009]
+- **An action gated by a held item** (Field Repair as an Improvisation perk). [Mind, 6042]
+- **A story `acted`** (Index II across story and fight; built for the fight only). [Mind, 6021]
+- **A `targets` filter by tier** (`not_tier`: Five Stars II's rank-and-file). [Soul, rules 1.75]
+- **A grant_action `tab`** (or a perk-held verb), so the Tending verbs on Camaraderie's perks show on the TEND tab. [Soul, 6213]
+- **A resource holder `on: fight`** (the fight's mana meter as a priced resource), for Crystallise's air draw on the price and Rite in the Field's free draw as a cost_mod (the merge's Step 3g, larger than it read: `resLeft`, `resPay`, `resWhyNot` and `resGive` take a unit or a character, never the fight). [Soul, 6207]
+- **A registration export from combat.ts to the physical cycle** (the Primed boon's real fix: a `combat_start` Momentum op on a meter made after it). [gaps, spec 5607]
+- **A sheet-level reader of the one resolver for character.ts** (`strainLimit` and `readyDesigns` still resolve `skill:` inline: importing `effects/triggers.ts` from `character.ts` makes a load cycle; a setter registered by triggers.ts would fix it). [the merge's m4]
+- **`brakeGiven`, a new export of `effects/cost.ts`** (built in the merge for the healing brake: the give is counted after the action runs, from `effects/actions.ts`): the lead to approve it or move the count. [spec 5610]
+- **A class-only multiplier** (the Figments door 119 and the Rigger 123 against 130 and 150). [gaps report; Balance 2.0]
+- **The effects step's own list:** none (`0.32-STEP2-EFFECTS-EVENTS.md`); its audit's "still open" rows are under Effects above.
 
 ### Big leftovers (designed, partly or not built; each shrunk to the owed part)
 
@@ -194,10 +261,12 @@ Direct questions. Where the lead gave a recommendation, it is built as stated un
 12. **Tank kit and guns.** The tank's free Buckler against the budget (the budget stays 300, ruled 19 Nov), and 3x healing cost. Guns reach 195% with both perks: refit the perks, or accept it under your "ceilings are relative" ruling? [morning-report-0.29.0 s10]
 13. **Virtue sheet.** Hymns at Faith 3 put two things on level 3 (recommended: keep, built as recommended unless Leon says otherwise); Foresight's combat tier II; Real Power merged into Rank Has Privileges II. [virtue.md 8]
 14. **Strength sheet.** Charge Carries +2 or +1 (measure first)? Throw Down as the big verb at 5 (recommended: yes)? Raw Power 1 gating Momentum (recommended: no)? Recommendations built unless Leon says otherwise. [strength.md 8]
-15. **Shadow numbers.** The number of tiles Prone gives through `seen_range` is yours to set. Should Douse widen from lamps to any light? [scout 14b/c]
+15. **Shadow numbers** (the Shadow lane's three, built as stated): Prone makes enemies see you 4 tiles less far (12 to 8 lit, 6 to 2 dark)? The works and the rim get 1 to 2 lamps (were 0 to 1: a pitch-black works ran GUARD-36 dry)? Widen Douse from lamps to fires and terminals (one data word, `shadow.douse`)? [0.32-LANE-SHADOW.md]
 16. **Outburst 4.0.** The 25 feeling colours and the readings in spec items 801-818. [old ROADMAP]
 17. **The open calls listed for you** in the playtest checklist (Survival about 132, Classes 3.0 53, 0.23.0 29) and spec section 14. [PLAYTEST-CHECKLIST; HANDOFF Open 8]
 18. **Leftover branches and folders.** May I delete `phc-figments2` (`design/figments-2`) and the ~25 non-git leftover folders? [TAKEOVER State]
+19. **Athletics "Defense from 1".** Not built: it moves the enemy yardstick (`test/balance/step1-fit`). Build it and refit the yardstick, or drop it? [0.32-LANE-BODY.md]
+20. **The quad Bulwark.** Its stage-1 clears fell 10 to 4 of 40 (Reactive Plate and Last Plate gone; the solo Bulwark 22 to 24). Accept, or give the Bulwark something back? [0.32-LANE-BODY.md]
 
 Answered on 19 Nov (verification file): carry weight (nothing changes); camp budget (stays 300); ceilings (a relative measure, not a hard line, so "all-in 7/1/1 builds sit over every ceiling" is not a fault by itself); Operative and Sigilist 0 of 40 (the bot's policy).
 
