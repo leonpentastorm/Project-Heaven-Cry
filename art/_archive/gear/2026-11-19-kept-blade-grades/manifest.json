@@ -2962,6 +2962,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-evoker--celestial",
+      "path": "art/icons/gear/focus-evoker--celestial.png",
+      "sha256": "4ed1ac1ccca966e2b96f501da91fbd12cfabcb5b47bfe0e129eeabd6410bc12c",
+      "label": "Evoker — Celestial",
+      "family": "focus-evoker",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-evoker--celestial.png",
+        "sha256": "41f7a0d6deeb5f7551a061af445dd24191ec9789cc182bbc8a9127f3cc2901ba"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-evoker--celestial.png",
+        "sha256": "4ed1ac1ccca966e2b96f501da91fbd12cfabcb5b47bfe0e129eeabd6410bc12c"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-evoker--celestial.txt",
+        "sha256": "0b2cd500ec1a02f720ece8a4481c9b7b73835db5d35c75c470a9dd32c635818a"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/focus-evoker.png",
+          "sha256": "3947d21607b863bf71949ab13c1a7667ca3cb5a006314d082516daaa1ee076f4"
+        },
+        {
+          "path": "art/icons/gear/focus-evoker--relic.png",
+          "sha256": "079a6787a1a91190cc198f904476bb281d8e3b7127567bf3fbab129887a9a511"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-evoker--celestial.png",
+        "128": "art/icons/gear/exports/128/focus-evoker--celestial.png",
+        "64": "art/icons/gear/exports/64/focus-evoker--celestial.png",
+        "32": "art/icons/gear/exports/32/focus-evoker--celestial.png"
+      },
+      "export_hashes": {
+        "256": "b153e2063822f2736f2ab7203e870a961a09e2f02adb3da71da139cf4c532c83",
+        "128": "b16cdf25cf7d5b4522a3cab91e1dde22706cbd418d35133a541d08bb2c273957",
+        "64": "1bf6bbc4d028a53a80c56c753b873c2ec4cfc81e1c2ef8c5260ecd97c98e0166",
+        "32": "493d96302be49d53df39e28390b0e26d6ed62f41aec9e267aaf99815f07476f4"
+      },
+      "grade": "celestial",
+      "standard_id": "focus-evoker",
+      "outline": {
+        "solid_alpha_iou": 0.9604550567661282,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 35
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
