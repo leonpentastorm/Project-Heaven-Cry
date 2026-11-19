@@ -12384,3 +12384,9 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     `banner-level-up` is drawn (`art/briefs/ART-REQUESTS.md` 0c). Proof: `apps/web/src/game/turnIntro-levelup.test.tsx`
     (a two-player Survival room through the reducer: fights won until a level rises; both pages show LEVEL UP, once a
     character, after VICTORY).
+5525. **The reach is drawn by its boundary** (owed fix, "the prayer reach boundary"; the to-do's "a prayer outlines every
+    tile in sight (heavy)"): the one pick overlay (`apps/web pickOverlay.ts`) shades an action's reach and draws a line
+    round its outer edge only (`reachEdge`: the sides whose neighbour is out of reach), no longer a dashed outline on
+    every tile. Every action's reach, not only a prayer's; nothing about which tiles are in reach changed (the engine's
+    `prayerAim` and previews). Each tile's hover note still says "in reach". Proof: `apps/web/src/game/pickOverlay.test.ts`.
+    Not done here (needs a ruling): a prayer with no data `range` still reaches every tile its caster sees.
