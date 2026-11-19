@@ -154,7 +154,7 @@ describe('Devoted', () => {
     expect((s.g.characters[c.id] as any).state.beloved).toEqual(['o1']);
     // module slots 1 + floor(4/3) = 2; the Beloved design may hold 3
     s.g.characters[c.id].soulKnown = { schools: ['damage'], modules: ['move', 'burst', 'homing'] };
-    s.g.characters[c.id].skills.empathy = 4;
+    s.g.characters[c.id].skills.empathy = 4; s.g.characters[c.id].skills.lore_master = 10; // rules 1.75 item 6205: room for one more ready design (Lore Master's)
     s.act({ type: 'story/perk', charId: c.id, id: 'devoted.beloved_spells', actionId: 'beloved_design', text: 'damage: move, burst, homing' } as any);
     const d = s.g.characters[c.id].outbursts!.find((x) => x.modules.length === 3)!; expect(d).toBeTruthy();
     expect((s.g.characters[c.id] as any).state.beloved).toContain(d.id);

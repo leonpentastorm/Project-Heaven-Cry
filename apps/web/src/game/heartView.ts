@@ -134,7 +134,7 @@ function switches(cb: any, u: any, on: string): { id: string; itemKey: string; w
 /** The Strain a bare-handed Begin adds (soul_modules.json cycle.no_emanator_strain), for any text that names it. */
 export const NO_EMANATOR_STRAIN: number = (SOUL_RULES as any).cycle.no_emanator_strain;
 export const noEmanatorText = (): string => 'No Emanator: +' + (SOUL_RULES as any).cycle.no_emanator_strain + ' Strain, paid from the air';
-const OVERDRAW = 'skill:will_power.3#overdraw';
+const OVERDRAW = 'skill:will_power.2#overdraw'; // rules 1.75 item 6200: Overdraw at Will Power 2
 /** `verdict`: the reducer's own answer for a Begin of this design (rules 1.62 item 4904: actionFlow.ts verdictOf, the
  * dry run of the action the click sends, with its credit and switches); the card's numbers stay the preview's. Without
  * it (a test, a screen with no action to send) the magic preview's own check stands. */

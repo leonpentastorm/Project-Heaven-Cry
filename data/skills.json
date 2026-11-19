@@ -4699,7 +4699,6 @@
           "soul": 0.1,
           "syphon": 0.1,
           "reach": 1,
-          "designs": 1,
           "slots": 1,
           "pumps": 1
         },
@@ -4717,10 +4716,6 @@
             "text": "+{=per_point.numbers.reach} tile Outburst reach"
           },
           {
-            "at": "every 2",
-            "text": "+{=per_point.numbers.designs} design ready"
-          },
-          {
             "at": "every 3",
             "text": "+{=per_point.numbers.slots} module slot"
           },
@@ -4729,8 +4724,12 @@
             "text": "{=per_point.numbers.pumps} free Pump a round"
           },
           {
-            "at": "from 7",
-            "text": "A held Outburst swells with no Strain"
+            "at": "at 2",
+            "text": "Learn the modules Size and Quiet"
+          },
+          {
+            "at": "at 4",
+            "text": "Learn the modules Bloom and Volley"
           }
         ]
       },
@@ -4738,11 +4737,11 @@
         "focus:emanator"
       ],
       "unlocks": {
-        "3": {
+        "2": {
           "name": "Overdraw",
           "category": "Active Skill",
-          "mastery": 1,
-          "text": "Once a turn: a Pump adds 2 stages · +1 Strain after the first",
+          "mastery": 0,
+          "text": "Once a turn: a Pump adds {=unlocks.2.numbers.stages} stages · +{=unlocks.2.numbers.strain} Strain after the first",
           "player": "Overdraw, once a turn: a Pump adds two stages · the first of a fight costs no Strain, then one Strain",
           "effects": [
             {
@@ -4750,44 +4749,50 @@
               "action": "overdraw",
               "ap": 0,
               "uses": "per_turn"
-            },
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "item": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6200",
+          "numbers": {
+            "stages": 2,
+            "strain": 1
+          }
+        },
+        "3": {
+          "name": "Mastery 1",
+          "mastery": 1,
+          "text": "A perk step in this skill: one of its two perks at Tier I.",
+          "effects": [
             {
               "op": "perk_choice",
               "skill": "will_power",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine",
-          "provisional": true,
-          "item": true
+          "adjudication": "engine"
         },
         "4": {
           "name": "Fork: Ride the Edge or Slow Burn",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's first fork, Ride the Edge or Slow Burn: not offered yet (Ride the Edge and Slow Burn are still to be built; data/forks.json).",
+          "text": "The door's first fork: choose Ride the Edge or Slow Burn, once, out of a fight, kept for good (data/forks.json).",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+          "source": "rules 1.75 (Soul lane, 0.32) item 6201"
         },
         "5": {
-          "name": "Pure Heart",
-          "category": "Combat Interaction",
+          "name": "Two Schools",
+          "category": "Active Skill",
           "mastery": 0,
-          "text": "Once per combat, the first Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release.",
-          "player": "Once a fight: the Strain that would Mana Short you is refused",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "pure_heart",
-              "ap": 0,
-              "uses": "per_combat"
-            }
-          ],
+          "text": "A design may carry a second school: it rides after the first at half strength and costs more MP (soul_modules.json second_school).",
+          "player": "A design may carry a second school, at half strength",
+          "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "item": true
+          "source": "rules 1.75 (Soul lane, 0.32) item 6200"
         },
         "7": {
           "name": "Mastery 3",
@@ -4806,11 +4811,11 @@
           "name": "Fork: Blood Price or Clean Break",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's second fork, Blood Price or Clean Break: not offered yet (Blood Price and Clean Break are still to be built; data/forks.json).",
+          "text": "The door's second fork: choose Blood Price or Clean Break, once, out of a fight, kept for good (data/forks.json).",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+          "source": "rules 1.75 (Soul lane, 0.32) item 6201"
         },
         "9": {
           "name": "Mastery 4",
@@ -4911,29 +4916,30 @@
         "rows": [
           {
             "at": "each",
-            "grows": "strain_limit",
+            "text": "+{=per_point.numbers.save} on Heart saves"
+          },
+          {
+            "at": "at 1, 2, 4, 6, 8",
             "text": "+{=per_point.numbers.strain_step} Strain limit"
           },
           {
-            "at": "each",
-            "text": "+{=per_point.numbers.save} on Heart saves"
+            "at": "at 2",
+            "text": "Learn the modules Homing, Swift, Left, Right and Silent"
+          },
+          {
+            "at": "at 6",
+            "text": "A held Outburst swells with no Strain"
           }
-        ]
+        ],
+        "note": "Rules 1.75 item 6202: the Strain limit moves at 1, 2, 4, 6 and 8 only (soul_modules.json strain.limit; tools/validate.py holds the row's points equal to its steps)."
       },
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Poker Face",
-          "category": "Conversation Quirk",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Interrogators and lie-readers take −{=unlocks.3.effects.0.value} against you.",
-          "player": "Anyone questioning you or reading your lies takes −{=.effects.0.value}",
+          "text": "A perk step in this skill: one of its four perks at Tier I.",
           "effects": [
-            {
-              "op": "tn_mod",
-              "context": "insight_checks_against_self",
-              "value": 3
-            },
             {
               "op": "perk_choice",
               "skill": "composure",
@@ -4943,27 +4949,17 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Stand Still",
-          "category": "Combat Starter",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Until you first act in a combat, enemies attacking you are at −2 to hit, and the first one to miss gives you a free attack on it (once a combat, if your weapon reaches). A Call doesn't count as acting.",
-          "player": "Until you first act: foes −{=.effects.0.value} to hit you · the first miss gives you a free attack",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "defense_until_first_act",
-              "value": 2
-            },
-            {
-              "op": "grant_action",
-              "action": "stand_still_counter",
-              "ap": 0,
-              "uses": "per_combat"
+              "op": "perk_choice",
+              "skill": "composure",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "engine",
-          "provisional": true,
-          "item": true
+          "adjudication": "engine"
         },
         "7": {
           "name": "Mastery 3",
@@ -5017,7 +5013,7 @@
         "once_per_scene": true
       },
       "tags": [
-        "gamma",
+        "beta",
         "core:soul",
         "attr:determination",
         "defense",
@@ -5052,6 +5048,17 @@
         "bad_for": "small bois, shy bois, studs and sluts.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "you_get_used_to_it": "poker_face"
+        },
+        "passives": {
+          "3": "poker_face",
+          "5": "stand_still"
+        },
+        "note": "Rules 1.75 item 6203: Poker Face and Stand Still became perks; You Get Used to It is removed (Poker Face at its tier)."
       }
     },
     {
@@ -5063,60 +5070,60 @@
       "summary": "The occultist's library: old scripts, curses, relics and the names of things.",
       "per_point": {
         "numbers": {
-          "call_range": 1
+          "call_range": 1,
+          "designs": 1
         },
         "rows": [
           {
             "at": "each",
             "text": "+{=per_point.numbers.call_range} tile Name It reach"
+          },
+          {
+            "at": "at 1",
+            "text": "Your first Outburst tone"
+          },
+          {
+            "at": "at 2",
+            "text": "Learn the forms Wave, Burst, Aura and Lance, and the modules Time, Ether and Phantom"
+          },
+          {
+            "at": "at 4",
+            "text": "Learn the modules Ricochet, Fuse and Return"
+          },
+          {
+            "at": "at 4, 6, 8, 10",
+            "text": "+{=per_point.numbers.designs} design ready"
           }
-        ]
+        ],
+        "note": "Rules 1.75 item 6205: ready designs are Lore Master's (soul_modules.json limits.ready_designs; tools/validate.py holds the design rows' points equal to its steps)."
       },
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Old Tales",
-          "category": "Passive",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Once per scene, ask the Narrator one question about a supernatural creature, curse or relic. The answer is true.",
-          "player": "Once a scene: one true fact about a creature, curse or relic",
+          "text": "A perk step in this skill: one of its four perks at Tier I.",
           "effects": [
-            {
-              "op": "grant_action",
-              "action": "old_tales_question",
-              "ap": 0,
-              "uses": "per_scene"
-            },
-            {
-              "op": "narrator",
-              "note": "Narrator answers truthfully"
-            },
             {
               "op": "perk_choice",
               "skill": "lore_master",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "narrator"
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Ward",
-          "category": "AP Mod",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "{=unlocks.5.effects.0.ap} AP: an ally gets +{=unlocks.5.numbers.save} on their next save against a supernatural effect.",
-          "player": "{=.effects.0.ap} AP: a friend +{=.numbers.save} on their next save against the supernatural",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "ward",
-              "ap": 1,
-              "uses": "at_will"
+              "op": "perk_choice",
+              "skill": "lore_master",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "engine",
-          "numbers": {
-            "save": 3
-          }
+          "adjudication": "engine"
         },
         "7": {
           "name": "Mastery 3",
@@ -5170,7 +5177,7 @@
         "once_per_scene": true
       },
       "tags": [
-        "beta",
+        "gamma",
         "core:soul",
         "attr:determination",
         "knowledge",
@@ -5206,6 +5213,17 @@
         "bad_for": "scientists, hackers, barbarians.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "old_tongue": "old_tales"
+        },
+        "passives": {
+          "3": "old_tales",
+          "5": "lore_ward"
+        },
+        "note": "Rules 1.75 item 6206: Old Tales and Warding Word became perks; Old Tongue is removed (folded into Old Tales II)."
       }
     },
     {

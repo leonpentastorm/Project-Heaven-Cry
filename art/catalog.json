@@ -8411,7 +8411,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "old_tongue",
+      "data_id": "old_tales",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "E",
@@ -33890,7 +33890,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-overdraw/overdraw.svg",
       "data_ids": [
-        "skill:will_power.3"
+        "skill:will_power.2"
       ]
     },
     "move-pure-heart": {
@@ -33927,7 +33927,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-pure-heart/pure-heart.svg",
       "data_ids": [
-        "skill:will_power.5"
+        "perk:pure_heart"
       ]
     },
     "move-shape": {

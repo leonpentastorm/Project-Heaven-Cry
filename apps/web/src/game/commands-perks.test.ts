@@ -84,19 +84,19 @@ describe('the Perks and Class tabs', () => {
 
 describe('the Perks tab: items used from another action are read-only (Leon, 9 Nov 2026; rules 1.14: the perk card in a fight)', () => {
   it('Overdraw, Pure Heart and The Twin Pays have no Confirm (no pk: action) but a row to read, and never become turn-card commands', () => {
-    const c = charWith({ skills: { ...charWith().skills, will_power: 10 } as any, perks: [{ id: 'the_twin_pays', tier: 'mastered' }] }), f = fight(c);
+    const c = charWith({ skills: { ...charWith().skills, will_power: 10 } as any, perks: [{ id: 'the_twin_pays', tier: 'mastered' }, { id: 'pure_heart', tier: 'I' }] }), f = fight(c);
     const gr = actionGroups(f.cb, f.u, c, { g: f.g }), rows = (gr.find((x) => x[3] === 'perks')?.[1] || []) as any[];
-    const keys = ['skill:will_power.3', 'skill:will_power.5', 'perk:the_twin_pays'];
+    const keys = ['skill:will_power.2', 'perk:pure_heart', 'perk:the_twin_pays']; // rules 1.75: Overdraw at 2, Pure Heart a Composure perk
     // not one of them runs from the tab (a pk: id is a Confirm)
     for (const k of keys) expect(rows.some((r) => r[0].startsWith(PK + k + '#'))).toBe(false);
     const ro = rows.filter((r) => r[0].startsWith(PKI));
     expect(ro.map((r) => r[0]).sort()).toEqual(keys.map((k) => PKI + k).sort());
     // a switch on another action: where the switch is, and its uses (rules 1.14: Overdraw is once a turn)
-    expect(ro.find((r) => r[0] === PKI + 'skill:will_power.3')).toMatchObject({ 1: 'Overdraw', 2: 'Once a turn' });
+    expect(ro.find((r) => r[0] === PKI + 'skill:will_power.2')).toMatchObject({ 1: 'Overdraw', 2: 'Once a turn' });
     expect(ro.find((r) => r[0] === PKI + 'perk:the_twin_pays')![2]).toBe('Once a fight');
     expect(ro.find((r) => r[0] === PKI + 'perk:the_twin_pays')![3]).not.toMatch(/No button here/);
     // a passive: a live line, never a cost
-    expect(ro.find((r) => r[0] === PKI + 'skill:will_power.5')![2]).toMatch(/^(Ready|Waiting: |Used |Last: |Active all fight)/);
+    expect(ro.find((r) => r[0] === PKI + 'perk:pure_heart')![2]).toMatch(/^(Ready|Waiting: |Used |Last: |Active all fight|Once a fight)/); // Pure Heart keeps its count privately (perk_cards private_count): it shows its limit
     expect(catalogue(f.cb, f.u, c, { g: f.g }).some((e) => e.action.startsWith(PKI))).toBe(false);
   });
   it('the rows come after the buttons, switches before passives (the shelves\' order)', () => {

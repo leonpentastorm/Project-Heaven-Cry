@@ -4615,77 +4615,6 @@
       "provisional": true
     },
     {
-      "id": "old_tongue",
-      "name": "Old Tongue",
-      "tier": "acquired",
-      "perk_type": "passive",
-      "skills": [
-        "lore_master"
-      ],
-      "skill_greek": "gamma",
-      "requires": [
-        {
-          "skill": "lore_master",
-          "min": 3
-        }
-      ],
-      "excludes": [],
-      "ap_cost": null,
-      "uses": "at_will",
-      "text": "I: You can read any ancient or upper-realm script. The Narrator tells you what it says. II: You can read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens, though it may still move. The Narrator plays the parley.",
-      "effects": [
-        {
-          "op": "narrator",
-          "note": "The player can read any ancient or upper-realm script."
-        }
-      ],
-      "tiers": {
-        "I": {
-          "requires": [
-            {
-              "skill": "lore_master",
-              "min": 3
-            }
-          ],
-          "ap_cost": null,
-          "text": "You can read any ancient or upper-realm script. The Narrator tells you what it says.",
-          "short": "Read any ancient or upper-realm script",
-          "effects": [
-            {
-              "op": "narrator",
-              "note": "The player can read any ancient or upper-realm script."
-            }
-          ]
-        },
-        "II": {
-          "requires": [
-            {
-              "skill": "lore_master",
-              "min": 5
-            }
-          ],
-          "ap_cost": null,
-          "text": "You can read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens, though it may still move. The Narrator plays the parley.",
-          "short": "Speak it · an upper-realm being parleys once",
-          "effects": [
-            {
-              "op": "narrator",
-              "note": "The player can read and speak upper-realm scripts; any upper-realm being will parley with them once."
-            }
-          ],
-          "replaces_tier_I": true,
-          "after": "I"
-        }
-      },
-      "adjudication": "hybrid",
-      "recovered": null,
-      "tags": [
-        "lore",
-        "language"
-      ],
-      "provisional": true
-    },
-    {
       "id": "rite_in_the_field",
       "name": "Rite in the Field",
       "tier": "acquired",
@@ -4703,28 +4632,116 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.I.effects.0.value|abs} AP less, never below {=tiers.I.effects.0.min} AP, and your Call Name It {=tiers.I.effects.1.value|abs} AP less, never below {=tiers.I.effects.1.min}. II: In a fight, Crystallise costs you {=tiers.II.effects.0.value|abs} AP less, never below {=tiers.II.effects.0.min} AP, and Name It {=tiers.II.effects.1.value|abs} AP less, never below {=tiers.II.effects.1.min}.",
+      "text": "I: Every fifth foe you drop yourself in a fight makes your next Crystallise cost {=tiers.I.effects.6.set} AP: the kill is the rite. II: Every third foe you drop yourself in a fight makes your next Crystallise cost {=tiers.II.effects.4.set} AP.",
       "effects": [
         {
-          "op": "cost_mod",
-          "when": "cost",
+          "op": "mark",
+          "when": "kill",
           "if": {
-            "action": ["crystallise"]
+            "actor": "self",
+            "flag": "fresh"
           },
-          "value": -1,
-          "min": 1,
-          "label": "Rite in the Field"
+          "flag": "fresh",
+          "clear": true
+        },
+        {
+          "op": "mark",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "flag": "f4"
+          },
+          "flag": "rite",
+          "label": "Rite in the Field",
+          "say": "Rite in the Field: {self}'s next Crystallise is free.",
+          "and": [
+            {
+              "op": "mark",
+              "flag": "f1",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "flag": "f2",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "flag": "f3",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "flag": "f4",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "flag": "fresh"
+            }
+          ]
+        },
+        {
+          "op": "mark",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "flag": "f3",
+            "no_flag": "f4"
+          },
+          "flag": "f4"
+        },
+        {
+          "op": "mark",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "flag": "f2",
+            "no_flag": "f3"
+          },
+          "flag": "f3"
+        },
+        {
+          "op": "mark",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "flag": "f1",
+            "no_flag": "f2"
+          },
+          "flag": "f2"
+        },
+        {
+          "op": "mark",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "no_flag": "fresh"
+          },
+          "flag": "f1"
         },
         {
           "op": "cost_mod",
           "when": "cost",
           "if": {
-            "action": ["call"],
-            "action_id": ["call.name_it"]
+            "action": [
+              "crystallise"
+            ],
+            "flag": "rite"
           },
-          "value": -1,
-          "min": 0,
+          "set": 0,
           "label": "Rite in the Field"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "crystallise"
+            ]
+          },
+          "flag": "rite",
+          "clear": true
         }
       ],
       "tiers": {
@@ -4736,29 +4753,117 @@
             }
           ],
           "ap_cost": null,
-          "text": "In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.I.effects.0.value|abs} AP less, never below {=tiers.I.effects.0.min} AP, and your Call Name It {=tiers.I.effects.1.value|abs} AP less, never below {=tiers.I.effects.1.min}.",
-          "short": "Crystallise {=tiers.I.effects.0.value} AP (min {=tiers.I.effects.0.min}) · Name It {=tiers.I.effects.1.value} AP (min {=tiers.I.effects.1.min})",
+          "text": "Every fifth foe you drop yourself in a fight makes your next Crystallise cost {=tiers.I.effects.6.set} AP: the kill is the rite.",
+          "short": "Every fifth foe you drop: your next Crystallise costs {=tiers.I.effects.6.set} AP",
           "effects": [
             {
-              "op": "cost_mod",
-              "when": "cost",
+              "op": "mark",
+              "when": "kill",
               "if": {
-                "action": ["crystallise"]
+                "actor": "self",
+                "flag": "fresh"
               },
-              "value": -1,
-              "min": 1,
-              "label": "Rite in the Field"
+              "flag": "fresh",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "flag": "f4"
+              },
+              "flag": "rite",
+              "label": "Rite in the Field",
+              "say": "Rite in the Field: {self}'s next Crystallise is free.",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "f1",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "f2",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "f3",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "f4",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "fresh"
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "flag": "f3",
+                "no_flag": "f4"
+              },
+              "flag": "f4"
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "flag": "f2",
+                "no_flag": "f3"
+              },
+              "flag": "f3"
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "flag": "f1",
+                "no_flag": "f2"
+              },
+              "flag": "f2"
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "no_flag": "fresh"
+              },
+              "flag": "f1"
             },
             {
               "op": "cost_mod",
               "when": "cost",
               "if": {
-                "action": ["call"],
-                "action_id": ["call.name_it"]
+                "action": [
+                  "crystallise"
+                ],
+                "flag": "rite"
               },
-              "value": -1,
-              "min": 0,
+              "set": 0,
               "label": "Rite in the Field"
+            },
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "crystallise"
+                ]
+              },
+              "flag": "rite",
+              "clear": true
             }
           ]
         },
@@ -4770,29 +4875,87 @@
             }
           ],
           "ap_cost": null,
-          "text": "In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.II.effects.0.value|abs} AP less, never below {=tiers.II.effects.0.min} AP, and your Call Name It {=tiers.II.effects.1.value|abs} AP less, never below {=tiers.II.effects.1.min}.",
-          "short": "Crystallise {=tiers.II.effects.0.value} AP · Name It {=tiers.II.effects.1.value} AP",
+          "text": "Every third foe you drop yourself in a fight makes your next Crystallise cost {=tiers.II.effects.4.set} AP.",
+          "short": "Every third foe you drop",
           "effects": [
             {
-              "op": "cost_mod",
-              "when": "cost",
+              "op": "mark",
+              "when": "kill",
               "if": {
-                "action": ["crystallise"]
+                "actor": "self",
+                "flag": "fresh"
               },
-              "value": -2,
-              "min": 1,
-              "label": "Rite in the Field"
+              "flag": "fresh",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "flag": "f2"
+              },
+              "flag": "rite",
+              "label": "Rite in the Field",
+              "say": "Rite in the Field: {self}'s next Crystallise is free.",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "f1",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "f2",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "fresh"
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "flag": "f1",
+                "no_flag": "f2"
+              },
+              "flag": "f2"
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "no_flag": "fresh"
+              },
+              "flag": "f1"
             },
             {
               "op": "cost_mod",
               "when": "cost",
               "if": {
-                "action": ["call"],
-                "action_id": ["call.name_it"]
+                "action": [
+                  "crystallise"
+                ],
+                "flag": "rite"
               },
-              "value": -2,
-              "min": 0,
+              "set": 0,
               "label": "Rite in the Field"
+            },
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "crystallise"
+                ]
+              },
+              "flag": "rite",
+              "clear": true
             }
           ],
           "replaces_tier_I": true,
@@ -4805,80 +4968,195 @@
         "ap",
         "ritual"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) items 6206, 6207"
     },
     {
-      "id": "you_get_used_to_it",
-      "name": "You Get Used to It",
+      "id": "old_tales",
+      "name": "Old Tales",
       "tier": "acquired",
       "perk_type": "passive",
       "skills": [
-        "composure"
+        "lore_master"
       ],
-      "skill_greek": "beta",
+      "skill_greek": "gamma",
       "requires": [
         {
-          "skill": "composure",
+          "skill": "lore_master",
           "min": 3
         }
       ],
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: The first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +{=effects.0.value}: you have seen worse. II: The first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +4: you have seen worse. You may give that bonus to the ally instead, for their next save this round; it costs you nothing.",
+      "text": "I: Once a scene, ask the Narrator one question about a supernatural creature, curse or relic. The answer is true. II: As Tier I, and you read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens, though it may still move. The Narrator plays the parley.",
       "effects": [
         {
-          "op": "save_mod",
-          "value": 2,
-          "target": "self",
-          "when": "the first time each round an ally within 5 tiles takes a Brain or Heart condition",
-          "duration": "your next save this round"
+          "op": "grant_action",
+          "action": "old_tales_question",
+          "ap": 0,
+          "uses": "per_scene"
+        },
+        {
+          "op": "narrator",
+          "note": "Narrator answers truthfully"
         }
       ],
       "tiers": {
         "I": {
           "requires": [
             {
-              "skill": "composure",
+              "skill": "lore_master",
               "min": 3
             }
           ],
           "ap_cost": null,
-          "text": "The first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +{=tiers.I.effects.0.value}: you have seen worse.",
-          "short": "An ally near you takes a Brain or Heart condition: your next save +{=tiers.I.effects.0.value}",
+          "text": "Once a scene, ask the Narrator one question about a supernatural creature, curse or relic. The answer is true.",
+          "short": "Once a scene: one true fact about a creature, curse or relic",
           "effects": [
             {
-              "op": "save_mod",
-              "value": 2,
-              "target": "self",
-              "when": "the first time each round an ally within 5 tiles takes a Brain or Heart condition",
-              "duration": "your next save this round"
+              "op": "grant_action",
+              "action": "old_tales_question",
+              "ap": 0,
+              "uses": "per_scene"
+            },
+            {
+              "op": "narrator",
+              "note": "Narrator answers truthfully"
             }
           ]
         },
         "II": {
           "requires": [
             {
-              "skill": "composure",
+              "skill": "lore_master",
               "min": 5
             }
           ],
           "ap_cost": null,
-          "text": "The first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +{=tiers.II.effects.0.value}: you have seen worse. You may give that bonus to the ally instead, for their next save this round; it costs you nothing.",
-          "short": "+{=tiers.II.effects.0.value} · or give it to that ally",
+          "text": "As Tier I, and you read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens, though it may still move. The Narrator plays the parley.",
+          "short": "Read and speak any old script · an upper-realm being parleys once",
           "effects": [
             {
-              "op": "save_mod",
-              "value": 4,
-              "target": "self",
-              "when": "the first time each round an ally within 5 tiles takes a Brain or Heart condition",
-              "duration": "your next save this round"
+              "op": "grant_action",
+              "action": "old_tales_question",
+              "ap": 0,
+              "uses": "per_scene"
             },
             {
-              "op": "grant_action",
-              "action": "seen_worse",
-              "ap": 0,
-              "uses": "per_round"
+              "op": "narrator",
+              "note": "Narrator answers truthfully; the player reads and speaks upper-realm scripts; an upper-realm being parleys with them once."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "lore",
+        "language"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6206"
+    },
+    {
+      "id": "recitation",
+      "name": "Recitation",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "lore_master"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "lore_master",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Once a turn, a Call you make calms {=tiers.I.effects.0.value|abs} Strain. II: Once a turn, a Call you make calms {=tiers.II.effects.0.value|abs} Strain.",
+      "effects": [
+        {
+          "op": "resource",
+          "when": "acted",
+          "if": {
+            "action": [
+              "call"
+            ]
+          },
+          "resource": "strain",
+          "value": -1,
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          },
+          "label": "Recitation",
+          "say": "Recitation: {self}'s heart eases ({gain} Strain)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "lore_master",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a turn, a Call you make calms {=tiers.I.effects.0.value|abs} Strain.",
+          "short": "Once a turn: a Call you make calms {=tiers.I.effects.0.value|abs} Strain",
+          "effects": [
+            {
+              "op": "resource",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "resource": "strain",
+              "value": -1,
+              "limit": {
+                "per": "per_turn",
+                "n": 1
+              },
+              "label": "Recitation",
+              "say": "Recitation: {self}'s heart eases ({gain} Strain)."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "lore_master",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a turn, a Call you make calms {=tiers.II.effects.0.value|abs} Strain.",
+          "short": "{=tiers.II.effects.0.value|abs} Strain",
+          "effects": [
+            {
+              "op": "resource",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "resource": "strain",
+              "value": -2,
+              "limit": {
+                "per": "per_turn",
+                "n": 1
+              },
+              "label": "Recitation",
+              "say": "Recitation: {self}'s heart eases ({gain} Strain)."
             }
           ],
           "replaces_tier_I": true,
@@ -4886,12 +5164,206 @@
         }
       },
       "adjudication": "engine",
-      "recovered": "recovered",
+      "recovered": null,
+      "tags": [
+        "soul_magic",
+        "support"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6206"
+    },
+    {
+      "id": "lore_ward",
+      "name": "Warding Word",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "lore_master"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "lore_master",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: {=tiers.I.effects.0.ap} AP: you or an ally you see within {=tiers.I.effects.0.reach.tiles} tiles has a bonus on its next Brain or Heart save (Warding Word). II: As Tier I, and the first Warding Word each turn costs {=tiers.II.effects.1.set} AP.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "warding_word",
+          "label": "Warding Word",
+          "ap": 1,
+          "uses": "at_will",
+          "scope": [
+            "combat"
+          ],
+          "reach": {
+            "tiles": 5,
+            "sight": true,
+            "side": "side",
+            "self": true,
+            "if": {
+              "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is Downed."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "warding_word",
+              "target": "target",
+              "skip_save": true,
+              "say": "{self} speaks a warding word over {target}.",
+              "fx": {
+                "k": "ward_seal"
+              }
+            }
+          ]
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "lore_master",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "{=tiers.I.effects.0.ap} AP: you or an ally you see within {=tiers.I.effects.0.reach.tiles} tiles has a bonus on its next Brain or Heart save (Warding Word).",
+          "short": "{=tiers.I.effects.0.ap} AP: a friend's next Brain or Heart save gets a bonus",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "warding_word",
+              "label": "Warding Word",
+              "ap": 1,
+              "uses": "at_will",
+              "scope": [
+                "combat"
+              ],
+              "reach": {
+                "tiles": 5,
+                "sight": true,
+                "side": "side",
+                "self": true,
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is Downed."
+                }
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "warding_word",
+                  "target": "target",
+                  "skip_save": true,
+                  "say": "{self} speaks a warding word over {target}.",
+                  "fx": {
+                    "k": "ward_seal"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "lore_master",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, and the first Warding Word each turn costs {=tiers.II.effects.1.set} AP.",
+          "short": "The first each turn costs {=tiers.II.effects.1.set} AP",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "warding_word",
+              "label": "Warding Word",
+              "ap": 1,
+              "uses": "at_will",
+              "scope": [
+                "combat"
+              ],
+              "reach": {
+                "tiles": 5,
+                "sight": true,
+                "side": "side",
+                "self": true,
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is Downed."
+                }
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "warding_word",
+                  "target": "target",
+                  "skip_save": true,
+                  "say": "{self} speaks a warding word over {target}.",
+                  "fx": {
+                    "k": "ward_seal"
+                  }
+                }
+              ]
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "perk:lore_ward#warding_word"
+                ]
+              },
+              "set": 0,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "free",
+                "peek": true
+              },
+              "label": "Warding Word"
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "warding_word"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "free"
+              }
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
       "tags": [
         "support",
         "defense"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6206"
     },
     {
       "id": "flat_line",
@@ -4971,6 +5443,278 @@
         "debuff"
       ],
       "provisional": true
+    },
+    {
+      "id": "poker_face",
+      "name": "Poker Face",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "composure"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "composure",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Interrogators and lie-readers take {=tiers.I.numbers.read|signed} against you (the Narrator's). II: Interrogators and lie-readers take {=tiers.II.numbers.read|signed} against you, and you have {=tiers.II.effects.1.value|signed} on Brain saves.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Interrogators and lie-readers take -3 against this character (rules 1.75 item 6203; the Narrator applies it to the reading roll)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Interrogators and lie-readers take {=tiers.I.numbers.read|signed} against you (the Narrator's).",
+          "short": "Anyone questioning you or reading your lies: {=tiers.I.numbers.read|signed}",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Interrogators and lie-readers take -3 against this character (rules 1.75 item 6203; the Narrator applies it to the reading roll)."
+            }
+          ],
+          "numbers": {
+            "read": -3
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Interrogators and lie-readers take {=tiers.II.numbers.read|signed} against you, and you have {=tiers.II.effects.1.value|signed} on Brain saves.",
+          "short": "{=tiers.II.effects.1.value|signed} on Brain saves",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Interrogators and lie-readers take -3 against this character (rules 1.75 item 6203; the Narrator applies it to the reading roll)."
+            },
+            {
+              "op": "stat_mod",
+              "stat": "save_brain",
+              "value": 2
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I",
+          "numbers": {
+            "read": -3
+          }
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "social",
+        "defense"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6203",
+      "numbers": {
+        "read": -3
+      }
+    },
+    {
+      "id": "stand_still",
+      "name": "Stand Still",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "composure"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "composure",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_combat",
+      "text": "I: Until you first act in a fight, foes attacking you are at {=tiers.I.numbers.to_hit|signed} to hit, and the first one to miss gives you a free attack on it (once a fight, if your weapon reaches). A Call is not acting. II: As Tier I, and Begin, Pump and Steady do not count as acting either.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "stand_still_counter",
+          "ap": 0,
+          "uses": "per_combat"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Until you first act in a fight, foes attacking you are at {=tiers.I.numbers.to_hit|signed} to hit, and the first one to miss gives you a free attack on it (once a fight, if your weapon reaches). A Call is not acting.",
+          "short": "Until you first act: foes {=tiers.I.numbers.to_hit|signed} to hit you · the first miss gives you a free attack",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "stand_still_counter",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "numbers": {
+            "to_hit": -2
+          },
+          "not_acting": [
+            "combat/call",
+            "combat/end-turn",
+            "combat/decline"
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, and Begin, Pump and Steady do not count as acting either.",
+          "short": "Begin, Pump and Steady don't count as acting",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "stand_still_counter",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "numbers": {
+            "to_hit": -2
+          },
+          "not_acting": [
+            "combat/call",
+            "combat/end-turn",
+            "combat/decline",
+            "combat/outburst",
+            "combat/pump",
+            "combat/steady"
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "defense"
+      ],
+      "provisional": true,
+      "numbers": {
+        "to_hit": -2
+      },
+      "source": "rules 1.75 (Soul lane, 0.32) item 6203"
+    },
+    {
+      "id": "pure_heart",
+      "name": "Pure Heart",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "composure"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "composure",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_combat",
+      "text": "I: Once a fight, the Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release. II: Up to {=tiers.II.numbers.uses} times a fight, the Strain that would Mana Short you is refused: your Strain falls to your limit instead.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "pure_heart",
+          "ap": 0,
+          "uses": "per_combat"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a fight, the Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release.",
+          "short": "Once a fight: the Strain that would Mana Short you is refused",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "pure_heart",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "numbers": {
+            "uses": 1
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Up to {=tiers.II.numbers.uses} times a fight, the Strain that would Mana Short you is refused: your Strain falls to your limit instead.",
+          "short": "{=tiers.II.numbers.uses} times a fight",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "pure_heart",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "numbers": {
+            "uses": 2
+          },
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "soul_magic",
+        "defense"
+      ],
+      "provisional": true,
+      "numbers": {
+        "uses": 1
+      },
+      "source": "rules 1.75 (Soul lane, 0.32) item 6203"
     },
     {
       "id": "litany",

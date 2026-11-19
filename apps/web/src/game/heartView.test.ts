@@ -145,7 +145,7 @@ describe('the action list and the cut-in', () => {
 
 // Rules 1.14: the three Will Power changes on screen. The fight() character has Will Power 6, so Overdraw is theirs.
 describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel and the design cards', () => {
-  const OD = 'skill:will_power.3#overdraw';
+  const OD = 'skill:will_power.2#overdraw';
   /** fight(), with these perks and this Will Power on the character before the fight is built. */
   function withPerks(perks: Record<string, string>, will = 6) {
     const c: any = newCharacter('c1', 'p1', sheetFrom('Vale')); c.skills.will_power = will;
@@ -177,7 +177,7 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     expect(heartPanel(cb, u, [OD])!.pump.title).toMatch(/stage 1 → 3 .*You take 1 Strain after it\./);
   });
   it('rules 1.24: the Pump button shows the MP the Pump will take, from the engine; a free Pump still owes it; short of MP it says so', () => {
-    const { cb, u } = withPerks({}, 2); beginOutburst(cb, rng, u, 'sb', undefined, true); // Soul Bolt: 17 MP for this caster
+    const { cb, u } = withPerks({}, 1); beginOutburst(cb, rng, u, 'sb', undefined, true); // Soul Bolt: 17 MP for this caster (Will Power 1: no Overdraw, rules 1.75 item 6200)
     let p = heartPanel(cb, u)!;
     expect(p.pump).toMatchObject({ ok: true, cost: '1 AP · 2 MP', mp: previewPump(cb, u).mp }); expect(p.pump.mp).toBe(2);
     expect(p.pump.title).toBe('A plain Pump: stage 0 → 1 (×1). It takes 2 MP (you have 383).');
@@ -210,7 +210,7 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     expect(q.pump.free).toBe(false); expect(q.freePumps).toBe(0);
   });
   it('a character without Overdraw has no Overdraw line', () => {
-    const { cb, u } = withPerks({}, 2); beginOutburst(cb, rng, u, 'sb', undefined, true);
+    const { cb, u } = withPerks({}, 1); beginOutburst(cb, rng, u, 'sb', undefined, true); // rules 1.75 item 6200: Overdraw from Will Power 2
     expect(heartPanel(cb, u)!.overdraw).toBe(''); expect(heartPanel(cb, u)!.pump.title).not.toMatch(/Overdraw/);
   });
   it('a preview never writes on the fight it is given: the switches ride on the engine\'s copy (engine review 4, finding 2)', () => {

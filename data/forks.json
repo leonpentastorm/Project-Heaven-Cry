@@ -1137,17 +1137,29 @@
           "door_pick": "fork.soul.ride_the_edge"
         }
       ],
-      "text": "A Release at exactly your Strain limit: +{=numbers.mult|more}% damage",
-      "numbers": {
-        "mult": 1.15
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [],
-      "why": "Its step is not offered (Slow Burn waits on N22), so it is not built in this slice; it needs N3b and N10's `at: limit` (approved), built with Slow Burn.",
+      "text": "Release at or over your Strain limit: {=effects.0.value|more}% damage",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "hostile": true,
+            "damage": [
+              "outburst"
+            ],
+            "self_res": {
+              "strain": {
+                "at": "limit"
+              }
+            }
+          },
+          "value": 1.15,
+          "label": "Ride the Edge"
+        }
+      ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6201"
     },
     {
       "id": "fork.soul.slow_burn",
@@ -1161,19 +1173,61 @@
           "door_pick": "fork.soul.slow_burn"
         }
       ],
-      "text": "Each turn you start holding an Outburst, Strain falls {=numbers.calm} more",
-      "numbers": {
-        "calm": 1
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N22"
+      "text": "Once a turn: Steady costs {=effects.0.set} AP and calms {=effects.2.value|abs} more Strain",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "steady"
+            ]
+          },
+          "set": 0,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "free",
+            "peek": true
+          },
+          "label": "Slow Burn"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "steady"
+            ]
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "free"
+          }
+        },
+        {
+          "op": "resource",
+          "when": "acted",
+          "if": {
+            "action": [
+              "steady"
+            ]
+          },
+          "resource": "strain",
+          "value": -1,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "calm"
+          },
+          "label": "Slow Burn",
+          "say": "Slow Burn: {self}'s heart cools further ({gain} Strain)."
+        }
       ],
-      "why": "The held turn's start is a hook, not a trigger (N22, not approved); the spec gives no cheaper wording.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6201"
     },
     {
       "id": "fork.soul.blood_price",
@@ -1187,19 +1241,46 @@
           "door_pick": "fork.soul.blood_price"
         }
       ],
-      "text": "A Pump may be paid in HP: {=numbers.hp_per_mp} HP per MP · never down to Downed",
-      "numbers": {
-        "hp_per_mp": 0.5
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N18"
+      "text": "Your heart burns you: your next Release {=effects.1.value|more}% damage",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "damaged",
+          "if": {
+            "target": "self",
+            "self_harm": true
+          },
+          "flag": "burned",
+          "label": "Blood Price"
+        },
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "hostile": true,
+            "damage": [
+              "outburst"
+            ],
+            "flag": "burned"
+          },
+          "value": 1.25,
+          "label": "Blood Price"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "release"
+            ]
+          },
+          "flag": "burned",
+          "clear": true
+        }
       ],
-      "why": "The Pump is not on the cost hook and a price cannot be paid in HP (N18, not approved); the spec's cheaper wording still needs the Pump on a hook.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6201"
     },
     {
       "id": "fork.soul.clean_break",
@@ -1213,18 +1294,30 @@
           "door_pick": "fork.soul.clean_break"
         }
       ],
-      "text": "A Release at stage {=numbers.stage} lowers Strain by {=numbers.calm}",
-      "numbers": {
-        "stage": 4,
-        "calm": 2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [],
-      "why": "Its step is not offered (Blood Price waits on N18), so it is not built in this slice; it needs N3b (approved), built with Blood Price.",
+      "text": "An Outburst drops a foe: {=effects.0.value} Strain, once a turn",
+      "effects": [
+        {
+          "op": "resource",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "damage": [
+              "outburst"
+            ]
+          },
+          "resource": "strain",
+          "value": -2,
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          },
+          "label": "Clean Break",
+          "say": "Clean Break: {self}'s heart eases ({gain} Strain)."
+        }
+      ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6201"
     }
   ]
 }

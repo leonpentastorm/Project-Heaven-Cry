@@ -15,7 +15,7 @@ const BARE: number = SR.cycle.no_emanator_strain;
 const BEGIN: number = SR.cycle.begin_strain ?? 1;
 const share = (u: Unit) => Math.floor(MANA_SHOCK.hp_share * u.maxHp);
 
-/** A fight with one Soul caster (Will Power `wp`: no Pure Heart below 5) and a friend, against one soldier far away (or
+/** A fight with one Soul caster (Will Power `wp`; Pure Heart only with its perk, rules 1.75) and a friend, against one soldier far away (or
  * a foe Soul caster). */
 function fight(o: { wp?: number; traits?: string[]; skills?: Record<string, number>; armourClass?: number; foes?: any[]; /** the caster's Survival boons (Character.relics) */ relics?: string[]; /** the friend holds Soulmate and bonds the caster before the fight */ soulmate?: boolean; /** the caster's own sheet (a class) */ heart?: CharSpec } = {}) {
   const s = storyWith([{ name: 'Heart', kit: 'soul', ...(o.heart || {}), skills: { will_power: o.wp ?? 3, ...(o.heart?.skills || {}), ...(o.skills || {}) }, traits: o.traits, armourClass: o.armourClass }, { name: 'Friend', kit: 'soldier', ...(o.soulmate ? { perks: { soulmate: 'I' }, skills: { camaraderie: 9 } } : {}) }]);
@@ -228,8 +228,8 @@ describe('it ends with the fight, and is never charged outside one (item 4508)',
 });
 
 describe('Pure Heart and enemies', () => {
-  it('Pure Heart (Will Power 5) turns away the first Short of the fight: no Stun, no Mana Shock', () => {
-    const f = fight({ wp: 5 }); const u = shortNow(f);
+  it('Pure Heart (a Composure perk, rules 1.75 item 6203) turns away the first Short of the fight: no Stun, no Mana Shock', () => {
+    const f = fight({ wp: 5, heart: { perks: { pure_heart: 'I' } } as any }); const u = shortNow(f);
     expect(u.conds?.stunned ?? 0).toBe(0); expect(u.mg!.shock).toBeFalsy(); expect(u.mg!.strain).toBe(u.mg!.strainLimit);
     expect(f.g.combat!.log.join(' ')).toMatch(/Pure Heart/);
   });

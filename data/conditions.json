@@ -1533,6 +1533,51 @@
       "source": "rules 1.33 section 3 (Settle)"
     },
     {
+      "id": "warding_word",
+      "name": "Warding Word",
+      "label": "Warded (next save)",
+      "kind": "state",
+      "side": "helps",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "Your next Brain or Heart save is at +{=effects.0.value}. It lasts until that save, or {=duration.rounds} rounds.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "save",
+          "if": {
+            "cond_family": [
+              "brain",
+              "heart"
+            ]
+          },
+          "value": 3,
+          "and": [
+            {
+              "op": "cleanse",
+              "condition": [
+                "warding_word"
+              ]
+            }
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 3
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack",
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6206 (Lore Master's Warding Word)"
+    },
+    {
       "id": "given_mark",
       "name": "Felt",
       "kind": "state",

@@ -54,7 +54,7 @@ describe('the three shelves', () => {
   it('Rides an action: an attack, a Pump and a Begin each read in plain words', () => {
     expect(row(shelves(charWith({ traits: ['gambler'] })).sh, 'trait:gambler').line).toBe('on your attacks');
     const c = charWith({ skills: { ...charWith().skills, will_power: 10 } as any, perks: [{ id: 'the_twin_pays', tier: 'mastered' } as any] }), { sh } = shelves(c);
-    expect(row(sh, 'skill:will_power.3')).toMatchObject({ shelf: 'rides', line: 'Once a turn' }); // Overdraw: once a turn
+    expect(row(sh, 'skill:will_power.2')).toMatchObject({ shelf: 'rides', line: 'Once a turn' }); // Overdraw: once a turn
     expect(row(sh, 'perk:the_twin_pays')).toMatchObject({ shelf: 'rides' });
     expect(row(sh, 'perk:the_twin_pays').line).toBe('Once a fight');
   });
@@ -182,8 +182,8 @@ describe('the live line of Always on', () => {
   });
   it('a limited passive that keeps its count out of reach says the limit, never "Ready"', () => {
     const all: any = {}; for (const k of SKILLS as any[]) all[k.id] = 10;
-    const c = charWith({ skills: all }), f = fight(c), r = row(perkShelves(f.g, f.cb, f.u, c), 'skill:composure.5');
-    expect(PRIVATE_COUNT).toContain('skill:composure.5');
+    const c = charWith({ skills: all, perks: [{ id: 'stand_still', tier: 'I' }] }), f = fight(c), r = row(perkShelves(f.g, f.cb, f.u, c), 'perk:stand_still'); // rules 1.75: a Composure perk
+    expect(PRIVATE_COUNT).toContain('perk:stand_still');
     expect(r).toMatchObject({ shelf: 'always', state: 'active', line: 'Once a fight' });
   });
   // "Ready" is a promise. A passive may only make it when the rules count its use where the card reads it: this reads

@@ -20,19 +20,19 @@ const hold = (f: F, t: Unit, by: Unit = f.pc) => { const x = f.unit(t.id); x.con
 
 describe('the data of the pass', () => {
   const P = PERK as Record<string, any>;
-  it('the replaced perks have new ids and the old ones are gone; there are still 106 perks, two acquired a skill', () => {
+  it('the replaced perks have new ids and the old ones are gone; the perks counted (rules 1.75: four acquired on a reshaped beta or gamma, two on an alpha)', () => {
     expect(P.grapple).toBeUndefined(); expect(P.origami_hands).toBeUndefined();
     expect(P.iron_grip.name).toBe('Iron Grip'); expect(P.iron_grip.skills).toEqual(['raw_power']);
     expect(P.both_hands.name).toBe('Pressure Point'); expect(P.both_hands.skills).toEqual(['dexterity']); // rules 1.56: the id stays, the perk is new
-    expect(PERKS.length).toBe(106);
+    expect(PERKS.length).toBe(110); // rules 1.75 (Soul, Determination): 106, +6 new (Poker Face, Stand Still, Pure Heart, Old Tales, Warding Word, Recitation), -2 removed (You Get Used to It, Old Tongue)
     const per: Record<string, number> = {}; for (const p of PERKS as any[]) if (p.tier === 'acquired') per[p.skills[0]] = (per[p.skills[0]] || 0) + 1;
-    expect(Object.keys(per).length).toBe(27); expect(Object.values(per).every((n) => n === 2)).toBe(true);
+    expect(Object.keys(per).length).toBe(27); for (const [sk, n] of Object.entries(per)) expect(n, sk).toBe((SKILL as any)[sk].slot === 'alpha' ? 2 : (SKILL as any)[sk].perk_remap ? 4 : 2); // rules 1.70 item 5537: a beta or gamma reshaped (its remap table) has four
   });
   it('every acquired and Mastered perk carries its skill\'s slot (skill_greek)', () => {
     for (const p of PERKS as any[]) if (p.tier === 'acquired' || p.tier === 'mastered') expect(p.skill_greek, p.id).toBe((SKILL as any)[p.skills[0]].slot);
   });
   it('no alpha or beta perk gives or takes AP in the turn any more (15.7); the own-cost discounts stay', () => {
-    const gone = ['used_to_the_pain', 'into_the_dark', 'rally_cry', 'clean_hands', 'many_hands', 'walking_wounded', 'you_get_used_to_it']; // rules 1.56: blueprint is Wake of the Kill (1 AP on a Figment's kill: the doc's ruling, spec item 4215)
+    const gone = ['used_to_the_pain', 'into_the_dark', 'rally_cry', 'clean_hands', 'many_hands', 'walking_wounded']; // rules 1.56: blueprint is Wake of the Kill (1 AP on a Figment's kill: the doc's ruling, spec item 4215)
     for (const id of gone) {
       const p = P[id], fx = [...(p.effects || []), ...(p.tiers?.I?.effects || []), ...(p.tiers?.II?.effects || [])];
       expect(fx.some((e: any) => e.op === 'stat_mod' && e.stat === 'ap'), id).toBe(false);
@@ -43,7 +43,7 @@ describe('the data of the pass', () => {
   it('Dead Signal is Acuity\'s (id analysis); the unlocks carry their new names', () => {
     expect(P.dead_signal.skills).toEqual(['analysis', 'ingenuity']); expect(P.dead_signal.requires[0]).toEqual({ skill: 'analysis', min: 5 });
     const name = (s: string, n: string) => (SKILL as any)[s].unlocks[n].name;
-    expect([name('raw_power', '3'), name('raw_power', '5'), name('analysis', '5'), name('camaraderie', '3'), name('composure', '5')]).toEqual(['Heavy Hands', 'Follow Through', 'Read Them', 'Hand-Off', 'Stand Still']);
+    expect([name('raw_power', '3'), name('raw_power', '5'), name('analysis', '5'), name('camaraderie', '3'), P.stand_still.name]).toEqual(['Heavy Hands', 'Follow Through', 'Read Them', 'Hand-Off', 'Stand Still']); // rules 1.75: Stand Still is a Composure perk
     expect((SKILL as any).analysis.unlocks['5'].text).toMatch(/deal 15% less damage/);
     expect((SKILL as any).proficiency.unlocks['5'].text).toMatch(/never jams and never breaks/);
   });
@@ -150,8 +150,8 @@ describe('Quick Draw, Tuned, Hand-Off, Stand Still (unlocks)', () => {
     many.put(many.pcs[1], 'C11'); expect(term(many)).toBe(0);
     const low = fight(3); low.unit(low.pcs[0].id).def = 9; expect(term(low)).toBe(0); // only if yours is higher
   });
-  it('Stand Still (the original, restored): until you first act, enemies are at −2 to hit you; a Call is not acting, a move is', () => {
-    const fight = (pts: number) => { const f = physFight([{ weapon: 'sabre', skills: { composure: pts, charisma: 1 } }, { name: 'Ally' }], [{ at: 'F7', weapon: 'service_pistol' }]); f.put(f.pcs[0], 'C7'); f.put(f.pcs[1], 'C8'); f.put(f.foe, 'F7'); f.turn(f.pc); return f; };
+  it('Stand Still (the original, restored; a Composure perk since rules 1.75 item 6203): until you first act, enemies are at −2 to hit you; a Call is not acting, a move is', () => {
+    const fight = (pts: number) => { const f = physFight([{ weapon: 'sabre', skills: { composure: pts, charisma: 1 }, ...(pts >= 5 ? { perks: { stand_still: 'I' } } : {}) }, { name: 'Ally' }], [{ at: 'F7', weapon: 'service_pistol' }]); f.put(f.pcs[0], 'C7'); f.put(f.pcs[1], 'C8'); f.put(f.foe, 'F7'); f.turn(f.pc); return f; };
     const term = (f: F) => { const pv = withGame(f.g, () => previewAttack(f.cb, f.unit(f.foe.id), f.unit(f.pc.id), 'shot', { free: true })); if (!pv.terms) throw new Error('preview: ' + pv.why); return pv.terms.filter((t: any) => t.label === 'Stand Still').reduce((n: number, t: any) => n + t.v, 0); };
     const f = fight(5); expect(term(f)).toBe(-2); expect(term(fight(4))).toBe(0);
     f.act({ type: 'combat/call', unitId: f.pc.id, id: 'call.rally', targetId: f.pcs[1].id } as any); expect(term(f)).toBe(-2);

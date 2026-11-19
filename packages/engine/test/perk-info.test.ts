@@ -15,13 +15,13 @@ describe('perks used from another action have no button of their own', () => {
     expect(dead).toEqual([]);
   });
   it('Overdraw, Pure Heart and The Twin Pays: no action entry anywhere; listed to read, with where they are used and the uses left', () => {
-    const f = fightWith([{ ...SOUL, skills: { will_power: 10 }, perks: ['the_twin_pays'] } as any], [{}]);
+    const f = fightWith([{ ...SOUL, skills: { will_power: 10, composure: 5 }, perks: ['the_twin_pays', 'pure_heart'] } as any], [{}]); // rules 1.75 item 6203: Pure Heart is a Composure perk
     const u = f.turn(f.pc), who = { u: f.unit(u.id), c: f.g.characters[f.pc.charId!], cb: f.cb, g: f.g };
     const ids = perkActionsFor(who, 'combat').map((e) => e.id);
-    for (const k of ['skill:will_power.3', 'skill:will_power.5', 'perk:the_twin_pays']) expect(ids).not.toContain(k);
+    for (const k of ['skill:will_power.2', 'perk:pure_heart', 'perk:the_twin_pays']) expect(ids).not.toContain(k);
     const info = perkInfoFor(who, 'combat'), by = (k: string) => info.find((e) => e.id === k);
-    expect(by('skill:will_power.3')).toMatchObject({ label: 'Overdraw', via: 'Used from Pump', tab: 'perks' });
-    expect(by('skill:will_power.5')).toMatchObject({ label: 'Pure Heart', via: 'Automatic' });
+    expect(by('skill:will_power.2')).toMatchObject({ label: 'Overdraw', via: 'Used from Pump', tab: 'perks' });
+    expect(by('perk:pure_heart')).toMatchObject({ label: 'Pure Heart', via: 'Automatic' });
     expect(by('perk:the_twin_pays')).toMatchObject({ via: 'Used from Begin' });
     expect(by('perk:the_twin_pays')!.uses).toMatchObject({ per: 'per_combat', n: 1, left: 1 });
     // a real button item is not listed to read (it has its own entry)

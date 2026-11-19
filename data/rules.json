@@ -378,7 +378,7 @@
       "syphon_bonus_pct": "10*(determination-1) + 10*will_power",
       "strain_limit": "3, +1 at Composure 1, 2, 4, 6 and 8 (rules 1.70 item 5539; soul_modules.json strain.limit)",
       "prayer_cooldown_turns": "max(3, ceil(9 - 0.75*faith - 0.25*virtue)) rounds (rules 1.22; patrons.json prayer.hymn.cooldown_rule)",
-      "ready_designs": "2 + floor(will_power/2), at least 3"
+      "ready_designs": "3, +1 at Lore Master 4, 6, 8 and 10 (soul_modules.json limits.ready_designs; rules 1.75 item 6205)"
     },
     "social": {
       "leadership": {
@@ -1500,7 +1500,7 @@
         "two_schools_from_will_power": 5,
         "second_school_extra_cost": 10,
         "module_slots": "1 + floor(will_power/3)",
-        "ready_designs": "2 + floor(will_power/2), at least 3",
+        "ready_designs": "3, +1 at Lore Master 4, 6, 8 and 10 (soul_modules.json limits.ready_designs; rules 1.75 item 6205)",
         "second_school": "a rider at half strength with its own option",
         "forms_per_design": 1
       },

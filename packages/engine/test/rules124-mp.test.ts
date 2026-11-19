@@ -23,7 +23,7 @@ import rulesJ from '../../../data/rules.json';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 
 const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
-const OD = 'skill:will_power.3#overdraw';
+const OD = 'skill:will_power.2#overdraw';
 /** A Soul caster at 3,5 on its turn with an Emanator in hand: no Insight saving, Normal air, 1,000 MP, Strain limit 20,
  * every feeling felt, no free Pump unless the test gives one. */
 function heart(spec: CharSpec = {}) {

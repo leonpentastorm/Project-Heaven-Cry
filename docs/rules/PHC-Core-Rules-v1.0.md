@@ -12554,3 +12554,64 @@ here is PROVISIONAL.
     Cover Them's Guard cost reads `tech_rule:guard.interpose_cost` (one copy of the interpose cost).
 5548. **Browser suites that fail only beside others** run one at a time (`apps/web/e2e/groups.json serial`: fx-room,
     magic, title, resources, capture-skills, picking).
+
+### Rules 1.75 (Soul), the Soul lane of the attribute rework: Determination, Insight, Virtue (0.32, 19 Nov 2026)
+
+The ruling layer is `docs/design/proposals/2026-11-19-attribute-proposals.md`; the sheets are
+`docs/design/proposals/2026-11-19-attribute-drafts/` determination.md, insight.md and virtue.md. Each skill takes the
+shape of rules 1.70 item 5537 (alpha: 1 the door, 2 a small verb, 3 perk step, 4 fork one, 5 a big verb, 6 and 7 perk
+steps, 8 fork two, 9 perk step, 10 Mastered; beta and gamma: the per-point gain on every level, four perks of two
+tiers on steps at 3 / 5 / 7 / 9, Mastered at 10). Removed perks map as each sheet's MIGRATION says
+(`skills.json perk_remap`, rules 1.70 item 5538). **Every new number here is PROVISIONAL.**
+
+**Determination (Will Power, Composure, Lore Master; the Channeler)**
+
+6200. **Will Power's ladder.** 1 the door (Outbursts) · 2 **Overdraw** (moved from 3; once a turn a Pump adds two
+    stages, the first of a fight costs no Strain, each after it 1) · 3 perk step · 4 fork one · 5 **Two Schools** (a
+    design may carry a second school at half strength for more MP: `soul_modules.json second_school`, now shown on
+    the ladder) · 6, 7 perk steps · 8 fork two · 9 perk step · 10 Mastered (The Twin Pays). Per point it keeps
+    Soul power, mana syphoned, the save strength, reach every 2 and a module slot every 3, and one free Pump a round
+    from 3; it shows the modules it opens at 2 (Size, Quiet) and 4 (Bloom, Volley). **It gives no Strain limit**
+    (rules 1.70 item 5539). Its "+1 design ready every 2 points" moves to Lore Master (item 6205), Pure Heart to
+    Composure (item 6203), the Strain-free swell to Composure 6 (item 6202).
+6201. **Will Power's forks** (all four offered; ids kept). Fork one, at 4: **Ride the Edge** (a Release while your
+    Strain is at or over your limit deals +15% damage) or **Slow Burn** (REPLACED: once a turn, Steady costs 0 AP and
+    calms 1 more Strain). Fork two, at 8: **Blood Price** (REPLACED: each time your own heart burns you, your next
+    Release deals +25% damage) or **Clean Break** (REPLACED: an Outburst that drops a foe calms 2 Strain, once a
+    turn). Ride the Edge reads the resource predicate's `at: "limit"` (rules 1.70 P2), which is "at or over", so the
+    card says "at or over your limit". PROVISIONAL: 1.15, 1, 1.25, 2.
+6202. **Composure's ladder.** Every point: +1 on Heart saves. **+1 Strain limit at 1, 2, 4, 6 and 8 only** (the levels
+    where the limit moves: rules 1.70 item 5539; the page no longer shows it on 3, 5, 7). 2: learns the modules Homing,
+    Swift, Left, Right and Silent (the existing gate). 6: **a held Outburst swells with no Strain** (moved from Will
+    Power 7: `soul_modules.json cycle.swell_no_strain {composure: 6}`; PROVISIONAL level). Perk steps 3 / 5 / 7 / 9;
+    Mastered Still Water.
+6203. **Composure's four perks.** **Poker Face** (`poker_face`, from the old free unlock at 3): I anyone questioning
+    you or reading your lies takes -3 (the Narrator's); II adds +2 on Brain saves. **Stand Still** (`stand_still`,
+    from the unlock at 5): I until you first act in a fight, foes are -2 to hit you and the first to miss gives you a
+    free attack (once a fight); II Begin, Pump and Steady do not count as acting either (the not-acting list is the
+    tier's data). **Pure Heart** (`pure_heart`, from Will Power 5): I once a fight the Strain that would Mana Short you
+    is refused and your Strain falls to your limit; II twice a fight. **Flat Line** (kept). You Get Used to It is
+    removed (maps to Poker Face at the same tier). PROVISIONAL: Poker Face II's +2, Pure Heart II's two.
+6204. **Lore Master's ladder.** Every point: +1 tile Name It reach. 1: Name It (the Call) and the first Outburst tone ·
+    2: learns the forms Wave, Burst, Aura and Lance and the modules Time, Ether and Phantom · 4: learns Ricochet, Fuse
+    and Return · **+1 design ready at 4, 6, 8 and 10** (item 6205) · perk steps 3 / 5 / 7 / 9 · Mastered True Name.
+    The Call's steps and price are rules 1.70's (steps 1 / 4 / 8, 3 / 2 / 1 AP from 1 / 5 / 9).
+6205. **Ready designs are Lore Master's**: 3, and +1 at Lore Master 4, 6, 8 and 10 (a number block,
+    `soul_modules.json limits.ready_designs`, read by the one `character.ts readyDesigns`; the same numbers the old
+    `2 + floor(Will Power / 2), at least 3` gave, now on Lore Master). Readied designs over the new count are kept on
+    the sheet; a new one cannot be readied until there is room.
+6206. **Lore Master's four perks.** **Old Tales** (`old_tales`, from the unlock at 3): I once a scene one true answer
+    about a supernatural creature, curse or relic; II adds: you read and speak any ancient or upper-realm script, and
+    an upper-realm being parleys with you once (Old Tongue folded in; Narrator). **Warding Word** (`lore_ward`, from
+    the unlock at 5; named so beside the Chaplain's Ward): I 1 AP, you or an ally you see within 5 tiles gets +3 on its
+    next Brain or Heart save (the condition `warding_word`, until the end of the fight or that save); II the first
+    each turn costs 0 AP. **Rite in the Field** (changed, Leon's wording): every fifth foe you drop yourself in a fight
+    (every third at tier II), your next Crystallise costs 0 AP. **Recitation** (new): once a turn, a Call you make calms
+    1 Strain (2 at tier II). Old Tongue is removed (maps to Old Tales). PROVISIONAL: Warding Word's 5 tiles, +3 and its
+    Brain-or-Heart reading of "a supernatural effect"; Recitation's 1 and 2.
+6207. **Rite in the Field's other half is handed back.** "Takes nothing from the air" is not built: Crystallise's draw on
+    the air (`magic.ts crystallise`: the meter at 10 or more, then -10) is not on the price, so no `cost_mod` reaches
+    it (ruling layer section 2 item 6). The 0 AP half is built; the air half waits for the lead's ruling.
+6208. **The Channeler.** Shape, Iron Heart (once a fight, on Mana Shock: -2 Strain; already data on the `mana_shock`
+    trigger), Storm Front, Heart Surge and Eye of the Storm are kept. **Occult Library**: its "+1 design ready" (now
+    Lore Master's ladder) is replaced by **once a turn, Syphon costs 0 AP**; the extra tone is kept.

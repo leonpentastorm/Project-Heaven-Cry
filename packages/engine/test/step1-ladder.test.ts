@@ -2,7 +2,7 @@
 // Rules 1.70 (0.32 step 1): the ladder schedule as data (item 5537), old saves' perk re-pick (item 5538), and an unspent
 // Attribute point carried from level 2 to 3 (the brief's H). Every change goes through the reducer (levelup/perk,
 // levelup/perk-repick, levelup/raise, narrator/turn) or the load door (migrateLoaded) on the repo's real old saves.
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { PERK, PERKS, SKILL, apply, migrateLoaded, ladderSchedule, ladderStepAt, stepsEarned, stepsTaken, pendingPerkSteps, pendingRepicks, levelUpDue, type Character } from '../src';
@@ -34,27 +34,27 @@ describe('the ladder schedule is one table (rules 1.70 item 5537)', () => {
     c.skills.durability = 6; expect(pendingPerkSteps(c).find((x) => x.skill === 'durability')).toBeUndefined();
     c.skills.durability = 7; expect(pendingPerkSteps(c).find((x) => x.skill === 'durability')?.free).toBe(1);
   });
-  describe('a fixture skill with four perks (the code works for two or four without change)', () => {
-    const FOUR = ['test_perk_a', 'test_perk_b'].map((id) => ({ id, name: 'Test ' + id.slice(-1).toUpperCase(), tier: 'acquired', skills: ['composure'], text: 'A test perk.', requires: [], effects: [], adjudication: 'engine', tiers: { I: { text: 'I' }, II: { text: 'II' } } }));
-    afterEach(() => { for (const p of FOUR) { const i = (PERKS as any[]).indexOf(p); if (i >= 0) (PERKS as any[]).splice(i, 1); delete (PERK as any)[p.id]; } });
+  describe('a skill with four perks (the code works for two or four without change; Composure has four since rules 1.75 item 6203)', () => {
     it('composure at 9: four steps among four perks, taken through the reducer, each perk at most II, no step twice', () => {
-      for (const p of FOUR) { (PERKS as any[]).push(p); (PERK as any)[p.id] = p; }
       const s = storyWith([{ skills: { composure: 9 }, attrs: { determination: 9 } }]), id = s.chars[0].id;
       const pend = () => pendingPerkSteps(s.g.characters[id]).find((x) => x.skill === 'composure');
       expect(pend()?.free).toBe(4);
       expect(pend()!.choices.map((x) => x.id).sort()).toEqual((PERKS as any[]).filter((p) => p.tier === 'acquired' && p.skills.includes('composure')).map((p) => p.id).sort());
       expect(pend()!.choices.length).toBe(4);
-      for (const id2 of ['test_perk_a', 'test_perk_b', 'test_perk_a', 'flat_line']) s.act({ type: 'levelup/perk', charId: id, perkId: id2 } as any);
+      for (const id2 of ['poker_face', 'stand_still', 'poker_face', 'flat_line']) s.act({ type: 'levelup/perk', charId: id, perkId: id2 } as any);
       const c = s.g.characters[id];
       expect(pend()).toBeUndefined(); expect(stepsTaken(c, 'composure')).toBe(4);
-      expect(c.perks.filter((x) => x.id === 'test_perk_a')).toEqual([{ id: 'test_perk_a', tier: 'II' }]);
+      expect(c.perks.filter((x) => x.id === 'poker_face')).toEqual([{ id: 'poker_face', tier: 'II' }]);
     });
   });
 });
 
 describe('old saves: the perk re-pick (rules 1.70 item 5538)', () => {
   const PT: any = SKILL.pain_threshold;
-  afterEach(() => { delete PT.perk_remap; });
+  // the fixture table is the only table here: the real ones (each attribute's, rules 1.75 onward) are set aside and put back
+  const REAL: Record<string, any> = {};
+  beforeEach(() => { for (const s of Object.values(SKILL) as any[]) if (s.perk_remap) { REAL[s.id] = s.perk_remap; delete s.perk_remap; } });
+  afterEach(() => { delete PT.perk_remap; for (const [k, v] of Object.entries(REAL)) { (SKILL as any)[k].perk_remap = v; delete REAL[k]; } });
   it('with no table, a real old save loads as it was (nothing written)', () => {
     for (const name of ['save-develop-cb40e92-mid-fight', 'save-develop-cb40e92-after-fight', 'save-live-0.22.0-long-mid-fight']) {
       const once = migrateLoaded(raw(name)), again = JSON.stringify(migrateLoaded(JSON.parse(JSON.stringify(once))));

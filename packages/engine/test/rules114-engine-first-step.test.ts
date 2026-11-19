@@ -52,10 +52,10 @@ describe('the 19 relabels (item 1101)', () => {
     for (const id of A_PERKS) expect(perkOf(id).adjudication, id).toBe('engine');
     for (const id of A_TRAITS) expect(traitOf(id).adjudication, id).toBe('engine');
   });
-  it('the labels of the 180: 128 engine, 45 hybrid, 7 narrator (rules 1.14 left 119, 46, 15; the truth pass of 12 Nov 2026, spec item 1514, moved fifteen; rules 1.56 moved Long Dark and Many-Eyed Dream to engine)', () => {
+  it('the labels of the 184: 131 engine, 45 hybrid, 8 narrator (rules 1.14 left 119, 46, 15; the truth pass of 12 Nov 2026, spec item 1514, moved fifteen; rules 1.56 moved Long Dark and Many-Eyed Dream to engine; rules 1.75 Determination: +Poker Face (hybrid), Stand Still, Pure Heart, Warding Word, Recitation (engine), Old Tales (narrator); -Old Tongue (hybrid), -You Get Used to It (engine))', () => {
     const all = [...PERKS, ...TRAITS], n = (l: string) => all.filter((x) => x.adjudication === l).length;
-    expect(all.length).toBe(180);
-    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([128, 45, 7]);
+    expect(all.length).toBe(184);
+    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([131, 45, 8]);
   });
   it('no relabelled card still hands a rule to the Narrator: Talks Broke Down gives its timing rule, Verse of War has no audit', () => {
     for (const t of ['I', 'II']) { expect(perkOf('talks_broke_down').tiers[t].text).not.toMatch(/Narrator/); expect(perkOf('talks_broke_down').tiers[t].text).toMatch(/same story round .* or the round after/); }
@@ -141,9 +141,9 @@ describe('Crowd Pleaser: a crowd is 3 or more listeners within 8 tiles, out of a
 
 describe('Old Tongue II: the being holds its attacks, not its whole turn (item 1109)', () => {
   function parley(speak: boolean) {
-    const f = fightWith([{ perks: { old_tongue: 'II' } }], [{ at: 'E6' }]); open(f.cb);
+    const f = fightWith([{ perks: { old_tales: 'II' } }], [{ at: 'E6' }]); open(f.cb);
     f.pc.pos = '2,5'; f.foe.pos = '7,5'; f.foe.kind = 'upper_realm'; f.foe.weapon = 'combat_knife'; f.foe.attack = 60; f.turn(f.pc);
-    if (speak) f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'old_tongue', actionId: 'speak_fight', targetId: f.foe.id, text: 'We come by cause.' } as any);
+    if (speak) f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'old_tales', actionId: 'speak_fight', targetId: f.foe.id, text: 'We come by cause.' } as any);
     const hp = f.pc.hp, from = f.foe.pos;
     f.cb.turn = f.cb.order.indexOf(f.foe.id); withGame(f.g, () => { beginTurn(f.cb, f.g.rng); enemyTurn(f.cb, f.g.rng); });
     return { f, hurt: hp - f.pc.hp, moved: f.foe.pos !== from };

@@ -101,6 +101,19 @@ White-ink signs, the same set and style as the fight banners' `banner-fight-star
 | `banner-fight-approach` | the APPROACH banner (a fight opened with no foe seeing the squad) | an eye half-closed or a footstep in fog: unseen, moving quietly |
 | `banner-level-up` | the LEVEL UP banner (any character of the room gains a level; any screen) | a rising chevron or a step mark climbing: growth, not a weapon |
 
+### 0d. The Soul lane of 0.32: new perks, verbs and Mastered perks (rules 1.75; requested 19 Nov 2026)
+
+Wick perk icons (white flat ink, 1024 × 1024, transparent; the STYLE-LOCK applies; the perk set in `art/icons/perks/`
+is the one to match). Until drawn, each shows the fallback the UI already uses for a perk with no icon.
+
+| id | what it is | direction |
+| --- | --- | --- |
+| `poker_face` | Composure perk: lie-readers take a penalty against you; II a Brain save bonus | Wick with a perfectly blank face while a questioning hand points at him |
+| `stand_still` | Composure perk: until you act, foes are worse at hitting you; the first miss is answered | Wick standing dead still as a shot goes wide past him |
+| `pure_heart` | Composure perk (from Will Power): the Strain that would short you is refused | Wick's chest glow held steady inside a ring, a crack refusing to spread (the move icon `move-pure-heart` exists and may be adapted) |
+| `lore_ward` | Lore Master perk "Warding Word": a spoken word guards a friend's next save | Wick speaking one word that hangs as a small sigil over a friend's head |
+| `recitation` | Lore Master perk: a Call calms your Strain | Wick reciting from memory, eyes closed, a heart glow cooling |
+
 ### 2. Outburst feelings and modules
 
 | # | For | Status | What it must show | Direction | Goes to |
@@ -293,10 +306,10 @@ The level-up card, the sheet and the fight tab show them beside the option's rul
 | K26 | **Clean Vent** (Sigils's fork at 4, `fork.sigil.clean_vent`) | Placeholder in place (option not built yet) | A vent of Flux blasting outward from Wick, foes thrown back | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-sigil-clean_vent`) |
 | K27 | **Written in Advance** (Sigils's fork at 6, `fork.sigil.written_in_advance`) | Placeholder in place (option not built yet) | A line of glyphs waiting on the ground before a doorway | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-sigil-written_in_advance`) |
 | K28 | **Running Script** (Sigils's fork at 6, `fork.sigil.running_script`) | Placeholder in place (option not built yet) | One glyph staying lit after the spell fires | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-sigil-running_script`) |
-| K29 | **Ride the Edge** (Outbursts's fork at 4, `fork.soul.ride_the_edge`) | Placeholder in place (option not built yet) | Wick balanced on a knife-edge, the heart full to the brim | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-ride_the_edge`) |
-| K30 | **Slow Burn** (Outbursts's fork at 4, `fork.soul.slow_burn`) | Placeholder in place (option not built yet) | A held flame burning low and steady in Wick's chest | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-slow_burn`) |
-| K31 | **Blood Price** (Outbursts's fork at 6, `fork.soul.blood_price`) | Placeholder in place (option not built yet) | Wick paying a pump of power with a drop of blood | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-blood_price`) |
-| K32 | **Clean Break** (Outbursts's fork at 6, `fork.soul.clean_break`) | Placeholder in place (option not built yet) | A great release and the heart easing after it | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-clean_break`) |
+| K29 | **Ride the Edge** (Outbursts's fork at 4, `fork.soul.ride_the_edge`) | Placeholder in place (option built in 0.32, rules 1.75) | Wick balanced on a knife-edge, the heart full to the brim | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-ride_the_edge`) |
+| K30 | **Slow Burn** (Outbursts's fork at 4, `fork.soul.slow_burn`) | Placeholder in place (option built in 0.32, rules 1.75: once a turn Steady is free and calms more) | A held flame burning low and steady in Wick's chest | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-slow_burn`) |
+| K31 | **Blood Price** (Outbursts's fork at 8, `fork.soul.blood_price`) | Placeholder in place (option built in 0.32, rules 1.75: when the heart burns you, the next Release hits harder) | Wick's heart burning him, the burn feeding the next blast | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-blood_price`) |
+| K32 | **Clean Break** (Outbursts's fork at 8, `fork.soul.clean_break`) | Placeholder in place (option built in 0.32, rules 1.75: an Outburst kill calms the heart) | A great release and the heart easing after it | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-clean_break`) |
 
 ## At risk in the balance pass
 

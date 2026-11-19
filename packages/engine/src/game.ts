@@ -1008,7 +1008,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (at >= 0 && g.story.magic?.[c!.id]?.held?.design === d.id) fail('You are holding that Outburst: release it or let it go first.');
       const r = checkOutburstDesign(c!, d, moduleSlots(c!), at >= 0 ? d.id : 'o' + (g.seq + 1)); if (typeof r === 'string') fail(r);
       const { design: clean, learnTone } = r as Exclude<typeof r, string>;
-      if (at < 0 && list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Will Power): forget one first.');
+      if (at < 0 && list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Lore Master): forget one first.');
       if (at < 0) g.seq++;
       if (learnTone) { const k = (c!.soulKnown ||= { schools: [], modules: [] }); (k.tones ||= []).push(learnTone); }
       if (at >= 0) list[at] = clean; else list.push(clean);

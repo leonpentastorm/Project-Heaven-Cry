@@ -2259,7 +2259,7 @@
               "name": "Occult Library",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "One more design ready · once, out of a fight: learn one more tone",
+              "text": "Once a turn, Syphon costs {=effects.1.set} AP · once, out of a fight: learn one more tone",
               "effects": [
                 {
                   "op": "stat_mod",
@@ -2267,9 +2267,35 @@
                   "value": 1
                 },
                 {
-                  "op": "stat_mod",
-                  "stat": "ready_designs",
-                  "value": 1
+                  "op": "cost_mod",
+                  "when": "cost",
+                  "if": {
+                    "action": [
+                      "syphon"
+                    ]
+                  },
+                  "set": 0,
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "free",
+                    "peek": true
+                  },
+                  "label": "Occult Library"
+                },
+                {
+                  "op": "use",
+                  "when": "acted",
+                  "if": {
+                    "action": [
+                      "syphon"
+                    ]
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "free"
+                  }
                 }
               ],
               "adjudication": "engine",
@@ -2285,7 +2311,8 @@
                 "determination"
               ],
               "status": "active",
-              "surface": "always"
+              "surface": "always",
+              "source": "rules 1.75 (Soul lane, 0.32) item 6208"
             }
           ]
         },

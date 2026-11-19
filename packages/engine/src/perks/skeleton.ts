@@ -19,6 +19,8 @@ import { condSource } from '../magic';
 import { TECHNIQUE, techGroupOf, actionTechOf } from '../physical/data';
 import { ensureMomentum } from '../physical/core';
 import { overworld, say } from '../kit';
+import { num } from '../effects/num';
+import { rawItem } from '../effects/collect';
 
 const tierII = (h: Holder) => h.tier === 'II';
 /** An item's per-fight state, read without creating it (previews and stat queries change nothing). */
@@ -139,15 +141,16 @@ register({
   brief: () => null,
 });
 
-// ---------- Composure · Stand Still (Mastery 2) ----------
+// ---------- Composure · Stand Still (a Composure perk since rules 1.75 item 6203) ----------
 // The original, restored (Leon, 10 Nov 2026: Composure is a beta again, and this is a defence): until you first act in
 // a combat, enemies attacking you are at −2 to hit, and the first one to miss gives you a free attack on it, once a
-// combat, if your weapon reaches. A Call is not "acting".
-const NOT_ACTING = new Set(['combat/call', 'combat/end-turn', 'combat/decline']);
+// combat, if your weapon reaches. What is not "acting" is the tier's list (perks.json stand_still not_acting: a Call; at
+// tier II Begin, Pump and Steady too); the to-hit is its number (numbers.to_hit).
+const notActing = (h: Holder): string[] => (rawItem(h.key) as any)?.tiers?.[h.tier || 'I']?.not_acting || [];
 register({
-  id: 'composure.5', kind: 'skill', claims: 'all', noDefaultActions: true, // the free attack is taken by the engine on the miss: no button
+  id: 'stand_still', claims: 'all', noDefaultActions: true, // the free attack is taken by the engine on the miss: no button
   on: {
-    attack_preview: (ctx, h) => { if (h.u && ctx.tgt === h.u && ctx.att.side !== h.u.side && !ctx.volleyCost && !peek(h).acted && !ctx.terms.some((x: any) => x.label === 'Stand Still')) ctx.terms.push({ v: -2, label: 'Stand Still' }); },
+    attack_preview: (ctx, h) => { if (h.u && ctx.tgt === h.u && ctx.att.side !== h.u.side && !ctx.volleyCost && !peek(h).acted && !ctx.terms.some((x: any) => x.label === 'Stand Still')) ctx.terms.push({ v: num(h, 'to_hit'), label: 'Stand Still' }); },
     on_miss: (ctx, h) => {
       const u = h.u, a: Unit | undefined = ctx.att; if (!u || ctx.tgt !== u || !a || a.side === u.side || !alive(u) || !alive(a)) return;
       const s = stateOf(h); if (s.acted || s.countered) return;
@@ -155,7 +158,7 @@ register({
       s.countered = true; say(ctx.cb, u.name + ' stood still, and answers the miss.');
       resolveAttack(ctx.cb, ctx.rng || { state: ((ctx.cb.round || 1) * 7919 + (ctx.cb.log.length || 1)) >>> 0 }, u, a, mode as any, charOfUnit(u), { free: true }); checkOver(ctx.cb);
     },
-    action_done: (ctx, h) => { if (ctx.u === h.u && h.cb && !overworld(h.cb) && !NOT_ACTING.has(ctx.a?.type)) stateOf(h).acted = true; },
+    action_done: (ctx, h) => { if (ctx.u === h.u && h.cb && !overworld(h.cb) && !notActing(h).includes(ctx.a?.type)) stateOf(h).acted = true; },
   },
   brief: () => null,
 });

@@ -271,11 +271,11 @@ describe('rules 1.33 section 5: the Mender', () => {
 });
 
 describe('rules 1.33 section 4: what leaves Empathy', () => {
-  it('the free Pump and the swell without Strain are Will Power\'s', () => {
+  it('the free Pump is Will Power\'s and the swell without Strain Composure\'s (rules 1.75 item 6202); neither is Empathy\'s', () => {
     const fp = (soulJ as any).cycle.free_pumps[0], sw = (soulJ as any).cycle.swell_no_strain;
     const c: any = { skills: { empathy: 10, will_power: 0 }, attrs: { insight: 10, determination: 10 }, perks: [], traits: [] };
     expect(freePumps(c)).toBe(0); expect(swellFree(c)).toBe(false);
-    c.skills.will_power = Math.max(fp.will_power, sw.will_power);
+    c.skills.will_power = fp.will_power; c.skills.composure = sw.composure;
     expect(freePumps(c)).toBe(fp.pumps); expect(swellFree(c)).toBe(true);
   });
   it('the tend profile is Healing given (Insight and Empathy), k from data', () => {

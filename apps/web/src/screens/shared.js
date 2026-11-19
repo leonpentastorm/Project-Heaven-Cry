@@ -35,13 +35,14 @@ export const SLOT_ORDER = { alpha: 0, beta: 1, gamma: 2 };
 // A skill's gains are rows tied to points (skills.json per_point.rows, numbers already filled by the engine's data
 // load). ONE helper places them on the points 1 to 10 for all three screens (creation, the "?" pop-up, level up):
 // `each` is the head line ("Every point: ..."), `every 2` lands on 2, 4, 6, 8, 10, `every 3` on 3, 6, 9, `from n`,
-// `at n` and `each from n` once on n. The steps also carry what the skill's own unlocks put there: a named unlock (one
+// `at n` and `each from n` once on n, `at n, m, ...` on each point listed (rules 1.75 item 6202: Composure's Strain limit). The steps also carry what the skill's own unlocks put there: a named unlock (one
 // with a category), a perk step (mastery 1 to 4) with the skill's two perks, the Mastered perk (mastery 5).
-const AT = /^(?:(each)|every (\d+)|(each from|from|at) (\d+))$/;
+const AT = /^(?:(each)|every (\d+)|(each from|from|at) (\d+)|at (\d+(?:, \d+)+))$/;
 /** The points a row lands on, out of 1..top (an `each` row lands on none: it is the head line). */
 export const rowPoints = (at, top = 10) => {
   const m = AT.exec(String(at || '')); if (!m || m[1]) return [];
   if (m[2]) return Array.from({ length: top }, (_, i) => i + 1).filter((n) => n % Number(m[2]) === 0);
+  if (m[5]) return m[5].split(', ').map(Number).filter((n) => n >= 1 && n <= top);
   const n = Number(m[4]); return n >= 1 && n <= top ? [n] : [];
 };
 const rowsOf = (id) => (ENGINE_SKILL[id] && ENGINE_SKILL[id].per_point && ENGINE_SKILL[id].per_point.rows) || [];

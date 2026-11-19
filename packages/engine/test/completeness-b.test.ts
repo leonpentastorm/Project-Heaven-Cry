@@ -163,9 +163,9 @@ describe('triggers from an enemy, through the reducer', () => {
     f.turn(medic); f.act({ type: 'combat/stim', unitId: medic.id, targetId: w.id } as any);
     expect(f.unit(w.id).hp).toBeGreaterThan(Math.floor(w.maxHp / 3));
   });
-  it('Pattern Lock, Outclassed and You Get Used to It hear an enemy\'s attack on its turn', () => {
-    for (const id of ['pattern_lock', 'outclassed', 'you_get_used_to_it']) {
-      const f = fightWith([{ perks: [id], traits: id === 'you_get_used_to_it' ? [] : [] }], [{ at: 'C6', weapon: 'fists', tier: 'elite' }]);
+  it('Pattern Lock, Outclassed and Stand Still hear an enemy\'s attack on its turn', () => { // rules 1.75: You Get Used to It is removed
+    for (const id of ['pattern_lock', 'outclassed', 'stand_still']) {
+      const f = fightWith([{ perks: [id] }], [{ at: 'C6', weapon: 'fists', tier: 'elite' }]);
       const pc = f.pc, foe = f.foe; pc.pos = '5,5'; foe.pos = '6,5'; foe.attack = 60;
       enemyTurn(f, pc, foe);
       expect(f.cb.round).toBeGreaterThanOrEqual(1); // the turn ran through the reducer without error

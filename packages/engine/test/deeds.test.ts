@@ -230,8 +230,8 @@ describe('Siege Engine: break through a wall to win a fight', () => {
 });
 
 describe('Twin Souls: survive a Mana Short', () => {
-  const T = { archetype: 'stormcaller', kit: 'soul', ...SK('will_power', 'lore_master') };
-  /** Will Power 5 is Pure Heart: the first Short of a fight is refused. An eligible character's deed is the second. */
+  const T = { archetype: 'stormcaller', kit: 'soul', ...SK('will_power', 'lore_master'), perks: { pure_heart: 'I' } };
+  /** Pure Heart (a Composure perk since rules 1.75 item 6203): the first Short of a fight is refused. An eligible character's deed is the second. */
   const push3 = (f: F) => { const u = f.pc; u.mg!.strain = u.mg!.strainLimit + 2; withGame(f.g, () => addStrain(f.cb, f.g.rng, u, 1, 'test')); };
   const short = (f: F) => { push3(f); expect(f.cb.log.join(' ')).toMatch(/Pure Heart/); expect(f.cb.log.join(' ')).not.toMatch(/MANA SHORT/); push3(f); expect(f.cb.log.join(' ')).toMatch(/MANA SHORT/); };
   it('a Mana Short, and alive when the fight ends: granted at the fight\'s end', () => {
@@ -243,7 +243,7 @@ describe('Twin Souls: survive a Mana Short', () => {
   it('near misses: no Short; dead at the end; not eligible', () => {
     let f = fight([T]); push3(f); win(f); none(f, 'twin_souls'); // Pure Heart refused it: no Short happened
     f = fight([T, {}]); short(f); f.pc.dead = true; f.pc.hp = 0; win(f); none(f, 'twin_souls');
-    f = fight([{ archetype: 'stormcaller', kit: 'soul', skills: { will_power: 5, lore_master: 4 } }]); short(f); win(f); none(f, 'twin_souls');
+    f = fight([{ archetype: 'stormcaller', kit: 'soul', skills: { will_power: 5, lore_master: 4 }, perks: { pure_heart: 'I' } }]); short(f); win(f); none(f, 'twin_souls');
   });
 });
 

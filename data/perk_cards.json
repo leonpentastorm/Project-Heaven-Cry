@@ -8,7 +8,8 @@
     "many_hands"
   ],
   "private_count": [
-    "skill:composure.5"
+    "perk:stand_still",
+    "perk:pure_heart"
   ],
   "items": [
     {
@@ -171,16 +172,6 @@
       "id": "perk:rally_cry",
       "tier": "II",
       "trigger": "when an enemy or a hazard drops an ally to 0 HP"
-    },
-    {
-      "id": "perk:you_get_used_to_it",
-      "tier": "I",
-      "trigger": "the first time each round an ally within 5 tiles takes a Brain or Heart condition"
-    },
-    {
-      "id": "perk:you_get_used_to_it",
-      "tier": "II",
-      "trigger": "the first time each round an ally within 5 tiles takes a Brain or Heart condition"
     },
     {
       "id": "perk:flat_line",

@@ -377,7 +377,7 @@ export const outburst: Policy = (x) => {
       // Only when the turn's Pumps can't reach the goal without it: its second stage is a plain one (no feeling in it).
       const canPump = Math.floor(u.ap - keep + 1e-9) + Math.min(Math.max(0, 1 - (m.freeUsed || 0)), (m.freePumps || 0) + (m.firstUsed || x.cb.overworld ? 0 : 1)); // rules 1.19: one free Pump a turn
       const od = !forced && (x.c?.skills?.will_power || 0) >= 3 && stage <= goal - 2 && goal - stage > canPump && x.memo.odStamp !== x.cb.round && (!x.memo.odUsed || m.strain + feelStrain(feel) + 1 + (carry ? 1 : 0) <= m.strainLimit + (peak ? 2 : 0));
-      if (od) { const s = allowed(x, { action: { type: 'combat/pump', ...(feel ? { feeling: feel } : {}), mods: ['skill:will_power.3#overdraw'] }, kind: 'setup', label: 'Overdraw' + (feel ? ' (' + (FEELING[feel]?.name || feel) + ')' : ''), seq: 'part' }); if (s) { x.memo.odStamp = x.cb.round; x.memo.odUsed = true; return s; } }
+      if (od) { const s = allowed(x, { action: { type: 'combat/pump', ...(feel ? { feeling: feel } : {}), mods: ['skill:will_power.2#overdraw'] }, kind: 'setup', label: 'Overdraw' + (feel ? ' (' + (FEELING[feel]?.name || feel) + ')' : ''), seq: 'part' }); if (s) { x.memo.odStamp = x.cb.round; x.memo.odUsed = true; return s; } }
       const s = allowed(x, { action: { type: 'combat/pump', ...(feel ? { feeling: feel } : {}) }, kind: 'setup', label: feel ? 'Pump (' + (FEELING[feel]?.name || feel) + ')' : 'Pump', seq: 'part' });
       if (s) return s;
     }

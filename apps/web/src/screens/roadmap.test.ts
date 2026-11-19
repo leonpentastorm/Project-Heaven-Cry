@@ -12,6 +12,7 @@ const want = (at: string): number[] => {
   if (at === 'each') return all;
   if (at === 'every 2') return [2, 4, 6, 8, 10];
   if (at === 'every 3') return [3, 6, 9];
+  if (/^at \d+(, \d+)+$/.test(at)) return at.slice(3).split(', ').map(Number); // rules 1.75 item 6202: a list of points
   const m = /^(each from|from|at) (\d+)$/.exec(at); if (!m) throw new Error('unknown at ' + at);
   return m[1] === 'each from' ? all.filter((n) => n >= Number(m[2])) : [Number(m[2])];
 };
@@ -62,10 +63,12 @@ describe('the road map of every skill', () => {
     expect(headLine('will_power')).toMatch(/^Every point: /);
     const per = r.head.map(() => 'each:each');
     expect(at(1)).toEqual(per);
-    expect(at(2)).toEqual([...per, 'row:every 2', 'row:every 2']);
-    expect(at(3)).toEqual([...per, 'row:every 3', 'row:from 3', 'unlock:at 3', 'perk:at 3']);
-    expect(at(7)).toEqual([...per, 'row:from 7', 'perk:at 7']);
-    expect(at(10)).toEqual([...per, 'row:every 2', 'row:every 2', 'mastered:at 10']);
+    // rules 1.75 item 6200: Overdraw (the small verb) at 2 with the modules it opens; the designs and the Strain-free swell left it
+    expect(at(2)).toEqual([...per, 'row:every 2', 'row:at 2', 'unlock:at 2']);
+    expect(at(3)).toEqual([...per, 'row:every 3', 'row:from 3', 'perk:at 3']);
+    expect(at(5)).toEqual([...per, 'unlock:at 5']);
+    expect(at(7)).toEqual([...per, 'perk:at 7']);
+    expect(at(10)).toEqual([...per, 'row:every 2', 'mastered:at 10']);
     // the perk step names the two perks once (level 3); later steps say "Perk", the names in the hover
     expect(r.steps[2].lines.find((l: any) => l.kind === "perk")!.text).toMatch(/^Perk: .+ or .+$/);
     for (const n of ladderSchedule('will_power').perk_steps.slice(1)) { const l = r.steps[n - 1].lines.find((x: any) => x.kind === 'perk')!; expect(l.text).toBe('Perk'); expect(l.tip).toMatch(/^Perk: .+ or .+, or a Tier II · /); }

@@ -280,19 +280,19 @@ register({
   brief: (h) => 'tag the check the sentence hinted at: hinted' + (tierII(h) ? '; the enemy acts on the false meaning' : ''),
 });
 
-// ---------- Old Tongue (Lore Master 3/5): read any ancient or upper-realm script; II: speak it, one parley per being ----------
-// Story: a check tagged ancient_script (or applies old_tongue) is an automatic success for the holder: they read it.
-// II: 'Speak the Old Tongue' (story, and in a fight against an upper-realm being): once per being, it parleys. In a
+// ---------- Old Tales II (Old Tongue folded in, rules 1.75 item 6206): read and speak any ancient or upper-realm script, one parley per being ----------
+// Story: at tier II a check tagged ancient_script (or applies old_tales) is an automatic success for the holder: they read it.
+// II: 'Speak the old tongue' (story, and in a fight against an upper-realm being): once per being, it parleys. In a
 // fight (PROVISIONAL) it holds its next turn's attacks while it listens (rules 1.14, spec item 1109: no attack, spell
 // or technique on that turn, but it may move; it used to lose the whole turn); the words go to the Narrator. It gives parley
 // when met, never summons a Celestial (the Accords), and what scripts reveal stays inside the Veil.
 const parleyed = (h: Holder): string[] => (sro(h).beings || []);
 register({
-  id: 'old_tongue',
+  id: 'old_tales',
   narrator: 'all',
   actions: [
     {
-      id: 'speak', label: 'Speak the Old Tongue', scope: ['story'], target: 'npc', ap: 0,
+      id: 'speak', label: 'Speak the old tongue', scope: ['story'], target: 'npc', ap: 0,
       text: 'Speak to an upper-realm being in its own tongue: it will parley with you, once.',
       available: (h) => (tierII(h) ? true : false),
       preview: (h, a) => { const who = npcRef(h, a).name || clip(a.text, 60); if (!who) return { ok: false, why: 'Name the being.' }; if (parleyed(h).some((b) => nameMatch(b, who))) return { ok: false, why: who + ' has parleyed with you once already.' }; return {}; },
@@ -303,7 +303,7 @@ register({
       },
     },
     {
-      id: 'speak_fight', label: 'Speak the Old Tongue', scope: ['combat'], target: 'enemy', ap: 0, range: HEARING,
+      id: 'speak_fight', label: 'Speak the old tongue', scope: ['combat'], target: 'enemy', ap: 0, range: HEARING,
       text: 'Speak to an upper-realm being in earshot. It parleys with you and makes no attacks on its next turn. Once per being.',
       available: (h) => (tierII(h) ? true : false),
       preview: (h, a) => {
@@ -318,7 +318,7 @@ register({
         // move), put on with no save and by nobody's Heart magic, so nothing that stops a condition stops the parley.
         restoreConds(t, { commanded: Math.max(t.conds?.commanded || 0, 1) }, undefined, undefined, { commanded: 'hold' });
         stateOf(h).listening = t.id;
-        say(h.cb, h.u!.name + ' speaks to ' + t.name + ' in the old tongue (Old Tongue): it holds its attacks on its next turn and listens.');
+        say(h.cb, h.u!.name + ' speaks to ' + t.name + ' in the old tongue (Old Tales): it holds its attacks on its next turn and listens.');
         note(h, t.name + ' (upper-realm) parleys with ' + h.u!.name + (a.text ? ': "' + clip(a.text, 160) + '"' : '') + '. Rule what it agrees to.');
       },
     },
@@ -326,10 +326,10 @@ register({
   on: {
     // A refusal (not upper-realm) gives the being back: it never parleyed.
     ruling_answered: (ctx, h) => { if (!refused(ctx, h)) return; const st = sst(h), i = (st.beings || []).map((b: string) => String(ctx.r.text).includes('if ' + b + ' is')).lastIndexOf(true); if (i >= 0) st.beings.splice(i, 1); },
-    check_post: (ctx, h) => { if (ctx.c === h.c && (tagsOf(ctx).includes('ancient_script') || appliesTo(ctx.ck, 'old_tongue')) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('OLD TONGUE'); } },
+    check_post: (ctx, h) => { if (tierII(h) && ctx.c === h.c && (tagsOf(ctx).includes('ancient_script') || appliesTo(ctx.ck, 'old_tales')) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('OLD TALES'); } },
     enemy_action_start: (ctx, h) => {
       const st = h.u?.ps?.[h.key] as any; if (!st?.listening || ctx.u.id !== st.listening) return;
-      delete st.listening; say(h.cb, ctx.u.name + ' holds its attacks and listens (Old Tongue).');
+      delete st.listening; say(h.cb, ctx.u.name + ' holds its attacks and listens (Old Tales).');
     },
   },
   brief: (h) => 'reads any ancient or upper-realm script (tag such checks ancient_script)' + (tierII(h) ? '; speaks it: one parley per being' : '') + '; within the Veil',

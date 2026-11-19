@@ -335,10 +335,10 @@ describe('Channeler', () => {
     expect(m().strain).toBe(m().strainLimit + OVER);
     expect(logCount(f.cb, /^Iron Heart: /)).toBe(1);
   });
-  it('Occult Library: one more ready design; learn one more tone out of a fight, once', () => {
+  it('Occult Library: no design-ready bonus since rules 1.75 item 6208 (Syphon free once a turn: soul-lane-0.32.test.ts); learn one more tone out of a fight, once', () => {
     const s = storyWith([cls('channeler', 5, SOUL), cls('channeler', 3, SOUL)]);
     const [c, d] = s.chars.map((x) => s.g.characters[x.id]);
-    expect(readyDesigns(c)).toBe(readyDesigns(d) + 1);
+    expect(readyDesigns(c)).toBe(readyDesigns(d));
     const known = c.soulKnown?.tones || [], tone = ['fire', 'frost', 'storm', 'stone', 'acid', 'poison', 'light', 'shadow'].find((t) => !known.includes(t)) || 'fire';
     s.act({ type: 'story/perk', charId: c.id, id: 'class:channeler.occult_library', actionId: 'occult_tone', choice: tone } as any);
     expect(s.g.characters[c.id].soulKnown!.tones).toContain(tone);

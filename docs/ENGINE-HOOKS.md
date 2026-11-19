@@ -99,12 +99,12 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `damage` | words | the damage is of one of these kinds (melee, ranged, explosive, outburst, sigil_spell, prayer, bond, weapon, physical, sigil, soul, elemental, fire, lightning, emp, true) | `holy_dread` (classes.json) |
 | `not_damage` | words | the damage is of none of these kinds (as damage; also a source type: strain, short) | `sanctuary` (classes.json) |
 | `by_hit` | bool | the damage came (or did not come) from someone's blow, not a hazard, trap, Bleeding or Burning | `ledger` (classes.json) |
-| `self_harm` | bool | the damage is (or is not) the unit's own doing (a Mana Short, an overload, Strain, Flux) | `last_wall` (perks.json) |
+| `self_harm` | bool | the damage is (or is not) the unit's own doing (a Mana Short, an overload, Strain, Flux) | `fork.soul.blood_price` (forks.json) |
 | `hostile` | bool | the actor and the target are (or are not) on different sides | `smite` (classes.json) |
 | `cond` | ids | the condition is one of these | `take_the_weight` (classes.json) |
-| `cond_family` | words | the condition's family is one of these (body, brain, heart) | `canticle_the_matchmaker` (conditions.json) |
+| `cond_family` | words | the condition's family is one of these (body, brain, heart) | `warding_word` (conditions.json) |
 | `action` | words | the priced action (its cost site) is one of these | `wrecker` (classes.json) |
-| `action_id` | words | the own id of the priced action is one of these (a Call: its Calls id, call.name_it; any priced action that passes its id on the context of its price) | `rite_in_the_field` (perks.json) |
+| `action_id` | words | the own id of the priced action is one of these (a Call: its Calls id, call.name_it; any priced action that passes its id on the context of its price) | none yet |
 | `word` | words | the Sigil word being drawn is one of these | `barrage` (classes.json) |
 | `hand` | words | the hand is one of these (main, off, both) | none yet |
 | `how` | words | the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (heal, tending, blessing (every prayer), perk, stim, leech, thread) | `relocated` (classes.json) |
@@ -139,7 +139,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `free_tech` | bool | the attack is (true) or is not (false) made with a free technique, everyone's (techniques.json free: Shot, Aimed Shot, Cut, Overwatch), or with no technique a lone shot, aimed shot, blow or throw (a roll of a volley is not: a Burst, full auto, a weapon skill, both hands) | `fire_discipline` (classes.json) |
 | `tech_ap_at_least` | number | the attack's own price is at least this many AP: its technique's cost with the weapon before any item (ctx.techAp), or with no technique the attack's base AP | `fire_discipline` (classes.json) |
 | `path_tiles_at_most` | number | the move (its priced walk: ctx.tiles) is at most this many tiles | `fire_and_move` (classes.json) |
-| `self_res` | res | self has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: "max" \| "limit"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit) | none yet |
+| `self_res` | res | self has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: "max" \| "limit"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit) | `fork.soul.ride_the_edge` (forks.json) |
 | `actor_res` | res | actor has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: "max" \| "limit"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit) | none yet |
 | `target_res` | res | target has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: "max" \| "limit"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit) | `fork.pressure.through_the_gap` (forks.json) |
 | `self_has_res` | words | the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…) | `ledger` (classes.json) |
@@ -178,7 +178,7 @@ An item whose behaviour is "when X, if Y, do Z, at most N per scope" is DATA: `{
 | `spawn` | any trigger | `block`, `at` | yes | make an owned unit (P9: owned.ts spawnOwned) from a data block (enemies.json companions, a system's forms) at the holder's level, on the free tile nearest the holder (at: self), the target or the event's tile; tied to the holder (owned); refused at its cap (ties_max:owned): nothing said | none yet |
 | `unmake` | any trigger | `refund` | yes | unmake an owned unit (P9: owned.ts unmakeOwned; the target, else the holder): it leaves the fight; refund: what its making took goes back to its owner | `snare` (figments.json) |
 | `redirect` | `taking` | `share`, `split`, `type` | yes | move a share of the damage being taken to the holder (a protector: Share a Hit), or with `targets` and split: true divide it among the units of that set; what is moved lands as the same blow (it is not redirected again), or with type as damage of that type (a Bond's share: soul) | `ward` (figments.json) |
-| `use` | any trigger | (none) | yes | nothing but its limit: spends one use (for a limit another effect reads with peek) | `fire_discipline` (classes.json) |
+| `use` | any trigger | (none) | yes | nothing but its limit: spends one use (for a limit another effect reads with peek) | `occult_library` (classes.json) |
 | `mark` | any trigger | `flag`, `clear` | yes | set (or with clear: true, clear) one of the item's own flags, for a later trigger's flag / no_flag | `fire_and_move` (classes.json) |
 | `take` | any trigger | `save`, `via` | yes | take one thing the target carries into the pile on the holder's tile: a throwable, else a spare magazine (Shadow's Lift); save: the target's save family (body, brain, heart) rolled against the holder's strength (via: by that skill), and a success keeps it | none yet |
 | `last_seen` | any trigger | (none) | yes | every other side now places the holder on the event's tile (cb.lastSeen: where its searchers go for a Hidden hostile; Shadow's Decoy) | none yet |
@@ -338,9 +338,9 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `on_damaged` | a unit lost HP | `t`, `src`, `dmg`, `prevHp` | effects/damage.ts:129 | classes/k.ts:1090 (+12) | `damaged` |
 | `on_downed` | a unit went down (Downed or dead) | `victim`, `by`, `src`, `ownTurn`, `dead` | effects/damage.ts:137 | classes/j.ts:819 (+18) | `downed` |
 | `on_kill` | a unit was dropped by an enemy (the killer gets the credit) | `victim`, `by`, `src`, `ownTurn` | effects/damage.ts:138 | classes/k.ts:112 (+6) | `kill` |
-| `cond_apply` | a condition is about to be put on a unit: its save, its rounds, a refusal | `by`, `t`, `id`, `fam`, `rounds`, `skipSave`, `cancel`, `why`, `tnAdd`, `saveAdd`, `arg`, `via`, `save` | magic.ts:361 (+3) | classes/i.ts:1043 (+25) | `cond_incoming` |
+| `cond_apply` | a condition is about to be put on a unit: its save, its rounds, a refusal | `by`, `t`, `id`, `fam`, `rounds`, `skipSave`, `cancel`, `why`, `tnAdd`, `saveAdd`, `arg`, `via`, `save` | magic.ts:361 (+3) | classes/i.ts:1043 (+24) | `cond_incoming` |
 | `save` | a save is rolled: items may add to it, change its TN, or pass or fail it outright | `by`, `t`, `id`, `fam`, `via`, `saveAdd`, `tnAdd`, `pass`, `fail`, `why` | rolls.ts:147 | none | `save` |
-| `cond_landed` | a condition landed on a unit | (a payload built elsewhere) | magic.ts:344 | classes/i.ts:364 (+12) | `cond_landed` |
+| `cond_landed` | a condition landed on a unit | (a payload built elsewhere) | magic.ts:344 | classes/i.ts:364 (+11) | `cond_landed` |
 | `cond_end` | a condition ended on a unit | `u`, `id` | magic.ts:445 | classes/j.ts:191 (+2) | `cond_ended` |
 | `displaced` | a unit was moved by someone else, after it landed (where it ended, what stopped it) | `u`, `by`, `from`, `to`, `path`, `how`, `kind`, `stoppedBy`, `blockedAt` | combat.ts:2295 | none |  |
 | `heal_given` | a heal landed (who healed whom, how much) | `t`, `by`, `n`, `kind`, `revived`, `over` | combat.ts:2849 (+1) | classes/k.ts:1251 (+10) | `heal_given` |
@@ -605,10 +605,10 @@ Asked with `statQuery(x, id)`, answered by an item's `stat:` or a data `stat_mod
 
 `immune(x, what)` is also asked about: `bleed`, `knockback`, `opportunity_attack`, `shove` (`IMMUNE_IDS`).
 
-### The condition table (`data/conditions.json`, 111 rows; loader `condtable.ts`)
+### The condition table (`data/conditions.json`, 112 rows; loader `condtable.ts`)
 
 A condition is a row; these are the fields rows use (how many rows use each):
-`id` (111), `amounts` (7), `name` (111), `kind` (111), `side` (111), `family` (111), `save` (111), `engine` (111), `text` (111), `effects` (111), `duration` (111), `ends_on` (111), `stacks` (111), `adjudication` (111), `save_note` (1), `provisional` (82), `aliases` (2), `key` (2), `label` (64), `boon` (52), `notes` (1), `source` (76), `engine_state` (3), `params` (1), `set_by` (57).
+`id` (112), `amounts` (7), `name` (112), `kind` (112), `side` (112), `family` (112), `save` (112), `engine` (112), `text` (112), `effects` (112), `duration` (112), `ends_on` (112), `stacks` (112), `adjudication` (112), `save_note` (1), `provisional` (83), `aliases` (2), `key` (2), `label` (65), `boon` (53), `notes` (1), `source` (77), `engine_state` (3), `params` (1), `set_by` (57).
 Families: `body`, `brain`, `heart`.
 
 #### The item-ops runner (`effects/triggers.ts`)
@@ -1628,7 +1628,7 @@ What the client animates. Name units by `unit` / `target`, tiles as `'x,y'`, `on
 | `mask` | `target`, `at`, `fade` | magic.ts:514 | 2 |
 | `melee` | `unit`, `target`, `from`, `to`, `weapon`, `cat`, `mode`, `hit`, `crit`, `fumble`, `dmg`, `killed`, `jam`, `chain`, `thrown`, `round`, `step`, `object`, `image`, `ricochet` | combat.ts:1562 | 7 |
 | `miss` | `unit`, `target`, `at`, `by`, `element` | classes/soul.ts:36 | 3 |
-| `momentum` | `unit`, `now`, `was` | perks/skeleton.ts:32 | 2 |
+| `momentum` | `unit`, `now`, `was` | perks/skeleton.ts:34 | 2 |
 | `move` | `unit`, `from`, `to`, `path`, `how`, `sight` | classes/j.ts:556 | 3 |
 | `null_wave` | `at`, `tiles`, `n`, `removed`, `glyphs`, `zones`, `walls` | classes/k.ts:917 | 2 |
 | `object` | `at`, `what`, `dmg`, `broken`, `hp`, `element`, `max` | classes/k.ts:926 | 3 |
@@ -1715,7 +1715,7 @@ A data row may name an fx kind for its op; the client draws it if a module there
 | `shield` | `amount` | `perks:last_wall` | yes | `actionPickers.ts`, `camera.ts`, `faithArt.ts`, `faithView.ts`, `fx/faith.ts`, `fx/follow.ts`, `fx/play.ts`, `fx/soul.ts`, `sandbox.tsx` |
 | `smite` |  | `classes:smite` | no | `fx/faith.ts` |
 | `stance` | `what`, `word` | `items:open_hand`, `items:jab`, `items:palm`, `items:sweep` (+4) | yes | `camera.ts`, `fx/melee-techniques.ts`, `fx/openhand.ts`, `fx/ranged.ts`, `fx/shadow.ts` |
-| `ward_seal` |  | `classes:ward` | no | `fx/faith.ts` |
+| `ward_seal` |  | `classes:ward`, `perks:lore_ward` | no | `fx/faith.ts` |
 
 #### `stance` words from data (12; fx `{k: "stance", what, word}`)
 

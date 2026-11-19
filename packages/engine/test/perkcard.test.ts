@@ -24,7 +24,7 @@ describe('perkCards', () => {
     expect(card(f, 'perk:into_the_dark').state).not.toBe('used');
     stateOf(h).used = true;
     expect(card(f, 'perk:into_the_dark')).toMatchObject({ state: 'used', spent: 'per_combat' });
-    expect(PERK_CARDS.private_count).toContain('skill:composure.5');
+    expect(PERK_CARDS.private_count).toContain('perk:stand_still'); // rules 1.75 item 6203: Stand Still is a Composure perk
   });
   it('an item whose button is up is left to USE NOW; an enemy\'s items are not the squad\'s to read; class moves have their own tab', () => {
     const f = fightWith([{ perks: { used_to_the_pain: 'I' }, classId: 'bard' }], [{ at: 'F6' }]); f.turn(f.pc);
