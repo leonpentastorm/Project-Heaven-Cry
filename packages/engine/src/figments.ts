@@ -28,6 +28,7 @@ import { condOn, saveAgainst } from './magic';
 import { canStand, tileOf } from './kit';
 import { addImage, dropImage, imagesOf, imageOfOwner, imageTurnStart, type FalseImage } from './illusion';
 import { numberOf } from './datatext';
+import { sourceOf } from './effects/triggers';
 import { registerDoorPicks, doorPicksOf, doorKeptOf, type DoorGrant } from './doorpicks';
 import { react } from './tactics';
 import type { Rng } from './rng';
@@ -63,7 +64,7 @@ const visOf = (c: Character | null | undefined): number => (c?.skills as any)?.[
  * forms_known.count on its points (2 at 1, +1 a point, all ten at 9). */
 export function formsKnown(c: Character | null | undefined): number {
   const p = visOf(c), K = FIG.forms_known; if (p < K.from) return 0;
-  return Math.max(0, Math.floor(numberOf(K.count, (of) => (of === 'skill:' + VIS ? p : 0))));
+  return Math.max(0, Math.floor(numberOf(K.count, (of) => sourceOf({ ctx: {}, h: { c } } as any, of)))); // THE one resolver (effects/triggers.ts; m4)
 }
 /** The forms this character holds open: the ones it learned (door/pick at figment_forms) and the ones a save kept
  * outside its count, in data order. */
