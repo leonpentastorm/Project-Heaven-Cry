@@ -15,6 +15,7 @@ import { doorLineOf, feedLineOf } from './doorView';
 import { forkChipsLine } from './forkLine';
 import { enchantMark } from './quiverView';
 import { proseTip } from './actionTip';
+import { powerPct } from './power';
 import { WEAPON, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
   coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam, wearState } from '@engine';
 
@@ -191,7 +192,7 @@ export function strainRows(hh: HeldHeart): ResRow[] {
     // The form only when the design's name doesn't already say it ('Soul Bolt' is a Bolt).
     const form = h.form && !h.name.toLowerCase().includes(h.form.toLowerCase()) ? ' · ' + h.form : '';
     out.push({ key: 'held', label: 'Holding', value: h.name + ' · stage ' + h.stage + ' / ' + h.maxStage, short: h.name + ' · ' + h.stage + ' / ' + h.maxStage, now: h.stage, max: h.maxStage, kind: 'pips', colour: RES_INK.soul,
-      sub: h.toneName + form + (mult ? ' · ×' + mult : '') + (h.freePumps != null ? ' · ' + plural(h.freePumps, 'free pump') + ' left' : '') + (h.steady ? ' · steadied' : ''),
+      sub: h.toneName + form + (mult ? ' · ' + powerPct(mult) + ' power' : '') + (h.freePumps != null ? ' · ' + plural(h.freePumps, 'free pump') + ' left' : '') + (h.steady ? ' · steadied' : ''),
       ...(h.stage >= h.maxStage ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : {}),
       hint: 'A held Outburst: Pump (1 AP and some MP) +1 stage, Release (1 AP) fires it. Held past your turn it swells +1 stage at your turn start (+' + hh.swell + ' Strain after that turn start\'s −1); Steady (1 AP) stops the swell.' });
   }

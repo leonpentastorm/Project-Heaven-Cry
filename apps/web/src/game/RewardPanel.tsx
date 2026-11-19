@@ -11,7 +11,7 @@ import { survivalRun } from '@engine';
 import { isFolded, setFolded } from './tabPrefs';
 import { go } from './store';
 import { Offer, Choices } from './rewardCards';
-import type { RewardPanelV } from './rewardPanelView';
+import { type RewardPanelV, payPieces } from './rewardPanelView';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', white: '#FFFFFF' };
 const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
@@ -60,9 +60,10 @@ function Pay({ p, named }: { p: RewardPanelV['pay'][number]; named: boolean }) {
     <div data-phc-reward-pay={p.charId} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 14px' }}>
       <span data-phc-reward-line="" style={{ display: 'inline-flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '0 8px' }}>
         {named ? <span style={{ fontSize: 'var(--fs-body)', fontWeight: 700 }}>{p.name}</span> : null}
-        <b data-phc-reward-xp={p.xp ?? ''} style={{ ...big, color: p.xp ? ink.ok : ink.muted }}>{p.xp ? '+' + p.xp + ' ' + W().xp : '–'}</b>
-        <span aria-hidden="true" style={{ color: ink.muted }}>·</span>
-        <b data-phc-reward-credits={p.credits ?? ''} style={{ ...big, color: p.credits ? ink.ok : ink.muted }}>{p.credits ? '+' + p.credits + ' ' + W().credits.toLowerCase() : '–'}</b>
+        {payPieces(p).map((x, i) => <React.Fragment key={x.kind}>
+          {i ? <span aria-hidden="true" style={{ color: ink.muted }}>·</span> : null}
+          <b {...(x.kind === 'xp' ? { 'data-phc-reward-xp': p.xp ?? '' } : x.kind === 'credits' ? { 'data-phc-reward-credits': p.credits ?? '' } : {})} style={{ ...big, color: x.kind === 'none' ? ink.muted : ink.ok }}>{x.text}</b>
+        </React.Fragment>)}
         <span hidden data-phc-reward-xp-total={p.xpTotal} /><span hidden data-phc-reward-credits-total={p.creditsTotal} />
       </span>
       {p.supply.length ? <span data-phc-reward-supply="" style={{ fontSize: 'var(--fs-body)', lineHeight: 1.4 }}>{p.supply.join(' · ')}</span> : null}

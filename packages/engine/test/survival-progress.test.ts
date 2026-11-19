@@ -291,6 +291,9 @@ describe('rules 1.43: the Crossroads (rule 42): every trade\'s gain and cost', (
     c0.pack = [...packOf(c0), { id: 'combat_knife', name: 'Combat knife', qty: 1, kind: 'weapon', weapon: 'combat_knife' }];
     const i = packOf(c0).findIndex((x) => !x.mags && !x.calibre && x.kind !== 'ammo' && priceOf(x.weapon || x.item || x.id, x.rarity || 'standard') != null);
     const it = packOf(c0)[i], n = Math.round(priceOf(it.weapon || it.item || it.id, it.rarity || 'standard')! * t.rate);
+    // 0.32 B10: the option says what is sold, by its own name ("A salvage buyer: Combat knife" / "Sell one Combat knife ...")
+    const o = runOptions(g, 'c1').find((x) => x.key === t.id + ':' + i)!;
+    expect(o.label).toBe(t.name + ': ' + it.name); expect(o.detail).toContain('Sell one ' + it.name + ' from your pack'); expect(o.detail).not.toContain('{item}'); expect(o.pays).toBe(n);
     const a = apply(g, { type: 'run/trade', charId: 'c1', trade: t.id, pick: i }, 'host');
     expect(creditsOf(a.characters.c1)).toBe(10000 + n);
     expect(refused(all(at()), { type: 'run/trade', charId: 'c1', trade: t.id, pick: packOf(c0).findIndex((x) => !!x.mags) })).toMatch(/^Pick a weapon or item/);

@@ -13,6 +13,8 @@ import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelin
 import { hasPaintedArt, heartMarkKey } from './heartIcons';
 import { heldOutburstOf } from './resources';
 import { tipAttrs } from './actionTip';
+import { powerPct } from './power';
+export { powerPct };
 import { OPT_LABEL, optValue } from './actionPickers';
 
 export const SOUL_INK = '#AE9BFF';
@@ -103,7 +105,7 @@ export function designVerdict(m: any, d0: any, mana?: number): { effects: string
   const d = migrateDesign(d0), mm = { soulMult: 1, healMult: 1, costSave: 0, soulRange: 0, soulBase: SOUL_DAMAGE, debuff: { body: 0, brain: 0, heart: 0 }, ...(m || {}) }, s1 = STAGE_MULT[1];
   if (mm.soulBase == null) mm.soulBase = SOUL_DAMAGE;
   const one = schoolEffect(mm, d, d.school, d.option, s1, 1), two = d.school2 && d.school2 !== d.school ? schoolEffect(mm, d, d.school2, d.option2, s1, SECOND_SCHOOL.strength) : '';
-  const dmgRange = d.school === 'damage' && !d.modules.includes('inverse') ? ' (snap ×' + STAGE_MULT[0] + ' ' + Math.floor(outburstDamage(mm, d, STAGE_MULT[0])) + ', stage 4 ×' + STAGE_MULT[MAX_STAGE] + ' ' + Math.floor(outburstDamage(mm, d, STAGE_MULT[MAX_STAGE])) + ')' : '';
+  const dmgRange = d.school === 'damage' && !d.modules.includes('inverse') ? ' (snap ' + Math.floor(outburstDamage(mm, d, STAGE_MULT[0])) + ', stage ' + MAX_STAGE + ' ' + Math.floor(outburstDamage(mm, d, STAGE_MULT[MAX_STAGE])) + ')' : '';
   const tone = toneOf(d), rider = tone === 'raw' ? 'Raw: Soul damage that ignores armour. No rider.' : toneName(tone) + ': armour counts half; stage 2–3 ' + toneRiders(tone, 2).text + ' Stage 4: ' + toneRiders(tone, MAX_STAGE).text;
   return { effects: 'At stage 1: ' + one + dmgRange + (two ? '; then ' + two : '') + '.', rider, line: designInfo(mm, d, mana).line };
 }
@@ -152,7 +154,7 @@ export function designCards(cb: any, u: any, verdict?: (designId: string) => { o
     const v = verdict ? verdict(d.id) : null, ok = v ? !!v.ok : !!b.ok, why = v ? v.why || 'Not now.' : b.why || 'Not now.';
     return { ...info, mp: b.cost || info.mp, beginAp, snapAp, beginWhy: ok ? '' : why, snapWhy, canBegin: ok, again, bloodHp,
       costText: 'Begin ' + beginAp + ' AP' + (d.modules.includes('swift') ? ' (Swift)' : '')
-        + ' · Snap ' + snapAp + ' AP ×' + STAGE_MULT[0] + ' · +' + (b.strain ?? 1) + ' Strain'
+        + ' · Snap ' + snapAp + ' AP at ' + powerPct(STAGE_MULT[0]) + ' power · +' + (b.strain ?? 1) + ' Strain'
         // rules 1.24: what a full heart of it comes to (the Begin and its four Pumps), when Pumps take MP
         + (fullMp > (b.cost || 0) ? ' · full heart ' + fullMp + ' MP' : '')
         // no Emanator in hand: the Begin draws on the air, and the heart pays for it in Strain (soul_modules.json cycle)
@@ -206,7 +208,7 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
   const SH: any = (SOUL_RULES as any).strain?.shock || {};
   const warn = m.shock ? String(SH.name || 'Mana Shock').toUpperCase() + ': ' + over + ' over the limit. ' + (SH.text || '') : plan.shortWarning ? 'MANA SHORT: ' + over + ' over the limit. You are Stunned and the held Outburst goes off wild.' : plan.burnWarning > 0 ? 'OVER THE LIMIT: the heart burns you for ' + plan.burnWarning + ' true damage at the end of your turn.' : over === 0 ? 'AT THE LIMIT: one more Strain and the heart starts to burn you.' : '';
   const noSwell = swellNote(cb, u);
-  const swell = h.steady ? 'Steadied: no swell next turn.' : noSwell ? noSwell + ' Next turn only your Strain grows (+' + H.swell + ').' : stage >= maxStage ? 'At full stage: next turn only your Strain grows (+' + H.swell + ').' : 'Next turn it swells: +1 stage (×' + STAGE_MULT[Math.min(maxStage, stage + 1)] + ') and +' + H.swell + ' Strain.';
+  const swell = h.steady ? 'Steadied: no swell next turn.' : noSwell ? noSwell + ' Next turn only your Strain grows (+' + H.swell + ').' : stage >= maxStage ? 'At full stage: next turn only your Strain grows (+' + H.swell + ').' : 'Next turn it swells: +1 stage (' + powerPct(STAGE_MULT[Math.min(maxStage, stage + 1)]) + ' power) and +' + H.swell + ' Strain.';
   const relWhy = plan.ok || /Pick a|direction/.test(plan.why || '') ? '' : plan.why || '';
   // the badge follows the engine's price of the next Pump: a free stage left this turn (rules 1.19) or none (row 6)
   // (the count is the engine's own price: the leading Pumps that magic.ts pumpsAp prices at 0 AP, up to the stage cap)
@@ -225,10 +227,10 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
     watch: !!m.held.watch, steady: !!m.held.steady, rider: plan.riderText, feedShow: glyphHere,
     // Rules 1.24: a Pump takes MP too (the engine's number). A free Pump is free of AP only, so with MP owed it reads "0 AP · 4 MP".
     pump: { id: 'pump', label: 'Pump', ap: pp.ap, mp: pp.mp || 0, cost: pp.ok ? pumpCost(pp) : (pp.ap ? pp.ap + ' AP' : '—'), ok: pp.ok, why: pp.ok ? '' : pp.why || '', free: pp.ok && pp.free,
-      title: pp.ok ? (pp.note ? 'An Overdraw Pump' : 'A plain Pump') + ': stage ' + stage + ' → ' + pp.stage + ' (×' + pp.mult + ')' + (pp.freeKind === 'first' ? '. This is your free first Pump of the fight' : pp.free ? '. This is your free Pump for this turn' : '')
+      title: pp.ok ? (pp.note ? 'An Overdraw Pump' : 'A plain Pump') + ': stage ' + stage + ' → ' + pp.stage + ' (' + powerPct(pp.mult) + ' power)' + (pp.freeKind === 'first' ? '. This is your free first Pump of the fight' : pp.free ? '. This is your free Pump for this turn' : '')
         + (pp.mp ? (pp.free ? ': it costs no AP, and ' : '. It takes ') + pp.mp + ' MP (you have ' + Math.floor(m.mp) + ').' : '.')
         + (pp.note ? ' ' + pp.note : overdraw && !od?.why ? ' ' + overdraw : '') : pp.why || '' },
-    release: { id: 'release', label: 'Release', cost: (plan.ap || SOUL_AP.release) + ' AP', ok: !relWhy, why: relWhy, title: 'Fire it at stage ' + (plan.stage ?? stage) + ' (×' + (plan.mult || STAGE_MULT[stage]) + ')' + ((plan.stage ?? stage) !== stage ? ' (surged from stage ' + stage + ')' : '') + (notes.length ? '. ' + notes.join(', ') + ' is in that number, built by the Releases before this one' : '') + (info?.form === 'aura' ? '. It goes off all around you, with no aim.' : '. Pick the aim on the grid.') },
+    release: { id: 'release', label: 'Release', cost: (plan.ap || SOUL_AP.release) + ' AP', ok: !relWhy, why: relWhy, title: 'Fire it at stage ' + (plan.stage ?? stage) + ' (' + powerPct(plan.mult || STAGE_MULT[stage]) + ' power)' + ((plan.stage ?? stage) !== stage ? ' (surged from stage ' + stage + ')' : '') + (notes.length ? '. ' + notes.join(', ') + ' is in that number, built by the Releases before this one' : '') + (info?.form === 'aura' ? '. It goes off all around you, with no aim.' : '. Pick the aim on the grid.') },
     steadyBtn: { id: 'steady', label: 'Steady', cost: SOUL_AP.steady + ' AP', ok: !st.err, why: st.err || '', title: 'Lose 1 Strain, and the Outburst doesn\'t swell at the start of your next turn.' },
     letgo: { id: 'letgo', label: 'Let go', cost: 'FREE', ok: !lg.err, why: lg.err || '', strainOff: off, title: 'Drop the Outburst without releasing it. The power you built is lost, and you lose ' + off + ' Strain.' },
     feed: { id: 'feed', label: 'Feed', cost: SOUL_AP.feed + ' AP', ok: !fd.err, why: fd.err || '', title: 'Absorb the glyph on your tile: +1 stage, and the glyph is gone.' },
@@ -281,7 +283,7 @@ export function aimOverlay(cb: any, u: any, src: string | 'held', aim?: string |
   const who = [en ? en + (en === 1 ? ' ENEMY' : ' ENEMIES') : '', al ? al + (al === 1 ? ' ALLY' : ' ALLIES') : '', me ? 'YOU' : ''].filter(Boolean).join(' · ');
   const chip = !plan.ok && plan.why && !/Pick a|direction/.test(plan.why) ? String(plan.why).split(/[:.(]/)[0].toUpperCase() : shapeW + (isArea || who ? ' · ' + (who || 'NO ONE') : '');
   const summary = (plan.affected || []).map((a) => { const k = affectedMark(a); return k.title; });
-  if (plan.resonance) summary.unshift('Resonance: +' + plan.resonanceBonus + ' to the multiplier, because an ally Released this round.');
+  if (plan.resonance) summary.unshift('Resonance: +' + powerPct(plan.resonanceBonus) + ' power, because an ally Released this round.');
   // The perk (rules 1.14): what the Releases before this one add to it (your own; an ally's you saw, at tier II), already in the numbers shown.
   for (const n of plan.multNotes || []) summary.unshift(n + ' to this Release, built by the Releases before it.');
   // Rules 1.8: what the feelings change, and the residue the release would leave (its tiles get a dashed edge in its colour).
@@ -348,13 +350,13 @@ export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: {
   // Two rows: three across, four when Feed shows (seven buttons).
   const cols = btns.length > 6 ? 4 : 3;
   return { show: true, name: p.name, icon: p.icon, kicker: 'HEART · ' + p.formName.toUpperCase() + ' · ' + p.toneName.toUpperCase(), shape: p.shape,
-    stageText: 'STAGE ' + p.stage + ' / ' + p.maxStage, multText: '×' + r2(p.mult),
+    stageText: 'STAGE ' + p.stage + ' / ' + p.maxStage, multText: powerPct(p.mult),
     // What the feelings change ("now HEALS · now CHAINS") on its own wrapping line under the header, so the counter
     // stays short at any stage and the words never run off the panel.
     doesText: [...p.does, ...(p.multNotes || []), ...(p.resonance ? [(p.multNotes || []).length ? 'allies +' + p.resonance : 'Resonance +' + p.resonance] : [])].join(' · '), hasDoes: p.does.length > 0 || !!p.resonance || (p.multNotes || []).length > 0,
     doesStyle: 'min-width: 0; white-space: normal; overflow-wrap: anywhere; font-size: var(--fs-sub); line-height: 1.25; font-weight: 700; letter-spacing: 0.06em; color: ' + (p.does.length ? doesInk : p.ink),
     multKey: 'm' + r2(p.mult) + '-' + p.felt.length, multCls: 'phc-mult-shake phc-mult-s' + Math.min(4, p.stage),
-    stages: p.stages.map((s) => ({ key: 's' + s.n, n: String(s.n), mult: '×' + s.mult, style: S.seg(s), feeling: s.feeling, glyph: s.feeling ? feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3') : '', glyphStyle: s.feeling ? iconStyle(feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3'), s.now ? '#0A0D13' : '#E7EBF3') : '', label: 'Stage ' + s.n + ' ×' + s.mult + (s.feeling ? ' (' + feelingName(s.feeling) + ')' : '') + (s.now ? ', now' : s.next ? ', next Pump' : '') })),
+    stages: p.stages.map((s) => ({ key: 's' + s.n, n: String(s.n), mult: powerPct(s.mult), style: S.seg(s), feeling: s.feeling, glyph: s.feeling ? feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3') : '', glyphStyle: s.feeling ? iconStyle(feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3'), s.now ? '#0A0D13' : '#E7EBF3') : '', label: 'Stage ' + s.n + ', ' + powerPct(s.mult) + ' power' + (s.feeling ? ' (' + feelingName(s.feeling) + ')' : '') + (s.now ? ', now' : s.next ? ', next Pump' : '') })),
     feel: { ...fr, toggle: fo.toggle || (() => {}), onSearch: fo.search || (() => {}), query: fo.query || '', openStr: fr.open ? 'true' : 'false',
       searchStyle: 'min-height: 26px; padding: 0 8px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: var(--fs-sub)' },
     freeShort: !p.freePumps ? '' : p.freePumps + ' FREE PUMP' + (p.freePumps === 1 ? '' : 'S'),

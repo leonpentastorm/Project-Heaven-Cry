@@ -63,7 +63,19 @@ export function doorFeedView(x: any, door: string): DoorFeedView | null {
   const now = num(x), mult = doorFeed(x, door);
   const up = p < 10 ? num(withPoints(x, f.beta, p + 1)) : null, next = up != null && up !== now ? up : null;
   const fill = (s: string) => String(s || '').replace(/\{beta\}/g, f.betaName).replace(/\{points\}/g, String(p)).replace(/\{now\}/g, String(now)).replace(/\{next\}/g, String(next)).replace(/\{pct\}/g, String(Math.round((mult - 1) * 100)));
-  return { door, beta: f.beta, betaName: f.betaName, points: p, mult, now, next, line: fill(f.row.line) + (next != null && f.row.next ? fill(f.row.next) : '') };
+  return { door, beta: f.beta, betaName: f.betaName, points: p, mult, now, next, line: p > 0 && now !== num(withPoints(x, f.beta, 0)) ? fill(f.row.line) + (next != null && f.row.next ? fill(f.row.next) : '') : firstLine(x, f, p, num) };
+}
+/** The line while the beta gives nothing yet (0 points, or points that have not moved the number): only what the first
+ * point that moves it gives, "First Camaraderie point: 2% of what you heal ..." ("At Analysis 2: ..." when the first
+ * point moves nothing). The row's own `line` from its colon on, read at that point. '' when no point up to 10 moves it. */
+function firstLine(x: any, f: Feed, p: number, num: (q: any) => number): string {
+  const base = num(withPoints(x, f.beta, 0));
+  for (let k = p + 1; k <= 10; k++) {
+    const q = withPoints(x, f.beta, k), v = num(q); if (v === base) continue;
+    const rest = String(f.row.line || '').replace(/^[^:]*:\s*/, '').replace(/\{beta\}/g, f.betaName).replace(/\{points\}/g, String(k)).replace(/\{now\}/g, String(v)).replace(/\{pct\}/g, String(Math.round((doorFeed(q, f.door) - 1) * 100)));
+    return (k === 1 ? 'First ' + f.betaName + ' point: ' : 'At ' + f.betaName + ' ' + k + ': ') + rest;
+  }
+  return '';
 }
 /** A look-alike of a unit or a sheet with one more point in a skill (the "next point" of the view; never written back). */
 function withPoints(x: any, sk: string, n: number): any {

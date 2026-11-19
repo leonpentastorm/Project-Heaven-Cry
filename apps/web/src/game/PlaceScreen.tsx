@@ -72,7 +72,7 @@ function ChoiceCard({ x, big }: { x: PlaceCardV; big?: boolean }) {
       <span style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 10 }}>
         <span style={{ display: 'flex', flexDirection: 'column' }}>
           <span data-phc-price="" style={{ fontSize: 24, fontWeight: 700, color: o.pays ? I.ok : I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{o.price ? o.price.toLocaleString('en') : o.pays ? '+' + o.pays.toLocaleString('en') : o.costs || 'Free'}</span>
-          {o.price ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : o.pays ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted, letterSpacing: '0.08em' }}>CREDITS PAID TO YOU</span> : null}
+          {o.price ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : o.pays ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted, letterSpacing: '0.08em' }}>{o.pays === 1 ? 'CREDIT FOR IT' : 'CREDITS FOR IT'}</span> : null}
         </span>
         <span style={{ marginLeft: 'auto', minHeight: 40, padding: '0 16px', display: 'inline-grid', placeItems: 'center', borderRadius: 10, background: o.why ? 'transparent' : I.text, outline: o.why ? '1px solid #3B475D' : 'none', color: o.why ? I.muted : I.ground, fontWeight: 700, fontSize: 15 }}>Take it</span>
       </span>

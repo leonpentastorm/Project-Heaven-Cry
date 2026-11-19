@@ -277,11 +277,12 @@ export function shieldsView(cb: Combat | null, u: Unit, viewer: Pick<Unit, 'side
   const blow = sh + platesWorth(guard ? guard.plates - guard.keep : 0);
   const all = sh + platesWorth(guard ? (plan && plan.keepUnlessDrop ? guard.plates : guard.plates - guard.keep) : 0);
   const allWord = sizeOf(all / maxHp).word, any = entries.length > 0 || !!guard;
-  const absorb = !any ? '' : known ? fill(L.absorb, { n: fmt(blow) }) : fill(L.absorb_size, { word: allWord });
+  // a line whose number is 0 is not said (0.32 B7: one kept plate stops nothing of an ordinary blow; its drop line says what it does)
+  const absorb = !any ? '' : known ? (blow > 0 ? fill(L.absorb, { n: fmt(blow) }) : '') : fill(L.absorb_size, { word: allWord });
   const absorbDrop = any && known && all > blow ? fill(L.absorb_drop, { n: fmt(all) }) : '';
   const chip = !entries.length ? '' : known ? fill(L.chip, { n: fmt(sh) }) : fill(L.chip_size, { word: sizeOf(sh / maxHp).word });
   const what = entries.length ? (entries.length === 1 ? fill(L.vs_one, { name: entries[0].name }) : L.vs_shields) : L.vs_guard;
-  const vs = !any ? '' : known ? fill(L.vs, { what, n: fmt(blow) }) : fill(L.vs_size, { what, word: allWord });
+  const vs = !any ? '' : known ? (blow > 0 ? fill(L.vs, { what, n: fmt(blow) }) : '') : fill(L.vs_size, { what, word: allWord });
   const words = [...entries.map((e) => e.name + ' ' + (e.amount != null ? fmt(e.amount) : e.size)), ...(guard ? [guard.line] : [])].join('; ');
   return { known, maxHp: u.maxHp, head: L.head, entries, guard, blow: known ? blow : null, all: known ? all : null, allWord, absorb, absorbDrop, chip, total: known ? sh : null, vs, words, rule: L.rule };
 }

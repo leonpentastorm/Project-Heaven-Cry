@@ -460,7 +460,8 @@
       { "id": "ev.graft", "name": "A back-room graft", "do": "graft", "provisional": true,
         "text": "A small blessing for the rest of the run, paid for in max HP." },
       { "id": "ev.salvage", "name": "A salvage buyer", "do": "salvage", "rate": 0.5, "provisional": true,
-        "text": "Sell one weapon or item from your pack for {=rate|pct}% of its price." }
+        "text": "Sell one weapon, item or material from your pack for {=rate|pct}% of its price.",
+        "pick_text": "Sell one {item} from your pack for {=rate|pct}% of its price." }
     ],
     "provisional": true
   },

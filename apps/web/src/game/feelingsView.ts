@@ -5,6 +5,7 @@
 import { FEELINGS, FEELING, PLAIN_STEP, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, moduleShelved, MODULE, SKILL, fightWith } from '@engine';
 import { feelingIcon, moduleIcon, heartMark, paintedStyle } from './heartIcons';
 import { tipAttrs } from './actionTip';
+import { powerPct, powerStep } from './power';
 
 /** Each feeling's light (a proposal for Leon; docs/design/handoffs/outburst-4.0-HANDOFF.md). Light and particles only,
  *  never body text, and always beside the feeling's word: 25 hues can't carry meaning alone (colour-system.md). Kept
@@ -88,7 +89,7 @@ export function feelingButtons(cb: any, u: any, mods?: string[] | null): Feeling
   return FEELINGS.filter((f: any) => known.includes(f.id)).map((f: any) => {
     const p = previewPump(pcb, u, f.id), ink = feelingInk(f.id);
     const step = p.step ?? (f.step?.base ?? PLAIN_STEP);
-    return { id: f.id, name: f.name, ink, icon: feelingIconSrc(f.id, ink), iconStyle: iconStyle(feelingIconSrc(f.id, ink), ink), ok: !!p.ok, why: p.ok ? '' : p.why || '', step: r2(step), mult: r2(p.mult), stepText: (step >= 0 ? '+' : '−') + Math.abs(r2(step)).toFixed(1), // rules 1.19: Calm and Relief take the multiplier down
+    return { id: f.id, name: f.name, ink, icon: feelingIconSrc(f.id, ink), iconStyle: iconStyle(feelingIconSrc(f.id, ink), ink), ok: !!p.ok, why: p.ok ? '' : p.why || '', step: r2(step), mult: r2(p.mult), stepText: powerStep(step), // rules 1.19: Calm and Relief take the multiplier down
       effect: feelingText(f), cost: p.ok ? (p.mp ? (p.free ? '0 AP' : p.ap + ' AP') + ' · ' + p.mp + ' MP' : p.free ? 'FREE' : p.ap + ' AP') : '', free: !!(p.ok && p.free), does: '' }; // rules 1.24: a Pump's MP
   });
 }
@@ -101,7 +102,7 @@ export function feelingRows(btns: FeelingBtn[], open: boolean, query: string, ru
     has: btns.length > 0, many, open: show, count: btns.length, canSearch: many && show,
     toggleLabel: (show ? 'Feelings ▾' : 'Feelings ▸') + ' (' + btns.length + ')',
     rows: list.map((b) => ({ key: b.id, name: b.name, icon: b.icon, iconStyle: b.iconStyle, ink: b.ink, off: !b.ok, cost: b.ok ? b.cost : '✕ ' + b.why.replace(/\.$/, ''), step: b.stepText, effect: b.effect,
-      ...tipAttrs({ name: b.name, cost: [...(b.ok ? [b.cost] : []), 'step ' + b.stepText, '×' + b.mult + ' after'], text: b.effect, why: b.why || null }), pick: () => { if (b.ok) run('pump:' + b.id); },
+      ...tipAttrs({ name: b.name, cost: [...(b.ok ? [b.cost] : []), 'step ' + b.stepText, powerPct(b.mult) + ' after'], text: b.effect, why: b.why || null }), pick: () => { if (b.ok) run('pump:' + b.id); },
       style: 'display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 0 6px; align-items: center; min-height: 34px; padding: 3px 7px; border-radius: 8px; text-align: left; font-family: inherit; color: #E7EBF3; cursor: ' + (b.ok ? 'pointer' : 'default') + '; border: 1px solid ' + rgba(b.ink, b.ok ? 0.75 : 0.3) + '; background: ' + rgba(b.ink, b.ok ? 0.12 : 0.04) + (b.ok ? '' : '; opacity: 0.55'),
       nameStyle: 'font-size: var(--fs-sub); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
       stepStyle: 'font-size: var(--fs-sub); font-weight: 700; color: ' + b.ink,

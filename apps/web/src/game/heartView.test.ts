@@ -47,7 +47,7 @@ describe('design cards', () => {
   it('the workshop verdict names both effects with numbers, and the tone\'s rider', () => {
     const { u } = fight();
     const v = designVerdict(u.mg, DESIGNS[2]);
-    expect(v.effects).toMatch(/At stage 1: \d+ damage \(snap ×0.8 \d+, stage 4 ×1.6 \d+\); then Push 3 tiles \(half\)/); // rules 1.19: the table tops out at ×1.6
+    expect(v.effects).toMatch(/At stage 1: \d+ damage \(snap \d+, stage 4 \d+\); then Push 3 tiles \(half\)/); // rules 1.19: the table tops out at ×1.6
     expect(designVerdict(u.mg, DESIGNS[0]).rider).toMatch(/^Fire: armour counts half; stage 2–3 Burning/);
     expect(toneChips([], 1).find((t) => t.id === 'fire')).toMatchObject({ known: false, free: true });
     expect(toneChips(['storm'], 1).find((t) => t.id === 'fire')).toMatchObject({ known: false, free: false });
@@ -167,7 +167,7 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     expect(p.pump.title).toMatch(/^A plain Pump: stage 0 → 1 .*Overdraw is ready this turn/);
     p = heartPanel(cb, u, [OD])!;
     // rules 1.24: both of its stages cost MP (10% + 20% of the Begin's 17: 5)
-    expect(p.pump).toMatchObject({ ok: true, cost: '1 AP · 5 MP', mp: 5 }); expect(p.pump.title).toMatch(/^An Overdraw Pump: stage 0 → 2 \(×1\.2\)\. It takes 5 MP \(you have 383\)\. Overdraw: 2 stages\. No Strain: your first Overdraw of the fight\.$/);
+    expect(p.pump).toMatchObject({ ok: true, cost: '1 AP · 5 MP', mp: 5 }); expect(p.pump.title).toMatch(/^An Overdraw Pump: stage 0 → 2 \(120% power\)\. It takes 5 MP \(you have 383\)\. Overdraw: 2 stages\. No Strain: your first Overdraw of the fight\.$/);
     expect(p.stages.find((x) => x.next)!.n).toBe(2); // the meter marks the stage this Pump reaches
     // Used this turn: the panel says why it isn't there; next turn it is ready again, now for 1 Strain.
     cb.mods = [OD]; pumpOutburst(cb, rng, u); delete cb.mods; u.mg.held.stage = 1;
@@ -180,10 +180,10 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     const { cb, u } = withPerks({}, 1); beginOutburst(cb, rng, u, 'sb', undefined, true); // Soul Bolt: 17 MP for this caster (Will Power 1: no Overdraw, rules 1.75 item 6200)
     let p = heartPanel(cb, u)!;
     expect(p.pump).toMatchObject({ ok: true, cost: '1 AP · 2 MP', mp: previewPump(cb, u).mp }); expect(p.pump.mp).toBe(2);
-    expect(p.pump.title).toBe('A plain Pump: stage 0 → 1 (×1). It takes 2 MP (you have 383).');
+    expect(p.pump.title).toBe('A plain Pump: stage 0 → 1 (100% power). It takes 2 MP (you have 383).');
     u.mg.freePumps = 1; u.mg.freePumpsMax = 1; // Empathy's free Pump: no AP, the MP is still owed
     p = heartPanel(cb, u)!;
-    expect(p.pump).toMatchObject({ ok: true, free: true, cost: '0 AP · 2 MP' }); expect(p.pump.title).toBe('A plain Pump: stage 0 → 1 (×1). This is your free Pump for this turn: it costs no AP, and 2 MP (you have 383).');
+    expect(p.pump).toMatchObject({ ok: true, free: true, cost: '0 AP · 2 MP' }); expect(p.pump.title).toBe('A plain Pump: stage 0 → 1 (100% power). This is your free Pump for this turn: it costs no AP, and 2 MP (you have 383).');
     expect(heartVals(p, () => {}).btns!.find((b: any) => b.key === 'pump')!.cost).toBe('0 AP · 2 MP');
     expect(p.feelings.every((f) => !f.ok || f.cost === '0 AP · 2 MP')).toBe(true); // a feeling Pump costs the same
     pumpOutburst(cb, rng, u); expect(u.mg.mp).toBe(381);
@@ -237,9 +237,9 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     beginOutburst(cb, rng, u, 'sb', undefined, true); u.mg.held.stage = 2; u.ap = 9;
     const p = heartPanel(cb, u)!;
     expect(p.multNotes).toEqual(['Resonance +4%']); expect(p.mult).toBe(1.25); // ×1.2 at stage 2 (rules 1.19), +4% (rules 1.56)
-    expect(p.release.title).toMatch(/^Fire it at stage 2 \(×1\.25\)\. Resonance \+4% is in that number/);
+    expect(p.release.title).toMatch(/^Fire it at stage 2 \(125% power\)\. Resonance \+4% is in that number/);
     const v: any = heartVals(p, () => {});
-    expect(v.multText).toBe('×1.25'); expect(v.hasDoes).toBe(true); expect(v.doesText).toBe('Resonance +4%');
+    expect(v.multText).toBe('125%'); expect(v.hasDoes).toBe(true); expect(v.doesText).toBe('Resonance +4%');
     const o = aimOverlay(cb, u, 'held', '4,5');
     expect(o.summary[0]).toBe('Resonance +4% to this Release, built by the Releases before it.');
     // A snap cast of a design shows it too.
