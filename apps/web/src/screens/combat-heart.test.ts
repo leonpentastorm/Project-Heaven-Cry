@@ -66,7 +66,7 @@ describe('the Outbursts tab (rules 1.5)', () => {
     expect(pad.designList.map((d: any) => d.key)).toEqual(['fb', 'sb']);
     expect(pad.designList[0].line).toMatch(/^BURST · radius 1 · reach \d+ · Fire · \d+ MP$/);
     expect(pad.designList[0].icon).toMatch(/^data:image\/svg\+xml/);
-    expect(pad.beginLabel).toBe('Begin Heartfire · 2 AP'); expect(pad.snapLabel).toBe('Snap · 3 AP ×0.8');
+    expect(pad.beginLabel).toBe('Begin Heartfire · 2 AP'); expect(pad.snapLabel).toBe('Snap · 3 AP at 80%');
     expect(pad.nowStyle).toBeUndefined(); // the 1.2 Hold / Release-now toggle is gone
     // Snap: hover a foe, the area is hatched and both foes carry their expected numbers.
     const foe = G.combat!.units.find((v) => v.side === 'foe')!;
@@ -113,7 +113,7 @@ describe('the Outbursts tab (rules 1.5)', () => {
     expect(tp.items.map((a: any) => a.key)).not.toContain('pump'); // the panel holds them
     for (let i = 0; i < 3; i++) { r = L.renderVals(); r.turnPanels[0].tabPanel[0].hv.btns[0].pick(); }
     expect(G.combat!.units.find((v) => v.id === u.id)!.mg!.held!.stage).toBe(3);
-    r = L.renderVals(); expect(r.turnPanels[0].tabPanel[0].hv.multText).toMatch(/^×1\.4/); // stage 3 is ×1.4 (rules 1.19)
+    r = L.renderVals(); expect(r.turnPanels[0].tabPanel[0].hv.multText).toBe('140%'); // stage 3 is ×1.4 (rules 1.19), said in percent (0.32 B6)
     // Release: aim at a foe, the preview shows them, Confirm fires it.
     const foe = G.combat!.units.find((v) => v.side === 'foe')!;
     L.pickAction('release'); L.setState({ aim: foe.pos }); r = L.renderVals();

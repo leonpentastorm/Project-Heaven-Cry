@@ -63,6 +63,7 @@ import { forkSheetCard } from '../game/forkView'; // rules 1.60: each door's for
 import { fromSkillsOf } from '../game/skillUnlocks'; // 0.31.9: the PERKS menu's FROM YOUR SKILLS
 import { foldVals } from '../game/fold'; // 0.31.x: the fork card folds to one line (the shared fold, remembered)
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
+import { powerPct } from '../game/power'; // 0.32 B6: an Outburst's strength in percent
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
 ensureMotionCss(); // the slide/pop classes (shared.js MOTION_CSS)
@@ -254,7 +255,7 @@ function magicVals(self, g, c) {
       return { key: x, label: (MODULE[x]?.name || x) + ' ' + signed(MODULE[x]?.cost || 0), title: (MODULE[x]?.text || '') + (noShape ? ' Size needs a shape.' : ''), pressed: on ? 'true' : 'false', locked: lock,
         pick: () => set({ modules: on ? self.state.mgDraft.modules.filter((y) => y !== x) : [...self.state.mgDraft.modules, x] }), style: chipStyle(SOUL_VIOLET, on) + (lock ? '; opacity: 0.45; cursor: default' : '') }; }),
     verdictEffects: verdict ? verdict.effects : '', verdictRider: verdict ? verdict.rider : '', verdictLine: verdict ? verdict.line : '', verdictIcon: draftD ? designInfo(m, draftD, mana).icon : formIconUri('bolt'),
-    cost: draftD ? designCost(m, draftD, mana) + ' MP · Begin ' + designAp(m, draftD) + ' AP, Pump 1 AP a stage, Release 1 AP (Snap: 3 AP ×' + STAGE_MULT[0] + ') · in ' + bandName(N.band) + ' air' : 'Pick a school.',
+    cost: draftD ? designCost(m, draftD, mana) + ' MP · Begin ' + designAp(m, draftD) + ' AP, Pump 1 AP a stage, Release 1 AP (Snap: 3 AP at ' + powerPct(STAGE_MULT[0]) + ') · in ' + bandName(N.band) + ' air' : 'Pick a school.',
     cantSave: !draftD || fight, save: () => { if (!draftD) return; self.setState({ mgSaved: JSON.stringify(c.outbursts || []), mgSavedGame: getState().game, mgSavedAt: Date.now() }); act({ type: 'magic/design', charId: c.id, design: draftD }); },
     cancel: () => self.setState({ mgDraft: null, mgSaved: null }), saveLabel: B.id ? 'Save changes' : 'Save design',
   } : none.b;
@@ -1047,7 +1048,7 @@ export class MainLogic extends DCLogic {
           pick: () => this.setState({ wWord: w }), style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 66px; max-width: 100%; padding: 4px 6px; border-radius: 8px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.04em; cursor: pointer; color: ' + (off ? '#A3AEC2' : on ? '#E7EBF3' : SIG_CYAN) + '; border: 1px ' + (off && !on ? 'dashed #2A3A48' : 'solid ' + (on ? SIG_CYAN : '#232D3F')) + '; background: ' + (on ? epRgba(SIG_CYAN, 0.16) : '#10151F') + (off ? '; opacity: 0.8' : '') }; }),
       designs: wCards.map((d) => { const on = designSel && d.id === designSel.id; return { key: d.id, name: d.name, sub: d.line, icon: d.icon, title: d.title + ' ' + d.costText + '.', subStyle: 'font-size: var(--fs-sub); font-weight: 700; color: ' + d.ink,
         pressed: on ? 'true' : 'false', pick: () => this.setState({ wDesign: d.id, wAim: null }), style: 'display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 0 8px; align-items: center; width: 100%; padding: 6px 10px; border-radius: 8px; text-align: left; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; color: #E7EBF3; border: 1px solid ' + (on ? d.ink : '#232D3F') + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.14) : '#10151F') + (d.canBegin ? '' : '; opacity: 0.6') }; }),
-      modes: [['begin', '♥ Begin and hold'], ['snap', 'Snap it now (×' + STAGE_MULT[0] + ')']].map(([id, label]) => { const on = (S.wObMode === 'snap' ? 'snap' : 'begin') === id; return { key: id, label, pressed: on ? 'true' : 'false', pick: () => this.setState({ wObMode: id, wAim: null }),
+      modes: [['begin', '♥ Begin and hold'], ['snap', 'Snap it now (' + powerPct(STAGE_MULT[0]) + ')']].map(([id, label]) => { const on = (S.wObMode === 'snap' ? 'snap' : 'begin') === id; return { key: id, label, pressed: on ? 'true' : 'false', pick: () => this.setState({ wObMode: id, wAim: null }),
         style: 'flex: 1; min-height: 32px; border-radius: 8px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; color: ' + (on ? '#E7EBF3' : SOUL_VIOLET) + '; border: 1px solid ' + SOUL_VIOLET + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.2) : 'transparent') }; }),
       showHeart: !!(mOpen && wHp && (W === 'release' || HEART_W.includes(W))),
       hv: heartVals(wHp, (id) => { if (id === 'release') return this.setState({ wAct: 'release', wAim: null });
