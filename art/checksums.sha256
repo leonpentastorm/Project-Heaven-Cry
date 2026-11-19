@@ -3170,6 +3170,7 @@ f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff  art/_archive/p
 e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--masterwork.png
 307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png
 da7b6ed8bfc762745ad0e9388be1e5a362352770e43d03d00e33fbc476b93a85  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-combat_knife--fine.json
+b21058413d711cb910cc5ec1c9bdf688edabf3db92333c23ae3f6da5a7abb9d0  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-combat_knife--masterwork.json
 002575a1123051b01b128b9f2e91b7bd064cd9d6a55d1d8699014b1f86cd1047  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--celestial.json
 549cebe53d0b8eda2c71df6eb46782d41a23aa876986ea159f993f3398aedcef  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--fine.json
 2543d38554d583b5692c2421e92698965d74606f29137b7a3c770d9c36a478fc  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--masterwork.json
@@ -4550,7 +4551,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-7cc60ba73d9f58471213a41efd492b5a4cd9f4243d49dcd68e3edc318d550969  art/catalog.json
+b9e301aff40421aac6b21bcc6bd40bc530d5658935b1494aaaf1d86d4464ce08  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6255,6 +6256,7 @@ d085e06a11ae4413f5d433bf645c3b9d5844c174745d18a1e0df6a0c014367ba  art/icons/gear
 34866e14ccd7657851525feedf3393e800ca081908f2aeaca41041758c06463a  art/icons/gear/exports/128/weapon-ccec_marksman_rifle.png
 e85a591573128ae362e625b4ab71c3c44d0b78aad41866288ef9f7b4292ef9f4  art/icons/gear/exports/128/weapon-coach_gun.png
 663f2165a8b408161c1fcfb82d71367efe934bd16138e01bc8b319f1d817e2bd  art/icons/gear/exports/128/weapon-combat_knife--fine.png
+adab0911c9c69d1111e51b38612090cd91106516110ac166da73983be45f7c22  art/icons/gear/exports/128/weapon-combat_knife--masterwork.png
 d4413730af60b700c0af8aeff385908dfb371fc15adbe87225d2c9ff48b2ddea  art/icons/gear/exports/128/weapon-combat_knife.png
 bc7973f1ce71e94150a74ef64486925ee2cc571cf3c1fdcf5ebee6fa10c2320e  art/icons/gear/exports/128/weapon-core_rifle.png
 10097fa66a1db9007bdb7ebf216137812c58daf49346e2c762abf980fed684c6  art/icons/gear/exports/128/weapon-crossbow.png
@@ -6433,6 +6435,7 @@ f60dbbfdd7e0bd7278cb92eaa41b1bd954921ef67d0bf4fde1f0df6ffd5fc563  art/icons/gear
 713e3888f7aef27dd8e056b8ece7e5bb6c352ea2184ef2e00d058415390f266e  art/icons/gear/exports/256/weapon-ccec_marksman_rifle.png
 25cbe91e58a0d507c07ef0ec0dfdfd87f23194bd3822cf17cee53fa1a24cc9ab  art/icons/gear/exports/256/weapon-coach_gun.png
 f4ab79610a10a94bb5132f8c00ab4194880486960d7a4a935c4473ded756b13c  art/icons/gear/exports/256/weapon-combat_knife--fine.png
+023fe6fa4c3102fecbd79ba5e9b81deb9aecc41ce03ee67324bc8f51295dc5ac  art/icons/gear/exports/256/weapon-combat_knife--masterwork.png
 03f00a26ea4114aa888a827d057c132e375c9741cbdc3387359ddc9a9b0cc2bf  art/icons/gear/exports/256/weapon-combat_knife.png
 35552a95ae875a5f5bcf5e257e59d975f55093e4d237fd6655d69b6767116b7e  art/icons/gear/exports/256/weapon-core_rifle.png
 addf9a8b0c6f0431a82a85ef459b749a46759482b09d3fc2f93cd0eec94676fe  art/icons/gear/exports/256/weapon-crossbow.png
@@ -6611,6 +6614,7 @@ cfc1aa2ec250b91181f140c4ac38c3d8765de2f3bb9d7ee338ed233d72ff8930  art/icons/gear
 1bf85acc806ff7914e0353a973e696724b3a96ca16d08f17cc1512704ec334c8  art/icons/gear/exports/32/weapon-ccec_marksman_rifle.png
 900ea5a9c16a605cfa65a9b7700a8f5cbb7f9db963949f06e1bd7283f201df3e  art/icons/gear/exports/32/weapon-coach_gun.png
 b0be2e331324186eb28829fdcf983ceb206d8eafc74e28ab4e34edec7e881917  art/icons/gear/exports/32/weapon-combat_knife--fine.png
+8a96c255bd1944448c0b9af24d97adc89fb15e1732dcb6cc5cd4a1217d08e96f  art/icons/gear/exports/32/weapon-combat_knife--masterwork.png
 97311216d3e4ae3cc30d0105db7a3bfcfbb484f392c2dfc7f5412ea6ec4a6593  art/icons/gear/exports/32/weapon-combat_knife.png
 8e367db293eb1f2ea9ec1967b7e5a5771c29207a7fd85938c6555d36e3d03cac  art/icons/gear/exports/32/weapon-core_rifle.png
 91c7330f314e01b38cc7030eac3504943d6bd3ae0ce5e05051a73d6f95cff3d1  art/icons/gear/exports/32/weapon-crossbow.png
@@ -6789,6 +6793,7 @@ c76770b7050bd32c42accd8741bfc93e87d8b8d7ed8320606692afc2cb24fdd5  art/icons/gear
 d08ff0e89e9e3727a7b906a52b3ac576ce95a35cd04dd32fe8a30b9d5acd124d  art/icons/gear/exports/64/weapon-ccec_marksman_rifle.png
 7e7855b75a91e3eb4654fd471b2361f867bce8c005092c01a0433c3e43bce8b6  art/icons/gear/exports/64/weapon-coach_gun.png
 43421f6c0927a0286a21b39791808bb6c6cf4f8bb387e851de844ad840058eaf  art/icons/gear/exports/64/weapon-combat_knife--fine.png
+26ece035227902fade36adbee9a2209005f84fdbe8a01e6de8220678b0432ae1  art/icons/gear/exports/64/weapon-combat_knife--masterwork.png
 91269a70f363d659d7829d8af876c54ea05a4bcfb86d41b0307c96d276876ea9  art/icons/gear/exports/64/weapon-combat_knife.png
 69a3cce76464f6e5be41f4f59c6abbc9b865ff5e3502cd6cc18324b7d42a0b61  art/icons/gear/exports/64/weapon-core_rifle.png
 714ba7e108eca05882be93aa07a7f5b8fd4371a76f9c9f16eee5207dd079762d  art/icons/gear/exports/64/weapon-crossbow.png
@@ -6931,6 +6936,7 @@ d66b69b6d49fcbe995e91a25afd5765a741ca3e4cb92dda3b6bbdf262bbfc574  art/icons/gear
 b7b78f5e26d3dd0b6b4af59a29183ceefc1674c3f3cf0c7a1826f08f8fe9b357  art/icons/gear/weapon-ccec_marksman_rifle.png
 e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5  art/icons/gear/weapon-coach_gun.png
 f28790fe4f8599f15cf52239a86074aaf8f6cd388a3af1bb143fdb59f46e25e2  art/icons/gear/weapon-combat_knife--fine.png
+4222b0d6fef781f9703e9c928450b5b7631f3c977c55ca4fbebe1861bbbcdd09  art/icons/gear/weapon-combat_knife--masterwork.png
 75fea68403b5a2a96e294f937d027422f74fba9de5253bddadc3a7d5297267e1  art/icons/gear/weapon-combat_knife.png
 af6729737210a873c2c8002ef2d672cb9f2b0257ce3fb9b51f6317265ea1ea10  art/icons/gear/weapon-core_rifle.png
 213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b  art/icons/gear/weapon-crossbow.png
