@@ -3206,6 +3206,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-emanator--celestial",
+      "path": "art/icons/gear/focus-emanator--celestial.png",
+      "sha256": "b3a766410be06333c9e00ec6058b31d859457bc30db915d9e740be6254549e54",
+      "label": "Emanator — Celestial",
+      "family": "focus-emanator",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-emanator--celestial.png",
+        "sha256": "a3312138b0ed066d3a8d38a4a9055cbf31e3ef223bf1b90c63726e813434e5ff"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-emanator--celestial.png",
+        "sha256": "b3a766410be06333c9e00ec6058b31d859457bc30db915d9e740be6254549e54"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-emanator--celestial.txt",
+        "sha256": "32809748534bc21ffa85a687eedf56ee7518559b24c9ed6e4a09147917800ff0"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/focus-emanator--celestial/v1/source.png",
+          "sha256": "afa5132f5305c2e27c525dea37fcac1a01f31c2bcb189263eb7c446a403d8a8a"
+        },
+        {
+          "path": "art/icons/gear/focus-emanator.png",
+          "sha256": "4fcd240a5ebe70b3c72cc08a8de1203f83e19382d4fd119b06a4ccd32e728bd5"
+        },
+        {
+          "path": "art/icons/gear/focus-emanator--relic.png",
+          "sha256": "ff48778e5c5e48d0a51da9e396bf2bc866f574e2cf52be144b2f8c4d8b7845ad"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-emanator--celestial.png",
+        "128": "art/icons/gear/exports/128/focus-emanator--celestial.png",
+        "64": "art/icons/gear/exports/64/focus-emanator--celestial.png",
+        "32": "art/icons/gear/exports/32/focus-emanator--celestial.png"
+      },
+      "export_hashes": {
+        "256": "57c4fbb3a6bd1e7cbf33d17c3af3fbfefb1a838cd6bea08bd6ec9f88fd5e2802",
+        "128": "3cc8131fce54f49d5afdcc884753a86ec9010e28be37296e62a6c7ac7c708767",
+        "64": "0d7f108e821d616b64fa9219f02c2b64364f3086e95e28157f251c69ab40310f",
+        "32": "181cf9f7100beb6d1992018b792a59cc43cd055cf9e03ff0a78ce44d07d994dd"
+      },
+      "grade": "celestial",
+      "standard_id": "focus-emanator",
+      "outline": {
+        "solid_alpha_iou": 0.9468267777828655,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 59
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
