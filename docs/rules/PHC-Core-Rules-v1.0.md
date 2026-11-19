@@ -13218,3 +13218,6 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       (its golden rows did not move). Still Standing (rules 1.73 item 5828 completed): once a fight, I: that turn has 3
       AP; II: 5 AP. A hit before that turn drops it as any blow does (PROVISIONAL: the sheet says nothing of it). Dropped
       on its own turn, the rest of that turn is the last one, its AP cut to the number (PROVISIONAL). Engine now.
+6509. **The sheet reads its number blocks through the one resolver** (`effects/hooks.ts setSheetSource`, registered by
+      `effects/triggers.ts` with `sourceOf`; `sheetSource(c)` for a character with no unit): `strainLimit` and
+      `readyDesigns` no longer resolve `skill:` themselves. No number changes.

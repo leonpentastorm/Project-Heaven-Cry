@@ -167,3 +167,15 @@ describe('one more turn at 0 HP (item 6508): Still Standing, and Bite the Bullet
     expect(f.cb.log.slice(n).some((l: string) => /borrowed time: death-save failure/.test(l))).toBe(true); expect(f.unit(u.id).hp).toBe(1);
   });
 });
+
+describe('the sheet reads its number blocks through the one resolver (item 6509)', () => {
+  it('strainLimit and readyDesigns move with the skill a block names, and character.ts resolves no skill: itself', async () => {
+    const { readFileSync } = await import('node:fs');
+    const src = readFileSync(new URL('../src/character.ts', import.meta.url), 'utf8');
+    expect(src).not.toMatch(/of\.startsWith\('skill:'\)/);
+    const { strainLimit, readyDesigns } = await import('../src');
+    const f = fightWith([{ skills: { composure: 0, lore_master: 0 } }], [{}]); const c = f.g.characters[f.pc.charId!];
+    const s0 = strainLimit(c), r0 = readyDesigns(c); c.skills.composure = 8; c.skills.lore_master = 10;
+    expect(strainLimit(c)).toBeGreaterThan(s0); expect(readyDesigns(c)).toBeGreaterThan(r0);
+  });
+});

@@ -20,7 +20,7 @@ import { setDowned, setBraced } from '../unitstate';
 import type { Combat, Unit } from '../combat';
 import type { Holder, HookName } from './types';
 import { uses } from './uses';
-import { setTriggerRunner, setAllItems, onHook } from './hooks';
+import { setTriggerRunner, setAllItems, onHook, setSheetSource } from './hooks';
 import { allItems, instanceMods, rawItem as rawItemT, itemInfo as itemInfoT } from './collect';
 import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, tieCap, canStand, tiesOf as tiesOfK, type Area } from '../kit';
 import { holds, FOCUS_DOORS, handProps, gearAt, kindOfDoor, FOCUS_IDS } from '../character';
@@ -336,7 +336,7 @@ const resNow = (ev: Ev, id: string): number => (ev.self.resMax?.[id] != null || 
 export function sourceOf(ev: Ev, of: string): number {
   const i = of.indexOf(':'); if (i < 0) return 0;
   const ns = of.slice(0, i), f = of.slice(i + 1);
-  if (ns === 'res') return resNow(ev, f);
+  if (ns === 'res') return ev.self ? resNow(ev, f) : 0; // a sheet with no unit (rules 1.77 item 6509) holds no meter
   if (ns === 'event') { const v = f === 'amount' ? (ev.ctx.dmg ?? ev.ctx.n ?? ev.ctx.amount ?? ev.ctx.base) : ev.ctx[f] ?? ev.ctx[camel(f)] ?? ev.ctx.src?.[f] ?? ev.ctx.src?.[camel(f)]; return typeof v === 'number' ? v : v ? 1 : 0; }
   if (ns === 'self' || ns === 'actor' || ns === 'target') return unitField(unitOf(ev, ns as Who), f);
   if (ns === 'ties') return tiesOfK(ev.cb, ev.self, f).length; // section 6: how many ties of a kind the holder has
@@ -346,6 +346,9 @@ export function sourceOf(ev: Ev, of: string): number {
   if (ns === 'tech_rule') return dataRef(of); // rules 1.70 item 5547 (P6): a value of techniques.json rules (datatext.ts dataRef)
   return 0;
 }
+// rules 1.77 item 6509: the sheet's numbers (character.ts strainLimit, readyDesigns) read their `of` through this one
+// resolver: a holder with the character and no unit
+setSheetSource((c, of) => sourceOf({ ctx: {}, trig: TRIGGERS.acted, h: { key: '', c, info: null } as any, self: null as any, cb: null as any, actor: null, target: null, preview: true }, of));
 /** The namespaces a number block's `of` may name in an item op. */
 export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill', 'feed', 'pick', 'tech_rule'];
 /** The numeric fields of an item op that may be number blocks. */

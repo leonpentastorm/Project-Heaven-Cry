@@ -219,6 +219,13 @@ export const setHandsRule = (f: (c: Character) => HandInstance[]) => { handsHook
 let rankHook: ((c: Character) => number) | null = null;
 /** character.ts gives the runtime its class-rank rule (kept there to avoid an import cycle). */
 export const setRankRule = (f: (c: Character) => number) => { rankHook = f; };
+/** Rules 1.77 item 6509: THE resolver of a number block's `of` (effects/triggers.ts sourceOf) for a sheet with no unit
+ * (character.ts strainLimit, readyDesigns). effects/triggers.ts registers it as it loads (character.ts can't import
+ * that file: a load cycle). */
+let SHEET_SOURCE: ((c: Character, of: string) => number) | null = null;
+export const setSheetSource = (f: (c: Character, of: string) => number): void => { SHEET_SOURCE = f; };
+/** A number block's reader for this sheet (datatext.ts numberOf's `of`), through the one resolver. */
+export const sheetSource = (c: Character) => (of: string): number => { if (!SHEET_SOURCE) throw new Error('the sheet resolver is not registered (effects/triggers.ts)'); return SHEET_SOURCE(c, of); };
 
 /** The effect op that lays a Grand form (a Sigil word's `grand`; rules 1.4; effect_ops.json). Which move carries it is
  *  the data's (classes.json: today the Grand Sigilist's Enlarge), never a name typed here. */

@@ -5,7 +5,7 @@ import { numberOf } from './datatext';
 import patronsJ from '../../../data/patrons.json';
 import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES, ladderSchedule, ELEMENTAL_CAP } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem, instanceMods } from './effects/collect';
-import { statQuery, setRankRule, setHandsRule, type HandInstance } from './effects/hooks';
+import { statQuery, setRankRule, setHandsRule, sheetSource, type HandInstance } from './effects/hooks';
 import type { StatId } from './effects/stats';
 import feelJ from '../../../data/feelings.json';
 import worldPlayJ from '../../../data/world_play.json';
@@ -828,9 +828,9 @@ export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
 /** The Strain limit (rules 1.70 item 5539, Leon's ruling): the number block soul_modules.json strain.limit (3, +1 at
  * Composure 1, 2, 4, 6 and 8; Will Power gives none), then what items add (stat strain_limit). */
-export const strainLimit = (c: Character) => fx(c, 'strain_limit', numberOf((SOUL_RULES as any).strain.limit, (of) => (of.startsWith('skill:') ? P(c, of.slice(6)) : 0)));
+export const strainLimit = (c: Character) => fx(c, 'strain_limit', numberOf((SOUL_RULES as any).strain.limit, sheetSource(c)));
 export const moduleSlots = (c: Character) => fx(c, 'module_slots', 1 + Math.floor(P(c, 'will_power') / 3));
-export const readyDesigns = (c: Character) => fx(c, 'ready_designs', numberOf((SOUL_RULES as any).limits.ready_designs, (of) => (of.startsWith('skill:') ? P(c, of.slice(6)) : 0))); // rules 1.75 item 6205: Lore Master's (a number block)
+export const readyDesigns = (c: Character) => fx(c, 'ready_designs', numberOf((SOUL_RULES as any).limits.ready_designs, sheetSource(c))); // rules 1.75 item 6205: Lore Master's (a number block)
 // ---------- rules 1.8: practice, module gates and picks (spec: Soul magic 12, sections 4 and 5) ----------
 const PR = (): any => (SOUL_RULES as any).practice || {};
 const GATES = (): any => (SOUL_RULES as any).gates || {};
