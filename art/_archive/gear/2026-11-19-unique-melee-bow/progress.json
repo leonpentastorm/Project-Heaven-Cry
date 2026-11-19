@@ -1,0 +1,16 @@
+{
+  "status": "claimed",
+  "target": 8,
+  "delivered": [],
+  "remaining": [
+    "weapon-last_sentence",
+    "weapon-grandmothers_teeth",
+    "weapon-last_crossing",
+    "weapon-owed_in_full",
+    "weapon-reveille",
+    "weapon-breath_of_morning",
+    "weapon-rearguard",
+    "weapon-windfall"
+  ],
+  "production_approved": false
+}
