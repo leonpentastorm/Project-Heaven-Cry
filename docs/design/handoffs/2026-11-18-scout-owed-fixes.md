@@ -1,6 +1,6 @@
 # Scout: the owed small fixes (release/0.31, live 0.31.10, HEAD 64c4f358)
 
-1. Read-only scouting for the to-do (`SESSION-TODO-2026-11-16.md` sections R, S, T, V). Nothing was changed, built or run; every line number is this worktree's.
+1. Read-only scouting for the to-do (`_archive/SESSION-TODO-2026-11-16.md` sections R, S, T, V). Nothing was changed, built or run; every line number is this worktree's.
 2. Fifteen items, one build note each (file, function, line, change, tests that pin today, data field). Browser-only questions are marked NOT REPRODUCED.
 3. Owner's word relayed 18 Nov: **Rest keeps MP** (so item 14's "a Rest still restores MP: ask Leon" is answered: leave Rest alone; Syphon is the only MP source besides it).
 4. The Silent rule's own "shape" is in no journal: the wf_63d35957 journal holds Stalk, dark maps, Douse, `seen_range` and the detect view only. What exists for Silent is below (item 14e).

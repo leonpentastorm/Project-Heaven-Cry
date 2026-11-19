@@ -1,7 +1,7 @@
 # The skill "?" page, the level-up screen and creation's Skills step: redesign (the lead, 18 Nov 2026)
 
 Leon: "look at the skill ? tabs and the level up screen, those screens are atrocious, objectively cave man UX."
-Read from live 0.31.10 screenshots. This is a build spec: lane 1 of `ATTACK-PLAN-2026-11-19.md` builds it with the
+Read from live 0.31.10 screenshots. This is a build spec: lane 1 of `_archive/ATTACK-PLAN-2026-11-19.md` builds it with the
 wording files. Rules: CLAUDE.md "Say the core, once, and stop"; the client decides nothing; every box folds.
 
 ## What is wrong today (the same three faults on all three screens)
