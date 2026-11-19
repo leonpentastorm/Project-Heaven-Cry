@@ -2,8 +2,8 @@
 
 Nine sheets, one per attribute, are in `2026-11-19-attribute-drafts/` (opus drafts written to Leon's rulings of
 18 Nov; the lead read all nine). **This file is the ruling layer over them**: where a sheet and this file disagree,
-this file wins. Lanes 4 and 5 build from a sheet plus this file. Status: **waiting for Leon's judgement** on section
-3; sections 1 and 2 are the lead's calls (no answer means yes).
+this file wins. Lanes 4 and 5 build from a sheet plus this file. Status: **approved by Leon, 19 Nov** (section 3: points 1 to 4 and 6 to 10 as recommended; point 5 rejected and
+redesigned in section 5; Rite in the Field counts your own kills); sections 1 and 2 are the lead's calls (no answer means yes).
 
 ## 1. What every sheet does (the shape, as ruled)
 
@@ -34,7 +34,8 @@ this file wins. Lanes 4 and 5 build from a sheet plus this file. Status: **waiti
    MIGRATION says. Alpha steps: a save keeps every step it holds; a new one is owed only when the 3 / 6 / 7 / 9
    schedule owes more than it holds.
 6. **Rite in the Field is built as Leon worded it** (every 5 kills, 3 at tier II: the next Crystallise costs 0 AP
-   and takes nothing from the air). The squad's kills count. The builder first checks whether Crystallise's draw on
+   and takes nothing from the air). **Your own kills count** (Leon, 19 Nov; counting the squad's would make it
+   7 and 5, not chosen). The builder first checks whether Crystallise's draw on
    the air goes through the price; if it does, it is a `cost_mod`; if not, it hands back and the core goes straight
    to the pack until the lead rules.
 7. **One owner per effect across sheets:** "Analyze costs 0 AP once a fight" is Acuity's Quick Read II only;
@@ -61,9 +62,10 @@ this file wins. Lanes 4 and 5 build from a sheet plus this file. Status: **waiti
    drops, Second Wind becomes the Bulwark's rank II move.*
 4. **Rolling Start loses its free Charge** (keeps the 2-tile run and +1 Momentum on a Charge hit).
    *Lead: yes; it ends the "Finisher, free Charge, Finisher" loop every turn.*
-5. **The Beast and the Blade become Visualization's second fork at 8** (out of reach at creation); the Eye becomes
-   the big verb at 5 for everyone; the Husk and the Sentinel open only at 10 (the Sentinel stays the Rigger's).
-   *Lead: yes.*
+5. **REJECTED by Leon (19 Nov): Visualization's forks as shape unlocks.** "Having its fork be just the shape
+   unlock is poor compared to other forks. Devise another system for unlocks: all shapes should be unlockable even
+   at Visualization 1; the fork just gives a permanent upgrade to these shapes that is worth choosing one or
+   another." Replaced by section 5 below; the Expression sheet's sections 2 and 3 are void.
 6. **Speed Load and Quick Draw leave Dexterity for a Reaction Speed perk**; Flush Out becomes one 2 AP verb at
    Dexterity 5 for every Dexterity weapon, soldiers and below only. *Lead: yes.*
 7. **Faith 2 gets a verb, Name the Sinner** (a Whisper: a foe is Judged 2 rounds, your patron's blows +20% on it);
@@ -85,3 +87,35 @@ this file wins. Lanes 4 and 5 build from a sheet plus this file. Status: **waiti
    Expression, Insight, Virtue. Each: spec, data, the picking UI for anything new that is aimed, card lines, a
    reducer test per new perk tier and fork option, the measure.
 3. The consolidation pass (CLAUDE.md "No rebuild" rule 4) before 0.32 goes live.
+
+## 5. Visualization: forms are learned, forks upgrade them (the lead, to Leon's ruling of 19 Nov)
+
+**Forms known.** A form is no longer opened by a level or a fork. You know **2 forms of your choice at
+Visualization 1**, out of all ten (Double, Snare, Hand, Eye, Wall, Ward, Beast, Blade, Husk, Sentinel), and
+**+1 form known at each of levels 2 to 9**: all ten at 9. The choice is made on the level-up screen (its picking
+UI in the same change) and is kept for good. What holds a strong form back at level 1 is what it costs: its charge,
+the one Figment held, its HP; the Figment ceiling (`balance.ceilings.figments`) is measured with a level-1 Beast,
+and the form's own numbers are turned if it is over, never a level gate.
+
+**The ladder.** 1 the door (Picture, Redraw, Let go; Glimmer; 2 forms known; 1 held) · 2 small verb: **Cash in**
+(moved from 1) · 3 perk step · 4 fork one · 5 big verb: **a second Figment held** · 6 perk step · 7 perk step
+(third held, as today) · 8 fork two · 9 perk step · 10 Mastered: Solid Image. Per point: +1 form known (2 to 9),
++1 tile reach, +1 Figment to hit; designs and traits as the sheet has them.
+
+**Fork one, at 4: what your Figments are made of** (applies to every form you know, for good).
+- **Hard Light:** your Figments have +40% HP, and one destroyed costs you no Snap.
+- **Sharp Light:** your Figments' strikes deal +20% damage, and a Figment that drops a foe acts once more (once a
+  round).
+
+**Fork two, at 8: how you hold them.**
+- **Many Hands:** +1 Figment held, and Picture costs 1 less charge (never under 1).
+- **Masterwork:** name one Figment you hold your Masterwork: +1 trait on it, and once a round one order to it
+  costs 0 AP. Naming another moves the mark.
+
+All numbers PROVISIONAL. Built from existing pieces where they exist (the HP multiplier Improvisation's feed uses,
+the Figment damage factor, `cost_mod` on charge and on a Figment order, a held-count stat, a per-round limit); an
+opus pass checks each against `figments.ts` and `ENGINE-HOOKS.md`, rewrites the Expression sheet's sections 2 and
+3 to this, and lists anything that needs a piece. Consequences for the rest of the sheet: Jury-Rig keeps its banked
+AP (Hard Light removes the Snap outright, so the two do not stack to a gain: Hard Light holders get the AP only);
+the Rigger's Scrap Sentinel stays (a free turret outside the forms known); a save keeps every form it has open and
+counts them against its forms known, never losing one.
