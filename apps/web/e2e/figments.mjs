@@ -98,7 +98,7 @@ let redrawSpent = 0;
 { const tR = await free(wall.pos), cR = (await me()).mg.vcharge;
   await p.evaluate(() => { const W = (window.__e2eWatch ||= {}); W.order = { up: null }; const mo = new MutationObserver(() => { if (W.order.up == null && document.querySelector('[data-phc-fig-order]')) W.order.up = performance.now(); }); mo.observe(document.documentElement, { childList: true, subtree: true }); });
   const er = await act({ type: 'combat/owned', unitId: u.id, owned: wall.id, verb: 'figment_redraw', tile: tR });
-  const seen = await p.waitForFunction(() => window.__e2eWatch.order.up != null, null, { timeout: 8000 }).then(() => true, () => false);
+  const seen = await p.waitForFunction(() => window.__e2eWatch.order.up != null, null, { timeout: 8000 }).catch(() => false).then((x) => x !== false);
   if (seen) { await pause(p, 150); await p.screenshot({ path: OUT + 'figments-redraw.png' }).catch(() => {}); }
   const logT = (await G()).combat.log.join(' ');
   ok('0.32: Redraw is shown (the order mark on the map) and said in the log (' + (er || 'done') + ')', !er && seen && /comes apart and reforms/.test(logT));

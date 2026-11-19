@@ -12,7 +12,7 @@ const act = (a) => p.evaluate((a) => { try { window.__phc.act(a); return null; }
 const G = () => p.evaluate(() => window.__phc.getState().game);
 const dismiss = async () => { for (let i = 0; i < 4 && (await p.locator('[data-phc-cutin]').count()); i++) { await p.keyboard.press('Escape'); await pause(p, 300); } };
 /** A float on the effects layer whose text matches (a number: "−12"). */
-const floatSeen = (re, timeout = 10000) => p.waitForFunction((src) => { const r = new RegExp(src); return [...document.querySelectorAll('div > span')].some((s) => r.test(s.textContent || '') && getComputedStyle(s.parentElement).fontWeight === '700'); }, re.source, { timeout, polling: 30 }).then(() => true, () => false);
+const floatSeen = (re, timeout = 10000) => p.waitForFunction((src) => { const r = new RegExp(src); return [...document.querySelectorAll('div > span')].some((s) => r.test(s.textContent || '') && getComputedStyle(s.parentElement).fontWeight === '700'); }, re.source, { timeout, polling: 30 }).catch(() => false).then((x) => x !== false);
 
 await p.goto(BASE);
 await click(p, 'PROVING GROUND', { timeout: 90000 });
@@ -39,7 +39,7 @@ await pause(p, 600);
 const foe = (await G()).combat.units.find((x) => x.side === 'foe' && !x.dead && Math.max(Math.abs(+x.pos.split(',')[0] - +u.pos.split(',')[0]), Math.abs(+x.pos.split(',')[1] - +u.pos.split(',')[1])) <= 3);
 ok('a soldier stands beside the Chaplain', !!foe);
 if (foe) {
-  const land = p.waitForSelector('[data-phc-prayer-land]', { state: 'attached', timeout: 15000 }).then(() => true, () => false);
+  const land = p.waitForSelector('[data-phc-prayer-land]', { state: 'attached', timeout: 15000 }).catch(() => false).then((x) => x !== false);
   const er = await act({ type: 'faith/pray', unitId: u.id, kind: 'hymn', id: 'lightning_rod', targetId: foe.id });
   const landed = await land; await pause(p, 140);
   await p.screenshot({ path: OUT + 'effects-hymn-lands.png' });
@@ -102,7 +102,7 @@ await q.waitForSelector('text=✓ LOCKED IN');
 await q.evaluate(() => { const g = window.__phc.getState().game, c = Object.values(g.characters)[0]; c.belief = { kind: 'faithful', patron: 'mother_ember' }; c.patron = 'mother_ember'; c.skills.faith = Math.max(1, c.skills.faith || 0); });
 await click(q, 'Start the run');
 await campConfirmGo(q);
-const pop = await q.waitForSelector('[data-phc-vow-popup="enter"]', { timeout: 30000 }).then(() => true, () => false);
+const pop = await q.waitForSelector('[data-phc-vow-popup="enter"]', { timeout: 30000 }).catch(() => false).then((x) => x !== false);
 await pause(q, 500); await q.screenshot({ path: OUT + 'effects-vow-popup.png' });
 ok('entering Survival\'s camp, the vow pop-up asks the Faithful character', pop);
 if (pop) {

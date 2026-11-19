@@ -58,6 +58,9 @@ import { glyphKeyNav } from '../game/glyphKeys';
 import { classMarks } from '../game/classMarks';
 import { fadeStyle, SHADE_POOL, shadowHeld, wispsUri, wispStyle, SHADOW_INK } from '../game/tokenFade';
 import { tieLayerVals, eyeLines, tieWords } from '../game/tieLayer';
+/** 0.32 (Q.2.f): the status strip on the token face: the first three signs of the same groups the token card shows
+ *  (game/statusStrip.ts), each ringed in its group's ink (helps, hurts, state). */
+const faceStatus = (groups) => { const fs = (groups || []).flatMap((sg) => sg.chips.filter((c) => c.hasIcon).map((c) => ({ key: c.key, icon: c.icon, style: 'width: 12px; height: 12px; padding: 1px; border-radius: 3px; background: #0A0D13; box-shadow: 0 0 0 1px ' + sg.ink }))).slice(0, 3); return { hasFaceSt: fs.length > 0, faceSt: fs }; };
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles, strokeButtons, strokeLayer, readableAt, traceMark, wordMasteryChips } from '../game/sigilView';
 import { backpackView } from '../game/backpack';
 import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, padAction, techAction, TWATCH, TPAD, needsAlly, ATTACK_MODES, isAttackMode, targetAttackPreview } from '../game/techView';
@@ -1228,7 +1231,7 @@ export class CombatLogic extends DCLogic {
       const prs = u && !u.dead && u.side === 'pc' ? presenceVals(u, g, cb) : null;
       // Physical 2.0 (part 3): Pressure pips over every token (public), Stopped once and a held Watch in its hover card
       // and aria-label; held Watches your side can see, tinted on their tiles with a dotted line from the watcher.
-      const uPhys = u ? physOf(g, cb, u, 'pc') : null, pLook = pressureLook(uPhys), mLook = momentumLook(uPhys), pLines = physLines(uPhys), wT = WMk.tiles.get(k), wChip = u ? WMk.chips.get(u.id) : null;
+      const uPhys = u ? physOf(g, cb, u, 'pc') : null, uSt = u && (u.side === 'pc' || u.analyzedBy) ? statusGroups(statusOf(u, g, uPhys, refOf, false), { small: true }) : null, pLook = pressureLook(uPhys), mLook = momentumLook(uPhys), pLines = physLines(uPhys), wT = WMk.tiles.get(k), wChip = u ? WMk.chips.get(u.id) : null;
       const wc = WLc.cells.get(k) || {}, kb = u && u.side === 'foe' ? kindBadge(u.kind, true) : null, dr = !u ? dropAt[k] : null;
       const pileHere = pileReach.some((o) => o.pos === k);
       // (a Call's reach: the one overlay's, pkTiles, since rules 1.65; the picked tile: a white edge)
@@ -1255,7 +1258,9 @@ export class CombatLogic extends DCLogic {
         hasKind: !!(kb && kb.has) && !isHeld, kindText: kb ? kb.text : '', kindStyle: kb ? kb.style + TOKEN_KIND_POS : '', kindTitle: kb ? kb.title : '',
         hasDrop: !!dr, dropText: dr ? '▾ ' + dr.npc.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase() : '', dropTitle: dr ? dr.npc.name + ' lies here (dropped when the carrier went down; back on the map after the fight)' : '',
         hasPresence: !!prs, presence: prs || {},
-        hasTok: !!u, t: u ? tokenVals(u, { ...tokOpt(u, x, y), extra: pLines, ties: tieWords(cb, u.id), pose: pLook.pose, status: u.side === 'pc' || u.analyzedBy ? statusGroups(statusOf(u, g, uPhys, refOf, false), { small: true }) : null }) : null, hasObj: !!ob && !u && !spr && !wc.cache && !wc.sigil, hasSigMark: !!wc.sigil && !u, sigMark: wc.sigil ? wc.sigil.src : '', sigMarkStyle: wc.sigil ? wc.sigil.style : '', objGlyph: ob ? kindOf(ob).glyph : '', objStyle: 'position: absolute; inset: 0 0 12px 0; display: grid; place-items: center; font-size: 20px; color: ' + (ob && (kindOf(ob).hazard || ob.kind === 'trap' || kindOf(ob).explodes) ? '#F65157' : ob && ob.kind === 'poi' ? '#FFFFFF' : '#C9D3E3'),
+        hasTok: !!u, t: u ? tokenVals(u, { ...tokOpt(u, x, y), extra: pLines, ties: tieWords(cb, u.id), pose: pLook.pose, status: uSt }) : null,
+        // 0.32 (Q.2.f): the status strip on the token face: the first three of the same groups' signs, in each group's ink
+        ...faceStatus(uSt), hasObj: !!ob && !u && !spr && !wc.cache && !wc.sigil, hasSigMark: !!wc.sigil && !u, sigMark: wc.sigil ? wc.sigil.src : '', sigMarkStyle: wc.sigil ? wc.sigil.style : '', objGlyph: ob ? kindOf(ob).glyph : '', objStyle: 'position: absolute; inset: 0 0 12px 0; display: grid; place-items: center; font-size: 20px; color: ' + (ob && (kindOf(ob).hazard || ob.kind === 'trap' || kindOf(ob).explodes) ? '#F65157' : ob && ob.kind === 'poi' ? '#FFFFFF' : '#C9D3E3'),
         click: () => this.tileClick(k), hover: (e) => hoverFor(this).enter(k, e),
         hasArrow: !!route[k] && k !== (cur && cur.pos), arrow: route[k] || '', hasCost: k === hv || !!mTag || !!aTag, cost: !(k === hv || mTag || aTag) ? '' : mTag || (aTag ? aTag.text : (moveAp ? '−' + moveAp + ' AP' : 'Paid') + ' · ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') + (crossing.length ? ' · ⚠ HAZARD' : '')),
         // The chip over the hovered tile: kept whole inside the map (it was cut off at the map's edge when the reason was

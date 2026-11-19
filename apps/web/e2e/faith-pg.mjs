@@ -227,7 +227,7 @@ const n1 = (await G()).combat.log.length;
 await watch(p, 'face', '[data-phc-faith-face="old_overcast"]');
 await watch(p, 'pland', '[data-phc-prayer-land],[data-phc-prayer-name]'); // 0.32: where a prayer lands, each unit it touched answers (or its name is said)
 await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();
-const landShot = p.waitForSelector('[data-phc-prayer-land],[data-phc-prayer-name]', { state: 'attached', timeout: 15000 }).then(async () => { if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-hymn-lands.png' }); return true; }, () => false); // 0.32
+const landShot = p.waitForSelector('[data-phc-prayer-land],[data-phc-prayer-name]', { state: 'attached', timeout: 15000 }).catch(() => false).then(async (x) => { if (x === false) return false; if (SHOTS) await p.screenshot({ path: SHOTS + '/faith-hymn-lands.png' }); return true; }); // 0.32
 // Faith 2.2 (spec 2.2): a square crop of the patron's portrait over the head of the one who prays, framed in the accent.
 {
   const face = p.locator('[data-phc-faith-face="old_overcast"]');

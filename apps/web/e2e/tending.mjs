@@ -118,7 +118,7 @@ if (bonded) ok('the Soldier is Bonded and the Mender Traced next turn', !!g.comb
 // Classes 3.0 step 10 (bonds-spec.md section 9): the Bond strip adds the enemy after a Bond that passes its save
 if (bonded) {
   const chip = host.locator('[data-bond-strip] [data-bond-side="foe"] [data-bond="' + foe.id + '"]');
-  const shown = await chip.waitFor({ timeout: 30000 }).then(() => true, () => false);
+  const shown = await chip.waitFor({ timeout: 30000 }).catch(() => false).then((x) => x !== false);
   const held = (g.combat.ties || []).filter((t) => t.kind === 'bond' && t.from === u.id).length;
   const count = (await host.locator('[data-bond-count]').first().textContent().catch(() => '')) || '';
   ok('the Bond strip lists the Soldier under the enemies, ' + count + ' held (the engine: ' + held + ')', shown && count.startsWith(held + ' / '));
@@ -140,11 +140,11 @@ if (mate) {
   g = await G(); const hp0 = g.combat.units.find((v) => v.id === m.id).hp;
   await host.evaluate(() => { const W = (window.__e2eWatch ||= {}); W.tend = { up: null }; const mo = new MutationObserver(() => { if (W.tend.up == null && document.querySelector('[data-phc-bond-heal],[data-phc-bond-tend]')) W.tend.up = performance.now(); }); mo.observe(document.documentElement, { childList: true, subtree: true }); });
   r = await perk('class:medic.triage', { actionId: 'triage', targetId: m.id });
-  { const seen = await host.waitForFunction(() => window.__e2eWatch.tend.up != null, null, { timeout: 8000 }).then(() => true, () => false);
+  { const seen = await host.waitForFunction(() => window.__e2eWatch.tend.up != null, null, { timeout: 8000 }).catch(() => false).then((x) => x !== false);
     if (seen && process.env.SHOTS_C3) { await host.screenshot({ path: process.env.SHOTS_C3 + 'mender-bond-heal-pulse.png' }); }
     // a Triage on a squadmate at full HP heals nothing (no event to draw): then a Shield through the Bond, which always lands
     let r0 = r, seen2 = seen;
-    if (!seen) { r0 = await perk('verb:tend.shield', { targetId: m.id }); seen2 = await host.waitForFunction(() => window.__e2eWatch.tend.up != null, null, { timeout: 8000 }).then(() => true, () => false); if (seen2 && process.env.SHOTS_C3) { await host.screenshot({ path: process.env.SHOTS_C3 + 'mender-bond-tend-pulse.png' }); } }
+    if (!seen) { r0 = await perk('verb:tend.shield', { targetId: m.id }); seen2 = await host.waitForFunction(() => window.__e2eWatch.tend.up != null, null, { timeout: 8000 }).catch(() => false).then((x) => x !== false); if (seen2 && process.env.SHOTS_C3) { await host.screenshot({ path: process.env.SHOTS_C3 + 'mender-bond-tend-pulse.png' }); } }
     ok('0.32: Tending through the Bond runs down the line to the tended token (' + (r0 || 'shown') + ')', !r0 && seen2);
     const ties = await host.evaluate(() => [...document.querySelectorAll('[data-token-ties]')].map((e) => e.textContent));
     ok('0.32: the token card says what each end is Bonded to (' + ties.join(' | ').slice(0, 80) + ')', ties.some((t) => /Bonded to /.test(t || ''))); }
