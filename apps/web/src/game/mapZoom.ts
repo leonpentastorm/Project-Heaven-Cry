@@ -43,11 +43,11 @@ export function saveZoom(z: MapZoom) { try { const n = normaliseZoom(z); if (n.m
 export const ZOOM_CSS = [
   '.phc-mapzoom{display:flex;align-items:center;gap:4px;margin:0 0 6px;font-family:\'Chakra Petch\',sans-serif}',
   '.phc-mapzoom>span{font-size:var(--fs-sub);font-weight:700;letter-spacing:.16em;color:#A3AEC2;margin-right:4px}',
-  '.phc-mapzoom button{min-height:26px;min-width:28px;padding:0 8px;border-radius:7px;border:1px solid #2E3A50;background:#10151F;color:#E7EBF3;font:700 12px/1 \'Chakra Petch\',sans-serif;cursor:pointer}',
+  '.phc-mapzoom button{min-height:26px;min-width:28px;padding:0 8px;border-radius:7px;border:1px solid #2E3A50;background:#10151F;color:#E7EBF3;font:700 var(--fs-sub)/1 \'Chakra Petch\',sans-serif;cursor:pointer}',
   '.phc-mapzoom button:hover{border-color:#A3AEC2}.phc-mapzoom button:disabled{opacity:.4;cursor:default}',
   '.phc-mapzoom button[aria-pressed=true]{border-color:#FFFFFF;background:#1C2536;color:#FFFFFF}',
   '.phc-mapzoom button:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}',
   '.phc-mapzoom .phc-mz-pct{min-width:52px}',
-  '.phc-mapzoom{flex-wrap:wrap}.phc-mapzoom kbd{margin-left:4px;padding:1px 5px;border-radius:4px;border:1px solid #3B475D;color:#A3AEC2;font:700 10px/1 \'Chakra Petch\',sans-serif}',
+  '.phc-mapzoom{flex-wrap:wrap}.phc-mapzoom kbd{margin-left:4px;padding:1px 5px;border-radius:4px;border:1px solid #3B475D;color:#A3AEC2;font:700 var(--fs-sub)/1 \'Chakra Petch\',sans-serif}',
   '.phc-mapzoom .phc-mz-whole{margin-left:8px}.phc-mapzoom>.phc-mz-hint{margin:0 0 0 8px;font-size:var(--fs-sub);font-weight:500;letter-spacing:0;color:#A3AEC2}',
 ].join('');

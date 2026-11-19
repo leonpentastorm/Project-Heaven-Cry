@@ -162,7 +162,7 @@ function ensureCss() {
     // The foot: how long it stays, and the button that keeps it. Only the buttons take clicks.
     '[data-phc-cut-box] .f{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}',
     '[data-phc-cut-box] .f span{font-size:var(--fs-sub);letter-spacing:.06em;color:#A3AEC2}',
-    '[data-phc-cut-box] .p{pointer-events:auto;cursor:pointer;height:26px;padding:0 10px;border:1px solid #2E3A50;background:#1C2536;color:#E7EBF3;font:700 11px/1 \'Chakra Petch\',sans-serif;letter-spacing:.12em;white-space:nowrap}',
+    '[data-phc-cut-box] .p{pointer-events:auto;cursor:pointer;height:26px;padding:0 10px;border:1px solid #2E3A50;background:#1C2536;color:#E7EBF3;font:700 var(--fs-sub)/1 \'Chakra Petch\',sans-serif;letter-spacing:.12em;white-space:nowrap}',
     '[data-phc-cut-box] .p:hover,[data-phc-cut-box] .p:focus-visible{border-color:#A3AEC2;outline:none}',
     '[data-phc-cut-box] .p[aria-pressed="true"]{background:#FFFFFF;border-color:#FFFFFF;color:#0A0D13}',
     '[data-phc-cut-box] .bar{position:absolute;left:0;right:0;bottom:0;height:2px;background:#A3AEC2;transform-origin:left center;opacity:.8}',
@@ -319,7 +319,7 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
     const src = o.portrait || o.mark;
     if (src) { const img = document.createElement('img'); img.src = src; img.alt = ''; img.style.cssText = 'position:absolute;inset:0 18% 22% 0;width:82%;height:78%;object-fit:cover;object-position:50% 18%;clip-path:polygon(0 0,100% 0,82% 100%,0 100%)'; root.appendChild(img); }
     const words = el('div', 'position:absolute;left:14px;right:22%;bottom:12px;display:flex;flex-direction:column;gap:4px');
-    if (o.kicker) words.appendChild(el('div', "font:700 12px 'Chakra Petch',sans-serif;letter-spacing:.24em;color:" + o.accent, o.kicker));
+    if (o.kicker) words.appendChild(el('div', "font:700 var(--fs-sub) 'Chakra Petch',sans-serif;letter-spacing:.24em;color:" + o.accent, o.kicker));
     if (o.line) words.appendChild(el('div', "font:600 16px/1.3 'Spectral',serif;color:#E7EBF3;text-shadow:0 2px 6px #000", o.line));
     root.appendChild(words);
     document.body.appendChild(root); nodes.push(root);
@@ -385,7 +385,7 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
   // 4. The words: the kicker, and the god calling the devoted by name (the name in the faith light).
   const words = el('div', 'position:absolute;left:0;right:0;bottom:0;padding:16vh 6vw 9vh;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;background:linear-gradient(to top,rgba(5,7,11,.95) 0%,rgba(5,7,11,.8) 55%,transparent 100%)');
   const rule = (w: string) => el('span', 'display:block;height:1px;width:' + w + ';background:linear-gradient(90deg,transparent,' + o.accent + ',transparent)');
-  if (o.kicker) { const k = el('div', "display:flex;align-items:center;gap:14px;font:700 13px 'Chakra Petch',sans-serif;letter-spacing:.32em;color:" + FAITH_INK); k.append(rule('min(14vw,140px)'), el('span', '', o.kicker), rule('min(14vw,140px)')); k.dataset.phcCutKicker = ''; words.appendChild(k); }
+  if (o.kicker) { const k = el('div', "display:flex;align-items:center;gap:14px;font:700 var(--fs-sub) 'Chakra Petch',sans-serif;letter-spacing:.32em;color:" + FAITH_INK); k.append(rule('min(14vw,140px)'), el('span', '', o.kicker), rule('min(14vw,140px)')); k.dataset.phcCutKicker = ''; words.appendChild(k); }
   const parts = lineParts(o.line || '', o.name);
   if (parts.length) {
     const ln = el('div', "max-width:min(1180px,92vw);font:600 clamp(26px,3.5vw,52px)/1.18 'Spectral',serif;color:#E7EBF3;letter-spacing:.01em;text-shadow:0 2px 0 #000,0 0 24px rgba(0,0,0,.9)");
@@ -393,7 +393,7 @@ export function showCutIn(o: CutInOpts): CutInHandle | null {
     for (const p of parts) { if (p.name) { const s = el('span', 'color:var(--faith-light,' + FAITH_GOLD + ');text-shadow:0 2px 0 #000,0 0 22px ' + FAITH_GOLD + '88', p.text); s.dataset.phcCutName = ''; ln.appendChild(s); } else ln.appendChild(document.createTextNode(p.text)); }
     words.appendChild(ln);
   }
-  words.appendChild(el('div', "font:700 10px 'Chakra Petch',sans-serif;letter-spacing:.2em;color:#7F8BA1;margin-top:4px", 'CLICK OR PRESS ANY KEY TO SKIP'));
+  words.appendChild(el('div', "font:700 var(--fs-sub) 'Chakra Petch',sans-serif;letter-spacing:.2em;color:#7F8BA1;margin-top:4px", 'CLICK OR PRESS ANY KEY TO SKIP'));
   root.appendChild(words);
   // 5. A white flash as it cuts in (not under reduced motion).
   if (!rm) { const f = el('div', 'position:absolute;inset:0;background:#FFFFFF;pointer-events:none'); root.appendChild(f); anim(f, [{ opacity: 0.7 }, { opacity: 0 }], { duration: 380, easing: 'ease-out', fill: 'forwards' }); }

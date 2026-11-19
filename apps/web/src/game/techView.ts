@@ -249,7 +249,7 @@ export function momentumLook(v: PhysView | null): { has: boolean; text: string; 
   if (!m || m.now < min) return { has: false, text: '', title: '', style: '', full: false };
   const full = m.now >= m.max;
   return { has: true, full, text: 'x' + m.now, title: 'Momentum ' + m.now + ' / ' + m.max + (full ? ' · MAX' : '') + (m.hint ? ' · ' + m.hint : ''),
-    style: 'position: absolute; left: -6px; top: calc(50% + 4px); transform: translateY(-50%); z-index: 4; min-width: 18px; padding: 0 3px; border-radius: 7px; box-sizing: border-box; pointer-events: none; font: 700 10px/13px Chakra Petch, sans-serif; text-align: center; color: ' + STRENGTH_INK + '; background: rgba(5, 7, 11, 0.85); '
+    style: 'position: absolute; left: -6px; top: calc(50% + 4px); transform: translateY(-50%); z-index: 4; min-width: 18px; padding: 0 3px; border-radius: 7px; box-sizing: border-box; pointer-events: none; font: 700 var(--fs-sub)/13px Chakra Petch, sans-serif; text-align: center; color: ' + STRENGTH_INK + '; background: rgba(5, 7, 11, 0.85); '
       + (full ? 'border: 3px double ' + STRENGTH_INK : 'border: 1px solid ' + STRENGTH_INK) };
 }
 /** The hover card's lines for a unit: its Pressure and state, and that it can't be stopped again this round. */

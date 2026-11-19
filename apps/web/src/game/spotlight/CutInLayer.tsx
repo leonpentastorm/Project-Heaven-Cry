@@ -106,7 +106,7 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 
       {words === 'side' ? (
         <div data-phc-spotlight-words="" style={{ position: 'absolute', top: 0, bottom: 0, ...textSide, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 6, minWidth: 0, textAlign: windowLeft ? 'left' : 'right',
           opacity: out ? 0 : 1, transition: 'opacity ' + T(150, k), animation: rm ? 'none' : spec.short ? 'phcCiText ' + T(200, k) + ' ease-out ' + T(140, k) + ' both' : 'phcCiText ' + T(300, k) + ' ease-out ' + T(220, k) + ' both' }}>
-          <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: '.22em', color: labelInk, textTransform: 'uppercase', overflowWrap: 'anywhere' }}>{spec.label}</span>
+          <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '.22em', color: labelInk, textTransform: 'uppercase', overflowWrap: 'anywhere' }}>{spec.label}</span>
           <span style={{ fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: nameSize, lineHeight: 1.05, color: '#FFFFFF', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{s.name}</span>
           {spec.line && <span style={{ fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: 18, lineHeight: 1.35, color: TEXT, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>“{spec.line}”</span>}
           {spec.caption && <span style={{ fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: spec.line ? 16 : 20, lineHeight: 1.35, color: spec.line ? '#A3AEC2' : TEXT, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{spec.caption}</span>}
@@ -116,7 +116,7 @@ function Strip({ s, i, w, h, seed, frac, windowLeft, rm, out, words, spec, dx = 
         // A god's name is in Virtue ink like its other words (colour-system.md): the patron's accent is the lip's alone.
         <div style={{ position: 'absolute', top: 0, bottom: 0, ...chipSide, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: windowLeft ? 'flex-start' : 'flex-end', gap: 2, minWidth: 0 }}>
           <span data-phc-cut-chip={s.key} style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: chipSize, lineHeight: 1.15, fontWeight: 700, letterSpacing: '.12em', color: labelInk, textTransform: 'uppercase', textAlign: windowLeft ? 'left' : 'right', overflowWrap: 'break-word', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', maxWidth: '100%' }}>{s.name}</span>
-          <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 10, fontWeight: 700, letterSpacing: '.22em', color: s.god ? GOD_WORD_INK : '#A3AEC2', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{s.god ? 'PATRON' : s.word}</span>
+          <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '.22em', color: s.god ? GOD_WORD_INK : '#A3AEC2', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>{s.god ? 'PATRON' : s.word}</span>
         </div>
       )}
     </div>
@@ -167,12 +167,12 @@ export function CutInView({ show }: { show: Showing }) {
       {plate && (
         <div data-phc-spotlight-plate="" style={{ position: 'absolute', left: 'calc(50% - min(360px, 46vw))', top: Math.min(plateTop, vh - (narrow ? 180 : 120)), width: 'min(720px, 92vw)', boxSizing: 'border-box', padding: '12px 18px 14px', background: 'rgba(10,13,19,.92)', borderTop: '3px solid ' + (lead.god ? lead.ink : lead.ink), boxShadow: '0 10px 30px rgba(0,0,0,.5)',
           display: 'flex', flexDirection: 'column', gap: 4, opacity: out ? 0 : 1, transition: 'opacity ' + T(150, k), animation: rm ? 'phcCiFade ' + T(120, k) + ' ease-out both' : spec.short ? 'phcCiText ' + T(200, k) + ' ease-out ' + T(140, k) + ' both' : 'phcCiText ' + T(300, k) + ' ease-out ' + T(260 + 70 * (n - 1), k) + ' both' }}>
-          <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: narrow ? '.14em' : '.3em', color: lead.god ? GOD_WORD_INK : lead.ink, overflowWrap: 'anywhere' }}>{spec.label}</span>
+          <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: narrow ? '.14em' : '.3em', color: lead.god ? GOD_WORD_INK : lead.ink, overflowWrap: 'anywhere' }}>{spec.label}</span>
           {narrow && single && <span style={{ fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 30, lineHeight: 1.1, color: '#FFFFFF', overflowWrap: 'anywhere' }}>{lead.name}</span>}
           {narrow && !single && (
             // Who is in the moment: each name in its ink with its word (colour is never the only signal).
-            <span data-phc-spotlight-names="" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', fontFamily: "'Chakra Petch', sans-serif", fontSize: 13, fontWeight: 700, lineHeight: 1.3 }}>
-              {spec.strips.map((x) => <span key={x.key} style={{ whiteSpace: 'nowrap' }}><span style={{ color: x.god ? GOD_WORD_INK : x.ink }}>{x.name}</span> <span style={{ fontSize: 10, letterSpacing: '.16em', color: x.god ? GOD_WORD_INK : '#A3AEC2' }}>{x.god ? 'PATRON' : x.word.toUpperCase()}</span></span>)}
+            <span data-phc-spotlight-names="" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', fontFamily: "'Chakra Petch', sans-serif", fontSize: 'var(--fs-sub)', fontWeight: 700, lineHeight: 1.3 }}>
+              {spec.strips.map((x) => <span key={x.key} style={{ whiteSpace: 'nowrap' }}><span style={{ color: x.god ? GOD_WORD_INK : x.ink }}>{x.name}</span> <span style={{ fontSize: 'var(--fs-sub)', letterSpacing: '.16em', color: x.god ? GOD_WORD_INK : '#A3AEC2' }}>{x.god ? 'PATRON' : x.word.toUpperCase()}</span></span>)}
             </span>
           )}
           {spec.line && <span style={{ fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: 19, lineHeight: 1.35, color: TEXT }}>“{spec.line}”</span>}
