@@ -17962,7 +17962,7 @@
     "weapon-service_pistol": {
       "label": "Service pistol",
       "path": "art/icons/gear/weapon-service_pistol.png",
-      "sha256": "cd5841d14335d25229287f0398e49f76cf8c4e3d9f8459db78e920510aa6697e",
+      "sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -17974,21 +17974,28 @@
         "64": "art/icons/gear/exports/64/weapon-service_pistol.png",
         "32": "art/icons/gear/exports/32/weapon-service_pistol.png"
       },
-      "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P049.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-10/native/02-weapon-service_pistol.png",
       "native_dimensions": [
         1254,
         1254
       ],
       "brief_number": 1,
       "origin": "brief",
-      "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/weapon-service_pistol.png",
+      "previous_path": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/weapon-service_pistol.png",
       "previous_exports": {
-        "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/weapon-service_pistol.png",
-        "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/weapon-service_pistol.png",
-        "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/weapon-service_pistol.png",
-        "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/weapon-service_pistol.png"
+        "256": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/256/weapon-service_pistol.png",
+        "128": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/128/weapon-service_pistol.png",
+        "64": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/64/weapon-service_pistol.png",
+        "32": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/32/weapon-service_pistol.png"
       },
-      "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-service_pistol.png"
+      "previous_source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P049.png",
+      "implementation_ready": false,
+      "collection": "prompt-pack-2026-11-19-file-10",
+      "previous_sha256": "cd5841d14335d25229287f0398e49f76cf8c4e3d9f8459db78e920510aa6697e",
+      "previous_native_dimensions": [
+        1254,
+        1254
+      ]
     },
     "weapon-smetanita_thumper": {
       "label": "Smetanita thumper",

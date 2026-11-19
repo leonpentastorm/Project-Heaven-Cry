@@ -1,20 +1,20 @@
 # November 19 File 10 gear art
 
 Branch `art/2026-11-19-reference-repaints` starts from develop `2020b5c2a`.
-**1 of 32** Standard candidates delivered. Numbers 01–17 are repaints of existing gear.
+**2 of 32** Standard candidates delivered. Numbers 01–17 are repaints of existing gear.
 The prompts describe fictional inventory props for Project Heaven Cry.
 Each accepted repaint keeps its original master and exports under superseded.
 
 | No. | Candidate | Status |
 | --- | --- | --- |
 | 01 | Hellraiser service rifle | repaint declined during File 09 |
-| 02 | Service pistol | draft awaiting review |
+| 02 | Service pistol | delivered as a review candidate |
 | 03 | Magistrate heavy pistol | pending |
 | 04 | Decrkm auto-pistol | delivered as a review candidate |
 | 05 | Decrkm SMG | image service declined this render |
 | 06 | Legion PDW | image service declined this render |
 | 07 | Mandestra drum-gun | image service declined this render |
-| 08 | Long rifle | pending |
+| 08 | Long rifle | image service declined this render |
 | 09 | .700 Blackpoint anti-materiel | repaint declined during File 09 |
 | 10 | CCEC marksman rifle | image service declined this render |
 | 11 | Adamantile battle rifle | image service declined this render |
@@ -24,7 +24,7 @@ Each accepted repaint keeps its original master and exports under superseded.
 | 15 | Smetanita thumper | repaint declined during File 09 |
 | 16 | Breacher tube | repaint declined during File 09 |
 | 17 | Frontier hand cannon | image service declined this render |
-| 18 | ADCorp line rifle (the line's base) | pending |
+| 18 | ADCorp line rifle (the line's base) | image service declined this render |
 | 19 | ADCorp short carbine | awaits entry 18 |
 | 20 | ADCorp designated rifle | awaits entry 18 |
 | 21 | Chezknov battle rifle (the line's base) | pending |
