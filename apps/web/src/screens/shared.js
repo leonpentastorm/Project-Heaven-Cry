@@ -8,7 +8,7 @@ import shellTpl from '../templates/shell.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
-import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION, healthView, shieldsView, CALL_RULES, callRangeAt, calls as CALLS_NS, doorForkView, doorFeedView, ENGINE_DEEDS, PERKS as ENGINE_PERKS, ladderCaps } from '@engine';
+import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, healthView, shieldsView, CALL_RULES, callRangeAt, calls as CALLS_NS, doorForkView, doorFeedView, ENGINE_DEEDS, PERKS as ENGINE_PERKS, ladderCaps } from '@engine';
 import { forkIconOf } from '../game/forkIcon';
 import { foldVals } from '../game/fold';
 import { shieldBlock } from '../game/shieldLook';
@@ -24,12 +24,9 @@ export const mod = (p) => (p <= 0 ? -2 : p - 1);
 /** A skill's modifier on a CHECK, as the engine rolls it (rules 1.13: a gamma skill counts its full points; the slot is
  * read from the engine's data, never from the screen data). Saves, attacks and Initiative keep mod(). */
 export const checkMod = (skillId, p) => checkModOf(skillId, p || 0);
-/** What one more point of an attribute gives, in the game's numbers (creation, level up, the attribute page). */
-export const ATTR_GIVES = {
-  endurance: '+15 max HP · +10% to ignore an injury', strength: '+10% physical damage · +5 kg carried', agility: '+0.5 tile of movement an AP · +1 Initiative',
-  perception: '+2 tiles of vision · +' + Math.round(CRIT_PER_PERCEPTION * 100) + '% critical damage · −10% critical damage taken', intelligence: '+10% Sigil power · +1 Line length every 2 points', expression: '+10% elemental damage · glyphs 0.1 AP cheaper',
-  insight: '+10% healing given · −5% Soul magic MP cost · +25 max MP', determination: '+5% Soul power · +75 max MP · +10% mana syphoned', virtue: 'Hymns return sooner', // rules 1.24: Max MP is Determination's and Insight's
-};
+/** What one more point of an attribute gives, in the game's numbers (creation, level up, the attribute page): the
+ *  data's own line (attributes.json player, read through the screen data), never typed here. */
+export const ATTR_GIVES = {}; D.attrs.forEach((a) => { ATTR_GIVES[a.id] = a.gives || ''; });
 /** A skill's place under its attribute, in words: the first is how you fight, the second how you survive, the third how
  *  you talk and notice (the third rolls checks one better than the others, which the roll shown already counts). */
 export const SLOT_WORD = { alpha: ['FIGHT', 'How you fight'], beta: ['SURVIVE', 'How you survive'], gamma: ['TALK · NOTICE', 'How you talk and notice · +1 on checks'] };
