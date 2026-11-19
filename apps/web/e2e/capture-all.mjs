@@ -9,7 +9,7 @@ const OUTD = process.env.CAPTURE_OUT || here('../../../.check/capture/all', impo
 mkdirSync(OUTD, { recursive: true });
 const browser = await chromium.launch();
 const SIZES = [[1280, 720], [1600, 900]];
-const done = [], skipped = [];
+const done = [], skipped = [], quickShots = []; // quickShots: a moment caught at the size of the moment only (a banner)
 let seq = Number(process.env.CAPTURE_SEQ_START || 0);
 const log = (s) => console.log(s);
 /** A picture of the page's current state at both sizes. */
@@ -129,7 +129,7 @@ await p.evaluate(() => { const w = window; w.__cards = []; const seen = new Set(
   new MutationObserver(() => { for (const el of document.querySelectorAll('[data-phc-card]')) { const id = el.getAttribute('data-phc-card-id'); if (seen.has(id)) continue; seen.add(id); w.__cards.push({ kind: el.getAttribute('data-phc-card'), id, t: performance.now(), text: el.textContent || '' }); } }).observe(document, { childList: true, subtree: true }); });
 const waitCard = (kind, timeout = 60000) => p.waitForFunction((kind) => window.__cards.some((c) => c.kind === kind), kind, { timeout, polling: 20 }).then(() => true, () => false);
 /** A picture at the current size, right now (for a banner that does not stay): saved under the size it was taken at. */
-const quick = async (name) => { const vs = p.viewportSize(); const f = vs.width + '-' + String(++seq).padStart(3, '0') + '-' + name + '.png'; await p.screenshot({ path: OUTD + '/' + f }); done.push(f); log('quick ' + f); };
+const quick = async (name) => { const vs = p.viewportSize(); const f = vs.width + '-' + String(++seq).padStart(3, '0') + '-' + name + '.png'; await p.screenshot({ path: OUTD + '/' + f }); done.push(f); quickShots.push(f); log('quick ' + f); };
 const myTurn = () => p.waitForFunction(() => { const g = window.__phc.getState().game, cb = g.combat; if (!cb || cb.over) return false; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); const d = document.querySelector('.phc-cb-dock'); return !!u && !!u.charId && !!d && !d.getAttribute('data-lock'); }, null, { timeout: 90000 }).then(() => true, () => false);
 const state = () => p.evaluate(() => window.__phc.getState().game.run?.state);
 const route1 = await p.evaluate(() => { const r = window.__phc.getState().game.run; const n = r.nodes.filter((x) => x.depth === 1 && x.kind === 'fight'); return n[0]?.id || r.nodes.find((x) => x.depth === 1).id; });
@@ -536,7 +536,8 @@ await step('the Narrator\'s desk', async () => {
 // three named checks (a green line must mean something was looked at): the pictures, and the two doors the 0.32 pass
 // found unshown (a held Bond, a held Figment); any other state not reached is noted in index.md and fails nothing
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
-ok('pictures taken at both sizes: ' + done.length, done.length > 0 && done.length % 2 === 0);
+{ const paired = done.filter((f) => !quickShots.includes(f)); // every screen is shot at both sizes; a banner (quick) only at the size it played in
+  ok('pictures taken at both sizes: ' + paired.length + ' screens' + ' (+' + quickShots.length + ' banner moments)', paired.length > 0 && paired.length % 2 === 0); }
 ok("the Mender's picture shows a Bond held", !skipped.some((x) => /^Mender: the Bond/.test(x)));
 ok('the Figment picture shows a Figment held', !skipped.some((x) => /^Rigger: Picture/.test(x)));
 console.log('done');
