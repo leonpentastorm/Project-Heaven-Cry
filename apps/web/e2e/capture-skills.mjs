@@ -107,7 +107,9 @@ for (const [w, h] of SIZES) {
     return { bad, hidden, more: more ? more.textContent.trim() : '' };
   });
   ok(w + ': the TO CHOOSE strip: label whole, chips whole, clear of MAX HP' + (strip.hidden ? ', ' + strip.more : '') + (strip.bad.length ? ' (' + strip.bad.join('; ') + ')' : ''), strip.bad.length === 0);
-  await q.locator('.phc-lu-tc[data-kind="perk"]').first().click(); await q.locator('.phc-lu-chooser[data-chooser="perk"]').waitFor({ timeout: 30000 });
+  // a chip that does not fit is counted on '+N more', which opens the first hidden choice (item B)
+  { const pc = q.locator('.phc-lu-tc[data-kind="perk"]').first(); if (await pc.isVisible()) await pc.click(); else await q.locator('.phc-lu-tc-more').click(); }
+  await q.locator('.phc-lu-chooser[data-chooser="perk"]').waitFor({ timeout: 30000 });
   const cw = await q.evaluate(() => [...document.querySelectorAll('.phc-lu-chooser .phc-perk-row')].filter((r) => [...r.querySelectorAll('.phc-perk-t1, .phc-perk-t2, .phc-perk-name')].some((c) => c.getBoundingClientRect().height > (parseFloat(getComputedStyle(c).lineHeight) || 20) * 1.5)).map((r) => r.getAttribute('data-perk')));
   ok(w + ': a perk step chooser open, its rows one line each (' + cw.join(', ') + ') ' + await shoot(q, 'levelup-perk-chooser', w), (await q.locator('.phc-lu-chooser .phc-perk-row').count()) >= 2 && (w !== 1280 || cw.length === 0));
   await q.locator('.phc-lu-tc[data-kind="fork"]').first().click(); await q.locator('.phc-lu-chooser[data-chooser="fork"]').waitFor({ timeout: 30000 });

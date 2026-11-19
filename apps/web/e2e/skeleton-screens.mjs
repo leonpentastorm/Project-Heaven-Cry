@@ -263,12 +263,12 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     const th = chips.find((c) => c.id === 'call.threaten');
     ok(at + 'Threaten is 1 AP at 5 points and shows its save: ' + th.meta + ' · ' + th.save, /^1 AP/.test(th.meta) && /^Heart save, TN \d+$/.test(th.save));
     await panel().locator('button[data-call="call.threaten"]').click(); await settle(p, 300);
-    // Rules 1.65: the one pick overlay draws the reach as a tile layer (a reach tile its dashed edge, a choice its solid
-    // one; the wording pass took the words "in reach" off the tiles' names); every tile the engine's preview sent is
+    // Rules 1.65: the one pick overlay draws the reach as a tile layer (0.31.12 item 5525: a reach tile its faint shade,
+    // the region's outer edge lined; a choice its solid outline; the wording pass took the words "in reach" off the tiles' names); every tile the engine's preview sent is
     // marked, and no other.
     const reach = await p.evaluate(() => {
       const pk = window.__phc.pick || { reach: [], choice: [] }, want = new Set([...pk.reach, ...pk.choice]);
-      const marked = [...document.querySelectorAll('button.phc-tok')].filter((b) => [...b.querySelectorAll('span[aria-hidden="true"]')].some((s) => /outline[^;]*(dashed|solid)/.test(s.getAttribute('style') || '') || /(dashed|solid)[^;]*outline/.test(s.getAttribute('style') || ''))).map((b) => (b.getAttribute('aria-label') || '').split(' ')[0]);
+      const marked = [...document.querySelectorAll('button.phc-tok')].filter((b) => [...b.querySelectorAll('span[aria-hidden="true"]')].some((s) => { const st = s.getAttribute('style') || ''; return /outline[^;]*(dashed|solid)/.test(st) || /(dashed|solid)[^;]*outline/.test(st) || /background: rgba\([^)]*, 0\.06\)/.test(st); })).map((b) => (b.getAttribute('aria-label') || '').split(' ')[0]);
       return { n: marked.length, want: want.size, sample: ([...document.querySelectorAll('button.phc-tok span[aria-hidden="true"]')].map((s) => s.getAttribute('style') || '').find((s) => /outline/.test(s)) || 'none').slice(0, 160) };
     });
     ok(at + 'the grid shows the Call\'s reach (' + reach.n + ' tiles marked, the engine sent ' + reach.want + (reach.n === reach.want ? '' : '; a layer: ' + reach.sample) + ')', reach.n > 20 && reach.n === reach.want);

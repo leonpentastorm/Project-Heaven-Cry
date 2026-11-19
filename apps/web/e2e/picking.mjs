@@ -22,6 +22,10 @@ const tok = (k) => p.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"]').
 const dismissCut = async () => { for (let i = 0; i < 4; i++) { if (!(await p.locator('[data-phc-cutin]').count())) return; await p.keyboard.press('Escape'); await settle(p, 300); } };
 /** The tiles whose hover card carries this word (the overlay writes its kind into each tile's card). */
 const tilesWith = (word) => p.evaluate((w) => [...document.querySelectorAll('button.phc-tok')].filter((b) => (b.getAttribute('aria-label') || '').includes(w)).map((b) => (b.getAttribute('aria-label') || '').split(' · ')[0]), word);
+/** The tiles whose pick-overlay layer matches (pickOverlay.ts: a reach tile's shade 0.06, a choice's 0.12 with its solid
+ *  outline, the area's 0.3): since the wording pass the tiles' names no longer say "in reach" or "it covers this tile". */
+const tilesLayer = (src) => p.evaluate((src) => { const r = new RegExp(src); return [...document.querySelectorAll('button.phc-tok')].filter((b) => [...b.querySelectorAll('span[aria-hidden="true"]')].some((s) => r.test(s.getAttribute('style') || ''))).map((b) => (b.getAttribute('aria-label') || '').split(/[ ·]/)[0]); }, src);
+const REACH = /background: rgba\([^)]*, 0\.06\)/.source, CHOICE = /background: rgba\([^)]*, 0\.12\)/.source, AREA = /background: rgba\([^)]*, 0\.3\)/.source;
 const keyOf = (r) => ('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.indexOf(r[0])) + ',' + (Number(r.slice(1)) - 1);
 /** The action box's words (the refusal line is there). */
 const dock = () => p.evaluate(() => (document.querySelector('.phc-cb-dock') || document.body).innerText || '');
@@ -67,7 +71,7 @@ async function check(name, btn, o = {}) {
   if (o.tab) { await p.locator('#phc-tab-' + o.tab).click(); await settle(p, 200); await p.locator('[role="tabpanel"]').getByRole('button', { name: btn }).first().click({ timeout: 15000 }).catch(async (e) => { console.log('INFO the tab buttons: ' + (await p.locator('[role="tabpanel"] button').allTextContents()).map((t) => t.trim().slice(0, 30)).join(' | ')); miss(e); }); }
   else await pickAction(p, btn, { timeout: 15000 }).catch(miss);
   await settle(p, 400);
-  const reach = await tilesWith('in reach'), choice = await tilesWith('you can pick this tile'), units = await tilesWith('you can pick them');
+  const choice = await tilesLayer(CHOICE), reach = [...new Set([...(await tilesLayer(REACH)), ...choice])], units = await tilesWith('you can pick them'); // a choice is drawn over its reach
   ok(name + ': selected, its reach or choices shown (reach ' + reach.length + ', tiles ' + choice.length + ', units ' + units.length + ')', reach.length + choice.length + units.length > 0);
   // the review: each action shows the kinds it must (a unit pick its reach too), and its choices lie in its reach
   for (const k of o.need || []) ok(name + ': it shows its ' + k + ' (' + ({ reach, choice, units })[k].length + ')', ({ reach, choice, units })[k].length > 0);
@@ -80,7 +84,7 @@ async function check(name, btn, o = {}) {
   const pick = o.hoverUnit ? near(units) : near(choice.filter(inside)) || near(choice) || near(units);
   if (pick) {
     await tok(keyOf(pick)).hover(); await settle(p, 500);
-    const cov = await tilesWith('it covers this tile'), line = await chip();
+    const cov = await tilesLayer(AREA), line = await chip();
     ok(name + ': on ' + pick + ', the area (' + cov.length + ' tiles) or the hover line ("' + line.slice(0, 60) + '")', cov.length > 0 || !!line);
     if (o.area) ok(name + ': the area under the pointer is the data\'s ' + o.area + ' tiles (' + cov.length + ')', cov.length === o.area);
     if (o.short) ok(name + ': the hover line stays short (' + line.length + ' characters, at most 90)', line.length > 0 && line.length <= 90);

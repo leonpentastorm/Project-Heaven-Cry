@@ -113,7 +113,7 @@ ok('the checklist and step 1: one FREE card an archetype (' + LO.archetypes.list
   await p.locator('[data-phc-camp-rack]').count() === LO.archetypes.list.length && await p.locator('[data-phc-camp-row="weapon"] [data-phc-camp-pick]').count() === LO.archetypes.list.length
   && await p.locator('[data-phc-camp-row="weapon"] [data-phc-camp-price]').count() === 0 && await p.locator('[data-phc-camp-row="weapon"] [data-phc-camp-freetag]').count() === LO.archetypes.list.length
   && await p.locator('[data-phc-camp-row="focus"] [data-phc-camp-pick]').count() === (focusStep ? 4 : 0) && await p.locator('[data-phc-camp-row="budget"] [data-phc-camp-compare]').count() > 0
-  && /NOT PICKED/.test(await p.locator('[data-phc-camp-check="weapon"]').textContent()) && /take one free weapon/.test(await p.locator('[data-phc-camp-help]').textContent()));
+  && /NOT PICKED/.test(await p.locator('[data-phc-camp-check="weapon"]').textContent()) && /costs nothing/.test(await p.locator('[data-phc-camp-check="weapon"]').getAttribute('data-tip-text'))); // (0.31.11: the help line is gone, the step says it)
 // moving on with nothing taken asks first, in plain words; Go back and pick closes it and leaves the camp as it was
 await p.locator('[data-phc-camp-next]').click(); await settle(p, 300);
 const askText = await p.locator('[data-phc-dialog] p').textContent().catch(() => '');
@@ -398,7 +398,7 @@ await settle(p, 300);
 ok('rules 1.64: the pick made inside the panel closes it (the picks are all made) and the pinned bar is gone', await p.locator('[data-phc-reward-panel]').count() === 0 && await p.locator('[data-phc-reward-bar]').count() === 0);
 { const c1 = Object.values(g.characters)[0];
   ok('the Materials card taken: gunpowder, casings and mana residue arrive in the pack (' + o1.materials.map((m) => m.item + ' ' + held(c, m.item) + ' → ' + held(c1, m.item)).join(', ') + ')', o1.materials.every((m) => held(c1, m.item) === held(c, m.item) + m.n));
-  ok('… and the run board says what was taken, in words', /takes the materials/.test(await p.locator('[data-phc-board-pick]').first().textContent().catch(() => '')));
+  ok('… and the run board says what was taken, in words', /takes the materials|: \+\w/.test(await p.locator('[data-phc-board-pick]').first().textContent().catch(() => '')));
 }
 /** Rules 1.54 item 11: a weapon taken from a pick, equipped through the sheet's GEAR tab (the one place for gear) by a click. */
 const equipCheck = async (want) => {
@@ -785,7 +785,7 @@ while (guard++ < 40) {
       sawLevelUp = true;
       await p.locator('[data-phc-levelup]').first().click();
       await p.waitForFunction(() => window.__phc.getState().screen === 'levelup', null, { timeout: 30000 });
-      await click(p, /Back to the map/, { timeout: 30000 });
+      await click(p, /Back to the map|Finish later/, { timeout: 30000 });
       await p.waitForSelector('[data-phc-run-screen]', { timeout: 30000 });
     }
     const ro = Object.values((await run()).offers || {})[0];
@@ -835,7 +835,7 @@ const both = async (name) => { await shot(name + '-1280'); await p.setViewportSi
 const cid0 = Object.keys(g.characters)[0], offer = r.boons[cid0];
 const cards = await p.locator('[data-phc-boons="' + cid0 + '"] [data-phc-boon]').allTextContents();
 ok('the boon pick: three large cards, each its name, its sentence with its number from data and its worth (' + offer.join(', ') + ')', cards.length === 3 && offer.length === 3
-  && cards.every((t) => /\d/.test(t) && /boon room/.test(t)) && await p.locator('[data-phc-boons] [data-phc-boon] [data-phc-boon-icon]').count() === 3); // 0.28.1: the artist's icon
+  && cards.every((t) => /\d/.test(t) && /Room \d|No room used/.test(t)) /* 0.31.11 wording: 'Room N' */ && await p.locator('[data-phc-boons] [data-phc-boon] [data-phc-boon-icon]').count() === 3); // 0.28.1: the artist's icon
 await both('survival-boon-pick');
 await p.locator('[data-phc-boon="' + offer[0] + '"]').click();
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'tile', null, { timeout: 30000 });

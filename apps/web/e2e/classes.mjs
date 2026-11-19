@@ -46,6 +46,8 @@ ok('level 3, no class yet: level ' + g.characters[cid].level + ', class ' + g.ch
 const lvl = p.locator('button', { hasText: /Earn your class|Level up/ }).first();
 await lvl.waitFor({ timeout: 30000 });
 await lvl.click();
+// 0.31.11: the class is chosen in the centred chooser the TO CHOOSE strip's Class chip opens
+await p.locator('.phc-lu-tc[data-kind="class"]').click({ timeout: 30000 });
 await p.waitForSelector('.phc-lu-pick', { timeout: 30000 });
 await settle(p, 700); // the pop-in animations
 const cards = p.locator('button.phc-lu-class-card');
