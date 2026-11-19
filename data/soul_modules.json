@@ -22,6 +22,8 @@
     "swell_strain": 1,
     "flooded_strain": 2,
     "no_emanator_strain": 4,
+    "no_emanator_warn": "Emanator stowed",
+    "no_emanator_warn_note": "The 0.32 merge (Step 3e): the fight panel's Strain row says this in place of NEAR THE LIMIT when only the air's Strain of a Begin without an Emanator in hand (no_emanator_strain) would take it over the limit.",
     "free_pumps": [
       {
         "will_power": 3,

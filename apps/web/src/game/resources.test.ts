@@ -26,6 +26,7 @@ const keys = (rows: any[]) => rows.map((r) => r.key);
 const sigil = (o: any = {}) => ({ words: ['fire', 'seek'], designs: [], evoker: true, emanator: false, charge: 10, cores: 2, coresMade: 0, flux: 0, mp: 0, mpMax: 0, strain: 0, held: null, cast: false, strainLimit: 4, ...o });
 const soul = (o: any = {}) => ({ words: [], designs: [{ id: 'd1', name: 'Heartfire', school: 'damage', modules: ['wave'], tone: 'fire' }], evoker: false, emanator: true, charge: 0, cores: 0, coresMade: 0, flux: 0, mp: 300, mpMax: 400, strain: 0, held: null, cast: false, strainLimit: 4, ...o });
 
+import SOULJ from '../../../../data/soul_modules.json';
 describe('the gunner: ammo, spares, ammo type, Heat', () => {
   it('rounds loaded / capacity with spare magazines in words; low ammo says RELOAD, none with no spares says EMPTY', () => {
     const { u, c, g } = fight((c) => { c.weapon = 'hellraiser_service_rifle'; });
@@ -117,6 +118,13 @@ describe('the Soul caster: MP, Strain vs its limit, the held Outburst', () => {
     // The −1 a turn is always there; calming the heart adds to it (Leon).
     expect(row(r, 'strain').hint).toMatch(/Falls by 1 at the start of each of your turns, and more by calming/);
     u.mg.strain = 6; expect(row(resourcesOf(u, c, g), 'strain').warn).toBe('MANA SHORT NEXT');
+  });
+  it("the Emanator stowed: when only the air's Strain of a Begin without one goes over, the row says so in the data's words, not NEAR THE LIMIT (the 0.32 merge, Step 3e)", () => {
+    const { u, c, g } = fight((c) => { c.weapon = 'fists'; });
+    u.mg = soul({ strain: 0, emanator: false });
+    const w = row(resourcesOf(u, c, g), 'strain').warn;
+    expect(w).toBe(String((SOULJ as any).cycle.no_emanator_warn).toUpperCase()); expect(w).not.toBe('NEAR THE LIMIT');
+    u.mg.emanator = true; expect(row(resourcesOf(u, c, g), 'strain').warn).toBeUndefined(); // in hand: nothing to warn of at 0
   });
   it('the held Outburst: design name, stage, tone and form through the one adapter', () => {
     const { u, c, g } = fight();
