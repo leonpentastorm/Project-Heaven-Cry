@@ -60,7 +60,7 @@ import { fadeStyle, SHADE_POOL, shadowHeld, wispsUri, wispStyle, SHADOW_INK } fr
 import { tieLayerVals, eyeLines } from '../game/tieLayer';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles, strokeButtons, strokeLayer, readableAt, traceMark, wordMasteryChips } from '../game/sigilView';
 import { backpackView } from '../game/backpack';
-import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, padAction, techAction, TWATCH, TPAD, needsAlly, ATTACK_MODES, isAttackMode } from '../game/techView';
+import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, padAction, techAction, TWATCH, TPAD, needsAlly, ATTACK_MODES, isAttackMode, targetAttackPreview } from '../game/techView';
 import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
@@ -952,7 +952,7 @@ export class CombatLogic extends DCLogic {
     const coverWord = (k) => { const c = tileCover(cb, k, 'pc', coverFoe, coverSeen, coverWalls); return !c ? '' : ' · ' + (c.grade === 'full' ? 'Full cover' : c.grade === 'half' ? 'Half cover' : c.grade === 'blocked' ? 'Out of the line of fire' : 'No cover') + ' from ' + c.foe + (c.mod ? ' (−' + c.mod + ' to its shots)' : ''); };
     const ATTACKS = ATTACK_MODES; // the old attack rows (a companion, a puppet or the drone keeps them: game/techView.ts)
     const attackMode = ATTACKS.includes(S.action) ? S.action : 'shot';
-    const pv = mineTurn && tgtUnit && ATTACKS.includes(S.action) ? previewAttack(cb, cur, tgtUnit, attackMode) : null;
+    const pv = mineTurn && tgtUnit && ATTACKS.includes(S.action) ? targetAttackPreview(g, cb, cur, tgtUnit, attackMode, S.mods, getState().me.id) : null; // with the switches the attack carries (a Break)
     // ---------- Physical 2.0 (rules 1.12; game/techView.ts): the weapon blocks, the open pad, the picked technique ----------
     // Everything below is the engine's (techniquePad, previewTechnique, physView): the screen works out no number.
     const blocks = mineTurn && !isLegacyUnit(cur) ? weaponBlocks(g, cb, cur) : [];

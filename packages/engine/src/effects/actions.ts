@@ -441,7 +441,8 @@ export function togglesFor(x: Who, actionType: string, actx: any = {}, mods: str
     if (!t.on.includes(actionType)) continue;
     const av = t.available ? t.available(h, actx) : true; if (av === false) continue;
     const id = h.key + '#' + t.id;
-    out.push({ id, itemKey: h.key, label: t.label, why: typeof av === 'string' ? av : null, on: toggleState(t, id, mods), preview: t.preview ? t.preview(h, actx) : null, defaultOn: !!t.defaultOn });
+    // a greyed toggle is never shown on (outside playtest 0.31.10 row 7: Break stayed pressed at 0 Shadow); the action never carries it
+    out.push({ id, itemKey: h.key, label: t.label, why: typeof av === 'string' ? av : null, on: typeof av !== 'string' && toggleState(t, id, mods), preview: t.preview ? t.preview(h, actx) : null, defaultOn: !!t.defaultOn });
   }
   return out;
 }

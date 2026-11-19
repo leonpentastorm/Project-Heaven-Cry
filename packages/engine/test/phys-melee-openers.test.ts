@@ -205,8 +205,8 @@ describe('Draw Cut (4)', () => {
 describe('Ambush (5)', () => {
   const hide = (u: Unit) => { u.hidden = true; u.hideEntry = 1; u.ambushUsed = 0; };
   it('only from Hidden: the Ambush multiplier; it costs no Momentum and gives none', () => {
-    const f = fight('sabre', ['ambush'], 'C5', 'D5'); hide(f.pc); rig({ hit: true, die: 12 });
-    const pv = f.pv('ambush', { targetId: f.foe.id }), cut = f.pv('cut', { targetId: f.foe.id });
+    const f = fight('sabre', ['ambush'], 'C5', 'D5'); const cut = f.pv('cut', { targetId: f.foe.id }); hide(f.pc); rig({ hit: true, die: 12 }); // the plain Cut out of Hidden (from Hidden the Cut is an ambush too: row 7 of the 0.31.10 playtest)
+    const pv = f.pv('ambush', { targetId: f.foe.id });
     expect(dmgOf(pv)).toBeCloseTo(dmgOf(cut) * (f.pc.ambushMult || 1.5), 5); expect(pv.momentum).toEqual({ now: 1, after: 1 }); expect(pv.ap).toBe(2);
     const before = state(f); f.pv('ambush', { targetId: f.foe.id }); expect(state(f)).toBe(before);
     expect(f.tech('ambush', { targetId: f.foe.id })).toBeNull();
@@ -217,9 +217,9 @@ describe('Ambush (5)', () => {
   });
   it('the card\'s damage is the action\'s, from a fresh Hidden entry and from one whose ambush is spent', () => {
     for (const spent of [false, true]) {
-      const f = fight('sabre', ['ambush'], 'C5', 'D5'); hide(f.pc); if (spent) f.pc.ambushUsed = 1; f.foe.armour = 0; rig({ hit: true, die: 12 });
+      const f = fight('sabre', ['ambush'], 'C5', 'D5'); f.foe.armour = 0; const cut = f.pv('cut', { targetId: f.foe.id }); hide(f.pc); if (spent) f.pc.ambushUsed = 1; rig({ hit: true, die: 12 }); // the plain Cut out of Hidden
       const pv = f.pv('ambush', { targetId: f.foe.id }), hp = f.foe.hp;
-      expect(dmgOf(pv)).toBeCloseTo(dmgOf(f.pv('cut', { targetId: f.foe.id })) * (f.pc.ambushMult || 1.5), 5);
+      expect(dmgOf(pv)).toBeCloseTo(dmgOf(cut) * (f.pc.ambushMult || 1.5), 5);
       expect(f.tech('ambush', { targetId: f.foe.id })).toBeNull();
       expect(hp - f.foe.hp, 'spent ' + spent).toBe(Math.max(1, Math.floor(dmgOf(pv) * (1 - ((f.foe as any).ambushTaken || 0)))));
     }

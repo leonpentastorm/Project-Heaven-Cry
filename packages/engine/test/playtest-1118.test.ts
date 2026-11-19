@@ -115,3 +115,22 @@ describe('row 5: Parry while holding Guard', () => {
     expect(f.cb.log.join(' ')).toMatch(/Retort/); expect(a.hp).toBeLessThan(900);
   });
 });
+
+import { applyCond } from '../src';
+describe('row 7: the Break toggle is never shown on when it can\'t be used', () => {
+  function hidden(shadow: number) {
+    const f = physFight([{ weapon: 'service_pistol', skills: { ingenuity: 7, dexterity: 3 } }], [{ tier: 'soldier', weapon: 'fists' }]);
+    f.cb.objects = []; f.put(f.pcs[0], 'C5'); const a = f.cb.units.find((u) => u.side === 'foe')!; f.put(a, 'D5'); a.hp = a.maxHp = 900; a.armour = 0;
+    const u = f.turn(f.pcs[0]); f.unit(u.id).res!.shadow = shadow;
+    f.bound(() => applyCond(f.cb, f.g.rng, f.unit(u.id), f.unit(u.id), 'hidden', 9, undefined, { skipSave: true }));
+    return { f, u: f.unit(u.id), a: f.unit(a.id) };
+  }
+  it('at 0 Shadow the Break chip is greyed and off, even with the switch left set; at 2 it is on', () => {
+    const BR = 'skill:ingenuity.1#shadow.break';
+    const z = hidden(0), pv0 = z.f.bound(() => previewDescriptor(z.f.g, z.u.id, 'melee', { targetId: z.a.id, mods: [BR] }, 'host'))!;
+    const t0 = pv0.toggles.find((t) => t.id === BR)!; expect(t0.why).toBeTruthy(); expect(t0.on).toBe(false);
+    expect((pv0.action as any)?.mods || []).not.toContain(BR);
+    const two = hidden(2), pv2 = two.f.bound(() => previewDescriptor(two.f.g, two.u.id, 'melee', { targetId: two.a.id, mods: [BR] }, 'host'))!;
+    expect(pv2.toggles.find((t) => t.id === BR)!.on).toBe(true); expect((pv2.action as any)?.mods).toContain(BR);
+  });
+});

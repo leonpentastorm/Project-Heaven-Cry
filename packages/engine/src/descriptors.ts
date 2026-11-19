@@ -1079,7 +1079,7 @@ export function nextStep(d: ActionDescriptor, p: Picks, o: { required?: boolean 
 function withMods(x: DescCtx, d: ActionDescriptor, picks: Picks): { toggles: ToggleEntry[]; picks: Picks } {
   if (!d.toggleOn) { const { mods: _m, ...rest } = picks; void _m; return { toggles: [], picks: rest }; }
   const tg = safe(() => withGame(x.g, () => togglesFor({ u: x.u, c: x.c, cb: x.cb, g: x.g }, d.toggleOn!, { action: d.id, target: picks.targetId ? x.cb.units.find((v) => v.id === picks.targetId) : null }, picks.mods || [])), [] as ToggleEntry[]);
-  const mods = tg.filter((t) => t.on && !t.why).map((t) => t.id).concat(tg.filter((t) => t.defaultOn && !t.on).map((t) => '!' + t.id));
+  const mods = tg.filter((t) => t.on && !t.why).map((t) => t.id).concat(tg.filter((t) => t.defaultOn && !t.on && !t.why).map((t) => '!' + t.id)); // (a greyed toggle shows off: it is not turned off by hand)
   return { toggles: tg, picks: { ...picks, mods } };
 }
 /** The reducer action Confirm sends for these picks (null: a required pick is missing, or no such action). */

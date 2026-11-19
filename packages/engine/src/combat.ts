@@ -1390,7 +1390,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const toHit = terms.reduce((t, x) => t + x.v, 0);
   const pct = Math.max(5, Math.min(95, (21 - (tgt.def - toHit)) * 5));
   const who = charFor(att);
-  return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty, terms, via: rolled, dmg: attackDamage(cb, att, tgt, mode, who, { preview: true, ambush: !!opts.ambush && tgt.side !== att.side, via: rolled }) };
+  return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty, terms, via: rolled, dmg: attackDamage(cb, att, tgt, mode, who, { preview: true, ambush: (ambushReady(att) || !!opts.ambush) && tgt.side !== att.side, via: rolled }) }; // an ambush as resolveAttack decides it (from Hidden too: outside playtest 0.31.10 row 7)
 }
 /** The live character behind a PC unit, when a game is bound (multipliers come from it). */
 const charFor = (u: Unit): Character | null => { const G = boundGameRef(); return (u.charId && G?.characters?.[u.charId]) || null; };

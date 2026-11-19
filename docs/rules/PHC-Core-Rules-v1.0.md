@@ -12277,3 +12277,14 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     reaction an event (rules 1.28), so with both switched on Parry answers first (it is the earlier phase, before the
     damage) and Retort waits; switched off in the Answer list, Parry leaves the blow to Retort. Proof:
     `test/playtest-1118.test.ts` (the foe's blow through `resolveAttack`).
+5503. **Previews that lie** (row 7). (a) An attack's preview from Hidden counts the ambush as the attack does: an
+    unspent Hidden entry makes the preview's damage an ambush's (`combat.ts previewAttack` reads `ambushReady`, as
+    `resolveAttack` does; it showed the plain damage, and Shadow's Break, which replaces the ambush term, showed a third
+    of what it dealt). (b) The fight screen's target card previews the attack with the switches Confirm sends (the
+    descriptor's mods on the fight: `techView.ts targetAttackPreview`). (c) A greyed switch is never shown on (Break at 0
+    Shadow; `effects/actions.ts togglesFor`), and the action never carries it. Recorded on purpose: `weapons`,
+    `costs-weapons` and `rules-weapons` (4 lines each: the ambush preview, 74.6 was 111.8 dealt). **Not built (needs a
+    new primitive):** the Momentum line of a melee preview counts only the technique's own cost and the plain attack's
+    +1; what items add on a hit (Rolling Start's +1, the Breaker's +2 against the Shaken, Charge's run) are `resource`
+    ops on the `hit` trigger, which a preview skips (it changes nothing). Proof: `test/playtest-1118.test.ts`,
+    `apps/web/src/game/targetPreview.test.ts` (the card's damage is what the reducer then deals).

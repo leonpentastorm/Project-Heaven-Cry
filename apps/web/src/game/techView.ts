@@ -9,7 +9,7 @@
 import { WEAPON, ITEM, phys, parseTechId, techParts, pairs } from '@engine';
 import { tipAttrs } from './actionTip';
 type PadEntry = phys.PadEntry; type PadGroup = phys.PadGroup;
-import { heatLimit } from '@engine';
+import { heatLimit, previewAttack, sendDescriptor, fightWith } from '@engine';
 const { techniquePad, packPad, pairedPad, physView, weaponSystem, propText, TECHNIQUE, shieldOf, followOf } = phys;
 import { gearIconUri, GEAR_INK_OFF } from './gearIcons';
 import { poseOf } from './fx/pressure';
@@ -305,3 +305,11 @@ export function lineTiles(a: string, b: string): string[] {
 
 /** The choices a technique's text offers beyond its property line, and what is sent when nothing is picked: the engine's. */
 export { TECH_OPTIONS as TECH_OPTS, techOpt as techOptOf } from '@engine';
+
+/** The target card's attack preview (outside playtest 0.31.10 row 7): the engine's previewAttack on the fight with the
+ * switches the attack will carry (a Break: Shadow's damage), the mods sendDescriptor puts on the action Confirm sends
+ * (only those that are on and allowed), so the card's damage is the one the reducer deals. */
+export function targetAttackPreview(g: any, cb: any, cur: any, tgt: any, mode: string, mods: string[] | null | undefined, me: string | null): any {
+  const sent: any = mods && mods.length ? sendDescriptor(g, cur.id, mode, { targetId: tgt.id, mods }, me) : null;
+  return previewAttack(fightWith(cb, sent && sent.mods && sent.mods.length ? sent.mods : null), cur, tgt, mode as any);
+}
