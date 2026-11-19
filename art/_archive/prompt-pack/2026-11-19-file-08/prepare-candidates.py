@@ -3,6 +3,7 @@ from pathlib import Path
 from PIL import Image,ImageDraw
 import numpy as np
 A=Path(__file__).parent
+def stem(ident):return ident if ident.startswith(('shield-','armour-','focus-','quiver-')) else 'weapon-'+ident
 ids=('katana','combat_knife','sabre','legion_gladius','recurve_bow','longbow','drifter_revolver','crossbow','repeating_crossbow')
 tiers=('fine','masterwork','relic','celestial')
 manifest=[]
@@ -11,13 +12,13 @@ d=ImageDraw.Draw(out)
 def maskbox(im):
  return im.getchannel('A').point(lambda v:255 if v>=128 else 0).getbbox()
 for r,ident in enumerate(ids):
- standard=Image.open(f'art/icons/gear/weapon-{ident}.png').convert('RGBA')
+ standard=Image.open(f'art/icons/gear/{stem(ident)}.png').convert('RGBA')
  b=maskbox(standard)
  for c,tier in enumerate(('standard',*tiers)):
   im=standard
   if tier!='standard':
-   src=A/'drafts'/f'weapon-{ident}--{tier}.png'
-   if tier=='fine' and (A/'drafts'/f'weapon-{ident}--fine-retry.png').exists():src=A/'drafts'/f'weapon-{ident}--fine-retry.png'
+   src=A/'drafts'/f'{stem(ident)}--{tier}.png'
+   if tier=='fine' and (A/'drafts'/f'{stem(ident)}--fine-retry.png').exists():src=A/'drafts'/f'{stem(ident)}--fine-retry.png'
    if not src.exists():
     d.text((c*168+8,r*150+50),'Pending',fill='#AAAAAA')
     continue
@@ -26,7 +27,7 @@ for r,ident in enumerate(ids):
    small=native.resize(tuple(round(v*scale) for v in native.size),Image.Resampling.LANCZOS)
    pos=tuple(round((b[k]+b[k+2]-scale*(g[k]+g[k+2]))/2) for k in range(2))
    im=Image.new('RGBA',(1024,1024));im.paste(small,pos)
-   dest=A/'candidate-masters'/f'weapon-{ident}--{tier}.png';dest.parent.mkdir(exist_ok=True)
+   dest=A/'candidate-masters'/f'{stem(ident)}--{tier}.png';dest.parent.mkdir(exist_ok=True)
    im.save(dest,optimize=True)
    x=np.asarray(standard.resize((64,64)).getchannel('A'))>=128
    y=np.asarray(im.resize((64,64)).getchannel('A'))>=128

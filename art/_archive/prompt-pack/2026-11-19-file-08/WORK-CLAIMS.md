@@ -15,3 +15,7 @@ The four grades for Katana, Combat Knife, Sabre and Legion Gladius have now been
 The next eight finish trials are recurve_bow and longbow, all four grades. This claim is also posted to the shared coordination issue https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 .
 
 Those eight are now registered and pushed as review candidates: this branch has 24 candidate masters, 96 game-size exports. Next claim is existing `weapon-crossbow` and `weapon-repeating_crossbow`, all four grades, eight pictures. Shared issue comment 7003710278 records it before rendering. No other IDs newly reserved here.
+
+Current delivered count: 28 review-candidate masters, 112 exports. Crossbow Fine, Repeating Crossbow Fine/Masterwork and Drifter Fine are registered. Crossbow Masterwork and Repeating Crossbow Relic were service-blocked; their higher grades remain pending.
+
+Current active claim: `shield-buckler`, `shield-riot_shield`, `shield-pavise`, each Fine/Masterwork/Relic/Celestial: twelve pictures. Shared issue comment 7003887329 records the reservation before rendering. Other kept glove, focus, quiver, hafted and armour grade IDs remain unclaimed by this worker. Check the shared issue before taking them. Existing blade grades `kemizuchi_duelling_blade`, `adamantile_greatsword`, `ork_machete` stay with the other worker. Their acknowledgment of the earlier overlap correction is still pending.

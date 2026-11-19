@@ -2,8 +2,9 @@ import json,shutil,hashlib
 from pathlib import Path
 from PIL import Image,ImageDraw
 A=Path(__file__).parent
+def stem(ident):return ident if ident.startswith(('shield-','armour-','focus-','quiver-')) else 'weapon-'+ident
 m=json.loads(Path('/workspace/work/prompt-pack-08/current-grade.json').read_text())
-dest=A/'drafts'/f"weapon-{m['id']}--{m['tier']}.png"
+dest=A/'drafts'/f"{stem(m['id'])}--{m['tier']}.png"
 assert not dest.exists(),dest
 shutil.copy2(m['src'],dest)
 m['src']=dest.as_posix()
@@ -15,13 +16,13 @@ out=Image.new('RGB',(1000,235*len(ids)),'#10151F')
 d=ImageDraw.Draw(out)
 for r,ident in enumerate(ids):
  for c,tier in enumerate(tiers):
-  p=Path(f'art/icons/gear/weapon-{ident}.png') if tier=='standard' else A/'drafts'/f'weapon-{ident}--{tier}.png'
-  if tier=='fine' and (A/'drafts'/f'weapon-{ident}--fine-retry.png').exists():p=A/'drafts'/f'weapon-{ident}--fine-retry.png'
+  p=Path(f'art/icons/gear/{stem(ident)}.png') if tier=='standard' else A/'drafts'/f'{stem(ident)}--{tier}.png'
+  if tier=='fine' and (A/'drafts'/f'{stem(ident)}--fine-retry.png').exists():p=A/'drafts'/f'{stem(ident)}--fine-retry.png'
   d.text((c*200+10,r*235+4),ident+' '+tier,fill='white')
   if p.exists():
    im=Image.open(p).convert('RGBA');im.thumbnail((190,190),Image.Resampling.LANCZOS)
    out.paste(im,(c*200+(200-im.width)//2,r*235+25),im)
 out.save(A/'review/complete-proof-progress.jpg',quality=95)
 paths=list((A/'drafts').glob('*.png'))
-(A/'PROGRESS.md').write_text('# Grade proof progress\n\n'+str(len(paths))+' archived PNG attempts, including earlier Fine trials. The composite shows the current candidate for each finish.\n\n[Proof progress](review/complete-proof-progress.jpg)\n')
+(A/'PROGRESS.md').write_text('# Grade proof progress\n\n'+str(len(list((A/'delivered').glob('*.json'))))+' registered review-candidate masters. '+str(len(paths))+' archived PNG attempts, including earlier Fine trials. The composite shows the current candidate for each finish.\n\n[Proof progress](review/complete-proof-progress.jpg) · [Inventory sizes](review/finish-candidates-small.jpg) · [Claims](WORK-CLAIMS.md) · [Handoff](HANDOFF.md)\n')
 print(dest)
