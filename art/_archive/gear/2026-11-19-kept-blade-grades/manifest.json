@@ -3330,6 +3330,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-visualizer--masterwork",
+      "path": "art/icons/gear/focus-visualizer--masterwork.png",
+      "sha256": "70a8dabe46ffa37a5630c680c9a3e0d87ba70dd6b73fd23553c70f86e78daa4e",
+      "label": "Visualizer — Masterwork",
+      "family": "focus-visualizer",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-visualizer--masterwork.png",
+        "sha256": "400ba9b768639a6e750dbe313cb970bc670f81984e2ecdc2e66861a0a7ace036"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-visualizer--masterwork.png",
+        "sha256": "70a8dabe46ffa37a5630c680c9a3e0d87ba70dd6b73fd23553c70f86e78daa4e"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-visualizer--masterwork.txt",
+        "sha256": "a109a4d9ab9df2975ed71857e9e037da36e2d71ab966618dab38b491fd7e5ad7"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/focus-visualizer.png",
+          "sha256": "b0184fad79241f59ef9f6afd4ef1e696b48c29e03ce6c9e76cbea1b36ca3f1ac"
+        },
+        {
+          "path": "art/icons/gear/focus-visualizer--fine.png",
+          "sha256": "573d79eb51226b55f6cb01aea34ab8aeee30f65f72ee43563b92beeacfea2105"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-visualizer--masterwork.png",
+        "128": "art/icons/gear/exports/128/focus-visualizer--masterwork.png",
+        "64": "art/icons/gear/exports/64/focus-visualizer--masterwork.png",
+        "32": "art/icons/gear/exports/32/focus-visualizer--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "f9c7699552feb8b005862dbd93111b8f8aa3092d5bab34a4c91f751f9e20c571",
+        "128": "e0599bf39983963353b52971d8dbf0bc04c28146c25fee75f6b9c565430ea247",
+        "64": "a10e6f5c183d10acdade094c6fe1aa4d57bdf516263164336d05356ed70b330c",
+        "32": "40f6b0c1b12cda720ec91f046cc519e7685f78c922afb6eb5796fb53b27484a2"
+      },
+      "grade": "masterwork",
+      "standard_id": "focus-visualizer",
+      "outline": {
+        "solid_alpha_iou": 0.9606048887712942,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 38
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
