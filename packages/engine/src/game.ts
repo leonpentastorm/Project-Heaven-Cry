@@ -554,7 +554,14 @@ export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
     for (const u of (cb?.units || []) as any[]) {
       if (u.lastTurn || u.dead || !condOn(u, 'last_turn')) continue;
       const c: any = (g as any).characters?.[u.charId]; let row: any = null, key = '';
-      for (const p of (c?.perks || []) as any[]) { const it: any = (PERK as any)[p.id]; const fx: any[] = it?.tiers?.[p.tier]?.effects ?? it?.effects ?? []; const r = fx.find((e) => e?.op === 'last_turn'); if (r) { row = { ...r, label: r.label || it.name }; key = 'perk:' + p.id; break; } }
+      // the right perk (the 0.32.0 ship review): only the old handler wrote this state, and it kept its own mark in the
+      // perk's bag (ps[key].lt), so the perk whose bag holds that mark is the one; with no mark anywhere, the first
+      for (const p of (c?.perks || []) as any[]) {
+        const it: any = (PERK as any)[p.id]; const fx: any[] = it?.tiers?.[p.tier]?.effects ?? it?.effects ?? []; const r = fx.find((e) => e?.op === 'last_turn');
+        if (!r) continue; const k = 'perk:' + p.id; const marked = u.ps?.[k]?.lt != null;
+        if (!row || (marked && u.ps?.[key]?.lt == null)) { row = { ...r, label: r.label || it.name }; key = k; }
+        if (marked) break;
+      }
       if (!row) continue;
       const began = u.ps?.[key]?.lt?.began ?? (cb.order?.[cb.turn] === u.id && !cb.window);
       u.lastTurn = { began: !!began, ...(typeof row.turn_ap === 'number' ? { turnAp: row.turn_ap } : {}), ...(row.hits === 'death_save' ? { hits: 'death_save' } : {}), label: row.label, ...(u.lastHitBy ? { by: u.lastHitBy } : {}) };

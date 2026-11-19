@@ -84,6 +84,16 @@ describe('A2: borrowed time ends through the one damage door (on_downed, on_kill
     expect(loaded.combat!.units.find((x: any) => x.id === f.pc.id)!.lastTurn).toMatchObject({ began: true, hits: (PERK as any).bite_the_bullet.effects.find((e: any) => e.op === 'last_turn').hits });
     const log = end(loaded); expect(log).toContain(over);
   });
+  it('the 0.33 fix: a character holding Still Standing first and Bite the Bullet takes the perk whose bag holds the old mark', () => {
+    const f = dropped({ still_standing: 'II', bite_the_bullet: 'I' }); f.turn(f.pc);
+    const c: any = f.g.characters[f.pc.charId!]; expect(c.perks.map((p: any) => p.id).indexOf('still_standing')).toBeLessThan(c.perks.map((p: any) => p.id).indexOf('bite_the_bullet'));
+    const old = JSON.parse(JSON.stringify(f.g)), ou = old.combat.units.find((x: any) => x.id === f.pc.id);
+    delete ou.lastTurn; ou.ps ||= {}; delete ou.ps['perk:still_standing']; ou.ps['perk:bite_the_bullet'] = { lt: { began: true } };
+    if (!condOn(ou, 'last_turn')) (ou.conds ||= {}).last_turn = 99;
+    const bite: any = (PERK as any).bite_the_bullet.effects.find((e: any) => e.op === 'last_turn');
+    const lt = migrateLoaded(old).combat!.units.find((x: any) => x.id === f.pc.id)!.lastTurn!;
+    expect(lt.hits).toBe(bite.hits); expect(lt.turnAp).toBeUndefined(); expect(lt.label).toBe(bite.label || (PERK as any).bite_the_bullet.name);
+  });
 });
 
 // ---------------------------------------------------------------------------------------------- A4

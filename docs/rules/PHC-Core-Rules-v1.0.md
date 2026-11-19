@@ -13497,3 +13497,17 @@ Survival) and the range measures; the account is `docs/design/handoffs/0.32-FIT.
     has no weapon skill (-2 to hit with the fists); with a 40-round cap the stalls end 3 won, 13 lost: not slow wins.
     Every door's Recommended kit clears stage 1 solo 10 times in 40 or more but the Sigilist's (2; Leon's ruling: the
     bot's limit).
+
+### Rules 1.82 (rules lane), 0.33: the rules not built in 0.32 (20 Nov 2026)
+
+The rules lane of 0.33: the owed rules of `docs/ROADMAP.md` ("0.32: needs a primitive", "Leftovers", "Big leftovers"
+and the questions waiting on Leon). Leon approved every new engine piece on 20 Nov 2026 ("approve all new engine
+pieces"); where he had not answered a question, the lead's pick is built behind a data switch (no answer means yes), and
+each is a **call made for Leon** he can reverse. A later revision overrides the body and the earlier ones. Every new
+number is PROVISIONAL; every rule here is `adjudication: engine` unless it says. Hand-off:
+`docs/design/handoffs/0.33-LANE-RULES.md`.
+
+7000. **Borrowed time on an old mid-fight save** (the 0.32.0 ship review): a fight saved under the old Bite the Bullet
+      handler takes its state from the perk whose bag holds that handler's mark (`ps[perk].lt`), not the first perk with
+      a `last_turn` row: a character holding Still Standing and Bite the Bullet gets Bite the Bullet's rule. With no
+      mark anywhere, the first such perk, as before. No number changes.
