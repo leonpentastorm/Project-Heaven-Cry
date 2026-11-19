@@ -5864,6 +5864,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-armoured_greaves--relic",
+      "path": "art/icons/gear/armour-armoured_greaves--relic.png",
+      "sha256": "e116897b56e3393681643694064631e8a68b1da14c9795d66387657369b5d270",
+      "label": "Armoured Greaves — Relic",
+      "family": "armour-armoured_greaves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-armoured_greaves--relic.png",
+        "sha256": "098e4a2273e196311c0bebbebc43fc6ba8d02327ccff1a37cb107495dd312872"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--relic.png",
+        "sha256": "e116897b56e3393681643694064631e8a68b1da14c9795d66387657369b5d270"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--relic.txt",
+        "sha256": "fd47a4a8d8f636a91b8cb892baa1b4d8664d5eb22743f80f5b496826bbe9a1f8"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-armoured_greaves.png",
+          "sha256": "fb960809ab40e72d1ceb6c00a35824825eb38dadfb660993bd789e6b459d7056"
+        },
+        {
+          "path": "art/icons/gear/armour-armoured_greaves--masterwork.png",
+          "sha256": "fa3450ae9155e8f9908ec07d807eeafb463a325b26b26d2c0fd0b6d5dd1434b0"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-armoured_greaves--relic.png",
+        "128": "art/icons/gear/exports/128/armour-armoured_greaves--relic.png",
+        "64": "art/icons/gear/exports/64/armour-armoured_greaves--relic.png",
+        "32": "art/icons/gear/exports/32/armour-armoured_greaves--relic.png"
+      },
+      "export_hashes": {
+        "256": "309d06bfb91d322eaad99fc9210b0e5f59e6f1bfe932d9cfd6d1527b14e48150",
+        "128": "b2e104b4806a2448a3635d1785d8fdc084d50528c7b1b352651daf3530a3ee1e",
+        "64": "41740fbba5ff1731a04b1f4011e0a9b8d04655ef76998e84a18a700041db60d8",
+        "32": "2017d741bfbeddf85c21b1febf3ec8c805d6efbdbda1f8488e0352384e9544c5"
+      },
+      "grade": "relic",
+      "standard_id": "armour-armoured_greaves",
+      "outline": {
+        "solid_alpha_iou": 0.963485794998291,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 37
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

@@ -23545,6 +23545,42 @@
         "different_pixels_32": 6,
         "different_pixels_64": 20
       }
+    },
+    "armour-armoured_greaves--relic": {
+      "label": "Armoured Greaves — Relic",
+      "path": "art/icons/gear/armour-armoured_greaves--relic.png",
+      "sha256": "e116897b56e3393681643694064631e8a68b1da14c9795d66387657369b5d270",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-armoured_greaves--relic.png",
+        "128": "art/icons/gear/exports/128/armour-armoured_greaves--relic.png",
+        "64": "art/icons/gear/exports/64/armour-armoured_greaves--relic.png",
+        "32": "art/icons/gear/exports/32/armour-armoured_greaves--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-armoured_greaves--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-armoured_greaves",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.963485794998291,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 37
+      }
     }
   },
   "survival_art": {
