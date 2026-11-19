@@ -5368,6 +5368,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-trauma_plate--relic",
+      "path": "art/icons/gear/armour-trauma_plate--relic.png",
+      "sha256": "318f35be25b1c6e990d9485770318ca274e55dd9400c412beebb77db6e929fe1",
+      "label": "Trauma Plate — Relic",
+      "family": "armour-trauma_plate",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-trauma_plate--relic.png",
+        "sha256": "b1d6657e4451b163e16c0d9756463cf737ab7a72b4c0244af6ec5ac21cfd53cf"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-trauma_plate--relic.png",
+        "sha256": "318f35be25b1c6e990d9485770318ca274e55dd9400c412beebb77db6e929fe1"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-trauma_plate--relic.txt",
+        "sha256": "f4916f2cb882c6446ec1f3f34120e2a341150b1b0ee31f92e7ddc2ef27a6ce46"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-trauma_plate--relic/v1/source.png",
+          "sha256": "831aebb5a161e7b62b53862f8d3c23f087b5d884270cff92c94798c6767ad25c"
+        },
+        {
+          "path": "art/icons/gear/armour-trauma_plate.png",
+          "sha256": "34cbf6f62a75b1718185be1bcc9eba105ad8fae3bac0b9e3bfb522e777a0a767"
+        },
+        {
+          "path": "art/icons/gear/armour-trauma_plate--masterwork.png",
+          "sha256": "172bdfe28b1ee957d969257ec8dfc0b431960c8af4b459be3c09e879b750a526"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-trauma_plate--relic.png",
+        "128": "art/icons/gear/exports/128/armour-trauma_plate--relic.png",
+        "64": "art/icons/gear/exports/64/armour-trauma_plate--relic.png",
+        "32": "art/icons/gear/exports/32/armour-trauma_plate--relic.png"
+      },
+      "export_hashes": {
+        "256": "2ffee4406ca4517405ca328dc81c9af23cb814083dd4b58faf0f045ea2b631ce",
+        "128": "303d43a31d5f197e702ed80a68ca2e791b5a7fe1ff6bd7e5aa3f9966b056824d",
+        "64": "4d8547974bf5866730a1ebc5619564980467d40a2d369341e74e86d905283c3d",
+        "32": "b9062590ba08c44dededd2896ad2ccf1b6e8666aac8740dba345cc18680d38a5"
+      },
+      "grade": "relic",
+      "standard_id": "armour-trauma_plate",
+      "outline": {
+        "solid_alpha_iou": 0.961946010387008,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 17,
+        "different_pixels_64": 15
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
