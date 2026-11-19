@@ -2280,6 +2280,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-kemizuchi_strikers--fine",
+      "path": "art/icons/gear/weapon-kemizuchi_strikers--fine.png",
+      "sha256": "27e94e8ecd863a00623e3921fe38f44e7639a586711735f6e0b2c63238be9c21",
+      "label": "Kemizuchi Strikers — Fine",
+      "family": "weapon-kemizuchi_strikers",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-kemizuchi_strikers--fine.png",
+        "sha256": "5c5605226aa4f3b927d667fd5c48ca3c1cd2cbdea547338aaf332d3c87765e5e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-kemizuchi_strikers--fine.png",
+        "sha256": "27e94e8ecd863a00623e3921fe38f44e7639a586711735f6e0b2c63238be9c21"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-kemizuchi_strikers--fine.txt",
+        "sha256": "79c5f5104389f3519cf27bffbd1513a5e6d102413be524f011404ea974049e62"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_strikers.png",
+          "sha256": "d4e4963718ef806fee94a92b1ec4f59d5ed9fe34de8aec489caf0ec669c83512"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_strikers--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_strikers--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_strikers--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_strikers--fine.png"
+      },
+      "export_hashes": {
+        "256": "3bbcd492c46641c20c19aaca435e8c4e04b31cc68a3a880103ed63cb552fe964",
+        "128": "792fe0e3153047159e18cce4d1f4738f214ea4db45be4ead8a6a257c3ddedcc9",
+        "64": "23eccc3898a69fb3e0895a9a4904b7e7bb50e66a825d0c5b708136ed0052a525",
+        "32": "f2d864e3cc28c7e1e1562d37415bebf803b7d434b0c3b1001c1081f79ce2de91"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-kemizuchi_strikers",
+      "outline": {
+        "solid_alpha_iou": 0.9850154109797647,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 18
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
