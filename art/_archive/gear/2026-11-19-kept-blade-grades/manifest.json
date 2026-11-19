@@ -1052,6 +1052,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lance--fine",
+      "path": "art/icons/gear/weapon-lance--fine.png",
+      "sha256": "13a08f61e5fe2de537b0053c27ca40dfd942bcce695127421ca7e235d8efbef1",
+      "label": "Lance — Fine",
+      "family": "weapon-lance",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lance--fine.png",
+        "sha256": "7779e4bd185208e6048054fe6738e9780bb27381fb6a7c7d34dc6fd2bc70bb90"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lance--fine.png",
+        "sha256": "13a08f61e5fe2de537b0053c27ca40dfd942bcce695127421ca7e235d8efbef1"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lance--fine.txt",
+        "sha256": "086a7fe3ac5808058e3945ea4bc334909de24e4b8039b4ad4960485d7e1ab8aa"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-lance.png",
+          "sha256": "20bff5d57a4df6bee81a29c9ab1e01390b6f232bf3073a275d99a105825a04a3"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lance--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-lance--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-lance--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-lance--fine.png"
+      },
+      "export_hashes": {
+        "256": "41a3da07828f25a57f85f299a5ac2fe5b14b6347ea8e634d93f392bba94d94cd",
+        "128": "1ce643aa6cc1e106c5293236af0e1c8b14b8a77c955f949e159f295988d52661",
+        "64": "9d9eb072ca001daee56ff345a2e829c4c5122da107ad8b6d20850acc670c4d71",
+        "32": "7292c4a1204d273c5a1e926e91d0ddb7f0c7b1532931622dd1e69957353cd48e"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-lance",
+      "outline": {
+        "solid_alpha_iou": 0.9610182018184631,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 21
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
