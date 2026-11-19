@@ -1110,6 +1110,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lance--masterwork",
+      "path": "art/icons/gear/weapon-lance--masterwork.png",
+      "sha256": "8a2c1ff9dc4bdc32f661a0c4e6ee71765445059f9c1fc96c26c4b49d9f3580b9",
+      "label": "Lance — Masterwork",
+      "family": "weapon-lance",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lance--masterwork.png",
+        "sha256": "912edaab0b826fab2b8b92768a91f14ae974aa93d3b33b65cfb0d044b804bf23"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lance--masterwork.png",
+        "sha256": "8a2c1ff9dc4bdc32f661a0c4e6ee71765445059f9c1fc96c26c4b49d9f3580b9"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lance--masterwork.txt",
+        "sha256": "fc0015df7842df8bc7bb64e546b7ce8b9626c55a00e82191aa89fcfe24553913"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-lance--masterwork/v1/source.png",
+          "sha256": "92fc75a484072b41309c32335821d40131d155d6e3a41849b2d893858c371069"
+        },
+        {
+          "path": "art/icons/gear/weapon-lance.png",
+          "sha256": "20bff5d57a4df6bee81a29c9ab1e01390b6f232bf3073a275d99a105825a04a3"
+        },
+        {
+          "path": "art/icons/gear/weapon-lance--fine.png",
+          "sha256": "13a08f61e5fe2de537b0053c27ca40dfd942bcce695127421ca7e235d8efbef1"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lance--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-lance--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-lance--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-lance--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "682d6b483526f5da1087bebcc7d673a965fdfd9ae9072709a1bd65d1574f9948",
+        "128": "08a94461da9ed4ca79c3611695a7174a2d699316651a5a4034f4cc45de3c32bf",
+        "64": "cc93692f4e3540fbcee6a13d0ed53c7daa3c7f3af4871d380a15b5267b458c9f",
+        "32": "85191f5241e3a2425a534eda44e13c7ae36716c06c87db8c33c9160738e71861"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-lance",
+      "outline": {
+        "solid_alpha_iou": 0.8902203992883969,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 46
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
