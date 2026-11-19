@@ -1,6 +1,6 @@
 # Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept current)
 
-**Live: 0.31.11 (19 Nov 2026).** **This file is the only list of owed work.** Hand-offs describe a session's state and link here; they do not list work. An item leaves this file only with evidence (a commit or a test). Every item says when its state was last checked against the code.
+**Live: 0.31.11 (19 Nov 2026). Being shipped: 0.32.0 (rules 1.70 to 1.81, `release/0.32`).** **This file is the only list of owed work.** Hand-offs describe a session's state and link here; they do not list work. An item leaves this file only with evidence (a commit or a test). Every item says when its state was last checked against the code.
 
 Item format: `**Short name.** What is owed. [size S/M/L] [state: open | partly | not verified; checked in code 19 Nov 2026 | from documents only] [source]`. Sizes: S under an hour, M a few hours, L about a day.
 
@@ -261,6 +261,20 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 - **Whole-game screenshot pass.** `capture-skills` covers only the skill pages; camp, path map, node kinds, rewards, fight tabs, victory, field, summary and settings were never read at 1600x900 (the `capture-all` draft was removed, `13cfaad7e`). Covers what nobody has seen in a browser: the field kit's Treat buttons, plate chips, shop icons, banners in motion, the field's three rounds, the status strip's group marks, the place card with its picture, the approach line in real play, the vault-chest reward, the mana forecast over the map. [M] [open; from documents only] [SESSION-TODO K, O, U, V]
 - **One full browser run.** Includes the Throw row's check, written and never run. [M] [open; from documents only] [spec 5534]
 - **Spec section 14** receives every new PROVISIONAL number. [S] [open; from documents only] [proposals 2.10]
+
+### 0.32.x polish (the screenshot pass's small faults, left on purpose; pictures in `.check/capture/all/` after `python tools/e2e.py capture-all`; list from its FAULTS.md, 20 Nov 2026)
+
+- **Path map:** the legend's second row clipped at the bottom (1280-021); the node card covers the neighbouring rows (1280-022). [S] [open]
+- **Run board:** cut by SQUAD at the bottom ("Report a run", "Set Feet · Camp"); GIVE says "No one to hand anything to." in a solo run (1600-042). [S] [open]
+- **Creation:** the Moves step is almost empty and says "Mastery 2 Evoker or Emanator user" (1280-010); the "-2" chip beside every skill at 0 points is unexplained (1280-007); Lock in shows "No origin yet" / "Not filled in" rows and only the checklist says why it is grey (1280-011). [S] [open]
+- **Camp:** the vow pop-up hides half the left sheet (1280-014); weapon cards say "To hit -2 (Dexterity)", "Damage -23% (Agility)" with no explanation (1280-015/017). [S] [open]
+- **Fight:** the header "ROUND 1 · THE PROVING GROUND · PROVING GROUND · W..." repeats and is cut; "Best so far: wave 0" after a first loss, the panel shot mid-fade (1280-138); the APPROACH banner caught half-faded over a white wash and VICTORY's "CLICK TO CONTINUE" runs into the small map (1280-024, 1280-037); the FREE ROAM bar covers the turn strip's second and third chips (1280-038/040); the door line "20% of the damage you take goes to it" still reads as a formula. [S] [open]
+- **Rewards and places:** a second copy of the card above the dialog (1600-042); "Pick one:" over a single card on ordinary fights; the shop's ammunition card alone in its row (1280-043/044); the LEVEL UP banner over the Forge (1280-052..055). [S] [open]
+- **Run summary:** "Keep Kade as a draft (level 5)" wraps to two lines (1600-073). [S] [open]
+- **Sheet and Proving Ground:** the bottom hint box covers the EQUIPPED section of the tools panel; the STATUS tab's foot rows overlap (1280-140); the MP row reads "100 / 100 stowed" with the word under the number. [S] [open]
+- **Level-up:** the "◇◇" marks are unexplained (1280-149); "Class: choose it from TO CHOOSE" alone in a panel and "+8 more" hides most chips (1280-146). [S] [open]
+- **Narrator's desk:** the first field is an empty unlabelled box; the left sheet shows the guest's character on the host's screen (1280-161). [S] [open]
+- **Browser suite `camera`:** four checks red on the release head before the fix pass (fight opens on your unit, drag moved the view, target in frame, camera stayed on the target): find whether the suite or the camera is wrong. [S] [open; 20 Nov 2026]
 
 ## After 0.32, before Items 2.0
 
