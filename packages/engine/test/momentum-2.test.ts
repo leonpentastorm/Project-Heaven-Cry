@@ -210,7 +210,7 @@ describe('a Launch kill is a Finisher everywhere: Follow Through and the end of 
 });
 
 // Item 5531 (the lead's ruling on row 15d of the outside playtest): after a Finisher the chain is locked to every action
-// the technique data places in a melee group: the Breaker's Barrel In (action id `lunge`, read as the Lunge technique)
+// the technique data places in a melee group: the Breaker's Barrel In (its own action id `barrel_in`, an Opener by rules.group_actions; the old id `lunge` still finds it)
 // is refused in the list, the preview and the reducer, in the data's one sentence; the basic Shove (no Momentum) is not.
 import { actionsFor } from '../src';
 describe('item 5531: the Finisher lock holds Barrel In; Shove stays', () => {
@@ -221,6 +221,8 @@ describe('item 5531: the Finisher lock holds Barrel In; Shove stays', () => {
     f.momentum(f.pc, 2); f.pc.ap = 9; const other = f.foes[1];
     const list = withGame(f.g, () => actionsFor(f.g, f.pc.id, 'host'));
     const bi = list.find((d: any) => d.id.includes('fighter.lunge'))!; expect(bi).toBeTruthy();
+    expect(bi.id).toMatch(/#barrel_in$/); // spec item 5608: its own action id, an Opener by techniques.json rules.group_actions
+    expect(refusal(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'class:fighter.lunge', actionId: 'barrel_in', targetId: other.id } as any))).toContain(PHYS_RULES.chain_ended.replace(/\.$/, ''));
     expect(bi.why).toContain(PHYS_RULES.chain_ended.replace(/\.$/, ''));
     expect(refusal(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'class:fighter.lunge', actionId: 'lunge', targetId: other.id } as any))).toContain(PHYS_RULES.chain_ended.replace(/\.$/, ''));
     f.put(f.unit(other.id), 'D5');

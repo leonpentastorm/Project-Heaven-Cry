@@ -249,6 +249,8 @@ export interface ActionPreview { ok: boolean; why?: string; ap: number; lines: s
 /** An action an item grants (combat Perks or Class tab, the area map, the story panel). */
 export interface ActionDef {
   id: string; label: string; scope: ActionScope[];
+  /** Ids it was known by before (spec item 5608: a save, a replay or a saved turn card that names the old id still finds it). */
+  was?: string[];
   /** Its AP before items. 'data': the item's own number in data/*.json (the action's `ap` in its grant_action, else the
    * item's ap_cost): write that, not a literal that repeats the data. A function: a cost that depends on the holder. */
   ap: number | 'data' | ((h: Holder, args: ActionArgs) => number);

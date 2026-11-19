@@ -366,7 +366,7 @@ function resolve(x: Who, id: string, actionId?: string): { h: Holder; d: ActionD
   const key = keyOf(id), h = holdersOf(x).find((y) => y.key === key);
   if (!h) return 'You don\'t have that.';
   h.g = x.g ?? boundGame();
-  const defs = actionDefs(h.info), d = actionId ? defs.find((a) => a.id === actionId) : defs[0];
+  const defs = actionDefs(h.info), d = actionId ? defs.find((a) => a.id === actionId) || defs.find((a) => a.was?.includes(actionId)) : defs[0];
   if (!d) return h.info.name + ' isn\'t an action.';
   return { h, d };
 }

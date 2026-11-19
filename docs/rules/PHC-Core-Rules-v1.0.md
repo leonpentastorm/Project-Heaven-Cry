@@ -12531,3 +12531,9 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     registration export, not approved: left for the lead. Meanwhile `data/actions.json resources.momentum` is marked
     `made_after_start`, and the validator warns of any `combat_start` `resource` op on such a meter. Primed keeps its
     `turn_start`, once a fight.
+5608. **Barrel In has its own action id** (item 5531's finding): the Breaker's Barrel In is the action `barrel_in` of
+    `class:fighter.lunge` (the move's id stays, so saves load), an Opener by `techniques.json rules.group_actions` (a
+    Finisher locks it as before; the chain counts it as before). An item action may name the ids it was known by
+    (`ActionDef.was`): a save, a replay or a saved turn card that sends the old `lunge` still finds it. Golden costs
+    re-recorded on purpose: the keys `...fighter.lunge#lunge` read `#barrel_in` (`costs-credit`, `costs-items-*`; the
+    same values). Proof: `test/momentum-2.test.ts` (item 5531's lock through both ids).
