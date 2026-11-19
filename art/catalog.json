@@ -25853,6 +25853,42 @@
         "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
         "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
       }
+    },
+    "armour-night_goggles--fine": {
+      "label": "Night-sight Goggles — Fine",
+      "path": "art/icons/gear/armour-night_goggles--fine.png",
+      "sha256": "2df5bab25e8ec014d66ba23dda33b2cc78a2c299f86823daf039b53bb3198b90",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-night_goggles--fine.png",
+        "128": "art/icons/gear/exports/128/armour-night_goggles--fine.png",
+        "64": "art/icons/gear/exports/64/armour-night_goggles--fine.png",
+        "32": "art/icons/gear/exports/32/armour-night_goggles--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-night_goggles--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-night_goggles",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9857953735132206,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 20
+      }
     }
   },
   "survival_art": {

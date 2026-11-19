@@ -6976,6 +6976,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-night_goggles--fine",
+      "path": "art/icons/gear/armour-night_goggles--fine.png",
+      "sha256": "2df5bab25e8ec014d66ba23dda33b2cc78a2c299f86823daf039b53bb3198b90",
+      "label": "Night-sight Goggles — Fine",
+      "family": "armour-night_goggles",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-night_goggles--fine.png",
+        "sha256": "f75dbc4645d9f6e94ef5491bc0660ff82ba2967da639fdaa0d48703517b1327a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-night_goggles--fine.png",
+        "sha256": "2df5bab25e8ec014d66ba23dda33b2cc78a2c299f86823daf039b53bb3198b90"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-night_goggles--fine.txt",
+        "sha256": "6aca0b8a94947021934fbf6b6f621e9f4b9532283abc938f2122810c4c700272"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-night_goggles.png",
+          "sha256": "87b18113df301af7e4ac7d5e21afef5e251aafc32624c3a5a9b29370a41af813"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-night_goggles--fine.png",
+        "128": "art/icons/gear/exports/128/armour-night_goggles--fine.png",
+        "64": "art/icons/gear/exports/64/armour-night_goggles--fine.png",
+        "32": "art/icons/gear/exports/32/armour-night_goggles--fine.png"
+      },
+      "export_hashes": {
+        "256": "e7023ae3ea84bb425936bcfabed784c20256cc6ba57ea2d4de20c56c92615366",
+        "128": "4d425f71ff69c35809bfdf0518ce64c94c16aec751831558eb292ee037b76747",
+        "64": "cf7c9e031f3e83a331f0b106f3f7dd2a13017e116a4390cdd736af37a0dd36f4",
+        "32": "2d3f7a6675cc40d67c15a6c15ce0b6e205cd767494b3b48a28525cc18412ee0b"
+      },
+      "grade": "fine",
+      "standard_id": "armour-night_goggles",
+      "outline": {
+        "solid_alpha_iou": 0.9857953735132206,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
