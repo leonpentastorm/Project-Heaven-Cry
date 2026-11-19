@@ -12346,3 +12346,14 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     stood at the start only). The fix is the alarm (item 5521). Proof: `test/fog-victory.test.ts` (a run fight joined
     from the approach, unexplored tiles on the map, the last foe dropped by a `combat/attack`: the field is open in that
     same action).
+5521. **The alarm** (owed fix; ATTACK-PLAN-2026-11-19 lane 2): when a fight opened in the approach (item 5008) is
+    joined, every foe group on the map learns where each character not Hidden stands now (`combat.ts joinFight` →
+    `raiseAlarm`, writing the foe side's `seenAt`, which `knownTile` and `enemySearchTile` already read), so a group that
+    never saw the squad comes for it, where before it searched the tiles the squad started on. A Hidden character stays
+    unknown; the foes' own Hidden (ambushers, skulkers) keep their rule. The log says it once,
+    `rules.json combat.approach.alarm_log` (PROVISIONAL wording). A fight that opens seen is unchanged (its opening
+    already gives each side where the other stands). No new primitive (the side's seen map is item 1.37's). Measured with
+    the run simulator (`survival-run.ts simRun`, gear route, stage 1 only), before → after: solo gunner GUARD-1 to 40,
+    26 → 26 of 40; duo SIM-1 to 20, 17 → 17; four 15 → 14; mixed 16 → 17 (74 → 74 of 100). Replays unchanged (29 of
+    29; no run fight in them). Proof: `test/fog-alarm.test.ts` (through the reducer: a free walk off the start, contact
+    by passes, the foe side knows the squad's tile now, the line once; the farthest foe closes in).
