@@ -113,6 +113,15 @@ White-ink signs, the same set and style as the fight banners' `banner-fight-star
 | `banner-fight-approach` | the APPROACH banner (a fight opened with no foe seeing the squad) | an eye half-closed or a footstep in fog: unseen, moving quietly |
 | `banner-level-up` | the LEVEL UP banner (any character of the room gains a level; any screen) | a rising chevron or a step mark climbing: growth, not a weapon |
 
+### 0d. Shadow verb added in 0.32 (requested 19 Nov 2026)
+
+One Wick icon, the same style as the other Shadow verbs (`shadow-verb:<id>`, `art/icons/shadow/`). Until drawn the row
+shows its group's mark (Slip).
+
+| id | where | direction |
+| --- | --- | --- |
+| `shadow-verb:shadow.stalk` | Stalk (rules 1.76 item 6405: 2 AP, once a turn, from Hidden, +1 Shadow) on the SHADOW tab | Wick crouched still in deep shadow, eyes on a distant figure, a wisp of shadow gathering round it |
+
 ### 2. Outburst feelings and modules
 
 | # | For | Status | What it must show | Direction | Goes to |

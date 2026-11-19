@@ -57,10 +57,11 @@ import { glyphUri, scratchUri, heartUri, joinUri, SIGIL_INK, SIGIL_GLOW, SOUL_IN
 import { glyphKeyNav } from '../game/glyphKeys';
 import { classMarks } from '../game/classMarks';
 import { fadeStyle, SHADE_POOL, shadowHeld, wispsUri, wispStyle, SHADOW_INK } from '../game/tokenFade';
-import { tieLayerVals, eyeLines, tieWords } from '../game/tieLayer';
 /** 0.32 (Q.2.f): the status strip on the token face: the first three signs of the same groups the token card shows
  *  (game/statusStrip.ts), each ringed in its group's ink (helps, hurts, state). */
 const faceStatus = (groups) => { const fs = (groups || []).flatMap((sg) => sg.chips.filter((c) => c.hasIcon).map((c) => ({ key: c.key, icon: c.icon, style: 'width: 12px; height: 12px; padding: 1px; border-radius: 3px; background: #0A0D13; box-shadow: 0 0 0 1px ' + sg.ink }))).slice(0, 3); return { hasFaceSt: fs.length > 0, faceSt: fs }; };
+import { tieLayerVals, eyeLines, eyeLinesAt, tieWords } from '../game/tieLayer';
+import { sightlineOn, toggleSightline, sightTile, sightWords, sightBar } from '../game/sightline';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles, strokeButtons, strokeLayer, readableAt, traceMark, wordMasteryChips } from '../game/sigilView';
 import { backpackView } from '../game/backpack';
 import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, padAction, techAction, TWATCH, TPAD, needsAlly, ATTACK_MODES, isAttackMode, targetAttackPreview } from '../game/techView';
@@ -939,6 +940,10 @@ export class CombatLogic extends DCLogic {
     if (S.tab === 'shadow' || S.action === 'hide') this._spotsArmed = true; else if (!isMove) this._spotsArmed = false;
     const HH = mineTurn ? hideHelp(cb, cur, ch, g) : null;
     const spotsOn = !!(HH && HH.spots && HH.spots.length && this._spotsArmed);
+    // Rules 1.76 item 6404, the shadow sightline (game/sightline.ts): the engine's watched tiles on Hide's row, shaded by
+    // how many enemies' eyes would reach you there; hovering an enemy outlines its reach; hovering a tile says who sees you there.
+    const slOn = !!(HH && cur && !cb.over && sightlineOn(cur, S.tab)), slWatch = slOn ? HH.watch : null;
+    const slFoe = slOn && S.hover ? ((cb.units || []).find((x) => x.pos === S.hover && x.side !== cur.side && !x.dead) || {}).id || null : null;
     const spotSet = new Set(spotsOn ? HH.spots : []), spotNear = spotsOn ? HH.spots[0] : null;
     const route = {}; let moveAp = 0;
     // Rules 1.9 (item 683): the route a click takes goes around revealed hazards when it can (the engine's movePaths), and
@@ -1246,8 +1251,9 @@ export class CombatLogic extends DCLogic {
         hasSgChip: !!sgc, sgChip: sgc ? sgc.text : '', sgChipTitle: sgc ? sgc.title : '', sgChipStyle: sgc ? sigilChipStyle(sgc) : '',
         hasPress: pLook.has && !isHeld, press: pLook.pips, pressStyle: pLook.style, pressTitle: pLook.title, hasPressTag: !!pLook.tag && !isHeld, pressTag: pLook.tag, pressTagStyle: pLook.tagStyle,
         hasMom: mLook.has && !isHeld, mom: mLook.text, momStyle: mLook.style, momTitle: mLook.title, momFull: mLook.full ? '1' : '',
+        ...((st) => ({ hasSight: st.has, sightN: String(st.n), sightStyle: st.style }))(sightTile(slWatch, k, slFoe)),
         hasWatchT: !!wT, watchTStyle: wT ? wT.style : '', watchTTitle: wT ? wT.title : '', hasWatchChip: !!wChip && !isHeld, watchChip: wChip ? wChip.text : '', watchChipStyle: wChip ? wChip.style : '', watchChipTitle: wChip ? wChip.title : '',
-        key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + ((ow) => (ow ? ' · ' + ow.line : ''))(ownedView(cb, u)) + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + ((sb) => (sb.has ? ' · ' + sb.head + ': ' + sb.words : ''))(shieldBlock(svOf(u))) + (u.downed ? ' · Downed' : '') + (u.side === 'pc' ? coverWord(k) : '') + (u.surrendered ? ' · Surrendered' : '') + (pLines.length ? ' · ' + pLines.join(' · ') : '') + (() => { const cs = [...effectsOf(u).map(([k, t]) => k + ': ' + t), ...condChips(u, g).filter((c) => c.key !== 'shield').map((c) => c.t)]; return cs.length ? ' · ' + cs.join(' · ') : ''; })() : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight through it; −' + COVER.full + ' to shots at whoever is beside it on this side)' : 'Half cover (−' + COVER.half + ' to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : (diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + coverWord(k)) + (spotSet.has(k) ? ' · hide spot: out of the eyes of every enemy you see' + (k === spotNear ? ' (nearest)' : '') : '') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (note && !pkOn ? ' · ' + note : '') + magicNote + (red.has(k) && !pkOn ? ' · in reach' + (red.get(k) ? ' (range band ' + (red.get(k) + 1) + ')' : '') : ''), title: u ? '' : refOf(k) + (note && !pkOn ? ' · ' + note : '') + magicNote,
+        key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + ((ow) => (ow ? ' · ' + ow.line : ''))(ownedView(cb, u)) + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + ((sb) => (sb.has ? ' · ' + sb.head + ': ' + sb.words : ''))(shieldBlock(svOf(u))) + (u.downed ? ' · Downed' : '') + (u.side === 'pc' ? coverWord(k) : '') + (u.surrendered ? ' · Surrendered' : '') + (pLines.length ? ' · ' + pLines.join(' · ') : '') + (() => { const cs = [...effectsOf(u).map(([k, t]) => k + ': ' + t), ...condChips(u, g).filter((c) => c.key !== 'shield').map((c) => c.t)]; return cs.length ? ' · ' + cs.join(' · ') : ''; })() : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight through it; −' + COVER.full + ' to shots at whoever is beside it on this side)' : 'Half cover (−' + COVER.half + ' to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : (diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + coverWord(k)) + (spotSet.has(k) ? ' · hide spot: out of the eyes of every enemy you see' + (k === spotNear ? ' (nearest)' : '') : '') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (slOn ? ' · sightline: ' + sightWords(cb, slWatch, k) : '') + (note && !pkOn ? ' · ' + note : '') + magicNote + (red.has(k) && !pkOn ? ' · in reach' + (red.get(k) ? ' (range band ' + (red.get(k) + 1) + ')' : '') : ''), title: u ? '' : refOf(k) + (note && !pkOn ? ' · ' + note : '') + magicNote + (slOn ? ' · ' + sightWords(cb, slWatch, k) : ''),
         worldNote: (wc.hz ? ' · ' + wc.hz.title : '') + (wc.cache ? ' · ' + wc.cache.title : '') + (wc.pile ? ' · ' + wc.pile.title.replace(/:\n/, ': ').replace(/\n/g, ', ') : '') + (dr ? ' · ' + dr.npc.name + ' lies here' : '') + (crossAt.has(k) ? ' · your path crosses this hazard' : ''),
         hasPile: !!wc.pile, pileStyle: wc.pile ? wc.pile.style : '', pileIconStyle: wc.pile ? wc.pile.iconStyle : '', pileCount: wc.pile ? wc.pile.count : '', pileCountStyle: wc.pile ? wc.pile.countStyle : '',
         hasPileTip: !!wc.pile && S.hover === k, pileTip: wc.pile ? wc.pile.tip : '', pileRows: wc.pile ? wc.pile.tipRows : [], pileTipStyle: wc.pile ? pileTipStyle(wc.pile, vxOf(x), vyOf(y), vW, !!u) : '',
@@ -1327,7 +1333,12 @@ export class CombatLogic extends DCLogic {
     for (const t of tiles) if (t.worldNote) t.label += t.worldNote;
     // The map's tie lines (game/tieLayer.ts: a Bond's faint line, from the view's ties; stronger on the Bonder's turn or a hovered chip)
     const tieLayer0 = tieLayerVals(cb, { turnOf: cur ? cur.id : null, hotTo: S.tieHot || null, motion: !reducedMotion() });
-    const eyeL = HH && HH.eyes.length && S.tab === 'shadow' && S.hover && S.hover === cur.pos ? eyeLines(cb, cur.id, HH.eyes, SHADOW_INK) : [];
+    // the eye lines: with the sightline on, from each enemy that would see you on the hovered tile (or where you stand);
+    // without it, as before (the SHADOW tab, hovering your own token)
+    const slAt = slOn ? (S.hover && S.hover !== cur.pos && !slFoe ? S.hover : cur.pos) : null;
+    const eyeL = slOn ? (slAt === cur.pos ? eyeLines(cb, cur.id, HH.eyes, SHADOW_INK) : eyeLinesAt(cb, slAt, slAt, (slWatch && slWatch[slAt]) || [], SHADOW_INK))
+      : HH && HH.eyes.length && S.tab === 'shadow' && S.hover && S.hover === cur.pos ? eyeLines(cb, cur.id, HH.eyes, SHADOW_INK) : [];
+    const sl = HH && cur && !cb.over ? { can: true, ...sightBar(cb, slWatch, slOn, slAt, refOf), toggle: () => { toggleSightline(slOn); sfx('toggle'); this.setState({}); } } : { can: false };
     const tieLayer = eyeL.length ? { ...tieLayer0, has: true, lines: [...tieLayer0.lines, ...eyeL] } : tieLayer0;
     // The strip turns over: the acting unit first, then who comes next (each slides to its new place).
     // An unseen hostile's place in the order is an opaque mark (the engine's fog): a card with nothing on it.
@@ -1901,7 +1912,7 @@ export class CombatLogic extends DCLogic {
       gridLeave: () => hoverFor(this).leave(), // the stroke tip and lit stroke go with the cursor
       // isolation: the map is one stacking layer, so nothing in it (a hovered tile, a chip, a token's card) rises above the
       // small map, the camera's arrows or any panel; inside it the axis labels are on top (GRID_LAYER).
-      tieLayer,
+      tieLayer, sl,
       gridStyle: 'display: grid; position: relative; isolation: isolate; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (this._camNeeded && !this._overview && !CAM.miniHidden ? '; margin-right: ' + Math.round(MINI_SLACK / zoom) + 'px' : ''),
       // The map's window (the camera): the grid scrolls inside it when it is bigger.
       camStyle: 'flex: none; max-width: ' + (this._view ? this._view.w + 'px' : '100%') + (this._view ? '; max-height: ' + this._view.h + 'px' : ''),

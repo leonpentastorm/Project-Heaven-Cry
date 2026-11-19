@@ -169,7 +169,7 @@ for (const who of ['self', 'actor', 'target'] as Who[]) {
   P(who + '_not_kind', 'words', who + '\'s kind is none of these (as ' + who + '_kind)', (ev, v) => { const u = unitOf(ev, who); return !!u && !kindsOf(u).some((k) => list(v).includes(k)); });
   if (who !== 'self') P(who + '_within', 'number', who + ' stands within this many tiles of the holder', (ev, v) => { const u = unitOf(ev, who); return !!u && !!u.pos && dist(u.pos, ev.self.pos) <= v; });
   P(who + '_sight', 'words', who + '\'s sight to the other side: seen, unseen, in_view, out_of_view (tactics.ts sightOf; any of the words named)', (ev, v) => { const u = unitOf(ev, who); if (!u) return false; const s = sightOf(ev.cb, u); return list(v).some((w) => s.includes(w)); }, () => SIGHT_WORDS);
-  if (who !== 'self') P(who + '_sees_self', 'bool', who + ' can (or cannot) see the holder: its eyes reach the holder\'s tile and the holder is not Hidden (shadow-spec 2.1)', (ev, v) => { const u = unitOf(ev, who); return !!u && (unitSees(ev.cb, u, ev.self.pos) && !ev.self.hidden) === v; });
+  if (who !== 'self') P(who + '_sees_self', 'bool', who + ' can (or cannot) see the holder: its eyes reach the holder\'s tile and the holder is not Hidden (shadow-spec 2.1)', (ev, v) => { const u = unitOf(ev, who); return !!u && (unitSees(ev.cb, u, ev.self.pos, undefined, ev.self) && !ev.self.hidden) === v; });
 }
 P('melee', 'bool', 'the attack or damage is (true) or is not (false) melee', (ev, v) => !!(ev.ctx.melee ?? ev.ctx.src?.melee) === v);
 // rules 1.63 (0.31, Pressure is Dexterity's): the skill an attack rolls to hit with, as the attack chose it (combat.ts
@@ -546,7 +546,7 @@ O('take', ANY, true, ['save', 'via'], 'take one thing the target carries into th
 function toCover(ev: Ev, u: Unit | null, e: any): string | false {
   if (!u) return false;
   const r = typeof e.tiles === 'number' ? e.tiles : Math.max(1, Math.floor(u.movement || 1)), foes = ev.cb.units.filter((v) => v.side !== u.side && !v.dead && !v.downed && !v.hidden);
-  const seen = (k: string) => foes.some((v) => unitSees(ev.cb, v, k));
+  const seen = (k: string) => foes.some((v) => unitSees(ev.cb, v, k, undefined, u)); // rules 1.76 item 6403: u's own seen_range
   const cands = [u.pos, ...tilesAround(u.pos, r, ev.cb)].filter((k) => (k === u.pos || canStand(ev.cb, k)) && nextToCover(ev.cb, k));
   if (!cands.length) return false;
   cands.sort((a, b) => (seen(a) ? 1 : 0) - (seen(b) ? 1 : 0) || dist(u.pos, a) - dist(u.pos, b));
@@ -812,7 +812,9 @@ function condsOn(u: Unit, name: HookName, cb: Combat) {
   const out = list.filter((x) => bears(u, x.row.id)).map((x) => ({ info: x.info, e: x.e, source: giverOf(cb, u, x.row.id) }));
   return out.length ? out : null;
 }
-function condStat(u: Unit, stat: string): number { const l = condIndex().stat[stat]; if (!l) return 0; let n = 0; for (const x of l) if (bears(u, x.row.id)) n += x.value; return n; }
+// (a flag condition's untimed stat_mod counts too: Prone's seen_range, rules 1.76 item 6402; condHas reads the flags. The
+// hooks above keep bears: a flag condition's own engine code runs its timed rows, Bleeding's tick)
+function condStat(u: Unit, stat: string): number { const l = condIndex().stat[stat]; if (!l) return 0; let n = 0; for (const x of l) if (condHas(u, x.row.id)) n += x.value; return n; }
 
 setTriggerRunner({ isTriggered, problem: triggerProblem, hookOf: triggerHook, run: runTriggered, conds: condsOn, condHooks: () => Object.keys(condIndex().on), condStat, auraSet, auraProblem, ifFails: ifFailsImpl, runOwn: runOwnImpl, isOp: (op) => !!OPS[op], condStatRows: (s) => (condIndex().stat[s] || []).map((x) => x.row.id) });
 setAllItems(allItems);

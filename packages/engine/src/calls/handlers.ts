@@ -189,7 +189,7 @@ call({
 // ---------- Spot (Vigilance): the next ally's attack on it ignores cover; step 2: not Hidden to them; step 3: two, +1 ----------
 call({
   id: 'call.spot',
-  seesHidden(t) { return !!t.num('unhide') && unitSees(t.cb, t.u, t.tgt.pos); },
+  seesHidden(t) { return !!t.num('unhide') && unitSees(t.cb, t.u, t.tgt.pos, undefined, t.tgt); },
   run(t) {
     const left = t.num('allies', 1), hit = t.num('hit'), unhide = !!t.num('unhide');
     if (t.preview) {

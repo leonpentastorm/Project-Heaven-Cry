@@ -229,7 +229,7 @@ function gotYou(h: Holder, cb: Combat, foe: Unit, at: string) {
   const mine = cb.order.indexOf(u.id);
   if (mine > cb.turn && cdFire(h, 'gain', cb.round)) { uses(h).take('per_round'); bankAp(u, 2, 'Got You in My Sight: ' + foe.name, cb); }
 }
-function sightSnap(h: Holder, cb: Combat): Record<string, string> { const out: Record<string, string> = {}; for (const f of foesOf(cb, h.u!, { companions: false })) if (!f.hidden && unitSees(cb, h.u!, f.pos)) out[f.id] = f.pos; return out; }
+function sightSnap(h: Holder, cb: Combat): Record<string, string> { const out: Record<string, string> = {}; for (const f of foesOf(cb, h.u!, { companions: false })) if (!f.hidden && unitSees(cb, h.u!, f.pos, undefined, f)) out[f.id] = f.pos; return out; }
 register({
   id: 'got_you_in_my_sight', claims: 'all',
   on: {
@@ -243,7 +243,7 @@ register({
     },
     hide: (ctx, h) => {
       const cb: Combat = ctx.cb; if (!h.u || ow(cb) || !alive(h.u) || ctx.u.side === h.u.side) return;
-      if (unitSees(cb, h.u, ctx.u.pos)) gotYou(h, cb, ctx.u, ctx.u.pos);
+      if (unitSees(cb, h.u, ctx.u.pos, undefined, ctx.u)) gotYou(h, cb, ctx.u, ctx.u.pos);
     },
     attack_roll: (ctx, h) => { if (ctx.tgt === h.u && ctx.ambush && h.tier !== 'II') stateOf(h).sneak = true; },
     on_hit: (ctx, h) => { if (ctx.tgt === h.u) { const s = stateOf(h); if (s.sneak) { s.sneak = false; if (!s.pen && cdFire(h, 'pen', landsNext(ctx.cb, h.u!))) { s.pen = 2; log(ctx.cb, h.u!.name + ' is caught by a sneak attack: −2 AP next turn (Got You in My Sight).'); } } } },

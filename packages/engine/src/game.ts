@@ -43,7 +43,7 @@ import { instanceMods, advancedActive, bindGame, boundGame, heldOfChar, emit as 
 import { surrender as yieldUnit, canYield } from './tactics';
 import { deedGrant } from './deeds';
 import { condSkillMod, STORY_CARRY, CORE_ITEM } from './magic';
-import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
+import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, TIER_NOTICE, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
 import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy, packKindOf, shieldLineNow, isShieldId, treatLimb } from './character';
@@ -470,7 +470,7 @@ const charsOf = (g: GameState, pid: string) => Object.values(g.characters).filte
 const isHost = (g: GameState, by: string) => by === g.hostId;
 // The faith rules (faith.ts) take these from here rather than importing game.ts (rules 1.6).
 bindFaith({ push: (g, e) => push(g, e), rollMod: (g, c, skill, roll) => sideRollMod(g, c, skill, roll), isHost, apLeft: (g, c) => apLeft(g, c), spendAp: (g, c, n) => spendAp(g, c, n), afterStory: (g) => closeRoundIfDone(g) });
-bindFaithSight((cb, u, t) => unitSees(cb, u, t.pos));
+bindFaithSight((cb, u, t) => unitSees(cb, u, t.pos, undefined, t));
 /** Players taking part in the round: everyone with a living character. */
 export const speakers = (g: GameState) => g.players.filter((p) => charsOf(g, p.id).length > 0);
 
@@ -2462,7 +2462,8 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
 
 // ---------- overworld rounds (spec: Overworld rounds) ----------
 /** How hard an enemy is to slip past: its notice bonus (Vigilant) and the TN of the Ingenuity check to stay hidden. */
-export const NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
+/** An NPC's notice by tier: the tier rows' (tactics.ts TIER_NOTICE, from enemies.json; rules 1.76, one copy). */
+export const NOTICE: Record<string, number> = TIER_NOTICE;
 export const ROUND_AP = 6;
 export const apLeft = (g: GameState, c: Character) => g.story.ap?.[c.id] ?? ROUND_AP;
 function spendAp(g: GameState, c: Character, n: number) { (g.story.ap ||= {})[c.id] = Math.max(0, Math.round((apLeft(g, c) - n) * 10) / 10); } // Glyph AP comes in tenths
@@ -3007,7 +3008,7 @@ function silentTakedown(g: GameState, cbx: Combat, c: Character, att: Combat['un
   if (!tgt?.dead || !att.hidden || att.dead) return false;
   if (!holdersOf({ c }).some((h) => h.key === 'class:shade.silent_kill')) return false;
   const others = cbx.units.filter((v) => v.side === 'foe' && !v.dead && !v.downed && !v.surrendered);
-  if (!others.length || others.some((v) => unitSees(cbx, v, att.pos))) return false;
+  if (!others.length || others.some((v) => unitSees(cbx, v, att.pos, undefined, att))) return false;
   // Rules 1.9 (item 699): the death sweep still runs, so the body's drops lie in the pile on its tile on the area map
   // (searching the body is picking up that pile).
   noteDeaths(cbx, g.rng);

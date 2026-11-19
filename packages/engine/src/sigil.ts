@@ -8,7 +8,7 @@
 // Rules revision 1.10 (Sigil 1.5, strokes): a Line is a stroke, the glyphs drawn as one (each glyph's strokeId; see
 // strokeRuns, strokePick); glyphs of other strokes never join, poison or block it. Old glyphs with no strokeId keep the
 // 1.4 touching-group reading (groupAt) until they fade.
-import { WEAPON, SKILL, ATTR, type SigilDef } from './data';
+import { WEAPON, SKILL, ATTR, ENEMY, type SigilDef } from './data';
 import {
   type Spell, type SigilFam, type Dir, G, ENEMY_AI, LIM, W, isSubject, isReach, isElement, isAffliction, isBoonWord, count, compileSpell, grammarError, MAX_GLYPHS, SIGIL_REV, STARTING_DEFAULT, lineMult,
 } from './sigilwords';
@@ -42,9 +42,9 @@ import { price, priced, bill, whyNot, canPay, pay, grantAp, withAp } from './eff
 import { uses } from './effects/uses';
 
 type Fam = SigilFam;
-/** Enemy notice by tier (tactics.ts TIER_NOTICE; copied here so this module doesn't import tactics, which reads magic.ts
- * at load). */
-const NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
+/** Enemy notice by tier: the tier's row (enemies.json `notice`, rules 1.76), read here without importing tactics (which reads
+ * magic.ts at load). */
+const noticeOf = (tier: string | undefined): number => ENEMY[tier || 'minion']?.notice ?? 0;
 /** Hidden (tactics.ts hide/reveal, the same steps): not while Marked; each entry gives one ambush. */
 function hideUnit(cb: Combat, u: Unit, why: string): string {
   if (condOn(u, 'marked')) return ' · ' + u.name + ' is Marked and can\'t hide';
@@ -1351,7 +1351,7 @@ const x2fx = (k: string) => (k === 'turret' ? 'turret_destroyed' : k === 'trap' 
 export function sigilSpot(cb: Combat, u: Unit) {
   if (u.dead || u.downed) return;
   const td = OBJ.trap?.trap, tr = { range: td?.detect_range ?? 2, tn: td?.detect_tn ?? 12 }; // the trap object's numbers (objects.json)
-  const passive = u.side === 'pc' ? passiveVigilance(u.vigilant || 0) : 10 + (NOTICE[u.tier || 'minion'] || 0);
+  const passive = u.side === 'pc' ? passiveVigilance(u.vigilant || 0) : 10 + noticeOf(u.tier);
   for (const z of cb.zones || []) {
     const zz: any = z; if (z.side === u.side || !(z.kind === 'trap' || (z.kind === 'turret' && zz.hidden))) continue;
     if ((zz.spotted ||= []).includes(u.side) || dist(z.tiles[0], u.pos) > tr.range || passive < tr.tn) continue;

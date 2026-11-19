@@ -296,7 +296,7 @@ register({
   on: {
     move_step: (ctx, h) => {
       const u = h.u, cb = h.cb, m: Unit = ctx.u; if (!u || !cb || overworld(cb) || !m || m.side === u.side || !alive(u) || !alive(m)) return;
-      if (condOn(u, 'silenced') || condOn(u, 'stunned') || !unitSees(cb, u, ctx.at || m.pos)) return;
+      if (condOn(u, 'silenced') || condOn(u, 'stunned') || !unitSees(cb, u, ctx.at || m.pos, undefined, m)) return;
       if (m.hidden && !sideSees(cb, u.side as 'pc' | 'foe', m)) return;
       const st = stateOf(h); if (st.r !== cb.round) { st.r = cb.round; st.ids = []; }
       if (st.ids.includes(m.id) || callMarks(m).spot) return;

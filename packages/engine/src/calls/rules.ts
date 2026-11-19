@@ -87,7 +87,7 @@ onHook('sees', (ctx: any, cb) => {
   const m = t.call?.spot; if (!m || !m.unhide || m.side !== ctx.side || !stands(cb, m)) return;
   const by: Unit | null = ctx.by || null;
   if (by ? !spotFor(cb, by, t) : !(m.left > 0 || m.live)) return;
-  if (cb.units.some((u) => u.side === ctx.side && unitSees(cb, u, t.pos))) ctx.seen = true;
+  if (cb.units.some((u) => u.side === ctx.side && unitSees(cb, u, t.pos, undefined, t))) ctx.seen = true;
 });
 
 onHook('turn_start_pre', (ctx: any, cb) => {
