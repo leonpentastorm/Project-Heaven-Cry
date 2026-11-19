@@ -43,7 +43,7 @@
     "from": 1,
     "count": { "base": 1, "per": [{ "of": "skill:visualization", "value": 1 }], "max": 10 },
     "provisional": true,
-    "note": "Rules 1.70 item 5541: forms are learned, never opened by a level or a fork. From Visualization {=forms_known.from}, the forms you know: {=forms_known.count.base} + your Visualization, at most {=forms_known.count.max} (2 at 1, all ten at 9), each chosen once (door/pick at the door figment_forms) and kept for good."
+    "note": "Rules 1.70 item 5541: forms are learned, never opened by a level or a fork. From the first point of Visualization, the forms you know: one more than your Visualization, at most all ten (2 at 1, all ten at 9), each chosen once (door/pick at the door figment_forms) and kept for good."
   },
   "ladder": [
     { "points": 1, "held": 1, "designs": 0, "traits": 0, "text": "The door: Picture, with the forms you know; 1 held, range 5; Glimmer, Redraw and Cash in. The Visualizer also works out of a fight." },

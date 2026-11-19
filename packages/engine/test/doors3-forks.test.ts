@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import './helpers/yard16';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { physFight, rig } from './helpers/physfight';
-import { SKILLS, SKILL, apply, applyCond, condOn, resolveAttack, migrateLoaded, pendingDoorPicks, doorForkView, doorForkViews, forkRow, forkBuilt, formsOf, FIG_REV, beginTurn, viewFor, heldOfChar, type Unit, type Action } from '../src';
+import { SKILLS, SKILL, apply, applyCond, condOn, resolveAttack, migrateLoaded, ladderSchedule, pendingDoorPicks, doorForkView, doorForkViews, forkRow, forkBuilt, formsOf, FIG_REV, beginTurn, viewFor, heldOfChar, type Unit, type Action } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { tiesOf } from '../src/kit';
 import { pressureOf, pressureCap } from '../src/physical/pressure';
@@ -21,6 +21,8 @@ const FK: Record<string, any> = Object.fromEntries((forksJ as any).items.map((x:
 const T: any = tendingJ;
 const grant = (id: string) => T.items.find((x: any) => x.id === id).effects.find((e: any) => e.op === 'grant_action');
 const ALPHAS = (SKILLS as any[]).filter((s) => Array.isArray(s.forks));
+/** The second fork's point of an alpha skill (rules 1.70 item 5536: skills.json ladder, the forks at 4 and 8). */
+const FORK2 = (skill: string): number => ladderSchedule(skill).forks[1];
 const SLAM = () => (SKILL as any).durability.unlocks['1'].effects.find((e: any) => e.action === 'guard_slam');
 
 let SAVES: 'pass' | 'fail' | null = null;
@@ -34,12 +36,15 @@ const big = (f: F, u: Unit) => { const x = f.unit(u.id); x.hp = x.maxHp = 9999; 
 const blow = (f: F, by: Unit, t: Unit, mode = 'shot') => withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(by.id), f.unit(t.id), mode, null, { noAp: true }));
 
 // ============================================================================================ the framework (N1, N2)
-describe('the forks as data (N1): two steps a door, at 4 and 6 of its alpha skill, picked once through door/pick', () => {
+describe('the forks as data (N1): two steps a door, at 4 and 8 of its alpha skill (rules 1.70 item 5536: the ladder schedule), picked once through door/pick', () => {
   it('every alpha skill but Visualization names two steps; each option is a forks.json row of its door at its step', () => {
     expect(ALPHAS.map((s) => s.id).sort()).toEqual(['brain_power', 'dexterity', 'durability', 'empathy', 'faith', 'ingenuity', 'raw_power', 'will_power']);
     for (const s of ALPHAS) {
-      expect(s.forks.map((f: any) => f.at), s.id).toEqual([4, 6]);
-      for (const st of s.forks) for (const o of st.of) expect(FK[o], o).toMatchObject({ door: s.id, step: st.at });
+      const at = ladderSchedule(s.id).forks;
+      expect(at, s.id).toEqual([4, 8]);
+      expect(s.forks.length, s.id).toBe(at.length);
+      for (const st of s.forks) expect(st.at, s.id + ': a fork row names no point of its own; the schedule does').toBeUndefined();
+      for (const [i, st] of s.forks.entries()) for (const o of st.of) expect(FK[o], o).toMatchObject({ door: s.id, step: at[i] });
     }
   });
   it('a step opens at its points, and only when both of its options are built; the view says which are missing', () => {
@@ -51,7 +56,7 @@ describe('the forks as data (N1): two steps a door, at 4 and 6 of its alpha skil
       expect(pendingDoorPicks(c, s.id).map((p) => p.grant), s.id).toEqual(offered);
       const v = doorForkView(c, s.id)!;
       for (const [i, f] of s.forks.entries()) {
-        expect(v.steps[i].offered, s.id + ' ' + f.at).toBe(f.of.every(forkBuilt));
+        expect(v.steps[i].offered, s.id + ' ' + ladderSchedule(s.id).forks[i]).toBe(f.of.every(forkBuilt));
         expect(v.steps[i].missing).toEqual(f.of.filter((o: string) => !forkBuilt(o)).map((o: string) => FK[o].name));
         if (!v.steps[i].offered) expect(v.steps[i].why).toMatch(/Sealed: not yet issued/); // rules 1.66 item 5212
       }
@@ -67,20 +72,20 @@ describe('the forks as data (N1): two steps a door, at 4 and 6 of its alpha skil
     expect(() => s.act({ type: 'door/pick', charId: id, door: 'durability', option: 'fork.guard.cover_them' } as Action)).toThrow(/No Durability choice is open/);
     c.skills.ingenuity = 10;
     expect(() => s.act({ type: 'door/pick', charId: id, door: 'ingenuity', option: 'fork.shadow.lend_the_dark' } as Action)).toThrow(/No such choice/);
-    c.skills.durability = 6;
+    c.skills.durability = FORK2('durability');
     expect(() => s.act({ type: 'door/pick', charId: id, door: 'durability', option: 'fork.pressure.lockdown' } as Action)).toThrow(/No such choice/);
     const f = fightWith([{ skills: { durability: 4 } }], [{}]);
     expect(() => f.act({ type: 'door/pick', charId: f.pc.charId, door: 'durability', option: 'fork.guard.provoke' } as Action)).toThrow(/after the fight/);
   });
   it('a picked option is held (a door verb, requires door_pick) and the other is not; door_pick / no_door_pick read the pick (N2)', () => {
-    const f = fightWith([{ skills: { durability: 6 }, picks: ['fork.guard.cover_them', 'fork.guard.stand_fast'] }], [{}]);
+    const f = fightWith([{ skills: { durability: FORK2('durability') }, picks: ['fork.guard.cover_them', 'fork.guard.stand_fast'] }], [{}]);
     const verbs = withGame(f.g, () => heldOfChar(f.g.characters[f.pc.charId]).verbs || []);
     expect(verbs).toContain('fork.guard.cover_them'); expect(verbs).toContain('fork.guard.stand_fast');
     expect(verbs).not.toContain('fork.guard.provoke'); expect(verbs).not.toContain('fork.guard.drive');
   });
-  it('a two-door character (Durability 6 and Dexterity 6) holds four picks; they survive a save and a level-up', () => {
+  it('a two-door character (Durability and Dexterity at their second fork, 8) holds four picks; they survive a save and a level-up', () => {
     const picks = ['fork.guard.provoke', 'fork.guard.drive', 'fork.pressure.walk_it_in', 'fork.pressure.lockdown'];
-    const s = storyWith([{ skills: { durability: 6, dexterity: 6 }, attrs: { endurance: 6, agility: 6 }, level: 9, picks }]), id = s.chars[0].id;
+    const s = storyWith([{ skills: { durability: FORK2('durability'), dexterity: FORK2('dexterity') }, attrs: { endurance: FORK2('durability'), agility: FORK2('dexterity') }, level: 9, picks }]), id = s.chars[0].id;
     let c = s.g.characters[id];
     expect([...c.doorPicks.durability, ...c.doorPicks.dexterity].sort()).toEqual([...picks].sort());
     expect(doorForkViews(c).filter((v) => v.picked.length).map((v) => [v.door, v.picked.length])).toEqual([['durability', 2], ['dexterity', 2]]);
@@ -181,7 +186,7 @@ describe('Guard, the first fork: Provoke and Cover Them', () => {
 
 describe('Guard, the second fork: Stand Fast and Drive (Slam\'s paired rows read the pick)', () => {
   function slam(picks: string[], saves: 'pass' | 'fail') {
-    const f = fightWith([tank(picks, 6)], [{ at: 'F6' }, { at: 'G6' }, { at: 'H6' }]);
+    const f = fightWith([tank(picks, FORK2('durability'))], [{ at: 'F6' }, { at: 'G6' }, { at: 'H6' }]);
     const me = big(f, at(f, f.pc, '5,5')); f.turn(me); f.unit(me.id).res.guard = 4; f.unit(me.id).ap = 6;
     const [a, b, c] = f.foes; at(f, a, '6,5'); at(f, b, '7,3'); at(f, c, '10,5'); for (const x of f.foes) { big(f, x); f.unit(x.id).conds = {}; }
     SAVES = saves;
@@ -238,7 +243,7 @@ describe('Momentum, the first fork: Rolling Start and Grindstone', () => {
 
 // ============================================================================================ Pressure (Dexterity)
 describe('Pressure\'s forks: Converging Fire, Walk It In, Through the Gap, Lockdown', () => {
-  const gun = (picks: string[], name = 'Gun'): CharSpec => ({ name, weapon: 'hellraiser_service_rifle', skills: { dexterity: 6 }, attrs: { agility: 6 }, level: 6, picks });
+  const gun = (picks: string[], name = 'Gun'): CharSpec => ({ name, weapon: 'hellraiser_service_rifle', skills: { dexterity: FORK2('dexterity') }, attrs: { agility: FORK2('dexterity') }, level: 6, picks });
   function setUp(specs: CharSpec[], tier = 'soldier') {
     const f = physFight(specs as any, [{ weapon: 'combat_knife', at: '10,4', tier }]); f.cb.objects = [];
     f.pcs.forEach((u, i) => { at(f, u, '4,' + (2 + 2 * i)); big(f, u); }); at(f, f.foe, '10,4'); big(f, f.foe); f.unit(f.foe.id).conds = {};

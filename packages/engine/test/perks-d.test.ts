@@ -8,7 +8,7 @@ import {
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
-import { hymnWait, prayerCooldown } from '../src';
+import { hymnWait, prayerCooldown, calls } from '../src';
 
 /** A seed whose next d20 is n. */
 function rngFor(n: number): { state: number } { for (let s = 1; s < 100000; s++) { const r = { state: s }; if (d20(r) === n) return { state: s }; } throw new Error('no seed'); }
@@ -96,7 +96,7 @@ describe('Rite in the Field (rules 1.63, D6: the rituals of the heart)', () => {
   it("cuts Lore Master's own Call Name It by its row (I and II, never below its floor), and no other Call", () => {
     const callAp = (perks: Record<string, string>, id: string, foe = false) => { const g = soulFight(perks, { skills: { lore_master: 3, vigilant: 3 } }); const a = g.pc.ap;
       g.act({ type: 'combat/call', unitId: g.pc.id, id, targetId: foe ? g.foe.id : g.pc.id } as any); return a - g.pc.ap; };
-    const plain = callAp({}, 'call.name_it'); expect(plain).toBe(2);
+    const plain = callAp({}, 'call.name_it'); expect(plain).toBe(calls.callBaseAp(3));
     const row = (t: string) => (PERK as any).rite_in_the_field.tiers[t].effects.find((e: any) => (e.if.action_id || []).includes('call.name_it'));
     for (const t of ['I', 'II']) expect(callAp({ rite_in_the_field: t }, 'call.name_it'), t).toBe(Math.max(row(t).min, plain + row(t).value));
     expect(callAp({ rite_in_the_field: 'II' }, 'call.spot', true)).toBe(callAp({}, 'call.spot', true));

@@ -155,10 +155,12 @@ describe('row 7: the Break toggle is never shown on when it can\'t be used', () 
 });
 
 import { chooseNode, upTurn } from './helpers/survival';
+import { FIG_DOOR } from '../src';
 describe('row 8: a Figment\'s damage and kills are its owner\'s, and Volatile\'s blast is in the log', () => {
   it('in a Survival fight a Volatile Figment pictured through the reducer is destroyed by a foe and bursts: logged, and the run\'s kept tally credits the owner', () => {
     let g: any = startRun(survivalRoom('PHC-R8', [{ build: 'plain_gun', level: 1 }], { test: true }), 'PHC-R8');
     const c = g.characters.c1; c.skills.visualization = 5; c.weapon = 'service_pistol'; c.offHand = { id: 'visualizer' };
+    c.doorPicks = { ...(c.doorPicks || {}), [FIG_DOOR]: ['double'] }; // rules 1.70 item 5541: the form is learned at figment_forms
     c.pack = [...(c.pack || []), { id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: 3, kind: 'ammo' }];
     g = apply(g, { type: 'figments/design', charId: 'c1', design: { id: 'v', name: 'Bomb', form: 'double', traits: ['volatile'] } } as any, 'host');
     g = apply(g, { type: 'run/move', node: chooseNode(g, ['fight'])!.id } as any, 'host');

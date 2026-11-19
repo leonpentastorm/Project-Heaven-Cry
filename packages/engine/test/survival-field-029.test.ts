@@ -4,7 +4,7 @@
 // Tug on a willing ally moves it (forcedRefusal: willing first); Slam beside a friend moves no friend (it reaches foes
 // only, and forcedRefusal's field rule holds any friend); an order to a Figment runs; Hide is the fight's own Hide.
 import { describe, it, expect } from 'vitest';
-import { apply, newGame, ARCHETYPES, reachable, RuleError, paths, dist } from '../src';
+import { apply, newGame, ARCHETYPES, reachable, RuleError, paths, dist, FIG_DOOR } from '../src';
 import tendingJ from '../../../data/tending.json';
 import { upTurn } from './helpers/survival';
 
@@ -61,7 +61,7 @@ describe("the 0.28.3 merge: 0.29's pieces on the field, by the same single gates
     expect(U(after, mu).pos).toBe(was); expect(U(after, mu).hp).toBe(U(g, mu).hp);
   });
   it('an order to a Figment runs on the field (the owned-unit order site)', () => {
-    let g = toField(inFight((x) => { const c = Object.values(x.characters).find((c: any) => c.name === 'Gun'); c.skills.visualization = 1; c.weapon = 'service_pistol'; c.offHand = { id: 'visualizer' }; })); g = up(g, 'gu');
+    let g = toField(inFight((x) => { const c = Object.values(x.characters).find((c: any) => c.name === 'Gun'); c.skills.visualization = 1; c.weapon = 'service_pistol'; c.offHand = { id: 'visualizer' }; c.doorPicks = { ...(c.doorPicks || {}), [FIG_DOOR]: ['double'] }; })); g = up(g, 'gu');
     const { gu } = ids(g), me = U(g, gu), P = paths(g.combat, me.pos, me.id), taken = new Set(g.combat.units.filter((u: any) => !u.dead).map((u: any) => u.pos));
     const free = Object.keys(P.dist).filter((k) => !taken.has(k) && P.dist[k] === 1);
     g = apply(g, { type: 'combat/perk', unitId: gu, id: 'verb:picture', choice: 'double', tile: free[0] }, 'p2');

@@ -81,7 +81,7 @@ describe('the design workshop view, against the reducer (figments/design)', () =
     const s = storyWith([{ skills: { visualization: 3 } }]); const id = s.chars[0].id;
     const v = figmentDesignView(s.g.characters[id]);
     const locked = { id: '', name: 'Hound', form: 'beast', traits: [] }, two = { id: '', name: 'Two', form: 'eye', traits: ['keen', 'swift'] };
-    expect(v.draftWhy(locked)).toMatch(/forms you know/); // rules 1.70 item 5541: a form not learned expect(() => s.act({ type: 'figments/design', charId: id, design: locked } as any)).toThrow(v.draftWhy(locked)!);
+    expect(v.draftWhy(locked)).toMatch(/forms you know/); expect(() => s.act({ type: 'figments/design', charId: id, design: locked } as any)).toThrow(v.draftWhy(locked)!);
     expect(v.draftWhy(two)).toMatch(/trait/); expect(() => s.act({ type: 'figments/design', charId: id, design: two } as any)).toThrow(v.draftWhy(two)!);
     const ok = { id: '', name: 'Lookout', form: 'eye', traits: ['keen'] }; expect(v.draftWhy(ok)).toBeNull();
     for (let i = 0; i < v.designsMax; i++) s.act({ type: 'figments/design', charId: id, design: { ...ok, name: 'Lookout ' + i } } as any);
