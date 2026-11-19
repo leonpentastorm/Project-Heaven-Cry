@@ -21817,6 +21817,42 @@
         "different_pixels_32": 2,
         "different_pixels_64": 15
       }
+    },
+    "focus-evoker--relic": {
+      "label": "Evoker — Relic",
+      "path": "art/icons/gear/focus-evoker--relic.png",
+      "sha256": "079a6787a1a91190cc198f904476bb281d8e3b7127567bf3fbab129887a9a511",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-evoker--relic.png",
+        "128": "art/icons/gear/exports/128/focus-evoker--relic.png",
+        "64": "art/icons/gear/exports/64/focus-evoker--relic.png",
+        "32": "art/icons/gear/exports/32/focus-evoker--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-evoker--relic.png",
+      "native_dimensions": [
+        1199,
+        1312
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.5",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "focus-evoker",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9677424337202388,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 35
+      }
     }
   },
   "survival_art": {

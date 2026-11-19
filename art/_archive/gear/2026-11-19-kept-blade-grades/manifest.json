@@ -2896,6 +2896,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-evoker--relic",
+      "path": "art/icons/gear/focus-evoker--relic.png",
+      "sha256": "079a6787a1a91190cc198f904476bb281d8e3b7127567bf3fbab129887a9a511",
+      "label": "Evoker — Relic",
+      "family": "focus-evoker",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-evoker--relic.png",
+        "sha256": "e2107689205942487b7c880e29edc321a618178bbeeaaa8cc251ece8c387fc9e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-evoker--relic.png",
+        "sha256": "079a6787a1a91190cc198f904476bb281d8e3b7127567bf3fbab129887a9a511"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-evoker--relic.txt",
+        "sha256": "b15ce8d29cbf80d4130ce668c561b3a1cdc802e8298e4658843cd0259f4556d1"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/focus-evoker--relic/v1/source.png",
+          "sha256": "1f20e9fe567679f9690207fb3b2cbb76d4714b20859787243c992fcffb45e61e"
+        },
+        {
+          "path": "art/icons/gear/focus-evoker.png",
+          "sha256": "3947d21607b863bf71949ab13c1a7667ca3cb5a006314d082516daaa1ee076f4"
+        },
+        {
+          "path": "art/icons/gear/focus-evoker--masterwork.png",
+          "sha256": "e8c5c67f38e006d7424fb12a300a1bc372de5e39341e52b9ace9e9c5a58c9add"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1199,
+        1312
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-evoker--relic.png",
+        "128": "art/icons/gear/exports/128/focus-evoker--relic.png",
+        "64": "art/icons/gear/exports/64/focus-evoker--relic.png",
+        "32": "art/icons/gear/exports/32/focus-evoker--relic.png"
+      },
+      "export_hashes": {
+        "256": "b651a4a0456cb2f1e16c720af09a96ce66d82dd78ba98508774e899f148ed21b",
+        "128": "4e4c4e092ecb44971373eeb799e9632d3f2cc2a838cc4a99d0778061acc2fb11",
+        "64": "68d1be46a935236743041c0c1ba0b196928741ccca9f162d0f1e63b18a54a960",
+        "32": "432abb4236a67de1bc4ac2c05a3deb91006168c0aea04959a9adf5b90fe54884"
+      },
+      "grade": "relic",
+      "standard_id": "focus-evoker",
+      "outline": {
+        "solid_alpha_iou": 0.9677424337202388,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 35
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
