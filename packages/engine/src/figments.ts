@@ -18,7 +18,7 @@ import type { Character, FigmentDesign } from './character';
 import { mod } from './character';
 import { ENEMY, enemyLevelRow, RULES, SKILL } from './data';
 import { register, statQuery, charOfUnit, uses } from './effects';
-import { onHook } from './effects/hooks';
+import { onHook, sheetSource } from './effects/hooks';
 import { registerPickList } from './effects/actions';
 import { rawItem, meetsRequires } from './effects/collect';
 import { price, resGive } from './effects/cost';
@@ -28,7 +28,6 @@ import { condOn, saveAgainst } from './magic';
 import { canStand, tileOf } from './kit';
 import { addImage, dropImage, imagesOf, imageOfOwner, imageTurnStart, type FalseImage } from './illusion';
 import { numberOf } from './datatext';
-import { sourceOf } from './effects/triggers';
 import { registerDoorPicks, doorPicksOf, doorKeptOf, type DoorGrant } from './doorpicks';
 import { react } from './tactics';
 import type { Rng } from './rng';
@@ -63,8 +62,8 @@ const visOf = (c: Character | null | undefined): number => (c?.skills as any)?.[
 /** Rules 1.70 item 5541: how many forms this character knows: from Visualization forms_known.from, the number block
  * forms_known.count on its points (2 at 1, +1 a point, all ten at 9). */
 export function formsKnown(c: Character | null | undefined): number {
-  const p = visOf(c), K = FIG.forms_known; if (p < K.from) return 0;
-  return Math.max(0, Math.floor(numberOf(K.count, (of) => sourceOf({ ctx: {}, h: { c } } as any, of)))); // THE one resolver (effects/triggers.ts; m4)
+  const p = visOf(c), K = FIG.forms_known; if (!c || p < K.from) return 0;
+  return Math.max(0, Math.floor(numberOf(K.count, sheetSource(c)))); // the sheet's one resolver (effects/hooks.ts sheetSource), as strainLimit
 }
 /** The forms this character holds open: the ones it learned (door/pick at figment_forms) and the ones a save kept
  * outside its count, in data order. */
