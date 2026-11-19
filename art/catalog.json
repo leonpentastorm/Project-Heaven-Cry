@@ -20917,6 +20917,42 @@
         "different_pixels_32": 3,
         "different_pixels_64": 15
       }
+    },
+    "weapon-maul--masterwork": {
+      "label": "Maul — Masterwork",
+      "path": "art/icons/gear/weapon-maul--masterwork.png",
+      "sha256": "0e74d4c3a486442bea909ab483f46fcecf257e86669f2a1c279572812b5126fb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-maul--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-maul--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-maul--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-maul--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-maul--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.2",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-maul",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9561779431165447,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 21
+      }
     }
   },
   "survival_art": {
