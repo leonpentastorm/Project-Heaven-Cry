@@ -32,6 +32,8 @@
 "item/perk/last_wall@mastered/taken-low": "P1 ps.perk:last_wall.flags.guard0>true uses.perk:last_wall|per_combat.n0>1 uses.perk:last_wall|per_combat.s0>c; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "item/perk/on_my_mark@mastered/action/order": "P1 faith.acted0>true faith.apMark6>8 ps.perk:on_my_mark.mark.ally0>pc-c3 ps.perk:on_my_mark.mark.pool0>4 ps.perk:on_my_mark.mark.real0>6 ps.skill:composure.5.acted0>true uses.perk:on_my_mark#order|per_round.n0>1 uses.perk:on_my_mark#order|per_round.s0>r1; P2 uses.perk:on_my_mark|per_round.n0>1 uses.perk:on_my_mark|per_round.s0>r1",
 "item/perk/open_hand@mastered/action/mercy_setting": "P1 faith.acted0>true faith.apMark6>9 ps.skill:composure.5.acted0>true",
+"item/perk/opening_argument@I/action/opening_argument": "P1 faith.acted0>true faith.apMark6>9 ps.skill:composure.5.acted0>true uses.perk:opening_argument#opening_argument|per_combat.n0>1 uses.perk:opening_argument#opening_argument|per_combat.s0>c",
+"item/perk/opening_argument@II/action/opening_argument": "P1 faith.acted0>true faith.apMark6>9 ps.skill:composure.5.acted0>true uses.perk:opening_argument#opening_argument|per_combat.n0>1 uses.perk:opening_argument#opening_argument|per_combat.s0>c",
 "item/perk/outclassed@I/taken-low": "P1 ps.perk:outclassed.casualty0>true ps.perk:outclassed.pen0>true; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "item/perk/outclassed@II/taken-low": "P1 ps.perk:outclassed.casualty0>true; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "item/perk/rally_cry@I/taken-low": "P2 ps.perk:rally_cry.less0>0.15; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",

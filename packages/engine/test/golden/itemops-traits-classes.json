@@ -166,6 +166,7 @@
 "class/marksman@III/aimed-attack": "P1 ap:9>6, F2 hp:259/259>0/259 dead:->1",
 "class/marksman@III/stats": "",
 "class/marksman@III/taken-miss": "turn:1>3, F2 ap:0>7",
+"class/trickster@I/prices2": "",
 "class/trickster@I/stats": "",
 "class/trickster@II/prices2": "",
 "class/trickster@II/stats": "",
