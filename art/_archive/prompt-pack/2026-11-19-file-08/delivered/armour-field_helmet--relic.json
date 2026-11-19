@@ -1,0 +1,16 @@
+{
+  "id": "armour-field_helmet",
+  "tier": "relic",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--relic.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--relic.png",
+  "size64_mask_differing_pixels": 47,
+  "sha256": "893a3310bfb94c4a96664bee341f3e198c7f0d7955d0055dabc23e5b317323f1",
+  "path": "art/icons/gear/armour-field_helmet--relic.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/armour-field_helmet--relic.png",
+    "128": "art/icons/gear/exports/128/armour-field_helmet--relic.png",
+    "64": "art/icons/gear/exports/64/armour-field_helmet--relic.png",
+    "32": "art/icons/gear/exports/32/armour-field_helmet--relic.png"
+  },
+  "source_sha256": "83d7a6d37c6e341f6fb1f7b04b752809bd79a7a7c98569b5285ba3949fe8221c"
+}
