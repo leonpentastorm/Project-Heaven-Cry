@@ -20,7 +20,7 @@ describe('the camp\'s screen (rules 1.55 item 49)', () => {
     ME = 'host'; const h = draw();
     expect(h).toContain('data-phc-camp-check="weapon"'); expect(h).toContain('data-phc-camp-check="budget"'); expect(h).not.toContain('data-phc-camp-check="focus"');
     expect(h).toContain('○ NOT PICKED');
-    expect(h).toContain('Before the run: take one free weapon and spend your budget on anything else.');
+    expect(h).not.toContain('Before the run');
     expect(h).toContain('Not sure? Take the recommended kit');
     expect(h.indexOf('Step 1 · Your free weapon')).toBeGreaterThan(h.indexOf('Not sure?'));
     expect(h.indexOf('Step 2 · Spend your budget')).toBeGreaterThan(h.indexOf('Step 1 · Your free weapon'));

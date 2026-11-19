@@ -348,7 +348,7 @@ await sidePanels(p, 'the rewards');
   const pay = p.locator('[data-phc-reward-pay="' + c.id + '"]'), num = async (k) => Number(await pay.locator('[data-phc-reward-' + k + ']').getAttribute('data-phc-reward-' + k));
   const xpS = await num('xp'), crS = await num('credits'), xpT = await num('xp-total'), crT = await num('credits-total'), payText = await pay.textContent();
   ok('… it shows the XP and credits the engine recorded on the fight (+' + xpS + ' XP of ' + paid?.xp + ', +' + crS + ' credits of ' + paid?.credits + ') and the totals now (' + xpT + ' XP, ' + crT + ' credits)', !!paid && xpS === paid.xp && crS === paid.credits
-    && xpT === c.xp && crT === c.credits && payText.includes('+' + paid.xp) && payText.includes('+' + paid.credits) && (await p.locator('[data-phc-reward-kicker]').textContent()).trim() === (g.combat?.name || '').toUpperCase());
+    && xpT === c.xp && crT === c.credits && payText.includes('+' + paid.xp) && payText.includes('+' + paid.credits) && (await p.locator('[data-phc-reward-kicker]').textContent()).trim().startsWith(g.combat?.name || ' ')); // one heading: the fight and how it went
   // its sections fold and remember
   await p.locator('[data-phc-reward-fold="reward:pay"] > button').click(); await settle(p, 200);
   const shut = await pay.count(), exp = await p.locator('[data-phc-reward-fold="reward:pay"] > button').getAttribute('aria-expanded');

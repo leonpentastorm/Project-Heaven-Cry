@@ -22,11 +22,11 @@ import ASSETS from './assets.json';
 
 const A = ASSETS as Record<string, string>;
 const art = (k: string) => (k ? A[k + '-lg'] || A[k] || '' : '');
-const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
+const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
 const GRID: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16, marginBottom: 28 };
 /** The words over each group of cards (the engine names the group; the client its heading and its note). */
 const HEAD: Record<string, [string, string]> = {
-  grade: ['Upgrade', 'One upgrade per visit'], repair: ['Repair', 'Back to full durability'], relic: ['Relic upgrade', 'Pick one property. It stays on the weapon.'],
+  grade: ['Upgrade', '1 a visit'], repair: ['Repair', 'Back to full durability'], relic: ['Relic upgrade', 'Pick one property. It stays on the weapon.'],
   forge: ['Mods and armour', 'Made for what your squad carries'], mod: ['Mod fitting', 'The armourer fits a mod to a gun you carry, or takes one off, for a fee'], fit: ['Armour fitting', 'Lets you wear heavier armour'],
   train: ['Training', ''], shrine: ['Blessings', 'Take one'], trade: ['Trades', 'One each, or walk on'],
 };
@@ -46,11 +46,11 @@ function TrainBarView({ b }: { b: NonNullable<PlaceCardV['bar']> }) {
         <span style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: at(b.now) + '%', background: '#7A879E' }} />
         {b.to != null ? <span style={{ position: 'absolute', top: 0, bottom: 0, right: 0, width: 2, background: I.white }} /> : null}
       </span>
-      <span aria-hidden="true" style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 13, color: I.muted, fontVariantNumeric: 'tabular-nums' }}>
+      <span aria-hidden="true" style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 'var(--fs-sub)', color: I.muted, fontVariantNumeric: 'tabular-nums' }}>
         <span>{b.now}{b.to != null ? ' / ' + b.to : ''} · <b style={{ color: I.white }}>+{b.add}</b></span>
         
       </span>
-      <span data-phc-trainbar-mark="" aria-hidden="true" style={{ fontSize: 13, lineHeight: 1.35, color: '#DCE2EC' }}>{b.mark}</span>
+      <span data-phc-trainbar-mark="" aria-hidden="true" style={{ fontSize: 'var(--fs-sub)', lineHeight: 1.35, color: '#DCE2EC' }}>{b.mark}</span>
     </span>
   );
 }
@@ -66,16 +66,16 @@ function ChoiceCard({ x, big }: { x: PlaceCardV; big?: boolean }) {
         {icon ? <span style={{ flexShrink: 0, width: 72, height: 72, display: 'grid', placeItems: 'center', borderRadius: 12, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}><img data-zoom={o.label} data-zoom-text={o.detail} src={icon} alt="" width={64} height={64} style={{ objectFit: 'contain' }} /></span> : null}
         <span style={{ fontFamily: "'Spectral', serif", fontSize: big ? 24 : 20, fontWeight: 600, lineHeight: 1.2 }}>{o.label}</span>
       </div>
-      {o.detail ? <span style={{ fontSize: 14, lineHeight: 1.45, color: '#DCE2EC' }}>{o.detail}</span> : null}
+      {o.detail ? <span style={{ fontSize: 'var(--fs-body)', lineHeight: 1.45, color: '#DCE2EC' }}>{o.detail}</span> : null}
       {x.bar ? <TrainBarView b={x.bar} /> : null}
       <span style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 10 }}>
         <span style={{ display: 'flex', flexDirection: 'column' }}>
           <span data-phc-price="" style={{ fontSize: 24, fontWeight: 700, color: o.pays ? I.ok : I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{o.price ? o.price.toLocaleString('en') : o.pays ? '+' + o.pays.toLocaleString('en') : o.costs || 'Free'}</span>
-          {o.price ? <span style={{ fontSize: 13, color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : o.pays ? <span style={{ fontSize: 13, color: I.muted, letterSpacing: '0.08em' }}>CREDITS PAID TO YOU</span> : null}
+          {o.price ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : o.pays ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted, letterSpacing: '0.08em' }}>CREDITS PAID TO YOU</span> : null}
         </span>
         <span style={{ marginLeft: 'auto', minHeight: 40, padding: '0 16px', display: 'inline-grid', placeItems: 'center', borderRadius: 10, background: o.why ? 'transparent' : I.text, outline: o.why ? '1px solid #3B475D' : 'none', color: o.why ? I.muted : I.ground, fontWeight: 700, fontSize: 15 }}>Take it</span>
       </span>
-      <span data-phc-status="" style={{ minHeight: 18, fontSize: 13, color: o.why ? I.muted : I.ok }}>{o.why || '✓ You can take this'}</span>
+      <span data-phc-status="" style={{ minHeight: 18, fontSize: 'var(--fs-sub)', color: o.why ? I.muted : I.ok }}>{o.why || ''}</span>
     </button>
   );
 }
@@ -91,7 +91,7 @@ function TabBody({ v, tab }: { v: PlaceViewV; tab: string }) {
         <section key={gname} data-phc-group={gname}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, margin: '6px 0 12px' }}>
             <h2 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>{HEAD[gname]?.[0] || gname}</h2>
-            {HEAD[gname]?.[1] ? <span style={{ fontSize: 13, color: I.muted }}>{HEAD[gname][1]}</span> : null}
+            {HEAD[gname]?.[1] ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>{HEAD[gname][1]}</span> : null}
             <span aria-hidden="true" style={{ flex: 1, height: 1, background: I.line, alignSelf: 'center' }} />
           </div>
           <div style={GRID}>

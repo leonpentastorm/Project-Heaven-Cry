@@ -78,12 +78,12 @@ export function PlaceBar(p: PlaceBarProps) {
         {p.portrait !== undefined ? (
           <div className="phc-keeper-img phc-pb-portrait" style={{ position: 'relative', width: compact ? 48 : 104, aspectRatio: compact ? '1 / 1' : '4 / 5', flexShrink: 0, borderRadius: compact ? 10 : 12, overflow: 'hidden', border: '1px solid #3B475D', background: I.raised, boxShadow: '0 12px 32px rgba(0,0,0,0.55)' }}>
             {p.portrait ? <img data-phc-keeper-portrait="" src={p.portrait} alt={p.portraitAlt || ''} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 20%', display: 'block' }} />
-              : <div style={{ display: 'grid', placeItems: 'center', height: '100%', color: I.muted, fontSize: 13, letterSpacing: '0.18em' }}>AHOC</div>}
+              : <div style={{ display: 'grid', placeItems: 'center', height: '100%', color: I.muted, fontSize: 'var(--fs-sub)', letterSpacing: '0.18em' }}>AHOC</div>}
           </div>) : null}
         <div style={{ display: 'flex', flexDirection: 'column', gap: compact ? 2 : 6, minWidth: 0, flex: '1 1 260px' }}>
           <h1 data-phc-keeper-name="" style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: compact ? 22 : 28, lineHeight: 1.1, overflowWrap: 'anywhere' }}>{p.name}</h1>
-          {p.sub ? <span data-phc-bar-sub="" style={{ fontSize: 14, lineHeight: 1.4, color: I.text }}>{p.sub}</span> : null}
-          {p.role ? <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: I.muted, textTransform: 'uppercase' }}>{p.role}</span> : null}
+          {p.sub ? <span data-phc-bar-sub="" style={{ fontSize: 'var(--fs-body)', lineHeight: 1.4, color: I.text }}>{p.sub}</span> : null}
+          {p.role ? <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: I.muted, textTransform: 'uppercase' }}>{p.role}</span> : null}
           {p.line ? <div data-phc-speech="" aria-live="polite" style={compact ? { position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' } : { marginTop: 4, padding: '10px 14px', borderRadius: 12, background: 'rgba(16,21,31,0.92)', border: '1px solid #3B475D' }}>
             <p key={p.line.key} className="phc-line" style={{ margin: 0, fontFamily: "'Spectral', serif", fontStyle: 'italic', fontSize: 17, lineHeight: 1.45, color: I.text }}>“{p.line.text}”</p>
           </div> : null}
@@ -101,7 +101,7 @@ export function PlaceBar(p: PlaceBarProps) {
 export function BarNumber({ label, n, muted, mark, numMark, children }: { label: string; n: number | string; muted?: boolean; mark?: Record<string, string>; numMark?: Record<string, string>; children?: React.ReactNode }) {
   return (
     <div {...(mark || {})} style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
-      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: I.muted }}>{label}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: I.muted }}>{label}</span>
       <span data-phc-bar-n="" {...(numMark || {})} style={{ fontSize: 36, fontWeight: 700, lineHeight: 1, color: muted ? I.muted : I.white, fontVariantNumeric: 'tabular-nums' }}>{typeof n === 'number' ? n.toLocaleString('en') : n}</span>
       {children}
     </div>

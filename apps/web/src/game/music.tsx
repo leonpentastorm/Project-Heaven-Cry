@@ -225,8 +225,8 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   const side = 'left';
   const btnText = blocked ? 'Click to start the music' : p.paused ? 'Music paused' : track ? track.title : 'No music';
   const mine = Object.values(game.characters).filter((c) => c.owner === meId && !c.dead && musicTraitOf(c) && songOf(c));
-  const btn: React.CSSProperties = { minHeight: 34, padding: '0 12px', borderRadius: 8, border: '1px solid #2E3A50', background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: 'pointer' };
-  const label: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: '#A3AEC2' };
+  const btn: React.CSSProperties = { minHeight: 34, padding: '0 12px', borderRadius: 8, border: '1px solid #2E3A50', background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 600, cursor: 'pointer' };
+  const label: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: '#A3AEC2' };
   const hostCol = want?.charId ? game.players.find((x) => x.id === game.characters[want.charId!]?.owner)?.color : null;
 
   return (
@@ -238,30 +238,30 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
           <div style={label}>NOW PLAYING{want?.layer ? ' · ' + ({ spotlight: 'SPOTLIGHT', pin: 'KEPT ON', encounter: 'FIGHT THEME', combat: 'FIGHT', ambient: 'AREA' } as any)[want.layer] : ''}</div>
           {track ? <>
             <div style={{ fontSize: 15, fontWeight: 700, color: '#E7EBF3' }}>{track.title}</div>
-            <div style={{ fontSize: 13, color: '#A3AEC2' }}>{track.artist || 'Unknown artist'}{track.licence ? ' · ' + track.licence : ''}</div>
-            <div style={{ fontSize: 13, color: hostCol || '#A3AEC2' }}>{want!.charId ? game.characters[want!.charId]?.name + '’s song · ' + want!.reason : want!.reason}{want?.layer === 'pin' && now?.areasLeft ? ' · ' + now.areasLeft + (now.areasLeft === 1 ? ' area' : ' areas') + ' left' : ''}</div>
-          </> : <div style={{ fontSize: 13, color: '#A3AEC2' }}>Silence. This area has no music.</div>}
-          {bad && <div style={{ fontSize: 13, color: '#F65157' }}>✗ {bad} can't play here (the video doesn't allow embedding, or not in your region).</div>}
+            <div style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>{track.artist || 'Unknown artist'}{track.licence ? ' · ' + track.licence : ''}</div>
+            <div style={{ fontSize: 'var(--fs-sub)', color: hostCol || '#A3AEC2' }}>{want!.charId ? game.characters[want!.charId]?.name + '’s song · ' + want!.reason : want!.reason}{want?.layer === 'pin' && now?.areasLeft ? ' · ' + now.areasLeft + (now.areasLeft === 1 ? ' area' : ' areas') + ' left' : ''}</div>
+          </> : <div style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>Silence. This area has no music.</div>}
+          {bad && <div style={{ fontSize: 'var(--fs-sub)', color: '#F65157' }}>✗ {bad} can't play here (the video doesn't allow embedding, or not in your region).</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <button style={btn} onClick={() => setPrefs({ paused: !p.paused })}>{p.paused ? '▶ Resume' : '❚❚ Pause'}</button>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#A3AEC2' }}>Volume
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>Volume
               <input type="range" min={0} max={100} value={p.vol} onChange={(e) => setPrefs({ vol: Number(e.target.value) })} aria-label="Music volume" style={{ width: 110 }} />
             </label>
-            {track?.yt && <a href={'https://www.youtube.com/watch?v=' + track.yt} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: '#7FD4FF' }}>Open on YouTube ↗</a>}
+            {track?.yt && <a href={'https://www.youtube.com/watch?v=' + track.yt} target="_blank" rel="noreferrer" style={{ fontSize: 'var(--fs-sub)', color: '#7FD4FF' }}>Open on YouTube ↗</a>}
           </div>
-          <div style={{ fontSize: 13, color: '#A3AEC2' }}>Pause and volume are yours only: the room's music goes on, and song bonuses still count.</div>
+          <div style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>Pause and volume are yours only: the room's music goes on, and song bonuses still count.</div>
           {/* Music only (Leon, UI pass): the Narrator's voice lives in Settings › Voice. */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: 8, borderTop: '1px solid #232D3F' }}>
-            <span style={{ fontSize: 13, color: '#A3AEC2' }}>The Narrator's voice and the sound mix are in Settings.</span>
+            <span style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>The Narrator's voice and the sound mix are in Settings.</span>
             <button type="button" style={{ ...btn, marginLeft: 'auto', minHeight: 30 }} onClick={() => { setOpen(false); openSettings('voice'); }}>Voice settings ⚙</button>
           </div>
           {mine.map((c) => {
             const isMine = now?.charId === c.id;
             return (
               <div key={c.id} style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', paddingTop: 6, borderTop: '1px solid #232D3F' }}>
-                <span style={{ fontSize: 13, color: '#E7EBF3', fontWeight: 600 }}>{c.name} · Musek Blestor</span>
+                <span style={{ fontSize: 'var(--fs-sub)', color: '#E7EBF3', fontWeight: 600 }}>{c.name} · Musek Blestor</span>
                 {!isMine && game.phase === 'story' && <button style={btn} onClick={() => act({ type: 'music/play', charId: c.id })}>Play my song</button>}
-                {!isMine && game.phase === 'combat' && <span style={{ fontSize: 13, color: '#A3AEC2' }}>In a fight: Play my song is a 2 AP action.</span>}
+                {!isMine && game.phase === 'combat' && <span style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>In a fight: Play my song is a 2 AP action.</span>}
                 {isMine && now?.layer === 'spotlight' && <button style={btn} onClick={() => act({ type: 'music/pin', charId: c.id })}>Keep it playing (2 areas)</button>}
                 {isMine && <button style={btn} onClick={() => act({ type: 'music/unpin', charId: c.id })}>Stop my song</button>}
               </div>
@@ -270,16 +270,16 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
       </div>
       <button ref={btnRef} data-phc-float="music" data-phc-float-place={place} onClick={() => { setOpen(!open); if (blocked) setPrefs({ paused: false }); }} aria-expanded={open} aria-label={'Music: ' + (track ? track.title + ' by ' + track.artist : 'nothing playing')}
         {...tipProps(iconOnly ? btnText : undefined)} onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}
-        style={{ position: 'fixed', [side]: 16, bottom: 16, zIndex: 9, maxWidth: 300, minHeight: 40, minWidth: 40, padding: iconOnly ? 0 : '0 14px', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 8, borderRadius: 999, border: '1px solid ' + (hostCol || '#3B475D'), background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)', ...floatStyle }}>
+        style={{ position: 'fixed', [side]: 16, bottom: 16, zIndex: 9, maxWidth: 300, minHeight: 40, minWidth: 40, padding: iconOnly ? 0 : '0 14px', justifyContent: 'center', display: 'flex', alignItems: 'center', gap: 8, borderRadius: 999, border: '1px solid ' + (hostCol || '#3B475D'), background: '#10151F', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)', ...floatStyle }}>
         <span aria-hidden style={{ fontSize: 16, color: hostCol || '#FFFFFF' }}>♪</span>
         {!iconOnly && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{btnText}</span>}
       </button>
       {creditP.shown && (
         <div role="status" className={presenceCls(side === 'left' ? 'phc-a-left' : 'phc-a-right', creditP.closing)} style={{ position: 'fixed', [side]: 16, bottom: 112, zIndex: 9, width: 300, padding: '10px 12px', borderRadius: 12, background: '#10151F', border: '1px solid #3B475D', borderLeft: '4px solid ' + creditP.shown.color, boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 2, pointerEvents: 'none' }}>
           <div style={label}>♪ NOW PLAYING</div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: '#E7EBF3' }}>{creditP.shown.title}</div>
-          <div style={{ fontSize: 13, color: '#A3AEC2' }}>{creditP.shown.artist}</div>
-          <div style={{ fontSize: 13, color: creditP.shown.color }}>{creditP.shown.reason}</div>
+          <div style={{ fontSize: 'var(--fs-body)', fontWeight: 700, color: '#E7EBF3' }}>{creditP.shown.title}</div>
+          <div style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>{creditP.shown.artist}</div>
+          <div style={{ fontSize: 'var(--fs-sub)', color: creditP.shown.color }}>{creditP.shown.reason}</div>
         </div>
       )}
     </>

@@ -44,7 +44,7 @@ describe('area map: Sigils (rules 1.4)', () => {
     // the MAGIC tab: words in grammar order, with their 1.4 class
     L.setState({ tab: 'magic' }); r = L.renderVals();
     expect(r.mg.sig.words.map((w: any) => [w.word, w.cls])).toEqual([['FIRE', 'SUBJECT · ELEMENT'], ['SEEK', 'REACH']]);
-    expect(r.mg.sig.stats[0].k).toMatch(/^Max Sigil words/);
+    expect(r.mg.sig.stats[0].k).toBe('Line length');
   });
   it('the area map\'s draw pad: labelled rows by word group, and a refused key says why in a few words', () => {
     G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'seed-sigil-rows');

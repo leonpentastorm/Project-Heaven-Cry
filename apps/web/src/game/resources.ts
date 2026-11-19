@@ -227,7 +227,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     }
     const rAp = reloadApOf(u, c, w, g), type = ammoName(u ? u.ammoType : c?.loadedType);
     const low = now > 0 && now < cap && now <= Math.max(1, Math.ceil(cap * 0.25));
-    const row: ResRow = { key: 'ammo', label: 'Ammo', value: now + ' / ' + cap + ' loaded' + (spareTxt ? ' · ' + spareTxt : ''), now, max: cap, kind: cap <= 12 ? 'pips' : 'bar', colour: RES_INK.body,
+    const row: ResRow = { key: 'ammo', label: 'Ammo', value: now + ' / ' + cap + (spareTxt ? ' · ' + (spareTxt.startsWith('spares:') ? 'plenty' : spare + (loose ? ' loose' : ' spare')) : ''), now, max: cap, kind: cap <= 12 ? 'pips' : 'bar', colour: RES_INK.body,
       sub: (w.name || wid) + (type ? ' · ' + type + ' rounds' : ''),
       hint: 'Rounds in the ' + (w.name || 'gun').toLowerCase() + '. ' + (spare > 0 ? 'Reload: ' + rAp + ' AP' + (loose ? ' (round by round from loose rounds).' : ' (a fresh ' + (w.reload_unit || 'magazine') + ').') : 'No spares left: pick some up, or switch weapons.') };
     // each gun's jam on its own ammo row (Hands 5d: the guns jam apart); Heat, which they pool, has its own row
@@ -400,7 +400,7 @@ export const RES_CSS = [
 ].join('\n');
 
 export function chipStyle(level?: string): string {
-  const base = 'flex: none; padding: 1px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; line-height: 18px; white-space: nowrap; ';
+  const base = 'flex: none; padding: 1px 8px; border-radius: 4px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; line-height: 18px; white-space: nowrap; ';
   return base + (level === 'alert' ? 'background: #F65157; color: #0A0D13; border: 1px solid #F65157' : level === 'ready' ? 'background: transparent; color: #6FEA77; border: 1px solid #6FEA77' : 'background: #0A0D13; color: #FFFFFF; border: 1px solid #FFFFFF');
 }
 const pct = (r: ResRow) => (r.max ? Math.max(0, Math.min(100, ((r.now ?? 0) / r.max) * 100)) : 0);
@@ -435,12 +435,12 @@ export function resRowView(r: ResRow, compact = false) {
     card: JSON.stringify({ name: r.label.toUpperCase(), chips: [r.value, r.warn || ''].filter(Boolean), lines: [...(r.sub ? [{ key: 'sub', kind: 'note', label: '', text: r.sub }] : []), ...proseTip(r.hint).lines], look: 'meter' }),
     aria: r.label + ': ' + r.value + (r.sub ? ' (' + r.sub + ')' : '') + (r.warn ? '. ' + r.warn : '') + '. ' + r.hint,
     isBar: r.kind === 'bar', isPips: r.kind === 'pips', isText: r.kind === 'text',
-    labelStyle: 'flex: none; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + r.colour + (compact ? '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0' : ''),
+    labelStyle: 'flex: none; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + r.colour + (compact ? '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0' : ''),
     // The full block wraps (the narrow area-map HUD must still show the spares); only the compact rows cut with an ellipsis.
     valueStyle: 'flex: 1 1 auto; min-width: 0; font-size: ' + (compact ? 14 : 15) + 'px; font-weight: 700; color: #E7EBF3; font-variant-numeric: tabular-nums; ' + (compact ? 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis' : 'white-space: normal; overflow-wrap: anywhere; line-height: 1.25'),
     miniValueStyle: 'flex: none; font-size: 15px; font-weight: 700; color: #E7EBF3; white-space: nowrap; font-variant-numeric: tabular-nums; text-align: right',
     warnStyle: chipStyle(r.level),
-    subStyle: 'display: block; font-size: 12px; font-weight: 500; line-height: 1.3; color: #A3AEC2; overflow-wrap: anywhere',
+    subStyle: 'display: block; font-size: var(--fs-sub); font-weight: 500; line-height: 1.3; color: #A3AEC2; overflow-wrap: anywhere',
     trackStyle: 'position: relative; display: block; height: ' + (compact ? 8 : 10) + 'px; border-radius: 3px; background: #1C2536; overflow: hidden',
     fillStyle: 'display: block; height: 100%; width: ' + pct(r) + '%; background: ' + ink,
     pips: pipsOf(r, compact),
@@ -494,4 +494,4 @@ export function sigilChip(rows: ResRow[]): SigilChip | null {
 }
 /** The chip's style on a 48 px map token: on the right edge, just below centre (clear of Pressure's pips and word on the top
  *  edge and the health word chip on the bottom edge; characters only, so never under a hostile's kind badge). */
-export const sigilChipStyle = (c: SigilChip) => 'position: absolute; right: -6px; top: calc(50% + 4px); transform: translateY(-50%); z-index: 5; padding: 0 3px; border-radius: 4px; font-size: 13px; line-height: 15px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + c.ink + '; border: 1px solid ' + c.ink;
+export const sigilChipStyle = (c: SigilChip) => 'position: absolute; right: -6px; top: calc(50% + 4px); transform: translateY(-50%); z-index: 5; padding: 0 3px; border-radius: 4px; font-size: var(--fs-sub); line-height: 15px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + c.ink + '; border: 1px solid ' + c.ink;

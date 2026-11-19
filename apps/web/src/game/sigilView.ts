@@ -247,7 +247,7 @@ export interface EvokeView {
    * Burst or the caster doesn't hold it), and the one picked. */ paints: string[]; paint: string | null;
   /** COMMAND · move with a tile picked: the walk it would take (the engine's path). */ orderPath: string[];
 }
-const badge = (bg: string, fg = '#0A0D13') => 'position: absolute; z-index: 5; padding: 0 3px; border-radius: 2px; font-size: 9px; line-height: 13px; font-weight: 700; letter-spacing: 0.02em; pointer-events: none; white-space: nowrap; background: ' + bg + '; color: ' + fg;
+const badge = (bg: string, fg = '#0A0D13') => 'position: absolute; z-index: 5; padding: 0 3px; border-radius: 2px; font-size: var(--fs-sub); line-height: 13px; font-weight: 700; letter-spacing: 0.02em; pointer-events: none; white-space: nowrap; background: ' + bg + '; color: ' + fg;
 const CORNER = { tl: 'left: 1px; top: 1px', tr: 'right: 1px; top: 1px', bl: 'left: 1px; bottom: 1px', br: 'right: 1px; bottom: 1px', c: 'left: 50%; top: 50%; transform: translate(-50%, -50%)' };
 /** Bresenham tiles from a to b (for drawing a lob's arc only; the engine owns real paths). */
 function lineTiles(a: string, b: string): string[] {
@@ -320,9 +320,9 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   for (const m of show.missiles) {
     const n = many ? String(m.i + 1) : '';
     m.path.forEach((k: string, j: number) => { const nx = m.path[j + 1] || m.impact, [ax, ay] = k.split(',').map(Number), [bx, by] = nx.split(',').map(Number); if (k === m.impact) return;
-      mark(k, { key: 'path' + m.i, text: ARROW[Math.sign(bx - ax) + ',' + Math.sign(by - ay)] || '·', style: badge('transparent', SIGIL_INK) + '; ' + CORNER.c + '; font-size: 14px', title: 'bolt path' }, 'the bolt passes'); });
+      mark(k, { key: 'path' + m.i, text: ARROW[Math.sign(bx - ax) + ',' + Math.sign(by - ay)] || '·', style: badge('transparent', SIGIL_INK) + '; ' + CORNER.c + '; font-size: var(--fs-body)', title: 'bolt path' }, 'the bolt passes'); });
     if (m.blockedAt) mark(m.blockedAt, { key: 'block' + m.i, text: '✕ ' + (m.stoppedBy === 'cover' ? 'BLOCKED' : 'STOPS'), style: badge('#FFFFFF') + '; ' + CORNER.bl, title: m.stoppedBy === 'cover' ? 'cover stops the bolt before here' : 'a creature here takes the bolt' }, m.stoppedBy === 'cover' ? 'the bolt is stopped by cover here' : 'the bolt stops on whoever stands here');
-    if (m.arc) { lineTiles(m.arc.from, m.arc.to).forEach((k) => { if (k !== m.arc.to) mark(k, { key: 'arc' + m.i, text: '⌒', style: badge('transparent', SIGIL_INK) + '; ' + CORNER.c + '; font-size: 13px; opacity: 0.75', title: 'the lob passes over' }, 'the lob passes over'); }); }
+    if (m.arc) { lineTiles(m.arc.from, m.arc.to).forEach((k) => { if (k !== m.arc.to) mark(k, { key: 'arc' + m.i, text: '⌒', style: badge('transparent', SIGIL_INK) + '; ' + CORNER.c + '; font-size: var(--fs-sub); opacity: 0.75', title: 'the lob passes over' }, 'the lob passes over'); }); }
     if (m.kind === 'appear' && !m.self) mark(m.impact, { key: 'appear' + m.i, text: '◇ APPEARS', style: badge(SIGIL_GLOW) + '; ' + CORNER.tl, title: 'SENSE: it appears here, nothing blocks it' }, 'it appears here');
     m.hops.forEach((k: string, j: number) => mark(k, { key: 'hop' + m.i + j, text: '⇢R' + (j + 1), style: badge(SIGIL_GLOW) + '; ' + CORNER.bl, title: 'RELAY hop ' + (j + 1) }, 'RELAY hop ' + (j + 1)));
     if (n) mark(m.impact, { key: 'miss' + m.i, text: 'M' + n, style: badge('#FFFFFF') + '; ' + CORNER.br, title: 'missile ' + n }, 'missile ' + n + ' lands');
@@ -393,7 +393,7 @@ export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {
   if (cmd === 'move' && !choice.orderTo) for (const k of out.orderTo) mark(k, { key: 'orderto', text: '', style: 'position: absolute; inset: 30%; z-index: 4; pointer-events: none; border: 2px dashed #E3BF51', title: 'COMMAND may send them here' }, 'COMMAND may send them here');
   if (cmd === 'move' && choice.orderTo) mark(choice.orderTo, { key: 'orderat', text: '⚑ GO', style: badge('#E3BF51') + '; ' + CORNER.br, title: 'COMMAND: they walk here' }, 'COMMAND: they walk here');
   // The walk it would take (spec 9.5: where it would leave a creature), step by step, the last tile where it stops.
-  if (cmd === 'move' && choice.orderTo) out.orderPath.forEach((k, i) => { if (k !== choice.orderTo) mark(k, { key: 'orderpath', text: '·' + (i + 1), style: badge('transparent', '#E3BF51') + '; ' + CORNER.c + '; font-size: 12px', title: 'COMMAND: step ' + (i + 1) + ' of the walk' }, 'COMMAND: step ' + (i + 1) + ' of the walk'); });
+  if (cmd === 'move' && choice.orderTo) out.orderPath.forEach((k, i) => { if (k !== choice.orderTo) mark(k, { key: 'orderpath', text: '·' + (i + 1), style: badge('transparent', '#E3BF51') + '; ' + CORNER.c + '; font-size: var(--fs-sub)', title: 'COMMAND: step ' + (i + 1) + ' of the walk' }, 'COMMAND: step ' + (i + 1) + ' of the walk'); });
   // 8. fizzle
   out.fizzle = !!show.ok && !!show.fizzle;
   out.fizzleText = out.fizzle ? 'There is nothing this spell can affect, so it will fizzle. Its charge, AP and Flux are still spent, and its glyphs fade.' : '';

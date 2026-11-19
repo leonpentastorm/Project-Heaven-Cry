@@ -120,6 +120,7 @@ _SAME = {  # (skill, per_point.numbers key) -> (the engine's data value, where i
     ("faith", "hymn_floor"): (_hymn_r.get("floor"), "patrons.json prayer.hymn.cooldown_rule.floor"),
     ("will_power", "pumps"): (((_cyc_r.get("free_pumps") or [{}])[0]).get("pumps"), "soul_modules.json cycle.free_pumps.0.pumps"),
 }
+_LADDER_GROWS = {"elemental_taken", "guard_pool", "hymn_wait"}  # packages/engine/src/ladder.ts LADDER_GROWS
 for s in items("skills"):
     if not isinstance(s, dict):
         continue
@@ -132,8 +133,12 @@ for s in items("skills"):
     seen = set()
     for i, r in enumerate(rows):
         w = f"skills:{sid}: per_point.rows.{i}"
-        if not isinstance(r, dict) or set(r) != {"at", "text"} or not isinstance(r.get("text"), str) or not r["text"].strip():
-            errors.append(f"{w}: a row is {{at, text}} with a text"); continue
+        if not isinstance(r, dict) or not {"at", "text"} <= set(r) <= {"at", "text", "grows"} or not isinstance(r.get("text"), str) or not r["text"].strip():
+            errors.append(f"{w}: a row is {{at, text}} with a text (and a capped row's grows)"); continue
+        # 0.31.11: a capped per-point row names the engine value it grows (packages/engine/src/ladder.ts LADDER_GROWS), so
+        # the ladder shows it only on the levels where it still adds
+        if "grows" in r and (r["grows"] not in _LADDER_GROWS or r["at"] != "each"):
+            errors.append(f"{w}: grows {r['grows']!r} is not one of {sorted(_LADDER_GROWS)} on an each row")
         m = _AT.match(str(r["at"]))
         if not m or (m.group(3) and not 1 <= int(m.group(3)) <= 10):
             errors.append(f"{w}: at {r['at']!r} is not each, each from n, every 2, every 3, from n or at n (n 1 to 10)")
@@ -1055,8 +1060,8 @@ if "actions" in data:
             if isinstance(r, dict) and _k == "needs" and isinstance(r.get(_k), list) and r[_k] and all(isinstance(x, str) and x for x in r[_k]): continue # rules 1.33: one of several paths (an MP focus: mg.emanator, mg.attuner)
             if isinstance(r, dict) and _k in r and not (isinstance(r[_k], str) and r[_k]):
                 errors.append(f"actions: resources.{rid}.{_k} must be a path (a setter: its name)")
-        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap)
-            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion)")
+        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion", "strain"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap); rules 1.69 item 5453: strain (magic.ts: addStrain up, easeStrain down)
+            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion, strain)")
 
 # Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
 # prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.

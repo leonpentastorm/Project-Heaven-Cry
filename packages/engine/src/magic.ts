@@ -29,7 +29,7 @@ import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
 import { grantGoods, lootToPack } from './containers';
 import { itemWords, wordCostMods, immune, mendShown } from './effects/core';
-import { price, priced, costOf, whyNot, canPay, pay, refund, apFor, resGive } from './effects/cost';
+import { price, priced, costOf, whyNot, canPay, pay, refund, apFor, resGive, setResSetter } from './effects/cost';
 import { masteredWords } from './sigilgrowth';
 import { tilesIn, rngOf } from './kit';
 import { feedOf, showFeedNumber } from './effects/feed';
@@ -950,6 +950,15 @@ function easeStrain(cb: Combat, u: Unit, n: number, way: string): number {
   shockEnds(cb, u);
   return was - m.strain;
 }
+/** Rules 1.69 item 5453 (N3b): Strain is a resource row (data/actions.json resources.strain, setter "strain"), so an item's
+ * `resource` op reads and changes it through the one Strain-change function each way, with its limit: up through
+ * addStrain (the strain hook, the Short and the Shock), down through easeStrain (strain_change, then the Shock's end).
+ * Returns what really changed; a unit with no heart has no Strain to change. */
+setResSetter('strain', (cb, u, n, _by, why) => {
+  const m = heart(u); if (!cb || !m || !n) return 0; const was = m.strain;
+  if (n > 0) addStrain(cb, rngOf(), u, n, why || 'an item'); else easeStrain(cb, u, -n, why || 'an item');
+  return m.strain - was;
+});
 /** Rules 1.56 (the Mana Shock): it lasts while Strain is over the limit (MagicUnit.shock); asked wherever Strain falls
  * and at the turn's end (a limit that rose). */
 function shockEnds(cb: Combat, u: Unit): boolean {
@@ -1010,6 +1019,8 @@ export function manaShort(cb: Combat, rng: Rng, u: Unit, limit?: number): string
     if (!cb.overworld && cb.order?.[cb.turn] === u.id) m.shockOwn = true;
     emitFx(cb, 'cond', { target: u.id, at: u.pos, id: MANA_SHOCK.id }); // the state's word on the token, no hurt flash (fx/play.ts cond)
     say(cb, u.name + ' is in ' + MANA_SHOCK.name + ' (Strain ' + m.strain + '/' + lim + '): ' + MANA_SHOCK.text);
+    // Rules 1.69: the one point where a heart enters the Shock (the item ops trigger `mana_shock` listens here).
+    emit(cb, 'mana_shock', { u, strain: m.strain, limit: lim, cb });
   }
   return ' · MANA SHORT';
 }

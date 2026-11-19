@@ -19,8 +19,8 @@ export interface EchoView {
   pips: { key: string; full: boolean; style: string; cls: string }[];
   lead: string; sections: { key: string; head: string; lines: EchoLine[] }[];
 }
-const LINE = 'font-size: 13px; line-height: 1.4; color: #E7EBF3';
-const MUTED = 'font-size: 13px; line-height: 1.4; color: #A3AEC2';
+const LINE = 'font-size: var(--fs-sub); line-height: 1.4; color: #E7EBF3';
+const MUTED = 'font-size: var(--fs-sub); line-height: 1.4; color: #A3AEC2';
 
 /** The Echo row and its explainer for a character's Echo (n). flare: 'up' or 'down' while a change is showing. */
 export function echoView(n: number | null | undefined, flare: '' | 'up' | 'down' = ''): EchoView {

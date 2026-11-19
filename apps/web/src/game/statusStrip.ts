@@ -49,7 +49,7 @@ export function statusGroups(list: StatusIn[], o: { small?: boolean; cap?: numbe
   return (['helps', 'hurts', 'state'] as Side[]).map((side) => {
     const all = list.filter((x) => x.side === side), shown = all.slice(0, cap), rest = all.slice(cap);
     return { side, head: SIDE_HEAD[side], hasHead: !small && !!SIDE_HEAD[side], ink: SIDE_INK[side],
-      headStyle: 'flex: none; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: ' + SIDE_INK[side],
+      headStyle: 'flex: none; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: ' + SIDE_INK[side],
       chips: shown.map((x) => { const c = x.n == null || x.n === '' ? '' : String(x.n), icon = condIconOf(x.cond) || uiMarkOf('status', side); // its sign, else its group's mark (in place of the glyph)
         return { key: x.key, side, glyph: SIDE_GLYPH[side], icon, hasIcon: !!icon, noIcon: !icon, iconStyle: 'flex: none; width: ' + (small ? '10px' : '14px') + '; height: ' + (small ? '10px' : '14px'), word: x.word, tip: x.tip, count: c, hasCount: !!c && !small, style: chipStyle(side, small),
           aria: (side === 'state' ? '' : SIDE_HEAD[side].toLowerCase() + ': ') + x.tip }; }),

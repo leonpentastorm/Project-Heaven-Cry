@@ -337,7 +337,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   };
   const showRound = (round: number, mineToo: boolean) => {
     if (document.hidden) return;
-    const b: Banner = { id: 'r' + round + ':' + Date.now(), kind: 'round', kicker: 'AREA MAP', kickerColor: '#A3AEC2', name: 'ROUND ' + round + (mineToo ? ' · YOUR MOVE' : ' · THE SQUAD MOVES'), sub: 'Say one thing · spend your AP · end your turn',
+    const b: Banner = { id: 'r' + round + ':' + Date.now(), kind: 'round', kicker: 'AREA MAP', kickerColor: '#A3AEC2', name: 'ROUND ' + round + (mineToo ? ' · YOUR MOVE' : ' · THE SQUAD MOVES'), sub: '',
       stripe: '#FFFFFF', img: IMG['emblem-ahoc-seal'] || '', mine: mineToo, foe: false, hold: ROUND_HOLD };
     setBanner(b); cue('round');
     later(() => setBanner((x) => (x && x.id === b.id ? null : x)), (reducedMotion() ? 300 : 520) + b.hold);
@@ -553,7 +553,7 @@ function TurnBanner({ b, rm }: { b: Banner; rm: boolean }) {
             <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, fontFamily: "'Chakra Petch', sans-serif" }}>
               <span style={{ fontSize: b.mine ? 15 : 13, fontWeight: 700, letterSpacing: '0.32em', color: b.kickerColor, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.mark ?? (b.mine ? '▶ ' : b.foe ? '⚠ ' : '')}{b.kicker}</span>
               <span style={{ fontSize: 'clamp(22px, 3.4vw, 34px)', fontWeight: 700, fontStyle: 'italic', lineHeight: 1.05, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{b.name}</span>
-              {b.sub && <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2', textTransform: 'uppercase' }}>{b.sub}</span>}
+              {b.sub && <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2', textTransform: 'uppercase' }}>{b.sub}</span>}
             </span>
           </span>
           {!rm && <span aria-hidden="true" style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '30%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent)', animation: 'phcBannerShine ' + Math.round(700 * k) + 'ms ease-out ' + Math.round(150 * k) + 'ms both' }} />}
@@ -612,10 +612,10 @@ function EndPanel({ b, rm, onClose }: { b: Banner; rm: boolean; onClose: () => v
       <BigBanner b={b} rm={rm} inline />
       {!!b.stats?.length && <div data-phc-end-stats="" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', fontFamily: "'Chakra Petch', sans-serif" }}>
         {b.stats.map((x) => <span key={x.label} style={{ display: 'flex', alignItems: 'baseline', gap: 10, padding: '8px 18px', background: '#10151F', border: '1px solid #232D3F', borderTop: '3px solid ' + b.stripe }}>
-          <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2', textTransform: 'uppercase' }}>{x.label}</span>
+          <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2', textTransform: 'uppercase' }}>{x.label}</span>
           <span style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', fontVariantNumeric: 'tabular-nums' }}>{x.value}</span></span>)}
       </div>}
-      <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: '0.22em', color: '#A3AEC2', textTransform: 'uppercase' }}>{CARDS.end.close}</span>
+      <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.22em', color: '#A3AEC2', textTransform: 'uppercase' }}>{CARDS.end.close}</span>
       <style>{'@keyframes ' + name + '{0%{opacity:0}' + p1 + '%{opacity:1}' + p2 + '%{opacity:1}100%{opacity:0}}'}</style>
     </div>
   );
@@ -625,7 +625,7 @@ function Bar({ label, v, max, color }: { label: string; v: number; max: number; 
   const pct = Math.max(0, Math.min(100, (v / Math.max(1, max)) * 100));
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '34px minmax(0, 1fr) 84px', gap: 8, alignItems: 'center' }}>
-      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color }}>{label}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.1em', color }}>{label}</span>
       <span style={{ height: 10, background: '#1C2536', transform: 'skewX(-20deg)', overflow: 'hidden' }}><span style={{ display: 'block', width: pct + '%', height: '100%', background: color }} /></span>
       <span style={{ fontSize: 15, fontWeight: 700, color: '#E7EBF3', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{v} / {max}</span>
     </div>
@@ -674,32 +674,32 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
           {!rm && <div aria-hidden="true" style={{ position: 'absolute', inset: 0, overflow: 'hidden', clipPath: slab }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,.35) 50%, transparent 65%)', animation: 'phcCutStreak ' + T(600) + ' ease-out ' + T(200) + ' both' }} /></div>}
         </div>
         <div style={{ position: 'relative', flex: 1, minWidth: 0, [R ? 'marginRight' : 'marginLeft']: -40, padding: R ? '18px 52px 18px 22px' : '18px 22px 18px 52px', background: '#0A0D13', clipPath: R ? 'polygon(0 0, 86% 0, 100% 100%, 0 100%)' : 'polygon(14% 0, 100% 0, 100% 100%, 0 100%)', borderTop: '3px solid #FFFFFF', display: 'flex', flexDirection: 'column', gap: 8, boxShadow: '0 20px 60px rgba(0,0,0,.7)' }}>
-          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.3em', color: '#FFFFFF' }}>▶ {c.kicker}</span>
+          <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.3em', color: '#FFFFFF' }}>▶ {c.kicker}</span>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 'clamp(26px, 4vw, 38px)', fontWeight: 600, lineHeight: 1.05, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
-          <span className="phc-cut-class" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: c.color }}>{c.clsIcon && <img className="phc-class-emblem" src={c.clsIcon} alt="" style={{ width: 18, height: 18, flex: 'none' }} />}{c.line.toUpperCase()}</span>
+          <span className="phc-cut-class" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: c.color }}>{c.clsIcon && <img className="phc-class-emblem" src={c.clsIcon} alt="" style={{ width: 18, height: 18, flex: 'none' }} />}{c.line.toUpperCase()}</span>
           <Bar label="HP" v={c.hp[0]} max={c.hp[1]} color="#F65157" />
           {c.res.length > 0 && <div role="list" aria-label="Your resources" data-cols={two ? 2 : 1} style={two ? { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '5px 12px' } : { display: 'flex', flexDirection: 'column', gap: 5 }}>{c.res.map((r) => <ResLine key={r.key} r={r} />)}</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 34, fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: '#FFFFFF' }}>AP</span>
+            <span style={{ width: 34, fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.1em', color: '#FFFFFF' }}>AP</span>
             <span aria-label={c.ap + ' AP'} style={{ display: 'flex', gap: 4 }}>{Array.from({ length: Math.max(0, Math.min(9, Math.round(c.ap))) }, (_, i) => <span key={i} style={{ width: 14, height: 14, transform: 'rotate(45deg)', background: '#FFFFFF' }} />)}</span>
           </div>
-          <span style={{ fontSize: 12, color: '#A3AEC2' }}>{c.weapon}</span>
+          <span style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>{c.weapon}</span>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 6, marginTop: 4 }}>
             {c.cmds.map((cmd, i) => (
               <button key={cmd.key} type="button" className="phc-cut-cmd" disabled={cmd.off} onClick={() => onPick(c, cmd)} data-sfx="click" data-act={cmd.action} {...tipProps(cmd.off ? cmd.label + ': ' + cmd.sub : undefined)}
                 style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 50, padding: '6px 10px', borderTop: '1px solid #3B475D', borderRight: '1px solid #3B475D', borderBottom: '1px solid #3B475D', borderLeft: '4px solid ' + (cmd.off ? '#3B475D' : i === 0 ? '#F65157' : c.color), background: '#10151F', color: cmd.off ? '#7F8BA1' : '#E7EBF3', opacity: cmd.off ? 0.7 : 1, fontFamily: 'inherit', textAlign: 'left', cursor: cmd.off ? 'default' : 'pointer', animation: rm ? undefined : 'phcCmdIn' + sfx2 + ' ' + T(300) + ' cubic-bezier(.2,.8,.2,1) ' + T(260 + i * 60) + ' both' }}>
-                <span style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, flex: 'none', border: '1px solid currentColor', fontSize: 11, fontWeight: 700 }}>{cmd.key}</span>
+                <span style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, flex: 'none', border: '1px solid currentColor', fontSize: 'var(--fs-sub)', fontWeight: 700 }}>{cmd.key}</span>
                 <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                   <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{cmd.label}</span>
-                  <span className="phc-cut-sub" style={{ fontSize: 11, color: '#A3AEC2', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cmd.sub}</span>
+                  <span className="phc-cut-sub" style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cmd.sub}</span>
                 </span>
               </button>
             ))}
           </div>
           <span style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.14em', color: '#7F8BA1' }}>PRESS 1–4 · ANY OTHER KEY OR CLICK TO PLAY ON</span>
+            <span style={{ fontSize: 'var(--fs-sub)', letterSpacing: '0.14em', color: '#7F8BA1' }}>PRESS 1–4 · ANY OTHER KEY OR CLICK TO PLAY ON</span>
             <button type="button" data-phc-customise="" onClick={() => onCustomise(c)} aria-keyshortcuts="C" aria-haspopup="dialog" {...tipProps("Choose which four commands this card offers")}
-              style={{ marginLeft: 'auto', padding: '2px 8px', border: '1px solid #3B475D', background: 'transparent', color: '#C9D3E3', fontFamily: 'inherit', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', cursor: 'pointer' }}>⚙ CUSTOMISE (C)</button>
+              style={{ marginLeft: 'auto', padding: '2px 8px', border: '1px solid #3B475D', background: 'transparent', color: '#C9D3E3', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', cursor: 'pointer' }}>⚙ CUSTOMISE (C)</button>
           </span>
         </div>
       </div>

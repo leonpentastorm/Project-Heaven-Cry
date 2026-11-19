@@ -76,7 +76,7 @@ export function figmentGrants(c: Character): DoorGrant[] {
   const more: DoorGrant[] = L.more.map((m) => { const of = m.of.flatMap((id) => FORKS[id]?.of || []).filter((f) => !fixed.has(f)); return { id: 'more:' + m.points, of, n: m.n, why: SKILL_NAME() + ' ' + m.points + ': one more of ' + name(of) + '.' }; });
   return [...forks, ...more].filter((g) => g.of.length > 0);
 }
-registerDoorPicks(FIG_DOOR, { name: 'Figment', grants: figmentGrants, option: (id) => (FORM[id] ? { id, label: FORM[id].name, icon: FORM[id].icon || '', text: FORM[id].text || '' } : null),
+registerDoorPicks(FIG_DOOR, { name: 'Figment', grants: figmentGrants, option: (id) => (FORM[id] ? { id, label: FORM[id].name, icon: FORM[id].icon || '', text: (FORM[id] as any).short || FORM[id].text || '' } : null), // a fork's card line: the form's short line (0.31.11), else its text
   // rules 1.60 (N1): the one fork view (doorpicks.ts doorForkView) reads the ladder's forks as the door's steps
   skill: FIG_DOOR, runsOn: String((SKILL[FIG_DOOR] as any)?.fork_runs_on || ''), steps: () => Object.values(FORKS).map((k) => ({ id: k.id, at: k.points, of: [...k.of], offered: true })) });
 /** Rules 1.56 (Figments 2.0) save migration: a character made before the forks (no stamp `figRev`) keeps every form

@@ -51,7 +51,7 @@ export const subHead = (name: string) => areaHead('other', name.toUpperCase());
 export function figmentHead(sub: string, look: { unit: string; img: string; short: string; ink: string }) {
   const h = subHead(sub);
   h.face = { show: true, unit: look.unit, img: look.img, hasImg: !!look.img, noImg: !look.img, text: look.short,
-    style: 'flex: none; display: grid; place-items: center; width: 26px; height: 26px; box-sizing: border-box; border-radius: 50%; overflow: hidden; font-size: 9.5px; font-weight: 700; letter-spacing: 0; color: ' + look.ink + '; border: 2px ' + (look.img ? 'solid' : 'dashed') + ' ' + look.ink + '; background: #0A0D13',
+    style: 'flex: none; display: grid; place-items: center; width: 26px; height: 26px; box-sizing: border-box; border-radius: 50%; overflow: hidden; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0; color: ' + look.ink + '; border: 2px ' + (look.img ? 'solid' : 'dashed') + ' ' + look.ink + '; background: #0A0D13',
     imgStyle: 'width: 100%; height: 100%; object-fit: cover' };
   return h;
 }

@@ -16,7 +16,7 @@ export interface PickMarks { reach: Iterable<string>; choice: Set<string>; choic
 
 /** A colour with an alpha, from #RRGGBB. */
 const rgba = (hex: string, a: number) => { const n = parseInt(hex.slice(1), 16); return 'rgba(' + ((n >> 16) & 255) + ', ' + ((n >> 8) & 255) + ', ' + (n & 255) + ', ' + a + ')'; };
-const BADGE = 'position: absolute; z-index: 4; padding: 0 4px; border-radius: 4px; font-size: 10px; font-weight: 700; line-height: 14px; letter-spacing: 0.04em; white-space: nowrap; pointer-events: none; ';
+const BADGE = 'position: absolute; z-index: 4; padding: 0 4px; border-radius: 4px; font-size: var(--fs-sub); font-weight: 700; line-height: 14px; letter-spacing: 0.04em; white-space: nowrap; pointer-events: none; ';
 const HOSTILE = '#F65157', ALLY = '#7FD4FF';
 
 /** The sides of a reach tile on the reach's boundary (its neighbour across that side is not in reach), as inset
@@ -39,8 +39,8 @@ export function pickTiles(cb: any, m: PickMarks | null | undefined, side: 'pc' |
   // whole sight was too heavy): a tile draws the sides whose neighbour is out of reach
   for (const k of inReach) { if (m.choice.has(k)) continue; const t = T(k); const edge = reachEdge(k, inReach, rgba(ink, 0.6)); t.layer = 'background: ' + rgba(ink, 0.06) + (edge ? '; box-shadow: ' + edge : ''); note(t, 'in reach'); }
   // a choice is drawn over its reach: its card says both (rules 1.65: reach, then the open pick's choices inside it)
-  for (const k of m.choice) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.12) + '; outline: 2px solid ' + rgba(ink, 0.85) + '; outline-offset: -2px'; if (inReach.has(k)) note(t, 'in reach'); note(t, 'you can pick this tile'); }
-  for (const k of m.area) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.3) + '; outline: 2px solid ' + ink + '; outline-offset: -2px'; note(t, 'it covers this tile'); }
+  for (const k of m.choice) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.12) + '; outline: 2px solid ' + rgba(ink, 0.85) + '; outline-offset: -2px'; note(t, 'click to aim'); }
+  for (const k of m.area) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.3) + '; outline: 2px solid ' + ink + '; outline-offset: -2px'; }
   const at = (id: string) => (cb.units || []).find((y: any) => y.id === id && !y.dead) || (cb.units || []).find((y: any) => y.id === id);
   for (const id of m.choiceUnits) {
     const x = at(id); if (!x) continue; const t = T(x.pos);

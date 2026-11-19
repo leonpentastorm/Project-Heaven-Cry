@@ -12258,6 +12258,39 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     `*_about`), the `pending` and `retired` lists and shelved rows are exempt. Slide's text no longer repeats its AP and
     its once-a-turn: the row and its chips say them.
 
+### Rules 1.69 (0.31.11), the Mana Shock trigger (19 Nov 2026)
+
+5450. **The trigger `mana_shock`** (approved by the lead for Iron Heart): an item's data row may listen to a heart
+    entering the Mana Shock. It fires once, where the Shock begins (after the Mana Short, Strain still over the
+    limit), whether the Short came from Strain added (a Begin, a Pump's feeling, the swell) or from the turn's end; the
+    holder is the unit that enters it. One hook (`mana_shock`, `magic.ts manaShort`, `{u, strain, limit}`), one row of
+    the closed trigger list (`effects/triggers.ts TRIGGERS`). Proof: `test/mana-shock-trigger.test.ts` (a real Pump
+    with Rage that shorts the heart).
+5451. **Iron Heart, Leon's ruling (17 Nov 2026):** once a fight, when you reach Mana Shock, relieve 2 Strain. Built
+    (0.31.11) as one data row on item 5450's trigger, through item 5453's Strain row: `{when: "mana_shock", limit:
+    {per: "per_combat", n: 1}, op: "resource", resource: "strain", value: -2}`; card text "Once a fight, on Mana Shock:
+    −2 Strain". Item 5401's rule (Strain over the limit stops at it) and its bespoke handler are gone. The relief comes
+    after the entry: a heart 3 over is left 1 over, still in the Shock, and the next turn's start calms it back to the
+    limit before that turn's end can charge the Shock's share. Proof: `test/classes-rev3-moves.test.ts` (a real Pump
+    with Rage that shorts the heart; once a fight).
+5452. **A skill ladder's capped per-point gains** (the "?" page and the level-up row's next line; the lead's ruling of
+    19 Nov 2026): a per-point row that stops adding before the skill's top is shown only on the levels where it still
+    adds, and the last of them says it is the most ("+10% elemental resistance (max)" at Pain Threshold 6). The row
+    names in data the engine value it grows (`skills.json per_point.rows[].grows`: `elemental_taken`, `guard_pool`,
+    `hymn_wait`); the engine reads that value through its own function at each point for the character (or a blank
+    one) and returns the last point where it moves (`ladder.ts ladderCaps`). So Pain Threshold's elemental resistance
+    stops at its 60% cap (6), Durability's plates held at the pool's cap for a non-Bulwark (a class pool that already
+    holds more shows no per-point plate), Faith's Hymn wait at its floor (sooner with a higher Virtue). Share a Hit's
+    per-point share (Camaraderie's unlock, up to 50%) has no per-point row: a row may only read its skill's
+    per_point.numbers, and the share's numbers are the unlock's effect; it stays in the unlock's own line (ruling
+    needed to give it a row). Proof: `packages/engine/test/ladder-caps.test.ts`, `apps/web/src/screens/roadmap.test.ts`.
+5453. **Strain is a resource row** (the piece N3b, approved by the lead for Iron Heart): `data/actions.json resources.strain`
+    (`mg.strain` on the unit, setter `strain`), so the item op `resource` reads and changes Strain like any other
+    resource. The setter (`magic.ts`) goes through the one Strain-change function each way, with its limit: a gain
+    through `addStrain` (the `strain` hook, the Short at 3 over, the Shock), a loss through `easeStrain`
+    (`strain_change`, then the Shock's end when the heart is back at its limit). It has no `max`: Strain may stand over
+    the limit. A unit with no heart has no Strain to change.
+
 ### 0.31.12, the outside playtest's blockers (19 Nov 2026)
 
 Rows 1 to 8 of `docs/design/proposals/2026-11-18-outside-playtest/TRIAGE.md`. The item numbers start at 5501 so they

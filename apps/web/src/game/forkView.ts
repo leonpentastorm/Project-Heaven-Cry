@@ -6,20 +6,17 @@
 // (screens/combat.js, game/resources.ts). Colour (docs/design/colour-system.md): a pick still to make is white with
 // "still to do"; a pick made is the door's attribute ink with "kept for good"; a step not offered yet is muted.
 import { doorForkView, doorForkViews, SKILL } from '@engine';
-import ASSETS from './assets.json';
 import { act, toast } from './store';
 import { ATTR_INK } from './classView';
 import { forkChipsLine } from './forkLine';
 export { forkChipsLine };
 
-const A = ASSETS as Record<string, string>;
 const MUTED = '#7F8BA1', TEXT = '#E7EBF3', WHITE = '#FFFFFF';
-/** An option's icon: its placeholder or art (art/catalog.json fork_icons, built as wick-fork-<id>), else its door's
- *  skill portrait (the spec: until drawn, the option shows its door's skill icon). */
-export const forkIconOf = (id: string, skill: string): string => A['wick-fork-' + id.replace(/\./g, '-')] || A['skill-' + skill] || '';
+import { forkIconOf } from './forkIcon';
+export { forkIconOf };
 const inkOf = (skill: string): string => ATTR_INK[(SKILL as any)[skill]?.attribute] || TEXT;
 
-export interface ForkOptView { key: string; name: string; text: string; icon: string; picked: boolean; canPick: boolean; label: string; style: string; nameStyle: string; btnStyle: string; pick: () => void; title: string }
+export interface ForkOptView { key: string; name: string; text: string; icon: string; picked: boolean; canPick: boolean; label: string; style: string; nameStyle: string; btnStyle: string; pick: () => void }
 export interface ForkStepView { key: string; head: string; headStyle: string; why: string; hasWhy: boolean; opts: ForkOptView[]; pending: boolean; style: string }
 export interface ForkCardView { key: string; door: string; head: string; headStyle: string; runsOn: string; steps: ForkStepView[]; pending: boolean; chips: string;
   /** The folded card's one line (the SKILLS tab): "Forks · 1 chosen · 1 to pick"; a pick still to make makes it white. */
@@ -35,33 +32,33 @@ export function forkCard(c: any, door: string, o: { inFight?: boolean; only?: nu
   const ink = inkOf(v.skill), skillName = (SKILL as any)[v.skill]?.name || v.skill;
   const steps = v.steps.filter((s) => !o.only || o.only.includes(s.at)).map((s) => {
     const state = s.pending ? 'pending' : s.picked ? 'picked' : !s.offered ? 'off' : 'locked';
-    const head = skillName.toUpperCase() + ' ' + s.at + ' · ' + (state === 'pending' ? 'CHOOSE ONE · STILL TO DO' : state === 'picked' ? 'CHOSEN · KEPT FOR GOOD' : state === 'off' ? 'NOT OFFERED YET' : 'OPENS AT ' + s.at);
+    const head = 'Fork at ' + s.at + (state === 'pending' ? ': choose one' : state === 'picked' ? ': chosen' : state === 'off' ? ': not offered yet' : '');
     // an option not built yet shows its rule in words like any other (its data `why` is a designer's note, never a player's line)
     const opts = s.options.map((op) => {
       const can = s.pending && op.built, armKey = c.id + '|' + op.id, armed = ARMED === armKey;
       return { key: op.id, name: op.name + (op.picked ? ' ✓' : ''), text: op.text, icon: forkIconOf(op.id, v.skill), picked: op.picked, canPick: can,
-        label: o.inFight ? 'After the fight' : armed ? 'Confirm: keep ' + op.name + ' for good' : 'Choose ' + op.name, title: op.name + ': ' + op.text + (can ? ' · Runs on ' + v.runsOn + '. Kept for good.' : ''),
+        label: o.inFight ? 'After the fight' : armed ? 'Confirm: keep ' + op.name + ' for good' : 'Choose ' + op.name,
         pick: () => {
           if (!can) return; if (o.inFight) { toast('Choose after the fight.'); return; }
           if (!armed) { ARMED = armKey; o.rerender?.(); return; }
           ARMED = null; act({ type: 'door/pick', charId: c.id, door, option: op.id } as any);
         },
-        btnStyle: 'align-self: flex-start; min-height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; '
+        btnStyle: 'align-self: flex-start; min-height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; '
           + (armed ? 'border: 0; background: #FFFFFF; color: #0A0D13' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF'),
-        nameStyle: 'font-size: 13px; font-weight: 700; color: ' + (op.picked ? ink : !op.built ? MUTED : TEXT),
+        nameStyle: 'font-size: var(--fs-sub); font-weight: 700; color: ' + (op.picked ? ink : !op.built ? MUTED : TEXT),
         style: 'flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border-radius: 8px; '
           + (op.picked ? 'border: 1px solid ' + ink + '; background: #10151F' : can ? 'border: 1px solid ' + WHITE + '; background: #1C2536' : 'border: 1px dashed #2E3A50; background: transparent; opacity: ' + (op.built ? '0.85' : '0.6')) };
     });
-    return { key: v.door + ':' + s.id, head, headStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: ' + (state === 'pending' ? WHITE : state === 'picked' ? ink : MUTED),
+    return { key: v.door + ':' + s.id, head, headStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; color: ' + (state === 'pending' ? WHITE : state === 'picked' ? ink : MUTED),
       why: s.why, hasWhy: !!s.why && state !== 'picked', opts, pending: s.pending,
       style: 'display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 10px; ' + (s.pending ? 'border: 1px solid ' + WHITE + '; background: rgba(255, 255, 255, 0.04)' : 'border: 1px solid #232D3F') };
   });
   if (!steps.length) return null;
   const chosen = v.steps.filter((s) => s.picked).length, toPick = v.pending, later = v.steps.filter((s) => s.open && !s.offered).length;
   const summary = ['Forks', chosen ? chosen + ' chosen' : '', toPick ? toPick + ' to pick' : '', later ? later + ' coming in a later version' : '', !chosen && !toPick && !later ? 'none open yet' : ''].filter(Boolean).join(' · ');
-  return { key: door, door, head: (v.name === skillName ? skillName : v.name + ' · ' + skillName).toUpperCase() + ' · FORKS' + (v.pending ? ' · ' + v.pending + ' STILL TO DO' : ''),
-    headStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + (v.pending ? WHITE : ink), runsOn: v.runsOn ? 'Every option runs on ' + v.runsOn + '.' : '', steps, pending: v.pending > 0, chips: forkChipsLine(c, door),
-    chosen, toPick, summary, summaryStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: ' + (toPick ? WHITE : chosen ? ink : MUTED) };
+  return { key: door, door, head: (v.name === skillName ? skillName : v.name + ' · ' + skillName).toUpperCase() + ' · FORKS',
+    headStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + (v.pending ? WHITE : ink), runsOn: v.runsOn ? 'Every option runs on ' + v.runsOn + '.' : '', steps, pending: v.pending > 0, chips: forkChipsLine(c, door),
+    chosen, toPick, summary, summaryStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.06em; color: ' + (toPick ? WHITE : chosen ? ink : MUTED) };
 }
 
 /** Every door's fork card a character has reached (its alpha at a step's points, or a pick made), pending ones first. */

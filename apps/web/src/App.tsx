@@ -124,13 +124,13 @@ export function App() {
       <SettingsHost />
       <DialogHost />
       {barP.shown && <div data-phc-conn-bar="" style={{ position: 'fixed', top: barTop + 8, left: 0, right: 0, zIndex: 60, display: 'flex', justifyContent: 'center', padding: '0 12px', pointerEvents: 'none' }}>
-        <div role="status" className={presenceCls('phc-a-drop', barP.closing)} style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: '6px 12px', maxWidth: 'min(680px, 100%)', padding: '8px 14px', borderRadius: 10, background: '#1C2536', border: '1px solid #2E3A50', boxShadow: '0 8px 30px rgba(0,0,0,.45)', color: '#E7EBF3', fontSize: 13, textAlign: 'center' }}>
+        <div role="status" className={presenceCls('phc-a-drop', barP.closing)} style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: '6px 12px', maxWidth: 'min(680px, 100%)', padding: '8px 14px', borderRadius: 10, background: '#1C2536', border: '1px solid #2E3A50', boxShadow: '0 8px 30px rgba(0,0,0,.45)', color: '#E7EBF3', fontSize: 'var(--fs-sub)', textAlign: 'center' }}>
           <span>{barP.shown}</span>
-          {guestAway && <button type="button" data-phc-conn-leave="" onClick={() => { leaveFlow(); }} style={{ minHeight: 30, padding: '0 12px', borderRadius: 8, border: '1px solid #3B475D', background: 'transparent', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>Leave the room</button>}
+          {guestAway && <button type="button" data-phc-conn-leave="" onClick={() => { leaveFlow(); }} style={{ minHeight: 30, padding: '0 12px', borderRadius: 8, border: '1px solid #3B475D', background: 'transparent', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>Leave the room</button>}
         </div>
       </div>}
       {toastP.shown && <div style={{ position: 'fixed', bottom: 20, left: 0, right: 0, zIndex: 70, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
-        <div key={toastP.shown.at} role={toastP.shown.ok ? 'status' : 'alert'} className={presenceCls('phc-a-rise', toastP.closing)} style={{ pointerEvents: 'auto', maxWidth: 'min(640px, 92vw)', padding: '12px 18px', borderRadius: 10, background: '#10151F', border: '1px solid ' + (toastP.shown.ok ? '#6FEA77' : '#F65157'), color: '#E7EBF3', fontSize: 14, boxShadow: '0 8px 30px rgba(0,0,0,.5)' }}>{toastP.shown.ok ? '✓ ' : ''}{toastP.shown.text}</div>
+        <div key={toastP.shown.at} role={toastP.shown.ok ? 'status' : 'alert'} className={presenceCls('phc-a-rise', toastP.closing)} style={{ pointerEvents: 'auto', maxWidth: 'min(640px, 92vw)', padding: '12px 18px', borderRadius: 10, background: '#10151F', border: '1px solid ' + (toastP.shown.ok ? '#6FEA77' : '#F65157'), color: '#E7EBF3', fontSize: 'var(--fs-body)', boxShadow: '0 8px 30px rgba(0,0,0,.5)' }}>{toastP.shown.ok ? '✓ ' : ''}{toastP.shown.text}</div>
       </div>}
     </>
   );

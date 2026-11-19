@@ -67,10 +67,10 @@ export function hazardHit(kind: string, severity: string): string {
 /** The legend under the map: one entry per hazard kind on it (word + swatch + glyph), and the safe path if any. */
 export function hazardLegend(tiles: HazardTile[]): { key: string; text: string; glyph: string; swatch: string; glyphStyle: string }[] {
   const kinds = [...new Set(tiles.filter((t) => !t.safe).map((t) => t.kind))], out = kinds.map((k) => { const L = hazardLook(k);
-    return { key: 'hz-' + k, text: L.word.charAt(0) + L.word.slice(1).toLowerCase() + ' (hazard)', glyph: L.glyph, glyphStyle: 'font-size: 12px; font-weight: 700; color: ' + L.ink,
+    return { key: 'hz-' + k, text: L.word.charAt(0) + L.word.slice(1).toLowerCase() + ' (hazard)', glyph: L.glyph, glyphStyle: 'font-size: var(--fs-sub); font-weight: 700; color: ' + L.ink,
       swatch: 'width: 12px; height: 12px; border-radius: 2px; background: repeating-linear-gradient(45deg, ' + rgba(L.ink, 0.45) + ' 0 3px, ' + rgba(L.ink, 0.1) + ' 3px 6px); border: 1px solid ' + L.ink }; });
-  if (tiles.some((t) => t.safe)) out.push({ key: 'hz-safe', text: 'Safe path (squad)', glyph: '✓', glyphStyle: 'font-size: 12px; font-weight: 700; color: ' + SAFE_INK, swatch: 'width: 12px; height: 12px; border-radius: 2px; border: 2px dashed ' + SAFE_INK });
-  if (tiles.some((t) => t.spent)) out.push({ key: 'hz-spent', text: 'Spent mine', glyph: '◌', glyphStyle: 'font-size: 12px; color: #A3AEC2', swatch: '' });
+  if (tiles.some((t) => t.safe)) out.push({ key: 'hz-safe', text: 'Safe path (squad)', glyph: '✓', glyphStyle: 'font-size: var(--fs-sub); font-weight: 700; color: ' + SAFE_INK, swatch: 'width: 12px; height: 12px; border-radius: 2px; border: 2px dashed ' + SAFE_INK });
+  if (tiles.some((t) => t.spent)) out.push({ key: 'hz-spent', text: 'Spent mine', glyph: '◌', glyphStyle: 'font-size: var(--fs-sub); color: #A3AEC2', swatch: '' });
   return out;
 }
 
@@ -82,13 +82,13 @@ export function markerCells(marks: Marker[], big = true): Map<string, { text: st
     const had = out.get(m.tile), obj = m.kind === 'objective' || (had && had.chip === 'OBJ');
     out.set(m.tile, { text: obj ? '◆' : '◇', chip: obj ? 'OBJ' : 'HINT', title: (had ? had.title + '\n' : '') + (m.kind === 'objective' ? 'Objective: ' : 'Hint: ') + m.text + ' (' + m.ref + ')',
       style: 'position: absolute; right: 1px; top: 0; z-index: 5; font-size: ' + (big ? 13 : 7) + 'px; line-height: 1; font-weight: 700; color: #FFFFFF; pointer-events: none; text-shadow: 0 0 3px #05070B, 0 0 6px rgba(255, 255, 255, 0.6)',
-      chipStyle: 'position: absolute; left: 50%; top: -7px; transform: translateX(-50%); z-index: 6; padding: 0 3px; border-radius: 3px; font-size: 8px; font-weight: 700; letter-spacing: 0.06em; line-height: 11px; pointer-events: none; background: #FFFFFF; color: #0A0D13' });
+      chipStyle: 'position: absolute; left: 50%; top: -7px; transform: translateX(-50%); z-index: 6; padding: 0 3px; border-radius: 3px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.06em; line-height: 11px; pointer-events: none; background: #FFFFFF; color: #0A0D13' });
   }
   return out;
 }
 export const markerLegend = (marks: Marker[]) => [
-  ...(marks.some((m) => m.kind === 'objective') ? [{ key: 'mk-obj', text: 'Objective marker', glyph: '◆', glyphStyle: 'font-size: 12px; color: #FFFFFF', swatch: '' }] : []),
-  ...(marks.some((m) => m.kind === 'hint') ? [{ key: 'mk-hint', text: 'Hint someone gave', glyph: '◇', glyphStyle: 'font-size: 12px; color: #FFFFFF', swatch: '' }] : []),
+  ...(marks.some((m) => m.kind === 'objective') ? [{ key: 'mk-obj', text: 'Objective marker', glyph: '◆', glyphStyle: 'font-size: var(--fs-sub); color: #FFFFFF', swatch: '' }] : []),
+  ...(marks.some((m) => m.kind === 'hint') ? [{ key: 'mk-hint', text: 'Hint someone gave', glyph: '◇', glyphStyle: 'font-size: var(--fs-sub); color: #FFFFFF', swatch: '' }] : []),
 ];
 
 // ---------- caches ----------
@@ -143,7 +143,7 @@ export function pileLook(o: MapObject, big = true): PileLook {
     style: 'position: absolute; left: ' + (big ? 1 : 0) + 'px; bottom: ' + (big ? 6 : 0) + 'px; z-index: 5; display: flex; align-items: center; gap: ' + (big ? 2 : 0) + 'px; padding: ' + (big ? '1px 3px 1px 2px' : '0 1px 0 0') + '; border-radius: 3px; pointer-events: none; background: rgba(10, 13, 19, 0.85); box-shadow: 0 0 0 1px #3B475D',
     iconStyle: 'display: block; width: ' + (big ? 12 : 5) + 'px; height: ' + (big ? 12 : 5) + 'px; background: url("' + PILE_ICON + '") center / contain no-repeat',
     countStyle: 'font-size: ' + (big ? 10 : 5) + 'px; font-weight: 700; line-height: 1; color: #E7EBF3',
-    tipStyle: 'position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%); z-index: 8; padding: 5px 8px; border-radius: 6px; white-space: nowrap; text-align: left; font-size: 11px; line-height: 1.4; font-weight: 600; pointer-events: none; background: #1C2536; border: 1px solid #3B475D; color: #E7EBF3; box-shadow: 0 4px 12px rgba(5, 7, 11, 0.6)' };
+    tipStyle: 'position: absolute; left: 50%; bottom: calc(100% + 4px); transform: translateX(-50%); z-index: 8; padding: 5px 8px; border-radius: 6px; white-space: nowrap; text-align: left; font-size: var(--fs-sub); line-height: 1.4; font-weight: 600; pointer-events: none; background: #1C2536; border: 1px solid #3B475D; color: #E7EBF3; box-shadow: 0 4px 12px rgba(5, 7, 11, 0.6)' };
 }
 /** The hover's place by the tile, kept inside the map: below the tile on the top two rows, flush left on the first two
  *  columns, flush right on the last two. */
@@ -208,7 +208,7 @@ export function crossesText(crosses: { ref: string; id: string; name: string }[]
 /** The danger mark on a route tile that crosses a revealed hazard (red: danger, with the ! glyph). */
 export const CROSS_STYLE = 'position: absolute; inset: 1px; z-index: 6; pointer-events: none; box-sizing: border-box; border-radius: 3px; border: 2px solid #F65157; box-shadow: 0 0 8px rgba(246, 81, 87, 0.7)';
 /** The chip on a crossed hazard tile of the route: "!" in danger red. */
-export const CROSS_CHIP_STYLE = 'position: absolute; right: 1px; top: 0; z-index: 7; padding: 0 3px; border-radius: 3px; font-size: 9px; font-weight: 700; line-height: 12px; pointer-events: none; background: #F65157; color: #0A0D13';
+export const CROSS_CHIP_STYLE = 'position: absolute; right: 1px; top: 0; z-index: 7; padding: 0 3px; border-radius: 3px; font-size: var(--fs-sub); font-weight: 700; line-height: 12px; pointer-events: none; background: #F65157; color: #0A0D13';
 
 // ---------- approaches in plain words ----------
 export const SUCCESS_WORDS: Record<string, string> = {
@@ -247,7 +247,7 @@ export interface ApproachRow {
 export function approachRows(g: GameState, targetId: string, opts: TalkOption[], inkOf: (skill: string) => string, busy = '', hazard?: { kind: string; severity: string } | null): ApproachRow[] {
   return opts.map((o, i) => {
     const raw = o.kind === 'approach' && o.idx != null ? rawApproach(g, targetId, o.idx) : null, why = busy || (o.available ? '' : o.why || 'Not now.');
-    const skills = (o.skills || []).map((s) => ({ key: s, name: SKILL[s]?.name || s, style: 'padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 1px solid ' + inkOf(s) + '; color: ' + inkOf(s) }));
+    const skills = (o.skills || []).map((s) => ({ key: s, name: SKILL[s]?.name || s, style: 'padding: 1px 8px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; border: 1px solid ' + inkOf(s) + '; color: ' + inkOf(s) }));
     const either = raw?.pick === 'best' && skills.length > 1;
     if (either) skills.splice(0, skills.length, { key: 'or', name: skills.map((x) => x.name).join(' or '), style: skills[0].style });
     const succ = o.kind === 'ask' ? (o.what === 'wants' ? 'they say what they want' : 'they point you at the objective (a marker on the map)') : SUCCESS_WORDS[o.success || ''] ?? SUCCESS_WORDS[''];
@@ -276,7 +276,7 @@ export function talkVals(g: GameState, tokenId: string, charId: string | undefin
   const img = art(v.avatar) || '';
   return { has: true, id: v.id, name: v.name, kind: v.kind, img, hasImg: !!img, badge: KIND_WORD[v.kind] || v.kind.toUpperCase(),
     kicker: (KIND_WORD[v.kind] || v.kind.toUpperCase()) + ' · ' + v.side.toUpperCase() + (v.prisoner ? ' · PRISONER' : '') + ' · ' + v.ref + (d < 99 ? ' · ' + d + (d === 1 ? ' TILE' : ' TILES') + ' AWAY' : ''),
-    side: v.side.toUpperCase(), sideStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: ' + (SIDE_INK[v.side] || '#A3AEC2'),
+    side: v.side.toUpperCase(), sideStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: ' + (SIDE_INK[v.side] || '#A3AEC2'),
     wants: v.wants ? 'Wants: ' + v.wants : '', hasWants: !!v.wants, hint: v.knows ? 'Told you: ' + v.knows.hint : '', hasHint: !!v.knows,
     rows, hasRows: rows.length > 0, none: rows.length === 0, canCarry: v.carryable && !carryWhy, carryWhy: v.carryable ? carryWhy : '', dist: d };
 }
@@ -297,7 +297,7 @@ export function hereVals(g: GameState): HereVals {
   const day = 'DAY ' + dayOf(g);
   let card: ReturnType<typeof hereCard>; try { card = hereCard(g, 'pc'); } catch { return { has: false, zone: '', day, rows: [] }; }
   const rows = card.objectives.map((o) => ({ key: o.key, text: o.text, tag: o.here ? (o.optional ? 'OPTIONAL · HERE' : 'HERE') : 'ELSEWHERE',
-    tagStyle: 'font-size: 10px; font-weight: 700; letter-spacing: 0.14em; color: ' + (o.here ? '#FFFFFF' : '#A3AEC2'),
+    tagStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: ' + (o.here ? '#FFFFFF' : '#A3AEC2'),
     steps: o.steps.map((s, i) => ({ key: o.key + i, text: s })), hasSteps: o.steps.length > 0,
     where: !o.here && o.zoneName ? 'In ' + o.zoneName : o.markers.length ? '◆ ' + o.markers.map((m) => m.ref).join(', ') : '', hasWhere: (!o.here && !!o.zoneName) || o.markers.length > 0 }));
   // The card shows whenever the zone is known (item 709: the day is always on it), objectives or not.
@@ -339,7 +339,7 @@ export interface NearItem { key: string; kind: 'npc' | 'carry' | 'cache' | 'haza
 export function nearItems(g: GameState, charId: string | undefined, busy = ''): NearItem[] {
   if (!charId || g.phase !== 'story') return [];
   const c = g.characters[charId], at = positionsOf(g)[charId]; if (!c || !at) return [];
-  const out: NearItem[] = [], apL = apLeft(g, c), btn = (ink: string) => 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; min-height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid ' + ink + '; background: transparent; color: #E7EBF3; font-family: inherit; font-size: 13px; text-align: left; cursor: pointer';
+  const out: NearItem[] = [], apL = apLeft(g, c), btn = (ink: string) => 'display: flex; flex-direction: column; align-items: flex-start; gap: 1px; width: 100%; min-height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid ' + ink + '; background: transparent; color: #E7EBF3; font-family: inherit; font-size: var(--fs-sub); text-align: left; cursor: pointer';
   for (const n of npcsOf(g)) { if (n.hidden) continue; const d = dist(at, n.pos); if (d > TALK_RANGE) continue;
     const kw = KIND_WORD[n.kind || 'human'] || 'PERSON';
     out.push({ key: 'n' + n.id, kind: 'npc', id: n.id, label: 'Talk to ' + n.name, sub: kw + ' · ' + refOf(n.pos) + ' · ' + d + (d === 1 ? ' tile' : ' tiles') + (n.wants || (n as any).wantsHidden || n.knows || (n.talk || []).length ? '' : ' · nothing to say'), off: false, why: '', style: btn('#FFFFFF') });
@@ -390,10 +390,10 @@ export function markVals(g: GameState, o: MapObject, charId?: string): MarkVals 
     : copied ? '✓ Copied: ' + name + ' is on your known-to-study list. A study pick can learn it (Magic tab).'
     : failed ? '✕ You couldn\'t make it out. Each of you gets one try.' : '';
   return { img: markUri(read ? w : null, { age, damage: dmg }), word: read && w ? name + ' · ' + (SIGIL[w].text || '') : 'An unread word. Investigate it to find out.',
-    wordStyle: 'font-size: 13px; line-height: 1.4; color: ' + (read ? SIGIL_INK : '#C9D3E3'),
+    wordStyle: 'font-size: var(--fs-sub); line-height: 1.4; color: ' + (read ? SIGIL_INK : '#C9D3E3'),
     kicker: 'SIGIL MARK · ' + (AGE_WORD[age] || age.toUpperCase()) + ' · ' + (DMG_WORD[dmg] || dmg.toUpperCase()) + ' · TN ' + tn,
     rule: 'Investigate: roll the better of ' + MARK.skills.map((s) => SKILL[s]?.name || s).join(' or ') + ', 2 AP, on or next to it. A success copies the word (+' + MARK.study + ' study). A critical teaches it, if you have room for a word.',
-    outcome, hasOutcome: !!outcome, outcomeStyle: 'font-size: 12px; font-weight: 700; line-height: 1.4; color: ' + (knows || copied ? '#6FEA77' : '#A3AEC2') };
+    outcome, hasOutcome: !!outcome, outcomeStyle: 'font-size: var(--fs-sub); font-weight: 700; line-height: 1.4; color: ' + (knows || copied ? '#6FEA77' : '#A3AEC2') };
 }
 
 // ---------- the map's cells: everything World Play draws on one tile ----------

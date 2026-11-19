@@ -10,7 +10,7 @@ import { arrowOf, type SgTile } from './sigilView';
 
 /** Perception's ink (the Infiltrator) and white for what Read shows (always paired with a word). */
 const RIG_INK = '#40BAA0', READ_INK = '#FFFFFF', HP = '#F65157', WARN = '#E3BF51';
-const badge = (bg: string, fg = '#0A0D13') => 'position: absolute; z-index: 5; padding: 0 3px; border-radius: 2px; font-size: 9px; line-height: 13px; font-weight: 700; letter-spacing: 0.02em; pointer-events: none; white-space: nowrap; background: ' + bg + '; color: ' + fg;
+const badge = (bg: string, fg = '#0A0D13') => 'position: absolute; z-index: 5; padding: 0 3px; border-radius: 2px; font-size: var(--fs-sub); line-height: 13px; font-weight: 700; letter-spacing: 0.02em; pointer-events: none; white-space: nowrap; background: ' + bg + '; color: ' + fg;
 const sign = (n: number) => (n > 0 ? 1 : n < 0 ? -1 : 0);
 const xy = (k: string) => k.split(',').map(Number);
 /** The arrow from one tile toward another (8 ways). */
@@ -41,7 +41,7 @@ export function classMarks(cb: any, side: 'pc' | 'foe' = 'pc', o: ClassMarkOpts 
     const mine = img.side === side, fooled = (img.fooled || []).length, fades = (img.round || 0) + 2;
     const title = 'False Image of ' + own.name + (mine ? ' (yours): ' + (fooled ? fooled + (fooled === 1 ? ' enemy takes' : ' enemies take') + ' it for ' + own.name : 'no enemy was fooled') : ' (a decoy)') + '. It fades at ' + own.name + '\'s turn in round ' + fades + ', or when struck.';
     T(img.pos).marks.push({ key: 'img' + img.id, text: pic ? '' : String(own.short || own.name || '?').slice(0, 3), title,
-      style: 'position: absolute; inset: 7%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; pointer-events: none; font-size: 11px; font-weight: 700; color: ' + SIGIL_INK + '; border-radius: ' + round + '; border: 2px dashed ' + SIGIL_INK
+      style: 'position: absolute; inset: 7%; z-index: 2; display: grid; place-items: center; box-sizing: border-box; pointer-events: none; font-size: var(--fs-sub); font-weight: 700; color: ' + SIGIL_INK + '; border-radius: ' + round + '; border: 2px dashed ' + SIGIL_INK
         + '; box-shadow: 0 0 10px ' + SIGIL_GLOW + ', inset 0 0 8px rgba(79, 200, 223, 0.45); opacity: 0.55; animation: phcDecoy 2.4s ease-in-out infinite'
         + (pic ? '; background: url("' + pic + '") center / cover no-repeat; filter: saturate(0.4) brightness(1.1) drop-shadow(0 0 4px ' + SIGIL_GLOW + ')' : '; background: rgba(79, 200, 223, 0.12)') });
     T(img.pos).marks.push({ key: 'imgt' + img.id, text: body ? 'DOUBLE' : 'IMAGE', title, style: badge(SIGIL_GLOW) + '; left: 50%; bottom: -1px; transform: translateX(-50%)' });

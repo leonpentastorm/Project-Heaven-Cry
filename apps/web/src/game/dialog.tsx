@@ -50,7 +50,7 @@ function valueOf(r: Req, confirm: boolean, text: string) {
 
 const C = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#3B475D', text: '#E7EBF3', body: '#C9D3E3', muted: '#A3AEC2', red: '#F65157', white: '#FFFFFF' };
 const UI = "'Chakra Petch', sans-serif";
-const btnBase: React.CSSProperties = { minHeight: 40, padding: '0 18px', borderRadius: 10, fontFamily: UI, fontSize: 14, fontWeight: 700, cursor: 'pointer' };
+const btnBase: React.CSSProperties = { minHeight: 40, padding: '0 18px', borderRadius: 10, fontFamily: UI, fontSize: 'var(--fs-body)', fontWeight: 700, cursor: 'pointer' };
 const primary = (danger?: boolean): React.CSSProperties => danger
   ? { ...btnBase, border: '1px solid ' + C.red, background: 'transparent', color: C.red }
   : { ...btnBase, border: 0, background: C.white, color: C.ground };
@@ -118,11 +118,11 @@ function DialogCard({ r }: { r: Req }) {
         className={presenceCls('phc-a-pop', closing)}
         style={{ width: 'min(460px, 100%)', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 14, padding: '20px 22px', borderRadius: 16, background: C.panel, border: '1px solid ' + C.line, boxShadow: '0 18px 60px rgba(0,0,0,0.6)', fontFamily: UI, color: C.text }}>
         <h2 id={'phc-dlg-t' + r.id} style={{ margin: 0, fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600, lineHeight: 1.25 }}>{o.title}</h2>
-        {o.body && <p id={'phc-dlg-b' + r.id} style={{ margin: 0, fontSize: 14, lineHeight: 1.55, color: C.body, whiteSpace: 'pre-line' }}>{o.body}</p>}
+        {o.body && <p id={'phc-dlg-b' + r.id} style={{ margin: 0, fontSize: 'var(--fs-body)', lineHeight: 1.55, color: C.body, whiteSpace: 'pre-line' }}>{o.body}</p>}
         {kind === 'text' && (o.multiline
           ? <textarea ref={field} value={text} onChange={(e) => setText(e.target.value)} rows={4} maxLength={o.maxLength} placeholder={o.placeholder} aria-label={o.title} style={fieldStyle} />
           : <input ref={field} value={text} onChange={(e) => setText(e.target.value)} maxLength={o.maxLength} placeholder={o.placeholder} aria-label={o.title} style={fieldStyle} />)}
-        {kind === 'text' && o.multiline && <span style={{ fontSize: 11, color: C.muted }}>{(o.optional ? 'Optional. ' : '') + 'Ctrl+Enter to send.'}</span>}
+        {kind === 'text' && o.multiline && <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>{(o.optional ? 'Optional. ' : '') + 'Ctrl+Enter to send.'}</span>}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap', marginTop: 4 }}>
           {kind !== 'tell' && <button ref={cancelBtn} type="button" data-sfx="back" onClick={() => answer(false)} style={secondary}>{cancelLabel}</button>}
           <button ref={okBtn} type="button" onClick={() => answer(true)} style={primary(o.danger)}>{okLabel}</button>

@@ -10,7 +10,7 @@ export const TONE_GLYPH: Record<string, string> = { fire: '▲', storm: 'ϟ', fr
 export function enchantMark(e: QuiverCard['ench'] | null | undefined): { text: string; style: string; ink: string } | null {
   if (!e) return null;
   const ink = TONE_INK[e.tone] || '#E7EBF3';
-  return { text: (TONE_GLYPH[e.tone] || '◆') + ' ' + e.name.toUpperCase(), ink, style: 'font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: ' + ink };
+  return { text: (TONE_GLYPH[e.tone] || '◆') + ' ' + e.name.toUpperCase(), ink, style: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; color: ' + ink };
 }
 /** The worn quiver on the weapon strip: "QUIVER 12/40 · ▲ EMBER" (arrows left of what it holds), or null for no bow. */
 export function quiverStrip(cards: QuiverCard[], arrowsLeft?: number | null): { text: string; ench: ReturnType<typeof enchantMark>; ready: string } | null {

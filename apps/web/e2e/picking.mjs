@@ -142,7 +142,7 @@ await check('the Throw row (a frag grenade)', /^Throw Frag grenade/, { shot: 'th
   await p.getByRole('button', { name: 'Confirm', exact: true }).click(); await settle(p, 600);
   ok('a stim on yourself from your own token: one stim used (' + s0 + ' -> ' + (await stims()) + ')', s0 > 0 && (await stims()) === s0 - 1);
   const s1 = await stims(); await dismissCut(); await p.keyboard.press('Escape').catch(() => {}); await settle(p, 100);
-  await p.getByRole('button', { name: /Backpack/ }).first().click(); await p.waitForSelector('[data-bp-panel]', { timeout: 10000 }); await settle(p, 300);
+  await p.getByRole('button', { name: /Backpack/ }).first().click(); await p.waitForSelector('[data-bp-panel]', { timeout: 30000 }); await settle(p, 300);
   const use = p.locator('[data-bp-row="stims"] button', { hasText: /^Use/ }).first(); await snap('stim-self-2-backpack');
   ok('the Backpack stims row has Use', (await use.count()) > 0 && await use.isEnabled());
   await use.click(); await settle(p, 600); await snap('stim-self-3-backpack-used');

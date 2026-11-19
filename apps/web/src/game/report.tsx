@@ -20,8 +20,8 @@ export const openReport = () => setWhich('report');
 export const openSpend = () => setWhich('spend');
 
 const ink = { panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2' };
-const btn: React.CSSProperties = { minHeight: 40, padding: '0 14px', borderRadius: 10, border: '1px solid #2E3A50', background: 'transparent', color: ink.text, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' };
-const label: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', color: ink.muted };
+const btn: React.CSSProperties = { minHeight: 40, padding: '0 14px', borderRadius: 10, border: '1px solid #2E3A50', background: 'transparent', color: ink.text, fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer' };
+const label: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: ink.muted };
 const money = (n: number | undefined) => '$' + (n || 0).toFixed(n && n < 0.1 ? 3 : 2);
 
 export function buildReport(what: string, withSave: boolean) {
@@ -73,11 +73,11 @@ function ReportDialog({ close }: { close: () => void }) {
   const errs = recentLogs().filter((l) => l.level === 'error').length, calls = recentExchanges().length;
   return (
     <Dialog title="REPORT A PROBLEM" close={close}>
-      <span style={{ fontSize: 13, color: ink.muted, lineHeight: 1.5 }}>Downloads one file to send to Leon. Nothing is sent from here. Your API key is never in it.</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted, lineHeight: 1.5 }}>Downloads one file to send to Leon. Nothing is sent from here. Your API key is never in it.</span>
       <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}><span style={label}>WHAT HAPPENED?</span>
-        <textarea value={what} onChange={(e) => setWhat(e.target.value)} rows={4} placeholder="What you did, what you expected, what happened instead." style={{ padding: 10, borderRadius: 8, border: '1px solid #2E3A50', background: '#0D1119', color: ink.text, fontFamily: 'inherit', fontSize: 14, resize: 'vertical' }} /></label>
+        <textarea value={what} onChange={(e) => setWhat(e.target.value)} rows={4} placeholder="What you did, what you expected, what happened instead." style={{ padding: 10, borderRadius: 8, border: '1px solid #2E3A50', background: '#0D1119', color: ink.text, fontFamily: 'inherit', fontSize: 'var(--fs-body)', resize: 'vertical' }} /></label>
       <span style={label}>IN THE FILE</span>
-      <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, lineHeight: 1.6, color: '#C9D3E3' }}>
+      <ul style={{ margin: 0, paddingLeft: 18, fontSize: 'var(--fs-sub)', lineHeight: 1.6, color: '#C9D3E3' }}>
         <li>This browser, screen and connection; the Narrator model (not the key); the voice's state</li>
         <li>{errs} error{errs === 1 ? '' : 's'} and the recent warnings from this browser</li>
         <li>{host ? (calls ? 'The last ' + calls + ' Narrator call' + (calls === 1 ? '' : 's') + ': what was sent and what came back' : 'No Narrator calls yet in this tab') : 'Narrator calls are in the host\'s report (they run in the host\'s browser)'}</li>
@@ -99,17 +99,17 @@ function SpendDialog({ close }: { close: () => void }) {
   const tokens = (n: number) => (n >= 1e6 ? (n / 1e6).toFixed(2) + ' M' : n >= 1e3 ? Math.round(n / 1e3) + ' k' : String(n)) + ' tokens';
   const recent = u?.recent || [], peak = Math.max(COST_CEILING_USD, ...recent);
   const cacheShare = u && u.input + u.cacheRead > 0 ? Math.round((u.cacheRead / (u.input + u.cacheRead)) * 100) : 0;
-  const row = (k: string, v: string, hint?: string) => <div style={{ display: 'flex', gap: 10, alignItems: 'baseline' }}><span style={{ ...label, minWidth: 170 }}>{k}</span><span style={{ fontSize: 15, fontWeight: 700 }}>{v}</span>{hint && <span style={{ fontSize: 12, color: ink.muted }}>{hint}</span>}</div>;
+  const row = (k: string, v: string, hint?: string) => <div style={{ display: 'flex', gap: 10, alignItems: 'baseline' }}><span style={{ ...label, minWidth: 170 }}>{k}</span><span style={{ fontSize: 15, fontWeight: 700 }}>{v}</span>{hint && <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>{hint}</span>}</div>;
   return (
     <Dialog title="NARRATOR SPEND" close={close}>
-      <span style={{ fontSize: 13, color: ink.muted, lineHeight: 1.5 }}>What this room's AI Narrator has cost on {host ? 'your' : 'the host\'s'} API key, from the provider's own token counts. Each turn is capped at {money(COST_CEILING_USD)}.</span>
-      {!priced && <span style={{ fontSize: 13, color: ink.muted, lineHeight: 1.5 }}>{providerInfo(st.narrator.provider).label} sets its own prices, so this meter counts tokens: check the bill on that service's site.</span>}
+      <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted, lineHeight: 1.5 }}>What this room's AI Narrator has cost on {host ? 'your' : 'the host\'s'} API key, from the provider's own token counts. Each turn is capped at {money(COST_CEILING_USD)}.</span>
+      {!priced && <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted, lineHeight: 1.5 }}>{providerInfo(st.narrator.provider).label} sets its own prices, so this meter counts tokens: check the bill on that service's site.</span>}
       {!priced && !!u?.calls && <>
         {row('INPUT', tokens(u.input), u.calls + ' call' + (u.calls === 1 ? '' : 's'))}
         {row('OUTPUT', tokens(u.output))}
         {!!u.cacheRead && row('READ FROM CACHE', tokens(u.cacheRead))}
       </>}
-      {!priced ? (!u || !u.calls ? <span style={{ fontSize: 14 }}>No Narrator turns yet.</span> : null) : !u || !u.calls ? <span style={{ fontSize: 14 }}>No Narrator turns yet.</span> : <>
+      {!priced ? (!u || !u.calls ? <span style={{ fontSize: 'var(--fs-body)' }}>No Narrator turns yet.</span> : null) : !u || !u.calls ? <span style={{ fontSize: 'var(--fs-body)' }}>No Narrator turns yet.</span> : <>
         {row('THIS ROOM', money(u.costUsd), u.calls + ' call' + (u.calls === 1 ? '' : 's'))}
         {row('AVERAGE CALL', money(u.costUsd / u.calls))}
         {row('LAST CALL', money(u.last))}
@@ -120,7 +120,7 @@ function SpendDialog({ close }: { close: () => void }) {
           <span style={{ position: 'absolute', left: 0, right: 0, bottom: (COST_CEILING_USD / peak) * 64 + 6, borderTop: '1px dashed #F65157' }} {...tipProps('Ceiling ' + money(COST_CEILING_USD))} />
           {recent.map((c, i) => <span key={i} {...tipProps(money(c))} style={{ flex: 1, maxWidth: 22, height: Math.max(2, (c / peak) * 64), background: c > COST_CEILING_USD * 0.8 ? '#F65157' : '#5C9EFF', borderRadius: 2 }} />)}
         </div>
-        <span style={{ fontSize: 11, color: ink.muted }}>The last {recent.length === 1 ? 'call' : recent.length + ' calls'} · dashed line: the {money(COST_CEILING_USD)} ceiling</span>
+        <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>The last {recent.length === 1 ? 'call' : recent.length + ' calls'} · dashed line: the {money(COST_CEILING_USD)} ceiling</span>
       </>}
       {est && row('NEXT TURN, ESTIMATED', money(est.warmUsd) + ' – ' + money(est.worstUsd), 'one request, cache warm – cold; lookups add more, up to the ' + money(COST_CEILING_USD) + ' ceiling')}
     </Dialog>

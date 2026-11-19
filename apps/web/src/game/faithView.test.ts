@@ -13,16 +13,30 @@ function game(belief: any, faith = 5) {
   return { g, c };
 }
 describe('faith views', () => {
+  it('0.31.11: a card with an amount says the engine own number for this character, and a real prayer lands that number', () => {
+    const { g, c } = game({ kind: 'faithful', patron: 'mother_ember' }, 5); c.level = 4;
+    const b = prayerButtons(faithView(g, c.id)!);
+    const health = b.whispers.find((x) => x.id === 'health')!, prot = b.whispers.find((x) => x.id === 'protection')!, rebuke = b.whispers.find((x) => x.id === 'rebuke')!;
+    expect(health.text).toMatch(/^Heal \d+$/); expect(prot.text).toMatch(/^Shield \d+$/); expect(rebuke.text).toMatch(/^\d+ Soul$/);
+    expect(b.whispers.find((x) => x.id === 'luck')!.text).not.toMatch(/^(Heal|Shield) /); // no amount: the data's line
+    // the Health whisper prayed in the story on a hurt ally heals what its card says (no other bonus on this sheet)
+    let g2 = apply(g, { type: 'char/add', sheet: sheet('Ally', { kind: 'atheist' }) }, 'h');
+    g2 = apply(g2, { type: 'session/start' } as any, 'h');
+    const ally: any = Object.values(g2.characters).find((x: any) => x.name === 'Ally'); g2.characters[ally.id].hp = 1;
+    const was = g2.characters[ally.id].hp, n = Number(health.text.replace('Heal ', ''));
+    g2 = apply(g2, { type: 'faith/pray', charId: c.id, kind: 'whisper', id: 'health', targetId: ally.id } as any, 'h');
+    expect(g2.characters[ally.id].hp - was).toBe(n);
+  });
   it('rules 1.22: the Hymns\' heading says how often a Hymn comes, when the next one does and what the vow did; every vow says what fulfils it', () => {
     const cd = { hymnRoundsLeft: 0, whisperUsed: false, miracleUsed: false, hymnWait: 3, hymnCooldown: 3, vowCut: false, vowBanked: false };
-    expect(hymnHeadText(cd)).toBe('HYMNS · EVERY 3 ROUNDS · READY');
-    expect(hymnHeadText({ ...cd, hymnRoundsLeft: 2 })).toBe('HYMNS · EVERY 3 ROUNDS · NEXT IN 2 ROUNDS');
-    expect(hymnHeadText({ ...cd, hymnWait: 2, hymnRoundsLeft: 1, vowCut: true })).toBe('HYMNS · EVERY 2 ROUNDS · NEXT IN 1 ROUND · YOUR VOW: 1 ROUND SOONER');
-    expect(hymnHeadText({ ...cd, vowBanked: true })).toBe('HYMNS · EVERY 3 ROUNDS · READY · YOUR VOW: THE NEXT WAIT 1 ROUND SHORTER');
+    expect(hymnHeadText(cd)).toBe('HYMNS · ready');
+    expect(hymnHeadText({ ...cd, hymnRoundsLeft: 2 })).toBe('HYMNS · next in 2 rounds');
+    expect(hymnHeadText({ ...cd, hymnWait: 2, hymnRoundsLeft: 1, vowCut: true })).toBe('HYMNS · next in 1 round · YOUR VOW: 1 ROUND SOONER');
+    expect(hymnHeadText({ ...cd, vowBanked: true })).toBe('HYMNS · ready · YOUR VOW: THE NEXT WAIT 1 ROUND SHORTER');
     expect(hymnHeadText(null)).toBe('HYMNS');
     const { g, c } = game({ kind: 'faithful', patron: 'mother_ember' }, 5); c.attrs = { ...c.attrs, virtue: 5 };
     const v = faithView(g, c.id)!, p = faithPanel(v)!;
-    expect(v.cooldowns.hymnCooldown).toBe(4); expect(p.hymnText).toBe('HYMNS · EVERY 4 ROUNDS · READY'); // Faith 5 and Virtue 5: 9 − 3.75 − 1.25
+    expect(v.cooldowns.hymnCooldown).toBe(4); expect(p.hymnText).toBe('HYMNS · ready'); // Faith 5 and Virtue 5: 9 − 3.75 − 1.25
     expect(v.vows.length).toBe(6); for (const x of v.vows) expect(x.fulfilledWhen.length, x.id).toBeGreaterThan(10);
   });
   it('odds: a d20 plus a modifier against a TN; a 1 always misses, a 20 always hits', () => {
@@ -44,7 +58,7 @@ describe('faith views', () => {
     expect(b.whispers.map((x) => x.id)).toEqual(['luck', 'health', 'protection', 'courage', 'guidance', 'safe_passage', 'rebuke']); // rules 1.21: Rebuke is the seventh
     expect(b.whispers[0]).toMatchObject({ ap: '1 AP', gate: 'ANYONE' });
     expect(b.hymns.map((x) => x.gate)).toEqual(['HYMN I · DEVOTION 3', 'HYMN II · DEVOTION 5', 'HYMN III · DEVOTION 7']);
-    expect(b.hymns[1].odds).toMatch(/^OVERREACH · TN \d+/); expect(b.hymns[1].warn).toMatch(/a miss costs 3 Devotion XP/);
+    expect(b.hymns[1].odds).toMatch(/^OVERREACH · TN \d+/); expect(b.hymns[1].warn).toMatch(/roll \d+ or lose 3 Devotion/);
     expect(b.miracle!.ok).toBe(false); expect(b.miracle!.why).toMatch(/Faith 7|Devotion 10/); expect(b.miracle!.gate).toBe('FAITH 7 · DEVOTION 10'); // rules 1.6.2
     for (const x of [...b.whispers, ...b.hymns, b.miracle!]) { expect(x.icon).toMatch(/^data:image\/svg|^\/assets\//); if (!x.ok) expect(x.why).toBeTruthy(); }
   });
@@ -59,12 +73,12 @@ describe('faith views', () => {
   });
   it('the liked-tag caps in words: the fight or the scene, the session (none in the Proving Ground), CAPPED once one is reached', () => {
     const caps = { fight: 2, scene: 2, session: 6 };
-    expect(tagCapsText({ fight: 1, scene: 0, session: 4, caps, where: 'fight' })).toEqual({ text: 'LIKED TAGS · 1/2 THIS FIGHT · 4/6 THIS SESSION', capped: false });
-    expect(tagCapsText({ fight: 0, scene: 2, session: 2, caps, where: 'scene' })).toEqual({ text: 'LIKED TAGS · 2/2 THIS SCENE · 2/6 THIS SESSION · CAPPED', capped: true });
+    expect(tagCapsText({ fight: 1, scene: 0, session: 4, caps, where: 'fight' })).toEqual({ text: 'Favour 1 / 2', capped: false });
+    expect(tagCapsText({ fight: 0, scene: 2, session: 2, caps, where: 'scene' })).toEqual({ text: 'Favour 2 / 2 · capped', capped: true });
     expect(tagCapsText({ fight: 1, scene: 0, session: 6, caps, where: 'fight' }).capped).toBe(true);
-    expect(tagCapsText({ fight: 1, scene: 0, session: 9, caps: { ...caps, session: null }, where: 'fight' })).toEqual({ text: 'LIKED TAGS · 1/2 THIS FIGHT', capped: false });
+    expect(tagCapsText({ fight: 1, scene: 0, session: 9, caps: { ...caps, session: null }, where: 'fight' })).toEqual({ text: 'Favour 1 / 2', capped: false });
     const { g, c } = game({ kind: 'faithful', patron: 'mother_ember' });
-    expect(faithPanel(faithView(g, c.id))!.tagCaps!.text).toBe('LIKED TAGS · 0/2 THIS SCENE · 0/6 THIS SESSION');
+    expect(faithPanel(faithView(g, c.id))!.tagCaps!.text).toBe('Favour 0 / 2');
     const at = game({ kind: 'atheist' }); expect(faithPanel(faithView(at.g, at.c.id))!.tagCaps).toBeNull(); // no patron, no caps to show
   });
   it('leaving: the pact cooldown on the day counter ("Nobody answers yet: N days"), then a grudge on a switch (who, what, how long)', () => {

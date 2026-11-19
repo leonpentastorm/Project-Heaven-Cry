@@ -72,11 +72,11 @@ export function Tips() {
   const done = (all?: boolean) => { seen.add(all ? '*' : tip.id); save(); force(); };
   return (
     <div key={tip.id} role="status" aria-label={'Tip: ' + tip.title} className={presenceCls('phc-a-right', closing)} style={{ position: 'fixed', top: 70, right: 16, zIndex: 9, width: 'min(400px, 92vw)', padding: '12px 14px', borderRadius: 12, background: '#1C2536', border: '1px solid #FFFFFF', boxShadow: '0 10px 30px rgba(0,0,0,0.6)', color: '#E7EBF3', fontFamily: "'Chakra Petch', sans-serif", display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: '#FFFFFF' }}>TIP · {tip.title}</span>
-      <span style={{ fontSize: 13, lineHeight: 1.5 }}>{tip.text}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: '#FFFFFF' }}>TIP · {tip.title}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', lineHeight: 1.5 }}>{tip.text}</span>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-        <button type="button" onClick={() => done(true)} style={{ minHeight: 32, padding: '0 10px', borderRadius: 8, border: 0, background: 'transparent', color: '#A3AEC2', fontFamily: 'inherit', fontSize: 13, cursor: 'pointer' }}>No more tips</button>
-        <button type="button" onClick={() => done()} style={{ minHeight: 32, padding: '0 14px', borderRadius: 8, border: 0, background: '#E7EBF3', color: '#0A0D13', fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Got it</button>
+        <button type="button" onClick={() => done(true)} style={{ minHeight: 32, padding: '0 10px', borderRadius: 8, border: 0, background: 'transparent', color: '#A3AEC2', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', cursor: 'pointer' }}>No more tips</button>
+        <button type="button" onClick={() => done()} style={{ minHeight: 32, padding: '0 14px', borderRadius: 8, border: 0, background: '#E7EBF3', color: '#0A0D13', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer' }}>Got it</button>
       </div>
     </div>
   );

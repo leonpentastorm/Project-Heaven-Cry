@@ -16,14 +16,14 @@ import { PlaceBar, BarNumber } from './PlaceBar';
 import { MoveOn } from './runPanels';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', white: '#FFFFFF', ok: '#6FEA77' };
-const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
+const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
 const btn = (on = true): React.CSSProperties => ({ minHeight: 44, padding: '0 20px', borderRadius: 10, border: on ? 0 : '1px solid ' + ink.line, background: on ? ink.text : 'transparent', color: on ? ink.ground : ink.text, fontFamily: 'inherit', fontWeight: 700, fontSize: 15, cursor: 'pointer' });
 const title: React.CSSProperties = { margin: 0, fontFamily: "'Spectral', serif", fontSize: 'clamp(28px, 2.4vw, 40px)', fontWeight: 600, lineHeight: 1.15 };
 
 function BoonPick({ b }: { b: BoonPickV }) {
   return (
     <section data-phc-boons={b.charId} aria-label={'Boons for ' + b.name} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <span style={kick}>{(b.mine ? 'YOUR BOON · ' : '') + b.name.toUpperCase()} · BOON ROOM {b.worth}{!b.canPick ? ' · ' + b.name.toUpperCase() + '\'S PLAYER PICKS' : !b.mine ? ' · YOU MAY PICK FOR THEM' : ''}</span>
+      <span style={kick}>{(b.mine ? '' : b.name.toUpperCase() + ' · ')}Boon room {b.worth}{!b.canPick ? ' · ' + b.name.toUpperCase() + '\'S PLAYER PICKS' : !b.mine ? ' · YOU MAY PICK FOR THEM' : ''}</span>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: 14 }}>
         {b.cards.map((c) => (
           <button key={c.id} type="button" data-phc-boon={c.id} data-phc-why={c.why ? '' : undefined} aria-disabled={!b.canPick || c.why ? 'true' : undefined}
@@ -33,9 +33,9 @@ function BoonPick({ b }: { b: BoonPickV }) {
               border: '1px solid ' + (c.why || !b.canPick ? ink.line : ink.muted), background: 'linear-gradient(180deg, #1C2536 0%, #10151F 100%)', color: c.why ? ink.muted : ink.text, fontFamily: 'inherit', textAlign: 'center', cursor: b.canPick && !c.why ? 'pointer' : 'default' }}>
             <span style={{ display: 'grid', placeItems: 'center', width: 88, height: 88, borderRadius: '50%', border: '1px solid ' + ink.line, background: ink.ground, color: ink.white }} dangerouslySetInnerHTML={{ __html: boonIconSvg(c.id, 56) }} />
             <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{c.name}</span>
-            <span style={{ fontSize: 14, lineHeight: 1.5, color: '#DCE2EC', maxWidth: 360 }}>{c.text}</span>
-            <span style={{ marginTop: 'auto', fontSize: 13, letterSpacing: '0.04em', color: c.worth ? ink.white : ink.muted }}>{c.worthLine}</span>
-            {c.why ? <span style={{ fontSize: 13, color: ink.muted }}>{c.why}</span> : b.canPick ? <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: ink.white }}>TAKE IT</span> : null}
+            <span style={{ fontSize: 'var(--fs-body)', lineHeight: 1.5, color: '#DCE2EC', maxWidth: 360 }}>{c.text}</span>
+            <span style={{ marginTop: 'auto', fontSize: 'var(--fs-sub)', letterSpacing: '0.04em', color: c.worth ? ink.white : ink.muted }}>{c.worthLine}</span>
+            {c.why ? <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>{c.why}</span> : b.canPick ? <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: ink.white }}>TAKE IT</span> : null}
           </button>
         ))}
       </div>
@@ -49,15 +49,15 @@ function TileCard({ t, mine }: { t: TileCardV; mine: boolean }) {
       onClick={() => act({ type: 'run/tile', tile: t.id })}
       style={{ position: 'relative', display: 'flex', flexDirection: 'column', minWidth: 0, padding: 0, overflow: 'hidden', textAlign: 'left', borderRadius: 16, border: mine ? '2px solid ' + ink.white : '2px solid ' + ink.line, background: ink.panel, color: ink.text, fontFamily: 'inherit', cursor: 'pointer' }}>
       <span aria-hidden="true" style={{ display: 'block', width: '100%', aspectRatio: '16 / 9', background: t.art ? 'center / cover no-repeat url("' + t.art + '")' : 'radial-gradient(ellipse at 50% 35%, #1C2536 0%, #10151F 80%)', borderBottom: '1px solid ' + ink.line }}>
-        {t.art ? null : <span style={{ display: 'grid', placeItems: 'center', height: '100%', fontSize: 13, letterSpacing: '0.18em', color: ink.muted }}>{t.setting.toUpperCase()}</span>}
+        {t.art ? null : <span style={{ display: 'grid', placeItems: 'center', height: '100%', fontSize: 'var(--fs-sub)', letterSpacing: '0.18em', color: ink.muted }}>{t.setting.toUpperCase()}</span>}
       </span>
       <span style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '16px 18px 18px' }}>
         <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{t.name}</span>
-        <span style={{ fontSize: 14, lineHeight: 1.5, color: '#DCE2EC' }}>{t.line}</span>
-        <span style={{ fontSize: 13, color: ink.muted }}>Boss: <span style={{ color: ink.text }}>{t.boss}</span> · Boons: <span style={{ color: ink.white }}>{t.theme}</span> ({t.boons.join(', ')})</span>
+        <span style={{ fontSize: 'var(--fs-body)', lineHeight: 1.5, color: '#DCE2EC' }}>{t.line}</span>
+        <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>Boss: <span style={{ color: ink.text }}>{t.boss}</span> · Boons: <span style={{ color: ink.white }}>{t.theme}</span> ({t.boons.join(', ')})</span>
         <span style={{ display: 'flex', gap: 6, alignItems: 'center', minHeight: 22 }}>
-          {mine ? <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: ink.white }}>✓ YOUR MARK</span> : null}
-          {t.leans.map((l) => <span key={l.initials} aria-label={l.name} style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, borderRadius: '50%', fontSize: 13, fontWeight: 700, background: l.color, color: ink.ground }}>{l.initials}</span>)}
+          {mine ? <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: ink.white }}>✓ YOUR MARK</span> : null}
+          {t.leans.map((l) => <span key={l.initials} aria-label={l.name} style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, borderRadius: '50%', fontSize: 'var(--fs-sub)', fontWeight: 700, background: l.color, color: ink.ground }}>{l.initials}</span>)}
         </span>
       </span>
     </button>
@@ -89,8 +89,8 @@ function Summary({ s }: { s: SummaryV }) {
         {s.members.map((m) => (
           <div key={m.id} data-phc-member-end={m.id} style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: 16, borderRadius: 12, background: ink.panel, border: '1px solid ' + ink.line }}>
             <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{m.name}</span>
-            <span style={{ fontSize: 14, color: ink.muted }}>Level <span style={{ color: ink.white }}>{m.level}</span> · {m.classLine}</span>
-            <span style={{ fontSize: 14, color: '#DCE2EC' }}>Boons: {m.boons}</span>
+            <span style={{ fontSize: 'var(--fs-body)', color: ink.muted }}>Level <span style={{ color: ink.white }}>{m.level}</span> · {m.classLine}</span>
+            <span style={{ fontSize: 'var(--fs-body)', color: '#DCE2EC' }}>Boons: {m.boons}</span>
             {m.mine ? <button type="button" data-phc-keep={m.id} onClick={() => keep(m.id)} style={{ ...btn(false), marginTop: 6 }}>Keep {m.name} as a draft (level {m.level})</button> : null}
           </div>
         ))}
@@ -114,9 +114,9 @@ export function StageScreen() {
     <div data-phc-stage-screen={v.state} style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', background: 'radial-gradient(ellipse at 50% 0%, #141B28 0%, #0A0D13 70%)', color: ink.text, fontFamily: "'Chakra Petch', sans-serif", boxSizing: 'border-box' }}>
       {v.summary ? <div style={{ padding: '18px 20px 32px' }}><Summary s={v.summary} /></div> : <>
         {/* the place header (PlaceBar, the visibility standard): the stage cleared, your credits, the button that moves on */}
-        <PlaceBar role={<span data-phc-cleared="">STAGE {v.stage} CLEARED</span>} name={v.state === 'boon' ? 'Pick a boon for the rest of the run' : 'Pick the next tile'}
+        <PlaceBar role={<span data-phc-cleared="">STAGE {v.stage} CLEARED</span>} name={v.state === 'boon' ? 'Pick a boon' : 'Pick the next tile'}
           money={mine ? <BarNumber label="CREDITS" n={mine.credits} mark={{ 'data-phc-bar-credits': '' }} /> : null} actions={<MoveOn />}
-          foot={v.waiting ? <span data-phc-waiting="" style={{ fontSize: 14, color: ink.white }}>{v.waiting}</span> : null} />
+          foot={v.waiting ? <span data-phc-waiting="" style={{ fontSize: 'var(--fs-body)', color: ink.white }}>{v.waiting}</span> : null} />
         <div style={{ display: 'flex', flexDirection: 'column', gap: 22, padding: '18px 20px 32px' }}>
         {v.state === 'boon' ? v.boons.map((b) => <BoonPick key={b.charId} b={b} />) : (
           <section aria-label="The next tile" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

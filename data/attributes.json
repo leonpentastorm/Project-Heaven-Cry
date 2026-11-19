@@ -53,6 +53,7 @@
   "items": [
     {
       "id": "endurance",
+      "player": "+{=derived.0.per_point_above_1} max HP · +{=derived.1.per_point_above_1}% to ignore an injury",
       "name": "Endurance",
       "core": "body",
       "skills": {
@@ -75,6 +76,7 @@
     },
     {
       "id": "strength",
+      "player": "+{=derived.1.per_point_above_1|pct}% physical damage · +{=derived.0.per_point_above_1} kg carried",
       "name": "Strength",
       "core": "body",
       "skills": {
@@ -97,6 +99,7 @@
     },
     {
       "id": "agility",
+      "player": "+{=derived.1.per_point_above_1} tile of movement an AP · +{=derived.0.per_point_above_1} Initiative",
       "name": "Agility",
       "core": "body",
       "skills": {
@@ -119,6 +122,7 @@
     },
     {
       "id": "perception",
+      "player": "+{=derived.0.per_point_above_1} tiles of vision · +{=derived.2.per_point_above_1|pct}% critical damage · {=derived.1.per_point_above_1}% critical damage taken",
       "name": "Perception",
       "core": "mind",
       "skills": {
@@ -146,6 +150,7 @@
     },
     {
       "id": "intelligence",
+      "player": "+{=derived.1.per_point_above_1|pct}% Sigil power · a longer Line at every even point",
       "name": "Intelligence",
       "core": "mind",
       "skills": {
@@ -168,6 +173,7 @@
     },
     {
       "id": "expression",
+      "player": "+{=derived.0.per_point_above_1|pct}% elemental damage · glyphs {=derived.1.per_point_above_1|abs} AP cheaper",
       "name": "Expression",
       "core": "mind",
       "skills": {
@@ -190,6 +196,7 @@
     },
     {
       "id": "insight",
+      "player": "+{=derived.0.per_point_above_1|pct}% healing given · {=derived.1.per_point_above_1}% Soul magic MP cost · +{=derived.2.per_point_above_1} max MP",
       "name": "Insight",
       "core": "soul",
       "skills": {
@@ -218,6 +225,7 @@
     },
     {
       "id": "determination",
+      "player": "+{=derived.0.per_point_above_1|pct}% Soul power · +{=derived.2.per_point_above_1} max MP · +{=derived.1.per_point_above_1}% mana syphoned",
       "name": "Determination",
       "core": "soul",
       "skills": {
@@ -246,6 +254,7 @@
     },
     {
       "id": "virtue",
+      "player": "Hymns return sooner",
       "name": "Virtue",
       "core": "soul",
       "skills": {

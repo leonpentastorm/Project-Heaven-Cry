@@ -306,6 +306,12 @@
       "on": "character",
       "path": "devotionXp",
       "setter": "devotion"
+    },
+    "strain": {
+      "name": "Strain",
+      "on": "unit",
+      "path": "mg.strain",
+      "setter": "strain"
     }
   },
   "costs": {

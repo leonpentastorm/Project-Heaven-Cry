@@ -46,7 +46,7 @@ export function shieldStrip(sv: ShieldsViewV | null) {
   return { has: segs.length > 0, segs, over,
     // 2 px of dark ground under it and an outline round it: the strip is never read as the HP bar's top edge
     boxStyle: 'position: absolute; left: 5px; right: 5px; bottom: 7px; height: 4px; z-index: 3; display: flex; gap: 1px; border-radius: 2px; overflow: hidden; pointer-events: none; background: ' + GROUND + '; box-shadow: 0 0 0 1px ' + GROUND,
-    plusStyle: 'position: absolute; right: 1px; bottom: 10px; z-index: 4; font-size: 9px; font-weight: 700; line-height: 1; color: #FFFFFF; text-shadow: 0 0 2px #05070B, 0 0 2px #05070B; pointer-events: none',
+    plusStyle: 'position: absolute; right: 1px; bottom: 10px; z-index: 4; font-size: var(--fs-sub); font-weight: 700; line-height: 1; color: #FFFFFF; text-shadow: 0 0 2px #05070B, 0 0 2px #05070B; pointer-events: none',
     /** the shields in words (a tip) */
     title: sv && sv.words ? sv.words : es.map((e) => e.name + ' ' + (e.amount != null ? fmtNum(e.amount) : e.size)).join(' · ') };
 }
@@ -59,7 +59,7 @@ export function shieldBlock(sv: ShieldsViewV | null, o: { guard?: boolean; rule?
   const lines = es.map((e) => ({ key: e.key, kind: e.kind, glyph: GLYPH[e.kind], name: e.name, ink: inkOf(e),
     amount: amountOf(e),
     lasts: e.lasts + (e.from ? ' · ' + e.from : ''),
-    pipStyle: 'flex: none; width: 10px; text-align: center; font-size: 11px; color: ' + inkOf(e),
+    pipStyle: 'flex: none; width: 10px; text-align: center; font-size: var(--fs-sub); color: ' + inkOf(e),
     nameStyle: 'font-weight: 700; color: ' + inkOf(e),
     text: GLYPH[e.kind] + ' ' + e.name + ' ' + amountOf(e) + ' · ' + e.lasts + (e.from ? ' · ' + e.from : '') }));
   const guardLine = g ? g.line || '' : '', first = !!(g && g.first);
@@ -68,9 +68,9 @@ export function shieldBlock(sv: ShieldsViewV | null, o: { guard?: boolean; rule?
   return { has, head: sv ? sv.head || '' : '', lines,
     hasGuard: !!g, hasGuardFirst: !!g && first, hasGuardLast: !!g && !first, guardGlyph: GLYPH.guard, guardName: g ? g.name : '', guardLine, guardTitle: g ? g.how : '',
     absorb, hasAbsorbDrop: !!absorbDrop, absorbDrop, hasRule: !!o.rule && !!sv && !!sv.rule, rule: o.rule && sv ? sv.rule : '',
-    headStyle: 'font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2',
-    lineStyle: 'display: flex; gap: 5px; align-items: baseline; font-size: 13px; color: #E7EBF3; line-height: 1.3',
-    subStyle: 'font-size: 12px; color: #A3AEC2; line-height: 1.3',
+    headStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2',
+    lineStyle: 'display: flex; gap: 5px; align-items: baseline; font-size: var(--fs-sub); color: #E7EBF3; line-height: 1.3',
+    subStyle: 'font-size: var(--fs-sub); color: #A3AEC2; line-height: 1.3',
     /** the block as one line of words (an aria-label, a tile's label) */
     words: [...(first ? [guardLine] : []), ...lines.map((l) => l.text), ...(first ? [] : [guardLine]), absorb, absorbDrop].filter(Boolean).join(' · ') };
 }
