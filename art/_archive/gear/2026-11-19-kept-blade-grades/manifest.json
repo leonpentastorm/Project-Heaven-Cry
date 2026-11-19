@@ -1668,6 +1668,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-striking_gloves--relic",
+      "path": "art/icons/gear/weapon-striking_gloves--relic.png",
+      "sha256": "9b36f752a3f17b24c47de7d956ab451043d216ca9d97ee734691013ea43c4ab9",
+      "label": "Striking Gloves — Relic",
+      "family": "weapon-striking_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-striking_gloves--relic.png",
+        "sha256": "e381d2db4265fcbd1bf4adfc11921d98cc3be88c53a99e67f87c9381d1b59ab8"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--relic.png",
+        "sha256": "9b36f752a3f17b24c47de7d956ab451043d216ca9d97ee734691013ea43c4ab9"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-striking_gloves--relic.txt",
+        "sha256": "9782a15bbe3277974f9192bb7781ac4cf0368cd209c9403fff2ecd729019b2d2"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-striking_gloves.png",
+          "sha256": "4e54720c6116953f5aa708040f4f083708ebaff75d8ee5ec794ffcb04c400576"
+        },
+        {
+          "path": "art/icons/gear/weapon-striking_gloves--masterwork.png",
+          "sha256": "ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-striking_gloves--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-striking_gloves--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-striking_gloves--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-striking_gloves--relic.png"
+      },
+      "export_hashes": {
+        "256": "5ae67cb39782f4bc6cab6207743922bf02a7a7ecba03b801b212f325553d1bd8",
+        "128": "ab0385baa97540f8bdb94fef0ac561ab915185589a9eaa5757548759dd62bb9d",
+        "64": "18d01d51d4cd0da8dd2a57c3a545301b5a6ffee8351d92bb5fc4354d69a497e1",
+        "32": "a9fe955bfc1e9adfefad78c02ce2b82110a2101d51a5e7ef2d95b976efde8c69"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-striking_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9851304067738278,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 10
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
