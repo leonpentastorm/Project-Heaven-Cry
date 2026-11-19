@@ -19854,6 +19854,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "armour-utility_belt--celestial": {
+      "label": "Armour-Utility Belt Celestial",
+      "path": "art/icons/gear/armour-utility_belt--celestial.png",
+      "sha256": "d06f5b32f7c5f5c5cda109892f5bab4228e2a2b61037aae75a63806bcf7049fe",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/armour-utility_belt.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-utility_belt--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-utility_belt--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-utility_belt--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-utility_belt--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {

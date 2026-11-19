@@ -3201,6 +3201,7 @@ a51ad4a6e04ecf8a9ae5d27a775933bcae317c6953755dbe3e0bc8007d364cc0  art/_archive/p
 3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--fine.png
 e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--masterwork.png
 307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png
+8e78250bbb559a5ba87331cba2f7c40885c6c69d65af6e5832eb10851e52fc8c  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--celestial.json
 a7dcf66a9748fd80a7dfea39c1e708e986ae23798a192c904eecb81aac58dcd3  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--fine.json
 0feef76328b7604059e30833c683a11ffdf06757f56fb961c0f0790f93bc8140  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--masterwork.json
 10920e4c9d9cb308d6674241c40fd118ea05e44d3eaac938adf607c12494a151  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--relic.json
@@ -4688,7 +4689,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-35b16fc9a8ca0030b757fd62c75f974ec04a9cd91f6af64d2840afd5d73f2c1c  art/catalog.json
+9230907c70db7cb1a456d0f3bde3b000364e118a5b203b46470112e8a0572701  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6262,6 +6263,7 @@ a4041379dedc8aa9b2468e69b5e6cf60021c4581dacf44837461c54a3ddc9b9a  art/icons/gear
 e89e958a8111b23300a6bc1a9cbabcc089e50ed980659f45d39ddebdd726978a  art/icons/gear/armour-torso_class4_assault.png
 0330e412b117353ba0c949b970e873970eaa5ee2e60c320e284a404d16ad990c  art/icons/gear/armour-torso_class5_juggernaut.png
 34cbf6f62a75b1718185be1bcc9eba105ad8fae3bac0b9e3bfb522e777a0a767  art/icons/gear/armour-trauma_plate.png
+d06f5b32f7c5f5c5cda109892f5bab4228e2a2b61037aae75a63806bcf7049fe  art/icons/gear/armour-utility_belt--celestial.png
 0e8c6867918be1364e99bf4a1338e7f2b8b2e70a0475ec1557d06c2243eb865d  art/icons/gear/armour-utility_belt--fine.png
 ca3eabccd2d49b9ca2a000c6fa56ebd70286b4966954797d10d812e57dc35235  art/icons/gear/armour-utility_belt--masterwork.png
 c55e8306ea8c66f9d90baca18092a176ea91cbfdf281b31aaed1b49f8b934f56  art/icons/gear/armour-utility_belt--relic.png
@@ -6301,6 +6303,7 @@ a408b52c26c21749fee2ed47bcab1c0e8b1e4c328943b3e10e8eb8cdcef21e41  art/icons/gear
 74bc992b64b1cd11d4353aade72b63acbc0bd15e8968913422f90e4983a4cd4a  art/icons/gear/exports/128/armour-torso_class4_assault.png
 9a43949c75e834aa8c3c4978ba8943ab862ff0ccb114e934c4e44b5448ce1bf3  art/icons/gear/exports/128/armour-torso_class5_juggernaut.png
 d100177d750f5126ec68f3f55ad007c95262470e23cc64eb133963f2d0c1a21a  art/icons/gear/exports/128/armour-trauma_plate.png
+d67fd46f14919630569f9dc294ddc83b246a59946df7c6f38007a882b8b0b5ea  art/icons/gear/exports/128/armour-utility_belt--celestial.png
 13c74d395909df8c3ba8efcd0f0cc86ab93a096c8f5e859495c015ff74b81544  art/icons/gear/exports/128/armour-utility_belt--fine.png
 279cdd7f70b77e3f398f8991a64883b3081cf27d22d0a15a5fd32fbc9251a0d3  art/icons/gear/exports/128/armour-utility_belt--masterwork.png
 63e8b25dc74949d747845024622212c2907803257c964528eba0777227df9e27  art/icons/gear/exports/128/armour-utility_belt--relic.png
@@ -6521,6 +6524,7 @@ efb83ae644678c65d9d4742a7f741b88d3055ff28498e5f0530e7592ac9f1e15  art/icons/gear
 4129a9edf4d280bed4c9b2cb3b692dd683d044b08bed56c4ceb03f6111994016  art/icons/gear/exports/256/armour-torso_class4_assault.png
 5ce01a672713277d596ac4b5c46125931eae36d2299cc4b50a2ed1c11b6aee29  art/icons/gear/exports/256/armour-torso_class5_juggernaut.png
 cb236c34839ddf069f706842205d351fdf95e98e76958a6343502d307caf89bb  art/icons/gear/exports/256/armour-trauma_plate.png
+db77a8e105c5377935da5c147bb2897b9fcc2f3dbb1486c4c4851d4cdc6beda5  art/icons/gear/exports/256/armour-utility_belt--celestial.png
 afdb2ffd4380b523b9edc5f954f680d9766c993342e1e6036fe21b16fbee1d5a  art/icons/gear/exports/256/armour-utility_belt--fine.png
 ae2d9ab47efcec61bd42721222a111af54b8c802ec2aec3c48ef1880173725f7  art/icons/gear/exports/256/armour-utility_belt--masterwork.png
 1f40a821674f21cad017e81e37efefaa2228ab2542d222cdc412d2eb0a86072d  art/icons/gear/exports/256/armour-utility_belt--relic.png
@@ -6741,6 +6745,7 @@ c684f30cffb06499ed24b68a302d49c253c11a9fbdac95b9a4ec399bb0de0871  art/icons/gear
 00d7f56e30575658447ed1d0a693b7c688b1b86ea19a49c8f99454da8bcd3b0e  art/icons/gear/exports/32/armour-torso_class4_assault.png
 fcfe1ecfe5b1a1abdcecb4cedc1405d75c2c164cbcb1d2afb20c4abcf825e57b  art/icons/gear/exports/32/armour-torso_class5_juggernaut.png
 9379e494e331bb65fb5c51d5007d14da3780b49f9dcb41ac546072af52976d05  art/icons/gear/exports/32/armour-trauma_plate.png
+c0aa2f302b51b0828000e3bd9e8ac21733619539f0fd0f4c49df8f0beeb5796b  art/icons/gear/exports/32/armour-utility_belt--celestial.png
 320e3967175621cc2186c6e09ed5fd8b1a1b373f928b307073e9045e498ccd8e  art/icons/gear/exports/32/armour-utility_belt--fine.png
 d60e052e955de6949d10126662702b2947f3c47400e098b77795c06d74d8c25d  art/icons/gear/exports/32/armour-utility_belt--masterwork.png
 9afc1376f9581f1bf11c7218ec77b45c1e29e5931b266cbaff137a41d2810a24  art/icons/gear/exports/32/armour-utility_belt--relic.png
@@ -6961,6 +6966,7 @@ d3c49d0d06afd1dff779f04946dce896d4e445664721cd69d18cac8ff5c77386  art/icons/gear
 e599d0d93e9b1976b0c34046347bb961e379414759e43be67034994745f6fa73  art/icons/gear/exports/64/armour-torso_class4_assault.png
 c3637e233564ec2fa10b3cdaf527feda763b08ef5b03ffda82dc7c5e878e412f  art/icons/gear/exports/64/armour-torso_class5_juggernaut.png
 d55f127cffcf294a4468daf063dcf967f71231a69aab5947e499f09467a8ec8b  art/icons/gear/exports/64/armour-trauma_plate.png
+72970737ead6f55708779be36e7c0dbd29e32f3d2cb47db465fd9112e2bee97d  art/icons/gear/exports/64/armour-utility_belt--celestial.png
 8f70bdf36e516dd6e4a1c2307d8b6d119224ca39b85279fd9e5627f9052eef1c  art/icons/gear/exports/64/armour-utility_belt--fine.png
 e56b5b405f250911f15d17f1af6dae4eae3afe63c539e1a8d2e8dfa835a31de0  art/icons/gear/exports/64/armour-utility_belt--masterwork.png
 fd188cec25c191b3cf8ef0fb505ad7813f44101dfa13776f910fdcb8e952efb3  art/icons/gear/exports/64/armour-utility_belt--relic.png
