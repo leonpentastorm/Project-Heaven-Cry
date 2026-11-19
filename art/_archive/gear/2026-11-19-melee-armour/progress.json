@@ -31,10 +31,10 @@
     "weapon-adamantile_plate_needle",
     "weapon-adamantile_longsword",
     "weapon-ork_skinner",
-    "weapon-ork_cleaver_glaive"
+    "weapon-ork_cleaver_glaive",
+    "weapon-weighted_gloves"
   ],
   "remaining": [
-    "weapon-weighted_gloves",
     "shield-spiked_buckler",
     "shield-boss_shield",
     "shield-ram_plate",
@@ -58,5 +58,5 @@
   ],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T03:53:16.244590+00:00"
+  "updated_utc": "2026-11-19T03:56:03.528182+00:00"
 }

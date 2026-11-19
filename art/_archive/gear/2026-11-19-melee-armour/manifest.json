@@ -1082,6 +1082,92 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-weighted_gloves",
+      "path": "art/icons/gear/weapon-weighted_gloves.png",
+      "sha256": "a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a",
+      "label": "Weighted gloves",
+      "family": "05-heavy-fists-gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-weighted_gloves.png",
+        "sha256": "0189245e4f1c2eeff8998b07ae9f383745a1d2c2e6fe1127c9f34c301b2fa623"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-weighted_gloves.png",
+        "sha256": "a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-weighted_gloves.txt",
+        "sha256": "65d16ef2b8326b175a40e20dcc6612fb28971f92faebb73dd2247719a6467c95"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/references/fuel-drum-and-tool-rack.png",
+          "sha256": "08c79a4b7371726cf894ed27ad394528e512c03af6fd7c037489813207d8df83"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-iron_mitts.png",
+          "sha256": "026003405fcfc8c519a886c370f5e6f0728ff8eb586cba7871225cd62e46b71a"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_strikers.png",
+          "sha256": "d4e4963718ef806fee94a92b1ec4f59d5ed9fe34de8aec489caf0ec669c83512"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-iron_mitts.png",
+          "sha256": "026003405fcfc8c519a886c370f5e6f0728ff8eb586cba7871225cd62e46b71a"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_strikers.png",
+          "sha256": "d4e4963718ef806fee94a92b1ec4f59d5ed9fe34de8aec489caf0ec669c83512"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-weighted_gloves.png",
+        "128": "art/icons/gear/exports/128/weapon-weighted_gloves.png",
+        "64": "art/icons/gear/exports/64/weapon-weighted_gloves.png",
+        "32": "art/icons/gear/exports/32/weapon-weighted_gloves.png"
+      },
+      "export_hashes": {
+        "256": "3a03f9bb561e05696b2dfb0b04381ffc5983a8d6abb1f4ae453a90469867052c",
+        "128": "4140008361b8e36984a2d8fd5b0e529954c7ed185d998b680644469455167557",
+        "64": "6a371f69334481951d74a757d7f443a07d0f246a393e53d91fe16d8623fdb9ad",
+        "32": "57a1614702ef9396069438a843ad6bee66941e9738fb5fde085c261ba4ada075"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

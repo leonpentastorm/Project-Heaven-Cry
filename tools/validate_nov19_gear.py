@@ -45,7 +45,7 @@ def validate(selected=None, complete=False):
         assert entry['source_path'] == a['source']['path'] and entry['native_dimensions'] == a['native_dimensions']
         assert entry['exports'] == a['exports'] and set(a['exports']) == {'256','128','64','32'}
         assert entry['sha256'] == a['sha256'] == sha(ROOT/a['path'])
-        for rec in [a, a['source'], a['master'], a['prompt'], *a['references']]:
+        for rec in [a, a['source'], a['master'], a['prompt'], *a['references'], *a.get('reference_sources', [])]:
             assert sha(ROOT/rec['path']) == rec['sha256'] == hashes[rec['path']], rec['path']
         with Image.open(ROOT/a['source']['path']) as native:
             assert list(native.size) == a['native_dimensions']

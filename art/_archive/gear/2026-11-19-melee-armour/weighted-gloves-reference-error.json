@@ -1,0 +1,5 @@
+{
+  "error": "referenced_image_paths must contain at most5 paths",
+  "generation_started": false,
+  "resolution": "Combine two existing material-reference images into one technical sheet; retain all six original reference paths and attach both family glove references."
+}

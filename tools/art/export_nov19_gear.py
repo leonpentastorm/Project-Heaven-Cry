@@ -157,6 +157,7 @@ def export(asset_id, source):
         'source': record(source_target), 'master': record(master),
         'prompt': record(BASE / f'prompts/{asset_id}.txt'),
         'references': [record(ROOT / p) for p in job['references']],
+        'reference_sources': [record(ROOT / p) for p in job.get('reference_sources', [])],
         'native_dimensions': asset['native_dimensions'], 'exports': exports,
         'export_hashes': {size: sha(ROOT / p) for size, p in exports.items()},
         'grade': 'standard', 'status': 'review-candidate', 'production_approved': False,
