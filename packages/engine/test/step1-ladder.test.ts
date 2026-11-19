@@ -66,7 +66,7 @@ describe('old saves: the perk re-pick (rules 1.70 item 5538)', () => {
     }
   });
   it('a table (old perk mapped, the 3-point passive a perk): the save holds the mapped perks within its steps, none lost or doubled, and is offered one re-pick', () => {
-    PT.perk_remap = { rev: 1, perks: { used_to_the_pain: 'scar_tissue' }, passives: { 3: 'used_to_the_pain' } };
+    PT.perk_remap = { rev: 1, perks: { used_to_the_pain: 'second_wind' }, passives: { 3: 'close_guard' } };
     const g = migrateLoaded(raw('save-develop-cb40e92-mid-fight'));
     for (const c of Object.values(g.characters) as Character[]) {
       const p = c.skills.pain_threshold || 0;
@@ -75,7 +75,7 @@ describe('old saves: the perk re-pick (rules 1.70 item 5538)', () => {
       const mine = c.perks.filter((x) => PERK[x.id]?.skills.includes('pain_threshold'));
       expect(stepsTaken(c, 'pain_threshold')).toBe(Math.min(stepsEarned(p, 'pain_threshold'), 2)); // the mapped perk, then the passive: as far as the steps reach
       expect(new Set(mine.map((x) => x.id)).size).toBe(mine.length); // none doubled
-      expect(mine[0].id).toBe('scar_tissue'); // the old perk first, mapped
+      expect(mine[0].id).toBe('second_wind'); // the old perk first, mapped
       expect(c.perkRepick!.pain_threshold).toEqual(mine);
       expect(pendingRepicks(c).map((x) => x.skill)).toEqual(['pain_threshold']); expect(levelUpDue(c)).toBe(true);
     }
@@ -83,21 +83,21 @@ describe('old saves: the perk re-pick (rules 1.70 item 5538)', () => {
     const once = JSON.stringify(g); expect(JSON.stringify(migrateLoaded(JSON.parse(once)))).toBe(once);
   });
   it('the re-pick through the reducer: keep closes it; choose again gives the steps back (preselection marked) and they are taken again', () => {
-    PT.perk_remap = { rev: 1, perks: { used_to_the_pain: 'scar_tissue' }, passives: { 3: 'used_to_the_pain' } };
-    const s = storyWith([{ skills: { pain_threshold: 5 }, perks: { used_to_the_pain: 'I' } }]), id = s.chars[0].id;
+    PT.perk_remap = { rev: 1, perks: { close_guard: 'second_wind' }, passives: { 3: 'close_guard' } };
+    const s = storyWith([{ skills: { pain_threshold: 5 }, perks: { close_guard: 'I' } }]), id = s.chars[0].id;
     const old = JSON.parse(JSON.stringify(s.g)); delete old.characters[id].perkRev;
     let g = migrateLoaded(old); const owner = g.characters[id].owner;
-    expect(g.characters[id].perkRepick.pain_threshold).toEqual([{ id: 'scar_tissue', tier: 'I' }, { id: 'used_to_the_pain', tier: 'I' }]);
+    expect(g.characters[id].perkRepick.pain_threshold).toEqual([{ id: 'second_wind', tier: 'I' }, { id: 'close_guard', tier: 'I' }]);
     const keep = apply(g, { type: 'levelup/perk-repick', charId: id, skill: 'pain_threshold', keep: true } as any, owner);
     expect(pendingRepicks(keep.characters[id])).toEqual([]); expect(stepsTaken(keep.characters[id], 'pain_threshold')).toBe(2);
     g = apply(g, { type: 'levelup/perk-repick', charId: id, skill: 'pain_threshold' } as any, owner);
     let c = g.characters[id];
     expect(stepsTaken(c, 'pain_threshold')).toBe(0); expect(pendingPerkSteps(c).find((x) => x.skill === 'pain_threshold')?.free).toBe(2);
-    expect(c.perkPreselect?.pain_threshold?.map((x: any) => x.id)).toEqual(['scar_tissue', 'used_to_the_pain']);
-    g = apply(g, { type: 'levelup/perk', charId: id, perkId: 'scar_tissue' } as any, owner);
-    g = apply(g, { type: 'levelup/perk', charId: id, perkId: 'scar_tissue' } as any, owner);
+    expect(c.perkPreselect?.pain_threshold?.map((x: any) => x.id)).toEqual(['second_wind', 'close_guard']);
+    g = apply(g, { type: 'levelup/perk', charId: id, perkId: 'second_wind' } as any, owner);
+    g = apply(g, { type: 'levelup/perk', charId: id, perkId: 'second_wind' } as any, owner);
     c = g.characters[id];
-    expect(c.perks.filter((x) => PERK[x.id]?.skills.includes('pain_threshold'))).toEqual([{ id: 'scar_tissue', tier: 'II' }]);
+    expect(c.perks.filter((x) => PERK[x.id]?.skills.includes('pain_threshold'))).toEqual([{ id: 'second_wind', tier: 'II' }]);
     expect(c.perkPreselect?.pain_threshold).toBeUndefined(); expect(pendingRepicks(c)).toEqual([]);
     expect(() => apply(g, { type: 'levelup/perk-repick', charId: id, skill: 'pain_threshold' } as any, owner)).toThrow(/No re-pick/);
   });
@@ -110,13 +110,13 @@ describe('old saves: the perk re-pick (rules 1.70 item 5538)', () => {
 });
 
 describe('the Strength step\'s tables (rules 1.73 items 5810, 5815): an old save at Guts 5 and Intimidation 5', () => {
-  it('Iron Stomach becomes Steady at its tier, Point Man fills the next step; Intimidation keeps Bone Talk and gets Marrow Talk; one re-pick each', () => {
+  it('Iron Stomach II becomes Steady II (both steps), no passive past the steps; Intimidation keeps Bone Talk and gets Marrow Talk; one re-pick each', () => {
     const s = storyWith([{ skills: { guts: 5, intimidation: 5 }, perks: { bone_talk: 'I' } }]), id = s.chars[0].id;
     const old = JSON.parse(JSON.stringify(s.g)); delete old.characters[id].perkRev; delete old.characters[id].perkRepick;
-    old.characters[id].perks = [{ id: 'iron_stomach', tier: 'I' }, { id: 'bone_talk', tier: 'I' }]; // what a 0.31 save holds
+    old.characters[id].perks = [{ id: 'iron_stomach', tier: 'II' }, { id: 'bone_talk', tier: 'I' }]; // what a 0.31 save holds
     const c: Character = migrateLoaded(old).characters[id];
     const of = (sk: string) => c.perks.filter((x) => PERK[x.id]?.skills.includes(sk));
-    expect(of('guts')).toEqual([{ id: 'steady', tier: 'I' }, { id: 'point_man', tier: 'I' }]); // the mapped perk, then the 5-point passive (the 3-point one is Steady already)
+    expect(of('guts')).toEqual([{ id: 'steady', tier: 'II' }]); // the mapped perk at its tier fills both steps (the passives do not fit)
     expect(of('intimidation')).toEqual([{ id: 'bone_talk', tier: 'I' }, { id: 'marrow_talk', tier: 'I' }]);
     expect(c.perks.some((x) => x.id === 'iron_stomach')).toBe(false);
     expect(pendingRepicks(c).map((x) => x.skill).sort()).toEqual(['guts', 'intimidation']);

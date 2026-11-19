@@ -146,7 +146,9 @@ export const nextLine = (id, p, who) => {
   const rank = { unlock: 0, fork: 0, call: 1, row: 2 };
   const own = s.lines.filter((l) => l.kind in rank).sort((x, y) => rank[x.kind] - rank[y.kind]).map((l) => l.text);
   const each = s.lines.filter((l) => l.kind === 'each').map((l) => l.text), extra = s.lines.filter((l) => l.kind === 'perk' || l.kind === 'mastered').map((l) => l.text);
-  return [...(own.length ? own : each.length ? each : r.head), ...extra].slice(0, 2).join(' · ');
+  // a perk step always shows (rules 1.73: a level whose only other lines are per-point rows keeps its perk on the card)
+  const base = own.length ? own : each.length ? each : r.head;
+  return [...base.slice(0, extra.length ? 1 : 2), ...extra].slice(0, 2).join(' · ');
 };
 /** What each point of a skill gives, in one line (the attribute page's skill cards): the head line's texts. */
 export const perPoint = (id) => roadMap(id).head.join(' · ') || (SK[id] && SK[id].summary) || '';

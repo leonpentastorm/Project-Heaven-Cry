@@ -22,7 +22,10 @@ describe('Bulwark: a fight starts with Guard (rules 1.29 section 2)', () => {
     expect(CLASS.defender.ranks.I.moves.map((m: any) => m.key)).toContain('class:defender.brace');
   });
   it('a Bulwark at every rank holds that Guard when the fight starts; no other class does', () => {
-    for (const n of [3, 5, 8]) { const f = fightWith([cls('defender', n)], [{}]); expect(f.pc.res!.guard, 'rank at ' + n).toBe(START_GUARD.value); }
+    // rules 1.73 item 5837: rank III's Reforge adds its Guard at the Bulwark's own turn start when it holds 1 or none
+    const RF: any = CLASS.defender.ranks.III.moves.find((m: any) => m.id === 'reforge').effects[0];
+    for (const n of [3, 5, 8]) { const f = fightWith([cls('defender', n)], [{}]); const mine = f.cb.order[f.cb.turn] === f.pc.id && f.cb.round >= 1;
+      expect(f.pc.res!.guard, 'rank at ' + n).toBe(Math.min(f.pc.resMax!.guard, START_GUARD.value + (n === 8 && mine && START_GUARD.value <= RF.if.self_res.guard.at_most ? RF.value : 0))); }
     for (const id of Object.keys(CLASS).filter((k) => k !== 'defender')) { const f = fightWith([cls(id, 8)], [{}]); expect(f.pc.res?.guard ?? 0, id).toBe(0); }
   });
   it('the Guard soaks a hit as any Guard does, and the cap is the class\'s (the start never passes it)', () => {

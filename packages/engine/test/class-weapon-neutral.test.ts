@@ -30,6 +30,7 @@ const DOOR: Record<string, Allow> = {
   'class:fighter.read_the_swing': { words: ['melee'], modes: ['melee'], why: 'Read the Swing (rules 1.60 item 4624): the door of Momentum, and the incoming attack: a melee attack that misses you (as Riposte answers one)' },
   'class:defender.anchor': { words: ['melee'], why: 'every opportunity attack is a melee strike (base rule), not the class\'s choice' },
   'class:defender.brace': { words: ['weapon attack'], why: 'Interpose answers an enemy\'s weapon attack (the incoming attack)' },
+  'class:defender.retort': { words: ['melee'], modes: ['melee'], why: 'Retort (rules 1.73 item 5836): the incoming attack, a foe\'s melee blow on the Bulwark (as Read the Swing reads the miss)' },
   // The Skirmisher's step (rules 1.30): neutral in rule; what stays is a door or a branch, never a lock.
   'class:marksman.fire_discipline': { modes: ['aimed'], why: 'the lead\'s ruling (13 Nov 2026): Aimed is the technique\'s own mode (+1 to hit); the 3-AP discount is any family\'s; Heat (the gun\'s door) is read from the weapon\'s heat_limit, not its family' },
   'class:marksman.special_ammo': { words: ['magazine', 'quiver'], code: 1, why: 'any weapon takes a load; the text says the form it takes (a magazine, a quiver, else a load of attacks); the one code read is the reload effect\'s art (fx cat)' },

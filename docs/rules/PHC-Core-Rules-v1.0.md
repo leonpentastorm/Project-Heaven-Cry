@@ -12633,3 +12633,52 @@ steps at 3, 5, 7 and 9, Mastered at 10). Every new number here is PROVISIONAL. I
 5818. **Bone Talk** is story only: its 2 AP fight version (a copy of Threaten) is cut.
 5819. **Measures** (the Breaker, solo and in a squad, before and after) and the Breaker's blade line are reported in the
     lane's hand-off (`docs/design/handoffs/0.32-LANE-BODY.md`); no number was fitted to a ceiling.
+
+**Endurance (Durability, Pain Threshold, Senses; the Bulwark)**
+
+5820. **Durability's ladder:** 1 the door (Guard: the technique with any weapon, Brace, melee rolling with Durability
+    while you hold Guard when it is higher), 2 **Challenge**, 3 perk step, 4 fork one (Provoke or Cover Them), 5
+    **Slam**, 6 and 7 perk steps, 8 fork two (Stand Fast or Drive), 9 perk step, 10 Last Wall. Its two perks (Weight of
+    the Wall, Answer in Kind) fill the four steps. Per point: +1 plate held (to the pool's cap), the Guard technique +1
+    plate from 2, and melee rolling with Durability while holding Guard.
+5821. **The door's surplus left it:** Set Against the Blow to Numb II (item 5827), Close Guard to a Pain Threshold perk
+    (item 5829), Retort to the Bulwark's rank II (item 5836), Second Wind to a Pain Threshold perk (item 5829); **Last
+    Plate is cut** (ruling layer section 3 item 3: the fourth "survive at 0" in one attribute). The shield's rule (a
+    shield adds a plate to each gain) stays a per-point row of the door for now (its numbers are `techniques.json
+    rules.guard`'s; moving it into the shields' item text is left).
+5822. **Challenge opens at Durability 2** (was 3); Slam stays at 5. Both stay effects of `durability.unlocks.1` (Called
+    Out's key `skill:durability.1#guard_challenge` still matches); rows at 2 and 5 name them on the ladder.
+5823. **Durability's forks** are unchanged (built in 0.30); fork two is at 8 (rules 1.70 item 5537).
+5824. **Last Plate is gone.** A blow that would drop a tank drops it (Still Standing, Last Wall and Bite the Bullet stay).
+5825. **Pain Threshold:** per point +1% plate soak (its feed), **+6% elemental resistance** (rules 1.70 item 5540; 60% at
+    10, the cap 80% with gear), +2 max HP a level. Four perks: **Numb**, **Still Standing**, **Second Wind**, **Close
+    Guard**; Mastered Walking Wounded.
+5826. **Removed:** Used to the Pain (to Second Wind at its tier) and Scar Tissue (to Numb at its tier); Numb and Still
+    Standing were the passives at 3 and 5. Old saves: `perk_remap` and one free re-pick. A removed id named by a remap
+    table is kept on the sheet at load until the remap maps it (it was dropped first: the lane's finding, fixed in
+    `character.ts migrateCharacterItems`); under the skill's first step it is taken off.
+5827. **Numb:** I, one injured limb no longer holds you back (the Narrator's: injuries carry no limb penalty the engine
+    reads); II, and while you hold Guard a critical on you lands as an ordinary hit, with no injury (Set Against the
+    Blow's rows; its Durability 3 gate is gone: the perk is the gate).
+5828. **Still Standing:** I, when your HP runs out, one more turn with 3 AP before you fall Downed (once a fight); II, 5
+    AP (PROVISIONAL 5). No engine half yet: a "last turn" has no general piece (Bite the Bullet's is its own handler); the
+    Narrator's until one is approved.
+5829. **Second Wind:** I, 2 AP once a fight, heal 25% of your max HP; II, and +2 Guard (PROVISIONAL 2). **Close Guard:**
+    I, an Answer: while you hold Guard, 25% of a foe's blow on an ally next to you comes to you and your plates soak it;
+    II, 50% (PROVISIONAL). The answer key `close_guard` is kept.
+5830. **Second Wind as a perk** (ruling layer section 3 item 3): the solo Bulwark is measured before and after; the
+    fallback (Second Wind as the Bulwark's rank II) is not built.
+5831. **Senses:** per point +1 to sense the unseen and +1 Warn reach; the Call as rules 1.70. Four perks: **Read the
+    Air**, **Bedside Manner** (kept), **Wind on the Skin** (kept), **Tremor**; Mastered Skin Map.
+5832. **Read the Air** (the passive at 3): I, a physical tell of someone close: +2 on your next social roll against them;
+    II, +4 (PROVISIONAL). The Narrator's. Old saves: Read the Air and Tremor as the passives at 3 and 5.
+5833. **Tremor** (the passive at 5): I, nothing moving on the ground in your Vision surprises you (the Narrator's: the
+    approach has no per-unit surprise piece); II, and +2 Guard when a fight starts (engine, PROVISIONAL 2).
+5834. **The Bulwark:** Brace, Called Out, Shrug It Off and Anchor are kept.
+5835. *(reserved)*
+5836. **Retort** replaces Unbroken at rank II (`class:defender.retort`; Unbroken is shelved, the Adamantile Knight's):
+    an Answer, a foe's melee blow on you while you hold Guard: 1 Guard and your reaction throw 50% of it back (its
+    armour applies). Its answer key `retort` is kept; it no longer needs Durability 3.
+5837. **Reforge** replaces the Reactive Plate at rank III (`class:defender.reforge`; the Reactive Plate is shelved): at
+    the start of your turn, holding 1 Guard or none, +2 Guard (PROVISIONAL 2). A rank III Bulwark's plates are the
+    door's (its soak a plate, met after the shields).

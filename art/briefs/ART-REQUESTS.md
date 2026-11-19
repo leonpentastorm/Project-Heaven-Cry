@@ -105,7 +105,7 @@ White-ink signs, the same set and style as the fight banners' `banner-fight-star
 
 Wick perk icons, white flat ink, 1024 × 1024, transparent, the STYLE-LOCK applies (master: `art/icons/traits/mind-without-fog.png`),
 the same set as the perks they sit beside on the skill page. Until drawn each shows the perk fallback the Perks tab already uses.
-Files go to `art/icons/perks/<id with dashes>.png` (catalog id `perk-<id>`). Steady (Guts) needs none: the Iron Stomach icon it absorbed is bound to it (`art/catalog.json` iron-stomach, data_id steady).
+Files go to `art/icons/perks/<id with dashes>.png` (catalog id `perk-<id>`). Steady (Guts) needs none: the Iron Stomach icon it absorbed is bound to it (`art/catalog.json` iron-stomach, data_id steady); likewise Numb takes Scar Tissue's icon and Second Wind Used to the Pain's.
 
 | id | skill | what it must show | direction |
 | --- | --- | --- | --- |
@@ -113,6 +113,11 @@ Files go to `art/icons/perks/<id with dashes>.png` (catalog id `perk-<id>`). Ste
 | `unflinching` | Guts | Wick taking a swing without blinking, Momentum's ring on him | a blade glancing off at the last moment; his eyes open |
 | `marrow_talk` | Intimidation | Wick leaning over a table, one finger on a bone | a soup bowl and a bone: the Papa's menace, courteous |
 | `stare_down` | Intimidation | Wick's stare across a room; the other figure frozen mid-step | two figures, a line of tension between the eyes |
+| `still_standing` | Pain Threshold | Wick on one knee, already rising, one hand on the ground | the last breath before the fall: grit, not glory |
+| `close_guard` | Pain Threshold | Wick's plated arm across a smaller figure beside him | the blow lands on his plates, not on the friend |
+| `read_the_air` | Senses | Wick close to someone, eyes on a bead of sweat at their temple | intimate distance, one detail picked out |
+| `tremor` | Senses | Wick's palm flat on the ground, lines of vibration coming in | the ground speaks first |
+| class moves `retort`, `reforge` (the Bulwark) | Durability | Retort: plates throwing a blow back; Reforge: a hammer on a plate | the move-icon set of the nine doors (`art/icons/moves/`, catalog `move-<id>`) |
 
 ### 2. Outburst feelings and modules
 

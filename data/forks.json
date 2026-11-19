@@ -84,7 +84,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "First foe to hit your plates each round is Taunted for {=effects.1.rounds} round, no save"
     },
     {
       "id": "fork.guard.cover_them",
@@ -160,7 +161,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "{=effects.0.and.0.value|abs} Guard and your reaction: the first ranged hit each round on an ally within {=effects.0.if.target_within} tiles lands on you"
     },
     {
       "id": "fork.guard.stand_fast",
@@ -182,7 +184,8 @@
       "effects": [],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Slam pushes nobody: every foe within {=numbers.within} tiles is Taunted for {=numbers.rounds} round and saves or is Off Balance"
     },
     {
       "id": "fork.guard.drive",
@@ -237,7 +240,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Slam pushes {=numbers.tiles} tiles · Off Balance save {=effects.0.value|signed} · each foe floored gives a plate (max {=effects.1.limit.n} a turn)"
     },
     {
       "id": "fork.shadow.light_fingers",

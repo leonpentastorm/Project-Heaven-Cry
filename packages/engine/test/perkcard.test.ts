@@ -12,11 +12,11 @@ const card = (f: F, key: string) => cards(f).find((k) => k.key === key)!;
 
 describe('perkCards', () => {
   it('a passive with a declared trigger waits for it; one with none is simply on; a standing one works', () => {
-    const f = fightWith([{ perks: { used_to_the_pain: 'I', bulwark: 'I' }, traits: ['pain_eater'] }], [{ at: 'F6' }]); f.turn(f.pc);
-    expect(card(f, 'perk:used_to_the_pain')).toMatchObject({ shelf: 'always', state: 'waiting', trigger: 'the first time you are hit in each fight', standing: false, button: false });
+    const f = fightWith([{ perks: { roll_with_it: 'I', bulwark: 'I' }, traits: ['pain_eater'] }], [{ at: 'F6' }]); f.turn(f.pc);
+    expect(card(f, 'perk:roll_with_it')).toMatchObject({ shelf: 'always', state: 'waiting', trigger: 'when an attack against you misses', standing: false, button: false }); // rules 1.73: Used to the Pain is removed
     expect(card(f, 'perk:bulwark')).toMatchObject({ shelf: 'always', state: 'active', trigger: '' });
     expect(card(f, 'trait:pain_eater')).toMatchObject({ shelf: 'always', state: 'active', standing: true });
-    expect(card(f, 'perk:used_to_the_pain').text).toBe(cardText(holdersOf({ u: f.pc, c: Object.values(f.g.characters)[0], cb: f.cb }).find((h) => h.key === 'perk:used_to_the_pain')!));
+    expect(card(f, 'perk:roll_with_it').text).toBe(cardText(holdersOf({ u: f.pc, c: Object.values(f.g.characters)[0], cb: f.cb }).find((h) => h.key === 'perk:roll_with_it')!));
   });
   it('state follows what the engine keeps: a spent use is "used" with its window; a private count never says ready', () => {
     const f = fightWith([{ perks: { into_the_dark: 'I' } }], [{ at: 'F6' }]); f.turn(f.pc);
@@ -27,15 +27,15 @@ describe('perkCards', () => {
     expect(PERK_CARDS.private_count).toContain('skill:composure.5');
   });
   it('an item whose button is up is left to USE NOW; an enemy\'s items are not the squad\'s to read; class moves have their own tab', () => {
-    const f = fightWith([{ perks: { used_to_the_pain: 'I' }, classId: 'bard' }], [{ at: 'F6' }]); f.turn(f.pc);
-    expect(cards(f, f.pc, { up: ['perk:used_to_the_pain'] }).map((k) => k.key)).not.toContain('perk:used_to_the_pain');
+    const f = fightWith([{ perks: { roll_with_it: 'I' }, classId: 'bard' }], [{ at: 'F6' }]); f.turn(f.pc);
+    expect(cards(f, f.pc, { up: ['perk:roll_with_it'] }).map((k) => k.key)).not.toContain('perk:roll_with_it');
     expect(cards(f, f.foe)).toEqual([]);
     expect(cards(f).every((k) => k.kind !== 'class')).toBe(true);
-    const h = withGame(f.g, () => holdersOf({ u: f.pc, c: Object.values(f.g.characters)[0], cb: f.cb }).find((x) => x.key === 'perk:used_to_the_pain')!);
+    const h = withGame(f.g, () => holdersOf({ u: f.pc, c: Object.values(f.g.characters)[0], cb: f.cb }).find((x) => x.key === 'perk:roll_with_it')!);
     expect(shelfOf(h, true)).toBe('use'); expect(shelfOf(h, false)).toBe('always');
   });
   it('reading the card changes nothing', () => {
-    const f = fightWith([{ perks: { used_to_the_pain: 'I', bulwark: 'II' }, traits: ['pain_eater', 'gambler'] }], [{ at: 'F6' }]); f.turn(f.pc);
+    const f = fightWith([{ perks: { roll_with_it: 'I', bulwark: 'II' }, traits: ['pain_eater', 'gambler'] }], [{ at: 'F6' }]); f.turn(f.pc);
     f.pc.uses ||= {}; const before = JSON.stringify(f.g);
     cards(f); cards(f);
     expect(JSON.stringify(f.g)).toBe(before);

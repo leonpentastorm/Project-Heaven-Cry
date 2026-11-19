@@ -12,16 +12,6 @@
   ],
   "items": [
     {
-      "id": "perk:used_to_the_pain",
-      "tier": "I",
-      "trigger": "the first time you are hit in each fight"
-    },
-    {
-      "id": "perk:used_to_the_pain",
-      "tier": "II",
-      "trigger": "the first time you are hit in each fight"
-    },
-    {
       "id": "perk:wind_on_the_skin",
       "tier": "I",
       "trigger": "when a fight starts",

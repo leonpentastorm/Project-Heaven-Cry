@@ -27,14 +27,15 @@ describe('the data of the pass', () => {
     const per: Record<string, number> = {}; for (const p of PERKS as any[]) if (p.tier === 'acquired') per[p.skills[0]] = (per[p.skills[0]] || 0) + 1;
     expect(Object.keys(per).length).toBe(27);
     for (const [sk, n] of Object.entries(per)) expect([2, 4], sk).toContain((SKILL as any)[sk].slot === 'alpha' ? n + 2 : n); // an alpha: exactly two
-    for (const sk of ['guts', 'intimidation']) expect(per[sk], sk).toBe(4); // rules 1.73 items 5810 and 5815 (the Strength step)
+    for (const sk of ['guts', 'intimidation', 'pain_threshold', 'sensory']) expect(per[sk], sk).toBe(4); // rules 1.73 items 5810, 5815 (Strength), 5826, 5832 (Endurance)
     expect(P.iron_stomach).toBeUndefined(); // folded into Steady (rules 1.73 item 5811)
   });
   it('every acquired and Mastered perk carries its skill\'s slot (skill_greek)', () => {
     for (const p of PERKS as any[]) if (p.tier === 'acquired' || p.tier === 'mastered') expect(p.skill_greek, p.id).toBe((SKILL as any)[p.skills[0]].slot);
   });
   it('no alpha or beta perk gives or takes AP in the turn any more (15.7); the own-cost discounts stay', () => {
-    const gone = ['used_to_the_pain', 'into_the_dark', 'rally_cry', 'clean_hands', 'many_hands', 'walking_wounded', 'you_get_used_to_it']; // rules 1.56: blueprint is Wake of the Kill (1 AP on a Figment's kill: the doc's ruling, spec item 4215)
+    const gone = ['into_the_dark', // rules 1.73: Used to the Pain is removed
+       'rally_cry', 'clean_hands', 'many_hands', 'walking_wounded', 'you_get_used_to_it']; // rules 1.56: blueprint is Wake of the Kill (1 AP on a Figment's kill: the doc's ruling, spec item 4215)
     for (const id of gone) {
       const p = P[id], fx = [...(p.effects || []), ...(p.tiers?.I?.effects || []), ...(p.tiers?.II?.effects || [])];
       expect(fx.some((e: any) => e.op === 'stat_mod' && e.stat === 'ap'), id).toBe(false);

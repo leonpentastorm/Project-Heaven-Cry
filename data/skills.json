@@ -100,14 +100,6 @@
           {
             "at": "each from 2",
             "text": "Guard technique: +{=per_point.numbers.guard_per_point} plate"
-          },
-          {
-            "at": "at 3",
-            "text": "Challenge · Retort · Set Against the Blow"
-          },
-          {
-            "at": "at 5",
-            "text": "Slam · Last Plate"
           }
         ]
       },
@@ -122,7 +114,7 @@
           "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your melee attacks (a shield's own strike and its follow included) roll with Durability's modifier in place of the weapon's own skill when Durability's is higher (never added on top: the tank hits through its door); a gun, a bow or a throw rolls with its own skill. The blow's damage still grows with the weapon's own attribute, never with Durability. Set Against the Blow (Durability {=unlocks.1.effects.1.if.self_skill.durability}): while you hold Guard, a critical hit on you lands as an ordinary hit (its critical multiplier is taken out) and leaves no injury. Close Guard (an Answer): while you hold Guard, {=unlocks.1.effects.3.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it. Retort (Durability {=unlocks.1.effects.5.if.self_skill.durability}, an Answer): a foe hits you in melee while you hold Guard: {=unlocks.1.effects.5.and.0.value|abs} Guard and your reaction throw {=unlocks.1.amounts.retort.per.0.value|pct}% of the blow back at it (its armour applies). Challenge (Durability {=unlocks.1.effects.6.if.self_skill.durability}): {=unlocks.1.effects.6.ap} AP and {=unlocks.1.effects.6.res.guard} Guard, named at one foe you see within {=unlocks.1.effects.6.reach.tiles} tiles: every foe you see within {=unlocks.1.effects.6.effects.0.targets.within} tiles makes a Heart save or is Taunted (a Boss too: it is never forced to attack you, but it is worse at hitting anyone else). Last Plate (Durability {=unlocks.1.effects.4.if.self_skill.durability}): once a fight, a blow that would drop you leaves you on {=unlocks.1.effects.4.value} HP and breaks every plate. Slam (Durability {=unlocks.1.effects.7.if.self_skill.durability}): {=unlocks.1.effects.7.ap} AP and {=unlocks.1.effects.7.res.guard} Guard: every foe next to you is pushed {=unlocks.1.effects.7.effects.1.tiles} tile (a Boss holds its ground) and makes a Body save or is Off Balance.",
+          "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your melee attacks (a shield's own strike and its follow included) roll with Durability's modifier in place of the weapon's own skill when Durability's is higher (never added on top: the tank hits through its door); a gun, a bow or a throw rolls with its own skill. The blow's damage still grows with the weapon's own attribute, never with Durability. Challenge (Durability {=unlocks.1.effects.1.if.self_skill.durability}): {=unlocks.1.effects.1.ap} AP and {=unlocks.1.effects.1.res.guard} Guard, named at one foe you see within {=unlocks.1.effects.1.reach.tiles} tiles: every foe you see within {=unlocks.1.effects.1.effects.0.targets.within} tiles makes a Heart save or is Taunted (a Boss too: it is never forced to attack you, but it is worse at hitting anyone else). Slam (Durability {=unlocks.1.effects.2.if.self_skill.durability}): {=unlocks.1.effects.2.ap} AP and {=unlocks.1.effects.2.res.guard} Guard: every foe next to you is pushed {=unlocks.1.effects.2.effects.1.tiles} tile (a Boss holds its ground) and makes a Body save or is Off Balance.",
           "player": "plates soak hits · melee rolls with Durability when higher",
           "effects": [
             {
@@ -139,142 +131,6 @@
               "if_higher": true
             },
             {
-              "op": "damage_mult",
-              "when": "dealing",
-              "if": {
-                "actor": "foe",
-                "target": "self",
-                "crit": true,
-                "by_hit": true,
-                "self_has_res": [
-                  "guard"
-                ],
-                "self_skill": {
-                  "durability": 3
-                }
-              },
-              "value": 1,
-              "label": "Set Against the Blow",
-              "fx": {
-                "k": "guard_move",
-                "move": "crit_turned"
-              },
-              "say": "{self} sets against the blow: the critical lands as an ordinary hit (Set Against the Blow).",
-              "and": [
-                {
-                  "op": "mark",
-                  "flag": "crit_turned"
-                }
-              ],
-              "replaces": "critical"
-            },
-            {
-              "op": "cancel",
-              "when": "injury",
-              "if": {
-                "actor": "foe",
-                "flag": "crit_turned"
-              },
-              "label": "Set Against the Blow",
-              "why": "Set Against the Blow",
-              "and": [
-                {
-                  "op": "mark",
-                  "flag": "crit_turned",
-                  "clear": true
-                }
-              ]
-            },
-            {
-              "op": "redirect",
-              "when": "taking",
-              "if": {
-                "target": "ally",
-                "target_within": 1,
-                "actor": "foe",
-                "by_hit": true,
-                "self_has_res": [
-                  "guard"
-                ],
-                "self_alive": true,
-                "answer_on": "close_guard"
-              },
-              "share": 0.25,
-              "label": "Close Guard",
-              "fx": {
-                "k": "guard_move",
-                "move": "close_guard"
-              },
-              "say": "{self} takes part of the blow on {target} (Close Guard).",
-              "type": "physical"
-            },
-            {
-              "op": "floor",
-              "when": "would_drop",
-              "if": {
-                "by_hit": true,
-                "open": true,
-                "self_skill": {
-                  "durability": 5
-                }
-              },
-              "value": 1,
-              "limit": {
-                "per": "per_combat",
-                "n": 1,
-                "key": "last_plate"
-              },
-              "label": "Last Plate",
-              "and": [
-                {
-                  "op": "resource",
-                  "resource": "guard",
-                  "value": "zero"
-                }
-              ],
-              "fx": {
-                "k": "guard_move",
-                "move": "last_plate"
-              },
-              "say": "{self} holds on the last plate: {=unlocks.1.effects.4.value} HP, every plate broken (Last Plate)."
-            },
-            {
-              "op": "deal",
-              "when": "damaged",
-              "if": {
-                "actor": "foe",
-                "melee": true,
-                "by_hit": true,
-                "self_has_res": [
-                  "guard"
-                ],
-                "self_alive": true,
-                "self_skill": {
-                  "durability": 3
-                },
-                "answer_on": "retort"
-              },
-              "amount": "retort",
-              "target": "actor",
-              "limit": {
-                "reaction": 1,
-                "kind": "attack"
-              },
-              "label": "Retort",
-              "and": [
-                {
-                  "op": "resource",
-                  "resource": "guard",
-                  "value": -1
-                }
-              ],
-              "fx": {
-                "k": "guard_move",
-                "move": "retort"
-              },
-              "say": "{self} throws the blow back at {actor}{then} (Retort)."
-            },
-            {
               "op": "grant_action",
               "action": "guard_challenge",
               "label": "Challenge",
@@ -288,11 +144,11 @@
               ],
               "if": {
                 "self_skill": {
-                  "durability": 3
+                  "durability": 2
                 }
               },
               "why": {
-                "self_skill": "Challenge needs Durability {=unlocks.1.effects.6.if.self_skill.durability}."
+                "self_skill": "Challenge needs Durability {=unlocks.1.effects.1.if.self_skill.durability}."
               },
               "reach": {
                 "tiles": 2,
@@ -338,7 +194,7 @@
                 }
               },
               "why": {
-                "self_skill": "Slam needs Durability {=unlocks.1.effects.7.if.self_skill.durability}."
+                "self_skill": "Slam needs Durability {=unlocks.1.effects.2.if.self_skill.durability}."
               },
               "effects": [
                 {
@@ -435,45 +291,20 @@
                   }
                 }
               ]
-            },
-            {
-              "op": "mark",
-              "when": "turn_end",
-              "flag": "crit_turned",
-              "clear": true,
-              "if": {
-                "flag": "crit_turned"
-              },
-              "label": "Set Against the Blow"
-            },
-            {
-              "op": "mark",
-              "when": "hit",
-              "flag": "crit_turned",
-              "clear": true,
-              "if": {
-                "actor": "foe",
-                "target": "self",
-                "flag": "crit_turned"
-              },
-              "label": "Set Against the Blow"
             }
           ],
-          "amounts": {
-            "retort": {
-              "kind": "damage",
-              "base": 0,
-              "per": [
-                {
-                  "of": "event:amount",
-                  "value": 0.5
-                }
-              ],
-              "type": "physical",
-              "armour": "full",
-              "provisional": true
-            }
-          }
+          "source": "rules 1.73 (Body), 0.32: the Endurance step (item 5821): Set Against the Blow, Close Guard, Retort and Last Plate left the door"
+        },
+        "2": {
+          "name": "Challenge",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "You can Challenge: Guard spent to make every foe you see close by save or be Taunted (the door's own verb, on Guard).",
+          "player": "Challenge: foes close by save or are Taunted",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.73 (Body), 0.32: the Endurance step (item 5822; the verb is unlocks.1 effect 1, its key kept for Called Out)"
         },
         "3": {
           "name": "Mastery 1",
@@ -499,46 +330,15 @@
           "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "5": {
-          "name": "Second Wind",
+          "name": "Slam",
           "category": "Active Skill",
           "mastery": 0,
-          "text": "{=unlocks.5.effects.0.ap} AP, once per combat: recover {=unlocks.5.amounts.heal.per.0.value|pct}% of your max HP.",
-          "player": "{=.effects.0.ap} AP, once a fight: heal {=.amounts.heal.per.0.value|pct}% max HP",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "second_wind",
-              "label": "Second Wind",
-              "ap": 2,
-              "uses": "per_combat",
-              "scope": [
-                "combat"
-              ],
-              "effects": [
-                {
-                  "op": "mend",
-                  "when": "acted",
-                  "amount": "heal",
-                  "say": "Second Wind{then}."
-                }
-              ]
-            }
-          ],
-          "amounts": {
-            "heal": {
-              "kind": "heal",
-              "base": 0,
-              "per": [
-                {
-                  "of": "self:max_hp",
-                  "value": 0.25
-                }
-              ],
-              "heal_kind": "perk"
-            }
-          },
+          "text": "You can Slam: Guard spent to push every foe next to you away and knock it Off Balance (the door's big verb, on Guard).",
+          "player": "Slam: push every foe beside you, Off Balance",
+          "effects": [],
           "adjudication": "engine",
-          "item": true
+          "provisional": true,
+          "source": "rules 1.73 (Body), 0.32: the Endurance step (item 5822)"
         },
         "7": {
           "name": "Mastery 3",
@@ -678,17 +478,10 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Numb",
-          "category": "Passive",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Ignore the penalty from one injured limb (arm or leg injury).",
-          "player": "One injured limb no longer slows you",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "ignored_limb_injuries",
-              "value": 1
-            },
             {
               "op": "perk_choice",
               "skill": "pain_threshold",
@@ -698,17 +491,14 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Still Standing",
-          "category": "AP Mod",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "When you drop to 0 HP, take one more turn with {=unlocks.5.effects.0.ap} AP before you fall Downed.",
-          "player": "When your HP runs out: one more turn with {=.effects.0.ap} AP before you fall Downed",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "still_standing",
-              "ap": 3,
-              "uses": "per_combat"
+              "op": "perk_choice",
+              "skill": "pain_threshold",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -799,6 +589,18 @@
         "bad_for": "anyone who still likes their limbs and doesn't want to lose one because they \"forgot fire is hot.\"",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "used_to_the_pain": "second_wind",
+          "scar_tissue": "numb"
+        },
+        "passives": {
+          "3": "numb",
+          "5": "still_standing"
+        },
+        "note": "rules 1.73 item 5826: Numb and Still Standing (free at 3 and 5) became perks; Used to the Pain maps to Second Wind, Scar Tissue to Numb"
       }
     },
     {
@@ -827,41 +629,27 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Read the Air",
-          "category": "Conversation Quirk",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Learn one physical tell of an NPC you're close to (pulse, sweat, scent). +{=unlocks.3.effects.1.value} on your next social roll against them.",
-          "player": "{=.effects.1.value} on your next social roll against someone close",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "narrator",
-              "note": "Narrator supplies the tell"
-            },
-            {
-              "op": "skill_mod_tag",
-              "tag": "social:next_roll_vs_target",
-              "value": 2
-            },
             {
               "op": "perk_choice",
               "skill": "sensory",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Tremor",
-          "category": "Combat Starter",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Nothing moving on the ground within your Vision range can ambush you: you act in the surprise round.",
-          "player": "Act in the surprise round against anything moving on the ground in sight",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "act_in_surprise_round",
-              "ap": 3,
-              "uses": "per_combat"
+              "op": "perk_choice",
+              "skill": "sensory",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -953,6 +741,15 @@
         "bad_for": "death metal fans, people who can't take the cold, elves of every kind.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {},
+        "passives": {
+          "3": "read_the_air",
+          "5": "tremor"
+        },
+        "note": "rules 1.73 item 5832: Read the Air and Tremor (free at 3 and 5) became perks"
       }
     },
     {

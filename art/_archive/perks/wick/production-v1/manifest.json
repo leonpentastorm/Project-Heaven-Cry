@@ -54,7 +54,7 @@
     },
     {
       "id": "used-to-the-pain",
-      "data_id": "used_to_the_pain",
+      "data_id": "second_wind",
       "name": "Used to the Pain",
       "family": "perks",
       "order": 3,
@@ -77,7 +77,7 @@
     },
     {
       "id": "scar-tissue",
-      "data_id": "scar_tissue",
+      "data_id": "numb",
       "name": "Scar Tissue",
       "family": "perks",
       "order": 4,

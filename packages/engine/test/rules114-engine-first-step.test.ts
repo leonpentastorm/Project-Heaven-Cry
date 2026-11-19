@@ -52,11 +52,12 @@ describe('the 19 relabels (item 1101)', () => {
     for (const id of A_PERKS) expect(perkOf(id).adjudication, id).toBe('engine');
     for (const id of A_TRAITS) expect(traitOf(id).adjudication, id).toBe('engine');
   });
-  it('the labels of the 184: 129 engine, 47 hybrid, 8 narrator (rules 1.73, the Strength step; rules 1.14 left 119, 46, 15; the truth pass of 12 Nov 2026, spec item 1514, moved fifteen; rules 1.56 moved Long Dark and Many-Eyed Dream to engine)', () => {
+  it('the labels of the 188: 129 engine, 49 hybrid, 10 narrator (rules 1.73, the Strength and Endurance steps; rules 1.14 left 119, 46, 15; the truth pass of 12 Nov 2026, spec item 1514, moved fifteen; rules 1.56 moved Long Dark and Many-Eyed Dream to engine)', () => {
     const all = [...PERKS, ...TRAITS], n = (l: string) => all.filter((x) => x.adjudication === l).length;
     // rules 1.73 (the Strength step): +Steady, Point Man, Marrow Talk (hybrid), +Unflinching, Stare Down (engine), -Iron Stomach (engine); Bone Talk hybrid -> narrator
-    expect(all.length).toBe(184);
-    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([129, 47, 8]);
+    // rules 1.73 (the Endurance step): +Numb, Tremor (hybrid), +Still Standing, Read the Air (narrator), +Second Wind, Close Guard (engine), -Used to the Pain, Scar Tissue (engine)
+    expect(all.length).toBe(188);
+    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([129, 49, 10]);
   });
   it('no relabelled card still hands a rule to the Narrator: Talks Broke Down gives its timing rule, Verse of War has no audit', () => {
     for (const t of ['I', 'II']) { expect(perkOf('talks_broke_down').tiers[t].text).not.toMatch(/Narrator/); expect(perkOf('talks_broke_down').tiers[t].text).toMatch(/same story round .* or the round after/); }

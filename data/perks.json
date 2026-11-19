@@ -315,8 +315,8 @@
       "provisional": true
     },
     {
-      "id": "used_to_the_pain",
-      "name": "Used to the Pain",
+      "id": "numb",
+      "name": "Numb",
       "tier": "acquired",
       "perk_type": "passive",
       "skills": [
@@ -332,11 +332,12 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: The first time you are hit in each fight: if that hit took less than 20% of your max HP, the next hit against you deals {=effects.0.value_pct|abs}% less damage. A heavier first hit gives you nothing. II: The first time you are hit in each fight: if that hit took less than 30% of your max HP, the next hit against you deals 40% less damage. A heavier first hit gives you nothing.",
+      "text": "I: One injured limb no longer holds you back. II: One injured limb no longer holds you back. While you hold Guard, a critical hit on you lands as an ordinary hit and leaves no injury.",
       "effects": [
-        {"op": "damage_mod", "value_pct": -25, "when": "taking", "if": {"flag": "hard", "by_hit": true, "actor": "foe", "amount_above": 0}, "and": [{"op": "mark", "flag": "hard", "clear": true}], "say": "{self} was ready for that one (Used to the Pain): {=.value_pct|abs}% less."},
-        {"op": "mark", "flag": "hard", "when": "damaged", "if": {"by_hit": true, "actor": "foe", "no_flag": "seen", "amount_share_below": 0.2}, "say": "{self} takes it in stride (Used to the Pain): the next hit deals {=effects.0.value_pct|abs}% less."},
-        {"op": "mark", "flag": "seen", "when": "damaged", "if": {"by_hit": true, "actor": "foe"}}
+        {
+          "op": "narrator",
+          "note": "One limb injury of this character's gives no penalty (no engine half yet: rules 1.73 item 5827, injuries carry no limb penalty the engine reads)."
+        }
       ],
       "tiers": {
         "I": {
@@ -347,12 +348,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "The first time you are hit in each fight: if that hit took less than 20% of your max HP, the next hit against you deals {=tiers.I.effects.0.value_pct|abs}% less damage. A heavier first hit gives you nothing.",
-          "short": "First hit under {=tiers.I.effects.1.if.amount_share_below|pct}% max HP: next hit −{=tiers.I.effects.0.value_pct|abs}%",
+          "text": "One injured limb no longer holds you back.",
+          "short": "One injured limb no longer holds you back",
           "effects": [
-            {"op": "damage_mod", "value_pct": -25, "when": "taking", "if": {"flag": "hard", "by_hit": true, "actor": "foe", "amount_above": 0}, "and": [{"op": "mark", "flag": "hard", "clear": true}], "say": "{self} was ready for that one (Used to the Pain): {=.value_pct|abs}% less."},
-            {"op": "mark", "flag": "hard", "when": "damaged", "if": {"by_hit": true, "actor": "foe", "no_flag": "seen", "amount_share_below": 0.2}, "say": "{self} takes it in stride (Used to the Pain): the next hit deals {=tiers.I.effects.0.value_pct|abs}% less."},
-            {"op": "mark", "flag": "seen", "when": "damaged", "if": {"by_hit": true, "actor": "foe"}}
+            {
+              "op": "narrator",
+              "note": "One limb injury of this character's gives no penalty (no engine half yet: rules 1.73 item 5827, injuries carry no limb penalty the engine reads)."
+            }
           ]
         },
         "II": {
@@ -363,30 +365,98 @@
             }
           ],
           "ap_cost": null,
-          "text": "The first time you are hit in each fight: if that hit took less than 30% of your max HP, the next hit against you deals {=tiers.II.effects.0.value_pct|abs}% less damage. A heavier first hit gives you nothing.",
-          "short": "Under {=tiers.II.effects.1.if.amount_share_below|pct}% · next hit −{=tiers.II.effects.0.value_pct|abs}%",
+          "text": "One injured limb no longer holds you back. While you hold Guard, a critical hit on you lands as an ordinary hit and leaves no injury.",
+          "short": "Holding Guard: a critical on you is an ordinary hit, no injury",
           "effects": [
-            {"op": "damage_mod", "value_pct": -40, "when": "taking", "if": {"flag": "hard", "by_hit": true, "actor": "foe", "amount_above": 0}, "and": [{"op": "mark", "flag": "hard", "clear": true}], "say": "{self} was ready for that one (Used to the Pain): {=.value_pct|abs}% less."},
-            {"op": "mark", "flag": "hard", "when": "damaged", "if": {"by_hit": true, "actor": "foe", "no_flag": "seen", "amount_share_below": 0.3}, "say": "{self} takes it in stride (Used to the Pain): the next hit deals {=tiers.II.effects.0.value_pct|abs}% less."},
-            {"op": "mark", "flag": "seen", "when": "damaged", "if": {"by_hit": true, "actor": "foe"}}
+            {
+              "op": "narrator",
+              "note": "One limb injury of this character's gives no penalty (no engine half yet: rules 1.73 item 5827)."
+            },
+            {
+              "op": "damage_mult",
+              "when": "dealing",
+              "if": {
+                "actor": "foe",
+                "target": "self",
+                "crit": true,
+                "by_hit": true,
+                "self_has_res": [
+                  "guard"
+                ]
+              },
+              "value": 1,
+              "label": "Numb",
+              "fx": {
+                "k": "guard_move",
+                "move": "crit_turned"
+              },
+              "say": "{self} sets against the blow: the critical lands as an ordinary hit (Numb).",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "crit_turned"
+                }
+              ],
+              "replaces": "critical"
+            },
+            {
+              "op": "cancel",
+              "when": "injury",
+              "if": {
+                "actor": "foe",
+                "flag": "crit_turned"
+              },
+              "label": "Numb",
+              "why": "Numb",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "crit_turned",
+                  "clear": true
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "flag": "crit_turned",
+              "clear": true,
+              "if": {
+                "flag": "crit_turned"
+              },
+              "label": "Numb"
+            },
+            {
+              "op": "mark",
+              "when": "hit",
+              "flag": "crit_turned",
+              "clear": true,
+              "if": {
+                "actor": "foe",
+                "target": "self",
+                "flag": "crit_turned"
+              },
+              "label": "Numb"
+            }
           ],
           "replaces_tier_I": true,
           "after": "I"
         }
       },
-      "adjudication": "engine",
-      "recovered": "recovered",
+      "adjudication": "hybrid",
+      "recovered": null,
       "tags": [
-        "survival",
+        "injury",
         "defense"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Endurance step"
     },
     {
-      "id": "scar_tissue",
-      "name": "Scar Tissue",
+      "id": "still_standing",
+      "name": "Still Standing",
       "tier": "acquired",
-      "perk_type": "passive",
+      "perk_type": "ap_mod",
       "skills": [
         "pain_threshold"
       ],
@@ -400,15 +470,11 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Each hit that wounds you in a fight gives you {=effects.0.value|pct}% less Elemental damage taken for the rest of that fight, up to 25%. II: Each hit that wounds you in a fight gives you {=effects.0.value|pct}% less Elemental damage taken and +{=effects.0.value|pct}% Injury resistance for the rest of that fight, up to 40% each.",
+      "text": "I: When your HP runs out, take one more turn with {=tiers.I.numbers.ap} AP before you fall Downed (once a fight). II: When your HP runs out, take one more turn with {=tiers.II.numbers.ap} AP before you fall Downed (once a fight).",
       "effects": [
         {
-          "op": "damage_reduction",
-          "type": "elemental",
-          "value": 0.05,
-          "per": "wound_taken_this_combat",
-          "max": 0.25,
-          "duration": "combat"
+          "op": "narrator",
+          "note": "Once a fight, when this character's HP runs out it takes one more turn (3 AP) before it falls Downed (no engine half yet: rules 1.73 item 5828, a last turn has no general piece)."
         }
       ],
       "tiers": {
@@ -420,16 +486,120 @@
             }
           ],
           "ap_cost": null,
-          "text": "Each hit that wounds you in a fight gives you {=tiers.I.effects.0.value|pct}% less Elemental damage taken for the rest of that fight, up to 25%.",
-          "short": "Each wounding hit: −{=tiers.I.effects.0.value|pct}% elemental damage taken, up to {=tiers.I.effects.0.max|pct}%",
+          "text": "When your HP runs out, take one more turn with {=tiers.I.numbers.ap} AP before you fall Downed (once a fight).",
+          "short": "HP out: one more turn with {=tiers.I.numbers.ap} AP, once a fight",
           "effects": [
             {
-              "op": "damage_reduction",
-              "type": "elemental",
-              "value": 0.05,
-              "per": "wound_taken_this_combat",
-              "max": 0.25,
-              "duration": "combat"
+              "op": "narrator",
+              "note": "Once a fight, when this character's HP runs out it takes one more turn (3 AP) before it falls Downed (no engine half yet: rules 1.73 item 5828, a last turn has no general piece)."
+            }
+          ],
+          "numbers": {
+            "ap": 3
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "pain_threshold",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "When your HP runs out, take one more turn with {=tiers.II.numbers.ap} AP before you fall Downed (once a fight).",
+          "short": "That turn has {=tiers.II.numbers.ap} AP",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, with 5 AP (no engine half yet: rules 1.73 item 5828)."
+            }
+          ],
+          "numbers": {
+            "ap": 5
+          },
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "survival"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Endurance step",
+      "numbers": {
+        "ap": 3
+      }
+    },
+    {
+      "id": "second_wind",
+      "name": "Second Wind",
+      "tier": "acquired",
+      "perk_type": "active_skill",
+      "skills": [
+        "pain_threshold"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "pain_threshold",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": 2,
+      "uses": "per_combat",
+      "text": "I: {=tiers.I.effects.0.ap} AP, once a fight: heal {=amounts.heal.per.0.value|pct}% of your max HP. II: {=tiers.II.effects.0.ap} AP, once a fight: heal {=amounts.heal.per.0.value|pct}% of your max HP and gain {=tiers.II.effects.0.effects.1.value} Guard.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "second_wind",
+          "label": "Second Wind",
+          "ap": 2,
+          "uses": "per_combat",
+          "scope": [
+            "combat"
+          ],
+          "effects": [
+            {
+              "op": "mend",
+              "when": "acted",
+              "amount": "heal",
+              "say": "Second Wind{then}."
+            }
+          ]
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "pain_threshold",
+              "min": 3
+            }
+          ],
+          "ap_cost": 2,
+          "text": "{=tiers.I.effects.0.ap} AP, once a fight: heal {=amounts.heal.per.0.value|pct}% of your max HP.",
+          "short": "{=tiers.I.effects.0.ap} AP, once a fight: heal {=amounts.heal.per.0.value|pct}% max HP",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "second_wind",
+              "label": "Second Wind",
+              "ap": 2,
+              "uses": "per_combat",
+              "scope": [
+                "combat"
+              ],
+              "effects": [
+                {
+                  "op": "mend",
+                  "when": "acted",
+                  "amount": "heal",
+                  "say": "Second Wind{then}."
+                }
+              ]
             }
           ]
         },
@@ -440,25 +610,33 @@
               "min": 5
             }
           ],
-          "ap_cost": null,
-          "text": "Each hit that wounds you in a fight gives you {=tiers.II.effects.0.value|pct}% less Elemental damage taken and +{=tiers.II.effects.0.value|pct}% Injury resistance for the rest of that fight, up to 40% each.",
-          "short": "+{=tiers.II.effects.1.value|pct}% injury resistance too · up to {=tiers.II.effects.0.max|pct}% each",
+          "ap_cost": 2,
+          "text": "{=tiers.II.effects.0.ap} AP, once a fight: heal {=amounts.heal.per.0.value|pct}% of your max HP and gain {=tiers.II.effects.0.effects.1.value} Guard.",
+          "short": "And +{=tiers.II.effects.0.effects.1.value} Guard",
           "effects": [
             {
-              "op": "damage_reduction",
-              "type": "elemental",
-              "value": 0.05,
-              "per": "wound_taken_this_combat",
-              "max": 0.4,
-              "duration": "combat"
-            },
-            {
-              "op": "damage_reduction",
-              "type": "limb",
-              "value": 0.05,
-              "per": "wound_taken_this_combat",
-              "max": 0.4,
-              "duration": "combat"
+              "op": "grant_action",
+              "action": "second_wind",
+              "label": "Second Wind",
+              "ap": 2,
+              "uses": "per_combat",
+              "scope": [
+                "combat"
+              ],
+              "effects": [
+                {
+                  "op": "mend",
+                  "when": "acted",
+                  "amount": "heal",
+                  "say": "Second Wind{then}."
+                },
+                {
+                  "op": "resource",
+                  "when": "acted",
+                  "resource": "guard",
+                  "value": 2
+                }
+              ]
             }
           ],
           "replaces_tier_I": true,
@@ -468,10 +646,153 @@
       "adjudication": "engine",
       "recovered": null,
       "tags": [
-        "defense",
-        "stacking"
+        "survival",
+        "heal"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Endurance step",
+      "amounts": {
+        "heal": {
+          "kind": "heal",
+          "base": 0,
+          "per": [
+            {
+              "of": "self:max_hp",
+              "value": 0.25
+            }
+          ],
+          "heal_kind": "perk"
+        }
+      }
+    },
+    {
+      "id": "close_guard",
+      "name": "Close Guard",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "pain_threshold"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "pain_threshold",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: An Answer: while you hold Guard, {=tiers.I.effects.0.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it. II: An Answer: while you hold Guard, {=tiers.II.effects.0.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it.",
+      "effects": [
+        {
+          "op": "redirect",
+          "when": "taking",
+          "if": {
+            "target": "ally",
+            "target_within": 1,
+            "actor": "foe",
+            "by_hit": true,
+            "self_has_res": [
+              "guard"
+            ],
+            "self_alive": true,
+            "answer_on": "close_guard"
+          },
+          "share": 0.25,
+          "label": "Close Guard",
+          "fx": {
+            "k": "guard_move",
+            "move": "close_guard"
+          },
+          "say": "{self} takes part of the blow on {target} (Close Guard).",
+          "type": "physical"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "pain_threshold",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "An Answer: while you hold Guard, {=tiers.I.effects.0.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it.",
+          "short": "Answer: {=tiers.I.effects.0.share|pct}% of a blow on an ally beside you comes to you",
+          "effects": [
+            {
+              "op": "redirect",
+              "when": "taking",
+              "if": {
+                "target": "ally",
+                "target_within": 1,
+                "actor": "foe",
+                "by_hit": true,
+                "self_has_res": [
+                  "guard"
+                ],
+                "self_alive": true,
+                "answer_on": "close_guard"
+              },
+              "share": 0.25,
+              "label": "Close Guard",
+              "fx": {
+                "k": "guard_move",
+                "move": "close_guard"
+              },
+              "say": "{self} takes part of the blow on {target} (Close Guard).",
+              "type": "physical"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "pain_threshold",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "An Answer: while you hold Guard, {=tiers.II.effects.0.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it.",
+          "short": "{=tiers.II.effects.0.share|pct}% of the blow",
+          "effects": [
+            {
+              "op": "redirect",
+              "when": "taking",
+              "if": {
+                "target": "ally",
+                "target_within": 1,
+                "actor": "foe",
+                "by_hit": true,
+                "self_has_res": [
+                  "guard"
+                ],
+                "self_alive": true,
+                "answer_on": "close_guard"
+              },
+              "share": 0.5,
+              "label": "Close Guard",
+              "fx": {
+                "k": "guard_move",
+                "move": "close_guard"
+              },
+              "say": "{self} takes part of the blow on {target} (Close Guard).",
+              "type": "physical"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "guard",
+        "protect"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Endurance step"
     },
     {
       "id": "wind_on_the_skin",
@@ -621,6 +942,166 @@
         "social",
         "truth"
       ]
+    },
+    {
+      "id": "read_the_air",
+      "name": "Read the Air",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "sensory"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "sensory",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Learn one physical tell of someone you are close to (pulse, sweat, scent): {=tiers.I.numbers.bonus|signed} on your next social roll against them. II: Learn one physical tell of someone you are close to (pulse, sweat, scent): {=tiers.II.numbers.bonus|signed} on your next social roll against them.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "The Narrator supplies one physical tell of an NPC this character is close to; +2 on its next social roll against them."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "sensory",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Learn one physical tell of someone you are close to (pulse, sweat, scent): {=tiers.I.numbers.bonus|signed} on your next social roll against them.",
+          "short": "A tell: {=tiers.I.numbers.bonus|signed} on your next social roll against them",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "The Narrator supplies one physical tell of an NPC this character is close to; +2 on its next social roll against them."
+            }
+          ],
+          "numbers": {
+            "bonus": 2
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "sensory",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Learn one physical tell of someone you are close to (pulse, sweat, scent): {=tiers.II.numbers.bonus|signed} on your next social roll against them.",
+          "short": "{=tiers.II.numbers.bonus|signed}",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, +4."
+            }
+          ],
+          "numbers": {
+            "bonus": 4
+          },
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "social"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Endurance step",
+      "numbers": {
+        "bonus": 2
+      }
+    },
+    {
+      "id": "tremor",
+      "name": "Tremor",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "sensory"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "sensory",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Nothing moving on the ground within your Vision can take you by surprise: you act in the surprise round. II: Nothing moving on the ground within your Vision can take you by surprise, and you start each fight with {=tiers.II.effects.1.value} Guard.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "This character is never surprised by anything moving on the ground within its Vision (no engine half yet: rules 1.73 item 5833, the approach has no per-unit surprise piece)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "sensory",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Nothing moving on the ground within your Vision can take you by surprise: you act in the surprise round.",
+          "short": "You act in the surprise round against anything on the ground",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "This character is never surprised by anything moving on the ground within its Vision (no engine half yet: rules 1.73 item 5833, the approach has no per-unit surprise piece)."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "sensory",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Nothing moving on the ground within your Vision can take you by surprise, and you start each fight with {=tiers.II.effects.1.value} Guard.",
+          "short": "And +{=tiers.II.effects.1.value} Guard when a fight starts",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I."
+            },
+            {
+              "op": "resource",
+              "when": "combat_start",
+              "resource": "guard",
+              "value": 2,
+              "label": "Tremor",
+              "say": "{self} felt them coming: +{gain} Guard (Tremor)."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "start",
+        "guard"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Endurance step"
     },
     {
       "id": "breaching_strike",
