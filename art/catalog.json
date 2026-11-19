@@ -20953,6 +20953,42 @@
         "different_pixels_32": 5,
         "different_pixels_64": 21
       }
+    },
+    "weapon-maul--relic": {
+      "label": "Maul — Relic",
+      "path": "art/icons/gear/weapon-maul--relic.png",
+      "sha256": "228d6571755fca6a20860af5749820e3526a8e1a56e51d8a5020ea91f4560f62",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-maul--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-maul--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-maul--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-maul--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-maul--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.2",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-maul",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9347347974057664,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 32
+      }
     }
   },
   "survival_art": {

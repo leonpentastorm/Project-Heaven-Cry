@@ -1420,6 +1420,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-maul--relic",
+      "path": "art/icons/gear/weapon-maul--relic.png",
+      "sha256": "228d6571755fca6a20860af5749820e3526a8e1a56e51d8a5020ea91f4560f62",
+      "label": "Maul — Relic",
+      "family": "weapon-maul",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-maul--relic.png",
+        "sha256": "3b28836a041dabb2902c199e4bd61413341ca4c7f89c485d580b555cf085a547"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-maul--relic.png",
+        "sha256": "228d6571755fca6a20860af5749820e3526a8e1a56e51d8a5020ea91f4560f62"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-maul--relic.txt",
+        "sha256": "60734a9e6a0bf1edf90c51bfccd23272cf7297562d1ce06218a5312236d7f622"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-maul.png",
+          "sha256": "50f0d5620bd8dd5a51d0e676e69ebad5e586a47a01634ac17ac96d7a26da8dac"
+        },
+        {
+          "path": "art/icons/gear/weapon-maul--masterwork.png",
+          "sha256": "0e74d4c3a486442bea909ab483f46fcecf257e86669f2a1c279572812b5126fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-maul--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-maul--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-maul--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-maul--relic.png"
+      },
+      "export_hashes": {
+        "256": "c4baaa5762f8637d88b7699e7bdfcfc6dcc3f28d58059b978cdb9d4103ac581a",
+        "128": "7063da9e29e2d6585c059a077522ac09003d5fb7dd5af75dbd05016e3958b665",
+        "64": "6949179289abd6ed0fc94f25d0075f733a3b5c3fee1673ad4e389208f0360769",
+        "32": "cea59fb99b34070536f9500b2eef2ab0ec7a7a3c256b05e864ae95f9c5daea2b"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-maul",
+      "outline": {
+        "solid_alpha_iou": 0.9347347974057664,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 32
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
