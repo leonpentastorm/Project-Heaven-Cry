@@ -13205,3 +13205,8 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       own save, never on top of it. Point Man I and II (rules 1.73 item 5812 completed): an ally within 3 tiles rolls its
       Fear saves with your Guts in place of its own, when yours is better (`if_higher`; PROVISIONAL: "in place of" read
       as never worse). The roll's read-out names it ("Guts (Point Man)"). Point Man is `adjudication: engine`.
+6507. **A roll kept from two dice** (item op `two_dice` on the attack's own roll hook `attack_roll`, `keep: worse` or
+      `better`): a second d20 is drawn from the fight's dice and the worse (or better) of the two stands; once an attack,
+      the log says both dice. No existing piece did it (Echo and the Lucky rerolls replace the die; the registry's
+      `disadvantage` op has no reader). Untouchable (rules 1.73 item 5849 completed): I, with no torso armour, attacks on
+      you roll twice and keep the worse; II, in Light armour or none (`self_holds body.armour_at_most`). Engine now.

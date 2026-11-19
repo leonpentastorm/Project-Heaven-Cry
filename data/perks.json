@@ -2555,8 +2555,20 @@
       "text": "I: With no torso armour, attacks on you roll twice and take the worse. II: In Light armour or none, attacks on you roll twice and take the worse.",
       "effects": [
         {
-          "op": "narrator",
-          "note": "Attacks on this character roll twice and keep the worse while it wears no torso armour (no engine half yet: rules 1.73 item 5849, a roll kept from two has no piece)."
+          "op": "two_dice",
+          "when": "attack_roll",
+          "keep": "worse",
+          "if": {
+            "actor": "foe",
+            "target": "self",
+            "self_holds": {
+              "body": {
+                "armour_at_most": "none"
+              }
+            }
+          },
+          "label": "Untouchable",
+          "say": "{self} is hard to pin down{then} (Untouchable)."
         }
       ],
       "tiers": {
@@ -2572,8 +2584,20 @@
           "short": "No torso armour: attacks on you roll twice, take the worse",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Attacks on this character roll twice and keep the worse while it wears no torso armour (no engine half yet: rules 1.73 item 5849, a roll kept from two has no piece)."
+              "op": "two_dice",
+              "when": "attack_roll",
+              "keep": "worse",
+              "if": {
+                "actor": "foe",
+                "target": "self",
+                "self_holds": {
+                  "body": {
+                    "armour_at_most": "none"
+                  }
+                }
+              },
+              "label": "Untouchable",
+              "say": "{self} is hard to pin down{then} (Untouchable)."
             }
           ]
         },
@@ -2589,15 +2613,27 @@
           "short": "Light armour too",
           "effects": [
             {
-              "op": "narrator",
-              "note": "As Tier I, in Light armour too."
+              "op": "two_dice",
+              "when": "attack_roll",
+              "keep": "worse",
+              "if": {
+                "actor": "foe",
+                "target": "self",
+                "self_holds": {
+                  "body": {
+                    "armour_at_most": "light"
+                  }
+                }
+              },
+              "label": "Untouchable",
+              "say": "{self} is hard to pin down{then} (Untouchable)."
             }
           ],
           "replaces_tier_I": true,
           "after": "I"
         }
       },
-      "adjudication": "narrator",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "defense",

@@ -3,7 +3,7 @@
 // rules each unlocked. Every rule goes through the reducer (the helpers' fight, a real action) or a real blow; every
 // number is read from data.
 import { describe, it, expect } from 'vitest';
-import { PERK, condOn, actionsFor, previewAttack, saveAgainst } from '../src';
+import { PERK, condOn, actionsFor, previewAttack, saveAgainst, resolveAttack } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 import { applyCond } from '../src/magic';
 import { resOf } from '../src/tactics';
@@ -116,5 +116,26 @@ describe('a save may roll with another skill (item 6506): Point Man I', () => {
     expect(labels(true, true)).toMatch(/Guts \(Point Man\)/);
     expect(labels(false, true)).not.toMatch(/Guts/);
     expect(labels(true, false)).not.toMatch(/Guts/);
+  });
+});
+
+describe('a roll kept from two dice (item 6507): Untouchable I and II', () => {
+  const swing = (tier: string | null, armourClass: number) => {
+    let kept = 0, both = 0;
+    for (let i = 0; i < 12; i++) {
+      const f = fightWith([{ skills: { athletics: 9 }, armourClass, ...(tier ? { perks: { untouchable: tier } } : {}) }], [{ at: 'C6' }], { seed: 'UT' + i });
+      f.foe.pos = '3,5'; f.foe.ap = 6; f.pc.pos = '2,5'; const n = f.cb.log.length;
+      withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), f.unit(f.pc.id), 'shot', null));
+      const lines = f.cb.log.slice(n) as string[], two = lines.map((l) => /d20 (\d+) and (\d+), the worse stands/.exec(l)).find((m) => m), shot = lines.map((l) => /fires at .*: d20 (\d+) /.exec(l)).find((m) => m);
+      if (two) { both++; if (shot && +shot[1] === Math.min(+two[1], +two[2])) kept++; }
+    }
+    return { both, kept };
+  };
+  it('no torso armour: every attack on you rolls two dice and the worse stands (I); Light armour: I gives none, II does', () => {
+    const r1 = swing('I', 0); expect(r1.both).toBe(12); expect(r1.kept).toBe(12);
+    expect(swing('I', 1).both).toBe(0);
+    const r2 = swing('II', 1); expect(r2.both).toBe(12); expect(r2.kept).toBe(12);
+    expect(swing('II', 2).both).toBe(0);
+    expect(swing(null, 0).both).toBe(0);
   });
 });

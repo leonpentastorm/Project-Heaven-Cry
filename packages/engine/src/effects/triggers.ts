@@ -13,6 +13,7 @@
 // and runTriggered() below reads the event, tests `if`, takes the `limit` through effects/uses.ts (the item's key, so the
 // counter is the one a handler kept with uses(h)), runs the op and writes `say`. A preview (ctx.preview) changes no
 // state: the amount ops still speak (a preview shows the number), the limit is read and not taken, nothing is logged.
+import { rollD20 } from '../rolls';
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { dataRef } from '../datatext';
 import type { Combat, Unit } from '../combat';
@@ -585,6 +586,16 @@ O('object', ANY, true, ['do', 'has', 'kind', 'amount'], 'work the object on the 
   return false;
 });
 O('close_roll', ['spot'], false, ['value'], 'an enemy next to the holder rolls to spot it (value added to its modifier) instead of finding it outright (Shadow\'s Close Quarters, rules 1.32)', (ev, e) => { if (ev.ctx.close) { ev.ctx.outright = false; ev.ctx.mod += e.value || 0; } });
+
+// Rules 1.77 item 6507 (the lead's ruling 6): a roll kept from two dice, on the attack's own roll hook. The attack's d20
+// is rolled; a second is drawn from the fight's dice and the worse (or better) of the two stands (Untouchable: attacks
+// on you roll twice and keep the worse). One second die however many items ask: the first item's keep decides.
+O('two_dice', ['attack_roll'], true, ['keep'], 'the attack rolls a second d20 and keeps the worse (keep: worse) or the better (keep: better) of the two (once an attack: the first item that asks)', (ev, e) => {
+  const rc = ev.ctx; if (rc.twoDice) return false;
+  const b = rollD20(rngOf(ev.h, rc)).die, a = rc.die, worse = e.keep !== 'better';
+  rc.twoDice = [a, b]; rc.die = worse ? Math.min(a, b) : Math.max(a, b); delete rc.hit;
+  return ' (d20 ' + a + ' and ' + b + ', ' + (worse ? 'the worse' : 'the better') + ' stands)';
+});
 
 /** A delayed deal's or mend's amount, fixed when it was queued (section 6: `delay`). */
 const fixedBlock = (e: any): AmountBlock => ({ kind: e.fixed.kind, base: e.fixed.n, ...(e.fixed.type ? { type: e.fixed.type } : {}), ...(e.fixed.door ? { door: e.fixed.door } : {}), ...(e.fixed.tech ? { tech: e.fixed.tech } : {}), ...(e.fixed.armour ? { armour: e.fixed.armour } : {}), ...(e.fixed.heal_kind ? { heal_kind: e.fixed.heal_kind } : {}) } as AmountBlock);

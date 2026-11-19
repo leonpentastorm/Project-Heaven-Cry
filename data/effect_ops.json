@@ -4320,6 +4320,33 @@
       }
     },
     {
+      "id": "two_dice",
+      "tier": "core",
+      "summary": "Item op (rules 1.77 item 6507): on the attack's roll, a second d20 is drawn and the worse (keep: worse) or the better (keep: better) of the two stands; once an attack. Runs on the trigger attack_roll.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "keep",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "two_dice",
+        "when": "attack_roll",
+        "keep": "worse",
+        "if": {
+          "actor": "foe",
+          "target": "self"
+        }
+      }
+    },
+    {
       "id": "mend_mult",
       "tier": "core",
       "summary": "Item op (Classes 3.0 step 1b): multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, blessing (prayers), perk...). Runs on the triggers heal and shield.",
@@ -6206,6 +6233,16 @@
         ],
         "changes_state": false,
         "about": "an enemy next to the holder rolls to spot it (value added to its modifier) instead of finding it outright (Shadow's Close Quarters, rules 1.32)"
+      },
+      "two_dice": {
+        "on": [
+          "attack_roll"
+        ],
+        "fields": [
+          "keep"
+        ],
+        "changes_state": true,
+        "about": "the attack rolls a second d20 and keeps the worse (keep: worse) or the better (keep: better) of the two (once an attack: the first item that asks)"
       }
     },
     "limit_scopes": [
