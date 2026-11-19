@@ -37,7 +37,7 @@ describe('the gunner: ammo, spares, ammo type, Heat', () => {
     expect(keys(r)).not.toContain('strain');
     const a = row(r, 'ammo');
     expect(a.label).toBe('Ammo');
-    expect(a.value).toMatch(/^24 \/ \d+ loaded · 2 spare/);
+    expect(a.value).toMatch(/^24 \/ \d+ · 2 spare/);
     expect(a.warn).toBeUndefined();
     u.ammo = 3; r = resourcesOf(u, c, g);
     expect(row(r, 'ammo')).toMatchObject({ warn: 'RELOAD', level: 'caution' });
@@ -231,7 +231,7 @@ describe('resource panel fixes', () => {
     const { u, c, g } = fight((c) => { c.weapon = 'crossbow'; });
     u.ammo = 1; u.loose = 6;
     const r = row(resourcesOf(u, c, g), 'ammo');
-    expect(r.value).toMatch(/^1 \/ 1 loaded/);
+    expect(r.value).toMatch(/^1 \/ 1/);
     expect(r.warn).toBeUndefined();
     u.ammo = 0; expect(row(resourcesOf(u, c, g), 'ammo').warn).toBe('RELOAD');
   });

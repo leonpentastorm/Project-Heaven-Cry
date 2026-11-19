@@ -309,7 +309,7 @@
 <section style="display: flex; flex-direction: column; gap: 16px; padding: 24px 32px">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Moves</h1>
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">What your build already knows how to do. What you carry is not chosen here: the mode hands it out when play starts (in Survival you build a loadout at the camp; a campaign gives its own). Everyone also carries one <span style="color: #E7EBF3">Essence of Experience</span>: 100 XP sealed in mana, cracked by a Mastery 2 Evoker or Emanator user. It sells well.</p>
-<sc-if value="{{noMoves}}" hint-placeholder-val="{{false}}"><p data-no-moves="" style="margin: 0; font-size: 15px; color: #C9D3E3">This build starts with no techniques and no magic: techniques come with points in Dexterity or Raw Power, magic with Brain Power or Will Power.</p></sc-if>
+<sc-if value="{{noMoves}}" hint-placeholder-val="{{false}}"><p data-no-moves="" style="margin: 0; font-size: 15px; color: #C9D3E3">{{noMovesText}}</p></sc-if>
 
 <sc-if value="{{hasTech}}" hint-placeholder-val="{{true}}">
 <h2 style="margin: 12px 0 0; font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">Techniques</h2>

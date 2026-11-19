@@ -5,7 +5,7 @@
 // Look: Sigil magic is Mind cyan (#4FC8DF, ink #8BDEEE), square and snapping; element hues tint effects only and always
 // come with the element's word.
 import { feelingInk, feelingName, residueTileStyle, residueTitle } from './feelingsView';
-import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, strokeRuns, strokesOfGlyph, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX, holderOf, sigilGrowthView } from '@engine';
+import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, strokeRuns, strokesOfGlyph, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX, fluxMaxOf, holderOf, sigilGrowthView } from '@engine';
 import { glyphUri, scratchUri, starUri, SIGIL_INK, SIGIL_GLOW, type JoinSeg } from './glyphs';
 import { uiMarkOf } from './doorArt';
 import { grandLook, grandTint } from './fx/grand';
@@ -200,7 +200,7 @@ export function patternPanel(cb: any, tile: string | null, u: any, knows: (w: st
   const stats = !ours || !m ? [] : [
     { k: 'Charge', now: String(now.charge), after: String(after.charge) + (after.evokeCharge != null ? ' (−' + after.evokeCharge + ')' : '') },
     { k: 'AP', now: num(now.ap), after: num(after.ap) }, // AP can be fractional (Glyph AP 0.8): no float noise
-    { k: 'Flux', now: now.flux + '/' + FLUX_MAX, after: after.flux + '/' + FLUX_MAX },
+    { k: 'Flux', now: now.flux + '/' + fluxMaxOf(u, cb), after: after.flux + '/' + fluxMaxOf(u, cb) },
   ];
   const text = shape + ': ' + words.map((w: any) => w.word).join(' · ') + '. ' + verdict + (ours ? ' ' + pa.capLeft + (pa.capLeft === 1 ? ' glyph' : ' glyphs') + ' left before your cap; room for ' + pa.lineLeft + ' more in this Line.' : '');
   return { has: true, tile, tiles: pa.tiles || [], shape, words, readable: allRead, ours: !!ours, valid: !!pa.valid && allRead, verdict, capLeft: pa.capLeft, lineLeft: pa.lineLeft, stats, overload: ours ? pa.overloadWarning : null, text };

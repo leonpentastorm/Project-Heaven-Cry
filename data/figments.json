@@ -231,18 +231,18 @@
     }
   ],
   "traits": [
-    { "id": "armoured", "name": "Armoured", "hp_mult": 1.5, "text": "HP x{=hp_mult}.", "provisional": true },
-    { "id": "swift", "name": "Swift", "tiles": 2, "text": "+{=tiles} tiles an AP; its moves draw no opportunity attacks.", "provisional": true },
-    { "id": "loud", "name": "Loud", "weight": -1, "text": "Enemies count it as the most hurt in reach, Minions included.", "provisional": true },
+    { "id": "armoured", "name": "Armoured", "hp_mult": 1.5, "text": "HP ×{=hp_mult}", "provisional": true },
+    { "id": "swift", "name": "Swift", "tiles": 2, "text": "+{=tiles} tiles an AP · its moves draw no opportunity attacks", "provisional": true },
+    { "id": "loud", "name": "Loud", "weight": -1, "text": "Enemies treat it as the most hurt in reach", "provisional": true },
     { "id": "volatile", "name": "Volatile", "amounts": { "burst": { "kind": "damage", "base": 20, "profile": "flat", "type": "explosive", "provisional": true } }, "within": 1,
-      "effects": [{ "op": "deal", "when": "downed", "amount": "burst", "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" } }], "text": "Destroyed (not let go): a burst of radius {=within}, {=amounts.burst.base} on everyone in it, both sides.", "provisional": true },
-    { "id": "tethered", "name": "Tethered", "range": 4, "text": "Its projection range +{=range}; it unravels only past twice that.", "provisional": true },
-    { "id": "mirror", "name": "Mirror", "lure": "pick", "text": "It lures as a Double would, in the look of any unit of your side you pick.", "provisional": true },
+      "effects": [{ "op": "deal", "when": "downed", "amount": "burst", "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" } }], "text": "Destroyed: {=amounts.burst.base} to everyone within {=within} tile, both sides", "provisional": true },
+    { "id": "tethered", "name": "Tethered", "range": 4, "text": "+{=range} projection range", "provisional": true },
+    { "id": "mirror", "name": "Mirror", "lure": "pick", "text": "Lures as any unit of your side you pick", "provisional": true },
     { "id": "barbed", "name": "Barbed", "amounts": { "barb": { "kind": "damage", "base": 10, "profile": "flat", "type": "true", "provisional": true } },
-      "effects": [{ "op": "deal", "when": "damaged", "if": { "actor": "foe", "melee": true, "by_hit": true }, "amount": "barb", "target": "actor" }], "text": "An enemy that hits it in melee takes {=amounts.barb.base}.", "provisional": true },
-    { "id": "lasting", "name": "Lasting", "upkeep": 0, "text": "No upkeep.", "provisional": true },
-    { "id": "keen", "name": "Keen", "roll": 2, "vision": 4, "text": "Its attacks +{=roll} to hit; an Eye sees {=vision} further.", "provisional": true },
-    { "id": "hollow", "name": "Hollow", "charge": -2, "hp_mult": 0.5, "text": "Costs {=charge|abs} charge less (never under one); HP x{=hp_mult}.", "provisional": true }
+      "effects": [{ "op": "deal", "when": "damaged", "if": { "actor": "foe", "melee": true, "by_hit": true }, "amount": "barb", "target": "actor" }], "text": "Melee attackers take {=amounts.barb.base}", "provisional": true },
+    { "id": "lasting", "name": "Lasting", "upkeep": 0, "text": "No upkeep", "provisional": true },
+    { "id": "keen", "name": "Keen", "roll": 2, "vision": 4, "text": "+{=roll} to hit · an Eye sees {=vision} further", "provisional": true },
+    { "id": "hollow", "name": "Hollow", "charge": -2, "hp_mult": 0.5, "text": "−{=charge|abs} charge (min one) · HP ×{=hp_mult}", "provisional": true }
   ],
   "trait_charge": 1,
   "items": [

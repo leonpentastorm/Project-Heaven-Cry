@@ -54,9 +54,9 @@ describe('the three shelves', () => {
   it('Rides an action: an attack, a Pump and a Begin each read in plain words', () => {
     expect(row(shelves(charWith({ traits: ['gambler'] })).sh, 'trait:gambler').line).toBe('on your attacks');
     const c = charWith({ skills: { ...charWith().skills, will_power: 10 } as any, perks: [{ id: 'the_twin_pays', tier: 'mastered' } as any] }), { sh } = shelves(c);
-    expect(row(sh, 'skill:will_power.3')).toMatchObject({ shelf: 'rides', line: 'on a Pump · 1/1 turn' }); // Overdraw: once a turn
+    expect(row(sh, 'skill:will_power.3')).toMatchObject({ shelf: 'rides', line: 'Once a turn' }); // Overdraw: once a turn
     expect(row(sh, 'perk:the_twin_pays')).toMatchObject({ shelf: 'rides' });
-    expect(row(sh, 'perk:the_twin_pays').line).toMatch(/^on Begin/);
+    expect(row(sh, 'perk:the_twin_pays').line).toBe('Once a fight');
   });
   it('Always on: a passive, with a live line', () => {
     const { sh } = shelves(perk('used_to_the_pain'));

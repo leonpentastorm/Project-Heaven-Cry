@@ -35,11 +35,11 @@ describe('the Magic tab: study and learning (rules 1.10.2)', () => {
   it('shows study toward the next word; a pick opens the chooser in the five groups, copied words first; picking learns it', () => {
     const { c, L } = start();
     let r = L.renderVals();
-    expect(r.mg.st.text).toBe('0 STUDY'); expect(r.mg.st.next).toBe('NEXT WORD AT 6'); expect(r.mg.st.canLearn).toBe(false);
+    expect(r.mg.st.text).toBe('Study 0 / 6'); expect(r.mg.st.next).toBe('→ new word'); expect(r.mg.st.canLearn).toBe(false);
     c().sigilGrowth.study = 9; c().sigilGrowth.toStudy = ['ward'];
     r = L.renderVals();
-    expect(r.mg.st.next).toBe('NEXT WORD AT 14'); expect(r.mg.st.meterNow).toBe('3'); expect(r.mg.st.meterMax).toBe('8');
-    expect(r.mg.st.canLearn).toBe(true); expect(r.mg.st.line).toMatch(/1 pick waits\./);
+    expect(r.mg.st.text).toBe('Study 9 / 14'); expect(r.mg.st.meterNow).toBe('3'); expect(r.mg.st.meterMax).toBe('8');
+    expect(r.mg.st.canLearn).toBe(true); expect(r.mg.st.line).toMatch(/1 pick waits/);
     expect(r.mg.st.toStudy.map((x: any) => x.word)).toEqual(['WARD']);
     r.mg.st.openPick(); r = L.renderVals();
     expect(r.mg.st.picking).toBe(true);

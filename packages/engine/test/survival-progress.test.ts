@@ -125,7 +125,7 @@ describe('rules 1.43: the grade step (rules 37, 38, 43)', () => {
     expect(refused(shop, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' })).toBe('This is not a Forge.');
     const a = apply(shop, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' }, 'host');
     expect(a.characters.c1.weaponState!.rarity).toBe('fine'); expect(creditsOf(a.characters.c1)).toBe(creditsOf(c0) - GRADE_UP.price.fine);
-    expect(refused(a, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' })).toBe('Masterwork upgrades open in stage 2.');
+    expect(refused(a, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' })).toBe('Opens in stage 2');
     const b = apply(a, { type: 'run/upgrade', charId: 'c2', where: 'main', place: 'shop' }, 'p2');
     expect(refused(b, { type: 'run/upgrade', charId: 'c2', where: 'off', place: 'shop' }, 'p2')).toBe('One upgrade per visit. ' + b.characters.c2.name + ' has had it here.');
     expect(refused(b, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' }, 'p2')).toMatch(/^Only .+'s player chooses for/);
@@ -139,7 +139,7 @@ describe('rules 1.43: the grade step (rules 37, 38, 43)', () => {
   it('the Relic step: a Forge only, from stage 3, one of three properties that fit and the cap; Masterwork first', () => {
     // the service rifle in hand (rules 1.52: the camp's free rifle fits fewer properties), Masterwork
     const prep = (g: GameState) => { for (const c of Object.values(g.characters)) { c.weapon = 'hellraiser_service_rifle'; delete c.weaponState; setGrade(c, 'main', 'masterwork'); } };
-    expect(refused(visit('forge', { stage: 2, prep }), { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' })).toBe('Relic upgrades open in stage 3.');
+    expect(refused(visit('forge', { stage: 2, prep }), { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' })).toBe('Opens in stage 3');
     const shop = visit('shop', { stage: 3, prep });
     expect(refused(shop, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'shop' })).toBe('Only a Forge makes a Relic.');
     const g = visit('forge', { stage: 3, prep }), c = g.characters.c1, offer = relicChoices(g, c, 'main');

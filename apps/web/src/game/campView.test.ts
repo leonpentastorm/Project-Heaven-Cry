@@ -53,7 +53,7 @@ describe('the camp as a checklist (rules 1.55 item 49)', () => {
     expect(ch.map((k) => k.key)).toEqual(['weapon', 'budget', 'boon']);
     expect(ch[0]).toMatchObject({ n: 1, title: 'FREE WEAPON', state: 'NOT PICKED', done: false, glyph: '○' });
     expect(ch[1]).toMatchObject({ n: 2, state: v.budget + ' of ' + v.budget + ' cr left', meter: { left: v.budget, total: v.budget } });
-    expect(campHelp(v)).toBe('Before the run: take one free weapon and spend your budget on anything else.');
+    expect(campHelp(v)).toBe('');
     const [a, b] = v.rack;
     expect(freeAction(a.free, v, 'weapon')).toBe('Take (free)');
     expect(campConfirm(v)).toEqual({ open: ['weapon'], text: 'You have not taken your free weapon. It costs nothing.', back: 'Go back and pick', go: 'Start without it' });
@@ -67,7 +67,7 @@ describe('the camp as a checklist (rules 1.55 item 49)', () => {
   it('a caster: the focus step, both open asks for both; Recommended ticks every free pick', () => {
     let g = fresh(), v = loadoutView(g as any, 'p2')!;
     expect(campChecklist(v).map((k) => k.key)).toEqual(['weapon', 'focus', 'budget', 'boon']);
-    expect(campHelp(v)).toBe('Before the run: take one free weapon, one free focus and spend your budget on anything else.');
+    expect(campHelp(v)).toBe('');
     expect(campConfirm(v)!.text).toBe('You have not taken your free weapon or your free focus. They cost nothing.');
     expect(campConfirm(v)!.go).toBe('Start without them');
     expect(v.recommended.lines.some((l) => l.endsWith('(free)'))).toBe(true);

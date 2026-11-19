@@ -574,7 +574,7 @@ export class CreateLogic extends DCLogic {
 
     return { ...epccgVals(this, (id) => S.skills[id] || 0), ...lightboxVals(this), zoomPortrait: zoomer(this, portrait.img, '', 'portrait'),
       steps, headerName: S.name || 'UNNAMED', budgetChip: left === 0 && statsPlaced ? '✓ EVERY POINT PLACED' : left + ' SKILL · ' + der.attrLeft + ' ATTRIBUTE LEFT', budgetChipStyle: chip(left === 0 && statsPlaced ? '#6FEA77' : '#FFFFFF'),
-      isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isMoves: S.step === 'moves', noMoves: !hasTech && !hasMagic, isLockin: S.step === 'lockin', isBelief: S.step === 'belief',
+      isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isMoves: S.step === 'moves', noMoves: !hasTech && !hasMagic, noMovesText: (S.skills.empathy || 0) > 0 ? 'No techniques or magic yet. Empathy opens Bonds and Tending once you hold an Attuner, which the mode gives when play starts.' : 'No techniques or magic yet: techniques come with Dexterity or Raw Power, magic with Brain Power or Will Power.', isLockin: S.step === 'lockin', isBelief: S.step === 'belief',
       ...this.beliefVals(),
       name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs,
       famTabs, famBlurb, archCards, pv, useArch, useLabel,
