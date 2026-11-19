@@ -114,7 +114,7 @@ await act({ type: 'sandbox/faith', charId, belief: 'faithful', patron: 'old_over
 await act({ type: 'sandbox/give', charId, item: 'service_pistol', equip: true });
 await act({ type: 'sandbox/give', charId, item: 'visualizer', equip: true });
 await act({ type: 'sandbox/give', charId, item: 'standard_core', qty: 3 });
-await act({ type: 'door/pick', charId, door: 'visualization', option: 'wall' }); await act({ type: 'door/pick', charId, door: 'visualization', option: 'beast' });
+await act({ type: 'door/pick', charId, door: 'figment_forms', option: 'wall' }); await act({ type: 'door/pick', charId, door: 'figment_forms', option: 'beast' }); // rules 1.70 item 5541: forms are learned at figment_forms
 const c0 = (await G()).characters[charId];
 ok('set up: Ingenuity ' + c0.skills.ingenuity + ', Visualization ' + c0.skills.visualization + ', Faith ' + c0.skills.faith + ', Devotion ' + c0.devotion, c0.skills.ingenuity >= 7 && c0.skills.faith >= 7 && c0.devotion === 10);
 await act({ type: 'sandbox/ai', on: false }); await act({ type: 'sandbox/auto', on: false });
@@ -126,7 +126,9 @@ ok('my turn', await toMe());
 ok('Hidden', (await act({ type: 'combat/hide', unitId: (await me()).id })) === null && !!(await me()).hidden);
 ok('walked to H11, beside the sandbags', await walkTo('7,10'));
 await act({ type: 'combat/end-turn', unitId: (await me()).id }); await toMe();
-await check('Vault', /^Vault/, { shot: 'vault', need: ['reach', 'choice'], subset: true, bad: async ({ choice }) => ['7,12', '5,10', '7,8'].find((k) => !choice.includes(ref(k))) });
+// rules 1.74 (the Mind lane): Shadow's Vault is cut (Vault is Athletics' Wall Run, a way of moving, no pick): its row is gone.
+// The tile-and-subset pick it proved is Douse's below (subset: true).
+ok('Vault: no Shadow row (cut, rules 1.74)', (await p.getByRole('button', { name: /^Vault/ }).count()) === 0);
 await check('Decoy', /^Decoy/, { shot: 'decoy', need: ['reach', 'choice'], bad: '20,20' });
 // a technique: a foe in sight; clicking yourself is refused in the engine's words
 await act({ type: 'sandbox/spawn', tier: 'soldier', weapon: 'combat_knife', at: ref('11,7'), name: 'Target' }); await settle(p, 400);
