@@ -20,6 +20,8 @@ import { openReport, openSpend } from '../game/report';
 import { derivedLines } from '../game/derived';
 import { perkEntries, storyPerkEntries, parsePk, pkId, pkCost, pkText, classOf, pickChoice, reloadItems, reloadBothItems, RELOAD_TAC, RELOAD2_TAC } from '../game/commands';
 import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesign, OPT_LABEL, optValue } from '../game/actionPickers';
+import { narratorSeat } from '@engine';
+import { deskTurn, resetDesk } from '../narrator/desk';
 import { previewPerkAction, phys, sheetPack, gearLockWhy, gearPreview, plateChoices, plateLesson, plateLessonWhy, GEAR, carriesMpFocus, inHands } from '@engine';
 import { SHEET_LINE_KEYS } from '../game/previewLines';
 import { weaponActions, verdictFor, markFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
@@ -376,7 +378,9 @@ function gmDeskVals(self, g, label) {
   // the campaign's prepared fights (its file's encounters), this zone's first: one starts with the turn
   const encs = ((g.campaign && g.campaign.encounters) || []).filter((e) => e && e.enemies && e.enemies.length), zone = g.story.zone;
   const enc = encs.find((e) => e.name === st.fight) || null;
-  const turn = () => ({ narration: text, ...(String(st.title || '').trim() ? { sceneTitle: String(st.title).trim().slice(0, 80) } : {}),
+  // Rules 1.84 (item 7202): the rest of the turn is the desk's other fields (narrator/desk.tsx), the AI's own tool's
+  // fields; what the template draws here is written over them (a prepared fight over one made up on the spot).
+  const turn = () => ({ ...deskTurn(g), narration: text, ...(String(st.title || '').trim() ? { sceneTitle: String(st.title).trim().slice(0, 80) } : {}),
     checks: checks.filter((x) => x.charId && x.skill).map((x) => ({ charId: x.charId, skills: [x.skill], tn: Number(x.tn), stakes: String(x.stakes || '').trim() || 'The Narrator asks for a check.' })),
     perkRulings: rulings.map((r) => ({ id: r.id, accepted: said[r.id] !== 'no' })),
     ...(enc ? { combat: { name: enc.name, difficulty: enc.difficulty, enemies: enc.enemies.map((f) => ({ ...f })) } } : {}) });
@@ -398,7 +402,8 @@ function gmDeskVals(self, g, label) {
     hasFights: encs.length > 0, fight: st.fight || '', onFight: (e) => set({ fight: e.target.value }),
     fights: [{ value: '', label: 'No fight' }, ...[...encs].sort((a, b) => (b.zone === zone) - (a.zone === zone)).map((e) => ({ value: e.name, label: 'Start the fight: ' + e.name + (e.zone === zone ? '' : ' (another zone)') }))],
     sendOff: !text, sendTitle: text ? 'Send your turn: the story goes on' : 'Write the narration first',
-    send: () => { if (!text) return; act({ type: 'narrator/turn', turn: turn() }); self.setState({ gm: null }); } };
+    titleHint: g.story.scene.title ? 'Now: ' + g.story.scene.title + ' (leave empty to stay in this scene)' : 'A title for the scene (leave empty for none)',
+    send: () => { if (!text) return; act({ type: 'narrator/turn', turn: turn() }); self.setState({ gm: null }); resetDesk(); } };
 }
 
 export class MainLogic extends DCLogic {
@@ -482,9 +487,10 @@ export class MainLogic extends DCLogic {
     if (!g) return { ...lightboxVals(this), ...epccgVals(this), stream: [], order: [], tabs: [], coreTabs: [], sheetSkills: [], bars: [], barsA: [], barsB: [], echoV: { has: false, pips: [], sections: [] }, qb: { has: false, groups: [] }, sfc: { has: false, gauge: [], effects: [], movers: [] }, rp: { o: {}, on: {}, grip: {}, gripKey: {}, slots: [] }, pc: {} };
     // Rules 1.54 item 11: the right panel's modules and what the sheet hides are the mode's (data/modes.json, game/panels.ts).
     const PL = panelsOf(g), HIDES = new Set(PL.hides), RUN = !!g.run;
-    // "I'll narrate" (rules 1.80 item 6801): the Narrator's seat with no character of its own reads every character's sheet
-    const own = Object.values(g.characters).filter((c) => c.owner === me), gmSeat = isHost && g.settings.mode === 'human' && !RUN && !g.sandbox;
-    const mine = gmSeat && !own.length ? Object.values(g.characters) : own;
+    // "I'll narrate" (rules 1.80 item 6801): the Narrator's seat (the engine's narratorSeat). Rules 1.84 (item 7203): with no
+    // character of its own the left panel holds the Narrator's notes (narrator/desk.tsx), never a guest's character.
+    const own = Object.values(g.characters).filter((c) => c.owner === me), gmSeat = narratorSeat(g, me);
+    const mine = own;
     const c = mine.find((x) => x.id === S.sel) || mine[0] || null;
     const P = (id) => (c ? c.skills[id] || 0 : 0), A = (id) => (c ? c.attrs[id] || 1 : 1);
     const playerOf = (pid) => g.players.find((p) => p.id === pid) || { name: '?', initials: '?', color: '#A3AEC2' };
@@ -930,7 +936,7 @@ export class MainLogic extends DCLogic {
     const units = inFight ? cb.units.filter((u) => !(u.dead && u.side === 'foe'))
       : Object.values(g.characters).filter((x) => !x.dead && pos[x.id]).map((x) => ({ id: 'pc-' + x.id, side: 'pc', charId: x.id, name: x.name, short: x.name.slice(0, 2).toUpperCase(), img: x.portrait,
         pos: pos[x.id], hp: x.hp, maxHp: maxHp(x), movement: movement(x), ap: 0, injuries: x.injuries || [], downed: false, dead: false }))
-        .concat((() => { const ns = npcsOf({ ...g, story: { ...g.story } }).filter((n) => !n.hidden);
+        .concat((() => { const ns = npcsOf({ ...g, story: { ...g.story } }).filter((n) => !n.hidden || gmSeat); // rules 1.84: the Narrator's seat sees who lurks
           // World Play 1.7: every token shows its face (its avatar, or the engine's pick by kind). People are cast from the
           // player-card pool only when a player holds that card; robots, drones and machines keep their own art; beasts badge only.
           const faces = castMany(g, ns.filter((n) => !NOT_PERSON.has(n.kind || 'human')).map((n) => ({ key: n.id, current: ART(n.portrait || faceOf(g, n)) || null, tags: npcTags(n.name, n.tier, n.weapon) })), taken);
@@ -939,6 +945,10 @@ export class MainLogic extends DCLogic {
     // Drones stand on the area map as tokens of their own (Drone Handler): the engine places them (positionsOf).
     if (!inFight) for (const x of Object.values(g.characters)) for (const k of x.companions || []) { const id = 'cp-' + x.id + '-' + k.id; if ((k.kind === 'drone' || k.kind === 'beast' || k.kind === 'twin') && pos[id] && !x.dead) { const mx = k.kind === 'twin' ? (k.maxHp || k.hp || 1) : (COMPANION_KINDS[k.kind]?.hp ?? 30); units.push({ id, side: 'pc', companion: k.kind, ctrl: x.id, name: k.kind === 'twin' ? 'The twin' : k.name || (k.kind === 'beast' ? 'Beast' : 'Drone'), short: k.kind === 'twin' ? 'TW' : k.kind === 'beast' ? 'BE' : 'DR', img: k.kind === 'twin' ? (k.img || '') : '', pos: pos[id], hp: k.hp ?? mx, maxHp: mx, ap: 0, injuries: [], downed: false, dead: false }); } }
     const tok = {}; units.forEach((u) => { tok[u.pos] = u; });
+    // Rules 1.84 (item 7204): on the human Narrator's map, what the players can't see is drawn with a dashed mark (only
+    // the seat's view holds it: the engine's viewFor). Lurkers, hidden objects and hidden hazards' tiles.
+    const secretAt = new Set(!gmSeat || inFight ? [] : [...(g.story.npcs || []).filter((n) => n.hidden).map((n) => n.pos), ...(g.story.objects || []).filter((o) => o.hidden).map((o) => o.pos),
+      ...(g.story.hazards || []).filter((h) => h.hidden && (!h.zone || h.zone === g.story.zone)).flatMap((h) => h.tiles || [])]);
     const objs = (inFight && cb ? cb.objects : g.story.objects) || defaultObjects(map), objAt = {};
     objs.forEach((o) => { if (o.kind !== 'pile' && (!objAt[o.pos] || kindOf(o).blocks_move)) objAt[o.pos] = o; }); // a pile draws as its own layer (worldLayer)
     const cov = {}; objs.forEach((o) => { const k = coverKind(o); if (k) cov[o.pos] = { kind: k }; });
@@ -1225,8 +1235,8 @@ export class MainLogic extends DCLogic {
             hasZone: !!sgLayer, zoneStyle: 'position: absolute; inset: 0; z-index: 1; pointer-events: none; box-sizing: border-box; ' + sgLayer,
             hasSg: labels && !!(sgT && sgT.marks.length), sg: labels && sgT ? sgT.marks : [],
             hasHeart: !!held, heart: held ? heartUri(held.stage) : '', heartStyle: 'position: absolute; z-index: 4; right: -6%; top: -6%; width: 40%; height: 40%; pointer-events: none; filter: drop-shadow(0 0 3px ' + SOUL_VIOLET + ')',
-            label: ref + (u ? ': ' + u.name : '') + ' · ' + what + (note ? ' · ' + note : '') + mWhat + wWhat, title: u ? '' : ref + ' · ' + what + mWhat + wWhat + (note ? '\n' + note : ''),
-            style: 'position: relative; display: block; aspect-ratio: 1; padding: 0; border: 0; border-radius: 1px; cursor: ' + (mover && !u && !solid.has(k) && !cov[k] ? 'pointer' : 'default') + '; background: ' + (u && !mapArt ? '#0D1119' : cellBg(k)) + ((S.wTarget && u && u.id === S.wTarget) || (S.wTarget && !u && o && S.wTarget === 'obj:' + o.id) || (readT && readT === k) ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : '') + mStyle + tgtMark });
+            label: ref + (u ? ': ' + u.name : '') + ' · ' + what + (note ? ' · ' + note : '') + mWhat + wWhat + (secretAt.has(k) ? ' · HIDDEN FROM THE PLAYERS' : ''), secret: secretAt.has(k) ? '1' : '', title: u ? '' : ref + ' · ' + what + mWhat + wWhat + (secretAt.has(k) ? ' · HIDDEN FROM THE PLAYERS' : '') + (note ? '\n' + note : ''),
+            style: 'position: relative; display: block; aspect-ratio: 1; padding: 0; border: 0; border-radius: 1px; cursor: ' + (mover && !u && !solid.has(k) && !cov[k] ? 'pointer' : 'default') + '; background: ' + (u && !mapArt ? '#0D1119' : cellBg(k)) + ((S.wTarget && u && u.id === S.wTarget) || (S.wTarget && !u && o && S.wTarget === 'obj:' + o.id) || (readT && readT === k) ? '; outline: 2px solid #FFFFFF; outline-offset: -2px' : secretAt.has(k) ? '; outline: 2px dashed #AE9BFF; outline-offset: -3px' : '') + mStyle + tgtMark });
         }
       }
       return out;
@@ -1565,6 +1575,7 @@ export class MainLogic extends DCLogic {
       narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'),
       // a human Narrator: the host writes at the desk below; everyone else sees the Narrator writing
       thinking: busy || (g.settings.mode === 'human' && !!g.story.work && g.phase !== 'combat' && !gmSeat), thinkingText: g.settings.mode === 'human' ? host.name + ', the Narrator, is writing…' : 'The Narrator is writing…',
+      gmNotes: gmSeat, sheetOn: !gmSeat || own.length > 0,
       gm: gmSeat && !!g.story.work && g.phase !== 'combat' ? gmDeskVals(this, g, label) : { show: false, ooc: [], rulings: [], checks: [], chars: [], skills: [], tns: [] }, narratorImg: IMG['wick-narrator-placeholder'],
       echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabArms: S.tab === 'arms', ar: S.tab === 'arms' ? armsTabVals(this, g, c) : { has: false }, tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),

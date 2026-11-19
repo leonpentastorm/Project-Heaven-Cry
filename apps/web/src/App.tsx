@@ -39,6 +39,7 @@ import { DialogHost } from './game/dialog';
 import { SettingsHost } from './game/settings';
 import { leaveFlow } from './screens/shell';
 import { ModeCentre } from './game/modeCentre';
+import { NarratorSeat } from './narrator/desk';
 
 const MAIN = makeScreen(expand(mainT), MainLogic as any);
 const SCREENS: Record<Screen, React.ComponentType<any>> = {
@@ -117,6 +118,7 @@ export function App() {
       {st.role && <CutInLayer game={st.game || null} screen={st.screen} />}
       {st.role && <SandboxPanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={st.screen} />}
       {st.role && <ModeCentre game={st.game || null} screen={st.screen} />}
+      {st.role === 'host' && st.screen === 'main' && <NarratorSeat game={st.game || null} meId={st.me.id} />}
       {st.role && <MissionLayer game={st.game || null} screen={st.screen} />}
       <PlaytestTools />
       <Tips />
