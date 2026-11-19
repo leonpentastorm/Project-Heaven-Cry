@@ -576,6 +576,47 @@
       "source": "Classes 3.0 (rev4-primitives.md batch row read): Shadow's Read Intent, the Operative's Analyze, Bonds' aim read"
     },
     {
+      "id": "cased",
+      "name": "Cased",
+      "kind": "state",
+      "side": "hurts",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "Whoever Cased you, and their side, see your weapon, your rounds, your armour and what you carry. A Lift on you costs {=effects.1.value|abs} AP less.",
+      "effects": [
+        {
+          "op": "reveal",
+          "what": "kit",
+          "shared_with": "source_side"
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "actor": "foe",
+            "target": "self",
+            "action": [
+              "verb:shadow.lift#lift"
+            ]
+          },
+          "value": -1,
+          "min": 0,
+          "label": "Cased"
+        }
+      ],
+      "duration": {
+        "until": "source"
+      },
+      "ends_on": [
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.77 item 6514 (the lead's ruling 5): Shadow's Case"
+    },
+    {
       "id": "read_them",
       "name": "Read Them",
       "kind": "state",

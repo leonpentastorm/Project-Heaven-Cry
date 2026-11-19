@@ -31,6 +31,7 @@ export interface CondMods {
   /** on d20s with a skill of this tag ('core:mind', 'core:soul', 'attr:expression'). */ skills?: { tag: string; value: number }[];
   /** to hit, by what it applies to. */ hit?: Partial<Record<HitContext, number>>;
   /** its source's side sees the bearer's next action (a `reveal` of what `intent`: the row `read`; Classes 3.0). */ intent?: boolean;
+  /** its source's side sees the bearer's kit (a `reveal` of what `kit`: the row `cased`; rules 1.77 item 6514: combat.ts kitOf). */ kit?: boolean;
   /** the reaction kinds it forbids (a `forbid` of action `reaction`, with its `kinds`; none named: 'all'). Rules 1.28. */ noReact?: string[] | 'all';
 }
 /** One condition as the engine reads its data/conditions.json row. */
@@ -59,6 +60,7 @@ function modsOf(row: any): CondMods {
     if (e.op === 'attack_mod' && typeof e.value === 'number' && HIT_CONTEXTS.includes(e.context || 'own_attacks')) (m.hit ||= {})[(e.context || 'own_attacks') as HitContext] = e.value;
     if (e.op === 'damage_mult' && typeof e.value === 'number' && e.context === 'next_attack') m.nextAttackMult = e.value;
     if (e.op === 'reveal' && e.what === 'intent') m.intent = true;
+    if (e.op === 'reveal' && e.what === 'kit') m.kit = true; // rules 1.77 item 6514
     if (e.op === 'forbid' && e.action === 'reaction') m.noReact = Array.isArray(e.kinds) && e.kinds.length ? [...e.kinds] : 'all';
   }
   return m;

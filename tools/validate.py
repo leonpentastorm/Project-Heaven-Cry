@@ -1065,19 +1065,21 @@ if "actions" in data:
             elif isinstance(_rule_acts[r].get("ap"), int) and c.get("ap") != _rule_acts[r].get("ap"):
                 errors.append(f"actions: costs.{cid} costs {c.get('ap')} AP but rules.json {r} says {_rule_acts[r].get('ap')}")
     for rid, r in (_acts_root.get("resources") or {}).items():
-        if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character") or not isinstance(r.get("path"), str) or not r.get("path"):
-            errors.append(f"actions: resources.{rid} needs a name, on (unit or character) and a path")
+        if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character", "fight") or not isinstance(r.get("path"), str) or not r.get("path"):
+            errors.append(f"actions: resources.{rid} needs a name, on (unit, character or fight: rules 1.77 item 6512) and a path")
         # Classes 3.0 batch row: the item op `resource` gives any row through effects/cost.ts resGive
-        for _k in (set(r) - {"name", "one", "on", "path", "whole", "max", "needs", "setter", "made_after_start"}) if isinstance(r, dict) else []:
-            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, one, on, path, whole, max, needs, setter, made_after_start)")
+        for _k in (set(r) - {"name", "one", "on", "path", "whole", "max", "needs", "setter", "short"}) if isinstance(r, dict) else []:
+            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, one, on, path, whole, max, needs, setter, short)")
+        if isinstance(r, dict) and "short" in r and not (isinstance(r["short"], str) and "{n}" in r["short"]): errors.append(f"actions: resources.{rid}.short is the refusal, with {{n}} (and {{have}}) in it (rules 1.77 item 6512)")
+        if isinstance(r, dict) and r.get("on") == "fight" and not r.get("setter"): errors.append(f"actions: resources.{rid}: a fight-held meter changes through its setter (rules 1.77 item 6512)")
         if isinstance(r, dict) and "one" in r and not (isinstance(r["one"], str) and r["one"]):
             errors.append(f"actions: resources.{rid}.one must be the name of one (a cost of 1: '1 core', never '1 cores')")
         for _k in ("max", "needs", "setter"):
             if isinstance(r, dict) and _k == "needs" and isinstance(r.get(_k), list) and r[_k] and all(isinstance(x, str) and x for x in r[_k]): continue # rules 1.33: one of several paths (an MP focus: mg.emanator, mg.attuner)
             if isinstance(r, dict) and _k in r and not (isinstance(r[_k], str) and r[_k]):
                 errors.append(f"actions: resources.{rid}.{_k} must be a path (a setter: its name)")
-        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion", "strain", "flux"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap); rules 1.69 item 5453: strain (magic.ts: addStrain up, easeStrain down); rules 1.70 item 5542: flux (magic.ts: flux() up, down to 0)
-            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion, strain, flux)")
+        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion", "strain", "flux", "mana"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap); rules 1.69 item 5453: strain (magic.ts: addStrain up, easeStrain down); rules 1.70 item 5542: flux (magic.ts: flux() up, down to 0)
+            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion, strain, flux, mana)")
 
 # Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
 # prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.
@@ -2044,7 +2046,7 @@ COND_READS = {
     "fear": ["attack_mod:not_vs_source"], "shaken": ["stat_mod:save_heart"], "marked": ["attack_mod:marker_squad_vs_self"], "grappled": ["attack_mod:not_vs_source"], "taunted": ["attack_mod:not_vs_source"],
     "suppressed": ["stat_mod:ap"], "withdrawing": ["stat_mod:defense"], "corroded": ["stat_mod:defense"], "quickened": ["stat_mod:ap"],
     "sharpened": ["attack_mod:next_attack", "damage_mult:next_attack"], "hopeful": ["attack_mod:next_attack"], "scorned": ["attack_mod:vs_source"],
-    "guarded": ["stat_mod:defense"], "inspired": ["attack_mod:own_attacks"], "read": ["reveal:intent"],
+    "guarded": ["stat_mod:defense"], "inspired": ["attack_mod:own_attacks"], "read": ["reveal:intent"], "cased": ["reveal:kit"],
     "exposed": ["stat_mod:defense"], "off_balance": ["stat_mod:ap"],  # Classes 3.0 step 6 (Shadow, rules 1.32)
     # rules 1.33: the feelings given along a Bond (bonds-spec.md 5.1)
     "given_rage": ["stat_mod:defense"], "foe_rage": ["stat_mod:defense"], "given_fear": ["attack_mod:own_attacks", "stat_mod:defense"],
@@ -2072,6 +2074,7 @@ def cond_reads(c):
         if e.get("op") == "skill_mod_tag" and isinstance(e.get("value"), (int, float)): out.append("skill_mod_tag:" + str(e.get("tag")))
         if e.get("op") == "damage_mult" and e.get("context") == "next_attack": out.append("damage_mult:next_attack")
         if e.get("op") == "reveal" and e.get("what") == "intent": out.append("reveal:intent")
+        if e.get("op") == "reveal" and e.get("what") == "kit": out.append("reveal:kit")
     return sorted(out)
 cond_names = set()
 for c in items("conditions"):
@@ -2167,7 +2170,7 @@ def check_pred(k, v, w):
     elif a == "tie" and not ((isinstance(v, str) and v in (p.get("values") or [])) or (isinstance(v, dict) and v.get("kind") in (p.get("values") or []) and v.get("as", "any") in ("from", "to", "any") and v.get("side", "any") in ("foe", "ally", "any") and set(v) <= {"kind", "as", "side"})): errors.append(f"{w}: `if.{k}` is a tie kind ({p.get('values')}) or {{kind, as: from or to, side}}")
     elif a == "hold" and not _hold_ok(v, p): errors.append(f"{w}: `if.{k}` is {{slot: hand or person, door: {p.get('values')}}} or {{slot, item: <id>}}, and / or {{hands: {{props: [weapon properties], only: bool}}, body: {{armour_at_most: {_ARMOUR_NAMES} or a class number}}}}")
     elif a == "skill" and not (isinstance(v, dict) and v and all(sk in known["skill"] and isinstance(n, int) for sk, n in v.items())): errors.append(f"{w}: `if.{k}` maps skills to points ({{empathy: 5}})")
-    elif a == "limit" and not (isinstance(v, dict) and (v.get("per") in LIMIT_SCOPES or isinstance(v.get("cooldown"), (int, float))) and set(v) <= {"per", "n", "key", "each", "cooldown"}): errors.append(f"{w}: `if.{k}` is a limit ({{per, n?, key?, each?}} or {{cooldown}})")
+    elif a == "limit" and not (isinstance(v, dict) and (v.get("per") in LIMIT_SCOPES or isinstance(v.get("cooldown"), (int, float))) and set(v) <= {"per", "n", "key", "shared", "each", "cooldown"}): errors.append(f"{w}: `if.{k}` is a limit ({{per, n?, key?, shared?, each?}} or {{cooldown}})")
     elif a == "res" and not (isinstance(v, dict) and v and all(isinstance(b, dict) and b and set(b) <= {"at_least", "at_most", "at"} and all(isinstance(b[x], (int, float)) and not isinstance(b[x], bool) for x in ("at_least", "at_most") if x in b) and b.get("at", "max") in ("max", "limit") and r in (p.get("values") or []) for r, b in v.items())): errors.append(f"{w}: `if.{k}` maps resources ({p.get('values')}) to bounds {{at_least: n, at_most: n, at: max | limit}} (rules 1.60, N10; rules 1.70 P2)")
     elif a in ("zone", "tie", "hold", "skill", "limit", "res"): pass
     elif p.get("values") and not all(x in p["values"] for x in vals): errors.append(f"{w}: `if.{k}` takes only {p['values']}")
@@ -2236,6 +2239,11 @@ def check_targets(t, w):
         elif f == "bool" and not isinstance(v, bool): errors.append(f"{w}: targets.{k} is true or false")
         elif isinstance(f, list) and v not in f: errors.append(f"{w}: targets.{k} takes {f}")
         elif f == "string" and not isinstance(v, str): errors.append(f"{w}: targets.{k} is a word")
+        elif f == "predicates":  # rules 1.77 item 6500: each unit of the set passes these predicates as the target
+            if not isinstance(v, dict): errors.append(f"{w}: targets.if is an object of predicates")
+            else:
+                for pk in v:
+                    if pk not in PRED: errors.append(f"{w}: unknown predicate '{pk}' in targets.if")
     _tk = {k.get("id") for k in (((data.get("rules") or {}).get("ties") or {}).get("kinds") or [])}
     if "tied" in t and t["tied"] not in _tk: errors.append(f"{w}: targets.tied names a tie kind (rules.json ties.kinds: {sorted(_tk)})")
     if "aims_at" in t and not (t["aims_at"] == "self" or (isinstance(t["aims_at"], str) and t["aims_at"].startswith("tied:") and t["aims_at"][5:] in _tk)): errors.append(f"{w}: targets.aims_at is self or tied:<a tie kind>")
@@ -2251,10 +2259,6 @@ def check_trigger_effect(e, w):
         if not o: errors.append(f"{w}: op '{x.get('op')}' does not run on a trigger (item_ops.ops)"); continue
         if t not in o["on"]: errors.append(f"{w}: op '{x.get('op')}' does not run on '{t}' (it runs on {o['on'][:6]}…)")
         if x.get("target") not in (None, "self", "actor", "target"): errors.append(f"{w}: an item op's target is self, actor or target")
-        # spec item 5607: a meter the fight's start makes after the items' combat_start ops (actions.json resources.<id>
-        # made_after_start) has nothing to take a combat_start resource op: give it at the holder's first turn_start
-        if t == "combat_start" and x.get("op") == "resource" and (((data.get("actions") or {}).get("resources") or {}).get(x.get("resource")) or {}).get("made_after_start"):
-            warns.append(f"{w}: a combat_start resource op on {x.get('resource')}, a meter made after the items' combat_start ops: it would be lost (give it at turn_start, once a fight)")
         for f in ("value", "value_pct", "max", "add", "set", "min", "at_least", "tiles", "rounds", "count", "share"):
             if f in x and not (isinstance(x[f], (int, float)) and not isinstance(x[f], bool)) and not (f == "value" and x.get("op") == "resource" and x[f] in ("all", "zero")):
                 if isinstance(x[f], dict): check_number_block(x[f], f"{w}: '{f}'")
@@ -2303,6 +2307,7 @@ def check_trigger_effect(e, w):
     lim = e.get("limit")
     if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or "reaction" in lim or (lim.get("per") in LIMIT_SCOPES and isinstance(lim.get("n", 1), int)))):
         errors.append(f"{w}: an item op's limit is {{ per: {sorted(LIMIT_SCOPES)}, n }}, {{ cooldown: rounds }} or {{ reaction: 1 or 2, kind }}")
+    if isinstance(lim, dict) and "shared" in lim and not (isinstance(lim["shared"], str) and lim["shared"] and "key" not in lim): errors.append(f"{w}: a limit's shared is a counter name, in place of key (rules 1.77 item 6504)")
 # Classes 3.0 P5, the standing aura: a stat_mod with `targets` and no `when` (statQuery answers it for every unit of the
 # set while its holder stands): a well-formed set centred on the holder, a numeric value.
 def check_aura(o, w):
@@ -2384,6 +2389,7 @@ if TRIG:
                     for k, v in r["if"].items(): check_pred(k, v, w)
                 if "tied" in r: check_pred("target_tied", r["tied"], w) if "target_tied" in PRED else errors.append(f"{w}: reach.tied needs ties (P8)")
         if "prayer" in g and g["prayer"] not in ("whisper", "hymn"): errors.append(f"{w}: a grant_action's prayer is whisper or hymn")
+        if "tab" in g and g["tab"] not in ("shadow", "tend", "figments"): errors.append(f"{w}: a grant_action's tab is a door's tab: shadow, tend or figments (rules 1.77 item 6501)")
         if "tier" in g and g["tier"] not in (1, 2, 3): errors.append(f"{w}: a prayer's tier is 1, 2 or 3")
         lim = g.get("limit")
         if lim is not None and not (isinstance(lim, dict) and lim.get("per") in LIMIT_SCOPES | {"per_turn", "per_round", "per_combat", "per_scene", "per_session", "per_rest"} and isinstance(lim.get("n", 1), int)): errors.append(f"{w}: a grant_action's limit is {{per, n}}")
@@ -2495,7 +2501,12 @@ if TRIG:
     if _SHR and _brk:
         _per = {p.get("of"): p.get("value") for e in _brk.get("effects") or [] if isinstance(e.get("value"), dict) for p in e["value"].get("per") or []}
         if _per != {"res:shadow": _SHR.get("per_point"), "event:ambush": _SHR.get("ambush_bonus"), "target:marked": _SHR.get("marked_bonus")}: errors.append("skills:ingenuity.1: the Break's term must read rules.json shadow per_point, ambush_bonus, marked_bonus")
-        if any((e.get("limit") or {}).get("key") == "gain" and (e["limit"].get("n") != _SHR.get("door_gains_per_turn")) for e in _door.get("effects") or []): errors.append("skills:ingenuity.1: the gains' shared limit is rules.json shadow.door_gains_per_turn")
+        if any((e.get("limit") or {}).get("shared") == "shadow_gain" and (e["limit"].get("n") != _SHR.get("door_gains_per_turn")) for e in _door.get("effects") or []): errors.append("skills:ingenuity.1: the gains' shared limit is rules.json shadow.door_gains_per_turn")
+        # rules 1.77 item 6504: Stalk's gain counts under the same shared limit, of the same size
+        _stk = next((x for x in (data.get("shadow") or {}).get("items") or [] if x.get("id") == "shadow.stalk"), None)
+        for _g in (_stk or {}).get("effects") or []:
+            for _e in _g.get("effects") or []:
+                if _e.get("op") == "resource" and ((_e.get("limit") or {}).get("shared") != "shadow_gain" or _e["limit"].get("n") != _SHR.get("door_gains_per_turn")): errors.append("shadow:shadow.stalk: its gain counts under the door's shared limit shadow_gain, n rules.json shadow.door_gains_per_turn (rules 1.77 item 6504)")
     _op = next((m for b in base if b.get("id") == "infiltrator" for m in b.get("gain") or [] if m.get("id") == "tradecraft"), None)
     if _SHR and _op and not any(e.get("op") == "resource" and e.get("when") == "combat_start" and e.get("value") == _SHR.get("operative_start") for e in _op.get("effects") or []): errors.append("classes:infiltrator.tradecraft: its combat_start Shadow is rules.json shadow.operative_start")
     # skills.json unlocks marked `item` are run as items (effects/collect.ts SKILL_ITEMS)

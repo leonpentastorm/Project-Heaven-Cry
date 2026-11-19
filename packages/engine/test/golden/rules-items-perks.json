@@ -11,6 +11,8 @@
 "item/perk/lore_ward@I/action/warding_word": "n0 P2 +warding_word3",
 "item/perk/lore_ward@II/action/warding_word": "n0 P2 +warding_word3",
 "item/perk/many_hands@mastered/ally-taken": "n1  || n1  || n1  || n1  || n1 ",
+"item/perk/still_standing@I/taken-low": "n1 P1 +last_turn99 || n1 P1 +last_turn99 || n1 P1 +last_turn99 || n1 P1 +last_turn99 || n1 P1 +last_turn99",
+"item/perk/still_standing@II/taken-low": "n1 P1 +last_turn99 || n1 P1 +last_turn99 || n1 P1 +last_turn99 || n1 P1 +last_turn99 || n1 P1 +last_turn99",
 "item/perk/still_water@mastered/taken": "n1  || n1  || n1  || n1  || n1 ",
 "item/perk/still_water@mastered/taken-crit": "n2  || n2  || n3 P2 bleed0>3 || n2  || n3 P2 bleed0>3",
 "item/perk/still_water@mastered/taken-low": "n1  || n1  || n1  || n1  || n1 ",

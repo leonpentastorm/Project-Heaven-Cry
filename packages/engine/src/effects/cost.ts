@@ -76,27 +76,33 @@ export const hasCost = (action: string, field = 'ap'): boolean => typeof verbOf(
  * 'reload_both', 'break'); any other name is itself. What the `cost` hook's ctx.action carries. */
 export const actionName = (action: string): string => VERBS[action]?.site || action;
 
-interface ResDef { name: string; /** the name of one (a cost or a need of 1: "1 core") */ one?: string; on: 'unit' | 'character'; path: string; whole?: boolean;
+interface ResDef { name: string; /** the name of one (a cost or a need of 1: "1 core") */ one?: string;
+  /** Who holds it: the unit, its character, or (rules 1.77 item 6512) the fight itself (the air's mana: Combat.mana). */ on: 'unit' | 'character' | 'fight'; path: string; whole?: boolean;
+  /** Rules 1.77 item 6512: the refusal when there is too little ({have}, {n}); default "Needs n <name> (you have m)". */ short?: string;
   /** Its most, a path on the same holder (MP: mg.mpMax): a gain stops there. */ max?: string;
   /** A path on the holder that must be set for it to be given at all, or a list of paths of which one must be (MP: mg.emanator or mg.attuner, an MP focus in hand: rules 1.33). */ needs?: string | string[];
   /** A named setter (registered with setResSetter) that gives it instead of the plain path: Pressure's addPressureTo. */ setter?: string }
 /** Every resource an action can cost (data/actions.json `resources`). */
 export const RESOURCES: Record<string, ResDef> = (actionsJ as any).resources;
-const holderOfRes = (d: ResDef, u: Unit | null | undefined, c: Character | null | undefined): any => (d.on === 'character' ? c ?? charOfUnit(u) : u);
+// rules 1.77 item 6512: a fight-held resource lives on the fight the price is asked in (cb), never on the unit
+const holderOfRes = (d: ResDef, u: Unit | null | undefined, c: Character | null | undefined, cb?: Combat | null): any => (d.on === 'fight' ? cb ?? null : d.on === 'character' ? c ?? charOfUnit(u) : u);
 function cell(d: ResDef, root: any): { o: any; k: string } | null {
   if (!root) return null; const parts = d.path.split('.'); let o = root;
   for (let i = 0; i < parts.length - 1; i++) { o = o?.[parts[i]]; if (o == null) return null; }
   return { o, k: parts[parts.length - 1] };
 }
 /** How much of a resource the unit has now (0 when it has no such thing: no Evoker, no class meter). */
-export function resLeft(u: Unit | null | undefined, id: string, c?: Character | null): number {
+export function resLeft(u: Unit | null | undefined, id: string, c?: Character | null, cb?: Combat | null): number {
   if (id === 'ap') return u?.ap ?? 0;
   const d = RESOURCES[id]; if (!d) throw new Error('Unknown resource "' + id + '" (data/rules.json costs.resources).');
-  const x = cell(d, holderOfRes(d, u, c)); return x ? Number(x.o[x.k]) || 0 : 0;
+  const x = cell(d, holderOfRes(d, u, c, cb)); return x ? Number(x.o[x.k]) || 0 : 0;
 }
-function resAdd(u: Unit | null | undefined, id: string, n: number, c?: Character | null): void {
+function resAdd(u: Unit | null | undefined, id: string, n: number, c?: Character | null, cb?: Combat | null): void {
   const d = RESOURCES[id]; if (!d) throw new Error('Unknown resource "' + id + '" (data/rules.json costs.resources).');
-  const x = cell(d, holderOfRes(d, u, c)); if (x) x.o[x.k] = (Number(x.o[x.k]) || 0) + n;
+  // rules 1.77 item 6512: a fight-held meter changes through its own setter (the air's mana: magic.ts shiftMana, its clamp
+  // and its band words), as resGive gives it
+  if (d.on === 'fight' && d.setter) { const f = SETTERS[d.setter]; if (!f) throw new Error('No setter "' + d.setter + '" for the resource ' + id + '.'); if (cb && u) f(cb, u, n, null, ''); return; }
+  const x = cell(d, holderOfRes(d, u, c, cb)); if (x) x.o[x.k] = (Number(x.o[x.k]) || 0) + n;
 }
 
 type ResSetter = (cb: Combat | null | undefined, u: Unit, n: number, by: Unit | null, why: string) => number;
@@ -138,7 +144,7 @@ const needsMet = (d: ResDef, root: any): boolean => !d.needs || (Array.isArray(d
  * its descriptor row read the mp row's needs this way), else what would change. A row with a setter can't be asked. */
 export function resGive(cb: Combat | null | undefined, u: Unit, id: string, n: number, o: { by?: Unit | null; c?: Character | null; why?: string; ask?: boolean } = {}): number {
   const d = RESOURCES[id]; if (!d) throw new Error('Unknown resource "' + id + '" (data/actions.json resources).');
-  const root = holderOfRes(d, u, o.c);
+  const root = holderOfRes(d, u, o.c, cb);
   if (!needsMet(d, root)) return o.ask ? NaN : 0;
   if (d.setter) { if (o.ask) throw new Error('The resource ' + id + ' is given through a setter: it can\'t be asked.'); const f = SETTERS[d.setter]; if (!f) throw new Error('No setter "' + d.setter + '" for the resource ' + id + '.'); return f(cb, u, n, o.by ?? null, o.why || ''); }
   const x = cell(d, root); if (!x) return o.ask ? NaN : 0;
@@ -256,25 +262,26 @@ export const apFor = (cb: Combat | null | undefined, u: Unit, as?: any): number 
 export function whyNot(cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { as?: any; c?: Character | null; /** Classes 3.0 P9: who pays a price made on another (an owned unit's, paid by its owner) */ payer?: Unit | null } = {}): string | null {
   if (o.payer && o.payer !== u) return whyNot(cb, o.payer, p, { as: o.as, c: o.c });
   const ap = apOf(p);
-  if (typeof p !== 'number') { const no = resWhyNot(p.res, u, o.c); if (no) return no; }
+  if (typeof p !== 'number') { const no = resWhyNot(p.res, u, o.c, cb); if (no) return no; }
   if (ap > 0 && apFor(cb, u, o.as) < ap) return needs(ap);
   return null;
 }
 /** The same question for the resources alone, with or without a unit (a story action has none): the sentence, or null.
  * With no unit only what the CHARACTER holds can be asked for (stims, Echo); a resource kept on a unit (charge, MP,
  * Supplies…) can't be paid where there is no unit, and the action is refused, never run for nothing. */
-export function resWhyNot(res: Record<string, number> | undefined, u: Unit | null | undefined, c?: Character | null): string | null {
+export function resWhyNot(res: Record<string, number> | undefined, u: Unit | null | undefined, c?: Character | null, cb?: Combat | null): string | null {
   for (const [id, n] of Object.entries(res || {})) {
     if (!(n > 0)) continue; const d = RESOURCES[id]; if (!d) throw new Error('Unknown resource "' + id + '" (data/actions.json resources).');
     const word = n === 1 && d.one ? d.one : d.name;
     if (!u && d.on === 'unit') return 'Only in a fight (it costs ' + n + ' ' + word + ').';
-    const have = resLeft(u, id, c); if (have < n) return needs(n, word, undefined, Math.floor(have)); // 0.28.3: "Needs 24 MP (you have 10)."
+    if (d.on === 'fight' && !cb) return 'Only in a fight (it costs ' + n + ' ' + word + ').';
+    const have = resLeft(u, id, c, cb); if (have < n) return d.short ? d.short.replace('{have}', String(Math.floor(have))).replace('{n}', String(n)) : needs(n, word, undefined, Math.floor(have)); // 0.28.3: "Needs 24 MP (you have 10)."
   }
   return null;
 }
 /** Take the resources alone (a story action: no unit, no AP). Ask resWhyNot first. */
-export function resPay(res: Record<string, number> | undefined, u: Unit | null | undefined, c?: Character | null): void {
-  for (const [id, n] of Object.entries(res || {})) if (n) resAdd(u, id, -n, c);
+export function resPay(res: Record<string, number> | undefined, u: Unit | null | undefined, c?: Character | null, cb?: Combat | null): void {
+  for (const [id, n] of Object.entries(res || {})) if (n) resAdd(u, id, -n, c, cb);
 }
 /** Can the unit pay this price now (AP and resources, with any credit)? whyNot() says why not. */
 export const canPay = (cb: Combat | null | undefined, u: Unit, p: Priced | number, o: { as?: any; c?: Character | null } = {}): boolean => !whyNot(cb, u, p, o);
@@ -293,7 +300,7 @@ export function pay(cb: Combat | null | undefined, u: Unit, p: Priced | number, 
   }
   if (due) (u as any).ap = r10(u.ap - due);
   if (due) paidNote(cb, u, due);
-  if (typeof p !== 'number') for (const [id, n] of Object.entries(p.res)) if (n) resAdd(u, id, -n, o.c);
+  if (typeof p !== 'number') for (const [id, n] of Object.entries(p.res)) if (n) resAdd(u, id, -n, o.c, cb);
   return due;
 }
 /** rules 1.66 item 5203 (the review): the price a dry run paid. previewAction opens cb.apPaid on its copy; pay() adds

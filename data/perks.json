@@ -335,8 +335,10 @@
       "text": "I: One injured limb no longer holds you back. II: One injured limb no longer holds you back. While you hold Guard, a critical hit on you lands as an ordinary hit and leaves no injury.",
       "effects": [
         {
-          "op": "narrator",
-          "note": "One limb injury of this character's gives no penalty (no engine half yet: rules 1.73 item 5827, injuries carry no limb penalty the engine reads)."
+          "op": "stat_mod",
+          "stat": "numb_limbs",
+          "value": 1,
+          "label": "Numb"
         }
       ],
       "tiers": {
@@ -352,8 +354,10 @@
           "short": "One injured limb no longer holds you back",
           "effects": [
             {
-              "op": "narrator",
-              "note": "One limb injury of this character's gives no penalty (no engine half yet: rules 1.73 item 5827, injuries carry no limb penalty the engine reads)."
+              "op": "stat_mod",
+              "stat": "numb_limbs",
+              "value": 1,
+              "label": "Numb"
             }
           ]
         },
@@ -369,8 +373,10 @@
           "short": "Holding Guard: a critical on you is an ordinary hit, no injury",
           "effects": [
             {
-              "op": "narrator",
-              "note": "One limb injury of this character's gives no penalty (no engine half yet: rules 1.73 item 5827)."
+              "op": "stat_mod",
+              "stat": "numb_limbs",
+              "value": 1,
+              "label": "Numb"
             },
             {
               "op": "damage_mult",
@@ -443,7 +449,7 @@
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "injury",
@@ -470,11 +476,22 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When your HP runs out, take one more turn with {=tiers.I.numbers.ap} AP before you fall Downed (once a fight). II: When your HP runs out, take one more turn with {=tiers.II.numbers.ap} AP before you fall Downed (once a fight).",
+      "text": "I: When your HP runs out, take one more turn with {=tiers.I.effects.0.turn_ap} AP before you fall Downed (once a fight). II: When your HP runs out, take one more turn with {=tiers.II.effects.0.turn_ap} AP before you fall Downed (once a fight).",
       "effects": [
         {
-          "op": "narrator",
-          "note": "Once a fight, when this character's HP runs out it takes one more turn (3 AP) before it falls Downed (no engine half yet: rules 1.73 item 5828, a last turn has no general piece)."
+          "op": "last_turn",
+          "when": "would_drop",
+          "if": {
+            "open": true,
+            "self_harm": false
+          },
+          "limit": {
+            "per": "per_combat",
+            "n": 1
+          },
+          "label": "Still Standing",
+          "say": "{self} is still standing{then}.",
+          "turn_ap": 3
         }
       ],
       "tiers": {
@@ -486,17 +503,25 @@
             }
           ],
           "ap_cost": null,
-          "text": "When your HP runs out, take one more turn with {=tiers.I.numbers.ap} AP before you fall Downed (once a fight).",
-          "short": "HP out: one more turn with {=tiers.I.numbers.ap} AP, once a fight",
+          "text": "When your HP runs out, take one more turn with {=tiers.I.effects.0.turn_ap} AP before you fall Downed (once a fight).",
+          "short": "HP out: one more turn with {=tiers.I.effects.0.turn_ap} AP, once a fight",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Once a fight, when this character's HP runs out it takes one more turn (3 AP) before it falls Downed (no engine half yet: rules 1.73 item 5828, a last turn has no general piece)."
+              "op": "last_turn",
+              "when": "would_drop",
+              "if": {
+                "open": true,
+                "self_harm": false
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1
+              },
+              "label": "Still Standing",
+              "say": "{self} is still standing{then}.",
+              "turn_ap": 3
             }
-          ],
-          "numbers": {
-            "ap": 3
-          }
+          ]
         },
         "II": {
           "requires": [
@@ -506,31 +531,36 @@
             }
           ],
           "ap_cost": null,
-          "text": "When your HP runs out, take one more turn with {=tiers.II.numbers.ap} AP before you fall Downed (once a fight).",
-          "short": "That turn has {=tiers.II.numbers.ap} AP",
+          "text": "When your HP runs out, take one more turn with {=tiers.II.effects.0.turn_ap} AP before you fall Downed (once a fight).",
+          "short": "That turn has {=tiers.II.effects.0.turn_ap} AP",
           "effects": [
             {
-              "op": "narrator",
-              "note": "As Tier I, with 5 AP (no engine half yet: rules 1.73 item 5828)."
+              "op": "last_turn",
+              "when": "would_drop",
+              "if": {
+                "open": true,
+                "self_harm": false
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1
+              },
+              "label": "Still Standing",
+              "say": "{self} is still standing{then}.",
+              "turn_ap": 5
             }
           ],
-          "numbers": {
-            "ap": 5
-          },
           "replaces_tier_I": true,
           "after": "I"
         }
       },
-      "adjudication": "narrator",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "survival"
       ],
       "provisional": true,
-      "source": "rules 1.73 (Body), 0.32: the Endurance step",
-      "numbers": {
-        "ap": 3
-      }
+      "source": "rules 1.73 (Body), 0.32: the Endurance step"
     },
     {
       "id": "second_wind",
@@ -1518,8 +1548,10 @@
       "text": "I: Fear can't stop you moving or acting; you keep only its penalty to hit. II: Fear can't stop you moving or acting; you keep only its penalty to hit. Fear and Nausea last at most {=tiers.II.effects.1.max} round on you.",
       "effects": [
         {
-          "op": "narrator",
-          "note": "Fear can't stop this character moving or acting; it keeps only Fear's penalty to hit (no engine half yet: rules 1.73 item 5811, needs a stat Fear's two refusals ask)."
+          "op": "stat_mod",
+          "stat": "fear_unbound",
+          "value": 1,
+          "label": "Steady"
         }
       ],
       "tiers": {
@@ -1535,8 +1567,10 @@
           "short": "Fear can't stop your moves or actions",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Fear can't stop this character moving or acting; it keeps only Fear's penalty to hit (no engine half yet: rules 1.73 item 5811, needs a stat Fear's two refusals ask)."
+              "op": "stat_mod",
+              "stat": "fear_unbound",
+              "value": 1,
+              "label": "Steady"
             }
           ]
         },
@@ -1552,8 +1586,10 @@
           "short": "Fear and Nausea last {=tiers.II.effects.1.max} round at most",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Fear can't stop this character moving or acting; it keeps only Fear's penalty to hit (no engine half yet: rules 1.73 item 5811, needs a stat Fear's two refusals ask)."
+              "op": "stat_mod",
+              "stat": "fear_unbound",
+              "value": 1,
+              "label": "Steady"
             },
             {
               "op": "cond_rounds",
@@ -1571,7 +1607,7 @@
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "resistance",
@@ -1598,11 +1634,22 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Allies within {=tiers.I.numbers.tiles} tiles roll Fear saves with your Guts in place of their own. II: Allies within {=tiers.II.effects.1.if.target_within} tiles roll Fear saves with your Guts in place of their own, and have {=tiers.II.effects.1.value|signed} on their Heart saves.",
+      "text": "I: Allies within {=tiers.I.effects.0.if.target_within} tiles roll Fear saves with your Guts in place of their own (when yours is better). II: Allies within {=tiers.II.effects.1.if.target_within} tiles roll Fear saves with your Guts in place of their own (when yours is better), and have {=tiers.II.effects.1.value|signed} on their Heart saves.",
       "effects": [
         {
-          "op": "narrator",
-          "note": "Allies within 3 tiles of this character roll Fear saves with its Guts in place of their own (no engine half yet: rules 1.73 item 5812, needs a save's skill swap)."
+          "op": "roll_with",
+          "when": "save",
+          "skill": "guts",
+          "if_higher": true,
+          "if": {
+            "target": "ally",
+            "target_within": 3,
+            "cond": [
+              "fear"
+            ],
+            "self_alive": true
+          },
+          "label": "Point Man"
         }
       ],
       "tiers": {
@@ -1614,17 +1661,25 @@
             }
           ],
           "ap_cost": null,
-          "text": "Allies within {=tiers.I.numbers.tiles} tiles roll Fear saves with your Guts in place of their own.",
-          "short": "Allies within {=tiers.I.numbers.tiles} tiles save against Fear with your Guts",
+          "text": "Allies within {=tiers.I.effects.0.if.target_within} tiles roll Fear saves with your Guts in place of their own (when yours is better).",
+          "short": "Allies within {=tiers.I.effects.0.if.target_within} tiles save against Fear with your Guts",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Allies within 3 tiles of this character roll Fear saves with its Guts in place of their own (no engine half yet: rules 1.73 item 5812, needs a save's skill swap)."
+              "op": "roll_with",
+              "when": "save",
+              "skill": "guts",
+              "if_higher": true,
+              "if": {
+                "target": "ally",
+                "target_within": 3,
+                "cond": [
+                  "fear"
+                ],
+                "self_alive": true
+              },
+              "label": "Point Man"
             }
-          ],
-          "numbers": {
-            "tiles": 3
-          }
+          ]
         },
         "II": {
           "requires": [
@@ -1634,12 +1689,23 @@
             }
           ],
           "ap_cost": null,
-          "text": "Allies within {=tiers.II.effects.1.if.target_within} tiles roll Fear saves with your Guts in place of their own, and have {=tiers.II.effects.1.value|signed} on their Heart saves.",
+          "text": "Allies within {=tiers.II.effects.1.if.target_within} tiles roll Fear saves with your Guts in place of their own (when yours is better), and have {=tiers.II.effects.1.value|signed} on their Heart saves.",
           "short": "And {=tiers.II.effects.1.value|signed} on their Heart saves",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Allies within 3 tiles of this character roll Fear saves with its Guts in place of their own (no engine half yet: rules 1.73 item 5812, needs a save's skill swap)."
+              "op": "roll_with",
+              "when": "save",
+              "skill": "guts",
+              "if_higher": true,
+              "if": {
+                "target": "ally",
+                "target_within": 3,
+                "cond": [
+                  "fear"
+                ],
+                "self_alive": true
+              },
+              "label": "Point Man"
             },
             {
               "op": "roll_mod",
@@ -1661,17 +1727,14 @@
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "fear",
         "support"
       ],
       "provisional": true,
-      "source": "rules 1.73 (Body), 0.32: the Strength step",
-      "numbers": {
-        "tiles": 3
-      }
+      "source": "rules 1.73 (Body), 0.32: the Strength step"
     },
     {
       "id": "unflinching",
@@ -2522,8 +2585,20 @@
       "text": "I: With no torso armour, attacks on you roll twice and take the worse. II: In Light armour or none, attacks on you roll twice and take the worse.",
       "effects": [
         {
-          "op": "narrator",
-          "note": "Attacks on this character roll twice and keep the worse while it wears no torso armour (no engine half yet: rules 1.73 item 5849, a roll kept from two has no piece)."
+          "op": "two_dice",
+          "when": "attack_roll",
+          "keep": "worse",
+          "if": {
+            "actor": "foe",
+            "target": "self",
+            "self_holds": {
+              "body": {
+                "armour_at_most": "none"
+              }
+            }
+          },
+          "label": "Untouchable",
+          "say": "{self} is hard to pin down{then} (Untouchable)."
         }
       ],
       "tiers": {
@@ -2539,8 +2614,20 @@
           "short": "No torso armour: attacks on you roll twice, take the worse",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Attacks on this character roll twice and keep the worse while it wears no torso armour (no engine half yet: rules 1.73 item 5849, a roll kept from two has no piece)."
+              "op": "two_dice",
+              "when": "attack_roll",
+              "keep": "worse",
+              "if": {
+                "actor": "foe",
+                "target": "self",
+                "self_holds": {
+                  "body": {
+                    "armour_at_most": "none"
+                  }
+                }
+              },
+              "label": "Untouchable",
+              "say": "{self} is hard to pin down{then} (Untouchable)."
             }
           ]
         },
@@ -2556,15 +2643,27 @@
           "short": "Light armour too",
           "effects": [
             {
-              "op": "narrator",
-              "note": "As Tier I, in Light armour too."
+              "op": "two_dice",
+              "when": "attack_roll",
+              "keep": "worse",
+              "if": {
+                "actor": "foe",
+                "target": "self",
+                "self_holds": {
+                  "body": {
+                    "armour_at_most": "light"
+                  }
+                }
+              },
+              "label": "Untouchable",
+              "say": "{self} is hard to pin down{then} (Untouchable)."
             }
           ],
           "replaces_tier_I": true,
           "after": "I"
         }
       },
-      "adjudication": "narrator",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "defense",
@@ -4188,31 +4287,8 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Your Spot also Reads its target: your side sees its next action until its turn ends. II: Your Spot also Reads its target, and a Spot on an enemy that can't see you gives {=tiers.II.effects.3.value} Shadow (once a turn).",
+      "text": "I: Your Spot also Reads its target: your side sees its next action until its turn ends. II: Your Spot also Reads its target, and a Spot on an enemy that can't see you gives {=tiers.II.effects.1.value} Shadow (once a turn).",
       "effects": [
-        {
-          "op": "mark",
-          "when": "cost",
-          "if": {
-            "action": [
-              "call"
-            ]
-          },
-          "flag": "spot",
-          "clear": true,
-          "priority": 10
-        },
-        {
-          "op": "mark",
-          "when": "cost",
-          "if": {
-            "action_id": [
-              "call.spot"
-            ]
-          },
-          "flag": "spot",
-          "priority": 20
-        },
         {
           "op": "condition",
           "when": "acted",
@@ -4220,7 +4296,9 @@
             "action": [
               "call"
             ],
-            "flag": "spot",
+            "action_id": [
+              "call.spot"
+            ],
             "target": "foe"
           },
           "condition": "read",
@@ -4243,36 +4321,15 @@
           "short": "Your Spot also Reads its target (its next action shown)",
           "effects": [
             {
-              "op": "mark",
-              "when": "cost",
-              "if": {
-                "action": [
-                  "call"
-                ]
-              },
-              "flag": "spot",
-              "clear": true,
-              "priority": 10
-            },
-            {
-              "op": "mark",
-              "when": "cost",
-              "if": {
-                "action_id": [
-                  "call.spot"
-                ]
-              },
-              "flag": "spot",
-              "priority": 20
-            },
-            {
               "op": "condition",
               "when": "acted",
               "if": {
                 "action": [
                   "call"
                 ],
-                "flag": "spot",
+                "action_id": [
+                  "call.spot"
+                ],
                 "target": "foe"
               },
               "condition": "read",
@@ -4291,32 +4348,9 @@
             }
           ],
           "ap_cost": null,
-          "text": "Your Spot also Reads its target, and a Spot on an enemy that can't see you gives {=tiers.II.effects.3.value} Shadow (once a turn).",
-          "short": "And a Spot on a foe that can't see you: +{=tiers.II.effects.3.value} Shadow",
+          "text": "Your Spot also Reads its target, and a Spot on an enemy that can't see you gives {=tiers.II.effects.1.value} Shadow (once a turn).",
+          "short": "And a Spot on a foe that can't see you: +{=tiers.II.effects.1.value} Shadow",
           "effects": [
-            {
-              "op": "mark",
-              "when": "cost",
-              "if": {
-                "action": [
-                  "call"
-                ]
-              },
-              "flag": "spot",
-              "clear": true,
-              "priority": 10
-            },
-            {
-              "op": "mark",
-              "when": "cost",
-              "if": {
-                "action_id": [
-                  "call.spot"
-                ]
-              },
-              "flag": "spot",
-              "priority": 20
-            },
             {
               "op": "condition",
               "when": "acted",
@@ -4324,7 +4358,9 @@
                 "action": [
                   "call"
                 ],
-                "flag": "spot",
+                "action_id": [
+                  "call.spot"
+                ],
                 "target": "foe"
               },
               "condition": "read",
@@ -4340,7 +4376,9 @@
                 "action": [
                   "call"
                 ],
-                "flag": "spot",
+                "action_id": [
+                  "call.spot"
+                ],
                 "target": "foe",
                 "target_sees_self": false
               },
@@ -7194,6 +7232,7 @@
             {
               "op": "grant_action",
               "action": "tend_raise",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -7334,6 +7373,7 @@
         {
           "op": "grant_action",
           "action": "tend_settle",
+          "tab": "tend",
           "ap": 1,
           "uses": "at_will",
           "res": {
@@ -7401,6 +7441,7 @@
             {
               "op": "grant_action",
               "action": "tend_settle",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -7468,6 +7509,7 @@
             {
               "op": "grant_action",
               "action": "tend_settle",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -7522,6 +7564,7 @@
             {
               "op": "grant_action",
               "action": "tend_soothe",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -7670,6 +7713,7 @@
         {
           "op": "grant_action",
           "action": "tend_tug",
+          "tab": "tend",
           "ap": 1,
           "uses": "at_will",
           "res": {
@@ -7793,6 +7837,7 @@
             {
               "op": "grant_action",
               "action": "tend_tug",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -7916,6 +7961,7 @@
             {
               "op": "grant_action",
               "action": "tend_tug",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -8026,6 +8072,7 @@
             {
               "op": "grant_action",
               "action": "tend_guide",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -8786,7 +8833,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Every fifth foe you drop yourself in a fight makes your next Crystallise cost {=tiers.I.effects.6.set} AP: the kill is the rite. II: Every third foe you drop yourself in a fight makes your next Crystallise cost {=tiers.II.effects.4.set} AP.",
+      "text": "I: Every fifth foe you drop yourself in a fight makes your next Crystallise cost {=tiers.I.effects.6.set} AP and take nothing from the air: the kill is the rite. II: Every third foe you drop yourself in a fight makes your next Crystallise cost {=tiers.II.effects.4.set} AP and take nothing from the air.",
       "effects": [
         {
           "op": "mark",
@@ -8887,6 +8934,19 @@
           "label": "Rite in the Field"
         },
         {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "crystallise"
+            ],
+            "flag": "rite"
+          },
+          "res": "mana",
+          "set": 0,
+          "label": "Rite in the Field"
+        },
+        {
           "op": "mark",
           "when": "acted",
           "if": {
@@ -8907,7 +8967,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Every fifth foe you drop yourself in a fight makes your next Crystallise cost {=tiers.I.effects.6.set} AP: the kill is the rite.",
+          "text": "Every fifth foe you drop yourself in a fight makes your next Crystallise cost {=tiers.I.effects.6.set} AP and take nothing from the air: the kill is the rite.",
           "short": "Every fifth foe you drop: your next Crystallise costs {=tiers.I.effects.6.set} AP",
           "effects": [
             {
@@ -9009,6 +9069,19 @@
               "label": "Rite in the Field"
             },
             {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "crystallise"
+                ],
+                "flag": "rite"
+              },
+              "res": "mana",
+              "set": 0,
+              "label": "Rite in the Field"
+            },
+            {
               "op": "mark",
               "when": "acted",
               "if": {
@@ -9029,7 +9102,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Every third foe you drop yourself in a fight makes your next Crystallise cost {=tiers.II.effects.4.set} AP.",
+          "text": "Every third foe you drop yourself in a fight makes your next Crystallise cost {=tiers.II.effects.4.set} AP and take nothing from the air.",
           "short": "Every third foe you drop",
           "effects": [
             {
@@ -9097,6 +9170,19 @@
                 ],
                 "flag": "rite"
               },
+              "set": 0,
+              "label": "Rite in the Field"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "crystallise"
+                ],
+                "flag": "rite"
+              },
+              "res": "mana",
               "set": 0,
               "label": "Rite in the Field"
             },
@@ -10754,7 +10840,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When the fight starts, every friend banks {=tiers.I.effects.0.value|signed} AP for its first turn. II: As Tier I, and each foe makes a Heart save against your Authority or is Shaken for {=tiers.II.effects.1.rounds} round.",
+      "text": "I: When the fight starts, every friend banks {=tiers.I.effects.0.value|signed} AP for its first turn. II: As Tier I, and each rank-and-file foe (never an Elite or a Boss) makes a Heart save against your Authority or is Shaken for {=tiers.II.effects.1.rounds} round.",
       "effects": [
         {
           "op": "grant_ap",
@@ -10803,8 +10889,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "As Tier I, and each foe makes a Heart save against your Authority or is Shaken for {=tiers.II.effects.1.rounds} round.",
-          "short": "And foes save or are Shaken",
+          "text": "As Tier I, and each rank-and-file foe (never an Elite or a Boss) makes a Heart save against your Authority or is Shaken for {=tiers.II.effects.1.rounds} round.",
+          "short": "And rank-and-file foes save or are Shaken",
           "effects": [
             {
               "op": "grant_ap",
@@ -10826,7 +10912,13 @@
               "rounds": 1,
               "targets": {
                 "of": "self",
-                "side": "foe"
+                "side": "foe",
+                "if": {
+                  "target_not_tier": [
+                    "elite",
+                    "boss"
+                  ]
+                }
               },
               "label": "Five Stars"
             }
@@ -13041,11 +13133,19 @@
       "text": "Once per fight, when you would drop to 0 HP, you stay on your feet until the end of your next turn (or of this turn, if it is yours). Until then every hit you take is a failed death save instead of damage. At the end of it you go Downed, unless you have been healed.",
       "effects": [
         {
-          "op": "state",
-          "state": "last_turn",
-          "when": "would_drop_to_0",
-          "uses": "per_combat",
-          "context": "act one full turn, then drop unless healed above 0"
+          "op": "last_turn",
+          "when": "would_drop",
+          "hits": "death_save",
+          "if": {
+            "open": true,
+            "self_harm": false
+          },
+          "limit": {
+            "per": "per_combat",
+            "n": 1
+          },
+          "label": "Bite the Bullet",
+          "say": "{self} bites the bullet: still standing{then}."
         }
       ],
       "adjudication": "engine",

@@ -55,7 +55,7 @@ describe('the 19 relabels (item 1101)', () => {
   it('the labels of the 192: 138 engine, 46 hybrid, 8 narrator (rules 1.14 left 119, 46, 15; the truth pass of 12 Nov 2026, spec item 1514, moved fifteen; rules 1.56 moved Long Dark and Many-Eyed Dream to engine; rules 1.75 Determination: +Poker Face (hybrid), Stand Still, Pure Heart, Warding Word, Recitation (engine), Old Tales (narrator); -Old Tongue (hybrid), -You Get Used to It (engine))', () => {
     const all = [...PERKS, ...TRAITS], n = (l: string) => all.filter((x) => x.adjudication === l).length;
     expect(all.length).toBe(215); // rules 1.73 (Body): +12; rules 1.74 (Mind): +11; rules 1.75 (Soul): +12. Rules 1.75 Virtue: +Righteous, Five Stars, Commanding Voice (engine), Foresight (hybrid), Rank Has Privileges (narrator), -Real Power (narrator) // rules 1.75 Insight: +8 new, -4 removed (Soulmate, Rally Cry, Sweet Talker, Double Meaning)
-    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([148, 53, 14]); // Body +2 / +4 / +6, Mind +8 / +3 / 0, Soul +10 / +1 / +1
+    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([153, 50, 12]); // Body +2 / +4 / +6, Mind +8 / +3 / 0, Soul +10 / +1 / +1; rules 1.77 (engine pieces): Steady, Point Man, Numb hybrid to engine, Untouchable, Still Standing narrator to engine
   });
   it('no relabelled card still hands a rule to the Narrator: Talks Broke Down gives its timing rule, Verse of War has no audit', () => {
     for (const t of ['I', 'II']) expect(perkOf('talks_broke_down').tiers[t].text).not.toMatch(/Narrator/);

@@ -13168,3 +13168,106 @@ tiers on steps at 3 / 5 / 7 / 9, Mastered at 10). Removed perks map as each shee
     merge reads obPeak 123 / 213 / 178 / 183% at levels 1 / 5 / 10 / 20, outside the old band (124 to 212%) at levels 1
     and 5. No class is refitted: the contract's `outburst_peak` row is set to what is measured (`level_lo` 0.74,
     `level_hi` 1.295: 122 to 214%). PROVISIONAL: the fun-and-balance pass judges it.
+
+### Rules 1.77 (engine pieces), the pieces the lead approved from 0.32's "needs a primitive" list (19 Nov 2026)
+
+The lead's rulings on the lanes' hand-backs (`docs/ROADMAP.md` "0.32: needs a primitive"): each piece is general, added
+to the engine's closed lists or surface by name, and each unlocks a rule a lane skipped. A later revision overrides the
+body and the earlier ones. Every new number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
+The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
+
+6500. **A filter on an op's unit set** (`targets.if`): the same predicates as an `if` and a verb's `reach.if`, tested on
+      each unit of the set as the event's target. Five Stars II's Shaken reaches rank-and-file foes only (`targets.if
+      {target_not_tier: [elite, boss]}`, as Flush Out's reach): an Elite or a Boss is never in its set (rules 1.75 item
+      6224 completed). Its card says "each rank-and-file foe (never an Elite or a Boss)".
+6501. **A grant's tab** (`grant_action tab`: a door's tab, `shadow`, `tend` or `figments`): an item's action may sit on a
+      door's tab instead of its item's (Perks, Class). The Tending verbs that moved onto Camaraderie's perks (rules 1.75
+      item 6213: Raise, Settle, Soothe, Tug, Guide) carry `tab: tend` and show on the TEND tab again.
+6502. **`acted` carries the action's own id** when its name is a family (a Call: `call.spot`), so `action_id` reads it
+      on `acted` as on `cost`. Read Intent (rules 1.74 item 6009) reads "your Spot" from the action itself; its two
+      marks on the price (a flag set while prices were listed) are gone. Nothing a player sees changes.
+6503. **An action's condition tells `cond_apply` the action and the unit it was aimed at** (`ctx.action`, `ctx.aim`;
+      the predicate `target_aimed` on `cond_incoming`). Called Out (rules 1.60 item 4619; item 5602 completed): the foe
+      you name with Challenge is Taunted with no save (no roll at all); every other foe in reach still saves. Its card
+      reads "the foe you name is Taunted with no save" again.
+6504. **A limit shared across items** (`limit.shared`: one counter of the holder's, named, that every item naming it
+      counts under; in place of `key`) and **the negation of the resource bound** (the predicates `self_not_res`,
+      `actor_not_res`, `target_not_res`: the bounds of `self_res` not met; no new bound). Stalk (item 6405 completed):
+      its +1 Shadow counts toward the Shadow door's two gains a turn (`shared: shadow_gain`, the door's three gains
+      too); it is refused, before anything is paid, when your Shadow is full (`self_not_res {shadow: {at: limit}}`) and
+      when the turn's two gains are already made (`uses_left`), each in words.
+6505. **Fear's two refusals read a stat** (`fear_unbound`, >0: the unit is not held by them; `combat.ts fearHolds`).
+      Steady I (rules 1.73 item 5811 completed): Fear can't stop you attacking its source or moving toward it; Fear's
+      to-hit penalty stays (the condition row's own). Steady is `adjudication: engine` now (its tier II keeps its
+      Fear-and-Nausea cap).
+6506. **A save may roll with another skill** (op `roll_with` on the trigger `save`, the attack's ask: one place picks
+      the skill, `rolls.ts rollSave`): the save rolls with the HOLDER's modifier in that skill in place of the saver's
+      own save, never on top of it. Point Man I and II (rules 1.73 item 5812 completed): an ally within 3 tiles rolls its
+      Fear saves with your Guts in place of its own, when yours is better (`if_higher`; PROVISIONAL: "in place of" read
+      as never worse). The roll's read-out names it ("Guts (Point Man)"). Point Man is `adjudication: engine`.
+6507. **A roll kept from two dice** (item op `two_dice` on the attack's own roll hook `attack_roll`, `keep: worse` or
+      `better`): a second d20 is drawn from the fight's dice and the worse (or better) of the two stands; once an attack,
+      the log says both dice. No existing piece did it (Echo and the Lucky rerolls replace the die; the registry's
+      `disadvantage` op has no reader). Untouchable (rules 1.73 item 5849 completed): I, with no torso armour, attacks on
+      you roll twice and keep the worse; II, in Light armour or none (`self_holds body.armour_at_most`). Engine now.
+6508. **One more turn at 0 HP** (item op `last_turn` on `would_drop`, Bite the Bullet's handler made general and
+      retired; `Unit.lastTurn`, the condition row `last_turn` its marker): the blow leaves the holder on 1 HP; it acts
+      to the end of its next turn (the rest of this one if it dropped on its own turn), with `turn_ap` AP when the item gives
+      a number, then falls Downed unless a heal reached it first; `hits: death_save`, each hit meanwhile is a failed death
+      save instead of damage (two on a critical; three and it dies on its feet). Bite the Bullet keeps its rule exactly
+      (its golden rows did not move). Still Standing (rules 1.73 item 5828 completed): once a fight, I: that turn has 3
+      AP; II: 5 AP. A hit before that turn drops it as any blow does (PROVISIONAL: the sheet says nothing of it). Dropped
+      on its own turn, the rest of that turn is the last one, its AP cut to the number (PROVISIONAL). Engine now.
+6509. **The sheet reads its number blocks through the one resolver** (`effects/hooks.ts setSheetSource`, registered by
+      `effects/triggers.ts` with `sourceOf`; `sheetSource(c)` for a character with no unit): `strainLimit` and
+      `readyDesigns` no longer resolve `skill:` themselves. No number changes.
+6510. **A fight-start registration** (`combat.ts onFightStart`): what a system sets up on every unit as a fight starts
+      runs before the items' `combat_start` ops (the Momentum meter and its starting value, `physical/rules.ts`). The
+      Primed boon's Momentum is a `combat_start` op again (item 5506's real fix); item 5607's workaround is gone (the
+      `made_after_start` mark on `actions.json resources.momentum` and the validator's warning). No number changes.
+6511. **Standing defensive modifiers are shown in the fight** (the lead's ruling 14): a to-hit term already carries its
+      source label (an item op's `label`: "Open guard"); one general reader, `rolls.ts standingTerms` (the terms a
+      unit's own items put on a hostile's roll to hit it as things stand; `effects/hooks.ts emitOwn` takes the fight),
+      read by the client through `standingModsFor(g, unitId)`. The token card lists them ("Open guard −2 to hit them");
+      the attack preview at that unit names the same term (it always listed every to-hit term by label). The gaps
+      lane's "Open guard's −2 shown in the fight" is done.
+6512. **A resource held by the fight** (`data/actions.json resources` row `on: fight`; `effects/cost.ts` resLeft, resPay,
+      resWhyNot and resGive take the fight the price is asked in, and a fight-held meter changes through its setter; a
+      row's `short` is its refusal): the air's mana is the resource `mana` (`Combat.mana`, setter `mana`: `magic.ts
+      shiftMana`, its clamp and band words unchanged). Crystallise's draw on the air is on its price (`actions.json
+      costs.crystallise.mana`, 10, the number it always took), so the one pay takes it and an item may change it. Rite in
+      the Field (rules 1.75 item 6207 completed): the Crystallise its kills make free costs 0 AP and takes nothing from
+      the air (`cost_mod res: mana, set: 0`), even when the air is too thin. Thin air still refuses a plain Crystallise
+      in its own words.
+6513. **Injuries carry their limb penalties where the engine reads them** (they always did: an injured arm −2 to hit with
+      it, `combat.ts armPenalty`; a leg halves Movement, `rollInjury` and the sheet's `movement`); no injury system was
+      built. The stat `numb_limbs` (how many of a unit's first limb injuries carry no penalty; `character.ts penalLimbs`)
+      is read by all three. Numb I and II (rules 1.73 item 5827 completed): one injured limb, the first, no longer holds
+      you back; a second still does. Numb is `adjudication: engine` (its tier II keeps its critical rule).
+6514. **`reveal what: "kit"`** (the condition table's `kit` mod; the one read-out `combat.ts kitOf(cb, unit, side)`,
+      the client's `kitSeenFor(g, unitId, side)`): while a unit bears a condition whose row reveals `kit`, given by a
+      unit of a side, that side sees its weapon, its rounds (in the weapon and spare), its armour and what it carries to
+      throw. Its loot is rolled only as it falls (rules 1.54): there is nothing to show before. **Case** (item 1966 and
+      6407 completed; `shadow.json shadow.case`, group Mark, Ingenuity 3): 1 AP, an enemy within 8 tiles you see that
+      can't see you is Cased (condition row `cased`, until the fight ends): your side reads its kit on its token card,
+      and a Lift on it by your side costs 1 AP less (the row's `cost_mod` at Lift's site; any of your side's Lifts,
+      PROVISIONAL). Every number PROVISIONAL.
+6515. **Added by the integrator, approved by the lead and recorded here:** the exports `brakeGiven` (`effects/cost.ts`,
+      the healing brake's count after the action runs: item 5610) and `eyeReach` (`combat.ts`, the one sight range:
+      item 6403), and the field `DoorPending.name` (a door's own name on its pending pick: the merge's m5).
+6516. **Not approved, left as they are:** a story-side `acted` (Index II across story and fight; story mode is later),
+      bare fists in the glove family and a thrown Relic property (Items 2.0).
+6517. **Not built here, each for a reason (the builder's report, `docs/design/handoffs/0.32-ENGINE-PIECES.md`):**
+      (a) **Silent** (item 6406; the lead's ruling: acting from Hidden gives your tile away while you stay Hidden; a
+      Silent attack does not) contradicts rules still standing: the body's "any attack reveals you unless the weapon is
+      silent", the Break's "spent and revealed when the action ends" (item 1953), Vanish II's roll "when an attack reveals
+      you", Parting Cut's re-hide after the Break's reveal (item 1966) and the Silent module's "Begin, Pump and Release
+      don't reveal you". Each needs Leon's word before the reveal on attack is changed; the `silent` property is read
+      from data already (weapons, mods, bows, the technique lines). (b) **Field Repair as Improvisation's fourth perk**
+      (item 6042) needs a new perk with two tiers, the unlock at 3 turned into a perk step, Overhaul's added grant, and
+      the old saves at Improvisation 3+ re-offered the step (pendingRepicks): larger than this lane; the gate piece (an
+      action gated by a held item) is not added without its first user. (c) **Per-unit surprise** (Tremor I, Shoot
+      First I/II): the engine has the per-unit sit-out (`Unit.waitRound`: an unaware foe, an attacker in the open), but
+      no rule makes a character Surprised when it is ambushed; making one is a balance rule (who loses round 1), so it
+      is written as a design in the report and not built. (d) **Athletics "Defense from 1"** stays from 2 (Waiting on
+      Leon).

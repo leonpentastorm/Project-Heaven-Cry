@@ -55,7 +55,8 @@ const now = () => {
 export const DATA_ONLY = ['trait:pain_eater', 'trait:right_of_way', 'perk:siege_engine', 'perk:hot_swap', 'perk:last_wall',
   'class:adamantile_knight.unbroken', 'class:mage.core_change', 'class:marksman.speed_loader', 'class:mage.barrage', 'class:trickster.blind_and_slow',
   'class:marksman.run_and_gun', 'class:marksman.reflex', 'class:fighter.riposte', // rules 1.30
-  'class:infiltrator.tradecraft']; // rules 1.32 (Shadow; Vanish is a data action, its grant_action owned by the action door)
+  'class:infiltrator.tradecraft', // rules 1.32 (Shadow; Vanish is a data action, its grant_action owned by the action door)
+  'perk:bite_the_bullet']; // rules 1.77 item 6508: the op last_turn
 
 describe('item ops: the ratchet on lane handlers', () => {
   const cur = now();

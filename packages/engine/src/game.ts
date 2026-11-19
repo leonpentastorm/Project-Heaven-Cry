@@ -1783,7 +1783,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   if (err) { unlend(cb); fail(err); }
   if (fld) { const fh = (cb as any).fieldHarm; delete (cb as any).fieldHarm; if (fh && fh.by === u.id) fail(fh.text); } // rules 1.55 item 64: harm to a friend on the field refuses the action (effects/hooks.ts harmHeld)
   // Classes 3.0 P2: the trigger `acted`, once, after the unit's own action succeeded (Analyze fires its own: analyze()).
-  { const name = actedName(g, cb!, u, c, a); if (name) acted(cb!, u, { action: name, t: 'targetId' in a && a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null, tile: tileOfAction(g, a), toggles, mode: a.type === 'combat/attack' ? a.mode || 'shot' : null, ...('choice' in a && (a as any).choice != null ? { choice: String((a as any).choice) } : {}) }); }
+  { const name = actedName(g, cb!, u, c, a); if (name) acted(cb!, u, { action: name, ...(a.type === 'combat/call' ? { id: a.id } : {}), t: 'targetId' in a && a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null, tile: tileOfAction(g, a), toggles, mode: a.type === 'combat/attack' ? a.mode || 'shot' : null, ...('choice' in a && (a as any).choice != null ? { choice: String((a as any).choice) } : {}) }); }
   { const used = settleCredit(cb!, loan); if (used) { briefUsed(cb!, u, used.brief); if (used.hadEncore) encoreUsed(cb!, u, used.spent - used.brief, loan!.encore); } }
   // An off-turn window counts the action (its unit is done after its limit; then the next, then the turn resumes).
   if (inWindow && cb!.window && a.type !== 'combat/decline' && a.type !== 'combat/end-turn') windowStep(cb!);
@@ -3719,7 +3719,7 @@ const liveFight = (g: GameState): Combat | null => (g.phase === 'combat' && g.co
 /** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
 const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
   'prone', 'braced', 'guardBrace', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'song', 'init',
-  'condBy', 'condVia', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
+  'condBy', 'condVia', 'condArg', 'condFresh', 'lastTurn', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
   // Physical 2.0 (rules 1.12): the meters and what a technique left on the unit
   'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed', 'openerUsed',
   // Calls (rules 1.13): the marks Calls left and the unit's own Call counters

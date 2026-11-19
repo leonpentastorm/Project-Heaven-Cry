@@ -6,7 +6,7 @@ import { setLogMarker, remark, say, type LogMark, type LogSideMark } from './log
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
-import { type Character, type PackItem, plainRounds, gearEntry, isShieldId, followsId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isShieldId, followsId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
@@ -131,6 +131,10 @@ export interface Unit {
   apNext?: number; apDebt?: number; apGained?: number; apTurnTotal?: number;
   /** Who hit this unit last, and everyone who has (kill attribution: bleed from your crits, barrels you broke). */
   lastHitBy?: string; damagedBy?: string[];
+  /** Rules 1.77 item 6508: borrowed time (op `last_turn`): the unit stands at 1 HP until the end of its next turn (this
+   * one when it dropped on it: began), then falls Downed unless healed; turnAp: that turn's AP; hits: death_save, each hit
+   * on it is a failed death save instead of damage; label: the item that gave it. */
+  lastTurn?: { began: boolean; turnAp?: number; hits?: 'death_save'; label: string };
   // ---------- shared subsystems (rules 1.3, lane 0B; every field optional so old saves load) ----------
   /** PC saves by family, debuff strength by delivering skill (rules 1.13), and item modifiers to d20 rolls by skill (the global ruling: item skill
    * mods reach every d20 that uses the skill), fixed when the unit is built. */
@@ -711,7 +715,7 @@ onHook('damage_in', (ctx: any) => {
 });
 
 /** −2 to attacks when an injured arm holds the weapon: the main-hand arm, or either arm for a two-handed weapon. */
-export const armPenalty = (u: Unit, w: WeaponDef) => ((u.injuries || []).some((i) => i.loc === 'arm' && (!ONE_HANDED.includes(w.category) || i.side === (u.hand || 'right'))) ? -2 : 0);
+export const armPenalty = (u: Unit, w: WeaponDef) => (penalLimbs(u.injuries, statQuery({ u }, 'numb_limbs').add).some((i) => i.loc === 'arm' && (!ONE_HANDED.includes(w.category) || i.side === (u.hand || 'right'))) ? -2 : 0); // rules 1.77 item 6513: Numb's ignored limb gives none
 
 export const alive = (u: Unit) => !u.dead && !u.downed && !u.surrendered;
 export const active = (cb: Combat) => cb.units.find((u) => u.id === (cb.window?.queue[0]?.unitId ?? cb.order[cb.turn]));
@@ -1352,7 +1356,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   if (hk.fail) return fail(hk.fail);
   // Conditions on the attacker (spec: Conditions): Afraid can't attack its source; Taunted must attack the taunter while
   // it can see them; Disarmed or a lowered weapon attacks with nothing but fists.
-  { const fs = condSource(att, 'fear'); if (fs && fs === tgt.id) return fail('Afraid of ' + tgt.name + ': you can\'t attack them.'); }
+  { const fs = condSource(att, 'fear'); if (fs && fs === tgt.id && fearHolds(cb, att)) return fail('Afraid of ' + tgt.name + ': you can\'t attack them.'); }
   { const ts = tauntedBy(att), tu = ts ? cb.units.find((x) => x.id === ts) : null; if (tu && tu.id !== tgt.id && !hk.ignoreTaunt && alive(tu) && sideSees(cb, att.side, tu)) return fail('Taunted: your attack must go at ' + tu.name + '.'); }
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && useW !== WEAPON.fists && !isMelee(useW)) return fail(condOn(att, 'disarmed') ? 'Disarmed: recover your weapon (2 AP), or strike with your fists.' : 'Your weapon is lowered: raise it (1 AP).');
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && isMelee(useW) && useW !== WEAPON.fists && mode !== 'melee') return fail('Disarmed: recover your weapon first.');
@@ -1661,8 +1665,8 @@ export function rollInjury(rng: Rng, t: Unit, cb?: Combat | null, by?: Unit | nu
   if (d === 1) { if (!ij.noDaze) { if (cb) applyCond(cb, rng, by || null, t, 'dazed', undefined, undefined, { skipSave: true }); else rawDazed(t, 1); } return lead + 'head' + (ij.noDaze || !t.dazedNext ? '' : ', Dazed'); }
   if (d <= 3) { if (cb) applyCond(cb, rng, by || null, t, 'bleeding', undefined, undefined, { skipSave: true }); else if (!immune({ u: t }, 'bleed')) rawBleed(t, 3); return lead + 'torso, ' + (t.bleed ? 'Bleeding' : 'no bleeding'); }
   if (d === 4) { inj.push({ loc: 'arm', side }); return lead + side + ' arm, −2 to attacks with it'; }
-  if (!ij.noHalve && !inj.some((i) => i.loc === 'leg')) t.movement = Math.max(0.5, t.movement / 2);
-  inj.push({ loc: 'leg', side });
+  // rules 1.77 item 6513: a leg injury Numb ignores (the stat numb_limbs) halves nothing; the first leg that holds it back does
+  { const was = penalLimbs(inj, statQuery({ u: t }, 'numb_limbs').add).some((i) => i.loc === 'leg'); inj.push({ loc: 'leg', side }); const now = penalLimbs(inj, statQuery({ u: t }, 'numb_limbs').add).some((i) => i.loc === 'leg'); if (!ij.noHalve && !was && now) t.movement = Math.max(0.5, t.movement / 2); }
   return lead + side + ' leg, half Movement';
 }
 
@@ -1720,6 +1724,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   cb.objects = objs; cb.sigilV = SIGIL_REV; // a fresh fight: rules 1.4 glyphs only
   tieCompanions(cb); // Classes 3.0 P9: each companion is tied to its owner (the owned-unit record)
   sayInitiative(cb, ''); // (re-marked by sightQuietly when the set-up hides someone)
+  for (const f of FIGHT_START) f(cb); // rules 1.77 item 6510: the systems' meters exist before the items' combat_start ops
   // Items at the start of a fight: 'combat_start' {cb, order, rng} (order mutable: act in the surprise round, swap places).
   const cs: any = emit(cb, 'combat_start', { cb, order: [...cb.order], rng });
   if (Array.isArray(cs.order) && cs.order.length === cb.order.length && cs.order.every((id: string) => cb.order.includes(id))) cb.order = cs.order;
@@ -1730,6 +1735,11 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   return cb;
 }
 
+/** Rules 1.77 item 6510: what a system sets up on every unit as a fight starts, BEFORE the items' 'combat_start' ops run
+ * (a door's meter and its starting value: physical/rules.ts Momentum), so an item's op at the start finds it. A system
+ * registers once at load (it can't be called from here: combat.ts can't import it, a load cycle). */
+const FIGHT_START: ((cb: Combat) => void)[] = [];
+export const onFightStart = (f: (cb: Combat) => void): void => { FIGHT_START.push(f); };
 /** Start the active unit's turn: AP, heat cooldown, Downed death saves (spec: Downed and dying). */
 export function beginTurn(cb: Combat, rng: Rng) {
   const u = active(cb);
@@ -1988,7 +1998,7 @@ export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint'
   const P = o.via || (o.shortest ? o.base || paths(cb, u.pos, u.id) : movePaths(cb, u, to, how, o.base)); // rules 1.9: a player's click-path goes around revealed hazards (item 683)
   const tiles = P.dist[to];
   if (tiles === undefined || to === u.pos) return 'Can\'t reach that tile.';
-  { const fs = condSource(u, 'fear'), f = fs ? cb.units.find((x) => x.id === fs) : null; if (f && !f.dead && dist(to, f.pos) < dist(u.pos, f.pos)) return 'Afraid of ' + f.name + ': you can\'t move toward them.'; }
+  { const fs = condSource(u, 'fear'), f = fs ? cb.units.find((x) => x.id === fs) : null; if (f && !f.dead && dist(to, f.pos) < dist(u.pos, f.pos) && fearHolds(cb, u)) return 'Afraid of ' + f.name + ': you can\'t move toward them.'; }
   // Threatened (a Call, rules 1.13): on its next turn it can't move toward the one who threatened it.
   { const cw = u.call?.cowed, f = cw ? cb.units.find((x) => x.id === cw.by) : null; if (f && alive(f) && dist(to, f.pos) < dist(u.pos, f.pos)) return 'Threatened by ' + f.name + ': you can\'t move toward them this turn.'; }
   let ap: number;
@@ -2782,10 +2792,11 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
  * through the price); range 4 + Analysis; line of sight; no roll. */
 export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'analyze', costOf('analyze', 'ap')).ap;
 /** THE door of the trigger `acted` (Classes 3.0 P2): a unit's own action succeeded. The reducer fires it once after each
- * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, tile, toggles, mode, ap, choice}
+ * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, id, tile, toggles, mode, ap, choice}
  * (choice, rules 1.33: the action's pick, as a felt feeling given by Inspire). */
-export function acted(cb: Combat, u: Unit, o: { action: string; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null }): void {
-  emit(cb, 'acted', { u, t: o.t || null, action: o.action, tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), cb });
+export function acted(cb: Combat, u: Unit, o: { action: string; id?: string | null; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null }): void {
+  // id (rules 1.77 item 6502): the action's own id when its name is a family (a Call: call.spot), read by `action_id`
+  emit(cb, 'acted', { u, t: o.t || null, action: o.action, ...(o.id ? { id: o.id } : {}), tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), cb });
 }
 /** How a unit's health reads on screen (rules 1.3; rules 1.55 item 29; `rules.json combat.health_look`): the one place
  * it is worked out. The squad's own and an Analyzed foe read exactly (`known`: the bar, `pct` 0 to 100, and the HP
@@ -3226,6 +3237,18 @@ onHook('on_hit', (ctx: any, cb: Combat) => {
   if (att.hidden) cb.lastSeen = { ...cb.lastSeen, [t.side]: { ...cb.lastSeen?.[t.side], [att.id]: att.pos } };
 });
 onHook('cond_end', (ctx: any) => { const u: Unit = ctx.u; if (u?.readIntent?.cond && u.readIntent.cond === ctx.id) delete u.readIntent; });
+/** Rules 1.77 item 6514: THE read-out of a unit's kit for a side (Shadow's Case): its weapon, its rounds (in the weapon,
+ * spare magazines), its armour and what it carries to throw, while it bears a condition whose row reveals `kit` (the row
+ * `cased`) given by a unit of that side. null otherwise. (Its loot is rolled only as it falls: nothing to show before.) */
+export interface KitView { weapon: string; rounds: string | null; armour: number; throwables: string[] }
+export function kitOf(cb: Combat, u: Unit, side: string): KitView | null {
+  const id = Object.keys(u.conds || {}).find((k) => (u.conds![k] || 0) > 0 && condDef(k)?.mods.kit), by = id ? cb.units.find((x) => x.id === u.condBy?.[id]) : null;
+  if (!id || !by || by.side !== side) return null;
+  const w = WEAPON[u.weapon], mag = w?.magazine;
+  const rounds = mag != null ? u.ammo + '/' + mag + ((u.mags || []).length ? ' and ' + (u.mags || []).length + ' spare' : '') : null;
+  const throwables = Object.entries(u.throwables || {}).filter(([, n]) => n > 0).map(([t, n]) => (WEAPON[t]?.name || ITEM[t]?.name || t) + (n > 1 ? ' x' + n : ''));
+  return { weapon: w?.name || u.weapon, rounds, armour: u.armour || 0, throwables };
+}
 /** Rules 1.23: the reason an intent gives when the enemy goes for the squad's healer. */
 export const HEALER_WHY = ': it goes for whoever is mending the squad';
 /** Rules 1.25: the reason an intent gives for each way an enemy chooses its target. */
@@ -3274,6 +3297,9 @@ export const die6 = (rng: Rng) => die(rng, 6);
 // ---------- weapon-granted actions (plan 2.9) ----------
 /** Can this weapon jam? Guns with a Heat limit can; bows, crossbows, the flamer, the breacher tube and the core rifle
  * can't (a natural 1 fumbles instead). A weapons.json `handling.deny: ['clear']` or `grant: ['clear']` overrides. */
+/** Do Fear's two refusals (no attack on its source, no step toward it) hold this unit? Not when an item answers
+ * 'fear_unbound' (rules 1.77 item 6505: Steady I); Fear's to-hit penalty is the condition row's and always stays. */
+export const fearHolds = (cb: Combat | null, u: Unit): boolean => !(statQuery({ u, cb }, 'fear_unbound').add > 0);
 /** Does nothing jam this unit's main-hand weapon (Tuned, Improvisation 5: the 'never_jams' query)? */
 export const neverJams = (cb: Combat | null, u: Unit): boolean => statQuery({ u, cb }, 'never_jams').add > 0;
 export function canJam(w: WeaponDef | undefined): boolean {

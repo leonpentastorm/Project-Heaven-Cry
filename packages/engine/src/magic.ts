@@ -158,6 +158,8 @@ export const CONDITION_IDS = Object.keys(CONDS).filter((k) => CONDS[k].engine !=
 // ---------- the meter ----------
 export const manaBand = (m: number) => MANA_BANDS.find((b) => m >= b.min && m <= b.max) || MANA_BANDS[1];
 export const manaOf = (cb: Combat) => (cb.mana ??= MANA_START);
+// rules 1.77 item 6512: the air's mana as a resource of the fight (data/actions.json resources.mana) changes here
+setResSetter('mana', (cb, _u, n) => { if (!cb) return 0; const was = manaOf(cb); shiftMana(cb, n); return manaOf(cb) - was; });
 export function shiftMana(cb: Combat, by: number, why?: string) {
   const was = manaOf(cb), now = Math.max(0, Math.min(40, was + by)); cb.mana = now;
   const a = manaBand(was).id, b = manaBand(now).id;
@@ -336,6 +338,8 @@ export const bodyDebuffs = (u: Unit) => debuffsOf(u, 'body');
 export interface CondOpts { /** No save (a hit's rider, a perk that says so). */ skipSave?: boolean; tnAdd?: number; /** Commanded's order, a variant. */ arg?: string;
   /** The skill that delivered it (rules 1.13: its strength sets the TN). */ via?: string; /** A strength fixed earlier (residue, a zone, a stored spell): used as it is. */ str?: number;
   /** Hidden only: the same Hidden entry as before (no new ambush). */ sameEntry?: boolean;
+  /** Rules 1.77 item 6503: the action that puts it on (its acted name) and the unit that action was aimed at, told to
+   * 'cond_apply' (ctx.action, ctx.aim) so an item can tell the named foe from the rest of an area. */ action?: string; aim?: Unit | null;
   /** Called once the condition has taken hold, just before 'cond_landed' is told (a move logs its own line here, so
    * that what reacts to the landing (Shrug It Off) reads after it). Never stored. */ onLand?: () => void }
 /** The second door of an immunity (the first is the 'cond_apply' hook): the `immune:<id>` query, and for Bleeding the
@@ -347,6 +351,8 @@ function askImmune(ca: any, t: Unit, id: string, fam?: Fam) {
   const im = immune({ u: t }, id, fam) || (id === 'bleeding' ? immune({ u: t }, 'bleed') : null);
   if (im) { ca.cancel = true; if (!ca.why && im !== 'perk') ca.why = im; }
 }
+/** The action and its aimed unit on 'cond_apply' (rules 1.77 item 6503), when the opts carry them. */
+const aimOf = (o: CondOpts) => ({ ...(o.action ? { action: o.action } : {}), ...(o.aim ? { aim: o.aim } : {}) });
 /** Apply a condition: the target saves (d20 + its save) against 12 + the source's strength with the skill that delivered it (opts.via, or the call it runs inside: withVia; rules 1.13) (spec: Conditions
  * and saves). Boons (Guarded, Inspired…) and states need no save. No stacking: a second dose resets to the longer
  * duration. The source is kept (u.condBy) for Fear, Taunted, Grappled, Marked and kill credit. */
@@ -358,7 +364,7 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
   // Items first: 'cond_apply' {by, t, id, fam, rounds, skipSave, cancel, why, tnAdd, saveAdd} (an immunity cancels it,
   // a perk may skip the save, change the rounds or the save's TN).
   const via = viaOf(by, opts.via);
-  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam: fam || def.fam, rounds: rounds || def.rounds, skipSave: !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, arg: opts.arg, via, cb, rng });
+  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam: fam || def.fam, rounds: rounds || def.rounds, skipSave: !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, arg: opts.arg, via, ...aimOf(opts), cb, rng });
   askImmune(ca, t, id, ca.fam);
   if (ca.cancel) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : ''); }
   const f: Fam = ca.fam || fam || def.fam || 'body';
@@ -406,7 +412,7 @@ function condNumbers(u: Unit, def: CondDef, on: boolean) {
 function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, def: CondDef, rounds: number | undefined, opts: CondOpts): string {
   const id = def.key, fam: Fam = def.fam || 'body';
   const via = viaOf(by, opts.via);
-  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || (def.noTick ? 1 : def.rounds), skipSave: !!def.noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, via, cb, rng });
+  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || (def.noTick ? 1 : def.rounds), skipSave: !!def.noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, via, ...aimOf(opts), cb, rng });
   askImmune(ca, t, id, def.fam);
   if (ca.cancel) return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : '');
   let saved = '';
@@ -1969,9 +1975,11 @@ export function syphon(cb: Combat, u: Unit): string | null {
 /** Crystallise (3 AP, the meter at 10+): the meter drops 10 and you make one standard core. */
 export function crystallise(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.emanator) return NEEDS_EMANATOR;
-  const cap = price({ cb, u }, 'crystallise').ap; // items price it (hooks gap D8)
-  { const no = whyNot(cb, u, cap); if (no) return no; } if (manaOf(cb) < 10) return 'The air is too thin (mana ' + manaOf(cb) + ', needs 10).';
-  pay(cb, u, cap); m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); shiftMana(cb, -10); say(cb, u.name + ' crystallises a mana core from the air.');
+  // items price it (hooks gap D8); rules 1.77 item 6512: its draw on the air is on the price (the resource `mana`, held by
+  // the fight), so an item may make it free (Rite in the Field) and the one pay takes it through shiftMana
+  const cap = price({ cb, u }, 'crystallise', { ap: costOf('crystallise'), res: { mana: costOf('crystallise', 'mana') } });
+  { const no = whyNot(cb, u, cap); if (no) return no; }
+  pay(cb, u, cap); m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); say(cb, u.name + ' crystallises a mana core from the air.');
   return null;
 }
 /** Who a spell would affect, hit or miss (used to decide whether a spell on the story map starts a fight). */

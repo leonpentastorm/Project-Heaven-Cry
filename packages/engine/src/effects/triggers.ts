@@ -15,19 +15,21 @@
 // state: the amount ops still speak (a preview shows the number), the limit is read and not taken, nothing is logged.
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { dataRef } from '../datatext';
+import { keepOfTwo } from '../rolls';
+import { setDowned, setBraced } from '../unitstate';
 import type { Combat, Unit } from '../combat';
 import type { Holder, HookName } from './types';
 import { uses } from './uses';
-import { setTriggerRunner, setAllItems, onHook } from './hooks';
+import { setTriggerRunner, setAllItems, onHook, setSheetSource } from './hooks';
 import { allItems, instanceMods, rawItem as rawItemT, itemInfo as itemInfoT } from './collect';
 import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, tieCap, canStand, tiesOf as tiesOfK, type Area } from '../kit';
 import { holds, FOCUS_DOORS, handProps, gearAt, kindOfDoor, FOCUS_IDS } from '../character';
 import { applyDamage } from './damage';
 import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
-import { say, dist, displace, emitFx, fxFell, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile, strikeRider } from '../combat';
+import { say, dist, displace, emitFx, fxFell, checkOver, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile, strikeRider } from '../combat';
 import { WEAPON, SKILL } from '../data';
 import { magsOf, type PackItem } from '../character';
-import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
+import { restoreConds, applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
 import { nextToCover, objectsAt, objectsOf, damageObject, refOf } from '../combat';
 import { objectIs, makeObject } from '../objects';
 import { CONDITION_ROWS, condRowsVersion, COND_TABLE_STATS } from '../condtable';
@@ -38,8 +40,8 @@ import patronsJ from '../../../../data/patrons.json';
 import { TECHNIQUES, PHYS_RULES as TECH_RULES, techGroupOf, techSystemOf } from '../physical/data';
 import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
-import { loseAp, weaponOwnSite, resMaxOf, resLimitOf } from './cost';
-import { resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
+import { loseAp, apFor, weaponOwnSite, resMaxOf, resLimitOf } from './cost';
+import { dropHeldShot, resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
 import { gainEcho } from './echo';
 import { doorFeed } from './feed';
 import { pickedFork, forkIds } from '../doorpicks';
@@ -188,7 +190,8 @@ P('cond', 'ids', 'the condition is one of these', (ev, v) => list(v).map(condId)
 P('cond_family', 'words', 'the condition\'s family is one of these (body, brain, heart)', (ev, v) => list(v).includes(ev.ctx.fam));
 P('action', 'words', 'the priced action (its cost site) is one of these', (ev, v) => list(v).includes(ev.ctx.action));
 // rules 1.64 item 5006 (the lead's approved primitive): a priced action's own id, for a cost_mod that names one Call
-P('action_id', 'words', 'the own id of the priced action is one of these (a Call: its Calls id, call.name_it; any priced action that passes its id on the context of its price)', (ev, v) => ev.ctx.action != null && typeof ev.ctx.id === 'string' && list(v).includes(ev.ctx.id));
+P('target_aimed', 'bool', 'on cond_incoming: the target is (or is not) the unit the action that puts the condition on was aimed at (rules 1.77 item 6503: the named foe of an area verb)', (ev, v) => !!ev.target && (ev.ctx.aim === ev.target) === v);
+P('action_id', 'words', 'the own id of the priced or done action is one of these (a Call: its Calls id, call.name_it; any priced action that passes its id on the context of its price; on acted, rules 1.77: the id the reducer passes: a Call)', (ev, v) => ev.ctx.action != null && typeof ev.ctx.id === 'string' && list(v).includes(ev.ctx.id));
 P('word', 'words', 'the Sigil word being drawn is one of these', (ev, v) => list(v).includes(ev.ctx.word));
 P('hand', 'words', 'the hand is one of these (main, off, both)', (ev, v) => list(v).includes(ev.ctx.hand || (ev.ctx.both ? 'both' : 'main')));
 P('how', 'words', 'the move is of one of these kinds (move, sprint, disengage; push, pull, throw, teleport); a reaction: its kind (attack, move, protect); a heal or shield: its kind (heal, tending, blessing (every prayer), perk, stim, leech, thread)', (ev, v) => list(v).includes(ev.ctx.kind ?? ev.ctx.how));
@@ -298,6 +301,7 @@ const resMeets = (ev: Ev, u: Unit | null, v: any): boolean => !!u && !!v && type
   if (b?.at === 'limit' && n < resLimitOf(u, id, u === ev.self ? ev.h.c : charOfUnit(u))) return false; // rules 1.70 item 5543 (P2)
   return true;
 });
+for (const who of ['self', 'actor', 'target'] as Who[]) P(who + '_not_res', 'res', who + ' does not have resources within these bounds (the negation of ' + who + '_res, rules 1.77 item 6504: {shadow: {at: "limit"}} is a meter not yet full)', (ev, v) => !!unitOf(ev, who) && !resMeets(ev, unitOf(ev, who), v), () => Object.keys(RESOURCES));
 for (const who of ['self', 'actor', 'target'] as Who[]) P(who + '_res', 'res', who + ' has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: "max" | "limit"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter\'s most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit)', (ev, v) => resMeets(ev, unitOf(ev, who), v), () => Object.keys(RESOURCES));
 P('self_has_res', 'words', 'the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)', (ev, v) => list(v).every((id) => resNow(ev, id) >= 1), () => Object.keys(RESOURCES));
 P('self_lacks_res', 'words', 'the holder has none of one of these resources (as self_has_res)', (ev, v) => list(v).some((id) => resNow(ev, id) < 1), () => Object.keys(RESOURCES));
@@ -332,7 +336,7 @@ const resNow = (ev: Ev, id: string): number => (ev.self.resMax?.[id] != null || 
 export function sourceOf(ev: Ev, of: string): number {
   const i = of.indexOf(':'); if (i < 0) return 0;
   const ns = of.slice(0, i), f = of.slice(i + 1);
-  if (ns === 'res') return resNow(ev, f);
+  if (ns === 'res') return ev.self ? resNow(ev, f) : 0; // a sheet with no unit (rules 1.77 item 6509) holds no meter
   if (ns === 'event') { const v = f === 'amount' ? (ev.ctx.dmg ?? ev.ctx.n ?? ev.ctx.amount ?? ev.ctx.base) : ev.ctx[f] ?? ev.ctx[camel(f)] ?? ev.ctx.src?.[f] ?? ev.ctx.src?.[camel(f)]; return typeof v === 'number' ? v : v ? 1 : 0; }
   if (ns === 'self' || ns === 'actor' || ns === 'target') return unitField(unitOf(ev, ns as Who), f);
   if (ns === 'ties') return tiesOfK(ev.cb, ev.self, f).length; // section 6: how many ties of a kind the holder has
@@ -342,6 +346,9 @@ export function sourceOf(ev: Ev, of: string): number {
   if (ns === 'tech_rule') return dataRef(of); // rules 1.70 item 5547 (P6): a value of techniques.json rules (datatext.ts dataRef)
   return 0;
 }
+// rules 1.77 item 6509: the sheet's numbers (character.ts strainLimit, readyDesigns) read their `of` through this one
+// resolver: a holder with the character and no unit
+setSheetSource((c, of) => sourceOf({ ctx: {}, trig: TRIGGERS.acted, h: { key: '', c, info: null } as any, self: null as any, cb: null as any, actor: null, target: null, preview: true }, of));
 /** The namespaces a number block's `of` may name in an item op. */
 export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill', 'feed', 'pick', 'tech_rule'];
 /** The numeric fields of an item op that may be number blocks. */
@@ -393,8 +400,8 @@ O('roll_mod', ['attack', 'to_hit', 'cond_incoming', 'save', 'spot'], false, ['va
   else if (ev.trig.hook === 'spot') { if (e.roll === 'tn') ev.ctx.tn += e.value; else ev.ctx.mod += e.value; }
   else if (e.roll === 'tn') ev.ctx.tnAdd = (ev.ctx.tnAdd || 0) + e.value; else ev.ctx.saveAdd = (ev.ctx.saveAdd || 0) + e.value;
 });
-O('roll_with', ['attack'], false, ['skill', 'if_higher'], 'the attack rolls with this skill\'s modifier (skill: a skill id, or a list: the best of them) in place of the weapon\'s own skill modifier, never on top of it; if_higher: only when it is higher (combat.ts rollWithPick: the one place the roll\'s skill is chosen, read by the roll, the attack\'s preview and the gear card)', (ev, e, label) => {
-  (ev.ctx.rollWith ||= []).push({ skill: e.skill, ifHigher: !!e.if_higher, label });
+O('roll_with', ['attack', 'save'], false, ['skill', 'if_higher'], 'the attack rolls with this skill\'s modifier (skill: a skill id, or a list: the best of them) in place of the weapon\'s own skill modifier, never on top of it; if_higher: only when it is higher (combat.ts rollWithPick: the one place the roll\'s skill is chosen, read by the roll, the attack\'s preview and the gear card); on a save (rules 1.77 item 6506) the save rolls with the HOLDER\'s modifier in that skill in place of the saver\'s own save (rolls.ts rollSave)', (ev, e, label) => {
+  (ev.ctx.rollWith ||= []).push({ skill: e.skill, ifHigher: !!e.if_higher, label, ...(ev.trig.hook === 'save' ? { from: ev.self } : {}) });
 });
 O('cost_mod', ['cost', 'swap', 'reload', 'attack', 'glyph_cost'], false, ['value', 'set', 'min', 'at_least', 'res'], 'change the AP (or with res, a resource: charge, flux…) of the action: add value, or set it; min is the floor a cut stops at; at_least raises it to that', (ev, e) => {
   const c = ev.ctx, r = e.res, box = r && ev.trig.hook === 'cost' ? (c.res ||= {}) : c, f = r || 'ap', cur = box[f] ?? 0;
@@ -426,7 +433,7 @@ O('condition', ANY, true, ['condition', 'rounds', 'skip_save', 'via', 'by', 'sam
   // rules 1.33: `{choice}` in the id is the action's pick ("given_{choice}": Inspire's felt feeling); an id that names no row does nothing
   const tmpl = !inc && typeof e.condition === 'string' && e.condition.includes('{choice}'), id = inc ? ev.ctx.id : tmpl ? withChoice(e.condition, ev) : e.condition, rounds = typeof e.rounds === 'number' ? e.rounds : inc && typeof ev.ctx.rounds === 'number' ? ev.ctx.rounds : undefined;
   if (tmpl && !CONDITION_ROWS.some((r: any) => r.id === id)) return false;
-  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), giverOfOp(ev, e), u, id, rounds, undefined, { ...(e.skip_save ? { skipSave: true } : {}), ...(typeof e.via === 'string' ? { via: e.via } : {}), ...(e.same_entry ? { sameEntry: true } : {}) });
+  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), giverOfOp(ev, e), u, id, rounds, undefined, { ...(e.skip_save ? { skipSave: true } : {}), ...(typeof e.via === 'string' ? { via: e.via } : {}), ...(e.same_entry ? { sameEntry: true } : {}), ...(ev.trig.hook === 'acted' ? { action: ev.ctx.action, aim: ev.ctx.t || null } : {}) }); // rules 1.77 item 6503: an action's condition tells cond_apply the action and the unit it was aimed at
 });
 O('cleanse', ANY, true, ['condition', 'family', 'count', 'newest'], 'end conditions: the ones named, or a family\'s debuffs, or any debuff (count: how many; newest: true, the newest first, else in the order named)', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
@@ -584,6 +591,46 @@ O('object', ANY, true, ['do', 'has', 'kind', 'amount'], 'work the object on the 
 });
 O('close_roll', ['spot'], false, ['value'], 'an enemy next to the holder rolls to spot it (value added to its modifier) instead of finding it outright (Shadow\'s Close Quarters, rules 1.32)', (ev, e) => { if (ev.ctx.close) { ev.ctx.outright = false; ev.ctx.mod += e.value || 0; } });
 
+// Rules 1.77 item 6507 (the lead's ruling 6): a roll kept from two dice, on the attack's own roll hook. The attack's d20
+// is rolled; a second is drawn from the fight's dice and the worse (or better) of the two stands (Untouchable: attacks
+// on you roll twice and keep the worse). One second die however many items ask: the first item's keep decides.
+O('two_dice', ['attack_roll'], true, ['keep'], 'the attack rolls a second d20 and keeps the worse (keep: worse) or the better (keep: better) of the two (once an attack: the first item that asks)', (ev, e) => {
+  const rc = ev.ctx; if (rc.twoDice) return false;
+  const a = rc.die, worse = e.keep !== 'better', b = keepOfTwo(rc, rngOf(ev.h, rc), worse ? 'worse' : 'better');
+  rc.twoDice = [a, b];
+  return ' (d20 ' + a + ' and ' + b + ', ' + (worse ? 'the worse' : 'the better') + ' stands)';
+});
+
+// Rules 1.77 item 6508 (the lead's ruling 7): one more turn at 0 HP, Bite the Bullet's handler made general. The blow
+// that would drop the holder leaves it on 1 HP and on borrowed time (Unit.lastTurn, the condition row last_turn as its
+// marker): it acts to the end of its next turn (the rest of this one when it dropped on its own turn), with `turn_ap` AP if
+// given (never more than it has); then it falls Downed unless a heal reached it first. hits: "death_save", every hit
+// on it meanwhile is a failed death save instead of damage (two on a critical), three and it dies on its feet.
+O('last_turn', ['would_drop'], true, ['turn_ap', 'hits'], 'the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own) with turn_ap AP if given, then falls Downed unless healed first; hits: death_save, each hit meanwhile is a failed death save instead of damage', (ev, e, label) => {
+  const u = ev.self, cb = ev.cb; if (ev.ctx.floor != null || u.hp <= 0 || u.lastTurn) return false;
+  const own = cb.order[cb.turn] === u.id && !cb.window;
+  ev.ctx.floor = 1; u.lastTurn = { began: own, ...(typeof e.turn_ap === 'number' ? { turnAp: e.turn_ap } : {}), ...(e.hits === 'death_save' ? { hits: 'death_save' } : {}), label };
+  if (own && typeof e.turn_ap === 'number') { const over = apFor(cb, u) - e.turn_ap; if (over > 0) loseAp(u, over); } // its AP cut to the number, never raised
+  restoreConds(u, { last_turn: 99 }); // its marker: nobody is asked
+  return own ? ' for the rest of this turn' : ' for one more turn';
+});
+/** End a unit's borrowed time, with its line. */
+const lastTurnEnd = (cb: Combat, u: Unit, why: string) => { delete u.lastTurn; endCond(u, 'last_turn'); say(cb, why); };
+onHook('damage_in', (ctx: any, cb: Combat) => {
+  const u: Unit = ctx.t; if (ctx.phase !== 'reduce' || !u?.lastTurn || u.lastTurn.hits !== 'death_save' || !(ctx.dmg > 0)) return;
+  ctx.dmg = 0; if (!ctx.src?.by || ['bleed', 'burn', 'hazard', 'trap'].includes(ctx.src.type)) return; // only a blow counts
+  u.saves.fail += ctx.src.crit ? 2 : 1;
+  say(cb, u.name + ' takes the hit on borrowed time: death-save failure ' + Math.min(3, u.saves.fail) + '/3 (' + u.lastTurn.label + ').');
+  if (u.saves.fail >= 3) { u.hp = 0; u.dead = true; lastTurnEnd(cb, u, u.name + ' dies on their feet.'); fxFell(cb, u); checkOver(cb); }
+});
+onHook('turn_start', (ctx: any, cb: Combat) => { const u: Unit = ctx.u; if (!u?.lastTurn) return; u.lastTurn.began = true; if (typeof u.lastTurn.turnAp === 'number') { const over = apFor(cb, u) - u.lastTurn.turnAp; if (over > 0) loseAp(u, over); } });
+onHook('turn_end', (ctx: any, cb: Combat) => {
+  const u: Unit = ctx.u; if (!u?.lastTurn || !u.lastTurn.began) return;
+  u.hp = 0; setDowned(u, true); setBraced(u, false); dropHeldShot(cb, u, 'down');
+  lastTurnEnd(cb, u, u.name + '\'s Last Turn is over: Downed.'); fxFell(cb, u);
+});
+onHook('heal_given', (ctx: any, cb: Combat) => { const u: Unit = ctx.t; if (u?.lastTurn && ctx.n > 0) lastTurnEnd(cb, u, u.name + ' is patched up in time: the Last Turn ends, still standing.'); });
+
 /** A delayed deal's or mend's amount, fixed when it was queued (section 6: `delay`). */
 const fixedBlock = (e: any): AmountBlock => ({ kind: e.fixed.kind, base: e.fixed.n, ...(e.fixed.type ? { type: e.fixed.type } : {}), ...(e.fixed.door ? { door: e.fixed.door } : {}), ...(e.fixed.tech ? { tech: e.fixed.tech } : {}), ...(e.fixed.armour ? { armour: e.fixed.armour } : {}), ...(e.fixed.heal_kind ? { heal_kind: e.fixed.heal_kind } : {}) } as AmountBlock);
 const blockOf = (h: Holder, e: any): AmountBlock | null => {
@@ -603,15 +650,18 @@ const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ..
  * side), alive (default true: still in the fight; false: Downed only), downed (true: the Downed too), max (the first n).
  * With no within and no shape, the whole field. `tied` and `aims_at` come with ties (P8) and the enemy's aim (a batch row).
  * `beyond` (rules 1.33, a tie kind): a unit tied to the holder by that kind is in the set wherever it stands (Rally: every
- * Bonded ally, and every ally within 4). */
-export interface TargetSet { of?: 'self' | 'actor' | 'target' | 'tile'; side?: 'foe' | 'ally' | 'side' | 'any'; within?: number; shape?: 'burst' | 'aura' | 'cone' | 'line'; seen?: boolean; alive?: boolean; downed?: boolean; max?: number; sees?: 'line' | 'eyes'; tied?: string; aims_at?: string; beyond?: string }
+ * Bonded ally, and every ally within 4). `if` (rules 1.77 item 6500): predicates each unit of the set must pass as the
+ * event's target, the same predicates as an `if` and a verb's `reach.if` (Five Stars II's rank-and-file:
+ * `{target_not_tier: [elite, boss]}`, as Flush Out's reach). */
+export interface TargetSet { of?: 'self' | 'actor' | 'target' | 'tile'; side?: 'foe' | 'ally' | 'side' | 'any'; within?: number; shape?: 'burst' | 'aura' | 'cone' | 'line'; seen?: boolean; alive?: boolean; downed?: boolean; max?: number; sees?: 'line' | 'eyes'; tied?: string; aims_at?: string; beyond?: string; if?: Record<string, unknown> }
 /** The fields of `targets` and the words each takes (data/effect_ops.json item_ops.targets is written from it). */
-export const TARGET_FIELDS: Record<string, string[] | 'number' | 'bool' | 'string'> = { of: ['self', 'actor', 'target', 'tile'], side: ['foe', 'ally', 'side', 'any'], within: 'number', shape: ['burst', 'aura', 'cone', 'line'], seen: 'bool', alive: 'bool', downed: 'bool', max: 'number', sees: ['line', 'eyes'], tied: 'string', aims_at: 'string', beyond: 'string' };
+export const TARGET_FIELDS: Record<string, string[] | 'number' | 'bool' | 'string' | 'predicates'> = { of: ['self', 'actor', 'target', 'tile'], side: ['foe', 'ally', 'side', 'any'], within: 'number', shape: ['burst', 'aura', 'cone', 'line'], seen: 'bool', alive: 'bool', downed: 'bool', max: 'number', sees: ['line', 'eyes'], tied: 'string', aims_at: 'string', beyond: 'string', if: 'predicates' };
 /** Why a `targets` block is malformed (null: it is fine). */
 export function targetsProblem(t: any): string | null {
   if (!t || typeof t !== 'object' || Array.isArray(t)) return '`targets` is an object';
   for (const [k, v] of Object.entries(t)) {
     const f = TARGET_FIELDS[k]; if (!f) return 'unknown targets field ' + k;
+    if (f === 'predicates') { if (!v || typeof v !== 'object' || Array.isArray(v)) return 'targets.if is an object of predicates'; for (const p of Object.keys(v)) if (!PREDICATES[p]) return 'unknown predicate ' + p + ' in targets.if'; continue; }
     if (f === 'number' ? typeof v !== 'number' : f === 'bool' ? typeof v !== 'boolean' : f === 'string' ? typeof v !== 'string' : !f.includes(v as string)) return 'targets.' + k + ' takes ' + (Array.isArray(f) ? f.join(', ') : 'a ' + f);
   }
   if ((t.shape === 'cone' || t.shape === 'line') && typeof t.within !== 'number') return 'a cone or a line needs `within` (its length)';
@@ -650,19 +700,23 @@ export function selectUnits(ev: Ev, t: TargetSet): Unit[] {
   const out = all.filter((v) => (t.alive === false ? !!v.downed : true) && (!t.side || rel(ev.self, v, t.side)) && (t.seen == null || sideSees(cb, ev.self.side as 'pc' | 'foe', v) === t.seen)
     && (!t.sees || (t.sees === 'eyes' ? unitSees(cb, v, at) : !condOn(v, 'blinded') && lineOfSight(cb, v.pos, at)))
     && (!t.tied || tiedTo(cb, ev.self, v, t.tied)) // P8: tied to the holder by this kind
-    && (!t.aims_at || aimsAt(cb, ev.self, v, t.aims_at))); // the batch row: what the unit means to do next is aimed at the holder (self) or at a unit tied to it (tied:<kind>)
+    && (!t.aims_at || aimsAt(cb, ev.self, v, t.aims_at)) // the batch row: what the unit means to do next is aimed at the holder (self) or at a unit tied to it (tied:<kind>)
+    && (!t.if || Object.keys(t.if).every((k) => PREDICATES[k]?.test({ ...ev, target: v }, (t.if as any)[k])))); // rules 1.77 item 6500: each unit as the target
   return typeof t.max === 'number' ? out.slice(0, t.max) : out;
 }
 
 // ============================================================================================== the limit
 /** `limit`: { per: a scope of effects/uses.ts (per_turn, per_round, per_combat, per_scene, per_session, per_rest), n,
- * key? (a second counter on the same item: "<item key>#<key>"), each?: "target" | "actor" (a counter per unit) } or
+ * key? (a second counter on the same item: "<item key>#<key>"), shared? (rules 1.77: one counter of the holder's that
+ * every item naming it counts under: "shared:<name>"), each?: "target" | "actor" (a counter per unit) } or
  * { cooldown: rounds }, or (rules 1.28) { reaction: n, kind: attack | move | protect }: the effect IS a reaction, made
  * through tactics.ts react() (it spends n of the holder's reactions, and none answers what it does). */
 export const LIMIT_SCOPES = ['per_turn', 'per_round', 'per_combat', 'per_scene', 'per_session', 'per_rest'];
 function limitOk(ev: Ev, lim: any, take: boolean): boolean {
   if (!lim) return true;
-  const h = { ...ev.h, u: ev.self, cb: ev.cb }, key = lim.key ? ev.h.key + '#' + withChoice(String(lim.key), ev) : undefined; // rules 1.33: a key may name the pick ({choice})
+  // rules 1.33: a key may name the pick ({choice}); rules 1.77 item 6504: `shared` names a counter every item of the
+  // holder that names it counts under (Stalk's gain under the Shadow door's two a turn), not the item's own
+  const h = { ...ev.h, u: ev.self, cb: ev.cb }, key = typeof lim.shared === 'string' ? 'shared:' + lim.shared : lim.key ? ev.h.key + '#' + withChoice(String(lim.key), ev) : undefined;
   const who = lim.each === 'target' ? ev.target : lim.each === 'actor' ? ev.actor : null;
   const U = who ? uses(h).on(who) : uses(h);
   if (lim.peek) take = false; // read only: another effect (op use) spends it

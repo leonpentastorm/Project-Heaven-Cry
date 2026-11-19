@@ -271,7 +271,7 @@
     { "id": "boon.primed", "kind": "relic", "name": "Primed", "pools": ["war", "streets"], "worth": 8, "adjudication": "engine", "provisional": true,
       "doors": ["durability", "raw_power", "ingenuity"],
       "effects": [ { "op": "resource", "when": "combat_start", "if": { "self_skill": { "durability": 1 } }, "resource": "guard", "value": 2 },
-                   { "op": "resource", "when": "turn_start", "limit": { "per": "per_combat", "n": 1 }, "if": { "self_skill": { "raw_power": 1 } }, "resource": "momentum", "value": 1 },
+                   { "op": "resource", "when": "combat_start", "if": { "self_skill": { "raw_power": 1 } }, "resource": "momentum", "value": 1 },
                    { "op": "resource", "when": "combat_start", "if": { "self_skill": { "ingenuity": 1 } }, "resource": "shadow", "value": 1 } ],
       "text": "Your door's meter starts each fight a step up: Guard {=effects.0.value|signed}, Momentum {=effects.1.value|signed}, Shadow {=effects.2.value|signed}." },
     { "id": "boon.reflexes", "kind": "relic", "name": "Quick Hands", "pools": ["streets"], "worth": 5, "adjudication": "engine", "provisional": true,

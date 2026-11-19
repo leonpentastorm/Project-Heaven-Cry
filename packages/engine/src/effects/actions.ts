@@ -49,7 +49,7 @@ const TARGETING = (e: any): ActionDef['target'] => {
 // A grant_action may carry, besides `ap` and `uses`: `res` (resources it costs, by id), `if` (the holder's predicates:
 // the action is greyed while one fails), `reach` {tiles, sight, side, self, if} (who it may go at: it builds the pick
 // list and the refusal), `pick` (a closed list, or 'words', 'squad', 'designs', 'gamma'), `pick_label`, `limit` {per, n}
-// (its use window), `prayer` ('whisper' | 'hymn': prayed through faith.ts, its slot, wait, dice and Witnessed; `tier`
+// (its use window), `tab` (rules 1.77: a door's tab its row sits on: shadow, tend, figments), `prayer` ('whisper' | 'hymn': prayed through faith.ts, its slot, wait, dice and Witnessed; `tier`
 // for a Hymn's gate) and nested `effects`. A door verb's (item kind `verb`) nested item ops run as the action's own
 // effects when it succeeds (on a ctx shaped as `acted`'s); another item's nested `when: "acted"` effects are lifted
 // onto the item (collect.ts liftActed).
@@ -165,6 +165,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
     if (g.pick) { d.pick = g.pick; if (g.pick_label) d.pickLabel = g.pick_label; }
     if (typeof g.site === 'string') d.site = g.site;
     if (g.prayer) d.prayer = g.prayer;
+    if (typeof g.tab === 'string' && (VERB_TABS as string[]).includes(g.tab)) d.tab = g.tab; // rules 1.77 item 6501: a door's tab (Tending verbs on Camaraderie's perks: TEND)
     if (g.if || g.prayer) d.available = (h) => {
       // the refusal: the grant's own sentence for the failing predicate (`why`: {predicate: sentence}), else its name
       if (g.if && h.u && h.cb) { const k = ifFails(h, g.if); if (k) return (g.why && typeof g.why[k] === 'string' ? g.why[k] : 'Not now (' + human(k) + ').'); }
@@ -239,6 +240,7 @@ export const VERB_TABS: ItemTab[] = ['shadow', 'tend', 'figments'];
 /** A prayer granted by any item (rules 1.31: the Chaplain's Ward and Sanctuary) goes on the Faith tab, among the prayers. */
 const tabOf = (h: Holder, d?: ActionDef): ItemTab => {
   if (d?.prayer) return 'faith';
+  if (d?.tab) return d.tab; // rules 1.77 item 6501: the grant's own tab
   if (h.kind === 'class') return 'class';
   const t = h.kind === 'verb' ? rawItem(h.key)?.tab : null;
   return VERB_TABS.includes(t) ? t : 'perks';

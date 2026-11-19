@@ -30,10 +30,6 @@ const tierII = (h: Holder) => h.tier === 'II';
 /** A tile from a grid reference ("F6") or a key ("5,5"). */
 /** Melee reach of the unit's melee option (fists when it holds a gun): 1, or 2 with a reach weapon. */
 const reachOf = (u: Unit) => { const w: any = WEAPON[u.weapon]; if (!w || !isMelee(w)) return 1; return (w.properties || []).includes('reach_2') || w.id === 'lance' || w.grants?.effect?.op === 'reach' ? (w.grants?.effect?.op === 'reach' ? w.grants.effect.value : 2) : 1; };
-/** A hit by someone (not a hazard, a trap's tick, bleeding or burning): what "a hit" and "a wound" mean here. */
-const isHit = (src: any) => !!src?.by && !['bleed', 'burn', 'hazard', 'trap'].includes(src.type);
-/** Self-inflicted damage (Mana Short, an Evoker's overload, Strain) never triggers the drop-to-0 savers (plan 6, Last Wall 1). */
-const selfHarm = (ctx: any) => !!ctx.self || ['short', 'overload', 'strain', 'flux'].includes(ctx.src?.type);
 const magicSrc = (src: any) => ['sigil', 'soul', 'elemental'].includes(src?.type);
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? (c.state ||= {}) : {});
 /** Read a character's item state without creating it (stat queries and previews must not change state). */
@@ -144,43 +140,7 @@ register({
   brief: () => 'can\'t be frightened; allies near them neither (story: you judge "near")',
 });
 
-// ---------- Bite the Bullet (Guts + Pain Threshold, Achieved) ----------
-// Once per combat, when you would drop to 0 HP (and no other saver held you up), you stay up in a Last Turn state
-// (at 1 HP, PROVISIONAL: the engine has no "up at 0 HP"; see the notes) and act normally to the end of your next turn
-// (this turn, if it is yours now). Then you go Downed unless someone healed you. Each hit you take meanwhile is a
-// death-save failure (two on a critical) instead of damage; at 3 you die (PROVISIONAL, plan 6 Bite the Bullet 2).
-// Ordering: after Angel of the Trenches and Last Wall (priority 20).
-const btbEnd = (h: Holder, why: string) => { const st = stateOf(h); st.lt = null; if (h.u) endCond(h.u, 'last_turn'); say(h.cb, why); };
-register({
-  id: 'bite_the_bullet', claims: 'all', priority: 20,
-  on: {
-    damage_in: (ctx, h) => {
-      if (ctx.t !== h.u) return;
-      const u = h.u!, st = stateOf(h);
-      if (ctx.phase === 'reduce' && st.lt && ctx.dmg > 0) {
-        ctx.dmg = 0; if (!isHit(ctx.src)) return;
-        u.saves.fail += ctx.src.crit ? 2 : 1;
-        say(h.cb, u.name + ' takes the hit on borrowed time: death-save failure ' + Math.min(3, u.saves.fail) + '/3 (Bite the Bullet).');
-        if (u.saves.fail >= 3) { u.hp = 0; u.dead = true; btbEnd(h, u.name + ' dies on their feet.'); if (h.cb) { fxFell(h.cb, u); checkOver(h.cb); } }
-        return;
-      }
-      if (ctx.phase !== 'would_drop_to_0' || ctx.floor != null || u.side !== 'pc' || selfHarm(ctx) || u.hp <= 0) return;
-      if (!uses(h).take('per_combat', 1)) return;
-      const own = !!h.cb && h.cb.order[h.cb.turn] === u.id && !h.cb.window;
-      ctx.floor = 1; st.lt = { began: own };
-      restoreConds(u, { last_turn: 99 }); // the perk's own marker: nobody is asked
-      say(h.cb, u.name + ' bites the bullet: still standing for ' + (own ? 'the rest of this turn' : 'one more turn') + '.');
-    },
-    turn_start: (ctx, h) => { if (ctx.u === h.u && stateOf(h).lt) stateOf(h).lt.began = true; },
-    turn_end: (ctx, h) => {
-      const st = stateOf(h); if (ctx.u !== h.u || !st.lt || !st.lt.began) return;
-      const u = h.u!; u.hp = 0; setDowned(u, true); setBraced(u, false); dropHeldShot(h.cb, u, 'down');
-      btbEnd(h, u.name + '\'s Last Turn is over: Downed.'); if (h.cb) fxFell(h.cb, u);
-    },
-    heal_given: (ctx, h) => { if (ctx.t === h.u && stateOf(h).lt && ctx.n > 0) btbEnd(h, h.u!.name + ' is patched up in time: the Last Turn ends, still standing.'); },
-  },
-  brief: () => null,
-});
+// ---------- Bite the Bullet (Guts + Pain Threshold, Achieved): written in data only (data/perks.json; the op last_turn, rules 1.77 item 6508) ----------
 
 // ---------- Siege Engine (Raw Power + Durability, Achieved): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 

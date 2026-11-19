@@ -10,7 +10,7 @@
 //   a turn's start: the held Watch ends; an enemy Suppressed loses 1 AP, Broken 2
 //   a turn's end: Pressure falls by 1 (2 in cover and unseen, or closer to the nearest enemy than the turn began)
 //   reactions: Pressed holds no Watch; Suppressed takes no opportunity attack either
-import { say, type Combat, type Unit, alive, dist, unitSees, emitFx, strikeWeapon } from '../combat';
+import { say, type Combat, type Unit, alive, dist, unitSees, emitFx, strikeWeapon, onFightStart } from '../combat';
 import { onHook, charOfUnit, growthHeld } from '../effects/hooks';
 import { condOn } from '../magic';
 import { WEAPON } from '../data';
@@ -51,8 +51,9 @@ onHook('on_hit', (ctx: any, cb) => {
 // ---------- Momentum: what starts it and what wears it off ----------
 const M = () => PHYS_RULES.momentum;
 // A fight starts with the door's start (1) of Momentum for every unit that has the meter, and what its items add
-// (rules 1.60, N23: momentumStart; the Breaker's Wind-up).
-onHook('combat_start', (_ctx: any, cb) => {
+// (rules 1.60, N23: momentumStart; the Breaker's Wind-up). Rules 1.77 item 6510: before the items' combat_start ops, so
+// an item that gives Momentum as the fight starts (the Primed boon) adds to it.
+onFightStart((cb) => {
   for (const u of cb.units) { ensureMomentum(u); delete u.openerUsed; if (u.resMax?.momentum != null && u.res) u.res.momentum = Math.max(u.res.momentum || 0, Math.min(u.resMax.momentum, momentumStart(cb, u))); }
 });
 // Walking: −1 for each tile of a walk, a Sprint or a Disengage. A step that is part of something else (ctx.part: a

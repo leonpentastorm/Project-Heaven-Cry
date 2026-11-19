@@ -414,6 +414,7 @@
       "verb:shadow.rig#rig": "allowed",
       "verb:shadow.stalk#stalk": "allowed",
       "verb:shadow.tag#tag": "allowed",
+      "verb:shadow.case#case": "allowed",
       "verb:shadow.timing#timing": "allowed",
       "verb:tend.bond#tend_bond": "allowed",
       "verb:tend.bond_free#tend_bond_free": "allowed",
@@ -449,7 +450,6 @@
     },
     "momentum": {
       "name": "Momentum",
-      "made_after_start": true,
       "on": "unit",
       "path": "res.momentum"
     },
@@ -524,6 +524,13 @@
       "on": "unit",
       "path": "mg.flux",
       "setter": "flux"
+    },
+    "mana": {
+      "name": "mana",
+      "on": "fight",
+      "path": "mana",
+      "setter": "mana",
+      "short": "The air is too thin (mana {have}, needs {n})."
     }
   },
   "costs": {
@@ -575,7 +582,8 @@
     },
     "crystallise": {
       "ap": 3,
-      "rule": "crystallise"
+      "rule": "crystallise",
+      "mana": 10
     },
     "interact": {
       "ap": 1,

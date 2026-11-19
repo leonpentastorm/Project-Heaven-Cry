@@ -1896,7 +1896,7 @@
               "limit": {
                 "per": "per_turn",
                 "n": 2,
-                "key": "gain"
+                "shared": "shadow_gain"
               },
               "fx": {
                 "k": "stance",
@@ -1929,7 +1929,7 @@
               "limit": {
                 "per": "per_turn",
                 "n": 2,
-                "key": "gain"
+                "shared": "shadow_gain"
               },
               "and": [
                 {
@@ -1958,7 +1958,7 @@
               "limit": {
                 "per": "per_turn",
                 "n": 2,
-                "key": "gain"
+                "shared": "shadow_gain"
               },
               "fx": {
                 "k": "stance",

@@ -69,6 +69,50 @@
       ]
     },
     {
+      "id": "shadow.case",
+      "name": "Case",
+      "kind": "verb",
+      "group": "mark",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 3
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP: an enemy within {=effects.0.reach.tiles} tiles that can't see you is Cased until the fight ends: your side sees its weapon, its rounds, its armour and what it carries, and a Lift on it costs less.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "case",
+          "ap": 1,
+          "uses": "at_will",
+          "reach": {
+            "tiles": 8,
+            "side": "foe",
+            "sight": true,
+            "if": {
+              "target_sees_self": false
+            },
+            "why": {
+              "target_sees_self": "{target} can see you."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "when": "acted",
+              "condition": "cased",
+              "target": "target",
+              "skip_save": true,
+              "say": "{self} cases {target}."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "shadow.lift",
       "name": "Lift",
       "kind": "verb",
@@ -508,7 +552,7 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "text": "{=effects.0.ap} AP, once a turn, from Hidden: +{=effects.0.effects.0.value} Shadow.",
+      "text": "{=effects.0.ap} AP, once a turn, from Hidden: +{=effects.0.effects.0.value} Shadow. It counts toward the door's {=effects.0.effects.0.limit.n} gains a turn, and not at a full meter.",
       "effects": [
         {
           "op": "grant_action",
@@ -518,7 +562,17 @@
           "if": {
             "self_has": [
               "hidden"
-            ]
+            ],
+            "self_not_res": {
+              "shadow": {
+                "at": "limit"
+              }
+            },
+            "uses_left": {
+              "per": "per_turn",
+              "n": 2,
+              "shared": "shadow_gain"
+            }
           },
           "effects": [
             {
@@ -530,11 +584,18 @@
                 "k": "stance",
                 "what": "shadow_gain"
               },
-              "say": "{self} waits in the dark: Shadow {res:shadow}."
+              "say": "{self} waits in the dark: Shadow {res:shadow}.",
+              "limit": {
+                "per": "per_turn",
+                "n": 2,
+                "shared": "shadow_gain"
+              }
             }
           ],
           "why": {
-            "self_has": "An enemy sees you: Stalk needs you Hidden."
+            "self_has": "An enemy sees you: Stalk needs you Hidden.",
+            "self_not_res": "Your Shadow is full.",
+            "uses_left": "You have built all the Shadow you can this turn."
           }
         }
       ]
@@ -692,13 +753,6 @@
       "group": "break",
       "min": 9,
       "why": "a toggle that rides on the Break (both on one attack, with its own points gate), and a re-hide after the Break's own reveal at the action's end: no primitive orders two toggles' acted effects or gates a toggle on the points it spends (rules 1.32 item 1966)"
-    },
-    {
-      "id": "shadow.case",
-      "name": "Case",
-      "group": "mark",
-      "min": 3,
-      "why": "no read-out of a unit's kit and rolled loot for a side (a condition row's `reveal` knows only `intent`; the fog and the hover card would need `what: kit`) (item 1966)"
     }
   ]
 }

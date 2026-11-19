@@ -4320,6 +4320,61 @@
       }
     },
     {
+      "id": "two_dice",
+      "tier": "core",
+      "summary": "Item op (rules 1.77 item 6507): on the attack's roll, a second d20 is drawn and the worse (keep: worse) or the better (keep: better) of the two stands; once an attack. Runs on the trigger attack_roll.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "keep",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "two_dice",
+        "when": "attack_roll",
+        "keep": "worse",
+        "if": {
+          "actor": "foe",
+          "target": "self"
+        }
+      }
+    },
+    {
+      "id": "last_turn",
+      "tier": "core",
+      "summary": "Item op (rules 1.77 item 6508): on would_drop, the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own), with turn_ap AP if given, then falls Downed unless healed first; hits: death_save, every hit meanwhile is a failed death save instead of damage. Bite the Bullet's handler made general.",
+      "count": 0,
+      "params": [
+        "and",
+        "hits",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "turn_ap",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "last_turn",
+        "when": "would_drop",
+        "turn_ap": 3,
+        "limit": {
+          "per": "per_combat",
+          "n": 1
+        }
+      }
+    },
+    {
       "id": "mend_mult",
       "tier": "core",
       "summary": "Item op (Classes 3.0 step 1b): multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, blessing (prayers), perk...). Runs on the triggers heal and shield.",
@@ -4774,9 +4829,13 @@
         "arg": "words",
         "about": "the priced action (its cost site) is one of these"
       },
+      "target_aimed": {
+        "arg": "bool",
+        "about": "on cond_incoming: the target is (or is not) the unit the action that puts the condition on was aimed at (rules 1.77 item 6503: the named foe of an area verb)"
+      },
       "action_id": {
         "arg": "words",
-        "about": "the own id of the priced action is one of these (a Call: its Calls id, call.name_it; any priced action that passes its id on the context of its price)"
+        "about": "the own id of the priced or done action is one of these (a Call: its Calls id, call.name_it; any priced action that passes its id on the context of its price; on acted, rules 1.77: the id the reducer passes: a Call)"
       },
       "word": {
         "arg": "words",
@@ -4994,6 +5053,78 @@
         "arg": "number",
         "about": "the move (its priced walk: ctx.tiles) is at most this many tiles"
       },
+      "self_not_res": {
+        "arg": "res",
+        "about": "self does not have resources within these bounds (the negation of self_res, rules 1.77 item 6504: {shadow: {at: \"limit\"}} is a meter not yet full)",
+        "values": [
+          "mp",
+          "charge",
+          "cores",
+          "momentum",
+          "guard",
+          "supplies",
+          "toxins",
+          "parts",
+          "stims",
+          "echo",
+          "pressure",
+          "vcharge",
+          "shadow",
+          "ledger",
+          "devotion_xp",
+          "strain",
+          "flux",
+          "mana"
+        ]
+      },
+      "actor_not_res": {
+        "arg": "res",
+        "about": "actor does not have resources within these bounds (the negation of actor_res, rules 1.77 item 6504: {shadow: {at: \"limit\"}} is a meter not yet full)",
+        "values": [
+          "mp",
+          "charge",
+          "cores",
+          "momentum",
+          "guard",
+          "supplies",
+          "toxins",
+          "parts",
+          "stims",
+          "echo",
+          "pressure",
+          "vcharge",
+          "shadow",
+          "ledger",
+          "devotion_xp",
+          "strain",
+          "flux",
+          "mana"
+        ]
+      },
+      "target_not_res": {
+        "arg": "res",
+        "about": "target does not have resources within these bounds (the negation of target_res, rules 1.77 item 6504: {shadow: {at: \"limit\"}} is a meter not yet full)",
+        "values": [
+          "mp",
+          "charge",
+          "cores",
+          "momentum",
+          "guard",
+          "supplies",
+          "toxins",
+          "parts",
+          "stims",
+          "echo",
+          "pressure",
+          "vcharge",
+          "shadow",
+          "ledger",
+          "devotion_xp",
+          "strain",
+          "flux",
+          "mana"
+        ]
+      },
       "self_res": {
         "arg": "res",
         "about": "self has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\" | \"limit\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit)",
@@ -5014,7 +5145,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "actor_res": {
@@ -5037,7 +5169,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "target_res": {
@@ -5060,7 +5193,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "self_has_res": {
@@ -5083,7 +5217,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "self_lacks_res": {
@@ -5106,7 +5241,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "patron": {
@@ -5284,14 +5420,15 @@
       },
       "roll_with": {
         "on": [
-          "attack"
+          "attack",
+          "save"
         ],
         "fields": [
           "skill",
           "if_higher"
         ],
         "changes_state": false,
-        "about": "the attack rolls with this skill's modifier (skill: a skill id, or a list: the best of them) in place of the weapon's own skill modifier, never on top of it; if_higher: only when it is higher (combat.ts rollWithPick: the one place the roll's skill is chosen, read by the roll, the attack's preview and the gear card)"
+        "about": "the attack rolls with this skill's modifier (skill: a skill id, or a list: the best of them) in place of the weapon's own skill modifier, never on top of it; if_higher: only when it is higher (combat.ts rollWithPick: the one place the roll's skill is chosen, read by the roll, the attack's preview and the gear card); on a save (rules 1.77 item 6506) the save rolls with the HOLDER's modifier in that skill in place of the saver's own save (rolls.ts rollSave)"
       },
       "cost_mod": {
         "on": [
@@ -6132,6 +6269,27 @@
         ],
         "changes_state": false,
         "about": "an enemy next to the holder rolls to spot it (value added to its modifier) instead of finding it outright (Shadow's Close Quarters, rules 1.32)"
+      },
+      "two_dice": {
+        "on": [
+          "attack_roll"
+        ],
+        "fields": [
+          "keep"
+        ],
+        "changes_state": true,
+        "about": "the attack rolls a second d20 and keeps the worse (keep: worse) or the better (keep: better) of the two (once an attack: the first item that asks)"
+      },
+      "last_turn": {
+        "on": [
+          "would_drop"
+        ],
+        "fields": [
+          "turn_ap",
+          "hits"
+        ],
+        "changes_state": true,
+        "about": "the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own) with turn_ap AP if given, then falls Downed unless healed first; hits: death_save, each hit meanwhile is a failed death save instead of damage"
       }
     },
     "limit_scopes": [
@@ -6174,7 +6332,8 @@
         ],
         "tied": "string",
         "aims_at": "string",
-        "beyond": "string"
+        "beyond": "string",
+        "if": "predicates"
       }
     }
   }

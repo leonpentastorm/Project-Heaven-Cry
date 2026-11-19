@@ -3939,7 +3939,7 @@
         "name": "Called Out",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Challenge costs no Guard · the foe you name is Taunted even if its save holds",
+        "text": "Challenge costs no Guard · the foe you name is Taunted with no save",
         "effects": [
           {
             "op": "cost_mod",
@@ -3953,20 +3953,20 @@
             }
           },
           {
-            "op": "condition",
-            "when": "acted",
-            "condition": "taunted",
-            "target": "target",
-            "skip_save": true,
-            "via": "durability",
+            "op": "skip_save",
+            "when": "cond_incoming",
             "if": {
+              "actor": "self",
+              "target": "foe",
               "action": [
                 "guard_challenge"
               ],
-              "target": "foe",
-              "target_alive": true
+              "cond": [
+                "taunted"
+              ],
+              "target_aimed": true
             },
-            "say": "{self} calls out {target}{then}."
+            "say": "{self} calls out {target}: no save."
           }
         ],
         "source": "rules 1.60 item 4619 (R1): Draw Fire merged into Challenge; the id is kept so saves load",

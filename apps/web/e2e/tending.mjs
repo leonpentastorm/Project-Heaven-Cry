@@ -84,7 +84,7 @@ mate = mates[0]?.charId || null;
 await snap('01-start');
 {
   const rows = await tendRows();
-  ok('Empathy 6: Shield has come (rules 1.75: at Empathy 5; Raise belongs to Nobody Left Behind II, on the Perks tab) (' + rows.filter((t) => /^Shield/.test(t)).length + ')', rows.some((t) => /^Shield/.test(t)) && !rows.some((t) => /^Raise/.test(t)));
+  ok('Empathy 6: Shield has come (rules 1.75: at Empathy 5; Raise belongs to Nobody Left Behind II, on its perk) (' + rows.filter((t) => /^Shield/.test(t)).length + ')', rows.some((t) => /^Shield/.test(t)) && !rows.some((t) => /^Raise/.test(t)));
   // (0.31.0: a mini meter; the focus line is its hover card now: both are read)
   const mpEl = host.locator('.phc-res-row:not(.phc-res-mini)[data-res="mp"]').first();
   const mp = ((await mpEl.textContent().catch(() => '')) || '') + ' ' + (await tipOf(mpEl));

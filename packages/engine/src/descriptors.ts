@@ -16,13 +16,14 @@
 // perkActionsFor, previewDraw, previewOutburst…): no rule is worked out again. The ids are the ones the screens and the
 // turn card always used ('shove', 'tq:main:cut', 'cl:call.order', 'pr:hymn:x.y', 'pk:<item>#<action>', 'draw'…), so a
 // player's saved turn-card picks and the two-key hotkeys keep working.
-import type { Combat, Unit, AttackMode } from './combat';
+import type { Combat, Unit, AttackMode, KitView } from './combat';
 import { WEAPON, SOUL_RULES } from './data';
-import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange, analyzeRange, pairs, sightBlockers } from './combat';
+import { kitOf, isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange, analyzeRange, pairs, sightBlockers } from './combat';
 import { kindOf } from './objects';
 import { apFor, canPay, RESOURCES, resGive, price, whyNot } from './effects/cost';
 import { eyesOn, seenByFoes, HIDE_WHY, throwRangeOf, radiusOf } from './tactics';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
+import { standingTerms } from './rolls';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun, fightWith, preview as previewOnCopy } from './preview';
 import type { Action, GameState } from './game';
 import { techniquePad, packPad, pairedPad, previewTechnique, useTechnique, momentumOf, shieldOf, physView, followOf } from './physical/core';
@@ -1063,6 +1064,16 @@ const systems = () => [...BUILT_IN, ...SYSTEMS];
 const SYS_OF = new WeakMap<ActionDescriptor, ActionSystem>();
 
 // ---------- the three functions ----------
+/** Rules 1.77 item 6514: a unit's kit as a side sees it (combat.ts kitOf: Shadow's Case), with the game bound. */
+export function kitSeenFor(g: GameState, unitId: string, side: string): KitView | null {
+  const u = g.combat?.units.find((x) => x.id === unitId); if (!u || !g.combat) return null;
+  return withGame(g, () => kitOf(g.combat!, u, side));
+}
+/** Rules 1.77 item 6511: a unit's standing to-hit terms for its token card (rolls.ts standingTerms), with the game bound. */
+export function standingModsFor(g: GameState, unitId: string): { v: number; label: string }[] {
+  const u = g.combat?.units.find((x) => x.id === unitId); if (!u) return [];
+  return withGame(g, () => standingTerms(g.combat, u));
+}
 /** Every action this unit could take now, in list order: grouped by tab (GROUP_ORDER), each system's rows in its own
  * order within a group. A unit with a fixed action list (the drone) gets only those. viewer: the player asking (its
  * side's fog rules the choices; the reducer's `by`). */

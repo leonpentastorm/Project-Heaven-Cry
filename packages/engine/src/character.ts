@@ -5,7 +5,7 @@ import { numberOf } from './datatext';
 import patronsJ from '../../../data/patrons.json';
 import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES, ladderSchedule, ELEMENTAL_CAP } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem, instanceMods } from './effects/collect';
-import { statQuery, setRankRule, setHandsRule, type HandInstance } from './effects/hooks';
+import { statQuery, setRankRule, setHandsRule, sheetSource, type HandInstance } from './effects/hooks';
 import type { StatId } from './effects/stats';
 import feelJ from '../../../data/feelings.json';
 import worldPlayJ from '../../../data/world_play.json';
@@ -669,6 +669,10 @@ export function servesIndex(c: Character, id: string): number {
   const pack = packOf(c), is = (x: PackItem) => x.qty > 0 && !x.mags && ((x.item || x.id) === id || ((ITEM[x.item || x.id] as any)?.serves_as || []).includes(id));
   const own = pack.findIndex((x) => x.qty > 0 && !x.mags && (x.item || x.id) === id); return own >= 0 ? own : pack.findIndex(is);
 }
+/** Rules 1.77 item 6513 (Numb): the limb injuries that hold a unit back: its arm and leg injuries after the first
+ * `ignored` (the stat `numb_limbs`: one injured limb no longer holds you back). Read by the arm's to-hit penalty
+ * (combat.ts armPenalty), a leg's halved Movement (combat.ts rollInjury) and the sheet's Movement (movement). */
+export const penalLimbs = (injuries: readonly Injury[] | undefined, ignored: number): Injury[] => (injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg').slice(Math.max(0, ignored));
 /** Rules 1.61 addendum item 4747: the one treatment of a limb: the first arm or leg injury comes off `t`. Returns it, or
  * null when `t` has none. Field Surgery, the field kit's use (`treat`) and a run's Rest all treat through this. */
 export function treatLimb(t: Character): Injury | null {
@@ -746,7 +750,7 @@ export const initiativeBonus = (c: Character) => fx(c, 'init', (A(c, 'agility') 
 /** Overburdened (spec: Carry weight): kg over the limit; −1 Movement per started 5 kg over. */
 export const overweightKg = (c: Character) => Math.max(0, Math.round((carriedKg(c).total - carryLimit(c)) * 100) / 100);
 export const overburdenPenalty = (c: Character) => Math.ceil(overweightKg(c) / 5);
-export const movement = (c: Character) => Math.max(0.5, fx(c, 'move', (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus')));
+export const movement = (c: Character) => Math.max(0.5, fx(c, 'move', (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (penalLimbs(c.injuries, statQuery({ c }, 'numb_limbs').add).some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus')));
 export const defense = (c: Character) => fx(c, 'defense', 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0)) + gearBonus(c, 'defense_bonus')
   + (c.offHand && isShieldId(c.offHand.id) && (WEAPON[c.weapon] as any)?.grants?.effect?.op === 'defense_with_shield' ? (WEAPON[c.weapon] as any).grants.effect.value : 0));
 // The derived multipliers below are the Stat term of the one formula (effects/output.ts; data/rules.json output.profiles
@@ -828,9 +832,9 @@ export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
 /** The Strain limit (rules 1.70 item 5539, Leon's ruling): the number block soul_modules.json strain.limit (3, +1 at
  * Composure 1, 2, 4, 6 and 8; Will Power gives none), then what items add (stat strain_limit). */
-export const strainLimit = (c: Character) => fx(c, 'strain_limit', numberOf((SOUL_RULES as any).strain.limit, (of) => (of.startsWith('skill:') ? P(c, of.slice(6)) : 0)));
+export const strainLimit = (c: Character) => fx(c, 'strain_limit', numberOf((SOUL_RULES as any).strain.limit, sheetSource(c)));
 export const moduleSlots = (c: Character) => fx(c, 'module_slots', 1 + Math.floor(P(c, 'will_power') / 3));
-export const readyDesigns = (c: Character) => fx(c, 'ready_designs', numberOf((SOUL_RULES as any).limits.ready_designs, (of) => (of.startsWith('skill:') ? P(c, of.slice(6)) : 0))); // rules 1.75 item 6205: Lore Master's (a number block)
+export const readyDesigns = (c: Character) => fx(c, 'ready_designs', numberOf((SOUL_RULES as any).limits.ready_designs, sheetSource(c))); // rules 1.75 item 6205: Lore Master's (a number block)
 // ---------- rules 1.8: practice, module gates and picks (spec: Soul magic 12, sections 4 and 5) ----------
 const PR = (): any => (SOUL_RULES as any).practice || {};
 const GATES = (): any => (SOUL_RULES as any).gates || {};
