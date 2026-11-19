@@ -4774,6 +4774,10 @@
         "arg": "words",
         "about": "the priced action (its cost site) is one of these"
       },
+      "target_aimed": {
+        "arg": "bool",
+        "about": "on cond_incoming: the target is (or is not) the unit the action that puts the condition on was aimed at (rules 1.77 item 6503: the named foe of an area verb)"
+      },
       "action_id": {
         "arg": "words",
         "about": "the own id of the priced or done action is one of these (a Call: its Calls id, call.name_it; any priced action that passes its id on the context of its price; on acted, rules 1.77: the id the reducer passes: a Call)"

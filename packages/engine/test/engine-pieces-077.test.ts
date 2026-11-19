@@ -39,3 +39,19 @@ describe('acted carries the Call id (item 6502): Read Intent reads a Spot from t
     const other = call('call.threaten'); expect(other.said).toBe(true); expect(other.read).toBe(false);
   });
 });
+
+describe('the action\'s target on cond_apply (item 6503): Called Out spares the named foe the Challenge\'s roll', () => {
+  it('the Bulwark\'s Challenge: the named foe is Taunted with no save rolled; the other foe in reach rolls its save', () => {
+    for (let i = 0; i < 4; i++) {
+      const f = fightWith([{ name: 'Tank', skills: { durability: 3 }, attrs: { endurance: 3 }, level: 3, weapon: 'sabre', classId: 'defender' }], [{ at: 'F6' }, { at: 'G6' }], { seed: 'CO' + i });
+      const [named, other] = f.foes; f.pc.pos = '4,2'; named.pos = '5,2'; other.pos = '6,2';
+      const me = f.turn(f.pc); me.res!.guard = 2;
+      f.act({ type: 'combat/perk', unitId: me.id, id: 'skill:durability.1', actionId: 'guard_challenge', targetId: named.id } as any);
+      const line = f.cb.log.find((l: string) => /issues a challenge/.test(l))!;
+      expect(condOn(f.unit(named.id), 'taunted')).toBe(true);
+      const part = (n: string) => line.split(' · ').find((x: string) => x.startsWith(n)) || '';
+      expect(part(named.name)).not.toMatch(/save d20/); expect(part(other.name)).toMatch(/save d20/);
+      expect(f.cb.log.some((l: string) => /calls out .*no save/.test(l))).toBe(true);
+    }
+  });
+});

@@ -336,6 +336,8 @@ export const bodyDebuffs = (u: Unit) => debuffsOf(u, 'body');
 export interface CondOpts { /** No save (a hit's rider, a perk that says so). */ skipSave?: boolean; tnAdd?: number; /** Commanded's order, a variant. */ arg?: string;
   /** The skill that delivered it (rules 1.13: its strength sets the TN). */ via?: string; /** A strength fixed earlier (residue, a zone, a stored spell): used as it is. */ str?: number;
   /** Hidden only: the same Hidden entry as before (no new ambush). */ sameEntry?: boolean;
+  /** Rules 1.77 item 6503: the action that puts it on (its acted name) and the unit that action was aimed at, told to
+   * 'cond_apply' (ctx.action, ctx.aim) so an item can tell the named foe from the rest of an area. */ action?: string; aim?: Unit | null;
   /** Called once the condition has taken hold, just before 'cond_landed' is told (a move logs its own line here, so
    * that what reacts to the landing (Shrug It Off) reads after it). Never stored. */ onLand?: () => void }
 /** The second door of an immunity (the first is the 'cond_apply' hook): the `immune:<id>` query, and for Bleeding the
@@ -350,6 +352,8 @@ function askImmune(ca: any, t: Unit, id: string, fam?: Fam) {
 /** Apply a condition: the target saves (d20 + its save) against 12 + the source's strength with the skill that delivered it (opts.via, or the call it runs inside: withVia; rules 1.13) (spec: Conditions
  * and saves). Boons (Guarded, Inspired…) and states need no save. No stacking: a second dose resets to the longer
  * duration. The source is kept (u.condBy) for Fear, Taunted, Grappled, Marked and kill credit. */
+/** The action and its aimed unit on 'cond_apply' (rules 1.77 item 6503), when the opts carry them. */
+const aimOf = (o: CondOpts) => ({ ...(o.action ? { action: o.action } : {}), ...(o.aim ? { aim: o.aim } : {}) });
 export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: string, rounds?: number, fam?: Fam, opts: CondOpts = {}): string {
   const id = condId(id0), def = CONDS[id];
   if (!def || def.engine === 'state' || t.dead) return ''; // a unit state (Braced, Downed) has its own setter: unitstate.ts
@@ -358,7 +362,7 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
   // Items first: 'cond_apply' {by, t, id, fam, rounds, skipSave, cancel, why, tnAdd, saveAdd} (an immunity cancels it,
   // a perk may skip the save, change the rounds or the save's TN).
   const via = viaOf(by, opts.via);
-  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam: fam || def.fam, rounds: rounds || def.rounds, skipSave: !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, arg: opts.arg, via, cb, rng });
+  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam: fam || def.fam, rounds: rounds || def.rounds, skipSave: !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, arg: opts.arg, via, ...aimOf(opts), cb, rng });
   askImmune(ca, t, id, ca.fam);
   if (ca.cancel) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : ''); }
   const f: Fam = ca.fam || fam || def.fam || 'body';
@@ -406,7 +410,7 @@ function condNumbers(u: Unit, def: CondDef, on: boolean) {
 function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, def: CondDef, rounds: number | undefined, opts: CondOpts): string {
   const id = def.key, fam: Fam = def.fam || 'body';
   const via = viaOf(by, opts.via);
-  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || (def.noTick ? 1 : def.rounds), skipSave: !!def.noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, via, cb, rng });
+  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || (def.noTick ? 1 : def.rounds), skipSave: !!def.noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, via, ...aimOf(opts), cb, rng });
   askImmune(ca, t, id, def.fam);
   if (ca.cancel) return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : '');
   let saved = '';

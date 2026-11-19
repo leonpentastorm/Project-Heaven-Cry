@@ -13186,3 +13186,7 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
 6502. **`acted` carries the action's own id** when its name is a family (a Call: `call.spot`), so `action_id` reads it
       on `acted` as on `cost`. Read Intent (rules 1.74 item 6009) reads "your Spot" from the action itself; its two
       marks on the price (a flag set while prices were listed) are gone. Nothing a player sees changes.
+6503. **An action's condition tells `cond_apply` the action and the unit it was aimed at** (`ctx.action`, `ctx.aim`;
+      the predicate `target_aimed` on `cond_incoming`). Called Out (rules 1.60 item 4619; item 5602 completed): the foe
+      you name with Challenge is Taunted with no save (no roll at all); every other foe in reach still saves. Its card
+      reads "the foe you name is Taunted with no save" again.

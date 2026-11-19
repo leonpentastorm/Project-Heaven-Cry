@@ -188,6 +188,7 @@ P('cond', 'ids', 'the condition is one of these', (ev, v) => list(v).map(condId)
 P('cond_family', 'words', 'the condition\'s family is one of these (body, brain, heart)', (ev, v) => list(v).includes(ev.ctx.fam));
 P('action', 'words', 'the priced action (its cost site) is one of these', (ev, v) => list(v).includes(ev.ctx.action));
 // rules 1.64 item 5006 (the lead's approved primitive): a priced action's own id, for a cost_mod that names one Call
+P('target_aimed', 'bool', 'on cond_incoming: the target is (or is not) the unit the action that puts the condition on was aimed at (rules 1.77 item 6503: the named foe of an area verb)', (ev, v) => !!ev.target && (ev.ctx.aim === ev.target) === v);
 P('action_id', 'words', 'the own id of the priced or done action is one of these (a Call: its Calls id, call.name_it; any priced action that passes its id on the context of its price; on acted, rules 1.77: the id the reducer passes: a Call)', (ev, v) => ev.ctx.action != null && typeof ev.ctx.id === 'string' && list(v).includes(ev.ctx.id));
 P('word', 'words', 'the Sigil word being drawn is one of these', (ev, v) => list(v).includes(ev.ctx.word));
 P('hand', 'words', 'the hand is one of these (main, off, both)', (ev, v) => list(v).includes(ev.ctx.hand || (ev.ctx.both ? 'both' : 'main')));
@@ -426,7 +427,7 @@ O('condition', ANY, true, ['condition', 'rounds', 'skip_save', 'via', 'by', 'sam
   // rules 1.33: `{choice}` in the id is the action's pick ("given_{choice}": Inspire's felt feeling); an id that names no row does nothing
   const tmpl = !inc && typeof e.condition === 'string' && e.condition.includes('{choice}'), id = inc ? ev.ctx.id : tmpl ? withChoice(e.condition, ev) : e.condition, rounds = typeof e.rounds === 'number' ? e.rounds : inc && typeof ev.ctx.rounds === 'number' ? ev.ctx.rounds : undefined;
   if (tmpl && !CONDITION_ROWS.some((r: any) => r.id === id)) return false;
-  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), giverOfOp(ev, e), u, id, rounds, undefined, { ...(e.skip_save ? { skipSave: true } : {}), ...(typeof e.via === 'string' ? { via: e.via } : {}), ...(e.same_entry ? { sameEntry: true } : {}) });
+  return applyCond(ev.cb, rngOf(ev.h, ev.ctx), giverOfOp(ev, e), u, id, rounds, undefined, { ...(e.skip_save ? { skipSave: true } : {}), ...(typeof e.via === 'string' ? { via: e.via } : {}), ...(e.same_entry ? { sameEntry: true } : {}), ...(ev.trig.hook === 'acted' ? { action: ev.ctx.action, aim: ev.ctx.t || null } : {}) }); // rules 1.77 item 6503: an action's condition tells cond_apply the action and the unit it was aimed at
 });
 O('cleanse', ANY, true, ['condition', 'family', 'count', 'newest'], 'end conditions: the ones named, or a family\'s debuffs, or any debuff (count: how many; newest: true, the newest first, else in the order named)', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
