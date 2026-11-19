@@ -6,6 +6,10 @@ import { composeEncounter, budgetFor, foeCost, foeLevel, tierLag, shareOf, ancho
 import { ENEMY, WEAPON, MAP_LIMITS, startGap, standable, CASTER, HEART_CASTER } from '../src';
 import enemiesJ from '../../../data/enemies.json';
 import lootJ from '../../../data/loot_tables.json';
+import svJ from '../../../data/survival.json';
+/** The map's size by its units: the data's steps (survival.json map_size; rules 1.81 item 6904 refitted them). */
+const MAP_STEPS = (svJ as any).map_size.steps as { units: number; size: number }[];
+const sizeFor = (units: number) => MAP_STEPS.find((s) => units <= s.units)!.size;
 declare const process: { env: Record<string, string | undefined> };
 declare const console: { log(...a: unknown[]): void };
 
@@ -116,7 +120,7 @@ describe('Survival encounters (rules 1.41)', () => {
 
   it('the map (rule 22): its size by units, the squad on the west edge, every foe at least the deployment minimum away, all starts standable and apart', () => {
     for (const { n, e } of cases.slice(0, 3000)) {
-      const units = n + e.foes.length, m = e.map, want = units <= 6 ? 16 : units <= 10 ? 20 : 26;
+      const units = n + e.foes.length, m = e.map, want = sizeFor(units);
       expect(m.w).toBe(want); expect(m.h).toBe(want);
       const starts = [...m.pcStart, ...m.foeStart];
       expect(new Set(starts).size).toBe(starts.length);
@@ -153,7 +157,7 @@ describe('Survival encounters (rules 1.41)', () => {
       r.n++; r.bulk += c.e.spent.bulk / c.e.target.bulk; r.press += c.e.spent.pressure / c.e.target.pressure; r.foes += c.e.foes.length; r.scaled += c.e.scaleHp !== 1 ? 1 : 0; r.maps[c.e.map.w] = (r.maps[c.e.map.w] || 0) + 1;
     }
     const lines = ['| Party, node | Fights | Bulk spent / target | Pressure spent / cap | Foes (mean) | HP-scaled | Maps (16 / 20 / 26) |', '| --- | --- | --- | --- | --- | --- | --- |'];
-    for (const [k, r] of Object.entries(rows)) lines.push('| ' + k + ' | ' + r.n + ' | ' + (r.bulk / r.n).toFixed(3) + ' | ' + (r.press / r.n).toFixed(3) + ' | ' + (r.foes / r.n).toFixed(2) + ' | ' + (100 * r.scaled / r.n).toFixed(1) + '% | ' + [16, 20, 26].map((s) => r.maps[s] || 0).join(' / ') + ' |');
+    for (const [k, r] of Object.entries(rows)) lines.push('| ' + k + ' | ' + r.n + ' | ' + (r.bulk / r.n).toFixed(3) + ' | ' + (r.press / r.n).toFixed(3) + ' | ' + (r.foes / r.n).toFixed(2) + ' | ' + (100 * r.scaled / r.n).toFixed(1) + '% | ' + MAP_STEPS.map((q) => r.maps[q.size] || 0).join(' / ') + ' |');
     const tmpl: Record<string, number> = {}; for (const c of cases) tmpl[c.e.template] = (tmpl[c.e.template] || 0) + 1;
     console.log(cases.length + ' fights\n' + lines.join('\n') + '\n\nTemplates: ' + Object.entries(tmpl).map(([k, v]) => k + ' ' + v).join(', '));
   });

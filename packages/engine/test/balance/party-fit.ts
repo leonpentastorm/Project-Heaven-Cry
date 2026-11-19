@@ -62,12 +62,13 @@ export function withLever<T>(lever: string | undefined, n: number, f: () => T): 
     if (lever === 'duopress') ENC_BUDGET.pressurePerChar = was.p.map((v: number, i: number) => (i === 1 ? was.p[0] : v)); // the duo's pressure a head at the solo's, nothing else
     if (lever === 'revive') SV.run.dead_return_hp = REVIVE_HP;
     if (lever === 'smallmap') SV.map_size.steps = [{ units: 99, size: was.steps[0].size }];
-    // lever `set:` (the fit's candidates, in memory only): `set:p=1.3/1.3/1.2/0.9;ret=50;m=4/6/8/10`
+    // lever `set:` (the fit's candidates, in memory only): `set:p=1.3/1.3/1.2/0.9;ret=50;m=4/6/8/10;ms=16/18/22`
     if (lever && lever.startsWith('set:')) for (const kv of lever.slice(4).split(';')) {
       const [k, v] = kv.split('='), arr = v.split('/').map(Number);
       if (k === 'p') ENC_BUDGET.pressurePerChar = arr; if (k === 'm') ENC_BUDGET.maxFoes = arr; if (k === 'ret') SV.run.dead_return_hp = arr[0];
       if (k === 'mem') RULES.combat.focus_memory.per_attacker = arr[0]; if (k === 'fin') RULES.combat.focus_memory.finish_share = arr[0]; // rules 1.61 focus memory (item 4964)
       if (k === 'cf') COVER.full = arr[0]; // rules 1.61 cover beside you (item 4960): full cover's term
+      if (k === 'ms') SV.map_size.steps = was.steps.map((st: any, i: number) => ({ ...st, size: arr[i] ?? st.size })); // 0.32 fit: the map's size by step (rules 1.41 map_size), in memory
     }
     void n;
     return f();
@@ -141,6 +142,8 @@ export interface PartyRun { cell: string; lever: string; seed: string; cleared: 
 /** Stage 1 of one party on one seed, every fight instrumented. */
 /** How many stages a run may play (PF_STAGES, default 1); `cleared` is still stage 1, `stages` how many were cleared. */
 const STAGES = Number(((globalThis as any).process?.env || {}).PF_STAGES || 1);
+/** A fight's round cap in the run (PF_MAX_ROUNDS, default 20): past it the run is `stalled` (0.32 fit: is a stall a slow win?). */
+const MAX_ROUNDS = Number(((globalThis as any).process?.env || {}).PF_MAX_ROUNDS || 20);
 export function partyRun(cell: string, seed: string, lever = 'none'): PartyRun {
   const doors = PARTIES[cell], n = doors.length, fights: FightStat[] = [];
   const P: any = Rec.prototype, fight0 = P.fight;
@@ -173,7 +176,7 @@ export function partyRun(cell: string, seed: string, lever = 'none'): PartyRun {
     }
   };
   let res: any; VERBS = {}; TRACE = [];
-  try { FOCUS.on = lever === 'focus'; res = withLever(lever, n, () => simRun({ party: cell, route: 'gear', seed, maxStages: STAGES, maxFightRounds: 20 })); }
+  try { FOCUS.on = lever === 'focus'; res = withLever(lever, n, () => simRun({ party: cell, route: 'gear', seed, maxStages: STAGES, maxFightRounds: MAX_ROUNDS })); }
   finally { P.fight = fight0; FOCUS.on = false; LIVE = null; }
   res.fights.forEach((f: any, i: number) => { if (fights[i]) { fights[i].kind = f.kind; fights[i].won = f.won; fights[i].rounds = f.rounds;
     // HP entering it (the stop's record): the lowest member's share, and the members at 10% or less (a Downed member of a won fight stands up at 1 HP)

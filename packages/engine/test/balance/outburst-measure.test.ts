@@ -20,7 +20,7 @@
 // how the "before" tables in the hand-off were made.
 import { describe, it, expect } from 'vitest';
 import feelJ from '../../../../data/feelings.json';
-import { rifle, pattern } from './magic-measure';
+import { rifle, pattern, peakPattern } from './magic-measure';
 import { freshFight } from './sim';
 import { buildCharacter, sheetLine } from './builds';
 import { FEELING, SOUL_RULES, SOUL_AP, previewOutburstPlan, bindGame, strainLimit, freePumps } from '../../src';
@@ -40,9 +40,8 @@ const ROWS = [
   { what: 'stage 4, plain Pumps', opts: { stage: 4 } },
 ];
 function row(p, variant, level, y, extra = {}) {
-  let r = pattern(p.what, 'outburst', variant, level, N * (p.n || 1), p.opts || Object.keys(extra).length ? { ...(p.opts || {}), ...extra } : null, /^Release /, y, 'sim_range_soldier', p.rounds || 8);
-  if (p.rounds === 1 && !r.casts) { r = pattern(p.what, 'outburst', variant, level, N * (p.n || 1), { ...(p.opts || {}), ...extra }, /^Release /, y, 'sim_range_soldier', 2); r.note = 'over two turns'; }
-  return r;
+  const opts = p.opts || Object.keys(extra).length ? { ...(p.opts || {}), ...extra } : null;
+  return p.rounds === 1 ? peakPattern(p.what, variant, level, N * (p.n || 1), opts, y) : pattern(p.what, 'outburst', variant, level, N * (p.n || 1), opts, /^Release /, y, 'sim_range_soldier', p.rounds || 8);
 }
 const cell = (r) => (r.casts ? r.perCast + ' · ' + r.turnsPerCast + ' t · ' + r.apPerCast + ' AP · S' + r.strainPerCast + ' · **' + r.pctRifle + '%**' + (r.note ? ' (' + r.note + ')' : '') : 'no cast');
 

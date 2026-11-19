@@ -82,12 +82,12 @@
     "elite": { "hp": [0.75, 1, 1, 0.8], "damage": [0.6, 1, 1, 0.8] },
     "provisional": true
   },
-  "map_size": { "about": "Rules 1.41 (spec rule 22): the fight's map by its units (the party and the foes): up to `units`, a square of `size` tiles, generated (rules 1.45, `layout`) or cropped from the middle of the open ground; the squad starts in the columns `squad_cols` (the west edge).", "steps": [ { "units": 6, "size": 16 }, { "units": 10, "size": 20 }, { "units": 99, "size": 26 } ], "squad_cols": [1, 2], "provisional": true },
+  "map_size": { "about": "Rules 1.41 (spec rule 22): the fight's map by its units (the party and the foes): up to `units`, a square of `size` tiles, generated (rules 1.45, `layout`) or cropped from the middle of the open ground; the squad starts in the columns `squad_cols` (the west edge).", "steps": [ { "units": 10, "size": 16 }, { "units": 99, "size": 20 } ], "steps_note": "rules 1.81 item 6904 (the 0.32 fit, 20 Nov 2026), PROVISIONAL: was 16 up to 6 units, 20 up to 10, 26 beyond. A party of four melee fighters walked a 20-tile map under the foes' guns (Breaker stage-1 clears of 40: solo 19, four 6; Bulwark 25, 8); every fight on the solo's 16-tile map gave four 14 and 19 (the party fit's smallmap lever). Measured with 16 up to 10 units and 20 beyond: four Breakers 6 -> 14, four Bulwarks 11 -> 17, every other door's four within its noise.", "squad_cols": [1, 2], "provisional": true },
   "layout": {
     "about": "Rules 1.45 (spec rule 22, section 4.3): the fight's map, generated from the node's own stream. `use`: `generated`, or `open_ground` for step 3's crop (the switch; also the fallback when no try passes). Stamps (`stamp_count` by map size) from the setting's list, turned and mirrored, `stamp_gap` apart past a ring of one kept tile, never in a start zone (the squad's first `zone_cols` columns; the enemy line and `foe_zone` columns either side); loose cover (one in `full_every` full; half cover in straight runs of `cover_run` tiles) near every start (`start_cover_reach`), until every tile outside the zones is within `cover_reach` of cover, and up to `cover_share`'s floor; `barrels` beside cover; the setting's props; `difficult` patches; a hazard patch (`hazard_size`) only where the template allows one (its `hazard`) and by the setting's chance; `dressing` tiles for the renderer. A try that fails the checks drops a stamp; after `tries`, the open ground. `grounds` and `dress_pieces`: how many of each a kit holds. `legend`: the characters the stamps use beyond the maps legend (`d` an open door).",
     "use": "generated",
     "tries": 8,
-    "stamp_count": { "16": [1, 2], "20": [2, 3], "26": [3, 5] },
+    "stamp_count": { "16": [1, 2], "20": [2, 3] },
     "stamp_gap": 1,
     "zone_cols": 4,
     "foe_zone": 2,

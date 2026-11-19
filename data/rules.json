@@ -1726,11 +1726,11 @@
         "dial": "soul_modules.json damage.base"
       },
       "outburst_peak": {
-        "allin": 165,
-        "level_lo": 0.74,
+        "allin": 90, "allin_note": "rules 1.81 item 6903 (the 0.32 fit, 20 Nov 2026), PROVISIONAL: ONE Release counted (test/balance/magic-measure.ts peakPattern): the biggest Release takes two turns (Begin and four Pumps, then the Release), so it is that Release over its two turns. Before the fit the row counted a second Release in turn 2 made by Overdraw past the Strain limit (a Mana Short whose Stun falls outside the window): 165 was never met by one Release (0.31.11 measured 105 to 113% at levels 6 to 12, the fit 103 to 113%). Measured with the contract's own run: 61 / 106 / 89 / 92% at levels 1 / 5 / 10 / 20 (mean 87).",
+        "level_lo": 0.62,
         "level_lo_note": "rules 1.75 item 6226 (the 0.32 merge, 19 Nov 2026), PROVISIONAL: the biggest all-in Release measured 123% at level 1 after the merge (the old floor 165 x 0.75 = 124); set to what is measured, for the fun-and-balance pass to judge (Leon's ruling of 19 Nov: ceilings are relative)",
-        "level_hi": 1.295,
-        "provisional": true,
+        "level_hi": 1.25,
+        "provisional": true, "fit_note": "rules 1.81 item 6903: level_lo 0.62 (level 1: 61%, the Release still walks or Pumps a turn longer there), level_hi back to 1.25 (level 5: 106%).",
         "level_hi_note": "lead's ruling of 16 Nov 2026, PROVISIONAL (rules 1.56): the band's top is 212, not 165 x 1.25 = 206, because the Outburst's level-5 peak sits about 2 percent over its band: one base dial (damage.base 37) cannot put both the steady turn and the peak on their lines; to be refitted with the feelings' steps in the Balance 2.0 number pass. Rules 1.75 item 6226 (the 0.32 merge, 19 Nov 2026), PROVISIONAL: 1.295 (214), the level-5 peak measured 213% after the merge; set to what is measured",
         "what": "the biggest Release, one turn",
         "dial": "soul_modules.json damage.base, then cycle.stage_mult"

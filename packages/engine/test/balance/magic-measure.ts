@@ -33,6 +33,17 @@ export function pattern(what: string, build: string, variant: string, level: num
     spellPerTurn: r1(spell / Math.max(1, c.turns)), allPerTurn: r1(c.dmg / Math.max(1, c.turns)), bigHit: c.bigHit, bigWhat: c.bigHitWhat,
     pctRifle: pct(spell / Math.max(1, c.turns), y.normal), pctAll: pct(c.dmg / Math.max(1, c.turns), y.normal), pctOwnRifle: pct(spell / Math.max(1, c.turns), y[variant]), errors: c.errors };
 }
+/** THE PEAK (one copy: magic-measure, outburst-measure and the contract's obPeak read it): the biggest Release, one turn
+ * from a quiet heart. When it can't be cast in turn 1 (the turn holds the Begin and the Pumps), the same over two turns,
+ * and then ONE Release is counted: the first lands on turn 2, so the row is that Release's damage over its two turns
+ * (0.32 fit, rules 1.81 item 6903: since rules 1.70 the Strain limit is Composure's and lower, so the policy fires a second
+ * Release in turn 2 by Overdraw past the limit, a Mana Short whose Stun falls in turn 3, outside the window; counting it
+ * doubled the row while the Release's own multiplier did not move). */
+export function peakPattern(what: string, variant: string, level: number, n: number, opts: any, y: Yard, tier = 'sim_range_soldier'): Row {
+  let r = pattern(what, 'outburst', variant, level, n, opts, /^Release /, y, tier, 1);
+  if (!r.casts) { r = pattern(what, 'outburst', variant, level, n, opts, /^Release /, y, tier, 2); r.note = 'one Release over two turns: it walks into reach or Pumps first'; if (r.casts) r.pctRifle = pct(r.perCast / 2, y.normal); }
+  return r;
+}
 export const SIGIL_PATTERNS = [2, 3, 4].map((g) => ({ what: g + ' glyphs', opts: { glyphs: g } }));
 export const OUTBURST_PATTERNS = [
   ...[0, 1, 2, 3, 4].map((s) => ({ what: 'stage ' + s + ', plain Pumps', opts: { stage: s } })),
@@ -51,9 +62,8 @@ export const EARLY_FEELINGS = ['rage', 'love', 'calm', 'spite', 'joy', 'shame', 
 export function measureLevel(level: number, variant: string, n: number, log: (s: string) => void = () => {}) {
   const y = rifle(level, n); log('rifle L' + level + ' ' + r1(y.normal) + ' / all in ' + r1(y.allin));
   const sig = SIGIL_PATTERNS.map((p) => { const r = pattern(p.what, 'sigil', variant, level, n, p.opts, /^Evoke /, y); log('sigil ' + variant + ' L' + level + ' ' + line(r)); return r; });
-  const out = OUTBURST_PATTERNS.map((p: any) => { let r = pattern(p.what, 'outburst', variant, level, n * (p.n || 1), p.opts, /^Release /, y, 'sim_range_soldier', p.rounds || 8);
-    // a one-turn peak that could not be cast in turn 1 (the caster had to walk into reach first): the same over two turns
-    if (p.rounds === 1 && !r.casts) { r = pattern(p.what, 'outburst', variant, level, n * (p.n || 1), p.opts, /^Release /, y, 'sim_range_soldier', 2); r.note = 'two turns: it walks into reach first'; } log('outburst ' + variant + ' L' + level + ' ' + line(r)); return r; });
+  const out = OUTBURST_PATTERNS.map((p: any) => { const r = p.rounds === 1 ? peakPattern(p.what, variant, level, n * (p.n || 1), p.opts, y) : pattern(p.what, 'outburst', variant, level, n * (p.n || 1), p.opts, /^Release /, y, 'sim_range_soldier', p.rounds || 8);
+    log('outburst ' + variant + ' L' + level + ' ' + line(r)); return r; });
   return { level, variant, rifle: y, sigil: sig, outburst: out };
 }
 export const line = (r: Row) => r.what + ': ' + (r.casts ? r.perCast + ' a cast · ' + r.turnsPerCast + ' turns · ' + r.apPerCast + ' AP · Strain ' + r.strainPerCast + ' · ' + r.pctRifle + '% of the rifle (with the sidearm ' + r.pctAll + '%; of its own share\'s rifle ' + r.pctOwnRifle + '%) · biggest hit ' + r.bigHit : 'out of reach (no cast in 8 turns)') + (r.errors ? ' · ERRORS ' + r.errors : '');
