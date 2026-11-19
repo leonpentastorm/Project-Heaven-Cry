@@ -990,6 +990,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-glaive--celestial",
+      "path": "art/icons/gear/weapon-glaive--celestial.png",
+      "sha256": "e53ad5fa2cc91610366fa74c878df5a2e5287568e454c53a96917ed724c311e2",
+      "label": "Glaive — Celestial",
+      "family": "weapon-glaive",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-glaive--celestial.png",
+        "sha256": "fc3546f6cf2c13247b094002ad7d910acb5517b33a6bfa82aa6e72fa6113b978"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-glaive--celestial.png",
+        "sha256": "e53ad5fa2cc91610366fa74c878df5a2e5287568e454c53a96917ed724c311e2"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-glaive--celestial.txt",
+        "sha256": "31a394e9e43f15632178bb3c850f8bd097aa437498703dbc5b6d0f8bf0489d4e"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-glaive.png",
+          "sha256": "c6e54c5d2f96f5c8dad00cbf0da2dc5bddb6aba60105ff52d8da91871818df1e"
+        },
+        {
+          "path": "art/icons/gear/weapon-glaive--relic.png",
+          "sha256": "14e13257e7f6415a3e83b407c0e41c27fe22339cd9160c1a02ec7c26bf9d1985"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-glaive--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-glaive--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-glaive--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-glaive--celestial.png"
+      },
+      "export_hashes": {
+        "256": "c42354e913190bdc41db95677a9208438651c97daf8d2b43f5a3f77e4517b3f9",
+        "128": "2b2cc855192d134feeedf6a8c24d59867bec2b26bf09b77a12815b17493a89e3",
+        "64": "8f6bcaaadef6cdb460646695db2e4d9370c94b2cd3038feabdcecbcd97cf1161",
+        "32": "c1b3cef0c14d8b6256d23fce73b3a542957b2635d50322e517ad9428d85d15af"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-glaive",
+      "outline": {
+        "solid_alpha_iou": 0.9183623586923312,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 27
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
