@@ -3178,6 +3178,7 @@ b21058413d711cb910cc5ec1c9bdf688edabf3db92333c23ae3f6da5a7abb9d0  art/_archive/p
 2543d38554d583b5692c2421e92698965d74606f29137b7a3c770d9c36a478fc  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--masterwork.json
 16fbab1a88dce46966d1e2783c45c3551e20366ead7edc75c208b2b418766200  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--relic.json
 6dd722cf2136692fb97e5891087d825c71fc556ba18593f67c9a684cbc2d0bb6  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-legion_gladius--fine.json
+e13bc77884d1cf75190731a3738aeea45498c09e9a98c07040201ebf42951c21  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-legion_gladius--masterwork.json
 e4cbbb102fa8a54cf14b271a843bbd638013fdc9e5eaeb2049bfd293054e4be9  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-sabre--celestial.json
 fc26ad210e9e994e962b482f61364a085be97584913dcb31ccb37cf7a0265f02  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-sabre--fine.json
 c91addb4c4282b8436fd7786a7bcf5332d12283e2d052ddd1318f1c2f40476fc  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-sabre--masterwork.json
@@ -4558,7 +4559,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-9d4c31077a8aaebf77bc23c305cba2dbf9716456e5fe403ef40b2fff5f986207  art/catalog.json
+5c2d1a84a01fab582a06d5c65b3bb54785537d880a9947b964c8044962887f55  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6300,6 +6301,7 @@ b51e2121eb98a2202ea5405729aba2cbe9c0d441fce3748e120ee001eaff6f54  art/icons/gear
 8169973e045659c2f744212d74e307fd9018a189e9dc3a5ef87b28bf66c5378b  art/icons/gear/exports/128/weapon-lance.png
 8ff8ec38ec5b8fa19ad95d7b276417da567fdd2692435aed99520ba7eac6e144  art/icons/gear/exports/128/weapon-legion_bullpup.png
 9beb0a8a6754c9c0c2c16d947c9cb7335056a899b43baae670f3463649c5dc04  art/icons/gear/exports/128/weapon-legion_gladius--fine.png
+220b0217c8c9e6dc2013f3178a90149d5e19059ef12c82b39b9c39662d62a1a0  art/icons/gear/exports/128/weapon-legion_gladius--masterwork.png
 5919004426304ce3062566f87b6fca079ab28c3726051d1fd5a6ae375674eb45  art/icons/gear/exports/128/weapon-legion_gladius.png
 68af83b2bed0980c05032f0a93c4bc148a7db55edc396d0549ad62414ac235a5  art/icons/gear/exports/128/weapon-legion_pdw.png
 6bd7aa073b95d9b3750c5bf825e3ff305e767b86550e03f26d1c11cdd3534431  art/icons/gear/exports/128/weapon-lever_carbine.png
@@ -6486,6 +6488,7 @@ b264e48f15abf671bf568a5f59939c12962fcdc237203cf538568323e2b7fd01  art/icons/gear
 5203a7cfab0370b964c5b6b58ad39b4d5a7b6a61328c8ab654cd298be6e07bbb  art/icons/gear/exports/256/weapon-lance.png
 0bb7830b551248d0e6a0e04ede6c1768c222bf6fc9aad3ebc365ee8eced50e2f  art/icons/gear/exports/256/weapon-legion_bullpup.png
 61c6169d1373aa4cf8b3fb9cd97c58738b105863bc1c7ee66ec640feaf229bdc  art/icons/gear/exports/256/weapon-legion_gladius--fine.png
+e4b1e01867455a68b1ea1159dc43a6914e1df6be7e2dd772d24b1a96894ea9d2  art/icons/gear/exports/256/weapon-legion_gladius--masterwork.png
 b8d48e40b38b9b547bb51c62875d2762ac02109142e69ab45341a9a012d4368f  art/icons/gear/exports/256/weapon-legion_gladius.png
 3f0f8f175ead077af3c123c88e76aedb7534349ad0e883baa2143adc8bbd963e  art/icons/gear/exports/256/weapon-legion_pdw.png
 1ac210a16fd112bc05524ce789743e378c327528370fd769a33bf90bd84b5732  art/icons/gear/exports/256/weapon-lever_carbine.png
@@ -6672,6 +6675,7 @@ bea319921f95cdb976f8892f5a46ee6bcc6aebbdad3944f4b41558834c2d499b  art/icons/gear
 a7b63c3a2009982e2765ee94817c59835145b6867b08730f23fa23756aa017de  art/icons/gear/exports/32/weapon-lance.png
 87af3e8f5a5ffd7f82e296f95cac0fac02bef5af8b5c77ff1eba17f99bb3bdb3  art/icons/gear/exports/32/weapon-legion_bullpup.png
 0d442b34dd4a7b0aba165c80408820e3465b8ae6c5293ea2434803b801ccad0c  art/icons/gear/exports/32/weapon-legion_gladius--fine.png
+436d9efcb638de69cf17cce949f6e7f5798ed3364a4195ed146e7c67778a796d  art/icons/gear/exports/32/weapon-legion_gladius--masterwork.png
 a36f5cf75f381e5e75459e4d2b2bba2c6d39d5821febf0db99ef66ffd5bd6145  art/icons/gear/exports/32/weapon-legion_gladius.png
 ba55647e761f2b7bee6a69a6d22ae40157e67f163d74825f8561a9d8e6d88a50  art/icons/gear/exports/32/weapon-legion_pdw.png
 7a55fa124c9ff5ddf788566d7e6b65b0b56a0556505f461f0a9809cb53a38ba7  art/icons/gear/exports/32/weapon-lever_carbine.png
@@ -6858,6 +6862,7 @@ c161ec288096dea1401ea4258a97dfaca42080c0edaeb0f07e67b5e32e5a6fcf  art/icons/gear
 2859f5ebfd9d5544f8b6e997af90b92fa99e48170f9ce7630642fd3987e6565d  art/icons/gear/exports/64/weapon-lance.png
 455dfdecde221f585c81d8836ee907b5591fb72f17371cade9096a873f60ff69  art/icons/gear/exports/64/weapon-legion_bullpup.png
 ae5d912898641d200c51393ffd3819c41b7bc2df4e18724f80a0bedc2c0c7dd1  art/icons/gear/exports/64/weapon-legion_gladius--fine.png
+b3a80f03f21a55b18a741636612a0b369b500f5c668492918cfee35df053ca30  art/icons/gear/exports/64/weapon-legion_gladius--masterwork.png
 1fb9745c80dea64172475a521754b32e8277af679dc9566a189c9aa3101eff36  art/icons/gear/exports/64/weapon-legion_gladius.png
 5d7c0eb43a8000de7de8d0ca7a3248cd6c292c99a77d570232c0cf14ccff1521  art/icons/gear/exports/64/weapon-legion_pdw.png
 b8a1a038f258ebb4171cd236992562d2d3111fd3f735e5b16c227c47862c9e5d  art/icons/gear/exports/64/weapon-lever_carbine.png
@@ -7008,6 +7013,7 @@ d4e4963718ef806fee94a92b1ec4f59d5ed9fe34de8aec489caf0ec669c83512  art/icons/gear
 20bff5d57a4df6bee81a29c9ab1e01390b6f232bf3073a275d99a105825a04a3  art/icons/gear/weapon-lance.png
 3dc7d695c6eb6c2698fa797c62cb8e81159f117c8cbfca317632d8cdc62581a1  art/icons/gear/weapon-legion_bullpup.png
 6287af08128f37253c8f97592da21fd70a2c609c024cd534d8b98ba39301b931  art/icons/gear/weapon-legion_gladius--fine.png
+f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff  art/icons/gear/weapon-legion_gladius--masterwork.png
 28e96e7333bce563f97911b40b91750c9a6b578573f85c2438e4e045a5c6cd92  art/icons/gear/weapon-legion_gladius.png
 6d69f356c1f392d54de6a83bec57c2c388925b5f16b2ead6898b3a27e95e864c  art/icons/gear/weapon-legion_pdw.png
 240ff2854ce3d39de7cb38c3cf375c319ddead321881ca66c3a8847c24393c07  art/icons/gear/weapon-lever_carbine.png

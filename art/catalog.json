@@ -18970,6 +18970,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "weapon-legion_gladius--masterwork": {
+      "label": "Legion Gladius Masterwork",
+      "path": "art/icons/gear/weapon-legion_gladius--masterwork.png",
+      "sha256": "f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/weapon-legion_gladius.png",
+      "source_path": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_gladius--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_gladius--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_gladius--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_gladius--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {
