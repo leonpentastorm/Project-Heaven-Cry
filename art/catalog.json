@@ -34592,7 +34592,10 @@
         "32": "art/icons/moves/exports/32/open-guard.png",
         "24": "art/icons/moves/exports/24/open-guard.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-open-guard/open-guard.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-open-guard/open-guard.svg",
+      "data_ids": [
+        "relic:open_hand#open_guard"
+      ]
     },
     "move-jab": {
       "label": "Wick \u2014 Jab",

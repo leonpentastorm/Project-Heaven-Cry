@@ -199,11 +199,12 @@ export function toHitTerms(cb: Combat | null | undefined, att: Unit | null | und
 /** Rules 1.77 item 6511: THE reader of a unit's standing to-hit terms, what its own items put on a hostile's roll to hit
  * it as things stand (Open guard: -2), each with its source label, for its token card. Asked as the first hostile on
  * the field would make a weapon attack at it (a preview: nothing changes); the attack's own preview names the same
- * terms (previewAttack, toHitTerms). Empty with no hostile on the field or no item that answers. */
-export function standingTerms(cb: Combat | null | undefined, u: Unit): { v: number; label: string }[] {
+ * terms (previewAttack, toHitTerms). Empty with no hostile on the field or no item that answers. Each term names its
+ * item (`src`, the holder's key), so a screen finds its picture (rules 1.78 item 6613). */
+export function standingTerms(cb: Combat | null | undefined, u: Unit): { v: number; label: string; src?: string }[] {
   const by = cb?.units.find((x) => x.side !== u.side && !x.dead && !x.downed); if (!cb || !by) return [];
   const ctx: any = emitOwn(u, 'to_hit', { att: by, tgt: u, type: 'weapon', mode: null, terms: [] as { v: number; label: string }[], preview: true, cb }, cb);
-  return (ctx.terms as { v: number; label: string }[]).filter((t) => t && t.v);
+  return (ctx.terms as { v: number; label: string; src?: string }[]).filter((t) => t && t.v);
 }
 /** The door each kind of roll to hit is made through (a weapon's own rarity is in its attack already). */
 const HIT_DOOR: Record<HitKind, string> = { weapon: '', sigil: 'brain_power', soul: 'will_power' };

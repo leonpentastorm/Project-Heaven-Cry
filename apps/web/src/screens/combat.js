@@ -69,6 +69,9 @@ import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
 import { actionIconOf, uiMarkOf, moveIconOf } from '../game/doorArt';
+/** Rules 1.78 item 6613: a standing to-hit term's picture: its item's own move picture for that term (catalog data_ids
+ *  `<item key>#<the term's label as an id>`: the Open Hand's stance is `relic:open_hand#open_guard`), or none. */
+export const guardPicOf = (t) => (t.src ? moveIconOf(t.src + '#' + String(t.label || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')) : '');
 import { mapLegacy, isLegacyUnit, plainAction, actionGroups, hideHelp, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, tabIdsKnown, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView, pickToggle, verdictOf } from '../game/actionFlow';
@@ -1264,7 +1267,7 @@ export class CombatLogic extends DCLogic {
         hasKind: !!(kb && kb.has) && !isHeld, kindText: kb ? kb.text : '', kindStyle: kb ? kb.style + TOKEN_KIND_POS : '', kindTitle: kb ? kb.title : '',
         hasDrop: !!dr, dropText: dr ? '▾ ' + dr.npc.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase() : '', dropTitle: dr ? dr.npc.name + ' lies here (dropped when the carrier went down; back on the map after the fight)' : '',
         hasPresence: !!prs, presence: prs || {},
-        hasTok: !!u, t: u ? tokenVals(u, { ...tokOpt(u, x, y), extra: pLines, ties: tieWords(cb, u.id), guards: standingModsFor(g, u.id), kit: u.side !== 'pc' ? kitSeenFor(g, u.id, 'pc') : null, pose: pLook.pose, status: uSt }) : null,
+        hasTok: !!u, t: u ? tokenVals(u, { ...tokOpt(u, x, y), extra: pLines, ties: tieWords(cb, u.id), guards: standingModsFor(g, u.id).map((t) => ({ ...t, pic: guardPicOf(t) })), kit: u.side !== 'pc' ? kitSeenFor(g, u.id, 'pc') : null, pose: pLook.pose, status: uSt }) : null,
         // 0.32 (Q.2.f): the status strip on the token face: the first three of the same groups' signs, in each group's ink
         ...faceStatus(uSt), hasObj: !!ob && !u && !spr && !wc.cache && !wc.sigil, hasSigMark: !!wc.sigil && !u, sigMark: wc.sigil ? wc.sigil.src : '', sigMarkStyle: wc.sigil ? wc.sigil.style : '', objGlyph: ob ? kindOf(ob).glyph : '', objStyle: 'position: absolute; inset: 0 0 12px 0; display: grid; place-items: center; font-size: 20px; color: ' + (ob && (kindOf(ob).hazard || ob.kind === 'trap' || kindOf(ob).explodes) ? '#F65157' : ob && ob.kind === 'poi' ? '#FFFFFF' : '#C9D3E3'),
         click: () => this.tileClick(k), hover: (e) => hoverFor(this).enter(k, e),

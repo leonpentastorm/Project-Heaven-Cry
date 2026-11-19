@@ -401,7 +401,7 @@ O('damage_mod', ['dealing', 'taking'], false, ['value', 'value_pct'], 'add to th
 });
 O('damage_vs', ['dealing'], false, ['value'], 'a bonus against this target (added with the other target bonuses)', (ev, e, label) => { ev.ctx.vs.push({ v: e.value, label }); });
 O('roll_mod', ['attack', 'to_hit', 'cond_incoming', 'save', 'spot'], false, ['value', 'roll'], 'a to-hit term on an attack (to_hit: on any roll to hit, weapon, Sigil or Outburst); on a condition or save, the save (roll: "save", the default there) or its TN (roll: "tn"); on a spot roll, its modifier or (roll: "tn") its TN', (ev, e, label) => {
-  if (ev.trig.hook === 'attack_preview' || ev.trig.hook === 'to_hit') ev.ctx.terms.push({ v: e.value, label });
+  if (ev.trig.hook === 'attack_preview' || ev.trig.hook === 'to_hit') ev.ctx.terms.push({ v: e.value, label, src: ev.h.key }); // src: the item it comes from (a standing term's picture, rules 1.78 item 6613)
   else if (ev.trig.hook === 'spot') { if (e.roll === 'tn') ev.ctx.tn += e.value; else ev.ctx.mod += e.value; }
   else if (e.roll === 'tn') ev.ctx.tnAdd = (ev.ctx.tnAdd || 0) + e.value; else ev.ctx.saveAdd = (ev.ctx.saveAdd || 0) + e.value;
 });

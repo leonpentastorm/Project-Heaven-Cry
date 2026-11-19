@@ -151,6 +151,7 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **Hallow** (the Chaplain's hallowed ground; zone kinds are data). `7f20b1261`, spec 6607.
 - **What rides on a hit on the attack card** ("On a hit: Smite, Judged"). `6f6f796d8`, spec 6608.
 - **A door's passive steps on the skill page** (the Tending pictures placed). `5a1f6b50d`, spec 6609.
+- **The Open Hand's stance picture on the token card's standing line** (each to-hit term names its item; the picture by catalog `data_ids`). Integration, spec 6613.
 
 ### 0.32: needs a primitive (ruled by the lead 19 Nov 2026; built by the engine-pieces lane, `docs/design/handoffs/0.32-ENGINE-PIECES.md`, rules 1.77)
 
@@ -195,7 +196,7 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 - **Engine pieces not built:** a thrown Relic property (the fight-joined fx is built, spec 6603; no data row needs a `per_stage` scope, spec 6610). Needs the lead's approval first (CLAUDE.md, no rebuild). [M] [not built; checked in code 19 Nov 2026] [spec 5010; verification]
 - **"I'll narrate" in a room.** Human-mode code exists but picking it only shows "coming soon". Owed: the selection and the Narrator screen end to end, with the ruling buttons tested. [L] [partly; checked in code 19 Nov 2026] [SESSION-HANDOFF 6.2-6.3]
 - **Co-op stall.** One two-player fight in five stalled on the guest's turn (0.21.0), never reproduced. [M] [open; from documents only] [coop-stall.md]
-- **Delivered art with no place in the game** (wiring, not new art; `move-breath` is wired). Owed (the Tending passive pictures are placed: spec 6609): `icon-resource-credits/xp/devotion` and the 7 `icon-tone-*` (`uiMarkOf('resource'/'tone')` never called); `move-open-guard`, `move-sway`, `move-counter`; `camp-step-ready` (checklist has no `ready` key); the `move-draw-fire` placeholder is not in assets.json. [M] [partly; checked in code 19 Nov 2026] [SESSION-TODO O; verification]
+- **Delivered art with no place in the game** (wiring, not new art; `move-breath` is wired). Owed (the Tending passive pictures are placed: spec 6609): `icon-resource-credits/xp/devotion` and the 7 `icon-tone-*` (`uiMarkOf('resource'/'tone')` never called); `move-sway`, `move-counter` (the Open Hand's stance, `move-open-guard`, is placed on the token card: spec 6613); `camp-step-ready` (checklist has no `ready` key); the `move-draw-fire` placeholder is not in assets.json. [M] [partly; checked in code 19 Nov 2026] [SESSION-TODO O; verification]
 
 ### Fun and balance pass
 

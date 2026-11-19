@@ -1074,7 +1074,7 @@ export function kitSeenFor(g: GameState, unitId: string, side: string): KitView 
   return withGame(g, () => kitOf(g.combat!, u, side));
 }
 /** Rules 1.77 item 6511: a unit's standing to-hit terms for its token card (rolls.ts standingTerms), with the game bound. */
-export function standingModsFor(g: GameState, unitId: string): { v: number; label: string }[] {
+export function standingModsFor(g: GameState, unitId: string): { v: number; label: string; src?: string }[] {
   const u = g.combat?.units.find((x) => x.id === unitId); if (!u) return [];
   return withGame(g, () => standingTerms(g.combat, u));
 }
