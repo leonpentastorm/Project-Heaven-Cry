@@ -1,0 +1,1 @@
+The dark reference matte helped the generator retain the pose. The render fills original cutouts in the screen and glyph with opaque white and adds spatter around the drawing. It is unsuitable for the menu.

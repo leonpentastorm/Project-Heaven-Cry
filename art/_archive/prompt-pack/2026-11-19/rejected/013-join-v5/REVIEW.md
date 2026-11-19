@@ -1,0 +1,1 @@
+The 256 px render covers y62–190 along the left edge and x63–192 along the bottom. The straight pieces require 64–191 at each join. The painted blue line also lands to the right of the bottom join center.

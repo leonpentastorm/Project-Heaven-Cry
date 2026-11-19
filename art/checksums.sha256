@@ -3148,6 +3148,7 @@ e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4  art/_archive/p
 c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/perks/wick/replaced/2026-11-16/shrug-it-off.png
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
+512c84e827dff394e1fd1252740ea1848e4ce974e9e5d5a5ce780f2388982d1e  art/_archive/prompt-pack/2026-11-19/EXACT-EDIT-REVIEW.md
 9998ac82e2ad4f73e05ec8f59d717855ca070698548b791c64a8349de3377298  art/_archive/prompt-pack/2026-11-19/HANDOFF.md
 68259168b9a0bdae8a3725b16edcad094e0e80af839d777b654c3bf731e5ad24  art/_archive/prompt-pack/2026-11-19/SPEC-UPDATE.md
 dde7268572207c89e6986fe8892cdf3cd612e4bdfa4ff0e683377ac6d3b8ac63  art/_archive/prompt-pack/2026-11-19/asset-build-check.txt
@@ -3363,6 +3364,9 @@ c6c0e453cb723c3aa7bfaad22b7a4682fc58c2ec94e728b1f4e22d23ba80c563  art/_archive/p
 edcb2406ed8fa8791e0da637883b906b9bb0c3d4e43296a2daab109ba56ad9a8  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v4/REVIEW.md
 12a4be92f078284f1fd5f65de1eca174234fffeb94b3ecae9624a67f3e09bb8a  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v4/native.png
 ab1e7c2c9f471686950dc3a108dd131087fe90be57f966428bf0199260af9baf  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v4/result.json
+3906988e2344a0688851cb1c008abf5c482e5f9585e6c8f77d49e9a1677ec7aa  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v5/REVIEW.md
+4bc9a09a637d6d7e691202a4414396c9149c038d4e7763233b33043834e3fa3a  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v5/native.png
+f9bf8b988bafdc26c55175a278380d297755c502786b5fd46a57b671c8fd2b06  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v5/result.json
 929666a9939e89d81feb981e3653127a82e288b21c1650e6234cf5e2bbdf16ef  art/_archive/prompt-pack/2026-11-19/rejected/014-opaque-v1/REVIEW.md
 cce241ae243c0a1e800e6f4b52d07f5825de644c2130d7b75b0f51f733b180a3  art/_archive/prompt-pack/2026-11-19/rejected/014-opaque-v1/native.png
 561a9df91a08667b64e1010b92274bdbdfa81b53459600cd3de71de189cad091  art/_archive/prompt-pack/2026-11-19/rejected/014-opaque-v1/result.json
@@ -3375,6 +3379,9 @@ f7e368d45e60bb2be0f663169431123b8ab79d908f930afb21f0cba0d8bbd745  art/_archive/p
 9c500a8c1aab7603248ee996632b02dfa9bede90ed602489365266c005f2ec57  art/_archive/prompt-pack/2026-11-19/rejected/030-dot-inside-arcs/REVIEW.md
 0ff48aeada89a5287f81b8fd91ef23f74bf6cf02793f5eea48449044e9a2e728  art/_archive/prompt-pack/2026-11-19/rejected/030-dot-inside-arcs/native.png
 5bd1b94ecf126502f4c48d0bd3203346de7f48a31e9fdd82a53b2150d3ad4844  art/_archive/prompt-pack/2026-11-19/rejected/030-dot-inside-arcs/result.json
+68c9495f3b85237a4b517fc28147ff5acd5d12dd32411408b2849e8c39248cb3  art/_archive/prompt-pack/2026-11-19/rejected/066-fifth-alpha-empty/REVIEW.md
+dfc629572b27e0382fc1028e165e9fd087379b81692a33f9c0acb461884b86da  art/_archive/prompt-pack/2026-11-19/rejected/066-fifth-alpha-empty/native.png
+bb1b064d26e5fc47524f193f05e2abed89429d35f5319c8061505887cccb4460  art/_archive/prompt-pack/2026-11-19/rejected/066-fifth-alpha-empty/result.json
 47c8b6ac8ac3718d54f09671577caa70d196e422a035b102c392cdd641c64e45  art/_archive/prompt-pack/2026-11-19/rejected/066-glyph-only/REVIEW.md
 6cc5806cd8b3e7c08e699541499e8a1838d5805d4834a5d0321928ea9174a452  art/_archive/prompt-pack/2026-11-19/rejected/066-glyph-only/native.png
 549d7a6113c153a491fe7b66adf47bca2076443606685af99e403c0e0366c32a  art/_archive/prompt-pack/2026-11-19/rejected/066-glyph-only/result.json
@@ -3386,6 +3393,10 @@ ab4f2a286ae8f63f8f8bbc403ad88238c368064af404ffd52fdff49ef2ee0bc3  art/_archive/p
 b63c09b53dfe6def63f970ad5d0d5b1ebfba885f029ebc9e88fd00f770438bff  art/_archive/prompt-pack/2026-11-19/rejected/066-second-redesign/comparison.jpg
 aa894e675cd14496ab77138910443d72a115fd5566f4d5e5e92943a71e4990be  art/_archive/prompt-pack/2026-11-19/rejected/066-second-redesign/native.png
 038cbca7d7c53940c0acbb4d3ced8f9546d6fdfda034483cd39355669e1a4eaf  art/_archive/prompt-pack/2026-11-19/rejected/066-second-redesign/result.json
+b517ebada40c4347ca63b8a8ea9e0a6ea3d7d125ca2d90b531378a2559e86908  art/_archive/prompt-pack/2026-11-19/rejected/066-sixth-matte-edit/REVIEW.md
+30bec0e899f72c482a71363319ca69b4c917ce66879371648ef91bced05901ee  art/_archive/prompt-pack/2026-11-19/rejected/066-sixth-matte-edit/native.png
+01a37d9bb7d00cda5f0c4638c6b294dab5711aba358006b6a781770190cd4c9a  art/_archive/prompt-pack/2026-11-19/rejected/066-sixth-matte-edit/reference-matte.png
+29043746ba32cda7017e749f1cf5869857bb33ae365413218d96dc320d0eb39e  art/_archive/prompt-pack/2026-11-19/rejected/066-sixth-matte-edit/result.json
 144a610176e8ff9cfd45245c9b335fc1a4a98ee24f285d537d0bdd508a55f68d  art/_archive/prompt-pack/2026-11-19/rejected/066-third-redesign/REVIEW.md
 1857c65c37dc074ab45ec22cebf9c842b470a62f6828f616c7b22381fd7e3f48  art/_archive/prompt-pack/2026-11-19/rejected/066-third-redesign/native.png
 119b3dff120a23caab0e95d53474206b8629149e92145d980da26784530aef52  art/_archive/prompt-pack/2026-11-19/rejected/066-third-redesign/result.json
@@ -3418,6 +3429,7 @@ a4f650bddbc5f8e1b55930c4b36adb0266753e772c8508b5e16567d20c60fc6c  art/_archive/p
 8054f92f9e48f1c10fe7a982e3547d2ed548adf1031e767cfce10b0aa7c8f4b8  art/_archive/prompt-pack/2026-11-19/review/batch-72-73-74-76-77-78.jpg
 a2c38562390d6c7725d0bcae52868ea1ae50f3af0f8e21d590fb4a9933309688  art/_archive/prompt-pack/2026-11-19/review/batch-75-79.jpg
 a6acbd3f18cf0b0b1fa61692a3a749e222d581621143ef5b6668e5c1be80a3b4  art/_archive/prompt-pack/2026-11-19/review/batch-80-81-82-83-84-85-86-87-88.jpg
+fa6b21ad94b46668aaf1946bed68bba479eaaddbcaeb42e098e7f65bda3b00a3  art/_archive/prompt-pack/2026-11-19/review/continued-exact-edits.jpg
 902f6a1440f2d3214e3e0eaae7f8bda9d2e1c45ce4006c7be03e59d79f7d878b  art/_archive/prompt-pack/2026-11-19/review/shrine-ground-repeat.png
 52488ccd4c2b7bef2fe36fdd0550c0a65cf1ec6d128d5e2008288291fdf623e6  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/128/prayer-held-breath.png
 607641f797531168f6a1361ced5ef9627f61597391cc8178ded58c4de641b5f2  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/128/soul-blood-price.png

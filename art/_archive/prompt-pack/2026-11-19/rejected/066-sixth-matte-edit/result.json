@@ -1,0 +1,8 @@
+{
+  "n": 66,
+  "src": "art/_archive/prompt-pack/2026-11-19/rejected/066-sixth-matte-edit/native.png",
+  "refs": [
+    "art/_archive/prompt-pack/2026-11-19/rejected/066-sixth-matte-edit/reference-matte.png"
+  ],
+  "prompt": "Edit this exact white ink Project Heaven Cry game icon in place at its current small scale and position on the square. The supplied navy is just a reference matte: render the same white ink as given with transparent blank canvas. The only new foreground mark is one small WHITE angular open glyph in the empty navy just above the existing rightward chain of tiny squares, near the tip of Wick\u2019s pen at about 61 percent across and 68 percent down the artboard. About the dimension of one of the small squares. Two fine joined angular strokes and one unfinished tiny stroke pointed back toward the pen. Carry over all other white pixels visually unchanged: the original figure, the main outlined floor square, and the original row of fragments. Pure white ink, original silhouette and exact positions, with fully transparent alpha everywhere the navy was."
+}
