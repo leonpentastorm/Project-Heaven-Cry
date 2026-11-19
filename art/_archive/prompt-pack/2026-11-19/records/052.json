@@ -1,0 +1,63 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 53,
+  "title": "Masterwork (fork)",
+  "path": "art/icons/forks/figment-masterwork.png",
+  "notes": "- **Id:** fork option `fork.figment.masterwork`. **Save as:** `art/icons/forks/figment-masterwork.png`. **Mode:** Wick icon. **Shows:** the fork card. The icon only; no token mark.",
+  "paint": "The icon shows: three hollow Figment figures in a row, two of them plain in a thin contour, and the one in the middle drawn finer: a bolder contour, richer hatch strokes, and a small three-pointed crown of strokes (not a letter) above its head. Wick, small, at the side, touches the middle one's shoulder with one finger as if naming it. One figure singled out among equals is what to read at 32 px. Avoid: a trophy, a medal, a star, a laurel wreath, a ribbon, text.",
+  "status": "review-candidate",
+  "n": 52,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png",
+    "art/icons/perks/mirage.png",
+    "art/icons/perks/solid-image.png"
+  ],
+  "label": "Masterwork (fork)",
+  "sha256": "6aa3a61cd14145e7743ba1a17ec61d6269373b26d80328de801fe483ea9897b6",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/052-figment-masterwork.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/forks/exports/256/figment-masterwork.png",
+    "128": "art/icons/forks/exports/128/figment-masterwork.png",
+    "64": "art/icons/forks/exports/64/figment-masterwork.png",
+    "56": "art/icons/forks/exports/56/figment-masterwork.png",
+    "48": "art/icons/forks/exports/48/figment-masterwork.png",
+    "44": "art/icons/forks/exports/44/figment-masterwork.png",
+    "40": "art/icons/forks/exports/40/figment-masterwork.png",
+    "32": "art/icons/forks/exports/32/figment-masterwork.png",
+    "24": "art/icons/forks/exports/24/figment-masterwork.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:53",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: three hollow Figment figures in a row, two of them plain in a thin contour, and the one in the middle drawn finer: a bolder contour, richer hatch strokes, and a small three-pointed crown of strokes (not a letter) above its head. Wick, small, at the side, touches the middle one's shoulder with one finger as if naming it. One figure singled out among equals is what to read at 32 px. Avoid: a trophy, a medal, a star, a laurel wreath, a ribbon, text.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "fork_icons",
+  "id": "fork-figment-masterwork",
+  "source_sha256": "abe4293f07f974fe96ea7a792427db8950c074afda387caf43937cecdbaf9376",
+  "export_sha256": {
+    "256": "2c5b384ffc4220ff40955c73166bdef311b34f5dcce3c07d355c7a7c912bc39b",
+    "128": "590ac8618b627743f28164b1dc3c4df82c8ee6503617c35d2a2229365c641fe5",
+    "64": "4a434306c45be17e20bdef35a0be1f9a933f629f39c94346b69bf02a1e0e0dae",
+    "56": "281e2dd90d19d5937ab9558e52802ad5303636efee1a123010ac87b597a46e9f",
+    "48": "d7bd1d2aa9eae8519544a2226e2a18a1548e986674a21916ea1af738f372e9c5",
+    "44": "a9d79fab8292a54181c0ff534c4d9e50170974af9c02be06aa5fc873b9f69e72",
+    "40": "4899b48455367279df398e251c51e4d26f635dc3bf2a11409f77e8e8dc36f308",
+    "32": "963d050b0fc5d4c5bb3fe57926ad5cded4f9c8ae7641aecdd11cf9e8a9b7ec85",
+    "24": "c01dc87bf290a7c2aed6e111d2a00236fc4b605522ba816540e893c2eeee70bb"
+  }
+}

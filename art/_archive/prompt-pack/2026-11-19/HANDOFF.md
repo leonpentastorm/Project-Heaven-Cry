@@ -1,12 +1,12 @@
 # November 19 art continuation
 
-Updated 19 November 2026 at 10:08 UTC+7. The 88 entries in files 01–04 have **14 delivered**, **73 to do** and **1 held**. Review candidates require visual approval.
+Updated 19 November 2026 at 10:11 UTC+7. The 88 entries in files 01–04 have **21 delivered**, **66 to do** and **1 held**. Review candidates require visual approval.
 
 | File | Delivered | Total listed |
 | --- | ---: | ---: |
 | 01 | 3 | 37 |
 | 02 | 11 | 11 |
-| 03 | 0 | 21 |
+| 03 | 7 | 21 |
 | 04 | 0 | 19 |
 
 ## Pickup
@@ -21,16 +21,9 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 
 ## Remaining entries
 
-- 049 | File 03 | Hard Light (fork) | `art/icons/forks/figment-hard-light.png`
-- 050 | File 03 | Sharp Light (fork) | `art/icons/forks/figment-sharp-light.png`
-- 051 | File 03 | Many Hands (fork) | `art/icons/forks/figment-many-hands.png`
-- 052 | File 03 | Masterwork (fork) | `art/icons/forks/figment-masterwork.png`
 - 053 | File 03 | Field Repair | `art/icons/perks/field-repair.png`
-- 054 | File 03 | Tuned | `art/icons/perks/tuned.png`
 - 055 | File 03 | Jury-Rig | `art/icons/perks/jury-rig.png`
-- 056 | File 03 | Smooth | `art/icons/perks/smooth.png`
 - 057 | File 03 | Parley (id `talks_broke_down`) | `art/icons/perks/talks-broke-down.png`
-- 058 | File 03 | Showman | `art/icons/perks/showman.png`
 - 059 | File 03 | Quick Sketch | `art/icons/moves/quick-sketch.png`
 - 060 | File 03 | Index | `art/icons/perks/index.png`
 - 061 | File 03 | Proven Formula | `art/icons/perks/proven-formula.png`
@@ -95,4 +88,4 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 - 036 | File 01 | `kit-shrine-pile`: Ground pile, shrine | `art/sprites/kit/shrine/pile.png`
 - 037 | File 01 | `kit-rim-pile`: Ground pile, rim | `art/sprites/kit/rim/pile.png`
 
-Unreviewed scratch renders currently on disk: 49, 50, 51, 52, 54, 56, 58.
+Unreviewed scratch renders currently on disk: 57.

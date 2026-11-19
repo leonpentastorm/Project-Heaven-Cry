@@ -1,0 +1,58 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 67,
+  "title": "Tuned",
+  "path": "art/icons/perks/tuned.png",
+  "notes": "- **Id:** `tuned`. **Save as:** `art/icons/perks/tuned.png`. **Mode:** Wick icon. **Shows:** the perk card.",
+  "paint": "The icon shows: Wick with his head tilted and one ear turned toward an invented compact weapon held up near his head, one finger flicking the weapon's receiver so that three short parallel ripple arcs leave it, the way a tuner listens to a plucked string. Eyes closed, a small satisfied set to his shoulders. The tilted head with the ripples at the weapon is what to read at 32 px. Avoid: a musical note, a tuning fork, a guitar, a stethoscope, a wrench.",
+  "status": "review-candidate",
+  "n": 54,
+  "kind": "wick",
+  "label": "Tuned",
+  "sha256": "8ab65b494c3533df8d52c4fde8b00667f23ae4d3196421225f9f0860981c7170",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/054-tuned.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/tuned.png",
+    "128": "art/icons/perks/exports/128/tuned.png",
+    "64": "art/icons/perks/exports/64/tuned.png",
+    "56": "art/icons/perks/exports/56/tuned.png",
+    "48": "art/icons/perks/exports/48/tuned.png",
+    "44": "art/icons/perks/exports/44/tuned.png",
+    "40": "art/icons/perks/exports/40/tuned.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:67",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick with his head tilted and one ear turned toward an invented compact weapon held up near his head, one finger flicking the weapon's receiver so that three short parallel ripple arcs leave it, the way a tuner listens to a plucked string. Eyes closed, a small satisfied set to his shoulders. The tilted head with the ripples at the weapon is what to read at 32 px. Avoid: a musical note, a tuning fork, a guitar, a stethoscope, a wrench.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perks",
+  "id": "tuned",
+  "source_sha256": "cfb993dd159365e182d4ad7e4cc0d992a36ce9e1104059b678b3f82ad42b2535",
+  "export_sha256": {
+    "256": "6f2a7911ae24c57251962bdb2448e294544581aeef2316f7dfcda611e5b83207",
+    "128": "b30edc1d3fffba930bb8d8b398c5fe8dd51f58b2b476f0d4dd493a2a30cd2c00",
+    "64": "864a646ffb3c4265dfd93f978e7e851688f58b01fff29a12caa400772ea5aa8f",
+    "56": "a113afc22b9538cd17cd98124683fa2018fc750ab70c4dbd2157574422e4038d",
+    "48": "63a52978759e882df102b59c4b455b75b9154440f9fd6aa7615a12d9afde4db9",
+    "44": "bd793a8b8b73b31c96af7b9111dc213d0b03c9ec6ae7910beb08bddc358d17f4",
+    "40": "dec1746e03cf98022439b2f20c5efe6e46638de6150187aaace467157878d469"
+  }
+}

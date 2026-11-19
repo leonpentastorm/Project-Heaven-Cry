@@ -10362,6 +10362,99 @@
       },
       "brief": "art/briefs/prompts-2026-11-19/02-skills-body.md:139",
       "ink": "#FFFFFF"
+    },
+    "tuned": {
+      "label": "Tuned",
+      "path": "art/icons/perks/tuned.png",
+      "sha256": "8ab65b494c3533df8d52c4fde8b00667f23ae4d3196421225f9f0860981c7170",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/054-tuned.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/tuned.png",
+        "128": "art/icons/perks/exports/128/tuned.png",
+        "64": "art/icons/perks/exports/64/tuned.png",
+        "56": "art/icons/perks/exports/56/tuned.png",
+        "48": "art/icons/perks/exports/48/tuned.png",
+        "44": "art/icons/perks/exports/44/tuned.png",
+        "40": "art/icons/perks/exports/40/tuned.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:67",
+      "ink": "#FFFFFF"
+    },
+    "smooth": {
+      "label": "Smooth",
+      "path": "art/icons/perks/smooth.png",
+      "sha256": "8bbda3b5623a9c56e7a8d4b9a8eb95a9dbeb7fdb5ed016a3da149d7620fb8175",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/056-smooth.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/smooth.png",
+        "128": "art/icons/perks/exports/128/smooth.png",
+        "64": "art/icons/perks/exports/64/smooth.png",
+        "56": "art/icons/perks/exports/56/smooth.png",
+        "48": "art/icons/perks/exports/48/smooth.png",
+        "44": "art/icons/perks/exports/44/smooth.png",
+        "40": "art/icons/perks/exports/40/smooth.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:79",
+      "ink": "#FFFFFF"
+    },
+    "showman": {
+      "label": "Showman",
+      "path": "art/icons/perks/showman.png",
+      "sha256": "521afa5b60804104a62510cf0034e539182bee1f9e4f7d1606628fed91261755",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/058-showman.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/showman.png",
+        "128": "art/icons/perks/exports/128/showman.png",
+        "64": "art/icons/perks/exports/64/showman.png",
+        "56": "art/icons/perks/exports/56/showman.png",
+        "48": "art/icons/perks/exports/48/showman.png",
+        "44": "art/icons/perks/exports/44/showman.png",
+        "40": "art/icons/perks/exports/40/showman.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:91",
+      "ink": "#FFFFFF"
     }
   },
   "illustrations": {
@@ -42854,6 +42947,138 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/fork-soul-clean_break/fork-soul-clean_break.png",
       "previous_sha256": "c3e68689876424b97209c08f2ed3c75fc60723160e803ba547f1cd340e05e065"
+    },
+    "fork-figment-hard_light": {
+      "label": "Hard Light (fork)",
+      "path": "art/icons/forks/figment-hard-light.png",
+      "sha256": "92990e053d4f449a9a3230799b8d92f69d1ef7bb2ac099a4425a0c60b294fd86",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/049-figment-hard-light.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/forks/exports/256/figment-hard-light.png",
+        "128": "art/icons/forks/exports/128/figment-hard-light.png",
+        "64": "art/icons/forks/exports/64/figment-hard-light.png",
+        "56": "art/icons/forks/exports/56/figment-hard-light.png",
+        "48": "art/icons/forks/exports/48/figment-hard-light.png",
+        "44": "art/icons/forks/exports/44/figment-hard-light.png",
+        "40": "art/icons/forks/exports/40/figment-hard-light.png",
+        "32": "art/icons/forks/exports/32/figment-hard-light.png",
+        "24": "art/icons/forks/exports/24/figment-hard-light.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:35",
+      "ink": "#FFFFFF"
+    },
+    "fork-figment-sharp_light": {
+      "label": "Sharp Light (fork)",
+      "path": "art/icons/forks/figment-sharp-light.png",
+      "sha256": "43294c07d1568f5c7ba5f3e752ea4290a7b02b4235ae54b0354923eb705d6da8",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/050-figment-sharp-light.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/forks/exports/256/figment-sharp-light.png",
+        "128": "art/icons/forks/exports/128/figment-sharp-light.png",
+        "64": "art/icons/forks/exports/64/figment-sharp-light.png",
+        "56": "art/icons/forks/exports/56/figment-sharp-light.png",
+        "48": "art/icons/forks/exports/48/figment-sharp-light.png",
+        "44": "art/icons/forks/exports/44/figment-sharp-light.png",
+        "40": "art/icons/forks/exports/40/figment-sharp-light.png",
+        "32": "art/icons/forks/exports/32/figment-sharp-light.png",
+        "24": "art/icons/forks/exports/24/figment-sharp-light.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:41",
+      "ink": "#FFFFFF"
+    },
+    "fork-figment-many_hands": {
+      "label": "Many Hands (fork)",
+      "path": "art/icons/forks/figment-many-hands.png",
+      "sha256": "c59e30d69b8c3bf464b3a4c256cd6716ae2f038ac0f0012ba0261ebe239013a3",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/051-figment-many-hands.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/forks/exports/256/figment-many-hands.png",
+        "128": "art/icons/forks/exports/128/figment-many-hands.png",
+        "64": "art/icons/forks/exports/64/figment-many-hands.png",
+        "56": "art/icons/forks/exports/56/figment-many-hands.png",
+        "48": "art/icons/forks/exports/48/figment-many-hands.png",
+        "44": "art/icons/forks/exports/44/figment-many-hands.png",
+        "40": "art/icons/forks/exports/40/figment-many-hands.png",
+        "32": "art/icons/forks/exports/32/figment-many-hands.png",
+        "24": "art/icons/forks/exports/24/figment-many-hands.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:47",
+      "ink": "#FFFFFF"
+    },
+    "fork-figment-masterwork": {
+      "label": "Masterwork (fork)",
+      "path": "art/icons/forks/figment-masterwork.png",
+      "sha256": "6aa3a61cd14145e7743ba1a17ec61d6269373b26d80328de801fe483ea9897b6",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/052-figment-masterwork.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/forks/exports/256/figment-masterwork.png",
+        "128": "art/icons/forks/exports/128/figment-masterwork.png",
+        "64": "art/icons/forks/exports/64/figment-masterwork.png",
+        "56": "art/icons/forks/exports/56/figment-masterwork.png",
+        "48": "art/icons/forks/exports/48/figment-masterwork.png",
+        "44": "art/icons/forks/exports/44/figment-masterwork.png",
+        "40": "art/icons/forks/exports/40/figment-masterwork.png",
+        "32": "art/icons/forks/exports/32/figment-masterwork.png",
+        "24": "art/icons/forks/exports/24/figment-masterwork.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:53",
+      "ink": "#FFFFFF"
     }
   },
   "door_emblems": {

@@ -1,0 +1,63 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 41,
+  "title": "Sharp Light (fork)",
+  "path": "art/icons/forks/figment-sharp-light.png",
+  "notes": "- **Id:** fork option `fork.figment.sharp_light`. **Save as:** `art/icons/forks/figment-sharp-light.png`. **Mode:** Wick icon. **Shows:** the fork card.",
+  "paint": "The icon shows: a Figment (a hollow contour figure) lunging forward with one arm drawn as a single long, tapering, razor-straight blade of light; ahead of the blade tip a foe silhouette (a plain solid shape cut by the frame) is parted by one clean line. Wick, small, stands behind it and lifts one open hand, already beckoning the next order. The long sharp taper is what to read at 32 px. Avoid: a sword with a hilt or guard, lightning, sparks, crossed blades, blood.",
+  "status": "review-candidate",
+  "n": 50,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png",
+    "art/icons/perks/mirage.png",
+    "art/icons/perks/solid-image.png"
+  ],
+  "label": "Sharp Light (fork)",
+  "sha256": "43294c07d1568f5c7ba5f3e752ea4290a7b02b4235ae54b0354923eb705d6da8",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/050-figment-sharp-light.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/forks/exports/256/figment-sharp-light.png",
+    "128": "art/icons/forks/exports/128/figment-sharp-light.png",
+    "64": "art/icons/forks/exports/64/figment-sharp-light.png",
+    "56": "art/icons/forks/exports/56/figment-sharp-light.png",
+    "48": "art/icons/forks/exports/48/figment-sharp-light.png",
+    "44": "art/icons/forks/exports/44/figment-sharp-light.png",
+    "40": "art/icons/forks/exports/40/figment-sharp-light.png",
+    "32": "art/icons/forks/exports/32/figment-sharp-light.png",
+    "24": "art/icons/forks/exports/24/figment-sharp-light.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:41",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: a Figment (a hollow contour figure) lunging forward with one arm drawn as a single long, tapering, razor-straight blade of light; ahead of the blade tip a foe silhouette (a plain solid shape cut by the frame) is parted by one clean line. Wick, small, stands behind it and lifts one open hand, already beckoning the next order. The long sharp taper is what to read at 32 px. Avoid: a sword with a hilt or guard, lightning, sparks, crossed blades, blood.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "fork_icons",
+  "id": "fork-figment-sharp_light",
+  "source_sha256": "2d3dba97b5bd4d008f42d1065fe8c9c42aa44cc315761cf261c8720bf7b5b816",
+  "export_sha256": {
+    "256": "0c79503a3942538847394677c1f1dd8d95fddfc9e790d9bdadf023e67e71083e",
+    "128": "23ebd1be38e70e1180e269fb613faebdfc5923ef3ada59417c6147de6662917b",
+    "64": "9b443a360ba64d33ed369192d23d657b0fde897e6c43c5abaa287045b488cfe2",
+    "56": "8b90a61a1c08d4ad7c0036b606740897e993d3d61905886823d773519df0b38f",
+    "48": "570de7a8e8113dcb762b48417de82dea9b7989e7f726673110b51bb3add1302d",
+    "44": "e86c3d981a79b15ddf4bc6835e9816c9b54e74695019088c78e38adebd8904cc",
+    "40": "fa0bc95b291fa97aaa2f62d1c1c4460ad1376a896b3f526ce15f32287b400089",
+    "32": "b5515346856f968f24c25babcbf15910c9de9560c66bd16f2f2ec31cb29ddeaf",
+    "24": "fe9534926da3211eff2b561116057d562371a01620f763e9737892786cda5185"
+  }
+}

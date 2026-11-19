@@ -1,0 +1,63 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 35,
+  "title": "Hard Light (fork)",
+  "path": "art/icons/forks/figment-hard-light.png",
+  "notes": "- **Id:** fork option `fork.figment.hard_light`. **Save as:** `art/icons/forks/figment-hard-light.png`. **Mode:** Wick icon. **Shows:** the fork card and the level-up screen.",
+  "paint": "The icon shows: Wick standing behind a Figment (a hollow contour figure) whose outline has been drawn extra thick and in a double line, like light set solid; a single blow, drawn as a short slash line, strikes the Figment's shoulder and stops there without leaving a mark. Wick's free hand rests, palm out, towards the Figment. The thick doubled contour is what to read at 32 px. Avoid: a shield with a crest, a brick wall, cracks, glowing rays, a knight.",
+  "status": "review-candidate",
+  "n": 49,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png",
+    "art/icons/perks/mirage.png",
+    "art/icons/perks/solid-image.png"
+  ],
+  "label": "Hard Light (fork)",
+  "sha256": "92990e053d4f449a9a3230799b8d92f69d1ef7bb2ac099a4425a0c60b294fd86",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/049-figment-hard-light.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/forks/exports/256/figment-hard-light.png",
+    "128": "art/icons/forks/exports/128/figment-hard-light.png",
+    "64": "art/icons/forks/exports/64/figment-hard-light.png",
+    "56": "art/icons/forks/exports/56/figment-hard-light.png",
+    "48": "art/icons/forks/exports/48/figment-hard-light.png",
+    "44": "art/icons/forks/exports/44/figment-hard-light.png",
+    "40": "art/icons/forks/exports/40/figment-hard-light.png",
+    "32": "art/icons/forks/exports/32/figment-hard-light.png",
+    "24": "art/icons/forks/exports/24/figment-hard-light.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:35",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick standing behind a Figment (a hollow contour figure) whose outline has been drawn extra thick and in a double line, like light set solid; a single blow, drawn as a short slash line, strikes the Figment's shoulder and stops there without leaving a mark. Wick's free hand rests, palm out, towards the Figment. The thick doubled contour is what to read at 32 px. Avoid: a shield with a crest, a brick wall, cracks, glowing rays, a knight.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "fork_icons",
+  "id": "fork-figment-hard_light",
+  "source_sha256": "7bf9c579c63c81b64ecf5cce037c519d7badde414cd67afc0055f435ff3bce18",
+  "export_sha256": {
+    "256": "16c73dfb398bc8672cd043a7fa57f163764a538fdeddd0bb6bbc3db75475c9d8",
+    "128": "e50ca9343ed525d8add3cbf55cf304e3aed6b2ada9e62519a83df7aa0f9aee1b",
+    "64": "d9d23c0ddad98e7fdecbeed532795693dcbd3e71dd7a6824795918271e70de35",
+    "56": "43850ecab27b5951dcebba1f1e8d7bc8ae2727ab010c1d88dc2985cfc26c9a0d",
+    "48": "3c60e0f8b53ee16637f6668f832f8a7b586837f53dbd2e2afb6f54d414f2daf4",
+    "44": "ae051a2c09d8aa5cbca1971c99fec451827227d2476c4a0421c0795dcb6faf63",
+    "40": "a43dc42240542d18a459dc799571090db1fba32852ecf2fc062f63cd9c7fd884",
+    "32": "8f6ffe7b996092e505259dcb47ebaaa8ee34d7f5f06019e5947478ad63481e3e",
+    "24": "ab504c5d70c3f02cba69697116f7d2b1b60dcfa3d74f55976591b362a6a15ccd"
+  }
+}

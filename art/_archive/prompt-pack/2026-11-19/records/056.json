@@ -1,0 +1,58 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 79,
+  "title": "Smooth",
+  "path": "art/icons/perks/smooth.png",
+  "notes": "- **Id:** `smooth`. **Save as:** `art/icons/perks/smooth.png`. **Mode:** Wick icon. **Shows:** the perk card.",
+  "paint": "The icon shows: Wick with one hand raised, palm out and relaxed, and an easy sideways smile, while a line leaves his mouth as a single soft S-curve that bends round a sharp angular snag and passes it without catching. The listener is only a shoulder and an ear cut by the frame, nodding. The line gliding past the snag is what to read at 32 px. Avoid: a snake, a banana peel, a liar's long nose, a smiley mask, a handshake.",
+  "status": "review-candidate",
+  "n": 56,
+  "kind": "wick",
+  "label": "Smooth",
+  "sha256": "8bbda3b5623a9c56e7a8d4b9a8eb95a9dbeb7fdb5ed016a3da149d7620fb8175",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/056-smooth.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/smooth.png",
+    "128": "art/icons/perks/exports/128/smooth.png",
+    "64": "art/icons/perks/exports/64/smooth.png",
+    "56": "art/icons/perks/exports/56/smooth.png",
+    "48": "art/icons/perks/exports/48/smooth.png",
+    "44": "art/icons/perks/exports/44/smooth.png",
+    "40": "art/icons/perks/exports/40/smooth.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:79",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick with one hand raised, palm out and relaxed, and an easy sideways smile, while a line leaves his mouth as a single soft S-curve that bends round a sharp angular snag and passes it without catching. The listener is only a shoulder and an ear cut by the frame, nodding. The line gliding past the snag is what to read at 32 px. Avoid: a snake, a banana peel, a liar's long nose, a smiley mask, a handshake.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perks",
+  "id": "smooth",
+  "source_sha256": "989caf3cf5e9aeb9af3cb6b96c89a972882753aa0b05c9f39c22a9b28a6a486e",
+  "export_sha256": {
+    "256": "d38677adf3cf4a77d08f0531f74da1934ea0e2ad7447653724dd5b8cad281a0b",
+    "128": "c0eafe03e679f8c5b137f3b57decfb2bef14507b1a4f35fa1b48ebaa9481bd3d",
+    "64": "3efe1eb78c77215cf27ba35de59b883e4e2cffbfdf8b8a376e5b55bcac69b496",
+    "56": "94f47e0683110518d15a32668db303ebb205c1ae4dbad9378a85e8ab37ae9062",
+    "48": "a528b5099ba8bcc1d6afd75ee474f190309341206b67d9db0e1460e708d5872f",
+    "44": "8500e7be002f99ae343eb86fd67b7907b9f93f00d53cd6bac5fcdf064ec302b2",
+    "40": "7805f966f06ce783bcefb63e5934ef5017c450edfb5520e1214ac59d060c962d"
+  }
+}
