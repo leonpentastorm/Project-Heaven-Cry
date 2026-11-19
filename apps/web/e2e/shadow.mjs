@@ -8,6 +8,8 @@
 // Screenshots: e2e/shots/shadow-*.png.
 import { chromium, player, click, BASE, OUT, settle } from './lib.mjs';
 import { tipOf } from './lib.mjs';
+import { readFileSync } from 'fs';
+const FADE_SHADOW = JSON.parse(readFileSync(new URL('../../../data/shadow.json', import.meta.url), 'utf8')).items.find((x) => x.id === 'shadow.fade').effects[0].res.shadow; // rules 1.74 item 6011
 const browser = await chromium.launch();
 const host = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -75,36 +77,38 @@ await snap('01-meter');
   const tab = (await host.locator('[role="tabpanel"]').textContent()) || '';
   const groups = ['SLIP', 'MARK', 'WORK', 'BREAK'].filter((w) => tab.includes(w));
   ok('the SHADOW tab in its groups: ' + groups.join(', '), groups.length >= 3);
-  const ri = host.locator('[role="tabpanel"] button', { hasText: 'Read Intent' }).first();
+  const ri = host.locator('[role="tabpanel"] button', { hasText: 'Tag' }).first(); // rules 1.74 item 6009: Read Intent is a Vigilance perk now; Tag needs you Hidden too
   const tip = (await ri.count()) ? await tipOf(ri) : '';
-  ok('Read Intent while seen, refused in the spec\'s words (' + tip.slice(0, 70) + ')', /An enemy sees you/.test(tip));
+  ok('Tag while seen, refused in the spec\'s words (' + tip.slice(0, 70) + ')', /An enemy sees you/.test(tip));
 }
 
-// ---------- 1. Fade for no Shadow (Vanish, rules 1.60 item 4628), then a turn ended Hidden with no attack ----------
-const sh0 = u.res?.shadow ?? 0;
+// ---------- 1. Fade at its Shadow (rules 1.74 item 6011: Vanish is the Operative's free Hide now), then a turn ended Hidden with no attack ----------
+await host.evaluate(([id, n]) => { const cb = window.__phc.getState().game.combat; const x = cb.units.find((v) => v.id === id); (x.res ||= {}).shadow = n; }, [u.id, FADE_SHADOW]); // Fade's Shadow, set by hand
+u = await me(); const sh0 = u.res?.shadow ?? 0;
 let r = await tabMove('shadow', /^Fade/);
 u = await me();
-ok('Fade with Vanish: Hidden, no Shadow spent (' + (r || 'confirmed') + ', Shadow ' + sh0 + ' -> ' + (u.res?.shadow ?? 0) + ')', !r && !!u.hidden && (u.res?.shadow ?? 0) === sh0);
+ok('Fade: Hidden, its Shadow spent (' + (r || 'confirmed') + ', Shadow ' + sh0 + ' -> ' + (u.res?.shadow ?? 0) + ')', !r && !!u.hidden && (u.res?.shadow ?? 0) === sh0 - FADE_SHADOW);
+const sh1 = u.res?.shadow ?? 0;
 await settle(host, 300);
 let op = await tokOpacity(u.pos);
 ok('Hidden: my token drawn at 60% (' + op + '), the Hidden word kept', op === 0.6 && /HIDDEN/.test((await tok(u.pos).getAttribute('aria-label')) || ''));
 await act({ type: 'combat/end-turn', unitId: u.id }); await settle(host, 300);
 ok('my turn again', await toMe());
 u = await me();
-ok('the turn ended Hidden with no attack: Shadow ' + u.res?.shadow, u.res?.shadow === 2 && !!u.hidden);
+ok('the turn ended Hidden with no attack: Shadow ' + u.res?.shadow, u.res?.shadow === sh1 + 1 && !!u.hidden);
 
-// ---------- 2. The SHADOW tab: Read Intent on a Soldier that can't see you ----------
+// ---------- 2. The SHADOW tab: Tag on a Soldier that can't see you (rules 1.74: Read Intent left the tab) ----------
 const [x, y] = u.pos.split(',').map(Number), at = (x + 3) + ',' + y;
 await act({ type: 'sandbox/spawn', tier: 'soldier', weapon: 'hellraiser_service_rifle', at: ref(at), name: 'Watchman' });
 const foe = (await G()).combat.units.find((v) => v.name === 'Watchman');
 ok('a Soldier on the field', !!foe);
 await host.locator('#phc-tab-shadow').click(); await settle(host, 200);
 const verbs = await host.locator('[role="tabpanel"] button').allTextContents();
-ok('the SHADOW tab lists the verbs: ' + verbs.slice(0, 6).join(' | ').slice(0, 160), verbs.some((t) => /Read Intent/.test(t)) && verbs.some((t) => /Lift/.test(t)));
+ok('the SHADOW tab lists the verbs: ' + verbs.slice(0, 6).join(' | ').slice(0, 160), verbs.some((t) => /Tag/.test(t)) && verbs.some((t) => /Lift/.test(t)) && !verbs.some((t) => /Read Intent/.test(t)));
 await snap('02-tab');
-r = await tabMove('shadow', /^Read Intent/, { target: foe.pos });
+r = await tabMove('shadow', /^Tag/, { target: foe.pos });
 const read = (await G()).combat.units.find((v) => v.id === foe.id);
-ok('Read Intent: the Soldier is Read (' + (r || 'confirmed') + ')', !r && (read.conds?.read || 0) > 0);
+ok('Tag: the Soldier is Marked (' + (r || 'confirmed') + ')', !r && (read.conds?.marked || 0) > 0);
 
 // ---------- 3. The Break: one shadow term, the meter spent, revealed ----------
 u = await me();

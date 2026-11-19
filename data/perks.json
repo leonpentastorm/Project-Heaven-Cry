@@ -2135,7 +2135,7 @@
           ],
           "ap_cost": null,
           "text": "Once a turn, an attack you make while Hidden and holding Shadow costs {=tiers.II.effects.0.value|abs} AP less (never under {=tiers.II.effects.0.min}). Shadow Run: once a turn, a move you make Hidden from beside cover to beside cover costs {=tiers.II.effects.2.value|abs} AP less (never under {=tiers.II.effects.2.min}).",
-          "short": "And Shadow Run: a Hidden cover-to-cover move costs {=tiers.II.effects.2.value|abs} AP less",
+          "short": "And Shadow Run: a Hidden cover move {=tiers.II.effects.2.value} AP",
           "effects": [
             {
               "op": "cost_mod",
@@ -3751,7 +3751,7 @@
           ],
           "ap_cost": null,
           "text": "Debate the enemy leader before a fight. On a success, every enemy has {=tiers.I.numbers.ap_loss} AP less in the first round.",
-          "short": "Before a fight: debate their leader, foes slowed in round one",
+          "short": "Before a fight: out-argue their leader",
           "effects": [
             {
               "op": "grant_action",
@@ -3777,7 +3777,7 @@
           ],
           "ap_cost": null,
           "text": "Debate the enemy leader before a fight; on a success, every enemy has {=tiers.II.numbers.ap_loss} AP less in the first round. Your first Persuade, Threaten or Parley each fight costs {=tiers.II.effects.2.set} AP.",
-          "short": "And your first Persuade, Threaten or Parley each fight costs {=tiers.II.effects.2.set} AP",
+          "short": "And your first talk each fight costs {=tiers.II.effects.2.set} AP",
           "effects": [
             {
               "op": "grant_action",

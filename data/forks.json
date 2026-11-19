@@ -1643,7 +1643,7 @@
           "door_pick": "fork.figment.masterwork"
         }
       ],
-      "text": "{=effects.0.ap} AP, once a turn: name a Figment you hold your Masterwork · it has +{=effects.1.value} to hit and takes {=effects.2.value|less}% less damage · once a round one order to it costs {=effects.3.set} AP",
+      "text": "Name your Masterwork ({=effects.0.ap} AP): +{=effects.1.value} to hit, {=effects.2.value|less}% less damage, a free order a round",
       "effects": [
         {
           "op": "grant_action",
