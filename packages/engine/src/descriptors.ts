@@ -23,6 +23,7 @@ import { kindOf } from './objects';
 import { apFor, canPay, RESOURCES, resGive, price, whyNot } from './effects/cost';
 import { eyesOn, seenByFoes, HIDE_WHY, throwRangeOf, radiusOf } from './tactics';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
+import { standingTerms } from './rolls';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun, fightWith, preview as previewOnCopy } from './preview';
 import type { Action, GameState } from './game';
 import { techniquePad, packPad, pairedPad, previewTechnique, useTechnique, momentumOf, shieldOf, physView, followOf } from './physical/core';
@@ -1066,6 +1067,11 @@ const SYS_OF = new WeakMap<ActionDescriptor, ActionSystem>();
 /** Every action this unit could take now, in list order: grouped by tab (GROUP_ORDER), each system's rows in its own
  * order within a group. A unit with a fixed action list (the drone) gets only those. viewer: the player asking (its
  * side's fog rules the choices; the reducer's `by`). */
+/** Rules 1.77 item 6511: a unit's standing to-hit terms for its token card (rolls.ts standingTerms), with the game bound. */
+export function standingModsFor(g: GameState, unitId: string): { v: number; label: string }[] {
+  const u = g.combat?.units.find((x) => x.id === unitId); if (!u) return [];
+  return withGame(g, () => standingTerms(g.combat, u));
+}
 export function actionsFor(g: GameState, unitId: string, viewer?: string | null): ActionDescriptor[] {
   // the game bound for every system's list (row 13 of the outside playtest: a door's feed reads the unit's character, so
   // Vent read "0/6" unbound while the Flux limit the reducer keeps was 7)

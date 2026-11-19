@@ -13225,3 +13225,9 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       runs before the items' `combat_start` ops (the Momentum meter and its starting value, `physical/rules.ts`). The
       Primed boon's Momentum is a `combat_start` op again (item 5506's real fix); item 5607's workaround is gone (the
       `made_after_start` mark on `actions.json resources.momentum` and the validator's warning). No number changes.
+6511. **Standing defensive modifiers are shown in the fight** (the lead's ruling 14): a to-hit term already carries its
+      source label (an item op's `label`: "Open guard"); one general reader, `rolls.ts standingTerms` (the terms a
+      unit's own items put on a hostile's roll to hit it as things stand; `effects/hooks.ts emitOwn` takes the fight),
+      read by the client through `standingModsFor(g, unitId)`. The token card lists them ("Open guard −2 to hit them");
+      the attack preview at that unit names the same term (it always listed every to-hit term by label). The gaps
+      lane's "Open guard's −2 shown in the fight" is done.

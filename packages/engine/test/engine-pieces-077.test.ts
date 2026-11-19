@@ -191,3 +191,16 @@ describe('a fight-start registration (item 6510): the Primed boon gives its Mome
     expect((primed.pc as any).res.momentum - (plain.pc as any).res.momentum).toBe(row.value);
   });
 });
+
+describe('a to-hit term carries its source label (item 6511): the fight shows standing defensive modifiers', () => {
+  const monk = (armourClass: number) => { const f = fightWith([{ archetype: 'monk', weapon: 'hand_wraps', offHand: null, armourClass } as any], [{ at: 'F6' }]); return f; };
+  it('the monk’s token card reads Open guard from the one reader; the enemy’s attack preview at it names the same term; in Medium, neither', async () => {
+    const { standingModsFor } = await import('../src');
+    const light = monk(1), og = (light.g as any) && standingModsFor(light.g, light.pc.id);
+    expect(og).toEqual([{ v: -2, label: 'Open guard' }]);
+    light.unit(light.foe.id).ap = 6; const pv = withGame(light.g, () => previewAttack(light.cb, light.unit(light.foe.id), light.unit(light.pc.id), 'shot'));
+    expect((pv.terms || []).some((t: any) => t.label === 'Open guard' && t.v === -2)).toBe(true);
+    const med = monk(2); expect(standingModsFor(med.g, med.pc.id)).toEqual([]);
+    expect(standingModsFor(light.g, light.foe.id)).toEqual([]);
+  });
+});

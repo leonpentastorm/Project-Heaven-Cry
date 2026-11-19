@@ -20,7 +20,7 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import rulesJ from '../../../data/rules.json';
 import type { Combat, Unit } from './combat';
 import { emitFx } from './combat';
-import { emit, hookUsed, charOfUnit } from './effects/hooks';
+import { emit, emitOwn, hookUsed, charOfUnit } from './effects/hooks';
 import { RARITY, focusRarity, mod } from './character';
 import { SKILL } from './data';
 import { d20, type Rng } from './rng';
@@ -195,6 +195,15 @@ export function toHitTerms(cb: Combat | null | undefined, att: Unit | null | und
   if (!cb || !att || !hookUsed('to_hit')) return fa ? [fa] : [];
   const ctx: any = emit(cb, 'to_hit', { att, tgt, type, ...(HIT_DOOR_WORD[type] ? { door: HIT_DOOR_WORD[type] } : {}), mode: o.mode ?? null, ...(o.via ? { via: o.via } : {}), terms: [] as { v: number; label: string }[], preview: o.preview !== false, cb });
   return [...(fa ? [fa] : []), ...(ctx.terms as { v: number; label: string }[]).filter((t) => t && t.v)];
+}
+/** Rules 1.77 item 6511: THE reader of a unit's standing to-hit terms, what its own items put on a hostile's roll to hit
+ * it as things stand (Open guard: -2), each with its source label, for its token card. Asked as the first hostile on
+ * the field would make a weapon attack at it (a preview: nothing changes); the attack's own preview names the same
+ * terms (previewAttack, toHitTerms). Empty with no hostile on the field or no item that answers. */
+export function standingTerms(cb: Combat | null | undefined, u: Unit): { v: number; label: string }[] {
+  const by = cb?.units.find((x) => x.side !== u.side && !x.dead && !x.downed); if (!cb || !by) return [];
+  const ctx: any = emitOwn(u, 'to_hit', { att: by, tgt: u, type: 'weapon', mode: null, terms: [] as { v: number; label: string }[], preview: true, cb }, cb);
+  return (ctx.terms as { v: number; label: string }[]).filter((t) => t && t.v);
 }
 /** The door each kind of roll to hit is made through (a weapon's own rarity is in its attack already). */
 const HIT_DOOR: Record<HitKind, string> = { weapon: '', sigil: 'brain_power', soul: 'will_power' };

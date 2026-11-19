@@ -272,12 +272,13 @@ export function emit(cb: Combat | null | undefined, name: HookName, ctx: any): a
   const gl = GLOBAL_HOOKS[name]; if (gl) for (const f of gl) { f(ctx, cb); if (ctx && ctx.stop) return ctx; }
   return ctx;
 }
-/** Fire a hook for ONE unit's own items, with no fight in reach (a price asked for a row before a fight is known). */
-export function emitOwn(u: Unit, name: HookName, ctx: any): any {
+/** Fire a hook for ONE unit's own items, with no fight in reach (a price asked for a row before a fight is known), or in
+ * the fight given. */
+export function emitOwn(u: Unit, name: HookName, ctx: any, cb: Combat | null = null): any { // cb (rules 1.77 item 6511): the fight it stands in, for a reader of one unit's own items
   const held = heldOfUnit(u); if (!heldAny(held)) return ctx;
   const list = buildIndex(held)[name]; if (!list) return ctx;
   const c = charOfUnit(u);
-  for (const s of list) { s.fn(ctx, holder(s.info, c, u, null)); if (ctx && ctx.stop) return ctx; }
+  for (const s of list) { s.fn(ctx, holder(s.info, c, u, cb)); if (ctx && ctx.stop) return ctx; }
   return ctx;
 }
 // ---------- engine systems that aren't items (rules 1.6: faith.ts) ----------
