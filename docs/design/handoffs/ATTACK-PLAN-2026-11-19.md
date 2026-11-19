@@ -194,3 +194,13 @@ are respectable adults." This voids every earlier line in this plan, the takeove
 calls those lines crude, takes them off the page or leaves them for Leon to cut (lane 3 scope item 6, the open
 question on "Bad for"). They are lore, they are on the face of the "?" page, and nobody edits them for tone. The
 same holds for all 2020 text and the game's humour: the wording pass shortens rules text, never the voice.
+
+## After 0.32: hosting and the code review (Leon, 19 Nov 2026)
+
+Leon: "we have the paid 5$ plan for cloudfare now so upgrade to whatever method is best in that plan. After 0.32 is done."
+
+Not before 0.32 ships. Then, in this order, each measured first:
+1. Move the site's files off Workers KV to the best method the paid Workers plan gives (the lead's pick: Workers Static Assets; confirm limits and pricing in Cloudflare's docs first). Deploy becomes `wrangler deploy`; the KV namespace is kept one release as a fallback. Rooms stay on Durable Objects.
+2. The preloader (wait for load, only the next screen's art), the connection fixes (close code 4000, the ping timer, the old socket on host/join), the server fixes (guest token, host token length, coalesced view writes, a room purge alarm).
+3. The rest of the outside code review of 19 Nov (fight-screen render costs, bundle split, engine clone and migration gate with the replays as the test, file splits, types): the review file is Leon's upload "PHC-Code-Review-and-Optimization-Brief.md"; seven of its claims were checked true by the lead.
+Code-only worktrees without `art/` and `audio/` (sparse checkout) may be used from 0.32 on, once the gate is shown to pass in one.
