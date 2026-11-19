@@ -544,6 +544,22 @@ export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
     for (const p of Object.values((g as any)?.run?.loadout || {}) as any[]) packs(p?.base?.pack);
     for (const objs of [(g as any)?.combat?.objects, (g as any)?.story?.objects]) for (const o of (objs || []) as any[]) for (const e of (o?.items || []) as any[]) if (e?.pack) { const n = shieldLineNow(e.pack); if (n !== e.pack) e.pack = n; }
   } catch { /* a save this old is handled by apply */ }
+  // rules 1.77 item 6508: a fight saved under the old Bite the Bullet handler holds a unit on borrowed time as the
+  // condition last_turn alone (its marker, 99 rounds), with no Unit.lastTurn: the op that took it over (effects/triggers.ts
+  // last_turn) reads the unit's state, so the unit would stand on 1 HP for good. It takes the state from the last_turn row
+  // of an item its character holds (hits, turn_ap, label), began as the old handler's own state said (else: is it its
+  // turn now), and the blow's dealer as the last unit that hit it. Nothing is written for a fight with no such unit.
+  try {
+    const cb: any = (g as any)?.combat;
+    for (const u of (cb?.units || []) as any[]) {
+      if (u.lastTurn || u.dead || !condOn(u, 'last_turn')) continue;
+      const c: any = (g as any).characters?.[u.charId]; let row: any = null, key = '';
+      for (const p of (c?.perks || []) as any[]) { const it: any = (PERK as any)[p.id]; const fx: any[] = it?.tiers?.[p.tier]?.effects ?? it?.effects ?? []; const r = fx.find((e) => e?.op === 'last_turn'); if (r) { row = { ...r, label: r.label || it.name }; key = 'perk:' + p.id; break; } }
+      if (!row) continue;
+      const began = u.ps?.[key]?.lt?.began ?? (cb.order?.[cb.turn] === u.id && !cb.window);
+      u.lastTurn = { began: !!began, ...(typeof row.turn_ap === 'number' ? { turnAp: row.turn_ap } : {}), ...(row.hits === 'death_save' ? { hits: 'death_save' } : {}), label: row.label, ...(u.lastHitBy ? { by: u.lastHitBy } : {}) };
+    }
+  } catch { /* a fight this old is handled by apply */ }
   // rules 1.39: a save from before modes played a campaign; playOf reads the missing field so, and nothing is written
   // here (a load must leave the state as it was: the replay guard's save-and-load case)
   return g;

@@ -135,7 +135,7 @@ export interface Unit {
   /** Rules 1.77 item 6508: borrowed time (op `last_turn`): the unit stands at 1 HP until the end of its next turn (this
    * one when it dropped on it: began), then falls Downed unless healed; turnAp: that turn's AP; hits: death_save, each hit
    * on it is a failed death save instead of damage; label: the item that gave it. */
-  lastTurn?: { began: boolean; turnAp?: number; hits?: 'death_save'; label: string };
+  lastTurn?: { began: boolean; turnAp?: number; hits?: 'death_save'; label: string; /** the unit whose blow was put off (its credit when the fall lands) */ by?: string };
   // ---------- shared subsystems (rules 1.3, lane 0B; every field optional so old saves load) ----------
   /** PC saves by family, debuff strength by delivering skill (rules 1.13), and item modifiers to d20 rolls by skill (the global ruling: item skill
    * mods reach every d20 that uses the skill), fixed when the unit is built. */

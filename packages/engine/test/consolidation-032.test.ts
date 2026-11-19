@@ -38,3 +38,50 @@ describe('A1: the fight-held resource (mana) reads, refunds and spends on the fi
     });
   });
 });
+
+// ---------------------------------------------------------------------------------------------- A2
+import { resolveAttack, apply, migrateLoaded, PERK } from '../src';
+import { condOn } from '../src/magic';
+const A2_RELICS = [{ id: 'test_fell', name: 'Fell (test)', text: 'A line when you go down.', effects: [{ op: 'use', when: 'downed', say: 'TEST FELL: {self}' }] }];
+beforeAll(() => addItems('relic', A2_RELICS));
+
+describe('A2: borrowed time ends through the one damage door (on_downed, on_kill, the credit)', () => {
+  const dropped = (perks: any) => {
+    for (let i = 0; i < 30; i++) {
+      const f = fightWith([{ skills: { pain_threshold: 5, guts: 5 }, perks, relics: ['test_fell'] }], [{ at: 'C6' }], { seed: 'SS' + i });
+      f.foe.pos = '3,5'; f.foe.ap = 6; f.pc.pos = '2,5'; f.pc.hp = 1;
+      withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), f.unit(f.pc.id), 'shot', null));
+      if (f.unit(f.pc.id).lastTurn) return f;
+    }
+    throw new Error('no hit landed');
+  };
+  const fell = (f: any) => f.cb.log.filter((l: string) => l.startsWith('TEST FELL'));
+  it('Still Standing II: at its turn\'s end the unit falls Downed, the downed trigger speaks, the blow\'s dealer has the credit', () => {
+    const f = dropped({ still_standing: 'II' }); const u = f.unit(f.pc.id), kills = f.foe.kills;
+    expect(u.lastTurn.by).toBe(f.foe.id); expect(fell(f)).toEqual([]);
+    f.turn(u); f.act({ type: 'combat/end-turn', unitId: u.id } as any);
+    expect(f.unit(u.id).downed).toBe(true); expect(f.unit(u.id).hp).toBe(0); expect(f.unit(u.id).lastTurn).toBeUndefined();
+    expect(fell(f)).toHaveLength(1); expect(f.unit(f.foe.id).kills).toBe(kills + 1);
+  });
+  it('Bite the Bullet: the death saves run out on its feet (the rule\'s number, from data): it dies through the door, the hitter has the kill', async () => {
+    const R: any = (await import('../../../data/rules.json')).default, n = R.combat.downed.death_save.failures_to_die;
+    const f = dropped({ bite_the_bullet: 'I' }); const u = f.unit(f.pc.id), kills = f.foe.kills;
+    u.saves.fail = n - 1; f.foe.ap = 6;
+    for (let i = 0; i < 12 && !f.unit(u.id).dead; i++) { f.foe.ap = 6; withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), f.unit(u.id), 'shot', null)); }
+    expect(f.unit(u.id).dead).toBe(true); expect(f.cb.log.some((l: string) => l === u.name + ' dies on their feet.')).toBe(true);
+    expect(f.cb.log.some((l: string) => l.includes('death-save failure ' + n + '/' + n))).toBe(true);
+    expect(fell(f).length).toBeGreaterThan(0); expect(f.unit(f.foe.id).kills).toBeGreaterThan(kills);
+  });
+  it('a fight saved under the old Bite the Bullet (the marker alone, no state) falls at the unit\'s turn end once loaded', () => {
+    const f = dropped({ bite_the_bullet: 'I' }); f.turn(f.pc);
+    const old = JSON.parse(JSON.stringify(f.g)), ou = old.combat.units.find((x: any) => x.id === f.pc.id);
+    delete ou.lastTurn; (ou.ps ||= {})['perk:bite_the_bullet'] = { lt: { began: true } }; // as the old handler kept it
+    expect(condOn(ou, 'last_turn')).toBe(true);
+    const over = f.pc.name + "'s Last Turn is over: Downed.";
+    const end = (g: any) => apply(g, { type: 'combat/end-turn', unitId: f.pc.id } as any, 'host').combat!.log;
+    expect(end(JSON.parse(JSON.stringify(old)))).not.toContain(over); // unmigrated: borrowed time never ends
+    const loaded = migrateLoaded(JSON.parse(JSON.stringify(old)));
+    expect(loaded.combat!.units.find((x: any) => x.id === f.pc.id)!.lastTurn).toMatchObject({ began: true, hits: (PERK as any).bite_the_bullet.effects.find((e: any) => e.op === 'last_turn').hits });
+    const log = end(loaded); expect(log).toContain(over);
+  });
+});

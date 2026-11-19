@@ -27,7 +27,7 @@ import { holds, FOCUS_DOORS, handProps, gearAt, kindOfDoor, FOCUS_IDS } from '..
 import { applyDamage } from './damage';
 import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
 import { say, dist, displace, emitFx, fxFell, checkOver, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile, strikeRider } from '../combat';
-import { WEAPON, SKILL } from '../data';
+import { WEAPON, SKILL, RULES } from '../data';
 import { magsOf, type PackItem } from '../character';
 import { restoreConds, applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
 import { nextToCover, objectsAt, objectsOf, damageObject, refOf } from '../combat';
@@ -614,25 +614,36 @@ O('two_dice', ['attack_roll'], true, ['keep'], 'the attack rolls a second d20 an
 O('last_turn', ['would_drop'], true, ['turn_ap', 'hits'], 'the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own) with turn_ap AP if given, then falls Downed unless healed first; hits: death_save, each hit meanwhile is a failed death save instead of damage', (ev, e, label) => {
   const u = ev.self, cb = ev.cb; if (ev.ctx.floor != null || u.hp <= 0 || u.lastTurn) return false;
   const own = cb.order[cb.turn] === u.id && !cb.window;
-  ev.ctx.floor = 1; u.lastTurn = { began: own, ...(typeof e.turn_ap === 'number' ? { turnAp: e.turn_ap } : {}), ...(e.hits === 'death_save' ? { hits: 'death_save' } : {}), label };
+  ev.ctx.floor = 1; u.lastTurn = { began: own, ...(typeof e.turn_ap === 'number' ? { turnAp: e.turn_ap } : {}), ...(e.hits === 'death_save' ? { hits: 'death_save' } : {}), label, ...(ev.ctx.src?.by ? { by: ev.ctx.src.by.id } : {}) };
   if (own && typeof e.turn_ap === 'number') { const over = apFor(cb, u) - e.turn_ap; if (over > 0) loseAp(u, over); } // its AP cut to the number, never raised
   restoreConds(u, { last_turn: 99 }); // its marker: nobody is asked
   return own ? ' for the rest of this turn' : ' for one more turn';
 });
 /** End a unit's borrowed time, with its line. */
 const lastTurnEnd = (cb: Combat, u: Unit, why: string) => { delete u.lastTurn; endCond(u, 'last_turn'); say(cb, why); };
+/** The death-save rule's failures to die (data/rules.json combat.downed.death_save). */
+const FAILS_TO_DIE: number = (RULES as any).combat.downed.death_save.failures_to_die;
+/** Borrowed time runs out: the blow that was put off lands, through the one damage door (applyDamage: a PC falls Downed,
+ * anyone else dies; on_downed and on_kill speak, and `by`, the blow's dealer, has the credit). Its source type is
+ * unsoftened (effects/damage.ts UNSOFTENED): nothing lowers it, no floor holds it up again. dies: its death saves are
+ * spent (it dies on its feet): Downed at its failures, it is finished through the same door. */
+function lastTurnFall(cb: Combat, u: Unit, by: Unit | null, dies: boolean): void {
+  const src = { type: 'last_turn', by, shield: false, credit: 'all' as const, downedFails: 0 };
+  if (u.hp > 0) applyDamage(cb, u, u.hp, src);
+  if (dies && !u.dead) { if (!u.downed) setDowned(u, true); applyDamage(cb, u, 1, src); }
+}
 onHook('damage_in', (ctx: any, cb: Combat) => {
   const u: Unit = ctx.t; if (ctx.phase !== 'reduce' || !u?.lastTurn || u.lastTurn.hits !== 'death_save' || !(ctx.dmg > 0)) return;
-  ctx.dmg = 0; if (!ctx.src?.by || ['bleed', 'burn', 'hazard', 'trap'].includes(ctx.src.type)) return; // only a blow counts
+  ctx.dmg = 0; if (!byHit(ctx.src)) return; // only a blow counts
   u.saves.fail += ctx.src.crit ? 2 : 1;
-  say(cb, u.name + ' takes the hit on borrowed time: death-save failure ' + Math.min(3, u.saves.fail) + '/3 (' + u.lastTurn.label + ').');
-  if (u.saves.fail >= 3) { u.hp = 0; u.dead = true; lastTurnEnd(cb, u, u.name + ' dies on their feet.'); fxFell(cb, u); checkOver(cb); }
+  say(cb, u.name + ' takes the hit on borrowed time: death-save failure ' + Math.min(FAILS_TO_DIE, u.saves.fail) + '/' + FAILS_TO_DIE + ' (' + u.lastTurn.label + ').');
+  if (u.saves.fail >= FAILS_TO_DIE) { lastTurnFall(cb, u, ctx.src.by, true); lastTurnEnd(cb, u, u.name + ' dies on their feet.'); fxFell(cb, u); checkOver(cb); }
 });
 onHook('turn_start', (ctx: any, cb: Combat) => { const u: Unit = ctx.u; if (!u?.lastTurn) return; u.lastTurn.began = true; if (typeof u.lastTurn.turnAp === 'number') { const over = apFor(cb, u) - u.lastTurn.turnAp; if (over > 0) loseAp(u, over); } });
 onHook('turn_end', (ctx: any, cb: Combat) => {
   const u: Unit = ctx.u; if (!u?.lastTurn || !u.lastTurn.began) return;
-  u.hp = 0; setDowned(u, true); setBraced(u, false); dropHeldShot(cb, u, 'down');
-  lastTurnEnd(cb, u, u.name + '\'s Last Turn is over: Downed.'); fxFell(cb, u);
+  lastTurnFall(cb, u, cb.units.find((x) => x.id === u.lastTurn?.by) ?? null, false); setBraced(u, false); dropHeldShot(cb, u, 'down');
+  lastTurnEnd(cb, u, u.name + '\'s Last Turn is over: ' + (u.dead ? 'down for good.' : 'Downed.')); fxFell(cb, u); checkOver(cb);
 });
 onHook('heal_given', (ctx: any, cb: Combat) => { const u: Unit = ctx.t; if (u?.lastTurn && ctx.n > 0) lastTurnEnd(cb, u, u.name + ' is patched up in time: the Last Turn ends, still standing.'); });
 
