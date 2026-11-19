@@ -2921,6 +2921,9 @@ if _sv is not None:
     if "nodes" in _sv:
         for _k in ("shop", "forge", "training", "shrine", "event", "cache", "rest", "vault"):
             if not isinstance(_sv["nodes"].get(_k), str) or not _sv["nodes"][_k].strip(): errors.append(f"survival:nodes.{_k}: the panel's text")
+    if "vow_change_nodes" in _sv:  # 0.32 consolidation: where a standing vow changes in a run (faith.ts vowChangeNow)
+        _vk = (_sv["vow_change_nodes"] or {}).get("kinds")
+        if not isinstance(_vk, list) or not _vk or any(_k not in (_sv.get("nodes") or {}) or _k in ("about", "provisional") for _k in _vk): errors.append("survival:vow_change_nodes.kinds: a list of node kinds (keys of survival.json nodes)")
     for _k in ("run", "stage", "rounds", "tiers", "share", "map_size", "xp", "credits", "ammo_pack", "rewards", "nodes", "tips", "pools", "names", "shop", "sell_rate"):
         if _k in _sv and _sv[_k].get("provisional") is not True: errors.append(f"survival:{_k}: every number is provisional (provisional: true)")
     # Rules 1.43 (build step 4a, in-run progression): the grade ladder, the Forge, the run's cap, the Relic properties

@@ -424,7 +424,8 @@
     "drill": 200, "study": 5, "practice": 8, "devotion": 4,
     "provisional": true
   },
-  "rest": { "about": "Rules 1.61 addendum item 4749 (0.30.1): a rest node treats every arm and leg injury of each character who rests (not the dead), through the one treatment (character.ts treatLimb), when `treat_injuries` is true. 0.32 (Leon, 16 Nov 2026, to-do F): `vow_change`: a node of this kind is where a Faithful character changes its standing vow (the vow pop-up, web game/VowPopup.tsx).", "treat_injuries": true, "vow_change": true, "provisional": true },
+  "rest": { "about": "Rules 1.61 addendum item 4749 (0.30.1): a rest node treats every arm and leg injury of each character who rests (not the dead), through the one treatment (character.ts treatLimb), when `treat_injuries` is true.", "treat_injuries": true, "provisional": true },
+  "vow_change_nodes": { "about": "0.32 (Leon, 16 Nov 2026, to-do F): the node kinds (keys of `nodes`) where a Faithful character changes its standing vow in a run (the vow pop-up, web game/VowPopup.tsx; faith.ts vowChangeNow).", "kinds": ["rest"], "provisional": true },
   "training": {
     "about": "Rules 1.43 (spec rule 45): the training ground's big training, one a character for free and a second (the most is `most`) for extra_price credits: drill, study or practice (Devotion is the shrine's).",
     "drill": 400, "study": 10, "practice": 15, "extra_price": 300, "most": 2,

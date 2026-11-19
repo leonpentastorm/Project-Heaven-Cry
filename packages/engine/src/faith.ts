@@ -1501,12 +1501,12 @@ function swearOn(cb: Combat, u: Unit, c: Character, v: any, allyId: string | und
   say(cb, u.name + ' swears a vow: "' + v.words + '"' + (allyId ? ' (' + cb.units.find((x) => x.id === allyId)!.name + ')' : '') + '.');
 }
 /** Rules 1.72 item 5705: where the standing vow may be chosen or changed (out of a fight): the first choice anywhere; a
- * change in a Survival run only at a node whose kind's row in survival.json says `vow_change` (the rest); out of a run,
+ * change in a Survival run only at a node of a kind survival.json `vow_change_nodes.kinds` names (the rest); out of a run,
  * any time out of a fight. */
 function vowChangeNow(g: GameState, c: Character): boolean {
   if (!c.vowStanding) return true;
   const r: any = (g as any).run; if (!r) return true;
-  const kind = r.note?.kind; return !!kind && !!(survivalJ as any)[kind]?.vow_change;
+  const kind = r.note?.kind; return !!kind && ((survivalJ as any).vow_change_nodes.kinds as string[]).includes(kind);
 }
 /** Rules 1.72 item 5705: faith/vow out of a fight sets the character's standing vow (unitId: the character; id '':
  * fighting unsworn; allyId: the ally's character). */

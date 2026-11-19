@@ -101,7 +101,7 @@ describe('rules 1.72: the effects lane\'s engine events', () => {
     const u = s.g.combat.units.find((x) => x.charId === pid), al = s.g.combat.units.find((x) => x.charId === aid);
     expect(u.vow).toEqual({ id: shield, allyId: al.id, state: 'sworn' });
     expect(fxOf(s.g.combat, 'vow').some((e) => e.state === 'sworn' && e.unit === u.id)).toBe(true);
-    // in a Survival run the vow changes only at a node whose kind's row says vow_change (the rest)
+    // in a Survival run the vow changes only at a node of a kind survival.json vow_change_nodes names (the rest)
     (s.g as any).run = { note: { kind: 'shrine' } }; s.g.combat = null; s.g.phase = 'story';
     expect(() => s.act({ type: 'faith/vow', unitId: pid, id: plain } as Action)).toThrow(/at a rest/);
     (s.g as any).run = { note: { kind: 'rest' } };
