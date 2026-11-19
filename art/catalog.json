@@ -21493,6 +21493,42 @@
         "different_pixels_32": 4,
         "different_pixels_64": 18
       }
+    },
+    "weapon-kemizuchi_strikers--masterwork": {
+      "label": "Kemizuchi Strikers — Masterwork",
+      "path": "art/icons/gear/weapon-kemizuchi_strikers--masterwork.png",
+      "sha256": "e48e3383dbdedd48bec6b2ddf93b6d64a8d266f7d3bcf5f5a8af905534a62a76",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_strikers--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_strikers--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_strikers--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_strikers--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-kemizuchi_strikers--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.5",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-kemizuchi_strikers",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.963619134440073,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 44
+      }
     }
   },
   "survival_art": {

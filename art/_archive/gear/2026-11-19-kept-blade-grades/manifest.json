@@ -2338,6 +2338,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-kemizuchi_strikers--masterwork",
+      "path": "art/icons/gear/weapon-kemizuchi_strikers--masterwork.png",
+      "sha256": "e48e3383dbdedd48bec6b2ddf93b6d64a8d266f7d3bcf5f5a8af905534a62a76",
+      "label": "Kemizuchi Strikers — Masterwork",
+      "family": "weapon-kemizuchi_strikers",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-kemizuchi_strikers--masterwork.png",
+        "sha256": "0d3a9140130403b76497ea8b0ff0884d5d7f490cb5a22637f1f59923f5b20152"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-kemizuchi_strikers--masterwork.png",
+        "sha256": "e48e3383dbdedd48bec6b2ddf93b6d64a8d266f7d3bcf5f5a8af905534a62a76"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-kemizuchi_strikers--masterwork.txt",
+        "sha256": "769ad49d23f9c164b1b9a622581b4d11b1859d2d8b52dcb912cd5b801d613f91"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-kemizuchi_strikers--masterwork/v1/source.png",
+          "sha256": "ffc1cbed630a58ee42e3c46d4b6346f2692602ce5cc8b6534e7ad9eb9478b0e5"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_strikers.png",
+          "sha256": "d4e4963718ef806fee94a92b1ec4f59d5ed9fe34de8aec489caf0ec669c83512"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_strikers--fine.png",
+          "sha256": "27e94e8ecd863a00623e3921fe38f44e7639a586711735f6e0b2c63238be9c21"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_strikers--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_strikers--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_strikers--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_strikers--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "1eba799d1b0f3394bdb75b308bab45554d36947bf74a550ad406e28a14a50e85",
+        "128": "a1946a4d7bbf763e9bc4cf1cb12a7a4e1993dca894a029c760cdab125891d4db",
+        "64": "a6e4a9316d6fccb7b9a29477bba782f781efb384f22221e1da9ffa0a2dec403b",
+        "32": "8e74955a5e12c618896456a2735335f25ae8200b9bc01a9f7261df175eb1833d"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-kemizuchi_strikers",
+      "outline": {
+        "solid_alpha_iou": 0.963619134440073,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 44
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
