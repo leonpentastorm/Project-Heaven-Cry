@@ -240,9 +240,9 @@ describe('row 16: Sigil Savant works in a Survival run (its Muscle Memory and Pr
     const c: any = Object.values(g0.characters)[0]; c.traits = [...(c.traits || []), 'sigil_savant']; c.sigils = ['spark', 'seek'];
     expect(runItemWhy(g0, c, 'trait:sigil_savant', 'muscle')).toBeNull();
     let g = apply(g0, { type: 'story/perk', charId: c.id, id: 'trait:sigil_savant', actionId: 'muscle', choice: 'spark' } as any, 'host');
-    expect(g.characters[c.id].state.sigil_savant.word).toBe('spark');
+    expect((g.characters[c.id] as any).state.sigil_savant.word).toBe('spark');
     g = apply(g, { type: 'story/perk', charId: c.id, id: 'trait:sigil_savant', actionId: 'practise', choice: 'seek' } as any, 'host');
-    expect(g.characters[c.id].state.sigil_savant.practised).toEqual(['seek']);
+    expect((g.characters[c.id] as any).state.sigil_savant.practised).toEqual(['seek']);
   });
 });
 
