@@ -1891,6 +1891,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-sealed_visor",
+      "path": "art/icons/gear/armour-sealed_visor.png",
+      "sha256": "6b03c6bb25fea954fb32478df0042d8a8bb0a6091dcf1f1674dae5a3a5c6c532",
+      "label": "Sealed visor",
+      "family": "07-respirators",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-sealed_visor.png",
+        "sha256": "b98cbadd25206d86e2fc806f9d22e064ca898a22cec18e7e8544b69c42b34a3e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-sealed_visor.png",
+        "sha256": "6b03c6bb25fea954fb32478df0042d8a8bb0a6091dcf1f1674dae5a3a5c6c532"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-sealed_visor.txt",
+        "sha256": "6db3a745d8ce615bd437dfc6559570b2b5f59f5a9c42556adff9979b8f92ba9e"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-gas_mask.png",
+          "sha256": "a633011fa2fed3defd33228d8dce7475d39060df9c779a1a9ebf0beab46ef98e"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sealed_visor.png",
+        "128": "art/icons/gear/exports/128/armour-sealed_visor.png",
+        "64": "art/icons/gear/exports/64/armour-sealed_visor.png",
+        "32": "art/icons/gear/exports/32/armour-sealed_visor.png"
+      },
+      "export_hashes": {
+        "256": "2357f8033c45e7a11dbc0741a6e39d5fde7b6fd823e37dee79eefff4f8d44b6b",
+        "128": "594511ddb3ebea7d7b98289bfddcfd79fdc6b1922b659499f4c7745610736837",
+        "64": "8e3653f73cdb6560dcc2937435219486fd1b24876433de086d4e8712b0e7dd16",
+        "32": "779dc2cdd5b0facb8d5095783eb86be97531def91de619d836ce90770fef9716"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

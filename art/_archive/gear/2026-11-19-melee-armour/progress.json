@@ -45,10 +45,10 @@
     "armour-blackout_hood",
     "armour-spotters_monocle",
     "armour-sight_visor",
-    "armour-breather"
+    "armour-breather",
+    "armour-sealed_visor"
   ],
   "remaining": [
-    "armour-sealed_visor",
     "armour-breacher_plate",
     "armour-mesh_undersuit",
     "armour-rig_belt",
@@ -58,5 +58,5 @@
   ],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T04:23:29.256340+00:00"
+  "updated_utc": "2026-11-19T04:25:15.851505+00:00"
 }

@@ -19464,6 +19464,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "armour-sealed_visor": {
+      "label": "Sealed visor",
+      "path": "art/icons/gear/armour-sealed_visor.png",
+      "sha256": "6b03c6bb25fea954fb32478df0042d8a8bb0a6091dcf1f1674dae5a3a5c6c532",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sealed_visor.png",
+        "128": "art/icons/gear/exports/128/armour-sealed_visor.png",
+        "64": "art/icons/gear/exports/64/armour-sealed_visor.png",
+        "32": "art/icons/gear/exports/32/armour-sealed_visor.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-sealed_visor.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+      "brief_number": 14,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {
