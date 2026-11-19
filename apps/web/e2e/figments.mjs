@@ -29,8 +29,8 @@ await act({ type: 'sandbox/class', charId: cid, classId: 'marksman', rank: 1 });
 await act({ type: 'sandbox/give', charId: cid, item: 'service_pistol', equip: true });
 ok('the Visualizer in the off hand', (await act({ type: 'sandbox/give', charId: cid, item: 'visualizer', equip: true })) === null);
 await act({ type: 'sandbox/give', charId: cid, item: 'standard_core', qty: 3 });
-// rules 1.56 (Figments 2.0), 1.60 (the forks at 4 and 6): the Wall and the Beast are fork forms: chosen through door/pick
-ok('the forks: the Wall (Visualization 4) and the Beast (Visualization 6) chosen', (await act({ type: 'door/pick', charId: cid, door: 'visualization', option: 'wall' })) === null && (await act({ type: 'door/pick', charId: cid, door: 'visualization', option: 'beast' })) === null);
+// rules 1.70 item 5541: forms are learned at the door figment_forms (forms known by Visualization), through door/pick
+ok('the forms: the Wall and the Beast learned', (await act({ type: 'door/pick', charId: cid, door: 'figment_forms', option: 'wall' })) === null && (await act({ type: 'door/pick', charId: cid, door: 'figment_forms', option: 'beast' })) === null);
 ok('the design Hound (Beast + Swift) kept out of the fight',(await act({ type: 'figments/design', charId: cid, design: { id: 'hound', name: 'Hound', form: 'beast', traits: ['swift'] } })) === null);
 await act({ type: 'sandbox/ai', on: false });
 await act({ type: 'sandbox/fight' });
@@ -57,7 +57,7 @@ const t2 = await free(u.pos);
 const e2 = await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'wall', tile: t2 });
 u = await me(); F = await figs();
 ok('Picture a bare Wall: 3 charge (' + (e2 || 'done') + ')', !e2 && F.length === 2 && u.mg.vcharge === 2);
-await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'double', tile: await free(u.pos) });
+await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'wall', tile: await free(u.pos) }); // a learned form (rules 1.70: an unlearned one is refused before the hold)
 await settle(p, 300);
 const body = (await p.locator('body').textContent()) || '';
 ok('a third Picture is refused in words (' + ((body.match(/Hold is full[^.]*\./) || [])[0] || 'no words') + '; ' + (await figs()).length + ' held)', (await figs()).length === 2 && /Hold is full/.test(body));
