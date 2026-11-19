@@ -22,6 +22,7 @@ import type { Sfx } from '../sfx';
 import { reducedMotion } from '../sfx';
 import { type Pt, after, anim, floatText, put, ring, svg, trace, lunge, angle } from './dom';
 import { MFX_INK } from './melee-techniques';
+import { moveIconOf } from '../doorArt';
 
 const { cut: WHITE, force: FORCE, foot: FOOT, muted: MUTED, guard: GUARD } = MFX_INK;
 /** The beats (ms at Fast): the jab, the rings, a form's shape, the afterimages; slice 2: Sway's lean, Breath's ring, the
@@ -102,6 +103,15 @@ function snap(a: Pt, b: Pt) {
   anim(box, [{ opacity: 1 }, { opacity: 1, offset: 0.7 }, { opacity: 0 }], { duration: OPEN_MS.counter + 100, fill: 'forwards' });
 }
 
+/** 0.33: the delivered sign of an Open Hand moment (art catalog move-sway, move-counter, by the moment's own word) over
+ *  a point, a beat; nothing when the picture is not built. */
+function signOver(word: string, p: Pt) {
+  const src = moveIconOf(word.toLowerCase()); if (!src || typeof document === 'undefined') return;
+  const img = document.createElement('img'); img.src = src; img.alt = ''; img.setAttribute('data-oh-sign', word.toLowerCase()); img.style.cssText = 'width:100%;height:100%;display:block;filter:drop-shadow(0 0 4px rgba(5,7,11,.9))';
+  const sz = Math.max(18, p.s * 0.5), box = put(img, { x: p.x, y: p.y - p.s * 0.75 }, sz, sz, 700); box.style.zIndex = '4';
+  anim(box, reducedMotion() ? [{ opacity: 0 }, { opacity: 1, offset: 0.2 }, { opacity: 1, offset: 0.75 }, { opacity: 0 }] : [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'scale(1)', offset: 0.25 }, { opacity: 1, offset: 0.7 }, { opacity: 0, transform: 'scale(1.1)' }], { duration: 700, easing: 'ease-out', fill: 'forwards' });
+}
+
 // ---------- the handlers ----------
 /** Wrap the blow and the stance handlers (after every other wrapper: the blow's own lunge, hit and number play first). */
 export function wrapOpenHand(H: Record<string, (e: FxEvent) => void>, K: OpenKit) {
@@ -113,7 +123,7 @@ export function wrapOpenHand(H: Record<string, (e: FxEvent) => void>, K: OpenKit
     const a = K.at(e.from), b = K.at(e.to); if (!a || !b) return;
     try {
       if (e.tech === 'flurry' && K.sawThen(e)) afterimages(K, e, a, b);
-      if (e.tech === 'riposte') { trace('openhand', { what: 'counter', unit: e.unit }); snap(a, b); floatText(COUNTER_WORD, b, WHITE, { small: true }); }
+      if (e.tech === 'riposte') { trace('openhand', { what: 'counter', unit: e.unit }); snap(a, b); floatText(COUNTER_WORD, b, WHITE, { small: true }); signOver(COUNTER_WORD, a); }
       if (!e.hit) return;
       trace('openhand', { what: 'blow', unit: e.unit, tech: e.tech || null });
       after(() => impact(along(a, b, 0.6), e.tech === 'flurry' ? 1 : 2, FORCE), OPEN_MS.jab);
@@ -126,7 +136,7 @@ export function wrapOpenHand(H: Record<string, (e: FxEvent) => void>, K: OpenKit
     trace('openhand', { what: w, form: e.what, unit: who });
     if (w === 'sway' || w === 'breath') { // the holder's own defence: drawn on the holder (the stance names it)
       const p = K.at(e.at) || (who ? K.at(String((e as any).pos || '')) : null), tok = K.tokOf(who, e.at); if (!p) return;
-      if (w === 'sway') { if (tok) lunge(tok, p.s * 0.15, -p.s * 0.06, OPEN_MS.sway); floatText(String(e.word), p, WHITE, { small: true }); K.play('swish', p, { rate: 1.3, gain: 0.3 }); }
+      if (w === 'sway') { if (tok) lunge(tok, p.s * 0.15, -p.s * 0.06, OPEN_MS.sway); floatText(String(e.word), p, WHITE, { small: true }); signOver(String(e.what || w), p); K.play('swish', p, { rate: 1.3, gain: 0.3 }); }
       else { ring(p, GUARD, OPEN_MS.breath, { from: 1.3, to: 0.35, width: 2 }); floatText(String(e.word), p, GUARD, { small: true, delay: OPEN_MS.breath * 0.6 }); }
       return;
     }

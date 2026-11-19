@@ -12,9 +12,9 @@
 //   shove by a unit to its own side's      GUIDE: the guide's small gesture and a faint thread, then the slide
 //   (Guide: a willing move)
 //   stance {what: untie, unit, target,     BREAK: the line parts from its middle and both ends recoil; the word is the
-//   how: the kind} (rules 1.72 item       kind's (BOND BROKEN). The engine says a tie its op ended (Let go); a tie
-//   5701: the tie op's clear)              gone otherwise (a Down, the Attuner leaving, sight) has no event yet and is
-//                                          still read from the view (noteTies), after what is queued
+//   how: the kind} (rules 1.72 item       kind's (BOND BROKEN). Since rules 1.85 every end (the op, a Down, the
+//   5701, 1.85 item 7302)                 Attuner leaving, sight, the mark) is the engine's event; reading the view
+//                                          (noteTies) is kept only as a fallback for a tie no event named
 // Not drawn, for want of an event (the engine emits none; listed in the 0.28.3 hand-off): the echo of a heal into a
 // Bonded enemy (the `deal` op makes no fx) and the share of damage (`redirect` makes none); and an un-Bonded Tending
 // heal can't be told from another heal (the heal event names no giver), so it keeps the plain heal. The idle breath of
