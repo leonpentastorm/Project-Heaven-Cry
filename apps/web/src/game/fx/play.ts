@@ -8,6 +8,7 @@ import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, element
 import { soulHandlers, soulBeat, discharge } from './soul';
 import { feelingHandlers, feelingBeat } from './feelings';
 import { faithHandlers, faithBeat, faithBatch, sealedBoon } from './faith';
+import { silentBatch } from './silent';
 import { classHandlers, classBeat } from './classes';
 import { physHandlers, physBeat } from './physical';
 import { meleeTechHandlers, meleeTechBeat, meleePrepass } from './melee-techniques';
@@ -16,7 +17,7 @@ import { wrapRanged, rangedBeat, rangedBatch, resetRanged, drawsOwnLoose } from 
 import { wrapTechFx, techPrepass, techExtraBeat } from './techniqueFx';
 import { grandLook } from './grand';
 import { worldHandlers, worldBeat } from './world';
-import { wrapFigments, figmentBeat, figmentExtraBeat, figOf, noteFigments } from './figments';
+import { wrapFigments, figmentBeat, figmentExtraBeat, figOf, noteFigments, figmentBatch } from './figments';
 import { leanIn, recoil } from './sigilBody';
 import { wrapBreaker, breakerBeat, noteBreaker } from './breaker';
 import { wrapPressure, pressureBeat, resetPressure } from './pressure';
@@ -31,7 +32,7 @@ import { DRAW_MS, brassOf, coreOf, drawArrow, dropMag, ejectCore, ejectShell, lo
 import { reloadCard } from './reload';
 import { fxOf, type Look as WeaponLook } from './weaponFx';
 import { bangMark, bangDue, tickDue, noteSight, noteOverwatch, tagChip, aimLine, resetSight, HOSTILE_INK, OTHER_INK } from './sight';
-import { type Pt, resetFloats, reanchor, after, bumpGen, withTempo, withEvent, trace, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl } from './dom';
+import { type Pt, resetFloats, reanchor, after, bumpGen, withTempo, withEvent, trace, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, fxMarker, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl } from './dom';
 
 import { activeCamera } from '../cameraView';
 import { fxTiles, glideMs, movesCamera } from '../camera';
@@ -920,14 +921,14 @@ const H: Record<string, Handler> = {
     if (e.revive) { ring(p, OK, 700, { from: 0.4, to: 1.4, width: 6 }); floatText('UP', p, OK, { big: true }); }
     else floatText('+' + fmtFloat(e.heal || 0), p, OK);
   },
-  heal(e) { const p = centre(e.at); if (!p) return; pluses(p, OK, 6); flash(tokOf(e.target, e.at), 'heal'); floatText(e.revive ? 'UP' : '+' + fmtFloat(e.amount || 0), p, OK, { big: !!e.revive }); play('crystal', p, { rate: 1.3, gain: 0.7 }); },
+  heal(e) { const p = centre(e.at); if (!p) return; pluses(p, OK, 6); flash(tokOf(e.target, e.at), 'heal'); floatText(e.revive ? 'UP' + (e.amount ? ' +' + fmtFloat(e.amount) : '') : '+' + fmtFloat(e.amount || 0), p, OK, { big: !!e.revive }); play('heal_shimmer', p, { rate: jitter(0.05), gain: 0.8 }); },
   hurt(e) {
     const p = at(e.at); if (!p) return;
     const why = e.why || '', tok = tokOrGhost(e.target, e.at, !!e.killed);
     const color = why === 'sigil' || why === 'elemental' || why === 'wall' ? SIGIL_INK : why === 'soul' ? SOUL_INK : undefined;
     if (why === 'burn') burst('flame', p, p.s * 0.9, 600, { color: '#F68A38', from: 0.5, to: 1.1 });
     if (why === 'bleed') decal(e.at, 'blood_' + (1 + Math.floor(Math.random() * 3)), '#7A0E16', 2600, 0.35);
-    if (e.element) elementImpact(p, e.element, why === 'soul' ? 'soul' : 'sigil', { power: why === 'acid' ? 0.4 : 0.55, quiet: true, decalKey: why === 'acid' ? null : e.at });
+    if (e.element) elementImpact(p, e.element, why === 'soul' ? 'soul' : 'sigil', { power: why === 'acid' ? 0.4 : 0.55, quiet: !e._prayer, decalKey: why === 'acid' ? null : e.at, sound: (s, o) => play(s, p, o) }); // a prayer's element is heard (fx/faith.ts prayerTies)
     else if (color) { squaresOrMotes(p, color, why === 'soul'); }
     if (why === 'acid') { bubbles(p, ELEMENTS.acid, 'sigil', 4, 900); play('stim', p, { gain: 0.4, rate: 1.2 }); }
     shake(tok, why === 'explosion' ? 1.6 : 0.8); flash(tok, color === SOUL_INK ? 'soul' : color ? 'magic' : 'hurt');
@@ -943,7 +944,7 @@ const H: Record<string, Handler> = {
     if (tok && !live) anim(tok, [{ filter: 'none', translate: '0 0', rotate: '0deg', opacity: 1 }, { ...fallen, opacity: 1, offset: 0.3 }, { ...fallen, opacity: 0.85, offset: 0.7 }, { ...fallen, opacity: 0 }], { duration: reducedMotion() ? 900 : 1700, easing: 'ease-out', fill: 'forwards' });
     else if (tok && !reducedMotion()) anim(tok, [{ filter: 'none', translate: '0 0', rotate: '0deg' }, { ...fallen, offset: 0.35 }, { ...fallen, offset: 0.85 }, { filter: 'none', translate: '0 0', rotate: '0deg' }], { duration: 1400, easing: 'ease-out' });
     dust({ x: p.x, y: p.y + p.s * 0.2 }, p.s);
-    floatText(e.dead ? 'DEAD' : 'DOWNED', p, HP, { delay: 150 });
+    floatText(e.dead ? 'DEAD' : e.surrendered ? 'SURRENDERS' : 'DOWNED', p, e.surrendered ? WHITE : HP, { delay: 150 }); // a surrender is not a fall (Love Conquers, a yield)
   },
   explode(e) { if (e.what === 'discharge') { discharge(SOUL_KIT, e); return; } explosion(e.at, e.radius || 1, e.what === 'fire' ? 'fire' : 'frag'); },
   object(e) { const p = at(e.at); if (!p) return; if (e.broken) { dust(p, p.s * 1.3); burst('smoke_soft', p, p.s, 700, { color: '#7F8BA1' }); play('body_fall', p, { rate: 0.8, delay: 90 }); floatText('BROKEN', p, MUTED, { small: true }); } },
@@ -1200,7 +1201,7 @@ Object.assign(H, soulHandlers(SOUL_KIT));
 // Outburst 4.0 (fx/feelings.ts): feelings felt and poured, residue, Revert, practice, Fuse, Linger, Thread.
 Object.assign(H, feelingHandlers(SOUL_KIT));
 // Blessing 2.0 (fx/faith.ts): prayers, Witnessed, interventions, Devotion, vows, the patron's lines and Miracles.
-Object.assign(H, faithHandlers({ ...SOUL_KIT, patronOfUnit: (id) => patronOfUnit(id), posOfChar: (charId) => { if (!charId) return undefined; for (const u of units.values()) if (u.charId === charId) return u.pos; return undefined; },
+Object.assign(H, faithHandlers({ ...SOUL_KIT, sideOf: (id) => unit(id)?.side || null, patronOfUnit: (id) => patronOfUnit(id), posOfChar: (charId) => { if (!charId) return undefined; for (const u of units.values()) if (u.charId === charId) return u.pos; return undefined; },
   nameOfChar: (charId) => (charId ? charNames.get(charId) : undefined), hurry: (ms) => hurryFx(ms) }));
 const NOTE = [1, 1.122, 1.26, 1.498, 1.682, 2];
 const hash = (s: string) => { let h = 0; for (const c of String(s || '')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; };
@@ -1529,10 +1530,21 @@ if (typeof window !== 'undefined') (window as any).__phcHold = turnsBusyUntil;
 export const fxBusyUntil = () => Math.max(queueEnd, performance.now());
 /** Run one event's effect now, outside the queue (for the turn intro, the Proving Ground, a test button). tempo: 0.85 for
  *  an action slowed after a spotlight cut-in. */
+/** An HP change no event of its batch drew a number for (fx/silent.ts): the number on the unit, its token flashing (red
+ *  for a loss, green for a gain), and a quiet sound, so nothing heals or wounds unseen. */
+function showSilent(m: Record<string, number>) {
+  for (const [id, d] of Object.entries(m)) {
+    const u = unit(id), p = u ? at(u.pos) : null; if (!p) continue;
+    const tok = tokOf(id, u!.pos); fxMarker(p, 'data-phc-silent', id);
+    if (d < 0) { shake(tok, 0.5); flash(tok, 'hurt'); floatText('−' + fmtFloat(-d), p, HP); play(u!.robot ? 'hit_metal' : 'hit_flesh', p, { rate: jitter(), gain: 0.55 }); }
+    else { pluses(p, OK, 5); flash(tok, 'heal'); floatText('+' + fmtFloat(d), p, OK); play('heal_shimmer', p, { gain: 0.6 }); }
+  }
+}
 export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string, tempo = 1, due?: number) {
   const ev = { n: 0, ...e } as FxEvent, at = due ?? performance.now();
   withEvent(ev.n, () => trace('ev', { k: ev.k, id: ev.id, tech: ev.tech, weapon: ev.weapon, cat: ev.cat, mode: ev.mode, hit: ev.hit, object: ev.object, cover: !!ev.cover, thrown: ev.thrown, chain: ev.chain, dmg: ev.dmg, why: ev.why, hp: !!ev.hp }), at);
   try { if (mineOnly(ev)) withEvent(ev.n, () => withTempo(tempo, () => H[ev.k]?.(ev)), at); } catch (err) { console.warn('fx', ev.k, err); }
+  try { if ((ev as any)._silent) withEvent(ev.n, () => withTempo(tempo, () => showSilent((ev as any)._silent)), at); } catch { /* the effects never stop the game */ }
   try { if (ev.k === 'object' && ev.at) releaseTile(String(ev.at)); else if (ev.k === 'explode' && ev.at) releaseCloud(ev); } catch { /* */ }
   // The turn intro (turnIntro.tsx) times enemy-turn banners on this clock instead of estimating. stream names whose
   // numbering n belongs to (FxLayer's stream key: 'cb|…' for a fight, 'st|…' for the area map).
@@ -1593,6 +1605,8 @@ export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number; 
   noteQueued(stream, Math.max(...evs.map((e) => e.n || 0)));
   if (opts.from == null) rangedBatch(evs, stream); // fx/ranged.ts: tag the batch's techniques in order (a new fight forgets the last)
   faithBatch(evs); // fx/faith.ts: each Chaplain moment tied to the unit it landed on (a data row's fx is sent at its holder)
+  figmentBatch(evs); // fx/figments.ts: a Figment's ordered move (Redraw, Interpose) marked from its row's fx
+  silentBatch(evs); // fx/silent.ts: an HP change no event draws a number for gets its number (no silent heal or damage)
   // A Miracle is a fixed hold, never compressed or skipped (everyone in the room sees the god answer, even in a backlog
   // or a decided fight), and what follows it (its effects) starts as its cut-in lands: Leon's order, "the screen zooms
   // to the map, then the miracle happens". What came before it plays first as usual (a decided fight skips it: the

@@ -17,7 +17,7 @@
 // enemy (shape, not colour alone). Still one layer, still no pointer, still not an effect (fx/**). The layer sits ABOVE
 // the tokens (z-index 3; a token is 2) so the mark bridges the two rings instead of hiding under them; a line never
 // reaches a face (a far line stops at the rim, the mark's ends sit on the ring).
-import { tieLines, type TieLine } from '@engine';
+import { tieLines, tieKinds, condName, type TieLine } from '@engine';
 
 /** The grid's geometry (combat.js gridStyle): its padding, the label strip, a tile and the gap. */
 export const GRID_GEOM = { pad: 8, axis: 18, tile: 46, gap: 2 };
@@ -84,6 +84,22 @@ export function eyeLines(cb: any, meId: string, eyes: string[], ink: string): Ti
     const ux = (x2 - x1) / len, uy = (y2 - y1) / len;
     out.push({ key: 'eyes:' + id + ':' + meId, kind: 'eyes', side: 'foe', from: id, to: meId, x1: Math.round(x1 + ux * RIM), y1: Math.round(y1 + uy * RIM), x2: Math.round(x2 - ux * RIM), y2: Math.round(y2 - uy * RIM),
       ink, dash: EYE_LINE.dash, width: EYE_LINE.width, opacity: EYE_LINE.opacity, cls: '', mark: false });
+  }
+  return out;
+}
+
+/** The ties a unit holds, in words for its token card (0.32: "Bonded to Gun"): each line kind's mark condition's name
+ *  (conditions.json), then the unit at the other end. Only kinds that draw a line on the map (the same ties the map
+ *  shows); fog has already dropped what this side can't see. */
+export function tieWords(cb: any, id: string): string[] {
+  let all: TieLine[] = []; try { all = cb ? tieLines(cb) : []; } catch { all = []; }
+  const out: string[] = [], name = (uid: string) => String((cb.units || []).find((x: any) => x.id === uid)?.name || '');
+  for (const t of all) {
+    if (t.from !== id && t.to !== id) continue;
+    const k: any = tieKinds().find((x: any) => x.id === t.kind); if (!k?.line) continue;
+    const word = k.mark ? condName(k.mark) : String(k.id);
+    const other = name(t.from === id ? t.to : t.from); if (!other) continue;
+    const line = word + ' to ' + other; if (!out.includes(line)) out.push(line);
   }
   return out;
 }

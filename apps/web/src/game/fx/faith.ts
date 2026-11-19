@@ -20,9 +20,11 @@
 //                line, the pull-away and the zoom to where it lands, the effect, then a box of what it did (~6 s, skippable)
 // Fog: every map effect goes through the kit's at() (null where the viewer can't see); a Miracle's answer is heard by
 // everyone. Reduce motion: still marks and short fades, no rays or particles.
-import { FAITH_PATRON, FAITH_RULES, FAITH_TAG, type FxEvent } from '@engine';
+import { CLASS, FAITH_PATRON, FAITH_RULES, FAITH_TAG, WHISPER, type FxEvent } from '@engine';
+import { thread, windUp } from './figments';
+import { elementId } from './elements';
 import { reducedMotion, type Sfx } from '../sfx';
-import { type Pt, anim, after, burst, floatText, put, ring, svg } from './dom';
+import { type Pt, anim, after, burst, floatText, fxMarker, put, ring, svg } from './dom';
 import { FAITH_GOLD, FAITH_INK, accentOf, patronFace, patronMarkUri, witnessedUri, vowIconUri, prayerIconUri } from '../faithArt';
 import { cutInTiming, miracleCutIn, playIntervention, showCutIn } from '../cutIn';
 
@@ -40,6 +42,8 @@ export interface FaithKit {
   nameOfChar?: (charId: string | null | undefined) => string | undefined;
   /** Can the viewer see this tile (fog)? */
   visible?: (key: string) => boolean;
+  /** A unit's side (a prayer's light lifts an ally and jolts a foe). */
+  sideOf?: (unitId: string | null | undefined) => string | null;
   /** A skipped cut-in moves the effects queue up by ms (fx/play.ts hurryFx). */
   hurry?: (ms: number) => void;
 }
@@ -177,11 +181,63 @@ export function faithBatch(evs: any[]): void {
     else if (e.k === 'ward_seal') { const b = back(i, (x) => x.k === 'boon' && x.word === 'ward'); if (b) { e._on = { target: b.target, at: b.at, amount: b.amount }; b._seal = 1; } }
     else if (e.k === 'holy_dread') { const c = back(i, (x) => x.k === 'cond' && x.id === 'shaken'); if (c) e._on = { target: c.target, at: c.at, resisted: !!c.resisted }; }
     else if (e.k === 'last_rites') { const p = fwd(i, (x) => x.k === 'prayer' && x.target) || back(i, (x) => x.k === 'prayer' && x.target); if (p) e._on = { target: p.target }; }
+    else if (e.k === 'prayer' && !e._hits) prayerTies(evs, i);
   }
+}
+/** A prayer's entry in data (patrons.json): a Whisper by its id, a Hymn or the Miracle by the patron's own rows. */
+export function prayerData(e: { kind?: string; id?: string; patron?: string | null }): any {
+  // an id may come as the patron's key ("old_overcast.thunderclap", the action's own) or bare
+  const raw = String(e.id || ''), dot = raw.indexOf('.'), id = dot >= 0 ? raw.slice(dot + 1) : raw, pat = String(e.patron || (dot >= 0 ? raw.slice(0, dot) : ''));
+  if (e.kind === 'whisper') return (WHISPER as any)[id] || null;
+  const p: any = (FAITH_PATRON as any)[pat]; if (!p) return null;
+  if (e.kind === 'miracle') return p.miracle && (!id || p.miracle.id === id) ? p.miracle : null;
+  return (p.hymns || []).find((h: any) => h.id === id) || null;
+}
+/** The element of a prayer's damage (its data's damage_type, as the elements read it), or null for plain light. */
+export function prayerElement(entry: any): string | null {
+  for (const x of entry?.effects || []) if (x && x.damage_type) { const el = elementId(x.damage_type); return el === 'raw' ? null : el; }
+  return null;
+}
+/** Does the prayer's data wound (an HP change below zero, or a damage op)? Its light is the patron's then, cracked. */
+export const prayerWounds = (entry: any): boolean => (entry?.effects || []).some((x: any) => (x?.stat === 'hp' && Number(x.value) < 0) || /damage|execute/.test(String(x?.op || '')));
+const TILE = /^\d+,\d+$/;
+/** Ties a prayer to what it did (pure; faithBatch): every unit the batch's effects land on until the next action (its
+ *  targets: _hits, the units its light goes to), and the prayer's element (its data's damage_type) onto its wounds, so
+ *  they look and sound like it (a hurt's own element wins). */
+function prayerTies(evs: any[], i: number) {
+  const e = evs[i], entry = prayerData(e), el = prayerElement(entry), hits: string[] = [];
+  const add = (id: unknown) => { const s = id == null ? '' : String(id); if (s && s !== e.unit && !hits.includes(s)) hits.push(s); };
+  if (e.target && !TILE.test(String(e.target))) add(e.target); // a tile prayer's target is its tile
+  for (let j = i + 1; j < evs.length; j++) {
+    const x = evs[j]; if (!x) continue;
+    if (x.k === 'prayer' || x.k === 'turn' || x.k === 'shot' || x.k === 'melee' || x.k === 'move') break;
+    if (x.k === 'hurt' || x.k === 'heal' || x.k === 'boon' || x.k === 'shove' || (x.k === 'cond' && x.target !== e.unit)) { add(x.target); e._effect = 1; }
+    if (x.k === 'hurt' && el && !x.element) { x.element = el; x._prayer = 1; }
+  }
+  e._hits = hits; e._el = el; if (!e._effect) e._effect = 0;
 }
 /** A Ward that is the Chaplain's (faithBatch marked its boon): the boon draws nothing; the seal is drawn instead. */
 export const sealedBoon = (e: any): boolean => !!e && e.k === 'boon' && !!e._seal;
 
+/** How far a song reaches (tiles), read from the class move whose row sends this fx kind (classes.json): the first verse's
+ *  condition (on you and your side within N), and from the third verse the widest of its conditions. No number here. */
+export function songReach(k: string, verse: number): number {
+  const walk = (xs: any[], out: any[]) => { for (const x of xs || []) { if (!x || typeof x !== 'object') continue; out.push(x); walk(x.effects, out); } return out; };
+  let found: number | null = null;
+  const visit = (o: any, depth: number) => {
+    if (found != null || !o || typeof o !== 'object' || depth > 8) return;
+    if (Array.isArray(o.effects)) {
+      const all = walk(o.effects, []);
+      if (all.some((x) => x.fx && x.fx.k === k)) {
+        const within = all.filter((x) => x.op === 'condition' && x.targets?.of === 'self' && Number.isFinite(Number(x.targets?.within))).map((x) => Number(x.targets.within));
+        if (within.length) { found = verse >= 3 ? Math.max(...within) : within[0]; return; }
+      }
+    }
+    for (const v of Array.isArray(o) ? o : Object.values(o)) visit(v, depth + 1);
+  };
+  visit(CLASS, 0);
+  return found ?? 1;
+}
 /** An SVG line drawn by stroke-dashoffset (the light of a prayer travelling). */
 function lightLine(a: Pt, b: Pt, color: string, ms: number, o: { width?: number; delay?: number; jag?: boolean } = {}) {
   const run = () => {
@@ -194,6 +250,13 @@ function lightLine(a: Pt, b: Pt, color: string, ms: number, o: { width?: number;
     const path = s.querySelector('path'); if (path) anim(path, [{ strokeDashoffset: String(len * 1.4) }, { strokeDashoffset: '0', offset: 0.6 }, { strokeDashoffset: '0', opacity: 0 }], { duration: ms + 300, easing: 'ease-out', fill: 'forwards' });
   };
   if (o.delay) after(run, o.delay); else run();
+}
+/** A bolt from above onto a point: a jagged white line with a glow in the ink, then a flash (the storm's prayers). */
+function bolt(q: Pt, ink: string) {
+  const top = { x: q.x + (Math.random() - 0.5) * q.s * 0.6, y: Math.max(4, q.y - q.s * 3.2), s: q.s };
+  lightLine(top, { ...q, y: q.y - q.s * 0.15 }, '#FFFFFF', 90, { jag: true, width: 2.5 });
+  lightLine({ ...top, x: top.x + 3 }, { ...q, y: q.y - q.s * 0.1 }, ink, 110, { jag: true, width: 1.5, delay: 20 });
+  if (!reducedMotion()) burst('glow', q, q.s * 1.1, 260, { color: '#FFFFFF', blend: 'screen', delay: 80 });
 }
 /** The acting token's own move: a bow (dip), a raised hand (rise and hold), a sway, a step toward. Off under Reduce motion. */
 function tokenMove(tok: HTMLElement | null | undefined, how: 'bow' | 'raise' | 'sway' | 'tilt', ms = 220) {
@@ -243,13 +306,38 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
   // In the story the events name characters (the area map's tokens are theirs): a unit's tile, else the character's.
   const posAny = (id: string | null | undefined) => posOf(id) || (K.posOfChar ? K.posOfChar(id) : undefined);
   const where = (e: any) => at(e.at || posAny(e.unit) || posAny(e.target));
-  const targetAt = (e: any) => at(e.targetAt || posAny(e.target) || e.at);
+  const targetAt = (e: any) => at(e.targetAt || (TILE.test(String(e.target || '')) ? e.target : posAny(e.target)) || e.at); // a tile prayer's target is its tile (the engine sends it as target)
   /** The one who prays: their own tile (where the icon or the face goes over the head). */
   const prayerAt = (e: any) => at(e.at || posAny(e.unit));
   const charAt = (e: any) => at(e.at || (K.posOfChar ? K.posOfChar(e.char) : null));
   /** The Chaplain's patron (a row's fx names its holder) and its light: the data's accent. */
   const patronOf = (e: any): string | null => e.patron || (K.patronOfUnit ? K.patronOfUnit(e.target || e.unit) : null);
   const accOf = (pat: string | null) => accentOf(pat, pat ? (FAITH_PATRON as any)[pat]?.accent : null);
+  /** Where a prayer lands: each unit it touched answers on its own token (an ally rises in the light, a foe jolts back
+   *  from it), a ring in the light closes on it; a storm's wound is a bolt from above (its element: the hurt plays the
+   *  impact and its sound). Nothing touched but a state: the prayer's own name (its data's `name`) where it lands. */
+  const landOn = (e: any, from: Pt | null, ink: string, delay: number) => {
+    const hits: string[] = Array.isArray(e._hits) ? e._hits : [], entry = prayerData(e);
+    if (e._el === 'shock' && hits.length) play('thunder' as Sfx, at(posAny(hits[0])), { gain: 0.9, delay }); // the storm's prayers: thunder as the bolts land
+    const side = (id: string) => (K.sideOf ? K.sideOf(id) : null), mine = K.sideOf ? K.sideOf(e.unit) : null;
+    hits.forEach((id, i) => {
+      const q = at(posAny(id)); if (!q) return;
+      after(() => {
+        const tt = K.tokOf ? K.tokOf(id) : null, foe = !!mine && !!side(id) && side(id) !== mine;
+        if (from && hits.length > 1 && (from.x !== q.x || from.y !== q.y)) thread({ ...from, y: from.y - from.s * 0.4 }, q, 180, { faint: true, ink, core: '#FFF7DC' });
+        fxMarker(q, 'data-phc-prayer-land', id);
+        if (e._el === 'shock') bolt(q, ink);
+        if (!reducedMotion()) ring(q, ink, 520, { from: 1.4, to: 0.85, width: 3 });
+        if (tt && !reducedMotion()) anim(tt, foe
+          ? [{ filter: 'none', translate: '0 0' }, { filter: 'brightness(1.6) drop-shadow(0 0 6px ' + ink + ')', translate: (from && q.x !== from.x ? (q.x > from.x ? 4 : -4) : 0) + 'px -1px', offset: 0.3 }, { filter: 'none', translate: '0 0' }]
+          : [{ filter: 'none', translate: '0 0' }, { filter: 'brightness(1.45) drop-shadow(0 0 8px ' + ink + ')', translate: '0 -4px', offset: 0.35 }, { filter: 'brightness(1.2) drop-shadow(0 0 4px ' + ink + ')', translate: '0 -3px', offset: 0.7 }, { filter: 'none', translate: '0 0' }], { duration: 620, easing: 'ease-out' });
+      }, delay + i * 60);
+    });
+    // a state only (Resupply, Dig In, Hearthlight, Foreknowing...): its name over the unit it is on, or over the one who prays
+    if (!e._effect && entry?.name) {
+      const q = at((TILE.test(String(e.target || '')) ? e.target : posAny(e.target)) || e.targetAt || e.at || posAny(e.unit)); if (q) fxMarker(q, 'data-phc-prayer-name', String(entry.name)); if (q) floatText(String(entry.name).toUpperCase(), { ...q, y: q.y + q.s * 0.55 }, FAITH_INK, { small: true, delay: delay + 80 });
+    }
+  };
   return {
     // Whisper (spec 2.1): a soft chime, the Whisper's icon rising over the head of the one who prays, a small gold ray
     // where it lands. Hymn (spec 2.2): a choir swell, the patron's face over the head of the one who prays, framed in the
@@ -257,13 +345,19 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
     prayer(e: any) {
       const p = targetAt(e), from = prayerAt(e) || p, acc = accentOf(e.patron, e.accent || (FAITH_PATRON as any)[e.patron]?.accent);
       const tok = K.tokOf ? K.tokOf(e.unit, e.at) : null, apart = !!p && !!from && (p.x !== from.x || p.y !== from.y);
+      // 0.32: the Figments' pieces (fx/figments.ts): the caster's wind-up in the patron's light, toward where it lands,
+      // then every unit the prayer touched (faithBatch's _hits) lit, lifted or jolted on its own token as the light
+      // arrives; a prayer that changes only a state says its name where it lands.
+      const fk = { at, tokOf: (id: string | null | undefined, fb?: string) => (K.tokOf ? K.tokOf(id, fb) : null) };
+      if (from && e.kind !== 'miracle') windUp(fk, e.unit || null, e.at || posAny(e.unit), p && apart ? p : null, e.kind === 'whisper' ? 150 : 220, e.kind === 'whisper', e.kind === 'whisper' ? FAITH_GOLD : acc);
+      if (e.kind !== 'miracle') landOn(e, from, e.kind === 'whisper' ? FAITH_GOLD : acc, e.kind === 'whisper' ? 400 : 520);
       if (e.kind === 'whisper') {
         // prayer 2.0: the one who prays bows first, then the light travels to the target and its ring lands
         tokenMove(tok, 'bow', 180);
         play('crystal', from || p, { rate: 1.8, gain: 0.45 });
         if (from) { whisperOverHead(e.id, from); rays(from, FAITH_GOLD, 3, 520); }
         if (apart && from) {
-          const rebuke = e.id === 'rebuke';
+          const rebuke = prayerWounds(prayerData(e));
           lightLine({ ...from, y: from.y - from.s * 0.4 }, p!, rebuke ? acc : FAITH_GOLD, 220, { delay: 180, jag: rebuke, width: rebuke ? 2 : 1.5 });
           if (!reducedMotion()) ring(p!, rebuke ? acc : FAITH_GOLD, 500, { from: 0.3, to: 0.8, width: 2, delay: 400 });
           if (rebuke) {
@@ -367,13 +461,13 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
       tokenMove(K.tokOf ? K.tokOf(e.target, e.at) : null, 'sway', 360);
       play('crystal', p, { rate: 1 + 0.12 * (Number(e.verse) || 1), gain: 0.35 });
       notes(p, acc, 4, 1100);
-      songGround(p, Number(e.verse) >= 3 ? 3 : 2, acc, 1700);
+      songGround(p, songReach(e.k, Number(e.verse) || 1), acc, 1700);
       if (Number(e.verse) >= 3 && !reducedMotion()) ring(p, acc, 700, { from: 0.6, to: 1.5, width: 2 });
       floatText(chaplainWord(e), { ...p, y: p.y - p.s * 0.6 }, FAITH_INK, { delay: 160 });
     },
     canticle_break(e: any) {
       const p = where(e), acc = accOf(patronOf(e)); if (!p) return;
-      songGround(p, 2, acc, 500, true);
+      songGround(p, songReach('canticle', 1), acc, 500, true);
       if (!reducedMotion()) for (let i = 0; i < 3; i++) { const a = -Math.PI / 2 + (i - 1) * 0.7; lightLine({ ...p, y: p.y - p.s * 0.4 }, { x: p.x + Math.cos(a) * p.s * 0.7, y: p.y - p.s * 0.4 + Math.sin(a) * p.s * 0.7, s: p.s }, '#A3AEC2', 120, { width: 1.5 }); }
       play('hit_metal', p, { rate: 0.6, gain: 0.35 });
       floatText(chaplainWord(e), { ...p, y: p.y - p.s * 0.6 }, '#A3AEC2', { small: true, delay: 120 });
@@ -411,6 +505,9 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
     // god calling the devoted by name; the view lands on the spot and the answer pours onto its area (the queue's next
     // events are the Miracle's own effects, which play as it lands); then the box of what it did.
     miracle(e: any) {
+      // the one who prays: the hand raised and the wind-up in the patron's light, as the god answers
+      const cp = at(e.at || posAny(e.unit));
+      if (cp) { tokenMove(K.tokOf ? K.tokOf(e.unit, e.at) : null, 'raise', 1200); windUp({ at, tokOf: (id, fb) => (K.tokOf ? K.tokOf(id, fb) : null) }, e.unit || null, e.at || posAny(e.unit), null, 320, false, accentOf(e.patron, (FAITH_PATRON as any)[e.patron]?.accent)); }
       const o = miracleCutIn(e, { nameOf: K.nameOfChar, visible: (k) => (K.visible ? K.visible(k) : !!at(k)), posOfChar: K.posOfChar }), acc = o.accent;
       const area: string[] = Array.isArray(e.area) && e.area.length ? e.area : o.focus && o.focus !== 'map' ? [o.focus] : [];
       showCutIn({

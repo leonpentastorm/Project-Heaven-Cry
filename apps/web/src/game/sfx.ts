@@ -28,7 +28,10 @@ export type CombatSfx = 'gun_pistol' | 'gun_revolver' | 'gun_magnum' | 'gun_smg'
   | 'sigil_draw' | 'sigil_evoke' | 'sigil_core' | 'sigil_overload' | 'soul_hold' | 'heartbeat' | 'soul_release' | 'crystal' | 'vent'
   | ElementSfx | WordSfx | SoulSfx | FeelSfx | FaithSfx;
 /** Faith 2.2 (rules 1.6.3): the Miracle cut-in's heavenly sting (game/cutIn.ts). */
-export type FaithSfx = 'miracle_sting';
+export type FaithSfx = 'miracle_sting'
+  // 0.32 effects lane: the VICTORY fanfare and the DEFEAT sting (rules.json combat.cards.end), LEVEL UP's sting, a heal's
+  // shimmer, a storm prayer's thunder (fx/faith.ts).
+  | 'victory_fanfare' | 'defeat_sting' | 'level_up' | 'heal_shimmer' | 'thunder';
 /** The eight feeling families (data/feelings.json `families`). */
 export type FeelingFamily = 'warm' | 'cold' | 'sharp' | 'low' | 'bright' | 'hollow' | 'wild' | 'holy';
 export const FEELING_FAMILIES: FeelingFamily[] = ['warm', 'cold', 'sharp', 'low', 'bright', 'hollow', 'wild', 'holy'];
@@ -105,6 +108,8 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   sighted: '/sfx/select_001.ogg',
   // Faith 2.2: the Miracle cut-in's sting (leohpaz's revive, CC BY 4.0: trimmed to its first rising run, mono, levelled).
   miracle_sting: CB('miracle_sting'),
+  // 0.32: sourced CC0 (credits in sfxCredits.ts; trimmed, faded, mono, levelled to -16 LUFS with a -3 dBFS limiter)
+  victory_fanfare: CB('victory_fanfare'), defeat_sting: CB('defeat_sting'), level_up: CB('level_up'), heal_shimmer: CB('heal_shimmer'), thunder: CB('thunder'),
 };
 /** Combat sounds load when a game is on screen (preloadCombatSfx), not on the title screen's first key press. */
 const isCombatFile = (f: string) => f.startsWith('/sfx/cb/');
@@ -119,7 +124,7 @@ const STAND_IN: Partial<Record<CombatSfx, Sfx>> = {
   sg_trap_set: 'draw', sg_trap_sprung: 'evoke', sg_light: 'start', sg_turret: 'draw', sg_turret_break: 'hit', sg_fizzle: 'error', sg_cleanse: 'draw',
   sg_join: 'toggle', sg_inflect: 'start', sg_study: 'start', spotlight_tear: 'melee',
   soul_breath_in: 'outburst', soul_breath_out: 'release', soul_sigh: 'release', soul_gasp: 'miss', soul_thump: 'outburst', soul_choir: 'outburst', soul_crack: 'short',
-  miracle_sting: 'start',
+  miracle_sting: 'start', victory_fanfare: 'start', defeat_sting: 'back', level_up: 'start', heal_shimmer: 'start', thunder: 'overload',
 };
 /** The mix: how loud each event sits under the master UI volume. */
 const MIX: Partial<Record<Sfx, number>> = {
@@ -140,7 +145,7 @@ const MIX: Partial<Record<Sfx, number>> = {
   // Feelings: the pump layer sits under the thump (0.55); residue stings are quieter still.
   feel_pump_warm: 0.4, feel_pump_cold: 0.4, feel_pump_sharp: 0.38, feel_pump_low: 0.45, feel_pump_bright: 0.45, feel_pump_hollow: 0.45, feel_pump_wild: 0.4, feel_pump_holy: 0.4,
   feel_residue_warm: 0.28, feel_residue_cold: 0.28, feel_residue_sharp: 0.3, feel_residue_low: 0.3, feel_residue_bright: 0.28, feel_residue_hollow: 0.3, feel_residue_wild: 0.3, feel_residue_holy: 0.3,
-  feel_unlock: 0.5, feel_revert: 0.35, feel_tick: 0.3, spotlight_tear: 0.55, miracle_sting: 0.55, sighted: 0.16,
+  feel_unlock: 0.5, feel_revert: 0.35, feel_tick: 0.3, spotlight_tear: 0.55, miracle_sting: 0.55, sighted: 0.16, victory_fanfare: 0.5, defeat_sting: 0.45, level_up: 0.45, heal_shimmer: 0.35, thunder: 0.5,
   sigil_draw: 0.3, sigil_evoke: 0.4, sigil_core: 0.35, sigil_overload: 0.45, soul_hold: 0.35, heartbeat: 0.55, soul_release: 0.5, crystal: 0.35, vent: 0.3, draw: 0.35, evoke: 0.45, overload: 0.45, outburst: 0.45, release: 0.5, short: 0.55, shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5, stamp: 0.75 };
 const files = (s: Sfx) => { const f = SFX_FILES[s]; return f ? (Array.isArray(f) ? f : [f]) : []; };
 

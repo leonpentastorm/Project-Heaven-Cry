@@ -11,6 +11,8 @@
 // 2 STARTING BOON (three large cards, centred, offered by what the loadout holds, with CARRYING under them, Free | Bought).
 // Every number and reason is the engine's (`loadoutView`: priceOf, the gear preview, the reducer's own refusals tried on
 // a copy, startOffer); every action is `run/loadout`, `run/boon` or `run/ready`.
+import { VowOnEnter } from './VowPopup';
+import { vowScope } from './standingVow';
 import React from 'react';
 import { act, getState } from './store';
 import { loadoutView, type LoadoutCardV, type LoadoutViewV, type CompareRowV, type CarryRowV } from '@engine';
@@ -255,6 +257,7 @@ export function LoadoutScreen() {
   const pill = (on: boolean): React.CSSProperties => ({ minHeight: 42, padding: '0 16px', borderRadius: 10, border: 0, background: on ? I.text : I.raised, color: on ? I.ground : I.muted, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: on ? 'pointer' : 'default' });
   return (
     <div className="phc-camp" data-phc-camp="" style={{ flex: '1 0 auto', display: 'flex', flexDirection: 'column', background: I.ground, color: I.text, fontFamily: "'Chakra Petch', sans-serif" }}>
+      <VowOnEnter scope={vowScope(g as any)} />{/* 0.32 (to-do F): entering the mode, a Faithful character swears a vow (game/VowPopup.tsx) */}
       <style>{CSS}</style>
       {/* the place header (PlaceBar, the visibility standard): sticky at the top of the middle column's scroll; rules
           rules 1.55 item 49: it is the checklist of what to do here, and the button that moves on */}
