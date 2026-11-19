@@ -1326,7 +1326,7 @@ export class MainLogic extends DCLogic {
       const MN = magicNow(g, c);
       for (const [id, n] of Object.entries(MN.conds)) if (n > 0) add(condName(id).toUpperCase(), n + (n === 1 ? ' round' : ' rounds') + ' left.', !['guarded', 'inspired'].includes(id));
       // 0.30.0: in a fight, every shield and the Guard (the engine's shieldsView, its words); on the story map, the one shield kept there
-      if (MN.cu) { const sv = shieldsView(g.combat, MN.cu, null, fmtNum); if (sv.chip || sv.guard) add(sv.chip || sv.head, [sv.words, sv.absorb, sv.absorbDrop].filter(Boolean).join('. ') + '.', false); }
+      if (MN.cu) { const sv = withGame(g, () => shieldsView(g.combat, MN.cu, null, fmtNum)); if (sv.chip || sv.guard) add(sv.chip || sv.head, [sv.words, sv.absorb, sv.absorbDrop].filter(Boolean).join('. ') + '.', false); }
       else if (MN.shield > 0) add('SHIELD ' + fmtNum(MN.shield), 'Soaks up the next ' + fmtNum(MN.shield) + ' damage.', false);
       if (MN.held) add('HOLDING AN OUTBURST', 'Stage ' + MN.held.stage + ': it grows each round (and adds Strain) until you release it.', false);
       if (MN.strain > 0) add('STRAIN ' + MN.strain + ' / ' + strainLimit(c), 'Past the limit, the heart shorts out. It eases by 1 after a round without casting and resets after a fight.', MN.strain >= strainLimit(c));
