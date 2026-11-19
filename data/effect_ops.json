@@ -5006,7 +5006,8 @@
           "vcharge",
           "shadow",
           "ledger",
-          "devotion_xp"
+          "devotion_xp",
+          "strain"
         ]
       },
       "actor_res": {
@@ -5027,7 +5028,8 @@
           "vcharge",
           "shadow",
           "ledger",
-          "devotion_xp"
+          "devotion_xp",
+          "strain"
         ]
       },
       "target_res": {
@@ -5048,7 +5050,8 @@
           "vcharge",
           "shadow",
           "ledger",
-          "devotion_xp"
+          "devotion_xp",
+          "strain"
         ]
       },
       "self_has_res": {
@@ -5069,7 +5072,8 @@
           "vcharge",
           "shadow",
           "ledger",
-          "devotion_xp"
+          "devotion_xp",
+          "strain"
         ]
       },
       "self_lacks_res": {
@@ -5090,7 +5094,8 @@
           "vcharge",
           "shadow",
           "ledger",
-          "devotion_xp"
+          "devotion_xp",
+          "strain"
         ]
       },
       "patron": {

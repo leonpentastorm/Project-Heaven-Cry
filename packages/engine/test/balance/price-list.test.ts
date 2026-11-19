@@ -293,7 +293,7 @@ const MOVE_VALUE: Record<string, (m: any) => Val> = {
   'medic.field_surgery': () => ({ how: 'out of a fight only', cur: 'upkeep', partial: true }),
   'bard.rally': () => ({ x: K.ALLIES * hpIn(20 * REF.healing), how: 'every ally within 4 tiles heals 20 × Healing given (' + K.ALLIES + ' allies counted, all of them hurt; the Bard is not healed) and loses Fear and Shaken', cur: 'HP restored' }),
   'channeler.shape': () => ({ how: 'the free Pump each turn steps +0.2 more on a Damage Outburst', cur: 'damage dealt', partial: true }),
-  'channeler.iron_heart': () => ({ how: 'once a fight, Strain stops at the limit instead of going over', cur: 'upkeep', partial: true }),
+  'channeler.iron_heart': () => ({ how: 'once a fight, on Mana Shock, 2 Strain off', cur: 'upkeep', partial: true }),
   'channeler.storm_front': () => ({ how: 'a Bolt or Lance arcs to up to 2 more enemies (up to ×3 the damage) for 10 MP', cur: 'damage dealt', partial: true }),
   'channeler.occult_library': () => ({ how: 'one more ready design and one more tone', cur: 'upkeep', partial: true }),
   'channeler.heart_surge': () => ({ how: 'a Release fires one stage higher (×2.6 past stage 4) for double Strain', cur: 'damage dealt', partial: true }),

@@ -2219,13 +2219,18 @@
               "name": "Iron Heart",
               "ap_cost": 0,
               "uses": "per_combat",
-              "text": "Once a fight: Strain over your limit stops at it",
+              "text": "Once a fight, on Mana Shock: {=effects.0.value} Strain",
               "effects": [
                 {
                   "op": "resource",
+                  "when": "mana_shock",
                   "resource": "strain",
-                  "set": "limit",
-                  "when": "strain would pass the limit"
+                  "value": -2,
+                  "limit": {
+                    "per": "per_combat",
+                    "n": 1
+                  },
+                  "say": "Iron Heart: {self}'s heart steadies ({gain} Strain)."
                 }
               ],
               "adjudication": "engine",
