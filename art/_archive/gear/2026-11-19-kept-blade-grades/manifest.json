@@ -560,6 +560,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hatchet--fine",
+      "path": "art/icons/gear/weapon-hatchet--fine.png",
+      "sha256": "976dda359eb94adec3ddc828079cf2b65da366bd07d647d2acf1cfc71039f888",
+      "label": "Hatchet — Fine",
+      "family": "weapon-hatchet",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hatchet--fine.png",
+        "sha256": "5caf62d198ac2e4a55310cced0781d0c57ceb461941c1c242f3f89a1499cbdcf"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hatchet--fine.png",
+        "sha256": "976dda359eb94adec3ddc828079cf2b65da366bd07d647d2acf1cfc71039f888"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hatchet--fine.txt",
+        "sha256": "918c42cc1f19805d7153634139fa78cd6e48a06bb5f3d76645862ec115b51473"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-hatchet.png",
+          "sha256": "a69bacdfb22ca5070e0e1a1edd6697ba40992bb95dc0851be4b4d35dc72947ac"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hatchet--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-hatchet--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-hatchet--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-hatchet--fine.png"
+      },
+      "export_hashes": {
+        "256": "7cd5f5c165446b239ff0cfab8bf2658bb6cb175f46278802ccb16db2611a9976",
+        "128": "facc8437a4674a0e9bcc7a369f835664aafd1a91be6e66cb10bdacf93f25423b",
+        "64": "a8410422ff6abe62a1d29ab54c5f5c2f90961e318960aff45a3ba1cb7dddc878",
+        "32": "4baaa148e19f7210fb45a051d45c04b2c66560abd70f5c750b83c3c33ddea015"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-hatchet",
+      "outline": {
+        "solid_alpha_iou": 0.9782863554305689,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 11
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
