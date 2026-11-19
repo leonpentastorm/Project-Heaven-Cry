@@ -13222,5 +13222,5 @@ Every new number here is PROVISIONAL and a data field.
     run, `asHit`, already run for the Momentum it leaves) and lists, in one line "On a hit: ...", every item whose
     hit-time effect ran for the attacker on that copy, by the row's label or the item's name (Smite's blow; Smite's
     Judged row is labelled "Judged"). One general reader, no item named in code: a rider spent for the turn (Smite once
-    a turn) drops off the line. The dice of the copy are the copy's own: an Atheist's roll for Smite on the copy is not
-    the real roll.
+    a turn) drops off the line. A rider that rolls (an Atheist's Smite) is rolled on the copy: the line can differ from
+    what the real attack's roll gives.
