@@ -18770,6 +18770,29 @@
         1254
       ],
       "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/19-armour-red_thread_gloves.png"
+    },
+    "weapon-homecoming": {
+      "label": "Homecoming (harpoon gun)",
+      "path": "art/icons/gear/weapon-homecoming.png",
+      "sha256": "17ef98574dc0267f53a4c9bfb63fd3879cc64f3b7bb934dbdd2285c73652e339",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-homecoming.png",
+        "128": "art/icons/gear/exports/128/weapon-homecoming.png",
+        "64": "art/icons/gear/exports/64/weapon-homecoming.png",
+        "32": "art/icons/gear/exports/32/weapon-homecoming.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-08-uniques",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/11-weapon-homecoming.png"
     }
   },
   "survival_art": {

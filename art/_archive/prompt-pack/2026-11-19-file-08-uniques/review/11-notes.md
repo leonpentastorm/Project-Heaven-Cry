@@ -1,0 +1,1 @@
+Homecoming reads as a short river-dock prop at 32 px. The water line reaches the head from the reel, and the key is attached to its handle. The selected candidate uses a steeper diagonal than the brief describes.

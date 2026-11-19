@@ -3148,14 +3148,15 @@ e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4  art/_archive/p
 c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/perks/wick/replaced/2026-11-16/shrug-it-off.png
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
-02e020dd0c9d632cb76472e682ad4ec30dac6bfafceef622142cc71f6420f024  art/_archive/prompt-pack/2026-11-19-file-08-uniques/HANDOFF.md
+6d5545f4ce0393e7f7d18a257b3d53e311808362d4a7b650ee6cecd7ff9239e1  art/_archive/prompt-pack/2026-11-19-file-08-uniques/HANDOFF.md
 1033e2fceba07707e975ee4a70d6cf240ae46c5ba7b6ba197d609f872ff74eb6  art/_archive/prompt-pack/2026-11-19-file-08-uniques/checkpoint.py
-ca126037527a4c62c6db003264bbbe0f9c27a396449e9069216097531c4cfb56  art/_archive/prompt-pack/2026-11-19-file-08-uniques/claim.json
+61dfa17e0d4c16137755beccb5bf50580d3393239147f2999880b885175d7609  art/_archive/prompt-pack/2026-11-19-file-08-uniques/claim.json
 ee64c427044997370fbe0d425f3f9c5da8e1b8ccdc38e47f8c7ff2b7f71976e3  art/_archive/prompt-pack/2026-11-19-file-08-uniques/deliver.py
 8d2cf8619add04b95accc0ce73efb416ea47099502ba5cfa9ab62ecd7a1c8761  art/_archive/prompt-pack/2026-11-19-file-08-uniques/generation-failures/failure-10-1795073291201.json
 a01dae189c0cb04e5c92ecf766e4faa479cf99627688cf2ccb22cf810ee283ce  art/_archive/prompt-pack/2026-11-19-file-08-uniques/generation-failures/failure-2-1795073048987.json
 be1f29679b4e9985951d4d487dd3920dc6278b42fec42c6cb388acbea1584b9b  art/_archive/prompt-pack/2026-11-19-file-08-uniques/generation-failures/failure-8-1795073419258.json
-448d2ca0ffca1155e34acf3c58fe2df4328024c2a507639df6b6371178377883  art/_archive/prompt-pack/2026-11-19-file-08-uniques/manifest.json
+c87412fd4ecba91e7338d90a9afc78deae01e928e0552ba6b7f43b2352b44815  art/_archive/prompt-pack/2026-11-19-file-08-uniques/manifest.json
+34a5ec73a7fb39e55b3bad459000361511943a86a24bfbd9f0c57143c4fb1988  art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/11-weapon-homecoming.png
 133ca8c3f98f6620c59b95bb974655d7fc2f26b3dc8e9ba9d8e45b942c967dfc  art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/17-shield-outpost_wall.png
 b23d882950cfb6a2917a444b45d3bcd7c828cb0968763e52da718c2e1bf4992a  art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/19-armour-red_thread_gloves.png
 564e67e453f84338116444b832332a5258ff6394f86da5675071ea6370a38136  art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/20-armour-hearth_coat.png
@@ -3163,6 +3164,7 @@ b23d882950cfb6a2917a444b45d3bcd7c828cb0968763e52da718c2e1bf4992a  art/_archive/p
 0decd38b47011a608efcb1c96bf0f225511a9082549e2b35e2fa7731c4013049  art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/22-armour-spring_air.png
 9147fe290dbf22c69313a8a62e85bbe684ffc926f604de38600bdf3074f504fa  art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/23-armour-long_road.png
 03b601fcff960f462cf95d1fc7edf10d08121b866261ab0038e03783d2122bbd  art/_archive/prompt-pack/2026-11-19-file-08-uniques/queue.json
+89b94277ae2064526fe360db905bf2a72f8ed5fd64ac61ff09394475c6d39a71  art/_archive/prompt-pack/2026-11-19-file-08-uniques/records/11.json
 609a4806ce5925330fd77ea501e62a04917f0bf13b76d4869038fb75f4a9542b  art/_archive/prompt-pack/2026-11-19-file-08-uniques/records/17.json
 84d98e7a2c1ae9a2018b4fb7417b557de8eb574909de1669593f75d5a30eeb56  art/_archive/prompt-pack/2026-11-19-file-08-uniques/records/19.json
 5efb1923436856cb7219881c65274cc70a485e979c139e88bef97c8995729567  art/_archive/prompt-pack/2026-11-19-file-08-uniques/records/20.json
@@ -3175,6 +3177,8 @@ ddf1056d323795028ee1a520fbb4f6c4973ae55956f3d2720694764696896a47  art/_archive/p
 cc024eaa3bf410c53b9435a702d3cd0de08f8b5afcfff412a21fb2c63eeb88a1  art/_archive/prompt-pack/2026-11-19-file-08-uniques/rejected/19-thread-route/REVIEW.md
 0cacd54899bcd2ffc7a7b03783cfc54fe33a6be79186ba92133347c7e634dafd  art/_archive/prompt-pack/2026-11-19-file-08-uniques/rejected/19-thread-route/native.png
 6518086e6649d542bb492a605e15711b9ac574b83652fa1fb7097474a22dbd44  art/_archive/prompt-pack/2026-11-19-file-08-uniques/rejected/19-thread-route/result.json
+ae054dd249d7f89c8966a0eab3b5cfa6ed7299bd29f57f065dc6754a11684807  art/_archive/prompt-pack/2026-11-19-file-08-uniques/review/11-notes.md
+10e71f7585327d2d0c6433568a10c600deb34f8ac2d30090d97ba5250d6583c7  art/_archive/prompt-pack/2026-11-19-file-08-uniques/review/batch-11.jpg
 fda7a1e3d5e8fe1ca896a8d8eb90ed75072bb2e324b1101004444f038218aa3c  art/_archive/prompt-pack/2026-11-19-file-08-uniques/review/batch-17.jpg
 1fb4c62544ef753dfcdaea979f3c69fa2085baa89d2c2bbd17f135a49c395d75  art/_archive/prompt-pack/2026-11-19-file-08-uniques/review/batch-19.jpg
 17ac90d53e7b4ca2dceea0abef436bc4a6490ff146a61d53fc14be0e7c5b7e48  art/_archive/prompt-pack/2026-11-19-file-08-uniques/review/batch-20.jpg
@@ -4509,7 +4513,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-27d91f0535770afe7e4102248d7e7ac93ccc05430bb600cc8a99737d48a4180e  art/catalog.json
+d832e11d653d054bd2c802e1cee8e66cf2bbeb0719ef083c3effc28b2abf7ce1  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6245,6 +6249,7 @@ b11732d331ec7788914fd75d444ba9be453ca3ff4d332b91d4f4c8b5696f092f  art/icons/gear
 9d55ac4127a704698d29440fad7ebaf07f2b576223e2ebd657e7936e4855338e  art/icons/gear/exports/128/weapon-hellraiser_rotary.png
 8e2a79b67cf0d14f42999b4fe87521350b9142d68b59e5676b33c0a42b61adba  art/icons/gear/exports/128/weapon-hellraiser_service_rifle.png
 3dbac9dcf52cdd51abf628fb3e5ada6be2ac23ceb75679dd511335ac16558482  art/icons/gear/exports/128/weapon-hellraiser_servo_fist.png
+d4212e889a584fdb4673642b3d1ca06b524a41c5601c599963dae96796253bac  art/icons/gear/exports/128/weapon-homecoming.png
 16d3784208f905aeedde5c7e4e9bc8572e9948785160d58329c741b8656aba8d  art/icons/gear/exports/128/weapon-incendiary_grenade.png
 228bb3d71774b3219866c41706aa32e61a6012d2544418abab81a7fc5c9c0a15  art/icons/gear/exports/128/weapon-iron_mitts.png
 e291bf6e01fc33fa976bbb1509d63accaeac9d07d0ce514c73dd111f218b60bf  art/icons/gear/exports/128/weapon-katana.png
@@ -6424,6 +6429,7 @@ fad5f5a8b9247c75018bf2a178a5d43eb7d1a92c45d21d6fa957e365cd87f523  art/icons/gear
 0edfe496741fab14342450ab9f6976e1422488b350ac4bcd28d12d2cfa1649f3  art/icons/gear/exports/256/weapon-hellraiser_rotary.png
 4e35a35d5d76a358b65cb2633e3ea6eb38296271c29f26a73f1163d9922b4859  art/icons/gear/exports/256/weapon-hellraiser_service_rifle.png
 8d1239a986deb56135fff7e4e7f2309f0c4981dd46fdbf7fda38a9a11779101e  art/icons/gear/exports/256/weapon-hellraiser_servo_fist.png
+33b389778d84d8e6a966168bc6f5ce44fbe12aa37ea5757ece887821e08dd036  art/icons/gear/exports/256/weapon-homecoming.png
 aff848a26137b23eeb53c7e60e1f5f1dd0601ee651d02a5ce3ebcb2d010bfe29  art/icons/gear/exports/256/weapon-incendiary_grenade.png
 4f727e7341ffa78f24bf7d6445d72327391c406f95fedd5ae7c18b534150f99d  art/icons/gear/exports/256/weapon-iron_mitts.png
 28d035b478131d2378fb9ef32e8f0f2f42b2fdea8915b2fddd3af94b1c94573a  art/icons/gear/exports/256/weapon-katana.png
@@ -6603,6 +6609,7 @@ fb483729621c91f7de49b5fa0edf12a0e491cedb1f12f30dc0e8764b9e9285fd  art/icons/gear
 6c791a93c97d3a098e6213931c7ba0e9b44f73e3b837345ba21a0d22161020db  art/icons/gear/exports/32/weapon-hellraiser_rotary.png
 9dc0154085b79dc3b9893ecd693942893183b7f515ce3c3148248da82a91d966  art/icons/gear/exports/32/weapon-hellraiser_service_rifle.png
 e37b4e9dced028f483a36c748444ac92ea7264003a50244e966b30ef4970d1a7  art/icons/gear/exports/32/weapon-hellraiser_servo_fist.png
+1bccdefcb5ce533e408616ff0e3b6dda35f81d7eeff00543f5ec91736ec9c5e8  art/icons/gear/exports/32/weapon-homecoming.png
 8260390fea8adeda78dcc43bf4deed25849c7e7d8e77871c4303ee306a731fc4  art/icons/gear/exports/32/weapon-incendiary_grenade.png
 b076cc9500e17ba641dca02261038f6254a2866ae599a504686e0ba72cd48431  art/icons/gear/exports/32/weapon-iron_mitts.png
 fa574ecb10a082c4b19a525987527b0d637ef7c5089171811235c06c9193755d  art/icons/gear/exports/32/weapon-katana.png
@@ -6782,6 +6789,7 @@ dcbafca82b1053a75092d2153185cbe356b636441179ae4302a9327c58d30a23  art/icons/gear
 341badaf7a39c88c24295a9cb251c5be7d28463ac12226786298a2996831223b  art/icons/gear/exports/64/weapon-hellraiser_rotary.png
 cdfee57748224e91a01110a08420de365a1088e1cfcf76c7ba482faf4765dec0  art/icons/gear/exports/64/weapon-hellraiser_service_rifle.png
 ea4f07a5a9402f753d093dc19322caf185eb9255b83be09d5c8ab56f8efa9d39  art/icons/gear/exports/64/weapon-hellraiser_servo_fist.png
+e68a70adfec5b069fdf0abc1b115923e96e2d4b6ad51f1405b84aaacc573aca7  art/icons/gear/exports/64/weapon-homecoming.png
 098f36b36917ea6e8b082de5b60ca944b6748e48220eb87c575d6e6fda5fa5c4  art/icons/gear/exports/64/weapon-incendiary_grenade.png
 df56e4124d26720ebd38d6939a8a2b2450b629093a83c8144b61e80b028e112b  art/icons/gear/exports/64/weapon-iron_mitts.png
 c161ec288096dea1401ea4258a97dfaca42080c0edaeb0f07e67b5e32e5a6fcf  art/icons/gear/exports/64/weapon-katana.png
@@ -6920,6 +6928,7 @@ a69bacdfb22ca5070e0e1a1edd6697ba40992bb95dc0851be4b4d35dc72947ac  art/icons/gear
 5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0  art/icons/gear/weapon-hellraiser_rotary.png
 99c427ece30b53645dafd986dc133011d5254ae1d83c3612943c21795d150587  art/icons/gear/weapon-hellraiser_service_rifle.png
 194e053129041c6456b705be701992e72d6ec8420a7901f10fe8cf0bf92bec00  art/icons/gear/weapon-hellraiser_servo_fist.png
+17ef98574dc0267f53a4c9bfb63fd3879cc64f3b7bb934dbdd2285c73652e339  art/icons/gear/weapon-homecoming.png
 8cb7669e3e9fc0b7c5c58545cae242f2090ab00cb976b4da93df90457daf0fee  art/icons/gear/weapon-incendiary_grenade.png
 026003405fcfc8c519a886c370f5e6f0728ff8eb586cba7871225cd62e46b71a  art/icons/gear/weapon-iron_mitts.png
 59588dba217985563b09c144f62b048cf3b0bc3465873e692ad8df403144fe58  art/icons/gear/weapon-katana.png

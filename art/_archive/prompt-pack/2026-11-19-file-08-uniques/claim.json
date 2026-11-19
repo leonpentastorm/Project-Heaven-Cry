@@ -65,7 +65,7 @@
   ],
   "peer": {
     "branch": "art/2026-11-19-unique-melee-bow",
-    "sha": "14cc287171ad7d58183ff8e2d865e20be30572e4",
+    "sha": "c6c580742f7167e6716c819ce5fc90415dd37269",
     "claimed": [
       1,
       2,
@@ -78,7 +78,9 @@
     ],
     "delivered": [
       1,
-      4
+      4,
+      6,
+      7
     ]
   }
 }

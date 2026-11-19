@@ -1,5 +1,43 @@
 [
   {
+    "n": 11,
+    "id": "homecoming",
+    "title": "Homecoming (harpoon gun)",
+    "path": "art/icons/gear/weapon-homecoming.png",
+    "refs": [],
+    "paint": "A unique harpoon gun of the river docks, the classic shoulder-fired whaler's gun pattern, on a slight diagonal, muzzle up and right, about 85% of the canvas width: a short, very thick, heavy steel barrel with a heavy barbed harpoon head standing out of the muzzle, its shaft running back into the barrel; a heavy round breech with one exposed side hammer; a single trigger in a plain guard; a plain straight walnut stock with a slim wrist and a steel butt plate, no pistol grip; a round line reel with a crank handle bolted under the fore-end, its line running up to the harpoon. Frontier work: bare steel, walnut, worn leather. The impossible material: the line wound on the reel and running up to the harpoon's eye is a thin rope of flowing river water, clear and quick, coiled tight on the reel and never spilling a drop. The story detail: a small brass house key tied to the reel's crank on a short cord. No colour accent: the water's cool clear blue-grey is the only colour beside steel and walnut.\nAvoid: a whale or fish, splashes or drops, a glow, a rope of ordinary fibre, a trident or spear-gun with rubber bands.",
+    "span": 0.85,
+    "dependency": null,
+    "label": "Homecoming (harpoon gun)",
+    "sha256": "17ef98574dc0267f53a4c9bfb63fd3879cc64f3b7bb934dbdd2285c73652e339",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-homecoming.png",
+      "128": "art/icons/gear/exports/128/weapon-homecoming.png",
+      "64": "art/icons/gear/exports/64/weapon-homecoming.png",
+      "32": "art/icons/gear/exports/32/weapon-homecoming.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-08-uniques",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/11-weapon-homecoming.png",
+    "source_sha256": "34a5ec73a7fb39e55b3bad459000361511943a86a24bfbd9f0c57143c4fb1988",
+    "export_sha256": {
+      "256": "33b389778d84d8e6a966168bc6f5ce44fbe12aa37ea5757ece887821e08dd036",
+      "128": "d4212e889a584fdb4673642b3d1ca06b524a41c5601c599963dae96796253bac",
+      "64": "e68a70adfec5b069fdf0abc1b115923e96e2d4b6ad51f1405b84aaacc573aca7",
+      "32": "1bccdefcb5ce533e408616ff0e3b6dda35f81d7eeff00543f5ec91736ec9c5e8"
+    },
+    "generator_prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. One single object, lit from the upper left, with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background, square 1024 x 1024 PNG with alpha; the object fills about 80 to 85% of the canvas, inside the central 90%. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The object is a fictional nonfunctional prop from Project Heaven Cry, shown only from one exterior view. This is a unique item, one of a kind: it keeps the silhouette of its family so that at 32 px it still reads as that kind of weapon or armour, and it carries one story detail and one impossible material, painted with the richness of an heirloom, not the gilding of a parade piece. One accent colour (given below), as a muted local paint or a contained light inside the outline, never a bloom. The silhouette must be bold and readable at 64 px in a shop grid and 32 px in a backpack row. The item:\n\nA unique harpoon gun of the river docks, the classic shoulder-fired whaler's gun pattern, on a slight diagonal, muzzle up and right, about 85% of the canvas width: a short, very thick, heavy steel barrel with a heavy barbed harpoon head standing out of the muzzle, its shaft running back into the barrel; a heavy round breech with one exposed side hammer; a single trigger in a plain guard; a plain straight walnut stock with a slim wrist and a steel butt plate, no pistol grip; a round line reel with a crank handle bolted under the fore-end, its line running up to the harpoon. Frontier work: bare steel, walnut, worn leather. The impossible material: the line wound on the reel and running up to the harpoon's eye is a thin rope of flowing river water, clear and quick, coiled tight on the reel and never spilling a drop. The story detail: a small brass house key tied to the reel's crank on a short cord. No colour accent: the water's cool clear blue-grey is the only colour beside steel and walnut.\nAvoid: a whale or fish, splashes or drops, a glow, a rope of ordinary fibre, a trident or spear-gun with rubber bands.\n\nDepict a wholly fantasy river-dock inventory heirloom. Dark short tube and long plain walnut shoulder form from left, one barbed silhouette at the right, visible antique round reel and a single little brass house key. The reel is a pale flowing water ribbon curled tight, and a thin line of blue-grey water links toward the right tip. No splashes or detached objects. One static decorative game prop in the exact inventory pose, not a diagram or scene."
+  },
+  {
     "n": 17,
     "id": "outpost_wall",
     "title": "Outpost Wall (Guard shield)",
