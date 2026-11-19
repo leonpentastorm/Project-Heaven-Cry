@@ -18701,6 +18701,29 @@
         1254
       ],
       "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/22-armour-spring_air.png"
+    },
+    "armour-long_road": {
+      "label": "The Long Road (boots)",
+      "path": "art/icons/gear/armour-long_road.png",
+      "sha256": "7d67c315c9279e1834def1f7cb8e5b07a3f6f944e5e980af0ebb6e7eba54e96e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-long_road.png",
+        "128": "art/icons/gear/exports/128/armour-long_road.png",
+        "64": "art/icons/gear/exports/64/armour-long_road.png",
+        "32": "art/icons/gear/exports/32/armour-long_road.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-08-uniques",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/23-armour-long_road.png"
     }
   },
   "survival_art": {
