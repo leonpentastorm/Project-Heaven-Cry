@@ -9,7 +9,7 @@ image a prompt: paste the file's style block, then the entry's prompt, and attac
 
 1. **Today's three:** the APPROACH and LEVEL UP banner signs and Wick's Second Wind (file 01, section 1).
 2. **The Wick icon set, file by file:** file 02 (Strength, Agility, Endurance), then file 03 (Expression, Intelligence,
-   Perception), then file 04 (Determination, Insight, Virtue). In each file, new pictures first, then the changed ones.
+   Perception), then file 04 (Determination, Insight, Virtue). In each file, work in the order the entries are written.
 3. **The live gaps** (file 01, sections 2 to 4): the three class-move icons, the two mod paintings, the Scrap Turret
    portrait, then the map kit (the 4 replacements first, then the 24 new pieces).
 4. **The new base forms, at the Standard finish:** melee (file 05), guns and bows (file 06), shields and armour (file 07),
@@ -30,8 +30,8 @@ image a prompt: paste the file's style block, then the entry's prompt, and attac
 | [`02-skills-body.md`](02-skills-body.md) | Wick icons for Strength, Agility and Endurance | 11 |
 | [`03-skills-mind.md`](03-skills-mind.md) | Wick icons for Expression, Intelligence and Perception (the four Figment forks among them) and the Darkened sign | 21 |
 | [`04-skills-soul.md`](04-skills-soul.md) | Wick icons for Determination, Insight and Virtue and the Blessed Aim sign | 19 |
-| [`05-melee-forms.md`](05-melee-forms.md) | New melee weapons in 12 families | 19 |
-| [`06-gun-forms.md`](06-gun-forms.md) | 15 new guns and 2 new bows | 17 |
+| [`05-melee-forms.md`](05-melee-forms.md) | New melee weapons in 11 of the 12 families (the hand-to-hand gloves have nothing new) | 19 |
+| [`06-gun-forms.md`](06-gun-forms.md) | 15 new guns, 1 new bow and 1 new crossbow | 17 |
 | [`07-shields-armour.md`](07-shields-armour.md) | 6 new shields and 14 new armour pieces | 20 |
 | [`08-grades-and-uniques.md`](08-grades-and-uniques.md) | The grade method for every graded item (the proof sheet's 8 written out in full), and 23 uniques | 23 uniques + 656 grade pictures |
 | [`09-heavy-and-strange.md`](09-heavy-and-strange.md) | New heavy and strange weapons in 8 families (launchers, rocket tubes, rotary and belt-fed guns, anti-materiel rifles, flamers, powered blades, power gauntlets, thrown weapons) | 16 |

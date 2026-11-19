@@ -101,3 +101,14 @@ repaints of file 10's coverage table, where both read as their pattern today). K
 73 + 28 + 14 = 760; with the 23 uniques, 783 gear pictures. The README's 871 adds files 01 to 04 (88 pictures: 37 + 11 +
 21 + 19). Painted Standards that exist today: 60 kept + 17 to be repainted = 77. The core rifle and the censer gun stay in
 `art/icons/gear/` as painted advanced-class weapons, not graded and not in this pack (R4).
+
+## Third verification (19 Nov 2026)
+
+- **`homecoming`:** a gun unique keeps one real pattern (base prompt U), so the prompt now names the classic
+  shoulder-fired whaler's gun (short very thick barrel, heavy breech with a side hammer, straight walnut stock, no pistol
+  grip) with the reel under the fore-end. The lever carbine and the breacher tube are no longer attached (they invited a
+  blend of three guns); the entry attaches only the base references.
+- **`encore`:** the cameo is a plain smiling face in profile, not a mask, and "a theatre-mask emblem" left the Avoid list,
+  so the prompt no longer asks for and forbids the same thing.
+- **A3.9, powered melee:** an Ork piece's nails, welds, jags and ochre daubs now stay in place at every grade, as A1 says;
+  only finish, material and wear change. C1 step 5 puts the uniques last, as the README's order does.

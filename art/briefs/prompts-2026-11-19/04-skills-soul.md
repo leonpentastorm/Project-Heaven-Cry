@@ -10,7 +10,7 @@ One image a prompt. Paste **the shared block of its mode (below) first, then the
 
 **Attach:** `art/icons/traits/mind-without-fog.png` (the master), plus three of `art/icons/perks/*.png` for line weight (for example `art/icons/perks/sweet-talker.png`, `art/icons/perks/litany.png`, `art/icons/perks/shared-breath.png`). Rule: `art/icons/STYLE-LOCK.md`. **Size:** 1024 x 1024 PNG, fully transparent background, subject filling about 80% with clear space around it. **Colour:** pure white (#FFFFFF) only. **Avoid:** any other colour or grey, outlines in a second colour, shading, gradients, texture, glow, borders, frames, text, letters, numbers, a second full figure (anyone else is a partial: a hand, a shoulder, a silhouette cut by the frame), recognisable real-world symbols, brands or faiths (no cross, no crescent, no star of a real faith; a medical mark is a plain plus).
 
-> Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small flame-headed figure of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:
+> Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:
 
 ## Shared block: white-ink sign (1 picture)
 
@@ -29,7 +29,7 @@ One image a prompt. Paste **the shared block of its mode (below) first, then the
 - **Must read at icon size as:** one big shape with a smaller shape nested inside it.
 
 ```
-Wick standing with both arms cradling one large rounded burst of light held at his chest, a solid white orb. Inside the orb, cut out as a negative shape, sits a second smaller shape with a different silhouette (a small teardrop flame), so the orb reads as one thing carrying another inside it. Wick's flame head tilts down toward it, calm. Bold flat shapes, the outer orb and the inner cut-out are the whole picture: no rays, no sparks.
+Wick standing with both arms cradling one large rounded burst of light held at his chest, a solid white orb. Inside the orb, cut out as a negative shape, sits a second smaller shape with a different silhouette (a small teardrop), so the orb reads as one thing carrying another inside it. Wick's head tilts down toward it, calm. Bold flat shapes, the outer orb and the inner cut-out are the whole picture: no rays, no sparks.
 ```
 
 ## `poker_face`: Poker Face
@@ -39,7 +39,7 @@ Wick standing with both arms cradling one large rounded burst of light held at h
 - **Must read as:** a face with nothing on it while the world is busy around it.
 
 ```
-Wick shown from the chest up, facing us, his flame head as an utterly still, symmetrical teardrop with two flat dash eyes and a flat dash mouth: a perfectly neutral deadpan. Around him, cut by the frame edges, are chaotic partial shapes streaking past in white: jagged zig-zag lines and a flying shard on each side, as if a storm is passing. Wick himself has no lines of motion at all; he is the still centre and the chaos is only at the margins.
+Wick shown from the chest up, facing us, his pixel-screen face showing a flat neutral face, two dash eyes and a dash mouth: a perfectly neutral deadpan. Around him, cut by the frame edges, are chaotic partial shapes streaking past in white: jagged zig-zag lines and a flying shard on each side, as if a storm is passing. Wick himself has no lines of motion at all; he is the still centre and the chaos is only at the margins.
 ```
 
 ## `stand_still`: Stand Still
@@ -49,7 +49,7 @@ Wick shown from the chest up, facing us, his flame head as an utterly still, sym
 - **Must read as:** a planted, motionless figure with motion lines streaming past.
 
 ```
-Wick standing bolt upright, feet planted shoulder-width, arms hanging loose at his sides, flame head level and calm. Streaming past him from left to right, parallel to the ground, are three long tapered white speed lines that bend around his silhouette without touching it, leaving a clean gap of empty space hugging his body. Two small short ticks at his feet mark that he is rooted. Strong vertical figure against horizontal streaks.
+Wick standing bolt upright, feet planted shoulder-width, arms hanging loose at his sides, head level, screen face calm. Streaming past him from left to right, parallel to the ground, are three long tapered white speed lines that bend around his silhouette without touching it, leaving a clean gap of empty space hugging his body. Two small short ticks at his feet mark that he is rooted. Strong vertical figure against horizontal streaks.
 ```
 
 ## `lore_ward`: Warding Word
@@ -91,7 +91,7 @@ Wick braced, one fist pressed to his chest where a small jagged crack is drawn a
 - **Must read as:** an unclouded heart that refuses what would overflow it.
 
 ```
-Wick standing with both palms open and lifted, holding between them at chest height a perfectly clear solid heart shape with one small plain four-point star cut out of its centre as negative space. Above the heart, a jagged rising wave of three spiked tongues (an overflow coming down on it) is stopped by one flat solid bar hovering just over the heart, and the tongues bend away to either side without touching it. Wick's flame head looks at the heart, quiet. No other marks.
+Wick standing with both palms open and lifted, holding between them at chest height a perfectly clear solid heart shape with one small plain four-point star cut out of its centre as negative space. Above the heart, a jagged rising wave of three spiked tongues (an overflow coming down on it) is stopped by one flat solid bar hovering just over the heart, and the tongues bend away to either side without touching it. Wick's screen face looks at the heart, quiet. No other marks.
 ```
 
 ---
@@ -102,10 +102,10 @@ Wick standing with both palms open and lifted, holding between them at chest hei
 
 - **Save as:** `art/icons/perks/hand-off.png`. **Mode:** Wick.
 - **Shows:** perk card.
-- **Must read as:** a guard passed from one body to another.
+- **Must read as:** one guard covering two: Wick's guard shared with the friend beside him.
 
 ```
-Wick stepping forward on the left, his arm extended out to the right, the open palm pushing a rounded shield-shaped wedge of white toward a partial silhouette of a friend cut by the right frame edge (a shoulder and a raised forearm). The shield sits half in Wick's hand and half in the friend's, being handed over at the exact moment, with two short curved motion ticks behind it. Wick's own front is left open and unguarded; the friend takes the cover.
+Wick standing on the left, his own rounded shield-shaped wedge of white still raised firmly in front of him, and his other arm extended out to the right toward a partial silhouette of a friend cut by the right frame edge (a shoulder and a raised forearm). From Wick's shield a matching ghost-edge of it, drawn as an open white contour of the same shape, extends over the friend's shoulder, with two short curved ticks between them. Wick keeps his guard; the same guard also covers the friend.
 ```
 
 ## `nobody_left_behind`: Nobody Left Behind
@@ -115,7 +115,7 @@ Wick stepping forward on the left, his arm extended out to the right, the open p
 - **Must read as:** Wick kneeling over a fallen friend and reaching to pull them up.
 
 ```
-Wick kneeling on one knee in the lower left, leaning over a fallen partial figure lying along the bottom of the frame (a head and a limp shoulder only, cut by the frame edge). One of Wick's hands is under the friend's shoulder, the other hand reaches upward and out, palm open, as if offering to pull them to standing; a short arch of three small lines rises from the fallen figure's shoulder to show they are being lifted. Wick's flame head is turned to the fallen friend. Low, grounded composition, heavy on the bottom half.
+Wick kneeling on one knee in the lower left, leaning over a fallen partial figure lying along the bottom of the frame (a head and a limp shoulder only, cut by the frame edge). One of Wick's hands is under the friend's shoulder, the other hand reaches upward and out, palm open, as if offering to pull them to standing; a short arch of three small lines rises from the fallen figure's shoulder to show they are being lifted. Wick's head is turned to the fallen friend. Low, grounded composition, heavy on the bottom half.
 ```
 
 ## `steady_hands`: Steady Hands
@@ -125,7 +125,7 @@ Wick kneeling on one knee in the lower left, leaning over a fallen partial figur
 - **Must read as:** two hands holding a shaking one steady.
 
 ```
-Close crop: two of Wick's hands, as bold white mitten-like shapes, cupping and enclosing a third partial hand that comes in from the right frame edge and shows four small short zig-zag tremor marks around it that stop where Wick's fingers close over it. Wick's flame head is visible small and low at the left, bowed over the hands, calm. The hands are the picture: a steady pair around a trembling one.
+Close crop: two of Wick's hands, as bold white mitten-like shapes, cupping and enclosing a third partial hand that comes in from the right frame edge and shows four small short zig-zag tremor marks around it that stop where Wick's fingers close over it. Wick's head is visible small and low at the left, bowed over the hands, calm. The hands are the picture: a steady pair around a trembling one.
 ```
 
 ## `pull_together`: Pull Together
@@ -145,7 +145,7 @@ Wick on the left, leaning back with both hands gripping a thick taut cord that r
 - **Must read as:** a bond that stays slack and unseen, with Wick hidden at its end.
 
 ```
-A thin single line laid in a lazy S-curve slack across the frame from left to right, drawn as a bold but narrow white thread with one loose loop in it. At the far right end it reaches a small half-hidden Wick, only his flame head and one shoulder showing, tucked behind a rounded wall-corner cut by the frame edge, peeking out with one eye. At the left end the thread attaches to a small ring. The thread has slack; nothing about it is pulled tight. Quiet, still, a lot of empty space around the line.
+A thin single line laid in a lazy S-curve slack across the frame from left to right, drawn as a bold but narrow white thread with one loose loop in it. At the far right end it reaches a small half-hidden Wick, only his head and one shoulder showing, tucked behind a rounded wall-corner cut by the frame edge, peeking out with one eye. At the left end the thread attaches to a small ring. The thread has slack; nothing about it is pulled tight. Quiet, still, a lot of empty space around the line.
 ```
 
 ## `veiled_insult`: Veiled Insult (a new picture, started from Sweet Talker)
@@ -165,6 +165,7 @@ Take the attached Sweet Talker icon and redraw it as Wick offering a single rose
 ## `fork.prayer.held_breath`: Swift Psalm (replaces the existing picture)
 
 - **Existing file to attach (to see what NOT to draw):** `art/icons/forks/prayer-held-breath.png` (a light held cupped, unspoken). **Save as:** `art/icons/forks/prayer-held-breath.png`.
+- **What changes:** today the picture shows a light held cupped and unspoken. The new picture shows the opposite: a prayer said out loud and quickly, the wait between prayers cut short. Nothing of the old cupped light remains.
 - **Shows:** the Hymn fork card.
 - **Must read as:** a prayer said quickly, the gap between prayers cut short.
 
@@ -179,7 +180,7 @@ Wick with head bowed and hands pressed together in prayer, mouth open, three sho
 - **Must read as:** a healing hand on a badly hurt ally.
 
 ```
-Wick on the left with one hand extended to the right, palm down, resting on the shoulder of a partial wounded ally cut by the right frame edge, who hangs slumped, head low. A soft fan of three short straight rays spreads from Wick's palm over the ally, and a plain plus-shaped cut-out sits on the ally's chest where the hurt is. Wick's flame head is steady and kind, tilted toward them. The ally is mostly a silhouette; the contact between hand and shoulder is the focus.
+Wick on the left with one hand extended to the right, palm down, resting on the shoulder of a partial wounded ally cut by the right frame edge, who hangs slumped, head low. A soft fan of three short straight rays spreads from Wick's palm over the ally, and a plain plus-shaped cut-out sits on the ally's chest where the hurt is. Wick's screen face is steady and kind, tilted toward them. The ally is mostly a silhouette; the contact between hand and shoulder is the focus.
 ```
 
 ## `foresight`: Foresight

@@ -33,10 +33,10 @@ least 50 px of clear margin on every side); each entry gives the object's own wi
 Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, in the pose the description gives, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the object fills the width the description gives, inside the central 90% of the canvas. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The name, maker and markings are invented: never a real brand, model name, logo or text; a shape not marked Pattern is invented too. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail concentrated on one or two focal edges and make the shape unmistakable when shrunk. Colour: metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the faction's signature colour is the single accent (given in each prompt), a muted local paint, not a glow. Rarity is not shown by a coloured border (the UI adds that): standard finish only, with honest wear. Heavy weapons are drawn dense and heavy, and must read heavier than any rifle even at 32 px. The object:
 ```
 
-## Pattern clause (paste after the style block, for entries marked Pattern only)
+## Pattern clause (paste after the style block, for entries marked Pattern only; the same clause, word for word, as in files 06 and 10)
 
 ```
-This weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape, its sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette. This overrides the invented-shape rule for the silhouette only. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline); it must not change the silhouette.
+This weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.
 ```
 
 **Avoid in every picture:** text, letters, numbers or marks; a hand or figure; muzzle flash, flame jets, smoke or sparks
@@ -115,16 +115,16 @@ The general-purpose belt-fed machine gun, carried and fired from the hip. Pose: 
 At 32 px: one long barrel with a handle on it and a belt box on the side; not a ring of barrels.
 ```
 
-## 6. `hellraiser_twin_rotary`: Twin rotary
+## 6. `hellraiser_twin_rotary`: Twin rotary (Pattern)
 
 - **Save as:** `art/icons/gear/weapon-hellraiser_twin_rotary.png`
 - **Grades later:** `weapon-hellraiser_twin_rotary--fine.png`, `--masterwork.png`, `--relic.png`, `--celestial.png` (same folder)
 - **Shows in:** backpack, shop, Forge, the hand slot and the gear card
-- **Attach:** `art/icons/gear/weapon-hellraiser_rotary.png`, `art/icons/weapons/hellraiser_rotary.svg`
+- **Attach:** `art/icons/gear/weapon-hellraiser_rotary.png`, `art/icons/weapons/hellraiser_rotary.svg` (the family: the maker's materials, accent and scale; this gun takes the real pattern's chute feed, not that painting's drum)
 
 ```
-Two six-barrel rotary guns on one carried twin mount, the heaviest gun a person carries. Pose: diagonal, muzzles up and right, about 90% of the canvas width. Silhouette: an invented carried mount; each of its two guns is drawn like the attached rotary gun (a ring of six long barrels held by two clamps, a round drive housing behind them, a feed chute entering the housing); the two sit side by side, joined by one squared carry mount with a crossbar handle on top and two spade grips at the rear; a flexible armoured feed chute curves away from the mount to a large squared backpack ammunition box drawn as part of the same object. Materials: heavy dark steel and black, the barrel tips scorched. Maker's touch: oxide-red paint on the twin mount.
-At 32 px: two rings of barrels side by side and a long curving chute.
+Two guns of one pattern, the six-barrel electrically driven rotary machine gun, mounted side by side as one carried weapon, the heaviest gun a person carries. Pose: diagonal, muzzles up and right, about 90% of the canvas width. Silhouette, kept exactly to that one pattern for each gun: a cluster of six long barrels held by a front clamp and a mid clamp, a round drive motor housing behind them, and a feeder on the side of each housing taking a flexible armoured feed chute. The two guns are joined by that pattern's twin cradle, with a crossbar carry handle on top and the pattern's pair of spade grips with a thumb trigger at the rear; the two chutes curve back to one large squared ammunition box worn as a backpack, drawn as part of the same object. No drum under the guns (the drum is the single rotary's shape). Materials: heavy dark steel and black, the barrel tips scorched. Maker's touch: oxide-red paint on the twin cradle.
+At 32 px: two rings of barrels side by side and two long curving chutes; no drum.
 ```
 
 # Anti-materiel rifles (Frontier mercenaries)

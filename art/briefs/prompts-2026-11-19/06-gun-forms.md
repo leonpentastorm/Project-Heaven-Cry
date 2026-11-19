@@ -1,10 +1,10 @@
-# GPT prompts, 19 Nov 2026, file 06: the gun forms and the bow forms
+# GPT prompts, 19 Nov 2026, file 06: the gun forms, a bow and a crossbow
 
-**17 pictures, all gear paintings: 15 new gun forms and 2 new bow forms.** Every picture here is a master at the Standard finish. Each graded item is painted at all five grades: the Standard master below, then its four grade pictures (fine, masterwork, relic, celestial), made image to image from the approved master by the method in `08-grades-and-uniques.md` and saved as `weapon-<id>--<tier>.png` in the same folder.
+**17 pictures, all gear paintings: 15 new gun forms, 1 new bow and 1 new crossbow.** Every picture here is a master at the Standard finish. Each graded item is painted at all five grades: the Standard master below, then its four grade pictures (fine, masterwork, relic, celestial), made image to image from the approved master by the method in `08-grades-and-uniques.md` and saved as `weapon-<id>--<tier>.png` in the same folder.
 
 ## How to use
 
-One image a prompt. For a **gun**, paste the **base prompt**, then the **gun pattern clause**, then the entry's prompt. For a **bow**, paste the **base prompt**, then the entry's prompt. Attach the base references below and the line's own paintings named in the entry. Save under the exact file name given; do not rename.
+One image a prompt. For a **gun**, paste the **base prompt**, then the **gun pattern clause**, then the entry's prompt. For a **bow or crossbow**, paste the **base prompt**, then the entry's prompt. Attach the base references below and the line's own paintings named in the entry. Save under the exact file name given; do not rename.
 
 **Order.** Where an entry says "paint after the repaint", the line's existing painting is being repainted to its real pattern in `10-rifle-analogues.md` (section 1, the repaints), saved over the same path. Paint that repaint first and attach the new one: the new form must match it.
 
@@ -20,10 +20,10 @@ One image a prompt. For a **gun**, paste the **base prompt**, then the **gun pat
 Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, in the pose the description gives, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the object fills the width the description gives, inside the central 90% of the canvas. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The name, maker and markings are invented: never a real brand, model name, logo or text. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges and make the shape unmistakable when shrunk. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour is the single accent, a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. It must sit in one set with the attached paintings of its maker line: the same scale rule, the same shape language, the same accent. The object is:
 ```
 
-## Gun pattern clause (paste after the base prompt, for every gun; it is the same clause as in `10-rifle-analogues.md`)
+## Gun pattern clause (paste after the base prompt, for every gun; the same clause, word for word, is the pattern clause of `09-heavy-and-strange.md` and the middle of the style block of `10-rifle-analogues.md`)
 
 ```
-This weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine's shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline); it must not change the silhouette. The pattern rule governs a gun's silhouette: it overrides the invented-shape rule for guns only; the name, the maker and the markings stay invented.
+This weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.
 ```
 
 **Scale rules (each prompt below already carries its own):** pistols and one-hand guns in side profile turned slightly toward the viewer, muzzle right, level, about 80% of the canvas width, every pistol the same width; submachine guns and short carbines on a slight diagonal (about 16 degrees, muzzle up and right), about 70% of the width; rifles and long guns on the same diagonal, about 85% of the width; shotguns on the same diagonal, about 80%, the long shotguns (the fowling gun and the Lumeri long scatter) about 85%; bows upright on a gentle diagonal, string to the lower left, about 85% of the height; crossbows horizontal like a rifle.
@@ -158,7 +158,7 @@ Avoid: a bayonet, spikes, blood, a scope, a drum, ornament.
 - **Attach (its line):** `art/icons/gear/weapon-adamantile_battle_rifle.png` (paint after the repaint)
 
 ```
-The paratrooper version of the tilting-breechblock metric battle rifle. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width like the short carbines. Silhouette, kept exactly: the same receiver as the attached battle rifle, its top cover tapering to the rear peep sight, the small folding cocking handle on the left side toward the front, and a straight 20-round box magazine; a short barrel with a tall eared front sight and a long slotted flash hider; a slim ventilated handguard; a side-folding skeleton stock of steel tubes with a flat butt plate, shown open. No carry handle. Materials: dark steel and black furniture, worn grey at the edges. Maker's touch: one small gilt crest at the heel of the stock and a thin brass-orange #F68A38 trim line along the handguard.
+The paratrooper version of the tilting-breechblock metric battle rifle. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width like the short carbines. Silhouette, kept exactly: the same receiver as the attached battle rifle, its top cover tapering to the rear peep sight, the small folding cocking handle on the left side toward the front, and a straight 20-round box magazine; a short barrel with a tall eared front sight and a long slotted flash hider; a slim ventilated handguard; a side-folding skeleton stock of steel tubes with a flat butt plate, shown open. No carry handle. Materials: dark steel and black furniture, worn grey at the edges. Maker's touch: one small blank gilt boss at the heel of the stock and a thin brass-orange #F68A38 trim line along the handguard.
 At 32 px: against the Adamantile battle rifle, shorter with an open tube stock; against the Hellraiser trench carbine, a straight magazine and a long slotted flash hider.
 Avoid: armour plates, spikes, a bayonet, a drum, a scope, heraldry with figures or letters.
 ```
@@ -170,9 +170,9 @@ Avoid: armour plates, spikes, a bayonet, a drum, a scope, heraldry with figures 
 - **Attach (its line):** `art/icons/gear/weapon-adamantile_battle_rifle.png` (paint after the repaint)
 
 ```
-The heavy-barrel squad version of the metric full-power battle rifle pattern. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: the same receiver as the attached battle rifle, with its top cover tapering to the rear peep sight, the small folding cocking handle on the left toward the front and the tall eared front sight; a thick heavy barrel ending in a long slotted flash hider; a folding bipod hinged near the muzzle, its two legs folded back along the barrel; a wooden handguard and a fixed wooden stock; a straight 30-round box magazine. Materials: dark steel and dark oiled wood, chipped at the edges. Maker's touch: one small gilt crest at the heel of the stock and a thin brass-orange #F68A38 trim line along the handguard.
+The heavy-barrel squad version of the metric full-power battle rifle pattern. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: the same receiver as the attached battle rifle, with its top cover tapering to the rear peep sight, the small folding cocking handle on the left toward the front and the tall eared front sight; a thick heavy barrel ending in a long slotted flash hider; a folding bipod hinged near the muzzle, its two legs folded back along the barrel; a wooden handguard and a fixed wooden stock; a straight 30-round box magazine. Materials: dark steel and dark oiled wood, chipped at the edges. Maker's touch: one small blank gilt boss at the heel of the stock and a thin brass-orange #F68A38 trim line along the handguard.
 At 32 px: against the Adamantile battle rifle, a thicker barrel, wood and a bipod; against the long rifle, a straight magazine and a bipod, no scope.
-Avoid: armour plates, spikes, a huge round muzzle brake, a scope, lettering on the crest.
+Avoid: armour plates, spikes, a huge round muzzle brake, a scope, any device or lettering on the gilt boss.
 ```
 
 ## 11. `fowling_gun`: Fowling gun (Break-action shotguns, long)
@@ -194,9 +194,9 @@ Avoid: a scope, a pump, a magazine tube, engraving of animals or scenes, a sling
 - **Attach (its line):** `art/icons/gear/weapon-brigade_auto_shotgun.png` (paint after the repaint)
 
 ```
-The stockless short version of the box-fed shotgun built on the stamped long-stroke rifle's body. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width like the other pistols. Silhouette, kept exactly: the same receiver as the attached auto shotgun, with the ribbed dust cover, the large safety lever on the right side and a fat straight box magazine; a very short barrel with a short gas tube over it and a short handguard; a pistol grip; no stock, the receiver ending in a plain rear plate with a sling loop. Materials: dark stamped steel and black polymer, worn grey at every edge. Maker's touch: one small gilt crest on the side of the receiver and a thin brass-orange #F68A38 trim line along the handguard.
+The stockless short version of the box-fed shotgun built on the stamped long-stroke rifle's body. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width like the other pistols. Silhouette, kept exactly: the same receiver as the attached auto shotgun, with the ribbed dust cover, the large safety lever on the right side and a fat straight box magazine; a very short barrel with a short gas tube over it and a short handguard; a pistol grip; no stock, the receiver ending in a plain rear plate with a sling loop. Materials: dark stamped steel and black polymer, worn grey at every edge. Maker's touch: one small blank gilt boss on the side of the receiver and a thin brass-orange #F68A38 trim line along the handguard.
 At 32 px: against the sawn-off, one barrel and a fat box magazine, not two barrels; against the Lumeri hand scatter, a box magazine and a dust cover, not a pump and a tube.
-Avoid: armour plates, a ram plate, double barrels, a tube magazine, spikes, a stock, lettering on the crest.
+Avoid: armour plates, a ram plate, double barrels, a tube magazine, spikes, a stock, any device or lettering on the gilt boss.
 ```
 
 ## 13. `brigade_drum_shotgun`: Brigade drum shotgun (Brigade auto shotguns, long)
@@ -206,7 +206,7 @@ Avoid: armour plates, a ram plate, double barrels, a tube magazine, spikes, a st
 - **Attach (its line):** `art/icons/gear/weapon-brigade_auto_shotgun.png` (paint after the repaint)
 
 ```
-The full-auto drum-fed combat shotgun pattern with the straight-line box body. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 80% of the canvas width like the shotguns. Silhouette, kept exactly: a long rectangular box receiver that runs straight back into a fixed stock of the same depth, the whole gun one straight line; a long carry handle along the top with the rear sight in it; a large round drum magazine under the receiver just ahead of the pistol grip; a short barrel sticking out of the front of the box, ending in a big flash hider, with a front sight post. Materials: black polymer and dark steel, scuffed at every edge. Maker's touch: one small gilt crest at the heel of the stock and a thin brass-orange #F68A38 trim line along the side of the box.
+The full-auto drum-fed combat shotgun pattern with the straight-line box body. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 80% of the canvas width like the shotguns. Silhouette, kept exactly: a long rectangular box receiver that runs straight back into a fixed stock of the same depth, the whole gun one straight line; a long carry handle along the top with the rear sight in it; a large round drum magazine under the receiver just ahead of the pistol grip; a short barrel sticking out of the front of the box, ending in a big flash hider, with a front sight post. Materials: black polymer and dark steel, scuffed at every edge. Maker's touch: one small blank gilt boss at the heel of the stock and a thin brass-orange #F68A38 trim line along the side of the box.
 At 32 px: against the Brigade auto shotgun, a straight box body with a round drum; against the Mandestra drum rifle, a black box and a handle, not wood and a slotted jacket.
 Avoid: armour plates, a ram plate, a belt, a bipod, spikes, a tube magazine, lettering.
 ```
@@ -237,9 +237,9 @@ Avoid: any cross, star or real faith's symbol, prayer text, smoke, a censer, a s
 
 ---
 
-# Bows
+# Bows and crossbows
 
-Bows are invented shapes, never a real bow model: paste the base prompt only, no pattern clause.
+Bows and crossbows are invented shapes, never a real model: paste the base prompt only, no pattern clause.
 
 ## 16. `short_bow`: Short bow (Bows, close)
 

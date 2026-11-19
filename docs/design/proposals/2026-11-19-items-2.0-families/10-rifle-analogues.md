@@ -237,3 +237,20 @@ A sixth line for these: not now; revisit after 0.34 (the lead's recommendation, 
   submachine gun: a stamped receiver with a cocking tube over the barrel; a fat smooth suppressor forming the whole front;
   a curved magazine ahead of the trigger group; a drum-style rear sight; a retractable two-strut stock. Matte black; one
   small steel-blue (`#5394AC`) plate on the stock struts.
+
+### Third verification (19 Nov 2026)
+
+- **2.10 `smetanita_service_pistol`:** was the open-top double-action pistol, the same pattern as 1.4
+  `decrkm_autopistol` (which is that pistol's burst version). Now the all-steel double-action pistol whose slide rides
+  inside the frame rails (low closed slide, spur hammer, frame thumb safety, plain round guard), so the two differ at 32 px.
+- **2.15 `albert_town_stalking_rifle`:** was the same round-receiver, ball-knob, plain-barrel bolt action as 1.8
+  `long_rifle`, different only in the stock. Now the classic full-stocked stalking rifle (walnut to the muzzle with a steel
+  nose cap, a flat spoon-shaped swept-back bolt handle, a short barrel with a leaf sight, a small scope).
+- **1.10 `ccec_marksman_rifle`:** no longer said to be "on the stamped long-stroke action"; it is described as its own
+  pattern (milled receiver, short-stroke piston, skeleton thumbhole stock, side-rail scope, short slightly curved
+  10-round magazine).
+- **2.4 / 2.6 Chezknov:** kept. The finding said the cocking tube over the barrel belongs only to the submachine gun, but
+  the roller-delayed battle rifle pattern has the same cocking tube above the barrel with the handle at its front left and
+  the hooded front sight at its end; removing it would make the rifle less faithful.
+- **How to read, item 6:** the repainted `smetanita_thumper`, `breacher_tube` and `blackpoint_700` take the Heavy weapons
+  grade block (A3.8), as file 08's C3 lists them; the other ids take the Guns block (A3.3).

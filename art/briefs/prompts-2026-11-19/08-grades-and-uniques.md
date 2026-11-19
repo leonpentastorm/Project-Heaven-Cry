@@ -293,7 +293,7 @@ Grade: Celestial. Keep the shape, the inlay and the scroll panel's place. The me
 
 ### A3.9 Powered melee and power gauntlets
 
-Change sits on: the side of the engine casing or the forearm plate, the blade bar or disc's flat (never its teeth), the grip or cuff, the bands and pistons' collars. The chain, teeth, saw disc, pistons, hoses and air bottle keep their shape. An Ork piece stays Ork at every grade: welds become neat, daubs become a painted stripe, nails become rivets, but the jagged shapes stay.
+Change sits on: the side of the engine casing or the forearm plate, the blade bar or disc's flat (never its teeth), the grip or cuff, the bands and pistons' collars. The chain, teeth, saw disc, pistons, hoses and air bottle keep their shape. An Ork piece stays Ork at every grade: its nails, welds, jags and ochre daubs stay where they are and keep their shape (section A1); only their finish, material and wear change with the grade.
 
 **Fine**
 ```
@@ -302,7 +302,7 @@ Grade: Fine. The same machine, newly serviced. Grime and soot cleaned off, the c
 
 **Masterwork**
 ```
-Grade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), one continuous stripe along the casing or plate. The grip or cuff is re-made in a finer, darker leather in the same shape; the bands, piston collars and bolts are polished brass or bright steel; the welds are neat and even. Exact edges, no wear.
+Grade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), one continuous stripe along the casing or plate. The grip or cuff is re-made in a finer, darker leather in the same shape; the bands, piston collars and bolts are polished brass or bright steel; every weld and nail keeps its place and shape, cleanly finished. Exact edges, no wear.
 ```
 
 **Relic**
@@ -453,7 +453,7 @@ Grade: Celestial. Keep the shape, the barrel stripe and the scroll panel's place
 2. **Grade sets of the 60 existing Standards that are kept** (section C3, "kept"), one sheet per item, by class.
 3. **The 17 repainted guns** (`10-rifle-analogues.md` section 1) are repainted and approved first; then their grade sets, made from the repaint, never from the old painting.
 4. **The 87 new Standards** (files 05, 06, 07, 09 and 10): each new Standard is approved first, then its grade set.
-5. **The 23 uniques** (section D) at any point; a unique built on a repainted or new silhouette is painted after that Standard is approved. Uniques have no grade pictures.
+5. **The 23 uniques** (section D) last, after the grade sets; a unique built on a repainted or new silhouette is painted after that Standard is approved. Uniques have no grade pictures.
 
 ## C2. Checklist per sheet (one item, five grades side by side)
 
@@ -629,18 +629,18 @@ Avoid: lightning bolts leaving the gun, sparks, rain, a face in the cloud, a glo
 - **At icon size it must read as:** the tiny over-and-under pistol with red velvet barrels.
 
 ```
-A unique two-shot over-and-under pocket pistol, side profile, muzzle to the right, drawn to fill the frame like a full pistol: two stacked short barrels, a small ornate frame with a spur trigger and a curved ivory grip. The impossible material: the two barrels are rolled stage-curtain velvet in deep red #B83243, hardened like steel, the nap of the velvet still visible, the folds of the curtain running down their length. The story detail: a tiny carved cameo of a grinning mask set in the grip (a carved face shape only, no eyes painted in), and a faded blank ticket stub tucked under the grip's lower screw. Playful, polished, a little sinister.
-Avoid: letters on the ticket, a jester or clown, a theatre-mask emblem, a ribbon hanging loose, confetti.
+A unique two-shot over-and-under pocket pistol, side profile, muzzle to the right, drawn to fill the frame like a full pistol: two stacked short barrels, a small ornate frame with a spur trigger and a curved ivory grip. The impossible material: the two barrels are rolled stage-curtain velvet in deep red #B83243, hardened like steel, the nap of the velvet still visible, the folds of the curtain running down their length. The story detail: a tiny carved cameo of a plain smiling face in profile set in the grip (a carved face only, not a mask, no eyes painted in), and a faded blank ticket stub tucked under the grip's lower screw. Playful, polished, a little sinister.
+Avoid: letters on the ticket, a jester or clown, a ribbon hanging loose, confetti.
 ```
 
 ### D2.4 `homecoming`: Homecoming (harpoon gun)
 
 - **Save as:** `art/icons/gear/weapon-homecoming.png`
-- **Attach:** `art/icons/gear/weapon-lever_carbine.png` (the walnut, the steel and the long-gun scale), `art/icons/gear/weapon-breacher_tube.png` (the size of a shoulder-fired gun; paint after its repaint is approved)
+- **Attach:** only the base references of base prompt U (this one-off gun has no family painting: draw the pattern the prompt describes)
 - **At icon size it must read as:** a short shoulder gun with a barbed harpoon standing out of its muzzle and a reel of line under it.
 
 ```
-A unique harpoon gun of the river docks, on a slight diagonal, muzzle up and right, about 85% of the canvas width: a short, thick steel barrel with a heavy barbed harpoon head standing out of the muzzle, its shaft running back into the barrel; a round line reel with a crank handle bolted under the barrel; a plain walnut stock and pistol grip; a lever on the side. Frontier work: bare steel, walnut, worn leather. The impossible material: the line wound on the reel and running up to the harpoon's eye is a thin rope of flowing river water, clear and quick, coiled tight on the reel and never spilling a drop. The story detail: a small brass house key tied to the reel's crank on a short cord. No colour accent: the water's cool clear blue-grey is the only colour beside steel and walnut.
+A unique harpoon gun of the river docks, the classic shoulder-fired whaler's gun pattern, on a slight diagonal, muzzle up and right, about 85% of the canvas width: a short, very thick, heavy steel barrel with a heavy barbed harpoon head standing out of the muzzle, its shaft running back into the barrel; a heavy round breech with one exposed side hammer; a single trigger in a plain guard; a plain straight walnut stock with a slim wrist and a steel butt plate, no pistol grip; a round line reel with a crank handle bolted under the fore-end, its line running up to the harpoon. Frontier work: bare steel, walnut, worn leather. The impossible material: the line wound on the reel and running up to the harpoon's eye is a thin rope of flowing river water, clear and quick, coiled tight on the reel and never spilling a drop. The story detail: a small brass house key tied to the reel's crank on a short cord. No colour accent: the water's cool clear blue-grey is the only colour beside steel and walnut.
 Avoid: a whale or fish, splashes or drops, a glow, a rope of ordinary fibre, a trident or spear-gun with rubber bands.
 ```
 

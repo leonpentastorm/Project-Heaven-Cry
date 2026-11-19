@@ -57,8 +57,10 @@ keep their own icons.
 
 **The cool**
 6. **The silhouette carries the edge:** a bayonet, a saw-back, trench spikes, a ported brake, a drum, a censer, a
-   blade, a hook. Every weapon gets one thing that's sharp, heavy or strange.
-7. **A faction signature in one or two lines** (Suggested until Leon confirms each):
+   blade, a hook. Every weapon gets one thing that's sharp, heavy or strange, except guns (rule 8): a gun's edge is its
+   real pattern, and nothing is added that changes its outline.
+7. **A faction signature in one or two lines** (Suggested until Leon confirms each); on a gun the signature goes only
+   into the maker's touch inside the outline (rule 8):
    - **Hellraiser Divisions:** bayonets, trench spikes, ported brakes, slab shapes.
    - **Lumeri Church:** lancet windows, the censer, spires, prayer beads, incense.
    - **Adamantile Brigade:** plate shapes, oversized guards, crests.

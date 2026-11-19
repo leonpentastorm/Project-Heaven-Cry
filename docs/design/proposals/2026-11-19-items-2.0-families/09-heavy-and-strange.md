@@ -268,3 +268,15 @@ The other mana arms (`spellslinger_pistol`, `evoker_blade`, `emanator_gauntlet`,
   entry's; a Pattern entry's silhouette follows its pattern). One frame rule for the pack: inside the central 90%, at
   least 50 px of margin.
 - The intake sentence was removed; the order note (paint the four file-10 repaints first) was added.
+
+## Third verification (19 Nov 2026): the twin rotary made a Pattern entry
+
+- **Twin rotary (`hellraiser_twin_rotary`):** marked Pattern again, superseding the second verification's note above. R3
+  says every gun reads as a real pattern and only melee, flamers, powered melee and thrown weapons are invented, so the
+  entry is now two guns of one pattern (the six-barrel electrically driven rotary machine gun) on that pattern's twin
+  cradle with spade grips, chute-fed from a backpack box. The family painting `weapon-hellraiser_rotary.png` is attached
+  for materials, accent and scale only; its drum is named as the single rotary's shape, so the prompt and the reference
+  no longer disagree about the feed.
+- **The pattern clause** is now word for word the same in files 06, 09 and 10, and says the maker's touch may be a band,
+  rivet, tag or a small blank gilt boss (a plain shape, so not a maker mark). Files 06 and 10 call Adamantile's touch a
+  "blank gilt boss" instead of a "gilt crest".
