@@ -1238,6 +1238,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lance--celestial",
+      "path": "art/icons/gear/weapon-lance--celestial.png",
+      "sha256": "c54d3b8bef1fe98bfecdb3acc4ab5cefd3a8537102d60ead859be93a57660bc4",
+      "label": "Lance — Celestial",
+      "family": "weapon-lance",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lance--celestial.png",
+        "sha256": "a1808e296bbc5a53f2ac9ea59bd0471e5ea7d90b63cd70771b402098a8b4506f"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lance--celestial.png",
+        "sha256": "c54d3b8bef1fe98bfecdb3acc4ab5cefd3a8537102d60ead859be93a57660bc4"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lance--celestial.txt",
+        "sha256": "e36bdea2b5210ceabdbd2dad4f3edeef2ab9efa2d43ac020824b1318ab51fd10"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-lance.png",
+          "sha256": "20bff5d57a4df6bee81a29c9ab1e01390b6f232bf3073a275d99a105825a04a3"
+        },
+        {
+          "path": "art/icons/gear/weapon-lance--relic.png",
+          "sha256": "e05eec12c0fcff034c3e28928a45621a2f7e9ca2b840c7ddef60f4f2072a4e2d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lance--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-lance--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-lance--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-lance--celestial.png"
+      },
+      "export_hashes": {
+        "256": "2f677863310dbc19fb92a33debeccbae825d5b65637a59dd415518cb8cbbdabb",
+        "128": "a0631afeb9907085ef95b3dffe7f6ea2cd8a37f3c18d815fa652ee332bada5ba",
+        "64": "633a9f0eec53d3b39e1c30fcf8b79b62318d922e9382612bab8b9242293045af",
+        "32": "0e31753777e8bd61c7973714444123807db40ed4d24a26a5979908250b25d4a2"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-lance",
+      "outline": {
+        "solid_alpha_iou": 0.9516431168787136,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 21
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
