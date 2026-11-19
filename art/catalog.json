@@ -23077,6 +23077,42 @@
         "different_pixels_32": 9,
         "different_pixels_64": 46
       }
+    },
+    "armour-padded_undershirt--masterwork": {
+      "label": "Padded Undershirt — Masterwork",
+      "path": "art/icons/gear/armour-padded_undershirt--masterwork.png",
+      "sha256": "32f891b7b470a4707b9277d5f42c328b0ff7cf4de7e1b833535fcb07a643ac5e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-padded_undershirt--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-padded_undershirt--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-padded_undershirt--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-padded_undershirt--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-padded_undershirt--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-padded_undershirt",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9462312614534203,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 15,
+        "different_pixels_64": 68
+      }
     }
   },
   "survival_art": {
