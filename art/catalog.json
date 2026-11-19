@@ -18918,6 +18918,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "weapon-sabre--celestial": {
+      "label": "Sabre Celestial",
+      "path": "art/icons/gear/weapon-sabre--celestial.png",
+      "sha256": "9664edff03e39031484333f33c58ba9a6cd58f81a2ba0b62afd5488d1a1da41b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/weapon-sabre.png",
+      "source_path": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-sabre--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-sabre--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-sabre--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-sabre--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {
