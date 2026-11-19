@@ -382,5 +382,37 @@
     "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-utility_belt--celestial.png",
     "size64_mask_differing_pixels": 87,
     "sha256": "d06f5b32f7c5f5c5cda109892f5bab4228e2a2b61037aae75a63806bcf7049fe"
+  },
+  {
+    "id": "armour-armoured_belt",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--fine.png",
+    "size64_mask_differing_pixels": 15,
+    "sha256": "853ba3fee0801aa74f332194db02f612edd816ec4b7c88ee4b1c9956124416ca"
+  },
+  {
+    "id": "armour-armoured_belt",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--masterwork.png",
+    "size64_mask_differing_pixels": 18,
+    "sha256": "0af186f98e2e52927462ac03ff6bc43ed2115770077f99b3652c9b05425fe462"
+  },
+  {
+    "id": "armour-armoured_belt",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--relic.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "26e9a5f8e86ec3b219ee5cd1fcc397196c7775890741e1c151057bc3f3d50087"
+  },
+  {
+    "id": "armour-armoured_belt",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--celestial.png",
+    "size64_mask_differing_pixels": 17,
+    "sha256": "2a541fb480af4f997dc3fa56928d9005227fa12a5a280bd02006ca4861680b4a"
   }
 ]

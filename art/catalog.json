@@ -19880,6 +19880,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "armour-armoured_belt--fine": {
+      "label": "Armour-Armoured Belt Fine",
+      "path": "art/icons/gear/armour-armoured_belt--fine.png",
+      "sha256": "853ba3fee0801aa74f332194db02f612edd816ec4b7c88ee4b1c9956124416ca",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/armour-armoured_belt.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-armoured_belt--fine.png",
+        "128": "art/icons/gear/exports/128/armour-armoured_belt--fine.png",
+        "64": "art/icons/gear/exports/64/armour-armoured_belt--fine.png",
+        "32": "art/icons/gear/exports/32/armour-armoured_belt--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {
