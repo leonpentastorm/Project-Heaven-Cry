@@ -3636,6 +3636,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-attuner--relic",
+      "path": "art/icons/gear/focus-attuner--relic.png",
+      "sha256": "ad422c865da2882b5606d1d8a701205acc1644cc1df9216b9570147f9f772774",
+      "label": "Attuner — Relic",
+      "family": "focus-attuner",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-attuner--relic.png",
+        "sha256": "3b35de319ec69671d3e38aa17ac15ba28b465dd155cd75815a226817188d6830"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-attuner--relic.png",
+        "sha256": "ad422c865da2882b5606d1d8a701205acc1644cc1df9216b9570147f9f772774"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-attuner--relic.txt",
+        "sha256": "72afb7ebde4d02bde31dfa39ecafce56d2f05626253f89d5e85957fea20148b4"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/focus-attuner.png",
+          "sha256": "e5c096f0816f62ee9e2a86cacb9741a5c73d21dc35dea0f6c66f8d55a9b27a84"
+        },
+        {
+          "path": "art/icons/gear/focus-attuner--masterwork.png",
+          "sha256": "6e60057ed370c9a255905d12320800856bfb0fee7b6c9082065972d668d1b228"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-attuner--relic.png",
+        "128": "art/icons/gear/exports/128/focus-attuner--relic.png",
+        "64": "art/icons/gear/exports/64/focus-attuner--relic.png",
+        "32": "art/icons/gear/exports/32/focus-attuner--relic.png"
+      },
+      "export_hashes": {
+        "256": "2859551d6d90aa789a3312eac8120cd103120fab8527e9dd669c7170fed4e4ef",
+        "128": "162d1c234aa381b3d2a982ff6d860e1633db7bbca0f82ac7fee785deb7b19167",
+        "64": "58d7370249681b324ea76bd583b317cd2ba8d8403d0404c6d1ddbd2c24e068d5",
+        "32": "f1377c5b016414f66ee8d01151381474c725c73131be9519e7897b9a23e60d82"
+      },
+      "grade": "relic",
+      "standard_id": "focus-attuner",
+      "outline": {
+        "solid_alpha_iou": 0.9630832466445082,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 45
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
