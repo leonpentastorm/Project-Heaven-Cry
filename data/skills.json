@@ -90,7 +90,7 @@
           },
           {
             "at": "from 1",
-            "text": "Shield in hand: +{=per_point.numbers.shield} plate a gain (a shield in each hand: ×{=per_point.numbers.two_shields})"
+            "text": "Shield in hand: +{=per_point.numbers.shield} plate a gain for each shield (one in each hand: +{=per_point.numbers.two_shields})"
           },
           {
             "at": "each from 2",

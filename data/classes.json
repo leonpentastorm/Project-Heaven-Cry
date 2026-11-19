@@ -3727,7 +3727,7 @@
           "rest_mult": 3,
           "run_per_stage": 1
         },
-        "text": "{=effects.0.ap} AP · {=effects.0.res.mp} MP: heal a friend beside you or a Bonded friend in sight and stop Bleeding · once an ally a turn · out of a fight ×{=numbers.rest_mult} · {=numbers.run_per_stage} a stage map in a run",
+        "text": "{=effects.0.ap} AP · {=effects.0.res.mp} MP: heal a friend beside you or a Bonded friend in sight and stop Bleeding · once an ally a turn · out of a fight it heals {=numbers.rest_mult|more}% more · {=numbers.run_per_stage} a stage map in a run",
         "effects": [
           {
             "op": "grant_action",
@@ -4358,7 +4358,7 @@
         "name": "Shape",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "The free Pump each turn adds +{=effects.0.value} to the multiplier",
+        "text": "The free Pump each turn adds {=effects.0.value|pct}% more damage to a Damage design's Release",
         "effects": [
           {
             "op": "stat_mod",
