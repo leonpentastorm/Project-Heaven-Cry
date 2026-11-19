@@ -1,0 +1,16 @@
+{
+  "id": "shield-riot_shield",
+  "tier": "relic",
+  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--relic.png",
+  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--relic.png",
+  "size64_mask_differing_pixels": 15,
+  "sha256": "5da0d0fe4dc1e7fef783464b90b086bdd0a547eddd3ba9dcf3b47a41dfaf645e",
+  "path": "art/icons/gear/shield-riot_shield--relic.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/shield-riot_shield--relic.png",
+    "128": "art/icons/gear/exports/128/shield-riot_shield--relic.png",
+    "64": "art/icons/gear/exports/64/shield-riot_shield--relic.png",
+    "32": "art/icons/gear/exports/32/shield-riot_shield--relic.png"
+  },
+  "source_sha256": "6378756e7da1f453e1749ce4595060e9e5a8db8b0e91d1cd52bbfb1a7bf32888"
+}

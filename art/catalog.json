@@ -19516,6 +19516,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "shield-riot_shield--relic": {
+      "label": "Shield-Riot Shield Relic",
+      "path": "art/icons/gear/shield-riot_shield--relic.png",
+      "sha256": "5da0d0fe4dc1e7fef783464b90b086bdd0a547eddd3ba9dcf3b47a41dfaf645e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/shield-riot_shield.png",
+      "source_path": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-riot_shield--relic.png",
+        "128": "art/icons/gear/exports/128/shield-riot_shield--relic.png",
+        "64": "art/icons/gear/exports/64/shield-riot_shield--relic.png",
+        "32": "art/icons/gear/exports/32/shield-riot_shield--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {
