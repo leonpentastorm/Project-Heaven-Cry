@@ -138,6 +138,19 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **m10** dead code and module-private helpers. `0f4e9523a`.
 - **The Emanator stowed** says so on the Strain row (Step 3e). `079f78e2f`.
 
+### Co-op (`wip/0.32-coop`; hand-off `docs/design/handoffs/0.32-COOP.md`; spec rules 1.80 items 6800-6802)
+
+- **The Narrator's desk, the rest of the turn.** Owed: voice hooks, NPCs, objects, hazards, triggers, loot, XP and the other optional fields of `narrator/turn`; a fight made up on the spot (only the campaign's prepared fights now). [M] [partly; checked in code 19 Nov 2026] [spec 6802]
+- **The human Narrator's private view in the story.** The host sees what the players see (hidden objects and lurkers stay hidden from the host too); a Narrator needs them. Needs a ruling on what the seat sees, then `viewFor`. [M] [not built] [spec 6802]
+- **Input delay from far away.** Locally a guest's action is on the guest's screen in about 60 ms (median); Leon measures 2 to 3 s from Vietnam to a US host. The local hops are not where the time goes: measure the live room (the same stamps on the live site) before changing anything. [M] [open] [0.32-COOP.md]
+- **Co-op stall (0.21.0).** Not reproduced in 0.32's loop either (see the hand-off); `coop-loop.mjs` stays as the opt-in hunt. [S] [open; watch] [coop-stall.md]
+
+#### Built in 0.32 (not yet live)
+
+- **2a-2c, the room link:** a replaced link (4000) stops and says "Opened in another tab" with Take over here; ping and retry timers cleared on close; hosting or joining again closes the old link. `d2a5a6636`.
+- **"I'll narrate":** selectable; the Narrator's desk (narration, checks with a TN, rulings Yes/No, a prepared fight); the fight screen's Narrator buttons tested end to end (`narrate.mjs`). `cc18b7e79`.
+- **The co-op loop** (`coop-loop.mjs`, hop stamps) and the fight screen's way out counting only a real wait. `d2a5a6636`, `89abfaf66`.
+
 ### 0.32: needs a primitive (lead to rule)
 
 One line each, with the rule that needs it. Nothing here is built; each waits for the lead's approval after a look at `docs/ENGINE-HOOKS.md`.
@@ -179,8 +192,6 @@ One line each, with the rule that needs it. Nothing here is built; each waits fo
 - **Enemies moving for an angle on an unattacked character.** [M] [not built; checked in code 19 Nov 2026] [spec 4969(b)]
 - **Cover arc: a pillar outside the 45 degree arc counts nothing.** The arc is built (`rules.json arc_deg`); this is a design call, to rule before building. [S] [partly; checked in code 19 Nov 2026] [spec 4969(c)]
 - **Engine pieces not built:** a `per_stage` uses scope; a thrown Relic property; an fx event for "fight joined". Each needs the lead's approval first (CLAUDE.md, no rebuild). [M] [not built; checked in code 19 Nov 2026] [spec 5010; verification]
-- **"I'll narrate" in a room.** Human-mode code exists but picking it only shows "coming soon". Owed: the selection and the Narrator screen end to end, with the ruling buttons tested. [L] [partly; checked in code 19 Nov 2026] [SESSION-HANDOFF 6.2-6.3]
-- **Co-op stall.** One two-player fight in five stalled on the guest's turn (0.21.0), never reproduced. [M] [open; from documents only] [coop-stall.md]
 - **Delivered art with no place in the game** (wiring, not new art; `move-breath` is wired). Owed: the 7 Tending passive pictures (no `tend-verb` alias); `icon-resource-credits/xp/devotion` and the 7 `icon-tone-*` (`uiMarkOf('resource'/'tone')` never called); `move-open-guard`, `move-sway`, `move-counter`; `camp-step-ready` (checklist has no `ready` key); the `move-draw-fire` placeholder is not in assets.json. [M] [partly; checked in code 19 Nov 2026] [SESSION-TODO O; verification]
 - **Stand Behind Me.** An icon exists, no move in data. [S] [not built; checked in code 19 Nov 2026] [verification]
 
