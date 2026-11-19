@@ -275,7 +275,7 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
         {!iconOnly && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{btnText}</span>}
       </button>
       {creditP.shown && (
-        <div role="status" className={presenceCls(side === 'left' ? 'phc-a-left' : 'phc-a-right', creditP.closing)} style={{ position: 'fixed', [side]: 16, bottom: 112, zIndex: 9, width: 300, padding: '10px 12px', borderRadius: 12, background: '#10151F', border: '1px solid #3B475D', borderLeft: '4px solid ' + creditP.shown.color, boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 2, pointerEvents: 'none' }}>
+        <div role="status" data-phc-toast="music" className={presenceCls(side === 'left' ? 'phc-a-left' : 'phc-a-right', creditP.closing)} style={{ position: 'fixed', [side]: 16, bottom: 112, zIndex: 9, width: 300, padding: '10px 12px', borderRadius: 12, background: '#10151F', border: '1px solid #3B475D', borderLeft: '4px solid ' + creditP.shown.color, boxShadow: '0 10px 30px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column', gap: 2, pointerEvents: 'none' }}>
           <div style={label}>♪ NOW PLAYING</div>
           <div style={{ fontSize: 'var(--fs-body)', fontWeight: 700, color: '#E7EBF3' }}>{creditP.shown.title}</div>
           <div style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>{creditP.shown.artist}</div>

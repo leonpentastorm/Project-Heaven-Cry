@@ -75,6 +75,11 @@ describe('level-up screen', () => {
   it('level 3: a card selects and previews; the confirm bar commits, for good', async () => {
     setup((c) => { c.level = 3; c.xp = 250; c.attrs.agility = 4; c.attrs.perception = 4; c.attrs.insight = 4; for (const k of ['endurance', 'strength', 'intelligence', 'expression', 'determination', 'virtue']) c.attrs[k] = 2; });
     const { el, root } = await mount();
+    // item C (0.31.11): the right panel's class block is one line while the class is still to choose; a click opens the chooser
+    expect(el.querySelector('.phc-lu-class-line')!.textContent).toBe('Class: choose it from TO CHOOSE');
+    expect(el.querySelector('.phc-lu-chooser')).toBeNull();
+    await React.act(async () => { (el.querySelector('.phc-lu-class-fold') as HTMLButtonElement).click(); });
+    expect(el.querySelector('.phc-lu-chooser[data-chooser="class"]')).toBeTruthy();
     await React.act(async () => { (el.querySelector('.phc-lu-tc[data-kind="class"]') as HTMLButtonElement).click(); });
     const cards = Array.from(el.querySelectorAll('button.phc-lu-class-card')) as HTMLButtonElement[];
     expect(cards.map((b) => b.getAttribute('data-class')).sort()).toEqual(['bard', 'infiltrator', 'marksman']);
@@ -83,8 +88,7 @@ describe('level-up screen', () => {
     const id = cards[1].getAttribute('data-class')!;
     await React.act(async () => { cards[1].click(); });
     expect(G.characters[Object.keys(G.characters)[0]].classId).toBeFalsy(); // a card only selects
-    expect(el.querySelector('.phc-lu-class-kicker')!.textContent).toMatch(/PREVIEW/);
-    expect(el.querySelector('.phc-lu-class-name')!.textContent).toBe(CLASS[id].name);
+    expect(el.querySelector('.phc-lu-class-line')!.textContent).toBe('Class: choose it from TO CHOOSE'); // not chosen yet: the side panel stays one line
     const confirm = el.querySelector('button.phc-lu-confirm-btn') as HTMLButtonElement;
     expect(confirm.textContent).toContain(CLASS[id].name);
     await React.act(async () => { confirm.click(); });

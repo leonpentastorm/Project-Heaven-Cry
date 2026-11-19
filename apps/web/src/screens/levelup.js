@@ -70,6 +70,22 @@ ensureStyle('phc-levelup', [
 
 export class LevelUpLogic extends DCLogic {
   constructor(props) { super(props); this.state = {}; }
+  /** How many TO CHOOSE chips fit whole in the strip, measured after the frame is drawn (and on a resize): the leading
+   *  chips whose right edge is inside the strip; with the '+N more' chip shown, all of them may fit in the room it takes. */
+  tcFit(n) {
+    if (typeof window === 'undefined' || typeof requestAnimationFrame === 'undefined') return;
+    if (!this._tcResize) { this._tcResize = () => this.tcFit(this._tcN || 0); window.addEventListener('resize', this._tcResize); }
+    this._tcN = n; cancelAnimationFrame(this._tcRaf);
+    this._tcRaf = requestAnimationFrame(() => {
+      const box = document.querySelector('.phc-lu-tc-scroll'); if (!box) { if (!document.querySelector('.phc-lu-head')) { window.removeEventListener('resize', this._tcResize); this._tcResize = null; } return; }
+      const chips = [...box.querySelectorAll('.phc-lu-tc')], right = box.getBoundingClientRect().right + 0.5;
+      const mb = document.querySelector('.phc-lu-tc-more'), extra = mb ? mb.getBoundingClientRect().width + 6 : 0;
+      let fit = chips.findIndex((b) => b.getBoundingClientRect().right > right); if (fit < 0) fit = chips.length;
+      if (fit < chips.length && chips.every((b) => b.getBoundingClientRect().right <= right + extra)) fit = chips.length;
+      const next = fit >= chips.length ? null : fit;
+      if (next !== (this.state.tcShown ?? null)) this.setState({ tcShown: next });
+    });
+  }
   /** After a +1, the row says what was gained for a moment, at the place clicked. */
   flash(id, text) { if (!text) return; this.setState({ flash: { id, text } }); clearTimeout(this._fl); this._fl = setTimeout(() => this.setState({ flash: null }), 1600); }
   renderVals() {
@@ -165,7 +181,7 @@ export class LevelUpLogic extends DCLogic {
       name: id ? k.name : c.level >= 3 ? 'Choose your class' : 'No class yet',
       nameStyle: "font-family: 'Spectral', serif; font-size: 34px; font-weight: 600; line-height: 1.05; color: " + (id ? em.ink : '#E7EBF3'),
       rank: id ? 'RANK ' + ROMAN_RANK[rank] : '', rankStyle: 'font-size: 22px; font-weight: 700; letter-spacing: 0.14em; color: #E7EBF3',
-      sub: id ? k.core.toUpperCase() + ' · ' + (k.tagline || '') : c.level >= 3 ? 'Pick one of the classes above, then confirm.' : 'Your class finds you at level 3 (250 XP): the class of your highest attribute (on a tie, you choose). Until then, these lead.',
+      sub: id ? k.core.toUpperCase() + ' · ' + (k.tagline || '') : c.level >= 3 ? 'Choose it from TO CHOOSE: the Class chip opens the chooser.' : 'Your class finds you at level 3 (250 XP): the class of your highest attribute (on a tie, you choose). Until then, these lead.',
       sig: prog ? prog.skills.map((s) => ({ key: s.id, name: s.name, pts: s.pts, style: 'font-size: var(--fs-sub); font-weight: 700; color: ' + ATTR[SK[s.id].attr].ink })) : [],
       total: prog ? prog.label : '', totalStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: ' + (prog ? prog.ink : '#A3AEC2'), nextLine: prog ? prog.nextLine : '',
       bar: prog ? 'height: 100%; border-radius: 99px; background: ' + (prog.ink) + '; width: ' + prog.pct + '%' : '',
@@ -173,9 +189,11 @@ export class LevelUpLogic extends DCLogic {
       ranks, closest, hasClosest: closest.length > 0,
       // Advanced classes are shelved (Class Roster Revision 3): one quiet line, nothing to learn.
       advNote: ADVANCED_SHELVED, hasAdvNote: !!c.classId && !advancedLive(),
-      // the panel folds to one line (its class, rank and the next rank's need); open while a class is being chosen
-      fold: foldVals('levelup:class', { byRule: !!c.classId, redraw }),
-      line: id ? k.name + ' ' + ROMAN_RANK[rank] + (prog && prog.nextLine ? ' · ' + prog.nextLine : '') : c.level >= 3 ? 'Choose your class' : 'Class at level 3',
+      // the panel folds to one line (its class, rank and the next rank's need); while the class is still to choose it
+      // stays one line that opens the centred class chooser (0.31.11 item C: the choice lives in TO CHOOSE)
+      fold: choosing && !c.classId ? { ...foldVals('levelup:class', { byRule: true, redraw }), open: false, folded: true, expanded: 'false', chev: '▸', toggle: () => this.setState({ chooser: 'class', armPerk: null }) }
+        : foldVals('levelup:class', { byRule: !!c.classId, redraw }),
+      line: c.classId ? k.name + ' ' + ROMAN_RANK[rank] + (prog && prog.nextLine ? ' · ' + prog.nextLine : '') : choosing ? 'Class: choose it from TO CHOOSE' : 'Class at level 3',
     };
     // ---------- TO CHOOSE (docs/design/handoffs/2026-11-18-skill-screens-redesign.md section 4 item 5): one chip a choice
     // waiting, in a fixed order (Class, then forks, then perk steps, each named with its skill); a chip opens its chooser
@@ -188,9 +206,15 @@ export class LevelUpLogic extends DCLogic {
     ];
     if (this.state.chooser && !queue.some((q) => q.key === this.state.chooser)) queueMicrotask(() => this.setState({ chooser: null, armPerk: null }));
     const cur = queue.find((q) => q.key === this.state.chooser) || null, openCh = (key) => this.setState({ chooser: key, armPerk: null });
-    const toChoose = queue.map((q) => ({ key: q.key, kind: q.kind, text: q.text, open: () => openCh(q.key), expanded: cur && cur.key === q.key ? 'true' : 'false',
+    // the strip shows the chips that fit whole (never one cut at the edge, never under the MAX HP chip); the rest are
+    // counted on a '+N more' chip that opens the first hidden choice (0.31.11 item B). How many fit is measured after
+    // the frame is drawn (tcFit), so a chip that does not fit keeps its place but is not shown.
+    const shown = this.state.tcShown == null ? queue.length : Math.min(queue.length, this.state.tcShown), more = queue.length - shown;
+    const toChoose = queue.map((q, i) => ({ key: q.key, kind: q.kind, text: q.text, open: () => openCh(q.key), expanded: cur && cur.key === q.key ? 'true' : 'false',
+      hidden: i >= shown ? 'true' : 'false', tab: i >= shown ? '-1' : '0',
       style: 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; white-space: nowrap; border: 1px solid #FFFFFF; '
-        + (cur && cur.key === q.key ? 'background: #FFFFFF; color: #0A0D13' : 'background: transparent; color: #FFFFFF') }));
+        + (cur && cur.key === q.key ? 'background: #FFFFFF; color: #0A0D13' : 'background: transparent; color: #FFFFFF') + (i >= shown ? '; visibility: hidden' : '') }));
+    this.tcFit(queue.length);
     const after = cur ? queue.find((q) => q.key !== cur.key) : null;
     const chBtn = 'min-height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer';
     const ch = { open: !!cur, kind: cur ? cur.kind : '', isPerk: !!cur && cur.kind === 'perk', isFork: !!cur && cur.kind === 'fork', isClass: !!cur && cur.kind === 'class',
@@ -225,6 +249,8 @@ export class LevelUpLogic extends DCLogic {
       spend: [left ? left + ' Skill point' + (left > 1 ? 's' : '') : '', attrLeft ? attrLeft + ' Attribute point' + (attrLeft > 1 ? 's' : '') : ''].filter(Boolean).join(' · ') || 'Nothing to spend',
       choosing, classCards, pick, cls,
       famTabs, tree, toChoose, hasToChoose: toChoose.length > 0, ch,
+      tcHasMore: more > 0, tcMoreText: '+' + more + ' more', tcMoreAria: more + ' more to choose: open the next', tcMoreOpen: () => (queue[shown] ? openCh(queue[shown].key) : null),
+      tcMoreStyle: 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; white-space: nowrap; border: 1px dashed #FFFFFF; background: transparent; color: #FFFFFF',
       ceil: 'Attributes: ' + ceil + (cap < 10 ? ' (' + [8, 9, 10].filter((n) => n > cap).map((n) => n + ' from level ' + attrCapLevel(n)).join(', ') + ')' : '') + (cap < 10 && legendRoom(c) > 0 ? ' · your Legendary Deed lets one Attribute go 1 above it' : ''),
       rules: "A skill can't be higher than the attribute above it, and an attribute can't pass the ceiling for your level; 10 is the top. At 3, 5, 7 and 9 points in a skill: one perk step. Odd levels: +2 Skill points. Even levels: +1 Skill point and +1 Attribute point. Unspent points keep.",
       // Take back what this visit spent (points and perk steps), until a fight or a class settles it.
