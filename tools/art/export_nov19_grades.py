@@ -151,6 +151,10 @@ def export(asset_id, source):
     }
     catalog = ROOT / 'art/catalog.json'
     catalog.write_text(set_catalog_entry(catalog.read_text(), 'gear', asset_id, asset))
+    # Record the actual selected request, including any quality correction.
+    prompt_path = BASE / f'prompts/{asset_id}.txt'
+    prompt_path.parent.mkdir(parents=True, exist_ok=True)
+    prompt_path.write_text(job['prompt'].rstrip() + '\n')
     manifest = json.loads((BASE / 'manifest.json').read_text())
     manifest['assets'].append({
         'id': asset_id, **record(target), 'label': job['label'], 'family': job['family'],

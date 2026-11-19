@@ -35,6 +35,8 @@ def validate(selected=None, complete=False):
         assert selected in delivered, 'Selected asset has not been delivered'
     hashes = {p: h for h,p in (line.split('  ',1) for line in (ROOT/'art/checksums.sha256').read_text().splitlines())}
     for a in manifest['assets']:
+        job = next(j for j in queue if j['id'] == a['id'])
+        assert (ROOT/a['prompt']['path']).read_text().strip() == job['prompt'].strip(), 'Selected prompt mismatch: '+a['id']
         entry = catalog[a['id']]
         assert a['id'] in expected and entry['path'] == a['path'] == f'art/icons/gear/{a["id"]}.png'
         assert entry['status'] == a['status'] == 'review-candidate'
