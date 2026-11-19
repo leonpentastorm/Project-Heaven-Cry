@@ -3152,11 +3152,13 @@ c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/p
 ea277a3661558ecf2ef5a2cd6dd56b6522d4a880cd432d4c15bf0c7757317e30  art/_archive/prompt-pack/2026-11-19-file-08/PROGRESS.md
 de170f113cd3ebf374aac961e312a61a79a465e55b2e89ad3c8a0aa108d7ab11  art/_archive/prompt-pack/2026-11-19-file-08/WORK-CLAIMS.md
 0f4451f582801b83b6bd059a2ff4a825f69b4d0f35ce8d2b4496b99857f8867c  art/_archive/prompt-pack/2026-11-19-file-08/archive-proof.py
-69d1332bdfb31374677e6018a74691f8b369f1a49ec851a88633f5e50598ac91  art/_archive/prompt-pack/2026-11-19-file-08/candidate-manifest.json
+b5240fe402f2d459ad9284f34af5253d53490b1f752ef73411b6d0658a3b0f82  art/_archive/prompt-pack/2026-11-19-file-08/candidate-manifest.json
 2ab19d7ce0c09973488c7db7de3e8e600a19f7be0fad6b8c971d4094e161af57  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--celestial.png
 f28790fe4f8599f15cf52239a86074aaf8f6cd388a3af1bb143fdb59f46e25e2  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--fine.png
 4222b0d6fef781f9703e9c928450b5b7631f3c977c55ca4fbebe1861bbbcdd09  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--masterwork.png
 307dc24a5f2beaf30cb51945170de0f47f37240fb5a3da66b18cd0755c73684b  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--relic.png
+d3f2925bda407b4c640c0c75e98d9b2bbd1e7f9fcc7bbaab50591de18fa01168  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-crossbow--fine.png
+6b06c89c770e650af30465f5a2a1bc8aa8f33e8402f79b417f4e06116bfcd969  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-drifter_revolver--fine.png
 d8e2f577764ef58474fb59ebe68d50c577047e4576c104ceb97272478a3209ad  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--celestial.png
 81e1607c196cf5e1b8f686913e1b75e1cb235669c8c54dff4f3e1c9e2dfeacbd  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--fine.png
 63be464d4cc977c8fbc1beebaad6b59e29fb30c3de01f8292aa8c49f9f1d4be7  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--masterwork.png
@@ -3173,6 +3175,8 @@ b7281bcfd74014aee19b50f1240b3872cade0003eff71e12a52bf59e612837d6  art/_archive/p
 d64f0f4e5ebe724f46ba63326c7a471c984701a761b3316c6192fc2745c988f8  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--fine.png
 492f339ecf0994159935f454f647ff6e8f81b1b95dbd6a4c4a9503918981d542  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--masterwork.png
 9724bff8e385745dd42df18f7094ea446face0d3c47d23700bda03d1593d67e6  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--relic.png
+a51ad4a6e04ecf8a9ae5d27a775933bcae317c6953755dbe3e0bc8007d364cc0  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-repeating_crossbow--fine.png
+6020773de63f70586e913a349ec39b54de6bc6f8d35d5bab57f7d664d7a2c209  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-repeating_crossbow--masterwork.png
 9664edff03e39031484333f33c58ba9a6cd58f81a2ba0b62afd5488d1a1da41b  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--celestial.png
 3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--fine.png
 e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--masterwork.png
@@ -3181,6 +3185,7 @@ e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/_archive/p
 da7b6ed8bfc762745ad0e9388be1e5a362352770e43d03d00e33fbc476b93a85  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-combat_knife--fine.json
 b21058413d711cb910cc5ec1c9bdf688edabf3db92333c23ae3f6da5a7abb9d0  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-combat_knife--masterwork.json
 8a3ea887aa0a78726357e43e888c022633d5e2e401ea21def548b7a95ca6ebe4  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-combat_knife--relic.json
+00b0b4b12ea5f3bab1c0c3579070045bec9c3d9c83c701467b9ebd8c39f6bf7f  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-drifter_revolver--fine.json
 002575a1123051b01b128b9f2e91b7bd064cd9d6a55d1d8699014b1f86cd1047  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--celestial.json
 549cebe53d0b8eda2c71df6eb46782d41a23aa876986ea159f993f3398aedcef  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--fine.json
 2543d38554d583b5692c2421e92698965d74606f29137b7a3c770d9c36a478fc  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--masterwork.json
@@ -3203,6 +3208,7 @@ c91addb4c4282b8436fd7786a7bcf5332d12283e2d052ddd1318f1c2f40476fc  art/_archive/p
 b3a3a7631ca137a9322c86a86ed12bb7815ef93c6faaca2ded3f6c7fc2dc2835  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-sabre--relic.json
 1d1a564bbc70765da2e0341483264b02230d2c01253b5fdf4b0fe80604b8ecd3  art/_archive/prompt-pack/2026-11-19-file-08/drafts/crossbow-masterwork-service-response.json
 6e43ed920243bd44d35a758eaa36a197ec46e5d9ad61e99b9465921fccc4e047  art/_archive/prompt-pack/2026-11-19-file-08/drafts/drifter-masterwork-service-response.json
+72e1759d32a21e590bcbe31d9ddde3f8193fbd18af8b3b91b0c8ae1677711349  art/_archive/prompt-pack/2026-11-19-file-08/drafts/repeating-crossbow-relic-service-response.json
 3d1268723eed6f9b126b7e6f9057e29c1032113284c3e75c822fb8066b3e26c4  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.json
 981dd851ac71828d106fc6e5cd0b9c268b69a58962830aa08522bda3265274da  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.png
 7c0e200935f2841623fbf6d824999bf1802fb3376975f1c13c70d62020ecbb66  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--fine.json
@@ -3263,13 +3269,13 @@ eb8b141554761006b8581f7a57662acabd1761f25f9c2ed1d4cccefb1c5d81f8  art/_archive/p
 a25d818351d0b8191c1d209601f5c7f405d92df9b7f7c86318fd09a89ce11001  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--masterwork.png
 853e2ea35a034566cfb1e05e4873e7d0b4eb01f7079955551e0957ec491a91cc  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--relic.json
 d0c7775b5c19b84e5a1178cb913136e6c9ae915b5d603b26d9d4263173e4e0a7  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--relic.png
-f1553b2523fcfbc15852c409067c2c8fb12d9b7e4f7d2c8c58c128617c09194f  art/_archive/prompt-pack/2026-11-19-file-08/prepare-candidates.py
+bd8aa85d66b09a4ae3fb5af68933a2b70548d8de5b80e4123b8e3e1712e674b5  art/_archive/prompt-pack/2026-11-19-file-08/prepare-candidates.py
 e7a735227aa2720d9397ccee2d3e15cec98e007353011825addca57af5c63367  art/_archive/prompt-pack/2026-11-19-file-08/register-grade.py
 79d3c0dbc7faba1cddf28fd3581c00527cafab9944416e4778529599f4093781  art/_archive/prompt-pack/2026-11-19-file-08/review/complete-proof-progress.jpg
 ad1c63c5da9e8985fa216f1022b6e3787608f15e5c7a9c429b134c8b895ecc39  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-proof-retry.jpg
 684ad11905fdb53ebd4323ff5a36881197c747a37cc5d765a7c1bcf58f1d543f  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-proof-retry.json
 044c57bbbfeb998d681132071f5a52f10e225cee796a0e98fdbe17325e53e73a  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-shape-proof.jpg
-d930da0527cf11b92ce2af7dd80d9b8e6ddc8c233664401e8730ba1ec759cea9  art/_archive/prompt-pack/2026-11-19-file-08/review/finish-candidates-small.jpg
+179a615da53ee08811ec3631ce1cab1795c0e41f5b76e5a1789084a64a529f6c  art/_archive/prompt-pack/2026-11-19-file-08/review/finish-candidates-small.jpg
 913e777dd59440282c65e02d72b6d6b54670a0ed67959614ea00d99729ec9846  art/_archive/skills/poc4-palette-v3/README.md
 f2378cba014d8bf49dd90a127189b471157bfaacb53aee2f30e1dff08375712e  art/_archive/skills/poc4-palette-v3/generation-briefs.json
 dce5d7fb8be4f153780e3144c12f0c82d117da4d2dea8516f0f4f374210076d8  art/_archive/skills/poc4-palette-v3/manifest.json
@@ -4600,7 +4606,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-ac2516a18b2d8db0791721d10d52bdf4559fb6a9c758241aea403195ab5fb1e7  art/catalog.json
+ae17169d590283ab1d700b5b7206043a5e5ba92e0aa7fd1e3221968a7db46684  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6313,6 +6319,7 @@ bc7973f1ce71e94150a74ef64486925ee2cc571cf3c1fdcf5ebee6fa10c2320e  art/icons/gear
 10097fa66a1db9007bdb7ebf216137812c58daf49346e2c762abf980fed684c6  art/icons/gear/exports/128/weapon-crossbow.png
 8f05ddcba675b21e21c25e1a64dcbbd77d7f68b18d848d65312bed4330c560ca  art/icons/gear/exports/128/weapon-decrkm_autopistol.png
 e41f1201db6d7dcf8f2421781569e9c2c7fae9d0ab40b280cbbd3b69b85fe4de  art/icons/gear/exports/128/weapon-decrkm_smg.png
+07ed7402230093bd0f26482db6e5d9fec449c0a042dbfd72ccf7f68a93c1a2e8  art/icons/gear/exports/128/weapon-drifter_revolver--fine.png
 d32f608c481a593efcdced0d18e712c67be7220adc000289a69cd897163f4473  art/icons/gear/exports/128/weapon-drifter_revolver.png
 23c7f9a0f2848f91b1a619fb7fa531bcfb154f8762bcd29657b4af9a389794ea  art/icons/gear/exports/128/weapon-emanator_gauntlet.png
 b5aa3b89dede588a16211fa7298b3cfa149cf4868d38ac5d6be6e9316d8d83c6  art/icons/gear/exports/128/weapon-emanator_katana.png
@@ -6510,6 +6517,7 @@ f4ab79610a10a94bb5132f8c00ab4194880486960d7a4a935c4473ded756b13c  art/icons/gear
 addf9a8b0c6f0431a82a85ef459b749a46759482b09d3fc2f93cd0eec94676fe  art/icons/gear/exports/256/weapon-crossbow.png
 002271e1c4ea5b170ecb3cbe104e1dd65d069f2118e5d878777c4463008946c4  art/icons/gear/exports/256/weapon-decrkm_autopistol.png
 ba707801ef346a51c5f0048a9ab06657d9a7f5299f422cb8b58d362211d321d1  art/icons/gear/exports/256/weapon-decrkm_smg.png
+e6859a1ca8e0ba59658b554ba44f33d5b2d889b461930c29a34d618e7c9cd495  art/icons/gear/exports/256/weapon-drifter_revolver--fine.png
 00b1b44b8290c05df13bd3bfdb23aed2e9ecf09a1007766d510089e2a485312d  art/icons/gear/exports/256/weapon-drifter_revolver.png
 09bf580b6b3560d41918efafe072caad389c9bb037933e6d8dce08ef451e56fa  art/icons/gear/exports/256/weapon-emanator_gauntlet.png
 02f8d160ea3f7685d0f3a1f35e20ba6b65b83563bcebf16cc4009c02968dee39  art/icons/gear/exports/256/weapon-emanator_katana.png
@@ -6707,6 +6715,7 @@ b0be2e331324186eb28829fdcf983ceb206d8eafc74e28ab4e34edec7e881917  art/icons/gear
 91c7330f314e01b38cc7030eac3504943d6bd3ae0ce5e05051a73d6f95cff3d1  art/icons/gear/exports/32/weapon-crossbow.png
 14c097ba1a561a9ac7ad234d6ecca984d419e8dcec602b10271814f8257b7c63  art/icons/gear/exports/32/weapon-decrkm_autopistol.png
 1628fb56699e58314963b2c541675a14d5fbb41e6bc19c4f68a1ad362ece77d5  art/icons/gear/exports/32/weapon-decrkm_smg.png
+35d11056325036ab354729cd6d4d09651acda3ac7f679fb4521266212f229502  art/icons/gear/exports/32/weapon-drifter_revolver--fine.png
 09ec7f212544995edfdcd7aa501d47f074f358fd08d267c299a97e6cc57b3569  art/icons/gear/exports/32/weapon-drifter_revolver.png
 7c7e3b4408340197efb43fb0828a12f4a24f1f1fecde3e00a04cebe6ce2d537e  art/icons/gear/exports/32/weapon-emanator_gauntlet.png
 6a0af04d93de69b503b6d4425e0090028e84468a3205d14c5d22f8f3897535c6  art/icons/gear/exports/32/weapon-emanator_katana.png
@@ -6904,6 +6913,7 @@ d08ff0e89e9e3727a7b906a52b3ac576ce95a35cd04dd32fe8a30b9d5acd124d  art/icons/gear
 714ba7e108eca05882be93aa07a7f5b8fd4371a76f9c9f16eee5207dd079762d  art/icons/gear/exports/64/weapon-crossbow.png
 0a71a070f4bc69aa06a4184c8968ec506b80dac4c961ac2b6b79f1345121c647  art/icons/gear/exports/64/weapon-decrkm_autopistol.png
 661303c6ad0aa3ce7e7f9746b4e469fd897a6f134a8d2fd85d218145810be573  art/icons/gear/exports/64/weapon-decrkm_smg.png
+4299325e71a8b806b0b52d0d83e82ab47de17e5c35e6b345fb1c3d6dd621fd49  art/icons/gear/exports/64/weapon-drifter_revolver--fine.png
 37f498ebc9b53aba76c7bcf1313bdd4939df0055975944a6ad6e29e110ec43a3  art/icons/gear/exports/64/weapon-drifter_revolver.png
 4c262b651454e75966b5c04a92ddeb9cd2b805fe0eb98287d775ad7d50ea483b  art/icons/gear/exports/64/weapon-emanator_gauntlet.png
 37492a6ae3cf6709ff6a498511a3ae24f52fe339ac12a9d5265e6de5d8d62207  art/icons/gear/exports/64/weapon-emanator_katana.png
@@ -7065,6 +7075,7 @@ af6729737210a873c2c8002ef2d672cb9f2b0257ce3fb9b51f6317265ea1ea10  art/icons/gear
 213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b  art/icons/gear/weapon-crossbow.png
 7e349cb915ee1c555f7faba91f2f4161a8ff541e004c561efde1bf32b2eb0a44  art/icons/gear/weapon-decrkm_autopistol.png
 766f93557fddb09b779d93c042b3d7c23e1c7937101f78119087382729a2bd69  art/icons/gear/weapon-decrkm_smg.png
+6b06c89c770e650af30465f5a2a1bc8aa8f33e8402f79b417f4e06116bfcd969  art/icons/gear/weapon-drifter_revolver--fine.png
 841e8815e3211ea0fee655c185b59f8976cb18dc3c2c08d0eee0d5db70bff11a  art/icons/gear/weapon-drifter_revolver.png
 0e63dc224d15837b444846c1763961c9f9166691bf0a066b18c06715d961901b  art/icons/gear/weapon-emanator_gauntlet.png
 ddb4a491352712db2686ab1fd618106df782eb4201cfb49bb5ff138e85366b3a  art/icons/gear/weapon-emanator_katana.png

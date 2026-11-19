@@ -1,0 +1,16 @@
+{
+  "id": "drifter_revolver",
+  "tier": "fine",
+  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-drifter_revolver--fine-retry.png",
+  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-drifter_revolver--fine.png",
+  "size64_mask_differing_pixels": 7,
+  "sha256": "6b06c89c770e650af30465f5a2a1bc8aa8f33e8402f79b417f4e06116bfcd969",
+  "path": "art/icons/gear/weapon-drifter_revolver--fine.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-drifter_revolver--fine.png",
+    "128": "art/icons/gear/exports/128/weapon-drifter_revolver--fine.png",
+    "64": "art/icons/gear/exports/64/weapon-drifter_revolver--fine.png",
+    "32": "art/icons/gear/exports/32/weapon-drifter_revolver--fine.png"
+  },
+  "source_sha256": "2022d4f62b1aca4e4214d3c9134e3b8c6dc6028db73c5855963ae441b9cf5968"
+}

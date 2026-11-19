@@ -3,7 +3,7 @@ from pathlib import Path
 from PIL import Image,ImageDraw
 import numpy as np
 A=Path(__file__).parent
-ids=('katana','combat_knife','sabre','legion_gladius','recurve_bow','longbow')
+ids=('katana','combat_knife','sabre','legion_gladius','recurve_bow','longbow','drifter_revolver','crossbow','repeating_crossbow')
 tiers=('fine','masterwork','relic','celestial')
 manifest=[]
 out=Image.new('RGB',(840,150*len(ids)),'#10151F')
@@ -18,6 +18,9 @@ for r,ident in enumerate(ids):
   if tier!='standard':
    src=A/'drafts'/f'weapon-{ident}--{tier}.png'
    if tier=='fine' and (A/'drafts'/f'weapon-{ident}--fine-retry.png').exists():src=A/'drafts'/f'weapon-{ident}--fine-retry.png'
+   if not src.exists():
+    d.text((c*168+8,r*150+50),'Pending',fill='#AAAAAA')
+    continue
    native=Image.open(src).convert('RGBA');g=maskbox(native)
    scale=min((b[2]-b[0])/(g[2]-g[0]),(b[3]-b[1])/(g[3]-g[1]))
    small=native.resize(tuple(round(v*scale) for v in native.size),Image.Resampling.LANCZOS)
