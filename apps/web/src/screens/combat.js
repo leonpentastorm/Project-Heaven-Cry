@@ -200,6 +200,9 @@ const COMBAT_CSS = [
   '.phc-cb-tabs::-webkit-scrollbar{display:none}.phc-cb-tabs>[role=tab]{transition:background-color .12s,color .12s,border-color .12s}.phc-cb-tabs>[role=tab]:not([aria-selected=true]):hover{background:#141B27;color:#E7EBF3}',
   '.phc-cb-tabpanel{scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}.phc-cb-tabpanel::-webkit-scrollbar{width:8px}.phc-cb-tabpanel::-webkit-scrollbar-thumb{background:#2E3A50;border-radius:4px}',
   '.phc-cb-tabs>[role=tab]:focus-visible,.phc-cb-tabpanel:focus-visible{outline:2px solid #FFFFFF;outline-offset:-2px}',
+  // B14, 0.32: the list scrolls in its own box above the chosen action's box; its last line fades out instead of a row
+  // looking cut in half under that box, and the room under the last row lets it scroll clear of the fade
+  '@media (min-width:1000px){.phc-cb-aside .phc-cb-tabpanel{padding-bottom:18px!important;-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 18px),rgba(0,0,0,.15));mask-image:linear-gradient(to bottom,#000 calc(100% - 18px),rgba(0,0,0,.15))}}',
   // Short windows (1280×720): a slimmer header and initiative strip, so the grid keeps its size.
   '@media (max-height:800px) and (min-width:1000px){.phc-cb-head{padding-top:6px!important;padding-bottom:6px!important}.phc-init{padding-top:5px!important;padding-bottom:5px!important}.phc-init [data-init]{padding-top:3px!important;padding-bottom:3px!important}.phc-init [data-init] img,.phc-init [data-init]>span:first-child{width:28px!important;height:28px!important}.phc-cb-row{padding-bottom:8px!important}.phc-cb-turn .phc-yt{padding-top:3px!important;padding-bottom:3px!important}.phc-cb-turn .phc-yt>span:first-child{font-size:16px!important}.phc-cb-ap .phc-pips>span{height:10px!important}.phc-cb-tabpanel .phc-cb-act[data-act]{min-height:34px!important}.phc-cb-tline{display:none!important}}',
   // The column, top to bottom: a bar (You in one line on short windows · Customise · Hide panel), the You card and the
@@ -267,7 +270,9 @@ ensureStyle('phc-camera', CAMERA_CSS);
 mountActionTips();
 /** The fight's camera (roadmap 2c; game/cameraView.ts): the map's window keeps the usual tile size and follows the play.
  *  Local to this browser: every player in a room has their own. */
-const CAM = new CameraView('fight');
+/** Under this window width the fight's small map starts folded (its button opens it): it covered the board's right third. */
+const MINI_FOLD_UNDER = 1400;
+const CAM = new CameraView('fight', 'phc.miniMap', MINI_FOLD_UNDER); // B5, 0.32: the small map starts folded on a window under MINI_FOLD_UNDER px wide
 /** Room kept free beside the map for the small map, so the tiles in that corner can be scrolled out from under it. */
 /** Two-key codes: how long after the first number the second still counts (provisional; balance pass section 15). */
 const CHORD_MS = 1000;
