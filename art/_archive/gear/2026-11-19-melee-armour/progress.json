@@ -21,10 +21,10 @@
     "weapon-legion_leaf_dagger",
     "weapon-legion_rank_sword",
     "weapon-short_draw",
-    "weapon-long_draw"
+    "weapon-long_draw",
+    "weapon-kemizuchi_side_sword"
   ],
   "remaining": [
-    "weapon-kemizuchi_side_sword",
     "weapon-kemizuchi_sword_breaker",
     "weapon-pitch_axe",
     "weapon-legion_spear",
@@ -58,5 +58,5 @@
   ],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T03:35:54.891215+00:00"
+  "updated_utc": "2026-11-19T03:37:35.732239+00:00"
 }
