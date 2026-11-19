@@ -199,6 +199,7 @@ suite again when the disk was full under it.
 - `fight-cards.mjs`: the fight cards (ui-screens.md "The fight cards"), in a Survival test room: FIGHT before the first turn's banner with the fight's name and who goes first, VICTORY with the run's line from data after the last effect, the next fight's FIGHT under reduced motion, none after a reload mid-fight, DEFEAT after the last hostile effect; each once, read from `data-phc-card`. Shots: `card-fight.png`, `card-victory.png`, `card-defeat.png`.
 - `resources.mjs`: the RESOURCES block below the HP bar (game/resources.ts): in the combat You card, the short-window mini-bar, the collapsed panel, the turn cut-in and the area-map HUD, for a gunner (low ammo → RELOAD), a Sigil caster (empty core → RELOAD CORE, Flux 5 → OVERLOAD SOON), a Soul caster (Strain near the limit, a held Outburst) and a Fighter with Momentum. The state a test needs is written into the host's own save and the page reloads it. Shots: `resources-*.png`.
 - `turn-card-side.mjs`: the turn card's CARD SIDE in its customise dialog (Auto, Left, Right): Right brings the next card in on the right, Left on the left, kept after a reload, Auto clears it.
+- `capture-skills.mjs`: screenshots for the lead, not a rules check: in creation's Skills step, every skill's "?" page with WHAT EACH POINT GIVES open, one shot each to `.check/capture/skills/<nn>-<id>.png` with an `index.md`; its checks say every skill face showed and every page was captured.
 
 ## Retired (12 Nov 2026), and where their checks are now
 
