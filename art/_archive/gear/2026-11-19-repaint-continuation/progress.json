@@ -1,0 +1,22 @@
+{
+  "status": "drawing",
+  "target": 14,
+  "delivered": [],
+  "remaining": [
+    "weapon-hellraiser_service_rifle",
+    "weapon-decrkm_smg",
+    "weapon-legion_pdw",
+    "weapon-mandestra_drum_gun",
+    "weapon-long_rifle",
+    "weapon-blackpoint_700",
+    "weapon-ccec_marksman_rifle",
+    "weapon-adamantile_battle_rifle",
+    "weapon-hellraiser_lmg",
+    "weapon-lumeri_scattergun",
+    "weapon-brigade_auto_shotgun",
+    "weapon-smetanita_thumper",
+    "weapon-breacher_tube",
+    "weapon-frontier_hand_cannon"
+  ],
+  "production_approved": false
+}
