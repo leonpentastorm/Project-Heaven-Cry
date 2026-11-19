@@ -435,8 +435,8 @@ register({
       if (f) stateOf(h).pick = f.id;
     },
     turn_end: (ctx, h) => { if (ctx.u === h.u) stateOf(h).locked = true; },
-    attack_preview: (ctx, h) => {
-      const u = h.u, cb = h.cb; if (!u || !cb || ctx.att.id !== stateOf(h).pick || ctx.att.side === u.side || !alive(u)) return;
+    to_hit: (ctx, h) => {
+      const u = h.u, cb = h.cb; if (ctx.type !== 'weapon' || !u || !cb || ctx.att.id !== stateOf(h).pick || ctx.att.side === u.side || !alive(u)) return;
       if (!unitSees(cb, ctx.att, u.pos, undefined, u)) return;
       ctx.terms.push({ v: tierII(h) ? -2 : -1, label: 'Flat Line (' + u.name + ')' });
     },

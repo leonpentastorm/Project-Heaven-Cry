@@ -361,7 +361,7 @@ register({
   id: 'case_closed', claims: 'all',
   on: {
     acted: (ctx, h) => { if (ctx.action === 'analyze' && ctx.u === h.u && ctx.t) closeCase(h, ctx.t, rngOf(h, ctx)); },
-    attack_preview: (ctx, h) => { if (h.u && ctx.tgt && !ctx.volleyCost && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: CASE_CLOSED[1]?.value ?? -2, label: 'Case Closed' }); },
+    to_hit: (ctx, h) => { if (ctx.type === 'weapon' && h.u && ctx.tgt && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: CASE_CLOSED[1]?.value ?? -2, label: 'Case Closed' }); },
     damage_out: (ctx, h) => { if (h.u && ctx.att && ctx.tgt && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.mults.some((x: any) => x.label === 'Case Closed')) ctx.mults.push({ v: CASE_CLOSED[2]?.value ?? 1.2, label: 'Case Closed' }); },
     check_result: (ctx, h) => {
       if (ctx.c !== h.c || !ctx.roll?.ok || !ctx.ck.skills?.includes('analysis') || !h.g || !h.c) return;
@@ -701,7 +701,7 @@ register({
     on_damaged: (ctx, h) => { if (ctx.src?.by === h.u && ctx.t.side !== h.u!.side) markAttacked(h); },
     forced_move: (ctx, h) => { if (ctx.by === h.u && ctx.u?.side !== h.u!.side) markAttacked(h); },
     outburst_begin: (ctx, h) => { if (ctx.u === h.u) markAttacked(h); },
-    attack_preview: (ctx, h) => { if (ctx.tgt === h.u && ctx.att.side !== h.u!.side && !attacked(h)) ctx.terms.push({ v: -2, label: 'Sanctuary' }); },
+    to_hit: (ctx, h) => { if (ctx.type === 'weapon' && ctx.tgt === h.u && ctx.att.side !== h.u!.side && !attacked(h)) ctx.terms.push({ v: -2, label: 'Sanctuary' }); },
     damage_in: (ctx, h) => { if (ctx.phase === 'would_drop_to_0' && ctx.src?.by === h.u && ctx.t.side !== h.u!.side && !ctx.t.companion && modOn(h, 'nonlethal')) ctx.src.nonlethal = true; },
     on_surrender: (ctx, h) => {
       if (!ctx.t?.subdued || (ctx.by !== h.u && ctx.t.lastHitBy !== h.u?.id)) return;

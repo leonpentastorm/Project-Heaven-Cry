@@ -85,3 +85,24 @@ describe('A2: borrowed time ends through the one damage door (on_downed, on_kill
     const log = end(loaded); expect(log).toContain(over);
   });
 });
+
+// ---------------------------------------------------------------------------------------------- A4
+import { standingModsFor, previewAttack } from '../src';
+import TRAITSJ from '../../../data/traits.json';
+describe('A4: the token card\'s standing terms read the one roll-to-hit hook (Stand Still, Heavyworlder, a friend\'s Hand-Off)', () => {
+  it('Stand Still and Heavyworlder show on the card with their data numbers, and the foe\'s attack preview carries the same terms', () => {
+    const f = fightWith([{ skills: { composure: 3 }, perks: { stand_still: 'I' }, traits: ['heavyworlder'] }], [{ at: 'E6' }]);
+    const ss = (PERK as any).stand_still.tiers.I.numbers.to_hit, hw = (TRAITSJ as any).items.find((t: any) => t.id === 'heavyworlder').effects.find((e: any) => e.op === 'roll_mod').value;
+    const card = standingModsFor(f.g, f.pc.id).map((t: any) => [t.label, t.v]);
+    expect(card).toContainEqual(['Stand Still', ss]); expect(card).toContainEqual(['big target (Heavyworlder)', hw]);
+    f.unit(f.foe.id).ap = 9; const pv = withGame(f.g, () => previewAttack(f.cb, f.unit(f.foe.id), f.unit(f.pc.id), 'shot'));
+    const terms = (pv.terms || []).map((t: any) => [t.label, t.v]);
+    expect(terms).toContainEqual(['Stand Still', ss]); expect(terms).toContainEqual(['big target (Heavyworlder)', hw]);
+    expect(standingModsFor(f.g, f.foe.id)).toEqual([]); // the PC's items are its own standing, never the foe's
+  });
+  it('a friend\'s Hand-Off shows on the covered unit\'s card', () => {
+    const f = fightWith([{ name: 'Covered' }, { name: 'Lender', perks: { hand_off: 'I' } }], [{ at: 'H6' }]);
+    const [a, b] = f.pcs; f.unit(a.id).pos = '2,5'; f.unit(b.id).pos = '3,5'; f.unit(a.id).def = 5; f.unit(b.id).def = 15;
+    expect(standingModsFor(f.g, a.id).map((t: any) => t.v)).toContain(-10);
+  });
+});

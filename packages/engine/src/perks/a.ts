@@ -349,7 +349,7 @@ const anchored = (h: Holder, t: Unit) => { const u = h.u; if (!u || !h.cb || t =
 register({
   id: 'squad_anchor', claims: 'all',
   on: {
-    attack_preview: (ctx, h) => { if (!ctx._anchor && anchored(h, ctx.tgt)) { ctx._anchor = true; ctx.terms.push({ v: -1, label: 'Squad Anchor (+1 Dodge)' }); } },
+    to_hit: (ctx, h) => { if (ctx.type === 'weapon' && !ctx._anchor && anchored(h, ctx.tgt)) { ctx._anchor = true; ctx.terms.push({ v: -1, label: 'Squad Anchor (+1 Dodge)' }); } },
     cond_apply: (ctx, h) => { if (!ctx._anchor && anchored(h, ctx.t)) { ctx._anchor = true; ctx.saveAdd = (ctx.saveAdd || 0) + 1; } },
     death_save: (ctx, h) => { if (!ctx._anchor && anchored(h, ctx.u)) { ctx._anchor = true; ctx.add += 1; } },
     moved: (ctx, h) => {

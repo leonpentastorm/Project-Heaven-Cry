@@ -87,7 +87,8 @@ function lends(h: Holder, ctx: any): number {
 register({
   id: 'hand_off', claims: 'all',
   on: {
-    attack_preview: (ctx, h) => { if (ctx.volleyCost || ctx._handOff) return; const n = lends(h, ctx); if (n > 0) { ctx._handOff = true; ctx.terms.push({ v: -n, label: 'Hand-Off (' + h.u!.name + '\'s Defense)' }); } },
+    // (on the weapon roll's to_hit: a standing term of the unit it covers, read by its token card: rolls.ts standingTerms)
+    to_hit: (ctx, h) => { if (ctx.type !== 'weapon' || ctx._handOff) return; const n = lends(h, ctx); if (n > 0) { ctx._handOff = true; ctx.terms.push({ v: -n, label: 'Hand-Off (' + h.u!.name + '\'s Defense)' }); } },
     attack_roll: (ctx, h) => { if (ctx._handOff) return; if (lends(h, ctx) > 0) { ctx._handOff = true; stateOf(h).round = h.cb!.round; say(h.cb, ctx.tgt.name + ' is covered by ' + h.u!.name + ' (Hand-Off): ' + h.u!.name + '\'s Defense against this attack.'); } },
   },
   brief: () => null,
@@ -102,7 +103,7 @@ const notActing = (h: Holder): string[] => (rawItem(h.key) as any)?.tiers?.[h.ti
 register({
   id: 'stand_still', claims: 'all', noDefaultActions: true, // the free attack is taken by the engine on the miss: no button
   on: {
-    attack_preview: (ctx, h) => { if (h.u && ctx.tgt === h.u && ctx.att.side !== h.u.side && !ctx.volleyCost && !peek(h).acted && !ctx.terms.some((x: any) => x.label === 'Stand Still')) ctx.terms.push({ v: num(h, 'to_hit'), label: 'Stand Still' }); },
+    to_hit: (ctx, h) => { if (ctx.type === 'weapon' && h.u && ctx.tgt === h.u && ctx.att.side !== h.u.side && !peek(h).acted && !ctx.terms.some((x: any) => x.label === 'Stand Still')) ctx.terms.push({ v: num(h, 'to_hit'), label: 'Stand Still' }); },
     on_miss: (ctx, h) => {
       const u = h.u, a: Unit | undefined = ctx.att; if (!u || ctx.tgt !== u || !a || a.side === u.side || !alive(u) || !alive(a)) return;
       const s = stateOf(h); if (s.acted || s.countered) return;

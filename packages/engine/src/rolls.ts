@@ -196,14 +196,18 @@ export function toHitTerms(cb: Combat | null | undefined, att: Unit | null | und
   const ctx: any = emit(cb, 'to_hit', { att, tgt, type, ...(HIT_DOOR_WORD[type] ? { door: HIT_DOOR_WORD[type] } : {}), mode: o.mode ?? null, ...(o.via ? { via: o.via } : {}), terms: [] as { v: number; label: string }[], preview: o.preview !== false, cb });
   return [...(fa ? [fa] : []), ...(ctx.terms as { v: number; label: string }[]).filter((t) => t && t.v)];
 }
-/** Rules 1.77 item 6511: THE reader of a unit's standing to-hit terms, what its own items put on a hostile's roll to hit
- * it as things stand (Open guard: -2), each with its source label, for its token card. Asked as the first hostile on
- * the field would make a weapon attack at it (a preview: nothing changes); the attack's own preview names the same
- * terms (previewAttack, toHitTerms). Empty with no hostile on the field or no item that answers. Each term names its
- * item (`src`, the holder's key), so a screen finds its picture (rules 1.78 item 6613). */
+/** Rules 1.77 item 6511: THE reader of a unit's standing to-hit terms, what its own items and its side's put on a
+ * hostile's roll to hit it as things stand (Open guard: -2, Stand Still, a friend's Hand-Off or Case Closed, Heavyworlder's
+ * +2), each with its source label, for its token card. Asked as the first hostile on the field would make a weapon
+ * attack at it (a preview: nothing changes), on the one hook every roll to hit is sized up on (`to_hit`, toHitTerms),
+ * the units of its side asked in the fight's order: the attack's own preview reads the same listeners (previewAttack).
+ * The attacker's own items are not asked (its bonuses are its attack's, not this unit's standing). Empty with no
+ * hostile on the field or no item that answers. A data row's term names its item (`src`, the holder's key), so a
+ * screen finds its picture (rules 1.78 item 6613). */
 export function standingTerms(cb: Combat | null | undefined, u: Unit): { v: number; label: string; src?: string }[] {
   const by = cb?.units.find((x) => x.side !== u.side && !x.dead && !x.downed); if (!cb || !by) return [];
-  const ctx: any = emitOwn(u, 'to_hit', { att: by, tgt: u, type: 'weapon', mode: null, terms: [] as { v: number; label: string }[], preview: true, cb }, cb);
+  const ctx: any = { att: by, tgt: u, type: 'weapon', mode: null, terms: [] as { v: number; label: string }[], preview: true, cb };
+  for (const x of cb.units) if (x.side === u.side) { emitOwn(x, 'to_hit', ctx, cb); if (ctx.stop) break; }
   return (ctx.terms as { v: number; label: string; src?: string }[]).filter((t) => t && t.v);
 }
 /** The door each kind of roll to hit is made through (a weapon's own rarity is in its attack already). */
