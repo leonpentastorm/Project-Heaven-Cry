@@ -1482,6 +1482,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-maul--celestial",
+      "path": "art/icons/gear/weapon-maul--celestial.png",
+      "sha256": "dab3bbbdf442bc217948fd60eee32f838a211d1eb1fe57e133a194b9c3d5e740",
+      "label": "Maul — Celestial",
+      "family": "weapon-maul",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-maul--celestial.png",
+        "sha256": "1c26259f0deab942eadb7cef8791a0bd9789d7426b94f0369995e4267aa1a68d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-maul--celestial.png",
+        "sha256": "dab3bbbdf442bc217948fd60eee32f838a211d1eb1fe57e133a194b9c3d5e740"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-maul--celestial.txt",
+        "sha256": "22906ee9381018309eb833d86ebb12c55b1cb4cb0f722ef324355bc83aa7858f"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-maul--celestial/v1/source.png",
+          "sha256": "575fb7d6bc0c99635fdada4ee31d00efed280073f5c3e696ae804baa1dda5a53"
+        },
+        {
+          "path": "art/icons/gear/weapon-maul.png",
+          "sha256": "50f0d5620bd8dd5a51d0e676e69ebad5e586a47a01634ac17ac96d7a26da8dac"
+        },
+        {
+          "path": "art/icons/gear/weapon-maul--relic.png",
+          "sha256": "228d6571755fca6a20860af5749820e3526a8e1a56e51d8a5020ea91f4560f62"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-maul--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-maul--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-maul--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-maul--celestial.png"
+      },
+      "export_hashes": {
+        "256": "3eec8103935d276ca2aeaeeedd4fa523baab750382cc269e605ae7b156cb503b",
+        "128": "875ca32cc360f0f381102da20f5afc894390510d6253bc3bb69c7e2dee0f7069",
+        "64": "894d3a719ab1febe14600d6b9d3bf899dc7ed15bde51cbe99ea153c44bd68e35",
+        "32": "e262b2ab12a14941f8da3d970a58893e3da2293a378e8b29c58e5fbd5f071868"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-maul",
+      "outline": {
+        "solid_alpha_iou": 0.8807729618563501,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 15,
+        "different_pixels_64": 63
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
