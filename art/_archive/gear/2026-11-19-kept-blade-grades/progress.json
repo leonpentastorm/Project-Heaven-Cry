@@ -11,13 +11,13 @@
     "weapon-adamantile_greatsword--relic",
     "weapon-adamantile_greatsword--celestial",
     "weapon-ork_machete--fine",
-    "weapon-hatchet--fine"
+    "weapon-hatchet--fine",
+    "weapon-hatchet--masterwork"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
     "weapon-ork_machete--relic",
     "weapon-ork_machete--celestial",
-    "weapon-hatchet--masterwork",
     "weapon-hatchet--relic",
     "weapon-hatchet--celestial",
     "weapon-war_axe--fine",
@@ -39,7 +39,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T09:06:49.829694+00:00",
+  "updated_utc": "2026-11-19T09:08:28.418479+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3
 }
