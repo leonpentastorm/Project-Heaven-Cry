@@ -893,10 +893,13 @@ export class CombatLogic extends DCLogic {
     if (z !== (this._zoom || 1) || vw !== v0.w || vh !== v0.h || col !== v0.col || needed !== !!this._camNeeded) {
       // The map is laid out anew (the first fit of this screen, a resized window, a size the player picked): the camera
       // keeps what it was looking at. The first time that is the player's own unit (back from the level-up screen in the
-      // middle of a fight, the view was left in the map's top-left corner); after that, the tile in the middle of the view.
-      const first = !this._view, t = !first && CAM.live() && CAM.scrolls() ? CAM.tiles() : null, mid = t ? Math.round((t.x0 + t.x1) / 2) + ',' + Math.round((t.y0 + t.y1) / 2) : null;
+      // middle of a fight, the view was left in the map's top-left corner); after that, the point in the middle of the
+      // view, or of the view it is gliding to (0.32: the panels change size as a turn starts; aimed at the middle tile,
+      // the view moved by up to a tile on a hostile's turn, and on your first turn it went back to where the fight's
+      // opening had left it, your unit out of frame, the camera suite).
+      const first = !this._view, mid = !first && CAM.live() ? CAM.middle(true) : null;
       this._zoom = z; this._view = { w: vw, h: vh, col }; this._camNeeded = needed; this.setState({});
-      if (!this._overview && (first || mid)) this.camAfter(() => { const k = first ? CAM.home : mid; if (k && !CAM.overview) CAM.follow([k], 'ask', true); });
+      if (!this._overview && (first || mid)) this.camAfter(() => { if (CAM.overview) return; if (first) { if (CAM.home) CAM.follow([CAM.home], 'ask', true); } else CAM.centreAt(mid); });
     }
     CAM.fits = !this._overview && fitsWhole(aW, aH, w, h, z);
     CAM.sync();
@@ -1347,7 +1350,14 @@ export class CombatLogic extends DCLogic {
     const slAt = slOn ? (S.hover && S.hover !== cur.pos && !slFoe ? S.hover : cur.pos) : null;
     const eyeL = slOn ? (slAt === cur.pos ? eyeLines(cb, cur.id, HH.eyes, SHADOW_INK) : eyeLinesAt(cb, slAt, slAt, (slWatch && slWatch[slAt]) || [], SHADOW_INK))
       : HH && HH.eyes.length && S.tab === 'shadow' && S.hover && S.hover === cur.pos ? eyeLines(cb, cur.id, HH.eyes, SHADOW_INK) : [];
-    const sl = HH && cur && !cb.over ? { can: true, ...sightBar(cb, slWatch, slOn, slAt, refOf), toggle: () => { toggleSightline(slOn); sfx('toggle'); this.setState({}); } } : { can: false };
+    // (the switch stays on the map's bar through the others' turns of a fight where it showed on yours, drawing nothing
+    // there: it came and went with each turn, the bar wrapped to a second row on your turn only, and the map's window
+    // changed size, and its zoom, every time a turn changed hands; 0.32, the camera suite)
+    const slFight = (g.code || '') + '|' + cb.name + '|' + (cb.log[0] || '');
+    if (HH && cur && !cb.over) this._slFight = slFight;
+    const slMine = !HH && !cb.over && this._slFight === slFight ? cb.units.find((u) => u.side === 'pc' && owner(u) === me && !u.dead) : null;
+    const sl = HH && cur && !cb.over ? { can: true, ...sightBar(cb, slWatch, slOn, slAt, refOf), toggle: () => { toggleSightline(slOn); sfx('toggle'); this.setState({}); } }
+      : slMine ? ((on) => ({ can: true, ...sightBar(cb, null, on, null, refOf), toggle: () => { toggleSightline(on); sfx('toggle'); this.setState({}); } }))(sightlineOn(slMine, S.tab)) : { can: false };
     const tieLayer = eyeL.length ? { ...tieLayer0, has: true, lines: [...tieLayer0.lines, ...eyeL] } : tieLayer0;
     // The strip turns over: the acting unit first, then who comes next (each slides to its new place).
     // An unseen hostile's place in the order is an opaque mark (the engine's fog): a card with nothing on it.
