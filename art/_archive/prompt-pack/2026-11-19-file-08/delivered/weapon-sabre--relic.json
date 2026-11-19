@@ -1,0 +1,16 @@
+{
+  "id": "sabre",
+  "tier": "relic",
+  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--relic.png",
+  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png",
+  "size64_mask_differing_pixels": 58,
+  "sha256": "307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a",
+  "path": "art/icons/gear/weapon-sabre--relic.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-sabre--relic.png",
+    "128": "art/icons/gear/exports/128/weapon-sabre--relic.png",
+    "64": "art/icons/gear/exports/64/weapon-sabre--relic.png",
+    "32": "art/icons/gear/exports/32/weapon-sabre--relic.png"
+  },
+  "source_sha256": "d0c7775b5c19b84e5a1178cb913136e6c9ae915b5d603b26d9d4263173e4e0a7"
+}

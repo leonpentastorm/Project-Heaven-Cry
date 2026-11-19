@@ -3179,6 +3179,7 @@ b21058413d711cb910cc5ec1c9bdf688edabf3db92333c23ae3f6da5a7abb9d0  art/_archive/p
 16fbab1a88dce46966d1e2783c45c3551e20366ead7edc75c208b2b418766200  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--relic.json
 fc26ad210e9e994e962b482f61364a085be97584913dcb31ccb37cf7a0265f02  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-sabre--fine.json
 c91addb4c4282b8436fd7786a7bcf5332d12283e2d052ddd1318f1c2f40476fc  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-sabre--masterwork.json
+b3a3a7631ca137a9322c86a86ed12bb7815ef93c6faaca2ded3f6c7fc2dc2835  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-sabre--relic.json
 6e43ed920243bd44d35a758eaa36a197ec46e5d9ad61e99b9465921fccc4e047  art/_archive/prompt-pack/2026-11-19-file-08/drafts/drifter-masterwork-service-response.json
 3d1268723eed6f9b126b7e6f9057e29c1032113284c3e75c822fb8066b3e26c4  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.json
 981dd851ac71828d106fc6e5cd0b9c268b69a58962830aa08522bda3265274da  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.png
@@ -4555,7 +4556,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-2277bd6766076f07ebab5f2dced5c00fd9379a8423ccdaf74c6b0a4662f01e2b  art/catalog.json
+57a6d84135aea5911bb2654e89a7cc93d4ace73de12363c71d24adf01e196084  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6314,6 +6315,7 @@ a837bb6f642515b9c6c9a0ad48fd1c5e86f4006c3053c821b402e0e27a1707dd  art/icons/gear
 6b814aca0239d2644ec89bec3e6dc8e869454da489a56beb620b719940f98b49  art/icons/gear/exports/128/weapon-repeating_crossbow.png
 91e1985bbb75b493295ca286d4b90eac6f41f3cbe75200a93baa22d37ec4637e  art/icons/gear/exports/128/weapon-sabre--fine.png
 ae83a1faf54c7c6a00103f3e7cbaee95532cf0f17812a8d28fdd2b86e2e09d41  art/icons/gear/exports/128/weapon-sabre--masterwork.png
+81d37f7ad081b9242298419cd93b78ebc952fc0df454d2db40b59761f2547725  art/icons/gear/exports/128/weapon-sabre--relic.png
 2d5d27a93f1ce09e3d83b0e38259665200416f9dc022209d9ae024a0df9989bf  art/icons/gear/exports/128/weapon-sabre.png
 992027e8643902b6d8047cee96c63b7a58c9a73619a2048d9f3e94da2b736d3f  art/icons/gear/exports/128/weapon-satchel_charge.png
 8240e25be75d09dc867cf18972965a7839f484b371c1e215f78b8f85afc3ae93  art/icons/gear/exports/128/weapon-sawn_off.png
@@ -6497,6 +6499,7 @@ f8a4bc6fe9c69684c734b7bf285f08fdfc8604d8f25abf4197fff531d6ce9891  art/icons/gear
 8324eda9b4271372b890327a10b12c716ed59d7165f36fe120d7265c18c8af62  art/icons/gear/exports/256/weapon-repeating_crossbow.png
 1e59d6444320b667a422e781ea0e02fe5419e515f0caacf5bef914e3c20faac5  art/icons/gear/exports/256/weapon-sabre--fine.png
 8cde875a2badd6e7b51cc47903bcaaee1c5a802645baa90c09fb6a7d84c2c9d0  art/icons/gear/exports/256/weapon-sabre--masterwork.png
+f3fc7b98df43735b3c7b9569030d5261e7012b939ccefced4f98c04bcadc098d  art/icons/gear/exports/256/weapon-sabre--relic.png
 24be51789f4be703baa0c639c0d6e7c384f6fc95433113f84d86c182c6f5b95c  art/icons/gear/exports/256/weapon-sabre.png
 3d9158439ea165a4229105030b98d9051ebec97ecb07d07e4f8b5c392e891c42  art/icons/gear/exports/256/weapon-satchel_charge.png
 a5064ecbca58f2efa08a34a87b63e42534e4e9daeab287bedbf75d32cf5020c8  art/icons/gear/exports/256/weapon-sawn_off.png
@@ -6680,6 +6683,7 @@ cd22c4cd7ff73cfeb5ac25e0701c2834f77b4f4cf52c4e8e6b115796ebc84d43  art/icons/gear
 edb054c0a1e9266f4e5e5b162e4efcebda0b902f49f19b60d7a0c483fc11dc06  art/icons/gear/exports/32/weapon-repeating_crossbow.png
 6e6fca2eb340db42cff8f6383399eeb4d0abd06f1559b4e78e0af7905d632adb  art/icons/gear/exports/32/weapon-sabre--fine.png
 d869a9a16dedd4d9f052455ff6a8a84d49616f35116a437b40808073b1101a35  art/icons/gear/exports/32/weapon-sabre--masterwork.png
+66e8b9c3e13e8b6b5d3b7566210dc586500c165143dda90fdb6b497f98cb3e6d  art/icons/gear/exports/32/weapon-sabre--relic.png
 6aeb299372e0b680bf2080700c17f4c613f0a4b8594e92a5b780572d19795763  art/icons/gear/exports/32/weapon-sabre.png
 edebcdb37a54533db9a2047d6cc84e630442f78517d9c470fb945fc15f089612  art/icons/gear/exports/32/weapon-satchel_charge.png
 a056d46757a62fbf49eee3b93e649493303078686ebf8735980790d0923152a4  art/icons/gear/exports/32/weapon-sawn_off.png
@@ -6863,6 +6867,7 @@ b41a32579b009cb880d689f8c1e2963289018cb46c487aa7291ac656bc16f16d  art/icons/gear
 ad5a67838d1237475727b2d9d702773705c0186b79cfd8122d254ea7e14c863f  art/icons/gear/exports/64/weapon-repeating_crossbow.png
 e44729a8e04f881e6fcaebf7aea6fb9a91a03d1326d32b0d251881f7d65e2208  art/icons/gear/exports/64/weapon-sabre--fine.png
 f6f98256d7fa9c8014181ac8546a3ae991297ccc735cdd820488416ddb414962  art/icons/gear/exports/64/weapon-sabre--masterwork.png
+b489e148169e8369e0e6b76c52f575be98c969e0f59b78541ff6b0ec92fdd5e7  art/icons/gear/exports/64/weapon-sabre--relic.png
 b2575f282a30a6c240d9832ac86872861d9f2af31ca2eea34a3978e4d54e2aa6  art/icons/gear/exports/64/weapon-sabre.png
 1377e9d975071cdfb74cadbd7af9be41295156f5d5fe57986adb6220d3115798  art/icons/gear/exports/64/weapon-satchel_charge.png
 585d3326d71d639c5b51cc60c14839d69ba9e4bee6737c57e6f436e1302549e6  art/icons/gear/exports/64/weapon-sawn_off.png
@@ -7010,6 +7015,7 @@ f315ad1c1970249e94351f5e4c696af4109b5fc13f49400043d98586d8aec23f  art/icons/gear
 d8537ef569454a7fcac82f1edc3a1372ea2a9ef4f43823a6df872572e84b5c68  art/icons/gear/weapon-repeating_crossbow.png
 3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6  art/icons/gear/weapon-sabre--fine.png
 e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/icons/gear/weapon-sabre--masterwork.png
+307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a  art/icons/gear/weapon-sabre--relic.png
 cd3bbe4eb898b4d4072305ead7f2d46ae038dc525c85b6965e0043b8ea18bb80  art/icons/gear/weapon-sabre.png
 07ef2d47b2682612fdad4cc657a034ae0544aae6c6e92c5d2eefaf721b732780  art/icons/gear/weapon-satchel_charge.png
 182449097f5759e63b764a0c3e22615aec2f9f69cf7967c48f7045a92765aabc  art/icons/gear/weapon-sawn_off.png
