@@ -278,6 +278,9 @@ export interface Combat { /** Rules 1.47: the effects a run's fight keeps for it
   /** A dry run's copy only (preview.ts PreviewOpts.asHit, G1 of 0.32): this unit's own attacks hit, so the preview reads what
    * a hit gives (the Momentum a Charge really reaches). Never set on a live fight. */
   asHit?: string;
+  /** The same copy only (rules 1.78 item 6608): the items whose hit-time ops ran for the asHit unit's attack (their names,
+   * in order), what the attack preview lists as riding on a hit (Smite). Never set on a live fight. */
+  riders?: string[];
   /** The overworld's throwaway fight state (storyCb): per-turn item counters live in the story instead. */
   overworld?: boolean;
   /** Each side's sight at the last check, for the sight_change hook (only kept while someone listens). */

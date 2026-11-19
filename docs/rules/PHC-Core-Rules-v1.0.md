@@ -13217,3 +13217,10 @@ Every new number here is PROVISIONAL and a data field.
     kind `hallowed`) and its predicates: zone kinds are data now (`rules.json zones.kinds`, the draft's P9: a new kind is
     a row) and the zone predicates read the actor too (`actor_in_zone`, beside `self_in_zone` and `target_in_zone`).
     Numbers PROVISIONAL (the draft's). Not built: praying a Whisper from holy ground (item 17: needs the seat, P3).
+6608. **What rides on a hit is on the attack card (Smite's chip; closes rules 1.71's open "riders in the attack
+    preview"):** a technique's preview runs the technique once more on a throwaway copy as a hit (the gaps lane's dry
+    run, `asHit`, already run for the Momentum it leaves) and lists, in one line "On a hit: ...", every item whose
+    hit-time effect ran for the attacker on that copy, by the row's label or the item's name (Smite's blow; Smite's
+    Judged row is labelled "Judged"). One general reader, no item named in code: a rider spent for the turn (Smite once
+    a turn) drops off the line. The dice of the copy are the copy's own: an Atheist's roll for Smite on the copy is not
+    the real roll.

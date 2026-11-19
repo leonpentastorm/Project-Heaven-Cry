@@ -6,11 +6,12 @@
 //   item 6604  aim marks on a Bonded ally: at the Bonder's turn start, each seen enemy aiming at a Bonded ally is Read
 //   item 6605  the Breaker's Into the Wall: a foe it drives into a wall, the edge or a body takes the slam, the body too
 //   item 6607  Hallow: a Chaplain's Hymn lays hallowed ground; allies starting a turn on it carry the verse, foes on it -1
+//   item 6608  the attack preview lists what rides on a hit (Smite), from the technique run as a hit on a copy
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { CLASS_MOVE_POOL, applyDamage, setDevotionXp, devotionThreshold, zonesAt, type Unit, type Action } from '../src';
 import { fightWith, withGame, storyWith, type CharSpec } from './helpers/perkfight';
-import { beginTurn, condOn, enemyIntent, previewAttack, CLASS } from '../src';
+import { beginTurn, condOn, enemyIntent, previewAttack, CLASS, previewDescriptor } from '../src';
 import { figFight } from './helpers/figfight';
 import { previewEvoke, apply, reachable, active, type GameState } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
@@ -158,5 +159,18 @@ describe('item 6607: Hallow (prayer-2.0 item 16)', () => {
     const term = () => withGame(h.f.g, () => previewAttack(h.f.cb, h.f.unit(h.foe), gun, 'shot', { free: true })).terms.filter((t: any) => /Hallow/.test(t.label)).map((t: any) => t.v);
     expect(term()).toEqual([]);
     foe.pos = '4,4'; expect(term()).toEqual([HALLOW.effects[1].value]);
+  });
+});
+
+describe('item 6608: riders on the attack card', () => {
+  const note = (g: any, u: string, foe: string) => (previewDescriptor(g, u, 'tq:main:shot', { targetId: foe }, 'host')?.lines || []).filter((l: any) => l.k === 'note').map((l: any) => l.text);
+  it("a Chaplain's Shot names Smite and Judged; once Smite is spent this turn only Judged; for a gunner nothing rides", () => {
+    const h = twoChaplains(); h.f.turn(h.me); h.f.unit(h.me).ap = 9;
+    expect(note(h.f.g, h.me, h.foe)).toContain('On a hit: Smite, Judged');
+    expect(h.f.cb.riders).toBeUndefined(); // the live fight is never written
+    h.f.unit(h.foe).def = -40; h.f.act({ type: 'combat/attack', unitId: h.me, targetId: h.foe, mode: 'shot' } as Action, 'host');
+    expect(h.f.cb.log.some((l) => /\(Smite\)/.test(l))).toBe(true);
+    expect(note(h.f.g, h.me, h.foe)).toContain('On a hit: Judged'); // once a turn: Smite's blow is spent, its Judged still rides
+    h.f.turn(h.gun); expect(note(h.f.g, h.gun, h.foe).some((t: string) => /On a hit/.test(t))).toBe(false);
   });
 });

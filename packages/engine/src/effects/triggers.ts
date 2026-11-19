@@ -722,6 +722,9 @@ export function runTriggered(ctx: any, h: Holder, e: any): void {
   // the batch row limit.of "owner": an owned unit's reaction is its owner's (P1's payer, P9's record)
   if (asReaction && !ev.preview) { const payer = lim.of === 'owner' ? ownerOf(cb, self) : null; if (lim.of === 'owner' && !payer) return; if (!react(cb, self, { kind: lim.kind, spend: lim.reaction, event: attackEvent(), ...(payer ? { payer } : {}) }, go)) return; } else go();
   if (ev.preview || !ran) return; // a set with nobody in it: nothing happened, nothing is said
+  // rules 1.78 item 6608: a dry run asked as a hit (preview.ts asHit) notes each item whose hit-time op ran for the
+  // attacker: the one list the attack preview reads for what rides on a hit
+  if (cb.asHit && trig.hook === 'on_hit' && changes && ev.actor?.id === cb.asHit && !(cb.riders || []).includes(label)) cb.riders = [...(cb.riders || []), label];
   // an op's own effect event: the holder (target), its tile, and the event's other unit (other: its target, or else its
   // actor, when that is not the holder: Close Guard's ally, Retort's attacker, rules 1.56 Guard 2.0) for a line between them
   if (e.fx && typeof e.fx === 'object') { const { k, ...rest } = e.fx, o = ev.target && ev.target !== self ? ev.target : ev.actor && ev.actor !== self ? ev.actor : null; emitFx(cb, k, { target: self.id, at: self.pos, ...(o ? { other: o.id, from: o.pos } : {}), ...rest }); }

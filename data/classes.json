@@ -2872,6 +2872,7 @@
                 {
                   "op": "condition",
                   "when": "hit",
+                  "label": "Judged",
                   "condition": "judged",
                   "rounds": 1,
                   "skip_save": true,
