@@ -10758,6 +10758,223 @@
       },
       "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:35",
       "ink": "#FFFFFF"
+    },
+    "stand-still": {
+      "label": "Stand Still",
+      "path": "art/icons/perks/stand-still.png",
+      "sha256": "8ad4c384023dde4ed6ae005fc04f812dfc8a70e70b09a403748b124d1e0aa039",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/072-stand-still.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/stand-still.png",
+        "128": "art/icons/perks/exports/128/stand-still.png",
+        "64": "art/icons/perks/exports/64/stand-still.png",
+        "56": "art/icons/perks/exports/56/stand-still.png",
+        "48": "art/icons/perks/exports/48/stand-still.png",
+        "44": "art/icons/perks/exports/44/stand-still.png",
+        "40": "art/icons/perks/exports/40/stand-still.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:45",
+      "ink": "#FFFFFF"
+    },
+    "lore-ward": {
+      "label": "Warding Word",
+      "path": "art/icons/perks/lore-ward.png",
+      "sha256": "3b9869b58e938b6630eedb93ccc752a7d115046cc9cf875955faf85ce81bfd5c",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/073-lore-ward.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/lore-ward.png",
+        "128": "art/icons/perks/exports/128/lore-ward.png",
+        "64": "art/icons/perks/exports/64/lore-ward.png",
+        "56": "art/icons/perks/exports/56/lore-ward.png",
+        "48": "art/icons/perks/exports/48/lore-ward.png",
+        "44": "art/icons/perks/exports/44/lore-ward.png",
+        "40": "art/icons/perks/exports/40/lore-ward.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:55",
+      "ink": "#FFFFFF"
+    },
+    "recitation": {
+      "label": "Recitation",
+      "path": "art/icons/perks/recitation.png",
+      "sha256": "3ef23b2f678a293c4785deeda9159105b7f677f629b7a7e894934dc1261acd8a",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/074-recitation.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/recitation.png",
+        "128": "art/icons/perks/exports/128/recitation.png",
+        "64": "art/icons/perks/exports/64/recitation.png",
+        "56": "art/icons/perks/exports/56/recitation.png",
+        "48": "art/icons/perks/exports/48/recitation.png",
+        "44": "art/icons/perks/exports/44/recitation.png",
+        "40": "art/icons/perks/exports/40/recitation.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:65",
+      "ink": "#FFFFFF"
+    },
+    "pure-heart": {
+      "label": "Pure Heart (a new Wick icon in `perks/`)",
+      "path": "art/icons/perks/pure-heart.png",
+      "sha256": "ed3ffaee1d542a530c62dea8e8d9699fd086119fd0630ec5b67dbf7721c97711",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/076-pure-heart.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/pure-heart.png",
+        "128": "art/icons/perks/exports/128/pure-heart.png",
+        "64": "art/icons/perks/exports/64/pure-heart.png",
+        "56": "art/icons/perks/exports/56/pure-heart.png",
+        "48": "art/icons/perks/exports/48/pure-heart.png",
+        "44": "art/icons/perks/exports/44/pure-heart.png",
+        "40": "art/icons/perks/exports/40/pure-heart.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:86",
+      "ink": "#FFFFFF"
+    },
+    "hand-off": {
+      "label": "Hand-Off",
+      "path": "art/icons/perks/hand-off.png",
+      "sha256": "cf948ba80a2579719f2241a32ef1749ff0760420ebb1298e019d490772ce03af",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/077-hand-off.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/hand-off.png",
+        "128": "art/icons/perks/exports/128/hand-off.png",
+        "64": "art/icons/perks/exports/64/hand-off.png",
+        "56": "art/icons/perks/exports/56/hand-off.png",
+        "48": "art/icons/perks/exports/48/hand-off.png",
+        "44": "art/icons/perks/exports/44/hand-off.png",
+        "40": "art/icons/perks/exports/40/hand-off.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:101",
+      "ink": "#FFFFFF"
+    },
+    "nobody-left-behind": {
+      "label": "Nobody Left Behind",
+      "path": "art/icons/perks/nobody-left-behind.png",
+      "sha256": "8aec503afa8202aa6c22038debd412f279296705f8d99c2fe83f59111e515486",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/078-nobody-left-behind.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/nobody-left-behind.png",
+        "128": "art/icons/perks/exports/128/nobody-left-behind.png",
+        "64": "art/icons/perks/exports/64/nobody-left-behind.png",
+        "56": "art/icons/perks/exports/56/nobody-left-behind.png",
+        "48": "art/icons/perks/exports/48/nobody-left-behind.png",
+        "44": "art/icons/perks/exports/44/nobody-left-behind.png",
+        "40": "art/icons/perks/exports/40/nobody-left-behind.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:111",
+      "ink": "#FFFFFF"
+    },
+    "steady-hands": {
+      "label": "Steady Hands",
+      "path": "art/icons/perks/steady-hands.png",
+      "sha256": "c8f46df235ea61c2812de101f0ddc0648e78286ae881f539d95dc0d40589f0a8",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/079-steady-hands.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/steady-hands.png",
+        "128": "art/icons/perks/exports/128/steady-hands.png",
+        "64": "art/icons/perks/exports/64/steady-hands.png",
+        "56": "art/icons/perks/exports/56/steady-hands.png",
+        "48": "art/icons/perks/exports/48/steady-hands.png",
+        "44": "art/icons/perks/exports/44/steady-hands.png",
+        "40": "art/icons/perks/exports/40/steady-hands.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:121",
+      "ink": "#FFFFFF"
     }
   },
   "illustrations": {
@@ -43325,13 +43542,13 @@
       "previous_sha256": "3c7de20c5c48fe96c5266be533a0d76c9bf931ea3267ca40819673f74bbe61bd"
     },
     "fork-soul-blood_price": {
-      "label": "Blood Price",
+      "label": "Blood Price (replaces the existing picture)",
       "path": "art/icons/forks/soul-blood-price.png",
-      "sha256": "0c4dae6ac582284c0b6fd3df4cfb4dba50fb972f16f1a731154aeea9f2ee6e65",
+      "sha256": "90dfd90bc76501e97f27b4ad9abc1346b16bef80deb8faad3ef526af6d7ff756",
       "format": "png",
       "mode": "wick",
       "tint": "determination",
-      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #",
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:75",
       "slot": true,
       "status": "review-candidate",
       "production_approved": false,
@@ -43340,18 +43557,27 @@
       "background": "transparent",
       "implementation_ready": false,
       "ink": "#FFFFFF",
-      "collection": "nine-doors-0.30",
+      "collection": "prompt-pack-2026-11-19",
       "request_key": "0.30/fork.soul.blood_price",
       "exports": {
+        "256": "art/icons/forks/exports/256/soul-blood-price.png",
         "128": "art/icons/forks/exports/128/soul-blood-price.png",
         "64": "art/icons/forks/exports/64/soul-blood-price.png",
+        "56": "art/icons/forks/exports/56/soul-blood-price.png",
         "48": "art/icons/forks/exports/48/soul-blood-price.png",
         "44": "art/icons/forks/exports/44/soul-blood-price.png",
+        "40": "art/icons/forks/exports/40/soul-blood-price.png",
         "32": "art/icons/forks/exports/32/soul-blood-price.png",
         "24": "art/icons/forks/exports/24/soul-blood-price.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/fork-soul-blood_price/fork-soul-blood_price.png",
-      "previous_sha256": "0783c6f5b1549b7f614b2525e4ebfef58c82dbb301aac1e51aa5056e7589c93d"
+      "previous_path": "art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/soul-blood-price.png",
+      "previous_sha256": "0c4dae6ac582284c0b6fd3df4cfb4dba50fb972f16f1a731154aeea9f2ee6e65",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/075-soul-blood-price.png",
+      "upscaled": false
     },
     "fork-soul-clean_break": {
       "label": "Clean Break",

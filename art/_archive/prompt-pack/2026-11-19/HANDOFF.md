@@ -1,13 +1,13 @@
 # November 19 art continuation
 
-Updated 19 November 2026 at 10:28 UTC+7. The 88 entries in files 01–04 have **36 delivered**, **51 to do** and **1 held**. Review candidates require visual approval.
+Updated 19 November 2026 at 10:38 UTC+7. The 88 entries in files 01–04 have **44 delivered**, **43 to do** and **1 held**. Review candidates require visual approval.
 
 | File | Delivered | Total listed |
 | --- | ---: | ---: |
 | 01 | 3 | 37 |
 | 02 | 11 | 11 |
 | 03 | 20 | 21 |
-| 04 | 2 | 19 |
+| 04 | 10 | 19 |
 
 ## Pickup
 
@@ -22,14 +22,6 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 ## Remaining entries
 
 - 066 | File 03 | Running Script (fork): replaces the existing picture | `art/icons/forks/sigil-running-script.png`
-- 072 | File 04 | `stand_still`: Stand Still | `art/icons/perks/stand-still.png`
-- 073 | File 04 | `lore_ward`: Warding Word | `art/icons/perks/lore-ward.png`
-- 074 | File 04 | `recitation`: Recitation | `art/icons/perks/recitation.png`
-- 075 | File 04 | `fork.soul.blood_price`: Blood Price (replaces the existing picture) | `art/icons/forks/soul-blood-price.png`
-- 076 | File 04 | `pure_heart`: Pure Heart (a new Wick icon in `perks/`) | `art/icons/perks/pure-heart.png`
-- 077 | File 04 | `hand_off`: Hand-Off | `art/icons/perks/hand-off.png`
-- 078 | File 04 | `nobody_left_behind`: Nobody Left Behind | `art/icons/perks/nobody-left-behind.png`
-- 079 | File 04 | `steady_hands`: Steady Hands | `art/icons/perks/steady-hands.png`
 - 080 | File 04 | `pull_together`: Pull Together | `art/icons/perks/pull-together.png`
 - 081 | File 04 | `quiet_thread`: Quiet Thread | `art/icons/perks/quiet-thread.png`
 - 082 | File 04 | `veiled_insult`: Veiled Insult (a new picture, started from Sweet Talker) | `art/icons/perks/veiled-insult.png`
@@ -72,3 +64,5 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 - 035 | File 01 | `kit-works-pile`: Ground pile, works | `art/sprites/kit/works/pile.png`
 - 036 | File 01 | `kit-shrine-pile`: Ground pile, shrine | `art/sprites/kit/shrine/pile.png`
 - 037 | File 01 | `kit-rim-pile`: Ground pile, rim | `art/sprites/kit/rim/pile.png`
+
+Unreviewed scratch renders currently on disk: 84.

@@ -873,12 +873,11 @@
     "n": 66,
     "kind": "wick",
     "refs": [
-      "art/icons/forks/sigil-running-script.png",
-      "art/icons/traits/mind-without-fog.png",
-      "art/icons/perks/bulwark.png",
-      "art/icons/perks/bedside-manner.png",
-      "art/icons/perks/before-the-blink.png"
-    ]
+      "art/icons/forks/sigil-running-script.png"
+    ],
+    "staging": "Image edit of the first and only attached PNG. Preserve Wick's exact pose, contour, glyph plate and existing foreground glyph. The single new mark is a tiny unfinished angled glyph adjoined near the mitten's side. Match all original white ink and holes. No extra change.",
+    "reviewNote": "Two image-edit attempts changed the character pose and the existing square glyph. Reject both redraws. Preserve the current source. The brief only permits a small unfinished glyph beside it, with the pose and old glyph retained.",
+    "editPrompt": "Edit the first attached PNG, preserving its central composition exactly: a small frontal squat Wick leans toward viewer-right, with one short boot forward, one bent behind, the right mitten over a rounded rectangular square-in-ring mark at ground level. His ceramic screen tilts clockwise; the two little parallel fasteners are at its top right. The existing square in its oval ring and the three tiny diagonal trailing fragments to the right stay. In the empty space just beside the original glyph, place a single tiny broken angular white two-stroke mark much smaller than the main square. Restrict the edit to that area. Keep every existing shape where it is and retain the transparent backdrop. No changes to the character, lines, existing glyph, crop, pose or expression."
   },
   {
     "file": "03",
@@ -920,7 +919,8 @@
       "art/icons/conditions/bleeding.png",
       "art/icons/conditions/braced.png"
     ],
-    "previousPaint": "The icon shows: on the left, one open almond-shaped eye with a clear circular pupil, looking right; its gaze drawn as a cone of two straight lines running out toward the right and stopping abruptly at a thick solid bar across the cone's end. On the right, beyond the bar and out of the cone's reach, one small solid round dot (the unit) sitting inside a soft ring of short dark dashes, the darkness gathered round it. The eye looks, the bar stops its gaze, the dot stays unseen. The eye, the bar and the dot beyond it are what to read at 24 px. Avoid: a crossed-out eye, a closed eye with lashes, a moon, a lightbulb with a slash, a full black circle (that is Blinded), a figure with a face."
+    "previousPaint": "The icon shows: on the left, one open almond-shaped eye with a clear circular pupil, looking right; its gaze drawn as a cone of two straight lines running out toward the right and stopping abruptly at a thick solid bar across the cone's end. On the right, beyond the bar and out of the cone's reach, one small solid round dot (the unit) sitting inside a soft ring of short dark dashes, the darkness gathered round it. The eye looks, the bar stops its gaze, the dot stays unseen. The eye, the bar and the dot beyond it are what to read at 24 px. Avoid: a crossed-out eye, a closed eye with lashes, a moon, a lightbulb with a slash, a full black circle (that is Blinded), a figure with a face.",
+    "staging": "Only the eye, barred cone and dot ring. Every dash and dot is white on transparent, with broad true-transparent gaps and no lash, colored accent or shadow."
   },
   {
     "file": "04",
@@ -977,7 +977,8 @@
       "art/icons/perks/litany.png",
       "art/icons/perks/shared-breath.png"
     ],
-    "previousPaint": "Wick standing bolt upright, feet planted shoulder-width, arms hanging loose at his sides, flame head level and calm. Streaming past him from left to right, parallel to the ground, are three long tapered white speed lines that bend around his silhouette without touching it, leaving a clean gap of empty space hugging his body. Two small short ticks at his feet mark that he is rooted. Strong vertical figure against horizontal streaks."
+    "previousPaint": "Wick standing bolt upright, feet planted shoulder-width, arms hanging loose at his sides, flame head level and calm. Streaming past him from left to right, parallel to the ground, are three long tapered white speed lines that bend around his silhouette without touching it, leaving a clean gap of empty space hugging his body. Two small short ticks at his feet mark that he is rooted. Strong vertical figure against horizontal streaks.",
+    "staging": "Stand perfectly upright, planted and unbending. Three narrow continuous horizontal streaks curve around the silhouette with a visible gap. Distinct from Unflinching's short deflected strikes and chest chevron."
   },
   {
     "file": "04",
@@ -996,7 +997,8 @@
       "art/icons/perks/litany.png",
       "art/icons/perks/shared-breath.png"
     ],
-    "previousPaint": "Wick on the left, one hand raised to mouth level, three short curved sound-arcs leaving his mouth, flowing to the right and flaring into a rounded dome-shaped shell of bold white that settles over a partial silhouette of an ally cut by the right frame edge (only their head and shoulder). The dome has a few carved notches in its rim, abstract angular marks and no real letters. The ally's shape is solid, the shell is a thick arc around them."
+    "previousPaint": "Wick on the left, one hand raised to mouth level, three short curved sound-arcs leaving his mouth, flowing to the right and flaring into a rounded dome-shaped shell of bold white that settles over a partial silhouette of an ally cut by the right frame edge (only their head and shoulder). The dome has a few carved notches in its rim, abstract angular marks and no real letters. The ally's shape is solid, the shell is a thick arc around them.",
+    "staging": "Three abstract V-shaped rim cuts, irregular and detached. No Hebrew, Latin, other letters or written text. Strong solid white shell with transparent interior."
   },
   {
     "file": "04",
@@ -1033,7 +1035,8 @@
       "art/icons/perks/bulwark.png",
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
-    ]
+    ],
+    "staging": "Fictional ceramic automaton and abstract white magical energy. Use a single small symbolic white teardrop from a chipped lantern shell into the ray. No physical injury, blood texture, red ink or gore."
   },
   {
     "file": "04",
@@ -1072,7 +1075,8 @@
       "art/icons/perks/litany.png",
       "art/icons/perks/shared-breath.png"
     ],
-    "previousPaint": "Wick stepping forward on the left, his arm extended out to the right, the open palm pushing a rounded shield-shaped wedge of white toward a partial silhouette of a friend cut by the right frame edge (a shoulder and a raised forearm). The shield sits half in Wick's hand and half in the friend's, being handed over at the exact moment, with two short curved motion ticks behind it. Wick's own front is left open and unguarded; the friend takes the cover."
+    "previousPaint": "Wick stepping forward on the left, his arm extended out to the right, the open palm pushing a rounded shield-shaped wedge of white toward a partial silhouette of a friend cut by the right frame edge (a shoulder and a raised forearm). The shield sits half in Wick's hand and half in the friend's, being handed over at the exact moment, with two short curved motion ticks behind it. Wick's own front is left open and unguarded; the friend takes the cover.",
+    "staging": "Wick's solid shield stays held in his own left mitten in front of his torso. ONE separate thin hollow shield echo protects the right-hand cropped friend. Neither character hands a shield to the other. Big transparent interior in echo, differentiate the solid guard."
   },
   {
     "file": "04",

@@ -1,0 +1,59 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 121,
+  "title": "`steady_hands`: Steady Hands",
+  "path": "art/icons/perks/steady-hands.png",
+  "notes": "- **Save as:** `art/icons/perks/steady-hands.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** two hands holding a shaking one steady.",
+  "paint": "Close crop: two of Wick's hands, as bold white mitten-like shapes, cupping and enclosing a third partial hand that comes in from the right frame edge and shows four small short zig-zag tremor marks around it that stop where Wick's fingers close over it. Wick's head is visible small and low at the left, bowed over the hands, calm. The hands are the picture: a steady pair around a trembling one.",
+  "status": "review-candidate",
+  "n": 79,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "previousPaint": "Close crop: two of Wick's hands, as bold white mitten-like shapes, cupping and enclosing a third partial hand that comes in from the right frame edge and shows four small short zig-zag tremor marks around it that stop where Wick's fingers close over it. Wick's flame head is visible small and low at the left, bowed over the hands, calm. The hands are the picture: a steady pair around a trembling one.",
+  "label": "Steady Hands",
+  "sha256": "c8f46df235ea61c2812de101f0ddc0648e78286ae881f539d95dc0d40589f0a8",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/079-steady-hands.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/steady-hands.png",
+    "128": "art/icons/perks/exports/128/steady-hands.png",
+    "64": "art/icons/perks/exports/64/steady-hands.png",
+    "56": "art/icons/perks/exports/56/steady-hands.png",
+    "48": "art/icons/perks/exports/48/steady-hands.png",
+    "44": "art/icons/perks/exports/44/steady-hands.png",
+    "40": "art/icons/perks/exports/40/steady-hands.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:121",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nClose crop: two of Wick's hands, as bold white mitten-like shapes, cupping and enclosing a third partial hand that comes in from the right frame edge and shows four small short zig-zag tremor marks around it that stop where Wick's fingers close over it. Wick's head is visible small and low at the left, bowed over the hands, calm. The hands are the picture: a steady pair around a trembling one.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perks",
+  "id": "steady-hands",
+  "source_sha256": "66a96f3b061d816a88fe5344bab29473e23be613e51e62a83647e3d3e9ee9d0c",
+  "export_sha256": {
+    "256": "c7b34c56bd9716b720f93c0d23454ad2b31a9b1d0165ebe957a0bad9dcbe9023",
+    "128": "62d361e2a01e1a51470e5619cf310bb8d3bdc0331da798d33f1c9246a8fb196f",
+    "64": "0366089345ff1455bb9d8fb31a87a8d4e5117ffbec39ebc5295f1dff610d17e9",
+    "56": "07ec5c6b638c3351586c4c1caf8f5e7dd0a12d90fe602071ecd5d699f85e93c5",
+    "48": "15bc0062d5a6c4c2a5ce0a5ca16c224e4433cfc6cc1694364bebc090222fc67d",
+    "44": "5288375babc0c1d2007b09ac401a7252022d26c661f876e37e0a0bf3bd8a93c3",
+    "40": "323d6efb44aaed8a98d9eb78468862e8c67b30983b8a307ad3ed066196259034"
+  }
+}

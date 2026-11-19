@@ -1,0 +1,60 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 101,
+  "title": "`hand_off`: Hand-Off",
+  "path": "art/icons/perks/hand-off.png",
+  "notes": "- **Save as:** `art/icons/perks/hand-off.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** one guard covering two: Wick's guard shared with the friend beside him.",
+  "paint": "Wick standing on the left, his own rounded shield-shaped wedge of white still raised firmly in front of him, and his other arm extended out to the right toward a partial silhouette of a friend cut by the right frame edge (a shoulder and a raised forearm). From Wick's shield a matching ghost-edge of it, drawn as an open white contour of the same shape, extends over the friend's shoulder, with two short curved ticks between them. Wick keeps his guard; the same guard also covers the friend.",
+  "status": "review-candidate",
+  "n": 77,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "previousPaint": "Wick stepping forward on the left, his arm extended out to the right, the open palm pushing a rounded shield-shaped wedge of white toward a partial silhouette of a friend cut by the right frame edge (a shoulder and a raised forearm). The shield sits half in Wick's hand and half in the friend's, being handed over at the exact moment, with two short curved motion ticks behind it. Wick's own front is left open and unguarded; the friend takes the cover.",
+  "staging": "Wick's solid shield stays held in his own left mitten in front of his torso. ONE separate thin hollow shield echo protects the right-hand cropped friend. Neither character hands a shield to the other. Big transparent interior in echo, differentiate the solid guard.",
+  "label": "Hand-Off",
+  "sha256": "cf948ba80a2579719f2241a32ef1749ff0760420ebb1298e019d490772ce03af",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/077-hand-off.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/hand-off.png",
+    "128": "art/icons/perks/exports/128/hand-off.png",
+    "64": "art/icons/perks/exports/64/hand-off.png",
+    "56": "art/icons/perks/exports/56/hand-off.png",
+    "48": "art/icons/perks/exports/48/hand-off.png",
+    "44": "art/icons/perks/exports/44/hand-off.png",
+    "40": "art/icons/perks/exports/40/hand-off.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:101",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick standing on the left, his own rounded shield-shaped wedge of white still raised firmly in front of him, and his other arm extended out to the right toward a partial silhouette of a friend cut by the right frame edge (a shoulder and a raised forearm). From Wick's shield a matching ghost-edge of it, drawn as an open white contour of the same shape, extends over the friend's shoulder, with two short curved ticks between them. Wick keeps his guard; the same guard also covers the friend.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\nWick's solid shield stays held in his own left mitten in front of his torso. ONE separate thin hollow shield echo protects the right-hand cropped friend. Neither character hands a shield to the other. Big transparent interior in echo, differentiate the solid guard. \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perks",
+  "id": "hand-off",
+  "source_sha256": "121f688e9a57cb68b03bcc40214d524c25c5f74d6e44e6f36c69ed90d35d0b08",
+  "export_sha256": {
+    "256": "b252b1f132c5100479f37217dfe9ed41ed6932183c7b4ecf080e94be4737bd19",
+    "128": "01dc31d7092bf91525e50c5f831c3aa66fb06a3c73b2fe656b039621238a6e92",
+    "64": "9d3dfcfdcbb552bafa37256b6fb6bac625353125ed134fd59fd65753a738b6c7",
+    "56": "c61fba8d2b6c044a2e1e4deb7eeaf8092f32c75ea092f479573e6053f4469f33",
+    "48": "c69b2a5ecf99b5a189497a08548337c62c4c7cc3e0be8f88d644aa662e4f2e2a",
+    "44": "a37dae156500c4983e57b381e37ee6a49d7579ad96f3db4ce60f7748c372dadf",
+    "40": "b5e1d5fd9f12ba52528bf0a827ad47494494bc4cbce46bc80dba2217ee97ab3d"
+  }
+}
