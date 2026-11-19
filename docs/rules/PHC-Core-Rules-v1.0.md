@@ -12510,3 +12510,7 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     what their step adds ("+0.5: it adds 50% of the Outburst's base damage to the Release"), Awe that its Pump adds a
     stage but no damage, each number read from the row's `step.base`; the Damage school and Inverse say their amount
     grows with the Soul skills and with each stage pumped. No rule changes; five bare numbers left the text baseline.
+5604. **The pick overlay's tile notes have one wording** (the lead's review list): a tile in reach says "in reach", a
+    tile to choose "in reach: click to choose it", a unit to choose "<name>: click to choose them", a tile the area
+    covers "in the area" (it said nothing), a unit it touches "<name>: <its tag>" (`apps/web/src/game/pickOverlay.ts`
+    `PICK_NOTE`). Proof: `pickOverlay.test.ts`; `apps/web/e2e/picking.mjs` reads the unit note.
