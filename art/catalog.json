@@ -19735,6 +19735,32 @@
       "collection": "2026-11-19-unique-melee-bow",
       "grade": "unique",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-breath_of_morning": {
+      "label": "Breath of Morning (hand wraps)",
+      "path": "art/icons/gear/weapon-breath_of_morning.png",
+      "sha256": "29dec27166fa680a325c323cd79bcf75aa86f6f5ad25b7bd71331b7d631227c5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-breath_of_morning.png",
+        "128": "art/icons/gear/exports/128/weapon-breath_of_morning.png",
+        "64": "art/icons/gear/exports/64/weapon-breath_of_morning.png",
+        "32": "art/icons/gear/exports/32/weapon-breath_of_morning.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-breath_of_morning.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": 6,
+      "collection": "2026-11-19-unique-melee-bow",
+      "grade": "unique",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

@@ -134,6 +134,76 @@
       "grade": "unique",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-breath_of_morning",
+      "path": "art/icons/gear/weapon-breath_of_morning.png",
+      "sha256": "29dec27166fa680a325c323cd79bcf75aa86f6f5ad25b7bd71331b7d631227c5",
+      "label": "Breath of Morning (hand wraps)",
+      "family": "unique-breath_of_morning",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-breath_of_morning.png",
+        "sha256": "bc3a8cc42b0aaf5fdae25fcb6c6f93b5fa4189e9eac621530ef54b28dd2fdd6a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/masters/v1/weapon-breath_of_morning.png",
+        "sha256": "29dec27166fa680a325c323cd79bcf75aa86f6f5ad25b7bd71331b7d631227c5"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-breath_of_morning.txt",
+        "sha256": "492caa40ab50519b5c0acab26200e6b27634b383315b17b4dfb4fcae213c1df8"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-unique-melee-bow/attempts/weapon-breath_of_morning/v1/source.png",
+          "sha256": "11bf3fe842ea1a7de5095065cf0cd786fef5bf76bd20947ea680fb064374f2f8"
+        },
+        {
+          "path": "art/icons/gear/weapon-afterword.png",
+          "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-hand_wraps.png",
+          "sha256": "275174226eca2cc49f2db8a64a0d553d4d591dc244b2b053fcab2dcd11fce994"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/hand_wraps.png",
+          "sha256": "9bed6d9a7a94150c7c553c86f1a86785dd3392744606da13d7500f627cb0bd3c"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-hand_wraps.png",
+          "sha256": "275174226eca2cc49f2db8a64a0d553d4d591dc244b2b053fcab2dcd11fce994"
+        },
+        {
+          "path": "art/icons/weapons/hand_wraps.svg",
+          "sha256": "6f4ef94c92cdffe06a9f15488a9ec5ebc25785367c4bec73573631ac8c4b4058"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-breath_of_morning.png",
+        "128": "art/icons/gear/exports/128/weapon-breath_of_morning.png",
+        "64": "art/icons/gear/exports/64/weapon-breath_of_morning.png",
+        "32": "art/icons/gear/exports/32/weapon-breath_of_morning.png"
+      },
+      "export_hashes": {
+        "256": "e70f9e223446710bd320af22499556740e8f33daaac2750a92afaf2b5fd88898",
+        "128": "0a94536eeddd66c4e44dc71f96215e6ca2c6c6ed44fd474e9e34d966321924c7",
+        "64": "205c0e9a11a3facd31eef4a6381137c831d2c51c2742106367902a1e1f6bf69f",
+        "32": "346accde7bb028187346206f370a5d85d2e2badc0b7223bb88a84315e5ebcf5d"
+      },
+      "grade": "unique",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
