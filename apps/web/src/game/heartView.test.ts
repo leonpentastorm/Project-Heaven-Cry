@@ -1,7 +1,7 @@
 // Outburst 2.0 on screen (game/heartView.ts): design cards with a shape icon and their line, the HEART panel's costs
 // and refusals (the engine's), the grid preview that tells an area from a bolt, and the cut-in's top commands.
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, type Sheet, newCharacter, startCombat, beginOutburst, pumpOutburst, releaseOutburst, previewPump } from '@engine';
+import { ARCHETYPES, type Sheet, newCharacter, startCombat, beginOutburst, pumpOutburst, releaseOutburst, previewPump, pumpsAp } from '@engine';
 import { formIconSvg, designInfo, designCards, heartPanel, heartVals, aimOverlay, idleOverlay, overlayTileStyle, designVerdict, toneChips, FORMS } from './heartView';
 import { smartCommands, actionGroups } from './commands';
 
@@ -199,6 +199,8 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
   it('outside playtest 0.31.10 row 6: a feeling button prices its Pump with the switches the action carries (Overdraw), as the reducer charges it; the free-Pump badge follows the engine', () => {
     const { cb, u } = withPerks({}, 6); u.mg.feelings = ['rage']; beginOutburst(cb, rng, u, 'sb', undefined, true);
     u.mg.freePumps = 1; u.mg.freePumpsMax = 1; // a free Pump this turn
+    // item J (0.31.11): the badge counts the leading Pumps the engine's pumpsAp prices at 0 AP (one a turn: rules 1.19)
+    expect(heartPanel(cb, u)!.freePumps).toBe(1); expect(pumpsAp(cb, u, u.mg.designs.find((x: any) => x.id === u.mg.held.design), 2, u.mg.held.stage)).toBeGreaterThan(0);
     const p = heartPanel(cb, u, [OD])!, rage = p.feelings.find((f) => f.id === 'rage')!;
     expect(rage.cost).toBe(p.pump.cost); // the plain Pump with the same switch: one price
     const ap0 = u.ap, mp0 = u.mg.mp; cb.mods = [OD]; expect(pumpOutburst(cb, rng, u, 'rage')).toBeNull(); delete cb.mods;

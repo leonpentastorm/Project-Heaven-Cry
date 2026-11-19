@@ -6,7 +6,7 @@
 // previewPump, outburstArea through the plan, designCost, designRange, heartReach, formSize, the cycle's own actions run
 // on a throwaway copy). The held heart and Strain are read through resources.ts heldOutburstOf(), the panel's adapter.
 import { tilesN } from '@engine';
-import { FREE_PER_TURN, inverseShield, outburstHeal, SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, SOUL_RULES, damageModeMult, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
+import { pumpsAp, inverseShield, outburstHeal, SCHOOL, MODULE, TONE, TONES, STAGE_MULT, MAX_STAGE, SOUL_AP, SECOND_SCHOOL, SOUL_RULES, damageModeMult, designCost, designRange, heartReach, formSize, formOf, toneOf, toneRiders,
   previewOutburst, previewOutburstPlan, previewPump, pumpsMp, togglesFor, swellBlockedWhy, dryRun, fightWith, steadyHeart, letGo, feedOutburst, setHeartWatch, outburstDamage, migrateDesign, manaBand, MANA_START, SOUL_DAMAGE,
   type OutburstPlan, type OutburstAffected } from '@engine';
 import { feelingButtons, feelingRows, revertBtn, feelingInk, feelingName, feelingIconSrc, markIconSrc, iconStyle, type FeelingBtn } from './feelingsView';
@@ -209,8 +209,12 @@ export function heartPanel(cb: any, u: any, mods?: string[]): HeartPanel | null 
   const swell = h.steady ? 'Steadied: no swell next turn.' : noSwell ? noSwell + ' Next turn only your Strain grows (+' + H.swell + ').' : stage >= maxStage ? 'At full stage: next turn only your Strain grows (+' + H.swell + ').' : 'Next turn it swells: +1 stage (×' + STAGE_MULT[Math.min(maxStage, stage + 1)] + ') and +' + H.swell + ' Strain.';
   const relWhy = plan.ok || /Pick a|direction/.test(plan.why || '') ? '' : plan.why || '';
   // the badge follows the engine's price of the next Pump: a free stage left this turn (rules 1.19) or none (row 6)
-  // (the count is the engine's: an Empathy Pump's are freePumps; a turn's own free stage is FREE_PER_TURN less those used)
-  const freeLeft = H.held?.freePumps == null ? null : !(pp.ok && pp.free) ? 0 : (pp as any).freeKind === 'empathy' ? H.held.freePumps : FREE_PER_TURN - (u.mg?.freeUsed || 0);
+  // (the count is the engine's own price: the leading Pumps that magic.ts pumpsAp prices at 0 AP, up to the stage cap)
+  const freeLeft = H.held?.freePumps == null ? null : !(pp.ok && pp.free) || !d ? 0 : (() => {
+    let k = 0; const most = Math.max(0, (h.maxStage || MAX_STAGE) - h.stage);
+    while (k < most && pumpsAp(cb, u, d, k + 1, h.stage) === 0) k++;
+    return k;
+  })();
   return {
     name: h.name, designId: h.designId, tone: h.tone, toneName: h.toneName, ink: toneInk(h.tone), form: (info?.form || 'bolt') as Form, formName: info?.formName || h.form, icon: info?.icon || formIconUri('bolt', toneInk(h.tone)), shape: info ? info.line : '',
     stage, maxStage, mult: plan.mult || STAGE_MULT[stage], resonance: plan.resonanceBonus || 0, multNotes: notes, overdraw,
