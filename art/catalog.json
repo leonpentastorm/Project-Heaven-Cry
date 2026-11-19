@@ -19416,7 +19416,7 @@
     "shield-buckler--relic": {
       "label": "Shield-Buckler Relic",
       "path": "art/icons/gear/shield-buckler--relic.png",
-      "sha256": "8303dd322c7b90b7a1430e96d39efc10565f5dfc3782f054896b41286d09ead9",
+      "sha256": "b1260240a5c0c94417f7003dcdd32c6222d9bd284a5ab6ee54b46e7ce034db12",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -19437,12 +19437,13 @@
         "32": "art/icons/gear/exports/32/shield-buckler--relic.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. One-pixel transparent frame guard removes edge contact by alpha-1 residue; prior candidate bytes and exports retained in border-revisions.",
+      "previous_path": "art/_archive/prompt-pack/2026-11-19-file-08/border-revisions/shield-buckler--relic/shield-buckler--relic.png"
     },
     "shield-buckler--celestial": {
       "label": "Shield-Buckler Celestial",
       "path": "art/icons/gear/shield-buckler--celestial.png",
-      "sha256": "05aca9b8aeea6061771501462f062454c46795f4f105f06abeeecbaa1d09ea98",
+      "sha256": "32a1c63554bd22dfe9375a204ea29e8c08b894f9d1268a73d97d597937381bb2",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -19463,7 +19464,8 @@
         "32": "art/icons/gear/exports/32/shield-buckler--celestial.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. One-pixel transparent frame guard removes edge contact by alpha-1 residue; prior candidate bytes and exports retained in border-revisions.",
+      "previous_path": "art/_archive/prompt-pack/2026-11-19-file-08/border-revisions/shield-buckler--celestial/shield-buckler--celestial.png"
     },
     "shield-riot_shield--fine": {
       "label": "Shield-Riot Shield Fine",
@@ -19650,7 +19652,7 @@
     "shield-pavise--celestial": {
       "label": "Shield-Pavise Celestial",
       "path": "art/icons/gear/shield-pavise--celestial.png",
-      "sha256": "464183d32b6f9d0fa32e75ac92c6823e02a7cf2b7ee419c953656e4f5ea3e785",
+      "sha256": "7f568c48310fe3889e94c51bd33a63990e8d938c8c94a04602eff2c89da5b515",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -19671,7 +19673,8 @@
         "32": "art/icons/gear/exports/32/shield-pavise--celestial.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. One-pixel transparent frame guard removes edge contact by alpha-1 residue; prior candidate bytes and exports retained in border-revisions.",
+      "previous_path": "art/_archive/prompt-pack/2026-11-19-file-08/border-revisions/shield-pavise--celestial/shield-pavise--celestial.png"
     },
     "quiver-quiver--fine": {
       "label": "Quiver-Quiver Fine",

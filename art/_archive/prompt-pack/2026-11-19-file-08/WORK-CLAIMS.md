@@ -1,25 +1,5 @@
-# Current grade-proof claim
+# Active grade claim
 
-This worker claims the eight File 08 section B proof images for Katana and Drifter, on branch art/2026-11-19-grade-proof.
+The current cross-agent reservation and available work list is [WORK-CLAIMS](../../../briefs/prompts-2026-11-19/WORK-CLAIMS.md).
 
-The other worker owns unique melee-and-bow entries 1–7 and 15. Their current handoff is at branch art/2026-11-19-unique-melee-bow, commit 1bca4ed94. This worker's seven accepted other uniques live on art/2026-11-19-unique-gear.
-
-Continuing the complete eight-image proof under Leon's instruction to keep working. Fine candidates already exist. Each subsequent image is made from its Standard and preceding candidate, then archived and pushed separately for review. The outline comparison remains part of the proof review.
-
-The shared pack currently has 150 delivered candidate masters. Proof experiments are additional drafts until their sheet passes review.
-
-Continuation now also claims finish trials for the existing Combat Knife, Sabre and Legion Gladius Standards, all four grades. These are draft review sheets under Leon's instruction to continue work. Drifter Masterwork was declined by the image service and its dependent finishes remain pending. No renderer on the other worker's unique lane is claimed here.
-
-The four grades for Katana, Combat Knife, Sabre and Legion Gladius have now been selected as 16 review-candidate masters after visual comparison at inventory size. All sources and measured edge differences are retained. This selection accepts resampling and modest contour drift for artistic review. It does not assert pixel-identical outlines.
-
-The next eight finish trials are recurve_bow and longbow, all four grades. This claim is also posted to the shared coordination issue https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 .
-
-Those eight are now registered and pushed as review candidates: this branch has 24 candidate masters, 96 game-size exports. Next claim is existing `weapon-crossbow` and `weapon-repeating_crossbow`, all four grades, eight pictures. Shared issue comment 7003710278 records it before rendering. No other IDs newly reserved here.
-
-Current delivered count: 28 review-candidate masters, 112 exports. Crossbow Fine, Repeating Crossbow Fine/Masterwork and Drifter Fine are registered. Crossbow Masterwork and Repeating Crossbow Relic were service-blocked; their higher grades remain pending.
-
-Current active claim: `shield-buckler`, `shield-riot_shield`, `shield-pavise`, each Fine/Masterwork/Relic/Celestial: twelve pictures. Shared issue comment 7003887329 records the reservation before rendering. Other kept glove, focus, quiver, hafted and armour grade IDs remain unclaimed by this worker. Check the shared issue before taking them. Existing blade grades `kemizuchi_duelling_blade`, `adamantile_greatsword`, `ork_machete` stay with the other worker. Their acknowledgment of the earlier overlap correction is still pending.
-
-LATEST: all twelve shields are delivered. This branch has 40 candidate masters and 160 exports; project baseline is 190/871 distinct candidate pictures. The other worker acknowledged release of the three overlapping blade IDs in issue comment 7004125558; their three alternatives are excluded. Their remaining exclusive grade claim is the three blades above plus `hatchet`, `war_axe`, `glaive`, `lance`, `maul`, four grades each (32 pictures). Do not take those IDs.
-
-Our current claim: `quiver-quiver`, `armour-utility_belt`, `armour-armoured_belt`, four grades each, twelve pictures. Shared comment 7004343617 reserves these before rendering. Remaining other glove/focus and armour grades are free from this worker's claims; recheck shared issue before taking exact IDs. Old claim paragraphs above are history.
+This branch has52 candidate masters and208 exports. Current reservation: armour-field_helmet, armour-ballistic_helmet, armour-night_goggles, armour-gas_mask, all four finishes (16 pictures). The previous quiver/belt/shield sets are delivered. Historical reservations remain in git history.

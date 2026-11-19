@@ -27,6 +27,11 @@ for r,ident in enumerate(ids):
    small=native.resize(tuple(round(v*scale) for v in native.size),Image.Resampling.LANCZOS)
    pos=tuple(round((b[k]+b[k+2]-scale*(g[k]+g[k+2]))/2) for k in range(2))
    im=Image.new('RGBA',(1024,1024));im.paste(small,pos)
+   edge=im.getchannel('A').getbbox()
+   if min(edge[0],edge[1],1024-edge[2],1024-edge[3])==0:
+    guarded=Image.new('RGBA',(1024,1024))
+    guarded.alpha_composite(im.resize((1022,1022),Image.Resampling.LANCZOS),(1,1))
+    im=guarded
    dest=A/'candidate-masters'/f'{stem(ident)}--{tier}.png';dest.parent.mkdir(exist_ok=True)
    im.save(dest,optimize=True)
    x=np.asarray(standard.resize((64,64)).getchannel('A'))>=128

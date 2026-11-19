@@ -1,0 +1,17 @@
+{
+  "branch": "art/2026-11-19-grade-proof",
+  "shared_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
+  "items": [
+    "armour-field_helmet",
+    "armour-ballistic_helmet",
+    "armour-night_goggles",
+    "armour-gas_mask"
+  ],
+  "tiers": [
+    "fine",
+    "masterwork",
+    "relic",
+    "celestial"
+  ],
+  "candidate_only": true
+}

@@ -1,5 +1,5 @@
-# Grade proof progress
+# Grade candidate progress
 
-48 registered review-candidate masters. 54 archived PNG attempts, including earlier Fine trials. The composite shows the current candidate for each finish.
+52 registered review-candidate masters,208 game-size exports. Sources, rejected attempts and earlier revisions are not extra delivered pictures.
 
-[Proof progress](review/complete-proof-progress.jpg) · [Inventory sizes](review/finish-candidates-small.jpg) · [Claims](WORK-CLAIMS.md) · [Handoff](HANDOFF.md)
+[Inventory sizes](review/finish-candidates-small.jpg) · [Native proof sheet](review/complete-proof-progress.jpg) · [Claims](WORK-CLAIMS.md) · [Handoff](HANDOFF.md)
