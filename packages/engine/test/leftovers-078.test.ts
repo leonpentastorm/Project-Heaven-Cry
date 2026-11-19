@@ -156,7 +156,7 @@ describe('item 6607: Hallow (prayer-2.0 item 16)', () => {
   });
   it('an enemy standing on it is at the row value to hit; off it, not', () => {
     const h = rig(); const foe = h.f.unit(h.foe), gun = h.f.unit(h.gun);
-    const term = () => withGame(h.f.g, () => previewAttack(h.f.cb, h.f.unit(h.foe), gun, 'shot', { free: true })).terms.filter((t: any) => /Hallow/.test(t.label)).map((t: any) => t.v);
+    const term = () => withGame(h.f.g, () => previewAttack(h.f.cb, h.f.unit(h.foe), gun, 'shot', { free: true })).terms!.filter((t: any) => /Hallow/.test(t.label)).map((t: any) => t.v);
     expect(term()).toEqual([]);
     foe.pos = '4,4'; expect(term()).toEqual([HALLOW.effects[1].value]);
   });

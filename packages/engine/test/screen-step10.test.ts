@@ -67,7 +67,8 @@ describe('step 10: the Chaplain\'s prayers on the Faith tab (chaplain-spec.md se
     expect(ward.group).toBe('faith'); expect(sanct.group).toBe('faith');
     expect(ward.sub).toBe(whisper.sub); expect(sanct.sub).toBe(hymn.sub);
     expect(whisper.sub).not.toBe(hymn.sub);
-    expect(rows.filter((d) => d.id.includes('class:guardian') && !d.id.includes('ward') && !d.id.includes('sanctuary')).every((d) => d.group === 'class')).toBe(true); // not a prayer: a class move
+    const hallow = rows.find((d) => d.id.includes('guardian.hallow')); expect(hallow.group).toBe('faith'); expect(hallow.sub).toBe(hymn.sub); // rules 1.78 item 6607: a Hymn of its own
+    expect(rows.filter((d) => d.id.includes('class:guardian') && !d.id.includes('ward') && !d.id.includes('sanctuary') && !d.id.includes('hallow')).every((d) => d.group === 'class')).toBe(true); // not a prayer: a class move
   });
 });
 

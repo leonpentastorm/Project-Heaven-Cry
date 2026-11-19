@@ -138,6 +138,26 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **m10** dead code and module-private helpers. `0f4e9523a`.
 - **The Emanator stowed** says so on the Strain row (Step 3e). `079f78e2f`.
 
+### Leftovers (`wip/0.32-leftovers`; hand-off `docs/design/handoffs/0.32-LEFTOVERS.md`; spec rules 1.78, items 6600-6611)
+
+- **Hurl** (the Breaker; momentum-2.0 item 16): needs P14 (see "needs a primitive"). [M] [not built; checked in code 19 Nov 2026] [spec 6606]
+- **Pray from holy ground** (prayer-2.0 item 17): needs the seat (P3) on a `hallowed` zone. [M] [not built] [spec 6607]
+- **NULL on a Figment, the enemy's weighing** (figments-spec section 8: charge x 4); the unmaking is built. [S] [not built] [spec 6602]
+- **Breaching Strike onto Into the Wall's row** (its per-perk code retired; moves the golden tables, so a re-record on purpose). [S] [open] [spec 6605]
+- **Stand Behind Me:** two written designs disagree (Guard 2.0 item 9 against the three-layers Bulwark III ceiling); the lead rules first. [S] [needs a ruling] [spec 6611]
+- **Hallow and Into the Wall icons** (ART-REQUESTS 0g) and the hallowed ground's own look on the map (drawn as any data zone today). [S] [open] [spec 6605, 6607]
+
+#### Built in 0.32 (not yet live)
+
+- **Two zones of one kind on a tile do not stack** (two Sanctuaries halve once). `5ff4ae85e`, spec 6601.
+- **NULL unmakes a Figment** on the tiles it covers (`sigils.json null.dispel`). `b71439891`, spec 6602.
+- **The fight joined is an fx event** (the alarm's, `joined`; CONTACT! on the map). `6048d2b07`, spec 6603.
+- **Aim marks on a Bonded ally** (Threads Reads them at the Bonder's turn start; one crosshair with the count). `9730b403f`, spec 6604.
+- **Into the Wall** (the Breaker: a foe driven into a wall, the edge or a body takes a slam, the body too). `0ab9fbc1c`, spec 6605.
+- **Hallow** (the Chaplain's hallowed ground; zone kinds are data). `7f20b1261`, spec 6607.
+- **What rides on a hit on the attack card** ("On a hit: Smite, Judged"). `6f6f796d8`, spec 6608.
+- **A door's passive steps on the skill page** (the Tending pictures placed). `5a1f6b50d`, spec 6609.
+
 ### 0.32: needs a primitive (lead to rule)
 
 One line each, with the rule that needs it. Nothing here is built; each waits for the lead's approval after a look at `docs/ENGINE-HOOKS.md`.
@@ -162,27 +182,22 @@ One line each, with the rule that needs it. Nothing here is built; each waits fo
 - **`brakeGiven`, a new export of `effects/cost.ts`** (built in the merge for the healing brake: the give is counted after the action runs, from `effects/actions.ts`): the lead to approve it or move the count. [spec 5610]
 - **A class-only multiplier** (the Figments door 119 and the Rigger 123 against 130 and 150). [gaps report; Balance 2.0]
 - **The effects step's own list:** none (`0.32-STEP2-EFFECTS-EVENTS.md`); its audit's "still open" rows are under Effects above.
+- **P14, the object op's `hurl`** (lift a loose object or a held small foe next to you and throw it at a second tile: an action with two tile picks; the objects' `loose` field), for Hurl; Grenadier's Arm's per-perk throw would move onto it. [leftovers, spec 6606]
+- **Added by the leftovers lane under its brief, for the lead to confirm:** the trigger `displaced` (on the existing hook, now also raised when a forced move is refused at its first tile) and the predicate `stopped_by` (item 1's collision rule); zone kinds read from `rules.json zones.kinds` (P9) and the predicate `actor_in_zone` (item 2's Hallow); `Combat.riders`, a dry-run copy field beside `asHit` (item 5's reader). [leftovers, spec 6605, 6607, 6608]
 
 ### Big leftovers (designed, partly or not built; each shrunk to the owed part)
 
-- **Breaker's Into the Wall (P13) and Hurl (P14).** The `displaced` hook, Throw Down into an occupant and Grenadier's Arm exist; these two moves do not. [M] [partly; checked in code 19 Nov 2026] [CHANGELOG 0.29.0; verification]
 - **Enemies breaking under Pressure.** Suppressed/Broken take AP, Pressed drops a held shot, Rout runs on a failed save. Owed: the AI acting on Broken ("must reach cover or drop Prone"); no flee or cower. [M] [partly; checked in code 19 Nov 2026] [verification]
-- **Hallow (consecrated ground).** Nothing in engine or data. [L] [not built; checked in code 19 Nov 2026] [CHANGELOG 0.29.0]
 - **Bare fists in the glove family (P11).** Overlaps Items 2.0. [M] [not built; checked in code 19 Nov 2026] [CHANGELOG 0.29.0]
-- **Aim marks on a Bonded ally.** The engine read `aims_at: tied:<kind>` exists. Owed: a data row that uses it, and the display. [S] [partly; checked in code 19 Nov 2026] [verification]
-- **Smite's chip on the attack card.** Needs riders in the attack preview. [M] [not built; checked in code 19 Nov 2026] [verification]
-- **Two Sanctuaries on one tile still stack** (each halves). [S] [not built; checked in code 19 Nov 2026] [spec 1908]
-- **NULL on a Figment.** `nullCatch` takes glyphs, zones and sigil walls only. [M] [not built; checked in code 19 Nov 2026] [verification]
 - **Enemy squad plan against reactions.** Enemies avoid held lanes (`held_risk`). Owed: bait / two-mover plan. [L] [partly; checked in code 19 Nov 2026] [verification]
 - **Enemy versions of the doors.** Sigil and Outburst casters, physical techniques per tier, Momentum and Pressure for all exist. Owed: enemy Guard, Shadow, Bonds, Figments, prayers. [L] [partly; checked in code 19 Nov 2026] [verification]
 - **Enemy focus memory past the round.** This-round memory is built; carry it further. [M] [partly; checked in code 19 Nov 2026] [spec 4969(a)]
 - **Enemies moving for an angle on an unattacked character.** [M] [not built; checked in code 19 Nov 2026] [spec 4969(b)]
 - **Cover arc: a pillar outside the 45 degree arc counts nothing.** The arc is built (`rules.json arc_deg`); this is a design call, to rule before building. [S] [partly; checked in code 19 Nov 2026] [spec 4969(c)]
-- **Engine pieces not built:** a `per_stage` uses scope; a thrown Relic property; an fx event for "fight joined". Each needs the lead's approval first (CLAUDE.md, no rebuild). [M] [not built; checked in code 19 Nov 2026] [spec 5010; verification]
+- **Engine pieces not built:** a thrown Relic property (the fight-joined fx is built, spec 6603; no data row needs a `per_stage` scope, spec 6610). Needs the lead's approval first (CLAUDE.md, no rebuild). [M] [not built; checked in code 19 Nov 2026] [spec 5010; verification]
 - **"I'll narrate" in a room.** Human-mode code exists but picking it only shows "coming soon". Owed: the selection and the Narrator screen end to end, with the ruling buttons tested. [L] [partly; checked in code 19 Nov 2026] [SESSION-HANDOFF 6.2-6.3]
 - **Co-op stall.** One two-player fight in five stalled on the guest's turn (0.21.0), never reproduced. [M] [open; from documents only] [coop-stall.md]
-- **Delivered art with no place in the game** (wiring, not new art; `move-breath` is wired). Owed: the 7 Tending passive pictures (no `tend-verb` alias); `icon-resource-credits/xp/devotion` and the 7 `icon-tone-*` (`uiMarkOf('resource'/'tone')` never called); `move-open-guard`, `move-sway`, `move-counter`; `camp-step-ready` (checklist has no `ready` key); the `move-draw-fire` placeholder is not in assets.json. [M] [partly; checked in code 19 Nov 2026] [SESSION-TODO O; verification]
-- **Stand Behind Me.** An icon exists, no move in data. [S] [not built; checked in code 19 Nov 2026] [verification]
+- **Delivered art with no place in the game** (wiring, not new art; `move-breath` is wired). Owed (the Tending passive pictures are placed: spec 6609): `icon-resource-credits/xp/devotion` and the 7 `icon-tone-*` (`uiMarkOf('resource'/'tone')` never called); `move-open-guard`, `move-sway`, `move-counter`; `camp-step-ready` (checklist has no `ready` key); the `move-draw-fire` placeholder is not in assets.json. [M] [partly; checked in code 19 Nov 2026] [SESSION-TODO O; verification]
 
 ### Fun and balance pass
 
