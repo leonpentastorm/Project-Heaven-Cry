@@ -323,7 +323,7 @@
           "door_pick": "fork.shadow.spotter"
         }
       ],
-      "text": "Hidden: the first ally weapon hit each round on a Marked foe is an ambush (×{=effects.0.value}) for {=effects.0.and.0.value|abs} Shadow",
+      "text": "Hidden: the first ally weapon hit each round on a Marked foe is an ambush, +{=effects.0.value|more}% damage, for {=effects.0.and.0.value|abs} Shadow",
       "effects": [
         {
           "op": "damage_mult",
@@ -408,7 +408,7 @@
           "door_pick": "fork.tend.short_thread"
         }
       ],
-      "text": "Tending a Bonded ally within {=effects.0.if.target_within} tiles is ×{=numbers.near} (not ×{=numbers.through}) · Touch reach {=numbers.touch} tiles",
+      "text": "Tending a Bonded ally within {=effects.0.if.target_within} tiles: +{=numbers.near|more}% healing, not +{=numbers.through|more}% · Touch reach {=numbers.touch} tiles",
       "numbers": {
         "near": 1.4,
         "through": 1.2,
@@ -1052,7 +1052,7 @@
           "door_pick": "fork.sigil.clean_vent"
         }
       ],
-      "text": "Once a turn: a Vent of {=numbers.min}+ Flux shoves adjacent foes {=numbers.push} tile and scorches them for {=numbers.base} × Flux vented",
+      "text": "Once a turn: a Vent of {=numbers.min}+ Flux shoves adjacent foes {=numbers.push} tile and scorches them for {=numbers.base} damage a Flux vented",
       "numbers": {
         "min": 2,
         "push": 1,
@@ -1080,7 +1080,7 @@
           "door_pick": "fork.sigil.written_in_advance"
         }
       ],
-      "text": "A Line that stood since before your last turn ended Evokes at ×{=numbers.mult}",
+      "text": "A Line that stood since before your last turn ended Evokes with +{=numbers.mult|more}% damage",
       "numbers": {
         "mult": 1.2
       },
@@ -1129,7 +1129,7 @@
           "door_pick": "fork.soul.ride_the_edge"
         }
       ],
-      "text": "A Release at exactly your Strain limit is ×{=numbers.mult}",
+      "text": "A Release at exactly your Strain limit: +{=numbers.mult|more}% damage",
       "numbers": {
         "mult": 1.15
       },

@@ -1891,7 +1891,7 @@
               "numbers": {
                 "factor": 0.7
               },
-              "text": "Heals and shields you give fill the Ledger (cap {=amounts.cap.base} × Healing given) · your next damage adds {=numbers.factor|pct}% of it, then it empties",
+              "text": "Heals and shields you give fill the Ledger · your next damage adds {=numbers.factor|pct}% of it, then it empties",
               "effects": [
                 {
                   "op": "resource",
@@ -3344,7 +3344,7 @@
           "load_attacks": 12,
           "load_ap": 1
         },
-        "text": "One load each of armour-piercing (×0.8, ignores armour), hollow-point (×1.3 against doubled armour) and incendiary (×0.9, Burning), restocked on rest · loading is a reload · {=numbers.load_attacks} attacks a load",
+        "text": "One load each of armour-piercing (ignores armour), hollow-point (against doubled armour) and incendiary (Burning), restocked on rest · loading is a reload · {=numbers.load_attacks} attacks a load",
         "effects": [
           {
             "op": "resource",
@@ -3675,7 +3675,7 @@
         "name": "Reactive Plate",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Guard blocks damage by itself: {=effects.0.value} off a hit per point, no AP, no reaction · every {=effects.1.every} Guard spent raises ambient mana by {=effects.1.value}",
+        "text": "Each Guard plate takes {=effects.0.value} off a hit by itself, no AP, no reaction · every {=effects.1.every} Guard spent: +{=effects.1.value} ambient mana",
         "effects": [
           {
             "op": "stat_mod",

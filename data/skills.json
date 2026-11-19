@@ -634,7 +634,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% Guard soak (× Durability)"
+            "text": "+{=per_point.numbers.feed|pct}% Guard soak"
           },
           {
             "at": "each",
@@ -1154,7 +1154,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% Momentum kept (× Raw Power)"
+            "text": "+{=per_point.numbers.feed|pct}% Momentum kept"
           },
           {
             "at": "each",
@@ -1818,7 +1818,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% Pressure shed · Slide reach (× Dexterity)"
+            "text": "+{=per_point.numbers.feed|pct}% Pressure shed · Slide reach"
           },
           {
             "at": "each from 2",
@@ -2673,7 +2673,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% foes' search difficulty while Hidden, up to +{=per_point.numbers.feed_at_double} (× Ingenuity)"
+            "text": "+{=per_point.numbers.feed|pct}% foes' search difficulty while Hidden, up to +{=per_point.numbers.feed_at_double}"
           },
           {
             "at": "each",
@@ -3221,7 +3221,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% Flux limit (× Brain Power)"
+            "text": "+{=per_point.numbers.feed|pct}% Flux limit"
           },
           {
             "at": "each",
@@ -3742,7 +3742,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% Figment HP (× Visualization)"
+            "text": "+{=per_point.numbers.feed|pct}% Figment HP"
           },
           {
             "at": "each",
@@ -4269,7 +4269,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% of Bond healing heals you too, up to {=per_point.numbers.feed_at_double|pct}% (× Empathy)"
+            "text": "+{=per_point.numbers.feed|pct}% of Bond healing heals you too, up to {=per_point.numbers.feed_at_double|pct}%"
           },
           {
             "at": "each",
@@ -4900,7 +4900,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% Strain limit (× Will Power)"
+            "text": "+{=per_point.numbers.feed|pct}% Strain limit"
           },
           {
             "at": "each",
@@ -5432,7 +5432,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% prayer shields (× Faith)"
+            "text": "+{=per_point.numbers.feed|pct}% prayer shields"
           },
           {
             "at": "each",

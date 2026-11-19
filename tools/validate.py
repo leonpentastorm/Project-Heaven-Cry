@@ -1060,8 +1060,8 @@ if "actions" in data:
             if isinstance(r, dict) and _k == "needs" and isinstance(r.get(_k), list) and r[_k] and all(isinstance(x, str) and x for x in r[_k]): continue # rules 1.33: one of several paths (an MP focus: mg.emanator, mg.attuner)
             if isinstance(r, dict) and _k in r and not (isinstance(r[_k], str) and r[_k]):
                 errors.append(f"actions: resources.{rid}.{_k} must be a path (a setter: its name)")
-        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap)
-            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion)")
+        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion", "strain"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap); rules 1.69 item 5453: strain (magic.ts: addStrain up, easeStrain down)
+            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion, strain)")
 
 # Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
 # prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.
