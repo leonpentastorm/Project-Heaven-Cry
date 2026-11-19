@@ -1022,6 +1022,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_cleaver_glaive",
+      "path": "art/icons/gear/weapon-ork_cleaver_glaive.png",
+      "sha256": "9920514a607b3e7ee2f82adbebc40189f1b94862c30e0822e63e19af3d328543",
+      "label": "Ork cleaver-glaive",
+      "family": "05-scrap-cutters",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_cleaver_glaive.png",
+        "sha256": "1d0e20b248d040c349b9a4c36ae7c20b1aefe9c0a4f13e6fe5566dfbabd64b75"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-ork_cleaver_glaive.png",
+        "sha256": "9920514a607b3e7ee2f82adbebc40189f1b94862c30e0822e63e19af3d328543"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-ork_cleaver_glaive.txt",
+        "sha256": "65a8e7abeb0a1db86cc115ec1265ce54cde6170a0eb0c1cbab0bddba703a4916"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_machete.png",
+          "sha256": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_cleaver_glaive.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_cleaver_glaive.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_cleaver_glaive.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_cleaver_glaive.png"
+      },
+      "export_hashes": {
+        "256": "8c697a01126fb1e7281205568a40d24033988bf6b54156394a927a36b7daae17",
+        "128": "1dddbc30f1aec1aece2f90ef2ffeb7d04b189b38f65b2d4a363db0c2c0d4075a",
+        "64": "e676f3a5a4122dcc601ed3fc36adc0b92e233ad22c367c04c0349b93600f2b83",
+        "32": "089da8f70ae8b967b6e9b43499c346cde23f57b594482b186d909e9ae29cff26"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

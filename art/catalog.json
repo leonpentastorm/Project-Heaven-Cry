@@ -19074,6 +19074,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-ork_cleaver_glaive": {
+      "label": "Ork cleaver-glaive",
+      "path": "art/icons/gear/weapon-ork_cleaver_glaive.png",
+      "sha256": "9920514a607b3e7ee2f82adbebc40189f1b94862c30e0822e63e19af3d328543",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_cleaver_glaive.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_cleaver_glaive.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_cleaver_glaive.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_cleaver_glaive.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_cleaver_glaive.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+      "brief_number": 18,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {
