@@ -1,0 +1,16 @@
+{
+  "id": "longbow",
+  "tier": "masterwork",
+  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--masterwork.png",
+  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--masterwork.png",
+  "size64_mask_differing_pixels": 135,
+  "sha256": "1fc682469a6064d6176e5420a52b5139881694615e52f81acb761f21593b2d9c",
+  "path": "art/icons/gear/weapon-longbow--masterwork.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-longbow--masterwork.png",
+    "128": "art/icons/gear/exports/128/weapon-longbow--masterwork.png",
+    "64": "art/icons/gear/exports/64/weapon-longbow--masterwork.png",
+    "32": "art/icons/gear/exports/32/weapon-longbow--masterwork.png"
+  },
+  "source_sha256": "2d4498613608e084f0471ebb10a43a21ff3831c6ee33119a40e7f083540c862c"
+}

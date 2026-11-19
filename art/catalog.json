@@ -19178,6 +19178,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Bow fittings and limb contours drift, particularly the Longbow upper fitting; artistic approval and an exact-outline pass remain pending."
+    },
+    "weapon-longbow--masterwork": {
+      "label": "Longbow Masterwork",
+      "path": "art/icons/gear/weapon-longbow--masterwork.png",
+      "sha256": "1fc682469a6064d6176e5420a52b5139881694615e52f81acb761f21593b2d9c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/weapon-longbow.png",
+      "source_path": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-longbow--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-longbow--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-longbow--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-longbow--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Bow fittings and limb contours drift, particularly the Longbow upper fitting; artistic approval and an exact-outline pass remain pending."
     }
   },
   "survival_art": {
