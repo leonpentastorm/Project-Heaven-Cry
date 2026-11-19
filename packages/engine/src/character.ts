@@ -99,6 +99,12 @@ export interface Character extends Sheet {
   doorKept?: Record<string, string[]>;
   /** Rules 1.56 (Figments 2.0): the stamp of the forks' save migration (figments.json migration.rev); none: made before it. */
   figRev?: number;
+  /** Rules 1.70 item 5538: per skill, the rev of its perk_remap table this sheet was made or migrated under. */
+  perkRev?: Record<string, number>;
+  /** Rules 1.70 item 5538: per skill, an old save's free re-pick still offered (the preselection it holds now). */
+  perkRepick?: Record<string, { id: string; tier: 'I' | 'II' }[]>;
+  /** Rules 1.70 item 5538: per skill, the preselection of a re-pick taken (the chooser marks it; gone when its steps are spent). */
+  perkPreselect?: Record<string, { id: string; tier: 'I' | 'II' }[]>;
   mp?: number; evoCharge?: number; learnedScene?: number;
   /** An advanced class (rules 1.2), held alongside the base class: all its moves at once (provisional; spec 14). Class
    * Roster Revision 3 shelves every advanced class: the field is kept, but gives nothing until they come back. */
@@ -479,7 +485,7 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   // its gear when play starts (loadout.ts). An old draft's or a test's kit is carried as before.
   const kit = s.kit ? KITS[s.kit] || KITS.medic : BARE_KIT;
   const c: Character = {
-    ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, figRev: (figmentsJ as any).migration.rev, perks: [],
+    ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, figRev: (figmentsJ as any).migration.rev, ...perkRevNow(), perks: [],
     unspent: { skill: 0, attr: 0, core: 0 }, deeds: [], weapon: kit.weapon, armourClass: kit.armourClass, stims: kit.stims, essence: 1, weaponKills: {}, dead: false,
     injuries: [], pack: kit.pack.map((x) => ({ ...x })), offHand: kit.offHand ? { id: kit.offHand } : null, focusRev: FOCUS_REV, mpRev: 124, hpRev: HP_REV,
     ...(s.kit ? {} : { bare: true, kit: '' }),
@@ -1345,9 +1351,54 @@ export function stepsTaken(c: Character, skill: string) {
   return c.perks.filter((x) => PERK[x.id]?.tier === 'acquired' && PERK[x.id].skills.includes(skill)).reduce((n, x) => n + (x.tier === 'II' ? 2 : 1), 0);
 }
 /** Something waits on the level-up screen: points to spend, a class to earn (level 3), a perk step to take, a fork to
- * pick (rules 1.60; outside playtest 0.31.10 row 2: a fork open at creation went unasked). */
+ * pick (rules 1.60; outside playtest 0.31.10 row 2: a fork open at creation went unasked), an old save's re-pick (rules 1.70). */
 export const levelUpDue = (c: Character | null | undefined): boolean =>
-  !!c && (c.unspent.skill + c.unspent.attr + c.unspent.core > 0 || (c.level >= 3 && !c.classId) || pendingPerkSteps(c).length > 0 || allPendingDoorPicks(c).length > 0);
+  !!c && (c.unspent.skill + c.unspent.attr + c.unspent.core > 0 || (c.level >= 3 && !c.classId) || pendingPerkSteps(c).length > 0 || allPendingDoorPicks(c).length > 0 || pendingRepicks(c).length > 0);
+
+// ---------- old saves: the perk re-pick (rules 1.70 item 5538; ruling layer section 2 item 5) ----------
+/** A skill's remap table (skills.json row `perk_remap`: rev, perks old id -> new id or null, passives unlock points ->
+ * the perk that replaces it), or null. Each attribute's step fills its skills' tables. */
+const remapOf = (s: any): { rev: number; perks?: Record<string, string | null>; passives?: Record<string, string> } | null => (s?.perk_remap && typeof s.perk_remap.rev === 'number' ? s.perk_remap : null);
+/** The stamp a sheet made now carries: every skill with a table at its rev (none: no field, a sheet is as it was). */
+export function perkRevNow(): { perkRev?: Record<string, number> } {
+  const m: Record<string, number> = {}; for (const s of SKILLS) { const t = remapOf(s); if (t) m[s.id] = t.rev; }
+  return Object.keys(m).length ? { perkRev: m } : {};
+}
+/** The skills with an old save's re-pick still offered, and the preselection each holds now. */
+export const pendingRepicks = (c: Character | null | undefined): { skill: string; held: { id: string; tier: 'I' | 'II' }[] }[] =>
+  Object.entries(c?.perkRepick || {}).map(([skill, held]) => ({ skill, held }));
+/** The load door's perk migration (rules 1.70 item 5538). For each beta or gamma skill whose table is newer than the
+ * sheet's stamp, with points at its first perk step or more: its old perks become their mapped ones (tiers kept; null
+ * drops one), the named passives it had (an unlock at points it reaches) become the perks that replace them, in that
+ * order, as far as its perk steps reach (a tier II that does not fit is held at I; no passive above the step count);
+ * the sheet holds them now and is offered one free re-pick. An alpha keeps every step it holds (stepsEarned owes a new
+ * one only when its schedule owes more). Nothing is written for a skill with no table. Says nothing in the story. */
+export function migrateCharacterPerks(c: Character): string[] {
+  for (const s of SKILLS as any[]) {
+    const t = remapOf(s); if (!t || (c.perkRev?.[s.id] ?? 0) >= t.rev) continue;
+    c.perkRev = { ...(c.perkRev || {}), [s.id]: t.rev };
+    const p = P(c, s.id); if (s.slot === 'alpha' || p < ladderSchedule(s.id).perk_steps[0]) continue;
+    const map = t.perks || {}, mine = (id: string) => id in map || (PERK[id]?.tier === 'acquired' && PERK[id].skills.includes(s.id));
+    const old = c.perks.filter((x) => mine(x.id)), pre: { id: string; tier: 'I' | 'II' }[] = [];
+    for (const x of old) { const to = x.id in map ? map[x.id] : x.id; if (to && PERK[to] && !pre.some((y) => y.id === to)) pre.push({ id: to, tier: x.tier === 'II' ? 'II' : 'I' }); }
+    for (const [pts, to] of Object.entries(t.passives || {}).sort((a, b) => +a[0] - +b[0])) if (p >= +pts && PERK[to] && !pre.some((y) => y.id === to)) pre.push({ id: to, tier: 'I' });
+    let left = stepsEarned(p, s.id); const keep: { id: string; tier: 'I' | 'II' }[] = [];
+    for (const x of pre) { if (left <= 0) break; const tier = x.tier === 'II' && left >= 2 ? 'II' : 'I'; keep.push({ id: x.id, tier }); left -= tier === 'II' ? 2 : 1; }
+    c.perks = [...c.perks.filter((x) => !old.includes(x)), ...keep.map((x) => ({ ...x }))];
+    c.perkRepick = { ...(c.perkRepick || {}), [s.id]: keep };
+  }
+  return [];
+}
+/** Answer an old save's re-pick (the reducer's levelup/perk-repick): keep what it holds, or give the skill's perk steps
+ * back to choose again (its preselection kept for the chooser to mark). Returns the refusal, or null. */
+export function answerRepick(c: Character, skill: string, keep: boolean): string | null {
+  const held = c.perkRepick?.[skill]; if (!held) return 'No re-pick waits for that skill.';
+  const rest = { ...(c.perkRepick || {}) }; delete rest[skill]; c.perkRepick = rest;
+  if (keep) return null;
+  c.perks = c.perks.filter((x) => !(PERK[x.id]?.tier === 'acquired' && PERK[x.id].skills.includes(skill)));
+  c.perkPreselect = { ...(c.perkPreselect || {}), [skill]: held };
+  return null;
+}
 /** Skills with a perk step waiting, and the choices for each (a new Tier I, or an upgrade of a held Tier I). */
 export function pendingPerkSteps(c: Character) {
   const out: { skill: string; choices: { id: string; tier: 'I' | 'II' }[]; /** Steps owed in this skill (2+ after a jump). */ free: number }[] = [];

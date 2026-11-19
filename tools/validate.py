@@ -3513,6 +3513,19 @@ for _s in items("skills"):
         _m = _u.get("mastery") if isinstance(_u, dict) else None
         if isinstance(_m, int) and 1 <= _m <= 4 and (_l.get("perk_steps") or [None] * 4)[_m - 1] != int(_pts): errors.append(f"skills:{_s.get('id')}.unlocks.{_pts}: mastery {_m} says a perk step, and the {_s.get('slot')} schedule has its step {_m} at {(_l.get('perk_steps') or [None] * 4)[_m - 1]} (set mastery 0: rules 1.70 item 5537)")
         if _m == 5 and _l.get("mastered") != int(_pts): errors.append(f"skills:{_s.get('id')}.unlocks.{_pts}: the Mastered row is at the schedule's mastered ({_l.get('mastered')})")
+# rules 1.70 item 5538: a skill's perk_remap (old saves' re-pick): {rev: n >= 1, perks: {old perk id: a perk of this skill
+# or null}, passives: {unlock points: a perk of this skill}}; the targets are acquired perks of the same skill
+_PK = {x.get("id"): x for x in items("perks") if isinstance(x, dict)}
+for _s in items("skills"):
+    _t = _s.get("perk_remap")
+    if _t is None: continue
+    _w = f"skills:{_s.get('id')}.perk_remap"
+    _own = lambda pid: pid in _PK and _PK[pid].get("tier") == "acquired" and _s.get("id") in (_PK[pid].get("skills") or [])
+    if not (isinstance(_t, dict) and isinstance(_t.get("rev"), int) and _t["rev"] >= 1 and set(_t) <= {"rev", "perks", "passives", "note"}): errors.append(f"{_w}: {{rev: n >= 1, perks?, passives?, note?}}"); continue
+    for _o, _n in (_t.get("perks") or {}).items():
+        if _n is not None and not _own(_n): errors.append(f"{_w}.perks.{_o}: maps to {_n!r}, not an acquired perk of {_s.get('id')} (or null)")
+    for _pts, _n in (_t.get("passives") or {}).items():
+        if not (str(_pts).isdigit() and _own(_n)): errors.append(f"{_w}.passives.{_pts}: unlock points to an acquired perk of {_s.get('id')}")
 # ---------- rules 1.60 slice C (Doors 3.0, the forks: N1, N2) ----------
 # data/forks.json: one row per fork option, a door verb held only by a sheet that picked it (`requires: [{door_pick:
 # <its own id>}]`). Each alpha skill names its two steps in skills.json `forks` ([{id, at, of: [two option ids]}]) at 4

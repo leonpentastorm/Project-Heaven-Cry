@@ -14,7 +14,7 @@
 // (canRaise, pendingPerkSteps, the character's perks); one click is one engine action, as before.
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, epRgba, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, roadMap, nextLine, ceilingLine, perkRow } from './shared';
-import { CLASS, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, ADVANCED_SHELVED, doorForkView } from '@engine';
+import { CLASS, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, ADVANCED_SHELVED, doorForkView, allPendingDoorPicks, pendingRepicks, PERK as ENGINE_PERK } from '@engine';
 import { act, getState, go, homeScreen } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
 import { figmentLadderView } from '@engine';
@@ -207,6 +207,10 @@ export class LevelUpLogic extends DCLogic {
     const queue = [
       ...(choosing ? [{ key: 'class', kind: 'class', text: 'Class' }] : []),
       ...D.skills.flatMap((s) => forkPend(s.id).map((f) => ({ key: 'fork:' + s.id + ':' + f.at, kind: 'fork', skill: s.id, at: f.at, text: 'Fork · ' + s.name }))),
+      // rules 1.70 item 5541: a door's choice that is no fork step (Figment forms known: figment_forms), one chip a door
+      ...allPendingDoorPicks(c).filter((pd) => !String(pd.grant).startsWith('fork:')).map((pd) => ({ key: 'door:' + pd.door + ':' + pd.grant, kind: 'door', door: pd.door, pd, text: (pd.left > 1 ? pd.left + ' choices' : 'Choice') + ' · ' + (pd.door === 'figment_forms' ? 'Figment forms' : pd.door) })),
+      // rules 1.70 item 5538: an old save's free re-pick of a skill's perk steps
+      ...pendingRepicks(c).map((x) => ({ key: 'repick:' + x.skill, kind: 'repick', skill: x.skill, held: x.held, text: 'Re-pick · ' + nameOf(x.skill) })),
       ...pendingPerkSteps(c).map((x) => ({ key: 'perk:' + x.skill, kind: 'perk', skill: x.skill, text: (x.free > 1 ? x.free + ' perk steps' : 'Perk step') + ' · ' + nameOf(x.skill) })),
     ];
     if (this.state.chooser && !queue.some((q) => q.key === this.state.chooser)) queueMicrotask(() => this.setState({ chooser: null, armPerk: null }));
@@ -222,8 +226,8 @@ export class LevelUpLogic extends DCLogic {
     this.tcFit(queue.length);
     const after = cur ? queue.find((q) => q.key !== cur.key) : null;
     const chBtn = 'min-height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer';
-    const ch = { open: !!cur, kind: cur ? cur.kind : '', isPerk: !!cur && cur.kind === 'perk', isFork: !!cur && cur.kind === 'fork', isClass: !!cur && cur.kind === 'class',
-      title: !cur ? '' : cur.kind === 'class' ? 'Your class has found you' : cur.kind === 'fork' ? 'Fork at ' + cur.at + ' · ' + nameOf(cur.skill) : 'Perk step · ' + nameOf(cur.skill),
+    const ch = { open: !!cur, kind: cur ? cur.kind : '', isPerk: !!cur && cur.kind === 'perk', isFork: !!cur && ['fork', 'door', 'repick'].includes(cur.kind), isClass: !!cur && cur.kind === 'class',
+      title: !cur ? '' : cur.kind === 'class' ? 'Your class has found you' : cur.kind === 'fork' ? 'Fork at ' + cur.at + ' · ' + nameOf(cur.skill) : cur.kind === 'door' ? cur.pd.why : cur.kind === 'repick' ? 'Re-pick · ' + nameOf(cur.skill) : 'Perk step · ' + nameOf(cur.skill),
       hasNext: !!after, next: () => (after ? openCh(after.key) : null), close: () => this.setState({ chooser: null, armPerk: null }), btnStyle: chBtn,
       perks: [], armed: false, confirmText: '', confirm: () => {}, back: () => this.setState({ armPerk: null }), forkOpts: [],
       okStyle: 'min-height: 36px; padding: 0 16px; border-radius: 10px; border: 0; background: #FFFFFF; color: #0A0D13; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer' };
@@ -232,12 +236,24 @@ export class LevelUpLogic extends DCLogic {
       const x = pend[cur.skill], ink = ATTR[SK[cur.skill].attr].ink, armed = this.state.armPerk;
       ch.perks = (ACQUIRED[cur.skill] || []).map((pk) => { const h = held(pk.id), legal = x && x.choices.find((y) => y.id === pk.id);
         return perkRow(pk.id, { held: h ? h.tier : '', ink, on: armed === pk.id, why: legal ? '' : h && h.tier === 'II' ? 'Tier II' : 'Not now',
-          act: legal ? { label: legal.tier === 'I' ? 'Take' : 'Upgrade', aria: (legal.tier === 'I' ? 'Take ' : 'Upgrade ') + pk.name, click: () => this.setState({ armPerk: pk.id }) } : null }); });
+          // rules 1.70 item 5538: a re-pick marks what the save held ('Take again')
+          act: legal ? { label: (legal.tier === 'I' ? 'Take' : 'Upgrade') + (((c.perkPreselect || {})[cur.skill] || []).some((q) => q.id === pk.id) ? ' again' : ''), aria: (legal.tier === 'I' ? 'Take ' : 'Upgrade ') + pk.name, click: () => this.setState({ armPerk: pk.id }) } : null }); });
       const a = armed && x && x.choices.find((y) => y.id === armed), pk = a ? PERKS.find((q) => q.id === armed) : null;
       if (a && pk) { ch.armed = true; ch.confirmText = (a.tier === 'I' ? 'Take ' + pk.name : 'Upgrade ' + pk.name + ' to II') + '? Kept for good.';
         ch.confirm = () => { act({ type: 'levelup/perk', charId: c.id, perkId: pk.id }); this.setState({ armPerk: null }); }; }
     }
-    if (ch.isFork) {
+    if (ch.isFork && cur.kind === 'door') {
+      // a door's choice (Figment forms known): its options as cards, Choose sends door/pick (the engine's verdict)
+      ch.forkOpts = cur.pd.options.map((o) => ({ key: o.id, name: o.label, text: o.text || '', icon: figmentIconUri(o.icon, FIG_LINE), cost: '', hasCost: false, canPick: true, label: 'Choose', btnStyle: chBtn,
+        pick: () => act({ type: 'door/pick', charId: c.id, door: cur.door, option: o.id }) }));
+    } else if (ch.isFork && cur.kind === 'repick') {
+      // rules 1.70 item 5538: keep what the save holds now, or choose the skill's perk steps again (the old ones marked)
+      const names = cur.held.map((h) => ((ENGINE_PERK[h.id] || {}).name || h.id) + ' ' + h.tier).join(', ') || 'none';
+      ch.forkOpts = [
+        { key: 'keep', name: 'Keep', text: 'Keep these perks: ' + names + '.', icon: '', cost: '', hasCost: false, canPick: true, label: 'Keep', btnStyle: chBtn, pick: () => act({ type: 'levelup/perk-repick', charId: c.id, skill: cur.skill, keep: true }) },
+        { key: 'again', name: 'Choose again', text: 'Give these perk steps back and choose them again (what you hold now is marked).', icon: '', cost: '', hasCost: false, canPick: true, label: 'Choose again', btnStyle: chBtn, pick: () => act({ type: 'levelup/perk-repick', charId: c.id, skill: cur.skill }) },
+      ];
+    } else if (ch.isFork) {
       // two columns: icon, name, the one line, the cost line if any, Choose (the fork view arms, then confirms)
       const fk = forkCard(c, cur.skill, { inFight, only: [cur.at], rerender: () => this.setState({ forkArm: Date.now() }) });
       ch.forkOpts = fk && fk.steps[0] ? fk.steps[0].opts.map((o) => ({ ...o, cost: '', hasCost: false })) : [];

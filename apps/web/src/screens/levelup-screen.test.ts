@@ -279,3 +279,29 @@ describe('level-up screen', () => {
     m.root.unmount();
   });
 });
+
+describe('rules 1.70: the TO CHOOSE strip carries an old save\'s re-pick (item 5538) and the Figment forms known (item 5541)', () => {
+  it('a re-pick chip opens Keep / Choose again; Choose again gives the steps back as a perk-step chip', async () => {
+    const c = setup((x) => { x.skills.pain_threshold = 3; x.perks = [{ id: 'scar_tissue', tier: 'I' }]; x.perkRepick = { pain_threshold: [{ id: 'scar_tissue', tier: 'I' }] }; });
+    const { el, root } = await mount();
+    const chip = el.querySelector('.phc-lu-tc[data-kind="repick"]') as HTMLButtonElement; expect(chip).toBeTruthy();
+    await React.act(async () => { chip.click(); });
+    const again = el.querySelector('[data-fork-pick="again"]') as HTMLButtonElement; expect(again).toBeTruthy(); expect(el.querySelector('[data-fork-pick="keep"]')).toBeTruthy();
+    await React.act(async () => { again.click(); });
+    expect(G.characters[c.id].perkRepick?.pain_threshold).toBeUndefined();
+    expect(el.querySelector('.phc-lu-tc[data-kind="repick"]')).toBeNull();
+    expect(el.querySelector('.phc-lu-tc[data-choose="perk:pain_threshold"]')).toBeTruthy();
+    await React.act(async () => { root.unmount(); });
+  });
+  it('Visualization 1: a forms-known chip; each Choose learns one form (door/pick at figment_forms)', async () => {
+    const c = setup((x) => { x.skills.visualization = 1; });
+    const { el, root } = await mount();
+    const chip = el.querySelector('.phc-lu-tc[data-kind="door"]') as HTMLButtonElement; expect(chip).toBeTruthy();
+    await React.act(async () => { chip.click(); });
+    const pick = el.querySelector('[data-fork-pick]') as HTMLButtonElement; expect(pick).toBeTruthy();
+    const form = pick.getAttribute('data-fork-pick');
+    await React.act(async () => { pick.click(); });
+    expect((G.characters[c.id] as any).doorPicks.figment_forms).toEqual([form]);
+    await React.act(async () => { root.unmount(); });
+  });
+});

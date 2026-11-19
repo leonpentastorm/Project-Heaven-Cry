@@ -9,6 +9,7 @@ import {
   packOf, magsOf, roundsOf, loadAll, specialRoundsFor, takeSpecialRounds, plainRounds, equip, unequip, fitMod, carryQuiver, stowQuiver, fitQuiverMod, swapQuivers, drawnWeapon, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, modsOn, maxDurOf, hasEvoker, carriesEvoker, carriesVisualizer, mpNow, coresCarried, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { setFigmentDesign, dropFigmentDesign, FIG_DESIGN_IN_FIGHT, migrateCharacterFigments } from './figments';
+import { migrateCharacterPerks, answerRepick } from './character';
 import { takeDoorPick, doorOption } from './doorpicks';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV, shockClear } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
@@ -358,6 +359,7 @@ export type Action =
   | { type: 'voice/ask'; charId: string; skill: string } | { type: 'overreach/choose'; id: string; choice: 'indulge' | 'resist' }
   | { type: 'levelup/raise'; charId: string; kind: 'skill' | 'attr' | 'core'; id: string } | { type: 'levelup/class'; charId: string; classId: string }
   | { type: 'levelup/perk'; charId: string; perkId: string }
+  | { type: 'levelup/perk-repick'; charId: string; skill: string; keep?: boolean }
   | { type: 'combat/move'; unitId: string; to: string; how?: 'move' | 'sprint' | 'disengage'; mods?: string[] } | { type: 'combat/attack'; unitId: string; targetId: string; mode: AttackMode; mods?: string[] }
   | { type: 'combat/shove'; unitId: string; targetId: string } | { type: 'combat/prone'; unitId: string } | { type: 'combat/brace'; unitId: string } | { type: 'combat/overwatch'; unitId: string; mode: 'shot' | 'aimed' | 'melee' }
   | { type: 'combat/gift'; unitId: string; aim: string }
@@ -517,6 +519,8 @@ export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
   // rules 1.56 (Figments 2.0; 0.29 wave-2 review MF3): a sheet from before the forks keeps the old ladder's forms here,
   // at the load door, so the first view (the Figments tab, the level-up card, Picture) is right before any action
   try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterFigments(c as any); } catch { /* a save this old is handled by apply */ }
+  // rules 1.70 item 5538: an old save's beta and gamma perks under a skill's newer remap table (nothing for a skill with none)
+  try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterPerks(c as any); } catch { /* a save this old is handled by apply */ }
   // rules 1.56 (consolidation 0.29 M5): a fight saved before fitted mods were held (0.28) keeps a held snapshot with no
   // mod relics, and a mod acts only as a held item now: each PC unit holding a snapshot takes the modifiers on its own
   // weapon instances (instanceMods of u.weapon with u.mods, u.offWeapon with u.offMods) that it lacks. Nothing is
@@ -577,7 +581,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
   for (const c of Object.values(g.characters || {})) {
-    const cls0 = c.classId, mpRev0 = c.mpRev, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c), ...migrateCharacterFaith(c), ...migrateCharacterItems(c), ...migrateCharacterMp(c), ...migrateCharacterFigments(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630), Devotion XP (item 715)
+    const cls0 = c.classId, mpRev0 = c.mpRev, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c), ...migrateCharacterFaith(c), ...migrateCharacterItems(c), ...migrateCharacterMp(c), ...migrateCharacterFigments(c), ...migrateCharacterPerks(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630), Devotion XP (item 715)
     // rules 1.24 (item 1348): Max MP left Virtue; a fight saved before it holds the old pool in its units: the same share of the new one
     // rules 1.36 (the level scale): HP in the new units, the same share of the bar; a fight saved before it moves with it
     if (migrateCharacterHp(c)) migrateCombatHp(g);
@@ -919,12 +923,22 @@ function reduce(g: GameState, a: Action, by: string) {
       const took = takeSpecialRounds(packOf(c!), w!.ammo, type, magazineSize(c!.weapon, c!.weaponState?.mods) ?? w!.magazine!), n = took.took; c!.loaded = n; c!.loadedType = type; c!.pack = took.pack;
       push(g, { kind: 'system', text: c!.name + ' loads ' + n + ' ' + type.replace(/_/g, '-') + ' rounds.' }); return;
     }
+    case 'levelup/perk-repick': { // rules 1.70 item 5538: an old save's free re-pick of a skill's perk steps
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      lvlBefore(c!);
+      { const no = answerRepick(c!, String(a.skill), !!a.keep); if (no) fail(no); }
+      push(g, { kind: 'system', text: c!.name + (a.keep ? ' keeps the ' : ' chooses again the ') + (SKILL[a.skill]?.name || a.skill) + ' perks.' });
+      lvlAfter(c!);
+      return;
+    }
     case 'levelup/perk': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       const step = pendingPerkSteps(c!).flatMap((s) => s.choices).find((x) => x.id === a.perkId); if (!step) fail('No perk step for that perk.');
       lvlBefore(c!);
       const held = c!.perks.find((x) => x.id === a.perkId);
       if (held) held.tier = 'II'; else c!.perks.push({ id: a.perkId, tier: 'I' });
+      // rules 1.70 item 5538: a re-pick's preselection goes once its skill's steps are all taken again
+      for (const sk of Object.keys(c!.perkPreselect || {})) if (!pendingPerkSteps(c!).some((x) => x.skill === sk)) { const r = { ...c!.perkPreselect }; delete r[sk]; c!.perkPreselect = Object.keys(r).length ? r : undefined; }
       push(g, { kind: 'system', text: c!.name + ' takes ' + PERK[a.perkId].name + ' (Tier ' + step!.tier + ').' });
       lvlAfter(c!);
       return;
