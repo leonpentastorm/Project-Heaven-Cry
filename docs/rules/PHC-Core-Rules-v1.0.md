@@ -845,7 +845,7 @@ Weapon skills and lore:
 | Hatchet | 22 | 1 | 120 | thrown 5 tiles |
 | Legion gladius | 19 | 1.3 | 300 | |
 | ✓ Sabre | 20 | 1.5 | 400 | |
-| Kemizuchi duelling blade | 24, +1 accuracy | 1.2 | 550 | |
+| Kemizuchi duelling blade | 19, +1 accuracy | 1.2 | 550 | item 5527 (was 24) |
 | Katana (rules 1.32) | 20 | 1.4 | 500 | lends Draw Cut; PROVISIONAL (items 1950 to 1952) |
 | Afterword (rules 1.58) | 15 | 0.4 | 700 | follows in the off hand (5e): its follow ×0.25 and Bleeding once a turn; rolls in shop gear and weapon picks from the 700 band; PROVISIONAL (item 4534) |
 
@@ -886,7 +886,7 @@ Weapon skills and lore:
 | Knuckledusters | 20 | 0.3 | 120 | *(rules 1.56, the unarmed fighter: was 16 and 60)* |
 | Striking gloves | 17 | 0.3 | 120 | Dexterity *(rules 1.56, the unarmed fighter)* |
 | Iron mitts | 25 | 1.2 | 500 | *(rules 1.56, the unarmed fighter)* |
-| Kemizuchi strikers | 21 | 0.4 | 500 | Dexterity *(rules 1.56, the unarmed fighter)* |
+| Kemizuchi strikers | 19 | 0.4 | 500 | Dexterity *(rules 1.56, the unarmed fighter)*; item 5527 (was 21) |
 | Hellraiser servo-fist | 30 | 2.5 | 1,200 | Raw Power 3 (rules 1.13; was Proficiency 3) |
 | Bite and claws | 18 | 0 | none | a beast companion's own weapon: never carried, bought or dropped (not one of the 3 types) |
 | Figment claws | 30 | 0 | none | a Beast Figment's own weapon (rules 1.34): never carried, bought or dropped |
