@@ -5496,6 +5496,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-runner_trousers--fine",
+      "path": "art/icons/gear/armour-runner_trousers--fine.png",
+      "sha256": "916582b1c681dabf2db592024d3feaf1fcbe4dbb4238829c83d05a4a41c99c35",
+      "label": "Runner Trousers — Fine",
+      "family": "armour-runner_trousers",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-runner_trousers--fine.png",
+        "sha256": "ebb32305d81f2f49e9be75b9e828c13cf567d48a7910899f360095041e699f04"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-runner_trousers--fine.png",
+        "sha256": "916582b1c681dabf2db592024d3feaf1fcbe4dbb4238829c83d05a4a41c99c35"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-runner_trousers--fine.txt",
+        "sha256": "ece08fd72caa3a26d9bf82ea7c10f27690ffe9421881ae248c829468588aa2af"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-runner_trousers--fine/v1/source.png",
+          "sha256": "31b57f269fbdfc365e54d70147131ed4051a67b1383b745579221b2425d0c5c2"
+        },
+        {
+          "path": "art/icons/gear/armour-runner_trousers.png",
+          "sha256": "2e2fe38e84e0e8da30560a478bc6af62db8c4de93fdf8a690e7ec84747e2f977"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-runner_trousers--fine.png",
+        "128": "art/icons/gear/exports/128/armour-runner_trousers--fine.png",
+        "64": "art/icons/gear/exports/64/armour-runner_trousers--fine.png",
+        "32": "art/icons/gear/exports/32/armour-runner_trousers--fine.png"
+      },
+      "export_hashes": {
+        "256": "28531c10aee3b2002d9f8d1d3687997f53e97b2c6b5da5d874df0c17682db374",
+        "128": "612e926d78203bcc0304e36d21605489c93f252d101eb2411db269bb8ea682e0",
+        "64": "55cdc84bbdaebf94cfd5262d19026d2c2bd6931605bbbe65b5285791628cf85b",
+        "32": "721b384fd07f9887da63bf8d0ae209ec6723b3f1c08ee253d1a929236dc8958f"
+      },
+      "grade": "fine",
+      "standard_id": "armour-runner_trousers",
+      "outline": {
+        "solid_alpha_iou": 0.9632463633112374,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 38
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
