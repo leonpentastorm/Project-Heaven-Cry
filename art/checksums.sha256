@@ -3148,7 +3148,7 @@ e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4  art/_archive/p
 c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/perks/wick/replaced/2026-11-16/shrug-it-off.png
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
-6f6cea58a51d965b133ccf181c59f2b7bb166538f40827e930e08a73ac14612f  art/_archive/prompt-pack/2026-11-19-file-10/HANDOFF.md
+f9c1c3a3198d10b47bf01c0963169d8f521ad8f3d02e98b33a7759323907962d  art/_archive/prompt-pack/2026-11-19-file-10/HANDOFF.md
 0cfa6a57666b19aff58f58030540046381945c5e6b73c810bc804973264b60ac  art/_archive/prompt-pack/2026-11-19-file-10/checkpoint.py
 b80fc4aba309821801a8c67b5f8af625aaa543b4bf184558cd76c3d709d36fff  art/_archive/prompt-pack/2026-11-19-file-10/deliver.py
 b8d497a00d903ba99fab4bc101b3e2ac5c2bff8446f56d0a2ee6da5c669dd4c5  art/_archive/prompt-pack/2026-11-19-file-10/generation-failures/failure-10-1795065515411.json
@@ -3156,6 +3156,10 @@ b8d497a00d903ba99fab4bc101b3e2ac5c2bff8446f56d0a2ee6da5c669dd4c5  art/_archive/p
 bc88ff8654b77b9d1a17f74bc04f6d24ea3a1d5ca5ab611c30f1cfbf055180eb  art/_archive/prompt-pack/2026-11-19-file-10/generation-failures/failure-13-1795065354541.json
 ce63e6e1c1cda5f5d1d647bb406cb575e65e8846aeefa5db22fe94192c83fa60  art/_archive/prompt-pack/2026-11-19-file-10/generation-failures/failure-17-1795065251205.json
 a351dd4be606ab6313b51a2d012e5797cbab9761fed184141fb7165870eefd9f  art/_archive/prompt-pack/2026-11-19-file-10/generation-failures/failure-18-1795065544980.json
+56f873307dcc89935b9b6c14410a127fa68cc4f4dd955e7ed2a3a7e05f00f7d1  art/_archive/prompt-pack/2026-11-19-file-10/generation-failures/failure-21-1795065771387.json
+0479051e37a67e45b8dcea0eafea1b92cbb41cd1d79991a93a4be607cc939db1  art/_archive/prompt-pack/2026-11-19-file-10/generation-failures/failure-24-1795065647335.json
+ae0dbb9520a5de3b6878b9d342a64502fa6fb5ea3d36e0ac83609b70bdbb20d6  art/_archive/prompt-pack/2026-11-19-file-10/generation-failures/failure-27-1795065701245.json
+c879d202b471356950270447ef706dbe78022ff445295dfcea9ef7cbb5237815  art/_archive/prompt-pack/2026-11-19-file-10/generation-failures/failure-30-1795065752390.json
 1dfd82796f8acd0b10cb14901cd960c10159d834b30e261a1ffa6aa471692d77  art/_archive/prompt-pack/2026-11-19-file-10/generation-failures/failure-5-1795065090444.json
 eabcd447d39faac296653030003b75f8437444c5bc43c0ceb280612e50eaa422  art/_archive/prompt-pack/2026-11-19-file-10/generation-failures/failure-6-1795065171822.json
 7134fd888659cf99e79446d0bf71029ec347c1a3e9ca3df0b6d4d05357136031  art/_archive/prompt-pack/2026-11-19-file-10/generation-failures/failure-7-1795065330702.json
@@ -3175,6 +3179,9 @@ d95912a6f79a99c0077327f663a8ffd9040bf3586365bd401f65a1353dc9880c  art/_archive/p
 8abc1cb891c86c492a2d6655f0ec6bd74bb51e74e4d3d51fbd38bf38405f6056  art/_archive/prompt-pack/2026-11-19-file-10/rejected/17-short-front/REVIEW.md
 6a1c0f97f7938afdec0a90ee21e6713591af782c3881fe7a1f307bbf81521f30  art/_archive/prompt-pack/2026-11-19-file-10/rejected/17-short-front/native.png
 c0b3f6beb173a99910501dc4f0e80fea4fbad7ca20374ccf06ab14fdb0980ee9  art/_archive/prompt-pack/2026-11-19-file-10/rejected/17-short-front/result.json
+37f750cdf1c9b2f329295838846228786c02eada7abef2514184e1227253b66d  art/_archive/prompt-pack/2026-11-19-file-10/rejected/21-missing-lower-silhouette/REVIEW.md
+98e1bd7cad23b563b3647c798f9adc67f805de34e814327ed86b21fc4c2f082f  art/_archive/prompt-pack/2026-11-19-file-10/rejected/21-missing-lower-silhouette/native.png
+0d055debbc061c27066a3b4750454f84fbfc6f6b164539a0e400091c9470c682  art/_archive/prompt-pack/2026-11-19-file-10/rejected/21-missing-lower-silhouette/result.json
 5dc683dee037619c852ebe2dc30e995264fe8376f7eea070b1ae25ce5f44e2b8  art/_archive/prompt-pack/2026-11-19-file-10/review/batch-17.jpg
 86820d994b6bfd4733185e080d1adc13164d013f57ffd387134cc68382c87c4c  art/_archive/prompt-pack/2026-11-19-file-10/review/batch-2.jpg
 8c647248765f469cae44bf7e4672853996a4469a42dd33520e0e413fcec8f143  art/_archive/prompt-pack/2026-11-19-file-10/review/batch-3.jpg

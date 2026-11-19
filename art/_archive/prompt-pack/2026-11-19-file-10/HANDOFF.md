@@ -27,16 +27,16 @@ Each accepted repaint keeps its original master and exports under superseded.
 | 18 | ADCorp line rifle (the line's base) | image service declined this render |
 | 19 | ADCorp short carbine | awaits entry 18 |
 | 20 | ADCorp designated rifle | awaits entry 18 |
-| 21 | Chezknov battle rifle (the line's base) | draft awaiting review |
+| 21 | Chezknov battle rifle (the line's base) | image service declined this render |
 | 22 | Chezknov machine carbine | awaits entry 21 |
 | 23 | Chezknov precision rifle | awaits entry 21 |
-| 24 | Arsenal piston rifle (the line's base) | pending |
+| 24 | Arsenal piston rifle (the line's base) | image service declined this render |
 | 25 | Arsenal courier PDW | awaits entry 24 |
 | 26 | Arsenal heavy rifle | awaits entry 24 |
-| 27 | Smetanita service pistol (the line's base) | pending |
+| 27 | Smetanita service pistol (the line's base) | image service declined this render |
 | 28 | Smetanita pocket pistol | awaits entry 27 |
 | 29 | Smetanita hand cannon | awaits entry 27 |
-| 30 | Albert Town service rifle (the line's base) | pending |
+| 30 | Albert Town service rifle (the line's base) | image service declined this render |
 | 31 | Albert Town brush carbine | awaits entry 30 |
 | 32 | Albert Town stalking rifle | awaits entry 30 |
 
