@@ -13252,3 +13252,22 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       can't see you is Cased (condition row `cased`, until the fight ends): your side reads its kit on its token card,
       and a Lift on it by your side costs 1 AP less (the row's `cost_mod` at Lift's site; any of your side's Lifts,
       PROVISIONAL). Every number PROVISIONAL.
+6515. **Added by the integrator, approved by the lead and recorded here:** the exports `brakeGiven` (`effects/cost.ts`,
+      the healing brake's count after the action runs: item 5610) and `eyeReach` (`combat.ts`, the one sight range:
+      item 6403), and the field `DoorPending.name` (a door's own name on its pending pick: the merge's m5).
+6516. **Not approved, left as they are:** a story-side `acted` (Index II across story and fight; story mode is later),
+      bare fists in the glove family and a thrown Relic property (Items 2.0).
+6517. **Not built here, each for a reason (the builder's report, `docs/design/handoffs/0.32-ENGINE-PIECES.md`):**
+      (a) **Silent** (item 6406; the lead's ruling: acting from Hidden gives your tile away while you stay Hidden; a
+      Silent attack does not) contradicts rules still standing: the body's "any attack reveals you unless the weapon is
+      silent", the Break's "spent and revealed when the action ends" (item 1953), Vanish II's roll "when an attack reveals
+      you", Parting Cut's re-hide after the Break's reveal (item 1966) and the Silent module's "Begin, Pump and Release
+      don't reveal you". Each needs Leon's word before the reveal on attack is changed; the `silent` property is read
+      from data already (weapons, mods, bows, the technique lines). (b) **Field Repair as Improvisation's fourth perk**
+      (item 6042) needs a new perk with two tiers, the unlock at 3 turned into a perk step, Overhaul's added grant, and
+      the old saves at Improvisation 3+ re-offered the step (pendingRepicks): larger than this lane; the gate piece (an
+      action gated by a held item) is not added without its first user. (c) **Per-unit surprise** (Tremor I, Shoot
+      First I/II): the engine has the per-unit sit-out (`Unit.waitRound`: an unaware foe, an attacker in the open), but
+      no rule makes a character Surprised when it is ambushed; making one is a balance rule (who loses round 1), so it
+      is written as a design in the report and not built. (d) **Athletics "Defense from 1"** stays from 2 (Waiting on
+      Leon).

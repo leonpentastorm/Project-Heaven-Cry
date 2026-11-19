@@ -56,8 +56,6 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 
 - **Forks at camp not shown in MAGIC (TRIAGE row 10), the fork half.** The "1 spare cores" half is fixed (below); forks picked at camp not showing on the MAGIC tab was not reproduced. [M] [open; from documents only] [TRIAGE row 10]
 - **"Needs Lore Master 1 (you have 1)".** The refusal text contradicts itself; not touched by the gaps lane. [S] [open; from documents only] [TRIAGE row 13]
-- **The Primed boon fix is still a workaround** (a data `turn_start`): the real fix needs a registration export (combat.ts to the physical cycle); the validator now warns of a `combat_start` op on a meter made after it (`ed39a6e76`, spec 5607). [S] [partly; checked in code 19 Nov 2026] [spec 5506, 5607]
-- **Open guard's -2 shown in the fight.** It shows only on the glove card; the fight has no general display of carried defensive modifiers. [M] [open; checked in code 19 Nov 2026] [0cf490a26; verification]
 - **Small test faults.** `fx-sweep`'s nine real-speed cases are refused with "no place to stand"; `tending.json` Bond card numbers are copies with no validator tie; live-site suites time out at 30 s on page load. [S] [open; from documents only] [SESSION-HANDOFF 6.4-6.5]
 - **Tests that call inner functions** (rule 5): `survival-field-actions` calls `fieldRefusal`. (`helpers/perkfight` sends forms and picks through door/pick: `ea20d6173`.) [S] [partly; from documents only] [wave2-rulings 4]
 - **The 0.30 review document for Leon's rulings** is not in the tree. Write it. [M] [open; from documents only] [SESSION-TODO D]
@@ -84,14 +82,12 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **Class audit.** Channeler first; 54 moves, 10 replaced or merged; the table goes to Leon. (The lanes changed moves one by one: Measured Blow, Retort, Reforge, Vanish, Sabotage, Backdraft, Quick Sketch, Occult Library; the audit table itself was not written.) [L] [partly; from the hand-offs 19 Nov 2026] [SESSION-TODO T]
 - **Alphas give too much.** One table for Leon of what moved to beta and gamma (the lanes moved the rows; no table). [M] [partly; from the hand-offs] [SESSION-TODO T]
 - **Mastered perks that are Narrator-only.** Established Fact and Closing Argument have engine halves (Mind); the others are listed for the next pass: Poker Face I, Old Tales, Between the Lines I, Foresight I, Rank Has Privileges. [M] [partly; from the hand-offs] [proposals 2.8]
-- **Rite in the Field's "takes nothing from the air".** Only the 0 AP half is built: Crystallise's air draw is not on the price (a priced resource on the fight's mana meter needs a holder `on: fight` in the resource rows: see "needs a primitive"). [S] [partly; checked in code 19 Nov 2026] [spec 6207; proposals 2.6]
 - **Per-sheet open items.** Agility: measure the solo Skirmisher. Endurance: the Guard cap of 4 makes "+1 plate" dead for non-Bulwarks; the solo Bulwark's rank II Second Wind fallback is not built. Insight: the solo Mender measure. Perception: free Hide may push the Operative over Shadow's 125 window (Vanish's free Hide is unused by the policy). Strength: Charge Carries +2 or +1 (Breaker 206% at level 20). [M] [open; from the hand-offs] [attribute drafts section 8]
 - **Parting Cut** (Ingenuity 9), listed but not built. [M] [open; from documents only] [perception.md; 0.31.5 notes]
 - **Playtest balance notes for the tables.** Rolling Start; Razor Beast hits 47-50 at level 2; Channeler deals 152 damage for 32 MP; the Mender's to-hit and its unexplained enemy Bond. [M] [open; from documents only] [TRIAGE balance]
-- **The Tending verbs on Camaraderie's perks show on the Perks tab,** not the TEND tab (needs a grant_action `tab`: see "needs a primitive"). [S] [open; from the Soul hand-off] [rules 1.75]
-- **Field Repair stays a free unlock** (Improvisation has three perks; gating it by a held perk needs a piece). Parley's tier I talk-down is Narrator-only (a dead button under the handler). [S] [open; from the Mind hand-off] [rules 1.74]
+- **Field Repair stays a free unlock** (Improvisation has three perks). The engine-pieces lane did not build it (rules 1.77 item 6517 b): a new perk of two tiers, the unlock at 3 a perk step, Overhaul's added grant, old saves at Improvisation 3+ re-offered the step, and the gate (an action gated by a held item) with it as its first user. Parley's tier I talk-down is Narrator-only (a dead button under the handler). [M] [open; checked in code 19 Nov 2026] [rules 1.74, 1.77]
 - **Visualization: re-measure the level-1 Beast; measure Sharp Light and Wake of the Kill together** (the measure picked no forks; no Beast-at-1 tool). [S] [open; from the Mind hand-off] [proposals 5, 5b]
-- **Five Stars II "rank-and-file only"** is built as every foe (needs a tier filter); **Warding Word "against a supernatural effect"** read as the next Brain or Heart save (PROVISIONAL). [S] [partly; from the Soul hand-off] [rules 1.75]
+- **Warding Word "against a supernatural effect"** read as the next Brain or Heart save (PROVISIONAL). [S] [partly; from the Soul hand-off] [rules 1.75]
 
 #### Built in 0.32 (not yet live)
 
@@ -113,9 +109,7 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 ### Shadow (`wip/0.32-shadow` merged at `43d49feae`; hand-off `docs/design/handoffs/0.32-LANE-SHADOW.md`)
 
 - **Detect view, the hover faults.** The sightline is built (below); the wisps' hover tip, hover lifting the whole tile stack, the hover card on focus-visible and tile verbs sending no choices were not checked. [M] [not verified; from the hand-off] [scout 14f]
-- **Stalk, the rest.** Built as data; not under the door's two gains a turn, and not refused at a full meter (both need a primitive: see below). [S] [partly; from the hand-off] [scout 14d]
-- **Silent property.** Shadow-spec 2.6 and to-do F disagree; needs a design pass before a builder. [M] [open] [scout 14e]
-- **Case (Shadow).** Not built; needs `reveal what: "kit"` and a side's read-out of a unit's kit (see below). [M] [not built; checked in code 19 Nov 2026] [verification]
+- **Silent property.** The lead ruled Leon's later word (acting from Hidden gives your tile away while you stay Hidden; a Silent attack does not); not built: it contradicts rules still standing (the body's "any attack reveals you", the Break's reveal, Vanish II's roll, Parting Cut's re-hide, the Silent module): Leon to rule each (Waiting on Leon). The `silent` property is read from data already. [M] [open; checked in code 19 Nov 2026] [rules 1.77 item 6517 a]
 - **Sight checks still asked without the looked-at unit:** an ally's eyes on an ally (combat ~1361 and ~2868, faith, tactics 129, perks/d 115, perks/e 136, 726 and 845, physical/rules 80, classes/k 1336) and tile-only checks. The lead's call whether `seen_range` applies there. [S] [open; from the hand-off] [rules 1.70 item 5545]
 
 #### Built in 0.32 (not yet live)
@@ -138,30 +132,33 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **m10** dead code and module-private helpers. `0f4e9523a`.
 - **The Emanator stowed** says so on the Strain row (Step 3e). `079f78e2f`.
 
-### 0.32: needs a primitive (lead to rule)
+### 0.32: needs a primitive (ruled by the lead 19 Nov 2026; built by the engine-pieces lane, `docs/design/handoffs/0.32-ENGINE-PIECES.md`, rules 1.77)
 
-One line each, with the rule that needs it. Nothing here is built; each waits for the lead's approval after a look at `docs/ENGINE-HOOKS.md`.
+What is left of the list (the built ones are under "Built in 0.32" below):
 
-- **A limit key shared across items** (Stalk under the Shadow door's two gains a turn; `limit.key` is item-scoped). [Shadow, rules 1.76 item 6405]
-- **A below-max bound on `self_res`** (`{shadow: {below: "max"}}`), so Stalk is refused at a full meter. [Shadow, 6405]
-- **`reveal what: "kit"`** and a side's read-out of a unit's kit and rolled loot (Case; its Lift discount is the P3 cost trigger). [Shadow, Case]
-- **A stat Fear's typed refusals ask** (Steady I: Fear can't stop moves or actions). [Body, rules 1.73]
-- **A save's skill swap on `cond_incoming`** (Point Man I: allies save against Fear with your Guts). [Body]
-- **Injuries carrying a limb penalty the engine reads** (Numb I). [Body]
-- **A general "last turn" op** (Still Standing: one more turn at 0 HP; Bite the Bullet's handler, generalised). [Body]
-- **A per-unit surprise piece in the approach** (Tremor I, Shoot First I/II act in the surprise round; rules 1.64). [Body]
-- **A roll kept from two on `to_hit` / `attack_roll`** (Untouchable I/II: attacks roll twice, keep the worse). [Body]
-- **`acted` carrying a Call's id** (`ctx.id`, so `action_id` works on `acted`): Read Intent is built from a `mark` on the price today (a smell). [Mind, rules 1.74 item 6009]
-- **An action gated by a held item** (Field Repair as an Improvisation perk). [Mind, 6042]
-- **A story `acted`** (Index II across story and fight; built for the fight only). [Mind, 6021]
-- **A `targets` filter by tier** (`not_tier`: Five Stars II's rank-and-file). [Soul, rules 1.75]
-- **A grant_action `tab`** (or a perk-held verb), so the Tending verbs on Camaraderie's perks show on the TEND tab. [Soul, 6213]
-- **A resource holder `on: fight`** (the fight's mana meter as a priced resource), for Crystallise's air draw on the price and Rite in the Field's free draw as a cost_mod (the merge's Step 3g, larger than it read: `resLeft`, `resPay`, `resWhyNot` and `resGive` take a unit or a character, never the fight). [Soul, 6207]
-- **A registration export from combat.ts to the physical cycle** (the Primed boon's real fix: a `combat_start` Momentum op on a meter made after it). [gaps, spec 5607]
-- **A sheet-level reader of the one resolver for character.ts** (`strainLimit` and `readyDesigns` still resolve `skill:` inline: importing `effects/triggers.ts` from `character.ts` makes a load cycle; a setter registered by triggers.ts would fix it). [the merge's m4]
-- **`brakeGiven`, a new export of `effects/cost.ts`** (built in the merge for the healing brake: the give is counted after the action runs, from `effects/actions.ts`): the lead to approve it or move the count. [spec 5610]
-- **A class-only multiplier** (the Figments door 119 and the Rigger 123 against 130 and 150). [gaps report; Balance 2.0]
-- **The effects step's own list:** none (`0.32-STEP2-EFFECTS-EVENTS.md`); its audit's "still open" rows are under Effects above.
+- **A per-unit surprise in the approach** (Tremor I, Shoot First I/II stay Narrator-only). The per-unit sit-out exists (`Unit.waitRound`); no rule makes a character Surprised when ambushed: a balance rule, designed in the report, not built. [M] [open; checked in code 19 Nov 2026] [rules 1.77 item 6517 c]
+- **An action gated by a held item** (Field Repair as Improvisation's fourth perk): see the Mind owed item above. [M] [open] [rules 1.77 item 6517 b]
+- **A class-only multiplier** (the Figments door 119 and the Rigger 123 against 130 and 150). Not in the lead's ruling list. [gaps report; Balance 2.0]
+- **Not approved, left as they are:** a story `acted` (Index II across story and fight), bare fists in the glove family and a thrown Relic property (Items 2.0). [rules 1.77 item 6516]
+
+#### Built in 0.32 (not yet live; the engine-pieces lane, rules 1.77 items 6500-6515)
+
+- **`targets.if`** (predicates on each unit of an op's set): Five Stars II reaches the rank-and-file only. `9cfecf56e`, item 6500.
+- **grant_action `tab`**: the Tending verbs on Camaraderie's perks show on the TEND tab. `851dcdbd9`, item 6501.
+- **`acted` carries a Call's id**: Read Intent reads the Spot on `acted`, its marks on the price gone. `07a149588`, re-record `4b416f1b8`, item 6502.
+- **`cond_apply` carries the action and its aimed unit** (`target_aimed`): Called Out skips the Challenge's roll for the named foe, its card says no save. `648ba50cb`, item 6503.
+- **`limit.shared` and the negated resource bound** (`self_not_res`): Stalk under the door's two gains a turn, refused at a full meter. `ae59a52dd`, item 6504.
+- **Fear's refusals read a stat** (`fear_unbound`): Steady I. `b795a85ec`, item 6505.
+- **`roll_with` on a save**: Point Man I/II. `7d2c36f1a`, re-record `056bc8a59`, item 6506.
+- **Item op `two_dice`** (a roll kept from two): Untouchable I/II. `69de9af0e`, item 6507.
+- **Item op `last_turn`** (Bite the Bullet's handler retired into it): Still Standing I/II. `80d7c5895`, re-record `e815f947e`, item 6508.
+- **The sheet's one resolver** (`setSheetSource`): strainLimit and readyDesigns. `3b214dfe2`, item 6509.
+- **`onFightStart`**: Primed's Momentum at `combat_start` again; `made_after_start` and its warning gone. `7cfd70600`, item 6510.
+- **Standing to-hit terms shown** (`standingTerms`, `standingModsFor`): Open guard on the token card. `a92ef6609`, item 6511.
+- **A resource held by the fight** (`on: fight`, the air's `mana`): Crystallise's draw on the price; Rite in the Field takes nothing from the air. `0c6456f8b`, item 6512.
+- **`numb_limbs`** read by the three limb-penalty readers: Numb I/II. `f06612883`, item 6513.
+- **`reveal what: kit`** (`kitOf`, `kitSeenFor`): Shadow's Case built. `7612cdf30`, item 6514.
+- **Check fixes, golden tables and replays re-recorded.** `51675087b`, `c94b97c82`, `70f4687f7`.
 
 ### Big leftovers (designed, partly or not built; each shrunk to the owed part)
 
@@ -267,6 +264,7 @@ Direct questions. Where the lead gave a recommendation, it is built as stated un
 18. **Leftover branches and folders.** May I delete `phc-figments2` (`design/figments-2`) and the ~25 non-git leftover folders? [TAKEOVER State]
 19. **Athletics "Defense from 1".** Not built: it moves the enemy yardstick (`test/balance/step1-fit`). Build it and refit the yardstick, or drop it? [0.32-LANE-BODY.md]
 20. **The quad Bulwark.** Its stage-1 clears fell 10 to 4 of 40 (Reactive Plate and Last Plate gone; the solo Bulwark 22 to 24). Accept, or give the Bulwark something back? [0.32-LANE-BODY.md]
+21. **Silent and the reveal on attack** (rules 1.77 item 6517 a): your later word (acting from Hidden gives your tile away while you stay Hidden; a Silent attack does not) against the rules still standing: the body's "any attack reveals you unless the weapon is silent", the Break's reveal at the action's end (item 1953), Vanish II's roll when an attack reveals you, Parting Cut's re-hide, the Silent module. Which of them change? [open; from the engine-pieces lane 19 Nov 2026]
 
 Answered on 19 Nov (verification file): carry weight (nothing changes); camp budget (stays 300); ceilings (a relative measure, not a hard line, so "all-in 7/1/1 builds sit over every ceiling" is not a fault by itself); Operative and Sigilist 0 of 40 (the bot's policy).
 
