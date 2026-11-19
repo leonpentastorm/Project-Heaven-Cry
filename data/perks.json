@@ -10754,7 +10754,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When the fight starts, every friend banks {=tiers.I.effects.0.value|signed} AP for its first turn. II: As Tier I, and each foe makes a Heart save against your Authority or is Shaken for {=tiers.II.effects.1.rounds} round.",
+      "text": "I: When the fight starts, every friend banks {=tiers.I.effects.0.value|signed} AP for its first turn. II: As Tier I, and each rank-and-file foe (never an Elite or a Boss) makes a Heart save against your Authority or is Shaken for {=tiers.II.effects.1.rounds} round.",
       "effects": [
         {
           "op": "grant_ap",
@@ -10803,8 +10803,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "As Tier I, and each foe makes a Heart save against your Authority or is Shaken for {=tiers.II.effects.1.rounds} round.",
-          "short": "And foes save or are Shaken",
+          "text": "As Tier I, and each rank-and-file foe (never an Elite or a Boss) makes a Heart save against your Authority or is Shaken for {=tiers.II.effects.1.rounds} round.",
+          "short": "And rank-and-file foes save or are Shaken",
           "effects": [
             {
               "op": "grant_ap",
@@ -10826,7 +10826,13 @@
               "rounds": 1,
               "targets": {
                 "of": "self",
-                "side": "foe"
+                "side": "foe",
+                "if": {
+                  "target_not_tier": [
+                    "elite",
+                    "boss"
+                  ]
+                }
               },
               "label": "Five Stars"
             }

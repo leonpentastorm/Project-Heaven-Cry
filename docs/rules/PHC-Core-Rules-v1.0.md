@@ -13168,3 +13168,15 @@ tiers on steps at 3 / 5 / 7 / 9, Mastered at 10). Removed perks map as each shee
     merge reads obPeak 123 / 213 / 178 / 183% at levels 1 / 5 / 10 / 20, outside the old band (124 to 212%) at levels 1
     and 5. No class is refitted: the contract's `outburst_peak` row is set to what is measured (`level_lo` 0.74,
     `level_hi` 1.295: 122 to 214%). PROVISIONAL: the fun-and-balance pass judges it.
+
+### Rules 1.77 (engine pieces), the pieces the lead approved from 0.32's "needs a primitive" list (19 Nov 2026)
+
+The lead's rulings on the lanes' hand-backs (`docs/ROADMAP.md` "0.32: needs a primitive"): each piece is general, added
+to the engine's closed lists or surface by name, and each unlocks a rule a lane skipped. A later revision overrides the
+body and the earlier ones. Every new number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
+The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
+
+6500. **A filter on an op's unit set** (`targets.if`): the same predicates as an `if` and a verb's `reach.if`, tested on
+      each unit of the set as the event's target. Five Stars II's Shaken reaches rank-and-file foes only (`targets.if
+      {target_not_tier: [elite, boss]}`, as Flush Out's reach): an Elite or a Boss is never in its set (rules 1.75 item
+      6224 completed). Its card says "each rank-and-file foe (never an Elite or a Boss)".

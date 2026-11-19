@@ -603,15 +603,18 @@ const specOf = (b: AmountBlock): AmountSpec => ({ kind: b.kind, base: b.base, ..
  * side), alive (default true: still in the fight; false: Downed only), downed (true: the Downed too), max (the first n).
  * With no within and no shape, the whole field. `tied` and `aims_at` come with ties (P8) and the enemy's aim (a batch row).
  * `beyond` (rules 1.33, a tie kind): a unit tied to the holder by that kind is in the set wherever it stands (Rally: every
- * Bonded ally, and every ally within 4). */
-export interface TargetSet { of?: 'self' | 'actor' | 'target' | 'tile'; side?: 'foe' | 'ally' | 'side' | 'any'; within?: number; shape?: 'burst' | 'aura' | 'cone' | 'line'; seen?: boolean; alive?: boolean; downed?: boolean; max?: number; sees?: 'line' | 'eyes'; tied?: string; aims_at?: string; beyond?: string }
+ * Bonded ally, and every ally within 4). `if` (rules 1.77 item 6500): predicates each unit of the set must pass as the
+ * event's target, the same predicates as an `if` and a verb's `reach.if` (Five Stars II's rank-and-file:
+ * `{target_not_tier: [elite, boss]}`, as Flush Out's reach). */
+export interface TargetSet { of?: 'self' | 'actor' | 'target' | 'tile'; side?: 'foe' | 'ally' | 'side' | 'any'; within?: number; shape?: 'burst' | 'aura' | 'cone' | 'line'; seen?: boolean; alive?: boolean; downed?: boolean; max?: number; sees?: 'line' | 'eyes'; tied?: string; aims_at?: string; beyond?: string; if?: Record<string, unknown> }
 /** The fields of `targets` and the words each takes (data/effect_ops.json item_ops.targets is written from it). */
-export const TARGET_FIELDS: Record<string, string[] | 'number' | 'bool' | 'string'> = { of: ['self', 'actor', 'target', 'tile'], side: ['foe', 'ally', 'side', 'any'], within: 'number', shape: ['burst', 'aura', 'cone', 'line'], seen: 'bool', alive: 'bool', downed: 'bool', max: 'number', sees: ['line', 'eyes'], tied: 'string', aims_at: 'string', beyond: 'string' };
+export const TARGET_FIELDS: Record<string, string[] | 'number' | 'bool' | 'string' | 'predicates'> = { of: ['self', 'actor', 'target', 'tile'], side: ['foe', 'ally', 'side', 'any'], within: 'number', shape: ['burst', 'aura', 'cone', 'line'], seen: 'bool', alive: 'bool', downed: 'bool', max: 'number', sees: ['line', 'eyes'], tied: 'string', aims_at: 'string', beyond: 'string', if: 'predicates' };
 /** Why a `targets` block is malformed (null: it is fine). */
 export function targetsProblem(t: any): string | null {
   if (!t || typeof t !== 'object' || Array.isArray(t)) return '`targets` is an object';
   for (const [k, v] of Object.entries(t)) {
     const f = TARGET_FIELDS[k]; if (!f) return 'unknown targets field ' + k;
+    if (f === 'predicates') { if (!v || typeof v !== 'object' || Array.isArray(v)) return 'targets.if is an object of predicates'; for (const p of Object.keys(v)) if (!PREDICATES[p]) return 'unknown predicate ' + p + ' in targets.if'; continue; }
     if (f === 'number' ? typeof v !== 'number' : f === 'bool' ? typeof v !== 'boolean' : f === 'string' ? typeof v !== 'string' : !f.includes(v as string)) return 'targets.' + k + ' takes ' + (Array.isArray(f) ? f.join(', ') : 'a ' + f);
   }
   if ((t.shape === 'cone' || t.shape === 'line') && typeof t.within !== 'number') return 'a cone or a line needs `within` (its length)';
@@ -650,7 +653,8 @@ export function selectUnits(ev: Ev, t: TargetSet): Unit[] {
   const out = all.filter((v) => (t.alive === false ? !!v.downed : true) && (!t.side || rel(ev.self, v, t.side)) && (t.seen == null || sideSees(cb, ev.self.side as 'pc' | 'foe', v) === t.seen)
     && (!t.sees || (t.sees === 'eyes' ? unitSees(cb, v, at) : !condOn(v, 'blinded') && lineOfSight(cb, v.pos, at)))
     && (!t.tied || tiedTo(cb, ev.self, v, t.tied)) // P8: tied to the holder by this kind
-    && (!t.aims_at || aimsAt(cb, ev.self, v, t.aims_at))); // the batch row: what the unit means to do next is aimed at the holder (self) or at a unit tied to it (tied:<kind>)
+    && (!t.aims_at || aimsAt(cb, ev.self, v, t.aims_at)) // the batch row: what the unit means to do next is aimed at the holder (self) or at a unit tied to it (tied:<kind>)
+    && (!t.if || Object.keys(t.if).every((k) => PREDICATES[k]?.test({ ...ev, target: v }, (t.if as any)[k])))); // rules 1.77 item 6500: each unit as the target
   return typeof t.max === 'number' ? out.slice(0, t.max) : out;
 }
 

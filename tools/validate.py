@@ -2236,6 +2236,11 @@ def check_targets(t, w):
         elif f == "bool" and not isinstance(v, bool): errors.append(f"{w}: targets.{k} is true or false")
         elif isinstance(f, list) and v not in f: errors.append(f"{w}: targets.{k} takes {f}")
         elif f == "string" and not isinstance(v, str): errors.append(f"{w}: targets.{k} is a word")
+        elif f == "predicates":  # rules 1.77 item 6500: each unit of the set passes these predicates as the target
+            if not isinstance(v, dict): errors.append(f"{w}: targets.if is an object of predicates")
+            else:
+                for pk in v:
+                    if pk not in PRED: errors.append(f"{w}: unknown predicate '{pk}' in targets.if")
     _tk = {k.get("id") for k in (((data.get("rules") or {}).get("ties") or {}).get("kinds") or [])}
     if "tied" in t and t["tied"] not in _tk: errors.append(f"{w}: targets.tied names a tie kind (rules.json ties.kinds: {sorted(_tk)})")
     if "aims_at" in t and not (t["aims_at"] == "self" or (isinstance(t["aims_at"], str) and t["aims_at"].startswith("tied:") and t["aims_at"][5:] in _tk)): errors.append(f"{w}: targets.aims_at is self or tied:<a tie kind>")
