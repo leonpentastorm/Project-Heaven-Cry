@@ -7,6 +7,7 @@ import type { StrikeOpts } from '../types';
 import { say, alive, active, dist, rollWithPick, weaponVia, type Unit } from '../../combat';
 import { emit } from '../../effects/hooks';
 import { canReact } from '../../tactics';
+import { answerKind } from '../core';
 import { mod, holdsShield } from '../../character';
 import { rollVs } from '../../rolls';
 import { weaponPhys } from '../data';
@@ -73,14 +74,19 @@ technique({
         if (canAnswer(t.cb, v, 'parry', att) && canReact(t.cb, v, 'protect')) return;
       }
       const vs = attackTotal(att, v); if (vs == null) return;
+      // Item 5530 (the lead's ruling on row 5): the reaction is spent only when the Parry stops the blow. The roll comes
+      // first, under the same gate an Answer has (answer(): canAnswer, canReact); a failed Parry is said and spends
+      // nothing, so the blow stays unanswered and Retort may still answer it.
+      if (t.preview || !canAnswer(t.cb, t.u, 'parry', att) || !canReact(t.cb, t.u, answerKind('parry'))) return;
+      ctx.parried = true;
+      const shield = shieldInOffHand(t) ? t.num('shield_bonus', 2) : 0, // with any weapon (Leon's ruling, 10 Nov 2026)
+         bonus = attackSkill(t, att) + shield;
+      const rv = rollVs(t.cb, t.rng, { by: t.u, mod: bonus, tn: vs, nat: false, over: true, why: 'parry' }), won = rv.ok; // it must BEAT the attack's total
+      const tell = () => { say(t.cb, t.u.name + ' parries' + (forAlly ? ' for ' + v.name : '') + ': ' + rv.text + (shield ? ' (incl. +' + shield + ' shield)' : '') + (won ? ' · the hit is halved' : ' · it gets through') + '.');
+        meleeFx(t, 'parry', { from: att.pos, to: v.pos, attacker: att.id, ally: forAlly ? v.id : null, won }); };
+      if (!won) { ROLLS.delete(att); tell(); return; }
       answer(t, att, () => {
-        ROLLS.delete(att); ctx.parried = true;
-        const shield = shieldInOffHand(t) ? t.num('shield_bonus', 2) : 0, // with any weapon (Leon's ruling, 10 Nov 2026)
-           bonus = attackSkill(t, att) + shield;
-        const rv = rollVs(t.cb, t.rng, { by: t.u, mod: bonus, tn: vs, nat: false, over: true, why: 'parry' }), won = rv.ok; // it must BEAT the attack's total
-        say(t.cb, t.u.name + ' parries' + (forAlly ? ' for ' + v.name : '') + ': ' + rv.text + (shield ? ' (incl. +' + shield + ' shield)' : '') + (won ? ' · the hit is halved' : ' · it gets through') + '.');
-        meleeFx(t, 'parry', { from: att.pos, to: v.pos, attacker: att.id, ally: forAlly ? v.id : null, won });
-        if (!won) return;
+        ROLLS.delete(att); tell();
         ctx.parryWon = true; // a Parried hit costs the one it lands on no Momentum (physical/rules.ts)
         ctx.dmg = ctx.dmg * t.num('halve', 0.5);
         if (t.line('light')) landed(t, t.num('light_momentum', 1));

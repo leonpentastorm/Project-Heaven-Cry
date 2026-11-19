@@ -12274,7 +12274,7 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     while holding Guard, when higher) chooses its skill as it does a melee attack's (`combat.ts rollWithPick`, asked
     through `attack_preview` as the other previews ask). The shield's +2 is added as before. `physical/melee/answers.ts`.
     Recorded on purpose: `builds-allin` (the all-in tank at level 9 now parries the vermin's blow) and 4 replays of 29.
-    **Retort is unchanged and needs a ruling to change:** Parry and Retort answer the same blow, and a unit makes one
+    *(Superseded by item 5530: a failed Parry spends no reaction and Retort may answer the same blow.)* **Retort is unchanged and needs a ruling to change:** Parry and Retort answer the same blow, and a unit makes one
     reaction an event (rules 1.28), so with both switched on Parry answers first (it is the earlier phase, before the
     damage) and Retort waits; switched off in the Answer list, Parry leaves the blow to Retort. Proof:
     `test/playtest-1118.test.ts` (the foe's blow through `resolveAttack`).
@@ -12315,7 +12315,7 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
 5507. **A choice the weapon can't take is not offered** (row 15: Run Through offered Leave it in on a Maul, and the
     Confirm then refused it). A technique's option that needs a property line (Run Through's Leave it in: Reach; Bash's
     Push: Heavy; Trip's Go down with it: Bare) is offered only with a weapon that has that line for the technique; with
-    one option left there is no choice step (`descriptors.ts TECH_OPTIONS`, `techPicks`). Proof:
+    one option left there is no choice step (`descriptors.ts TECH_OPTIONS`, `techPicks`; the gate is data since the fix round: `techniques.json` `opt_needs`, option id: property, checked by the validator). Proof:
     `test/playtest-1118.test.ts` (the Maul's and the Glaive's Run Through steps).
 5508. **Begin and Snap are one row** (row 15): the Outburst action's Begin-or-Snap step is drawn by the screen's own
     footer row (the step's renderer), so the action box no longer adds a second pair of chips. Proof:
@@ -12406,3 +12406,19 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     purpose:** `weapons`, `costs-weapons`, `rules-weapons` (and its log): the two weapons' lines only (10 lines each).
     The Dexterity melee line as a whole (the sabre and katana over 165 at level 10 all in) is the lead's balance item,
     not changed here.
+
+### 0.31.12 fix round, the review's findings and the lead's rulings (19 Nov 2026)
+
+5530. **A failed Parry keeps your reaction; Retort may answer the same blow** (the lead's ruling on row 5, 19 Nov
+    2026; supersedes the "Retort is unchanged" sentence of item 5502). Parry spends your reaction only when it stops the
+    blow (it beats the attack's total and the hit is halved). A Parry that fails is still rolled and said ("it gets
+    through"), but no reaction is spent and the blow is not marked answered, so Retort (its Answer switched on, Guard
+    held, Durability 3) may then answer the same blow when it lands. `physical/melee/answers.ts`.
+5531. **After a Finisher the chain is locked to every action that builds or spends Momentum** (the lead's ruling on
+    row 15d). The lock is read from data: an item's action whose id the technique data places in a melee group (a
+    technique row's id, or `techniques.json rules.group_actions`) is refused after a Finisher this turn, as a melee
+    technique is (`effects/actions.ts` entryOf, the one gate of the list, the preview and the reducer). The Breaker's
+    Barrel In (action `lunge`) is read as the Lunge technique, an Opener, by its id (the chain already counted it so),
+    so it is locked; Launch counts as a Finisher. Shove (no Momentum either way) stays open. The refusal is one line of
+    data (`techniques.json rules.chain_ended`), read by the technique gate and the action list. Barrel In's id sharing
+    the Lunge technique's is a finding for the lead (a distinct id would need its own `group_actions` row).

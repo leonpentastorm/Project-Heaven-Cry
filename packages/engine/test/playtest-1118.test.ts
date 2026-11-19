@@ -96,9 +96,9 @@ import { resolveAttack, mod } from '../src';
 import { physFight, rig } from './helpers/physfight';
 describe('row 5: Parry while holding Guard', () => {
   /** A Durability 7 tank (Dexterity 1) with Parry, a maul-wielding Soldier next to it; the foe's blow through resolveAttack. */
-  function fight(answers?: string[]) {
+  function fight(answers?: string[], attack?: number) {
     const f = physFight([{ weapon: 'hand_wraps', known: ['parry'], skills: { durability: 7, dexterity: 1, athletics: 0, raw_power: 0 } }], [{ tier: 'soldier', weapon: 'maul' }]);
-    f.cb.objects = []; f.put(f.pcs[0], 'C5'); const a = f.cb.units.find((u) => u.side === 'foe')!; f.put(a, 'D5'); a.hp = a.maxHp = 900;
+    f.cb.objects = []; f.put(f.pcs[0], 'C5'); const a = f.cb.units.find((u) => u.side === 'foe')!; f.put(a, 'D5'); a.hp = a.maxHp = 900; if (attack != null) a.attack = attack;
     const t = f.unit(f.pcs[0].id); t.hp = t.maxHp; t.armour = 0; t.res!.guard = 3;
     if (answers) (f.char(f.pcs[0]) as any).phys.answers = answers;
     f.cb.round = 1; rig({ hit: true, die: 12 }); f.turn(a);
@@ -116,6 +116,14 @@ describe('row 5: Parry while holding Guard', () => {
     const { f, a } = fight(['retort']);
     expect(f.cb.log.some((l) => / parries/.test(l))).toBe(false);
     expect(f.cb.log.join(' ')).toMatch(/Retort/); expect(a.hp).toBeLessThan(900);
+  });
+  it('item 5530: a failed Parry spends no reaction, and Retort answers the same blow; a Parry that stops it spends the reaction', () => {
+    const lost = fight(['parry', 'retort'], 60); // the blow's total is past any parry
+    expect(lost.f.cb.log.some((l) => / parries: .* it gets through/.test(l))).toBe(true);
+    expect(lost.f.cb.log.join(' ')).toMatch(/Retort/); expect(lost.a.hp).toBeLessThan(900);
+    const won = fight(['parry', 'retort'], -40); // the parry beats it
+    expect(won.f.cb.log.some((l) => / parries: .* the hit is halved/.test(l))).toBe(true);
+    expect(won.f.cb.log.join(' ')).not.toMatch(/Retort/); expect(won.a.hp).toBe(900);
   });
 });
 
