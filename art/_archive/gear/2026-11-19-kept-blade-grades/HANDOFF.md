@@ -1,6 +1,6 @@
 # Gear grade candidates
 
-**101/120 grade candidates delivered** on `art/2026-11-19-kept-blade-grades`. Shared mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . See claim.json for this lane’s current Standards. Released overlapping blades reuse12 peer candidates, with3 local alternatives archived.
+**102/120 grade candidates delivered** on `art/2026-11-19-kept-blade-grades`. Shared mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . See claim.json for this lane’s current Standards. Released overlapping blades reuse12 peer candidates, with3 local alternatives archived.
 
 Leon requested continuous candidate production; proof approval is not fabricated. All candidates remain review-candidate, production_approved:false, implementation_ready:false, with outline.review_required:true. Exact outline is measured, never asserted unless the masks match. Per-image registration is uniform scaling/translation only, without warp, silhouette masks, filled pixels or code-drawn substitutes. The generated native remains untouched.
 
@@ -10,12 +10,12 @@ Tomorrow: fetch this branch and develop safely, read the latest issue 3 comments
 
 Peer audit: [coordination/peer-audit-2026-11-19.md](coordination/peer-audit-2026-11-19.md). Peer58 masters/232 exports and12 canonical imports were checked. Faint alpha<8 margin residue requires versioned technical cleanup; check its subsequent correction manifest before claiming that cleanup is complete. Peer quota resets20 November2026 at09:45:39 Bangkok time; this does not establish this session’s quota.
 
-Remaining: weapon-ork_machete--masterwork, weapon-ork_machete--relic, weapon-ork_machete--celestial, weapon-war_axe--fine, weapon-war_axe--masterwork, weapon-war_axe--relic, weapon-war_axe--celestial, armour-combat_gloves--fine, armour-combat_gloves--masterwork, armour-combat_gloves--relic, armour-combat_gloves--celestial, armour-field_boots--fine, armour-field_boots--masterwork, armour-field_boots--relic, armour-field_boots--celestial, armour-heavy_boots--fine, armour-heavy_boots--masterwork, armour-heavy_boots--relic, armour-heavy_boots--celestial.
+Remaining: weapon-ork_machete--masterwork, weapon-ork_machete--relic, weapon-ork_machete--celestial, weapon-war_axe--fine, weapon-war_axe--masterwork, weapon-war_axe--relic, weapon-war_axe--celestial, armour-combat_gloves--masterwork, armour-combat_gloves--relic, armour-combat_gloves--celestial, armour-field_boots--fine, armour-field_boots--masterwork, armour-field_boots--relic, armour-field_boots--celestial, armour-heavy_boots--fine, armour-heavy_boots--masterwork, armour-heavy_boots--relic, armour-heavy_boots--celestial.
 
 Service-rejected requests (do not repeatedly resubmit): weapon-ork_machete--masterwork, weapon-war_axe--fine.
 
 Waiting on rejected prerequisites: weapon-ork_machete--celestial, weapon-ork_machete--relic, weapon-war_axe--celestial, weapon-war_axe--masterwork, weapon-war_axe--relic.
 
-Ready independent next steps, in queue order: armour-combat_gloves--fine, armour-field_boots--fine, armour-heavy_boots--fine. Other pending grades follow their preceding grade.
+Ready independent next steps, in queue order: armour-combat_gloves--masterwork, armour-field_boots--fine, armour-heavy_boots--fine. Other pending grades follow their preceding grade.
 
 Runtime handoff: implementation_ready:false records review status but does not gate the web asset builder. The builder emits grade asset keys; the current UI gear resolver still needs grade-aware selection. Do not claim that runtime grade selection is implemented by these art deliveries.

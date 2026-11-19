@@ -23761,6 +23761,42 @@
         "different_pixels_32": 4,
         "different_pixels_64": 18
       }
+    },
+    "armour-combat_gloves--fine": {
+      "label": "Combat Gloves — Fine",
+      "path": "art/icons/gear/armour-combat_gloves--fine.png",
+      "sha256": "7b5a4f15bff2059ee2d4f56bb5fa4040d75a369b6568087e39e14b3380b67f14",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-combat_gloves--fine.png",
+        "128": "art/icons/gear/exports/128/armour-combat_gloves--fine.png",
+        "64": "art/icons/gear/exports/64/armour-combat_gloves--fine.png",
+        "32": "art/icons/gear/exports/32/armour-combat_gloves--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-combat_gloves--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-combat_gloves",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9730044270755843,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 28
+      }
     }
   },
   "survival_art": {

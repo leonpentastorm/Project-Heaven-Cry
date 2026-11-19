@@ -6236,6 +6236,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-combat_gloves--fine",
+      "path": "art/icons/gear/armour-combat_gloves--fine.png",
+      "sha256": "7b5a4f15bff2059ee2d4f56bb5fa4040d75a369b6568087e39e14b3380b67f14",
+      "label": "Combat Gloves — Fine",
+      "family": "armour-combat_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-combat_gloves--fine.png",
+        "sha256": "2ad725daa85570be68420d24dfdc0da458694982f52bfe62d2af7218a259e894"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-combat_gloves--fine.png",
+        "sha256": "7b5a4f15bff2059ee2d4f56bb5fa4040d75a369b6568087e39e14b3380b67f14"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-combat_gloves--fine.txt",
+        "sha256": "f7df0d4fefb63cd475e2309db73c7ca1dab7350585d375de28046eadbff30c3b"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-combat_gloves--fine/v1/source.png",
+          "sha256": "8741bbaf1af1d432370c1fdd8d11360e8215c966682e7872cdc1ac57d4f05019"
+        },
+        {
+          "path": "art/icons/gear/armour-combat_gloves.png",
+          "sha256": "66dc7cda8639e28a20fc66538026fe2eb4880e85be90e3508ed73d3671b57b25"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-combat_gloves--fine.png",
+        "128": "art/icons/gear/exports/128/armour-combat_gloves--fine.png",
+        "64": "art/icons/gear/exports/64/armour-combat_gloves--fine.png",
+        "32": "art/icons/gear/exports/32/armour-combat_gloves--fine.png"
+      },
+      "export_hashes": {
+        "256": "421129dbe567f768202793416989e2057fa00db7b140538b36593d0fef25bae0",
+        "128": "3336af0d8604e95321ab8a8c11ec037af31d85c88563f0e08911ffd213379574",
+        "64": "28c23328d897d35ccd9dc7e69130ebd8eb865cb25b998aa1054fe540417a16b3",
+        "32": "b3bb90918f6e5253f20279b2602499a9def0e0e9379fa7317e497ee362df10c9"
+      },
+      "grade": "fine",
+      "standard_id": "armour-combat_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9730044270755843,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 28
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
