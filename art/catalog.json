@@ -18996,6 +18996,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-adamantile_plate_needle": {
+      "label": "Plate needle",
+      "path": "art/icons/gear/weapon-adamantile_plate_needle.png",
+      "sha256": "2be4ff5ef64f6489739ab40862a9736fbd4d734708ddaaa4fa35c1473e76be13",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-adamantile_plate_needle.png",
+        "128": "art/icons/gear/exports/128/weapon-adamantile_plate_needle.png",
+        "64": "art/icons/gear/exports/64/weapon-adamantile_plate_needle.png",
+        "32": "art/icons/gear/exports/32/weapon-adamantile_plate_needle.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+      "brief_number": 15,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

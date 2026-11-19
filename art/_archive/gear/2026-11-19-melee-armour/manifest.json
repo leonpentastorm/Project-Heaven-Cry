@@ -842,6 +842,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-adamantile_plate_needle",
+      "path": "art/icons/gear/weapon-adamantile_plate_needle.png",
+      "sha256": "2be4ff5ef64f6489739ab40862a9736fbd4d734708ddaaa4fa35c1473e76be13",
+      "label": "Plate needle",
+      "family": "05-great-blades",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png",
+        "sha256": "16c69e22ee36ba3e695d02c6305670527bde826496bb241bc25d2039bce55edd"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-adamantile_plate_needle.png",
+        "sha256": "2be4ff5ef64f6489739ab40862a9736fbd4d734708ddaaa4fa35c1473e76be13"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-adamantile_plate_needle.txt",
+        "sha256": "c7dba55649a545d3df0c755aec2c658c3f86aeb604fca67957f01c3029bab2cb"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-adamantile_greatsword.png",
+          "sha256": "74764eb60ffb2b26b581206171e9d7f9a44453f23c061fb636fef61e2efe7f12"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-adamantile_plate_needle.png",
+        "128": "art/icons/gear/exports/128/weapon-adamantile_plate_needle.png",
+        "64": "art/icons/gear/exports/64/weapon-adamantile_plate_needle.png",
+        "32": "art/icons/gear/exports/32/weapon-adamantile_plate_needle.png"
+      },
+      "export_hashes": {
+        "256": "fc631e03b88895a38885dc6e0e95d951bc24557ec9d5013d532d52e783680050",
+        "128": "7d011079e0101bbc7fa38b3fd67c195a772cc68b4010b44fffff904d9052421f",
+        "64": "f381b36111dd7d67dcfb30eb0a8622708fd44dcd275c9ea2e1ac4a669fc26b34",
+        "32": "0b968cec8d3506ea5eae5ce6aa0c18d3adeabf0c9596f2591827504ac441db7a"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
