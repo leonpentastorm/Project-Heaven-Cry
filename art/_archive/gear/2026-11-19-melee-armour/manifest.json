@@ -1997,6 +1997,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-mesh_undersuit",
+      "path": "art/icons/gear/armour-mesh_undersuit.png",
+      "sha256": "5a36c6129138e8b7b640bf3a216b8bab73b604f9701396f6a054913f74fca1a9",
+      "label": "Mesh undersuit",
+      "family": "07-undershirts",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-mesh_undersuit.png",
+        "sha256": "1d7cc1fd1acb7787adab06212b8edd83603b66fd8ef07d1ea31aca5259dd2df3"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-mesh_undersuit.png",
+        "sha256": "5a36c6129138e8b7b640bf3a216b8bab73b604f9701396f6a054913f74fca1a9"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-mesh_undersuit.txt",
+        "sha256": "c3a5991aa328146c1d23d2feb025fa4507e236f46b293e43f9d293775fb6e43a"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-padded_undershirt.png",
+          "sha256": "da04bbb067c16ca0c133c96426d79b1cb0ca8c46ab3eb533b34a12017e7af6ed"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-mesh_undersuit.png",
+        "128": "art/icons/gear/exports/128/armour-mesh_undersuit.png",
+        "64": "art/icons/gear/exports/64/armour-mesh_undersuit.png",
+        "32": "art/icons/gear/exports/32/armour-mesh_undersuit.png"
+      },
+      "export_hashes": {
+        "256": "1e3971a1821be17dbb04058c28c8e1b6a2da033e2e8502647f7f542853fcb995",
+        "128": "0fe7691f43af7af7f78ebaa9cb251e7d819d019687cb43c6116a3cc8906f028e",
+        "64": "efa5a4e37304649e84c66662c2c29c0bb02e62d373fe312001c6d50915f61cd2",
+        "32": "e5565808f0c9055e80d32380d93e9871a0faf8f4ca1ac9e37b078f192922c55f"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

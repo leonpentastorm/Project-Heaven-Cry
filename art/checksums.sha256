@@ -1218,20 +1218,21 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-10e5b39ca6cdeb08f2b907b232a2cb3398209ba6ae00f7890e0e70f1f6994de5  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
+4887b836de7f4502f39e514bc4fa60f1b22ebfa7e0738f9d4b50648b3f73318e  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
 07471adad875c9c2111822059651471b6f98fbc2b2d5a7e00b9e729c8378f340  art/_archive/gear/2026-11-19-melee-armour/attempts/shield-barrier_wall/v1/prompt.txt
 8fc43c0fc75be061ae6839d91964f1e7d7b3b9abdd4355fef50764b1fc422345  art/_archive/gear/2026-11-19-melee-armour/attempts/shield-barrier_wall/v1/source.png
 9baea3255504f9e53d711446792e72b5372fbd74335ca4608add0486cf02e915  art/_archive/gear/2026-11-19-melee-armour/briefs/05-melee-forms.md
 c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/_archive/gear/2026-11-19-melee-armour/briefs/07-shields-armour.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/_archive/gear/2026-11-19-melee-armour/briefs/README.md
 95edab6065fdcc674b0bd1d662a6f49278080bd7ee0f31cfda198d5aeb9fd0c8  art/_archive/gear/2026-11-19-melee-armour/lowland-chopper-generation-error.json
-0c25e8b9d8648e5f53be2641b83aa9e966e71e07d05d4a9bec8b5601bf414934  art/_archive/gear/2026-11-19-melee-armour/manifest.json
+3c64e1b4b47c39087d953cd2f0dc39cc69e7c3748bfcbedc55c1bf62612dc2e2  art/_archive/gear/2026-11-19-melee-armour/manifest.json
 c171a27223a1bf4a108f774695087d2fc3d2074789e196f0661a740013f20e0a  art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-assault_helm.png
 b9c6cb8fe201b0d9e8dfb84a2b9059fae5501ef2b87c0f9fe863cf9b3571413c  art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-blackout_hood.png
 b5478d1d99942caa91c505c71a679b6a331f3b5f5c791148ff5641acc87edcb7  art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-breacher_plate.png
 122ce61995e1f39338eafa5d03b36c19766c9fac17fa0eb3a441b2390e9d45ce  art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-breather.png
 a9d1a28e40f4433587bdd8aa3fd9d8c1617a11bf1f42ac8de4f49821ab3d7efa  art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-cowl.png
 8c4e276582b096d10b0338b3bead760bb450cdfbc1c04c54b777d1b9c46d532b  art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-hood.png
+5a36c6129138e8b7b640bf3a216b8bab73b604f9701396f6a054913f74fca1a9  art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-mesh_undersuit.png
 6b03c6bb25fea954fb32478df0042d8a8bb0a6091dcf1f1674dae5a3a5c6c532  art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-sealed_visor.png
 477c0f52e43494ba1432e0d9f0964cbc28cd7c5454367c531bbb9aff367b26a0  art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-sight_visor.png
 819496772c36e8eba62f4b709185feeca90f3d9db192af408d91fc26b77a18f2  art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-spotters_monocle.png
@@ -1260,7 +1261,7 @@ fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4  art/_archive/g
 c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-war_hammer.png
 bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-war_pick.png
 a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-weighted_gloves.png
-4e9a804b1ca48afe497d204fc333ae3adf0ba1e0b8a8af765f9e8d2cb71f3162  art/_archive/gear/2026-11-19-melee-armour/progress.json
+cb3e842473b4cb5af169543ee42b0f3d44436b30af18733b5c867b6d3b3ed216  art/_archive/gear/2026-11-19-melee-armour/progress.json
 54760a740ba4b1ecec9bbe8ea567331a0e05792c98655e6927219559fb9c7162  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-assault_helm.txt
 84c98f75ca902406ed731b932a357031c90a45a13860786d04019ed78d13cd88  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-blackout_hood.txt
 7932a392b9ee47b9cb01a32677283c6c34a97179dc14ab802af6bc6e17902feb  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-breacher_plate.txt
@@ -1300,7 +1301,7 @@ aaa3859af91cde95cffa25d66fe7fe94c278858151a39c459bf6ec11acceb992  art/_archive/g
 2b712f5e14d4be982af410663cffa3e3878f3d0fcb901d64a60aea44649597df  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-war_hammer.txt
 b83d19be3f91a5c2ee62b9a25a7ead8fbce968ded227119ec6143113fb2c31f1  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-war_pick.txt
 65d16ef2b8326b175a40e20dcc6612fb28971f92faebb73dd2247719a6467c95  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-weighted_gloves.txt
-9287fe2b49a54c36f191b70735254487f89ec745d9f5e7d933f1059358a52e0b  art/_archive/gear/2026-11-19-melee-armour/queue.json
+bb2e12c7b9fc91204e666c548949e113af8fdf0f55fcd70a65d38fc945f7beca  art/_archive/gear/2026-11-19-melee-armour/queue.json
 08c79a4b7371726cf894ed27ad394528e512c03af6fd7c037489813207d8df83  art/_archive/gear/2026-11-19-melee-armour/references/fuel-drum-and-tool-rack.png
 9a913632855428ce70d55f4136797c88b34abfc1e6d8aa425b96ebfb6b37b30d  art/_archive/gear/2026-11-19-melee-armour/reviews/05-axes-32px.png
 65ed57609c5852ab18a184c4ec9506f6814945e9310e4f3deefec161268946bf  art/_archive/gear/2026-11-19-melee-armour/reviews/05-axes-64px.png
@@ -1336,6 +1337,8 @@ b3e294ec2d8675c198b025f01f940ca3902d0e6d7751de403416dd8f7d224c82  art/_archive/g
 ce2f77e1924e94e8d91fca2453e5734e864310d031b8ea57809885d703a70813  art/_archive/gear/2026-11-19-melee-armour/reviews/07-respirators-64px.png
 2519f04bc737535b245c78159514dc7c6925607135b1a9b6197e3d068acf13e2  art/_archive/gear/2026-11-19-melee-armour/reviews/07-shields-32px.png
 c92a0b80d50e59b155a9d5dd3dda994dcbb1d366cc68d14ba59df959db737c2a  art/_archive/gear/2026-11-19-melee-armour/reviews/07-shields-64px.png
+22dd36c35036bf59f85578aa1040e538f00f10d092bb489fdde3af70021bebda  art/_archive/gear/2026-11-19-melee-armour/reviews/07-undershirts-32px.png
+e6499915fb4c152d29a9bbadb859888234c60e53656832d585c591b2f84cf034  art/_archive/gear/2026-11-19-melee-armour/reviews/07-undershirts-64px.png
 f98429e5d1e6db3c7e7589c1e89b707f70f73e427384407532eac9e9a8f6cba0  art/_archive/gear/2026-11-19-melee-armour/short-draw-generation-error.json
 d7e99abd9f31709a2a5a20f29506169f81fbb8a7bfd48d9f50789b90896b91e5  art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-assault_helm.png
 31be0cab9ee0c770dea414d692a4cf5a9b258d48b26ba7745b86cef542a4ae99  art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-blackout_hood.png
@@ -1343,6 +1346,7 @@ b0a4eddaf5328f0ec0fb34655b59e83ca5af5eaa21b6572e0408c97a66f7604a  art/_archive/g
 bc094d83f552daa107a168a052e7bb31f06a57a6b5a3542b3ebbcc0e19cacd29  art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-breather.png
 b40dbe4976c9746bd33b9fbaf12d41b0211d1fe1f85f9942b3b1c3d555502ce4  art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-cowl.png
 a8575b529a8b21e76513a6b5e6c631f6e0554cd2f66dfae6ec7ebb3a02e65c65  art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-hood.png
+1d7cc1fd1acb7787adab06212b8edd83603b66fd8ef07d1ea31aca5259dd2df3  art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-mesh_undersuit.png
 b98cbadd25206d86e2fc806f9d22e064ca898a22cec18e7e8544b69c42b34a3e  art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-sealed_visor.png
 0c6d54ea2c93e0e57eba30b77d97df0558efe80100217aaf48c053fdde49bc21  art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-sight_visor.png
 be26eb53497aa12574f565d424f7d7f87afd406ea6b0e81d283b838982aebf6b  art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-spotters_monocle.png
@@ -4636,7 +4640,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-4b6b199e0d5a5135537f8740777187579c9f8e934021788720822fba59eb93f7  art/catalog.json
+6017e44a71cdafe29df8eb25997a33ab5bf6445cc2d22cffbdf6aaad25e90803  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6205,6 +6209,7 @@ d32379fb535b312e867f35936b1b3dbbc1c4ae28cbd4ad8a8394a70bb2c75fe8  art/icons/gear
 a633011fa2fed3defd33228d8dce7475d39060df9c779a1a9ebf0beab46ef98e  art/icons/gear/armour-gas_mask.png
 bf6aa28766f45a090f5289c830c5638b78a1b54fc8034dda83eca4e4d839bf96  art/icons/gear/armour-heavy_boots.png
 8c4e276582b096d10b0338b3bead760bb450cdfbc1c04c54b777d1b9c46d532b  art/icons/gear/armour-hood.png
+5a36c6129138e8b7b640bf3a216b8bab73b604f9701396f6a054913f74fca1a9  art/icons/gear/armour-mesh_undersuit.png
 87b18113df301af7e4ac7d5e21afef5e251aafc32624c3a5a9b29370a41af813  art/icons/gear/armour-night_goggles.png
 da04bbb067c16ca0c133c96426d79b1cb0ca8c46ab3eb533b34a12017e7af6ed  art/icons/gear/armour-padded_undershirt.png
 0f44b47bed85ac981c11a1f5d31a6d3f1cffe87e4365576ea2dab0369cc3aef2  art/icons/gear/armour-prescription_glasses.png
@@ -6250,6 +6255,7 @@ ce41eca2ce571e5c264f0a771bf25668526c1fe519e5e88cdd4b1f76693ffaeb  art/icons/gear
 ea679057093317edce546a59e11d282f21e914e751213e0402084eab9ce3da6a  art/icons/gear/exports/128/armour-gas_mask.png
 88c4b22682c34ad7def1ad5afc2baed74839e487fc6a2986e095791415b56cf6  art/icons/gear/exports/128/armour-heavy_boots.png
 857bbb07a468482951513d16ad444462db030faea12f6da0e5862b8382752b40  art/icons/gear/exports/128/armour-hood.png
+0fe7691f43af7af7f78ebaa9cb251e7d819d019687cb43c6116a3cc8906f028e  art/icons/gear/exports/128/armour-mesh_undersuit.png
 990f410ae7a9cf4d9df7503a01ccd944b7377aa20c2f988c09451f69ad2ed886  art/icons/gear/exports/128/armour-night_goggles.png
 e1e9b24768a6e0a0d8f80822159126c795407637ea19fe6213866b97467d1f71  art/icons/gear/exports/128/armour-padded_undershirt.png
 74362e352431a8940e721ef8ba8fde3f13c4039e88b30681e2f9b1ae28e2426f  art/icons/gear/exports/128/armour-prescription_glasses.png
@@ -6457,6 +6463,7 @@ b4477adcb1ce25ed620561ca7fedd6adcfd00476b45fb41578e5d712acb5109e  art/icons/gear
 edb14e46a0b4db9f5f604848b7270331e7c5e0ea370e6265d890b87491953a20  art/icons/gear/exports/256/armour-gas_mask.png
 935ef2ee67aa881186beba0c03396c8444dba53a007a7b2a0ee72c4c97eac226  art/icons/gear/exports/256/armour-heavy_boots.png
 e9159abb587e71c5483d9c59bd75688cc91e572ea0f009804fddf51f5996b65e  art/icons/gear/exports/256/armour-hood.png
+1e3971a1821be17dbb04058c28c8e1b6a2da033e2e8502647f7f542853fcb995  art/icons/gear/exports/256/armour-mesh_undersuit.png
 15695c186d50f2fc6bf9659371f3345bf67b538643802c41cdcb61ff878093e7  art/icons/gear/exports/256/armour-night_goggles.png
 53a42281ad8e9785ba141465ce4472a15c46104377e4aa1ca39fbecf58d98413  art/icons/gear/exports/256/armour-padded_undershirt.png
 421b27be75537a8a312329e1670c8d291624efbcd0772d49654d7ac6767da761  art/icons/gear/exports/256/armour-prescription_glasses.png
@@ -6664,6 +6671,7 @@ a8f8bf8ec9f65c6ee81218607fa04f94ae0aa1bf2cf9d6a341c6d68b9d0b723c  art/icons/gear
 7d74c0381b4e18ddd980722c0763c6a84f2f346244f85ab5b06ea9656b275d2d  art/icons/gear/exports/32/armour-gas_mask.png
 010a116a0234bb017485504b6446f3c68e5e6aaf8fc47dee0889b35cca8e88f0  art/icons/gear/exports/32/armour-heavy_boots.png
 f1c7d774717ea6d9905ba7d04901ce1f44d4fabec70cb4059867fced8abe9c37  art/icons/gear/exports/32/armour-hood.png
+e5565808f0c9055e80d32380d93e9871a0faf8f4ca1ac9e37b078f192922c55f  art/icons/gear/exports/32/armour-mesh_undersuit.png
 81e3ff31a73b4816632d48bb41d1523c11243616936da3f3f2f56e106ece65ea  art/icons/gear/exports/32/armour-night_goggles.png
 01c57560d4a82c2e204e1f092951be3cc826aa157aa6840b5cb8581dce1c9349  art/icons/gear/exports/32/armour-padded_undershirt.png
 88de9925fa0f077bc7b5325c57899728676e8cefdbacd2b57542f4afdf8fe7e2  art/icons/gear/exports/32/armour-prescription_glasses.png
@@ -6871,6 +6879,7 @@ a5291cad5ed0b2279ed48b7908ae81dba7ba84e84e53cd584bf5d9f49f0dac76  art/icons/gear
 bd810824fdad2a7f14fec085725d33902782986992a875de3f5efaef0f53c905  art/icons/gear/exports/64/armour-gas_mask.png
 3702018bf27796aef1d8ed966598319a8a6b004b50f393565a76816d61383604  art/icons/gear/exports/64/armour-heavy_boots.png
 4f900f39d950a9df8c8b5470870080adf3404c1918c73f3324ed16b5c547bbe9  art/icons/gear/exports/64/armour-hood.png
+efa5a4e37304649e84c66662c2c29c0bb02e62d373fe312001c6d50915f61cd2  art/icons/gear/exports/64/armour-mesh_undersuit.png
 8d924f08d355fda64af34f2a770a27b9077df85c161ada1df2bf28457b86fbc8  art/icons/gear/exports/64/armour-night_goggles.png
 2c8af987a4a8409964ecfe8ddd97eeeac97650c410c08a863b7fbf22bc39aba5  art/icons/gear/exports/64/armour-padded_undershirt.png
 28c86936a7049117d9006292b4b8f4abc52dc3629924fc1eedd354316aeb38a4  art/icons/gear/exports/64/armour-prescription_glasses.png
