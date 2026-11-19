@@ -12,26 +12,45 @@ Order: 0.32 (in progress) -> after 0.32 (hosting, code review) -> Items 2.0 (ask
 
 The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.md` (link, not copied; "proposals N" below means its numbered sections). Release branch `release/0.32`; effects on `wip/0.32-effects`.
 
-### Shared pieces (`release/0.32`; built so far: `d59d42b73`, `c7338ec99`, `585d58d29`)
+### Shared pieces (`release/0.32`; checked against the branch 19 Nov 2026)
 
-- **Call price table.** 3 AP, 2 AP from 5 points, 1 AP from 9, once a turn; at 10 the reaction may pay and one more Call that turn costs 1 AP. Settles "Call steps 9 and 10 overlap". [M] [open; checked in code 19 Nov 2026] [proposals 2.2-2.3]
-- **Call strength steps.** Move from 1/3/7 to 1/4/8 for all nine Calls; Rally and Brief re-stepped stronger; measure the other seven. [M] [open; checked in code 19 Nov 2026] [proposals 2.1, 2.4]
-- **Perk-step schedule as data.** Alpha steps 3/6/7/9, forks at 4/8; beta and gamma steps 3/5/7/9; Mastered at 10. [M] [open; checked in code 19 Nov 2026] [proposals 4.1]
-- **Old-save migration.** A free re-pick for betas and gammas with 3+ points; the 11 removed perks mapped; an old-save test. [M] [open; checked in code 19 Nov 2026] [proposals 2.5, 3.9]
-- **Strain limit.** 3 at Composure 0, +1 at Composure 1/2/4/6/8; Will Power gives none. Update every text and test that states the old limit; the Will Power 4/6 forks must not give the limit back; report the nerf before it ships. [M] [open; checked in code 19 Nov 2026] [proposals 3.10]
-- **Elemental resistance.** Pain Threshold gives 6% a point, cap 80%. List every other source and say plainly that no gear gives resistance today (Items 2.0's armour work). [S] [open; checked in code 19 Nov 2026] [proposals 6]
-- **`figment_forms` door** with its save migration. [M] [open; checked in code 19 Nov 2026] [proposals 5]
-- **Approved primitives, built on the branch and not live:** Flux as a resource row; the `at: limit` predicate; the target-aware price (N20); `seen_range`; `reactRefusal` (answers spec 5530's "a won Parry rolled and dropped unsaid"); the `tech_rule:` data reference. Each ships with its test through the reducer. [M] [partly; checked in code 19 Nov 2026] [attribute-proposals; spec 5530]
-- **Serial group for flaky browser suites.** The list has fx-room, magic, title, resources, capture-skills, picking; add voice, shadow, tending, slate, slate-title, slate-music, turn-card-side, sigil15-growth. [S] [open; from documents only] [START-HERE 15 Nov]
+- **Call strength steps, the rest.** The steps moved to 1/4/8 (`514e66e23`); still owed: Rally and Brief re-stepped stronger, and the other seven Calls measured. [M] [partly; checked in code 19 Nov 2026] [proposals 2.1, 2.4]
+- **Strain limit: the nerf report.** The limit is built (`514e66e23` D); report the nerf to Leon before it ships, and check the Will Power 4/6 forks do not give the limit back. [S] [partly; checked in code 19 Nov 2026] [proposals 3.10]
+- **Elemental resistance: the source list.** Pain Threshold 6% a point under the 80% cap is built (`514e66e23` E, `dd62cf571`); still owed: list every other source and say plainly that no gear gives resistance today. [S] [partly; from documents only] [proposals 6]
+- **Serial group for flaky browser suites, the rest.** The serial list exists (`585d58d29`: fx-room, magic, title, resources, capture-skills, picking); add voice, shadow, tending, slate, slate-title, slate-music, turn-card-side, sigil15-growth. [S] [open; checked in groups.json 19 Nov 2026] [START-HERE 15 Nov]
 
-### Effects (`wip/0.32-effects`: audit `293c414b0`, "no silent HP change" `1497f7d46`, prayer effects `8b24fe818` in progress)
+#### Built in 0.32 (not yet live)
 
-- **Prayer effects R1-R8.** Typed numbers moved to data; Covering Fire 3x3 and the "99 rounds" text; Love Conquers' surrender; elements on prayer damage plus a thunder asset; per-patron sounds. [L] [partly; checked in code 19 Nov 2026] [scout-owed-fixes 15a]
-- **Bond and Tending verb effects.** [M] [open; from documents only] [lead's lane list]
-- **Figment effects (live trace first).** Husk Burst is silent; Redraw shown as a blink, Interpose as a walk; the order link from the owner; a destroyed Figment unravels; say/fx on order rows; `fieldRepair` bypasses `mend()`. [L] [open; from documents only] [scout-owed-fixes 15b]
-- **Vow pop-up** when entering a mode, changed at rests; needs `c.vow` carried into the fight. Built as recommended (see Waiting on Leon 2). [M] [open; from documents only] [scout-owed-fixes 11]
-- **Sounds** (CC0 / CC BY, credited): victory fanfare, defeat, lightning, thunderclap, heal shimmer, divine impact, level-up sting (LEVEL UP reuses the `feel_unlock` chime today, spec 5524). [M] [open; from documents only] [SESSION-TODO C8]
-- **Small UI.** Fork, action-row and trap icons still small; the legend's "Your trap" line; camera jump after an illegal far click (needs a browser repro); fight-panel tabs wrap to a second row with every door open; status strip not drawn on the token face. [M] [open; from documents only] [scout-owed-fixes]
+- **Call price table.** 3 AP, 2 AP from 5 points, 1 AP from 9, once a turn; at 10 twice, and the reaction may pay. `514e66e23` A, `508402cdc` (skeleton-screens). [proposals 2.2-2.3]
+- **Perk-step schedule as data.** `skills.json ladder` (alpha 3/6/7/9, forks 4/8; beta and gamma 3/5/7/9). `514e66e23` B. [proposals 4.1]
+- **Old-save migration.** The free re-pick (`perk_remap`, `perkRev`, `migrateCharacterPerks`), the removed perks mapped, tests on the repo's old saves. `c58d03ff0`. [proposals 2.5, 3.9]
+- **Strain limit** 3, +1 at Composure 1/2/4/6/8. `514e66e23` D. [proposals 3.10]
+- **Elemental resistance** 6% a point of Pain Threshold, cap 80% in data. `514e66e23` E, `dd62cf571`. [proposals 6]
+- **`figment_forms` door** with its save migration (figRev 2). `514e66e23` F. [proposals 5]
+- **Approved primitives:** Flux as a resource row and `at: limit` (`d59d42b73`); the target-aware price, `seen_range`, `reactRefusal`, the `tech_rule:` reference (`c7338ec99`); each with its reducer test. [attribute-proposals; spec 5530]
+- **Golden tables and replays re-recorded for rules 1.70.** `fe47c3744`.
+
+### Effects (`wip/0.32-effects` merged into `release/0.32` at `b290bc3a5`; report `docs/design/handoffs/0.32-EFFECTS-AUDIT.md`)
+
+- **Prayer effects, the rest of R1-R8.** Built: the wind-up and landing (`8b24fe818`), elements on prayer damage from the engine (`11a345ff6`), the storm's thunder (`6b18699c4`). Still owed: typed numbers moved to data; Covering Fire 3x3 and the "99 rounds" text; per-patron sounds. [M] [partly; checked in code 19 Nov 2026] [scout-owed-fixes 15a]
+- **Everyone Home: the allies' tokens.** Its heals and shields are numbered now; the touched allies' tokens do not answer (the Miracle's landing skips `landOn`; audit re-run 19 Nov: "target token still (2)"). [S] [open; checked in code 19 Nov 2026] [0.32 effects audit]
+- **Soothe has no log line.** The cleanse is drawn and named (CLEANSED, `11a345ff6`), but `tending.json tend.soothe`'s cleanse row has no `say`. [S] [open; checked in code 19 Nov 2026] [0.32 effects audit]
+- **Tug on an ally already beside you draws nothing.** It now says so in the log (`a82b2ece3`); nothing is drawn on the map. [S] [open; checked in code 19 Nov 2026] [0.32 effects audit]
+- **A Bond ending any other way has no event.** Let go is the engine's event now (`11a345ff6`); a Down, the Attuner leaving and sight still read the parting from two views (`bonds.ts noteTies`). Each needs `untie` callers in `kit.ts` to say it (a lead's call: one event in `untie` itself). [S] [open; checked in code 19 Nov 2026] [rules 1.72 item 5701]
+- **The out-of-run vow change.** Out of a Survival run the standing vow changes any time out of a fight (rules 1.72 item 5705, PROVISIONAL): Leon to confirm. [S] [open] [rules 1.72]
+- **Figment effects, the rest.** Built: the orders shown, Redraw a blink, Interpose a walk, a destroyed Figment BROKEN at once (`c8fda7784`), Husk Burst's number (`1497f7d46`). Still owed: `fieldRepair` bypasses `mend()`. [S] [partly; from documents only] [scout-owed-fixes 15b]
+- **Sounds, the rest.** Built: victory fanfare, defeat sting, level-up sting, heal shimmer, the storm's thunder (`6b18699c4`). Still owed: a divine impact; a lightning sound apart from the thunder. [S] [partly; checked in code 19 Nov 2026] [SESSION-TODO C8]
+- **Small UI.** Fork, action-row and trap icons still small; the legend's "Your trap" line; camera jump after an illegal far click (needs a browser repro); fight-panel tabs wrap to a second row with every door open. [M] [open; from documents only] [scout-owed-fixes]
+
+#### Built in 0.32 (not yet live)
+
+- **Bond and Tending verb effects.** The tend down a Bond, "Bonded to" on the token card (`875a5452c`); Soothe's cleanse shown (`11a345ff6`, rules 1.72 item 5700); Let go's parting from the engine's event (`11a345ff6`, item 5701); Tug's ally line (`a82b2ece3`, item 5706). Tests: `test/rules172-fx.test.ts`, `fx/bonds.test.ts`.
+- **No silent HP change.** `fx/silent.ts` (`1497f7d46`); Everyone Home's shields through the one mend (`11a345ff6`, item 5703).
+- **A state-only prayer says its name** from the engine's event (`11a345ff6`, item 5704).
+- **Vow pop-up** at the camp, changed at a rest (`5640182a1`); the standing vow carried on the character by the engine, sworn as each fight starts; the device store and the auto-swear removed (`11a345ff6`, item 5705).
+- **Status strip on the token face.** `4732369fe`.
+- **The NOW PLAYING credit never covers a panel** (a chip at the top edge, opened on hover). `a82b2ece3`, item 5707.
+- **PlaceScreen no longer imports `data/survival.json`** (the vow button asks the engine's `faithView` `vowChange`). `11a345ff6`.
 
 ### Gaps (player-facing faults and small things no lane owned)
 
