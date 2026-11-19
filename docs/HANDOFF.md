@@ -1,4 +1,4 @@
-Owed work: docs/ROADMAP.md (the only list). Anything below that reads as a to-do is history unless the roadmap carries it. Live is 0.31.11 (19 Nov 2026); older live-version lines below are history.
+Owed work: docs/ROADMAP.md (the only list). Anything below that reads as a to-do is history unless the roadmap carries it. Live is 0.32.0 (20 Nov 2026; account: docs/design/handoffs/0.32.0-LIVE.md); older live-version lines below are history.
 
 # Hand-off: picking up Project Heaven Cry (written at v0.0.1; the version now is in `package.json`)
 

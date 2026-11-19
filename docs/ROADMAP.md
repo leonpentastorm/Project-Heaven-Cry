@@ -1,14 +1,14 @@
 # Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept current)
 
-**Live: 0.31.11 (19 Nov 2026). Being shipped: 0.32.0 (rules 1.70 to 1.81, `release/0.32`).** **This file is the only list of owed work.** Hand-offs describe a session's state and link here; they do not list work. An item leaves this file only with evidence (a commit or a test). Every item says when its state was last checked against the code.
+**Live: 0.32.0 (20 Nov 2026; rules 1.70 to 1.81; account `docs/design/handoffs/0.32.0-LIVE.md`).** **This file is the only list of owed work.** Hand-offs describe a session's state and link here; they do not list work. An item leaves this file only with evidence (a commit or a test). Every item says when its state was last checked against the code.
 
 Item format: `**Short name.** What is owed. [size S/M/L] [state: open | partly | not verified; checked in code 19 Nov 2026 | from documents only] [source]`. Sizes: S under an hour, M a few hours, L about a day.
 
 How this list was made: the merged list of 19 Nov (`BEFORE-ITEMS-2.0`) was checked against the code, and `docs/design/handoffs/2026-11-19-code-verification.md` WINS where they differ (it also holds Leon's rulings of 19 Nov evening). Rulings that shape everything: **everything owed goes into 0.32, worked continuously, before Items 2.0 and art; 30% of the weekly usage is a target, not a cutting line; nothing is cut.** Hosting off KV and the outside code review come after 0.32, before Items 2.0.
 
-Order: 0.32 (in progress) -> after 0.32 (hosting, code review) -> Items 2.0 (ask Leon) -> Later.
+Order: 0.32 (LIVE 20 Nov 2026; what is listed under it as owed is still owed) -> after 0.32 (hosting, code review) -> Items 2.0 (ask Leon) -> Later.
 
-## 0.32 (in progress)
+## 0.32 (live 20 Nov 2026; the owed items below carry on)
 
 The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.md` (link, not copied; "proposals N" below means its numbered sections). Release branch `release/0.32`; effects on `wip/0.32-effects`.
 
@@ -19,7 +19,7 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **Elemental resistance: the source list.** Pain Threshold 6% a point under the 80% cap is built (`514e66e23` E, `dd62cf571`); still owed: list every other source and say plainly that no gear gives resistance today. [S] [partly; from documents only] [proposals 6]
 - **Serial group for flaky browser suites, the rest.** The serial list exists (`585d58d29`: fx-room, magic, title, resources, capture-skills, picking); add voice, shadow, tending, slate, slate-title, slate-music, turn-card-side, sigil15-growth. [S] [open; checked in groups.json 19 Nov 2026] [START-HERE 15 Nov]
 
-#### Built in 0.32 (not yet live)
+#### Built in 0.32 (live in 0.32.0)
 
 - **Call price table.** 3 AP, 2 AP from 5 points, 1 AP from 9, once a turn; at 10 twice, and the reaction may pay. `514e66e23` A, `508402cdc` (skeleton-screens). [proposals 2.2-2.3]
 - **Perk-step schedule as data.** `skills.json ladder` (alpha 3/6/7/9, forks 4/8; beta and gamma 3/5/7/9). `514e66e23` B. [proposals 4.1]
@@ -42,7 +42,7 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **Sounds, the rest.** Built: victory fanfare, defeat sting, level-up sting, heal shimmer, the storm's thunder (`6b18699c4`). Still owed: a divine impact; a lightning sound apart from the thunder. [S] [partly; checked in code 19 Nov 2026] [SESSION-TODO C8]
 - **Small UI.** Fork, action-row and trap icons still small; the legend's "Your trap" line; camera jump after an illegal far click (needs a browser repro); fight-panel tabs wrap to a second row with every door open. [M] [open; from documents only] [scout-owed-fixes]
 
-#### Built in 0.32 (not yet live)
+#### Built in 0.32 (live in 0.32.0)
 
 - **Bond and Tending verb effects.** The tend down a Bond, "Bonded to" on the token card (`875a5452c`); Soothe's cleanse shown (`11a345ff6`, rules 1.72 item 5700); Let go's parting from the engine's event (`11a345ff6`, item 5701); Tug's ally line (`a82b2ece3`, item 5706). Tests: `test/rules172-fx.test.ts`, `fx/bonds.test.ts`.
 - **No silent HP change.** `fx/silent.ts` (`1497f7d46`); Everyone Home's shields through the one mend (`11a345ff6`, item 5703).
@@ -61,7 +61,7 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **The 0.30 review document for Leon's rulings** is not in the tree. Write it. [M] [open; from documents only] [SESSION-TODO D]
 - **The gaps lane's group F leftovers** (wave 3 SHOULD-FIX still open: 1 forced moves on a Boss typed per item, 7 Run and Gun's text, 8 `fx/guard.ts` `within` fallback, 11 `open-hand-2` `usable` and `shadow-2` `hideBlock` called directly, 14 `enemySearchTile` AI in code, 18 Launch's two copies of its AP; not checked 2, 10, 12, 17). [M] [open; checked by the gaps lane 19 Nov 2026] [BEFORE-ITEMS-2.0 group F]
 
-#### Built in 0.32 (not yet live)
+#### Built in 0.32 (live in 0.32.0)
 
 - **A resource price of 1 names one** ("Load the Visualizer · 1 core"). `4e010c1e4`, spec 5601.
 - **Called Out's card says what happens** ("Taunted even if its save holds"). `6bd9ca3e1`, spec 5602.
@@ -89,7 +89,7 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **Visualization: re-measure the level-1 Beast; measure Sharp Light and Wake of the Kill together** (the measure picked no forks; no Beast-at-1 tool). [S] [open; from the Mind hand-off] [proposals 5, 5b]
 - **Warding Word "against a supernatural effect"** read as the next Brain or Heart save (PROVISIONAL). [S] [partly; from the Soul hand-off] [rules 1.75]
 
-#### Built in 0.32 (not yet live)
+#### Built in 0.32 (live in 0.32.0)
 
 - **Strength** (rules 1.73 items 5800-5819): Raw Power's ladder (Grapple 2, Throw Down 5), Spill and Headlong, Rolling Start without its free Charge, Guts and Intimidation four perks each, Measured Blow merged. `dce438554`, re-record `2053d31cc`.
 - **Endurance** (5820-5837): Durability's ladder, Pain Threshold and Senses four perks each, Second Wind a perk, Last Plate cut, Retort and Reforge on the Bulwark. `8101214be`, re-record `747fc2ab1`.
@@ -112,13 +112,13 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **Silent property.** The lead ruled Leon's later word (acting from Hidden gives your tile away while you stay Hidden; a Silent attack does not); not built: it contradicts rules still standing (the body's "any attack reveals you", the Break's reveal, Vanish II's roll, Parting Cut's re-hide, the Silent module): Leon to rule each (Waiting on Leon). The `silent` property is read from data already. [M] [open; checked in code 19 Nov 2026] [rules 1.77 item 6517 a]
 - **Sight checks still asked without the looked-at unit:** an ally's eyes on an ally (combat ~1361 and ~2868, faith, tactics 129, perks/d 115, perks/e 136, 726 and 845, physical/rules 80, classes/k 1336) and tile-only checks. The lead's call whether `seen_range` applies there. [S] [open; from the hand-off] [rules 1.70 item 5545]
 
-#### Built in 0.32 (not yet live)
+#### Built in 0.32 (live in 0.32.0)
 
 - **Dark maps** for shrine, works and rim (works and rim 1 to 2 lamps), Douse on a dark map, Prone's `seen_range`, one sight range (`eyeReach`), enemy notice and vision as tier data. `e45418996`, `9e6ebe053`, spec 6400-6408.
 - **The shadow sightline** on the map (who sees each tile, eye lines, the SIGHTLINE switch). `72e99c3e6`.
 - **Stalk** (2 AP, once a turn, from Hidden, +1 Shadow) as data. `e45418996`.
 
-#### The review of the shared step: fixes built in the merge (not yet live)
+#### The review of the shared step: fixes built in the merge (live in 0.32.0)
 
 - **M1** forms a legacy save kept outside the count are charged against the grant. `83ea69741`.
 - **M2** the looked-at unit named everywhere eyes are asked; Chain Smoker and Lowland Born on the one sight range. `90575110d`.
@@ -136,7 +136,7 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 
 Tests only (`packages/engine/test/balance/`): no engine source, no data, no game number changed.
 
-#### Built in 0.32 (not yet live)
+#### Built in 0.32 (live in 0.32.0)
 
 - **The Sigilist's run policy** (`run-policies.ts sigilRun`): no step beside a blade (the pistol, Clean Vent first); small game shot, not drawn for; the Line as long as the target needs and the turn pays; the core swapped before a Line; Overclock when Max Sigil words is under four; the opt-in `noCover` Line placement in `policies.ts sigil` (off for the contract). [fa8b00eb3]
 - **The Operative's policy** (`door-policies.ts operative`): Shadow built to two before a Break (a Break that drops a foe at once), Tag, Stalk, Fade, a better unseen angle, the gun when it can't hide. [fa8b00eb3]
@@ -150,7 +150,7 @@ Tests only (`packages/engine/test/balance/`): no engine source, no data, no game
 - **Input delay from far away.** Locally a guest's action is on the guest's screen in about 60 ms (median); Leon measures 2 to 3 s from Vietnam to a US host. The local hops are not where the time goes: measure the live room (the same stamps on the live site) before changing anything. [M] [open] [0.32-COOP.md]
 - **Co-op stall (0.21.0).** Not reproduced in 0.32's loop either (see the hand-off); `coop-loop.mjs` stays as the opt-in hunt. [S] [open; watch] [coop-stall.md]
 
-#### Built in 0.32 (not yet live)
+#### Built in 0.32 (live in 0.32.0)
 
 - **2a-2c, the room link:** a replaced link (4000) stops and says "Opened in another tab" with Take over here; ping and retry timers cleared on close; hosting or joining again closes the old link. `d2a5a6636`.
 - **"I'll narrate":** selectable; the Narrator's desk (narration, checks with a TN, rulings Yes/No, a prepared fight); the fight screen's Narrator buttons tested end to end (`narrate.mjs`). `cc18b7e79`.
@@ -164,7 +164,7 @@ Tests only (`packages/engine/test/balance/`): no engine source, no data, no game
 - **Enemy door verbs:** Slam, Challenge, Retort, Last Plate, Tag, Ghost Kill, Stalk, Tug, Snap, a Figment order, prayers. Blocked: see the needs-a-primitive list. [L] [not built] [rules 1.79 item 6711]
 - **Interpose for an enemy with Durability 3** (the Heartfire elite): not checked whether the Answer is usable for a unit whose techniques are its row's. [S] [not verified] [rules 1.79 item 6710]
 
-#### Built in 0.32 (not yet live)
+#### Built in 0.32 (live in 0.32.0)
 
 - **Enemies act on Pressure:** a Broken enemy reaches cover or drops Prone and stays down; a Suppressed one slides into cover and walks short; log lines from data. `591270294`, spec 6700-6702.
 - **Focus memory per enemy:** keeps its target for 2 rounds, turns on whoever hurt it since. `591270294`, spec 6705-6706.
@@ -182,7 +182,7 @@ Tests only (`packages/engine/test/balance/`): no engine source, no data, no game
 - **Stand Behind Me:** two written designs disagree (Guard 2.0 item 9 against the three-layers Bulwark III ceiling): Waiting on Leon 23 (lead's pick: the second, as the Bulwark's rank III move). [S] [needs a ruling] [spec 6611]
 - **Hallow and Into the Wall icons** (ART-REQUESTS 0g) and the hallowed ground's own look on the map (drawn as any data zone today). [S] [open] [spec 6605, 6607]
 
-#### Built in 0.32 (not yet live)
+#### Built in 0.32 (live in 0.32.0)
 
 - **Two zones of one kind on a tile do not stack** (two Sanctuaries halve once). `5ff4ae85e`, spec 6601.
 - **NULL unmakes a Figment** on the tiles it covers (`sigils.json null.dispel`). `b71439891`, spec 6602.
@@ -207,7 +207,7 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 - **An enemy step that weighs a held item action** by a want in its data (one general step for every door verb: Slam, Challenge, Retort, Tag, Ghost Kill, Tug, Snap, a Figment order), run through the player's action path (`runPerkAction`). APPROVED by the lead (0.32 integration); not built: the only Guard-holding row (the Heartfire elite, Durability 3) is below Slam's gate (Durability 5), so giving it Slam needs a number changed first (a balance call), and holding `skill:durability.1` also gives its melee roll with Durability, a second behaviour. An `enemyStep` registration (as `physical/ai.ts`) plus a row field is the shape. [M] [approved, open] [Enemy AI, rules 1.79 item 6711]
 - **A faith block on an enemy row** (patron and Devotion), so `faith.ts` can let an enemy pray a Whisper. [Enemy AI, 6711]
 
-#### Built in 0.32 (not yet live; the engine-pieces lane, rules 1.77 items 6500-6515)
+#### Built in 0.32 (live in 0.32.0; the engine-pieces lane, rules 1.77 items 6500-6515)
 
 - **`targets.if`** (predicates on each unit of an op's set): Five Stars II reaches the rank-and-file only. `9cfecf56e`, item 6500.
 - **grant_action `tab`**: the Tending verbs on Camaraderie's perks show on the TEND tab. `851dcdbd9`, item 6501.
@@ -237,7 +237,7 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 
 ### Fun and balance pass
 
-#### Built in 0.32 (not yet live)
+#### Built in 0.32 (live in 0.32.0)
 
 - **The Operative clears.** Unseen Hand (an attack from Hidden rolls with Ingenuity when higher) and the Recommended rifle: solo 0 → 13, four 0 → 22. `bcfa7cf6a`, rules 1.81 items 6900-6901.
 - **The Outburst peak measured as one Release** (the 0.32 rise was a second, Mana Short Release in the window); the contract band set to what is measured; **the map 16 tiles up to 10 units** (four Breakers 6 → 14, four Bulwarks 11 → 17). `cf981b944`, items 6903-6904.
@@ -263,6 +263,10 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 - **Spec section 14** receives every new PROVISIONAL number. [S] [open; from documents only] [proposals 2.10]
 
 ### 0.32.x polish (the screenshot pass's small faults, left on purpose; pictures in `.check/capture/all/` after `python tools/e2e.py capture-all`; list from its FAULTS.md, 20 Nov 2026)
+
+- **The your-turn card off screen under 1000 px.** `turnIntro.tsx panelBox(true)` measures the side panel, which wraps below the map under 1000 px: the card from the right is drawn below the window (a key or click dismisses it). Clamp to the viewport and fall back to the window when the panel is off screen or under 200 px high. [S] [open; confirmed in code 20 Nov 2026] [0.32.0 ship review]
+- **Borrowed time on an old mid-fight save.** `migrateLoaded` gives `lastTurn` from the first perk with a `last_turn` row; a character holding both Still Standing and Bite the Bullet may get the wrong one. [S] [not verified; 20 Nov 2026] [0.32.0 ship review]
+- **`voice` passes only alone** (a timing check at about 8 s): add it to the serial group or fix the suite. [S] [open; 20 Nov 2026] [0.32.0 proof run]
 
 - **Path map:** the legend's second row clipped at the bottom (1280-021); the node card covers the neighbouring rows (1280-022). [S] [open]
 - **Run board:** cut by SQUAD at the bottom ("Report a run", "Set Feet · Camp"); GIVE says "No one to hand anything to." in a solo run (1600-042). [S] [open]
