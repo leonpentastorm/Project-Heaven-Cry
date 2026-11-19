@@ -1,7 +1,7 @@
 # November 19 File 09 gear art
 
 Delivery branch `art/2026-11-19-heavy-and-strange` starts from develop commit `2020b5c2a`.
-**4 of 16** File 09 Standard masters delivered.
+**6 of 16** File 09 Standard masters delivered.
 File 09 is independent of the separate File 05 and 07 delivery. The 0.30 hold list contains no matching entries.
 The four higher grades wait for approved Standard masters.
 
@@ -17,8 +17,8 @@ The four higher grades wait for approved Standard masters.
 | 08 | Wall gun (Pattern) | awaits prerequisite 18 |
 | 09 | Votive torch | image service declined this render |
 | 10 | Cathedral burner | image service declined this render |
-| 11 | Snarl knife | image service declined this render |
-| 12 | Wreck saw | image service declined this render |
+| 11 | Snarl knife | delivered as a review candidate |
+| 12 | Wreck saw | delivered as a review candidate |
 | 13 | Piston knuckles | delivered as a review candidate |
 | 14 | Door-knocker | delivered as a review candidate |
 | 15 | Throwing darts | delivered as a review candidate |

@@ -18724,6 +18724,52 @@
         1254
       ],
       "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/15-weapon-throwing_darts.png"
+    },
+    "weapon-ork_snarl_knife": {
+      "label": "Snarl knife",
+      "path": "art/icons/gear/weapon-ork_snarl_knife.png",
+      "sha256": "4f2120d28cbbf5d3fef2f3379c4e878a362e6edd2a5ea3508b962836bdaa43d3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/11-weapon-ork_snarl_knife.png"
+    },
+    "weapon-ork_wreck_saw": {
+      "label": "Wreck saw",
+      "path": "art/icons/gear/weapon-ork_wreck_saw.png",
+      "sha256": "e272205cec29553d355f07fd39a927d092e052e71865d35e5e24da25fdae060d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/12-weapon-ork_wreck_saw.png"
     }
   },
   "survival_art": {
