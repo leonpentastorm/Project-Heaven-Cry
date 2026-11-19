@@ -43,6 +43,90 @@
     "generator_prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, in the pose the description gives, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the object fills the width the description gives, inside the central 90% of the canvas. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The name, maker and markings are invented: never a real brand, model name, logo or text; a shape not marked Pattern is invented too. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail concentrated on one or two focal edges and make the shape unmistakable when shrunk. Colour: metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the faction's signature colour is the single accent (given in each prompt), a muted local paint, not a glow. Rarity is not shown by a coloured border (the UI adds that): standard finish only, with honest wear. Heavy weapons are drawn dense and heavy, and must read heavier than any rifle even at 32 px. The object:\n\nThe servo-fist without the gauntlet: a knuckle bar with a single piston strapped along the wrist. Pose: upright, three-quarter, filling about 75% of the canvas; no hand inside. Silhouette: a slab knuckle bar of four rings, one exposed piston running back to a wrist cuff with a small air bottle, no glove. Materials: dark steel, black rubber hose, scuffs. Accent: oxide red #CC2435 on the cuff.\nAt 32 px: one long piston behind the knuckle bar.\n\nThis is the new Standard-finish form for Project Heaven Cry. Keep the family reference's gouache materials while matching this form's silhouette exactly.\n\nOne isolated inventory object with unbroken mechanical attachment and geometrically consistent perspective. Use the first composite reference for material treatment only; keep the specific pose in the subject brief. Single object view, no exploded schematic, text, logo, label, watermark, floor or glow. Leave genuinely transparent clear canvas edges.\n\nFour apertures in one single proximal knuckle bar, the object open and hollow, connected straight piston over its wrist brace, physically plausible connection. Empty, no hand."
   },
   {
+    "n": 14,
+    "id": "hellraiser_door_knocker",
+    "title": "Door-knocker",
+    "path": "art/icons/gear/weapon-hellraiser_door_knocker.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_servo_fist.png",
+      "art/icons/weapons/hellraiser_servo_fist.svg"
+    ],
+    "paint": "A mining ram worn by trench troops: a forearm-length pneumatic ram gauntlet with a flat striking plate. Pose: upright, three-quarter, filling about 75% of the canvas; no hand or arm inside. Silhouette: a massive flat square ram plate over the knuckles, two thick pistons running the length of the forearm, an air tank at the elbow, short trench spikes on the plate's edge. Materials: dark steel, dented plate, black hoses. Accent: oxide red #CC2435.\nAt 32 px: twice as long as the servo-fist, with a flat square plate in front.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.75,
+    "label": "Door-knocker",
+    "sha256": "02aac08ab2efeec09c1767064e2a9dd0ae2504fa6412d6c7686b7cca58d88e40",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-hellraiser_door_knocker.png",
+      "128": "art/icons/gear/exports/128/weapon-hellraiser_door_knocker.png",
+      "64": "art/icons/gear/exports/64/weapon-hellraiser_door_knocker.png",
+      "32": "art/icons/gear/exports/32/weapon-hellraiser_door_knocker.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-09",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/14-weapon-hellraiser_door_knocker.png",
+    "source_sha256": "77e9069cda67f98cd14537f5316401a2b33f4b2a75d652255a32f2b2190ac758",
+    "export_sha256": {
+      "256": "2dc24d0bf4349a461d352df5aed8bfb82bf66e85bdc87169d8758b6a320aa2af",
+      "128": "fda08539ad63643bb17595c7830b4348ab3e678eac89ba36202d4f85f58b3661",
+      "64": "c95c2822e5fc1fded7ff7422e7d7cc0ab64147f14a0648941a4675823b52a541",
+      "32": "1bf12a56e43e8942ee1f63c77b32404c6db7faab257ca2c599f8c4fe92679bb8"
+    },
+    "generator_prompt": "Repaint this completed fantasy inventory art in the same rough gouache and worn oxide-red palette. New composition: an UPRIGHT tall gauntlet standing vertically, cuff opening and air tank at the BOTTOM of the image, steel square plate at the TOP of the image. This is a mining ram wrist brace, displayed empty, with one visible hollow forearm opening at the bottom in three-quarter view. The two thick parallel pistons visibly run vertically along a long forearm brace from bottom to top and join the same flat heavy steel plate, with short points at the edge. Elongate the body so it reads as long as two short gloves. Keep one coherent object of clear, readable near-vertical silhouette, same red steel palette, no human, no label, no ground. Transparent square."
+  },
+  {
+    "n": 15,
+    "id": "throwing_darts",
+    "title": "Throwing darts",
+    "path": "art/icons/gear/weapon-throwing_darts.png",
+    "refs": [
+      "art/icons/gear/weapon-throwing_knives.png",
+      "art/icons/weapons/throwing_knives.svg"
+    ],
+    "paint": "Eight quiet needles: a roll of slim weighted darts, two with a dark coated tip. Pose: three-quarter, the roll laid open on the diagonal, filling about 80% of the canvas. Silhouette: a leather roll opened flat with eight needle darts held in loops, short stiff flights, two tips darkened. Materials: blackened steel, worn leather. Accent: none.\nAt 32 px: many thin lines in a row, not four blades in a fan.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.8,
+    "label": "Throwing darts",
+    "sha256": "7198d94034839265f183871fd3c4b12ba195ab735b9ee7c743cadf640db5e3e2",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-throwing_darts.png",
+      "128": "art/icons/gear/exports/128/weapon-throwing_darts.png",
+      "64": "art/icons/gear/exports/64/weapon-throwing_darts.png",
+      "32": "art/icons/gear/exports/32/weapon-throwing_darts.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-09",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/15-weapon-throwing_darts.png",
+    "source_sha256": "1b6db1db583d13540bb569d208373967d112ea905a335568af702980eeb8ca5b",
+    "export_sha256": {
+      "256": "51a06ddcb10a8409c91c8b1c0be83dcdd55ec191bc0266baab2474553496b336",
+      "128": "e650fcc637868b45907ae3a8483440ae5988dd9987d642cd4152733f7952339a",
+      "64": "1c8cc0003db1bd85bdae3e509f555a3aeba743c79609d52fdc9e5bb67b493a3c",
+      "32": "4956eb88ac0aa330ee58880b5f9adac800b4f4fb897b8305d64d3a4bb81d0ea5"
+    },
+    "generator_prompt": "Edit the attached Project Heaven Cry inventory-art painting of a leather roll of little steel darts. Keep the diagonal pose, gouache materials, stitching, transparent background, dark steel and the last two dark points. There are currently seven darts, five bright and two dark. Make a slightly wider cloth roll holding exactly EIGHT, six bright points then two dark points. Add exactly one more bright-pointed dart with its own identical leather loop on the left. Match all eight as a single evenly spaced continuous row, with one fin tail and one point per shaft. Clear transparent margin on all four sides. No backdrop or lettering."
+  },
+  {
     "n": 16,
     "id": "throwing_javelins",
     "title": "Throwing javelins",

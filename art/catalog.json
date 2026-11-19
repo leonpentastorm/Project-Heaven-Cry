@@ -18678,6 +18678,52 @@
         1254
       ],
       "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/16-weapon-throwing_javelins.png"
+    },
+    "weapon-hellraiser_door_knocker": {
+      "label": "Door-knocker",
+      "path": "art/icons/gear/weapon-hellraiser_door_knocker.png",
+      "sha256": "02aac08ab2efeec09c1767064e2a9dd0ae2504fa6412d6c7686b7cca58d88e40",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_door_knocker.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_door_knocker.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_door_knocker.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_door_knocker.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/14-weapon-hellraiser_door_knocker.png"
+    },
+    "weapon-throwing_darts": {
+      "label": "Throwing darts",
+      "path": "art/icons/gear/weapon-throwing_darts.png",
+      "sha256": "7198d94034839265f183871fd3c4b12ba195ab735b9ee7c743cadf640db5e3e2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_darts.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_darts.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_darts.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_darts.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/15-weapon-throwing_darts.png"
     }
   },
   "survival_art": {

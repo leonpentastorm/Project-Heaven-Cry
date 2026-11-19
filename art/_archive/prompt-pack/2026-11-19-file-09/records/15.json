@@ -1,0 +1,42 @@
+{
+  "n": 15,
+  "id": "throwing_darts",
+  "title": "Throwing darts",
+  "path": "art/icons/gear/weapon-throwing_darts.png",
+  "refs": [
+    "art/icons/gear/weapon-throwing_knives.png",
+    "art/icons/weapons/throwing_knives.svg"
+  ],
+  "paint": "Eight quiet needles: a roll of slim weighted darts, two with a dark coated tip. Pose: three-quarter, the roll laid open on the diagonal, filling about 80% of the canvas. Silhouette: a leather roll opened flat with eight needle darts held in loops, short stiff flights, two tips darkened. Materials: blackened steel, worn leather. Accent: none.\nAt 32 px: many thin lines in a row, not four blades in a fan.",
+  "pattern": false,
+  "needs": false,
+  "span": 0.8,
+  "label": "Throwing darts",
+  "sha256": "7198d94034839265f183871fd3c4b12ba195ab735b9ee7c743cadf640db5e3e2",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-throwing_darts.png",
+    "128": "art/icons/gear/exports/128/weapon-throwing_darts.png",
+    "64": "art/icons/gear/exports/64/weapon-throwing_darts.png",
+    "32": "art/icons/gear/exports/32/weapon-throwing_darts.png"
+  },
+  "collection": "prompt-pack-2026-11-19-file-09",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/15-weapon-throwing_darts.png",
+  "source_sha256": "1b6db1db583d13540bb569d208373967d112ea905a335568af702980eeb8ca5b",
+  "export_sha256": {
+    "256": "51a06ddcb10a8409c91c8b1c0be83dcdd55ec191bc0266baab2474553496b336",
+    "128": "e650fcc637868b45907ae3a8483440ae5988dd9987d642cd4152733f7952339a",
+    "64": "1c8cc0003db1bd85bdae3e509f555a3aeba743c79609d52fdc9e5bb67b493a3c",
+    "32": "4956eb88ac0aa330ee58880b5f9adac800b4f4fb897b8305d64d3a4bb81d0ea5"
+  },
+  "generator_prompt": "Edit the attached Project Heaven Cry inventory-art painting of a leather roll of little steel darts. Keep the diagonal pose, gouache materials, stitching, transparent background, dark steel and the last two dark points. There are currently seven darts, five bright and two dark. Make a slightly wider cloth roll holding exactly EIGHT, six bright points then two dark points. Add exactly one more bright-pointed dart with its own identical leather loop on the left. Match all eight as a single evenly spaced continuous row, with one fin tail and one point per shaft. Clear transparent margin on all four sides. No backdrop or lettering."
+}
