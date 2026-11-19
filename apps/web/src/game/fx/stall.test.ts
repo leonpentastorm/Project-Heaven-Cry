@@ -34,6 +34,14 @@ describe('a fight\'s screen never waits for good on effects that will not play',
     expect(fxShownLog(g)).toBeNull(); expect(fxShownHp(g).size).toBe(0);
     expect(settledNow()).toBe(1); expect(console.warn).toHaveBeenCalled();
   });
+  it('a fight synced silently (a refresh: its effects taken up, none queued) waits on nothing and is never counted as settled', () => {
+    const { g, key } = game(foePhase());
+    setProcessed(key, 3); // FxLayer met the fight with three effects already in it: shown as they are, never played
+    expect(fxShownTurn(g), 'nothing waits').toBeNull();
+    vi.advanceTimersByTime(STUCK_HARD_MS + 1000);
+    expect(fxShownTurn(g)).toBeNull();
+    expect(settledNow(), 'no way out was needed').toBe(0); expect(console.warn).not.toHaveBeenCalled();
+  });
   it('effects the layer never took up at all are settled the same way', () => {
     const { g, key } = game(foePhase());
     setProcessed(key, 0);

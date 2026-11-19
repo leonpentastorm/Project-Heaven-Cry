@@ -13428,3 +13428,26 @@ aiRouteRisk`); their per-turn marks are `uses()` cells on the unit. **Every numb
       story-fight-story-magic, proving-doors-hiding-watches-wave6, cover-4v7-blades-walk-away); `bait` 1
       (proving-doors-hiding-watches-wave6); the Heartfire elite's `guard` 4 (cover-4v7-casters, open-4v7-casters,
       cover-4v7-level20-allin, proving-4v12-magic). Unmoved: the five others.
+
+### Rules 1.80 (rooms), the co-op lane of 0.32 (19 Nov 2026)
+
+6800. **One link per player.** A player who opens the room again (another tab, another browser) takes it over: the
+    room closes the older link (`4000`), and the older one now stops for good instead of trying again. It says
+    "Opened in another tab" and offers **Take over here**, which takes the room back the same way (the other tab then
+    stops). Before, the two tabs took the room from each other every few seconds for ever. A closed link leaves no
+    keep-alive or retry running, and hosting or joining again closes the page's old link first. Nothing changes in the
+    room server's storage, its host check or its hosting. Proof: `apps/web/src/game/net.test.ts`,
+    `apps/web/e2e/reconnect.mjs` (the second tab).
+6801. **"I'll narrate" can be picked.** The host takes the Narrator's seat; no key is needed and the engine still
+    rolls every die and owns every number. When the story waits for the Narrator (the opening, a round that needs
+    judgement, the results of the checks, after a fight), a **Narrator's desk** opens in the middle column of the host's
+    screen only, both side panels kept (rules 1.54 item 11): the narration, an optional scene title, the checks to call
+    (who, which skill, the TN, the stakes), a Yes or No on each ruling the story owes (No gives the use back), and one
+    of the campaign's prepared fights to start. It sends the same turn the AI Narrator sends (`narrator/turn`), checked
+    by the engine the same way. A Narrator with no character of their own reads every character's sheet in the left
+    panel and does not speak in the rounds; the players see "<name>, the Narrator, is writing…". In a fight the host
+    answers each attempt with the fight screen's Narrator buttons (rules 1.14). Proof: `apps/web/e2e/narrate.mjs`.
+6802. **Not in the desk yet** (owed, `docs/ROADMAP.md`): voice hooks, NPCs, objects, hazards, triggers, loot, XP and
+    the other optional fields of the Narrator's turn; the Narrator's private view of hidden things in the story
+    (traps, hidden NPCs: the host sees what the players see); a fight made up on the spot (only the campaign's
+    prepared fights). The AI Narrator's turn has them all; the desk sends only what it shows.

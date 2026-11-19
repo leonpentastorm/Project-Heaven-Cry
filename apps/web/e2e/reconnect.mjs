@@ -50,6 +50,23 @@ await guest.getByRole('button', { name: /Enlarge the Durability skill portrait/ 
 await guest.waitForSelector('text=SKILL PORTRAIT');
 ok('the skill portrait opens large in the lightbox', true);
 await shot(guest, '31-lightbox');
+// 0.32 (docs/design/handoffs/0.32-COOP.md 2a): the guest opens the room in a second tab. The first tab is replaced and
+// stops (it used to take the room back within seconds, and the two tabs kicked each other for ever); it says so and
+// offers to take over, and taking over moves the room back, the second tab now the one that stops.
+const tab2 = await guest.context().newPage(); tab2.errors = [];
+await tab2.goto(BASE); // the room this browser was in resumes by itself
+await tab2.waitForFunction(() => window.__phc.getState().conn === 'online', null, { timeout: 60000 });
+await guest.waitForSelector('[data-phc-conn-takeover]', { timeout: 30000 });
+ok('the first tab says the room was opened in another tab, and offers Take over here', (await guest.locator('text=Opened in another tab').count()) > 0);
+const gConn = () => guest.evaluate(() => window.__phc.getState().conn), t2Conn = () => tab2.evaluate(() => window.__phc.getState().conn);
+// (12 s on the page's clock: well past the old back-off, which took the room back within 8 s)
+await tab2.waitForFunction(() => new Promise((r) => setTimeout(() => r(true), 12000)), null, { timeout: 60000 });
+ok('the two tabs no longer take the room from each other: 12 s later the second tab is still online and the first has let go (' + await t2Conn() + ', ' + await gConn() + ')', (await t2Conn()) === 'online' && (await gConn()) === 'replaced');
+await guest.locator('[data-phc-conn-takeover]').click();
+await guest.waitForFunction(() => window.__phc.getState().conn === 'online', null, { timeout: 60000 });
+await tab2.waitForSelector('[data-phc-conn-takeover]', { timeout: 30000 });
+ok('Take over here brings the room back to the first tab, and the second tab is the one that lets go', (await t2Conn()) === 'replaced');
+await tab2.close();
 console.log('errors', host.errors, guest.errors);
 const errs = [...host.errors, ...guest.errors].filter((e) => !/Failed to load resource|favicon|youtube|ERR_|net::/i.test(e));
 ok('no page errors (' + errs.slice(0, 3).join(' | ') + ')', errs.length === 0);

@@ -3,7 +3,7 @@
 import React from 'react';
 import { makeScreen } from './dc/runtime';
 import { expand } from './screens/shared';
-import { getState, subscribe, type Screen } from './game/store';
+import { getState, subscribe, takeOver, type Screen } from './game/store';
 import createT from './templates/create.template.html?raw';
 import roomT from './templates/room.template.html?raw';
 import mainT from './templates/main.template.html?raw';
@@ -83,7 +83,7 @@ export function App() {
   // Character creation has its own theme, "Intake" (fades in on arrival, out on leaving).
   React.useEffect(() => { if (st.screen === 'create') playCreateMusic(); else stopCreateMusic(); }, [st.screen]);
   const n = st.game?.story.entries.length || 0;
-  const bar = st.role && st.conn !== 'online' ? (st.conn === 'host-away' ? 'The host is offline. Your screen will update when they return.' : st.conn === 'error' ? 'Can\'t join: ' + (st.connNote || 'connection refused') : 'Connecting to room ' + st.code + '…') : null;
+  const bar = st.role && st.conn !== 'online' ? (st.conn === 'host-away' ? 'The host is offline. Your screen will update when they return.' : st.conn === 'replaced' ? 'Opened in another tab: the room is there now.' : st.conn === 'error' ? 'Can\'t join: ' + (st.connNote || 'connection refused') : 'Connecting to room ' + st.code + '…') : null;
   const barP = usePresence(bar), toastP = usePresence(st.toast);
   // The connection bar sits just under the screen's header, never over it: the header holds Leave, a guest's way out of
   // a room whose host has gone (review of the UI pass).
@@ -126,6 +126,7 @@ export function App() {
       {barP.shown && <div data-phc-conn-bar="" style={{ position: 'fixed', top: barTop + 8, left: 0, right: 0, zIndex: 60, display: 'flex', justifyContent: 'center', padding: '0 12px', pointerEvents: 'none' }}>
         <div role="status" className={presenceCls('phc-a-drop', barP.closing)} style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: '6px 12px', maxWidth: 'min(680px, 100%)', padding: '8px 14px', borderRadius: 10, background: '#1C2536', border: '1px solid #2E3A50', boxShadow: '0 8px 30px rgba(0,0,0,.45)', color: '#E7EBF3', fontSize: 'var(--fs-sub)', textAlign: 'center' }}>
           <span>{barP.shown}</span>
+          {st.conn === 'replaced' && <button type="button" data-phc-conn-takeover="" onClick={() => takeOver()} style={{ minHeight: 30, padding: '0 12px', borderRadius: 8, border: 0, background: '#FFFFFF', color: '#0A0D13', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>Take over here</button>}
           {guestAway && <button type="button" data-phc-conn-leave="" onClick={() => { leaveFlow(); }} style={{ minHeight: 30, padding: '0 12px', borderRadius: 8, border: '1px solid #3B475D', background: 'transparent', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>Leave the room</button>}
         </div>
       </div>}

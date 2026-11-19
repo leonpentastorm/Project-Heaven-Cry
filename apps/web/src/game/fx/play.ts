@@ -243,7 +243,10 @@ function waitingIn(cb: { fx?: FxEvent[] }, key: string): ((e: FxEvent) => boolea
   let done = playedTo.get(key) || 0; const q = queuedTo.get(key) || 0;
   const fx = cb.fx || [], top = fx.length ? fx[fx.length - 1].n || 0 : 0, now = performance.now();
   let seen = topSeen.get(key); if (!seen || seen.n !== top) topSeen.set(key, (seen = { n: top, at: now }));
-  if (top > done) {
+  // (something waits only when an effect past what has played is queued, or past what was taken up: a fight synced
+  // silently, a refresh or a returning tab, has its effects taken up and none queued, and nothing to settle. Settling
+  // it anyway counted a way out that never was: 0.32 co-op loop, the refreshing guest)
+  if (top > done && (q > done || top > p)) {
     const quiet = now - Math.max(lastMove, seen.at);
     if (quiet > STUCK_HARD_MS || (quiet > STUCK_MS && !timers.length && !held && now > queueEnd)) {
       try { console.warn('[phc] a fight\'s effects stopped playing: showing the real state', { stream: key, played: done, queued: q, takenUp: p, newest: top, quietMs: Math.round(quiet) }); } catch { /* */ }

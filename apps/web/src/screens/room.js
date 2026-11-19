@@ -146,8 +146,8 @@ export class RoomLogic extends DCLogic {
     const starts = startsFor(g).map((x) => ({ short: x.short + (x.soon ? ' · soon' : ''), pick: x.soon ? () => toast(x.title + ' is coming after the systems are done. Fight in the Proving Ground, or load your own campaign.') : hostPick({ start: x.id }), pressed: S.start === x.id ? 'true' : 'false', style: pill(S.start === x.id) }));
     const startImg = IMG[st0.art] || ART(st0.art) || IMG['world-pilot'];
     const start = { zoom: zoomer(this, ART_BIG(st0.art) || startImg, st0.title + ' · ' + st0.artNote, 'world'), kicker: st0.kicker, title: st0.title, img: startImg, imgStyle: 'display: block; width: 100%; height: 300px; object-fit: cover; object-position: ' + st0.focus, artNote: st0.artNote, lore: st0.lore.map((text) => ({ text })), meta: st0.meta };
-    const modes = [['ai', 'AI Narrator', 'Your own API key: Anthropic, OpenRouter, OpenAI, Gemini, a local model or another site. Plays every start.'], ['human', "I'll narrate", 'Coming soon: a private Narrator screen.']].map(([id, name, desc]) => ({ name, desc, pick: id === 'human' ? () => toast('Human Narrator mode is coming soon. Use the AI Narrator for now.') : hostPick({ mode: id }), pressed: S.mode === id ? 'true' : 'false',
-      style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; padding: 14px; border-radius: 12px; font-family: inherit; color: #E7EBF3; cursor: pointer; ' + (S.mode === id ? 'border: 1px solid #E7EBF3; background: #1C2536' : 'border: 1px solid #232D3F; background: #10151F' + (id === 'human' ? '; opacity: 0.6' : '')) }));
+    const modes = [['ai', 'AI Narrator', 'Your own API key: Anthropic, OpenRouter, OpenAI, Gemini, a local model or another site. Plays every start.'], ['human', "I'll narrate", 'You are the Narrator: your own desk in the story and in fights. No key needed; the engine rolls.']].map(([id, name, desc]) => ({ name, desc, pick: hostPick({ mode: id }), pressed: S.mode === id ? 'true' : 'false',
+      style: 'display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; padding: 14px; border-radius: 12px; font-family: inherit; color: #E7EBF3; cursor: pointer; ' + (S.mode === id ? 'border: 1px solid #E7EBF3; background: #1C2536' : 'border: 1px solid #232D3F; background: #10151F') }));
     const tones = ['Grim', 'Pulp', 'Literary'].map((t) => ({ name: t, pick: hostPick({ tone: t }), pressed: S.tone === t ? 'true' : 'false', style: pill(S.tone === t) }));
     // Start: host only, at least one locked-in character, and (AI) a key.
     const offline = g.players.filter((p) => p.online && !Object.values(g.characters).some((c) => c.owner === p.id) && p.id !== g.hostId);
@@ -159,7 +159,7 @@ export class RoomLogic extends DCLogic {
     const notReady = !!why;
     const lib = st.library.filter((c) => !c.draft && !validateSheet(c));
     return {
-      ...lightboxVals(this), code: g.code, connText: st.conn === 'online' ? '● ONLINE' : st.conn === 'host-away' ? '● HOST AWAY' : '● RECONNECTING',
+      ...lightboxVals(this), code: g.code, connText: st.conn === 'online' ? '● ONLINE' : st.conn === 'host-away' ? '● HOST AWAY' : st.conn === 'replaced' ? '● IN ANOTHER TAB' : '● RECONNECTING',
       connStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + (st.conn === 'online' ? '#6FEA77' : '#FFFFFF'),
       copyLabel: this.state.copied ? 'Copied ✓' : 'Copy invite link',
       copyInvite: () => { const url = location.origin + '/?room=' + g.code; navigator.clipboard?.writeText(url).then(() => { this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 2000); }, () => toast('Invite link: ' + url, true)); },

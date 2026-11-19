@@ -132,6 +132,19 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **m10** dead code and module-private helpers. `0f4e9523a`.
 - **The Emanator stowed** says so on the Strain row (Step 3e). `079f78e2f`.
 
+### Co-op (`wip/0.32-coop`; hand-off `docs/design/handoffs/0.32-COOP.md`; spec rules 1.80 items 6800-6802)
+
+- **The Narrator's desk, the rest of the turn.** Owed: voice hooks, NPCs, objects, hazards, triggers, loot, XP and the other optional fields of `narrator/turn`; a fight made up on the spot (only the campaign's prepared fights now). [M] [partly; checked in code 19 Nov 2026] [spec 6802]
+- **The human Narrator's private view in the story.** The host sees what the players see (hidden objects and lurkers stay hidden from the host too); a Narrator needs them. Needs a ruling on what the seat sees, then `viewFor`. [M] [not built] [spec 6802]
+- **Input delay from far away.** Locally a guest's action is on the guest's screen in about 60 ms (median); Leon measures 2 to 3 s from Vietnam to a US host. The local hops are not where the time goes: measure the live room (the same stamps on the live site) before changing anything. [M] [open] [0.32-COOP.md]
+- **Co-op stall (0.21.0).** Not reproduced in 0.32's loop either (see the hand-off); `coop-loop.mjs` stays as the opt-in hunt. [S] [open; watch] [coop-stall.md]
+
+#### Built in 0.32 (not yet live)
+
+- **2a-2c, the room link:** a replaced link (4000) stops and says "Opened in another tab" with Take over here; ping and retry timers cleared on close; hosting or joining again closes the old link. `d2a5a6636`.
+- **"I'll narrate":** selectable; the Narrator's desk (narration, checks with a TN, rulings Yes/No, a prepared fight); the fight screen's Narrator buttons tested end to end (`narrate.mjs`). `cc18b7e79`.
+- **The co-op loop** (`coop-loop.mjs`, hop stamps) and the fight screen's way out counting only a real wait. `d2a5a6636`, `89abfaf66`.
+
 ### Enemy AI (`wip/0.32-ai`; hand-off `docs/design/handoffs/0.32-ENEMY-AI.md`; spec rules 1.79, items 6700 to 6714)
 
 - **The side's memory past the round (spec 4969 a).** Built and OFF (`rules.json combat.focus_memory.carry` 0): any carry from 0.25 moves the defence-measure guard (the idle pair's first Down 4.2 rounds at most; measured 5). The lead to rule: refit the guard, or keep it off. [S] [built, off; 19 Nov 2026] [rules 1.79 item 6703]
@@ -209,8 +222,6 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 - **Enemy versions of the doors.** Guard is built (0.32, rules 1.79). Owed: the door verbs and prayers (under Enemy AI above). [L] [partly; 19 Nov 2026] [rules 1.79 item 6711]
 - **Cover arc: a pillar outside the 45 degree arc counts nothing.** The arc is built (`rules.json arc_deg`); this is a design call, to rule before building. [S] [partly; checked in code 19 Nov 2026] [spec 4969(c)]
 - **Engine pieces not built:** a thrown Relic property (the fight-joined fx is built, spec 6603; no data row needs a `per_stage` scope, spec 6610). Needs the lead's approval first (CLAUDE.md, no rebuild). [M] [not built; checked in code 19 Nov 2026] [spec 5010; verification]
-- **"I'll narrate" in a room.** Human-mode code exists but picking it only shows "coming soon". Owed: the selection and the Narrator screen end to end, with the ruling buttons tested. [L] [partly; checked in code 19 Nov 2026] [SESSION-HANDOFF 6.2-6.3]
-- **Co-op stall.** One two-player fight in five stalled on the guest's turn (0.21.0), never reproduced. [M] [open; from documents only] [coop-stall.md]
 - **Delivered art with no place in the game** (wiring, not new art; `move-breath` is wired). Owed (the Tending passive pictures are placed: spec 6609): `icon-resource-credits/xp/devotion` and the 7 `icon-tone-*` (`uiMarkOf('resource'/'tone')` never called); `move-sway`, `move-counter` (the Open Hand's stance, `move-open-guard`, is placed on the token card: spec 6613); `camp-step-ready` (checklist has no `ready` key); the `move-draw-fire` placeholder is not in assets.json. [M] [partly; checked in code 19 Nov 2026] [SESSION-TODO O; verification]
 
 ### Fun and balance pass
