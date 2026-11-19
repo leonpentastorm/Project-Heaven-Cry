@@ -225,6 +225,7 @@ const tileBtn = (k) => { const [x, y] = k.split(',').map(Number); return p.locat
 await tileBtn(foe.pos).click(); await pause(p, 250);
 const n1 = (await G()).combat.log.length;
 await watch(p, 'face', '[data-phc-faith-face="old_overcast"]');
+await watch(p, 'pland', '[data-phc-prayer-land],[data-phc-prayer-name]'); // 0.32: where a prayer lands, each unit it touched answers (or its name is said)
 await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();
 // Faith 2.2 (spec 2.2): a square crop of the patron's portrait over the head of the one who prays, framed in the accent.
 {
@@ -245,6 +246,7 @@ await p.getByRole('button', { name: 'Confirm', exact: true }).first().click();
   }
 }
 await pause(p, 300);
+{ const w = await watchedGone(p, 'pland', 15000); ok('0.32: the Hymn lands: a unit it touched answers on its token, or its name is said where it lands', !!w && w.up != null); }
 ok('Thunderclap is prayed by standing: 3 AP, in the log', (await G()).combat.log.length > n1 && (await myU()).ap <= 3);
 ok('Faith 7 and your patron\'s Hymn: Witnessed', !!(await myU()).conds?.witnessed);
 ok('the resource rows say WITNESSED', /WITNESSED/.test(await p.locator('aside').first().textContent()));

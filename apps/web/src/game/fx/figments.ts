@@ -15,7 +15,7 @@
 import { FORM, figmentLookOf, type FxEvent } from '@engine';
 import type { Sfx } from '../sfx';
 import { reducedMotion } from '../sfx';
-import { type Pt, after, anim, floatText, put, ring, svg, trace, lunge, angle } from './dom';
+import { type Pt, after, anim, floatText, fxMarker, put, ring, svg, trace, lunge, angle } from './dom';
 import { figmentIcon } from '../figmentIcons';
 
 export const FIG_INK = '#5394AC';
@@ -221,7 +221,7 @@ export function wrapFigments(H: Record<string, (e: FxEvent) => void>, K: FigKit)
     const id = String(e.target || e.unit || ''), f = figOf(id), what = String(e.what || '');
     if (!f || !what.startsWith('figment_')) { base.stance?.(e); return; }
     trace('figment', { what: 'order', unit: id, order: what });
-    const at = e.at || K.posOf(id), p = K.at(at);
+    const at = e.at || K.posOf(id), p = K.at(at); if (p) fxMarker(p, 'data-phc-fig-order', what);
     command(K, id, f, at, true);
     if (what === 'figment_order' && p) {
       const q = e.other ? K.at(e.from || K.posOf(String(e.other))) : null;
@@ -239,7 +239,7 @@ export function wrapFigments(H: Record<string, (e: FxEvent) => void>, K: FigKit)
     if (!f || !how || !e.ok || e.from === e.to) { base.shove?.(e); return; }
     const a = K.at(e.from), b = K.at(e.to);
     if (how === 'figment_blink') {
-      trace('figment', { what: 'blink', unit: id });
+      trace('figment', { what: 'blink', unit: id }); if (b) fxMarker(b, 'data-phc-fig-order', 'figment_blink');
       if (a) { lines(a, false, FIG_MS.unmake * 0.6); ring(a, FIG_INK, 360, { from: 0.8, to: 1.5, width: 2 }); }
       if (a && b) thread(a, b, FIG_MS.travel, { faint: true });
       K.release(id);

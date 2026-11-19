@@ -32,7 +32,7 @@ import { DRAW_MS, brassOf, coreOf, drawArrow, dropMag, ejectCore, ejectShell, lo
 import { reloadCard } from './reload';
 import { fxOf, type Look as WeaponLook } from './weaponFx';
 import { bangMark, bangDue, tickDue, noteSight, noteOverwatch, tagChip, aimLine, resetSight, HOSTILE_INK, OTHER_INK } from './sight';
-import { type Pt, resetFloats, reanchor, after, bumpGen, withTempo, withEvent, trace, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl } from './dom';
+import { type Pt, resetFloats, reanchor, after, bumpGen, withTempo, withEvent, trace, fxTempo, fxPace, fxScale, slow, particle, anim, angle, anchor, burst, centre, flash, floatText, fxMarker, gridShown, hasLayer, lunge, panOf, put, ring, screenTint, shake, shakeScreen, slideFrom, sprite, svg, tileEl, timerRing, tokenEl } from './dom';
 
 import { activeCamera } from '../cameraView';
 import { fxTiles, glideMs, movesCamera } from '../camera';
@@ -1535,7 +1535,7 @@ export const fxBusyUntil = () => Math.max(queueEnd, performance.now());
 function showSilent(m: Record<string, number>) {
   for (const [id, d] of Object.entries(m)) {
     const u = unit(id), p = u ? at(u.pos) : null; if (!p) continue;
-    const tok = tokOf(id, u!.pos);
+    const tok = tokOf(id, u!.pos); fxMarker(p, 'data-phc-silent', id);
     if (d < 0) { shake(tok, 0.5); flash(tok, 'hurt'); floatText('−' + fmtFloat(-d), p, HP); play(u!.robot ? 'hit_metal' : 'hit_flesh', p, { rate: jitter(), gain: 0.55 }); }
     else { pluses(p, OK, 5); flash(tok, 'heal'); floatText('+' + fmtFloat(d), p, OK); play('heal_shimmer', p, { gain: 0.6 }); }
   }

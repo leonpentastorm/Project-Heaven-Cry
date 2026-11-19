@@ -138,7 +138,14 @@ if (mate) {
   r = await perk('verb:tend.bond', { targetId: m.id });
   ok('Bond the squadmate: ' + (r || '1 AP'), !r);
   g = await G(); const hp0 = g.combat.units.find((v) => v.id === m.id).hp;
+  await host.evaluate(() => { const W = (window.__e2eWatch ||= {}); W.tend = { up: null }; const mo = new MutationObserver(() => { if (W.tend.up == null && document.querySelector('[data-phc-bond-heal],[data-phc-bond-tend]')) W.tend.up = performance.now(); }); mo.observe(document.documentElement, { childList: true, subtree: true }); });
   r = await perk('class:medic.triage', { actionId: 'triage', targetId: m.id });
+  { const seen = await host.waitForFunction(() => window.__e2eWatch.tend.up != null, null, { timeout: 8000 }).then(() => true, () => false);
+    if (seen && process.env.SHOTS_C3) { await settle(host, 120); await host.screenshot({ path: process.env.SHOTS_C3 + 'mender-bond-heal-pulse.png' }); }
+    const r0 = r;
+    ok('0.32: a heal through the Bond runs down the line to the tended token (' + (r0 || 'shown') + ')', !!r0 || seen);
+    const ties = await host.evaluate(() => [...document.querySelectorAll('[data-token-ties]')].map((e) => e.textContent));
+    ok('0.32: the token card says what each end is Bonded to (' + ties.join(' | ').slice(0, 80) + ')', ties.some((t) => /Bonded to /.test(t || ''))); }
   g = await G(); u = await unit(me);
   ok('Triage through the Bond: ' + (r || 'healed ' + (g.combat.units.find((v) => v.id === m.id).hp - hp0)), !r || /Already|full|range/i.test(r));
   ok('the Ledger counts it (' + (u.res?.ledger ?? 0) + ')', (u.res?.ledger ?? 0) >= 0);

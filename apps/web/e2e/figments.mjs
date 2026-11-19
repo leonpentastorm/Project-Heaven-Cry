@@ -93,6 +93,17 @@ ok('the Visualizer row names the focus (' + (vRow || 'none') + ')', /Visualizer 
 const tokLabel = await p.evaluate((name) => { const b = [...document.querySelectorAll('button.phc-tok')].find((e) => (e.getAttribute('aria-label') || '').includes(' · ' + name + ' · ')); return b ? b.getAttribute('aria-label') : ''; }, hound.name);
 ok('a Figment\'s token reads as ' + meName + '\'s (' + tokLabel.slice(0, 90) + ')', tokLabel.includes(meName + '\'s Figment'));
 
+// ---------- 0.32: an order shown (Redraw: the maker's command, the Figment comes apart and reforms; never a shove's thud) ----------
+{ const tR = await free(wall.pos);
+  await p.evaluate(() => { const W = (window.__e2eWatch ||= {}); W.order = { up: null }; const mo = new MutationObserver(() => { if (W.order.up == null && document.querySelector('[data-phc-fig-order]')) W.order.up = performance.now(); }); mo.observe(document.documentElement, { childList: true, subtree: true }); });
+  const er = await act({ type: 'combat/owned', unitId: u.id, owned: wall.id, verb: 'figment_redraw', tile: tR });
+  const seen = await p.waitForFunction(() => window.__e2eWatch.order.up != null, null, { timeout: 8000 }).then(() => true, () => false);
+  if (seen) { await pause(p, 150); await p.screenshot({ path: OUT + 'figments-redraw.png' }).catch(() => {}); }
+  const logT = (await G()).combat.log.join('
+');
+  ok('0.32: Redraw is shown (the order mark on the map) and said in the log (' + (er || 'done') + ')', !er && seen && /comes apart and reforms/.test(logT));
+  u = await me(); }
+
 // ---------- Let go: half its charge back ----------
 const c0 = u.mg.vcharge, eg = await act({ type: 'combat/owned', unitId: u.id, owned: hound.id, verb: 'let_go' });
 u = await me();

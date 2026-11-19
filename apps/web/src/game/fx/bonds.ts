@@ -22,7 +22,7 @@ import { tieKinds, tieLines, type FxEvent, type TieLine } from '@engine';
 import type { Sfx } from '../sfx';
 import { reducedMotion } from '../sfx';
 import { INSIGHT_INK } from '../bondStrip';
-import { type Pt, after, anim, floatText, fxScale, put, ring, svg, trace } from './dom';
+import { type Pt, after, anim, floatText, fxMarker, fxScale, put, ring, svg, trace } from './dom';
 import { thread, windUp } from './figments';
 
 /** The moments' lengths (ms at Fast): the wind-up, the thread's run, the line drawing in, a heal's pulse, the parting,
@@ -154,7 +154,7 @@ export function wrapBonds(H: Record<string, (e: FxEvent) => void>, K: BondKit) {
         K.play('sg_command', fp, { rate: 1.4, gain: 0.3 });
         if (m.what === 'tend' && k === 'cond') K.play('soul_hold', tp, { rate: 1.5, gain: 0.35, delay: BOND_MS.pulse });
         after(() => {
-          ring(tp, m.ink, 420, { from: 0.8, to: 1.25, width: 4 });
+          ring(tp, m.ink, 420, { from: 0.8, to: 1.25, width: 4 }); fxMarker(tp, 'data-phc-bond-' + m.what, m.to);
           const tt = K.tokOf(m.to, K.posOf(m.to)); if (tt) anim(tt, [{ filter: 'none', translate: '0 0' }, { filter: 'brightness(1.4) drop-shadow(0 0 7px ' + m.ink + ')', translate: '0 -3px', offset: 0.35 }, { filter: 'none', translate: '0 0' }], { duration: 520, easing: 'ease-out' });
           b(e);
         }, BOND_MS.pulse);

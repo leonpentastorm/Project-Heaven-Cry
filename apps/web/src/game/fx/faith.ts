@@ -24,7 +24,7 @@ import { CLASS, FAITH_PATRON, FAITH_RULES, FAITH_TAG, WHISPER, type FxEvent } fr
 import { thread, windUp } from './figments';
 import { elementId } from './elements';
 import { reducedMotion, type Sfx } from '../sfx';
-import { type Pt, anim, after, burst, floatText, put, ring, svg } from './dom';
+import { type Pt, anim, after, burst, floatText, fxMarker, put, ring, svg } from './dom';
 import { FAITH_GOLD, FAITH_INK, accentOf, patronFace, patronMarkUri, witnessedUri, vowIconUri, prayerIconUri } from '../faithArt';
 import { cutInTiming, miracleCutIn, playIntervention, showCutIn } from '../cutIn';
 
@@ -322,6 +322,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
       after(() => {
         const tt = K.tokOf ? K.tokOf(id) : null, foe = !!mine && !!side(id) && side(id) !== mine;
         if (from && hits.length > 1 && (from.x !== q.x || from.y !== q.y)) thread({ ...from, y: from.y - from.s * 0.4 }, q, 180, { faint: true, ink, core: '#FFF7DC' });
+        fxMarker(q, 'data-phc-prayer-land', id);
         if (e._el === 'shock') bolt(q, ink);
         if (!reducedMotion()) ring(q, ink, 520, { from: 1.4, to: 0.85, width: 3 });
         if (tt && !reducedMotion()) anim(tt, foe
@@ -331,7 +332,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
     });
     // a state only (Resupply, Dig In, Hearthlight, Foreknowing...): its name over the unit it is on, or over the one who prays
     if (!e._effect && entry?.name) {
-      const q = at(posAny(e.target) || e.targetAt || e.at || posAny(e.unit)); if (q) floatText(String(entry.name).toUpperCase(), { ...q, y: q.y + q.s * 0.55 }, FAITH_INK, { small: true, delay: delay + 80 });
+      const q = at(posAny(e.target) || e.targetAt || e.at || posAny(e.unit)); if (q) fxMarker(q, 'data-phc-prayer-name', String(entry.name)); if (q) floatText(String(entry.name).toUpperCase(), { ...q, y: q.y + q.s * 0.55 }, FAITH_INK, { small: true, delay: delay + 80 });
     }
   };
   return {
