@@ -9,14 +9,14 @@ shutil.copy2(m['src'],dest)
 m['src']=dest.as_posix()
 m['sha256']=hashlib.sha256(dest.read_bytes()).hexdigest()
 dest.with_suffix('.json').write_text(json.dumps(m,indent=2)+'\n')
-ids=('katana','drifter_revolver')
+ids=tuple(dict.fromkeys(('katana','drifter_revolver',*[json.loads(p.read_text())['id'] for p in sorted((A/'drafts').glob('*.json')) if 'id' in json.loads(p.read_text())])))
 tiers=('standard','fine','masterwork','relic','celestial')
-out=Image.new('RGB',(1000,470),'#10151F')
+out=Image.new('RGB',(1000,235*len(ids)),'#10151F')
 d=ImageDraw.Draw(out)
 for r,ident in enumerate(ids):
  for c,tier in enumerate(tiers):
   p=Path(f'art/icons/gear/weapon-{ident}.png') if tier=='standard' else A/'drafts'/f'weapon-{ident}--{tier}.png'
-  if tier=='fine':p=A/'drafts'/f'weapon-{ident}--fine-retry.png'
+  if tier=='fine' and (A/'drafts'/f'weapon-{ident}--fine-retry.png').exists():p=A/'drafts'/f'weapon-{ident}--fine-retry.png'
   d.text((c*200+10,r*235+4),ident+' '+tier,fill='white')
   if p.exists():
    im=Image.open(p).convert('RGBA');im.thumbnail((190,190),Image.Resampling.LANCZOS)
