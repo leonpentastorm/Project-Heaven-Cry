@@ -1,9 +1,12 @@
 # The prompt pack, 19 November 2026: the artist's cover page
 
 This folder is everything to paint for Project Heaven Cry's next releases, in ten files. Each file starts with the style
-block(s) to paste first. Each picture then has its id and name, the exact file name and folder to save as, where it shows
-in the game, the reference images to attach (every path is in this repository), and one fenced prompt to paste. One
-image a prompt: paste the file's style block, then the entry's prompt, and attach what the entry names.
+block(s) to paste first. Each picture then has its id and name, the exact file name and folder to save as, and one fenced
+prompt to paste. Where it shows in the game and the reference images to attach (every path is in this repository, or is
+another entry's save target) are given on the entry where they are its own; where an entry has none, they are given once
+for its whole mode, section or file, at the top of that mode, section or file, and hold for every entry under it. One
+image a prompt: paste the file's style block, then the entry's prompt, and attach what the entry and its mode or section
+name.
 
 ## The order to work in
 

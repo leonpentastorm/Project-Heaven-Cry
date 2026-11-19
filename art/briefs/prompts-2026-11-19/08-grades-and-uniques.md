@@ -87,16 +87,16 @@ Paste the block of the item's class and grade after its keep line. Section C3 li
 
 ### A3.1 Blades
 
-Change sits on: the flat of the blade along the spine or fuller, the edge, the guard (the bolster or collar where there is no guard), the grip wrap, the pommel.
+Change sits on: the flat of the blade along the spine or fuller, the edge, the guard (the bolster or collar where there is no guard), the grip wrap, the pommel. An Ork piece stays Ork at every grade, and a sword-breaker keeps its slots: nails, welds, jags, saw notches, slots and ochre daubs stay where they are and keep their shape (section A1); only their finish, material and wear change with the grade.
 
 **Fine**
 ```
-Grade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter; the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.
+Grade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.
 ```
 
 **Masterwork**
 ```
-Grade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere, no wear, a calm sense of quality.
+Grade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.
 ```
 
 **Relic**
@@ -106,7 +106,7 @@ Grade: Relic. Keep the shape and the inlay line. Age it as an heirloom: the stee
 
 **Celestial**
 ```
-Grade: Celestial. Keep the shape, the inlay line and the ornament's place. The blade and its fittings become a pale, unmarked, almost pearl-ivory material with no scratch, patina or tool mark; the grip wrap is ivory cord. The inlay line and the seam where blade meets guard give a faint, contained ivory-gold light from inside, a lit line no wider than the inlay; nothing spills past the outline: no bloom, no halo, no rays, no sparks. As if made by someone with nothing to fear.
+Grade: Celestial. Keep the shape, the inlay line and the ornament's place. The blade and its fittings become a pale, unmarked, almost pearl-ivory material with no scratch, patina or tool mark; nails, welds, jags, saw notches and slots keep their shape in the pale material; the grip wrap is ivory cord. The inlay line and the seam where blade meets guard give a faint, contained ivory-gold light from inside, a lit line no wider than the inlay; nothing spills past the outline: no bloom, no halo, no rays, no sparks. As if made by someone with nothing to fear.
 ```
 
 ### A3.2 Hafted
@@ -317,11 +317,11 @@ Grade: Celestial. Keep the shape, the inlay and the ornament's place. The casing
 
 ### A3.10 Thrown weapons
 
-Change sits on: each piece of the set (the flat of each knife, the shaft of each dart, the head of each javelin) and its holder (the roll, the loops, the back quiver). Every piece in the set gets the same change: the count of pieces never changes.
+Change sits on: each piece of the set (the flat of each knife, the shaft of each dart, the head of each javelin) and its holder (the roll, the loops, the back quiver). Every piece in the set gets the same change: the count of pieces never changes, and the two darkened dart tips stay darkened at every grade.
 
 **Fine**
 ```
-Grade: Fine. The same set, newly kept. Every blade, dart or head cleaned and honed to a bright edge or point, the shafts oiled, the flights or wraps fresh, the leather holder cleaned and conditioned. Add one thin engraved line along each blade or head (a thin painted ring on each dart shaft), the same on every piece. Nothing else is added.
+Grade: Fine. The same set, newly kept. Every blade, dart or head cleaned and honed to a bright edge or point (the two darkened dart tips stay darkened), the shafts oiled, the flights or wraps fresh, the leather holder cleaned and conditioned. Add one thin engraved line along each blade or head (a thin painted ring on each dart shaft), the same on every piece. Nothing else is added.
 ```
 
 **Masterwork**
@@ -336,7 +336,7 @@ Grade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep pat
 
 **Celestial**
 ```
-Grade: Celestial. Keep the shape, the inlays and the ornament's place. Every piece becomes a pale, unmarked pearl-ivory, the holder a pale hide. Each inlay gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.
+Grade: Celestial. Keep the shape, the inlays and the ornament's place. Every piece becomes a pale, unmarked pearl-ivory, the holder a pale hide; the two darkened dart tips stay darkened. Each inlay gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.
 ```
 
 ---
@@ -669,12 +669,12 @@ Avoid: smoke, a flame outside the tube, a cross or halo, a candle standing on th
 ### D2.7 `unsaid`: Unsaid (suppressed submachine gun)
 
 - **Save as:** `art/icons/gear/weapon-unsaid.png`
-- **Attach:** `art/icons/gear/weapon-whisper_smg.png` (the family silhouette), `art/icons/weapons/whisper_smg.svg`
-- **At icon size it must read as:** the Whisper SMG, its long suppressor a piece of night.
+- **Attach:** your saved `art/icons/gear/weapon-chezknov_machine_carbine.png` (file 10, entry 2.5: the pattern's receiver, sights, magazine and stock), `art/icons/gear/weapon-whisper_smg.png` (the scale and the blue-grey stock plate only, not its silhouette)
+- **At icon size it must read as:** the slim roller-delayed submachine gun with its integral suppressor, the suppressor a piece of night.
 
 ```
-A unique integrally suppressed submachine gun, on a slight diagonal, muzzle up and right, about 70% of the canvas width: the compact submachine gun of the attached painting: a squared stamped receiver with a short top rail, a straight magazine ahead of the trigger guard, a pistol grip, a folding skeleton stock with a small blue-grey plate on it, and a long fat smooth suppressor forming the front half of the gun; matte dark steel. The impossible material: the suppressor is a piece of night, a matte black that holds no highlight at all, with a few faint stars deep inside it. The story detail: a moth's wing pressed flat under a strip of clear tape on the side of the stock. Accent: the small blue-grey plate on the stock, as on the attached painting.
-Avoid: a glow past the suppressor, smoke, a moon, letters or marks, a second magazine.
+A unique integrally suppressed submachine gun, on a slight diagonal, muzzle up and right, about 70% of the canvas width: the integrally suppressed version of the roller-delayed submachine gun pattern of the attached machine carbine: a slim round stamped receiver tube with the cocking tube above it and the cocking handle at its front-left; a round rotary drum rear sight and a hooded front sight ring; a strongly curved pistol-calibre magazine set just ahead of the trigger group; a pistol grip; a retracted sliding metal stock of two bars with a rubber butt pad and a small blue-grey plate on it; and, in place of the barrel and fore-end, one long fat smooth suppressor tube of even diameter forming the front half of the gun, with no ports; matte dark steel. The impossible material: the suppressor is a piece of night, a matte black that holds no highlight at all, with a few faint stars deep inside it. The story detail: a moth's wing pressed flat under a strip of clear tape on the side of the stock. Accent: the small blue-grey plate on the stock, as on the attached painting.
+Avoid: a glow past the suppressor, smoke, a moon, letters or marks, a second magazine, a straight magazine, a folding skeleton stock.
 ```
 
 ### D2.8 `windfall`: Windfall (recurve bow)

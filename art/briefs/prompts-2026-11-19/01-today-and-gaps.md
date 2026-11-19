@@ -4,7 +4,7 @@ For the artist, and for GPT. This file holds **37 pictures**: 3 for the fight sc
 
 **One image a prompt.** For each picture: attach the references of its mode, paste **the mode's style block once** (below, one per mode), then paste the entry's fenced prompt. Each fenced prompt reads on after the style block and names its own subject, its own "At icon size" test and its own "Avoid" list. Save every picture under the exact file name and folder given; do not rename.
 
-**In-world only.** Everything is invented: no real-world person, brand, franchise, place or insignia, no real weapon model, no real faith's symbol (a medical mark is a plain plus, never a red cross). **No text, letters or numbers in any image** (a glyph is an abstract mark, never a letterform). Nanobots are mana.
+**In-world only.** Everything in this file is invented: no real-world person, brand, maker or model name, logo, franchise, place or insignia, no real faith's symbol (melee, bows, shields, armour and strange weapons are invented shapes; only a gun in files 06, 09 and 10 follows a real pattern) (a medical mark is a plain plus, never a red cross). **No text, letters or numbers in any image** (a glyph is an abstract mark, never a letterform). Nanobots are mana.
 
 ## Order
 
@@ -355,7 +355,7 @@ Setting: ahoc, AHOC chapter outpost (ceramic-grey panels, riveted plate, concret
 - **Shows:** Survival fight maps, Central City back streets; a Sigil word drawn into the world long ago (a door carving, a Keystone, a warding post, an old plate), investigated from the next tile. A plain star today.
 
 ```
-Setting: city, Central City back streets (wet cobbles, ivory plaster, brick, iron, canvas, warm amber lamp light and blue-grey #5394AC shadow). One Sigil mark sprite, flat on the ground, non-blocking, about two thirds of a tile: one worn cobblestone with an incised abstract glyph of a crescent of three notches, the grooves filled with old pale lime plaster, the stones round it wet and dark. It is old, worn and only slightly lit, an abstract glyph and never a letter; it shows a deliberate old mark, not damage. At 64 px: a worn plate or stone with one clear carved shape at its centre. It must differ from the poi (this one is a fixed carving, not an object lying on the floor) and from the Sigil wall (no flecks, no glow). Avoid: letters, numerals, a real religion's symbol, a bright glow, a person.
+Setting: city, Central City back streets (wet cobbles, ivory plaster, brick, iron, canvas, warm amber lamp light and blue-grey #5394AC shadow). One Sigil mark sprite, flat on the ground, non-blocking, about two thirds of a tile: one worn cobblestone with an incised abstract glyph of a chevron of three notches, the grooves filled with old pale lime plaster, the stones round it wet and dark. It is old, worn and only slightly lit, an abstract glyph and never a letter; it shows a deliberate old mark, not damage. At 64 px: a worn plate or stone with one clear carved shape at its centre. It must differ from the poi (this one is a fixed carving, not an object lying on the floor) and from the Sigil wall (no flecks, no glow). Avoid: letters, numerals, a real religion's symbol, a bright glow, a person.
 ```
 
 ### `kit-field-sigil_mark`: Sigil mark, field

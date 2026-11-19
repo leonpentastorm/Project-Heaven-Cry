@@ -53,8 +53,8 @@ dense and heavy.
 
 Each is a full repaint of a painting that exists. The outline changes, so do not paint image to image from the old
 picture: attach it only for the scale in the frame, the palette, the wear and the maker's accent, then draw the pattern
-the prompt describes. Save over the same file name (the new picture replaces the old one). The game's numbers do not
-change; draw the pattern's own magazine.
+the prompt describes. Save over the same file name (the new picture replaces the old one). Draw the pattern's own
+magazine.
 
 ### 1.1 `hellraiser_service_rifle`: Hellraiser service rifle
 
@@ -298,7 +298,7 @@ At 32 px: a slim tube with a curved magazine, a drum sight and a bar stock.
 - **Attach:** `art/icons/gear/weapon-long_rifle.png` (the sniper scale); your saved `art/icons/gear/weapon-chezknov_battle_rifle.png` (the line)
 
 ```
-The roller-delayed rifle made into a heavy semi-automatic precision rifle. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: the same long slim stamped receiver and cocking tube as the battle rifle, but a heavy thick barrel and a deep squared fore-end; a big long scope low on a claw mount; a large adjustable precision stock with a tall cheek piece and an adjustable butt plate; a vertical palm-shelf pistol grip; a straight box magazine; a small folding support leg under the fore-end. Materials: black stamped steel and black polymer, matte. Maker's touch: one brass rivet on the receiver.
+The roller-delayed rifle made into a heavy semi-automatic precision rifle. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: the same long slim stamped receiver and cocking tube as the battle rifle, but a heavy thick barrel and a deep squared fore-end; a big long scope low on a claw mount; a large adjustable precision stock with a tall cheek piece and an adjustable butt plate; a vertical palm-shelf pistol grip; a straight box magazine; a plain fore-end with nothing under it. Materials: black stamped steel and black polymer, matte. Maker's touch: one brass rivet on the receiver. Avoid: a bipod or support leg.
 At 32 px: the battle rifle's body, thick and scoped, with a big squared adjustable stock.
 ```
 

@@ -31,3 +31,18 @@ pictures. Graded items: 164 (60 kept, 17 repainted, 87 new).
 Intake (the lead's job): add the catalog entries in `art/catalog.json`, run `python3 tools/rehash_art_checksums.py` and
 `python3 tools/validate_art.py`, then `npm run assets`; kit grounds also `python3 tools/art/kit_seams.py --sheet <dir>`; a
 replaced picture's old file goes to `art/_archive/`.
+
+## Notes moved out of the artist files (fourth verification, 19 Nov 2026)
+
+- File 10, section 1: the repaints change only the picture; the game's numbers (magazine size included) do not change.
+  The artist is told only to draw the pattern's own magazine.
+- File 09, `hellraiser_twin_rotary`: no real pattern is a two-gun carried weapon, so it is no longer marked Pattern. It
+  is an invented combined weapon drawn from the six-barrel rotary pattern's parts, chute-fed; the existing
+  `hellraiser_rotary` painting is attached for scale, materials and accent only (its drum is not the real pattern).
+- File 08, `unsaid`: built from the Chezknov machine carbine's pattern (file 10, entry 2.5) with an integral
+  suppressor, so it reads as one real suppressed pattern; `whisper_smg` (kept, not repainted) gives only the scale and
+  the blue-grey stock plate.
+- File 05, the Kemizuchi duelling family: the existing duelling blade is an open-frame, chisel-tipped blade with a round
+  crimson disc guard, a squared cross-bar and a squared ring pommel. The side-sword (solid blade, adds a knuckle bar)
+  and the sword-breaker (no disc, heavier cross-bar) share the cross-bar, cord and ring pommel. The copies in this
+  folder's `05-melee-forms.md` keep the older "dish guard" wording as the design record; the artist file is current.

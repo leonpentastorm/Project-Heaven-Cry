@@ -115,15 +115,15 @@ The general-purpose belt-fed machine gun, carried and fired from the hip. Pose: 
 At 32 px: one long barrel with a handle on it and a belt box on the side; not a ring of barrels.
 ```
 
-## 6. `hellraiser_twin_rotary`: Twin rotary (Pattern)
+## 6. `hellraiser_twin_rotary`: Twin rotary (invented: built from one pattern's parts; paste no pattern clause)
 
 - **Save as:** `art/icons/gear/weapon-hellraiser_twin_rotary.png`
 - **Grades later:** `weapon-hellraiser_twin_rotary--fine.png`, `--masterwork.png`, `--relic.png`, `--celestial.png` (same folder)
 - **Shows in:** backpack, shop, Forge, the hand slot and the gear card
-- **Attach:** `art/icons/gear/weapon-hellraiser_rotary.png`, `art/icons/weapons/hellraiser_rotary.svg` (the family: the maker's materials, accent and scale; this gun takes the real pattern's chute feed, not that painting's drum)
+- **Attach:** `art/icons/gear/weapon-hellraiser_rotary.png`, `art/icons/weapons/hellraiser_rotary.svg` (this painting supplies only the scale, the maker's materials and the oxide-red accent; do not copy its drum)
 
 ```
-Two guns of one pattern, the six-barrel electrically driven rotary machine gun, mounted side by side as one carried weapon, the heaviest gun a person carries. Pose: diagonal, muzzles up and right, about 90% of the canvas width. Silhouette, kept exactly to that one pattern for each gun: a cluster of six long barrels held by a front clamp and a mid clamp, a round drive motor housing behind them, and a feeder on the side of each housing taking a flexible armoured feed chute. The two guns are joined by that pattern's twin cradle, with a crossbar carry handle on top and the pattern's pair of spade grips with a thumb trigger at the rear; the two chutes curve back to one large squared ammunition box worn as a backpack, drawn as part of the same object. No drum under the guns (the drum is the single rotary's shape). Materials: heavy dark steel and black, the barrel tips scorched. Maker's touch: oxide-red paint on the twin cradle.
+An invented combined weapon: two six-barrel electrically driven rotary machine guns mounted side by side as one carried weapon, the heaviest gun a person carries. The combination is ours; each of the two guns is drawn from the real six-barrel rotary pattern's own parts. Pose: diagonal, muzzles up and right, about 90% of the canvas width. Silhouette, each gun: a cluster of six long barrels held by a front clamp and a mid clamp, a round drive motor housing behind them, and a feeder on the side of each housing taking a flexible armoured feed chute. The two guns are joined by a twin cradle, with a crossbar carry handle on top and a pair of spade grips with a thumb trigger at the rear; the two chutes curve back to one large squared ammunition box worn as a backpack, drawn as part of the same object. No drum under the guns. Materials: heavy dark steel and black, the barrel tips scorched. Maker's touch: oxide-red paint on the twin cradle.
 At 32 px: two rings of barrels side by side and two long curving chutes; no drum.
 ```
 

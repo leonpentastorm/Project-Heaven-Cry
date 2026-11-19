@@ -59,7 +59,7 @@ Wick standing bolt upright, feet planted shoulder-width, arms hanging loose at h
 - **Must read as:** a spoken word becoming a protective shell around someone else.
 
 ```
-Wick on the left, one hand raised to mouth level, three short curved sound-arcs leaving his mouth, flowing to the right and flaring into a rounded dome-shaped shell of bold white that settles over a partial silhouette of an ally cut by the right frame edge (only their head and shoulder). The dome has a few carved notches in its rim, abstract angular marks and no real letters. The ally's shape is solid, the shell is a thick arc around them.
+Wick on the left, one hand raised to mouth level, three short curved sound-arcs leaving his mouth, flowing to the right and flaring into a rounded dome-shaped shell of bold white that settles over a partial silhouette of an ally cut by the right frame edge (only their head and shoulder). The dome has a few carved notches in its rim, abstract angular notches, never letterforms. The ally's shape is solid, the shell is a thick arc around them.
 ```
 
 ## `recitation`: Recitation

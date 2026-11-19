@@ -171,12 +171,12 @@ Avoid: a polearm shaft, a straight blade, crimson cord, a sheath or strap.
 - **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-kemizuchi_duelling_blade.png`
-- **Is:** the Academy duelling family's middle form: the officer's everyday sword, cut and thrust, with more blade than the duelling needle and more guard for the hand. One-handed.
-- **At icon size it must read as:** a straight blade with the family's dish guard plus a looping bar.
+- **Is:** the Academy duelling family's middle form: the officer's everyday sword, cut and thrust, a longer solid blade than the duelling blade's open frame, and more guard for the hand. One-handed.
+- **At icon size it must read as:** a long solid straight blade with the family's round disc guard plus a looping knuckle bar.
 
 ```
-The Kemizuchi Military Academy's officer sword. On the 45 degree diagonal like the attached duelling blade, the same frame. A straight double-edged blade, clearly wider than the duelling blade's and tapering to an acute point, with a short fuller near the hilt. The hilt keeps the family's swept dish guard and adds a single side ring and one curving knuckle bar from the guard to the pommel. Bright steel, the guard blackened steel, a lacquered black grip bound with crimson cord. Accent: lacquer crimson #86234E in the cord.
-Avoid: a full basket of bars, a curved blade, a needle-thin blade (that is the duelling blade), gilt.
+The Kemizuchi Military Academy's officer sword. On the 45 degree diagonal like the attached duelling blade, the same frame. A solid straight double-edged blade, longer than the duelling blade and a little narrower, tapering to an acute point, with a short fuller near the hilt. The hilt keeps the family's look from the attached duelling blade: the same round disc guard lacquered crimson, the same squared steel cross-bar behind it with a rivet at each end, the same crimson cord crossed over a black grip and the same squared ring pommel; it adds one curving knuckle bar from the cross-bar to the pommel. Worn bright steel, the cross-bar and pommel in the same aged steel as the reference. Accent: lacquer crimson #86234E in the disc and the cord.
+Avoid: a full basket of bars, a curved blade, an open-frame blade or a chisel tip (that is the duelling blade), gilt.
 ```
 
 ## 10. `kemizuchi_sword_breaker`: Kemizuchi sword-breaker
@@ -185,12 +185,12 @@ Avoid: a full basket of bars, a curved blade, a needle-thin blade (that is the d
 - **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-kemizuchi_duelling_blade.png`
-- **Is:** the Academy duelling family's heavy form: a short, heavy blade whose back is cut into deep slots that catch an opponent's blade and twist it out of the hand. One-handed.
+- **Is:** the Academy duelling family's heavy form: a short, heavy solid blade whose back is cut into deep slots that catch an opponent's blade and twist it out of the hand; it keeps the family's cross-bar, cord and ring pommel but drops the disc. One-handed.
 - **At icon size it must read as:** a short broad blade with a comb of slots along its back.
 
 ```
-The Kemizuchi Military Academy's blade-catcher. On the 45 degree diagonal like the attached duelling blade, the same frame, so the short blade is drawn large. A short, thick, straight single-edged blade; its spine is cut into a comb of four deep square slots, each slot as wide as the teeth between them so the gaps stay open when shrunk. A heavy straight crossguard with rounded tips, a short lacquered black grip, a squared pommel. Dark blued steel with bright edges on the comb's teeth, crimson cord bound at the pommel. Accent: lacquer crimson #86234E.
-Avoid: a saw with many small teeth, a serrated edge, a dish guard (the family's quick forms carry it), a curved blade.
+The Kemizuchi Military Academy's blade-catcher. On the 45 degree diagonal like the attached duelling blade, the same frame, so the short blade is drawn large. A short, thick, straight single-edged blade; its spine is cut into a comb of four deep square slots, each slot as wide as the teeth between them so the gaps stay open when shrunk. The hilt keeps the family's look from the attached duelling blade without its disc: the same squared steel cross-bar with a rivet at each end, made a little heavier, the same crimson cord crossed over a short black grip and the same squared ring pommel. Dark blued steel with bright edges on the comb's teeth. Accent: lacquer crimson #86234E in the cord.
+Avoid: a saw with many small teeth, a serrated edge, a round disc guard (the other two forms carry it), an open-frame blade, a curved blade.
 ```
 
 # 6. Axes

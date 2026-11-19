@@ -7,7 +7,7 @@ For the artist, and for GPT. **21 pictures: 20 Wick icons and 1 white-ink sign (
 - **One image a prompt.** Paste the base prompt of its mode (below) first, then the entry's prompt block, and attach the references the mode names. Every entry's block is self-contained after the base prompt: it starts "The icon shows:". Save under the file name and folder given; do not rename.
 - **One convention for Figments.** A Figment is the Rigger's drawn construct, never a person. In every picture below a Figment is a **hollow figure in one bold white contour (outline only, no fill) with two or three parallel hatch strokes inside**, so it reads apart from Wick, who is solid white. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame).
 - **Check.** Look at every icon at 32 px in a row and at 44 px on a chip, on `#10151F`.
-- **In-world only.** No real-world person, brand, franchise, insignia or place; weapons and gear are invented shapes; no text, letters or numbers in any image (a page has no writing, a formula is plain strokes and a tick).
+- **In-world only.** No real-world person, brand, maker or model name, logo, franchise, insignia or place; no text, letters or numbers in any image (a page has no writing, a formula is plain strokes and a tick).
 - **Colour.** Wick icons and signs are pure white; the game tints them. No colour is painted.
 
 ## The base prompts, one per art mode
@@ -165,7 +165,7 @@ The icon shows: Wick crouched, one fingertip holding still a foe silhouette's sw
 ### Darkened (condition)
 - **Id:** `darkened`. **Save as:** `art/icons/conditions/darkened.png`. **Mode:** white-ink sign (use the sign base prompt, not the Wick one). **Shows:** the status strip and the token's chip: darkness gathers round a unit, and foes see it only from close by. It must read apart from `conditions/blinded.png` (attached as the contrast: Blinded is the bearer's own eye struck out; Darkened is the bearer hidden from an eye looking at it).
 ```
-The icon shows: on the left, one open almond-shaped eye with a clear circular pupil, looking right; its gaze drawn as a cone of two straight lines running out toward the right and stopping abruptly at a thick solid bar across the cone's end. On the right, beyond the bar and out of the cone's reach, one small solid round dot (the unit) sitting inside a soft ring of short dark dashes, the darkness gathered round it. The eye looks, the bar stops its gaze, the dot stays unseen. The eye, the bar and the dot beyond it are what to read at 24 px. Avoid: a crossed-out eye, a closed eye with lashes, a moon, a lightbulb with a slash, a full black circle (that is Blinded), a figure with a face.
+The icon shows: on the left, one open almond-shaped eye with a clear circular pupil, looking right; its gaze drawn as a cone of two straight lines running out toward the right and stopping abruptly at a thick solid bar across the cone's end. On the right, beyond the bar and out of the cone's reach, one small solid round dot (the unit) sitting inside a ring of short, thin, evenly spaced white dashes gathered round the dot, with gaps of empty transparency between them. The eye looks, the bar stops its gaze, the dot stays unseen. The eye, the bar and the dot beyond it are what to read at 24 px. Avoid: a crossed-out eye, a closed eye with lashes, a moon, a lightbulb with a slash, a filled solid disc, a figure with a face.
 ```
 
 ---
