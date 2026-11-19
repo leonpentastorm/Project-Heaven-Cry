@@ -12256,3 +12256,18 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     items, weapons, conditions, survival, actions and pressure; designer fields (note, source, rules, about, `*_note`,
     `*_about`), the `pending` and `retired` lists and shelved rows are exempt. Slide's text no longer repeats its AP and
     its once-a-turn: the row and its chips say them.
+
+### Rules 1.69 (0.31.11), the Mana Shock trigger (19 Nov 2026)
+
+5450. **The trigger `mana_shock`** (approved by the lead for Iron Heart): an item's data row may listen to a heart
+    entering the Mana Shock. It fires once, where the Shock begins (after the Mana Short, Strain still over the
+    limit), whether the Short came from Strain added (a Begin, a Pump's feeling, the swell) or from the turn's end; the
+    holder is the unit that enters it. One hook (`mana_shock`, `magic.ts manaShort`, `{u, strain, limit}`), one row of
+    the closed trigger list (`effects/triggers.ts TRIGGERS`). Proof: `test/mana-shock-trigger.test.ts` (a real Pump
+    with Rage that shorts the heart).
+5451. **Iron Heart, Leon's ruling (17 Nov 2026):** once a fight, when you reach Mana Shock, relieve 2 Strain. **Not
+    built yet:** taking Strain off from data needs Strain as a resource row (the shelved piece N3b, approved for another
+    lane, not this one); until it lands, item 5401's rule stays in the data and the engine. The row it becomes is one
+    line on item 5450's trigger: `{when: "mana_shock", limit: {per: "per_combat", n: 1}, op: "resource", resource:
+    "strain", value: -2}`. The relief comes after the entry: a heart 3 over is left 1 over, still in the Shock, and the
+    next turn's start calms it back to the limit before that turn's end can charge the Shock's share.

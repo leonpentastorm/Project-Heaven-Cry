@@ -94,6 +94,8 @@ export const TRIGGERS: Record<string, Trigger> = {
   to_hit: { hook: 'to_hit', actor: att, target: tgt, self: 'actor', about: 'a roll to hit a target is sized up: a weapon attack, a Sigil or an Outburst (one hook, rolls.ts toHitTerms; `damage` reads its type: weapon, sigil, soul); roll_mod adds a term' },
   spot: { hook: 'spot', actor: by, target: u_, self: 'target', about: 'a unit rolls to spot a Hidden one (the holder is the Hidden one; roll_mod changes the roll or, with roll: "tn", its TN; cancel)' },
   // Rules 1.44 (Survival, build step 5): what a fight's end gives its fighters goes home with them (Field Mending's heal)
+  // Rules 1.69: a heart enters Mana Shock (magic.ts manaShort, after the Short; Strain is still over the limit)
+  mana_shock: { hook: 'mana_shock', actor: u_, self: 'actor', about: 'a unit enters Mana Shock (after its Mana Short, Strain still over its limit)' },
   combat_over: { hook: 'combat_over', self: null, about: 'the fight is decided, before the fighters are written back to their characters: a heal or a resource given here goes home with them (combat_end comes after)' },
 };
 

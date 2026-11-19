@@ -1000,6 +1000,8 @@ export function manaShort(cb: Combat, rng: Rng, u: Unit, limit?: number): string
     if (!cb.overworld && cb.order?.[cb.turn] === u.id) m.shockOwn = true;
     emitFx(cb, 'cond', { target: u.id, at: u.pos, id: MANA_SHOCK.id }); // the state's word on the token, no hurt flash (fx/play.ts cond)
     say(cb, u.name + ' is in ' + MANA_SHOCK.name + ' (Strain ' + m.strain + '/' + lim + '): ' + MANA_SHOCK.text);
+    // Rules 1.69: the one point where a heart enters the Shock (the item ops trigger `mana_shock` listens here).
+    emit(cb, 'mana_shock', { u, strain: m.strain, limit: lim, cb });
   }
   return ' · MANA SHORT';
 }
