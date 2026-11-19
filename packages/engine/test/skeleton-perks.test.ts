@@ -110,13 +110,12 @@ describe('Iron Grip (replaces Grapple)', () => {
 // (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Both Hands (replaces Origami Hands)'
 
 describe('Quick Draw, Tuned, Hand-Off, Stand Still (unlocks)', () => {
-  it('Quick Draw: the first attack of a fight with a weapon drawn for it costs 0 AP (asked with the technique\'s id); then full price', () => {
+  it('Quick Draw (Speed Load II since rules 1.73 item 5852): the first attack of a fight with a weapon drawn for it costs 0 AP (asked with the technique\'s id); Dexterity 5 alone, or Tier I, gives none', () => {
     const cost = (f: F, tech: string) => withGame(f.g, () => emit(f.cb, 'attack_preview', { att: f.pc, tgt: f.pc, mode: 'shot', melee: false, ap: 2, reach: 1, terms: [], fail: null, free: false, preview: true, volleyCost: true, tech, cb: f.cb, mods: [] })).ap;
-    const f = physFight([{ weapon: 'sabre', skills: { dexterity: 5 } }]); f.turn(f.pc);
+    const f = physFight([{ weapon: 'sabre', skills: { dexterity: 1, reaction_speed: 5 }, perks: { speed_load: 'II' } }]); f.turn(f.pc);
     expect(cost(f, 'snap_shot')).toBe(0); expect(cost(f, 'draw_cut')).toBe(0); expect(cost(f, 'shot')).toBe(2);
-    withGame(f.g, () => emit(f.cb, 'action_done', { u: f.pc, a: { type: 'combat/technique', id: 'snap_shot', item: 0 }, cb: f.cb }));
-    expect(cost(f, 'snap_shot')).toBe(2); expect(logHas(f, /Quick Draw/)).toBe(true);
-    const low = physFight([{ weapon: 'sabre', skills: { dexterity: 4 } }]); low.turn(low.pc); expect(cost(low, 'snap_shot')).toBe(2);
+    const dex = physFight([{ weapon: 'sabre', skills: { dexterity: 9 } }]); dex.turn(dex.pc); expect(cost(dex, 'snap_shot')).toBe(2);
+    const one = physFight([{ weapon: 'sabre', skills: { reaction_speed: 5 }, perks: { speed_load: 'I' } }]); one.turn(one.pc); expect(cost(one, 'snap_shot')).toBe(2);
   });
   it('Tuned: the weapon in your main hand never stays jammed and never breaks; without it a fumble jams', () => {
     const run = (pts: number) => {
@@ -182,18 +181,19 @@ describe('the hooks wired into the core (physical/core.ts)', () => {
     };
     expect(run({ iron_grip: 'II' })).toBe(2); expect(run({ iron_grip: 'I' })).toBe(1); expect(run({})).toBe(1);
   });
-  it('Quick Draw in play: the first Snap Shot of a fight costs 0 AP on the card and in the charge; the second costs its 2', () => {
-    const fight = (pts: number) => {
-      const f = physFight([{ weapon: 'sabre', known: ['snap_shot'], skills: { dexterity: pts } }], [{ at: 'F7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'F7'); f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 900; f.turn(f.pc);
+  it('Quick Draw in play (Speed Load II): the first Snap Shot of a fight costs 0 AP on the card and in the charge; the next costs its 2', () => {
+    const fight = (perks: any) => {
+      const f = physFight([{ weapon: 'sabre', known: ['snap_shot'], skills: { dexterity: 5, reaction_speed: 5 }, perks }], [{ at: 'F7' }]); f.put(f.pc, 'C7'); f.put(f.foe, 'F7'); f.unit(f.foe.id).hp = f.unit(f.foe.id).maxHp = 900; f.turn(f.pc);
       const c: any = f.char(f.pc); c.pack = [...(c.pack || []), { id: 'service_pistol', name: 'service_pistol', qty: 1, kind: 'weapon', weapon: 'service_pistol', loaded: 12 }];
       return f;
     };
     const stowed = (f: F, w: string) => (f.char(f.pc) as any).pack.findIndex((x: any) => x.weapon === w);
-    const f = fight(5); rig({ hit: true, die: 12 });
+    const f = fight({ speed_load: 'II' }); rig({ hit: true, die: 12 });
     expect(f.pv('snap_shot', { targetId: f.foe.id, item: stowed(f, 'service_pistol') }).ap).toBe(0);
     expect(f.tech('snap_shot', { targetId: f.foe.id, item: stowed(f, 'service_pistol') })).toBeNull(); expect(f.pc.ap).toBe(6);
+    expect(logHas(f, /Quick Draw/)).toBe(true);
     expect(f.pv('snap_shot', { targetId: f.foe.id, item: stowed(f, 'sabre') }).ap).toBeGreaterThan(0); // used up for the fight
-    const low = fight(4); expect(low.pv('snap_shot', { targetId: low.foe.id, item: stowed(low, 'service_pistol') }).ap).toBe(2);
+    const low = fight({}); expect(low.pv('snap_shot', { targetId: low.foe.id, item: stowed(low, 'service_pistol') }).ap).toBe(2);
   });
 });
 

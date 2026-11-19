@@ -97,16 +97,19 @@ describe('D1: a throw rolls with Dexterity whatever the weapon thrown (combat.ts
   });
 });
 
-describe('review: the blade twin of Flush Out frightens no Elite or Boss (a free Fear every turn stopped a Boss)', () => {
+// rules 1.73 item 5843: the blade twin of Flush Out is cut; Flush Out is one verb for every Dexterity weapon (soldiers and below)
+describe('review: Flush Out frightens no Elite or Boss (a free Fear every turn stopped a Boss); the blade twin is gone', () => {
   const twin = (tier: string) => {
     const f = physFight([{ weapon: 'combat_knife', skills: { dexterity: 7 }, attrs: { agility: 7 }, level: 6 }], [{ at: 'F5', tier, weapon: 'combat_knife' }]);
     f.cb.objects = []; f.put(f.pc, 'E5'); f.put(f.foe, 'F5'); big(f, f.foe); f.unit(f.foe.id).conds = {};
     const u = f.turn(f.pc); f.unit(u.id).ap = 9; rig({ hit: true }); FAIL_FEAR = true;
-    f.press(f.foe, DOOR.effects.find((e: any) => e.label === 'flush_out_blade').if.target_res.pressure.at_least, f.pc);
-    cut(f); return !!f.unit(f.foe.id).conds?.fear;
+    f.press(f.foe, 2, f.pc);
+    cut(f); const byCut = !!f.unit(f.foe.id).conds?.fear;
+    let byVerb = false; try { f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:pressure.flush_out', targetId: f.foe.id } as any); byVerb = !!f.unit(f.foe.id).conds?.fear; } catch { byVerb = false; }
+    return { byCut, byVerb };
   };
-  it('a Pressed Soldier cut with a Dexterity blow is Afraid on a failed save', () => { expect(twin('soldier')).toBe(true); });
-  it('a Pressed Elite or Boss is not asked to save at all', () => { expect(twin('elite')).toBe(false); expect(twin('boss')).toBe(false); });
+  it('a Pressed Soldier cut with a Dexterity blow is not Afraid from the cut; Flush Out makes it Afraid on a failed save', () => { const r = twin('soldier'); expect(r.byCut).toBe(false); expect(r.byVerb).toBe(true); });
+  it('a Pressed Elite or Boss is not asked to save at all', () => { for (const t of ['elite', 'boss']) { const r = twin(t); expect(r.byCut).toBe(false); expect(r.byVerb).toBe(false); } });
 });
 
 describe('D4: a gun still presses as before (every gun rolls with Dexterity)', () => {

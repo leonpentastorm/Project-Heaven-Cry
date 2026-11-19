@@ -117,6 +117,11 @@ Files go to `art/icons/perks/<id with dashes>.png` (catalog id `perk-<id>`). Ste
 | `close_guard` | Pain Threshold | Wick's plated arm across a smaller figure beside him | the blow lands on his plates, not on the friend |
 | `read_the_air` | Senses | Wick close to someone, eyes on a bead of sweat at their temple | intimate distance, one detail picked out |
 | `tremor` | Senses | Wick's palm flat on the ground, lines of vibration coming in | the ground speaks first |
+| `untouchable` | Athletics | Wick leaning out of a blow's path, no armour, the blade passing through empty air | light, almost lazy; two ghost outlines of the swing |
+| `shoot_first` | Reaction Speed | Wick's pistol already up while the others are still turning | the first to move in a frozen room |
+| `cut_in` | Reaction Speed | Wick stepping across a speaker mid-sentence, one hand raised | a speech mark cut in half |
+| `speed_load` | Reaction Speed | Wick slapping a fresh magazine home, the empty one still falling | motion lines, one clean click |
+| verb `pressure.flush_out` (Dexterity 5) | Dexterity | a shot cracking past a crouched figure that bolts from cover | the Pressure door's verb set (`art/icons/moves/`, catalog `move-<id>`, as Slide) |
 | class moves `retort`, `reforge` (the Bulwark) | Durability | Retort: plates throwing a blow back; Reforge: a hammer on a plate | the move-icon set of the nine doors (`art/icons/moves/`, catalog `move-<id>`) |
 
 ### 2. Outburst feelings and modules

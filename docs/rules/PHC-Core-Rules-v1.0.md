@@ -12682,3 +12682,48 @@ steps at 3, 5, 7 and 9, Mastered at 10). Every new number here is PROVISIONAL. I
 5837. **Reforge** replaces the Reactive Plate at rank III (`class:defender.reforge`; the Reactive Plate is shelved): at
     the start of your turn, holding 1 Guard or none, +2 Guard (PROVISIONAL 2). A rank III Bulwark's plates are the
     door's (its soak a plate, met after the shields).
+
+**Agility (Dexterity, Athletics, Reaction Speed; the Skirmisher)**
+
+5840. **Dexterity's ladder:** 1 the door (Pressure: each hit rolled with Dexterity presses), 2 **Slide**, 3 perk step, 4
+    fork one (Converging Fire or Walk It In), 5 **Flush Out**, 6 and 7 perk steps, 8 fork two (Through the Gap or
+    Lockdown), 9 perk step, 10 Trick Shot. Its two perks (Pressure Point, Keep Their Heads Down) fill the four steps. Per
+    point unchanged (+1 to hit with guns, light blades and throws, +2% critical damage, the throw's reach, harder saves).
+5841. **The door's surplus left it:** Near Miss to Hold the Lane (item 5855), Shaken Nerves to Break Them (item 5856),
+    the Flush rider and its blade twin into Flush Out (item 5843), Speed Load and Quick Draw to Reaction Speed's Speed
+    Load (item 5852; ruling layer section 3 item 6).
+5842. **Slide opens at Dexterity 2** (was 1; `pressure.json pressure.slide` requires).
+5843. **Flush Out** (`pressure.json pressure.flush_out`, Dexterity 5): 2 AP, once a turn: a Pressed foe (Pressure 2 or
+    more) you see within 8 tiles saves or is Afraid of you for 1 round, and loses the Take's Pressure
+    (`tech_rule:pressure.take_cost`). Soldiers and below only (never an Elite or a Boss). The Flush technique's own rider
+    and the blade twin are cut. PROVISIONAL 2 AP, 8 tiles.
+5844. **Dexterity's forks** are unchanged; fork two at 8 (rules 1.70 item 5537).
+5845. **Athletics:** per point +1 Defense (from 2, unchanged) and its Pressure feed. The sheet's "Defense from 1"
+    (PROVISIONAL) is **not built**: it moves the enemy table's yardstick (`test/balance/step1-fit`), a balance call for the
+    lead.
+5846. **Athletics' four perks:** **Wall Run** (Vault, the passive at 3, is its Tier I), **Untouchable** (the passive at
+    5), **Roll With It** (kept), **Catch** (moved from Reaction Speed); Mastered Never There. Old saves: Wall Run and
+    Untouchable as the passives at 3 and 5, one free re-pick; a Catch taken with a Reaction Speed step counts on Athletics
+    now (the Reaction Speed step comes back).
+5847. **Wall Run:** I (Vault), run over cover, low obstacles and gaps, and along walls, up to 2 such tiles in a row at no
+    extra movement; II, 4 tiles, and one attack mid-run (the old Tiers, its handler unchanged). Shadow's Vault is cut
+    (ruling layer section 2 item 7).
+5848. **Catch** is Athletics' (its tiers unchanged).
+5849. **Untouchable:** I, with no torso armour attacks on you roll twice and take the worse; II, in Light armour too
+    (PROVISIONAL). No engine half yet (a roll kept from two has no piece); the Narrator's until one is approved.
+5850. **Reaction Speed:** per point +1 Initiative and +1 Cue reach; the Call as rules 1.70. Four perks: **Shoot First**
+    (the passive at 3), **Cut In** (the passive at 5), **Speed Load** (new), **Rounding Up** (kept); Mastered Before the
+    Blink. Old saves: Shoot First and Cut In as the passives at 3 and 5, one free re-pick.
+5851. **Shoot First:** I, you act in the surprise round even when surprised, with 3 AP; II, 4 AP (PROVISIONAL). The
+    Narrator's (the approach has no per-unit surprise piece). **Cut In:** I, once a scene, cut in and act first; II,
+    twice a scene. The Narrator's.
+5852. **Speed Load:** I, a reload costs 1 AP less (`ap_cost:reload`); II, and once a fight your first attack with a
+    weapon you draw for it (Draw Cut, Snap Shot) costs no AP (Quick Draw, data now: a `cost_mod` on the attack's preview
+    with a peeked per-fight limit, its use taken on the roll). Dexterity no longer cheapens reloads or draws.
+5853. *(reserved)*
+5854. **The Skirmisher:** Fire Discipline, Special Ammo, Duck and Roll, Killzone and Run and Gun are kept; the gains
+    Reflex, Fire and Move, Relocated and Break Them stay.
+5855. **Hold the Lane** takes Near Miss: held shots cost 1 AP less (at least 1), and a held shot that misses still adds 1
+    Pressure (once a turn a foe; no Dexterity gate).
+5856. **Break Them** takes Shaken Nerves: Rout 1 AP less on your turn, and every save a foe makes against you is harder
+    by 1 for each Pressure on it (at most 2; no Dexterity gate).

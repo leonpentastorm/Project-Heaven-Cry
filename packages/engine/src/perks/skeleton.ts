@@ -1,20 +1,17 @@
 // Skeleton 2.0 (rules 1.13), the perk and unlock pass: the items that were replaced or became passives.
 //   Iron Grip I/II (perk)          a held target can't react (rules 1.56); II: a melee technique's push goes further
 //                                  (Heavy Hands, rules 1.73 item 5804; Follow Through is the Breaker's Measured Blow, data)
-//   Dexterity 5 · Quick Draw       the first attack of a fight with a weapon drawn for it costs no AP
 //   Improvisation 5 · Tuned        the weapon in your main hand never jams and never breaks
 //   Camaraderie 3 · Hand-Off       once a round an adjacent ally uses your Defense against one attack
 //   Composure 5 · Stand Still      until you first act in a fight: −2 to hit you, and the first miss gives a free attack
 // Every number here is PROVISIONAL (spec section 14).
 //
-// Wired in physical/core.ts: Iron Grip II's push (forceMove asks 'push_tiles'), Quick Draw (apFor names its technique in
-// 'attack_preview').
+// Wired in physical/core.ts: Iron Grip II's push (forceMove asks 'push_tiles').
 import { register, stateOf, has, type Holder } from '../effects';
 import { charOfUnit } from '../effects/hooks';
 import { type Combat, type Unit, dist, alive, checkOver, previewAttack, resolveAttack, isMelee } from '../combat';
 import { WEAPON } from '../data';
 import { condSource } from '../magic';
-import { TECHNIQUE } from '../physical/data';
 import { num } from '../effects/num';
 import { overworld, say } from '../kit';
 
@@ -50,23 +47,8 @@ register({
   brief: () => null,
 });
 
-// ---------- Dexterity · Quick Draw (Mastery 2) ----------
-// Once per combat, the first attack you make with a weapon you draw for it (a technique that draws: Draw Cut, Snap
-// Shot) costs 0 AP. The cost is zeroed where the core asks for a technique's AP ('attack_preview' with the technique's
-// id, W2), so the card, the check and the charge agree; it is used up when such a technique has been used.
-const draws = (id: any) => !!TECHNIQUE[id]?.needs?.stowed;
-register({
-  id: 'dexterity.5', kind: 'skill', claims: 'all',
-  on: {
-    attack_preview: (ctx, h) => { if (ctx.att === h.u && h.cb && !overworld(h.cb) && draws(ctx.tech) && !peek(h).drawn) ctx.ap = 0; },
-    action_done: (ctx, h) => {
-      const u = h.u, cb = h.cb, a = ctx.a; if (!u || !cb || ctx.u !== u || a?.type !== 'combat/technique' || overworld(cb) || !draws(a.id)) return;
-      const st = stateOf(h); if (st.drawn) return; st.drawn = true;
-      say(cb, u.name + ' had it out before anyone saw (Quick Draw).');
-    },
-  },
-  brief: () => null,
-});
+// Quick Draw (once a fight, the first attack with a weapon drawn for it costs no AP) is data since rules 1.73 item 5852:
+// Speed Load II (perks.json speed_load), a cost_mod on the attack's preview and its use on the roll.
 
 // ---------- Improvisation · Tuned (Mastery 2) ----------
 // The weapon in your main hand never jams and never breaks (PROVISIONAL reading of "the weapon you maintain", spec 14).

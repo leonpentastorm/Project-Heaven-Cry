@@ -5,9 +5,10 @@ import { reactionsUsed } from '../src';
 import { phys, resolveAttack, previewAttack, toggleProne, reload, reloadHands, enemyTurn, type Unit } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { physFight, rig } from './helpers/physfight';
-import { SKILL as SKILL_NM } from '../src';
-/** Rules 1.56 Pressure 2.0: Dexterity's Near Miss (a held shot that misses still adds Pressure) from its door's points. */
-const nearMiss = (f: any): number => { const e: any = (SKILL_NM as any).dexterity.unlocks['1'].effects[0], c: any = f.g.characters[f.pc.charId]; return (c?.skills?.dexterity || 0) >= e.if.self_skill.dexterity ? e.value : 0; };
+import { CLASSES as CLASSES_NM } from '../src';
+/** Rules 1.56 Pressure 2.0: Near Miss (a held shot that misses still adds Pressure); since rules 1.73 item 5855 the
+ * Skirmisher's Hold the Lane's row (classes.json marksman speed_loader), held by its class, not by Dexterity's points. */
+const nearMiss = (f: any): number => { const c: any = f.g.characters[f.pc.charId]; const k: any = (CLASSES_NM as any).find((x: any) => x.id === 'marksman'); const e: any = k.ranks.I.moves.find((m: any) => m.id === 'speed_loader').effects.find((x: any) => x.label === 'Hold the Lane'); return c?.classId === 'marksman' ? e.value : 0; };
 import { calm as reset, unchanged, type PhysF as F } from './helpers/physfight-ranged';
 
 beforeEach(() => { rig(null); ROLLS.length = 0; });

@@ -916,7 +916,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Allies' Dexterity hits on a foe already hit that way this round: +{=effects.0.value} Pressure, once a round a foe"
     },
     {
       "id": "fork.pressure.walk_it_in",
@@ -955,7 +956,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "A Dexterity attack that misses still lays +{=effects.0.value} Pressure (once a turn per foe)"
     },
     {
       "id": "fork.pressure.through_the_gap",
@@ -1046,7 +1048,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Once a turn, a Dexterity hit that caps a foe's Pressure: next move {=effects.3.value|abs} AP less, no opportunity attacks"
     },
     {
       "id": "fork.pressure.lockdown",
@@ -1105,7 +1108,8 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "A Dexterity hit that leaves a foe at its Pressure cap also Slows it for {=effects.1.rounds} round, no save"
     },
     {
       "id": "fork.sigil.overflux",

@@ -2370,7 +2370,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: During a move you can run along walls, over low obstacles and across gaps, up to 2 such tiles in a row. The move must end on open floor. II: During a move you can run along walls, over low obstacles and across gaps, up to 4 such tiles in a row. With Wall Run strike you can attack once from the middle of the run; the move and the attack cost their usual AP. The move must end on open floor.",
+      "text": "I: Vault: during a move you run over cover, low obstacles and gaps, and along walls, up to {=tiers.I.effects.0.max_tiles} such tiles in a row, at no extra movement. The move must end on open floor. II: During a move you can run along walls, over low obstacles and across gaps, up to 4 such tiles in a row. With Wall Run strike you can attack once from the middle of the run; the move and the attack cost their usual AP. The move must end on open floor.",
       "effects": [
         {
           "op": "movement_mode",
@@ -2387,8 +2387,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "During a move you can run along walls, over low obstacles and across gaps, up to 2 such tiles in a row. The move must end on open floor.",
-          "short": "Run along walls, low cover and gaps, {=tiers.I.effects.0.max_tiles} tiles in a row",
+          "text": "Vault: during a move you run over cover, low obstacles and gaps, and along walls, up to {=tiers.I.effects.0.max_tiles} such tiles in a row, at no extra movement. The move must end on open floor.",
+          "short": "Vault: over cover, obstacles and gaps, {=tiers.I.effects.0.max_tiles} tiles in a row",
           "effects": [
             {
               "op": "movement_mode",
@@ -2424,7 +2424,8 @@
       "tags": [
         "mobility"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step (item 5847): Vault (Athletics 3) is its Tier I; Shadow's Vault is cut (ruling layer section 2 item 7)"
     },
     {
       "id": "roll_with_it",
@@ -2499,6 +2500,78 @@
         "dodge"
       ],
       "provisional": true
+    },
+    {
+      "id": "untouchable",
+      "name": "Untouchable",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "athletics"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "athletics",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: With no torso armour, attacks on you roll twice and take the worse. II: In Light armour or none, attacks on you roll twice and take the worse.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Attacks on this character roll twice and keep the worse while it wears no torso armour (no engine half yet: rules 1.73 item 5849, a roll kept from two has no piece)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "athletics",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "With no torso armour, attacks on you roll twice and take the worse.",
+          "short": "No torso armour: attacks on you roll twice, take the worse",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Attacks on this character roll twice and keep the worse while it wears no torso armour (no engine half yet: rules 1.73 item 5849, a roll kept from two has no piece)."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "athletics",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "In Light armour or none, attacks on you roll twice and take the worse.",
+          "short": "Light armour too",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, in Light armour too."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "defense",
+        "dodge"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step"
     },
     {
       "id": "both_hands",
@@ -2912,10 +2985,10 @@
       "provisional": true
     },
     {
-      "id": "catch",
-      "name": "Catch",
+      "id": "shoot_first",
+      "name": "Shoot First",
       "tier": "acquired",
-      "perk_type": "combat_interaction",
+      "perk_type": "combat_starter",
       "skills": [
         "reaction_speed"
       ],
@@ -2923,6 +2996,268 @@
       "requires": [
         {
           "skill": "reaction_speed",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: You act in the surprise round even when your side is the one surprised ({=tiers.I.numbers.ap} AP). II: You act in the surprise round even when your side is the one surprised ({=tiers.II.numbers.ap} AP).",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "This character acts in the surprise round even when surprised, with 3 AP (no engine half yet: rules 1.73 item 5851, the approach has no per-unit surprise piece)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "You act in the surprise round even when your side is the one surprised ({=tiers.I.numbers.ap} AP).",
+          "short": "Act in the surprise round, even when surprised",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "This character acts in the surprise round even when surprised, with 3 AP (no engine half yet: rules 1.73 item 5851, the approach has no per-unit surprise piece)."
+            }
+          ],
+          "numbers": {
+            "ap": 3
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "You act in the surprise round even when your side is the one surprised ({=tiers.II.numbers.ap} AP).",
+          "short": "That action has {=tiers.II.numbers.ap} AP",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, with 4 AP."
+            }
+          ],
+          "numbers": {
+            "ap": 4
+          },
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "start",
+        "initiative"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step",
+      "numbers": {
+        "ap": 3
+      }
+    },
+    {
+      "id": "cut_in",
+      "name": "Cut In",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "reaction_speed"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "reaction_speed",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Once a scene, interrupt someone mid-sentence or mid-action to act first: grab, draw, leave or speak. II: Twice a scene, interrupt someone mid-sentence or mid-action to act first: grab, draw, leave or speak.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Once a scene this character may interrupt an NPC mid-sentence or mid-action and act first."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a scene, interrupt someone mid-sentence or mid-action to act first: grab, draw, leave or speak.",
+          "short": "Once a scene: cut in and act first",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Once a scene this character may interrupt an NPC mid-sentence or mid-action and act first."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Twice a scene, interrupt someone mid-sentence or mid-action to act first: grab, draw, leave or speak.",
+          "short": "Twice a scene",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "As Tier I, twice a scene."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "social",
+        "initiative"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step"
+    },
+    {
+      "id": "speed_load",
+      "name": "Speed Load",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "reaction_speed"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "reaction_speed",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Reloading costs {=tiers.I.effects.0.value|abs} AP less. II: Reloading costs {=tiers.II.effects.0.value|abs} AP less, and once a fight your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs no AP.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap_cost:reload",
+          "value": -1
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Reloading costs {=tiers.I.effects.0.value|abs} AP less.",
+          "short": "Reload costs {=tiers.I.effects.0.value|abs} AP less",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:reload",
+              "value": -1
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "reaction_speed",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Reloading costs {=tiers.II.effects.0.value|abs} AP less, and once a fight your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs no AP.",
+          "short": "Once a fight: your first drawn attack costs no AP",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:reload",
+              "value": -1
+            },
+            {
+              "op": "cost_mod",
+              "when": "attack",
+              "set": 0,
+              "if": {
+                "mode": [
+                  "draw_cut",
+                  "snap_shot"
+                ]
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "draw",
+                "peek": true
+              },
+              "label": "Quick Draw"
+            },
+            {
+              "op": "use",
+              "when": "attack_roll",
+              "if": {
+                "mode": [
+                  "draw_cut",
+                  "snap_shot"
+                ]
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "draw"
+              },
+              "say": "{self} had it out before anyone saw (Quick Draw)."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "ap",
+        "reload"
+      ],
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step"
+    },
+    {
+      "id": "catch",
+      "name": "Catch",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "athletics"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "athletics",
           "min": 3
         }
       ],
@@ -2948,7 +3283,7 @@
         "I": {
           "requires": [
             {
-              "skill": "reaction_speed",
+              "skill": "athletics",
               "min": 3
             }
           ],
@@ -2973,7 +3308,7 @@
         "II": {
           "requires": [
             {
-              "skill": "reaction_speed",
+              "skill": "athletics",
               "min": 5
             }
           ],
@@ -3004,7 +3339,8 @@
         "reaction",
         "grenades"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step (item 5848): moved from Reaction Speed to Athletics"
     },
     {
       "id": "sleight_of_hand",

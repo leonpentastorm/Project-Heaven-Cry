@@ -1312,14 +1312,6 @@
           {
             "at": "each",
             "text": "Shooting techniques: harder to save against"
-          },
-          {
-            "at": "at 3",
-            "text": "Near Miss · Shaken Nerves"
-          },
-          {
-            "at": "at 5",
-            "text": "Flush Out: can leave a foe Afraid"
           }
         ]
       },
@@ -1354,73 +1346,9 @@
           "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "Pressure is Dexterity's door: every hit you roll with Dexterity presses its target, a gun's, a bow's, a thrown knife's, a light blade's or a Dexterity glove's alike (a glove whose blows roll with Dexterity counts). A ranged hit adds Pressure (the first on each target each turn); a blow rolled with Dexterity adds {=unlocks.1.effects.3.value} (at most {=unlocks.1.effects.3.limit.n} on a target a turn) and does not shed your own; a blow rolled with anything else sheds your own. Slide is yours from the first point (its own card). From Dexterity {=unlocks.1.effects.0.if.self_skill.dexterity}, Near Miss: an attack of yours rolled with Dexterity off your own turn (a held shot: Overwatch, Deny, Cover Me, Dead to Rights; a Riposte) that misses still adds {=unlocks.1.effects.0.value} Pressure (once a turn for each target): your lane holds even when the round or the blade goes wide; and Shaken Nerves: every save a foe makes against you is harder by {=unlocks.1.effects.1.value.per.0.value} for each Pressure pip on it (at most {=unlocks.1.effects.1.value.max}). From Dexterity {=unlocks.1.effects.2.if.self_skill.dexterity}, Flush Out: your Flush also makes its target save (Heart) or be Afraid of you for {=unlocks.1.effects.2.rounds} round: it won't come at you or shoot at you; and its blade twin: a Pressed foe (Pressure {=unlocks.1.effects.4.if.target_res.pressure.at_least} or more) you hit with a blow rolled with Dexterity saves the same way or is Afraid of you for {=unlocks.1.effects.4.rounds} round (once a turn; never an Elite or a Boss: only a Flush frightens those).",
+          "text": "Pressure is Dexterity's door: every hit you roll with Dexterity presses its target, a gun's, a bow's, a thrown knife's, a light blade's or a Dexterity glove's alike (a glove whose blows roll with Dexterity counts). A ranged hit adds Pressure (the first on each target each turn); a blow rolled with Dexterity adds {=unlocks.1.effects.0.value} (at most {=unlocks.1.effects.0.limit.n} on a target a turn) and does not shed your own; a blow rolled with anything else sheds your own. Slide and Flush Out are its verbs (their own cards, at the levels the ladder shows).",
           "player": "Dexterity hits add Pressure · Slide",
           "effects": [
-            {
-              "op": "resource",
-              "when": "miss",
-              "label": "near_miss",
-              "resource": "pressure",
-              "value": 1,
-              "target": "target",
-              "if": {
-                "actor": "self",
-                "rolled_with": [
-                  "dexterity"
-                ],
-                "hostile": true,
-                "own_turn": false,
-                "self_skill": {
-                  "dexterity": 3
-                }
-              },
-              "limit": {
-                "per": "per_turn",
-                "n": 1,
-                "each": "target"
-              },
-              "say": "{self}'s near miss keeps {target}'s head down."
-            },
-            {
-              "op": "roll_mod",
-              "when": "save",
-              "roll": "tn",
-              "label": "shaken nerves",
-              "value": {
-                "base": 0,
-                "per": [
-                  {
-                    "of": "target:pressure",
-                    "value": 1
-                  }
-                ],
-                "max": 2
-              },
-              "if": {
-                "actor": "self",
-                "target": "foe",
-                "self_skill": {
-                  "dexterity": 3
-                }
-              }
-            },
-            {
-              "op": "condition",
-              "when": "acted",
-              "condition": "fear",
-              "rounds": 1,
-              "via": "dexterity",
-              "target": "target",
-              "if": {
-                "action": [
-                  "flush"
-                ],
-                "self_skill": {
-                  "dexterity": 5
-                }
-              }
-            },
             {
               "op": "resource",
               "when": "hit",
@@ -1443,55 +1371,26 @@
                 "each": "target"
               },
               "say": "{self} keeps {target} on the back foot."
-            },
-            {
-              "op": "condition",
-              "when": "hit",
-              "label": "flush_out_blade",
-              "condition": "fear",
-              "rounds": 1,
-              "via": "dexterity",
-              "target": "target",
-              "if": {
-                "actor": "self",
-                "hostile": true,
-                "melee": true,
-                "target_alive": true,
-                "rolled_with": [
-                  "dexterity"
-                ],
-                "target_not_tier": [
-                  "elite",
-                  "boss"
-                ],
-                "target_res": {
-                  "pressure": {
-                    "at_least": 2
-                  }
-                },
-                "self_skill": {
-                  "dexterity": 5
-                }
-              },
-              "limit": {
-                "per": "per_turn",
-                "n": 1
-              }
             }
-          ]
+          ],
+          "source": "rules 1.73 (Body), 0.32: the Agility step (item 5841): Near Miss went to Hold the Lane, Shaken Nerves to Break Them, the Flush rider and its blade twin into Flush Out"
+        },
+        "2": {
+          "name": "Slide",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "You can Slide: dive to the nearest cover, no opportunity attacks, and shed your own Pressure (the door's verb, pressure.json).",
+          "player": "Slide: dive to cover and shed Pressure",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.73 (Body), 0.32: the Agility step (item 5842)"
         },
         "3": {
-          "name": "Speed Load",
-          "category": "AP Mod",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Reloading costs {=unlocks.3.effects.0.value|abs} AP less.",
-          "player": "Reload costs {=.effects.0.value|abs} AP less",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "ap_cost:reload",
-              "value": -1
-            },
             {
               "op": "perk_choice",
               "skill": "dexterity",
@@ -1511,23 +1410,15 @@
           "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "5": {
-          "name": "Quick Draw",
-          "category": "AP Mod",
+          "name": "Flush Out",
+          "category": "Active Skill",
           "mastery": 0,
-          "text": "Once per combat, your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs 0 AP.",
-          "player": "Once a fight: your first attack with a weapon you draw costs no AP",
-          "effects": [
-            {
-              "op": "cost_mod",
-              "action": "attack_with_a_drawn_weapon",
-              "value": "zero",
-              "uses": "per_combat",
-              "context": "Draw Cut, Snap Shot"
-            }
-          ],
+          "text": "You can Flush Out: a Pressed foe you see saves or is Afraid of you, and loses Pressure (the door's verb, pressure.json; soldiers and below).",
+          "player": "Flush Out: a Pressed foe saves or is Afraid of you",
+          "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "item": true
+          "source": "rules 1.73 (Body), 0.32: the Agility step (item 5843)"
         },
         "7": {
           "name": "Mastery 3",
@@ -1664,17 +1555,10 @@
       ],
       "unlocks": {
         "3": {
-          "name": "Vault",
-          "category": "Combat Interaction",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Move over cover and obstacles at no extra movement cost.",
-          "player": "Cross cover at no extra movement",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "ignore_obstacle_move_cost",
-              "value": 1
-            },
             {
               "op": "perk_choice",
               "skill": "athletics",
@@ -1684,15 +1568,14 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Untouchable",
-          "category": "Active Skill",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "While wearing no torso armour (Class 0), attacks against you roll twice and take the worse result.",
-          "player": "No torso armour: attacks on you roll twice, take the worse",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "disadvantage",
-              "context": "attacks_against_self:armor_class_0"
+              "op": "perk_choice",
+              "skill": "athletics",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -1784,6 +1667,15 @@
         "bad_for": "slow-living types, high nobility, heavy-armour users.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {},
+        "passives": {
+          "3": "wall_run",
+          "5": "untouchable"
+        },
+        "note": "rules 1.73 item 5846: Vault (now Wall Run's Tier I) and Untouchable (free at 3 and 5) became perks; Catch moved here from Reaction Speed"
       }
     },
     {
@@ -1812,18 +1704,10 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Shoot First",
-          "category": "Combat Starter",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "You act in the surprise round even when your side is the one surprised.",
-          "player": "Act in the surprise round, even when surprised",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "grant_action",
-              "action": "act_in_surprise_round",
-              "ap": 3,
-              "uses": "per_combat"
-            },
             {
               "op": "perk_choice",
               "skill": "reaction_speed",
@@ -1833,20 +1717,17 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Cut In",
-          "category": "Conversation Quirk",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Once per scene, interrupt an NPC mid-sentence or mid-action to act first: grab, draw, leave, or speak.",
-          "player": "Once a scene: cut in and act first",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "cut_in",
-              "ap": 0,
-              "uses": "per_scene"
+              "op": "perk_choice",
+              "skill": "reaction_speed",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "engine"
         },
         "7": {
           "name": "Mastery 3",
@@ -1934,6 +1815,15 @@
         "bad_for": "calm people, people who need to save face, anyone who doesn't want to look like they're on speed.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {},
+        "passives": {
+          "3": "shoot_first",
+          "5": "cut_in"
+        },
+        "note": "rules 1.73 item 5850: Shoot First and Cut In (free at 3 and 5) became perks; Catch left for Athletics (its step comes back)"
       }
     },
     {

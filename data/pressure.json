@@ -15,7 +15,7 @@
       "requires": [
         {
           "skill": "dexterity",
-          "min": 1
+          "min": 2
         }
       ],
       "adjudication": "engine",
@@ -51,6 +51,83 @@
               "op": "resource",
               "resource": "pressure",
               "value": -1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pressure.flush_out",
+      "name": "Flush Out",
+      "kind": "verb",
+      "group": "move",
+      "requires": [
+        {
+          "skill": "dexterity",
+          "min": 5
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Agility step (item 5843): one verb for every Dexterity weapon in place of the Flush rider and its blade twin",
+      "text": "{=effects.0.ap} AP, once a turn: a Pressed foe (Pressure {=effects.0.reach.if.target_res.pressure.at_least} or more) you see within {=effects.0.reach.tiles} tiles saves or is Afraid of you for {=effects.0.effects.0.rounds} round, and loses Pressure as a Take does. Never an Elite or a Boss.",
+      "short": "A Pressed foe you see saves or is Afraid of you",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "flush_out",
+          "label": "Flush Out",
+          "ap": 2,
+          "uses": "per_turn",
+          "scope": [
+            "combat"
+          ],
+          "reach": {
+            "tiles": 8,
+            "side": "foe",
+            "sight": true,
+            "if": {
+              "target_res": {
+                "pressure": {
+                  "at_least": 2
+                }
+              },
+              "target_not_tier": [
+                "elite",
+                "boss"
+              ],
+              "target_alive": true
+            },
+            "why": {
+              "target_res": "Not Pressed enough yet.",
+              "target_not_tier": "An Elite or a Boss is never flushed out.",
+              "target_alive": "{target} is already down."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "when": "acted",
+              "condition": "fear",
+              "rounds": 1,
+              "via": "dexterity",
+              "target": "target",
+              "say": "{self} flushes {target} out{then}."
+            },
+            {
+              "op": "resource",
+              "when": "acted",
+              "resource": "pressure",
+              "target": "target",
+              "value": {
+                "base": 0,
+                "per": [
+                  {
+                    "of": "tech_rule:pressure.take_cost",
+                    "value": -1
+                  }
+                ]
+              }
             }
           ]
         }

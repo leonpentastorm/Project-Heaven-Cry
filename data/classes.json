@@ -1097,7 +1097,7 @@
           "name": "Break Them",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Rout costs you {=effects.0.value|abs} AP less on your turn (never under {=effects.0.min}).",
+          "text": "Rout costs you {=effects.0.value|abs} AP less on your turn (never under {=effects.0.min}), and every save a foe makes against you is harder by {=effects.1.value.per.0.value} for each Pressure on it (at most {=effects.1.value.max}).",
           "effects": [
             {
               "op": "cost_mod",
@@ -1109,6 +1109,26 @@
                   "rout"
                 ],
                 "own_turn": true
+              }
+            },
+            {
+              "op": "roll_mod",
+              "when": "save",
+              "roll": "tn",
+              "label": "Break Them",
+              "value": {
+                "base": 0,
+                "per": [
+                  {
+                    "of": "target:pressure",
+                    "value": 1
+                  }
+                ],
+                "max": 2
+              },
+              "if": {
+                "actor": "self",
+                "target": "foe"
               }
             }
           ],
@@ -1123,7 +1143,9 @@
             "agility"
           ],
           "status": "active",
-          "surface": "combat"
+          "surface": "combat",
+          "short": "Rout {=effects.0.value|abs} AP less · foes save harder for each Pressure on them",
+          "source": "rules 1.73 (Body), 0.32: the Agility step (item 5856): Shaken Nerves moved in from Dexterity 3"
         }
       ],
       "ranks": {
@@ -1138,7 +1160,7 @@
               "name": "Hold the Lane",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Held shots cost {=effects.0.value|abs} AP less (min {=effects.0.min})",
+              "text": "Held shots cost {=effects.0.value|abs} AP less (min {=effects.0.min}) · a held shot that misses still adds {=effects.1.value} Pressure (once a turn a foe)",
               "effects": [
                 {
                   "op": "cost_mod",
@@ -1150,9 +1172,31 @@
                       "watch"
                     ]
                   }
+                },
+                {
+                  "op": "resource",
+                  "when": "miss",
+                  "label": "Hold the Lane",
+                  "resource": "pressure",
+                  "value": 1,
+                  "target": "target",
+                  "if": {
+                    "actor": "self",
+                    "rolled_with": [
+                      "dexterity"
+                    ],
+                    "hostile": true,
+                    "own_turn": false
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "each": "target"
+                  },
+                  "say": "{self}'s near miss keeps {target}'s head down."
                 }
               ],
-              "source": "rules 1.60 item 4626 (R8): was Speed Loader, which repeated Speed Load (Dexterity 3); the id is kept so saves load",
+              "source": "rules 1.60 item 4626 (R8): was Speed Loader, which repeated Speed Load (Dexterity 3); the id is kept so saves load; rules 1.73 (Body), 0.32: the Agility step (item 5855): Near Miss moved in from Dexterity 3",
               "adjudication": "engine",
               "provisional": true,
               "origin": "marksman",
@@ -1165,7 +1209,8 @@
                 "agility"
               ],
               "status": "active",
-              "surface": "combat"
+              "surface": "combat",
+              "short": "Held shots {=effects.0.value|abs} AP less · a held miss still presses"
             }
           ]
         },

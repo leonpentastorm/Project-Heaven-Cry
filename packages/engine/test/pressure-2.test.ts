@@ -113,56 +113,58 @@ describe('Dexterity\'s door (skills.json dexterity.unlocks.1)', () => {
     expect(pressureOf(f.unit(u.id))).toBe(2 + g.effects[2].value);
     expect(() => f.act({ unitId: u.id, type: 'combat/perk', id: 'verb:pressure.slide' } as any)).toThrow(); // once a turn
   });
-  it('Near Miss (Dexterity 3): a held shot that misses still adds value Pressure, once a turn for each target; below 3 none; a plain shot misses with none', () => {
-    const d = door(), need = d.effects[0].if.self_skill.dexterity;
-    const held = (dex: number) => {
-      const { f, u } = setUp(sk({ skills: { dexterity: dex } }), '10,4'); f.unit(u.id).attack = -60;
+  // rules 1.73 items 5855, 5856, 5843: Near Miss is Hold the Lane's row, Shaken Nerves Break Them's (the Skirmisher's), and the
+  // Flush rider and its blade twin are one verb, Flush Out (pressure.json, Dexterity 5)
+  it('Near Miss (Hold the Lane, the Skirmisher): a held shot that misses still adds value Pressure; another class\'s none; a plain shot misses with none', () => {
+    const nm = (CLASS.marksman as any).ranks.I.moves.find((m: any) => m.id === 'speed_loader').effects.find((e: any) => e.label === 'Hold the Lane');
+    const held = (spec: CharSpec) => {
+      const { f, u } = setUp(spec, '10,4'); f.unit(u.id).attack = -60;
       f.act({ unitId: u.id, type: 'combat/technique', id: 'overwatch' } as any);
       const L = f.cb.log.length; f.turn(f.foe); f.unit(f.foe.id).ap = 6;
       withGame(f.g, () => moveUnit(f.cb, f.unit(f.foe.id), '9,4', f.g.rng));
       return { fired: count(f, /overwatch/i, L), p: pressureOf(f.unit(f.foe.id)), lines: count(f, /near miss/, L) };
     };
-    const a = held(need), b = held(need - 1);
+    const a = held(sk({ skills: { dexterity: 6 } })), b = held(gunner({ skills: { dexterity: 6 } }));
     expect(a.fired).toBeGreaterThan(0);
-    // the fixed seed's held round goes wide (a natural 20 would hit: the near-miss line is the rule)
-    expect(a.lines).toBe(1); expect(b.lines).toBe(0); expect(a.p - b.p).toBe(d.effects[0].value);
-    const { f, u } = setUp(sk({ skills: { dexterity: need } })); f.unit(u.id).attack = -60; const L = f.cb.log.length;
+    expect(a.lines).toBe(1); expect(b.lines).toBe(0); expect(a.p - b.p).toBe(nm.value);
+    const { f, u } = setUp(sk({ skills: { dexterity: 6 } })); f.unit(u.id).attack = -60; const L = f.cb.log.length;
     shoot(f, u); expect(count(f, /near miss/, L)).toBe(0);
   });
-  it('Shaken Nerves (Dexterity 3): a real Rout\'s save TN rises by the pips, at most value.max', () => {
-    const d = door(), sn = d.effects[1].value;
-    const tn = (dex: number, pips: number) => {
-      const { f, u } = setUp(sk({ skills: { dexterity: dex } })); (f.unit(f.foe.id) as any).pressure = pips;
+  it('Shaken Nerves (Break Them, the Skirmisher): a real Rout\'s save TN rises by the pips, at most value.max; another class\'s does not', () => {
+    const sn = gain('break_them').effects.find((e: any) => e.label === 'Break Them').value;
+    const tn = (spec: CharSpec, pips: number) => {
+      const { f, u } = setUp(spec); (f.unit(f.foe.id) as any).pressure = pips;
       let seen = 0; onHook('save', (ctx: any) => { if (ctx.by?.id === u.id) seen = ctx.tnAdd || 0; });
       f.act({ unitId: u.id, type: 'combat/technique', id: 'rout', targetId: f.foe.id } as any);
       return seen;
     };
-    expect(tn(3, 2) - tn(2, 2)).toBe(Math.min(sn.max, 2 * sn.per[0].value));
-    expect(tn(3, 4) - tn(2, 4)).toBe(sn.max);
+    expect(tn(sk({ skills: { dexterity: 3 } }), 2) - tn(gunner({ skills: { dexterity: 3 } }), 2)).toBe(Math.min(sn.max, 2 * sn.per[0].value));
+    expect(tn(sk({ skills: { dexterity: 3 } }), 4) - tn(gunner({ skills: { dexterity: 3 } }), 4)).toBe(sn.max);
   });
-  it('Flush Out (Dexterity 5): a Flush makes its target save or be Afraid (fear) of the shooter; then on its turn it does not close in or attack', () => {
-    const d = door(), need = d.effects[2].if.self_skill.dexterity;
-    const { f, u } = setUp(sk({ skills: { dexterity: need } }), '6,4');
-    f.unit(f.foe.id).ap = 6; (f.unit(f.foe.id) as any).saves = undefined;
-    let feared = false;
-    for (let i = 0; i < 8 && !feared; i++) { // a save can pass: Flush again until it fails (the dice are the fight's)
-      f.unit(u.id).ap = 6;
-      f.act({ unitId: u.id, type: 'combat/technique', id: 'flush', targetId: f.foe.id } as any);
-      feared = condOn(f.unit(f.foe.id), 'fear');
-    }
-    expect(feared).toBe(true);
+  it('Flush Out (Dexterity 5, a verb): a Pressed foe saves or is Afraid of the shooter, loses the Take\'s Pressure; then on its turn it does not close in or attack', () => {
+    const fo = itemInfo('verb:pressure.flush_out')!.effects[0];
+    const { f, u } = setUp(sk({ skills: { dexterity: 5 } }), '6,4');
+    f.unit(f.foe.id).ap = 6; (f.unit(f.foe.id) as any).sv = { body: 0, brain: 0, heart: -50 }; (f.unit(f.foe.id) as any).pressure = fo.reach.if.target_res.pressure.at_least;
+    const ap = f.unit(u.id).ap;
+    f.act({ unitId: u.id, type: 'combat/perk', id: 'verb:pressure.flush_out', targetId: f.foe.id } as any);
+    expect(ap - f.unit(u.id).ap).toBe(fo.ap); expect(condOn(f.unit(f.foe.id), 'fear')).toBe(true);
+    expect(pressureOf(f.unit(f.foe.id))).toBeLessThan(fo.reach.if.target_res.pressure.at_least);
     const hp = f.unit(u.id).hp, was = f.unit(f.foe.id).pos;
     f.act({ unitId: u.id, type: 'combat/end-turn' } as any);
-    // the foe's turn ran (enemy AI): no hit on the Skirmisher, and it is no closer
     const dd = (a: string, b: string) => { const [ax, ay] = a.split(',').map(Number), [bx, by] = b.split(',').map(Number); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
     expect(f.unit(u.id).hp).toBe(hp);
     expect(dd(f.unit(f.foe.id).pos, f.unit(u.id).pos)).toBeGreaterThanOrEqual(dd(was, '4,4'));
   });
-  it('below Dexterity 5 a Flush gives no fear', () => {
-    const d = door(), need = d.effects[2].if.self_skill.dexterity;
-    const { f, u } = setUp(sk({ skills: { dexterity: need - 1 } }), '6,4');
-    for (let i = 0; i < 4; i++) { f.unit(u.id).ap = 6; f.act({ unitId: u.id, type: 'combat/technique', id: 'flush', targetId: f.foe.id } as any); }
-    expect(condOn(f.unit(f.foe.id), 'fear')).toBe(false);
+  it('Flush Out is refused below Dexterity 5, on a foe not Pressed enough, and on an Elite; the Flush technique alone gives no fear', () => {
+    const fo = itemInfo('verb:pressure.flush_out')!.effects[0], need = fo.reach.if.target_res.pressure.at_least;
+    const low = setUp(sk({ skills: { dexterity: 4 } }), '6,4'); (low.f.unit(low.f.foe.id) as any).pressure = need;
+    expect(() => low.f.act({ unitId: low.u.id, type: 'combat/perk', id: 'verb:pressure.flush_out', targetId: low.f.foe.id } as any)).toThrow();
+    for (let i = 0; i < 4; i++) { low.f.unit(low.u.id).ap = 6; low.f.act({ unitId: low.u.id, type: 'combat/technique', id: 'flush', targetId: low.f.foe.id } as any); }
+    expect(condOn(low.f.unit(low.f.foe.id), 'fear')).toBe(false);
+    const calm = setUp(sk({ skills: { dexterity: 5 } }), '6,4'); (calm.f.unit(calm.f.foe.id) as any).pressure = need - 1;
+    expect(() => calm.f.act({ unitId: calm.u.id, type: 'combat/perk', id: 'verb:pressure.flush_out', targetId: calm.f.foe.id } as any)).toThrow();
+    const f = fightWith([sk({ skills: { dexterity: 5 } })], [{ weapon: 'combat_knife', tier: 'elite' }]); const u = f.turn(f.pc); at(f, u, '4,4'); at(f, f.foe, '6,4'); (f.unit(f.foe.id) as any).pressure = need;
+    expect(() => f.act({ unitId: u.id, type: 'combat/perk', id: 'verb:pressure.flush_out', targetId: f.foe.id } as any)).toThrow();
   });
 });
 
