@@ -12367,3 +12367,10 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     until the white-ink sign `banner-fight-approach` is drawn (`art/briefs/ART-REQUESTS.md` 0c). Proof:
     `apps/web/src/game/turnIntro-banners.test.tsx` (through the reducer: an unseen fight's first big card is APPROACH,
     BATTLE START after contact; PHC-0003's seen fight shows BATTLE START only).
+5523. **The quiet phases' music** (Leon, 18 Nov: "make the songs the same as roam mode"): a run fight's approach (before
+    contact) and its field after a win (FREE ROAM) play the run's one calm track, `survival.json music.quiet` (**Survival:
+    Path Map**, PROVISIONAL), from that one field (`music.ts musicFor`); the fight's song starts at contact (with BATTLE
+    START) and stops at VICTORY, when the calm track returns for FREE ROAM. Before, the approach and the field played the
+    fight's song. The client needs no change (it plays what the engine picks and preloads the run's track). Proof:
+    `test/survival-music.test.ts` (through the reducer: an unseen fight plays the quiet track; contact, the fight song;
+    the win's field, the quiet track; off the field, the run's own track).

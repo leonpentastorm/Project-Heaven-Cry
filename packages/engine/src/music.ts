@@ -55,7 +55,7 @@ export const FIGHT_POOL: readonly OstId[] = ['gunline', 'brass_on_the_floor', 'd
 export const GEARING_UP: OstId = 'gearing_up';
 /** Survival's music by situation (data/survival.json `music`, rules 1.54): the camp, the path map by setting (else
  * `default`), a place by its node's kind, the boon pick. One lookup, runMusic. */
-export const RUN_MUSIC: { camp: OstId; map: Record<string, OstId>; place: Record<string, OstId>; boon: OstId } = (survivalJ as any).music;
+export const RUN_MUSIC: { camp: OstId; map: Record<string, OstId>; place: Record<string, OstId>; boon: OstId; quiet: OstId } = (survivalJ as any).music;
 /**
  * The track a Survival run plays now (rules 1.54), or null when nothing here is the run's own (a fight, which keeps the
  * fight music, or the summary, which keeps what plays today). The camp plays camp; the boon pick plays boon; a place
@@ -182,6 +182,9 @@ export function musicFor(g: GameState): { key: string; layer: 'spotlight' | 'pin
   if (m) return { key: 's' + m.seq, layer: m.layer, track: m.track, reason: m.reason, charId: m.charId, seq: m.seq };
   const camp = g.campaign, zone = camp?.zones.find((z) => z.id === (g.combat && g.phase === 'combat' ? g.combat.map.id : g.story.zone));
   if (g.phase === 'combat' && g.combat && g.combat.units.some((u) => u.side === 'foe')) {
+    // Rules item 5523: a run fight's quiet phases (the approach before contact, the field after a win: FREE ROAM) play
+    // the run's one calm track (survival.json music.quiet); the fight's song starts at contact and stops at VICTORY.
+    if (g.run && (g.combat.approach || g.combat.field)) return { key: 'sv:' + RUN_MUSIC.quiet, layer: 'ambient', track: OST[RUN_MUSIC.quiet], reason: g.combat.approach ? 'Survival: the approach' : 'Survival: free roam' };
     const th = fightTheme(g.combat);
     if (th.id !== 'last_rounds') {
       const enc = camp?.encounters?.find((e) => e.music && e.name.toLowerCase() === g.combat!.name.toLowerCase());

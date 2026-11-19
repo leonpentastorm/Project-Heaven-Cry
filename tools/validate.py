@@ -2578,10 +2578,10 @@ if _sv is not None:
         def _mtrack(path, v):
             if not isinstance(v, str) or (_ost_ids is not None and v not in _ost_ids):
                 errors.append(f"{_w}.{path}: {v!r} is not a track in the engine's OstId list (packages/engine/src/music.ts)")
-        if not isinstance(_mu, dict) or set(_mu) - {"about", "camp", "map", "place", "boon"} or not {"camp", "map", "place", "boon"} <= set(_mu):
-            errors.append(f"{_w}: an object of camp, map, place and boon (and about)")
+        if not isinstance(_mu, dict) or set(_mu) - {"about", "camp", "map", "place", "boon", "quiet"} or not {"camp", "map", "place", "boon", "quiet"} <= set(_mu):
+            errors.append(f"{_w}: an object of camp, map, place, boon and quiet (and about)")
         else:
-            _mtrack("camp", _mu["camp"]); _mtrack("boon", _mu["boon"])
+            _mtrack("camp", _mu["camp"]); _mtrack("boon", _mu["boon"]); _mtrack("quiet", _mu["quiet"])
             _mm = _mu["map"] if isinstance(_mu["map"], dict) else {}
             if "default" not in _mm: errors.append(f"{_w}.map: needs a `default` track")
             for _k, _v in _mm.items():

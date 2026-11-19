@@ -2,7 +2,7 @@
 // its node's kind (a place with no track of its own plays the map's), the boon pick; a fight keeps the fight music.
 // Every case goes through the reducer (a real run, a real move) and musicFor; the numbers of the table are read from data.
 import { describe, expect, it } from 'vitest';
-import { type GameState, apply, musicFor, OST, FIGHT_POOL, RUN_MUSIC } from '../src';
+import { type GameState, apply, musicFor, reachable, OST, FIGHT_POOL, RUN_MUSIC } from '../src';
 import { type Pc } from './helpers/replay';
 import { survivalRoom, startRun, ownerOf, leaveField } from './helpers/survival';
 import svJ from '../../../data/survival.json';
@@ -64,16 +64,36 @@ describe('rules 1.54: Survival\'s music by situation', () => {
   });
   it('a fight in a run keeps the fight selection: never one of the run\'s own tracks', () => {
     for (const kind of ['fight', 'elite']) {
-      const g = onNode(kind, undefined, kind === 'elite' ? 5 : 3);
+      let g = onNode(kind, undefined, kind === 'elite' ? 5 : 3);
       expect(g.phase, kind).toBe('combat');
+      // (a fight opened in the approach plays the quiet track until contact, rules item 5523: join it first)
+      for (let k = 0; k < 12 && g.combat!.approach; k++) { const cb = g.combat!, u = cb.units.find((x) => x.id === cb.order[cb.turn])!; g = apply(g, { type: 'combat/end-turn', unitId: u.id }, g.characters[u.charId!]?.owner || 'host'); }
       const t = musicFor(g);
       expect(t.layer).toBe('combat');
       expect(String(t.track?.ost).startsWith('surv_')).toBe(false);
       expect([...FIGHT_POOL, 'heaven_falls', 'last_rounds']).toContain(t.track?.ost);
     }
   });
+  // Rules item 5523 (Leon: "make the songs the same as roam mode"): a run fight's quiet phases, the approach before
+  // contact and the field after a win (FREE ROAM), play the one calm track (music.quiet); the fight's song is heard from
+  // contact to VICTORY.
+  it('the approach and FREE ROAM play the quiet track; the fight song from contact to the win', () => {
+    let g: GameState | null = null;
+    for (let s = 1; s <= 40 && !g; s++) {
+      const seed = 'PHC-' + String(s).padStart(4, '0'), x = started(seed), n = reachable(x.run!).find((q) => q.kind === 'fight');
+      if (!n) continue; const f = take(x, n.id); if (f.combat?.approach) g = f;
+    }
+    expect(g).toBeTruthy();
+    expect(musicFor(g!).track?.ost).toBe(M.quiet); expect(musicFor(g!).layer).toBe('ambient');
+    for (let k = 0; k < 12 && g!.combat!.approach; k++) { const cb = g!.combat!, u = cb.units.find((x) => x.id === cb.order[cb.turn])!; g = apply(g!, { type: 'combat/end-turn', unitId: u.id }, g!.characters[u.charId!]?.owner || 'host'); }
+    expect(g!.combat!.approach).toBeUndefined();
+    const fight = musicFor(g!); expect(fight.layer).toBe('combat'); expect(fight.track?.ost).not.toBe(M.quiet);
+    g = apply(g!, { type: 'run/skip' }, 'host'); expect(g.run!.state).toBe('field'); expect(g.combat!.field).toBeTruthy();
+    expect(musicFor(g).track?.ost).toBe(M.quiet);
+    g = leaveField(g); expect(g.phase).not.toBe('combat'); expect(musicFor(g).layer).toBe('ambient'); // off the field: the run's own tracks (runMusic)
+  });
   it('every Survival context resolves to a real track in the table', () => {
-    const ids: string[] = [M.camp, M.boon, ...Object.values<string>(M.map), ...Object.values<string>(M.place)];
+    const ids: string[] = [M.camp, M.boon, M.quiet, ...Object.values<string>(M.map), ...Object.values<string>(M.place)];
     for (const id of ids) expect(OST[id as keyof typeof OST], id).toBeTruthy();
     expect(M.map.default).toBeTruthy();
     for (const s of SV.settings) expect(RUN_MUSIC.map[s.id] || RUN_MUSIC.map.default, s.id).toBeTruthy();
