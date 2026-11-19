@@ -13553,3 +13553,9 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       side from the shooter: the new predicate `target_behind`) lands on you instead, whole (the op `redirect`, share 1):
       your plates take it as they take any hit. The log says "X takes the shot meant for Y (Stand Behind Me)." Guard 2.0
       item 9's half-cover design is not built. Its picture is `move-stand-behind-me`.
+7007. **Parting Cut** (Ingenuity 9; shadow-spec section 4; closes rules 1.32 item 1966's first verb): a Break that spends
+      at least **2** Shadow (the spec's "all Shadow, at least 2") and drops its target leaves you **Hidden again**, with
+      the same entry (no fresh ambush), when no enemy's eyes reach you after it. It rides the Break itself (three rows in
+      the Break's toggle, gated `self_skill ingenuity 9` and the Shadow held as the attack is rolled), after the Break's
+      own reveal; Ghost Kill's rule is unchanged beside it (Parting Cut does not ask that no eyes reached you as you
+      struck: the victim's own eyes do not stop it). `shadow.json pending` is empty. No new engine piece.

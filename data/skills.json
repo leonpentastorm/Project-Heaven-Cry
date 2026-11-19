@@ -1895,7 +1895,7 @@
           "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Break: spend it all on one weapon attack from Hidden. Go to Ground: Hide costs you {=unlocks.1.effects.8.value|abs} AP less (at least {=unlocks.1.effects.8.min}). First Shade: your first Hide of a fight, holding no Shadow, gives {=unlocks.1.effects.9.value} at once. Tagged: +{=unlocks.1.effects.10.value} to hit from Hidden on a Marked enemy. Unseen Hand: an attack you make from Hidden rolls with Ingenuity when that is higher than the weapon's own skill (never added on top).",
+          "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Break: spend it all on one weapon attack from Hidden. Go to Ground: Hide costs you {=unlocks.1.effects.8.value|abs} AP less (at least {=unlocks.1.effects.8.min}). First Shade: your first Hide of a fight, holding no Shadow, gives {=unlocks.1.effects.9.value} at once. Tagged: +{=unlocks.1.effects.10.value} to hit from Hidden on a Marked enemy. Unseen Hand: an attack you make from Hidden rolls with Ingenuity when that is higher than the weapon's own skill (never added on top). Parting Cut (Ingenuity {=unlocks.1.toggles.0.effects.2.if.self_skill.ingenuity}): a Break that spends at least {=unlocks.1.toggles.0.effects.2.if.self_res.shadow.at_least} Shadow and drops its target leaves you Hidden again when no enemy's eyes reach you after it (no fresh ambush).",
           "player": "+{=.effects.0.value} for a turn ended Hidden · +{=.effects.1.value} for a cover-to-cover move · +{=.effects.2.value} for an unseen kill. Go to Ground: Hide costs {=.effects.8.value|abs} AP less · First Shade: +{=.effects.9.value} Shadow on your first Hide · Tagged: +{=.effects.10.value} to hit a Marked foe · Unseen Hand: attacks from Hidden roll with Ingenuity when higher",
           "effects": [
             {
@@ -2150,6 +2150,70 @@
                     "what": "break"
                   },
                   "say": "{self} breaks from the shadows and is revealed."
+                },
+                {
+                  "op": "mark",
+                  "flag": "parting_ready",
+                  "when": "attack_roll",
+                  "if": {
+                    "self_skill": {
+                      "ingenuity": 9
+                    },
+                    "self_res": {
+                      "shadow": {
+                        "at_least": 2
+                      }
+                    }
+                  },
+                  "label": "Parting Cut"
+                },
+                {
+                  "op": "mark",
+                  "flag": "parting",
+                  "when": "hit",
+                  "if": {
+                    "flag": "parting_ready",
+                    "hostile": true,
+                    "target_alive": false
+                  },
+                  "label": "Parting Cut"
+                },
+                {
+                  "op": "condition",
+                  "condition": "hidden",
+                  "when": "acted",
+                  "if": {
+                    "flag": "parting",
+                    "self_sight": [
+                      "out_of_view"
+                    ],
+                    "self_lacks": [
+                      "hidden"
+                    ]
+                  },
+                  "skip_save": true,
+                  "same_entry": true,
+                  "priority": 112,
+                  "label": "Parting Cut",
+                  "fx": {
+                    "k": "stance",
+                    "what": "ghost"
+                  },
+                  "say": "{self} leaves the body behind and is gone again (Parting Cut)."
+                },
+                {
+                  "op": "mark",
+                  "flag": "parting",
+                  "clear": true,
+                  "when": "acted",
+                  "priority": 125
+                },
+                {
+                  "op": "mark",
+                  "flag": "parting_ready",
+                  "clear": true,
+                  "when": "acted",
+                  "priority": 125
                 }
               ]
             }
@@ -2327,7 +2391,7 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. The Shadow verb of this rung opens: Timing (a foe loses AP).",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. The Shadow verb of this rung opens: Timing (a foe loses AP). Parting Cut opens: a killing Break can hide you again (see Ingenuity's Break).",
           "player": "New move: Timing (foe loses AP)",
           "effects": [
             {

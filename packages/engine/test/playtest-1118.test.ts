@@ -168,10 +168,12 @@ describe('row 8: a Figment\'s damage and kills are its owner\'s, and Volatile\'s
     g = apply(g, { type: 'run/move', node: chooseNode(g, ['fight'])!.id } as any, 'host');
     const pc = g.combat.units.find((u: any) => u.charId === 'c1'), picture = (tile: string) => apply(g, { type: 'combat/perk', unitId: pc.id, id: 'verb:picture', choice: 'd:v', tile } as any, 'host');
     g = picture('2,7'); // the first act is contact (rules 1.64 item 5011): the fight is joined, the picture waits for the turn
-    g = upTurn(g, pc.id); g = picture('2,7');
+    // (rules 1.82 item 7004: the foes are caught by surprise, so the character's turn is first and the picture is made)
+    if (!g.combat.units.some((u: any) => u.owned?.kind === 'figment')) { g = upTurn(g, pc.id); g = picture('2,7'); }
     const fig = g.combat.units.find((u: any) => u.owned?.kind === 'figment'); expect(fig?.ctrl).toBe('c1');
     const [fx, fy] = fig.pos.split(',').map(Number), foe = g.combat.units.find((u: any) => u.side === 'foe' && !u.dead);
     foe.pos = (fx + 1) + ',' + fy; foe.hp = 5; foe.armour = 0; fig.hp = 1; g.combat.turn = g.combat.order.indexOf(foe.id);
+    { const two = g.combat.units.find((u: any) => u.side === 'foe' && !u.dead && u !== foe); if (two && two.id === 'foe-1') { two.pos = (fx + 1) + ',' + (fy + 1); two.hp = 5; two.armour = 0; } } // the one beside it (since rules 1.82 item 7004 the foes have not walked up in round 1)
     const log0 = g.combat.log.length;
     rig({ hit: true, die: 12 }); withGame(g, () => resolveAttack(g.combat, g.rng, foe, fig, 'melee', null, { noAp: true })); rig(null); // the foe's blow (what its AI turn calls)
     expect(fig.hp).toBe(0); expect(foe.hp).toBe(0);
@@ -288,5 +290,27 @@ describe('row 13: the Flux limit is one number (Rumination\'s feed), on the Vent
     expect(max).toBeGreaterThan(fluxMaxOf(f.unit(u.id), f.cb)); // the feed counts for this build (unbound it is lost)
     const vent = actionsFor(f.g, u.id, 'host').find((d) => d.id === 'vent')!;
     expect(vent.name).toBe('Vent Flux · 0/' + max);
+  });
+});
+
+describe('rules 1.82 item 7007: Parting Cut (Ingenuity 9): a killing Break of 2 Shadow or more hides you again when no eyes reach you after it', () => {
+  const BREAK = ['skill:ingenuity.1#shadow.break'];
+  const fight = (ing: number, shadow: number) => {
+    const f = fightWith([{ weapon: 'hellraiser_service_rifle', skills: { ingenuity: ing }, attrs: { perception: Math.max(ing, 3) } }], [{ tier: 'minion' }, { tier: 'minion' }]);
+    const t = f.foes[0], w = f.foes[1]; w.pos = '14,8'; w.vision = 1;
+    const u = f.turn(f.pc); f.unit(u.id).pos = '1,4'; t.pos = '3,4'; t.vision = 1;
+    f.act({ type: 'combat/hide', unitId: u.id } as any); if (!f.unit(u.id).hidden) throw new Error('could not hide');
+    f.unit(t.id).vision = 12; // the victim's eyes on your tile as you shoot: no Ghost Kill
+    f.unit(t.id).hp = 1; f.unit(u.id).attack = 60; (f.unit(u.id).res as any).shadow = shadow; f.unit(u.id).ap = 9;
+    f.act({ type: 'combat/attack', unitId: u.id, targetId: t.id, mode: 'shot', mods: BREAK } as any);
+    expect(f.unit(t.id).hp).toBeLessThanOrEqual(0);
+    return { f, u: f.unit(u.id) };
+  };
+  it('Ingenuity 9, a Break of 2 Shadow that kills: Hidden again, said in the log', () => {
+    const { f, u } = fight(9, 2); expect(u.hidden).toBe(true); expect(f.cb.log.some((l: string) => /\(Parting Cut\)/.test(l))).toBe(true);
+  });
+  it('a Break of 1 Shadow, or Ingenuity 8: revealed as the Break says', () => {
+    const a = fight(9, 1), b = fight(8, 2);
+    expect(a.u.hidden, a.f.cb.log.slice(-4).join(' | ')).toBeFalsy(); expect(b.u.hidden, b.f.cb.log.slice(-4).join(' | ')).toBeFalsy();
   });
 });
