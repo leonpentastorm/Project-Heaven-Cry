@@ -215,10 +215,22 @@ describe('the forks (door/pick) and the save migration', () => {
     expect((c as any).doorKept[D].length).toBe(had.length - formsKnown(c)); // ... and the one over it kept outside it
     expect((c as any).doorPicks.visualization).toBeUndefined(); // the old door is gone
     expect(pendingDoorPicks(c, D)).toEqual([]);
-    c.skills.visualization = 7; // two more known: chosen from the forms it does not hold
-    expect(pendingDoorPicks(c, D)[0].left).toBe(2);
+    c.skills.visualization = 7; // two more known, one of them already held outside the count (M1): one to choose
+    expect(pendingDoorPicks(c, D)[0].left).toBe(1);
     expect(pendingDoorPicks(c, D).flatMap((p) => p.options.map((o) => o.id)).sort()).toEqual(F.forms.map((f: any) => f.id).filter((x: string) => !had.includes(x)).sort());
     c.skills.visualization = 5; const once = JSON.stringify(g); expect(JSON.stringify(migrateLoaded(JSON.parse(once)))).toBe(once); // once: a second load changes nothing
+  });
+  it('M1: a legacy save holding a form over its count learns none at the next point (levelup/raise through the reducer)', () => {
+    // Visualization 5 (6 known) and 7 forms from the old ladder: 6 learned, 1 kept outside the count
+    const s = storyWith([{ skills: { visualization: 5 }, attrs: { expression: 7 }, classId: 'trickster' }]), id = s.chars[0].id, D = F.forms_known.door;
+    const old = JSON.parse(JSON.stringify(s.g)); delete old.characters[id].figRev; delete old.characters[id].doorPicks; delete old.characters[id].doorKept;
+    s.g = migrateLoaded(old);
+    expect(formsOf(s.g.characters[id]).length).toBe(7); expect(((s.g.characters[id] as any).doorKept[D] || []).length).toBe(1);
+    (s.g.characters[id] as any).unspent = { ...((s.g.characters[id] as any).unspent || {}), skill: 1 };
+    s.act({ type: 'levelup/raise', charId: id, kind: 'skill', id: F.visualizer.door } as any);
+    const c = s.g.characters[id]; expect(c.skills.visualization).toBe(6); expect(formsKnown(c)).toBe(7);
+    expect(pendingDoorPicks(c, D)).toEqual([]); // 7 known, 7 held: nothing to learn
+    expect(() => s.act({ type: 'door/pick', charId: id, door: D, option: F.forms.map((f: any) => f.id).find((x: string) => !formsOf(c).includes(x)) } as any)).toThrow();
   });
   it('the migration of a rev-1 save (it picked at the old forks): its fork picks and kept forms move to figment_forms', () => {
     const s = storyWith([{ skills: { visualization: 4 } }]), id = s.chars[0].id, D = F.forms_known.door;

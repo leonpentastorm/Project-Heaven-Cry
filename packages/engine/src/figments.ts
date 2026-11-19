@@ -71,9 +71,11 @@ export function formsOf(c: Character | null | undefined): string[] {
   const open = new Set([...doorPicksOf(c, FIG_DOOR), ...doorKeptOf(c, FIG_DOOR)]);
   return (FIG.forms as any[]).map((f) => f.id).filter((id) => open.has(id));
 }
-/** The door's grant: forms known, chosen from all ten (what a save kept outside the count takes no place in it). */
+/** The door's grant: forms known, chosen from all ten. A form a save kept outside the count (doorKept) is charged
+ * against it here (the review of the 0.32 shared step, M1): a legacy save holding more forms than it knows learns no
+ * new one until its forms known pass what it holds. */
 export function figmentGrants(c: Character): DoorGrant[] {
-  const n = formsKnown(c); if (n <= 0) return [];
+  const n = Math.max(0, formsKnown(c) - doorKeptOf(c, FIG_DOOR).length); if (n <= 0) return [];
   return [{ id: 'known', of: (FIG.forms as any[]).map((f) => f.id), n, why: SKILL_NAME() + ' ' + visOf(c) + ': ' + n + ' forms known, each chosen once and kept for good.' }];
 }
 registerDoorPicks(FIG_DOOR, { name: 'Figment form', skill: VIS, grants: figmentGrants, option: (id) => (FORM[id] ? { id, label: FORM[id].name, icon: FORM[id].icon || '', text: (FORM[id] as any).short || FORM[id].text || '' } : null) }); // a form's card line: its short line (0.31.11), else its text
