@@ -2683,7 +2683,7 @@
     "about": "Classes 3.0 P10 and P9 (rules 1.78 item 6607): the kinds of zone data may lay (op zone; predicates self_in_zone, actor_in_zone, target_in_zone; engine: magic.ts DATA_ZONE_KINDS, makeZone, zonesAt). A row: id, the system that lays it. One side's zones of a kind on one tile never stack (rules 1.78 item 6601).",
     "kinds": [
       { "id": "sanctuary", "about": "the Chaplain's Sanctuary (rules 1.31)" },
-      { "id": "hallowed", "about": "the Chaplain's Hallow (rules 1.78 item 6607)" }
+      { "id": "hallowed", "about": "the Chaplain's Hallow (rules 1.78 item 6607)", "seat": ["whisper"], "seat_note": "rules 1.82 item 7005 (the seat): a Whisper of a unit of the zone's side reaches from any of its tiles as if the caster stood there (sight and range; faith.ts prayerSeats)" }
     ]
   },
   "ties": {

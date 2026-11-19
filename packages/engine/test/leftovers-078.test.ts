@@ -13,7 +13,7 @@ import { CLASS_MOVE_POOL, applyDamage, setDevotionXp, devotionThreshold, zonesAt
 import { fightWith, withGame, storyWith, type CharSpec } from './helpers/perkfight';
 import { beginTurn, condOn, enemyIntent, previewAttack, CLASS, previewDescriptor } from '../src';
 import { figFight } from './helpers/figfight';
-import { previewEvoke, apply, reachable, active, type GameState } from '../src';
+import { previewEvoke, apply, reachable, active, prayerAim, prayerSeats, type GameState } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 
 const CHAP: CharSpec = { name: 'Chaplain', skills: { faith: 6 }, attrs: { virtue: 8 }, level: 12, classId: 'guardian' };
@@ -159,6 +159,23 @@ describe('item 6607: Hallow (prayer-2.0 item 16)', () => {
     const term = () => withGame(h.f.g, () => previewAttack(h.f.cb, h.f.unit(h.foe), gun, 'shot', { free: true })).terms!.filter((t: any) => /Hallow/.test(t.label)).map((t: any) => t.v);
     expect(term()).toEqual([]);
     foe.pos = '4,4'; expect(term()).toEqual([HALLOW.effects[1].value]);
+  });
+});
+
+describe('rules 1.82 item 7005: a Whisper prays from holy ground (the seat)', () => {
+  it('Rebuke reaches a foe seen from a hallowed tile as if the Chaplain stood there; a Hymn does not; before the ground, not', () => {
+    const h = twoChaplains(); const f = h.f;
+    f.unit(h.me).vision = 4; f.unit(h.me).pos = '0,12'; // the Chaplain sees 4 tiles, far from the foe
+    const reach = () => prayerAim(f.g, h.me, 'whisper', 'rebuke').reach;
+    expect(reach()).not.toContain(f.unit(h.foe).pos);
+    f.turn(h.two); f.unit(h.two).ap = 6;
+    f.act({ type: 'combat/perk', unitId: h.two, id: 'class:guardian.hallow', actionId: 'hallow', tile: '4,5' } as Action, 'host'); // the second Chaplain lays it: the side's ground
+    expect(prayerSeats(f.cb, f.unit(h.me), 'whisper')).toContain('5,5');
+    expect(prayerSeats(f.cb, f.unit(h.me), 'hymn')).toEqual([f.unit(h.me).pos]);
+    expect(reach()).toContain(f.unit(h.foe).pos);
+    f.turn(h.me); f.unit(h.me).ap = 6; const n = f.cb.log.length;
+    f.act({ type: 'faith/pray', unitId: h.me, kind: 'whisper', id: 'rebuke', targetId: h.foe } as any, 'host');
+    expect(f.cb.log.slice(n).join(' ')).toMatch(/Rebuke/);
   });
 });
 

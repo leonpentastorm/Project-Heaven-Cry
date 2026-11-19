@@ -13539,3 +13539,10 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       `adjudication: engine`. The old surprise round's `ambushers_ap` is not read (an ambusher acts on its own turn with
       the AP it has, item 1501). A story fight's own ambush rules (unaware foes, an attack in the open) are unchanged.
       One function, `combat.ts surpriseSide`.
+7005. **Praying from holy ground** (prayer-2.0 item 17; closes rules 1.78 item 6607's last part; the seat, P3 on a zone,
+      a new engine piece): a zone kind's row may list prayers under `seat` (`rules.json zones.kinds`); a unit of the
+      zone's side counts such a prayer **from each of the zone's tiles as if it stood there**: its sight and its range
+      (the units it may aim at, the tiles it may pick, a two-unit prayer's pick range). Hallowed ground's row lists the
+      **Whisper**: a Whisper reaches from any hallowed tile of your side's (anyone's Hallow of your side, not only your
+      own; PROVISIONAL), a Hymn and a Miracle do not. Nothing else of the prayer moves (its area round the caster, its
+      AP, its roll). One reader, `faith.ts prayerSeats`, used by the targets, the pick and the aim.
