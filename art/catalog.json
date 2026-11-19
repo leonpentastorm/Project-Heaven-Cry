@@ -20665,6 +20665,42 @@
         "different_pixels_32": 2,
         "different_pixels_64": 24
       }
+    },
+    "weapon-glaive--relic": {
+      "label": "Glaive — Relic",
+      "path": "art/icons/gear/weapon-glaive--relic.png",
+      "sha256": "14e13257e7f6415a3e83b407c0e41c27fe22339cd9160c1a02ec7c26bf9d1985",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-glaive--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-glaive--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-glaive--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-glaive--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-glaive--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.2",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-glaive",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.8020901371652515,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 67
+      }
     }
   },
   "survival_art": {
