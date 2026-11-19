@@ -19885,6 +19885,42 @@
         "different_pixels_32": 3,
         "different_pixels_64": 6
       }
+    },
+    "weapon-legion_gladius--masterwork": {
+      "label": "Legion Gladius — Masterwork",
+      "path": "art/icons/gear/weapon-legion_gladius--masterwork.png",
+      "sha256": "b12143083cdfe3c5ceee491749c91166b76383cf92fafa2bb4789d5e336f14f7",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_gladius--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_gladius--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_gladius--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_gladius--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-legion_gladius--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.1",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-legion_gladius",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9825688685328057,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 8
+      }
     }
   },
   "survival_art": {

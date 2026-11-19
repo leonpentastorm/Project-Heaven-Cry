@@ -118,6 +118,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_gladius--masterwork",
+      "path": "art/icons/gear/weapon-legion_gladius--masterwork.png",
+      "sha256": "b12143083cdfe3c5ceee491749c91166b76383cf92fafa2bb4789d5e336f14f7",
+      "label": "Legion Gladius — Masterwork",
+      "family": "weapon-legion_gladius",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-legion_gladius--masterwork.png",
+        "sha256": "a12c5417e1e948d5ba910582aafc9e3b38d6c8df67654da1c1cf737b4a73e431"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-legion_gladius--masterwork.png",
+        "sha256": "b12143083cdfe3c5ceee491749c91166b76383cf92fafa2bb4789d5e336f14f7"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-legion_gladius--masterwork.txt",
+        "sha256": "69dbe843b7a3ed6ba5ebeba488b3d4f945a6ecc46e33ad404b983cde396bc5e3"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-legion_gladius.png",
+          "sha256": "28e96e7333bce563f97911b40b91750c9a6b578573f85c2438e4e045a5c6cd92"
+        },
+        {
+          "path": "art/icons/gear/weapon-legion_gladius--fine.png",
+          "sha256": "0526866522450e260e5859dd8569dc1e460f85607075f6568d005c0afb336fa0"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_gladius--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_gladius--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_gladius--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_gladius--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "418f5dc6681b1a366bd3cd63aa948364f527ddf1d18477727c4decdfb239f825",
+        "128": "e6fc9c0e2415435b7257a0f40844c6986b58ffb3c2380e220ba862388228913c",
+        "64": "fc9afa25626acfcad5f6efc4c753028035eb3243bbcd217633ffab5bc10b3f4b",
+        "32": "7ea2500440ce4b5ad2c2bc48cb661f441f2d28805a400bcca56e916479564d64"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-legion_gladius",
+      "outline": {
+        "solid_alpha_iou": 0.9825688685328057,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 8
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
