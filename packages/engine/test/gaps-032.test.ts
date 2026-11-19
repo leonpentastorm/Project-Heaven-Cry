@@ -6,6 +6,8 @@ import { figFight } from './helpers/figfight';
 import { physFight, rig } from './helpers/physfight';
 import { actionsFor, previewDescriptor, raiseNeed } from '../src';
 import { storyWith } from './helpers/perkfight';
+import { allItems, actionDefs } from '../src/effects';
+import ACTIONSJ from '../../../data/actions.json';
 
 describe('TRIAGE row 10: a resource price of 1 names one ("1 core", never "1 spare cores")', () => {
   it('Load the Visualizer costs 1 core, read off the action row the Figments tab shows', () => {
@@ -49,5 +51,15 @@ describe('G2: "Raise <Attribute>" is offered from the refusal\'s structure, not 
     expect(need).toEqual({ attr: 'endurance', n: 4 });
     expect(() => s.act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: 'durability' } as any)).toThrow('Needs Endurance 4: an Attribute point first.');
     expect(raiseNeed(c, 'skill', 'pain_threshold')).toBeNull(); // 0 points over Endurance 3: no need
+  });
+});
+
+// G3 (spec item 5609): every item action has its field row in data (no row: refused)
+describe('G3: the field reads each action\'s flag from data/actions.json field', () => {
+  it('every item action a fight can take has a row (allowed, or a refusal with words)', () => {
+    const F: any = (ACTIONSJ as any).field, missing: string[] = [];
+    for (const info of allItems()) { let defs: any[] = []; try { defs = actionDefs(info); } catch { continue; }
+      for (const d of defs) if ((d.scope || []).includes('combat') && !F.actions[info.key + '#' + d.id]) missing.push(info.key + '#' + d.id); }
+    expect(missing).toEqual([]);
   });
 });

@@ -72,6 +72,7 @@ import { openCamp, loadoutAction, campReady, campBoon, LOADOUT, type LoadoutActi
 import { gearIfBare, campaignLoadout } from './loadout';
 import { type GiveAction, type UseAction, giveNow, setUseDoor, useOf, useNow, useProblem, registerUseOp } from './give';
 import survivalFieldJ from '../../../data/survival.json';
+import actionsJ from '../../../data/actions.json';
 import { type MakeAction, makeNow } from './recipes';
 import { earnCredits, creditsOf } from './credits';
 
@@ -3985,23 +3986,18 @@ function freshRound(g: GameState, charId: string | undefined) {
 }
 /** After a free-movement action: AP full again, nothing waits for a Narrator, the map open to everyone. */
 function freeAgain(g: GameState) { g.story.ap = {}; g.story.ended = {}; g.story.spoken = {}; g.story.needs = false; g.story.work = null; g.story.await = 'players'; }
-/** Rules 1.55 item 35 (`survival.json field`): what the area map carries back to the character, and the ops that give
- * something lasting. */
-const FIELD: { lasting_ops: string[]; rounds: number } = (survivalFieldJ as any).field;
-/** Why an item's action is refused on the field (rules 1.55 item 35), or null: at will (no limit that holds on the
- * field), every cost besides AP a resource the area map rebuilds, and something lasting (or nothing the data states:
- * an item's own handler, doubtful). Prayers are left to their own slots and waits. */
+/** Rules 1.55 item 35 (`survival.json field`): the field's rounds. */
+const FIELD: { rounds: number } = (survivalFieldJ as any).field;
+/** G3 (0.32, spec item 5609): each item action's row for the field (data/actions.json field.actions: "allowed", or the
+ * kind of its refusal, worded in field.texts); an action with no row is refused (texts.unflagged). */
+const FIELD_ACTIONS: { texts: Record<string, string>; actions: Record<string, string> } = (actionsJ as any).field;
+/** Why an item's action is refused on the field (rules 1.55 item 35), or null: its row in data/actions.json field.actions
+ * (G3: data, never a guess from its ops; no row, refused). */
 export function fieldRefusal(g: GameState, c: Character, id: string, actionId?: string): string | null {
-  const h = holdersOf({ c }).find((y) => y.key === itemKey(id)); if (!h) return null; // the action itself refuses
-  const defs = actionDefs(h.info), d = actionId ? defs.find((x) => x.id === actionId) : defs[0]; if (!d) return null;
-  const grants = (h.info.effects || []).filter((e: any) => e?.op === 'grant_action'), row: any = grants.find((e: any) => e.action === d.id) || (grants.length === 1 ? grants[0] : null);
-  if (row?.prayer || row?.limit) return null;
-  const per = d.uses?.per || 'at_will'; if (per !== 'at_will' && per !== 'out_of_combat') return null;
-  let res: Record<string, number> = {}; try { res = (typeof d.res === 'function' ? d.res({ ...h, c, g }, {}) : d.res) || {}; } catch { res = {}; }
-  if (Object.values(res).some((n) => Number(n) > 0)) return null; // rules 1.55 item 64: the fight's units pay what they spend
-  const ops: string[] = (row?.effects || []).map((e: any) => e?.op).filter(Boolean);
-  if (ops.length && !ops.some((o) => FIELD.lasting_ops.includes(o))) return null;
-  return (d.label || h.info.name) + ' waits for a fight: on the field it would ' + (ops.length ? 'give something lasting for AP alone, again and again.' : 'cost nothing the field counts (the lead rules on it).');
+  void g; const h = holdersOf({ c }).find((y) => y.key === itemKey(id)); if (!h) return null; // the action itself refuses
+  const defs = actionDefs(h.info), d = actionId ? defs.find((x) => x.id === actionId) || defs.find((x) => x.was?.includes(actionId)) : defs[0]; if (!d) return null;
+  const v = FIELD_ACTIONS.actions[h.key + '#' + d.id]; if (v === 'allowed') return null;
+  return (FIELD_ACTIONS.texts[v] || FIELD_ACTIONS.texts.unflagged).replace('{label}', d.label || h.info.name);
 }
 /** Rules 1.55 item 32: a stim used out of a fight with no map under the squad (the path map, a place, the camp, the
  * rewards): the fight's own stim (combat.ts useStim: its stabilise, its heal, its AP and its count) on a strip of two

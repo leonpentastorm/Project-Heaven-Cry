@@ -3145,11 +3145,18 @@ if _sv is not None:
     # Rules 1.55 items 35 and 64 (0.28.3): what the field refuses (item ops of effect_ops.json)
     _fd = _sv.get("field")
     if _fd is not None:
-        _opids = set((((data.get("effect_ops") or {}).get("item_ops") or {}).get("ops") or {}).keys())
-        if not _fd.get("lasting_ops"): errors.append("survival:field: lasting_ops, a list")
         if "carried_res" in _fd: errors.append("survival:field.carried_res: gone in rules 1.55 item 64 (the field's units pay what they spend)")
-        for _x in _fd.get("lasting_ops") or []:
-            if _x not in _opids: errors.append(f"survival:field.lasting_ops: {_x!r} is not an item op")
+        if "lasting_ops" in _fd: errors.append("survival:field.lasting_ops: gone in spec item 5609 (G3: each action's row in actions.json field)")
+    # G3 (spec item 5609): each item action's field row: allowed, or a refusal kind that has its words
+    _fa = (data.get("actions") or {}).get("field")
+    if not isinstance(_fa, dict) or not isinstance(_fa.get("actions"), dict) or not isinstance(_fa.get("texts"), dict) or "unflagged" not in _fa["texts"]:
+        errors.append("actions:field: texts (with unflagged) and actions (<item key>#<action id>: allowed or a text kind)")
+    else:
+        for _k, _v in _fa["actions"].items():
+            if "#" not in _k: errors.append(f"actions:field.actions: {_k!r} is <item key>#<action id>")
+            if _v != "allowed" and _v not in _fa["texts"]: errors.append(f"actions:field.actions.{_k}: {_v!r} is allowed or one of texts {sorted(_fa['texts'])}")
+        for _t, _w in _fa["texts"].items():
+            if "{label}" not in _w: errors.append(f"actions:field.texts.{_t}: names the action ({{label}})")
         if _fd.get("provisional") is not True: errors.append("survival:field: provisional: true")
 
 # Rules 1.54 (survival-spec 14.2, 14.3): items' pack_kind and plural, the recipes (one converter, recipes.ts) and the

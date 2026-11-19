@@ -12537,3 +12537,10 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     (`ActionDef.was`): a save, a replay or a saved turn card that sends the old `lunge` still finds it. Golden costs
     re-recorded on purpose: the keys `...fighter.lunge#lunge` read `#barrel_in` (`costs-credit`, `costs-items-*`; the
     same values). Proof: `test/momentum-2.test.ts` (item 5531's lock through both ids).
+5609. **The field reads a flag per action** (piece G3, approved by the lead; rules 1.55 items 35 and 64): on the field
+    after a won fight, an item's own action (`combat/perk`) is allowed or refused by its row in `data/actions.json
+    field.actions` (`<item key>#<action id>`: "allowed", or the kind of refusal, worded in `field.texts`); an action
+    with no row is refused ("<action> waits for a fight."). `game.ts fieldRefusal` reads only the row; the guess from an
+    action's limit, its cost and its ops (`survival.json field.lasting_ops`) is gone. The rows were seeded from the
+    guess's answers (198 actions: 103 allowed, 94 "free", 1 "lasting"; nothing changed for a player): the lead rules
+    each "free" one by changing its row. A new item action needs its row (`test/gaps-032.test.ts` fails on one without).
