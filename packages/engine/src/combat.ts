@@ -1859,7 +1859,10 @@ function remarkOpening(cb: Combat) { const at = cb.log.findIndex((l, i) => i < 4
 function joinFight(cb: Combat, rng: Rng) {
   delete cb.approach; cb.round = 1;
   sayInitiative(cb, APPROACH.joined_log + ' ');
-  raiseAlarm(cb);
+  const told = raiseAlarm(cb);
+  // rules 1.78 item 6603 (spec item 5010 c): the fight joined is an effects event (the alarm's, `joined`), over the first
+  // character the foes learned of (no tile: nobody was told; the screen still sounds it)
+  emitFx(cb, 'alarm', { joined: true, ...(told ? { at: told } : {}) });
   for (let i = 0; i < cb.order.length; i++) {
     cb.turn = i; const u = active(cb)!;
     if (u.dead || u.surrendered || (u.side === 'foe' && u.downed)) continue;
@@ -1870,14 +1873,15 @@ function joinFight(cb: Combat, rng: Rng) {
  * foe group on the map learns where each character not Hidden stands now (the foe side's seenAt, read by knownTile), so
  * a group that never saw the squad comes for it (enemySearchTile) instead of searching where the squad started. A Hidden
  * character stays unknown; the foes' own Hidden (ambushers) keep their rule. The log says it once (rules.json
- * combat.approach.alarm_log), when it told the foes anything. */
-function raiseAlarm(cb: Combat) {
-  let told = false;
+ * combat.approach.alarm_log), when it told the foes anything. Returns the first told character's tile (null: none). */
+function raiseAlarm(cb: Combat): string | null {
+  let told: string | null = null;
   for (const p of cb.units) {
     if (p.side !== 'pc' || !alive(p) || p.hidden) continue;
-    if (cb.seenAt?.foe?.[p.id] !== p.pos) { noteSeen(cb, 'foe', p.id, p.pos); told = true; }
+    if (cb.seenAt?.foe?.[p.id] !== p.pos) { noteSeen(cb, 'foe', p.id, p.pos); told ??= p.pos; }
   }
   if (told && APPROACH.alarm_log) say(cb, APPROACH.alarm_log);
+  return told;
 }
 /** Pass the turn to the next unit that can act; Downed PCs still get turns (death saves). o.newRound: the round ends with
  * this turn (rules 1.62 item 4906: a field opens on a new round). On a field (rules 1.62 item 4906) the round that would

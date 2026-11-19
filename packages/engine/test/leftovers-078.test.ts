@@ -2,12 +2,14 @@
 // (a real action), numbers read from the data.
 //   item 6601  two Sanctuaries on one tile do not stack (spec item 1908): one side's zones of a kind, the first laid acts
 //   item 6602  NULL unmakes a Figment on the tiles it covers (figments-spec rule 12; sigils.json null.dispel)
+//   item 6603  the fight joined is an effects event (the alarm's, joined: true) at the first character the foes learn of
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { CLASS_MOVE_POOL, applyDamage, setDevotionXp, devotionThreshold, zonesAt, type Unit, type Action } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { figFight } from './helpers/figfight';
-import { previewEvoke } from '../src';
+import { previewEvoke, apply, reachable, active, type GameState } from '../src';
+import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 
 const CHAP: CharSpec = { name: 'Chaplain', skills: { faith: 6 }, attrs: { virtue: 8 }, level: 12, classId: 'guardian' };
 /** Two Chaplains (Faithful, Old Overcast) and a gunner against two soldiers. */
@@ -56,5 +58,25 @@ describe('item 6602: NULL unmakes a Figment (figments-spec rule 12)', () => {
     h.f.act({ type: 'combat/evoke', unitId: h.sig, tile: '2,8', aim: '6,8' } as any);
     expect(h.f.cb.units.some((v) => v.id === h.fig)).toBe(false);
     expect(h.f.cb.log.some((l) => /NULL unmakes .*Double/i.test(l))).toBe(true);
+  });
+});
+
+describe('item 6603: the fight joined is an effects event (spec item 5010 c)', () => {
+  it("a Survival fight opened unseen: no alarm event before contact; at contact one, joined, on a character's tile", () => {
+    let g: GameState | null = null;
+    for (let s = 1; s <= 40 && !g; s++) {
+      const seed = 'PHC-' + String(s).padStart(4, '0');
+      let x = startRun(survivalRoom(seed, [{ build: 'plain_gun', level: 1 }] as any, { test: true }), seed);
+      const n = reachable(x.run!).find((y) => y.kind === 'fight'); if (!n) continue;
+      x = apply(x, { type: 'run/move', node: n.id } as any, ownerOf(0));
+      if (x.combat?.approach) g = x;
+    }
+    expect(g).toBeTruthy();
+    const alarms = (x: GameState) => (x.combat!.fx || []).filter((e: any) => e.k === 'alarm');
+    expect(alarms(g!).length).toBe(0);
+    for (let k = 0; k < 8 && g!.combat!.approach; k++) g = apply(g!, { type: 'combat/end-turn', unitId: active(g!.combat!)!.id } as any, ownerOf(0));
+    expect(g!.combat!.approach).toBeUndefined();
+    const a = alarms(g!); expect(a.length).toBe(1); expect(a[0].joined).toBe(true);
+    if (a[0].at) expect(g!.combat!.units.some((u) => u.side === 'pc' && u.pos === a[0].at)).toBe(true);
   });
 });

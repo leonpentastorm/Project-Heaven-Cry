@@ -13187,3 +13187,7 @@ Every new number here is PROVISIONAL and a data field.
     (`sigils.json null.dispel` gains `figment`: an owned unit whose record kind is listed); the preview marks each
     Figment as the rest ("⊘ FIGMENT"), and a NULL that only unmakes a Figment does not fizzle. The enemy caster's weighing
     of NULL on a Figment (figments-spec section 8: its charge x 4) is not built; the enemy AI's weights are unchanged.
+6603. **The fight joined is an effects event (closes item 5010 c):** when contact joins a fight opened unseen (rules 1.64
+    item 5008), the engine emits the alarm's effects event with `joined` (no new kind), on the tile of the first
+    character the foes learned of (item 5521). The screen draws CONTACT! there with the alarm's rings and sound; it
+    shows no toast, since the BATTLE START card says the same.

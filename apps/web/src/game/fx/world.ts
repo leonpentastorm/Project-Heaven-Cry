@@ -34,7 +34,7 @@ export function worldWord(e: Partial<FxEvent> & { k: string }): string {
     case 'hazard_gone': return x.why === 'disarmed' ? 'MADE SAFE' : 'CLEARED';
     case 'safe_path': return 'SAFE PATH';
     case 'trigger': return x.then === 'fight' ? 'AMBUSH!' : x.then === 'spawn' ? 'SOMEONE COMES' : 'REVEALED';
-    case 'alarm': return 'ALARM!';
+    case 'alarm': return x.joined ? 'CONTACT!' : 'ALARM!'; // rules 1.78 item 6603: the fight joined
     case 'approach': return x.ok ? 'SUCCESS' : 'FAILED';
     case 'talk': return x.what === 'objective' ? 'ASKED ABOUT THE OBJECTIVE' : 'ASKED WHAT THEY WANT';
     case 'marker': return 'MARKED';
@@ -111,7 +111,7 @@ function say(text: string) { import('../store').then((m) => m.toast(text, true),
 export function worldLine(e: Partial<FxEvent> & { k: string }): string {
   const x: any = e, n = (x.spawned || x.revealed || []).length;
   if (e.k === 'trigger') return (x.then === 'fight' ? '⚠ Ambush! ' : x.then === 'spawn' ? 'Someone comes. ' : 'Something is revealed. ') + (n ? n + (n === 1 ? ' appears' : ' appear') + (x.then === 'fight' ? ': the fight starts.' : '.') : '');
-  if (e.k === 'alarm') return '⚠ The alarm is up' + (n ? ': ' + n + ' hidden ' + (n === 1 ? 'hostile wakes.' : 'hostiles wake.') : '.');
+  if (e.k === 'alarm') return x.joined ? '' : '⚠ The alarm is up' + (n ? ': ' + n + ' hidden ' + (n === 1 ? 'hostile wakes.' : 'hostiles wake.') : '.'); // a fight joined: BATTLE START says it (turnIntro.tsx)
   return '';
 }
 export function worldHandlers(K: WorldKit): Record<string, (e: FxEvent) => void> {
@@ -165,7 +165,7 @@ export function worldHandlers(K: WorldKit): Record<string, (e: FxEvent) => void>
       say(worldLine(e).trim());
       (x.spawned || []).slice(0, 8).forEach((id: string, i: number) => { const k = posOf(id); entrance(tokOf(id, k), at(k), fight ? HP : WHITE, 200 + i * 90); }); },
     alarm(e) { const x: any = e, p = at(x.at); play('sg_trap_sprung', p, { rate: 0.6 }); play('dry_click', p, { delay: 120, gain: 0.5 }); screenTint('red', 420);
-      say(worldLine(e));
+      const line = worldLine(e); if (line) say(line);
       if (p) { banner(p, worldWord(e), HP); for (let i = 0; i < 3; i++) ring(p, HP, 700, { from: 0.5, to: 3 + i, width: 3, delay: i * 180 }); }
       (x.revealed || []).slice(0, 8).forEach((id: string, i: number) => { const k = posOf(id); entrance(tokOf(id, k), at(k), HP, 250 + i * 80); }); },
     approach(e) { const x: any = e, p = at(x.at) || actorAt(x), read = x.ok && /^(copied|learned) /.test(String(x.effect || ''));
