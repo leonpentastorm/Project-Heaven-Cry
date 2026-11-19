@@ -19620,6 +19620,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "shield-pavise--relic": {
+      "label": "Shield-Pavise Relic",
+      "path": "art/icons/gear/shield-pavise--relic.png",
+      "sha256": "6301e0a8f3c62f555cb075a780a9b5416670081c6f9381c59db966b41cb77033",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/shield-pavise.png",
+      "source_path": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-pavise--relic.png",
+        "128": "art/icons/gear/exports/128/shield-pavise--relic.png",
+        "64": "art/icons/gear/exports/64/shield-pavise--relic.png",
+        "32": "art/icons/gear/exports/32/shield-pavise--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {
