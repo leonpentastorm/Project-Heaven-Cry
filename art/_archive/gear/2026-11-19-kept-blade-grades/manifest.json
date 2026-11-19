@@ -5620,6 +5620,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-runner_trousers--relic",
+      "path": "art/icons/gear/armour-runner_trousers--relic.png",
+      "sha256": "5dd4801614d1a576556ce2d20f60c22663e6006701449e3b29fdfe1598207661",
+      "label": "Runner Trousers — Relic",
+      "family": "armour-runner_trousers",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-runner_trousers--relic.png",
+        "sha256": "101d182a15c21b5dbffed833a849afda252580df3ec1e48da117166f8ec1060d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-runner_trousers--relic.png",
+        "sha256": "5dd4801614d1a576556ce2d20f60c22663e6006701449e3b29fdfe1598207661"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-runner_trousers--relic.txt",
+        "sha256": "a8dbff898265b742fa4347dee312d60142bcbd59a9f1d855a31cfa8e886aacec"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-runner_trousers.png",
+          "sha256": "2e2fe38e84e0e8da30560a478bc6af62db8c4de93fdf8a690e7ec84747e2f977"
+        },
+        {
+          "path": "art/icons/gear/armour-runner_trousers--masterwork.png",
+          "sha256": "5a9730ec0d1483f555a35bb0043aaabc307e3282ca703c409273309e553b83cb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-runner_trousers--relic.png",
+        "128": "art/icons/gear/exports/128/armour-runner_trousers--relic.png",
+        "64": "art/icons/gear/exports/64/armour-runner_trousers--relic.png",
+        "32": "art/icons/gear/exports/32/armour-runner_trousers--relic.png"
+      },
+      "export_hashes": {
+        "256": "b4b36c11c4ad44cd5b881ca44a979bb810ceed207d77ce3045d2491c53ba5655",
+        "128": "8d27af78e1337c4a4221ae3fc34c0d917451b4f89fcf53d3d97a1f38be421379",
+        "64": "14e27d1a569461bb21ee1beae510ab267985f0638013317b4981a6c33224dd0f",
+        "32": "94080ff19fc0c83d2ed4b504ffef12bdd648371419f8627528d403c7323e772b"
+      },
+      "grade": "relic",
+      "standard_id": "armour-runner_trousers",
+      "outline": {
+        "solid_alpha_iou": 0.9618361300612787,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 13,
+        "different_pixels_64": 39
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
