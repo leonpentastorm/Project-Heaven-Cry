@@ -12506,3 +12506,7 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     save holds (`doors3-reshape.test.ts`, every save passing). The card reads "the foe you name is Taunted even if its
     save holds". Sparing the named foe the Challenge's own roll needs the action's target on the `cond_apply` event (an
     addition to the closed lists; not built).
+5603. **No feeling or module says "multiplier" in its card** (the lead's review list): Rage, Shame, Pride and Abandon say
+    what their step adds ("+0.5: it adds 50% of the Outburst's base damage to the Release"), Awe that its Pump adds a
+    stage but no damage, each number read from the row's `step.base`; the Damage school and Inverse say their amount
+    grows with the Soul skills and with each stage pumped. No rule changes; five bare numbers left the text baseline.
