@@ -12320,3 +12320,7 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
 5508. **Begin and Snap are one row** (row 15): the Outburst action's Begin-or-Snap step is drawn by the screen's own
     footer row (the step's renderer), so the action box no longer adds a second pair of chips. Proof:
     `apps/web/src/screens/combat-heart.test.ts`.
+5509. **Mercy is sworn only where a foe can yield** (row 16: the Mercy vow was offered in a fight of machines). A vow
+    marked `needs_yielding_foe` (patrons.json: Mercy) is not offered, and is refused ("No enemy here can yield."), in a
+    fight where no living enemy can yield (`yielding.ts canYield`, the one answer). `faith.ts faithView`, `swearVow`.
+    Proof: `test/playtest-1118.test.ts`.

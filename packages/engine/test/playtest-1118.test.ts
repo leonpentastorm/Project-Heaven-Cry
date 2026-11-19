@@ -212,3 +212,21 @@ describe('row 15: menu faults', () => {
     expect(optsOf('glaive', 'run_through')).toContain('leave');
   });
 });
+
+import { faithView } from '../src';
+describe('row 16: the Mercy vow is offered only when a foe can yield (canYield)', () => {
+  const holyAgainst = (foes: any[]) => {
+    const f = fightWith([{ name: 'Priest', skills: { faith: 7 } } as any], foes);
+    const c: any = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan'; c.devotion = 3;
+    const u = f.turn(f.pc); return { f, u, c };
+  };
+  it('in a fight of machines Mercy is not offered and the reducer refuses it; against people it is', () => {
+    const m = holyAgainst([{ at: 'O10', name: 'Gun drone' }, { at: 'O11', name: 'Patrol robot' }]);
+    expect(m.f.cb.units.filter((x) => x.side === 'foe').every((x) => x.kind === 'robot')).toBe(true);
+    expect(withGame(m.f.g, () => faithView(m.f.g, m.c.id))!.vows.map((v) => v.id)).not.toContain('mercy');
+    expect(() => m.f.act({ type: 'faith/vow', unitId: m.u.id, id: 'mercy' } as any)).toThrow();
+    const p = holyAgainst([{ at: 'O10' }]);
+    expect(withGame(p.f.g, () => faithView(p.f.g, p.c.id))!.vows.map((v) => v.id)).toContain('mercy');
+    p.f.act({ type: 'faith/vow', unitId: p.u.id, id: 'mercy' } as any); expect(p.f.unit(p.u.id).vow?.id).toBe('mercy');
+  });
+});

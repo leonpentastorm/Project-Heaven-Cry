@@ -332,6 +332,7 @@
       "id": "mercy",
       "name": "Mercy",
       "words": "I spare who yields.",
+      "needs_yielding_foe": true,
       "broken_when": "you damage a surrendered or Downed enemy",
       "adjudication": "engine",
       "fulfilled_when": "an enemy yields to you, or you spare one with a blow that would have killed it"
