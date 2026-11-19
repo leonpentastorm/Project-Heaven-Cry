@@ -95,3 +95,13 @@ describe('the moments, through play.ts\'s handlers', () => {
     expect(floats()).toEqual([KIND.id.toUpperCase() + ' BROKEN']);
   });
 });
+
+describe('0.32: Tending down a Bond that is not a heal', () => {
+  it('a shield (boon) or a condition the Bonder puts on its Bonded ally is a TEND down the line; on an enemy Bond, or resisted, it is not', () => {
+    const lines = [LINE(GUN, 'ally'), LINE(FOE, 'foe')];
+    expect(bondFxOf({ k: 'boon', word: 'ward', target: GUN.id, amount: 30 } as any, lines, MED.id)).toMatchObject({ what: 'tend', from: MED.id, to: GUN.id });
+    expect(bondFxOf({ k: 'cond', id: 'settled', target: GUN.id } as any, lines, MED.id)).toMatchObject({ what: 'tend' });
+    expect(bondFxOf({ k: 'cond', id: 'settled', target: GUN.id, resisted: true } as any, lines, MED.id)).toBeNull();
+    expect(bondFxOf({ k: 'boon', word: 'ward', target: FOE.id } as any, lines, MED.id)).toBeNull();
+  });
+});
