@@ -1,5 +1,8 @@
 # Art requests: what needs an artist (or image generation)
 
+> **19 Nov 2026: the current full list is [`ART-REQUESTS-2026-11-19.md`](ART-REQUESTS-2026-11-19.md)** (0.31.x, 0.32 and
+> the Items 2.0 plan). Several rows below are delivered or superseded; that file says which.
+
 **This is the one list to hand an artist.** It is kept up to date as the game changes: every time a rules pass adds,
 renames or removes something that has art, the entry lands here in the same change. If the list is empty, nothing is
 waiting.
