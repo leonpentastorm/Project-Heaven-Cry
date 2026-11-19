@@ -1,0 +1,12 @@
+{
+  "id": "armour-field_helmet",
+  "tier": "fine",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--fine.png",
+  "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its fine finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. The maker's signature parts are image one's exact domed olive-grey field helmet with its small triangular crown ridge, riveted brow band, flared brim, dark padded inner lining, and hanging canvas chin strap with square buckle. Keep the same three-quarter view, every fitting, silhouette and negative space. No head or wearer. Fine: clean evenly refinished olive-grey shell, fresh tidy canvas and lining, bright buckle; add one thin engraved line along the brow rim only. No new ornament, crest, spike or symbol. Fictional RPG game inventory painting. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
+  "refs": [
+    "art/icons/gear/armour-field_helmet.png",
+    "art/icons/gear/armour-field_helmet.png"
+  ],
+  "previous": "art/icons/gear/armour-field_helmet.png",
+  "sha256": "4f4572d343110e0ede8d5bba17ead87f6c18044d572ae213147bf196397aca74"
+}
