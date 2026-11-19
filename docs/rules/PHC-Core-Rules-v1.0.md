@@ -12591,3 +12591,83 @@ PROVISIONAL (where a vow changes out of a Survival run).
     "{self} draws on the Bond; {target} is already at their side." No number changes.
 5707. **The NOW PLAYING credit never covers a panel** (web, every screen): a one-line chip at the top edge's middle,
     opened by the pointer to the artist and the reason (it was a card over the bottom of the left panel).
+### Rules 1.71 (0.32), the gaps lane: owed player-facing faults (19 Nov 2026)
+
+5600. **A melee preview's Momentum is the technique run as a hit** (piece G1, approved by the lead; answers item 5503's
+    "not built"): the Momentum line of a technique's preview ("Momentum a → b") is read from the technique itself, run
+    on the dry run's copy of the fight with the acting unit's own attacks hitting (`preview.ts dryRun`, option `asHit`;
+    the copy's `Combat.asHit`, read at the one hit decision in `combat.ts resolveAttack`). Every hit-time op counts as
+    the action counts it (Rolling Start's +1, the Breaker's +2 against the Shaken, Charge's run), with no second
+    formula. Only the fight screen's descriptor preview reads it (`descriptors.ts techPreviewOf`); the enemy's choice
+    keeps `previewTechnique`'s own line. Proof: `packages/engine/test/gaps-032.test.ts` (the preview's line equals the
+    reducer's Momentum after the same Charge hits).
+5601. **A price of 1 names one** (TRIAGE row 10's "1 spare cores with 5 held"): a resource row may give the name of one
+    (`data/actions.json resources.<id>.one`); a price or a need of 1 reads it ("Load the Visualizer · 1 AP · 1 core";
+    "Needs 1 core (you have 0)."). The cores row reads "cores" / "core": the count of spare cores is the meter's and
+    the sheet's, never a price's. The forks picked at the camp's Level up show on the MAGIC tab (checked in the browser
+    on 0.31.11). Proof: `packages/engine/test/gaps-032.test.ts`.
+5602. **Called Out's card says the rule as it runs** (TRIAGE row 13): Challenge taunts every foe within 2 with its save,
+    the named foe included; Called Out then puts Taunted on the named foe with no save, so it is Taunted even when its
+    save holds (`doors3-reshape.test.ts`, every save passing). The card reads "the foe you name is Taunted even if its
+    save holds". Sparing the named foe the Challenge's own roll needs the action's target on the `cond_apply` event (an
+    addition to the closed lists; not built).
+5603. **No feeling or module says "multiplier" in its card** (the lead's review list): Rage, Shame, Pride and Abandon say
+    what their step adds ("+0.5: it adds 50% of the Outburst's base damage to the Release"), Awe that its Pump adds a
+    stage but no damage, each number read from the row's `step.base`; the Damage school and Inverse say their amount
+    grows with the Soul skills and with each stage pumped. No rule changes; five bare numbers left the text baseline.
+5604. **The pick overlay's tile notes have one wording** (the lead's review list): a tile in reach says "in reach", a
+    tile to choose "in reach: click to choose it", a unit to choose "<name>: click to choose them", a tile the area
+    covers "in the area" (it said nothing), a unit it touches "<name>: <its tag>" (`apps/web/src/game/pickOverlay.ts`
+    `PICK_NOTE`). Proof: `pickOverlay.test.ts`; `apps/web/e2e/picking.mjs` reads the unit note.
+5605. **The initiative line is written once for each side** (the lead's review list: `fog.ts` rewrote it with a regular
+    expression on the sentence): where the line is written (`combat.ts sayInitiative`, at the fight's opening and when it
+    is joined), each side that does not see every unit gets its own reading on the line's mark (the seen in order, then
+    "n unseen"; `log.ts LogSideMark.line`), and `fog.ts` sends that reading as it is. The opening line is marked again
+    as the set-up's sight changes, as before. Replays re-recorded on purpose (their log marks only).
+5606. **A skill point refused for its attribute carries the need as structure** (piece G2, approved by the lead):
+    `character.ts raiseNeed(c, kind, id)` gives `{attr, n}` (the attribute the skill waits on and the points it needs);
+    `canRaise`'s sentence is made from it and names the attribute ("Needs Endurance 4: an Attribute point first.").
+    The level-up screen's "Raise <Attribute>" and its one reason are to read `raiseNeed`, not the sentence (the screen is
+    the shared lane's file: a hand-off note). Proof: `packages/engine/test/gaps-032.test.ts` (the reducer's refusal).
+5607. **A Momentum op at the fight's start is warned of** (the Primed boon's workaround, item 5506): the Momentum meter
+    is made by the fight's start after the items' `combat_start` ops (a global listener runs after the items), so a
+    `combat_start` op on it would be lost. The real fix, making the meters before the items' ops, needs the fight's
+    start to call the physical lane (`combat.ts` cannot import `physical/core.ts` at load: a cycle) through a new
+    registration export, not approved: left for the lead. Meanwhile `data/actions.json resources.momentum` is marked
+    `made_after_start`, and the validator warns of any `combat_start` `resource` op on such a meter. Primed keeps its
+    `turn_start`, once a fight.
+5608. **Barrel In has its own action id** (item 5531's finding): the Breaker's Barrel In is the action `barrel_in` of
+    `class:fighter.lunge` (the move's id stays, so saves load), an Opener by `techniques.json rules.group_actions` (a
+    Finisher locks it as before; the chain counts it as before). An item action may name the ids it was known by
+    (`ActionDef.was`): a save, a replay or a saved turn card that sends the old `lunge` still finds it. Golden costs
+    re-recorded on purpose: the keys `...fighter.lunge#lunge` read `#barrel_in` (`costs-credit`, `costs-items-*`; the
+    same values). Proof: `test/momentum-2.test.ts` (item 5531's lock through both ids).
+5609. **The field reads a flag per action** (piece G3, approved by the lead; rules 1.55 items 35 and 64): on the field
+    after a won fight, an item's own action (`combat/perk`) is allowed or refused by its row in `data/actions.json
+    field.actions` (`<item key>#<action id>`: "allowed", or the kind of refusal, worded in `field.texts`); an action
+    with no row is refused ("<action> waits for a fight."). `game.ts fieldRefusal` reads only the row; the guess from an
+    action's limit, its cost and its ops (`survival.json field.lasting_ops`) is gone. The rows were seeded from the
+    guess's answers (198 actions: 103 allowed, 94 "free", 1 "lasting"; nothing changed for a player): the lead rules
+    each "free" one by changing its row. A new item action needs its row (`test/gaps-032.test.ts` fails on one without).
+5610. **The healing brake per giver, written down for building** (item 4640, Leon's ruling ii; the lead's list: no lane
+    built it): each Mend, Touch or Shield, and the Mender's Triage, a giver gives the same target in the same round
+    costs its MP × 1.5 for every one that giver already gave that target this round (the second ×1.5, the third ×2.25).
+    Data: `rules.json mending.brake` (`mult`, `per`, and the four actions by `<item key>#<action id>`, checked by the
+    validator), marked `built: false`, PROVISIONAL. Not built here: the cost site's context (`effects/cost.ts price`,
+    the `cost` hook) carries no target, so no data row can count a giver's gives on one target; it needs the
+    target-aware price (N20, on the shared lane's branch). With it, the build is one general reader at the cost site:
+    the action's key in `brake.actions`, the count from `uses(h).on(target)` in `brake.per`, the MP price × `mult` to
+    that count. Touch is to be cut by the attribute lanes (Camaraderie takes the healing verbs): its row goes with it.
+5611. **The two keepers' names match their faces** (item 2914; the recommendation of 15 Nov 2026, built under "no answer
+    means yes", Leon may reverse it): the Smetanita trader (`survival-keeper-works`, painted as a woman automaton) is
+    Corra Vell; the rim chandler (`survival-keeper-rim`, a man) is Ivo Smetanin (`survival.json faces`). Names only.
+5612. **Delivered art is drawn where it has a place** (the lead's list; wiring only, every picture by its catalog id
+    through `apps/web/src/game/doorArt.ts`): the seven tone marks on the MAGIC tab's tone chips (`uiMarkOf('tone')`);
+    the XP mark on the sheet's XP bar, the Devotion mark on the FAITH tab, the credits mark in a run's squad panel
+    (`uiMarkOf('resource')`); the camp's Ready sign on the camp's Ready / Start the run button (`campStepIconOf`); the
+    Open Hand's four forms on the attack's form chips (catalog `data_ids` `relic:open_hand#<form>`, read by
+    `moveIconOf`). No place yet: the Open Hand's stance and every standing defensive modifier (the fight has no reader
+    of them: a to-hit term carries no source, and an item's own hooks cannot be asked inside a fight for one unit; a
+    general reader needs one of those, not built), the five Tending passives (their `data_ids` name their items; no
+    screen lists a door's passive steps), Stand Behind Me (Guard 2.0's Bastion path, never built: no move carries it).
+    `move-draw-fire` is Called Out's placeholder. `art/briefs/ART-REQUESTS.md` says so.

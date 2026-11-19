@@ -29,6 +29,9 @@ export function reachEdge(k: string, reach: Set<string>, colour: string): string
   if (!reach.has(x + ',' + (y + 1))) out.push('inset 0 -2px 0 0 ' + colour);
   return out.join(', ');
 }
+/** The tile notes of the overlay, one wording for all of them (the hover card reads them): where it reaches, a tile or a
+ *  unit to click, what the area covers. */
+export const PICK_NOTE = { reach: 'in reach', choice: 'in reach: click to choose it', unit: 'click to choose them', area: 'in the area' } as const;
 /** The overlay's tiles: reach, choices, the area and whom it touches. ink: the action's own colour. */
 export function pickTiles(cb: any, m: PickMarks | null | undefined, side: 'pc' | 'foe', ink = '#E7EBF3'): Record<string, SgTile> {
   const out: Record<string, SgTile> = {}; if (!m) return out;
@@ -37,15 +40,15 @@ export function pickTiles(cb: any, m: PickMarks | null | undefined, side: 'pc' |
   const inReach = new Set(m.reach);
   // the reach is one shaded region with a line round its edge only (0.31.12: a dashed outline on every tile of a prayer's
   // whole sight was too heavy): a tile draws the sides whose neighbour is out of reach
-  for (const k of inReach) { if (m.choice.has(k)) continue; const t = T(k); const edge = reachEdge(k, inReach, rgba(ink, 0.6)); t.layer = 'background: ' + rgba(ink, 0.06) + (edge ? '; box-shadow: ' + edge : ''); note(t, 'in reach'); }
+  for (const k of inReach) { if (m.choice.has(k)) continue; const t = T(k); const edge = reachEdge(k, inReach, rgba(ink, 0.6)); t.layer = 'background: ' + rgba(ink, 0.06) + (edge ? '; box-shadow: ' + edge : ''); note(t, PICK_NOTE.reach); }
   // a choice is drawn over its reach: its card says both (rules 1.65: reach, then the open pick's choices inside it)
-  for (const k of m.choice) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.12) + '; outline: 2px solid ' + rgba(ink, 0.85) + '; outline-offset: -2px'; note(t, 'click to aim'); }
-  for (const k of m.area) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.3) + '; outline: 2px solid ' + ink + '; outline-offset: -2px'; }
+  for (const k of m.choice) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.12) + '; outline: 2px solid ' + rgba(ink, 0.85) + '; outline-offset: -2px'; note(t, PICK_NOTE.choice); }
+  for (const k of m.area) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.3) + '; outline: 2px solid ' + ink + '; outline-offset: -2px'; note(t, PICK_NOTE.area); }
   const at = (id: string) => (cb.units || []).find((y: any) => y.id === id && !y.dead) || (cb.units || []).find((y: any) => y.id === id);
   for (const id of m.choiceUnits) {
     const x = at(id); if (!x) continue; const t = T(x.pos);
-    t.marks.push({ key: 'pkpick', text: '◇', style: BADGE + 'background: #0A0D13; color: ' + ink + '; border: 1px solid ' + ink + '; right: -2px; top: -2px', title: x.name + ': you can pick them' });
-    t.layer = (t.layer ? t.layer + '; ' : '') + 'outline: 2px solid ' + ink + '; outline-offset: -2px'; note(t, x.name + ': you can pick them');
+    t.marks.push({ key: 'pkpick', text: '◇', style: BADGE + 'background: #0A0D13; color: ' + ink + '; border: 1px solid ' + ink + '; right: -2px; top: -2px', title: x.name + ': ' + PICK_NOTE.unit });
+    t.layer = (t.layer ? t.layer + '; ' : '') + 'outline: 2px solid ' + ink + '; outline-offset: -2px'; note(t, x.name + ': ' + PICK_NOTE.unit);
   }
   for (const g of m.targets) {
     const x = at(g.id); if (!x) continue;

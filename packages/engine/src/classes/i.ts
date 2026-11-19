@@ -288,7 +288,8 @@ let lunging: Unit | null = null;
 register({
   id: 'fighter.lunge', claims: (e: any) => e?.when !== 'hit', // Momentum on a Shaken or Frightened enemy (Classes 3.0) is an item op: the runner runs it
   actions: [{
-    id: 'lunge', label: 'Barrel In', scope: ['combat'], target: 'enemy', ap: (h) => (h.u ? meleeAp(h.u) : 2),
+    // spec item 5608: its own id (it shared the Lunge technique's before; the old id still finds it)
+    id: 'barrel_in', was: ['lunge'], label: 'Barrel In', scope: ['combat'], target: 'enemy', ap: (h) => (h.u ? meleeAp(h.u) : 2),
     text: 'Costs 1 Momentum and the AP of a strike. Move up to 2 tiles and strike, as one action. The move draws no opportunity attacks.',
     available: (h) => { const u = h.u; if (!u) return false; if (resOf(u, 'momentum') < 1) return 'Needs 1 Momentum. You earn it with melee hits and by closing in.'; return true; },
     preview: (h, args) => {

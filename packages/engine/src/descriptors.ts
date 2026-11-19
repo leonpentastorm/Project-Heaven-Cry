@@ -25,7 +25,7 @@ import { eyesOn, seenByFoes, HIDE_WHY, throwRangeOf, radiusOf } from './tactics'
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun, fightWith, preview as previewOnCopy } from './preview';
 import type { Action, GameState } from './game';
-import { techniquePad, packPad, pairedPad, previewTechnique, shieldOf, physView, followOf } from './physical/core';
+import { techniquePad, packPad, pairedPad, previewTechnique, useTechnique, momentumOf, shieldOf, physView, followOf } from './physical/core';
 import { TECHNIQUE, weaponSystem, propText } from './physical/data';
 import { callPad, previewCall } from './calls/core';
 import { faithView, previewPrayer, beliefOf, FAITH_MIN, DEVOTION_XP, MIRACLE_COST_LEVELS, GATE, MIRACLE_FAITH, prayerChoices, prayerAim, prayerAnswerOn, prayerEntry } from './faith';
@@ -365,7 +365,7 @@ export const PK = 'pk:';
 export const perkId = (e: { id: string; actionId: string }) => PK + e.id + '#' + e.actionId;
 export function parsePerkId(id: string | null | undefined): { id: string; actionId: string } | null { if (!id || !id.startsWith(PK)) return null; const [k, a] = id.slice(PK.length).split('#'); return { id: k, actionId: a }; }
 /** What an entry costs besides AP, from the cost site's figures (0.28.3, rules 1.55 item 46: "24 MP"). */
-const perkResText = (e: PerkActionEntry): string[] => Object.entries(e.res || {}).map(([k, n]) => n + ' ' + (RESOURCES[k]?.name || k));
+const perkResText = (e: PerkActionEntry): string[] => Object.entries(e.res || {}).map(([k, n]) => n + ' ' + ((n === 1 && RESOURCES[k]?.one) || RESOURCES[k]?.name || k)); // a cost of 1 names one ("1 core")
 export const perkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : [priceOf(e) + ' AP', ...perkResText(e)].join(' · ')) + (e.uses.label ? ' · ' + e.uses.label : '');
 /** An on/off policy pair names the one in force; Eye of the Storm reads ARMED once armed. */
 export function perkState(e: PerkActionEntry): { tag: string; why: string | null } {
@@ -715,6 +715,9 @@ function techPreviewOf(x: DescCtx, t: { hand: string; id: string; item?: string 
     if (a.follow) lines.push({ k: 'odds', text: 'then ' + (WEAPON[a.item]?.name || 'the off hand') + ' · ' + (q.ok ? q.pct + '%' + dmgOf(q) : /reach/i.test(q.why || '') ? 'out of reach' : q.why || 'can\'t follow') });
     else lines.push({ k: 'odds', text: name(a.target) + ': ' + (q.ok ? 'hit ' + q.pct + '% · need ' + q.need + dmgOf(q) : q.why || 'can\'t attack') }); }
   for (const n of pv.notes || []) lines.push({ k: 'note', text: n });
+  // G1 (0.32, spec item 5600): the Momentum it leaves is the technique itself run on a copy as a hit (preview.ts dryRun
+  // asHit): every hit-time op (Rolling Start, the Breaker's +2, Charge's run) counts as the action counts it
+  if (pv.momentum && whole.ok) { const dr = safe(() => dryRun(x.g, fcb, x.u.id, (c, u, rng) => useTechnique(c, u, t.id, args, rng), { asHit: true }), null as any); if (dr && !dr.err && dr.u) pv.momentum = { ...pv.momentum, after: momentumOf(dr.u) }; }
   if (pv.momentum) lines.push({ k: 'meter', text: 'Momentum ' + pv.momentum.now + ' → ' + pv.momentum.after + (pv.ends ? ' · ends your chain' : '') });
   if (pv.guard) lines.push({ k: 'meter', text: 'Guard ' + pv.guard.now + ' → ' + pv.guard.after });
   for (const q of pv.pressure || []) lines.push({ k: 'meter', text: name(q.unit) + ': Pressure ' + (q.add >= 0 ? '+' : '') + q.add + ' → ' + q.after + (q.state ? ' (' + (PRESS_STATE[q.state] ?? q.state) + ')' : '') + (q.onHit ? ' on a hit' : '') });

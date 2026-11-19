@@ -2,7 +2,7 @@
 import { tilesN } from './log';
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { fxTaps } from './fxtap';
-import { setLogMarker, remarkOpening, say, type LogMark, type LogSideMark } from './log';
+import { setLogMarker, remark, say, type LogMark, type LogSideMark } from './log';
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
@@ -275,6 +275,9 @@ export interface Combat { /** Rules 1.47: the effects a run's fight keeps for it
   reacting?: { unit: string; kind: string };
   /** The toggles the player set on the action being resolved (combat/attack mods…); set and cleared by the reducer. */
   mods?: string[];
+  /** A dry run's copy only (preview.ts PreviewOpts.asHit, G1 of 0.32): this unit's own attacks hit, so the preview reads what
+   * a hit gives (the Momentum a Charge really reaches). Never set on a live fight. */
+  asHit?: string;
   /** The overworld's throwaway fight state (storyCb): per-turn item counters live in the story instead. */
   overworld?: boolean;
   /** Each side's sight at the last check, for the sight_change hook (only kept while someone listens). */
@@ -372,7 +375,7 @@ export function stampFxHp(cb: Combat) {
 // ------------------------------------------------------------------------------------------------- the fight's log
 // The log's writers (say, sayOf, sayAt, unsay) are in log.ts, a leaf module; this is the part that needs the fight's
 // rules: which units a line names and whether each side sees them now (registered with log.ts as its marker).
-export { say, sayOf, sayAt, unsay, logQuietly, remarkOpening, type LogMark, type LogSideMark } from './log';
+export { say, sayOf, sayAt, unsay, logQuietly, type LogMark, type LogSideMark } from './log';
 const escRe = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 /** The units a line names, by name (the longest names first, so 'Raider 2' is not also 'Raider'). */
 export function unitsNamedIn(cb: Combat, text: string): Unit[] {
@@ -1536,7 +1539,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   emit(cb, 'attack_roll', rc);
   const roll = rc.die, total = roll + pv.toHit;
   const crit = roll === 20 || roll >= rc.critMin, fumble = roll === 1 && !rc.noFumble;
-  const hit = rc.hit ?? (!fumble && (crit || total >= pv.need));
+  const hit = rc.hit ?? (cb.asHit === att.id || (!fumble && (crit || total >= pv.need))); // a dry run asked as a hit (preview.ts asHit)
   // Tuned (Improvisation 5): the main hand's gun never jams, so its natural 1 is only a miss and its Heat only Heat
   const tuned = !melee && mode !== 'thrown' && canJam(w) && neverJams(cb, att);
   if (mode === 'thrown') { if (fumble) stagger(att); } // a thrown weapon: no round, no Heat, no Recoil for the next shot
@@ -1710,7 +1713,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: [], over: null, level, ...(extra.fear ? { fear: true } : {}), ...(typeof extra.fromTalk === 'boolean' ? { fromTalk: extra.fromTalk } : {}) };
   cb.objects = objs; cb.sigilV = SIGIL_REV; // a fresh fight: rules 1.4 glyphs only
   tieCompanions(cb); // Classes 3.0 P9: each companion is tied to its owner (the owned-unit record)
-  say(cb, 'Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')); // (re-marked by sightQuietly when the set-up hides someone)
+  sayInitiative(cb, ''); // (re-marked by sightQuietly when the set-up hides someone)
   // Items at the start of a fight: 'combat_start' {cb, order, rng} (order mutable: act in the surprise round, swap places).
   const cs: any = emit(cb, 'combat_start', { cb, order: [...cb.order], rng });
   if (Array.isArray(cs.order) && cs.order.length === cb.order.length && cs.order.every((id: string) => cb.order.includes(id))) cb.order = cs.order;
@@ -1824,11 +1827,32 @@ export function contactCheck(cb: Combat, rng: Rng, o: { acting?: boolean } = {})
   if (!seen && !hit) return false;
   joinFight(cb, rng); return true;
 }
+/** The initiative line (spec item 5605): every unit in the order by name and Initiative. A side that does not see some of
+ * them reads them as one count ("2 unseen"): each side's line is built here, where it is written, and kept on the
+ * line's mark (fog.ts sends it as it is). The fight's opening one is marked again whenever the set-up changes who is
+ * seen (sightQuietly: who starts Hidden), as the fight opens. */
+const INIT_HEAD = 'Initiative: ', INIT_SEP = ' · ';
+function initiativeEntries(cb: Combat): { u: Unit; text: string }[] { return cb.order.map((id) => cb.units.find((x) => x.id === id)).filter((u): u is Unit => !!u).map((u) => ({ u, text: u.name + ' ' + u.init })); }
+function initiativeMark(cb: Combat, at: number): LogMark {
+  const m = logMark(cb, cb.log[at]); if (!m) return m;
+  const lead = cb.log[at].slice(0, cb.log[at].indexOf(INIT_HEAD)), all = initiativeEntries(cb), out: { pc?: LogSideMark; foe?: LogSideMark } = { ...m };
+  for (const side of ['pc', 'foe'] as const) {
+    const s = out[side]; if (!s) continue; // 0: the side sees none of it (not sent); undefined: it sees all (sent whole)
+    const unseen = all.filter((e) => e.u.side !== side && !e.u.dead && !sideSeesUnit(cb, side, e.u));
+    out[side] = { ...s, line: lead + INIT_HEAD + [...all.filter((e) => !unseen.includes(e)).map((e) => e.text), ...(unseen.length ? [unseen.length + ' unseen'] : [])].join(INIT_SEP) };
+  }
+  return out;
+}
+function sayInitiative(cb: Combat, lead: string) {
+  const at = say(cb, lead + INIT_HEAD + initiativeEntries(cb).map((e) => e.text).join(INIT_SEP)) - 1;
+  remark(cb, at, initiativeMark(cb, at));
+}
+function remarkOpening(cb: Combat) { const at = cb.log.findIndex((l, i) => i < 4 && l.startsWith(INIT_HEAD)); if (at >= 0) remark(cb, at, initiativeMark(cb, at)); }
 /** Rules 1.64 item 5008: contact. The fight is joined: round 1 from the top of the initiative order (rolled as the fight
  * began, read out now), every unit's first turn on full AP (beginTurn). */
 function joinFight(cb: Combat, rng: Rng) {
   delete cb.approach; cb.round = 1;
-  say(cb, APPROACH.joined_log + ' Initiative: ' + cb.order.map((id) => { const u = cb.units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · '));
+  sayInitiative(cb, APPROACH.joined_log + ' ');
   raiseAlarm(cb);
   for (let i = 0; i < cb.order.length; i++) {
     cb.turn = i; const u = active(cb)!;

@@ -1056,8 +1056,10 @@ if "actions" in data:
         if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character") or not isinstance(r.get("path"), str) or not r.get("path"):
             errors.append(f"actions: resources.{rid} needs a name, on (unit or character) and a path")
         # Classes 3.0 batch row: the item op `resource` gives any row through effects/cost.ts resGive
-        for _k in (set(r) - {"name", "on", "path", "whole", "max", "needs", "setter"}) if isinstance(r, dict) else []:
-            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, on, path, whole, max, needs, setter)")
+        for _k in (set(r) - {"name", "one", "on", "path", "whole", "max", "needs", "setter", "made_after_start"}) if isinstance(r, dict) else []:
+            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, one, on, path, whole, max, needs, setter, made_after_start)")
+        if isinstance(r, dict) and "one" in r and not (isinstance(r["one"], str) and r["one"]):
+            errors.append(f"actions: resources.{rid}.one must be the name of one (a cost of 1: '1 core', never '1 cores')")
         for _k in ("max", "needs", "setter"):
             if isinstance(r, dict) and _k == "needs" and isinstance(r.get(_k), list) and r[_k] and all(isinstance(x, str) and x for x in r[_k]): continue # rules 1.33: one of several paths (an MP focus: mg.emanator, mg.attuner)
             if isinstance(r, dict) and _k in r and not (isinstance(r[_k], str) and r[_k]):
@@ -2237,6 +2239,10 @@ def check_trigger_effect(e, w):
         if not o: errors.append(f"{w}: op '{x.get('op')}' does not run on a trigger (item_ops.ops)"); continue
         if t not in o["on"]: errors.append(f"{w}: op '{x.get('op')}' does not run on '{t}' (it runs on {o['on'][:6]}…)")
         if x.get("target") not in (None, "self", "actor", "target"): errors.append(f"{w}: an item op's target is self, actor or target")
+        # spec item 5607: a meter the fight's start makes after the items' combat_start ops (actions.json resources.<id>
+        # made_after_start) has nothing to take a combat_start resource op: give it at the holder's first turn_start
+        if t == "combat_start" and x.get("op") == "resource" and (((data.get("actions") or {}).get("resources") or {}).get(x.get("resource")) or {}).get("made_after_start"):
+            warns.append(f"{w}: a combat_start resource op on {x.get('resource')}, a meter made after the items' combat_start ops: it would be lost (give it at turn_start, once a fight)")
         for f in ("value", "value_pct", "max", "add", "set", "min", "at_least", "tiles", "rounds", "count", "share"):
             if f in x and not (isinstance(x[f], (int, float)) and not isinstance(x[f], bool)) and not (f == "value" and x.get("op") == "resource" and x[f] in ("all", "zero")):
                 if isinstance(x[f], dict): check_number_block(x[f], f"{w}: '{f}'")
@@ -3154,11 +3160,23 @@ if _sv is not None:
     # Rules 1.55 items 35 and 64 (0.28.3): what the field refuses (item ops of effect_ops.json)
     _fd = _sv.get("field")
     if _fd is not None:
-        _opids = set((((data.get("effect_ops") or {}).get("item_ops") or {}).get("ops") or {}).keys())
-        if not _fd.get("lasting_ops"): errors.append("survival:field: lasting_ops, a list")
         if "carried_res" in _fd: errors.append("survival:field.carried_res: gone in rules 1.55 item 64 (the field's units pay what they spend)")
-        for _x in _fd.get("lasting_ops") or []:
-            if _x not in _opids: errors.append(f"survival:field.lasting_ops: {_x!r} is not an item op")
+        if "lasting_ops" in _fd: errors.append("survival:field.lasting_ops: gone in spec item 5609 (G3: each action's row in actions.json field)")
+    # G3 (spec item 5609): each item action's field row: allowed, or a refusal kind that has its words
+    _fa = (data.get("actions") or {}).get("field")
+    if not isinstance(_fa, dict) or not isinstance(_fa.get("actions"), dict) or not isinstance(_fa.get("texts"), dict) or "unflagged" not in _fa["texts"]:
+        errors.append("actions:field: texts (with unflagged) and actions (<item key>#<action id>: allowed or a text kind)")
+    else:
+        for _k, _v in _fa["actions"].items():
+            if "#" not in _k: errors.append(f"actions:field.actions: {_k!r} is <item key>#<action id>")
+            if _v != "allowed" and _v not in _fa["texts"]: errors.append(f"actions:field.actions.{_k}: {_v!r} is allowed or one of texts {sorted(_fa['texts'])}")
+        for _t, _w in _fa["texts"].items():
+            if "{label}" not in _w: errors.append(f"actions:field.texts.{_t}: names the action ({{label}})")
+        # spec item 5610: the healing brake names real item actions (every one has its field row)
+        _bk = (((data.get("rules") or {}).get("mending") or {}).get("brake") or {})
+        for _k in _bk.get("actions") or []:
+            if _k not in _fa["actions"]: errors.append(f"rules:mending.brake.actions: {_k!r} is no item action (actions.json field.actions)")
+        if _bk and not (isinstance(_bk.get("mult"), (int, float)) and _bk["mult"] > 1): errors.append("rules:mending.brake.mult: a number over 1")
         if _fd.get("provisional") is not True: errors.append("survival:field: provisional: true")
 
 # Rules 1.54 (survival-spec 14.2, 14.3): items' pack_kind and plural, the recipes (one converter, recipes.ts) and the

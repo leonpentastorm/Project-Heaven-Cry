@@ -2,8 +2,8 @@
 // overlay (game/pickOverlay.ts), from the engine's own marks. For Vault, Decoy, Douse (Shadow), a Whisper (Health), a
 // Hymn with an area (Thunderclap), the Miracle The Sky Answers, Picture and a Figment's Move, a technique, a thrown
 // stim and the Throw row (a frag grenade, on the Attack tab):
-//   · selected: its reach is shaded (tiles whose hover card says "in reach" or "you can pick this tile"), or its legal
-//     units ringed ("you can pick them");
+//   · selected: its reach is shaded (tiles whose hover card says "in reach" or "in reach: click to choose it"), or its legal
+//     units ringed ("click to choose them");
 //   · the pointer on a legal tile or unit: the area it covers ("it covers this tile"), whom it touches, or the hover line;
 //   · a click on a tile or unit it can't take: the engine's refusal is a line by the action box ("✕ …"), nothing picked.
 // The review (rules 1.65 item 5108): each action must show the kinds it has (a unit pick its reach too; Vault's and
@@ -71,7 +71,7 @@ async function check(name, btn, o = {}) {
   if (o.tab) { await p.locator('#phc-tab-' + o.tab).click(); await settle(p, 200); await p.locator('[role="tabpanel"]').getByRole('button', { name: btn }).first().click({ timeout: 15000 }).catch(async (e) => { console.log('INFO the tab buttons: ' + (await p.locator('[role="tabpanel"] button').allTextContents()).map((t) => t.trim().slice(0, 30)).join(' | ')); miss(e); }); }
   else await pickAction(p, btn, { timeout: 15000 }).catch(miss);
   await settle(p, 400);
-  const choice = await tilesLayer(CHOICE), reach = [...new Set([...(await tilesLayer(REACH)), ...choice])], units = await tilesWith('you can pick them'); // a choice is drawn over its reach
+  const choice = await tilesLayer(CHOICE), reach = [...new Set([...(await tilesLayer(REACH)), ...choice])], units = await tilesWith('click to choose them'); // a choice is drawn over its reach
   ok(name + ': selected, its reach or choices shown (reach ' + reach.length + ', tiles ' + choice.length + ', units ' + units.length + ')', reach.length + choice.length + units.length > 0);
   // the review: each action shows the kinds it must (a unit pick its reach too), and its choices lie in its reach
   for (const k of o.need || []) ok(name + ': it shows its ' + k + ' (' + ({ reach, choice, units })[k].length + ')', ({ reach, choice, units })[k].length > 0);

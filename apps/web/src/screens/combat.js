@@ -67,7 +67,7 @@ import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, w
 import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
-import { actionIconOf, uiMarkOf } from '../game/doorArt';
+import { actionIconOf, uiMarkOf, moveIconOf } from '../game/doorArt';
 import { mapLegacy, isLegacyUnit, plainAction, actionGroups, hideHelp, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, tabIdsKnown, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView, pickToggle, verdictOf } from '../game/actionFlow';
@@ -1466,7 +1466,7 @@ export class CombatLogic extends DCLogic {
       const n = tpadOpen.kind === 'watch' ? 'Hold a shot' : 'Techniques · ' + ((blocks.find((b) => b.hand === tpadOpen.hand) || {}).name || '');
       sel.name = n; sel.text = 'Pick one in the pad (arrow keys move, Enter picks), then its target on the map.'; sel.extra = '';
     }
-    sel.toggles = tgls.map((t) => ({ key: t.id, label: t.label + (t.on ? ' ✓' : ''), pressed: t.on ? 'true' : 'false', title: dotJoin(t.preview || t.label, t.why), off: !!t.why,
+    sel.toggles = tgls.map((t) => ({ key: t.id, label: t.label + (t.on ? ' ✓' : ''), ...((m) => ({ mark: m, hasMark: !!m }))(moveIconOf(t.id)), /* a form's sign (a toggle's id is <item key>#<form>) (the Open Hand's Jab, Palm, Sweep, Snatch: catalog data_ids) */ pressed: t.on ? 'true' : 'false', title: dotJoin(t.preview || t.label, t.why), off: !!t.why,
       pick: () => this.setState({ mods: pickToggle(this.state.mods, tgls, t) }),
       style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; ' + (t.on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') + (t.why ? '; opacity: 0.45' : '') }));
     // A technique whose weapon has two of the properties it reads: the player picks which line applies (args.line).

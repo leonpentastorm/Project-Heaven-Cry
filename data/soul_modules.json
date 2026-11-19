@@ -181,7 +181,7 @@
       "id": "damage",
       "name": "Damage",
       "base_cost": 20,
-      "text": "Deals {=damage} damage × your Soul multiplier × the stage multiplier, in the way you pick. A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
+      "text": "Deals {=damage} damage, more with your Soul skills and more again with each stage you pump it to, in the way you pick. A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
       "damage": 40,
       "hit": "will_power_vs_defense",
       "options": [
@@ -832,7 +832,7 @@
       "family": "augment",
       "cost": 10,
       "strain_extra": 0,
-      "text": "Flips a Damage Outburst: instead of harming, it gives each ally it reaches a shield of {=shield} × your Soul multiplier × the stage multiplier, and it skips enemies in the area. The shield grows with your level, like healing. In a shape (Wave, Burst, Aura or Lance) each ally gets ×0.4 of it. The Narrator decides what a flipped debuff does.",
+      "text": "Flips a Damage Outburst: instead of harming, it gives each ally it reaches a shield of {=shield}, more with your Soul skills and with each stage you pump it to, and it skips enemies in the area. The shield grows with your level, like healing. In a shape (Wave, Burst, Aura or Lance) each ally gets ×0.4 of it. The Narrator decides what a flipped debuff does.",
       "provisional": true,
       "source_note": "module name from the 2020 spell-crafting notes; cost and effect are new",
       "adjudication": "hybrid",

@@ -23,7 +23,7 @@ import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesig
 import { previewPerkAction, phys, sheetPack, gearLockWhy, gearPreview, plateChoices, plateLesson, plateLessonWhy, GEAR, carriesMpFocus, inHands } from '@engine';
 import { SHEET_LINE_KEYS } from '../game/previewLines';
 import { weaponActions, verdictFor, markFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
-import { doorEmblemOf, classPortraitOf, moveIconOf } from '../game/doorArt';
+import { doorEmblemOf, classPortraitOf, moveIconOf, uiMarkOf } from '../game/doorArt';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
 import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, hasMpFocus, carriesEvoker, carriesEmanator, focusHand, FOCUS_IDS, NEEDS_EVOKER, NEEDS_EMANATOR, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
@@ -244,7 +244,7 @@ function magicVals(self, g, c) {
     hasOptions: opts.length > 0, options: opts.map((o) => { const v = optValue(o), on = B.option === v; return { key: o, label: OPT_LABEL[o] || o, text: wayText(B.school, o), pressed: on ? 'true' : 'false', pick: () => set({ option: v }), style: chipStyle(SOUL_VIOLET, on) }; }),
     hasOptions2: opts2.length > 0, options2: opts2.map((o) => { const v = optValue(o), on = B.option2 === v; return { key: o, label: OPT_LABEL[o] || o, text: wayText(B.school2, o), pressed: on ? 'true' : 'false', pick: () => set({ option2: v }), style: chipStyle(SOUL_VIOLET, on) }; }),
     tones: toneChips(kTones, vis).map((t) => { const on = (B.tone || 'raw') === t.id, can = t.known || t.free;
-      return { key: t.id, label: t.name + (t.free ? ' · free' : ''), pressed: on ? 'true' : 'false', locked: !can, title: t.text + (can ? '' : ' Not learned yet (a teacher or a plate).') + (t.free ? ' Your first tone is free at Lore Master 1: learned with this design.' : ''),
+      return { key: t.id, label: t.name + (t.free ? ' · free' : ''), ...((m) => ({ mark: m, hasMark: !!m }))(uiMarkOf('tone', t.id)), pressed: on ? 'true' : 'false', locked: !can, title: t.text + (can ? '' : ' Not learned yet (a teacher or a plate).') + (t.free ? ' Your first tone is free at Lore Master 1: learned with this design.' : ''),
         pick: () => { if (can) set({ tone: t.id }); }, style: chipStyle(t.ink, on) + (can ? '' : '; opacity: 0.4; cursor: default') }; }),
     shapes: [{ id: '', name: 'Bolt' }, ...known.modules.filter((x) => isShape(x)).map((x) => ({ id: x, name: MODULE[x]?.name || x }))].map((x) => { const on = (shapeOn || '') === x.id, full = !on && !!x.id && !shapeOn && B.modules.length >= slots;
       return { key: x.id || 'bolt', label: x.name + (x.id ? ' ' + signed(MODULE[x.id]?.cost || 0) : ''), icon: formIconUri(x.id || 'bolt', toneInk(B.tone)), pressed: on ? 'true' : 'false', locked: full, title: x.id ? MODULE[x.id]?.text || '' : 'One target (the default; no module).',
@@ -471,7 +471,7 @@ export class MainLogic extends DCLogic {
     const hpMax = c ? maxHp(c) : 1, mpMax = c ? maxMp(c) : 1, mpNowV = c ? magicNow(g, c).mp : 0, ema = !!c && carriesMpFocus(c), mpHeld = c ? mpFocusLine(c) : '', next = c ? xpForLevel(c.level + 1) : 1, prevXp = c ? xpForLevel(c.level) : 0;
     const bars = c ? [['HP', '#F65157', Math.round(c.hp / hpMax * 100), fmtNum(c.hp) + ' / ' + fmtNum(hpMax)], ['MP', '#5C9EFF', ema ? Math.round(mpNowV / Math.max(1, mpMax) * 100) : 0, ema ? mpNowV + ' / ' + mpMax + (mpHeld ? ' · ' + mpHeld : ' · stowed') : c && ((c.skills || {}).will_power > 0 || (c.outbursts || []).length) ? 'no Emanator' : '—'],
       ['XP', '#A3AEC2', c.level >= 20 ? 100 : Math.round((c.xp - prevXp) / Math.max(1, next - prevXp) * 100), c.xp.toLocaleString() + ' / ' + next.toLocaleString()]]
-      .map(([label, col, pct, text]) => ({ label, text, labelStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + col, fill: 'width: ' + Math.max(0, Math.min(100, pct)) + '%; height: 100%; background: ' + col })) : [];
+      .map(([label, col, pct, text]) => ({ label, text, ...((m) => ({ mark: m, hasMark: !!m }))(label === 'XP' ? uiMarkOf('resource', 'xp') : ''), labelStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + col, fill: 'width: ' + Math.max(0, Math.min(100, pct)) + '%; height: 100%; background: ' + col })) : [];
     const barsA = bars.filter((b) => b.label !== 'XP'), barsB = bars.filter((b) => b.label === 'XP');
     const TAB_IDS = ['skills', 'status', 'perks', 'gear', 'arms', 'magic', 'faith'], tabDir = (to, from) => (TAB_IDS.indexOf(to) < TAB_IDS.indexOf(from) ? 'l' : 'r');
     // The sheet's tabs wrap onto a second line when the seven don't fit (never squeezed, never scrolled sideways); each

@@ -8,7 +8,8 @@ import type { Combat } from './combat';
 /** One side's mark on a log line: 0, the side saw none of the units it names (the line is not sent to it); else n, the
  * names of the units it names that the side didn't see (sent as 'something unseen'), and t, their tiles then, as the
  * log writes them (refOf 'M6' and 'x,y'; sent as 'somewhere unseen'). */
-export type LogSideMark = 0 | { n: string[]; t?: string[] };
+export type LogSideMark = 0 | { n: string[]; t?: string[]; /** the whole line as this side reads it, built where it is written (the
+ * initiative line: the unseen as one count, combat.ts initiativeMark); fog.ts sends it as it is */ line?: string };
 /** A log line's mark (cb.logSee[i]): 0 for every side, else the sides that didn't see all of it. Past the end of
  * cb.logSee (trailing 0s are not kept), and in an old save with no cb.logSee, a line is every side's. */
 export type LogMark = 0 | { pc?: LogSideMark; foe?: LogSideMark };
@@ -51,12 +52,8 @@ export function unsay(cb: Combat, at: number) {
   const s = cb.logSee; if (!s || at >= s.length) return;
   s.splice(at, 1); while (s.length && !s[s.length - 1]) s.pop(); if (!s.length) delete cb.logSee;
 }
-/** The fight's initiative line names every unit: when the set-up changes who is seen (sightQuietly: who starts Hidden),
- * its mark is worked out again, as the fight opens. */
-export function remarkOpening(cb: Combat) {
-  const at = cb.log.findIndex((l, i) => i < 4 && l.startsWith('Initiative: ')); if (at < 0) return;
-  putMark(cb, at, markOf(cb, cb.log[at]), false);
-}
+/** Mark line `at` again with this mark (a line whose writer builds each side's reading: combat.ts initiativeMark). */
+export function remark(cb: Combat, at: number, m: LogMark) { if (at >= 0 && at < cb.log.length) putMark(cb, at, QUIET ? 0 : m, false); }
 
 /** Rules 1.66 item 5213: a count of tiles in words, singular for one ("1 tile", "3 tiles"). */
 export const tilesN = (n: number | string | undefined): string => n + (Number(n) === 1 ? ' tile' : ' tiles');

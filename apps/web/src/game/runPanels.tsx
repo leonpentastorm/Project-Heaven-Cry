@@ -25,6 +25,7 @@ import { placeClosed, closePlace } from './placeMark';
 import { ICON } from './runIconSizes';
 import { WearBar } from './WearBar';
 import { campGuard, levelUpGuard } from './campView';
+import { campStepIconOf, uiMarkOf } from './doorArt';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', hp: '#F65157', white: '#FFFFFF' };
 const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: ink.muted };
@@ -109,14 +110,15 @@ function RunBoard({ g, me }: { g: GameState; me: string }) {
 }
 
 /** The one phase control: what the engine's views say the squad does next, here. */
-interface Phase { key: string; label: string; attr: Record<string, string>; go?: () => void; why?: string }
+interface Phase { key: string; label: string; attr: Record<string, string>; go?: () => void; why?: string; /** its sign (the camp's Ready: camp-step-ready), '' none */ icon?: string }
 /** The camp's phase (rules 1.52): Ready (or Start, solo) once a starting boon is chosen. The right panel's control and
  * the camp's own top bar both draw this one (the bar with its own data mark). */
 export function campPhase(g: GameState, me: string): Phase | null {
   const lv = loadoutView(g as any, me); if (!lv) return null;
   const solo = lv.solo;
-  if (lv.readyWhy) return { key: 'ready', label: solo ? 'Start the run' : 'Ready', attr: { 'data-phc-phase': 'ready' }, why: lv.readyWhy }; // the engine's refusal, in its words
-  return { key: 'ready', label: solo ? 'Start the run' : lv.ready ? '✓ Ready (undo)' : 'Ready', attr: { 'data-phc-phase': 'ready', 'data-phc-camp-ready': '' }, go: () => levelUpGuard(lv, () => campGuard(lv, false, () => act({ type: 'run/ready', ...(lv.ready ? { undo: true } : {}) } as any)), () => go('levelup', { levelupChar: lv.me.id })) }; // rules 1.55 item 49: a free pick still open asks first; a level-up due asks before that (playtest 0.31.10 row 2)
+  const icon = campStepIconOf('ready'); // the camp's Ready sign (camp_icons camp-step-ready), '' when not built
+  if (lv.readyWhy) return { key: 'ready', label: solo ? 'Start the run' : 'Ready', icon, attr: { 'data-phc-phase': 'ready' }, why: lv.readyWhy }; // the engine's refusal, in its words
+  return { key: 'ready', label: solo ? 'Start the run' : lv.ready ? '✓ Ready (undo)' : 'Ready', icon, attr: { 'data-phc-phase': 'ready', 'data-phc-camp-ready': '' }, go: () => levelUpGuard(lv, () => campGuard(lv, false, () => act({ type: 'run/ready', ...(lv.ready ? { undo: true } : {}) } as any)), () => go('levelup', { levelupChar: lv.me.id })) }; // rules 1.55 item 49: a free pick still open asks first; a level-up due asks before that (playtest 0.31.10 row 2)
 }
 function phaseOf(g: GameState, me: string, v: RunViewV): Phase | null {
   const r = g.run!;
@@ -136,12 +138,14 @@ function phaseOf(g: GameState, me: string, v: RunViewV): Phase | null {
 /** The same phase control, drawn again in a place's header (PlaceBar: the visibility standard), so the button that moves
  * on is in sight however far the middle is scrolled. Its own data mark (`data-phc-bar-go`), the right panel's stays the one
  * `data-phc-phase`. Nothing when there is nothing to move on to (or the fight is the next thing: the right panel says it). */
+/** A phase control's sign (the camp's Ready), white ink on the button. */
+function PhaseSign({ src, k }: { src: string; k: string }) { return <img data-phc-phase-sign={k} src={src} alt="" width={18} height={18} style={{ width: 18, height: 18, flex: 'none' }} />; }
 export function MoveOn() {
   const st = getState(), g = st.game, me = st.me.id; if (!g || !g.run) return null;
   const v = runView(g, me); if (!v) return null;
   const ph = phaseOf(g, me, v); if (!ph || ph.key === 'fight') return null;
   return <button type="button" data-phc-bar-go={ph.key} aria-disabled={ph.go ? undefined : 'true'} {...tipProps(ph.why || null)} onClick={() => { if (ph.go) ph.go(); else if (ph.why) toast(ph.why); }}
-    style={{ ...btn(true, !ph.go), minHeight: 42, padding: '0 16px', fontSize: 15 }}>{ph.label}</button>;
+    style={{ ...btn(true, !ph.go), minHeight: 42, padding: '0 16px', fontSize: 15, display: 'inline-flex', alignItems: 'center', gap: 8 }}>{ph.icon ? <PhaseSign src={ph.icon} k={ph.key} /> : null}{ph.label}</button>;
 }
 /** Each seat's mark: ready at the camp and the shop, the next stop marked on the map and at a place. */
 function marksOf(g: GameState, me: string): Record<string, string> {
@@ -164,7 +168,7 @@ function RunSquad({ g, me }: { g: GameState; me: string }) {
             <span style={{ display: 'grid', placeItems: 'center', width: 24, height: 24, flex: 'none', borderRadius: '50%', fontSize: 'var(--fs-sub)', fontWeight: 700, background: p.color, color: ink.ground }}>{p.initials}</span>
             <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
               <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}{p.mine ? ' (you)' : ''}</span>
-              <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>Level {p.level} · <span style={{ color: p.hp < p.maxHp ? ink.hp : ink.muted }}>HP {p.hp}/{p.maxHp}</span> · <span data-phc-credits={p.id} style={{ color: ink.white }}>{p.credits} credits</span></span>
+              <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>Level {p.level} · <span style={{ color: p.hp < p.maxHp ? ink.hp : ink.muted }}>HP {p.hp}/{p.maxHp}</span> · <span data-phc-credits={p.id} style={{ color: ink.white, whiteSpace: 'nowrap' }}>{uiMarkOf('resource', 'credits') ? <img data-phc-res-mark="credits" src={uiMarkOf('resource', 'credits')} alt="" width={13} height={13} style={{ width: 13, height: 13, marginRight: 3, verticalAlign: '-2px' }} /> : null}{p.credits} credits</span></span>
               {p.wear && p.wear.state !== 'sound' ? <span data-phc-member-wear="main" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-sub)', color: ink.muted }}><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 90 }}>{p.weapon}</span><WearBar w={p.wear} label={p.weapon} compact /></span> : null}
               {p.worn.map((x, i) => <span key={i} data-phc-member-wear="other" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-sub)', color: ink.muted }}><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 90 }}>{x.name}</span><WearBar w={x.w} label={x.name} compact /></span>)}
             </span>
@@ -172,7 +176,7 @@ function RunSquad({ g, me }: { g: GameState; me: string }) {
             {p.levelUp && p.mine ? <button type="button" data-phc-levelup={p.id} onClick={() => go('levelup', { levelupChar: p.id })} {...tipProps('Level up: spend your points')} style={{ ...btn(true), minHeight: 28, padding: '0 8px', fontSize: 'var(--fs-sub)' }}>★</button> : null}
           </div>))}
       </div>
-      {ph ? <button type="button" {...ph.attr} aria-disabled={ph.go ? undefined : 'true'} {...tipProps(ph.why || null)} onClick={() => { if (ph.go) ph.go(); else if (ph.why) toast(ph.why); }} style={{ ...btn(true, !ph.go), minHeight: 40, width: '100%' }}>{ph.label}</button>
+      {ph ? <button type="button" {...ph.attr} aria-disabled={ph.go ? undefined : 'true'} {...tipProps(ph.why || null)} onClick={() => { if (ph.go) ph.go(); else if (ph.why) toast(ph.why); }} style={{ ...btn(true, !ph.go), minHeight: 40, width: '100%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>{ph.icon ? <PhaseSign src={ph.icon} k={ph.key} /> : null}{ph.label}</button>
         : v.waiting ? <span data-phc-waiting="" style={{ fontSize: 'var(--fs-sub)', color: ink.white }}>{v.waiting}</span> : null}
     </div>
   );

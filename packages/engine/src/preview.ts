@@ -59,6 +59,9 @@ export interface PreviewOpts {
   viewer?: Side | null;
   /** The switches set on the action being previewed (Ricochet, Heart Surge…), as the click would carry them. */
   mods?: string[] | null;
+  /** G1 (0.32): the acting unit's own attacks hit on the copy (Combat.asHit), so the preview reads what a hit gives: the
+   *  hit-time ops run as the action runs them (the Momentum a Charge reaches), no second formula. dryRun only. */
+  asHit?: boolean;
 }
 /** Run fn on a throwaway copy of the fight, with a shadow of the game bound. What fn returns is the preview; the live
  * fight and game are untouched. rng is the copy's own (a preview's roll never moves the real dice). */
@@ -77,6 +80,7 @@ export interface DryRun { /** the engine's refusal in plain words, or null: it w
  * How a screen learns a cost or a reason without working out a rule. */
 export function dryRun(g: any, cb: Combat, unitId: string, fn: (cb: Combat, u: Unit, rng: Rng, g: any) => string | null | undefined, o: PreviewOpts = {}): DryRun {
   return preview(g, cb, (c, sg, rng) => {
+    if (o.asHit) c.asHit = unitId;
     const u = c.units.find((x) => x.id === unitId) || null, ap0 = u ? u.ap : 0;
     let err: string | null = null;
     try { err = u ? fn(c, u, rng, sg) || null : 'No unit.'; } catch (e: any) { err = String((e && e.message) || e); }
