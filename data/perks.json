@@ -470,11 +470,22 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When your HP runs out, take one more turn with {=tiers.I.numbers.ap} AP before you fall Downed (once a fight). II: When your HP runs out, take one more turn with {=tiers.II.numbers.ap} AP before you fall Downed (once a fight).",
+      "text": "I: When your HP runs out, take one more turn with {=tiers.I.effects.0.ap} AP before you fall Downed (once a fight). II: When your HP runs out, take one more turn with {=tiers.II.effects.0.ap} AP before you fall Downed (once a fight).",
       "effects": [
         {
-          "op": "narrator",
-          "note": "Once a fight, when this character's HP runs out it takes one more turn (3 AP) before it falls Downed (no engine half yet: rules 1.73 item 5828, a last turn has no general piece)."
+          "op": "last_turn",
+          "when": "would_drop",
+          "ap": 3,
+          "if": {
+            "open": true,
+            "self_harm": false
+          },
+          "limit": {
+            "per": "per_combat",
+            "n": 1
+          },
+          "label": "Still Standing",
+          "say": "{self} is still standing{then}."
         }
       ],
       "tiers": {
@@ -486,17 +497,25 @@
             }
           ],
           "ap_cost": null,
-          "text": "When your HP runs out, take one more turn with {=tiers.I.numbers.ap} AP before you fall Downed (once a fight).",
-          "short": "HP out: one more turn with {=tiers.I.numbers.ap} AP, once a fight",
+          "text": "When your HP runs out, take one more turn with {=tiers.I.effects.0.ap} AP before you fall Downed (once a fight).",
+          "short": "HP out: one more turn with {=tiers.I.effects.0.ap} AP, once a fight",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Once a fight, when this character's HP runs out it takes one more turn (3 AP) before it falls Downed (no engine half yet: rules 1.73 item 5828, a last turn has no general piece)."
+              "op": "last_turn",
+              "when": "would_drop",
+              "ap": 3,
+              "if": {
+                "open": true,
+                "self_harm": false
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1
+              },
+              "label": "Still Standing",
+              "say": "{self} is still standing{then}."
             }
-          ],
-          "numbers": {
-            "ap": 3
-          }
+          ]
         },
         "II": {
           "requires": [
@@ -506,31 +525,36 @@
             }
           ],
           "ap_cost": null,
-          "text": "When your HP runs out, take one more turn with {=tiers.II.numbers.ap} AP before you fall Downed (once a fight).",
-          "short": "That turn has {=tiers.II.numbers.ap} AP",
+          "text": "When your HP runs out, take one more turn with {=tiers.II.effects.0.ap} AP before you fall Downed (once a fight).",
+          "short": "That turn has {=tiers.II.effects.0.ap} AP",
           "effects": [
             {
-              "op": "narrator",
-              "note": "As Tier I, with 5 AP (no engine half yet: rules 1.73 item 5828)."
+              "op": "last_turn",
+              "when": "would_drop",
+              "ap": 5,
+              "if": {
+                "open": true,
+                "self_harm": false
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1
+              },
+              "label": "Still Standing",
+              "say": "{self} is still standing{then}."
             }
           ],
-          "numbers": {
-            "ap": 5
-          },
           "replaces_tier_I": true,
           "after": "I"
         }
       },
-      "adjudication": "narrator",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "survival"
       ],
       "provisional": true,
-      "source": "rules 1.73 (Body), 0.32: the Endurance step",
-      "numbers": {
-        "ap": 3
-      }
+      "source": "rules 1.73 (Body), 0.32: the Endurance step"
     },
     {
       "id": "second_wind",
@@ -13064,11 +13088,19 @@
       "text": "Once per fight, when you would drop to 0 HP, you stay on your feet until the end of your next turn (or of this turn, if it is yours). Until then every hit you take is a failed death save instead of damage. At the end of it you go Downed, unless you have been healed.",
       "effects": [
         {
-          "op": "state",
-          "state": "last_turn",
-          "when": "would_drop_to_0",
-          "uses": "per_combat",
-          "context": "act one full turn, then drop unless healed above 0"
+          "op": "last_turn",
+          "when": "would_drop",
+          "hits": "death_save",
+          "if": {
+            "open": true,
+            "self_harm": false
+          },
+          "limit": {
+            "per": "per_combat",
+            "n": 1
+          },
+          "label": "Bite the Bullet",
+          "say": "{self} bites the bullet: still standing{then}."
         }
       ],
       "adjudication": "engine",

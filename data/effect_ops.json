@@ -4347,6 +4347,34 @@
       }
     },
     {
+      "id": "last_turn",
+      "tier": "core",
+      "summary": "Item op (rules 1.77 item 6508): on would_drop, the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own), with ap AP if given, then falls Downed unless healed first; hits: death_save, every hit meanwhile is a failed death save instead of damage. Bite the Bullet's handler made general.",
+      "count": 0,
+      "params": [
+        "and",
+        "ap",
+        "hits",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "last_turn",
+        "when": "would_drop",
+        "ap": 3,
+        "limit": {
+          "per": "per_combat",
+          "n": 1
+        }
+      }
+    },
+    {
       "id": "mend_mult",
       "tier": "core",
       "summary": "Item op (Classes 3.0 step 1b): multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, blessing (prayers), perk...). Runs on the triggers heal and shield.",
@@ -6243,6 +6271,17 @@
         ],
         "changes_state": true,
         "about": "the attack rolls a second d20 and keeps the worse (keep: worse) or the better (keep: better) of the two (once an attack: the first item that asks)"
+      },
+      "last_turn": {
+        "on": [
+          "would_drop"
+        ],
+        "fields": [
+          "ap",
+          "hits"
+        ],
+        "changes_state": true,
+        "about": "the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own) with ap AP if given, then falls Downed unless healed first; hits: death_save, each hit meanwhile is a failed death save instead of damage"
       }
     },
     "limit_scopes": [

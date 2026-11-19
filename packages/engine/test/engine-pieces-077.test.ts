@@ -139,3 +139,31 @@ describe('a roll kept from two dice (item 6507): Untouchable I and II', () => {
     expect(swing(null, 0).both).toBe(0);
   });
 });
+
+describe('one more turn at 0 HP (item 6508): Still Standing, and Bite the Bullet on the same op', () => {
+  const dropped = (perks: any) => {
+    for (let i = 0; i < 30; i++) {
+      const f = fightWith([{ skills: { pain_threshold: 5, guts: 5 }, perks }], [{ at: 'C6' }], { seed: 'SS' + i });
+      f.foe.pos = '3,5'; f.foe.ap = 6; f.pc.pos = '2,5'; f.pc.hp = 1;
+      withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), f.unit(f.pc.id), 'shot', null));
+      if (f.unit(f.pc.id).lastTurn || f.unit(f.pc.id).downed) return f;
+    }
+    throw new Error('no hit landed');
+  };
+  it('Still Standing II: the blow leaves you on 1 HP; your next turn has its AP; at its end you fall Downed', () => {
+    const ap = (PERK as any).still_standing.tiers.II.effects[0].ap;
+    const f = dropped({ still_standing: 'II' }); const u = f.unit(f.pc.id);
+    expect(u.downed).toBeFalsy(); expect(u.hp).toBe(1); expect(condOn(u, 'last_turn')).toBe(true);
+    expect(f.turn(u).ap).toBe(ap);
+    f.act({ type: 'combat/end-turn', unitId: u.id } as any);
+    expect(f.unit(u.id).downed).toBe(true); expect(f.unit(u.id).lastTurn).toBeUndefined();
+  });
+  it('without the perk the blow drops you; Bite the Bullet keeps its own rule (hits are death-save failures)', () => {
+    expect(dropped({}).unit(dropped({}).pc.id).downed).toBe(true);
+    const f = dropped({ bite_the_bullet: 'I' }); const u = f.unit(f.pc.id);
+    expect(u.lastTurn).toMatchObject({ hits: 'death_save' }); expect(u.hp).toBe(1);
+    const n = f.cb.log.length; f.foe.ap = 6;
+    for (let i = 0; i < 6 && !f.cb.log.slice(n).some((l: string) => /borrowed time/.test(l)); i++) { f.foe.ap = 6; withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), f.unit(u.id), 'shot', null)); }
+    expect(f.cb.log.slice(n).some((l: string) => /borrowed time: death-save failure/.test(l))).toBe(true); expect(f.unit(u.id).hp).toBe(1);
+  });
+});

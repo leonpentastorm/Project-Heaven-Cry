@@ -13,9 +13,10 @@
 // and runTriggered() below reads the event, tests `if`, takes the `limit` through effects/uses.ts (the item's key, so the
 // counter is the one a handler kept with uses(h)), runs the op and writes `say`. A preview (ctx.preview) changes no
 // state: the amount ops still speak (a preview shows the number), the limit is read and not taken, nothing is logged.
-import { rollD20 } from '../rolls';
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { dataRef } from '../datatext';
+import { rollD20 } from '../rolls';
+import { setDowned, setBraced } from '../unitstate';
 import type { Combat, Unit } from '../combat';
 import type { Holder, HookName } from './types';
 import { uses } from './uses';
@@ -25,10 +26,10 @@ import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, t
 import { holds, FOCUS_DOORS, handProps, gearAt, kindOfDoor, FOCUS_IDS } from '../character';
 import { applyDamage } from './damage';
 import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
-import { say, dist, displace, emitFx, fxFell, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile, strikeRider } from '../combat';
+import { say, dist, displace, emitFx, fxFell, checkOver, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile, strikeRider } from '../combat';
 import { WEAPON, SKILL } from '../data';
 import { magsOf, type PackItem } from '../character';
-import { applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
+import { restoreConds, applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
 import { nextToCover, objectsAt, objectsOf, damageObject, refOf } from '../combat';
 import { objectIs, makeObject } from '../objects';
 import { CONDITION_ROWS, condRowsVersion, COND_TABLE_STATS } from '../condtable';
@@ -39,8 +40,8 @@ import patronsJ from '../../../../data/patrons.json';
 import { TECHNIQUES, PHYS_RULES as TECH_RULES, techGroupOf, techSystemOf } from '../physical/data';
 import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
-import { loseAp, weaponOwnSite, resMaxOf, resLimitOf } from './cost';
-import { resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
+import { loseAp, setAp, weaponOwnSite, resMaxOf, resLimitOf } from './cost';
+import { dropHeldShot, resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
 import { gainEcho } from './echo';
 import { doorFeed } from './feed';
 import { pickedFork, forkIds } from '../doorpicks';
@@ -596,6 +597,36 @@ O('two_dice', ['attack_roll'], true, ['keep'], 'the attack rolls a second d20 an
   rc.twoDice = [a, b]; rc.die = worse ? Math.min(a, b) : Math.max(a, b); delete rc.hit;
   return ' (d20 ' + a + ' and ' + b + ', ' + (worse ? 'the worse' : 'the better') + ' stands)';
 });
+
+// Rules 1.77 item 6508 (the lead's ruling 7): one more turn at 0 HP, Bite the Bullet's handler made general. The blow
+// that would drop the holder leaves it on 1 HP and on borrowed time (Unit.lastTurn, the condition row last_turn as its
+// marker): it acts to the end of its next turn (the rest of this one when it dropped on its own turn), with `ap` AP if
+// given (never more than it has); then it falls Downed unless a heal reached it first. hits: "death_save", every hit
+// on it meanwhile is a failed death save instead of damage (two on a critical), three and it dies on its feet.
+O('last_turn', ['would_drop'], true, ['ap', 'hits'], 'the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own) with ap AP if given, then falls Downed unless healed first; hits: death_save, each hit meanwhile is a failed death save instead of damage', (ev, e, label) => {
+  const u = ev.self, cb = ev.cb; if (ev.ctx.floor != null || u.hp <= 0 || u.lastTurn) return false;
+  const own = cb.order[cb.turn] === u.id && !cb.window;
+  ev.ctx.floor = 1; u.lastTurn = { began: own, ...(typeof e.ap === 'number' ? { ap: e.ap } : {}), ...(e.hits === 'death_save' ? { hits: 'death_save' } : {}), label };
+  if (own && typeof e.ap === 'number' && (u.ap || 0) > e.ap) setAp(u, e.ap);
+  restoreConds(u, { last_turn: 99 }); // its marker: nobody is asked
+  return own ? ' for the rest of this turn' : ' for one more turn';
+});
+/** End a unit's borrowed time, with its line. */
+const lastTurnEnd = (cb: Combat, u: Unit, why: string) => { delete u.lastTurn; endCond(u, 'last_turn'); say(cb, why); };
+onHook('damage_in', (ctx: any, cb: Combat) => {
+  const u: Unit = ctx.t; if (ctx.phase !== 'reduce' || !u?.lastTurn || u.lastTurn.hits !== 'death_save' || !(ctx.dmg > 0)) return;
+  ctx.dmg = 0; if (!ctx.src?.by || ['bleed', 'burn', 'hazard', 'trap'].includes(ctx.src.type)) return; // only a blow counts
+  u.saves.fail += ctx.src.crit ? 2 : 1;
+  say(cb, u.name + ' takes the hit on borrowed time: death-save failure ' + Math.min(3, u.saves.fail) + '/3 (' + u.lastTurn.label + ').');
+  if (u.saves.fail >= 3) { u.hp = 0; u.dead = true; lastTurnEnd(cb, u, u.name + ' dies on their feet.'); fxFell(cb, u); checkOver(cb); }
+});
+onHook('turn_start', (ctx: any) => { const u: Unit = ctx.u; if (!u?.lastTurn) return; u.lastTurn.began = true; if (typeof u.lastTurn.ap === 'number' && (u.ap || 0) > u.lastTurn.ap) setAp(u, u.lastTurn.ap); });
+onHook('turn_end', (ctx: any, cb: Combat) => {
+  const u: Unit = ctx.u; if (!u?.lastTurn || !u.lastTurn.began) return;
+  u.hp = 0; setDowned(u, true); setBraced(u, false); dropHeldShot(cb, u, 'down');
+  lastTurnEnd(cb, u, u.name + '\'s Last Turn is over: Downed.'); fxFell(cb, u);
+});
+onHook('heal_given', (ctx: any, cb: Combat) => { const u: Unit = ctx.t; if (u?.lastTurn && ctx.n > 0) lastTurnEnd(cb, u, u.name + ' is patched up in time: the Last Turn ends, still standing.'); });
 
 /** A delayed deal's or mend's amount, fixed when it was queued (section 6: `delay`). */
 const fixedBlock = (e: any): AmountBlock => ({ kind: e.fixed.kind, base: e.fixed.n, ...(e.fixed.type ? { type: e.fixed.type } : {}), ...(e.fixed.door ? { door: e.fixed.door } : {}), ...(e.fixed.tech ? { tech: e.fixed.tech } : {}), ...(e.fixed.armour ? { armour: e.fixed.armour } : {}), ...(e.fixed.heal_kind ? { heal_kind: e.fixed.heal_kind } : {}) } as AmountBlock);
