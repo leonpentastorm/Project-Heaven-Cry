@@ -43,7 +43,7 @@
     "art/icons/perks/bedside-manner.png",
     "art/icons/perks/before-the-blink.png"
   ],
-  "family": "perks",
+  "family": "perk_candidates",
   "id": "thinking-aloud",
   "source_sha256": "a6d620bf37ab72cdf272afaf85a868808f821787cba5f1d9b56ba467958b66b5",
   "export_sha256": {

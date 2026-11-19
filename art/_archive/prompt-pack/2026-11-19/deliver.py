@@ -145,7 +145,7 @@ def binding(job, catalog):
         return "fork_icons", "fork-figment-" + stem.removeprefix("figment-").replace("-", "_")
     if job["n"] == 1:
         return "interface_icons", "banner-fight-approach"
-    family, prefix = {"perks": ("perks", ""), "banners": ("interface_icons", "banner-"),
+    family, prefix = {"perks": ("perk_candidates", ""), "banners": ("interface_icons", "banner-"),
                       "moves": ("move_icons", "move-"), "conditions": ("condition_icons", "cond-"),
                       "gear": ("gear", "")}.get(path.parent.name, ("kit", f"kit-{path.parent.name}-"))
     return family, prefix + stem
@@ -197,7 +197,7 @@ def deliver(jobs):
         sizes = {"wick": (256, 128, 64, 56, 48, 44, 40, 32, 24),
                  "sign": (256, 128, 64, 48, 44, 32, 24, 16),
                  "gear": (256, 128, 64, 32)}.get(kind, ())
-        if family == "perks":
+        if family in ("perks", "perk_candidates"):
             sizes = (256, 128, 64, 56, 48, 44, 40)
         for size in sizes:
             out = target.parent / "exports" / str(size) / target.name

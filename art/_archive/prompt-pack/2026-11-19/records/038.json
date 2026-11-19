@@ -43,7 +43,7 @@
     "art/icons/perks/bedside-manner.png",
     "art/icons/perks/before-the-blink.png"
   ],
-  "family": "perks",
+  "family": "perk_candidates",
   "id": "point-man",
   "source_sha256": "f9504fba998b445338883fb1d7d08a4d7409a2e4620a1cdb640fabc717660195",
   "export_sha256": {

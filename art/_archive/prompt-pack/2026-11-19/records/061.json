@@ -43,7 +43,7 @@
     "art/icons/perks/bedside-manner.png",
     "art/icons/perks/before-the-blink.png"
   ],
-  "family": "perks",
+  "family": "perk_candidates",
   "id": "proven-formula",
   "source_sha256": "f3e8fdbfde85f8df8dcabdc35c12476f5b5ce11c5a29219b7e48dd4cf2c2e92d",
   "export_sha256": {

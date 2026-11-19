@@ -45,7 +45,7 @@
     "art/icons/perks/bedside-manner.png",
     "art/icons/perks/before-the-blink.png"
   ],
-  "family": "perks",
+  "family": "perk_candidates",
   "id": "field-repair",
   "source_sha256": "14190c93c3b5243c534ae973ae0dac7e324a4f6dc1c0bce56d45e1251f8e385f",
   "export_sha256": {

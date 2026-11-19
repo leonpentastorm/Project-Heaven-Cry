@@ -166,7 +166,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "second-wind",
     "source_sha256": "4cd5ea974fe4ac72f747c0081a8756f24f51bce043542753aad14678758a75b3",
     "export_sha256": {
@@ -1104,6 +1104,52 @@
   {
     "file": "01",
     "source": "01-today-and-gaps.md",
+    "line": 321,
+    "title": "`kit-shrine-sigil_wall`: Sigil wall, shrine",
+    "path": "art/sprites/kit/shrine/sigil_wall.png",
+    "notes": "- **Mode:** Kit sprite, 256 x 256 transparent sprite, NEW.\n- **Save as:** `art/sprites/kit/shrine/sigil_wall.png`.\n- **Shows:** Survival fight maps, shrine and cathedral district; the wall of packed mana a Sigil raises: it blocks movement and sight and crumbles away after a while. A hatched square today.",
+    "paint": "Setting: shrine, shrine and cathedral district (pale flagstone, dark wood, ivory wax, violet cloth, gold #F2C46A candle glow). One Sigil wall sprite, a block of packed mana (nanobots) filling about three quarters of the one-tile cell, square to the grid, straight overhead. It is built of ivory and gold flecks, dense and nearly solid in the middle so it reads as full cover that blocks a standing person, with a square with one corner open, outlined in denser flecks laid across its top face as the raised Sigil, an abstract mark and never a letter. The edges are crisp on the top and left and fray into a few drifting motes on the right and bottom, so it looks newly made and about to crumble. A faint inner glow of its own flecks only, no bloom outside it. At 64 px: a bright speckled slab with one bold mark. It must not read as masonry, glass, ice or a stone wall of the setting. Avoid: a brick pattern, a door, a person, a shield, any lettering.",
+    "status": "review-candidate",
+    "n": 24,
+    "kind": "cover-full",
+    "paintExtra": "One shallow square raised slab, viewed completely overhead with only the TOP FACE. No camera tilt, no foundation or landscape. Clear 15% transparent margin. Tiny flecks within the slab footprint; the silhouette still reads as one solid blocking object.",
+    "label": "Sigil wall, shrine",
+    "sha256": "cde920554b0d774a4f241f33cf50f3c249ea65a5c37c7960b2b5bee364f7bc78",
+    "width": 256,
+    "height": 256,
+    "format": "png",
+    "mode": "kit",
+    "production_approved": false,
+    "implementation_ready": false,
+    "background": "transparent",
+    "collection": "prompt-pack-2026-11-19",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19/native/024-sigil_wall.png",
+    "upscaled": false,
+    "exports": {},
+    "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:321",
+    "setting": "shrine",
+    "piece": "sigil_wall",
+    "object": "sigil_wall",
+    "use": true,
+    "prompt": "Paint one game-map kit piece in Heavenprint: hand-painted gouache and ink with broken, directional brush strokes, selective dry-brush scumbling, restrained hatching and warm ivory accents, the same hand as the attached kit pieces, but simplified and bold so it reads at 64 px. Straight overhead view, no perspective tilt, no horizon. Flat, even top light with one consistent soft highlight from the upper left on edges and tops; NO cast shadow, NO drop shadow, NO ground contact shadow, NO glow or bloom spilling outside the object (a lamp, a seam or the flecks the piece names may be lit within the object's own shape, never as a halo). Scale: one tile = 1.5 m = 256 px; a crate is about a metre (about 170 px), a standing person's footprint about a third of a tile. No text, no letters, no numbers, no signs with writing, no logos, no figures, no creatures, no UI, no frame, no border, no watermark. Everything is invented. For a sprite: transparent background (PNG with alpha), the object centred inside an 80% safe box of a 256 x 256 px canvas, crisp clean edges, no halo, nothing touching the canvas edge. For a ground texture: a seamless tileable square texture, 1024 x 1024 px, straight top-down, the left and right edges match and the top and bottom edges match when repeated, flat even lighting, no vignette, no border, no landmark that would show as a repeat, no objects on it, even mid-dark value with gentle low-contrast variation. The piece:\nSetting: shrine, shrine and cathedral district (pale flagstone, dark wood, ivory wax, violet cloth, gold #F2C46A candle glow). One Sigil wall sprite, a block of packed mana (nanobots) filling about three quarters of the one-tile cell, square to the grid, straight overhead. It is built of ivory and gold flecks, dense and nearly solid in the middle so it reads as full cover that blocks a standing person, with a square with one corner open, outlined in denser flecks laid across its top face as the raised Sigil, an abstract mark and never a letter. The edges are crisp on the top and left and fray into a few drifting motes on the right and bottom, so it looks newly made and about to crumble. A faint inner glow of its own flecks only, no bloom outside it. At 64 px: a bright speckled slab with one bold mark. It must not read as masonry, glass, ice or a stone wall of the setting. Avoid: a brick pattern, a door, a person, a shield, any lettering.\nONE broken square only: four connected slim lines except a single gap at the upper-right corner, centered on ivory-gold solid mana slab. Completely empty unmarked interior. No star, crescent, circle, center stroke, flare, silhouette, panel border or symbol besides the open square. Bold at 64 px.",
+    "refs": [
+      "art/_archive/prompt-pack/2026-11-19/references/shrine-kit.jpg",
+      "art/sprites/objects/poi-marker.png",
+      "art/sprites/objects/fire.png",
+      "art/sprites/objects/rubble.png"
+    ],
+    "family": "kit",
+    "id": "kit-shrine-sigil_wall",
+    "source_sha256": "eeb4c00c24b0e51ffe5fe69578e475a9dc71f443679a1fa1a23841324773a2bb",
+    "export_sha256": {}
+  },
+  {
+    "file": "01",
+    "source": "01-today-and-gaps.md",
     "line": 331,
     "title": "`kit-rim-sigil_wall`: Sigil wall, rim",
     "path": "art/sprites/kit/rim/sigil_wall.png",
@@ -1602,6 +1648,51 @@
   {
     "file": "01",
     "source": "01-today-and-gaps.md",
+    "line": 441,
+    "title": "`kit-shrine-pile`: Ground pile, shrine",
+    "path": "art/sprites/kit/shrine/pile.png",
+    "notes": "- **Mode:** Kit sprite, 256 x 256 transparent sprite, NEW.\n- **Save as:** `art/sprites/kit/shrine/pile.png`.\n- **Shows:** Survival fight maps, shrine and cathedral district; the pile of things lying on a tile (dropped magazines, loose rounds, weapons and anything else), one pile a tile, picked up by walking onto it. Three bars today.",
+    "paint": "Setting: shrine, shrine and cathedral district (pale flagstone, dark wood, ivory wax, violet cloth, gold #F2C46A candle glow). One ground pile sprite, a small low heap of dropped kit of about two thirds of a tile, slightly irregular, non-blocking: a spilled cloth bundle on pale flagstone with a plain magazine, two loose rounds, a candle stub and a folded violet cloth, ivory wax drips round it. It reads as 'things lying here, pick them up': a heap with a clear top face, items overlapping so no single one is identifiable as a particular weapon or tool, nothing standing taller than a magazine. At 64 px: an uneven pile of small shapes with one brighter metal glint, sitting on the ground. It must differ from the poi (it is loose and untidy, no cleared ring) and from the crate (no box). Avoid: a named weapon, a chest, a skull, a body, a hand, any lettering.",
+    "status": "review-candidate",
+    "n": 36,
+    "kind": "prop",
+    "label": "Ground pile, shrine",
+    "sha256": "957072303c956633b6c882e3d2acb654f80a9ba95870986f481211b354ca45d9",
+    "width": 256,
+    "height": 256,
+    "format": "png",
+    "mode": "kit",
+    "production_approved": false,
+    "implementation_ready": false,
+    "background": "transparent",
+    "collection": "prompt-pack-2026-11-19",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19/native/036-pile.png",
+    "upscaled": false,
+    "exports": {},
+    "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:441",
+    "setting": "shrine",
+    "piece": "pile",
+    "object": "pile",
+    "use": true,
+    "prompt": "Paint one game-map kit piece in Heavenprint: hand-painted gouache and ink with broken, directional brush strokes, selective dry-brush scumbling, restrained hatching and warm ivory accents, the same hand as the attached kit pieces, but simplified and bold so it reads at 64 px. Straight overhead view, no perspective tilt, no horizon. Flat, even top light with one consistent soft highlight from the upper left on edges and tops; NO cast shadow, NO drop shadow, NO ground contact shadow, NO glow or bloom spilling outside the object (a lamp, a seam or the flecks the piece names may be lit within the object's own shape, never as a halo). Scale: one tile = 1.5 m = 256 px; a crate is about a metre (about 170 px), a standing person's footprint about a third of a tile. No text, no letters, no numbers, no signs with writing, no logos, no figures, no creatures, no UI, no frame, no border, no watermark. Everything is invented. For a sprite: transparent background (PNG with alpha), the object centred inside an 80% safe box of a 256 x 256 px canvas, crisp clean edges, no halo, nothing touching the canvas edge. For a ground texture: a seamless tileable square texture, 1024 x 1024 px, straight top-down, the left and right edges match and the top and bottom edges match when repeated, flat even lighting, no vignette, no border, no landmark that would show as a repeat, no objects on it, even mid-dark value with gentle low-contrast variation. The piece:\nSetting: shrine, shrine and cathedral district (pale flagstone, dark wood, ivory wax, violet cloth, gold #F2C46A candle glow). One ground pile sprite, a small low heap of dropped kit of about two thirds of a tile, slightly irregular, non-blocking: a spilled cloth bundle on pale flagstone with a plain magazine, two loose rounds, a candle stub and a folded violet cloth, ivory wax drips round it. It reads as 'things lying here, pick them up': a heap with a clear top face, items overlapping so no single one is identifiable as a particular weapon or tool, nothing standing taller than a magazine. At 64 px: an uneven pile of small shapes with one brighter metal glint, sitting on the ground. It must differ from the poi (it is loose and untidy, no cleared ring) and from the crate (no box). Avoid: a named weapon, a chest, a skull, a body, a hand, any lettering.\nTiny loose overlapping low heap of everyday lost supplies directly overhead. Similar painted material and lighting to the setting references. Transparent outside the silhouette of the objects, with at most a little inherent dirt between the items. No base tile, circular pedestal, wide floor, ring or border. No readable text or letters.",
+    "refs": [
+      "art/_archive/prompt-pack/2026-11-19/references/shrine-kit.jpg",
+      "art/sprites/objects/poi-marker.png",
+      "art/sprites/objects/fire.png",
+      "art/sprites/objects/rubble.png"
+    ],
+    "family": "kit",
+    "id": "kit-shrine-pile",
+    "source_sha256": "61e5ce3ceb50a1535f313fcb8e7aafe25898cc4ee4d852b86329e9f3c56447b0",
+    "export_sha256": {}
+  },
+  {
+    "file": "01",
+    "source": "01-today-and-gaps.md",
     "line": 451,
     "title": "`kit-rim-pile`: Ground pile, rim",
     "path": "art/sprites/kit/rim/pile.png",
@@ -1689,7 +1780,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "point-man",
     "source_sha256": "f9504fba998b445338883fb1d7d08a4d7409a2e4620a1cdb640fabc717660195",
     "export_sha256": {
@@ -1747,7 +1838,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "unflinching",
     "source_sha256": "766ed2d0d40fe0863ec0e4f7ed9a383166654c2649494e86c3c145427947205e",
     "export_sha256": {
@@ -1805,7 +1896,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "marrow-talk",
     "source_sha256": "7a82f5efbc7ed049163134ace2eb4eab383e065031f34882668f863025cf35f7",
     "export_sha256": {
@@ -1863,7 +1954,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "stare-down",
     "source_sha256": "cc21e84829bcd457d226e4f1747184ac5b71834408fd1d55e33c239ec2ca91b2",
     "export_sha256": {
@@ -1921,7 +2012,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "untouchable",
     "source_sha256": "410f85ed682b61fa6695983640dbf40d00ed2595c4638ab821a4cc59089ea0fb",
     "export_sha256": {
@@ -1979,7 +2070,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "shoot-first",
     "source_sha256": "6176534c8e53ec3e044b40b66f55ba733487904a37944e10a396a7b63d078446",
     "export_sha256": {
@@ -2037,7 +2128,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "cut-in",
     "source_sha256": "e621f74c1e4c1a0e34fdbf6d39f883778e3e1c3039718addec3f6f1f02cdb4b8",
     "export_sha256": {
@@ -2095,7 +2186,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "still-standing",
     "source_sha256": "90671e69eaf54e7eb065e3f77bb524060ed5c543f0aa174524f0141f52d11ae4",
     "export_sha256": {
@@ -2153,7 +2244,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "read-the-air",
     "source_sha256": "8c3701a7cb7a6db56985ad727a91e682e178f5e302e4a37434a6db0dd5b904c0",
     "export_sha256": {
@@ -2211,7 +2302,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "tremor",
     "source_sha256": "80e0da08fedfd90c836c8f12434199da2102d8b4a096e88d51c4e040afd8b340",
     "export_sha256": {
@@ -2585,7 +2676,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "field-repair",
     "source_sha256": "14190c93c3b5243c534ae973ae0dac7e324a4f6dc1c0bce56d45e1251f8e385f",
     "export_sha256": {
@@ -2643,7 +2734,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "tuned",
     "source_sha256": "cfb993dd159365e182d4ad7e4cc0d992a36ce9e1104059b678b3f82ad42b2535",
     "export_sha256": {
@@ -2765,7 +2856,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "smooth",
     "source_sha256": "989caf3cf5e9aeb9af3cb6b96c89a972882753aa0b05c9f39c22a9b28a6a486e",
     "export_sha256": {
@@ -2888,7 +2979,7 @@
     "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:91",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick bowing deeply to the side with one arm flung out in a flourish towards a hollow Figment figure stepping onto a small raised round stage behind him, the stage a thick low disc with a half-ring of three footlight dots at its lip. His other hand sweeps back, presenting it. The bow plus the Figment on the little stage is what to read at 32 px. Avoid: a curtain with fringe, a top hat, a spotlight cone, a mask, an audience of faces.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "showman",
     "source_sha256": "421bae93c62915a6b1e790dff86dab4f2d95bc06d60d8df6f413945e4dfe0735",
     "export_sha256": {
@@ -3009,7 +3100,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "index",
     "source_sha256": "3730d6566cc697105425d9d67ac3f0112c7b716270866f7c0a53cd9489990688",
     "export_sha256": {
@@ -3067,7 +3158,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "proven-formula",
     "source_sha256": "f3e8fdbfde85f8df8dcabdc35c12476f5b5ce11c5a29219b7e48dd4cf2c2e92d",
     "export_sha256": {
@@ -3125,7 +3216,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "objection",
     "source_sha256": "541b5afa39a718c466226423c29e2f58a1ab61f208408868d4f046e27f9f12ed",
     "export_sha256": {
@@ -3183,7 +3274,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "opening-argument",
     "source_sha256": "55abdf3fd7dfbc903089f42f14514b9236a6944735b0dd01eda698e5cfc0890f",
     "export_sha256": {
@@ -3241,7 +3332,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "thinking-aloud",
     "source_sha256": "a6d620bf37ab72cdf272afaf85a868808f821787cba5f1d9b56ba467958b66b5",
     "export_sha256": {
@@ -3361,7 +3452,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "quick-read",
     "source_sha256": "272931f9b409808f7397458df8689e9d4eca670bf3c5ede97889ef4d54f21c83",
     "export_sha256": {
@@ -3419,7 +3510,7 @@
       "art/icons/perks/bedside-manner.png",
       "art/icons/perks/before-the-blink.png"
     ],
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "read-them",
     "source_sha256": "9e20c31face1aed78d80220e905f36e070677a1e1858d0586c43a36b78fe5faf",
     "export_sha256": {
@@ -3601,7 +3692,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:35",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick shown from the chest up, facing us, his pixel-screen face showing a flat neutral face, two dash eyes and a dash mouth: a perfectly neutral deadpan. Around him, cut by the frame edges, are chaotic partial shapes streaking past in white: jagged zig-zag lines and a flying shard on each side, as if a storm is passing. Wick himself has no lines of motion at all; he is the still centre and the chaos is only at the margins.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "poker-face",
     "source_sha256": "648330fe1532a096b320f36d5bf89d333cad1fac13ee5b4dbd1011a456e1fa83",
     "export_sha256": {
@@ -3661,7 +3752,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:45",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick standing bolt upright, feet planted shoulder-width, arms hanging loose at his sides, head level, screen face calm. Streaming past him from left to right, parallel to the ground, are three long tapered white speed lines that bend around his silhouette without touching it, leaving a clean gap of empty space hugging his body. Two small short ticks at his feet mark that he is rooted. Strong vertical figure against horizontal streaks.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\nStand perfectly upright, planted and unbending. Three narrow continuous horizontal streaks curve around the silhouette with a visible gap. Distinct from Unflinching's short deflected strikes and chest chevron. \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "stand-still",
     "source_sha256": "e4b00620ab5fef91c85f9fd8d0f4acb8b4213533dbe11b31933281b771cfe4f8",
     "export_sha256": {
@@ -3721,7 +3812,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:55",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick on the left, one hand raised to mouth level, three short curved sound-arcs leaving his mouth, flowing to the right and flaring into a rounded dome-shaped shell of bold white that settles over a partial silhouette of an ally cut by the right frame edge (only their head and shoulder). The dome has a few carved notches in its rim, abstract angular notches, never letterforms. The ally's shape is solid, the shell is a thick arc around them.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\nThree abstract V-shaped rim cuts, irregular and detached. No Hebrew, Latin, other letters or written text. Strong solid white shell with transparent interior. \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "lore-ward",
     "source_sha256": "b8c498402a76aacd746ae007be26ee988dbecaa18d230d8466e3ffc8c00556a3",
     "export_sha256": {
@@ -3779,7 +3870,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:65",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick holding an open book flat in his left hand, reading aloud: three sound-arcs leave his mouth and curve up and away. On his chest, a plain solid heart shape with three small concentric ripple rings spreading outward and fading flat, drawn as wide thin ripples, as if the heart is settling like still water. The book is a simple slab with a spine cut, its pages as two or three flat bands, no letters on them.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "recitation",
     "source_sha256": "5689d09b2bcb16dde296647461d881dfcb51507d609fb3820ffc15e3cf17a022",
     "export_sha256": {
@@ -3908,7 +3999,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:86",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick standing with both palms open and lifted, holding between them at chest height a perfectly clear solid heart shape with one small plain four-point star cut out of its centre as negative space. Above the heart, a jagged rising wave of three spiked tongues (an overflow coming down on it) is stopped by one flat solid bar hovering just over the heart, and the tongues bend away to either side without touching it. Wick's screen face looks at the heart, quiet. No other marks.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "pure-heart",
     "source_sha256": "6598c755f7fefe50d0ef9a396ec5bad6da7e72c098eb18c616d0ee84e61d6c64",
     "export_sha256": {
@@ -3968,7 +4059,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:101",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick standing on the left, his own rounded shield-shaped wedge of white still raised firmly in front of him, and his other arm extended out to the right toward a partial silhouette of a friend cut by the right frame edge (a shoulder and a raised forearm). From Wick's shield a matching ghost-edge of it, drawn as an open white contour of the same shape, extends over the friend's shoulder, with two short curved ticks between them. Wick keeps his guard; the same guard also covers the friend.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\nWick's solid shield stays held in his own left mitten in front of his torso. ONE separate thin hollow shield echo protects the right-hand cropped friend. Neither character hands a shield to the other. Big transparent interior in echo, differentiate the solid guard. \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "hand-off",
     "source_sha256": "121f688e9a57cb68b03bcc40214d524c25c5f74d6e44e6f36c69ed90d35d0b08",
     "export_sha256": {
@@ -4027,7 +4118,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:111",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick kneeling on one knee in the lower left, leaning over a fallen partial figure lying along the bottom of the frame (a head and a limp shoulder only, cut by the frame edge). One of Wick's hands is under the friend's shoulder, the other hand reaches upward and out, palm open, as if offering to pull them to standing; a short arch of three small lines rises from the fallen figure's shoulder to show they are being lifted. Wick's head is turned to the fallen friend. Low, grounded composition, heavy on the bottom half.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "nobody-left-behind",
     "source_sha256": "1b76f67b70da0ddc405442e66304ad089cdd233d01763e5b638df44d2c9de0bc",
     "export_sha256": {
@@ -4086,7 +4177,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:121",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nClose crop: two of Wick's hands, as bold white mitten-like shapes, cupping and enclosing a third partial hand that comes in from the right frame edge and shows four small short zig-zag tremor marks around it that stop where Wick's fingers close over it. Wick's head is visible small and low at the left, bowed over the hands, calm. The hands are the picture: a steady pair around a trembling one.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "steady-hands",
     "source_sha256": "66a96f3b061d816a88fe5344bab29473e23be613e51e62a83647e3d3e9ee9d0c",
     "export_sha256": {
@@ -4144,7 +4235,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:131",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick on the left, leaning back with both hands gripping a thick taut cord that runs in a straight line across the frame to the right, where a partial silhouette of a friend (head and one reaching arm, cut by the right frame edge) is being drawn toward him, leaning forward and off balance, feet leaving the ground. The cord is a single bold line with one small knot near Wick's hands. Behind the friend, a jagged cut-out wedge suggests the danger they are leaving.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "pull-together",
     "source_sha256": "20c2924dceed9ded18c3fda5e0322ab9ccebc824ae6d9d2259fda2560cb09253",
     "export_sha256": {
@@ -4203,7 +4294,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:141",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nA thin single line laid in a lazy S-curve slack across the frame from left to right, drawn as a bold but narrow white thread with one loose loop in it. At the far right end it reaches a small half-hidden Wick, only his head and one shoulder showing, tucked behind a rounded wall-corner cut by the frame edge, peeking out with one eye. At the left end the thread attaches to a small ring. The thread has slack; nothing about it is pulled tight. Quiet, still, a lot of empty space around the line.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "quiet-thread",
     "source_sha256": "718d5f0a3e81d47d084f5715cc4f2b63748ed63824bbea20f5223d64d3d8e495",
     "export_sha256": {
@@ -4262,7 +4353,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:151",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nTake the attached Sweet Talker icon and redraw it as Wick offering a single rose toward the right with a charming bow, but the rose is barbed: the stem carries three sharp curved thorns and the outer petals end in small jagged points, and a thin sharp blade-like leaf curls from the stem like a hidden dagger. Wick's eyes are sly: two half-closed lids with one eyebrow raised and a lopsided narrow smile, no hearts anywhere. Same line weight and size as the attached icon.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "veiled-insult",
     "source_sha256": "fc3abab2480e25ba3411245653c22fed90c3971d7dc96f97ef6fdeea564df90d",
     "export_sha256": {
@@ -4389,7 +4480,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:176",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick on the left with one hand extended to the right, palm down, resting on the shoulder of a partial wounded ally cut by the right frame edge, who hangs slumped, head low. A soft fan of three short straight rays spreads from Wick's palm over the ally, and a plain plus-shaped cut-out sits on the ally's chest where the hurt is. Wick's screen face is steady and kind, tilted toward them. The ally is mostly a silhouette; the contact between hand and shoulder is the focus.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "righteous",
     "source_sha256": "f200a875c854e656f6c6a022d535e31bda4a0c81d63d86524818156c6f9097b6",
     "export_sha256": {
@@ -4447,7 +4538,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:186",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick facing right, eyes wide, one hand raised toward the frame edge in a halting gesture. In front of him, drawn as a hollow ghost (a white band with an empty inside, built of dashed arc segments) is a big swinging blow, a crescent sweep coming down on a partial friend's silhouette at the right frame edge. Between the ghost-blow and the friend, a single short solid white bar stands as a stop, catching it, so the friend's silhouette stays whole. The ghost is faint in meaning; the stop is solid.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "foresight",
     "source_sha256": "43e00364ba59fe731fa6af29aee27120b8bb6758f6c5fe21bdf2acd12585265c",
     "export_sha256": {
@@ -4505,7 +4596,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:196",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick standing tall and proud on a low rise, chest out, one arm pointing forward and right, wearing on his shoulder a neat row of five small solid diamond-shaped marks (an invented rank sign, not a real insignia). Behind and beside him, partial silhouettes of three squad-mates cut by the frame lean forward into a charge, each with a short speed line, their silhouettes stacked in a wedge pointing the way he points. Wick stationary and upright, everyone around him flowing forward.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "five-stars",
     "source_sha256": "0af556f8e46d5992525dd9c40f90219c4b98ba39477e98c176f3c07b87112162",
     "export_sha256": {
@@ -4563,7 +4654,7 @@
     "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:206",
     "ink": "#FFFFFF",
     "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick shouting with his mouth wide open, head thrown slightly back, a bold set of four sound-arcs leaving his mouth to the right, growing in size, completely unbroken. Around his throat a thick ring (a binding band) is shown cracking and exploding outward into five sharp white shards, scattering clear of his neck. The sound-arcs pass through the empty space where the ring was. Loud, strong, open, with the shattered ring just left of the arcs.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
-    "family": "perks",
+    "family": "perk_candidates",
     "id": "commanding-voice",
     "source_sha256": "2474554c88fb9b6833ca5875f06c11145288d5df40b6a88df436c7e0979f7e41",
     "export_sha256": {

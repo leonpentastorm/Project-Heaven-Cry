@@ -43,7 +43,7 @@
     "art/icons/perks/bedside-manner.png",
     "art/icons/perks/before-the-blink.png"
   ],
-  "family": "perks",
+  "family": "perk_candidates",
   "id": "untouchable",
   "source_sha256": "410f85ed682b61fa6695983640dbf40d00ed2595c4638ab821a4cc59089ea0fb",
   "export_sha256": {

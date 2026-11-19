@@ -43,7 +43,7 @@
     "art/icons/perks/bedside-manner.png",
     "art/icons/perks/before-the-blink.png"
   ],
-  "family": "perks",
+  "family": "perk_candidates",
   "id": "second-wind",
   "source_sha256": "4cd5ea974fe4ac72f747c0081a8756f24f51bce043542753aad14678758a75b3",
   "export_sha256": {

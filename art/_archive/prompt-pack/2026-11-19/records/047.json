@@ -43,7 +43,7 @@
     "art/icons/perks/bedside-manner.png",
     "art/icons/perks/before-the-blink.png"
   ],
-  "family": "perks",
+  "family": "perk_candidates",
   "id": "tremor",
   "source_sha256": "80e0da08fedfd90c836c8f12434199da2102d8b4a096e88d51c4e040afd8b340",
   "export_sha256": {

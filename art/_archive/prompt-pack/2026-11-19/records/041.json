@@ -43,7 +43,7 @@
     "art/icons/perks/bedside-manner.png",
     "art/icons/perks/before-the-blink.png"
   ],
-  "family": "perks",
+  "family": "perk_candidates",
   "id": "stare-down",
   "source_sha256": "cc21e84829bcd457d226e4f1747184ac5b71834408fd1d55e33c239ec2ca91b2",
   "export_sha256": {

@@ -43,7 +43,7 @@
     "art/icons/perks/bedside-manner.png",
     "art/icons/perks/before-the-blink.png"
   ],
-  "family": "perks",
+  "family": "perk_candidates",
   "id": "marrow-talk",
   "source_sha256": "7a82f5efbc7ed049163134ace2eb4eab383e065031f34882668f863025cf35f7",
   "export_sha256": {

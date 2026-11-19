@@ -43,7 +43,7 @@
     "art/icons/perks/bedside-manner.png",
     "art/icons/perks/before-the-blink.png"
   ],
-  "family": "perks",
+  "family": "perk_candidates",
   "id": "read-the-air",
   "source_sha256": "8c3701a7cb7a6db56985ad727a91e682e178f5e302e4a37434a6db0dd5b904c0",
   "export_sha256": {

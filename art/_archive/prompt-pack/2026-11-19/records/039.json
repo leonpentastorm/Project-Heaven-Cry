@@ -43,7 +43,7 @@
     "art/icons/perks/bedside-manner.png",
     "art/icons/perks/before-the-blink.png"
   ],
-  "family": "perks",
+  "family": "perk_candidates",
   "id": "unflinching",
   "source_sha256": "766ed2d0d40fe0863ec0e4f7ed9a383166654c2649494e86c3c145427947205e",
   "export_sha256": {

@@ -59,8 +59,9 @@ lines += ["", "## Pickup", "",
           "Review paint materials, map joins, firearm silhouettes and grip or part attachment visually. "
           "The generated source path is in scratch result-N.json. Preserve sources before a workspace restart.", "",
           "Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py deliver on the accepted IDs. "
-          "Previous files and exports are archived when replaced. Finish with deliver.py verify, the asset build and "
-          "repository art validation. The full validator currently stops at its fixed perk count once new perks exist. "
+          "Previous files and exports are archived when replaced. The 37 new perks have masters at their requested "
+          "paths and entries under perk_candidates in art/catalog.json until gameplay rules supply their IDs. "
+          "Finish with deliver.py verify, the asset build and repository art validation. "
           "Restore generated app assets.json before committing art-only changes.", "",
           "## Remaining entries", ""]
 for n in pending:

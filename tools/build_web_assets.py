@@ -208,6 +208,8 @@ def gear_key(stem):
         return "gear-" + rid
     if kind in GEAR_DERIVED or (kind == "armour" and rid.startswith("torso_class")):
         return "gear-" + stem
+    if kind == "mod" and "mod_" + rid in DATA_IDS:
+        return "gear-mod_" + rid
     for cand in (rid, "ammo_" + rid, "mod_" + rid):
         if cand in DATA_IDS:
             return "gear-" + cand
