@@ -1,0 +1,40 @@
+{
+  "n": 4,
+  "id": "whisper_pistol",
+  "title": "Whisper pistol (Whisper, close)",
+  "path": "art/icons/gear/weapon-whisper_pistol.png",
+  "refs": [
+    "art/icons/gear/weapon-whisper_smg.png"
+  ],
+  "paint": "The wartime integrally suppressed tube pistol pattern. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width like the other pistols. Silhouette, kept exactly: the whole gun is one long smooth cylinder of even diameter, receiver and suppressor in one, from a round knurled bolt cap at the rear end to a plain flat muzzle; the magazine forms the grip, hanging straight down below the rear third of the tube, with a rubber-covered base; a grip safety on the back of the grip; a small trigger in a narrow trigger guard; two tiny low blade sights on top of the tube. Materials: matte black everything, a dull non-reflective finish that swallows the light, only the faintest grey edge highlights, dark rubber on the grip base. Maker's touch: a single small dark steel-blue tag at the base of the grip, blank.\nAt 32 px: against the service pistol, a long smooth tube with a grip under its back end; against the Whisper submachine gun, no stock and no front grip.\nAvoid: shine or glints, a slide, ports or holes in the tube, a laser or light, an optic, a screwed-on can with knurling at the front.",
+  "needs": false,
+  "span": 0.8,
+  "label": "Whisper pistol (Whisper, close)",
+  "sha256": "e98d19fb768cae67930fc23d981faea536af5aafd151615fc9faaf66b3aa2323",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-whisper_pistol.png",
+    "128": "art/icons/gear/exports/128/weapon-whisper_pistol.png",
+    "64": "art/icons/gear/exports/64/weapon-whisper_pistol.png",
+    "32": "art/icons/gear/exports/32/weapon-whisper_pistol.png"
+  },
+  "collection": "prompt-pack-2026-11-19-file-06",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19-file-06/native/04-weapon-whisper_pistol.png",
+  "source_sha256": "4ba5d609aa7e38f60f5710cd6f2da4e2d0cdc647355dd6b298bf3d41ef1d9c4e",
+  "export_sha256": {
+    "256": "5723fe0d2d93e2e34a1b6f748ae999830dd7d6579334921cbbf1c4c16067f1d0",
+    "128": "40779a216d99a754007d50bda72bed0dd731caae31dba8c192134e003421f8d9",
+    "64": "6d99268f2fedd51955d37d6fa2cb5d9ac2e4f3b51586fd455c3ab31e9771578a",
+    "32": "0bbee1a450106489c506c3b94f422ca2a44f74b039a546ea6cd95e67fdf26c18"
+  },
+  "generator_prompt": "One isolated fictional game inventory painting for Project Heaven Cry RPG. A stylized, nonfunctional prop, shown in one single exterior perspective, no schematic or inset. Heavenprint hand-painted gouache, bold contour, visible angular brushwork, crisp focal edge, medium dark shadows, upper-left warm ivory highlights, wear kept within the object. First reference is brushwork only. Remaining refs are fictional RPG family icons; use their brushwork, palette and scale. Whisper Pistol, a fictional inventory prop from the quiet Whisper line. Tiny angular lower grip hanging from the back third of one long uninterrupted smooth matte-black cylinder. Two tiny raised notches on top and a small plain slate-blue patch at the very base of the grip. No separate stock or front handle. On-screen side view with the cylinder aimed right, directly level. Charcoal edges, barely any shine. The full shape reads immediately small. On a true transparent 1024 square with clear margins, no stage or cast shadow. No print, letters, numbers, people, logos, insignia, flare, smoke, backdrop or colored frame. One clear silhouette readable at 32 px."
+}
