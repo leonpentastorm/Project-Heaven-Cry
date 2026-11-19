@@ -1,0 +1,300 @@
+[
+  {
+    "n": 1,
+    "id": "last_sentence",
+    "title": "Last Sentence (great blade)",
+    "path": "art/icons/gear/weapon-last_sentence.png",
+    "refs": [
+      "art/icons/gear/weapon-adamantile_greatsword.png",
+      "art/icons/weapons/adamantile_greatsword.svg"
+    ],
+    "paint": "A unique two-handed greatsword of the Adamantile Brigade, on the 45 degree diagonal, nearly corner to corner, the blade as the focal point: a wide flat blade, an oversized plate guard and a crest on the pommel, pale steel with gilt. The impossible material: the centre of the blade, along the fuller, is a strip of stilled daylight, a pale warm ivory-gold #E9D6A2 that the guard can be seen through, solid as glass and quietly lit from inside, bounded exactly by the fuller's edges. The story detail: a narrow reliquary slot at the base of the blade holding a rolled verdict sealed with blank wax at both ends, the seal cracked once and remade. Heirloom richness, heavy and solemn.\nAvoid: letters on the scroll or the seals, a halo or rays, a cross, flames, wings on the guard, a glow past the blade's edge.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 2,
+    "id": "grandmothers_teeth",
+    "title": "Grandmother's Teeth (scrap cutter)",
+    "path": "art/icons/gear/weapon-grandmothers_teeth.png",
+    "refs": [
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/weapons/ork_machete.svg"
+    ],
+    "paint": "A unique Ork machete, on the 45 degree diagonal, handle bottom-left: a wide, uneven cleaver blade with a jagged back and a belly, a grip of oily leather with nails driven through it, rust and dirty ochre paint daubs. Instead of an edge, the belly of the blade is set with a row of big curved teeth hammered in like nails. The impossible material: the teeth are still growing; the one at the tip is longer than the rest, and at the back of the blade the pale roots of two teeth push through the steel like new shoots. The story detail: one tooth near the grip is missing, replaced by a bent iron bolt wired into the gap with care no Ork admits to. Ugly, heavy, a family heirloom. Accent: dirty ochre daubs.\nAvoid: gore or blood, a skull, a jaw or a mouth shape, a chainsaw, anything that leaves the blade's silhouette.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 3,
+    "id": "last_crossing",
+    "title": "Last Crossing (polearm)",
+    "path": "art/icons/gear/weapon-last_crossing.png",
+    "refs": [
+      "art/icons/gear/weapon-glaive.png",
+      "art/icons/weapons/glaive.svg"
+    ],
+    "paint": "A unique glaive belonging to the Toll-Keeper's ferrymen, on the 45 degree diagonal, nearly corner to corner: a long pole of dark weathered wood, and at its head a curved single-edged blade that is plainly an old oar's blade, sharpened along its curved side, with a small hook at its base. The impossible material: the oar blade is coated in a film of black water that never drips, still and glassy, holding a pale teal #79BDB6 reflection of a sky that is not there; no drop leaves it. The story detail: a single old coin wedged into a slot cut in the socket where blade meets pole, and the hasp of a coin box nailed beside it. Quiet, patient, oilskin-dark.\nAvoid: a skull, a scythe, drops or splashes, a boat, a hooded figure, a glow past the blade.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 4,
+    "id": "owed_in_full",
+    "title": "Owed in Full (Kemizuchi duelling blade)",
+    "path": "art/icons/gear/weapon-owed_in_full.png",
+    "refs": [
+      "art/icons/gear/weapon-kemizuchi_duelling_blade.png",
+      "art/icons/weapons/kemizuchi_duelling_blade.svg"
+    ],
+    "paint": "A unique Kemizuchi duelling blade, on the 45 degree diagonal, handle bottom-left: a straight blade built as an open steel frame with an angled chisel tip, a round lacquered disc guard, a short squared cross-bar behind it, a cord-wrapped grip and a squared ring pommel; pale steel and black lacquer. The impossible material: the open window inside the blade's frame is strung end to end with taut violet threads #9C82D7, close as a loom's warp, hard as steel and holding an edge, faintly lit from inside. The story detail: one thread near the guard is tied in a single small knot, and three small brass beads are threaded on another, pushed up against the guard like a count kept. Precise, cold, patient.\nAvoid: a spider web, letters or numbers, a loose thread end, a glow past the frame, crimson in place of the violet.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 5,
+    "id": "reveille",
+    "title": "Reveille (maul)",
+    "path": "art/icons/gear/weapon-reveille.png",
+    "refs": [
+      "art/icons/gear/weapon-maul.png",
+      "art/icons/weapons/maul.svg"
+    ],
+    "paint": "A unique two-handed maul of the Hellraiser Divisions, on the 45 degree diagonal, head top-right: a big squared steel block head with a short wedge on its back, held by riveted straps on a banded wooden haft with a ring at the butt; dark parkerised steel, slab-cut edges. The impossible material: the striking face is a single bell-note made solid: the steel of the face stands in fine concentric ripples, as if the head had just been struck and the ring had set hard mid-sound, the deepest ring holding a dull oxide red #CC2435 heat; the ripples stay inside the face's square outline. The story detail: a dented brass bugle mouthpiece riveted to the collar where head meets haft. Heavy, loud even standing still.\nAvoid: musical notes, sound lines drawn in the air, a bell shape for the head, spikes, a glow past the face.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 6,
+    "id": "breath_of_morning",
+    "title": "Breath of Morning (hand wraps)",
+    "path": "art/icons/gear/weapon-breath_of_morning.png",
+    "refs": [
+      "art/icons/gear/weapon-hand_wraps.png",
+      "art/icons/weapons/hand_wraps.svg"
+    ],
+    "paint": "A unique set of fighting hand wraps, shown as the wrapped shape of a closed fist with no hand inside, three-quarter view, one loose tail strip curling away at the wrist. The impossible material: the wraps are bound from a strip of morning fog, pale grey-white and soft-edged, faintly translucent where the turns overlap, solid enough to hold a fist; the loose tail thins toward its end and fades to nothing within the outline. The story detail: one narrow strip of faded red ribbon wound in among the fog at the wrist and knotted, a keepsake. No colour accent: the fog's pale value is the light of the piece, the ribbon the only colour. Quiet, light, unhurried.\nAvoid: a hand or skin, wind lines, a face in the mist, drifting smoke past the outline.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 7,
+    "id": "rearguard",
+    "title": "Rearguard (Legion short sword)",
+    "path": "art/icons/gear/weapon-rearguard.png",
+    "refs": [
+      "art/icons/gear/weapon-legion_gladius.png",
+      "art/icons/weapons/legion_gladius.svg"
+    ],
+    "paint": "A unique Thousand World Legion short sword, on the 45 degree diagonal, handle bottom-left: a broad straight blade with a long leaf point and a central fuller, a squared riveted crossguard block, an olive-grey wrapped grip and a round pommel; plain issue steel. The impossible material: the blade is packed winter snow, firm as steel and holding an edge, a fine crust of frost along the edge, a thin blue shadow lying in the fuller; it has never melted. The story detail: a cord tied round the grip with a row of small knots, one for each soldier it covered on a retreat, the last knot left half tied. Accent: none, the Legion's single pale stripe across the guard.\nAvoid: icicles hanging, snowflakes in the air, numbers, a glow, a crossguard of a different shape.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 8,
+    "id": "in_triplicate",
+    "title": "In Triplicate (Legion bullpup)",
+    "path": "art/icons/gear/weapon-in_triplicate.png",
+    "refs": [
+      "art/icons/gear/weapon-legion_bullpup.png",
+      "art/icons/weapons/legion_bullpup.svg"
+    ],
+    "paint": "A unique Thousand World Legion bullpup rifle, on a slight diagonal, muzzle up and right: the bullpup pattern with a long carry handle running over the whole body, the cocking handle under it, the short straight magazine behind the pistol grip, two thin bipod legs folded along the fore-end, a short barrel with a ringed flash hider and a flat butt; olive-grey polymer and bare steel, plain and mass-produced. The impossible material: the magazine is a crisp folded paper form, pale and flat-edged with sharp creases, holding a stack of brass rounds at its lips as firmly as steel. The story detail: three blank wax seals pressed in a neat row on the receiver's side, and the butt wrapped in a long strip of blank ledger tape bound with wire. Accent: the olive green #8B9F47 of the seals. Dry, orderly, faintly absurd.\nAvoid: writing, numbers or stamps on the paper or the tape, a barcode, a book, a scope, a glow.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 9,
+    "id": "second_thunder",
+    "title": "Second Thunder (magnum revolver)",
+    "path": "art/icons/gear/weapon-second_thunder.png",
+    "refs": [
+      "art/icons/gear/weapon-frontier_hand_cannon.png",
+      "art/icons/weapons/frontier_hand_cannon.svg"
+    ],
+    "paint": "A unique big double-action magnum revolver, side profile turned slightly toward the viewer, muzzle to the right, level: a long barrel with a full-length underlug and a vented top rib, an adjustable rear sight, a heavy frame and a rubber-wrapped grip; blued steel. The impossible material: the cylinder is a cage of aged brass bands around a ball of grey storm cloud held perfectly still, a thin vein of Old Overcast blue #4E8DD1 light caught inside it. The story detail: the front sight is a small copper lightning-rod finial, and the grip is wrapped in the cord of an old weather vane, knotted twice. Theatrical and heavy, an heirloom of someone who argued with the sky.\nAvoid: lightning bolts leaving the gun, sparks, rain, a face in the cloud, a glow past the cage, any marking on the barrel.",
+    "span": 0.85,
+    "dependency": "- **Attach:** `art/icons/gear/weapon-frontier_hand_cannon.png` (paint this unique after its repaint is approved), `art/icons/weapons/frontier_hand_cannon.svg`"
+  },
+  {
+    "n": 10,
+    "id": "encore",
+    "title": "Encore (two-shot derringer)",
+    "path": "art/icons/gear/weapon-encore.png",
+    "refs": [
+      "art/icons/gear/weapon-parlour_pistol.png",
+      "art/icons/weapons/parlour_pistol.svg"
+    ],
+    "paint": "A unique two-shot over-and-under pocket pistol, side profile, muzzle to the right, drawn to fill the frame like a full pistol: two stacked short barrels, a small ornate frame with a spur trigger and a curved ivory grip. The impossible material: the two barrels are rolled stage-curtain velvet in deep red #B83243, hardened like steel, the nap of the velvet still visible, the folds of the curtain running down their length. The story detail: a tiny carved cameo of a plain smiling face in profile set in the grip (a carved face only, not a mask, no eyes painted in), and a faded blank ticket stub tucked under the grip's lower screw. Playful, polished, a little sinister.\nAvoid: letters on the ticket, a jester or clown, a ribbon hanging loose, confetti.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 11,
+    "id": "homecoming",
+    "title": "Homecoming (harpoon gun)",
+    "path": "art/icons/gear/weapon-homecoming.png",
+    "refs": [],
+    "paint": "A unique harpoon gun of the river docks, the classic shoulder-fired whaler's gun pattern, on a slight diagonal, muzzle up and right, about 85% of the canvas width: a short, very thick, heavy steel barrel with a heavy barbed harpoon head standing out of the muzzle, its shaft running back into the barrel; a heavy round breech with one exposed side hammer; a single trigger in a plain guard; a plain straight walnut stock with a slim wrist and a steel butt plate, no pistol grip; a round line reel with a crank handle bolted under the fore-end, its line running up to the harpoon. Frontier work: bare steel, walnut, worn leather. The impossible material: the line wound on the reel and running up to the harpoon's eye is a thin rope of flowing river water, clear and quick, coiled tight on the reel and never spilling a drop. The story detail: a small brass house key tied to the reel's crank on a short cord. No colour accent: the water's cool clear blue-grey is the only colour beside steel and walnut.\nAvoid: a whale or fish, splashes or drops, a glow, a rope of ordinary fibre, a trident or spear-gun with rubber bands.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 12,
+    "id": "first_light",
+    "title": "First Light (precision rifle)",
+    "path": "art/icons/gear/weapon-first_light.png",
+    "refs": [
+      "art/icons/gear/weapon-long_rifle.png",
+      "art/icons/weapons/long_rifle.svg"
+    ],
+    "paint": "A unique bolt-action precision rifle, on a slight diagonal, muzzle up and right, about 85% of the canvas width: the classic precision pattern of the attached repaint: a one-piece synthetic stock with a straight comb and a near-vertical pistol grip, a round receiver with a turned-down bolt handle, a long heavy plain barrel with no brake, a hinged floorplate with nothing hanging below, a bipod folded under the fore-end and a large scope with tall turrets; neutral matte finish. The impossible material: the scope's body is translucent amber glass, and inside it a sunrise is caught half-risen, a small warm sun at the horizon line, never rising further; the light stays inside the scope. The story detail: a hand-made sunshade of folded tin over the scope's front lens, dented once and mended with wire. Accent: the warm dawn amber inside the scope.\nAvoid: a beam or glare leaving the lens, rays, a glow past the scope, a wooden hunting stock, any marking.",
+    "span": 0.85,
+    "dependency": "- **Attach:** `art/icons/gear/weapon-long_rifle.png` (paint this unique after its repaint is approved), `art/icons/weapons/long_rifle.svg`"
+  },
+  {
+    "n": 13,
+    "id": "night_watch",
+    "title": "Night Watch (pump shotgun)",
+    "path": "art/icons/gear/weapon-night_watch.png",
+    "refs": [
+      "art/icons/gear/weapon-lumeri_scattergun.png",
+      "art/icons/weapons/lumeri_scattergun.svg"
+    ],
+    "paint": "A unique Lumeri Church pump-action combat shotgun, on a slight diagonal, muzzle up and right, about 80% of the canvas width: a long tube magazine under the barrel, a ribbed pump fore-end, a receiver with a side ejection port, a bead front sight and a plain fixed stock with a straight wrist carrying one thin gold inlay line; ivory-painted wood and steel. The impossible material: the tube magazine is clear glass and holds one candle flame that burns along its whole length without wax or wick, steady and contained. The story detail: drips of old white wax layered down the pump fore-end, left by a hundred night watches. Accent: Lumeri gold #F2C46A in the flame.\nAvoid: smoke, a flame outside the tube, a cross or halo, a candle standing on the gun, letters.",
+    "span": 0.85,
+    "dependency": "- **Attach:** `art/icons/gear/weapon-lumeri_scattergun.png` (paint this unique after its repaint is approved), `art/icons/weapons/lumeri_scattergun.svg`"
+  },
+  {
+    "n": 14,
+    "id": "unsaid",
+    "title": "Unsaid (suppressed submachine gun)",
+    "path": "art/icons/gear/weapon-unsaid.png",
+    "refs": [
+      "art/icons/gear/weapon-chezknov_machine_carbine.png",
+      "art/icons/gear/weapon-whisper_smg.png"
+    ],
+    "paint": "A unique integrally suppressed submachine gun, on a slight diagonal, muzzle up and right, about 70% of the canvas width: the integrally suppressed version of the roller-delayed submachine gun pattern of the attached machine carbine: a slim round stamped receiver tube with the cocking tube above it and the cocking handle at its front-left; a round rotary drum rear sight and a hooded front sight ring; a strongly curved pistol-calibre magazine set just ahead of the trigger group; a pistol grip; a retracted sliding metal stock of two bars with a rubber butt pad and a small blue-grey plate on it; and, in place of the barrel and fore-end, one long fat smooth suppressor tube of even diameter forming the front half of the gun, with no ports; matte dark steel. The impossible material: the suppressor is a piece of night, a matte black that holds no highlight at all, with a few faint stars deep inside it. The story detail: a moth's wing pressed flat under a strip of clear tape on the side of the stock. Accent: the small blue-grey plate on the stock, as on the attached painting.\nAvoid: a glow past the suppressor, smoke, a moon, letters or marks, a second magazine, a straight magazine, a folding skeleton stock.",
+    "span": 0.85,
+    "dependency": "- **Attach:** your saved `art/icons/gear/weapon-chezknov_machine_carbine.png` (file 10, entry 2.5: the pattern's receiver, sights, magazine and stock), `art/icons/gear/weapon-whisper_smg.png` (the scale and the blue-grey stock plate only, not its silhouette)"
+  },
+  {
+    "n": 15,
+    "id": "windfall",
+    "title": "Windfall (recurve bow)",
+    "path": "art/icons/gear/weapon-windfall.png",
+    "refs": [
+      "art/icons/gear/weapon-recurve_bow.png",
+      "art/icons/weapons/recurve_bow.svg"
+    ],
+    "paint": "A unique recurve bow, upright on a gentle diagonal, string to the lower left, about 85% of the canvas height: two curving limbs with curled tips, a riser bound with cord wraps and a small arrow shelf; weathered wood with mossy green-and-ochre paint. The impossible material: the string is a single strand of falling rain held taut between the nocks, a line of clear drops standing still along it, each catching one point of light. The story detail: three feathers of three different birds tied together at the riser with a twist of cord. No colour accent beyond the bow's own moss green.\nAvoid: an arrow, splashes, clouds, a glow past the string, letters.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 16,
+    "id": "return_clause",
+    "title": "Return Clause (Ward shield)",
+    "path": "art/icons/gear/shield-return_clause.png",
+    "refs": [
+      "art/icons/gear/shield-buckler.png",
+      "art/icons/gear/shield-riot_shield.png",
+      "art/icons/gear/shield-deflector.png"
+    ],
+    "paint": "A unique Ward shield made by the Science Team, front view, upright, about 85% of the canvas height: a light rounded-diamond deflector with a thin pale steel frame, precise straight edges and a thin dark arm strap showing at one edge. Its face is the impossible material: a sheet of still water standing upright inside the frame, flat and unbroken, reflecting a cool pale sky, with no drip at the edges. Suspended inside the water is one caught spell: a single bright abstract glyph stroke in Mind cyan #4FC8DF, as if it had struck and been held, ready to go back the way it came. The story detail: a burn-black scorch line on the frame's upper edge where the first spell it ever turned grazed it, left unrepaired on purpose. Pale ceramic and dark steel; the only accent is the cyan of the glyph, contained inside the water.\nAvoid: a mirror, a reflected face or figure, letters or numerals as the glyph, a round buckler shape, sparks or a glow past the frame.",
+    "span": 0.85,
+    "dependency": "- **Attach:** `art/icons/gear/shield-buckler.png` and `art/icons/gear/shield-riot_shield.png` (shield scale and front view), and file 07's approved `art/icons/gear/shield-deflector.png` (paint this unique after it)"
+  },
+  {
+    "n": 17,
+    "id": "outpost_wall",
+    "title": "Outpost Wall (Guard shield)",
+    "path": "art/icons/gear/shield-outpost_wall.png",
+    "refs": [
+      "art/icons/gear/shield-pavise.png",
+      "art/icons/armour/pavise.svg"
+    ],
+    "paint": "A unique Guard shield of the Thousand World Legion's frontier outposts, front view, standing on its ground edge, about 85% of the canvas height: a tall, wide board shield with a centre ridge and a folded prop leg showing behind it, in olive-grey painted steel over dark boards, plain and mass-produced, one faded pale stripe across the top. The impossible material: its foot and its prop leg have grown roots of dark iron, thick and coiled tight against the bottom edge, gripping nothing, as if the shield took root the first night it was planted and never quite let go; the roots stay inside a neat silhouette at the base. The story detail: a long row of short scratched notches along the right edge, one for each night it held a line, the newest still bright. Heavy, dented, cared for. Accent: none, the pale stripe.\nAvoid: soil, grass or a ground plane, numerals for the notches, an emblem, a riot-shield viewport, leaves.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 18,
+    "id": "grudge_plate",
+    "title": "Grudge Plate (Strike shield)",
+    "path": "art/icons/gear/shield-grudge_plate.png",
+    "refs": [
+      "art/icons/gear/shield-buckler.png",
+      "art/icons/gear/shield-riot_shield.png",
+      "art/icons/gear/shield-boss_shield.png"
+    ],
+    "paint": "A unique Strike shield of the Hellraiser Divisions, front view, upright, about 85% of the canvas height: a medium round-cornered shield of dark parkerised steel plates over planks, a slab-cut steel rim, and one big thick domed steel boss in the middle ringed by heavy rivets; the boss is the largest shape. The impossible material: the face is covered in deep dents from blows it has taken, and every dent holds the heat of the blow like a banked coal, a deep oxide red #CC2435 glow sitting inside each dent only, brightest in the newest, as if the shield is keeping count and waiting to give it all back. The story detail: one dent near the rim has been ringed with a hand-scratched circle, the one blow its owner swore to return. Hard scratches at the edges.\nAvoid: flames, smoke, sparks, a glow outside the dents, a skull or emblem, spikes, a kite or rectangular shape.",
+    "span": 0.85,
+    "dependency": "- **Attach:** `art/icons/gear/shield-buckler.png` and `art/icons/gear/shield-riot_shield.png` (shield scale and front view), and file 07's approved `art/icons/gear/shield-boss_shield.png` (paint this unique after it)"
+  },
+  {
+    "n": 19,
+    "id": "red_thread_gloves",
+    "title": "Red Thread (worn gloves)",
+    "path": "art/icons/gear/armour-red_thread_gloves.png",
+    "refs": [
+      "art/icons/gear/armour-work_gloves.png",
+      "art/icons/gear/armour-combat_gloves.png",
+      "art/icons/armour/work_gloves.svg"
+    ],
+    "paint": "A unique pair of fitted field gloves, shown side by side as one object, front view, no hands inside: supple dark leather with light padding at the knuckles, neat stitching, short cuffs. The impossible material: one red thread #D879AF that has no end: it runs out of the right glove's index fingertip, loops once across the gap between the pair, and goes into the left glove's cuff, where it is stitched into the seam and comes out again at its fingertip, a single unbroken loop binding the two. The story detail: a small empty thread spool clipped at the right cuff, polished by use. Warm, tidy, fond.\nAvoid: hearts, a knot shaped like a heart, hands or skin, a loose thread end, a glow, any lettering.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 20,
+    "id": "hearth_coat",
+    "title": "Hearth Coat (vest, outer torso)",
+    "path": "art/icons/gear/armour-hearth_coat.png",
+    "refs": [
+      "art/icons/gear/armour-torso_class1_light.png"
+    ],
+    "paint": "A unique padded coat, front view, laid out as for sale, no wearer: a long quilted coat with a high collar, front toggles and one reinforced shoulder, in dark waxed cloth with brown leather patches, an apron panel tied over the front with a deep pocket. The impossible material: the quilted lining, seen at the open collar and at the turned-back cuffs, is banked embers, glowing a low hearth orange #ED8A3C and never burning the cloth beside it, the glow contained inside the lining. The story detail: flour dusted on both cuffs and a wooden spoon standing in the apron pocket. Homely, warm, worn soft.\nAvoid: flames or smoke, a heart, a cross or medical mark, a wearer, a glow past the coat's outline.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 21,
+    "id": "lucky_dent",
+    "title": "Lucky Dent (helmet)",
+    "path": "art/icons/gear/armour-lucky_dent.png",
+    "refs": [
+      "art/icons/gear/armour-field_helmet.png",
+      "art/icons/armour/field_helmet.svg"
+    ],
+    "paint": "A unique field helmet, three-quarter view, upright, no wearer: a domed steel shell with a short ridge at the crown, a riveted brim band and a flared brim, a canvas liner and a chin strap with a square buckle; olive-grey paint chipped to bare steel. The impossible material: one deep dent on the brow holds the round that made it, caught in the steel as in clear honey-coloured amber: the steel around the dent has turned clear, and the flattened brass round hangs inside it, still. The story detail: a small star twisted from wire tied to the chin-strap ring for luck. Accent: none, Legion olive-grey; the brass of the round is the only warm point.\nAvoid: a hole through the shell, blood, cracks spreading, letters or numbers, a glow past the dent.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 22,
+    "id": "spring_air",
+    "title": "Spring Air (respirator)",
+    "path": "art/icons/gear/armour-spring_air.png",
+    "refs": [
+      "art/icons/gear/armour-gas_mask.png",
+      "art/icons/armour/gas_mask.svg"
+    ],
+    "paint": "A unique gas mask, front view, upright, no wearer: a dark rubber face with two squared goggle lenses, a strap harness over the crown with square buckles, a snout vent below, and two round filter canisters on the cheeks. The impossible material: the two filter canisters are glass drums, and each holds a tiny living spring morning: a tuft of fresh green grass, one small white flower and a pale sky above it, sealed behind the glass. The story detail: a dried blossom tucked under the head strap's buckle. No colour accent beyond the green inside the canisters; the lenses keep a plain glass tint.\nAvoid: a face behind the lenses, smoke or gas, insects, a glow past the canisters, letters.",
+    "span": 0.85,
+    "dependency": null
+  },
+  {
+    "n": 23,
+    "id": "long_road",
+    "title": "The Long Road (boots)",
+    "path": "art/icons/gear/armour-long_road.png",
+    "refs": [
+      "art/icons/gear/armour-field_boots.png",
+      "art/icons/armour/field_boots.svg"
+    ],
+    "paint": "A unique pair of tall lace-up field boots, three-quarter view, side by side as one object, no wearer: worn brown leather, brass eyelets, a turned-down collar, scuffed toe caps. The impossible material: the soles are a slab of old cobbled road, rounded grey cobblestones set in rows where the tread lugs would be, a thin line of moss growing between two of them. The story detail: the left boot laced with its old brown lace, the right with a mismatched cord of faded blue, and a sprig of dried heather pushed through the top eyelet. Accent: none, Frontier leather and stone.\nAvoid: a road or ground plane under them, footprints, mud splashes, a glow, letters.",
+    "span": 0.85,
+    "dependency": null
+  }
+]
