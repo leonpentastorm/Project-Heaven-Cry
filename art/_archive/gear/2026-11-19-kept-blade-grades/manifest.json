@@ -1974,6 +1974,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hand_wraps--celestial",
+      "path": "art/icons/gear/weapon-hand_wraps--celestial.png",
+      "sha256": "b433d80f649e8f2062668510c84cf37cebddcad3ca5a1a9e6b80e78854b48f6d",
+      "label": "Hand Wraps — Celestial",
+      "family": "weapon-hand_wraps",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hand_wraps--celestial.png",
+        "sha256": "0640654b6c1aad923f8c6caaf806dca1e9f821a316e84b276221e01a51735f9c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hand_wraps--celestial.png",
+        "sha256": "b433d80f649e8f2062668510c84cf37cebddcad3ca5a1a9e6b80e78854b48f6d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hand_wraps--celestial.txt",
+        "sha256": "f4d1a560096f1285974b8426b916aef99428ae7685e0d85071119ac2d5aca276"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-hand_wraps.png",
+          "sha256": "275174226eca2cc49f2db8a64a0d553d4d591dc244b2b053fcab2dcd11fce994"
+        },
+        {
+          "path": "art/icons/gear/weapon-hand_wraps--relic.png",
+          "sha256": "e438f18f6f6aafbf6b6b445637f11eeb271dcb7d6b4ab1b27c359851b4b9b6ac"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hand_wraps--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-hand_wraps--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-hand_wraps--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-hand_wraps--celestial.png"
+      },
+      "export_hashes": {
+        "256": "6ca4456b905a6099dce4f9d39bb14df9f48f08d670109fe4b302ae76b170d887",
+        "128": "d0f3d187785e515ea505d2294e9942502979f7db78ef46c01fc610b407e126a3",
+        "64": "71c7daa2ce71a5ba3453a0eb1089cf9835a56e616927460323792195d757a60a",
+        "32": "b6815578ba4f86670c4b353d7a51476917f90a82683adc6acacc1ad5e62d634f"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-hand_wraps",
+      "outline": {
+        "solid_alpha_iou": 0.9683112495612496,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 38
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
