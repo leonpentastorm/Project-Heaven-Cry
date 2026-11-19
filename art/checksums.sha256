@@ -3148,11 +3148,11 @@ e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4  art/_archive/p
 c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/perks/wick/replaced/2026-11-16/shrug-it-off.png
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
-3b019456b65b464a04d3563940d18021e9479ef0eab66377122e665f8509bc52  art/_archive/prompt-pack/2026-11-19-file-08-uniques/HANDOFF.md
+f37fc0e02f0cdcd95cb4d488fed5e5270273c5a64b2250f8c0f9c6fc51cdd162  art/_archive/prompt-pack/2026-11-19-file-08-uniques/HANDOFF.md
 64134cb1731ea34748761d371d13ee924bd2bca2aa701d798546ca21dca8012b  art/_archive/prompt-pack/2026-11-19-file-08-uniques/checkpoint.py
 43aaac3d1bf20ff39eee3eb0f7e9330d46806fbbd164f3a9b2bf233fd2e24ab8  art/_archive/prompt-pack/2026-11-19-file-08-uniques/claim.json
 ee64c427044997370fbe0d425f3f9c5da8e1b8ccdc38e47f8c7ff2b7f71976e3  art/_archive/prompt-pack/2026-11-19-file-08-uniques/deliver.py
-1373fca8576f9c1eea013fb3256668b6a65b13c8d2d7d717899378c0a1897fe2  art/_archive/prompt-pack/2026-11-19-file-08-uniques/manifest.json
+70d7daf498f86af5a545f3a7460c054ad6811c62870fa9b9f03f8d431f4f9e4f  art/_archive/prompt-pack/2026-11-19-file-08-uniques/manifest.json
 564e67e453f84338116444b832332a5258ff6394f86da5675071ea6370a38136  art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/20-armour-hearth_coat.png
 13afe0ac6dd6027e666e75834932a2e7753e6bec099a42e6665b9df85d4a804d  art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/21-armour-lucky_dent.png
 0decd38b47011a608efcb1c96bf0f225511a9082549e2b35e2fa7731c4013049  art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/22-armour-spring_air.png
@@ -3160,6 +3160,7 @@ ee64c427044997370fbe0d425f3f9c5da8e1b8ccdc38e47f8c7ff2b7f71976e3  art/_archive/p
 03b601fcff960f462cf95d1fc7edf10d08121b866261ab0038e03783d2122bbd  art/_archive/prompt-pack/2026-11-19-file-08-uniques/queue.json
 5efb1923436856cb7219881c65274cc70a485e979c139e88bef97c8995729567  art/_archive/prompt-pack/2026-11-19-file-08-uniques/records/20.json
 883955e2e81cf51501bec03163777c557b15d34edeed902ab4b9e3b52eadca13  art/_archive/prompt-pack/2026-11-19-file-08-uniques/records/21.json
+49b74366fc5c3408d677ef50cfea24fa2d63137d3cf188f76af0b2a9a893b4ed  art/_archive/prompt-pack/2026-11-19-file-08-uniques/records/22.json
 cc024eaa3bf410c53b9435a702d3cd0de08f8b5afcfff412a21fb2c63eeb88a1  art/_archive/prompt-pack/2026-11-19-file-08-uniques/rejected/19-thread-route/REVIEW.md
 0cacd54899bcd2ffc7a7b03783cfc54fe33a6be79186ba92133347c7e634dafd  art/_archive/prompt-pack/2026-11-19-file-08-uniques/rejected/19-thread-route/native.png
 6518086e6649d542bb492a605e15711b9ac574b83652fa1fb7097474a22dbd44  art/_archive/prompt-pack/2026-11-19-file-08-uniques/rejected/19-thread-route/result.json
@@ -4495,7 +4496,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-c7a419e256461ee8da24a2976a2c59e44a13e81625076704c26558c99a8e7029  art/catalog.json
+18493675bde28b3f4e01b4a0dc5b10389074d078289969cb290af98a717c81fa  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6065,6 +6066,7 @@ da04bbb067c16ca0c133c96426d79b1cb0ca8c46ab3eb533b34a12017e7af6ed  art/icons/gear
 0f44b47bed85ac981c11a1f5d31a6d3f1cffe87e4365576ea2dab0369cc3aef2  art/icons/gear/armour-prescription_glasses.png
 2e2fe38e84e0e8da30560a478bc6af62db8c4de93fdf8a690e7ec84747e2f977  art/icons/gear/armour-runner_trousers.png
 a4041379dedc8aa9b2468e69b5e6cf60021c4581dacf44837461c54a3ddc9b9a  art/icons/gear/armour-smiling_mask.png
+88c154c3b2aed48ffec5c580ca29fe81e8419cc59945933aa0ace9216e144ed5  art/icons/gear/armour-spring_air.png
 993f7915c6be69db181495b5a8f185813e0ffa40a3e5deb9f5ad1fbd4ef5207f  art/icons/gear/armour-torso_class1_light.png
 668167f8973f2c10d039bad7d0a07d5db593d1722021fdc1b25ed2f5da29ef3d  art/icons/gear/armour-torso_class2_medium.png
 8240c5b8ec6b2d169cc8a52ac2c0b7192cd06137f9ac3c75e5b2c4d436b0b3c9  art/icons/gear/armour-torso_class3_heavy.png
@@ -6103,6 +6105,7 @@ e1e9b24768a6e0a0d8f80822159126c795407637ea19fe6213866b97467d1f71  art/icons/gear
 74362e352431a8940e721ef8ba8fde3f13c4039e88b30681e2f9b1ae28e2426f  art/icons/gear/exports/128/armour-prescription_glasses.png
 6a5fb1859b0534cd44f4b191d0943ba36731e67c5ef4ee5cfc8c969fd689438e  art/icons/gear/exports/128/armour-runner_trousers.png
 494710c49f93bf4ce35bc655bd1fcedeebee76acaafe7d8595d8ef5f67dc68dd  art/icons/gear/exports/128/armour-smiling_mask.png
+c3aa4a87ab54e236bcff8d3cdafdbd9130e85f38166bc23186b87f2f4a063aa2  art/icons/gear/exports/128/armour-spring_air.png
 335d9f4368f69bbc4b0ac847a9b5d81d9efa5fc2acc6c3ee55dc9226ab9f7f25  art/icons/gear/exports/128/armour-torso_class1_light.png
 b5b565872b26738b2fc75ad5a476a2bd17568a1dd909ad41210925bcb063a39c  art/icons/gear/exports/128/armour-torso_class2_medium.png
 a408b52c26c21749fee2ed47bcab1c0e8b1e4c328943b3e10e8eb8cdcef21e41  art/icons/gear/exports/128/armour-torso_class3_heavy.png
@@ -6278,6 +6281,7 @@ e44f8f7b0887961b9b81124aa61bc56218e45cc77513e084d070accdbe53ae0f  art/icons/gear
 421b27be75537a8a312329e1670c8d291624efbcd0772d49654d7ac6767da761  art/icons/gear/exports/256/armour-prescription_glasses.png
 2c4091ee79e6d561f24dbdab036c4e6acdff03be59bede8806b769e545676678  art/icons/gear/exports/256/armour-runner_trousers.png
 1f88e60c6b27398e7582476f7b7719c2c1fb3bd591dea563c49d2500eb0de31b  art/icons/gear/exports/256/armour-smiling_mask.png
+4169739b287e79abdf6b032259d9845ad70d54d9fa6a1954d07c4d5a3fe8c821  art/icons/gear/exports/256/armour-spring_air.png
 efb83ae644678c65d9d4742a7f741b88d3055ff28498e5f0530e7592ac9f1e15  art/icons/gear/exports/256/armour-torso_class1_light.png
 49747f85783825db24fbfcc6b032bb59ad498c7baa4b3dafe5fc89463c9bd316  art/icons/gear/exports/256/armour-torso_class2_medium.png
 80db1864e218fc8f667365ddc9db105ef098693da281ba028397f25ebbb17b43  art/icons/gear/exports/256/armour-torso_class3_heavy.png
@@ -6453,6 +6457,7 @@ a8f8bf8ec9f65c6ee81218607fa04f94ae0aa1bf2cf9d6a341c6d68b9d0b723c  art/icons/gear
 88de9925fa0f077bc7b5325c57899728676e8cefdbacd2b57542f4afdf8fe7e2  art/icons/gear/exports/32/armour-prescription_glasses.png
 5a9a8f9e5625baee043d2e722cafe95bb90c5e6c2eb057b98d197e73148a75e9  art/icons/gear/exports/32/armour-runner_trousers.png
 fa0346aff59805a3a3e425da7ba57bf06fefced4af88231be977f531d34c3334  art/icons/gear/exports/32/armour-smiling_mask.png
+43f55031dfb35ca907ced827b6507d729b88bec40335f32ca723f6925f68ecbb  art/icons/gear/exports/32/armour-spring_air.png
 59a4fc6b4c6c64ed94504c9d2105cc2057c8af6e1a9fac10baa2e8f703b52b0b  art/icons/gear/exports/32/armour-torso_class1_light.png
 e246accc90ed96bdc43ff12469d99481be682902838a069acea321df4d0d4dd6  art/icons/gear/exports/32/armour-torso_class2_medium.png
 c684f30cffb06499ed24b68a302d49c253c11a9fbdac95b9a4ec399bb0de0871  art/icons/gear/exports/32/armour-torso_class3_heavy.png
@@ -6628,6 +6633,7 @@ ead01bfc770862c5aa5dc1942976842a5b5df75423672ab2233a490da4077eb3  art/icons/gear
 28c86936a7049117d9006292b4b8f4abc52dc3629924fc1eedd354316aeb38a4  art/icons/gear/exports/64/armour-prescription_glasses.png
 aaf946b5910a5fbafb46f421d6a1257bdd413eaa31413ad10e98bd3eca051a1f  art/icons/gear/exports/64/armour-runner_trousers.png
 f4d36a415d8c620b18c7050b0af75748201858ee1444c0165f62ead7527fc4d3  art/icons/gear/exports/64/armour-smiling_mask.png
+8db7f10abba52f05460b8c0a8eb8644eebb45e68b2206001863289363b0431a5  art/icons/gear/exports/64/armour-spring_air.png
 45ee1acfc6f8603c41cb5be631f9ef9a45ba9fa1c281a9f29b371b022ae253d4  art/icons/gear/exports/64/armour-torso_class1_light.png
 1444679cd083fa14b4bb80ad34cfe26cfb17622b6f50cc3854d4b69aaf0414d3  art/icons/gear/exports/64/armour-torso_class2_medium.png
 d3c49d0d06afd1dff779f04946dce896d4e445664721cd69d18cac8ff5c77386  art/icons/gear/exports/64/armour-torso_class3_heavy.png

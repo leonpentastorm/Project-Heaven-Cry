@@ -1,7 +1,7 @@
 # File 08 unique inventory paintings
 
 Updated 19 November 2026 at 14:18 UTC+7. Branch `art/2026-11-19-unique-gear`.
-**2 of 23 uniques delivered. 140 of 215 base pictures and uniques. 140 of 871 across the pack.**
+**3 of 23 uniques delivered. 141 of 215 base pictures and uniques. 141 of 871 across the pack.**
 The baseline was 138 delivered candidates across the live branches. The count is per requested master.
 These independent unique paintings have been brought forward while the grade proof is open.
 The six uniques with missing or unapproved references still depend on those references.
@@ -29,7 +29,7 @@ The six uniques with missing or unapproved references still depend on those refe
 | 19 · Red Thread (worn gloves) | `art/icons/gear/armour-red_thread_gloves.png` | draft needs correction |
 | 20 · Hearth Coat (vest, outer torso) | `art/icons/gear/armour-hearth_coat.png` | delivered for review |
 | 21 · Lucky Dent (helmet) | `art/icons/gear/armour-lucky_dent.png` | delivered for review |
-| 22 · Spring Air (respirator) | `art/icons/gear/armour-spring_air.png` | claimed, awaiting render or review |
+| 22 · Spring Air (respirator) | `art/icons/gear/armour-spring_air.png` | delivered for review |
 | 23 · The Long Road (boots) | `art/icons/gear/armour-long_road.png` | claimed, awaiting render or review |
 
 Deliveries include the exact native sources, contact sheets, stable archive hashes and 256/128/64/32 px PNG exports.

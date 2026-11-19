@@ -18678,6 +18678,29 @@
         1254
       ],
       "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/21-armour-lucky_dent.png"
+    },
+    "armour-spring_air": {
+      "label": "Spring Air (respirator)",
+      "path": "art/icons/gear/armour-spring_air.png",
+      "sha256": "88c154c3b2aed48ffec5c580ca29fe81e8419cc59945933aa0ace9216e144ed5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-spring_air.png",
+        "128": "art/icons/gear/exports/128/armour-spring_air.png",
+        "64": "art/icons/gear/exports/64/armour-spring_air.png",
+        "32": "art/icons/gear/exports/32/armour-spring_air.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-08-uniques",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/22-armour-spring_air.png"
     }
   },
   "survival_art": {

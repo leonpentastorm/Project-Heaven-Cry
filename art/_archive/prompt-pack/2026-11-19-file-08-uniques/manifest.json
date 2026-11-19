@@ -79,5 +79,46 @@
       "32": "0fd249bc09939573173e8cb97c5d149d7a427331fb7723a37bb426940aed2a4f"
     },
     "generator_prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. One single object, lit from the upper left, with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background, square 1024 x 1024 PNG with alpha; the object fills about 80 to 85% of the canvas, inside the central 90%. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The object is a fictional nonfunctional prop from Project Heaven Cry, shown only from one exterior view. This is a unique item, one of a kind: it keeps the silhouette of its family so that at 32 px it still reads as that kind of weapon or armour, and it carries one story detail and one impossible material, painted with the richness of an heirloom, not the gilding of a parade piece. One accent colour (given below), as a muted local paint or a contained light inside the outline, never a bloom. The silhouette must be bold and readable at 64 px in a shop grid and 32 px in a backpack row. The item:\n\nA unique field helmet, three-quarter view, upright, no wearer: a domed steel shell with a short ridge at the crown, a riveted brim band and a flared brim, a canvas liner and a chin strap with a square buckle; olive-grey paint chipped to bare steel. The impossible material: one deep dent on the brow holds the round that made it, caught in the steel as in clear honey-coloured amber: the steel around the dent has turned clear, and the flattened brass round hangs inside it, still. The story detail: a small star twisted from wire tied to the chin-strap ring for luck. Accent: none, Legion olive-grey; the brass of the round is the only warm point.\nAvoid: a hole through the shell, blood, cracks spreading, letters or numbers, a glow past the dent.\n\nOne armored helmet in three-quarter view on transparent alpha. One distinct small honey amber dent inset into brow, containing a flattened brass fleck. A small wire good-luck star at the chin strap's ring, no emblems on the helmet itself."
+  },
+  {
+    "n": 22,
+    "id": "spring_air",
+    "title": "Spring Air (respirator)",
+    "path": "art/icons/gear/armour-spring_air.png",
+    "refs": [
+      "art/icons/gear/armour-gas_mask.png",
+      "art/icons/armour/gas_mask.svg"
+    ],
+    "paint": "A unique gas mask, front view, upright, no wearer: a dark rubber face with two squared goggle lenses, a strap harness over the crown with square buckles, a snout vent below, and two round filter canisters on the cheeks. The impossible material: the two filter canisters are glass drums, and each holds a tiny living spring morning: a tuft of fresh green grass, one small white flower and a pale sky above it, sealed behind the glass. The story detail: a dried blossom tucked under the head strap's buckle. No colour accent beyond the green inside the canisters; the lenses keep a plain glass tint.\nAvoid: a face behind the lenses, smoke or gas, insects, a glow past the canisters, letters.",
+    "span": 0.85,
+    "dependency": null,
+    "label": "Spring Air (respirator)",
+    "sha256": "88c154c3b2aed48ffec5c580ca29fe81e8419cc59945933aa0ace9216e144ed5",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-spring_air.png",
+      "128": "art/icons/gear/exports/128/armour-spring_air.png",
+      "64": "art/icons/gear/exports/64/armour-spring_air.png",
+      "32": "art/icons/gear/exports/32/armour-spring_air.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-08-uniques",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/22-armour-spring_air.png",
+    "source_sha256": "0decd38b47011a608efcb1c96bf0f225511a9082549e2b35e2fa7731c4013049",
+    "export_sha256": {
+      "256": "4169739b287e79abdf6b032259d9845ad70d54d9fa6a1954d07c4d5a3fe8c821",
+      "128": "c3aa4a87ab54e236bcff8d3cdafdbd9130e85f38166bc23186b87f2f4a063aa2",
+      "64": "8db7f10abba52f05460b8c0a8eb8644eebb45e68b2206001863289363b0431a5",
+      "32": "43f55031dfb35ca907ced827b6507d729b88bec40335f32ca723f6925f68ecbb"
+    },
+    "generator_prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. One single object, lit from the upper left, with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background, square 1024 x 1024 PNG with alpha; the object fills about 80 to 85% of the canvas, inside the central 90%. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The object is a fictional nonfunctional prop from Project Heaven Cry, shown only from one exterior view. This is a unique item, one of a kind: it keeps the silhouette of its family so that at 32 px it still reads as that kind of weapon or armour, and it carries one story detail and one impossible material, painted with the richness of an heirloom, not the gilding of a parade piece. One accent colour (given below), as a muted local paint or a contained light inside the outline, never a bloom. The silhouette must be bold and readable at 64 px in a shop grid and 32 px in a backpack row. The item:\n\nA unique gas mask, front view, upright, no wearer: a dark rubber face with two squared goggle lenses, a strap harness over the crown with square buckles, a snout vent below, and two round filter canisters on the cheeks. The impossible material: the two filter canisters are glass drums, and each holds a tiny living spring morning: a tuft of fresh green grass, one small white flower and a pale sky above it, sealed behind the glass. The story detail: a dried blossom tucked under the head strap's buckle. No colour accent beyond the green inside the canisters; the lenses keep a plain glass tint.\nAvoid: a face behind the lenses, smoke or gas, insects, a glow past the canisters, letters.\n\nBuild two translucent circular glass filter canisters laterally on the same dark respirator. Each contains a miniature green tuft and one small ivory flower. The upper goggles are plain dark tinted and do not show a face. Isolated fantasy item."
   }
 ]
