@@ -18710,6 +18710,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "weapon-katana--celestial": {
+      "label": "Katana Celestial",
+      "path": "art/icons/gear/weapon-katana--celestial.png",
+      "sha256": "d8e2f577764ef58474fb59ebe68d50c577047e4576c104ceb97272478a3209ad",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/weapon-katana.png",
+      "source_path": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-katana--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-katana--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-katana--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-katana--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {

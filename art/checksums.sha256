@@ -3169,6 +3169,7 @@ f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff  art/_archive/p
 3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--fine.png
 e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--masterwork.png
 307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png
+002575a1123051b01b128b9f2e91b7bd064cd9d6a55d1d8699014b1f86cd1047  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--celestial.json
 549cebe53d0b8eda2c71df6eb46782d41a23aa876986ea159f993f3398aedcef  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--fine.json
 2543d38554d583b5692c2421e92698965d74606f29137b7a3c770d9c36a478fc  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--masterwork.json
 16fbab1a88dce46966d1e2783c45c3551e20366ead7edc75c208b2b418766200  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--relic.json
@@ -4548,7 +4549,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-0ab4b266bc82a7a922361d3b92a7a75d58a18c1e9b2971c6a13b42fe746bbf54  art/catalog.json
+f6a3af6f96a6080600dd49ade42a4ce1b6ad65a662dffa718e029bbf7e23fad6  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6275,6 +6276,7 @@ b11732d331ec7788914fd75d444ba9be453ca3ff4d332b91d4f4c8b5696f092f  art/icons/gear
 3dbac9dcf52cdd51abf628fb3e5ada6be2ac23ceb75679dd511335ac16558482  art/icons/gear/exports/128/weapon-hellraiser_servo_fist.png
 16d3784208f905aeedde5c7e4e9bc8572e9948785160d58329c741b8656aba8d  art/icons/gear/exports/128/weapon-incendiary_grenade.png
 228bb3d71774b3219866c41706aa32e61a6012d2544418abab81a7fc5c9c0a15  art/icons/gear/exports/128/weapon-iron_mitts.png
+ab4ffa75bc6bb5b3a3b6dd05c9f8622e4cd56c9d0f34d17eed5a6016922a028c  art/icons/gear/exports/128/weapon-katana--celestial.png
 0f4ed06d29c3d2d48cd1f001276f29fccc9901435c0241466c689b4ca542792e  art/icons/gear/exports/128/weapon-katana--fine.png
 1cc0fa15cf53ffc791bcf5666f9bb7de9ff92f56cb079564f1ec36d64201dbfa  art/icons/gear/exports/128/weapon-katana--masterwork.png
 52d34c8eb790661c110563fe8e3bcc169e1744ba6e6bd24b87a4fccc3551da9f  art/icons/gear/exports/128/weapon-katana--relic.png
@@ -6451,6 +6453,7 @@ fad5f5a8b9247c75018bf2a178a5d43eb7d1a92c45d21d6fa957e365cd87f523  art/icons/gear
 8d1239a986deb56135fff7e4e7f2309f0c4981dd46fdbf7fda38a9a11779101e  art/icons/gear/exports/256/weapon-hellraiser_servo_fist.png
 aff848a26137b23eeb53c7e60e1f5f1dd0601ee651d02a5ce3ebcb2d010bfe29  art/icons/gear/exports/256/weapon-incendiary_grenade.png
 4f727e7341ffa78f24bf7d6445d72327391c406f95fedd5ae7c18b534150f99d  art/icons/gear/exports/256/weapon-iron_mitts.png
+a910666b86da7b8018c93ad6ce353eb83ada431d952a1d886ca4930a947264fa  art/icons/gear/exports/256/weapon-katana--celestial.png
 aef4251fad4e2969ad6e9f01f56b59490ab1d996e3de622bb79cb66101b22080  art/icons/gear/exports/256/weapon-katana--fine.png
 10f955ed2ea40f6fa022ed5a06e9a71ec3580296d1f708183a39919a7c3a0e44  art/icons/gear/exports/256/weapon-katana--masterwork.png
 a8a368f95c442bb6a5e619f4107bc1ca828ba0cbb8ecca1646003890dcc574d4  art/icons/gear/exports/256/weapon-katana--relic.png
@@ -6627,6 +6630,7 @@ fb483729621c91f7de49b5fa0edf12a0e491cedb1f12f30dc0e8764b9e9285fd  art/icons/gear
 e37b4e9dced028f483a36c748444ac92ea7264003a50244e966b30ef4970d1a7  art/icons/gear/exports/32/weapon-hellraiser_servo_fist.png
 8260390fea8adeda78dcc43bf4deed25849c7e7d8e77871c4303ee306a731fc4  art/icons/gear/exports/32/weapon-incendiary_grenade.png
 b076cc9500e17ba641dca02261038f6254a2866ae599a504686e0ba72cd48431  art/icons/gear/exports/32/weapon-iron_mitts.png
+c52491312dfe9c7c42d92da27b318fbf94f011a78b19121bbeb6b37562a7103b  art/icons/gear/exports/32/weapon-katana--celestial.png
 b24b00ae8d8f847d7d89f751be9d06ea3e6eccae21682bc797b756279d7c8a98  art/icons/gear/exports/32/weapon-katana--fine.png
 7eb20a812a78ff10ac62d6e8beb170bf0af03fc83cbe7c60cf8965ff717cf225  art/icons/gear/exports/32/weapon-katana--masterwork.png
 364ee8e7c6f98f899dde5924145502f20901952f5b79f952d15ef01270d51c1e  art/icons/gear/exports/32/weapon-katana--relic.png
@@ -6803,6 +6807,7 @@ cdfee57748224e91a01110a08420de365a1088e1cfcf76c7ba482faf4765dec0  art/icons/gear
 ea4f07a5a9402f753d093dc19322caf185eb9255b83be09d5c8ab56f8efa9d39  art/icons/gear/exports/64/weapon-hellraiser_servo_fist.png
 098f36b36917ea6e8b082de5b60ca944b6748e48220eb87c575d6e6fda5fa5c4  art/icons/gear/exports/64/weapon-incendiary_grenade.png
 df56e4124d26720ebd38d6939a8a2b2450b629093a83c8144b61e80b028e112b  art/icons/gear/exports/64/weapon-iron_mitts.png
+5c8fb62510ba959333cd8c92033b8545b49170ef4c41583b9a83680e5582fca1  art/icons/gear/exports/64/weapon-katana--celestial.png
 5d06e2aebfd8360ac1e01b1587894976c753820f36438920555bb4c0c6dfe14c  art/icons/gear/exports/64/weapon-katana--fine.png
 fa660bf0adc6f0f0b9018fe9681830b6266377580f49347450769d44b400a4be  art/icons/gear/exports/64/weapon-katana--masterwork.png
 8ee8ec2cd14d4bf25eb5d9574b6d50e05c5d7f02a5159f5f9c1ac5cf74f6050b  art/icons/gear/exports/64/weapon-katana--relic.png
@@ -6943,6 +6948,7 @@ a69bacdfb22ca5070e0e1a1edd6697ba40992bb95dc0851be4b4d35dc72947ac  art/icons/gear
 194e053129041c6456b705be701992e72d6ec8420a7901f10fe8cf0bf92bec00  art/icons/gear/weapon-hellraiser_servo_fist.png
 8cb7669e3e9fc0b7c5c58545cae242f2090ab00cb976b4da93df90457daf0fee  art/icons/gear/weapon-incendiary_grenade.png
 026003405fcfc8c519a886c370f5e6f0728ff8eb586cba7871225cd62e46b71a  art/icons/gear/weapon-iron_mitts.png
+d8e2f577764ef58474fb59ebe68d50c577047e4576c104ceb97272478a3209ad  art/icons/gear/weapon-katana--celestial.png
 81e1607c196cf5e1b8f686913e1b75e1cb235669c8c54dff4f3e1c9e2dfeacbd  art/icons/gear/weapon-katana--fine.png
 63be464d4cc977c8fbc1beebaad6b59e29fb30c3de01f8292aa8c49f9f1d4be7  art/icons/gear/weapon-katana--masterwork.png
 ffc538dbf8d885757ea58b8cc8fa9e80b7fc02dfec5231959907cad03fba62ff  art/icons/gear/weapon-katana--relic.png
