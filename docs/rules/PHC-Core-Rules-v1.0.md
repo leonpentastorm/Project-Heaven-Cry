@@ -12390,3 +12390,9 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     every tile. Every action's reach, not only a prayer's; nothing about which tiles are in reach changed (the engine's
     `prayerAim` and previews). Each tile's hover note still says "in reach". Proof: `apps/web/src/game/pickOverlay.test.ts`.
     Not done here (needs a ruling): a prayer with no data `range` still reaches every tile its caster sees.
+5526. **A token's hover card's condition signs enlarge** (owed fix): each condition sign in a token's hover card carries
+    the one lightbox's `data-zoom` (its name) and `data-zoom-text` (its text), as the fight panel's strip already did. To
+    reach it, the card lingers 0.2 s after the pointer leaves the token (`apps/web main.tsx`: visibility with a hide
+    delay in place of display none), and only its signs take a click; the rest of the card still lets clicks through to
+    the tiles under it, and a click on a sign enlarges only (the tile is not picked). Proof:
+    `apps/web/src/screens/zoom-text.test.ts`; the browser suite `fight-panel.mjs` reads the card's visibility now.
