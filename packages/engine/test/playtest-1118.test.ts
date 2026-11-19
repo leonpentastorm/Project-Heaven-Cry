@@ -165,9 +165,12 @@ describe('row 8: a Figment\'s damage and kills are its owner\'s, and Volatile\'s
     expect(fig.hp).toBe(0); expect(foe.hp).toBe(0);
     const lines = g.combat.log.slice(log0).join(' | ');
     expect(lines).toContain('Volatile: '); expect(lines).toContain('damage to ' + foe.name);
+    // the blast's foes: the blow's attacker and the one beside it (seeded layout), each 20 and each killed
+    const blasted = g.combat.units.filter((u: any) => u.side === 'foe' && u.hp <= 0).map((u: any) => u.id);
+    expect(blasted).toEqual(['foe-0', 'foe-1']);
     g = apply(g, { type: 'run/skip' } as any, 'host'); // the fight ends through the reducer: runFightOver keeps the tally
     const t = g.run.stats.fights.at(-1).tally;
-    expect(t.chars.c1.dealt).toBeGreaterThan(0); expect(t.chars.c1.kills).toBeGreaterThanOrEqual(1);
+    expect(Object.keys(t.chars)).toEqual(['c1']); expect(t.chars.c1.dealt).toBe(40); expect(t.chars.c1.kills).toBe(2);
     expect(t.other.dealt).toBe(0);
   });
 });
