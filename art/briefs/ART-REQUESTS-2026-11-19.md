@@ -1,7 +1,11 @@
 # Art requests, 19 November 2026: everything for 0.31.x, 0.32.x and the Items 2.0 plan
 
 This is the current full list. It sits on top of [`ART-REQUESTS.md`](ART-REQUESTS.md), the standing file, which is kept as
-history and for its direction notes. Start at the top and work down. Every row names its **art mode**. Read these first:
+history and for its direction notes. Start at the top and work down. Every row names its **art mode**.
+
+**The prompts for every row are in [`prompts-2026-11-19/`](prompts-2026-11-19/README.md)** (start at its README: the order of work, the files, how to hand pictures back).
+
+Read these first:
 
 - [`art/style-guide/PHC-Style-Guide.md`](../style-guide/PHC-Style-Guide.md) (the one style guide) and [`art/AGENTS.md`](../AGENTS.md)
 - [`art/icons/STYLE-LOCK.md`](../icons/STYLE-LOCK.md) for every Wick icon; the master is [`art/icons/traits/mind-without-fog.png`](../icons/traits/mind-without-fog.png)
