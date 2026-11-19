@@ -132,6 +132,23 @@ The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.
 - **m10** dead code and module-private helpers. `0f4e9523a`.
 - **The Emanator stowed** says so on the Strain row (Step 3e). `079f78e2f`.
 
+### Enemy AI (`wip/0.32-ai`; hand-off `docs/design/handoffs/0.32-ENEMY-AI.md`; spec rules 1.79, items 6700 to 6714)
+
+- **The side's memory past the round (spec 4969 a).** Built and OFF (`rules.json combat.focus_memory.carry` 0): any carry from 0.25 moves the defence-measure guard (the idle pair's first Down 4.2 rounds at most; measured 5). The lead to rule: refit the guard, or keep it off. [S] [built, off; 19 Nov 2026] [rules 1.79 item 6703]
+- **The Read does not foresee the Pressure moves.** The intent (Trickster's Read, `enemyIntent`) still names the attack a Broken or Suppressed enemy would make, not its cover move. [S] [not built] [rules 1.79]
+- **The bait reads Overwatch and held lanes only,** not a Retort or other Answer (no AI reads Answers before acting). [M] [not built] [rules 1.79 item 6709]
+- **Enemy door verbs:** Slam, Challenge, Retort, Last Plate, Tag, Ghost Kill, Stalk, Tug, Snap, a Figment order, prayers. Blocked: see the needs-a-primitive list. [L] [not built] [rules 1.79 item 6711]
+- **Interpose for an enemy with Durability 3** (the Heartfire elite): not checked whether the Answer is usable for a unit whose techniques are its row's. [S] [not verified] [rules 1.79 item 6710]
+
+#### Built in 0.32 (not yet live)
+
+- **Enemies act on Pressure:** a Broken enemy reaches cover or drops Prone and stays down; a Suppressed one slides into cover and walks short; log lines from data. `591270294`, spec 6700-6702.
+- **Focus memory per enemy:** keeps its target for 2 rounds, turns on whoever hurt it since. `591270294`, spec 6705-6706.
+- **The angle (spec 4969 b):** a gunner whose every target is under fire walks up to 4 tiles for a shot at one nobody attacks, cover first. `591270294`, spec 6707.
+- **The bait:** a Vermin or Minion walks into a seen held lane to draw the shot while a stronger ally holds out of it until the bait has acted. `591270294`, spec 6708.
+- **Enemy Guard:** a row's `guard` gives Durability's door (plates, soak, Pressure on Guard, the Guard technique); the Heartfire elite has 3 plates. `591270294`, spec 6710.
+- **Gating and the re-record:** no state written for a switched-off block (`a10729f25`); costs-outburst and 24 of 29 replays re-recorded on purpose, each named with the block that moved it (`cc5e74fae`, spec 6714). Survival stage 1 at 40 seeds: solo_gunner 31 to 30, four 38 to 38, mixed 30 to 31 (spec 6713).
+
 ### Leftovers (`wip/0.32-leftovers`; hand-off `docs/design/handoffs/0.32-LEFTOVERS.md`; spec rules 1.78, items 6600-6611)
 
 - **Hurl** (the Breaker; momentum-2.0 item 16): needs P14 (see "needs a primitive"). [M] [not built; checked in code 19 Nov 2026] [spec 6606]
@@ -163,6 +180,8 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 - **Not approved, left as they are:** a story `acted` (Index II across story and fight), bare fists in the glove family and a thrown Relic property (Items 2.0). [rules 1.77 item 6516]
 - **P14, the object op's `hurl`** (lift a loose object or a held small foe next to you and throw it at a second tile: an action with two tile picks; the objects' `loose` field), for Hurl; Grenadier's Arm's per-perk throw would move onto it. [M] [open] [leftovers, spec 6606]
 - **The seat (P3) on a zone** (praying from holy ground, Hallow). [M] [open] [leftovers, spec 6607]
+- **An enemy step that weighs a held item action** by a want in its data (one general step for every door verb: Slam, Challenge, Retort, Tag, Ghost Kill, Tug, Snap, a Figment order). An enemy can hold the items (`u.held`); no AI step runs them. [Enemy AI, rules 1.79 item 6711]
+- **A faith block on an enemy row** (patron and Devotion), so `faith.ts` can let an enemy pray a Whisper. [Enemy AI, 6711]
 
 #### Built in 0.32 (not yet live; the engine-pieces lane, rules 1.77 items 6500-6515)
 
@@ -186,12 +205,8 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 
 ### Big leftovers (designed, partly or not built; each shrunk to the owed part)
 
-- **Enemies breaking under Pressure.** Suppressed/Broken take AP, Pressed drops a held shot, Rout runs on a failed save. Owed: the AI acting on Broken ("must reach cover or drop Prone"); no flee or cower. [M] [partly; checked in code 19 Nov 2026] [verification]
 - **Bare fists in the glove family (P11).** Overlaps Items 2.0. [M] [not built; checked in code 19 Nov 2026] [CHANGELOG 0.29.0]
-- **Enemy squad plan against reactions.** Enemies avoid held lanes (`held_risk`). Owed: bait / two-mover plan. [L] [partly; checked in code 19 Nov 2026] [verification]
-- **Enemy versions of the doors.** Sigil and Outburst casters, physical techniques per tier, Momentum and Pressure for all exist. Owed: enemy Guard, Shadow, Bonds, Figments, prayers. [L] [partly; checked in code 19 Nov 2026] [verification]
-- **Enemy focus memory past the round.** This-round memory is built; carry it further. [M] [partly; checked in code 19 Nov 2026] [spec 4969(a)]
-- **Enemies moving for an angle on an unattacked character.** [M] [not built; checked in code 19 Nov 2026] [spec 4969(b)]
+- **Enemy versions of the doors.** Guard is built (0.32, rules 1.79). Owed: the door verbs and prayers (under Enemy AI above). [L] [partly; 19 Nov 2026] [rules 1.79 item 6711]
 - **Cover arc: a pillar outside the 45 degree arc counts nothing.** The arc is built (`rules.json arc_deg`); this is a design call, to rule before building. [S] [partly; checked in code 19 Nov 2026] [spec 4969(c)]
 - **Engine pieces not built:** a thrown Relic property (the fight-joined fx is built, spec 6603; no data row needs a `per_stage` scope, spec 6610). Needs the lead's approval first (CLAUDE.md, no rebuild). [M] [not built; checked in code 19 Nov 2026] [spec 5010; verification]
 - **"I'll narrate" in a room.** Human-mode code exists but picking it only shows "coming soon". Owed: the selection and the Narrator screen end to end, with the ruling buttons tested. [L] [partly; checked in code 19 Nov 2026] [SESSION-HANDOFF 6.2-6.3]

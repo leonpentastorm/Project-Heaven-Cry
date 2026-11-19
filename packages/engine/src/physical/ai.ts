@@ -2,7 +2,13 @@
 // and its tier's list (enemies.json `techniques`, on the unit as u.techs). Where it would make a plain attack it asks
 // each technique's handler how much it wants it (`ai`: a plain attack is 5) and uses the best one that beats that.
 // Planning is pure: it reads previews only, so the intent a player Analyzes is what the enemy then does.
-import { type Combat, type Unit, type AimWhy, alive, enemyStep, sideSees, enemyPreference, noteEnemyAim, doctrineOf, alliesOn, tauntedBy, finishing } from '../combat';
+import { type Combat, type Unit, type AimWhy, alive, enemyStep, sideSees, enemyPreference, noteEnemyAim, doctrineOf, alliesOn, tauntedBy, finishing, say, paths, apForTiles, moveUnit, moveBlock, toggleProne, unitSees, lineOfSight, sightBlockers, effectiveRange, attackApCost, isMelee, dist } from '../combat';
+import { ENEMY_AI, WEAPON } from '../data';
+import { onHook } from '../effects/hooks';
+import { uses } from '../effects/uses';
+import { apFor } from '../effects/cost';
+import { pressureState, atCover } from './pressure';
+import { foesOf } from '../kit';
 import { isGhost, perceivedFoes } from '../illusion';
 import { condOn } from '../magic';
 import type { TechArgs } from './types';
@@ -53,4 +59,49 @@ export function aiTechnique(cb: Combat, u: Unit): Pick | null {
 enemyStep({
   plan(cb, u) { const p = aiTechnique(cb, u); return p ? { text: 'use ' + TECHNIQUE[p.id].name + (p.target ? ' on ' + p.target.name : ''), ...(p.target ? { targetId: p.target.id } : {}), ...(p.why ? { why: p.why } : {}) } : null; },
   act(cb, rng, u) { const p = aiTechnique(cb, u); if (!p || useTechnique(cb, u, p.id, p.args, rng) !== null) return false; if (p.target) noteEnemyAim(cb, u, p.target, p.why); return true; },
+});
+
+// Rules 1.79 items 6700 to 6702 (enemies.json ai.pressure): an enemy acts on its Pressure. Before its first action of a
+// turn ('enemy_action_start', step 0) a Broken enemy reaches the covered tile fewest of its foes can see (within this
+// turn's AP), or, with none in reach, drops Prone and stays down this turn: that is its first action (techniques.json
+// rules.pressure.states.broken: "it must reach cover or drop Prone first"). Already against cover, it stays there this
+// turn. A Suppressed enemy not against cover first takes a covered tile within `suppressed_cover_tiles` that keeps a
+// line on someone it sees, if it can still shoot after; and it walks at most `suppressed_move_tiles` a move this turn.
+// The log says so (the block's lines). Never an ordered enemy (a Command decides) nor a player's unit.
+type Fill = (k: string) => boolean;
+const coverAt = (cb: Combat, u: Unit, k: string) => atCover(cb, { ...u, pos: k } as Unit); // Pressure's own cover test (pressure.ts), on a tile
+function coverWalk(cb: Combat, u: Unit, maxTiles: number, apLeft: number, ok: Fill): string | null {
+  const P = paths(cb, u.pos, u.id), foes = foesOf(cb, u);
+  let best: string | null = null, bs = Infinity;
+  for (const [k, tiles] of Object.entries(P.dist)) {
+    if (k === u.pos || tiles <= 0 || tiles > maxTiles || apForTiles(tiles, u.bank, u.movement) > apLeft || !coverAt(cb, u, k) || !ok(k)) continue;
+    const eyes = foes.filter((v) => unitSees(cb, v, k, undefined, u)).length, sc = eyes * 100 + tiles;
+    if (sc < bs || (sc === bs && best != null && k < best)) { bs = sc; best = k; }
+  }
+  return best;
+}
+onHook('enemy_action_start', (ctx: any, cb: Combat) => {
+  const u: Unit = ctx.u, PA = ENEMY_AI.pressure;
+  if (!PA || PA.on === false || ctx.skip || ctx.step !== 0 || cb.window || !u || u.side !== 'foe' || u.charId || u.companion || !alive(u) || condOn(u, 'commanded')) return;
+  const s = pressureState(u); if (s !== 'broken' && s !== 'suppressed') return;
+  const line = (k: keyof typeof PA.lines) => say(cb, PA.lines[k].replace(/\{name\}/g, u.name));
+  const A = uses({ key: 'ai', u, c: null, cb, g: undefined } as any); // the AI's counters on the unit (combat.ts reads them: aiUses)
+  const short = (tiles: number) => { (u as any).aiShort = tiles; A.take('per_turn', 1, 'ai:short'); };
+  const here = atCover(cb, u), canMove = !moveBlock(u);
+  if (s === 'broken') {
+    short(0); // it holds where it gets to this turn
+    if (here) return;
+    const to = canMove ? coverWalk(cb, u, Infinity, apFor(cb, u), () => true) : null;
+    if (to) { line('broken_cover'); if (!moveUnit(cb, u, to, ctx.rng)) { ctx.skip = true; return; } }
+    if (!u.prone && toggleProne(cb, u) === null) { A.take('per_turn', 1, 'ai:down'); line('broken_prone'); ctx.skip = true; }
+    else if (u.prone) A.take('per_turn', 1, 'ai:down');
+    return;
+  }
+  short(PA.suppressed_move_tiles);
+  if (here || !canMove || u.prone) return;
+  const w = WEAPON[u.weapon]; if (!w) return;
+  const melee = isMelee(w), left = apFor(cb, u) - attackApCost(w, melee ? 'melee' : 'shot');
+  const seen = foesOf(cb, u, { seenBySide: u.side }), reach = melee ? 1 : effectiveRange(w), walls = sightBlockers(cb);
+  const to = coverWalk(cb, u, PA.suppressed_cover_tiles, left, (k) => seen.some((v) => dist(k, v.pos) <= reach && lineOfSight(cb, k, v.pos, false, walls)));
+  if (to) { line('suppressed_cover'); if (!moveUnit(cb, u, to, ctx.rng)) ctx.skip = true; }
 });

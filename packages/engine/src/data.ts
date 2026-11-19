@@ -55,7 +55,12 @@ export const PERKS: PerkDef[] = (perksJ as any).items;
 export const TRAITS: TraitDef[] = (traitsJ as any).items;
 export const ENEMIES: EnemyTier[] = (enemiesJ as any).items;
 /** Rules 1.37: how the enemy AI reads the new systems (enemies.json `ai`): behaviour only. */
-export const ENEMY_AI: { figments_last: string[]; shelter: Record<string, number>; held_risk: number; skulk_open: number; healer_tie: string | null; boss_hidden_rounds: number } = { figments_last: [], shelter: {}, held_risk: 0, skulk_open: 0, healer_tie: null, boss_hidden_rounds: Infinity, ...((enemiesJ as any).ai || {}) };
+export const ENEMY_AI: { figments_last: string[]; shelter: Record<string, number>; held_risk: number; skulk_open: number; healer_tie: string | null; boss_hidden_rounds: number;
+  // Rules 1.79 (0.32, enemies): the behaviour blocks; each has `on` (false: off) and its log lines; absent: off
+  pressure?: { on: boolean; suppressed_cover_tiles: number; suppressed_move_tiles: number; lines: Record<'broken_cover' | 'broken_prone' | 'suppressed_cover', string> };
+  focus?: { on: boolean; rounds: number; keep: number; threat: number; lines: Record<'keep' | 'threat', string> };
+  angle?: { on: boolean; max_tiles: number; cover: number; line: string };
+  bait?: { on: boolean; tiers: string[]; for: string[]; lure: number; hold: number; line: string } } = { figments_last: [], shelter: {}, held_risk: 0, skulk_open: 0, healer_tie: null, boss_hidden_rounds: Infinity, ...((enemiesJ as any).ai || {}) };
 export const ARCHETYPES: any[] = (archetypesJ as any).items;
 
 export const SKILL: Record<string, SkillDef> = Object.fromEntries(SKILLS.map((s) => [s.id, s]));

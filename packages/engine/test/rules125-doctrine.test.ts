@@ -80,7 +80,14 @@ describe('rules 1.25: Soldiers spread their fire', () => {
   it('the memory is the round\'s: next round nobody has fired yet', () => {
     const f = rig([{ tier: 'soldier' }, { tier: 'soldier' }]), [s1, s2] = f.foes; pc(f, 'Bo').hp = 100;
     shot(f, s1, 'Bo'); expect(aim(f, s2).who).toBe('Ada');
-    f.cb.round++; const b = aim(f, s2); expect(b.who).toBe('Bo'); expect(b.why).toBe('wounded');
+    f.cb.round++;
+    // rules 1.79 item 6703 (spec 4969 a): `carry` is built and OFF in the data (0: it moved the enemy table's guard), so
+    // the round's memory is the round's, as before
+    expect(RULES.combat.focus_memory.carry).toBe(0);
+    const b = aim(f, s2); expect(b.who).toBe('Bo'); expect(b.why).toBe('wounded');
+    // switched on (0.5), s1's shot on Bo last round counts half an attacker: the first foe of the new round spreads off him
+    (RULES.combat.focus_memory as any).carry = 0.5;
+    try { expect(aim(f, s2).who, 'the carried memory spreads the round\'s first shot').toBe('Ada'); } finally { (RULES.combat.focus_memory as any).carry = 0; }
   });
   it('the near ones first: a target 6 tiles further back is not worth leaving the line for; 3 tiles further is', () => {
     const far = rig([{ tier: 'soldier' }, { tier: 'soldier' }]); pc(far, 'Bo').pos = '0,5'; pc(far, 'Ada').pos = '6,5'; // from 11,4: Ada 5 tiles, Bo 11
