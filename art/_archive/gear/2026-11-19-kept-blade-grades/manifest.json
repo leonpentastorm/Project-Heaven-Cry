@@ -3272,6 +3272,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-visualizer--fine",
+      "path": "art/icons/gear/focus-visualizer--fine.png",
+      "sha256": "573d79eb51226b55f6cb01aea34ab8aeee30f65f72ee43563b92beeacfea2105",
+      "label": "Visualizer — Fine",
+      "family": "focus-visualizer",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-visualizer--fine.png",
+        "sha256": "c5149faa94bcb5725f1351e06f41fcc014664e0e7d82a8961d09d54c7c86ccb9"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-visualizer--fine.png",
+        "sha256": "573d79eb51226b55f6cb01aea34ab8aeee30f65f72ee43563b92beeacfea2105"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-visualizer--fine.txt",
+        "sha256": "4bf49d0ccd58aa4b801a3fb8e775a6a508ed261087fe2e1ba3513760cd0b3fb5"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/focus-visualizer.png",
+          "sha256": "b0184fad79241f59ef9f6afd4ef1e696b48c29e03ce6c9e76cbea1b36ca3f1ac"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-visualizer--fine.png",
+        "128": "art/icons/gear/exports/128/focus-visualizer--fine.png",
+        "64": "art/icons/gear/exports/64/focus-visualizer--fine.png",
+        "32": "art/icons/gear/exports/32/focus-visualizer--fine.png"
+      },
+      "export_hashes": {
+        "256": "6db943b5e89ec317b032134532f7a0b80b4503ac7c118f5fdd71a1d933018c9a",
+        "128": "2aa63465d224b4e073f5a9d50df6d0e68ef8bb2fa7ce888ec01598ad5c141301",
+        "64": "90f258e20189144fee6c2dbe01246d4b9809f8d2e51d9dad9d1e8a1ce7338697",
+        "32": "949f31833dc6705558f1c4126f2ce97c0287195860dd759ffb40b2e711634c90"
+      },
+      "grade": "fine",
+      "standard_id": "focus-visualizer",
+      "outline": {
+        "solid_alpha_iou": 0.9774128758641868,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 15
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
