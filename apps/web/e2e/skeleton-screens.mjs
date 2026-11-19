@@ -11,6 +11,9 @@
 // (or SHOTS=<dir>).
 import { mkdirSync, readFileSync } from 'fs';
 import { chromium, click, player, hostAs, BASE, settle, here } from './lib.mjs';
+// rules 1.70 item 5535: a Call's AP is the one price table (data/calls.json rules.price), read here at the speaker's points
+const CALL_PRICE = JSON.parse(readFileSync(new URL('../../../data/calls.json', import.meta.url), 'utf8')).rules.price;
+const callAp = (pts) => [...CALL_PRICE].reverse().find((r) => pts >= r.from).ap;
 const SHOTS = process.env.SHOTS || here('../../../docs/design/handoffs/skeleton-2.0-shots/', import.meta.url).replace(/\/$/, '');
 mkdirSync(SHOTS, { recursive: true });
 const browser = await chromium.launch();
@@ -261,7 +264,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     ok(at + 'one chip per Call the speaker has: ' + chips.map((c) => c.id.replace('call.', '')).join(', '), ['call.order', 'call.rally', 'call.threaten'].every((id) => chips.some((c) => c.id === id)));
     ok(at + 'each chip has its AP, its reach and the text of its step', chips.every((c) => /^(\d AP|free) · \d+ tiles$/.test(c.meta) && c.text.length > 8));
     const th = chips.find((c) => c.id === 'call.threaten');
-    ok(at + 'Threaten is 1 AP at 5 points and shows its save: ' + th.meta + ' · ' + th.save, /^1 AP/.test(th.meta) && /^Heart save, TN \d+$/.test(th.save));
+    ok(at + 'Threaten is ' + callAp(5) + ' AP at 5 points (the price table) and shows its save: ' + th.meta + ' · ' + th.save, new RegExp('^' + callAp(5) + ' AP').test(th.meta) && /^Heart save, TN \d+$/.test(th.save));
     await panel().locator('button[data-call="call.threaten"]').click(); await settle(p, 300);
     // Rules 1.65: the one pick overlay draws the reach as a tile layer (0.31.12 item 5525: a reach tile its faint shade,
     // the region's outer edge lined; a choice its solid outline; the wording pass took the words "in reach" off the tiles' names); every tile the engine's preview sent is
@@ -274,7 +277,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     ok(at + 'the grid shows the Call\'s reach (' + reach.n + ' tiles marked, the engine sent ' + reach.want + (reach.n === reach.want ? '' : '; a layer: ' + reach.sample) + ')', reach.n > 20 && reach.n === reach.want);
     await p.locator('button.phc-tok[aria-label^="' + ref(rook) + ' ·"]').first().click(); await settle(p, 350);
     const foot = (await p.locator('.phc-cb-foot').first().innerText()).replace(/\s+/g, ' ');
-    ok(at + 'the card: the Call, its target and the save with its TN', /Threaten · 1 AP · within \d+ tiles/.test(foot) && /To Rook\./.test(foot) && /Rook rolls a Heart save against TN \d+/.test(foot));
+    ok(at + 'the card: the Call, its target and the save with its TN', new RegExp('Threaten · ' + callAp(5) + ' AP · within [0-9]+ tiles').test(foot) && /To Rook\./.test(foot) && /Rook rolls a Heart save against TN \d+/.test(foot));
     v = await inView();
     ok(at + 'with a Call picked the grid and Confirm are in view (page scroll ' + v.pageScroll + ' px)', v.grid && v.confirm && v.pageScroll <= 1);
     await p.screenshot({ path: SHOTS + '/calls-' + W + '.png' });
@@ -322,11 +325,12 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
   const ap0 = (await G()).combat.units.find((u) => u.charId === cid).ap;
   await p.getByRole('button', { name: /^Confirm/ }).first().click(); await settle(p, 1200);
   const cbA = (await G()).combat, meA = cbA.units.find((u) => u.charId === cid);
-  ok('Confirm makes the Call: 1 AP spent (' + ap0 + ' → ' + meA.ap + ') and the log says so', meA.ap === ap0 - 1 && cbA.log.some((l) => /calls Threaten at Rook/.test(l)));
+  ok('Confirm makes the Call: ' + callAp(5) + ' AP spent (' + ap0 + ' → ' + meA.ap + ') and the log says so', meA.ap === ap0 - callAp(5) && cbA.log.some((l) => /calls Threaten at Rook/.test(l)));
   console.log('note log: ' + cbA.log.filter((l) => /Threaten|Rook|Shaken|save/i.test(l)).slice(-4).join(' / '));
   await p.locator('#phc-tab-calls').click(); await settle(p, 300);
-  const again = await panel().locator('button[data-call="call.threaten"]').click().then(() => p.locator('.phc-cb-foot').first().innerText());
-  ok('a second hindering Call at the same enemy this round is refused with the engine\'s reason', /already been hindered by a Call this round/.test(again.replace(/\s+/g, ' ')));
+  // rules 1.70 item 5535: each Call once a turn: the second Threaten is greyed with the engine's reason
+  const again = (await panel().locator('button[data-call="call.threaten"]').first().getAttribute('aria-label')) || '';
+  ok('a second Threaten this turn is refused with the engine\'s reason (' + again + ')', /not now: Threaten is made once a turn/.test(again));
   await p.screenshot({ path: SHOTS + '/calls-after-1280.png' });
   ok('the Proving Ground: no page errors' + (p.errors.length ? ': ' + p.errors.join(' | ') : ''), !p.errors.length);
   await p.context().close();
