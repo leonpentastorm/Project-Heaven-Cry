@@ -414,5 +414,37 @@
     "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--celestial.png",
     "size64_mask_differing_pixels": 17,
     "sha256": "2a541fb480af4f997dc3fa56928d9005227fa12a5a280bd02006ca4861680b4a"
+  },
+  {
+    "id": "armour-field_helmet",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--fine.png",
+    "size64_mask_differing_pixels": 29,
+    "sha256": "c551b2ca49415108740f97fe14f2b7c65708ba645f8c30fa7f6d7524b6d990ab"
+  },
+  {
+    "id": "armour-field_helmet",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--masterwork.png",
+    "size64_mask_differing_pixels": 47,
+    "sha256": "4f934ce70e51f20b44717b4981315404c067bbb666135b223843d2c05b66ea9c"
+  },
+  {
+    "id": "armour-field_helmet",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--relic.png",
+    "size64_mask_differing_pixels": 47,
+    "sha256": "893a3310bfb94c4a96664bee341f3e198c7f0d7955d0055dabc23e5b317323f1"
+  },
+  {
+    "id": "armour-field_helmet",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--celestial.png",
+    "size64_mask_differing_pixels": 47,
+    "sha256": "cc99ccf3f4f4df99199110df962ee28d8e0d8c0512db79e004b9a4124a691269"
   }
 ]
