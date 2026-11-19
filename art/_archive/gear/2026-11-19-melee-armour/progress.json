@@ -23,10 +23,10 @@
     "weapon-short_draw",
     "weapon-long_draw",
     "weapon-kemizuchi_side_sword",
-    "weapon-kemizuchi_sword_breaker"
+    "weapon-kemizuchi_sword_breaker",
+    "weapon-pitch_axe"
   ],
   "remaining": [
-    "weapon-pitch_axe",
     "weapon-legion_spear",
     "weapon-war_pick",
     "weapon-war_hammer",
@@ -58,5 +58,5 @@
   ],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T03:39:09.927849+00:00"
+  "updated_utc": "2026-11-19T03:40:45.846718+00:00"
 }

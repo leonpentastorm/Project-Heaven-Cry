@@ -602,6 +602,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-pitch_axe",
+      "path": "art/icons/gear/weapon-pitch_axe.png",
+      "sha256": "764c878300209ab68ed19c7784ac79f6c47ec343fec81b7c229f288fb356213b",
+      "label": "Pitch axe",
+      "family": "05-axes",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png",
+        "sha256": "22b4dc28c0c3d3f7945546bd3a752c11fcce29798618561b279ad238784a078c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-pitch_axe.png",
+        "sha256": "764c878300209ab68ed19c7784ac79f6c47ec343fec81b7c229f288fb356213b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-pitch_axe.txt",
+        "sha256": "f584c0142b21391b665204e30c4cfd60cb3dfa3c1cca2a72a424ce6b5f9e490b"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-hatchet.png",
+          "sha256": "a69bacdfb22ca5070e0e1a1edd6697ba40992bb95dc0851be4b4d35dc72947ac"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-pitch_axe.png",
+        "128": "art/icons/gear/exports/128/weapon-pitch_axe.png",
+        "64": "art/icons/gear/exports/64/weapon-pitch_axe.png",
+        "32": "art/icons/gear/exports/32/weapon-pitch_axe.png"
+      },
+      "export_hashes": {
+        "256": "36bf0e1c3346941c573a704d40b227cb8a2ecc64e986bb112ab3ff2cde7dde6c",
+        "128": "b0ba9022c825dd6561de887f44d57657c79737285f637a973646d63c2c1ad137",
+        "64": "d3358de67f24d4e64f16dae82a8a1902057b7e12a3f223afcf8d0d37a6cc8536",
+        "32": "a5a6d8efaef9fedc71b569a4cd32b14e149ed120d150cdb30f7a9489cbca0ce5"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
