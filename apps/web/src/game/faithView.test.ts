@@ -17,15 +17,24 @@ describe('faith views', () => {
     const { g, c } = game({ kind: 'faithful', patron: 'mother_ember' }, 5); c.level = 4;
     const b = prayerButtons(faithView(g, c.id)!);
     const health = b.whispers.find((x) => x.id === 'health')!, prot = b.whispers.find((x) => x.id === 'protection')!, rebuke = b.whispers.find((x) => x.id === 'rebuke')!;
-    expect(health.text).toMatch(/^Heal \d+$/); expect(prot.text).toMatch(/^Shield \d+$/); expect(rebuke.text).toMatch(/^\d+ Soul$/);
-    expect(b.whispers.find((x) => x.id === 'luck')!.text).not.toMatch(/^(Heal|Shield) /); // no amount: the data's line
+    expect(health.figure).toMatch(/^Heal \d+$/); expect(prot.figure).toMatch(/^Shield \d+$/); expect(rebuke.figure).toMatch(/^\d+ soul$/);
+    expect(health.text).toMatch(/ally in sight/); // the figure is beside the card's full text, never instead of it (item A)
+    expect(b.whispers.find((x) => x.id === 'luck')!.figure).toBe(''); // no amount: no figure
     // the Health whisper prayed in the story on a hurt ally heals what its card says (no other bonus on this sheet)
     let g2 = apply(g, { type: 'char/add', sheet: sheet('Ally', { kind: 'atheist' }) }, 'h');
     g2 = apply(g2, { type: 'session/start' } as any, 'h');
     const ally: any = Object.values(g2.characters).find((x: any) => x.name === 'Ally'); g2.characters[ally.id].hp = 1;
-    const was = g2.characters[ally.id].hp, n = Number(health.text.replace('Heal ', ''));
+    const was = g2.characters[ally.id].hp, n = Number(health.figure.replace('Heal ', ''));
     g2 = apply(g2, { type: 'faith/pray', charId: c.id, kind: 'whisper', id: 'health', targetId: ally.id } as any, 'h');
     expect(g2.characters[ally.id].hp - was).toBe(n);
+  });
+  it('0.31.11 item A: Thunderclap\'s card keeps its push and Shaken text, and its figure says lightning (the effect\'s damage_type)', () => {
+    const p = FAITH_PATRONS.find((x: any) => (x.hymns || []).some((h: any) => h.id === 'thunderclap'))!;
+    const { g, c } = game({ kind: 'faithful', patron: p.id }, 7); c.level = 6;
+    const tc = prayerButtons(faithView(g, c.id)!).hymns.find((x) => x.id.endsWith('.thunderclap'))!;
+    expect(tc).toBeTruthy();
+    expect(tc.text).toMatch(/pushed \d+ tile/); expect(tc.text).toMatch(/Shaken/);
+    expect(tc.figure).toMatch(/^\d+ lightning$/);
   });
   it('rules 1.22: the Hymns\' heading says how often a Hymn comes, when the next one does and what the vow did; every vow says what fulfils it', () => {
     const cd = { hymnRoundsLeft: 0, whisperUsed: false, miracleUsed: false, hymnWait: 3, hymnCooldown: 3, vowCut: false, vowBanked: false };

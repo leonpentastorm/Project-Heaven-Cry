@@ -42,7 +42,7 @@ export function faithTabVals(sc, g, c) {
       const pv = missing ? null : previewPrayer(g, c.id, b.kind, b.id, args);
       ready = !!pv && pv.ok; verdict = missing || (pv.ok ? (pv.effectText || 'Ready.') : pv.why || 'Not now.');
     }
-    return { key: b.key, icon: b.icon, name: b.name, text: b.text, meta: b.ap + (b.odds && b.odds !== 'SURE' ? ' · ' + b.odds.replace(/^TN /, 'roll ').replace(/^OVERREACH · TN /, 'overreach, roll ') : ''), warn: b.warn || '', hasWarn: !!b.warn, why: why || '', hasWhy: !!why,
+    return { key: b.key, icon: b.icon, name: b.name, text: b.figure ? b.text + ' · for you: ' + b.figure : b.text, meta: b.ap + (b.odds && b.odds !== 'SURE' ? ' · ' + b.odds.replace(/^TN /, 'roll ').replace(/^OVERREACH · TN /, 'overreach, roll ') : ''), warn: b.warn || '', hasWarn: !!b.warn, why: why || '', hasWhy: !!why,
       off: !!why, pressed: open ? 'true' : 'false', style: btnStyle(open, !!why, FAITH_INK),
       aria: b.name + ' (' + b.kind + ')' + (why ? ': ' + why : needs ? ': choose, then confirm' : ''),
       click: () => { if (why) return toast(why); if (!needs) return pray(b, {}); sc.setState({ faOpen: open ? null : b.key, faPick: null }); },

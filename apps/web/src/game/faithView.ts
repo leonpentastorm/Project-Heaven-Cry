@@ -46,7 +46,7 @@ export function oddsText(p: PrayerPreview): string {
 
 // ---------- the prayer buttons ----------
 export interface PrayerButton {
-  key: string; kind: PrayerKindUI; id: string; name: string; text: string; icon: string;
+  key: string; kind: PrayerKindUI; id: string; name: string; text: string; /** The engine's number for you ("Heal 20", "34 lightning"), '' when none: shown beside text. */ figure: string; icon: string;
   /** "1 AP", "3 AP". */ ap: string;
   /** The gate or the dice: "ANYONE", "HYMN I · DEVOTION 3", "BY DICE · TN 14", "FAITH 7 · DEVOTION 10". */ gate: string;
   odds: string; /** An overreach: its TN, and what a miss costs in Devotion XP; the Miracle: its price (rules 1.6.2). */ warn?: string;
@@ -57,10 +57,11 @@ function button(kind: PrayerKindUI, id: string, name: string, text: string, p: P
   const gate = kind === 'whisper' ? (p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? 12) : 'ANYONE')
     : kind === 'miracle' ? 'FAITH ' + MIRACLE_FAITH + ' · DEVOTION ' + (p.gate ?? GATE.miracle)
     : p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? '?') : 'HYMN ' + ROMAN[tier] + ' · DEVOTION ' + (p.gate ?? '?');
-  // the card's line: the engine's own number for this character when the prayer has one ("Heal 20", "Shield 20", "27 Soul")
-  const fig = p.amount ? (p.amount.kind === 'heal' ? 'Heal ' : p.amount.kind === 'shield' ? 'Shield ' : '') + p.amount.n + (p.amount.kind === 'soul' ? ' Soul' : '') : '';
+  // the engine's own number for this character when the prayer has one ("Heal 20", "Shield 20", "27 soul", "34 lightning"),
+  // shown BESIDE the card's full text, never instead of it (0.31.11 item A: Thunderclap's push and Shaken stay said)
+  const fig = p.amount ? (p.amount.kind === 'heal' ? 'Heal ' + p.amount.n : p.amount.kind === 'shield' ? 'Shield ' + p.amount.n : p.amount.n + ' ' + (p.amount.type || 'soul')) : '';
   return {
-    key: kind + ':' + id, kind, id, name, text: fig || text, icon: prayerIconUri(kind, kind === 'hymn' ? id : id, p.patron, tier), ap: p.ap + ' AP', gate,
+    key: kind + ':' + id, kind, id, name, text, figure: fig, icon: prayerIconUri(kind, kind === 'hymn' ? id : id, p.patron, tier), ap: p.ap + ' AP', gate,
     odds: oddsText(p), warn: p.mode === 'overreach' && p.overreach ? 'Overreach: roll ' + p.overreach.tn + ' or lose ' + DEVOTION_XP.overreachMiss + ' Devotion'
       : kind === 'miracle' ? 'Lowers your Devotion by ' + MIRACLE_COST_LEVELS + ' levels (' + GATE.miracle + ' → ' + (GATE.miracle - MIRACLE_COST_LEVELS) + '), after it lands' : undefined,
     ok: !!p.ok, why: p.ok ? undefined : p.why || 'Not now.', target: p.target || 'none', patron: p.patron, tier, source,

@@ -132,7 +132,7 @@ const effVal = (entry: any, op: 'heal' | 'shield', fallback = 0): number => {
 };
 const hymnEntry = (id: string): any => { for (const p of FAITH_PATRONS) for (const h of p.hymns || []) if (h.id === id) return h; return null; };
 /** 0.31.11: a prayer's number for the card that shows it: its heal or shield through prayerAmount (the formula the prayer
- * heals and shields with), its Soul damage through the same terms prayerStrike hands to harm (Blessing power, the Level
+ * heals and shields with), its damage (of the effect's own damage_type) through the same terms prayerStrike hands to harm (Blessing power, the Level
  * term); in a fight the unit's own power and level, else the character's. Before the target's own bonuses. */
 function prayerFigure(entry: any, c: Character, u: Unit | null): PrayerPreview['amount'] | null {
   const power = u?.blessPower || blessingPower(c), lvl = u ? levelTerm(u) : term(mendFactor(c.level), 'level');
@@ -140,7 +140,8 @@ function prayerFigure(entry: any, c: Character, u: Unit | null): PrayerPreview['
   const s = effVal(entry, 'shield'); if (s) return { kind: 'shield', n: Math.round(prayerAmount('shield', s, power, lvl)) };
   const d = prayerDamage(entry); if (!d) return null;
   const sa = prayerStrike(d, power, u ? dealTerm(u) : term(levelOf('blessing', c.level), 'level'));
-  return { kind: 'soul', n: amountOf({ kind: 'damage', base: sa.base, round: 'round' }, null, { level: null, mults: sa.mults }).amount };
+  const type = String(fxOf(entry, 'stat_mod', (q) => q.stat === 'hp' && Number(q.value) < 0)?.damage_type || 'soul'); // the effect's own damage type (Thunderclap: lightning)
+  return { kind: 'damage', type, n: amountOf({ kind: 'damage', base: sa.base, round: 'round' }, null, { level: null, mults: sa.mults }).amount };
 }
 /** Mother Ember's healing intervention: (base + per × Devotion) × Blessing power × the heal Level term (heal-shield-percent
  * spec: it gains the `mend` column; it never passes the cap). Its own numbers, not the damage interventions'. */
@@ -250,7 +251,7 @@ export interface PrayerPreview {
   target: string;
   /** 0.31.11: what it heals, shields or deals for this character (the faith card's number), as the prayer lands it
    *  (prayerFigure: the one prayer formula), before the target's own bonuses; absent for a prayer with no amount. */
-  amount?: { kind: 'heal' | 'shield' | 'soul'; n: number };
+  amount?: { kind: 'heal' | 'shield' | 'damage'; n: number; /** damage only: the effect's damage_type (soul when it names none) */ type?: string };
 }
 export interface PrayerArgs { targetId?: string; targetId2?: string; tile?: string }
 
