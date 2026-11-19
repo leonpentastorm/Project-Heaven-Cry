@@ -6050,6 +6050,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-work_gloves--masterwork",
+      "path": "art/icons/gear/armour-work_gloves--masterwork.png",
+      "sha256": "1380af440ce28758d3ebb14fd5ae99214ac61821e48798872ff58ffa9bd1fe0c",
+      "label": "Work Gloves — Masterwork",
+      "family": "armour-work_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-work_gloves--masterwork.png",
+        "sha256": "dfeaceee9df9800fdb5a9a34bf46a0bab2aad6ff023de1d546ca83fdc33f47dc"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-work_gloves--masterwork.png",
+        "sha256": "1380af440ce28758d3ebb14fd5ae99214ac61821e48798872ff58ffa9bd1fe0c"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-work_gloves--masterwork.txt",
+        "sha256": "564234a0c76795357c12cebf98db6cf797594744b0280be07b7aee146f2a2eb6"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-work_gloves.png",
+          "sha256": "4ad6c1706c2db4051f02d71ec41d3e878c23c5be12661864a81d80888f6b12c6"
+        },
+        {
+          "path": "art/icons/gear/armour-work_gloves--fine.png",
+          "sha256": "57ea734a7df3bc18ac5d05578bff45d8a71b2ca9b57308077d17cdcbc8d1ed73"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-work_gloves--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-work_gloves--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-work_gloves--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-work_gloves--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "e7a53ed9ff7a1241fdc811f8d7fdf1ecf52739ad94801cfa9063929044a0d031",
+        "128": "123c58b81e0ea3dd10aec707d532fdfbf001e1a821d776ac0a33a5b8e004db2d",
+        "64": "5abd063ccd63b636695b90611726a5a63b578a45facfc8c29c2d7d80aaa8c875",
+        "32": "29b1637dd45e15d9d1f0d26c7a7d78a789b5c9af22e3d95dd8c2379335a1d76a"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-work_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9807501181717915,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 19
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

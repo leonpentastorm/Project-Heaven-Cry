@@ -99,7 +99,8 @@
     "armour-armoured_greaves--masterwork",
     "armour-armoured_greaves--relic",
     "armour-armoured_greaves--celestial",
-    "armour-work_gloves--fine"
+    "armour-work_gloves--fine",
+    "armour-work_gloves--masterwork"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -109,7 +110,6 @@
     "weapon-war_axe--masterwork",
     "weapon-war_axe--relic",
     "weapon-war_axe--celestial",
-    "armour-work_gloves--masterwork",
     "armour-work_gloves--relic",
     "armour-work_gloves--celestial",
     "armour-combat_gloves--fine",
@@ -127,7 +127,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T13:38:43.505934+00:00",
+  "updated_utc": "2026-11-19T13:41:50.804222+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3
 }
