@@ -103,6 +103,7 @@ for (const [w, h] of SIZES) {
     for (const b of shown) { const c = r(b); if (c.left < B.left - 0.5 || c.right > B.right + 0.5 || b.scrollWidth > b.clientWidth + 1) bad.push('chip cut: ' + b.textContent.trim()); }
     if (A.right > H.left + 0.5 || (more && r(more).right > H.left + 0.5)) bad.push('strip under the MAX HP chip');
     const hidden = chips.length - shown.length;
+    if (hidden && more && shown.length) { const g = r(more).left - r(shown[shown.length - 1]).right; if (g > 10) bad.push('a gap of ' + Math.round(g) + ' px before +N more'); }
     if (hidden && (!more || !more.textContent.includes('+' + hidden + ' more'))) bad.push('hidden chips with no +N more');
     return { bad, hidden, more: more ? more.textContent.trim() : '' };
   });

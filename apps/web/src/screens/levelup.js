@@ -50,7 +50,9 @@ ensureStyle('phc-levelup', [
   '.phc-lu-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,280px);gap:20px;padding:8px 28px 24px;align-items:start}',
   '.phc-lu-class{position:sticky;top:96px}',
   '.phc-lu-pick{display:flex;flex-direction:column;gap:14px;padding:24px 32px 0}',
-  '.phc-lu-pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(max(280px,calc((100% - 24px) / 3)),1fr));gap:12px}',
+  '.phc-lu-pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,max(280px,calc((100% - 24px) / 3))),1fr));gap:12px}',
+  // 0.31.11: a narrow window (the 420 px check) wraps the header and the chooser keeps inside the viewport, one column
+  '@media (max-width:760px){.phc-lu-head{flex-wrap:wrap!important;padding:8px 12px!important}.phc-lu-head .phc-lu-budget{flex-basis:100%!important;flex-wrap:wrap!important}.phc-lu-chooser{padding:12px!important}.phc-lu-confirm{padding:12px!important}.phc-lu-body{padding:8px 12px 24px!important}.phc-lu-why>span{white-space:normal!important}.phc-lu-attr-why{flex:1 1 100%!important}}',
   '.phc-lu-confirm{position:sticky;bottom:0;z-index:3;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:12px 132px 12px 16px;border-radius:12px;background:#10151F;border:1px solid #232D3F;box-shadow:0 -8px 24px rgba(10,13,19,0.85)}',
   '@media (max-width:1000px){.phc-lu-pick{padding:16px 16px 0}}',
   '@media (max-width:1000px){.phc-lu-body{grid-template-columns:minmax(0,1fr);padding:12px 16px}.phc-lu-class{order:-1;position:static}}',
@@ -78,11 +80,13 @@ export class LevelUpLogic extends DCLogic {
     this._tcN = n; cancelAnimationFrame(this._tcRaf);
     this._tcRaf = requestAnimationFrame(() => {
       const box = document.querySelector('.phc-lu-tc-scroll'); if (!box) { if (!document.querySelector('.phc-lu-head')) { window.removeEventListener('resize', this._tcResize); this._tcResize = null; } return; }
-      const chips = [...box.querySelectorAll('.phc-lu-tc')], right = box.getBoundingClientRect().right + 0.5;
-      const mb = document.querySelector('.phc-lu-tc-more'), extra = mb ? mb.getBoundingClientRect().width + 6 : 0;
-      let fit = chips.findIndex((b) => b.getBoundingClientRect().right > right); if (fit < 0) fit = chips.length;
-      if (fit < chips.length && chips.every((b) => b.getBoundingClientRect().right <= right + extra)) fit = chips.length;
-      const next = fit >= chips.length ? null : fit;
+      // from the chips' own widths (a hidden chip is taken out of the flow but keeps its width), not their places: the
+      // shown chips then the '+N more' chip sit together, with no gap where the hidden ones were
+      const gap = parseFloat(getComputedStyle(box).columnGap) || 6, room = box.clientWidth;
+      const w = [...box.querySelectorAll('.phc-lu-tc')].map((b) => b.offsetWidth), mb = box.querySelector('.phc-lu-tc-more'), moreW = (mb ? mb.offsetWidth : 96) + gap;
+      const upTo = (k) => w.slice(0, k).reduce((t, x) => t + x, 0) + Math.max(0, k - 1) * gap;
+      let next = null;
+      if (upTo(w.length) > room + 0.5) { let k = w.length - 1; while (k > 0 && upTo(k) + moreW > room + 0.5) k--; next = k; }
       if (next !== (this.state.tcShown ?? null)) this.setState({ tcShown: next });
     });
   }
@@ -213,7 +217,7 @@ export class LevelUpLogic extends DCLogic {
     const toChoose = queue.map((q, i) => ({ key: q.key, kind: q.kind, text: q.text, open: () => openCh(q.key), expanded: cur && cur.key === q.key ? 'true' : 'false',
       hidden: i >= shown ? 'true' : 'false', tab: i >= shown ? '-1' : '0',
       style: 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; white-space: nowrap; border: 1px solid #FFFFFF; '
-        + (cur && cur.key === q.key ? 'background: #FFFFFF; color: #0A0D13' : 'background: transparent; color: #FFFFFF') + (i >= shown ? '; visibility: hidden' : '') }));
+        + (cur && cur.key === q.key ? 'background: #FFFFFF; color: #0A0D13' : 'background: transparent; color: #FFFFFF') + (i >= shown ? '; position: absolute; left: 0; top: 0; visibility: hidden; pointer-events: none' : '') }));
     this.tcFit(queue.length);
     const after = cur ? queue.find((q) => q.key !== cur.key) : null;
     const chBtn = 'min-height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer';
