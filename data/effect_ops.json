@@ -4857,14 +4857,24 @@
         "arg": "zone",
         "about": "self stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
         "values": [
-          "sanctuary"
+          "sanctuary",
+          "hallowed"
+        ]
+      },
+      "actor_in_zone": {
+        "arg": "zone",
+        "about": "actor stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
+        "values": [
+          "sanctuary",
+          "hallowed"
         ]
       },
       "target_in_zone": {
         "arg": "zone",
         "about": "target stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
         "values": [
-          "sanctuary"
+          "sanctuary",
+          "hallowed"
         ]
       },
       "actor_tied": {

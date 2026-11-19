@@ -211,7 +211,7 @@ P('amount_share_below', 'number', 'the event\'s amount is under this share of th
 P('by_cover', 'words', 'the move started (from) and / or ended (to) next to standing cover, or (here) the holder stands next to it now: every word named must hold', (ev, v) => list(v).every((w) => { const k = w === 'from' ? ev.ctx.from : w === 'to' ? ev.ctx.to : w === 'here' ? ev.self.pos : null; return !!k && nextToCover(ev.cb, k); }), ['from', 'to', 'here']);
 // Classes 3.0 P10: zones from data. {kind, owner: self (the holder's own), side (its side's) or any}
 const zoneArg = (v: any) => (typeof v === 'string' ? { kind: v, owner: 'any' } : { kind: v?.kind, owner: v?.owner || 'any' });
-for (const who of ['self', 'target'] as Who[]) P(who + '_in_zone', 'zone', who + ' stands in a zone of this kind (a kind, or {kind, owner: self, side or any})', (ev, v) => { const u = unitOf(ev, who), a = zoneArg(v); return !!u && zonesAt(ev.cb, u.pos, a.kind, a.owner, ev.self).length > 0; }, () => [...DATA_ZONE_KINDS]);
+for (const who of ['self', 'actor', 'target'] as Who[]) P(who + '_in_zone', 'zone', who + ' stands in a zone of this kind (a kind, or {kind, owner: self, side or any})', (ev, v) => { const u = unitOf(ev, who), a = zoneArg(v); return !!u && zonesAt(ev.cb, u.pos, a.kind, a.owner, ev.self).length > 0; }, () => [...DATA_ZONE_KINDS]);
 // Classes 3.0 P8: ties. `<who>_tied: "<kind>"` (tied to the holder either way) or {kind, as: from or to} (the unit is
 // the tie's from end, the holder its to end: an owned unit's owner is `actor_tied: {kind: "owned", as: "from"}`)
 const tieArg = (v: any): { kind: string; as: 'from' | 'to' | 'any' } => (typeof v === 'string' ? { kind: v, as: 'any' } : { kind: v?.kind, as: v?.as || 'any' });

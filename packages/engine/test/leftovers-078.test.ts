@@ -5,11 +5,12 @@
 //   item 6603  the fight joined is an effects event (the alarm's, joined: true) at the first character the foes learn of
 //   item 6604  aim marks on a Bonded ally: at the Bonder's turn start, each seen enemy aiming at a Bonded ally is Read
 //   item 6605  the Breaker's Into the Wall: a foe it drives into a wall, the edge or a body takes the slam, the body too
+//   item 6607  Hallow: a Chaplain's Hymn lays hallowed ground; allies starting a turn on it carry the verse, foes on it -1
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { CLASS_MOVE_POOL, applyDamage, setDevotionXp, devotionThreshold, zonesAt, type Unit, type Action } from '../src';
 import { fightWith, withGame, storyWith, type CharSpec } from './helpers/perkfight';
-import { beginTurn, condOn, enemyIntent } from '../src';
+import { beginTurn, condOn, enemyIntent, previewAttack, CLASS } from '../src';
 import { figFight } from './helpers/figfight';
 import { previewEvoke, apply, reachable, active, type GameState } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
@@ -129,5 +130,33 @@ describe('item 6605: Into the Wall (momentum-2.0 item 15, P13)', () => {
   it('a push with room behind it, and anyone not a Breaker, deal no slam', () => {
     expect(shoveRig('fighter', 'none').lost).toEqual([0, 0]);
     expect(shoveRig(null, 'body').lost).toEqual([0, 0]);
+  });
+});
+
+describe('item 6607: Hallow (prayer-2.0 item 16)', () => {
+  const HALLOW: any = (CLASS.guardian as any).gain.find((m: any) => m.id === 'hallow');
+  function rig() {
+    const h = twoChaplains(); const f = h.f;
+    f.turn(h.me); f.unit(h.me).ap = 6;
+    f.act({ type: 'combat/perk', unitId: h.me, id: 'class:guardian.hallow', actionId: 'hallow', tile: '3,5' } as Action, 'host');
+    return h;
+  }
+  it('a Hymn: its AP, the Hymn wait starts; the ground is a zone of the data kind hallowed, the tile and every tile within its reach', () => {
+    const h = rig();
+    expect(h.f.unit(h.me).ap).toBe(6 - HALLOW.effects[0].ap);
+    expect(() => h.f.act({ type: 'faith/pray', unitId: h.me, kind: 'hymn', id: 'thunderclap' } as any, 'host')).toThrow(/wait/);
+    const z = zonesAt(h.f.cb, '3,5', 'hallowed', 'any'); expect(z.length).toBe(1);
+    expect(z[0].tiles.length).toBe((2 * HALLOW.effects[0].effects[0].within + 1) ** 2); expect(z[0].left).toBe(HALLOW.effects[0].effects[0].rounds);
+  });
+  it('an ally starting a turn on it carries the patron verse; one off it does not', () => {
+    const h = rig();
+    h.f.turn(h.gun); expect(condOn(h.f.unit(h.gun), 'canticle_old_overcast')).toBe(true);
+    h.f.unit(h.two).pos = '12,12'; h.f.turn(h.two); expect(condOn(h.f.unit(h.two), 'canticle_old_overcast')).toBe(false);
+  });
+  it('an enemy standing on it is at the row value to hit; off it, not', () => {
+    const h = rig(); const foe = h.f.unit(h.foe), gun = h.f.unit(h.gun);
+    const term = () => withGame(h.f.g, () => previewAttack(h.f.cb, h.f.unit(h.foe), gun, 'shot', { free: true })).terms.filter((t: any) => /Hallow/.test(t.label)).map((t: any) => t.v);
+    expect(term()).toEqual([]);
+    foe.pos = '4,4'; expect(term()).toEqual([HALLOW.effects[1].value]);
   });
 });

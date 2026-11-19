@@ -2673,6 +2673,13 @@
     "data": "weapon_mastery.json",
     "provisional": true
   },
+  "zones": {
+    "about": "Classes 3.0 P10 and P9 (rules 1.78 item 6607): the kinds of zone data may lay (op zone; predicates self_in_zone, actor_in_zone, target_in_zone; engine: magic.ts DATA_ZONE_KINDS, makeZone, zonesAt). A row: id, the system that lays it. One side's zones of a kind on one tile never stack (rules 1.78 item 6601).",
+    "kinds": [
+      { "id": "sanctuary", "about": "the Chaplain's Sanctuary (rules 1.31)" },
+      { "id": "hallowed", "about": "the Chaplain's Hallow (rules 1.78 item 6607)" }
+    ]
+  },
   "ties": {
     "about": "Classes 3.0 P8 (engine: kit.ts tie, untie, tiesOf): the kinds of tie between two units. A row: id, max (a holder's base cap; the stat ties_max:<kind> adds to it; no max: no cap), ends_on (from_down, to_down, to_dead, unseen_round, combat_end), on_end (none, or unmake: the far end is unmade, P9), line (the map draws the tie: ink, and foe_dash, the dash pattern to a unit of another side; screenViews.ts tieLines). Each system adds its own kind.",
     "kinds": [

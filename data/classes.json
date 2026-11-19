@@ -3599,6 +3599,243 @@
           "status": "active",
           "surface": "combat",
           "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+        },
+        {
+          "id": "hallow",
+          "name": "Hallow",
+          "ap_cost": 2,
+          "uses": "at_will",
+          "text": "A Hymn of your own ({=effects.0.ap} AP; no MP, no Strain): it starts your one Hymn wait. Pick a tile you can see within {=effects.0.reach.tiles} tiles: it and every tile within {=effects.0.effects.0.within} of it are hallowed ground for {=effects.0.effects.0.rounds} rounds. You and every ally who starts a turn on it carry your patron's verse for that round, without the song (an Atheist rolls the Whisper's TN for it). Every enemy standing on it is at {=effects.1.value|signed} to hit.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "hallow",
+              "label": "Hallow",
+              "prayer": "hymn",
+              "ap": 2,
+              "uses": "at_will",
+              "reach": {
+                "tile": true,
+                "tiles": 6,
+                "sight": true
+              },
+              "effects": [
+                {
+                  "op": "zone",
+                  "kind": "hallowed",
+                  "at": "tile",
+                  "within": 1,
+                  "rounds": 3,
+                  "say": "{self} hallows the ground."
+                }
+              ]
+            },
+            {
+              "op": "roll_mod",
+              "when": "to_hit",
+              "value": -1,
+              "if": {
+                "actor": "foe",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                }
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_nerukhan",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "nerukhan"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_the_quartermaster",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "the_quartermaster"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_the_laughing_mask",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "the_laughing_mask"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_toll_keeper",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "toll_keeper"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_mother_ember",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "mother_ember"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_old_overcast",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "old_overcast"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_the_matchmaker",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "the_matchmaker"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_counting_weaver",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "counting_weaver"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_plain",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "not_patron": [
+                  "nerukhan",
+                  "the_quartermaster",
+                  "the_laughing_mask",
+                  "toll_keeper",
+                  "mother_ember",
+                  "old_overcast",
+                  "the_matchmaker",
+                  "counting_weaver"
+                ],
+                "answered": true
+              }
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "guardian",
+          "new": true,
+          "fantasy_tags": [
+            "faith",
+            "prayer",
+            "zone"
+          ],
+          "attributes": [
+            "virtue"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "source": "rules 1.78 item 6607 (docs/design/proposals/2026-11-prayer-2.0.md item 16, P9)"
         }
       ]
     }

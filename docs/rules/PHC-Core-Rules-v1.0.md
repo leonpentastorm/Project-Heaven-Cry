@@ -13209,3 +13209,11 @@ Every new number here is PROVISIONAL and a data field.
 6606. **Hurl (the Breaker; momentum-2.0 item 16, P14) is not built:** it needs the object op's `hurl` (a lift and a throw
     to a second tile: one action with two tile picks), the objects' `loose` field and Throw Down's landing for a held
     small foe; none is an existing piece. Listed for the lead.
+6607. **Hallow (the Chaplain; prayer-2.0 item 16; closes item 4488's Hallow):** a Chaplain's gain, a Hymn of its own
+    (**2** AP, no MP or Strain; it starts the one Hymn wait, as Sanctuary does): a tile in sight within **6**, and every
+    tile within **1** of it, is hallowed ground for **3** rounds. The Chaplain and each ally who starts a turn on it carry
+    the patron's verse (the Canticle's verse rows, `canticle_<patron>`, an Atheist's `canticle_plain` by the Whisper's
+    roll) for **1** round, without the song; every enemy standing on it is at **-1** to hit. Built from the zone op (the
+    kind `hallowed`) and its predicates: zone kinds are data now (`rules.json zones.kinds`, the draft's P9: a new kind is
+    a row) and the zone predicates read the actor too (`actor_in_zone`, beside `self_in_zone` and `target_in_zone`).
+    Numbers PROVISIONAL (the draft's). Not built: praying a Whisper from holy ground (item 17: needs the seat, P3).
