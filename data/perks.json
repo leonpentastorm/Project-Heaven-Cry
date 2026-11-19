@@ -1518,8 +1518,10 @@
       "text": "I: Fear can't stop you moving or acting; you keep only its penalty to hit. II: Fear can't stop you moving or acting; you keep only its penalty to hit. Fear and Nausea last at most {=tiers.II.effects.1.max} round on you.",
       "effects": [
         {
-          "op": "narrator",
-          "note": "Fear can't stop this character moving or acting; it keeps only Fear's penalty to hit (no engine half yet: rules 1.73 item 5811, needs a stat Fear's two refusals ask)."
+          "op": "stat_mod",
+          "stat": "fear_unbound",
+          "value": 1,
+          "label": "Steady"
         }
       ],
       "tiers": {
@@ -1535,8 +1537,10 @@
           "short": "Fear can't stop your moves or actions",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Fear can't stop this character moving or acting; it keeps only Fear's penalty to hit (no engine half yet: rules 1.73 item 5811, needs a stat Fear's two refusals ask)."
+              "op": "stat_mod",
+              "stat": "fear_unbound",
+              "value": 1,
+              "label": "Steady"
             }
           ]
         },
@@ -1552,8 +1556,10 @@
           "short": "Fear and Nausea last {=tiers.II.effects.1.max} round at most",
           "effects": [
             {
-              "op": "narrator",
-              "note": "Fear can't stop this character moving or acting; it keeps only Fear's penalty to hit (no engine half yet: rules 1.73 item 5811, needs a stat Fear's two refusals ask)."
+              "op": "stat_mod",
+              "stat": "fear_unbound",
+              "value": 1,
+              "label": "Steady"
             },
             {
               "op": "cond_rounds",
@@ -1571,7 +1577,7 @@
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "resistance",

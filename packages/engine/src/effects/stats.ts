@@ -55,6 +55,7 @@ export const STATS = {
   // Classes 3.0 step 5 (rules 1.31): the Chaplain's presence
   patron_presence: 'While Witnessed, the patron stands at this unit\'s side: its interventions reach further and land on a Judged enemy of its first (>0; faith.ts presenceOf)',
   always_seen: 'The other side sees this unit wherever it is (>0; tactics.ts sightOf, Classes 3.0 P7: Traced, a Figment\'s Stare)',
+  fear_unbound: 'The two refusals of Fear (no attack on its source, no step toward it) do not hold this unit; its to-hit penalty stays (>0; combat.ts fearHolds; rules 1.77 item 6505: Steady I)',
   seen_range: 'Tiles added to (negative: taken from) the range at which other units\' eyes see this unit (combat.ts unitSees with a target, seenRangeOf; rules 1.70 item 5545, P4)',
   // Classes 3.0 step 8 (rules 1.34): Figments
   figment_designs: 'Figment designs kept ready beyond the door\'s ladder (figments.ts designsMax; the Rigger +1)',

@@ -1352,7 +1352,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   if (hk.fail) return fail(hk.fail);
   // Conditions on the attacker (spec: Conditions): Afraid can't attack its source; Taunted must attack the taunter while
   // it can see them; Disarmed or a lowered weapon attacks with nothing but fists.
-  { const fs = condSource(att, 'fear'); if (fs && fs === tgt.id) return fail('Afraid of ' + tgt.name + ': you can\'t attack them.'); }
+  { const fs = condSource(att, 'fear'); if (fs && fs === tgt.id && fearHolds(cb, att)) return fail('Afraid of ' + tgt.name + ': you can\'t attack them.'); }
   { const ts = tauntedBy(att), tu = ts ? cb.units.find((x) => x.id === ts) : null; if (tu && tu.id !== tgt.id && !hk.ignoreTaunt && alive(tu) && sideSees(cb, att.side, tu)) return fail('Taunted: your attack must go at ' + tu.name + '.'); }
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && useW !== WEAPON.fists && !isMelee(useW)) return fail(condOn(att, 'disarmed') ? 'Disarmed: recover your weapon (2 AP), or strike with your fists.' : 'Your weapon is lowered: raise it (1 AP).');
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && isMelee(useW) && useW !== WEAPON.fists && mode !== 'melee') return fail('Disarmed: recover your weapon first.');
@@ -1988,7 +1988,7 @@ export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint'
   const P = o.via || (o.shortest ? o.base || paths(cb, u.pos, u.id) : movePaths(cb, u, to, how, o.base)); // rules 1.9: a player's click-path goes around revealed hazards (item 683)
   const tiles = P.dist[to];
   if (tiles === undefined || to === u.pos) return 'Can\'t reach that tile.';
-  { const fs = condSource(u, 'fear'), f = fs ? cb.units.find((x) => x.id === fs) : null; if (f && !f.dead && dist(to, f.pos) < dist(u.pos, f.pos)) return 'Afraid of ' + f.name + ': you can\'t move toward them.'; }
+  { const fs = condSource(u, 'fear'), f = fs ? cb.units.find((x) => x.id === fs) : null; if (f && !f.dead && dist(to, f.pos) < dist(u.pos, f.pos) && fearHolds(cb, u)) return 'Afraid of ' + f.name + ': you can\'t move toward them.'; }
   // Threatened (a Call, rules 1.13): on its next turn it can't move toward the one who threatened it.
   { const cw = u.call?.cowed, f = cw ? cb.units.find((x) => x.id === cw.by) : null; if (f && alive(f) && dist(to, f.pos) < dist(u.pos, f.pos)) return 'Threatened by ' + f.name + ': you can\'t move toward them this turn.'; }
   let ap: number;
@@ -3275,6 +3275,9 @@ export const die6 = (rng: Rng) => die(rng, 6);
 // ---------- weapon-granted actions (plan 2.9) ----------
 /** Can this weapon jam? Guns with a Heat limit can; bows, crossbows, the flamer, the breacher tube and the core rifle
  * can't (a natural 1 fumbles instead). A weapons.json `handling.deny: ['clear']` or `grant: ['clear']` overrides. */
+/** Do Fear's two refusals (no attack on its source, no step toward it) hold this unit? Not when an item answers
+ * 'fear_unbound' (rules 1.77 item 6505: Steady I); Fear's to-hit penalty is the condition row's and always stays. */
+export const fearHolds = (cb: Combat | null, u: Unit): boolean => !(statQuery({ u, cb }, 'fear_unbound').add > 0);
 /** Does nothing jam this unit's main-hand weapon (Tuned, Improvisation 5: the 'never_jams' query)? */
 export const neverJams = (cb: Combat | null, u: Unit): boolean => statQuery({ u, cb }, 'never_jams').add > 0;
 export function canJam(w: WeaponDef | undefined): boolean {

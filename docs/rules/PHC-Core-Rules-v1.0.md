@@ -13196,3 +13196,7 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       its +1 Shadow counts toward the Shadow door's two gains a turn (`shared: shadow_gain`, the door's three gains
       too); it is refused, before anything is paid, when your Shadow is full (`self_not_res {shadow: {at: limit}}`) and
       when the turn's two gains are already made (`uses_left`), each in words.
+6505. **Fear's two refusals read a stat** (`fear_unbound`, >0: the unit is not held by them; `combat.ts fearHolds`).
+      Steady I (rules 1.73 item 5811 completed): Fear can't stop you attacking its source or moving toward it; Fear's
+      to-hit penalty stays (the condition row's own). Steady is `adjudication: engine` now (its tier II keeps its
+      Fear-and-Nausea cap).

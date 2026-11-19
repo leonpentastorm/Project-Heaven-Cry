@@ -3,7 +3,7 @@
 // rules each unlocked. Every rule goes through the reducer (the helpers' fight, a real action) or a real blow; every
 // number is read from data.
 import { describe, it, expect } from 'vitest';
-import { PERK, condOn, actionsFor } from '../src';
+import { PERK, condOn, actionsFor, previewAttack } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 import { applyCond } from '../src/magic';
 import { resOf } from '../src/tactics';
@@ -83,5 +83,25 @@ describe("a shared limit and the negated resource bound (item 6504): Stalk under
     // the same turn without Stalk: the turn ended Hidden is the second gain
     const b = sneak(); b.f.act({ type: 'combat/move', unitId: b.id, to: '2,5' } as any); b.f.act({ type: 'combat/end-turn', unitId: b.id } as any);
     expect(resOf(b.f.unit(b.id), 'shadow')).toBe(cap);
+  });
+});
+
+describe('Fear reads a stat (item 6505): Steady I', () => {
+  const afraid = (perks: any) => {
+    const f = fightWith([{ skills: { guts: 5 }, perks }], [{ at: 'H6' }]);
+    const u = f.turn(f.pc); u.pos = '2,5'; u.ap = 9; f.foe.pos = '6,5';
+    withGame(f.g, () => applyCond(f.cb, f.g.rng, f.foe, f.unit(u.id), 'fear', 3, undefined, { skipSave: true }));
+    return { f, id: u.id };
+  };
+  it('without it, Fear refuses an attack on its source and a step toward it; with Steady I both go, and the to-hit penalty stays', () => {
+    const a = afraid({}); expect(condOn(a.f.unit(a.id), 'fear')).toBe(true);
+    expect(() => a.f.act({ type: 'combat/attack', unitId: a.id, targetId: a.f.foe.id, mode: 'shot' } as any)).toThrow(/Afraid/);
+    expect(() => a.f.act({ type: 'combat/move', unitId: a.id, to: '3,5' } as any)).toThrow(/Afraid/);
+    const b = afraid({ steady: 'I' }); expect(condOn(b.f.unit(b.id), 'fear')).toBe(true);
+    const pv = (f: any, id: string) => withGame(f.g, () => previewAttack(f.cb, f.unit(id), f.foe, 'shot'));
+    expect(pv(b.f, b.id).ok).toBe(true);
+    b.f.act({ type: 'combat/move', unitId: b.id, to: '3,5' } as any); expect(b.f.unit(b.id).pos).toBe('3,5');
+    b.f.act({ type: 'combat/attack', unitId: b.id, targetId: b.f.foe.id, mode: 'shot' } as any);
+    expect(b.f.cb.log.some((l: string) => /Afraid/.test(l))).toBe(false);
   });
 });
