@@ -6546,6 +6546,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-field_boots--masterwork",
+      "path": "art/icons/gear/armour-field_boots--masterwork.png",
+      "sha256": "710d3360af8b41ca01b04fd35227c2d05fb69862d0c2cca64242a6a4f54b0d72",
+      "label": "Field Boots — Masterwork",
+      "family": "armour-field_boots",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-field_boots--masterwork.png",
+        "sha256": "4cf4953ea1a89508204db6daeffdfe3e70107b4f6042fecea5fd2ce87c736ff2"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-field_boots--masterwork.png",
+        "sha256": "710d3360af8b41ca01b04fd35227c2d05fb69862d0c2cca64242a6a4f54b0d72"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-field_boots--masterwork.txt",
+        "sha256": "a141e2bf45d2480005c84b2c3d1c2f5c8ceec914481e2708241b26a473944918"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-field_boots.png",
+          "sha256": "ba426f025a3b38a93adca821a970134edb9ecabb89498f09ee28f6e117d8083e"
+        },
+        {
+          "path": "art/icons/gear/armour-field_boots--fine.png",
+          "sha256": "03507d0e63d6300e089a6c04154da70a00ec086476c62fc555ac771e116b9889"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_boots--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-field_boots--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-field_boots--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-field_boots--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "6bc0c909c2c844c63b5a5b912a575228282856f9ff0610f1f0b9da78e3dcfdfe",
+        "128": "b977ad130c641f91e0daaccbfc9c862072c043aa62bc2fa47ba2bfa5e8add8e2",
+        "64": "8082d6cf1bd7cdfd03b3456b76dbbe453a3d46f8041be8c1b8fa93f307b31493",
+        "32": "f692906edab1e7d455d23afd65b7db8456496c3f5ff673348188e47caf6f6ab2"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-field_boots",
+      "outline": {
+        "solid_alpha_iou": 0.9834914646562439,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 22
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
