@@ -4992,6 +4992,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-padded_undershirt--fine",
+      "path": "art/icons/gear/armour-padded_undershirt--fine.png",
+      "sha256": "c1f762d29b678e4cc3583c51dbc879d24040f0d37bf641d4158d45a4af92bd7e",
+      "label": "Padded Undershirt — Fine",
+      "family": "armour-padded_undershirt",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-padded_undershirt--fine.png",
+        "sha256": "d9758d8aa83ddcc6b32e7f65e8084646fa947758be714b673ac31932f304b6f6"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-padded_undershirt--fine.png",
+        "sha256": "c1f762d29b678e4cc3583c51dbc879d24040f0d37bf641d4158d45a4af92bd7e"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-padded_undershirt--fine.txt",
+        "sha256": "63c7830335306b75831daa1d8b0001cfde8713fb13c5aef49ba6886db2a64882"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-padded_undershirt--fine/v1/source.png",
+          "sha256": "7a577d6086b8bdcc199289bcfbf6f9c0d42482603768ca8bf250d0475fd7e97a"
+        },
+        {
+          "path": "art/icons/gear/armour-padded_undershirt.png",
+          "sha256": "da04bbb067c16ca0c133c96426d79b1cb0ca8c46ab3eb533b34a12017e7af6ed"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-padded_undershirt--fine.png",
+        "128": "art/icons/gear/exports/128/armour-padded_undershirt--fine.png",
+        "64": "art/icons/gear/exports/64/armour-padded_undershirt--fine.png",
+        "32": "art/icons/gear/exports/32/armour-padded_undershirt--fine.png"
+      },
+      "export_hashes": {
+        "256": "74b41dcbb98aa2d988017ed759ac2821b51f4f22915df13ae31089ac03f51144",
+        "128": "0bad6c80106e5795437aa689cb9cf962527734cb909cfffd9469f95816933c14",
+        "64": "015af9df8a4ac74a893f305ea65378f281cd204c309fa71bb5a91161163ba44b",
+        "32": "6eb5806dc8c4c06cc9c14e03db137c4f61be8f066aef5739a6d427039fe64a72"
+      },
+      "grade": "fine",
+      "standard_id": "armour-padded_undershirt",
+      "outline": {
+        "solid_alpha_iou": 0.9646474158409225,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 46
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
