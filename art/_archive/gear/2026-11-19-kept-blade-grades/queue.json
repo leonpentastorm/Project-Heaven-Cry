@@ -766,5 +766,860 @@
     "status": "delivered",
     "production_approved": false,
     "depends_on": "weapon-maul--relic"
+  },
+  {
+    "id": "weapon-striking_gloves--fine",
+    "standard_id": "weapon-striking_gloves",
+    "grade": "fine",
+    "label": "Striking Gloves — Fine",
+    "path": "art/icons/gear/weapon-striking_gloves--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-striking_gloves.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-striking_gloves",
+    "family_references": [
+      "art/icons/gear/weapon-striking_gloves.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single hollow brown fingerless leather striking glove, five open finger/thumb tubes and open oval cuff, two narrow orange-stitched bands crossing the back, angular metal cuff rim with its two rivets and small red inset patch. Keep the exact handedness, tube openings, leather folds, band positions, rivets and red/orange accent locations; no hand inside.\n\nGrade: Fine. The same glove, newly kept. The leather or cloth is cleaned and conditioned, the stitching neat and even, any metal knuckles or plates bright. Add one thin line across the back of the hand: stitched on leather, engraved on metal, woven into the wrap on cloth. Nothing else is added. No hand inside.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single hollow brown fingerless leather striking glove, five open finger/thumb tubes and open oval cuff, two narrow orange-stitched bands crossing the back, angular metal cuff rim with its two rivets and small red inset patch. Keep the exact handedness, tube openings, leather folds, band positions, rivets and red/orange accent locations; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null
+  },
+  {
+    "id": "weapon-striking_gloves--masterwork",
+    "standard_id": "weapon-striking_gloves",
+    "grade": "masterwork",
+    "label": "Striking Gloves — Masterwork",
+    "path": "art/icons/gear/weapon-striking_gloves--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-striking_gloves.png",
+      "art/icons/gear/weapon-striking_gloves--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-striking_gloves",
+    "family_references": [
+      "art/icons/gear/weapon-striking_gloves.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single hollow brown fingerless leather striking glove, five open finger/thumb tubes and open oval cuff, two narrow orange-stitched bands crossing the back, angular metal cuff rim with its two rivets and small red inset patch. Keep the exact handedness, tube openings, leather folds, band positions, rivets and red/orange accent locations; no hand inside.\n\nGrade: Masterwork. Keep everything of the Fine grade. The line becomes a cord or inlay in the item's accent colour (bright brass thread if it has no accent), one clear stripe across the back of the hand. The leather is a finer, darker, supple hide in the same shapes; metal parts are polished crisp; the cuff is bound with a neat edge. A focus's lens or core window is unchanged.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single hollow brown fingerless leather striking glove, five open finger/thumb tubes and open oval cuff, two narrow orange-stitched bands crossing the back, angular metal cuff rim with its two rivets and small red inset patch. Keep the exact handedness, tube openings, leather folds, band positions, rivets and red/orange accent locations; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-striking_gloves--fine"
+  },
+  {
+    "id": "weapon-striking_gloves--relic",
+    "standard_id": "weapon-striking_gloves",
+    "grade": "relic",
+    "label": "Striking Gloves — Relic",
+    "path": "art/icons/gear/weapon-striking_gloves--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-striking_gloves.png",
+      "art/icons/gear/weapon-striking_gloves--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-striking_gloves",
+    "family_references": [
+      "art/icons/gear/weapon-striking_gloves.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single hollow brown fingerless leather striking glove, five open finger/thumb tubes and open oval cuff, two narrow orange-stitched bands crossing the back, angular metal cuff rim with its two rivets and small red inset patch. Keep the exact handedness, tube openings, leather folds, band positions, rivets and red/orange accent locations; no hand inside.\n\nGrade: Relic. Keep the shape and the line. The leather darkens smooth with use like an heirloom, the metal takes a warm patina, the line turns to old gold thread, and the cuff buckle or the knuckle bar carries one small flush gilt ornament. Add one old repair that tells a story: a seam re-stitched in a different, older thread, or a knuckle plate held by a replaced rivet.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single hollow brown fingerless leather striking glove, five open finger/thumb tubes and open oval cuff, two narrow orange-stitched bands crossing the back, angular metal cuff rim with its two rivets and small red inset patch. Keep the exact handedness, tube openings, leather folds, band positions, rivets and red/orange accent locations; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-striking_gloves--masterwork"
+  },
+  {
+    "id": "weapon-striking_gloves--celestial",
+    "standard_id": "weapon-striking_gloves",
+    "grade": "celestial",
+    "label": "Striking Gloves — Celestial",
+    "path": "art/icons/gear/weapon-striking_gloves--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-striking_gloves.png",
+      "art/icons/gear/weapon-striking_gloves--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-striking_gloves",
+    "family_references": [
+      "art/icons/gear/weapon-striking_gloves.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single hollow brown fingerless leather striking glove, five open finger/thumb tubes and open oval cuff, two narrow orange-stitched bands crossing the back, angular metal cuff rim with its two rivets and small red inset patch. Keep the exact handedness, tube openings, leather folds, band positions, rivets and red/orange accent locations; no hand inside.\n\nGrade: Celestial. Keep the shape, the line and the ornament's place. The leather becomes a pale ivory hide, the metal pearl-ivory, unmarked. The stitched line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo. A focus's lens or core window keeps its own colour and glow exactly as before; the ivory-gold light never enters it.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single hollow brown fingerless leather striking glove, five open finger/thumb tubes and open oval cuff, two narrow orange-stitched bands crossing the back, angular metal cuff rim with its two rivets and small red inset patch. Keep the exact handedness, tube openings, leather folds, band positions, rivets and red/orange accent locations; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-striking_gloves--relic"
+  },
+  {
+    "id": "weapon-hand_wraps--fine",
+    "standard_id": "weapon-hand_wraps",
+    "grade": "fine",
+    "label": "Hand Wraps — Fine",
+    "path": "art/icons/gear/weapon-hand_wraps--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-hand_wraps.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-hand_wraps",
+    "family_references": [
+      "art/icons/gear/weapon-hand_wraps.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single hollow cloth hand-wrap form, four rounded wrapped finger ends, open thumb tube at upper-left, open oval cuff at lower-left and the one loose curved cloth tail to lower-right. Preserve the precise overlapping diagonal cloth turns, finger shapes, all openings and tail outline, warm grey-ivory cloth with no coloured accent; no hand inside.\n\nGrade: Fine. The same glove, newly kept. The leather or cloth is cleaned and conditioned, the stitching neat and even, any metal knuckles or plates bright. Add one thin line across the back of the hand: stitched on leather, engraved on metal, woven into the wrap on cloth. Nothing else is added. No hand inside.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single hollow cloth hand-wrap form, four rounded wrapped finger ends, open thumb tube at upper-left, open oval cuff at lower-left and the one loose curved cloth tail to lower-right. Preserve the precise overlapping diagonal cloth turns, finger shapes, all openings and tail outline, warm grey-ivory cloth with no coloured accent; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null
+  },
+  {
+    "id": "weapon-hand_wraps--masterwork",
+    "standard_id": "weapon-hand_wraps",
+    "grade": "masterwork",
+    "label": "Hand Wraps — Masterwork",
+    "path": "art/icons/gear/weapon-hand_wraps--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-hand_wraps.png",
+      "art/icons/gear/weapon-hand_wraps--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-hand_wraps",
+    "family_references": [
+      "art/icons/gear/weapon-hand_wraps.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single hollow cloth hand-wrap form, four rounded wrapped finger ends, open thumb tube at upper-left, open oval cuff at lower-left and the one loose curved cloth tail to lower-right. Preserve the precise overlapping diagonal cloth turns, finger shapes, all openings and tail outline, warm grey-ivory cloth with no coloured accent; no hand inside.\n\nGrade: Masterwork. Keep everything of the Fine grade. The line becomes a cord or inlay in the item's accent colour (bright brass thread if it has no accent), one clear stripe across the back of the hand. The leather is a finer, darker, supple hide in the same shapes; metal parts are polished crisp; the cuff is bound with a neat edge. A focus's lens or core window is unchanged.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single hollow cloth hand-wrap form, four rounded wrapped finger ends, open thumb tube at upper-left, open oval cuff at lower-left and the one loose curved cloth tail to lower-right. Preserve the precise overlapping diagonal cloth turns, finger shapes, all openings and tail outline, warm grey-ivory cloth with no coloured accent; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-hand_wraps--fine"
+  },
+  {
+    "id": "weapon-hand_wraps--relic",
+    "standard_id": "weapon-hand_wraps",
+    "grade": "relic",
+    "label": "Hand Wraps — Relic",
+    "path": "art/icons/gear/weapon-hand_wraps--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-hand_wraps.png",
+      "art/icons/gear/weapon-hand_wraps--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-hand_wraps",
+    "family_references": [
+      "art/icons/gear/weapon-hand_wraps.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single hollow cloth hand-wrap form, four rounded wrapped finger ends, open thumb tube at upper-left, open oval cuff at lower-left and the one loose curved cloth tail to lower-right. Preserve the precise overlapping diagonal cloth turns, finger shapes, all openings and tail outline, warm grey-ivory cloth with no coloured accent; no hand inside.\n\nGrade: Relic. Keep the shape and the line. The leather darkens smooth with use like an heirloom, the metal takes a warm patina, the line turns to old gold thread, and the cuff buckle or the knuckle bar carries one small flush gilt ornament. Add one old repair that tells a story: a seam re-stitched in a different, older thread, or a knuckle plate held by a replaced rivet.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single hollow cloth hand-wrap form, four rounded wrapped finger ends, open thumb tube at upper-left, open oval cuff at lower-left and the one loose curved cloth tail to lower-right. Preserve the precise overlapping diagonal cloth turns, finger shapes, all openings and tail outline, warm grey-ivory cloth with no coloured accent; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-hand_wraps--masterwork"
+  },
+  {
+    "id": "weapon-hand_wraps--celestial",
+    "standard_id": "weapon-hand_wraps",
+    "grade": "celestial",
+    "label": "Hand Wraps — Celestial",
+    "path": "art/icons/gear/weapon-hand_wraps--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-hand_wraps.png",
+      "art/icons/gear/weapon-hand_wraps--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-hand_wraps",
+    "family_references": [
+      "art/icons/gear/weapon-hand_wraps.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single hollow cloth hand-wrap form, four rounded wrapped finger ends, open thumb tube at upper-left, open oval cuff at lower-left and the one loose curved cloth tail to lower-right. Preserve the precise overlapping diagonal cloth turns, finger shapes, all openings and tail outline, warm grey-ivory cloth with no coloured accent; no hand inside.\n\nGrade: Celestial. Keep the shape, the line and the ornament's place. The leather becomes a pale ivory hide, the metal pearl-ivory, unmarked. The stitched line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo. A focus's lens or core window keeps its own colour and glow exactly as before; the ivory-gold light never enters it.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single hollow cloth hand-wrap form, four rounded wrapped finger ends, open thumb tube at upper-left, open oval cuff at lower-left and the one loose curved cloth tail to lower-right. Preserve the precise overlapping diagonal cloth turns, finger shapes, all openings and tail outline, warm grey-ivory cloth with no coloured accent; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-hand_wraps--relic"
+  },
+  {
+    "id": "weapon-knuckledusters--fine",
+    "standard_id": "weapon-knuckledusters",
+    "grade": "fine",
+    "label": "Knuckledusters — Fine",
+    "path": "art/icons/gear/weapon-knuckledusters--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-knuckledusters.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-knuckledusters",
+    "family_references": [
+      "art/icons/gear/weapon-knuckledusters.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same upright squared brass knuckleduster, exactly four round finger holes, four tapered triangular knuckle points, riveted outer plates, the long S-shaped inner palm brace and two large rectangular lower openings, three ochre diagonal paint stripes on its lower plate. Preserve every hole, spike, rivet, brace and opening in its exact place; dark steel and brass, ochre accent at the bottom only.\n\nGrade: Fine. The same glove, newly kept. The leather or cloth is cleaned and conditioned, the stitching neat and even, any metal knuckles or plates bright. Add one thin line across the back of the hand: stitched on leather, engraved on metal, woven into the wrap on cloth. Nothing else is added. No hand inside.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same upright squared brass knuckleduster, exactly four round finger holes, four tapered triangular knuckle points, riveted outer plates, the long S-shaped inner palm brace and two large rectangular lower openings, three ochre diagonal paint stripes on its lower plate. Preserve every hole, spike, rivet, brace and opening in its exact place; dark steel and brass, ochre accent at the bottom only.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null
+  },
+  {
+    "id": "weapon-knuckledusters--masterwork",
+    "standard_id": "weapon-knuckledusters",
+    "grade": "masterwork",
+    "label": "Knuckledusters — Masterwork",
+    "path": "art/icons/gear/weapon-knuckledusters--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-knuckledusters.png",
+      "art/icons/gear/weapon-knuckledusters--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-knuckledusters",
+    "family_references": [
+      "art/icons/gear/weapon-knuckledusters.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same upright squared brass knuckleduster, exactly four round finger holes, four tapered triangular knuckle points, riveted outer plates, the long S-shaped inner palm brace and two large rectangular lower openings, three ochre diagonal paint stripes on its lower plate. Preserve every hole, spike, rivet, brace and opening in its exact place; dark steel and brass, ochre accent at the bottom only.\n\nGrade: Masterwork. Keep everything of the Fine grade. The line becomes a cord or inlay in the item's accent colour (bright brass thread if it has no accent), one clear stripe across the back of the hand. The leather is a finer, darker, supple hide in the same shapes; metal parts are polished crisp; the cuff is bound with a neat edge. A focus's lens or core window is unchanged.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same upright squared brass knuckleduster, exactly four round finger holes, four tapered triangular knuckle points, riveted outer plates, the long S-shaped inner palm brace and two large rectangular lower openings, three ochre diagonal paint stripes on its lower plate. Preserve every hole, spike, rivet, brace and opening in its exact place; dark steel and brass, ochre accent at the bottom only.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-knuckledusters--fine"
+  },
+  {
+    "id": "weapon-knuckledusters--relic",
+    "standard_id": "weapon-knuckledusters",
+    "grade": "relic",
+    "label": "Knuckledusters — Relic",
+    "path": "art/icons/gear/weapon-knuckledusters--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-knuckledusters.png",
+      "art/icons/gear/weapon-knuckledusters--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-knuckledusters",
+    "family_references": [
+      "art/icons/gear/weapon-knuckledusters.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same upright squared brass knuckleduster, exactly four round finger holes, four tapered triangular knuckle points, riveted outer plates, the long S-shaped inner palm brace and two large rectangular lower openings, three ochre diagonal paint stripes on its lower plate. Preserve every hole, spike, rivet, brace and opening in its exact place; dark steel and brass, ochre accent at the bottom only.\n\nGrade: Relic. Keep the shape and the line. The leather darkens smooth with use like an heirloom, the metal takes a warm patina, the line turns to old gold thread, and the cuff buckle or the knuckle bar carries one small flush gilt ornament. Add one old repair that tells a story: a seam re-stitched in a different, older thread, or a knuckle plate held by a replaced rivet.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same upright squared brass knuckleduster, exactly four round finger holes, four tapered triangular knuckle points, riveted outer plates, the long S-shaped inner palm brace and two large rectangular lower openings, three ochre diagonal paint stripes on its lower plate. Preserve every hole, spike, rivet, brace and opening in its exact place; dark steel and brass, ochre accent at the bottom only.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-knuckledusters--masterwork"
+  },
+  {
+    "id": "weapon-knuckledusters--celestial",
+    "standard_id": "weapon-knuckledusters",
+    "grade": "celestial",
+    "label": "Knuckledusters — Celestial",
+    "path": "art/icons/gear/weapon-knuckledusters--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-knuckledusters.png",
+      "art/icons/gear/weapon-knuckledusters--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-knuckledusters",
+    "family_references": [
+      "art/icons/gear/weapon-knuckledusters.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same upright squared brass knuckleduster, exactly four round finger holes, four tapered triangular knuckle points, riveted outer plates, the long S-shaped inner palm brace and two large rectangular lower openings, three ochre diagonal paint stripes on its lower plate. Preserve every hole, spike, rivet, brace and opening in its exact place; dark steel and brass, ochre accent at the bottom only.\n\nGrade: Celestial. Keep the shape, the line and the ornament's place. The leather becomes a pale ivory hide, the metal pearl-ivory, unmarked. The stitched line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo. A focus's lens or core window keeps its own colour and glow exactly as before; the ivory-gold light never enters it.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same upright squared brass knuckleduster, exactly four round finger holes, four tapered triangular knuckle points, riveted outer plates, the long S-shaped inner palm brace and two large rectangular lower openings, three ochre diagonal paint stripes on its lower plate. Preserve every hole, spike, rivet, brace and opening in its exact place; dark steel and brass, ochre accent at the bottom only.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-knuckledusters--relic"
+  },
+  {
+    "id": "weapon-kemizuchi_strikers--fine",
+    "standard_id": "weapon-kemizuchi_strikers",
+    "grade": "fine",
+    "label": "Kemizuchi Strikers — Fine",
+    "path": "art/icons/gear/weapon-kemizuchi_strikers--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-kemizuchi_strikers.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-kemizuchi_strikers",
+    "family_references": [
+      "art/icons/gear/weapon-kemizuchi_strikers.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single open-finger brown leather glove with five hollow tubes, diagonal leather finger wraps, small central angular steel knuckle plate secured with two brass rivets, red lacquer inset panels below it, long folded leather back and open oval metal-trimmed cuff. Preserve handedness, every opening, the angular blade-like plate outline, red panel locations and cuff rivets exactly; no hand inside.\n\nGrade: Fine. The same glove, newly kept. The leather or cloth is cleaned and conditioned, the stitching neat and even, any metal knuckles or plates bright. Add one thin line across the back of the hand: stitched on leather, engraved on metal, woven into the wrap on cloth. Nothing else is added. No hand inside.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single open-finger brown leather glove with five hollow tubes, diagonal leather finger wraps, small central angular steel knuckle plate secured with two brass rivets, red lacquer inset panels below it, long folded leather back and open oval metal-trimmed cuff. Preserve handedness, every opening, the angular blade-like plate outline, red panel locations and cuff rivets exactly; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null
+  },
+  {
+    "id": "weapon-kemizuchi_strikers--masterwork",
+    "standard_id": "weapon-kemizuchi_strikers",
+    "grade": "masterwork",
+    "label": "Kemizuchi Strikers — Masterwork",
+    "path": "art/icons/gear/weapon-kemizuchi_strikers--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-kemizuchi_strikers.png",
+      "art/icons/gear/weapon-kemizuchi_strikers--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-kemizuchi_strikers",
+    "family_references": [
+      "art/icons/gear/weapon-kemizuchi_strikers.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single open-finger brown leather glove with five hollow tubes, diagonal leather finger wraps, small central angular steel knuckle plate secured with two brass rivets, red lacquer inset panels below it, long folded leather back and open oval metal-trimmed cuff. Preserve handedness, every opening, the angular blade-like plate outline, red panel locations and cuff rivets exactly; no hand inside.\n\nGrade: Masterwork. Keep everything of the Fine grade. The line becomes a cord or inlay in the item's accent colour (bright brass thread if it has no accent), one clear stripe across the back of the hand. The leather is a finer, darker, supple hide in the same shapes; metal parts are polished crisp; the cuff is bound with a neat edge. A focus's lens or core window is unchanged.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single open-finger brown leather glove with five hollow tubes, diagonal leather finger wraps, small central angular steel knuckle plate secured with two brass rivets, red lacquer inset panels below it, long folded leather back and open oval metal-trimmed cuff. Preserve handedness, every opening, the angular blade-like plate outline, red panel locations and cuff rivets exactly; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-kemizuchi_strikers--fine"
+  },
+  {
+    "id": "weapon-kemizuchi_strikers--relic",
+    "standard_id": "weapon-kemizuchi_strikers",
+    "grade": "relic",
+    "label": "Kemizuchi Strikers — Relic",
+    "path": "art/icons/gear/weapon-kemizuchi_strikers--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-kemizuchi_strikers.png",
+      "art/icons/gear/weapon-kemizuchi_strikers--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-kemizuchi_strikers",
+    "family_references": [
+      "art/icons/gear/weapon-kemizuchi_strikers.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single open-finger brown leather glove with five hollow tubes, diagonal leather finger wraps, small central angular steel knuckle plate secured with two brass rivets, red lacquer inset panels below it, long folded leather back and open oval metal-trimmed cuff. Preserve handedness, every opening, the angular blade-like plate outline, red panel locations and cuff rivets exactly; no hand inside.\n\nGrade: Relic. Keep the shape and the line. The leather darkens smooth with use like an heirloom, the metal takes a warm patina, the line turns to old gold thread, and the cuff buckle or the knuckle bar carries one small flush gilt ornament. Add one old repair that tells a story: a seam re-stitched in a different, older thread, or a knuckle plate held by a replaced rivet.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single open-finger brown leather glove with five hollow tubes, diagonal leather finger wraps, small central angular steel knuckle plate secured with two brass rivets, red lacquer inset panels below it, long folded leather back and open oval metal-trimmed cuff. Preserve handedness, every opening, the angular blade-like plate outline, red panel locations and cuff rivets exactly; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-kemizuchi_strikers--masterwork"
+  },
+  {
+    "id": "weapon-kemizuchi_strikers--celestial",
+    "standard_id": "weapon-kemizuchi_strikers",
+    "grade": "celestial",
+    "label": "Kemizuchi Strikers — Celestial",
+    "path": "art/icons/gear/weapon-kemizuchi_strikers--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-kemizuchi_strikers.png",
+      "art/icons/gear/weapon-kemizuchi_strikers--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-kemizuchi_strikers",
+    "family_references": [
+      "art/icons/gear/weapon-kemizuchi_strikers.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single open-finger brown leather glove with five hollow tubes, diagonal leather finger wraps, small central angular steel knuckle plate secured with two brass rivets, red lacquer inset panels below it, long folded leather back and open oval metal-trimmed cuff. Preserve handedness, every opening, the angular blade-like plate outline, red panel locations and cuff rivets exactly; no hand inside.\n\nGrade: Celestial. Keep the shape, the line and the ornament's place. The leather becomes a pale ivory hide, the metal pearl-ivory, unmarked. The stitched line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo. A focus's lens or core window keeps its own colour and glow exactly as before; the ivory-gold light never enters it.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single open-finger brown leather glove with five hollow tubes, diagonal leather finger wraps, small central angular steel knuckle plate secured with two brass rivets, red lacquer inset panels below it, long folded leather back and open oval metal-trimmed cuff. Preserve handedness, every opening, the angular blade-like plate outline, red panel locations and cuff rivets exactly; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-kemizuchi_strikers--relic"
+  },
+  {
+    "id": "weapon-iron_mitts--fine",
+    "standard_id": "weapon-iron_mitts",
+    "grade": "fine",
+    "label": "Iron Mitts — Fine",
+    "path": "art/icons/gear/weapon-iron_mitts--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-iron_mitts.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-iron_mitts",
+    "family_references": [
+      "art/icons/gear/weapon-iron_mitts.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single hollow heavy mitt, four closed blunt knuckle lobes under one broad continuous face, large left thumb lobe, three transverse riveted steel straps and the same broad open oval cuff. Preserve each strap, rivet and thumb/knuckle outline; dark brown leather, warm steel, red cuff panel with its two pale diagonal stripes in exactly their original place; no hand inside.\n\nGrade: Fine. The same glove, newly kept. The leather or cloth is cleaned and conditioned, the stitching neat and even, any metal knuckles or plates bright. Add one thin line across the back of the hand: stitched on leather, engraved on metal, woven into the wrap on cloth. Nothing else is added. No hand inside.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single hollow heavy mitt, four closed blunt knuckle lobes under one broad continuous face, large left thumb lobe, three transverse riveted steel straps and the same broad open oval cuff. Preserve each strap, rivet and thumb/knuckle outline; dark brown leather, warm steel, red cuff panel with its two pale diagonal stripes in exactly their original place; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null
+  },
+  {
+    "id": "weapon-iron_mitts--masterwork",
+    "standard_id": "weapon-iron_mitts",
+    "grade": "masterwork",
+    "label": "Iron Mitts — Masterwork",
+    "path": "art/icons/gear/weapon-iron_mitts--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-iron_mitts.png",
+      "art/icons/gear/weapon-iron_mitts--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-iron_mitts",
+    "family_references": [
+      "art/icons/gear/weapon-iron_mitts.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single hollow heavy mitt, four closed blunt knuckle lobes under one broad continuous face, large left thumb lobe, three transverse riveted steel straps and the same broad open oval cuff. Preserve each strap, rivet and thumb/knuckle outline; dark brown leather, warm steel, red cuff panel with its two pale diagonal stripes in exactly their original place; no hand inside.\n\nGrade: Masterwork. Keep everything of the Fine grade. The line becomes a cord or inlay in the item's accent colour (bright brass thread if it has no accent), one clear stripe across the back of the hand. The leather is a finer, darker, supple hide in the same shapes; metal parts are polished crisp; the cuff is bound with a neat edge. A focus's lens or core window is unchanged.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single hollow heavy mitt, four closed blunt knuckle lobes under one broad continuous face, large left thumb lobe, three transverse riveted steel straps and the same broad open oval cuff. Preserve each strap, rivet and thumb/knuckle outline; dark brown leather, warm steel, red cuff panel with its two pale diagonal stripes in exactly their original place; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-iron_mitts--fine"
+  },
+  {
+    "id": "weapon-iron_mitts--relic",
+    "standard_id": "weapon-iron_mitts",
+    "grade": "relic",
+    "label": "Iron Mitts — Relic",
+    "path": "art/icons/gear/weapon-iron_mitts--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-iron_mitts.png",
+      "art/icons/gear/weapon-iron_mitts--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-iron_mitts",
+    "family_references": [
+      "art/icons/gear/weapon-iron_mitts.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single hollow heavy mitt, four closed blunt knuckle lobes under one broad continuous face, large left thumb lobe, three transverse riveted steel straps and the same broad open oval cuff. Preserve each strap, rivet and thumb/knuckle outline; dark brown leather, warm steel, red cuff panel with its two pale diagonal stripes in exactly their original place; no hand inside.\n\nGrade: Relic. Keep the shape and the line. The leather darkens smooth with use like an heirloom, the metal takes a warm patina, the line turns to old gold thread, and the cuff buckle or the knuckle bar carries one small flush gilt ornament. Add one old repair that tells a story: a seam re-stitched in a different, older thread, or a knuckle plate held by a replaced rivet.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single hollow heavy mitt, four closed blunt knuckle lobes under one broad continuous face, large left thumb lobe, three transverse riveted steel straps and the same broad open oval cuff. Preserve each strap, rivet and thumb/knuckle outline; dark brown leather, warm steel, red cuff panel with its two pale diagonal stripes in exactly their original place; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-iron_mitts--masterwork"
+  },
+  {
+    "id": "weapon-iron_mitts--celestial",
+    "standard_id": "weapon-iron_mitts",
+    "grade": "celestial",
+    "label": "Iron Mitts — Celestial",
+    "path": "art/icons/gear/weapon-iron_mitts--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-iron_mitts.png",
+      "art/icons/gear/weapon-iron_mitts--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-iron_mitts",
+    "family_references": [
+      "art/icons/gear/weapon-iron_mitts.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single hollow heavy mitt, four closed blunt knuckle lobes under one broad continuous face, large left thumb lobe, three transverse riveted steel straps and the same broad open oval cuff. Preserve each strap, rivet and thumb/knuckle outline; dark brown leather, warm steel, red cuff panel with its two pale diagonal stripes in exactly their original place; no hand inside.\n\nGrade: Celestial. Keep the shape, the line and the ornament's place. The leather becomes a pale ivory hide, the metal pearl-ivory, unmarked. The stitched line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo. A focus's lens or core window keeps its own colour and glow exactly as before; the ivory-gold light never enters it.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single hollow heavy mitt, four closed blunt knuckle lobes under one broad continuous face, large left thumb lobe, three transverse riveted steel straps and the same broad open oval cuff. Preserve each strap, rivet and thumb/knuckle outline; dark brown leather, warm steel, red cuff panel with its two pale diagonal stripes in exactly their original place; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-iron_mitts--relic"
+  },
+  {
+    "id": "focus-evoker--fine",
+    "standard_id": "focus-evoker",
+    "grade": "fine",
+    "label": "Evoker — Fine",
+    "path": "art/icons/gear/focus-evoker--fine.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-evoker.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-evoker",
+    "family_references": [
+      "art/icons/gear/focus-evoker.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single articulated dark leather focus gauntlet with five armored fingers, one sharply pointed index-finger cap at upper-left, small polygonal brass-edged housing centered on the back containing a hexagonal icy-cyan lens, open oval cuff and narrow buckled wrist strap. Keep every finger plate, rivet, seam, lens size and housing, exact handedness and cyan lens colour #8BDEEE and contained luminosity; no skin or hand inside.\n\nGrade: Fine. The same glove, newly kept. The leather or cloth is cleaned and conditioned, the stitching neat and even, any metal knuckles or plates bright. Add one thin line across the back of the hand: stitched on leather, engraved on metal, woven into the wrap on cloth. Nothing else is added. No hand inside.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single articulated dark leather focus gauntlet with five armored fingers, one sharply pointed index-finger cap at upper-left, small polygonal brass-edged housing centered on the back containing a hexagonal icy-cyan lens, open oval cuff and narrow buckled wrist strap. Keep every finger plate, rivet, seam, lens size and housing, exact handedness and cyan lens colour #8BDEEE and contained luminosity; no skin or hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null
+  },
+  {
+    "id": "focus-evoker--masterwork",
+    "standard_id": "focus-evoker",
+    "grade": "masterwork",
+    "label": "Evoker — Masterwork",
+    "path": "art/icons/gear/focus-evoker--masterwork.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-evoker.png",
+      "art/icons/gear/focus-evoker--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-evoker",
+    "family_references": [
+      "art/icons/gear/focus-evoker.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single articulated dark leather focus gauntlet with five armored fingers, one sharply pointed index-finger cap at upper-left, small polygonal brass-edged housing centered on the back containing a hexagonal icy-cyan lens, open oval cuff and narrow buckled wrist strap. Keep every finger plate, rivet, seam, lens size and housing, exact handedness and cyan lens colour #8BDEEE and contained luminosity; no skin or hand inside.\n\nGrade: Masterwork. Keep everything of the Fine grade. The line becomes a cord or inlay in the item's accent colour (bright brass thread if it has no accent), one clear stripe across the back of the hand. The leather is a finer, darker, supple hide in the same shapes; metal parts are polished crisp; the cuff is bound with a neat edge. A focus's lens or core window is unchanged.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single articulated dark leather focus gauntlet with five armored fingers, one sharply pointed index-finger cap at upper-left, small polygonal brass-edged housing centered on the back containing a hexagonal icy-cyan lens, open oval cuff and narrow buckled wrist strap. Keep every finger plate, rivet, seam, lens size and housing, exact handedness and cyan lens colour #8BDEEE and contained luminosity; no skin or hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "focus-evoker--fine"
+  },
+  {
+    "id": "focus-evoker--relic",
+    "standard_id": "focus-evoker",
+    "grade": "relic",
+    "label": "Evoker — Relic",
+    "path": "art/icons/gear/focus-evoker--relic.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-evoker.png",
+      "art/icons/gear/focus-evoker--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-evoker",
+    "family_references": [
+      "art/icons/gear/focus-evoker.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single articulated dark leather focus gauntlet with five armored fingers, one sharply pointed index-finger cap at upper-left, small polygonal brass-edged housing centered on the back containing a hexagonal icy-cyan lens, open oval cuff and narrow buckled wrist strap. Keep every finger plate, rivet, seam, lens size and housing, exact handedness and cyan lens colour #8BDEEE and contained luminosity; no skin or hand inside.\n\nGrade: Relic. Keep the shape and the line. The leather darkens smooth with use like an heirloom, the metal takes a warm patina, the line turns to old gold thread, and the cuff buckle or the knuckle bar carries one small flush gilt ornament. Add one old repair that tells a story: a seam re-stitched in a different, older thread, or a knuckle plate held by a replaced rivet.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single articulated dark leather focus gauntlet with five armored fingers, one sharply pointed index-finger cap at upper-left, small polygonal brass-edged housing centered on the back containing a hexagonal icy-cyan lens, open oval cuff and narrow buckled wrist strap. Keep every finger plate, rivet, seam, lens size and housing, exact handedness and cyan lens colour #8BDEEE and contained luminosity; no skin or hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "focus-evoker--masterwork"
+  },
+  {
+    "id": "focus-evoker--celestial",
+    "standard_id": "focus-evoker",
+    "grade": "celestial",
+    "label": "Evoker — Celestial",
+    "path": "art/icons/gear/focus-evoker--celestial.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-evoker.png",
+      "art/icons/gear/focus-evoker--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-evoker",
+    "family_references": [
+      "art/icons/gear/focus-evoker.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single articulated dark leather focus gauntlet with five armored fingers, one sharply pointed index-finger cap at upper-left, small polygonal brass-edged housing centered on the back containing a hexagonal icy-cyan lens, open oval cuff and narrow buckled wrist strap. Keep every finger plate, rivet, seam, lens size and housing, exact handedness and cyan lens colour #8BDEEE and contained luminosity; no skin or hand inside.\n\nGrade: Celestial. Keep the shape, the line and the ornament's place. The leather becomes a pale ivory hide, the metal pearl-ivory, unmarked. The stitched line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo. A focus's lens or core window keeps its own colour and glow exactly as before; the ivory-gold light never enters it.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single articulated dark leather focus gauntlet with five armored fingers, one sharply pointed index-finger cap at upper-left, small polygonal brass-edged housing centered on the back containing a hexagonal icy-cyan lens, open oval cuff and narrow buckled wrist strap. Keep every finger plate, rivet, seam, lens size and housing, exact handedness and cyan lens colour #8BDEEE and contained luminosity; no skin or hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "focus-evoker--relic"
+  },
+  {
+    "id": "focus-emanator--fine",
+    "standard_id": "focus-emanator",
+    "grade": "fine",
+    "label": "Emanator — Fine",
+    "path": "art/icons/gear/focus-emanator--fine.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-emanator.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-emanator",
+    "family_references": [
+      "art/icons/gear/focus-emanator.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single five-finger pale plated focus gauntlet with long flared cuff, large round violet lens in a circular brass bezel centered on the back, its four rectangular retaining clips and the straight violet channel running down to a small round wrist fitting. Preserve every plate, finger, round fitting, brass rivet, open cuff, channel location and exact handedness. Lens and channel remain violet #9D7ADC with their original contained luminosity at every grade; no hand inside.\n\nGrade: Fine. The same glove, newly kept. The leather or cloth is cleaned and conditioned, the stitching neat and even, any metal knuckles or plates bright. Add one thin line across the back of the hand: stitched on leather, engraved on metal, woven into the wrap on cloth. Nothing else is added. No hand inside.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single five-finger pale plated focus gauntlet with long flared cuff, large round violet lens in a circular brass bezel centered on the back, its four rectangular retaining clips and the straight violet channel running down to a small round wrist fitting. Preserve every plate, finger, round fitting, brass rivet, open cuff, channel location and exact handedness. Lens and channel remain violet #9D7ADC with their original contained luminosity at every grade; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null
+  },
+  {
+    "id": "focus-emanator--masterwork",
+    "standard_id": "focus-emanator",
+    "grade": "masterwork",
+    "label": "Emanator — Masterwork",
+    "path": "art/icons/gear/focus-emanator--masterwork.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-emanator.png",
+      "art/icons/gear/focus-emanator--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-emanator",
+    "family_references": [
+      "art/icons/gear/focus-emanator.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single five-finger pale plated focus gauntlet with long flared cuff, large round violet lens in a circular brass bezel centered on the back, its four rectangular retaining clips and the straight violet channel running down to a small round wrist fitting. Preserve every plate, finger, round fitting, brass rivet, open cuff, channel location and exact handedness. Lens and channel remain violet #9D7ADC with their original contained luminosity at every grade; no hand inside.\n\nGrade: Masterwork. Keep everything of the Fine grade. The line becomes a cord or inlay in the item's accent colour (bright brass thread if it has no accent), one clear stripe across the back of the hand. The leather is a finer, darker, supple hide in the same shapes; metal parts are polished crisp; the cuff is bound with a neat edge. A focus's lens or core window is unchanged.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single five-finger pale plated focus gauntlet with long flared cuff, large round violet lens in a circular brass bezel centered on the back, its four rectangular retaining clips and the straight violet channel running down to a small round wrist fitting. Preserve every plate, finger, round fitting, brass rivet, open cuff, channel location and exact handedness. Lens and channel remain violet #9D7ADC with their original contained luminosity at every grade; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "focus-emanator--fine"
+  },
+  {
+    "id": "focus-emanator--relic",
+    "standard_id": "focus-emanator",
+    "grade": "relic",
+    "label": "Emanator — Relic",
+    "path": "art/icons/gear/focus-emanator--relic.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-emanator.png",
+      "art/icons/gear/focus-emanator--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-emanator",
+    "family_references": [
+      "art/icons/gear/focus-emanator.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single five-finger pale plated focus gauntlet with long flared cuff, large round violet lens in a circular brass bezel centered on the back, its four rectangular retaining clips and the straight violet channel running down to a small round wrist fitting. Preserve every plate, finger, round fitting, brass rivet, open cuff, channel location and exact handedness. Lens and channel remain violet #9D7ADC with their original contained luminosity at every grade; no hand inside.\n\nGrade: Relic. Keep the shape and the line. The leather darkens smooth with use like an heirloom, the metal takes a warm patina, the line turns to old gold thread, and the cuff buckle or the knuckle bar carries one small flush gilt ornament. Add one old repair that tells a story: a seam re-stitched in a different, older thread, or a knuckle plate held by a replaced rivet.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single five-finger pale plated focus gauntlet with long flared cuff, large round violet lens in a circular brass bezel centered on the back, its four rectangular retaining clips and the straight violet channel running down to a small round wrist fitting. Preserve every plate, finger, round fitting, brass rivet, open cuff, channel location and exact handedness. Lens and channel remain violet #9D7ADC with their original contained luminosity at every grade; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "focus-emanator--masterwork"
+  },
+  {
+    "id": "focus-emanator--celestial",
+    "standard_id": "focus-emanator",
+    "grade": "celestial",
+    "label": "Emanator — Celestial",
+    "path": "art/icons/gear/focus-emanator--celestial.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-emanator.png",
+      "art/icons/gear/focus-emanator--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-emanator",
+    "family_references": [
+      "art/icons/gear/focus-emanator.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single five-finger pale plated focus gauntlet with long flared cuff, large round violet lens in a circular brass bezel centered on the back, its four rectangular retaining clips and the straight violet channel running down to a small round wrist fitting. Preserve every plate, finger, round fitting, brass rivet, open cuff, channel location and exact handedness. Lens and channel remain violet #9D7ADC with their original contained luminosity at every grade; no hand inside.\n\nGrade: Celestial. Keep the shape, the line and the ornament's place. The leather becomes a pale ivory hide, the metal pearl-ivory, unmarked. The stitched line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo. A focus's lens or core window keeps its own colour and glow exactly as before; the ivory-gold light never enters it.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single five-finger pale plated focus gauntlet with long flared cuff, large round violet lens in a circular brass bezel centered on the back, its four rectangular retaining clips and the straight violet channel running down to a small round wrist fitting. Preserve every plate, finger, round fitting, brass rivet, open cuff, channel location and exact handedness. Lens and channel remain violet #9D7ADC with their original contained luminosity at every grade; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "focus-emanator--relic"
+  },
+  {
+    "id": "focus-visualizer--fine",
+    "standard_id": "focus-visualizer",
+    "grade": "fine",
+    "label": "Visualizer — Fine",
+    "path": "art/icons/gear/focus-visualizer--fine.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-visualizer.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-visualizer",
+    "family_references": [
+      "art/icons/gear/focus-visualizer.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single five-finger brown leather focus glove, brass-edged angular back plate, large round blue-teal lens centered in its circular bezel with four rectangular retaining clips, small brass finger bands and short open cuff with a buckled strap. Preserve all contours, finger gaps, panel shapes, rivets, buckle and handedness. Lens stays its original blue-teal #5394AC with original contained luminosity at every grade; no hand inside.\n\nGrade: Fine. The same glove, newly kept. The leather or cloth is cleaned and conditioned, the stitching neat and even, any metal knuckles or plates bright. Add one thin line across the back of the hand: stitched on leather, engraved on metal, woven into the wrap on cloth. Nothing else is added. No hand inside.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single five-finger brown leather focus glove, brass-edged angular back plate, large round blue-teal lens centered in its circular bezel with four rectangular retaining clips, small brass finger bands and short open cuff with a buckled strap. Preserve all contours, finger gaps, panel shapes, rivets, buckle and handedness. Lens stays its original blue-teal #5394AC with original contained luminosity at every grade; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null
+  },
+  {
+    "id": "focus-visualizer--masterwork",
+    "standard_id": "focus-visualizer",
+    "grade": "masterwork",
+    "label": "Visualizer — Masterwork",
+    "path": "art/icons/gear/focus-visualizer--masterwork.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-visualizer.png",
+      "art/icons/gear/focus-visualizer--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-visualizer",
+    "family_references": [
+      "art/icons/gear/focus-visualizer.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single five-finger brown leather focus glove, brass-edged angular back plate, large round blue-teal lens centered in its circular bezel with four rectangular retaining clips, small brass finger bands and short open cuff with a buckled strap. Preserve all contours, finger gaps, panel shapes, rivets, buckle and handedness. Lens stays its original blue-teal #5394AC with original contained luminosity at every grade; no hand inside.\n\nGrade: Masterwork. Keep everything of the Fine grade. The line becomes a cord or inlay in the item's accent colour (bright brass thread if it has no accent), one clear stripe across the back of the hand. The leather is a finer, darker, supple hide in the same shapes; metal parts are polished crisp; the cuff is bound with a neat edge. A focus's lens or core window is unchanged.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single five-finger brown leather focus glove, brass-edged angular back plate, large round blue-teal lens centered in its circular bezel with four rectangular retaining clips, small brass finger bands and short open cuff with a buckled strap. Preserve all contours, finger gaps, panel shapes, rivets, buckle and handedness. Lens stays its original blue-teal #5394AC with original contained luminosity at every grade; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "focus-visualizer--fine"
+  },
+  {
+    "id": "focus-visualizer--relic",
+    "standard_id": "focus-visualizer",
+    "grade": "relic",
+    "label": "Visualizer — Relic",
+    "path": "art/icons/gear/focus-visualizer--relic.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-visualizer.png",
+      "art/icons/gear/focus-visualizer--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-visualizer",
+    "family_references": [
+      "art/icons/gear/focus-visualizer.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single five-finger brown leather focus glove, brass-edged angular back plate, large round blue-teal lens centered in its circular bezel with four rectangular retaining clips, small brass finger bands and short open cuff with a buckled strap. Preserve all contours, finger gaps, panel shapes, rivets, buckle and handedness. Lens stays its original blue-teal #5394AC with original contained luminosity at every grade; no hand inside.\n\nGrade: Relic. Keep the shape and the line. The leather darkens smooth with use like an heirloom, the metal takes a warm patina, the line turns to old gold thread, and the cuff buckle or the knuckle bar carries one small flush gilt ornament. Add one old repair that tells a story: a seam re-stitched in a different, older thread, or a knuckle plate held by a replaced rivet.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single five-finger brown leather focus glove, brass-edged angular back plate, large round blue-teal lens centered in its circular bezel with four rectangular retaining clips, small brass finger bands and short open cuff with a buckled strap. Preserve all contours, finger gaps, panel shapes, rivets, buckle and handedness. Lens stays its original blue-teal #5394AC with original contained luminosity at every grade; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "focus-visualizer--masterwork"
+  },
+  {
+    "id": "focus-visualizer--celestial",
+    "standard_id": "focus-visualizer",
+    "grade": "celestial",
+    "label": "Visualizer — Celestial",
+    "path": "art/icons/gear/focus-visualizer--celestial.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-visualizer.png",
+      "art/icons/gear/focus-visualizer--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-visualizer",
+    "family_references": [
+      "art/icons/gear/focus-visualizer.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single five-finger brown leather focus glove, brass-edged angular back plate, large round blue-teal lens centered in its circular bezel with four rectangular retaining clips, small brass finger bands and short open cuff with a buckled strap. Preserve all contours, finger gaps, panel shapes, rivets, buckle and handedness. Lens stays its original blue-teal #5394AC with original contained luminosity at every grade; no hand inside.\n\nGrade: Celestial. Keep the shape, the line and the ornament's place. The leather becomes a pale ivory hide, the metal pearl-ivory, unmarked. The stitched line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo. A focus's lens or core window keeps its own colour and glow exactly as before; the ivory-gold light never enters it.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single five-finger brown leather focus glove, brass-edged angular back plate, large round blue-teal lens centered in its circular bezel with four rectangular retaining clips, small brass finger bands and short open cuff with a buckled strap. Preserve all contours, finger gaps, panel shapes, rivets, buckle and handedness. Lens stays its original blue-teal #5394AC with original contained luminosity at every grade; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "focus-visualizer--relic"
+  },
+  {
+    "id": "focus-attuner--fine",
+    "standard_id": "focus-attuner",
+    "grade": "fine",
+    "label": "Attuner — Fine",
+    "path": "art/icons/gear/focus-attuner--fine.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-attuner.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-attuner",
+    "family_references": [
+      "art/icons/gear/focus-attuner.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single brown leather focus glove in its oblique palm-away pose with five rounded plated fingers and a sloping short open cuff, pale angular plate across the back, small round rose lens in a brass bezel near the wrist and thin gold wires fanning to the fingers with one rose channel running to the middle finger. Preserve every wire, finger loop, plate, cuff seam, lens location and handedness. Rose lens and its channel stay #EB95B7 with original contained luminosity at every grade; no hand inside.\n\nGrade: Fine. The same glove, newly kept. The leather or cloth is cleaned and conditioned, the stitching neat and even, any metal knuckles or plates bright. Add one thin line across the back of the hand: stitched on leather, engraved on metal, woven into the wrap on cloth. Nothing else is added. No hand inside.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single brown leather focus glove in its oblique palm-away pose with five rounded plated fingers and a sloping short open cuff, pale angular plate across the back, small round rose lens in a brass bezel near the wrist and thin gold wires fanning to the fingers with one rose channel running to the middle finger. Preserve every wire, finger loop, plate, cuff seam, lens location and handedness. Rose lens and its channel stay #EB95B7 with original contained luminosity at every grade; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null
+  },
+  {
+    "id": "focus-attuner--masterwork",
+    "standard_id": "focus-attuner",
+    "grade": "masterwork",
+    "label": "Attuner — Masterwork",
+    "path": "art/icons/gear/focus-attuner--masterwork.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-attuner.png",
+      "art/icons/gear/focus-attuner--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-attuner",
+    "family_references": [
+      "art/icons/gear/focus-attuner.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single brown leather focus glove in its oblique palm-away pose with five rounded plated fingers and a sloping short open cuff, pale angular plate across the back, small round rose lens in a brass bezel near the wrist and thin gold wires fanning to the fingers with one rose channel running to the middle finger. Preserve every wire, finger loop, plate, cuff seam, lens location and handedness. Rose lens and its channel stay #EB95B7 with original contained luminosity at every grade; no hand inside.\n\nGrade: Masterwork. Keep everything of the Fine grade. The line becomes a cord or inlay in the item's accent colour (bright brass thread if it has no accent), one clear stripe across the back of the hand. The leather is a finer, darker, supple hide in the same shapes; metal parts are polished crisp; the cuff is bound with a neat edge. A focus's lens or core window is unchanged.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single brown leather focus glove in its oblique palm-away pose with five rounded plated fingers and a sloping short open cuff, pale angular plate across the back, small round rose lens in a brass bezel near the wrist and thin gold wires fanning to the fingers with one rose channel running to the middle finger. Preserve every wire, finger loop, plate, cuff seam, lens location and handedness. Rose lens and its channel stay #EB95B7 with original contained luminosity at every grade; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "focus-attuner--fine"
+  },
+  {
+    "id": "focus-attuner--relic",
+    "standard_id": "focus-attuner",
+    "grade": "relic",
+    "label": "Attuner — Relic",
+    "path": "art/icons/gear/focus-attuner--relic.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-attuner.png",
+      "art/icons/gear/focus-attuner--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-attuner",
+    "family_references": [
+      "art/icons/gear/focus-attuner.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single brown leather focus glove in its oblique palm-away pose with five rounded plated fingers and a sloping short open cuff, pale angular plate across the back, small round rose lens in a brass bezel near the wrist and thin gold wires fanning to the fingers with one rose channel running to the middle finger. Preserve every wire, finger loop, plate, cuff seam, lens location and handedness. Rose lens and its channel stay #EB95B7 with original contained luminosity at every grade; no hand inside.\n\nGrade: Relic. Keep the shape and the line. The leather darkens smooth with use like an heirloom, the metal takes a warm patina, the line turns to old gold thread, and the cuff buckle or the knuckle bar carries one small flush gilt ornament. Add one old repair that tells a story: a seam re-stitched in a different, older thread, or a knuckle plate held by a replaced rivet.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single brown leather focus glove in its oblique palm-away pose with five rounded plated fingers and a sloping short open cuff, pale angular plate across the back, small round rose lens in a brass bezel near the wrist and thin gold wires fanning to the fingers with one rose channel running to the middle finger. Preserve every wire, finger loop, plate, cuff seam, lens location and handedness. Rose lens and its channel stay #EB95B7 with original contained luminosity at every grade; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "focus-attuner--masterwork"
+  },
+  {
+    "id": "focus-attuner--celestial",
+    "standard_id": "focus-attuner",
+    "grade": "celestial",
+    "label": "Attuner — Celestial",
+    "path": "art/icons/gear/focus-attuner--celestial.png",
+    "kind": "focus",
+    "references": [
+      "art/icons/gear/focus-attuner.png",
+      "art/icons/gear/focus-attuner--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "focus-attuner",
+    "family_references": [
+      "art/icons/gear/focus-attuner.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single brown leather focus glove in its oblique palm-away pose with five rounded plated fingers and a sloping short open cuff, pale angular plate across the back, small round rose lens in a brass bezel near the wrist and thin gold wires fanning to the fingers with one rose channel running to the middle finger. Preserve every wire, finger loop, plate, cuff seam, lens location and handedness. Rose lens and its channel stay #EB95B7 with original contained luminosity at every grade; no hand inside.\n\nGrade: Celestial. Keep the shape, the line and the ornament's place. The leather becomes a pale ivory hide, the metal pearl-ivory, unmarked. The stitched line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo. A focus's lens or core window keeps its own colour and glow exactly as before; the ivory-gold light never enters it.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.",
+    "keep_line": "the same single brown leather focus glove in its oblique palm-away pose with five rounded plated fingers and a sloping short open cuff, pale angular plate across the back, small round rose lens in a brass bezel near the wrist and thin gold wires fanning to the fingers with one rose channel running to the middle finger. Preserve every wire, finger loop, plate, cuff seam, lens location and handedness. Rose lens and its channel stay #EB95B7 with original contained luminosity at every grade; no hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "focus-attuner--relic"
   }
 ]

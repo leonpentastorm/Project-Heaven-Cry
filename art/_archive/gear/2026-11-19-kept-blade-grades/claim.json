@@ -1,6 +1,6 @@
 {
   "branch": "art/2026-11-19-kept-blade-grades",
-  "updated_utc": "2026-11-19T07:45:49.211491+00:00",
+  "updated_utc": "2026-11-19T09:40:51.793314+00:00",
   "ids": [
     "weapon-kemizuchi_duelling_blade--fine",
     "weapon-kemizuchi_duelling_blade--masterwork",
@@ -33,7 +33,43 @@
     "weapon-maul--fine",
     "weapon-maul--masterwork",
     "weapon-maul--relic",
-    "weapon-maul--celestial"
+    "weapon-maul--celestial",
+    "weapon-striking_gloves--fine",
+    "weapon-striking_gloves--masterwork",
+    "weapon-striking_gloves--relic",
+    "weapon-striking_gloves--celestial",
+    "weapon-hand_wraps--fine",
+    "weapon-hand_wraps--masterwork",
+    "weapon-hand_wraps--relic",
+    "weapon-hand_wraps--celestial",
+    "weapon-knuckledusters--fine",
+    "weapon-knuckledusters--masterwork",
+    "weapon-knuckledusters--relic",
+    "weapon-knuckledusters--celestial",
+    "weapon-kemizuchi_strikers--fine",
+    "weapon-kemizuchi_strikers--masterwork",
+    "weapon-kemizuchi_strikers--relic",
+    "weapon-kemizuchi_strikers--celestial",
+    "weapon-iron_mitts--fine",
+    "weapon-iron_mitts--masterwork",
+    "weapon-iron_mitts--relic",
+    "weapon-iron_mitts--celestial",
+    "focus-evoker--fine",
+    "focus-evoker--masterwork",
+    "focus-evoker--relic",
+    "focus-evoker--celestial",
+    "focus-emanator--fine",
+    "focus-emanator--masterwork",
+    "focus-emanator--relic",
+    "focus-emanator--celestial",
+    "focus-visualizer--fine",
+    "focus-visualizer--masterwork",
+    "focus-visualizer--relic",
+    "focus-visualizer--celestial",
+    "focus-attuner--fine",
+    "focus-attuner--masterwork",
+    "focus-attuner--relic",
+    "focus-attuner--celestial"
   ],
   "standards": [
     "weapon-kemizuchi_duelling_blade",
@@ -43,7 +79,16 @@
     "weapon-war_axe",
     "weapon-glaive",
     "weapon-lance",
-    "weapon-maul"
+    "weapon-maul",
+    "weapon-striking_gloves",
+    "weapon-hand_wraps",
+    "weapon-knuckledusters",
+    "weapon-kemizuchi_strikers",
+    "weapon-iron_mitts",
+    "focus-evoker",
+    "focus-emanator",
+    "focus-visualizer",
+    "focus-attuner"
   ],
   "other_agent_proof_standards": [
     "weapon-katana",
@@ -58,5 +103,7 @@
     "weapon-legion_gladius"
   ],
   "peer_canonical_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
-  "target": 32
+  "target": 68,
+  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7005374794",
+  "latest_implementer_commit": "c22cc8f7bd27fb73fb99cebea7b3ef2b57748454"
 }

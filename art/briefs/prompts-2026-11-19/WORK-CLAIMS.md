@@ -1,3 +1,14 @@
+# Live claim expansion — 19 November 2026
+
+Shared mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Check comments before taking IDs.
+
+`art/2026-11-19-kept-blade-grades` owns68 candidates: previous32 plus36 gloves/foci, four grades each for `weapon-striking_gloves`, `weapon-hand_wraps`, `weapon-knuckledusters`, `weapon-kemizuchi_strikers`, `weapon-iron_mitts`, `focus-evoker`, `focus-emanator`, `focus-visualizer`, `focus-attuner`. The first25 are delivered; seven earlier jobs are service-blocked/dependent. See `art/_archive/gear/2026-11-19-kept-blade-grades/queue.json` for exact status.
+
+Peer grade-proof has58 delivered. Its10 remaining headgear jobs are released (Ballistic Helmet Relic/Celestial, Night Goggles4, Gas Mask4). Other kept armour52, guns24, heavy8, powered8, thrown4 remain free at this snapshot:96 further candidates. Do not take an ID without checking issue3. All candidates remain unapproved.
+
+---
+Historical claim snapshots below; latest mailbox and the section above take precedence.
+
 # Current grade lane — acknowledged split
 
 Coordination and acknowledgment: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . This worker owns **32 candidates**: four grades for kemizuchi_duelling_blade, adamantile_greatsword, ork_machete, hatchet, war_axe, glaive, lance and maul. Exact ids are in the active claim.json. The other instance owns Katana/Drifter, combat_knife/sabre/legion_gladius, recurve_bow/longbow, crossbow/repeating_crossbow and shield-buckler/riot_shield/pavise.
