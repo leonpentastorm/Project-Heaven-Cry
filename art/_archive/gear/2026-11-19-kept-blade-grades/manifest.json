@@ -2648,6 +2648,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-iron_mitts--relic",
+      "path": "art/icons/gear/weapon-iron_mitts--relic.png",
+      "sha256": "989b085e949628f57711c3e7713e690c91a5710a98ba8eb82773722ffab39f3d",
+      "label": "Iron Mitts — Relic",
+      "family": "weapon-iron_mitts",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-iron_mitts--relic.png",
+        "sha256": "f5fa498a6db288fc10cb67b6eca27cfdc389f53cfd626e848f60453ed856ec0a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-iron_mitts--relic.png",
+        "sha256": "989b085e949628f57711c3e7713e690c91a5710a98ba8eb82773722ffab39f3d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-iron_mitts--relic.txt",
+        "sha256": "fa4bfcdb9ffeed5cfbd39a50246ce853758fff4c0edda0e4c957638f12e164b0"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-iron_mitts--relic/v1/source.png",
+          "sha256": "1acfcea897f066de5903682f0d6db42a40a7b4ad8f5c518bbab946dff33b31e2"
+        },
+        {
+          "path": "art/icons/gear/weapon-iron_mitts.png",
+          "sha256": "026003405fcfc8c519a886c370f5e6f0728ff8eb586cba7871225cd62e46b71a"
+        },
+        {
+          "path": "art/icons/gear/weapon-iron_mitts--masterwork.png",
+          "sha256": "4a644356dfe74e098e3fcda9510ea8f7ba3d743e5288a233e96d0926e5adda3c"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-iron_mitts--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-iron_mitts--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-iron_mitts--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-iron_mitts--relic.png"
+      },
+      "export_hashes": {
+        "256": "ab225e6a7557313a81139450445446e5588698c5895c7c67351e9fac185f553b",
+        "128": "0045b035bca11d5be9ac448c23e53a9ae441874f5d184f2466eac8c13e28e159",
+        "64": "9c9b2dc080c4f7b6a47df0d78b69f673cb9b0ac5f7b8c13ace33e08d40121112",
+        "32": "ec8af10606c53ccf5f4ac5782ddcb29f4d711f18ccdd1d32eea01c171a047d35"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-iron_mitts",
+      "outline": {
+        "solid_alpha_iou": 0.9766138740690317,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 23
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

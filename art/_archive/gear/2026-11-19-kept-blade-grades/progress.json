@@ -44,7 +44,8 @@
     "weapon-kemizuchi_strikers--relic",
     "weapon-kemizuchi_strikers--celestial",
     "weapon-iron_mitts--fine",
-    "weapon-iron_mitts--masterwork"
+    "weapon-iron_mitts--masterwork",
+    "weapon-iron_mitts--relic"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -54,7 +55,6 @@
     "weapon-war_axe--masterwork",
     "weapon-war_axe--relic",
     "weapon-war_axe--celestial",
-    "weapon-iron_mitts--relic",
     "weapon-iron_mitts--celestial",
     "focus-evoker--fine",
     "focus-evoker--masterwork",
@@ -75,7 +75,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T10:09:34.722571+00:00",
+  "updated_utc": "2026-11-19T10:12:06.080625+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3
 }
