@@ -12553,3 +12553,6 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     target-aware price (N20, on the shared lane's branch). With it, the build is one general reader at the cost site:
     the action's key in `brake.actions`, the count from `uses(h).on(target)` in `brake.per`, the MP price × `mult` to
     that count. Touch is to be cut by the attribute lanes (Camaraderie takes the healing verbs): its row goes with it.
+5611. **The two keepers' names match their faces** (item 2914; the recommendation of 15 Nov 2026, built under "no answer
+    means yes", Leon may reverse it): the Smetanita trader (`survival-keeper-works`, painted as a woman automaton) is
+    Corra Vell; the rim chandler (`survival-keeper-rim`, a man) is Ivo Smetanin (`survival.json faces`). Names only.

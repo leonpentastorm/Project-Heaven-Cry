@@ -645,7 +645,7 @@
           "sell": ["Salvage pays. Not much, but it pays."],
           "give": ["Pass it along. Somebody'll need it more by tonight."]
         }, "provisional": true },
-      { "id": "trader", "name": "Ivo Smetanin", "role": "Smetanita trader", "node": "shop", "settings": ["works"], "portrait": "survival-keeper-works", "fallback": "pell-morrow", "backdrop": "shop-works", "backdrop_pending": false, "backdrop_fallback": "m813-rear-pad-loading", "bias": {"focus": 2.0, "mana": 2.0}, "price": 1.15,
+      { "id": "trader", "name": "Corra Vell", "role": "Smetanita trader", "node": "shop", "settings": ["works"], "portrait": "survival-keeper-works", "fallback": "pell-morrow", "backdrop": "shop-works", "backdrop_pending": false, "backdrop_fallback": "m813-rear-pad-loading", "bias": {"focus": 2.0, "mana": 2.0}, "price": 1.15,
         "lines": {
           "greet": ["Smetanita goods. Precision costs, and precision is all I sell.", "Gloves, cores, tools of the trade. The foundry makes, I deliver.", "Inspect anything. Touch nothing you won't buy."],
           "bought": ["A sound investment.", "Calibrated this morning."],
@@ -675,7 +675,7 @@
           "sell": ["The house takes it back, and gives a little."],
           "give": ["Give freely. It is the only giving that counts."]
         }, "provisional": true },
-      { "id": "chandler", "name": "Corra Vell", "role": "Rim chandler", "node": "shop", "settings": ["rim"], "portrait": "survival-keeper-rim", "fallback": "asher-fen", "backdrop": "shop-rim", "backdrop_pending": false, "backdrop_fallback": null, "bias": {"item": 1.5, "core": 1.5}, "price": 1.0,
+      { "id": "chandler", "name": "Ivo Smetanin", "role": "Rim chandler", "node": "shop", "settings": ["rim"], "portrait": "survival-keeper-rim", "fallback": "asher-fen", "backdrop": "shop-rim", "backdrop_pending": false, "backdrop_fallback": null, "bias": {"item": 1.5, "core": 1.5}, "price": 1.0,
         "lines": {
           "greet": ["Air's recycled, prices aren't. Take a look.", "Last stop before the dark. Stock up.", "Close the hatch behind you. We pay for the heat."],
           "bought": ["Sealed and stamped.", "Don't let it vent."],
