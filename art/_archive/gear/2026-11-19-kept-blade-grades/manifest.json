@@ -4930,6 +4930,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-torso_class5_juggernaut--celestial",
+      "path": "art/icons/gear/armour-torso_class5_juggernaut--celestial.png",
+      "sha256": "ea8a89a94e72b5b11359f0ed7fbfccdae07830ab5631945fe5bd50a8f9604d02",
+      "label": "Juggernaut Armour — Celestial",
+      "family": "armour-torso_class5_juggernaut",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-torso_class5_juggernaut--celestial.png",
+        "sha256": "d41297e72f31056a0e011c2cd73ef10baced3eaa101328acd2c6f85e0e11462c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-torso_class5_juggernaut--celestial.png",
+        "sha256": "ea8a89a94e72b5b11359f0ed7fbfccdae07830ab5631945fe5bd50a8f9604d02"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-torso_class5_juggernaut--celestial.txt",
+        "sha256": "e8b1319b46777c176a231ecbcfa5c40295f9bd42d7a3641dfcfc20219a9fab57"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-torso_class5_juggernaut.png",
+          "sha256": "0330e412b117353ba0c949b970e873970eaa5ee2e60c320e284a404d16ad990c"
+        },
+        {
+          "path": "art/icons/gear/armour-torso_class5_juggernaut--relic.png",
+          "sha256": "a4bce832ac870baf7f7f1d6d8eec931510ef09259e3d7405c38d1428dff306a7"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-torso_class5_juggernaut--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-torso_class5_juggernaut--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-torso_class5_juggernaut--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-torso_class5_juggernaut--celestial.png"
+      },
+      "export_hashes": {
+        "256": "b4d42032cc28301d4bdc515de727372603223dbdb4c9c7e1e419b23c55933a93",
+        "128": "1a93a902012db2cc3286fff0e5532a4f4d4ef61a973aea2be71d0e9d39c2a5e5",
+        "64": "81c70e69b382fe7779fbe3d75926ee9c4938dcb1947ef925e63488582e5751dc",
+        "32": "63f5e360663579002a20556854f4d16943d9c0f7b11c8cb72ad49607d18b5448"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-torso_class5_juggernaut",
+      "outline": {
+        "solid_alpha_iou": 0.9875462020848041,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 19
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
