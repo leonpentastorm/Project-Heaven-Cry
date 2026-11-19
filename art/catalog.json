@@ -19803,6 +19803,60 @@
         "64": "art/icons/gear/exports/64/weapon-kemizuchi_strikers.png",
         "32": "art/icons/gear/exports/32/weapon-kemizuchi_strikers.png"
       }
+    },
+    "mod-follow_guard": {
+      "label": "Shield follow (mod)",
+      "path": "art/icons/gear/mod-follow_guard.png",
+      "sha256": "30067668d3581f0e9bcb5b3c901e9e2d20f896cf6953afc2853f67f0f5b5d75b",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "gear",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/007-mod-follow_guard.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/mod-follow_guard.png",
+        "128": "art/icons/gear/exports/128/mod-follow_guard.png",
+        "64": "art/icons/gear/exports/64/mod-follow_guard.png",
+        "32": "art/icons/gear/exports/32/mod-follow_guard.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:137"
+    },
+    "mod-afterword": {
+      "label": "Afterword's edge (mod)",
+      "path": "art/icons/gear/mod-afterword.png",
+      "sha256": "c3ef7f845d32dd536da258281002c84ece826653adb145412f03870d9a5239ea",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "gear",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/008-mod-afterword.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/mod-afterword.png",
+        "128": "art/icons/gear/exports/128/mod-afterword.png",
+        "64": "art/icons/gear/exports/64/mod-afterword.png",
+        "32": "art/icons/gear/exports/32/mod-afterword.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:147"
     }
   },
   "survival_art": {
@@ -20905,7 +20959,7 @@
     },
     "survival-k034": {
       "label": "dress-2.png",
-      "path": "art/sprites/kit/ahoc/dress-2.png",
+      "path": "art/_archive/prompt-pack/2026-11-19/superseded/art/sprites/kit/ahoc/dress-2.png",
       "sha256": "733a68112d5c86bd8b4f4ead63758fb351603ca144d4641e4752c384b2ef5c47",
       "width": 256,
       "height": 256,
@@ -23033,7 +23087,7 @@
     },
     "survival-k146": {
       "label": "ground-2.png",
-      "path": "art/sprites/kit/shrine/ground-2.png",
+      "path": "art/_archive/prompt-pack/2026-11-19/superseded/art/sprites/kit/shrine/ground-2.png",
       "sha256": "9bd37bb78c1d93b31b0f0af736e0c4f999af4c86d0154717bfa8812ea477295d",
       "width": 1024,
       "height": 1024,
@@ -26314,7 +26368,25 @@
       "delivery": "survival-k034",
       "status": "review-candidate",
       "use": false,
-      "why": "lettering painted on the floor (the brief: no text, no letters)"
+      "why": "Replacement candidate awaiting in-game join review",
+      "previous_path": "art/_archive/prompt-pack/2026-11-19/superseded/art/sprites/kit/ahoc/dress-2.png",
+      "previous_sha256": "733a68112d5c86bd8b4f4ead63758fb351603ca144d4641e4752c384b2ef5c47",
+      "label": "AHOC dress 2",
+      "sha256": "91c553a08c583283b04a67034394b5a825a43d9416189aeca23e4013b2477e66",
+      "format": "png",
+      "mode": "kit",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/012-dress-2.png",
+      "upscaled": false,
+      "exports": {},
+      "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:197"
     },
     "kit-ahoc-dress-3": {
       "setting": "ahoc",
@@ -28061,7 +28133,25 @@
       "delivery": "survival-k146",
       "status": "review-candidate",
       "use": false,
-      "why": "a seam at the top-bottom join: the octagon rows lose their step (tools/art/kit_seams.py)"
+      "why": "Replacement candidate awaiting in-game join review",
+      "previous_path": "art/_archive/prompt-pack/2026-11-19/superseded/art/sprites/kit/shrine/ground-2.png",
+      "previous_sha256": "9bd37bb78c1d93b31b0f0af736e0c4f999af4c86d0154717bfa8812ea477295d",
+      "label": "Shrine ground 2",
+      "sha256": "116638cb5b7d59d68b392bfbe2b1ac96ef57b0846359b937c7635e790a4c5460",
+      "format": "png",
+      "mode": "ground",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "opaque",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/011-ground-2.png",
+      "upscaled": false,
+      "exports": {},
+      "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:187"
     },
     "kit-shrine-ground-3": {
       "setting": "shrine",

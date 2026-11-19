@@ -52,6 +52,8 @@ def export(image, size, kind, name):
     image = image.convert("RGBA")
     if kind == "ground" or name == "wall-corner":
         assert min(image.size) >= size
+        if kind == "ground":
+            assert image.getchannel("A").getextrema() == (255, 255), "Ground must be opaque"
         return image.resize((size, size), RESAMPLE)
     box = image.getchannel("A").getbbox()
     assert box and image.getchannel("A").getextrema() == (0, 255), "Missing transparent background or solid ink"
@@ -172,6 +174,13 @@ def deliver(jobs):
             join = max(metrics["ratio_x"], metrics["ratio_y"], metrics["band_x"], metrics["band_y"])
             assert join <= seams.SEAM_MAX, f"Ground seam exceeds threshold: {join:.2f}"
             extra["seam_metrics"] = {k: float(v) for k, v in metrics.items()}
+        if n == 13:
+            fixed = np.asarray(image.getchannel("A")) >= 127
+            straight_image = Image.open(ROOT / "art/sprites/kit/rim/wall-straight.png").convert("RGBA")
+            straight = np.asarray(straight_image.getchannel("A")) >= 127
+            assert np.array_equal(fixed[:, 0], straight[:, -1]), "Rim left end misses the straight opening"
+            assert np.array_equal(fixed[-1, :], straight[:, 0]), "Rim bottom end misses the rotated straight opening"
+            assert not (fixed[0, :].any() or fixed[:, -1].any()), "Rim corner has an unexpected opening"
         entry = catalog.setdefault(family, {}).get(key, {}).copy()
         old = ROOT / entry.get("path", job["path"])
         if old.is_file():

@@ -3148,22 +3148,26 @@ e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4  art/_archive/p
 c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/perks/wick/replaced/2026-11-16/shrug-it-off.png
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
-db09d8d283a824b76e28c7f4e5d56d5bbe3627894aab3f422793936ff0ac432d  art/_archive/prompt-pack/2026-11-19/HANDOFF.md
+67a0b53220ee1727f5e8015b23b88a4bf2a7b02cda994d460cb8edfbf586eb59  art/_archive/prompt-pack/2026-11-19/HANDOFF.md
 68259168b9a0bdae8a3725b16edcad094e0e80af839d777b654c3bf731e5ad24  art/_archive/prompt-pack/2026-11-19/SPEC-UPDATE.md
 b5f96710e4519a4a4da2a7f8e47632fac97ff50d28cbb6ed38aa51c3853fcc76  art/_archive/prompt-pack/2026-11-19/asset-build-check.txt
 53a796e2821165185750f766accc3da9c9ecf119e0d266871323fbac659f13e9  art/_archive/prompt-pack/2026-11-19/checkpoint.py
-afb0a2ef9567cd56767c24206ef4c3996978bd0381ab389b520e1937fdbba250  art/_archive/prompt-pack/2026-11-19/deliver.py
+582fb3c80b6aa2754991b169df1dce984dc754ba723324c0ee37702123e86d5a  art/_archive/prompt-pack/2026-11-19/deliver.py
 ba25f7da2445b248a4efaf13548568d050b5498880abacba727a07bb9da5d6a9  art/_archive/prompt-pack/2026-11-19/full-library-check.txt
 acb44d47bf43d913c4569bd3cbd0cecd60fb2d8d35551c36a1e7208264f09cd4  art/_archive/prompt-pack/2026-11-19/generate-ink.js
 9db4e9db8ae2e42ef9b0b82236a9a2152ab9a2a8b868bd00e229e57fd32f86ac  art/_archive/prompt-pack/2026-11-19/generate-painted.js
 6aff4dfe18ef2c3233f77511408659cdd60a0fa38229c7aa4ec4a2d915c7c9db  art/_archive/prompt-pack/2026-11-19/generation-failures/failure-53-1795057558567.json
-acc240e489ee0e4756de0e897b5a3f47cde23e15c3281bd84a549e3e5cb8cc91  art/_archive/prompt-pack/2026-11-19/manifest.json
+9eedad0621e1491f5bb813ab5ea0735faf9cfa0ad79e985236ef8d262a40679f  art/_archive/prompt-pack/2026-11-19/manifest.json
 8b1b2c5d3cc564cfaadb5eb38bbfe4935f8f2c9ad71a78c138973727db01790c  art/_archive/prompt-pack/2026-11-19/native/001-fight-approach.png
 589b79858daac86a32585c03e930ccf1d30728c968c98a7a56311867f170c8a4  art/_archive/prompt-pack/2026-11-19/native/002-level-up.png
 4cd5ea974fe4ac72f747c0081a8756f24f51bce043542753aad14678758a75b3  art/_archive/prompt-pack/2026-11-19/native/003-second-wind.png
 aa5c99d459813f307f637cf02e163b37c594d6f1e6123c839364a1c35ddd3a91  art/_archive/prompt-pack/2026-11-19/native/004-draw-fire.png
 0625f5822a3aabd0a02c0a69402fc010f688cd5f6db1c2573af7de50d3741378  art/_archive/prompt-pack/2026-11-19/native/005-wind-up.png
 e12dbd429ba6a7eba89c84407872e6b4174e4bf6bf79037a66e0a753451f3bea  art/_archive/prompt-pack/2026-11-19/native/006-read-the-swing.png
+325e6907b52ebb9d9dd947cf70d49b1fc1647d50248d6c00338db3f5215e7e7d  art/_archive/prompt-pack/2026-11-19/native/007-mod-follow_guard.png
+5ef02f4600515f3bca7e47154c49f075049adb42cf796072039230f7333cd431  art/_archive/prompt-pack/2026-11-19/native/008-mod-afterword.png
+147bb985c5220f7ab4ca7f4fb742bf8388dc113a77ead72d3c6d81cf0d7d3e8b  art/_archive/prompt-pack/2026-11-19/native/011-ground-2.png
+ed1293fdd0c47b6c279040de8f962faf4259450df53f1ddaec3234468ef59abc  art/_archive/prompt-pack/2026-11-19/native/012-dress-2.png
 f9504fba998b445338883fb1d7d08a4d7409a2e4620a1cdb640fabc717660195  art/_archive/prompt-pack/2026-11-19/native/038-point-man.png
 766ed2d0d40fe0863ec0e4f7ed9a383166654c2649494e86c3c145427947205e  art/_archive/prompt-pack/2026-11-19/native/039-unflinching.png
 7a82f5efbc7ed049163134ace2eb4eab383e065031f34882668f863025cf35f7  art/_archive/prompt-pack/2026-11-19/native/040-marrow-talk.png
@@ -3216,7 +3220,7 @@ f200a875c854e656f6c6a022d535e31bda4a0c81d63d86524818156c6f9097b6  art/_archive/p
 099943fdce5c9527e1c92dcd9aab246ad4eade62f02957061eff86886b22a051  art/_archive/prompt-pack/2026-11-19/native/088-blessed-aim.png
 80afc58a078d43d61ce90b8ed199c3e62501073ac7632d973e2176c2a4a1763a  art/_archive/prompt-pack/2026-11-19/order.json
 042a050d1148a07bda28957bbae5844a2ae068e840b6d07ebc819c2ded384859  art/_archive/prompt-pack/2026-11-19/package.py
-95f2cf8f82f8c3a85d11cdf28a00990c59aa4937e71ac7e968d3188cc615f37f  art/_archive/prompt-pack/2026-11-19/progress.json
+18ee14cb2c77d95ed50510db6deff1dabb43a4ae2d8770ccafc093295bebb78a  art/_archive/prompt-pack/2026-11-19/progress.json
 f2bb3844fa9f109fd737f87f0d167c3e4dc121f0f0988fb2ea94ed000724d6b7  art/_archive/prompt-pack/2026-11-19/queue.json
 632b19c6566cf0e63e8381e3daed8d495bcbe99c0dfc5b4eae038bb2d603a5ac  art/_archive/prompt-pack/2026-11-19/records/001.json
 c29e9c09a0e12d8b03754eebcafe9c6510800e83da06caca6b7e734223229e21  art/_archive/prompt-pack/2026-11-19/records/002.json
@@ -3224,6 +3228,10 @@ c29e9c09a0e12d8b03754eebcafe9c6510800e83da06caca6b7e734223229e21  art/_archive/p
 ab8b65bec4d6cb6ecac3ea5b2cc454fc78b2024c4146fb6e90a44368ea068318  art/_archive/prompt-pack/2026-11-19/records/004.json
 f3096985bd989c1f5e1489ce58c26f9debfa35ab590dde76409d3a18169e745f  art/_archive/prompt-pack/2026-11-19/records/005.json
 3bfbcf0231b23e7ca1c606ca5b41b013b15a6f730ac6611c813525d1a349a7e3  art/_archive/prompt-pack/2026-11-19/records/006.json
+1e71d4ff5896505f3e13521b49c29296d130ef2e6b59f9dde1c34ea2a49e4c5e  art/_archive/prompt-pack/2026-11-19/records/007.json
+12e7bc8788a8d5a7a351fc67b18348dfc070d0ccdb13c541cc2e9ba98f19c91b  art/_archive/prompt-pack/2026-11-19/records/008.json
+f96301aec6fcd13f6ce47884b287420731022313ad6d3b80570419876834cbb1  art/_archive/prompt-pack/2026-11-19/records/011.json
+a0e754ac3b9ee1c61c4e78bda2b24511df884227ca7f686d2e4060b0117a8906  art/_archive/prompt-pack/2026-11-19/records/012.json
 1ebc6bd0b1b3e8da2708a14d4933e86f05a9ea2eb42c98bed3b2699eb79477e7  art/_archive/prompt-pack/2026-11-19/records/038.json
 edbda739989c4ee573b291d935d2537da3fb1d7bc67354b48ca3b31a3e07e2d7  art/_archive/prompt-pack/2026-11-19/records/039.json
 7bf0d26895aabf3c45802676a5a2bedfb1dbce2309b8a15f21b565e4c09c5105  art/_archive/prompt-pack/2026-11-19/records/040.json
@@ -3282,6 +3290,12 @@ f51ce33f37870ace609bd761919081be7c779dee37b43d433ddad6bb57cc5358  art/_archive/p
 e486a727f98ea69f5762d3010b8cf0f01a35f21c85ddc37ae075a8167db756ec  art/_archive/prompt-pack/2026-11-19/references/works-kit.jpg
 5b42abb9d6cdf13d5ddbc3674a33915ef5dc1692f26e446b33efb22028230c49  art/_archive/prompt-pack/2026-11-19/rejected/003-flame-head/native.png
 1408df758b8e1995c252252fb931068eceb042644fb6c29d64f7a694f58cf3a0  art/_archive/prompt-pack/2026-11-19/rejected/003-flame-head/result.json
+4c93883136c1bcd7078e2ef6bda987fa90c77b9edf448d7f78d86f8ae6269a45  art/_archive/prompt-pack/2026-11-19/rejected/010-join-v1/REVIEW.md
+521bf7e3487c99150d883986703767775270416c835df764a6d52ae0412efdd9  art/_archive/prompt-pack/2026-11-19/rejected/010-join-v1/native.png
+51d948728d56a92c39ba8d69ec9a250d1affcf6dfd12c209347a095a4c705bcb  art/_archive/prompt-pack/2026-11-19/rejected/010-join-v1/result.json
+c76bc508902a4203db19b644fa7b684cd3f6c184befb006458b6a353e4f758c4  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v1/REVIEW.md
+eb94fe957af6ee24a20de80170232619179cceb11eaef0c09a6b656cd9dba032  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v1/native.png
+cbe7f93884ae69add743deaef8a75ab5ea15166cc19479b88376cd5ba8f8e675  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v1/result.json
 ab4f2a286ae8f63f8f8bbc403ad88238c368064af404ffd52fdff49ef2ee0bc3  art/_archive/prompt-pack/2026-11-19/rejected/066-redesigned/native.png
 09181a6b1c5ca95e13ed1003f0e2a0d626e20fb7fcbf92ea630421ff6e6db25d  art/_archive/prompt-pack/2026-11-19/rejected/066-redesigned/result.json
 b63c09b53dfe6def63f970ad5d0d5b1ebfba885f029ebc9e88fd00f770438bff  art/_archive/prompt-pack/2026-11-19/rejected/066-second-redesign/comparison.jpg
@@ -3290,7 +3304,9 @@ aa894e675cd14496ab77138910443d72a115fd5566f4d5e5e92943a71e4990be  art/_archive/p
 144a610176e8ff9cfd45245c9b335fc1a4a98ee24f285d537d0bdd508a55f68d  art/_archive/prompt-pack/2026-11-19/rejected/066-third-redesign/REVIEW.md
 1857c65c37dc074ab45ec22cebf9c842b470a62f6828f616c7b22381fd7e3f48  art/_archive/prompt-pack/2026-11-19/rejected/066-third-redesign/native.png
 119b3dff120a23caab0e95d53474206b8629149e92145d980da26784530aef52  art/_archive/prompt-pack/2026-11-19/rejected/066-third-redesign/result.json
+3dcde18fd2a88a5d5a21c47a3a3367165cf0b3106df4cab715896fe2fa8222cb  art/_archive/prompt-pack/2026-11-19/review/ahoc-ground-repeat.png
 0045ea14510ab484f7ca20f9979f083285764b5e28847945ef7feb305f03a189  art/_archive/prompt-pack/2026-11-19/review/batch-1-2.jpg
+53f526ddc073421142ae9e4d4bec4cbd30231a3120514ba08a1dff5a5ae70013  art/_archive/prompt-pack/2026-11-19/review/batch-10-12.jpg
 aaf63d4e8173266efc4d011aa728248dff9546e957fac4e59429149e5ad89b87  art/_archive/prompt-pack/2026-11-19/review/batch-3-42.jpg
 d1a306bf219d05b86356bbc7acde32454d911ebd8296596faf28d28878b275a4  art/_archive/prompt-pack/2026-11-19/review/batch-38-39-40-41.jpg
 9aef2595fc0c44fbd0bde4e3cc2e2adfd5157db9241077c65b5eabf68537e933  art/_archive/prompt-pack/2026-11-19/review/batch-4-5-6.jpg
@@ -3301,9 +3317,11 @@ ae263fa9b22c98dca01b38c33cb606477cf1d10f8b9444f82fbc148c28575c1a  art/_archive/p
 f5303f81deda7bbc51d9e0818db01b393dcbda59cea19bef1e76087541af7903  art/_archive/prompt-pack/2026-11-19/review/batch-63.jpg
 86d3244d37d5eee278b8d3e482019fd19bbc64b2ff981450b209e62a560faacb  art/_archive/prompt-pack/2026-11-19/review/batch-64-65-67-68-69-70-71.jpg
 a4f650bddbc5f8e1b55930c4b36adb0266753e772c8508b5e16567d20c60fc6c  art/_archive/prompt-pack/2026-11-19/review/batch-65-66-67-70.jpg
+29c9c6ac9ecc89c3b36f611c4541dd51eab1011b45f69c8d088958a2a99cc288  art/_archive/prompt-pack/2026-11-19/review/batch-7-8-10-11-12-13.jpg
 8054f92f9e48f1c10fe7a982e3547d2ed548adf1031e767cfce10b0aa7c8f4b8  art/_archive/prompt-pack/2026-11-19/review/batch-72-73-74-76-77-78.jpg
 a2c38562390d6c7725d0bcae52868ea1ae50f3af0f8e21d590fb4a9933309688  art/_archive/prompt-pack/2026-11-19/review/batch-75-79.jpg
 a6acbd3f18cf0b0b1fa61692a3a749e222d581621143ef5b6668e5c1be80a3b4  art/_archive/prompt-pack/2026-11-19/review/batch-80-81-82-83-84-85-86-87-88.jpg
+902f6a1440f2d3214e3e0eaae7f8bda9d2e1c45ce4006c7be03e59d79f7d878b  art/_archive/prompt-pack/2026-11-19/review/shrine-ground-repeat.png
 52488ccd4c2b7bef2fe36fdd0550c0a65cf1ec6d128d5e2008288291fdf623e6  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/128/prayer-held-breath.png
 607641f797531168f6a1361ced5ef9627f61597391cc8178ded58c4de641b5f2  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/128/soul-blood-price.png
 b1b4d905f140c09d6057f6bfe411316f6a8e78b87798f50214faef2ecb58fec4  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/24/prayer-held-breath.png
@@ -3335,6 +3353,8 @@ bea3f17f7440179418153b57c1618962c49ec2255b7c6d09f9969b589570d857  art/_archive/p
 63c41154dfbfbb6de03fbd996da210a783029acde673841a28fdda6acd33f3a0  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/perks/exports/64/talks-broke-down.png
 4406d87940e5cafcc2326a7bc29640e08687fa5fd9f58e6b3abeee346ef81b4f  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/perks/jury-rig.png
 9ff7caf955c5f8ce29df363a66c106cb34927ffabd88a9d213b1ffaf00057bb7  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/perks/talks-broke-down.png
+733a68112d5c86bd8b4f4ead63758fb351603ca144d4641e4752c384b2ef5c47  art/_archive/prompt-pack/2026-11-19/superseded/art/sprites/kit/ahoc/dress-2.png
+9bd37bb78c1d93b31b0f0af736e0c4f999af4c86d0154717bfa8812ea477295d  art/_archive/prompt-pack/2026-11-19/superseded/art/sprites/kit/shrine/ground-2.png
 913e777dd59440282c65e02d72b6d6b54670a0ed67959614ea00d99729ec9846  art/_archive/skills/poc4-palette-v3/README.md
 f2378cba014d8bf49dd90a127189b471157bfaacb53aee2f30e1dff08375712e  art/_archive/skills/poc4-palette-v3/generation-briefs.json
 dce5d7fb8be4f153780e3144c12f0c82d117da4d2dea8516f0f4f374210076d8  art/_archive/skills/poc4-palette-v3/manifest.json
@@ -4665,7 +4685,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-607acf8c8eb20113f1c8d0e611cfc84d5339b90e62fed9ffccc4bbe09ced0cdf  art/catalog.json
+92c9357f7023048f55631087bce7d725fcc5d109e61b88d8be351132e16fd02f  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6395,6 +6415,7 @@ d8d4554cf0adc2addba5e03ba55f887cba7d932f115f3fbc4c6c1b052dc85b5a  art/icons/gear
 f5c32696eab72c47d70f0c121566753860c748a70119c1ba42603d75cc300830  art/icons/gear/exports/128/material-casing.png
 1143f5d8c30a99d348051b9bdb1d9dbc79dbb4ddb6842c52f1c662425cb3f72c  art/icons/gear/exports/128/material-gunpowder.png
 44b0daefc6cd90fb070c1cdecc7153de7d337e8f2ca754756dc6a5ba567d80a4  art/icons/gear/exports/128/material-mana_residue.png
+95aa2d805de042d6c9fa636c8178855546ad713bd530a57717c47b4439beec79  art/icons/gear/exports/128/mod-afterword.png
 65d56883d9a6f137ae1876aa9256788a80d9d2aa461032adefb4c17a9f1e56b3  art/icons/gear/exports/128/mod-bayonet.png
 cf32d3f5655f5f31d9c5debbacbbc2c22ac6909bb7408bb8a61eb68b09af702c  art/icons/gear/exports/128/mod-compensator.png
 97085d155db33f37002b2c7e3166a2a2b5035691db94df7722e1a505b996ae00  art/icons/gear/exports/128/mod-ench_acid.png
@@ -6404,6 +6425,7 @@ e6e5ce22996bca405cac1f9adf5b574518a290ae97786561c4e7933c96551d32  art/icons/gear
 1f76f1edfc9f018e66f766b72b34f10fab14d572e2d75733fc6dea614ea36391  art/icons/gear/exports/128/mod-ench_stone.png
 e3b8928bc3a74c52faa051268976a02f6a7a8cfe2e1d79167f86d17496b5f822  art/icons/gear/exports/128/mod-ench_storm.png
 6171d1845234e3d67658c526e53d9980d84697f960d0264b9cf0aa1f26b7cf77  art/icons/gear/exports/128/mod-extended_mag.png
+651ed35ab03d7da9d4b8c1e5e09b50fb08a4240943d4364ebee0e41264026e0c  art/icons/gear/exports/128/mod-follow_guard.png
 3372077efb2e9621764f2e860263e94da7b5c589a483d86b9f251125bbf90194  art/icons/gear/exports/128/mod-foregrip.png
 4c0c749ccb0779a0b619134f706a9781f7d6c75d6460487f7aecd6411c1b7c45  art/icons/gear/exports/128/mod-open_hand.png
 4eb589afb4c759b192f08ebb6ab5a6bb1818d3631d8f04b36712d3a1f1f6591f  art/icons/gear/exports/128/mod-quick_release.png
@@ -6568,6 +6590,7 @@ af3e4845928226cbf93c674866e782ef6d88f027127db0b0374eeb128f257595  art/icons/gear
 fcf621101ca804c512f6d1aa4135560e502bbe72db7acf9f53a95cee1e871fa0  art/icons/gear/exports/256/material-casing.png
 d142eaab05b137bfbd807e5080eee2a80b6f0f29f03e159d1153b563f53bbd83  art/icons/gear/exports/256/material-gunpowder.png
 53095b23adb0db4e1bbe7c6c1d6dae1ecc17ec4ab8f36e3dea8cd79449246055  art/icons/gear/exports/256/material-mana_residue.png
+f984e278bde8cd8d4d9ed7e3a9c4189cbe14dbc21bac223c53bf8bd4271defba  art/icons/gear/exports/256/mod-afterword.png
 5a0c745789a6cb9adbbf9fe17010424e577fed7d3af7ae73e239c8f4f2d0bdd6  art/icons/gear/exports/256/mod-bayonet.png
 480cfaba04d0616e6fa9ed9b50bf343582c73463cf2b218a22c9e7cbc0bbac2f  art/icons/gear/exports/256/mod-compensator.png
 bc0887a016e6bee0ed55846e765ec5acfe09a4076b6eff8120bc632435cdae6b  art/icons/gear/exports/256/mod-ench_acid.png
@@ -6577,6 +6600,7 @@ a43314e4bd215c15d32196f070d201c7c4b0b8914817778975905ece1151ddfc  art/icons/gear
 a797167763e2e041d7141464eaef675f349e0d108e6cec3ab588decd1c1bdbfe  art/icons/gear/exports/256/mod-ench_stone.png
 fb3463ab97726f63738e6c6de4ce2136e41ac3e248040e75fea10d762787f710  art/icons/gear/exports/256/mod-ench_storm.png
 ec7b6b1ddbd0086ebc227b77f6a1f1deb6d815b832da5493bb6b9599317d80a8  art/icons/gear/exports/256/mod-extended_mag.png
+a55b5ed9ec70c6e7c72b5ddd368d1896f1a544b1ffc01697a0bb6931b649d422  art/icons/gear/exports/256/mod-follow_guard.png
 700ab4ab312cda48c206f9a2369a511d3284e84c8d8565ead91268239b9140ad  art/icons/gear/exports/256/mod-foregrip.png
 5443258b6fe8c42e46e68c63e25b12e9ede9ea1cd4bbfe087b927ca02a6a27b4  art/icons/gear/exports/256/mod-open_hand.png
 aa63b59c5f7ba85a776f150850074e6061eb476cedb77a57abb241615c23f5c6  art/icons/gear/exports/256/mod-quick_release.png
@@ -6741,6 +6765,7 @@ b0b727b4bb25fa8762c0cb41ff3d51aaed89e5e251b251524be17b0bddd1ed71  art/icons/gear
 516b610c24b3a5bde5e4f433c62624927eb312cebfd5f9f51ac2e98f50aef396  art/icons/gear/exports/32/material-casing.png
 c29023f8b2eae6a5d74d864248e7141b937dcf68e76f92c265a53afae286f323  art/icons/gear/exports/32/material-gunpowder.png
 a4494d1f5b8941902ee8be07ca9e079c7e71ef1ff905ceeccd834c425942a046  art/icons/gear/exports/32/material-mana_residue.png
+09b22dac751cb5d54536c38a8ba65acdabe612c976e95015de0f97907c492fd2  art/icons/gear/exports/32/mod-afterword.png
 13efd73a9cdfe538efcb7d1e4d9bdab7448e0eea76458ea04c540aa824b35ca8  art/icons/gear/exports/32/mod-bayonet.png
 41e6a99663c3b8f4be4c393c59cb7fd2e4d2f69f8e6c482743a5c7724dab6586  art/icons/gear/exports/32/mod-compensator.png
 8d252eb271a6ee23ea7d7a26f56f42a5c211862ea0fc89ccd8b27f8f0434f8d3  art/icons/gear/exports/32/mod-ench_acid.png
@@ -6750,6 +6775,7 @@ aba7cc8a95d58aa869c6a6d56a9b557114a72179c05dc2485639a19e5a010ee0  art/icons/gear
 4ce5ddda785a01b514549e40127ce6175d52561c0af9cd6b7997ea9a3f686b5f  art/icons/gear/exports/32/mod-ench_stone.png
 7e9e8dc11bc3c107dc46d5642555dee58c7802ee199a153a86553a9e0070f488  art/icons/gear/exports/32/mod-ench_storm.png
 89e8a59dc821d198a65d5492eb357f808703398e35aa1ecd60f14a67081f1a86  art/icons/gear/exports/32/mod-extended_mag.png
+46a87ea5bc1a795f0bed5623316ff6e22e33197c00e033ff2d8b6488fd2772b7  art/icons/gear/exports/32/mod-follow_guard.png
 a93caac2a8075cf582cdb6d681f119b68ee616a0c97cebb9e1668d7dc8d24402  art/icons/gear/exports/32/mod-foregrip.png
 401538cc75fa8163a3d58b839ccc36cceace3dab771092248eae4f0a4e860a3f  art/icons/gear/exports/32/mod-open_hand.png
 1af3617ff4cf87261a59e2d42e9378f5c79db6cb55670591d3f75b24a319e7a7  art/icons/gear/exports/32/mod-quick_release.png
@@ -6914,6 +6940,7 @@ a9fd56f24d1ee9ba790b688c83f93373e40f0ffa4c5f379a42d203e3a37001fd  art/icons/gear
 ae698f2e50cc321496a790c0f342ddf5b3f53afb02a16e8f345316e0511b413f  art/icons/gear/exports/64/material-casing.png
 82171a1094c17eb441f98212bbae7715df7a2099a8ccd266f7fe5dbb91df872f  art/icons/gear/exports/64/material-gunpowder.png
 a25835b39f6c3135666b7bf46ae1c26bd75404909616d063609323a5961c319c  art/icons/gear/exports/64/material-mana_residue.png
+08efe36c30f5acbb6106188e0af2e86a4f271d1e73945cc023d5d519999ee638  art/icons/gear/exports/64/mod-afterword.png
 e89342cf18d4e29a07a6071f6ecd7a81d6de7bbf05152063ecd7de50c6a7790e  art/icons/gear/exports/64/mod-bayonet.png
 06dd9c29022d60e9dbd8cd79f0ab63c20077860ced8e2e6afd5b70bc597eefb4  art/icons/gear/exports/64/mod-compensator.png
 f435af96a18b291de4de10170d70b8c4831b513788207c8d89307b75ae4459ae  art/icons/gear/exports/64/mod-ench_acid.png
@@ -6923,6 +6950,7 @@ ceb836ecb3452de9421c1d1c98b112d0dce83b46abd1ddef8e41316444631e47  art/icons/gear
 58b8091a999ce6711aacfe1b35c085bc9f9bff28b08230cd0b2c0a304df8f9b2  art/icons/gear/exports/64/mod-ench_stone.png
 2b707dbf096b3bc34ef4f4764a578af1387de0d2c454fff4d02665351f2577b2  art/icons/gear/exports/64/mod-ench_storm.png
 8a855a4d4caacc2c8cb620837d660f9031e8ceebb4b6da00c8b276bbf2a44cb8  art/icons/gear/exports/64/mod-extended_mag.png
+7dec8bd6a5e7179efbca83472c296b75e5392d25fcc31fd49ed4747ace9798f9  art/icons/gear/exports/64/mod-follow_guard.png
 acecce5eab2e84ba8cd1c4806e924fc4d42c6cde1f17c28c53cc6b9966d88e56  art/icons/gear/exports/64/mod-foregrip.png
 9997f54376038ecb118e28e73c25e1c9a180c319a61aaf75f0741847129ec3ea  art/icons/gear/exports/64/mod-open_hand.png
 66da1a6e624d61dc26108f80f7837d017f6dc0317e67424413253a9b011f336e  art/icons/gear/exports/64/mod-quick_release.png
@@ -7051,6 +7079,7 @@ a9594b6a15eec1d2e45509dcaffad615fee5e8b610f9df38dfd271e4560f9c5e  art/icons/gear
 2136e082fd34f3bcda2e54c456b5a97b3ba843cbc87318d8c9ca6ed3f0e297d6  art/icons/gear/material-casing.png
 ddb33036c3bbed5fbf693514998d1ff3ab7fac42cb8a34639a6dd514238c57df  art/icons/gear/material-gunpowder.png
 6792b95535f93121a090f5a1a234c6a4b6594a43af8a5323cce6b5ce212dfabc  art/icons/gear/material-mana_residue.png
+c3ef7f845d32dd536da258281002c84ece826653adb145412f03870d9a5239ea  art/icons/gear/mod-afterword.png
 d2ea384687bd1bd29cfae5db32637513eafe10535f295dfe8c424ffd20fb34dc  art/icons/gear/mod-bayonet.png
 358b67c44f2332bb6f7793cbc680c780bb2127e8512efdf3305ac944ec8dbe58  art/icons/gear/mod-compensator.png
 5d512ea223fc3cbd5c350138606f0f64ca29a97f341a223ca026c5d93a00fda4  art/icons/gear/mod-ench_acid.png
@@ -7060,6 +7089,7 @@ e24e94c08eeead7abbebd331e61efe7ba1d8fe16335cf3299ec9aec0558bbb74  art/icons/gear
 25262f298a59b066c3c6a49c3937a4e439f4e8bcfcf3047a664e67bf7fde45c9  art/icons/gear/mod-ench_stone.png
 ae3cf11ccbb81aeb8d12089278bf1f5b49abdfca264ea90a0dcf10cb4079fac0  art/icons/gear/mod-ench_storm.png
 e0a213c92fbcf919e26b3f36fe72b875d077bdbdfc217b9ce0b23112d37a315c  art/icons/gear/mod-extended_mag.png
+30067668d3581f0e9bcb5b3c901e9e2d20f896cf6953afc2853f67f0f5b5d75b  art/icons/gear/mod-follow_guard.png
 bb367f3b4ce2ac71d8e3b5c98803dff28d8fa3571ecf26dee1cfaf0f6050ae77  art/icons/gear/mod-foregrip.png
 0324a0d5766ddce2dc950ff1379de2084ba430af3b9771c6d73ede7c551ef6d1  art/icons/gear/mod-open_hand.png
 03016c95eeee9c83ad404ec2674a7259866ad4d64c0f142d358551a736e06295  art/icons/gear/mod-quick_release.png
@@ -12011,7 +12041,7 @@ a48e0ec9520ba8f39de34734bb8653cdf5950d669c213bc1c1ec588f9ae6e522  art/sprites/ki
 b41a54cbc1603af2eb618b25974301f32d7d9967005d3a6fbf177c8274851593  art/sprites/kit/ahoc/door-open.png
 8e287953c5a40ac3527670572cbe64387b58dbb3f247319ee798846f2364d75d  art/sprites/kit/ahoc/door.png
 8e02d461b623d874504034029c9bb310ad057c8d8616cd7caf6a2d853f56305b  art/sprites/kit/ahoc/dress-1.png
-733a68112d5c86bd8b4f4ead63758fb351603ca144d4641e4752c384b2ef5c47  art/sprites/kit/ahoc/dress-2.png
+91c553a08c583283b04a67034394b5a825a43d9416189aeca23e4013b2477e66  art/sprites/kit/ahoc/dress-2.png
 f09d98bb95496152fe442c10d7afec0deb77db88d127a05d1a4e766ca712d131  art/sprites/kit/ahoc/dress-3.png
 1321688c0d753a35a0c72a0545aeefb3c3785217e7617f49bf00e0e1999a58a4  art/sprites/kit/ahoc/dress-4.png
 0cc7f1fb11efc5fe633d199ad718b97f789084e0e7f8f8ed30c714f940f2faa3  art/sprites/kit/ahoc/exit.png
@@ -12161,7 +12191,7 @@ c3d53d4624a6ff13e4c4f30d23a81dfc67eadcdaed1c0a4f3432b23cc7eb2867  art/sprites/ki
 437bdf9b9e68437fecd8a3e4a1c606dcecf9edb9019ed01c9fceb578c9ce293a  art/sprites/kit/shrine/exit.png
 bae75ed304478c62ee3af1ebf1f5a0aeec28c40e9970acdec84b2b433e126b39  art/sprites/kit/shrine/fire.png
 d9c035c6d970a8cb296ae8dfa52989a90e63ddc038e92b203629c7fe7f5684cc  art/sprites/kit/shrine/ground-1.png
-9bd37bb78c1d93b31b0f0af736e0c4f999af4c86d0154717bfa8812ea477295d  art/sprites/kit/shrine/ground-2.png
+116638cb5b7d59d68b392bfbe2b1ac96ef57b0846359b937c7635e790a4c5460  art/sprites/kit/shrine/ground-2.png
 52d0eb8494c310aae64b45e039aae247a8ebec8d459c445a268bc241778fafee  art/sprites/kit/shrine/ground-3.png
 d2bc1bb384b565c7f141a276196854d2610cae86164ab7bc19a0844d0c05754d  art/sprites/kit/shrine/hole.png
 fc81bb9a4dffa5194b267f8e65abb0615ec884306c14bc006d34dd31a409c2bd  art/sprites/kit/shrine/lamp.png

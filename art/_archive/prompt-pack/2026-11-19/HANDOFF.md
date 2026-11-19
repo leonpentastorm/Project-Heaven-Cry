@@ -1,10 +1,10 @@
 # November 19 art continuation
 
-Updated 19 November 2026 at 10:51 UTC+7. The 88 entries in files 01–04 have **56 delivered**, **31 to do** and **1 held**. Review candidates require visual approval.
+Updated 19 November 2026 at 10:58 UTC+7. The 88 entries in files 01–04 have **60 delivered**, **27 to do** and **1 held**. Review candidates require visual approval.
 
 | File | Delivered | Total listed |
 | --- | ---: | ---: |
-| 01 | 6 | 37 |
+| 01 | 10 | 37 |
 | 02 | 11 | 11 |
 | 03 | 20 | 21 |
 | 04 | 19 | 19 |
@@ -22,11 +22,7 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 ## Remaining entries
 
 - 066 | File 03 | Running Script (fork): replaces the existing picture | `art/icons/forks/sigil-running-script.png`
-- 007 | File 01 | `mod_follow_guard`: Shield follow (mod) | `art/icons/gear/mod-follow_guard.png`
-- 008 | File 01 | `mod_afterword`: Afterword's edge (mod) | `art/icons/gear/mod-afterword.png`
 - 010 | File 01 | `kit-ahoc-ground-2`: AHOC ground 2 | `art/sprites/kit/ahoc/ground-2.png`
-- 011 | File 01 | `kit-shrine-ground-2`: Shrine ground 2 | `art/sprites/kit/shrine/ground-2.png`
-- 012 | File 01 | `kit-ahoc-dress-2`: AHOC dress 2 | `art/sprites/kit/ahoc/dress-2.png`
 - 013 | File 01 | `kit-rim-wall-corner`: Rim wall corner | `art/sprites/kit/rim/wall-corner.png`
 - 014 | File 01 | `kit-ahoc-poi`: Point of interest, ahoc | `art/sprites/kit/ahoc/poi.png`
 - 015 | File 01 | `kit-city-poi`: Point of interest, city | `art/sprites/kit/city/poi.png`

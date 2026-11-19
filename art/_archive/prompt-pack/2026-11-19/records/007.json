@@ -1,0 +1,51 @@
+{
+  "file": "01",
+  "source": "01-today-and-gaps.md",
+  "line": 137,
+  "title": "`mod_follow_guard`: Shield follow (mod)",
+  "path": "art/icons/gear/mod-follow_guard.png",
+  "notes": "- **Mode:** Gear painting, 1024 x 1024 PNG, transparent.\n- **Save as:** `art/icons/gear/mod-follow_guard.png`.\n- **Shows:** Backpack, shop, Forge. A shield fitting, the follow bracket.",
+  "paint": "Subject: a shield fitting, the follow bracket (a light, hand-sized part). Silhouette feature: a curved steel arm bracket shaped like half a ring, with a hinge pin at its top end, a short sprung link, and a worn walnut-brown leather strap running through two slotted loops and closed with one brass buckle, so the shield follows the arm forward and back. The bracket is laid flat, three-quarter view, the strap curled once in a loose S. Materials and accent: dark scuffed steel, oiled leather, a single small brass buckle; the accent is the brass, no faction colour (Frontier, unbranded). At 32 px: a half-ring of steel with a strap hanging off it. Against the foregrip: it is a ring and a strap, not a grip; against the bayonet: not a blade. No shield face in the picture, no hands, no arm.",
+  "status": "review-candidate",
+  "n": 7,
+  "kind": "gear",
+  "label": "Shield follow (mod)",
+  "sha256": "30067668d3581f0e9bcb5b3c901e9e2d20f896cf6953afc2853f67f0f5b5d75b",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "gear",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/007-mod-follow_guard.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/mod-follow_guard.png",
+    "128": "art/icons/gear/exports/128/mod-follow_guard.png",
+    "64": "art/icons/gear/exports/64/mod-follow_guard.png",
+    "32": "art/icons/gear/exports/32/mod-follow_guard.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:137",
+  "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, three-quarter view, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the object fills about 80% of the canvas (at least 50 px of clear margin on every side). No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. Everything is invented: never a recognisable real-world make, model or emblem. The silhouette is bold and readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal in charcoal, steel grey and warm ivory highlights; one accent colour only, given below. No coloured rarity border (the UI adds it). Standard finish with honest wear. The object:\nSubject: a shield fitting, the follow bracket (a light, hand-sized part). Silhouette feature: a curved steel arm bracket shaped like half a ring, with a hinge pin at its top end, a short sprung link, and a worn walnut-brown leather strap running through two slotted loops and closed with one brass buckle, so the shield follows the arm forward and back. The bracket is laid flat, three-quarter view, the strap curled once in a loose S. Materials and accent: dark scuffed steel, oiled leather, a single small brass buckle; the accent is the brass, no faction colour (Frontier, unbranded). At 32 px: a half-ring of steel with a strap hanging off it. Against the foregrip: it is a ring and a strap, not a grip; against the bayonet: not a blade. No shield face in the picture, no hands, no arm.",
+  "refs": [
+    "art/icons/gear/mod-foregrip.png",
+    "art/icons/gear/mod-bayonet.png",
+    "art/icons/gear/mod-compensator.png",
+    "art/portraits/world/new-faces/orren-vask.png"
+  ],
+  "family": "gear",
+  "id": "mod-follow_guard",
+  "source_sha256": "325e6907b52ebb9d9dd947cf70d49b1fc1647d50248d6c00338db3f5215e7e7d",
+  "export_sha256": {
+    "256": "a55b5ed9ec70c6e7c72b5ddd368d1896f1a544b1ffc01697a0bb6931b649d422",
+    "128": "651ed35ab03d7da9d4b8c1e5e09b50fb08a4240943d4364ebee0e41264026e0c",
+    "64": "7dec8bd6a5e7179efbca83472c296b75e5392d25fcc31fd49ed4747ace9798f9",
+    "32": "46a87ea5bc1a795f0bed5623316ff6e22e33197c00e033ff2d8b6488fd2772b7"
+  }
+}
