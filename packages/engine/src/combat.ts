@@ -1114,7 +1114,7 @@ export function unitSees(cb: Combat, u: Unit, k: string, walls?: Set<string>, t?
 /** THE one sight range (rules 1.76 item 6403): how far u's eyes reach to tile k: its vision, halved off a lit tile on a
  * dark map without dark sight, plus the looked-at unit's `seen_range` (Prone's, rules 1.76 item 6402); never below 0.
  * unitSees and the enemy's own aim (enemyHuntTile, the firing-position score) read it, and the items that stretch or
- * shrink a sight (Chain Smoker, Wind on the Skin, Lowland Born: the 0.32 merge, M2); no second copy. */
+ * shrink a sight (Wind on the Skin, Lowland Born: the 0.32 merge, M2; Chain Smoker is a seen_range row); no second copy. */
 export function eyeReach(cb: Combat, u: Unit, k: string, t?: Unit | null): number {
   return Math.max(0, (litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2)) + seenRangeOf(cb, t));
 }
@@ -1135,7 +1135,7 @@ export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
   }
   return { tiles, seen, sensed };
 }
-/** Items that change who is seen (Sixth Sense, Skin Map, Sworn Sibling, Upper-Touched, Chain Smoker): the 'sees' hook
+/** Items that change who is seen (Sixth Sense, Skin Map, Sworn Sibling, Upper-Touched): the 'sees' hook
  * {cb, side, t, by, seen, sensed}. side is the side looking; by is the one unit looking (an attack, a reaction) or null
  * for the side's shared sight (the fog of war). Handlers may set seen or sensed. Allies count too (a sibling). */
 const sightHooked = (cb: Combat) => anyOn(cb, 'sees') || cb.units.some((u) => u.hidden && !!u.call?.spot?.unhide) || statHeard(cb, 'always_seen'); // rules 1.13: a Spotted unit isn't Hidden to the allies it was pointed out to (calls/rules.ts); Classes 3.0 P7: someone may be always seen

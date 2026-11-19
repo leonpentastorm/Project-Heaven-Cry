@@ -118,3 +118,19 @@ describe('A5: one copy of each number', () => {
     expect(typeof (PERK as any).read_them.numbers.I).toBe('object'); // a reference, not a number
   });
 });
+
+// ---------------------------------------------------------------------------------------------- A6
+describe('A6: Chain Smoker\'s Hacking Cough is a seen_range row (no sight hook of its own)', () => {
+  function hideAt(traits: string[], gap: number) {
+    const f = fightWith([{ name: 'Smoker', traits }], [{ tier: 'soldier', at: '14,5' }]);
+    f.cb.objects = []; const foe = f.unit(f.foe.id); f.unit(f.pc.id).pos = (14 - gap) + ',5';
+    f.turn(f.pc); let err: string | null = null;
+    try { f.act({ type: 'combat/hide', unitId: f.pc.id } as any); } catch (e: any) { err = String(e?.message || e); }
+    return { err, hidden: !!f.unit(f.pc.id).hidden, vision: foe.vision || 12 };
+  }
+  it('just past the foe\'s eyes: plain, it Hides; a smoker is smelt (seen) and cannot', () => {
+    const v = hideAt([], 1).vision, add = (TRAITSJ as any).items.find((t: any) => t.id === 'chain_smoker').effects.find((e: any) => e.stat === 'seen_range').value;
+    expect(hideAt([], v + 1).hidden).toBe(true);
+    const s = hideAt(['chain_smoker'], v + add); expect(s.hidden).toBe(false); expect(s.err).toBeTruthy();
+  });
+});

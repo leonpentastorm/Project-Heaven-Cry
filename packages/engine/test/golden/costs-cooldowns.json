@@ -131,6 +131,8 @@
 "cool/ap/trait/bottle_butts_for_eyes/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/central_city_kid/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/central_city_kid/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
+"cool/ap/trait/chain_smoker/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
+"cool/ap/trait/chain_smoker/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/crawler_blooded/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/crawler_blooded/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/trait/drone_handler/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",

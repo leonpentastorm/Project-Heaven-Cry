@@ -12,7 +12,7 @@ import { itemAmount, amountMult } from '../effects/amounts';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, packOf } from '../character';
-import { dist, alive, unitSees, eyeReach, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, tauntedBy, type AttackMode } from '../combat';
+import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, refOf, tauntedBy, type AttackMode } from '../combat';
 import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength, saveAgainst , saveTn } from '../magic';
 import { tendHook } from '../effects/damage';
 import { WEAPON, PERK } from '../data';
@@ -589,7 +589,7 @@ register({
 // +2 to their spotting against you in a fight, +2 tiles of NPC notice range in the story.
 const lit = (h: Holder) => ro(h.c).lit_scene === sceneN(h) && h.g != null;
 register({
-  id: 'chain_smoker', claims: [0, 3],
+  id: 'chain_smoker', claims: [0], // (Hacking Cough's +2 to their Detection is its data row: stat seen_range)
   actions: [{
     id: 'light_up', label: 'Light Up', scope: ['combat', 'world', 'story', 'run'], target: 'none', ap: (h) => (h.cb ? 2 : 0),
     text: 'Light a cigarette: +2 Composure for the scene, and remove one Heart debuff from yourself.',
@@ -608,11 +608,6 @@ register({
     check_mod: (ctx, h) => { if (ctx.c === h.c && lit(h) && composureCk(ctx.ck)) ctx.add.push({ add: 2, label: 'Light Up' }); },
     spot: (ctx, h) => { if (ctx.u === h.u) ctx.mod += 2; },
     notice: (ctx, h) => { if (ctx.c === h.c) ctx.range += 2; },
-    // In the fog: enemies see you 2 tiles farther than their Vision (the sight hook), line of sight still needed.
-    sees: (ctx, h) => {
-      const u = h.u, cb: Combat = ctx.cb; if (!u || ctx.t !== u || ctx.side === u.side || ctx.seen) return;
-      if (cb.units.some((v) => v.side === ctx.side && alive(v) && (!ctx.by || ctx.by === v) && dist(v.pos, u.pos) <= eyeReach(cb, v, u.pos, u) + 2 && lineOfSight(cb, v.pos, u.pos))) ctx.seen = !u.hidden;
-    },
   },
   brief: () => null,
 });

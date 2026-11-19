@@ -7,7 +7,7 @@
       "id": "stat_mod",
       "tier": "core",
       "summary": "Add to a derived stat (hp, ap, move, armor, init, mp_max, ...).",
-      "count": 189,
+      "count": 190,
       "params": [
         "basis",
         "context",
@@ -1623,18 +1623,18 @@
       "id": "detection_against_self",
       "tier": "bespoke",
       "summary": "",
-      "count": 2,
+      "count": 1,
       "params": [
         "context",
         "value"
       ],
       "used_by": [
-        "traits:chain_smoker",
         "traits:slicer"
       ],
       "example": {
         "op": "detection_against_self",
-        "value": 2
+        "value": 2,
+        "context": "machines"
       }
     },
     {
