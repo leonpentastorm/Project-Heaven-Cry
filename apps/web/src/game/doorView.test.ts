@@ -6,7 +6,7 @@ vi.mock('./store', () => ({ getState: () => ({}), subscribe: () => () => {} }));
 import { ARCHETYPES, type Sheet, SKILL, SIGIL_GRAMMAR, SOUL_RULES, newCharacter, startCombat, beginOutburst, pumpOutburst, SPELL_AP, DOOR_TABS } from '@engine';
 import { physFight } from '../../../../packages/engine/test/helpers/physfight';
 import { ATTR_INK } from './classView';
-import { DOORS, topDoor, firstTurnTab, tabDoorLine } from './doorView';
+import { DOORS, topDoor, firstTurnTab, tabDoorLine, feedLineOf } from './doorView';
 import { designCards } from './heartView';
 import { smartCommands, actionGroups } from './commands';
 import { TIPS, DOOR_TIPS, myDoorTurn } from './tips';
@@ -143,5 +143,24 @@ describe('the door tabs\' headers come from data', () => {
     const G = f.bound(() => actionGroups(f.cb, f.unit(f.pc.id), f.char(f.pc), { g: f.g, noNarrator: true }));
     const sh = G.find((gr: any) => gr[3] === 'shadow'), d = tabDoorLine('shadow')!;
     expect(sh?.[0]).toBe(d.title); expect(sh?.[2]).toBe(d.ink);
+  });
+});
+
+describe('the door tab\'s beta line (0.32 fix pass B6): no formula with zero values', () => {
+  const doorOf = (beta: string) => (Object.values(SKILL) as any[]).find((a) => a.attribute === (SKILL as any)[beta].attribute && a.slot === 'alpha').id;
+  const betas = (Object.values(SKILL) as any[]).filter((s) => s.feed).map((s) => s.id);
+  it('at 0 beta points every feed line says only what the first point that moves it gives, never a 0 or a "next point"', () => {
+    expect(betas.length).toBeGreaterThan(0);
+    for (const b of betas) {
+      const door = doorOf(b), name = (SKILL as any)[b].name;
+      const l = feedLineOf({ skills: { [door]: 3, [b]: 0 } }, door);
+      expect(l, b).toMatch(new RegExp('^(First ' + name + ' point|At ' + name + ' [0-9]+): '));
+      expect(l, b).not.toMatch(/next point|\b0%|\bneed 0\b/);
+    }
+  });
+  it('with points the line keeps the number now and the next point (Improvisation, the Figments door)', () => {
+    const b = betas.find((x) => (SKILL as any)[x].feed.carrier === 'figment_hp')!, door = doorOf(b);
+    expect(feedLineOf({ skills: { [door]: 3, [b]: 0 } }, door)).toMatch(/^First \S+ point: your Figments are \d+% tougher$/);
+    expect(feedLineOf({ skills: { [door]: 3, [b]: 2 } }, door)).toMatch(/^\S+ 2: your Figments are \d+% tougher \(next point: \d+%\)$/);
   });
 });

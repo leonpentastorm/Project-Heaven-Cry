@@ -13,6 +13,7 @@ import { GLYPH_PATHS, SIGIL_INK, SOUL_INK, SOUL_WARM } from '../glyphs';
 import { type ElementFx, type ElementId, ELEMENTS, elementFx, elementImpact, jag, mix, shardCss } from './elements';
 import { type Pt, after, anim, burst, centre, edgePulse, flash, floatText, particle, put, ring, screenTint, shake, shakeScreen, svg } from './dom';
 import { feelingPump } from './feelings';
+import { powerPct } from '../power';
 
 const HP = '#F65157', WHITE = '#FFFFFF', MUTED = '#A3AEC2', COOL = '#8FB4FF', MP = '#5C9EFF';
 /** What play.ts lends the Soul handlers: where things are (respecting fog), tokens, and panned sound. */
@@ -238,7 +239,7 @@ export function soulHandlers(K: SoulKit): Record<string, (e: FxEvent) => void> {
       rise(p, col, L.motes, 800, 0.9);
       if (L.shimmer) { shimmer(p, 4 + st); dashRing(p, '#DCD6FF', 700, L.ringTo + 0.2); }
       if (L.edge) { edgePulse(col, 900, 1); shakeScreen(0.18); }
-      floatText('STAGE ' + st + (e.mult ? ' ×' + e.mult : '') + (e.free ? ' · FREE' : ''), p, col, { small: true, delay: 120 });
+      floatText('STAGE ' + st + (e.mult ? ' · ' + powerPct(e.mult) : '') + (e.free ? ' · FREE' : ''), p, col, { small: true, delay: 120 });
       feelingPump(K, e, p); // rules 1.8: the feeling's colour, motif and sound layer, the counter's shake
     },
     // The swell at the turn's start: one slow, deep beat and a wide, slow ring.
