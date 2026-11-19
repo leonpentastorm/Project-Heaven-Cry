@@ -18658,6 +18658,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-lowland_chopper": {
+      "label": "Lowland chopper",
+      "path": "art/icons/gear/weapon-lowland_chopper.png",
+      "sha256": "3448226ac076dedebcff4fd4f6a45dfacdc43dc66aa355a78aa468c95e537fff",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lowland_chopper.png",
+        "128": "art/icons/gear/exports/128/weapon-lowland_chopper.png",
+        "64": "art/icons/gear/exports/64/weapon-lowland_chopper.png",
+        "32": "art/icons/gear/exports/32/weapon-lowland_chopper.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-lowland_chopper.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+      "brief_number": 2,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

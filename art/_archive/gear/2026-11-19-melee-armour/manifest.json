@@ -62,6 +62,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lowland_chopper",
+      "path": "art/icons/gear/weapon-lowland_chopper.png",
+      "sha256": "3448226ac076dedebcff4fd4f6a45dfacdc43dc66aa355a78aa468c95e537fff",
+      "label": "Lowland chopper",
+      "family": "05-service-knives",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-lowland_chopper.png",
+        "sha256": "bc6a4335dbcdcca7250dd548b502da43fd85eddf95df823d00007f811d21fea4"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-lowland_chopper.png",
+        "sha256": "3448226ac076dedebcff4fd4f6a45dfacdc43dc66aa355a78aa468c95e537fff"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-lowland_chopper.txt",
+        "sha256": "7c185a70a16f8b11392792d77f501e285eded4574774c20edee2f2f76e30a0f4"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-combat_knife.png",
+          "sha256": "75fea68403b5a2a96e294f937d027422f74fba9de5253bddadc3a7d5297267e1"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lowland_chopper.png",
+        "128": "art/icons/gear/exports/128/weapon-lowland_chopper.png",
+        "64": "art/icons/gear/exports/64/weapon-lowland_chopper.png",
+        "32": "art/icons/gear/exports/32/weapon-lowland_chopper.png"
+      },
+      "export_hashes": {
+        "256": "6cb6d20f5de96bbf37f94ef1167ab3116b9f5274ff3b38a602008098b344b12e",
+        "128": "91cffaeffd781c8543e776fcafcf842eb0641301a92d127fb39d53df7429fce6",
+        "64": "daa571ba8715b88bb652d3c9145e9e42f66b94fe0e60754783995c784ef12027",
+        "32": "87a75e39a2a8f76f637f53f4a00e287345807175b42a9ff88284869b4bff4ba4"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
