@@ -14,7 +14,7 @@ import { UNTIL } from './condtable';
 import { maxReactions, reactionsUsed, cueLive } from './tactics';
 import { TECHNIQUE } from './physical';
 import { SKILL, SKILLS, RULES, CLASSES, CLASS, CLASS_MOVE_POOL } from './data';
-import { charOfUnit } from './effects/hooks';
+import { charOfUnit, bindGame } from './effects/hooks';
 import { shieldOrder, shieldTotal } from './effects/damage';
 import { guardOf, guardMax } from './physical/core';
 import { guardSoakOf } from './physical/guard';
@@ -252,7 +252,8 @@ function doorAttrOf(g: Unit | null): string | null {
 const sizeOf = (share: number): { word: string; bar: number } => { const S: any[] = SL().size; const r = S.find((x) => x.upto != null && share <= x.upto) || S[S.length - 1]; return { word: r.word, bar: r.bar }; };
 /** The shields a unit holds, as `viewer` may know them (null: as the squad sees it, like healthView). `fmt` writes a
  *  number into the texts (the client passes its one formatter; default: plain digits). */
-export function shieldsView(cb: Combat | null, u: Unit, viewer: Pick<Unit, 'side'> | null = null, fmt: (n: number) => string = (n) => String(Math.round(n))): ShieldsView {
+export function shieldsView(cb: Combat | null, u: Unit, viewer: Pick<Unit, 'side'> | null = null, fmt: (n: number) => string = (n) => String(Math.round(n)), g?: any): ShieldsView {
+  if (g !== undefined) { const was = bindGame(g || null); try { return shieldsView(cb, u, viewer, fmt); } finally { bindGame(was); } } // `g`: the game the character is read through (Pain Threshold's feed); a screen passes it
   const L = SL(), known = (viewer ? viewer.side === u.side : u.side === 'pc') || !!u.analyzedBy, maxHp = Math.max(1, u.maxHp);
   const entries: ShieldEntry[] = shieldOrder(u).map((e, i) => {
     const src = e.layer ? layerSource(e.layer.layer) : { name: L.base.name, attribute: null }, row = e.layer ? L.layer : L.base, sz = sizeOf(e.n / maxHp);

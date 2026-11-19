@@ -35,7 +35,7 @@
 // Sounds go through cue() (exported: App.tsx uses it for the combat transition). It plays the wished file names below
 // when sfx.ts has a file for them, else stand-ins from the existing set plus a small synthesised hit.
 import React from 'react';
-import { type GameState, WEAPON, CLASS, FLUX_MAX, isUnseenId, SETTING, runSetting, survivalRun, RULES } from '@engine';
+import { type GameState, WEAPON, CLASS, isUnseenId, SETTING, runSetting, survivalRun, RULES } from '@engine';
 import { roundLabel } from './fieldView';
 import { ART, ART_BIG, IMG } from '../screens/shared';
 import { castFight } from './cast';

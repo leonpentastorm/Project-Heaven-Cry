@@ -16,7 +16,7 @@ vi.mock('../game/report', () => ({ openReport: () => {}, PlaytestTools: () => nu
 const { CombatLogic } = await import('./combat.js');
 
 describe('row 13: the Guard soak the screen shows is the one the blow spends', () => {
-  it('a Durability 8, Pain Threshold 4 tank holding Guard: every soak in the fight screen equals the engine soak with the game bound (guardSoakOf, what the damage path spends)', () => {
+  it('a Durability 8, Pain Threshold 4 tank holding Guard: every soak in the fight screen equals the engine soak with the game bound (guardSoakOf, what the damage path spends)', async () => {
     snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'guard-soak');
     const a = ARCHETYPES[0];
     const sheet: Sheet = { name: 'Tank', portrait: '', origin: 'Thousand-Planet frontier', kit: 'medic', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} } as any;
@@ -34,6 +34,10 @@ describe('row 13: the Guard soak the screen shows is the one the blow spends', (
     expect(texts.some((t) => t.includes(want.line!))).toBe(true);
     expect(texts.some((t) => t.includes(bare.line!))).toBe(false);
     expect(active(G.combat!)).toBeTruthy();
+    // the AI Narrator's fight summary is told the same soak (narrator/fight.ts passes the game to shieldsView)
+    const { fightAsk } = await import('../narrator/fight');
+    const ask = fightAsk(G, { id: 'r1', unit: u.id, charId: c.id, text: 'Hold.', round: G.combat!.round } as any);
+    expect(ask).toContain(want.line!); expect(ask).not.toContain(bare.line!);
   });
 });
 
@@ -52,5 +56,9 @@ describe('row 13: the Flux meter reads the limit the reducer keeps', () => {
     expect(want).toBeGreaterThan(fluxMaxOf(u, G.combat!));
     const row = resourcesOf(u, c, G).find((r) => r.key === 'flux')!;
     expect(row.max).toBe(want); expect(row.value).toBe('0 / ' + want);
+    // the Evoke planner's Flux line (game/sigilView patternPanel) and the engine's own previews read the same limit
+    expect(fluxMaxOf(u, G.combat!, G)).toBe(want);
+    // out of the fight, the sheet's own: the character, its points and items (the MAGIC tab and the resources block)
+    expect(fluxMaxOf(c, null, G)).toBe(want);
   });
 });

@@ -8,7 +8,7 @@ import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVal
 import { reducedMotion, sfx } from '../game/sfx';
 import { fightPace } from '../game/combatSpeed';
 import { MANA_SHOCK, WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, fightSight, isUnseenId, litAt, tileCover, sightBlockers, COVER,
-  SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, fluxMaxOf, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, condDef, CONDITION_ROWS, condId, condIsBoon, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
+  SIGIL, SCHOOL, MODULE, MANA_START, fluxMaxOf, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, condDef, CONDITION_ROWS, condId, condIsBoon, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
@@ -495,7 +495,7 @@ export const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([id
   // Mana Shock is the heart shorting out (rules 1.5): no conditions.json row, always a harm
   ...(u.mg && u.mg.shock ? [{ key: 'c-mana_shock', id: null, sign: 'mana_shock', side: 'hurts', word: shortWord(MANA_SHOCK.name), n: null, k: SIDE_GLYPH.hurts + ' ' + MANA_SHOCK.name.toUpperCase(), t: MANA_SHOCK.name + ': ' + MANA_SHOCK.text, style: COND_CHIP + 'border: 1px solid #F65157; color: #F65157' }] : []),
   // 0.30.0: every shield it holds (the layers and the base), from the engine's shieldsView, never u.shield alone
-  ...((sv) => (sv.chip ? [{ key: 'shield', id: null, side: 'state', word: sv.chip, n: null, k: sv.chip, t: sv.words + (sv.absorb ? '. ' + sv.absorb + '.' : ''), style: 'padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : []))((g ? withGame(g, () => shieldsView(g.combat || null, u, null, fmtNum)) : shieldsView(null, u, null, fmtNum)))];
+  ...((sv) => (sv.chip ? [{ key: 'shield', id: null, side: 'state', word: sv.chip, n: null, k: sv.chip, t: sv.words + (sv.absorb ? '. ' + sv.absorb + '.' : ''), style: 'padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : []))(shieldsView(g?.combat || null, u, null, fmtNum, g || null))];
 
 /** 0.31.0 (U4): a unit's status for the strip (game/statusStrip.ts): its effects, its conditions and its Physical lines,
  *  each with its side read from its conditions.json row (an effect with no row is a harm: Heat, a jam, overweight). Its
@@ -1004,8 +1004,8 @@ export class CombatLogic extends DCLogic {
     const readable = new Set(cb.units.filter((u) => u.side === 'pc' && owner(u) === me && u.mg).flatMap((u) => u.mg.words)), knows = (w) => readable.has(w);
     const seenGlyph = (k) => !!k && glyphsAt(pcb, k).length > 0; // the view holds only the glyphs this side sees
     const evTile = S.action === 'evoke' && S.glyphTile && seenGlyph(S.glyphTile) ? S.glyphTile : null;
-    const evV = mineTurn && mg && evTile ? evokeView(fogged(pcb), cur, evTile, S.evc || {}, S.hover, knows) : null; // (fog: who is affected, as this side sees the fight)
-    const hoverPanel = S.action === 'evoke' && !evTile && mineTurn && seenGlyph(S.hover) ? patternPanel(pcb, S.hover, cur, knows) : null;
+    const evV = mineTurn && mg && evTile ? evokeView(fogged(pcb), cur, evTile, S.evc || {}, S.hover, knows, g) : null; // (fog: who is affected, as this side sees the fight)
+    const hoverPanel = S.action === 'evoke' && !evTile && mineTurn && seenGlyph(S.hover) ? patternPanel(pcb, S.hover, cur, knows, null, g) : null;
     // Outburst (rules 1.5, game/heartView.ts): not holding, a design and Begin (hold at stage 0) or Snap (Begin and
     // Release at once, aimed); holding, the HEART panel (Pump, Release, Steady, Let go, Feed, Heart Overwatch). Every cost,
     // refusal, tile and number is the engine's preview.
@@ -1082,7 +1082,7 @@ export class CombatLogic extends DCLogic {
     const encoreWaiting = mineTurn && cur.faith && cur.faith.encore ? cur.faith.encore : null;
     const VT0 = CAM.live() && !this._overview ? CAM.tiles() : { x0: 0, y0: 0, x1: cb.map.w - 1, y1: cb.map.h - 1 };
     // 0.30.0: each unit's shields worked out once a render (the engine's shieldsView), read by its tile, strip and cards
-    const SV = new Map(), svOf = (u) => { let v = SV.get(u.id); if (!v) SV.set(u.id, v = withGame(g, () => shieldsView(cb, u, null, fmtNum))); return v; }; // the game bound: Pain Threshold's feed reads the unit's character (row 13: the SHIELDS block said 7 a plate, the blow spent 9)
+    const SV = new Map(), svOf = (u) => { let v = SV.get(u.id); if (!v) SV.set(u.id, v = shieldsView(cb, u, null, fmtNum, g)); return v; }; // the game passed: Pain Threshold's feed reads the unit's character (row 13: the SHIELDS block said 7 a plate, the blow spent 9)
     const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { cb, sv: svOf(u), ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x - VT0.x0 >= (VT0.x1 - VT0.x0 + 1) / 2, up: y - VT0.y0 >= (VT0.y1 - VT0.y0 + 1) / 2 }; };
     const condWord = (u) => healthView(u).word; // the engine's view (rules 1.55 item 29): the look's word
 
@@ -1486,7 +1486,7 @@ export class CombatLogic extends DCLogic {
     const curOwner = cur ? playerOf(owner(cur)) : null;
     /** A unit's magic in a line: Evoker, heart, shield, conditions. */
     const magicLine = (u) => { const m = u.mg, cs = condChips(u, g); let t = '';
-      if (m && m.evoker) t += ' · Flux ' + m.flux + '/' + withGame(g, () => fluxMaxOf(u, cb)) + ' · Charge ' + m.charge; // the limit the reducer keeps (row 13)
+      if (m && m.evoker) t += ' · Flux ' + m.flux + '/' + fluxMaxOf(u, cb, g) + ' · Charge ' + m.charge; // the limit the reducer keeps (row 13)
       if (m && m.emanator) t += ' · MP ' + Math.round(m.mp) + '/' + m.mpMax;
       const hh = m ? heldOutburstOf(m) : null;
       if (hh && (hh.strain || hh.held)) t += ' · Strain ' + hh.strain + '/' + hh.limit;

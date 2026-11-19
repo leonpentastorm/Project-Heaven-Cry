@@ -15,7 +15,7 @@ import { doorLineOf, feedLineOf } from './doorView';
 import { forkChipsLine } from './forkLine';
 import { enchantMark } from './quiverView';
 import { proseTip } from './actionTip';
-import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
+import { WEAPON, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
   coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam, wearState } from '@engine';
 
 export type ResKind = 'bar' | 'pips' | 'text';
@@ -302,7 +302,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     const flux = mg ? mg.flux : sm.flux || 0;
     // the limit the reducer keeps (the engine's fluxMaxOf, the game bound: Rumination's feed reads the character; row 13
     // of the outside playtest: the meter said 6 while the header and the rule said 7)
-    const FMAX: number = mg && u ? (g ? E.withGame(g, () => E.fluxMaxOf(u, cb)) : E.fluxMaxOf(u, cb)) : FLUX_MAX;
+    const FMAX: number = E.fluxMaxOf(mg && u ? u : c, mg && u ? cb : null, g ?? null); // (out of a fight: the sheet's own)
     const fr: ResRow = { key: 'flux', label: 'Flux', value: flux + ' / ' + FMAX, now: flux, max: FMAX, kind: 'pips', colour: RES_INK.mind,
       hint: 'Each glyph adds 1 Flux. Past ' + FMAX + ' the Evoker overloads (10 damage per Flux over, locked a round). Vent (1 AP) clears it.' };
     if (flux >= FMAX) Object.assign(fr, { warn: 'OVERLOAD NEXT', level: 'alert', hint: 'At ' + FMAX + ': the next glyph overloads the Evoker. Vent (1 AP) first.' });

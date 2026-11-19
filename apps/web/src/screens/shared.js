@@ -428,7 +428,7 @@ export function tokenVals(u, opt) {
     // 0.30.0: the SHIELDS block (the engine's shieldsView: exact for the squad and an Analyzed foe, size words for any
     // other; game/shieldLook.ts draws it), on every card: yours, a friend's, a foe's. opt.sv: the view the screen already
     // worked out for this unit this render. No rule line here: it is the target card's and your own panel's.
-    sh: shieldBlock(opt.sv || shieldsView(opt.cb || null, u, null, fmtNum)),
+    sh: shieldBlock(opt.sv || shieldsView(opt.cb || null, u, null, fmtNum, opt.g)), // opt.g: the game the character is read through
     tokStyle: 'position: absolute; inset: 6%; z-index: 2; display: grid; place-items: center; border-radius: 50%; overflow: hidden; box-sizing: border-box; font-size: 9px; font-weight: 700; '
       + (opt.ally ? 'border: 2px solid ' + opt.color + '; background: #000' : opt.color && opt.color !== '#F65157' ? 'border: 2px solid ' + opt.color + '; background: #141922; color: ' + opt.color : 'border: 2px solid #F65157; background: #2A0F14; color: #F65157') + (u.downed || u.dead ? '; opacity: 0.45' : '') + (opt.pose ? '; ' + opt.pose : ''), // opt.pose: Pressure 2.0's crouch (techView pressureLook)
     popStyle: 'position: absolute; z-index: 30; ' + (opt.up ? 'bottom' : 'top') + ': calc(100% + 6px); ' + (opt.right ? 'right: 0' : 'left: 0') + '; width: 210px; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + (opt.ally ? opt.color : '#F65157') + '; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6); color: #E7EBF3; text-align: left; pointer-events: none; white-space: normal',
