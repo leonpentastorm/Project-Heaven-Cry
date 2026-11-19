@@ -129,7 +129,7 @@ register({
 /** The plain mode of the weapon in hand: a strike with a melee weapon, a throw with a thrown one, else a shot. */
 const plainMode = (u: Unit): 'melee' | 'thrown' | 'shot' => { const w = W(u); return !w ? 'melee' : isMelee(w) ? 'melee' : w.category === 'thrown' ? 'thrown' : 'shot'; };
 /** Called Shot's step to hit: the data's (−2), none while the target can't see you (rules 1.32). */
-const calledStep = (h: Holder, u: Unit, t: Unit): number => (u.hidden || !unitSees(h.cb!, t, u.pos) ? 0 : (((h.info.effects || []).find((e: any) => e?.op === 'attack_mod' && e.context === 'called_shot') as any)?.value ?? -2));
+const calledStep = (h: Holder, u: Unit, t: Unit): number => (u.hidden || !unitSees(h.cb!, t, u.pos, undefined, u) ? 0 : (((h.info.effects || []).find((e: any) => e?.op === 'attack_mod' && e.context === 'called_shot') as any)?.value ?? -2));
 register({
   id: 'gunslinger.called_shot', claims: 'all',
   actions: [
@@ -810,7 +810,7 @@ register({
   on: {
     turn_end: (ctx, h) => {
       const u = h.u, tu = turretOf(h), cb = h.cb; if (ctx.u !== u || !tu || !cb || !u) return;
-      const t = foesOf(cb, tu).filter((v) => !v.hidden && unitSees(cb, tu, v.pos)).sort((a, b) => dist(a.pos, tu.pos) - dist(b.pos, tu.pos) || a.hp - b.hp)[0]; if (!t) return;
+      const t = foesOf(cb, tu).filter((v) => !v.hidden && unitSees(cb, tu, v.pos, undefined, v)).sort((a, b) => dist(a.pos, tu.pos) - dist(b.pos, tu.pos) || a.hp - b.hp)[0]; if (!t) return;
       const rng = rngOf(h, ctx), cover = coverBonus(cb, tu.pos, t.pos), sr = rollVs(cb, rng as any, { by: tu, mod: [{ add: 4, label: 'turret' }, { add: -cover, label: 'cover' }], tn: t.def, why: 'turret shot' }), r = sr.die, hit = sr.ok;
       emitFx(cb, 'shot', { unit: tu.id, target: t.id, from: tu.pos, to: t.pos, weapon: 'service_pistol', cat: 'pistol', mode: 'shot', hit, crit: false, fumble: r === 1, dmg: 0, killed: false });
       say(cb, 'The sentry turret fires at ' + t.name + ': ' + sr.text + (cover ? ' (−5 cover)' : '') + (hit ? harm(cb, rng as any, u, t, itemAmount('class:siege_engineer.sentry_turret', 'damage'), 'physical') : ' · miss') + '.');

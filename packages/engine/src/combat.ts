@@ -1089,8 +1089,13 @@ export function litAt(cb: Combat, k: string): boolean {
  * narrows the range at which it is seen; asked only when something in the fight answers it). */
 export function unitSees(cb: Combat, u: Unit, k: string, walls?: Set<string>, t?: Unit | null): boolean {
   if (u.dead || u.downed || u.eyes === false) return false; // Classes 3.0 P7: a unit with no eyes of its own sees nothing
-  const range = Math.max(0, (litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2)) + seenRangeOf(cb, t));
-  return dist(u.pos, k) <= range && (k === u.pos || lineOfSight(cb, u.pos, k, false, walls));
+  return dist(u.pos, k) <= eyeReach(cb, u, k, t) && (k === u.pos || lineOfSight(cb, u.pos, k, false, walls));
+}
+/** THE one sight range (rules 1.76 item 6403): how far u's eyes reach to tile k: its vision, halved off a lit tile on a
+ * dark map without dark sight, plus the looked-at unit's `seen_range` (Prone's, rules 1.76 item 6402); never below 0.
+ * unitSees and the enemy's own aim (enemyHuntTile, the firing-position score) read it; no second copy. */
+function eyeReach(cb: Combat, u: Unit, k: string, t?: Unit | null): number {
+  return Math.max(0, (litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2)) + seenRangeOf(cb, t));
 }
 /** Rules 1.70 item 5545 (P4): the tiles a unit's stat `seen_range` adds to the range at which others' eyes see it (0 when
  * nothing in the fight answers the stat: the sight test stays as fast as it was). */
@@ -1613,7 +1618,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   else if (!stopped) emit(cb, 'on_miss', { att, tgt, mode, die: roll, fumble, melee, via: pv.via, volley: VOLLEY, stopped: false, cb, rng, mods: cb.mods || [] });
   // Rules 1.32 (shadow-spec 2.6): the target of a silent attack from Hidden that is still up, and whose eyes reach the
   // attacker's tile, rolls to spot it at once (the one spotting roll, for that one looker); no reaction is spent.
-  if (spotBack && att.hidden && alive(tgt) && unitSees(cb, tgt, att.pos)) spotHidden(cb, rng, tgt, att);
+  if (spotBack && att.hidden && alive(tgt) && unitSees(cb, tgt, att.pos, undefined, att)) spotHidden(cb, rng, tgt, att);
   // The flamer's cone (cone_3): everyone else in a 3-tile cone toward the target gets the same attack, each its own roll.
   if ((useW.properties || []).includes('cone_3') && !opts.noCone) for (const v of unitsIn(cb, { shape: 'cone', from: att.pos, toward: tgtAt, n: 3 }, { downed: true, not: [tgt, att] })) if (previewAttack(cb, att, v, mode, { free: true }).ok) chained(() => resolveAttack(cb, rng, att, v, mode, who, { noAp: true, noWear: true, noCone: true, ...(opts.fx ? { fx: opts.fx } : {}) }), 'cone');
   return { roll, total, vs: pv.need, hit, crit, fumble, damage, line, killed };
@@ -2072,7 +2077,7 @@ function reactionStrike(cb: Combat, rng: Rng, h: Unit, t: Unit, mode: AttackMode
 /** Overwatch (spec): a unit holding a shot fires at the first enemy that moves in its sight and range, as its reaction
  * (checked at every step of a walk). A unit may hold more than one shot (u.owShots, class moves), all on one reaction. */
 export function triggerOverwatch(cb: Combat, rng: Rng, mover: Unit, seg?: string[], walked?: string[]) {
-  for (const h of cb.units) if (h.overwatch && h.side !== mover.side && alive(h) && !mover.dead && !mover.downed && !mover.hidden && unitSees(cb, h, mover.pos)) {
+  for (const h of cb.units) if (h.overwatch && h.side !== mover.side && alive(h) && !mover.dead && !mover.downed && !mover.hidden && unitSees(cb, h, mover.pos, undefined, mover)) {
     const pv = previewAttack(cb, h, mover, h.overwatch, { free: true }); if (!pv.ok) continue;
     const paid = heldShotPaid(cb, h); // Killzone's second shot: the reactions its first shot spent cover it
     // Killzone's first shot spends both reactions (owSpend, rules 1.30); with fewer left, one (and only it fires)
@@ -3069,7 +3074,7 @@ function enemyHuntTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[],
   if (targets.some((x) => x.t === mark)) return null; // it has the shot already (or the healer is too well covered to be worth it: then it stays on its target)
   if (condSource(u, 'fear') === mark.id || u.call?.cowed?.by === mark.id) return null;
   const w = WEAPON[u.weapon], P = paths(cb, u.pos, u.id), walls = sightBlockers(cb), left = u.ap - attackApCost(w, 'shot');
-  const eyes = cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, mark.pos)) ? Infinity : (litAt(cb, mark.pos) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2));
+  const eyes = cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, mark.pos, undefined, mark)) ? Infinity : eyeReach(cb, u, mark.pos, mark); // rules 1.76 item 6403: the one sight range
   const reach = Math.min(effectiveRange(w), eyes), taken = new Set(pcs.map((t) => t.pos));
   let best: string | null = null, bs = Infinity;
   for (const [k, tiles] of Object.entries(P.dist)) {
@@ -3104,7 +3109,7 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
   // A shot needs eyes on the target as well as a weapon that reaches (the attack is refused otherwise): from a tile, its
   // own sight (halved into the dark), unless someone else on its side already sees the target. Without this an enemy
   // 13 or 14 tiles off with a long gun counted its own tile as a firing position, was refused the shot, and never moved.
-  const eyes = new Map(pcs.map((t) => [t.id, cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, t.pos)) ? Infinity : (litAt(cb, t.pos) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2))] as [string, number]));
+  const eyes = new Map(pcs.map((t) => [t.id, cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, t.pos, undefined, t)) ? Infinity : eyeReach(cb, u, t.pos, t)] as [string, number])); // rules 1.76 item 6403
   const score0 = (k: string, tiles: number) => { const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
     const sees = pcs.some((t) => dist(k, t.pos) <= Math.min(reach, eyes.get(t.id)!) && lineOfSight(cb, k, t.pos, false, walls));
     // (a tile with a line on someone is as good as any other such tile: a shooter doesn't creep closer with its spare AP)
@@ -3115,7 +3120,7 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
     if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
     if (fu2 && dist(k, fu2.pos) < dist(u.pos, fu2.pos)) continue;
     let score = score0(k, tiles) + aiRouteRisk(cb, u, P, k); // around known fields, spotted traps and held attacks it sees
-    if (sneak && sneak.some((t) => unitSees(cb, t, k, walls))) score += ENEMY_AI.skulk_open; // rules 1.37: a skulker flanks through what the other side can't see
+    if (sneak && sneak.some((t) => unitSees(cb, t, k, walls, u))) score += ENEMY_AI.skulk_open; // rules 1.37: a skulker flanks through what the other side can't see
     if (risky) score += (emit(cb, 'ai_move_risk', { u, from: u.pos, to: k, risk: 0, cb }) as any).risk || 0;
     if (score < bestScore) { bestScore = score; best = k; }
   }

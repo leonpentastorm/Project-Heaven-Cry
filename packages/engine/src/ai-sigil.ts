@@ -86,7 +86,7 @@ export function aiRouteRisk(cb: Combat, u: Unit, P: { prev: Record<string, strin
     if (h.kind === 'burst') { if (dist(k, h.u.pos) <= h.reach) r += ENEMY_AI.held_risk; continue; }
     for (let t = k; t && t !== u.pos; t = P.prev[t]) {
       const from = P.prev[t] ?? u.pos;
-      if (h.kind === 'watch' ? dist(h.u.pos, t) <= h.reach && unitSees(cb, h.u, t) : (dist(from, h.u.pos) <= 1) !== (dist(t, h.u.pos) <= 1)) { r += ENEMY_AI.held_risk; break; }
+      if (h.kind === 'watch' ? dist(h.u.pos, t) <= h.reach && unitSees(cb, h.u, t, undefined, u) : (dist(from, h.u.pos) <= 1) !== (dist(t, h.u.pos) <= 1)) { r += ENEMY_AI.held_risk; break; }
     }
   }
   return r;

@@ -81,7 +81,7 @@ export function atCover(cb: Combat, u: Unit): boolean {
 /** A shot that goes past the cover its target is using (the target stands against cover, and it doesn't face this shot). */
 export const flanksCover = (cb: Combat, att: Unit, tgt: Unit): boolean => atCover(cb, tgt) && !coverTileFor(cb, att.pos, tgt.pos);
 /** In cover and out of every enemy's sight. */
-export const coveredUnseen = (cb: Combat, u: Unit): boolean => atCover(cb, u) && !foesOf(cb, u).some((v) => unitSees(cb, v, u.pos));
+export const coveredUnseen = (cb: Combat, u: Unit): boolean => atCover(cb, u) && !foesOf(cb, u).some((v) => unitSees(cb, v, u.pos, undefined, u));
 
 /** The Pressure the first ranged hit of a turn gives this target from this shooter, as things stand: 1; 1 more past
  * cover the target is using; 2 in place of 1, hidden, for an unseen hit with a Silent weapon. The rule and the card

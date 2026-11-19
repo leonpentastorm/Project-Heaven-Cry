@@ -213,11 +213,12 @@ export function sightOf(cb: Combat, u: Unit, by?: Unit | null): [SightWord, Sigh
 export const TIER_NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
 /** THE one test of an enemy's eyes on a unit: v, of the other side, up and not itself Hidden, sees the tile (range,
  * light, line of sight). at: a tile the unit would stand on (the Hide spots, rules 1.56 Shadow 2.0 item 11). */
-const eyeOn = (cb: Combat, u: Unit, v: Unit, at: string) => v.side !== u.side && alive(v) && !v.hidden && unitSees(cb, v, at, undefined, u);
+const eyeOn = (cb: Combat, u: Unit, v: Unit, at: string, walls?: Set<string>) => v.side !== u.side && alive(v) && !v.hidden && unitSees(cb, v, at, walls, u);
 /** Does any unit of the other side see this tile (range, light, line of sight)? at: another tile (default its own). */
 export const seenByFoes = (cb: Combat, u: Unit, at: string = u.pos) => cb.units.some((v) => eyeOn(cb, u, v, at));
-/** The units of the other side whose eyes reach the unit's tile (or `at`): seenByFoes's own test, listed. */
-export const eyesOn = (cb: Combat, u: Unit, at: string = u.pos): Unit[] => cb.units.filter((v) => eyeOn(cb, u, v, at));
+/** The units of the other side whose eyes reach the unit's tile (or `at`): seenByFoes's own test, listed. walls:
+ * sightBlockers(cb), from a caller that asks at many tiles (the shadow sightline, rules 1.76 item 6404). */
+export const eyesOn = (cb: Combat, u: Unit, at: string = u.pos, walls?: Set<string>): Unit[] => cb.units.filter((v) => eyeOn(cb, u, v, at, walls));
 /** Become Hidden (not while Marked). Each entry gives one ambush. Returns a log suffix. */
 export function hide(cb: Combat, u: Unit, why = ''): string {
   if (condOn(u, 'marked')) return ' · ' + u.name + ' is Marked and can\'t hide';
@@ -300,7 +301,7 @@ export function spotHidden(cb: Combat, rng: Rng, by: Unit, only?: Unit | null) {
     // next to it: found outright, unless an item makes it a roll (op close_roll: Shadow's Close Quarters, rules 1.32);
     // the hook is asked only when someone listens, and the die is rolled only for a roll (an outright find rolls nothing)
     const close = dist(u.pos, by.pos) <= 1;
-    if (!close && !unitSees(cb, by, u.pos)) continue;
+    if (!close && !unitSees(cb, by, u.pos, undefined, u)) continue; // rules 1.76 item 6403: the hider's seen_range
     const pre: any = !close ? null : hookUsed('spot') ? emit(cb, 'spot', { by, u, die: 0, mod: m, tn: tn0, cancel: false, close: true, outright: true, cb, rng }) : { outright: true };
     if (pre?.outright) { reveal(cb, u, by.name + ' is right next to them', { how: 'close', by }); continue; }
     const die = pre?.cancel ? 0 : pre?.die || rollD20(rng).die; // (an item may have set the close roll's die)

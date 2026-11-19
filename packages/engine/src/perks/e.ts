@@ -492,7 +492,7 @@ register({
       if (uses(h).left('per_combat', 1, h.key + '#fired') <= 0) return;
       const armed = !!armedOf(h), ambush = !armed && !stateOf(h).hadTurn;
       if (!armed && !ambush) return;
-      if (!unitSees(cb, u, foe.pos)) return;
+      if (!unitSees(cb, u, foe.pos, undefined, foe)) return;
       if (!(u.armed ||= {})[h.key] && ambush) u.armed[h.key] = { choice: previewAttack(cb, { ...u, ap: 2 } as Unit, foe, 'shot').ok ? 'shot' : 'prone', round: cb.round };
       if (heartbeat(h, foe, rngOf(h, ctx))) { uses(h).take('per_combat', 1, h.key + '#fired'); disarm(h); checkOver(cb); }
       else if (ambush) disarm(h);
@@ -556,7 +556,7 @@ register({
     turn_end: (ctx, h) => { if (ctx.u === h.u) stateOf(h).locked = true; },
     attack_preview: (ctx, h) => {
       const u = h.u, cb = h.cb; if (!u || !cb || ctx.att.id !== stateOf(h).pick || ctx.att.side === u.side || !alive(u)) return;
-      if (!unitSees(cb, ctx.att, u.pos)) return;
+      if (!unitSees(cb, ctx.att, u.pos, undefined, u)) return;
       ctx.terms.push({ v: tierII(h) ? -2 : -1, label: 'Flat Line (' + u.name + ')' });
     },
   },
@@ -585,7 +585,7 @@ register({
 });
 function patSee(ctx: any, h: Holder) {
   const u = h.u, cb = h.cb; if (!u || !cb || ctx.att.side === u.side || u.dead) return;
-  if (ctx.tgt !== u && !unitSees(cb, u, ctx.att.pos)) return;
+  if (ctx.tgt !== u && !unitSees(cb, u, ctx.att.pos, undefined, ctx.att)) return;
   const st = stateOf(h), seen: string[] = (st.seen ||= []), k = patKey(ctx); if (!seen.includes(k)) seen.push(k);
 }
 
@@ -806,7 +806,7 @@ register({
     preview: (h, args) => {
       const cb = h.cb, u = h.u, t = unitById(cb, args.targetId); if (!cb || !u || !t) return {};
       if (t === u) return { ok: false, why: 'Command someone else.' };
-      if (!unitSees(cb, u, t.pos)) return { ok: false, why: 'You can\'t see ' + t.name + '.' };
+      if (!unitSees(cb, u, t.pos, undefined, t)) return { ok: false, why: 'You can\'t see ' + t.name + '.' };
       if (!alive(t) || condOn(t, 'stunned')) return { ok: false, why: t.name + ' can\'t act.' };
       if (!overworld(cb) && ordered(h, t).left('per_round') <= 0) return { ok: false, why: t.name + ' already took a Command this round.' };
       const kind = String(args.choice || '').toLowerCase();

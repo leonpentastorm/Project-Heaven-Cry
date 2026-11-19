@@ -299,7 +299,7 @@
       "family": "body",
       "save": false,
       "engine": "flag",
-      "text": "You are on the ground. Melee attacks against you have +{=effects.0.value} to hit and ranged attacks against you have −2. Standing up costs 1 AP.",
+      "text": "You are on the ground. Melee attacks against you have +{=effects.0.value} to hit and ranged attacks against you have −2. Enemies see you from {=effects.2.value|abs} tiles less far. Standing up costs 1 AP.",
       "effects": [
         {
           "op": "attack_mod",
@@ -310,6 +310,13 @@
           "op": "attack_mod",
           "value": -2,
           "context": "ranged_vs_self"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "seen_range",
+          "value": -4,
+          "provisional": true,
+          "about": "rules 1.76 item 6402: enemies' eyes reach a Prone unit 4 tiles less far (the number is Leon's to set)"
         }
       ],
       "duration": {

@@ -469,7 +469,7 @@ const charsOf = (g: GameState, pid: string) => Object.values(g.characters).filte
 const isHost = (g: GameState, by: string) => by === g.hostId;
 // The faith rules (faith.ts) take these from here rather than importing game.ts (rules 1.6).
 bindFaith({ push: (g, e) => push(g, e), rollMod: (g, c, skill, roll) => sideRollMod(g, c, skill, roll), isHost, apLeft: (g, c) => apLeft(g, c), spendAp: (g, c, n) => spendAp(g, c, n), afterStory: (g) => closeRoundIfDone(g) });
-bindFaithSight((cb, u, t) => unitSees(cb, u, t.pos));
+bindFaithSight((cb, u, t) => unitSees(cb, u, t.pos, undefined, t));
 /** Players taking part in the round: everyone with a living character. */
 export const speakers = (g: GameState) => g.players.filter((p) => charsOf(g, p.id).length > 0);
 
@@ -3006,7 +3006,7 @@ function silentTakedown(g: GameState, cbx: Combat, c: Character, att: Combat['un
   if (!tgt?.dead || !att.hidden || att.dead) return false;
   if (!holdersOf({ c }).some((h) => h.key === 'class:shade.silent_kill')) return false;
   const others = cbx.units.filter((v) => v.side === 'foe' && !v.dead && !v.downed && !v.surrendered);
-  if (!others.length || others.some((v) => unitSees(cbx, v, att.pos))) return false;
+  if (!others.length || others.some((v) => unitSees(cbx, v, att.pos, undefined, att))) return false;
   // Rules 1.9 (item 699): the death sweep still runs, so the body's drops lie in the pile on its tile on the area map
   // (searching the body is picking up that pile).
   noteDeaths(cbx, g.rng);

@@ -84,13 +84,13 @@ register({
       text: 'Threaten an enemy who can see and hear you. It makes a Heart save or is Shaken. II: every enemy in earshot who sees you makes the save.',
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
-        if (!unitSees(h.cb!, t, h.u.pos)) return { ok: false, why: t.name + ' has to see you.' };
+        if (!unitSees(h.cb!, t, h.u.pos, undefined, h.u)) return { ok: false, why: t.name + ' has to see you.' };
         const tn = saveTn(h.u, 'intimidation');
         return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + tn + ' or Shaken' + (tierII(h) ? '. Every enemy in earshot who sees you rolls too.' : '.')] };
       },
       run: (h, a, rng) => {
         const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!;
-        const group = tierII(h) ? cb.units.filter((v) => v.side === t.side && up(v) && dist(v.pos, u.pos) <= HEARING && unitSees(cb, v, u.pos)) : [t];
+        const group = tierII(h) ? cb.units.filter((v) => v.side === t.side && up(v) && dist(v.pos, u.pos) <= HEARING && unitSees(cb, v, u.pos, undefined, u)) : [t];
         if (!group.includes(t)) group.unshift(t);
         let out = ''; for (const v of group) out += applyCond(cb, rng, u, v, 'shaken', undefined, 'heart', { via: 'intimidation' });
         say(cb, u.name + ' leans in (Bone Talk' + (a.text ? ': "' + a.text.slice(0, 160) + '"' : '') + ')' + out + '.');
@@ -136,7 +136,7 @@ register({
     },
     turn_end: (ctx, h) => {
       const cb = h.cb!, u = h.u, t: Unit = ctx.u;
-      if (!up(u) || !t || t.side === u.side || !up(t) || t.hp * 2 > t.maxHp || !canSurrender(t) || !unitSees(cb, t, u.pos)) return;
+      if (!up(u) || !t || t.side === u.side || !up(t) || t.hp * 2 > t.maxHp || !canSurrender(t) || !unitSees(cb, t, u.pos, undefined, u)) return;
       say(cb, t.name + ' remembers whose name it is (The Name They Whisper)' + trySurrender(cb, rngOf(h, ctx), u, t, 0, 'intimidation') + '.');
     },
   },
@@ -162,7 +162,7 @@ register({
   on: {
     on_damaged: (ctx, h) => {
       const t: Unit = ctx.t, u = h.u, cb = h.cb!;
-      if (!up(u) || !t || t.side === u.side || !up(t) || ctx.prevHp * 4 <= t.maxHp || t.hp * 4 > t.maxHp || !mercyOk(t) || offered(h).includes(t.id) || !unitSees(cb, u, t.pos)) return;
+      if (!up(u) || !t || t.side === u.side || !up(t) || ctx.prevHp * 4 <= t.maxHp || t.hp * 4 > t.maxHp || !mercyOk(t) || offered(h).includes(t.id) || !unitSees(cb, u, t.pos, undefined, t)) return;
       const rng = rngOf(h); if (!rng) return;
       if (mercyMode(h) !== 'always') { if (mercyMode(h) === 'ask') say(cb, u.name + ' could offer ' + t.name + ' mercy (Open Hand: free on your turn).'); return; }
       say(cb, u.name + ' offers ' + t.name + ' an open hand' + offerMercy(h, t, rng) + '.');
@@ -177,7 +177,7 @@ register({
         if (t.hp * 4 > t.maxHp) return { ok: false, why: t.name + ' isn\'t beaten enough yet. It must be at a quarter of its HP or less.' };
         if (offered(h).includes(t.id)) return { ok: false, why: 'Mercy was offered to ' + t.name + ' already.' };
         if (!mercyOk(t)) return { ok: false, why: t.name + ' won\'t surrender.' };
-        if (!unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' };
+        if (!unitSees(h.cb!, h.u, t.pos, undefined, t)) return { ok: false, why: 'You can\'t see them.' };
         return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (saveTn(h.u, 'empathy')) + ' or it surrenders.'] };
       },
       run: (h, a, rng) => { const t = h.cb!.units.find((x) => x.id === a.targetId)!; say(h.cb, h.u!.name + ' offers ' + t.name + ' an open hand' + offerMercy(h, t, rng) + '.'); },
@@ -250,7 +250,7 @@ register({
   actions: [{
     id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 'data', uses: { per: 'per_combat', n: 1 }, needsSight: true,
     text: 'Once a fight: judge an enemy you can see. Its next attack on your side fails, and your attacks on it deal +50% damage for the rest of the fight.',
-    preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && h.u && !unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return { lines: ['Its next attack on your side fails. Your attacks on it deal +50% damage.'] }; },
+    preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && h.u && !unitSees(h.cb!, h.u, t.pos, undefined, t)) return { ok: false, why: 'You can\'t see them.' }; return { lines: ['Its next attack on your side fails. Your attacks on it deal +50% damage.'] }; },
     run: (h, a) => {
       const t = h.cb!.units.find((x) => x.id === a.targetId)!; stateOf(h).judged = { id: t.id, spent: false };
       emitFx(h.cb!, 'cond', { target: t.id, at: t.pos, id: 'marked' });
@@ -370,7 +370,7 @@ register({
       const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
       if (!t.analyzedBy) return { ok: false, why: 'It has to be Analyzed first.' };
       if (closed(h).includes(t.id)) return { ok: false, why: 'Already read.' };
-      if (dist(h.u.pos, t.pos) > 4 + (h.u.analysis || 0) || !unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'Out of Analyze range or sight.' };
+      if (dist(h.u.pos, t.pos) > 4 + (h.u.analysis || 0) || !unitSees(h.cb!, h.u, t.pos, undefined, t)) return { ok: false, why: 'Out of Analyze range or sight.' };
       return {};
     },
     run: (h, a) => { closeCase(h, h.cb!.units.find((x) => x.id === a.targetId)!); },

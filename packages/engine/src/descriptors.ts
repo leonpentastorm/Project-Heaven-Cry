@@ -18,7 +18,7 @@
 // player's saved turn-card picks and the two-key hotkeys keep working.
 import type { Combat, Unit, AttackMode } from './combat';
 import { WEAPON, SOUL_RULES } from './data';
-import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange, analyzeRange, pairs } from './combat';
+import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange, analyzeRange, pairs, sightBlockers } from './combat';
 import { kindOf } from './objects';
 import { apFor, canPay, RESOURCES, resGive, price, whyNot } from './effects/cost';
 import { eyesOn, seenByFoes, HIDE_WHY, throwRangeOf, radiusOf } from './tactics';
@@ -117,6 +117,10 @@ export interface ActionDescriptor {
   spots?: string[];
   /** Hide: the enemies, of those the viewer sees, whose eyes reach the unit's tile now (who sees you). */
   eyes?: string[];
+  /** Hide (rules 1.76 item 6404, the shadow sightline): each tile of the map from which the unit, standing there, would be
+   * seen, with the enemies (of those the viewer sees) whose eyes reach it there (eyesOn, Hide's own test). A tile not
+   * listed is watched by none. Presentation only. */
+  watch?: Record<string, string[]>;
 }
 export type Picks = Record<string, any>;
 /** One line of a descriptor preview (odds, a note, a meter, a save, the cost, an ask). */
@@ -609,13 +613,27 @@ function basicPreview(x: DescCtx, d: ActionDescriptor, p: Picks, action: Action 
 function hideHelp(x: DescCtx, d: ActionDescriptor): ActionDescriptor {
   if (x.u.side !== 'pc') return d;
   const me = x.seen.units.find((v) => v.id === x.u.id) || x.u, eyes = safe(() => eyesOn(x.seen, me).map((v) => v.id), [] as string[]);
-  if (d.why !== HIDE_WHY.seen || !eyes.length) return { ...d, eyes };
+  const watch = safe(() => sightline(x.seen, me), {} as Record<string, string[]>);
+  if (d.why !== HIDE_WHY.seen || !eyes.length) return { ...d, eyes, watch };
   const mo = safe(() => moveOptions(x.g, x.cb, x.u.id, 'move'), { tiles: {} } as any) as { tiles: Record<string, { ap: number; tiles: number }> };
   const spots = Object.entries(mo.tiles).filter(([k, o]) => canPay(x.cb, x.u, o.ap + d.cost.ap) && !seenByFoes(x.seen, me, k))
     .sort(([a, p], [b, q]) => p.ap - q.ap || dist(me.pos, a) - dist(me.pos, b) || (a < b ? -1 : 1)).map(([k]) => k);
   const who = eyes.length + (eyes.length === 1 ? ' enemy' : ' enemies');
   const why = (spots.length ? HIDE_WHY.seen_to : HIDE_WHY.seen_none).replace('{who}', who).replace('{tile}', spots.length ? refOf(spots[0]) : '');
-  return { ...d, why, eyes, spots };
+  return { ...d, why, eyes, spots, watch };
+}
+/** The shadow sightline (rules 1.76 item 6404): every tile of the map from which this unit, standing there, is in the
+ * eyes of an enemy, with those enemies, asked of Hide's own test (eyesOn: range, light, the unit's own seen_range, line of
+ * sight) on the fight as the viewer's side sees it (cb: x.seen; an enemy it does not see is not there). Pure. */
+function sightline(cb: Combat, me: Unit): Record<string, string[]> {
+  const out: Record<string, string[]> = {};
+  if (cb.over || !cb.units.some((v) => v.side !== me.side && !v.dead && !v.downed && !v.hidden)) return out;
+  const walls = sightBlockers(cb);
+  for (let y = 0; y < cb.map.h; y++) for (let xx = 0; xx < cb.map.w; xx++) {
+    const k = xx + ',' + y, ids = eyesOn(cb, me, k, walls).map((v) => v.id);
+    if (ids.length) out[k] = ids;
+  }
+  return out;
 }
 /** What Confirm will do, in words, for a basic action with these picks (the panel's line under the name). */
 function basicSay(x: DescCtx, d: ActionDescriptor, p: Picks): string | null {

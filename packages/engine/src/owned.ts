@@ -249,7 +249,7 @@ function dataVerbAimWhy(cb: Combat, owner: Unit, me: Unit, dv: any, o: { targetI
     if (dv.reach.side === 'foe' && t.side === owner.side) return 'Pick an enemy.';
     if (dv.reach.side === 'ally' && t.side !== owner.side) return 'Pick an ally.';
     if (dist(me.pos, t.pos) > (dv.reach.tiles ?? 1)) { const n = dv.reach.tiles ?? 1; return 'Out of reach (' + n + (n === 1 ? ' tile' : ' tiles') + ' from ' + me.name + ').'; }
-    if (dv.reach.eyes ? !unitSees(cb, me, t.pos) : t.side !== owner.side && !sideSeesUnit(cb, owner.side, t)) return 'It can\'t see them.';
+    if (dv.reach.eyes ? !unitSees(cb, me, t.pos, undefined, t) : t.side !== owner.side && !sideSeesUnit(cb, owner.side, t)) return 'It can\'t see them.';
     if (dv.dash && dist(me.pos, t.pos) > 1) { const to = dashTo(cb, me, dv, t); if (typeof to !== 'string') return to.why; }
   }
   return null;

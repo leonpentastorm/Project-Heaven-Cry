@@ -2856,6 +2856,9 @@ if _sv is not None:
             if _hz is not None and not ((_ok_ids.get(_hz.get("kind")) or {}).get("hazard") and _num(_hz.get("chance")) and 0 <= _hz["chance"] <= 1): errors.append(f"{_w2}.hazard: a hazard kind of objects.json and a chance 0 to 1 (or null)")
             for _k in (_sl.get("props") or {}):
                 if _k not in _ok_ids: errors.append(f"{_w2}.props: {_k!r} is not an object kind")
+            # rules 1.76 item 6400: a dark setting's fights are dark maps (lit only by its props' `light` and carried light)
+            if _sl.get("dark") not in (None, True, False): errors.append(f"{_w2}.dark: true or false")
+            if _sl.get("dark") and not any((_ok_ids.get(_k) or {}).get("light") for _k in (_sl.get("props") or {})): errors.append(f"{_w2}.dark: a dark setting has a light among its props")
             if _sl.get("kit") != "pending" and not (pathlib.Path(__file__).resolve().parent.parent / "art/sprites/kit" / str(_sl.get("kit"))).is_dir(): errors.append(f"{_w2}.kit: {_sl.get('kit')!r} is not a folder of art/sprites/kit (or \"pending\")")
         for _tp in _sv.get("templates") or []:
             if _tp.get("hazard") not in (None, True, False): errors.append(f"survival:templates.{_tp.get('id')}.hazard: true or false")

@@ -795,7 +795,7 @@ const wardDef = (n: number, self: boolean): ActionDef => ({
   id: 'ward' + n + (self ? '_self' : ''), label: 'Ward ×' + n + (self ? ' (yourself)' : ''), scope: ['combat'], target: self ? 'none' : 'ally', ap: (h) => (h.u ? price({ cb: h.cb, u: h.u }, 'ward', 2).ap : 2), res: { charge: n }, range: 6,
   text: 'Spend ' + n + ' charge to put a shield of ' + itemAmount('class:warden.ward', 'shield', [], { charge: n }) + ' × your Healing given on ' + (self ? 'yourself' : 'an ally within 6 tiles') + '. Adds ' + n + ' Flux.',
   available: (h) => evokerReady(h) || true,
-  preview: (h, args) => { if (self) return {}; const t = unitById(h.cb!, args.targetId); if (t && !unitSees(h.cb!, h.u!, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return {}; },
+  preview: (h, args) => { if (self) return {}; const t = unitById(h.cb!, args.targetId); if (t && !unitSees(h.cb!, h.u!, t.pos, undefined, t)) return { ok: false, why: 'You can\'t see them.' }; return {}; },
   run: (h, args) => {
     const cb = h.cb!, u = h.u!, t = self ? u : unitById(cb, args.targetId)!; u.mg!.cast = true;
     const v = grantShield(cb, t, itemAmount('class:warden.ward', 'shield', [term(healMultOf(h), 'stat: healing given')], { charge: n }), u); emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: 0, gained: v });

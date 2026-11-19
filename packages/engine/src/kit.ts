@@ -95,7 +95,7 @@ function counts(cb: Combat, v: Unit, o: Who, from: string): boolean {
   if (o.companions === false && v.companion) return false;
   if (o.images === false && (v as any).ghostOf) return false;
   if (o.within != null && dist(v.pos, o.from || from) > o.within) return false;
-  if (o.seenBy && !unitSees(cb, o.seenBy, v.pos)) return false;
+  if (o.seenBy && !unitSees(cb, o.seenBy, v.pos, undefined, v)) return false;
   if (o.seenBySide && !sideSeesUnit(cb, o.seenBySide, v, false, walls || (walls = sightBlockers(cb)))) return false;
   return true;
 }
@@ -255,7 +255,7 @@ onHook('round_start', (_ctx: any, cb: Combat) => {
     const g = tieKind(t.kind)?.gear, c = g ? charOfUnit(a) : null;
     if (g && c && !holds(c, { slot: 'person', door: g.door })) { untie(cb, (x) => x === t); continue; }
     if (!tieEnds(t, 'unseen_round', cb)) continue;
-    if (unitSees(cb, a, b.pos)) { delete t.lost; continue; }
+    if (unitSees(cb, a, b.pos, undefined, b)) { delete t.lost; continue; }
     t.lost = (t.lost || 0) + 1; if (t.lost >= 2) untie(cb, (x) => x === t); // out of sight at two round starts in a row: a full round
   }
 });

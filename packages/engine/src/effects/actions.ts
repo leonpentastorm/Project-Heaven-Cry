@@ -85,7 +85,7 @@ export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): str
   if ((side === 'ally' || side === 'side') && t.side !== u.side) return 'Pick an ally.';
   // rules 1.33: reach.beyond (a tie kind): a unit tied to the holder by it is in reach at any range the holder itself sees
   const far = !!reach.beyond && !ifFails(h, { target_tied: reach.beyond }, t);
-  if (far && !unitSees(cb, u, t.pos)) return 'Not in sight: a Bond carries it only where you can see.';
+  if (far && !unitSees(cb, u, t.pos, undefined, t)) return 'Not in sight: a Bond carries it only where you can see.';
   const tiles = holderNumber(h, reach.tiles);
   if (!far && tiles != null && distK(u.pos, t.pos) > tiles) return 'Out of range (' + tiles + (tiles === 1 ? ' tile).' : ' tiles).');
   if (reach.sight && t.side !== u.side && ifFails(h, { target_sight: ['seen'] }, t)) return 'You can\'t see them.'; // the holder's side sees it (P7)

@@ -106,7 +106,10 @@ export const operative: Policy = (x) => {
       if (!t.conds?.marked && u.ap >= 1 + pv.ap && once(x, 'tag')) { const s = verb(x, 'verb:shadow.tag', 'tag', { targetId: t.id }); if (s) return s; }
       const s = ok(x, { action: { type: 'combat/attack', targetId: t.id, mode: 'shot', mods: BREAK }, kind: 'attack', label: 'Break' }); if (s) return s;
     }
-    if (sh === 0 && tgts.length && u.ap < 2 * (tgts[0]?.pv.ap || 2)) return null; // wait Hidden: Shadow at the turn's end
+    if (sh === 0 && tgts.length && u.ap < 2 * (tgts[0]?.pv.ap || 2)) { // wait Hidden: Shadow at the turn's end; rules 1.76 item 6405: Stalk with the AP it has
+      if (once(x, 'stalk')) { const s = verb(x, 'verb:shadow.stalk', 'stalk'); if (s) return s; }
+      return null;
+    }
     return gunner(x);
   }
   // seen or in the open: Hide here, or walk to a tile no foe sees and Hide there

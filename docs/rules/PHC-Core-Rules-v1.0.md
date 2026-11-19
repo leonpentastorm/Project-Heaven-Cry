@@ -478,7 +478,7 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 - **Analyze on NPCs**: out of combat it is an Acuity check the Narrator calls (TN by how guarded they are). On a success you learn what Analyze reveals in a fight, in words.
 - **Wards and rituals** belong to Sigil and Soul magic; until that pass, the Narrator rules them from the perk's text.
 
-**Prone** (1 AP to drop or stand): ranged attacks against you are at −2 and melee attacks at +2, and you can't move until you stand. **Opportunity attacks** need a free reaction (one per round). **Overwatch** spends the shot's AP now and holds the shot until your next turn: the first enemy that moves while in your line of sight and range takes it, as your reaction.
+**Prone** (1 AP to drop or stand): ranged attacks against you are at −2 and melee attacks at +2, and you can't move until you stand. *(Rules 1.76 item 6402: enemies' eyes also reach you 4 tiles less far while Prone.)* **Opportunity attacks** need a free reaction (one per round). **Overwatch** spends the shot's AP now and holds the shot until your next turn: the first enemy that moves while in your line of sight and range takes it, as your reaction.
 
 **Vision** (written 7 Nov 2026, Leon: vision, fog of war and darkness are one stat; provisional):
 - **Vision range** = 12 + 2 × (Perception − 1) + Vigilant tiles.
@@ -12554,3 +12554,48 @@ here is PROVISIONAL.
     Cover Them's Guard cost reads `tech_rule:guard.interpose_cost` (one copy of the interpose cost).
 5548. **Browser suites that fail only beside others** run one at a time (`apps/web/e2e/groups.json serial`: fx-room,
     magic, title, resources, capture-skills, picking).
+
+### Rules 1.76 (Shadow), dark maps, Douse, Prone's seen range, the shadow sightline, Stalk (19 Nov 2026)
+
+The banked Shadow work of 0.32 (the to-do of 16 Nov, section C item 6; `docs/design/handoffs/2026-11-18-scout-owed-fixes.md`
+item 14). A later revision overrides the body and the earlier ones. Every number here is PROVISIONAL and a data field;
+every item is `adjudication: engine`.
+
+6400. **Dark maps in Survival** (the lead's ruling, to-do F): a setting's layout may be dark (`survival.json
+      settings[].layout.dark`); a fight generated for it is a dark map (`MapDef.dark`). The shrine, the works and the rim
+      are dark; the AHOC base, the city and the field are lit. On a dark map sight off a lit tile is halved (rules body,
+      Vision: the one `litAt`); the lights are the setting's props (`layout.props`: lamps, terminals) and the objects'
+      own `light` radius (`objects.json`: a lamp 3, a fire 2, a terminal 1), a unit's carried light and magic light.
+      PROVISIONAL: the clears are measured before and after (the lane's report).
+6401. **Douse on a dark map** (item 1973 stands: a lamp): Douse's reach and its effect name an object word read by the
+      one `objects.ts objectIs` (a kind id or a field of the kind's row): today `lamp`, the kind. Widening Douse to every
+      light (a fire, a terminal's glow) is one data change, Leon's call (a terminal would break): the word `light` (the
+      field every light-giving object row holds) in `shadow.douse`'s reach and effect, and its text. On a dark map a
+      doused lamp's tiles go dark at once (the one `litAt`); on a lit map Douse changes nothing to sight.
+6402. **Prone lowers the range you are seen at** (approved in to-do F as the stat `seen_range`, rules 1.70 item 5545):
+      Prone carries `seen_range` **−4 tiles** (`conditions.json prone`; PROVISIONAL, the number is Leon's to set). An
+      enemy's eyes reach a Prone unit 4 tiles less far (12 becomes 8 in the light; 6 becomes 2 in the dark); never below
+      0. Prone's other rules are unchanged.
+6403. **One sight range** (rules 1.70 item 5545 completed): the range at which a unit's eyes see a tile is one function
+      (`combat.ts unitSees`, its private `eyeReach`): its vision, halved off a lit tile without dark sight, plus the
+      looked-at unit's `seen_range`. Every test of whether an enemy sees a unit names that unit (the fog, Hide, the
+      spot roll, the enemy's own aim and its hunt, the sight words, the perks and techniques that ask whether a foe
+      sees someone), so Prone and any later `seen_range` reach all of them. A check of a tile with nobody on it, or of
+      an ally looking at an ally, names no target (Prone hides you from enemies' eyes, not from your squad's).
+6404. **The shadow sightline** (Leon's name for the detect view; also spec item 5107, a sight view per enemy): in a
+      fight, on your turn, the map can show who can see you and from where, from the engine's own sight (one copy, the
+      Hide test `eyesOn`), on the fight as your side sees it (an enemy you don't see is never counted, named or drawn):
+      (a) each tile your eyes see is marked by how many of those enemies' eyes would reach you standing there, watched
+      tiles shaded in the hurting ink by the count, unwatched ones clear; (b) dark tiles keep the dark's own shade; (c)
+      a line from each enemy that sees you where you stand; (d) each seen enemy's eyeline: its reach toward you drawn as
+      the edge of the tiles it watches; (e) hovering a tile says "seen here by" and names them, or "unseen here". It
+      rides Hide's row in the action list (`watch`), shown with the SIGHTLINE switch on the map (saved per player), on
+      by default while you are Hidden or the SHADOW tab is open. Presentation only: no rule reads it.
+6405. **Stalk** (the journal's shape; to-do F): a Shadow verb at Ingenuity 1 (group Slip, `shadow.json shadow.stalk`):
+      **2 AP, once a turn, from Hidden: +1 Shadow** (the meter's cap binds). 2 AP keeps the Operative's 1-AP Tradecraft
+      the better buy. PROVISIONAL. *Not built:* Stalk's gain is not yet counted under the door's two gains a turn
+      (the limit's key is the item's own; a key shared by the door's items is a new primitive, listed for the lead),
+      and it is not refused at a full meter (no "below its most" bound on the resource predicate).
+6406. **Silent** (to-do F) is not built here: its rule needs a ruling first (the standing rule, shadow-spec 2.6, a silent
+      attack lets its target roll to spot you; to-do F, acting from Hidden gives your tile away while you stay Hidden).
+6407. **Case** (`shadow.json pending`) is not built: it needs a read-out of a unit's kit and rolled loot for a side.

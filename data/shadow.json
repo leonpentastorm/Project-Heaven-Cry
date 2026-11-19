@@ -648,6 +648,50 @@
       ]
     },
     {
+      "id": "shadow.stalk",
+      "name": "Stalk",
+      "kind": "verb",
+      "group": "slip",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 1
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP, once a turn, from Hidden: +{=effects.0.effects.0.value} Shadow.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "stalk",
+          "ap": 2,
+          "uses": "per_turn",
+          "if": {
+            "self_has": [
+              "hidden"
+            ]
+          },
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": 1,
+              "when": "acted",
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
+              },
+              "say": "{self} waits in the dark: Shadow {res:shadow}."
+            }
+          ],
+          "why": {
+            "self_has": "An enemy sees you: Stalk needs you Hidden."
+          }
+        }
+      ]
+    },
+    {
       "id": "shadow.vault",
       "name": "Vault",
       "kind": "verb",
