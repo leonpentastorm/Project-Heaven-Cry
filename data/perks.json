@@ -6167,7 +6167,7 @@
           ],
           "ap_cost": null,
           "text": "Once a scene, ask the Narrator one question about a supernatural creature, curse or relic. The answer is true.",
-          "short": "Once a scene: one true fact about a creature, curse or relic",
+          "short": "Once a scene: one true fact about the supernatural",
           "effects": [
             {
               "op": "grant_action",
@@ -6190,7 +6190,7 @@
           ],
           "ap_cost": null,
           "text": "As Tier I, and you read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens, though it may still move. The Narrator plays the parley.",
-          "short": "Read and speak any old script · an upper-realm being parleys once",
+          "short": "Old scripts · a parley",
           "effects": [
             {
               "op": "grant_action",
@@ -7686,7 +7686,7 @@
           ],
           "ap_cost": null,
           "text": "Lower-ranked people follow your reasonable orders without a roll.",
-          "short": "Lower-ranked people follow reasonable orders without a roll",
+          "short": "Your reasonable orders obeyed, no roll",
           "effects": [
             {
               "op": "narrator",
@@ -7703,7 +7703,7 @@
           ],
           "ap_cost": null,
           "text": "As Tier I, and once per organisation the Narrator names who really holds its power, and they agree to see you.",
-          "short": "Once per organisation: who really holds power agrees to see you",
+          "short": "Meet who really holds power",
           "effects": [
             {
               "op": "narrator",

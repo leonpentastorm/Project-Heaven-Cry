@@ -54,7 +54,7 @@ await act({ type: 'sandbox/clear' });
 ok('Empathy 1: my turn', await toMe());
 {
   const rows = await tendRows(), txt = (await host.locator('[role="tabpanel"]').textContent()) || '';
-  ok('Empathy 1: the TEND tab, in its groups (' + ['BOND', 'HEAL', 'HELP'].filter((w) => txt.includes(w)).join(', ') + ')', rows.some((t) => /^Bond/.test(t)) && ['BOND', 'HEAL', 'HELP'].every((w) => txt.includes(w)));
+  ok('Empathy 1: the TEND tab, in its groups (' + ['BOND', 'HEAL'].filter((w) => txt.includes(w)).join(', ') + '; rules 1.75: the help verbs are Camaraderie perks)', rows.some((t) => /^Bond/.test(t)) && ['BOND', 'HEAL'].every((w) => txt.includes(w)));
   ok('Empathy 1: no Shield (Empathy 2) and no Raise (Empathy 3)', !rows.some((t) => /^Shield/.test(t)) && !rows.some((t) => /^Raise/.test(t)));
   const b = host.locator('[role="tabpanel"] button', { hasText: /^Bond/ }).first(), tip = (await b.count()) ? await tipOf(b) : '';
   ok('no Attuner in hand: Bond says why (' + tip.slice(0, 60) + ')', /Needs an Attuner in hand\./.test(tip));
@@ -84,7 +84,7 @@ mate = mates[0]?.charId || null;
 await snap('01-start');
 {
   const rows = await tendRows();
-  ok('Empathy 6: Shield and Raise have come (' + rows.filter((t) => /^(Shield|Raise)/.test(t)).length + ')', rows.some((t) => /^Shield/.test(t)) && rows.some((t) => /^Raise/.test(t)));
+  ok('Empathy 6: Shield has come (rules 1.75: at Empathy 5; Raise belongs to Nobody Left Behind II, on the Perks tab) (' + rows.filter((t) => /^Shield/.test(t)).length + ')', rows.some((t) => /^Shield/.test(t)) && !rows.some((t) => /^Raise/.test(t)));
   // (0.31.0: a mini meter; the focus line is its hover card now: both are read)
   const mpEl = host.locator('.phc-res-row:not(.phc-res-mini)[data-res="mp"]').first();
   const mp = ((await mpEl.textContent().catch(() => '')) || '') + ' ' + (await tipOf(mpEl));

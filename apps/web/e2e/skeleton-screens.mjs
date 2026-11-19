@@ -143,7 +143,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
   await p.locator('[role="tablist"][aria-label="Sheet"] [role="tab"][data-tab="status"]').click(); await settle(p, 300);
   const from = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll('[data-derived]')].map((r) => [r.getAttribute('data-derived'), (r.querySelector('[data-derived-from]') || {}).textContent || ''])));
   ok('Status: HP per level from Pain Threshold, healing given Empathy, received Camaraderie, shields Conscience', from.hp_level === 'Pain Threshold' && /Empathy/.test(from.heal_given) && from.heal_received === 'Camaraderie' && from.shield_received === 'Conscience');
-  ok('Status: Brain save Rumination, critical damage taken Acuity, ambush damage taken Improvisation, ranges Brain Power and Will Power', from.save_brain === 'Rumination' && /Acuity/.test(from.crit_taken) && from.ambush_taken === 'Improvisation' && from.sigil_range === 'Brain Power' && from.soul_range === 'Will Power' && from.ready_designs === 'Will Power');
+  ok('Status: Brain save Rumination, critical damage taken Acuity, ambush damage taken Improvisation, ranges Brain Power and Will Power, designs ready Lore Master (rules 1.75 item 6205)', from.save_brain === 'Rumination' && /Acuity/.test(from.crit_taken) && from.ambush_taken === 'Improvisation' && from.sigil_range === 'Brain Power' && from.soul_range === 'Will Power' && from.ready_designs === 'Lore Master');
   await p.screenshot({ path: SHOTS + '/sheet-status-1440.png' });
 
   // ----- 3. level up -----
