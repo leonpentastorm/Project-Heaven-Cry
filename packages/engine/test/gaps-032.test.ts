@@ -63,3 +63,16 @@ describe('G3: the field reads each action\'s flag from data/actions.json field',
     expect(missing).toEqual([]);
   });
 });
+
+// Item 15 (ROADMAP "Magic"): a focus taken out of the off hand goes to the pack as a focus (packKindOf), never a tool
+describe('a stowed focus is a focus in the pack', () => {
+  it('gear/unequip of each focus in the off hand: its pack line is of kind focus', () => {
+    for (const id of ['evoker', 'emanator', 'attuner', 'visualizer']) {
+      const s = storyWith([{ name: 'Ash' }], 'FOCUS' + id);
+      const c: any = Object.values(s.g.characters)[0]; c.offHand = { id };
+      const g = s.act({ type: 'gear/unequip', charId: c.id, slot: 'off' } as any);
+      const line = (g.characters[c.id].pack || []).find((x: any) => (x.item || x.id) === id);
+      expect(line, id).toBeTruthy(); expect(line!.kind, id).toBe('focus');
+    }
+  });
+});
