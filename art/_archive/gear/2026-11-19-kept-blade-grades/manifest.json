@@ -3880,6 +3880,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-torso_class1_light--relic",
+      "path": "art/icons/gear/armour-torso_class1_light--relic.png",
+      "sha256": "0261609dc3ff31f79ab09b4004d416ec39bb151c3d097435040530c7c860da9b",
+      "label": "Light Armour — Relic",
+      "family": "armour-torso_class1_light",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-torso_class1_light--relic.png",
+        "sha256": "1a2e8b15d4d99d2470e3fd850af3d61d8ce13fe13145aa95dd6448802e14fb3e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-torso_class1_light--relic.png",
+        "sha256": "0261609dc3ff31f79ab09b4004d416ec39bb151c3d097435040530c7c860da9b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-torso_class1_light--relic.txt",
+        "sha256": "703443e4e423660bc8e6cdd0e3377596c0c8e05fa709b3113c50271a4f6f5cd1"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-torso_class1_light.png",
+          "sha256": "993f7915c6be69db181495b5a8f185813e0ffa40a3e5deb9f5ad1fbd4ef5207f"
+        },
+        {
+          "path": "art/icons/gear/armour-torso_class1_light--masterwork.png",
+          "sha256": "b269f21f83082ca5d89178ced234e5a999837662910d66af57da3eb345c2b9a2"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-torso_class1_light--relic.png",
+        "128": "art/icons/gear/exports/128/armour-torso_class1_light--relic.png",
+        "64": "art/icons/gear/exports/64/armour-torso_class1_light--relic.png",
+        "32": "art/icons/gear/exports/32/armour-torso_class1_light--relic.png"
+      },
+      "export_hashes": {
+        "256": "4082acf0cab7e35215ec52e9b9221f64ba2dd99e3eefd1c0066501ae2e63ed1f",
+        "128": "4d8c0f9256fd0409dd2cf36046a04aae99a6ca129b9758ec5a47cb8f9372fa13",
+        "64": "ae376e3ad486c5d6b57b1eb571a2b88a96133925941c0ba0df96417ae1f23b80",
+        "32": "1de5b9e1fdb76a80d8d28e2a8530d18dc8bdec96261d3e6820b244eab9347049"
+      },
+      "grade": "relic",
+      "standard_id": "armour-torso_class1_light",
+      "outline": {
+        "solid_alpha_iou": 0.9715621124710195,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 37
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
