@@ -23221,6 +23221,42 @@
         "different_pixels_32": 0,
         "different_pixels_64": 9
       }
+    },
+    "armour-trauma_plate--masterwork": {
+      "label": "Trauma Plate — Masterwork",
+      "path": "art/icons/gear/armour-trauma_plate--masterwork.png",
+      "sha256": "172bdfe28b1ee957d969257ec8dfc0b431960c8af4b459be3c09e879b750a526",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-trauma_plate--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-trauma_plate--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-trauma_plate--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-trauma_plate--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-trauma_plate--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-trauma_plate",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9914080797644591,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 13
+      }
     }
   },
   "survival_art": {
