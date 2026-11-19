@@ -48,6 +48,7 @@ function audit(group: string, action: string, h: { g: GameState }, casterId: str
   setContext(g, 'combat');
   queueFx(evs as any, 'cb|audit' + (++SEQ)); for (let i = 0; i < 40; i++) vi.advanceTimersByTime(500);
   const T = (window as any).__phcFxTrace as any[];
+  if (process.env.AUDIT_DEBUG && action.includes(process.env.AUDIT_DEBUG)) console.log(action, JSON.stringify(evs.map((e: any) => [e.k, e.target, e.dmg ?? e.amount, e.hp ? JSON.stringify(e.hp) : ''])), JSON.stringify(T.filter((t) => t.w === 'float').map((t) => t.text)));
   const floats = T.filter((t) => t.w === 'float').map((t) => String(t.text));
   const sfx = [...new Set(T.filter((t) => t.w === 'sfx').map((t) => String(t.s)))];
   const after = snap(g), faults: string[] = [], nums: string[] = [];

@@ -8,6 +8,7 @@ import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, element
 import { soulHandlers, soulBeat, discharge } from './soul';
 import { feelingHandlers, feelingBeat } from './feelings';
 import { faithHandlers, faithBeat, faithBatch, sealedBoon } from './faith';
+import { silentBatch } from './silent';
 import { classHandlers, classBeat } from './classes';
 import { physHandlers, physBeat } from './physical';
 import { meleeTechHandlers, meleeTechBeat, meleePrepass } from './melee-techniques';
@@ -920,7 +921,7 @@ const H: Record<string, Handler> = {
     if (e.revive) { ring(p, OK, 700, { from: 0.4, to: 1.4, width: 6 }); floatText('UP', p, OK, { big: true }); }
     else floatText('+' + fmtFloat(e.heal || 0), p, OK);
   },
-  heal(e) { const p = centre(e.at); if (!p) return; pluses(p, OK, 6); flash(tokOf(e.target, e.at), 'heal'); floatText(e.revive ? 'UP' : '+' + fmtFloat(e.amount || 0), p, OK, { big: !!e.revive }); play('crystal', p, { rate: 1.3, gain: 0.7 }); },
+  heal(e) { const p = centre(e.at); if (!p) return; pluses(p, OK, 6); flash(tokOf(e.target, e.at), 'heal'); floatText(e.revive ? 'UP' + (e.amount ? ' +' + fmtFloat(e.amount) : '') : '+' + fmtFloat(e.amount || 0), p, OK, { big: !!e.revive }); play('crystal', p, { rate: 1.3, gain: 0.7 }); },
   hurt(e) {
     const p = at(e.at); if (!p) return;
     const why = e.why || '', tok = tokOrGhost(e.target, e.at, !!e.killed);
@@ -1529,10 +1530,21 @@ if (typeof window !== 'undefined') (window as any).__phcHold = turnsBusyUntil;
 export const fxBusyUntil = () => Math.max(queueEnd, performance.now());
 /** Run one event's effect now, outside the queue (for the turn intro, the Proving Ground, a test button). tempo: 0.85 for
  *  an action slowed after a spotlight cut-in. */
+/** An HP change no event of its batch drew a number for (fx/silent.ts): the number on the unit, its token flashing (red
+ *  for a loss, green for a gain), and a quiet sound, so nothing heals or wounds unseen. */
+function showSilent(m: Record<string, number>) {
+  for (const [id, d] of Object.entries(m)) {
+    const u = unit(id), p = u ? at(u.pos) : null; if (!p) continue;
+    const tok = tokOf(id, u!.pos);
+    if (d < 0) { shake(tok, 0.5); flash(tok, 'hurt'); floatText('−' + fmtFloat(-d), p, HP); play(u!.robot ? 'hit_metal' : 'hit_flesh', p, { rate: jitter(), gain: 0.55 }); }
+    else { pluses(p, OK, 5); flash(tok, 'heal'); floatText('+' + fmtFloat(d), p, OK); play('crystal', p, { rate: 1.3, gain: 0.5 }); }
+  }
+}
 export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string, tempo = 1, due?: number) {
   const ev = { n: 0, ...e } as FxEvent, at = due ?? performance.now();
   withEvent(ev.n, () => trace('ev', { k: ev.k, id: ev.id, tech: ev.tech, weapon: ev.weapon, cat: ev.cat, mode: ev.mode, hit: ev.hit, object: ev.object, cover: !!ev.cover, thrown: ev.thrown, chain: ev.chain, dmg: ev.dmg, why: ev.why, hp: !!ev.hp }), at);
   try { if (mineOnly(ev)) withEvent(ev.n, () => withTempo(tempo, () => H[ev.k]?.(ev)), at); } catch (err) { console.warn('fx', ev.k, err); }
+  try { if ((ev as any)._silent) withEvent(ev.n, () => withTempo(tempo, () => showSilent((ev as any)._silent)), at); } catch { /* the effects never stop the game */ }
   try { if (ev.k === 'object' && ev.at) releaseTile(String(ev.at)); else if (ev.k === 'explode' && ev.at) releaseCloud(ev); } catch { /* */ }
   // The turn intro (turnIntro.tsx) times enemy-turn banners on this clock instead of estimating. stream names whose
   // numbering n belongs to (FxLayer's stream key: 'cb|…' for a fight, 'st|…' for the area map).
@@ -1593,6 +1605,7 @@ export function queueFx(evs: FxEvent[], stream?: string, opts: { keep?: number; 
   noteQueued(stream, Math.max(...evs.map((e) => e.n || 0)));
   if (opts.from == null) rangedBatch(evs, stream); // fx/ranged.ts: tag the batch's techniques in order (a new fight forgets the last)
   faithBatch(evs); // fx/faith.ts: each Chaplain moment tied to the unit it landed on (a data row's fx is sent at its holder)
+  silentBatch(evs); // fx/silent.ts: an HP change no event draws a number for gets its number (no silent heal or damage)
   // A Miracle is a fixed hold, never compressed or skipped (everyone in the room sees the god answer, even in a backlog
   // or a decided fight), and what follows it (its effects) starts as its cut-in lands: Leon's order, "the screen zooms
   // to the map, then the miracle happens". What came before it plays first as usual (a decided fight skips it: the
