@@ -18866,6 +18866,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-kemizuchi_sword_breaker": {
+      "label": "Kemizuchi sword-breaker",
+      "path": "art/icons/gear/weapon-kemizuchi_sword_breaker.png",
+      "sha256": "58521e7d0c861cb4aefa8e85275d67177cf7988d8270c1b1d20af51984080b80",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_sword_breaker.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_sword_breaker.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_sword_breaker.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_sword_breaker.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_sword_breaker.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+      "brief_number": 10,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

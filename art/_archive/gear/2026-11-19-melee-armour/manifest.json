@@ -542,6 +542,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-kemizuchi_sword_breaker",
+      "path": "art/icons/gear/weapon-kemizuchi_sword_breaker.png",
+      "sha256": "58521e7d0c861cb4aefa8e85275d67177cf7988d8270c1b1d20af51984080b80",
+      "label": "Kemizuchi sword-breaker",
+      "family": "05-kemizuchi-duelling",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_sword_breaker.png",
+        "sha256": "3f942bad0ad5813a6bac00f280bbe61730e7a34c6fda3f3652cc93ed2f894529"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-kemizuchi_sword_breaker.png",
+        "sha256": "58521e7d0c861cb4aefa8e85275d67177cf7988d8270c1b1d20af51984080b80"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-kemizuchi_sword_breaker.txt",
+        "sha256": "310f58fb26c41e5e30f177a8c9d132c342ec6ee3e26a96619be6823fa12758bd"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_duelling_blade.png",
+          "sha256": "f6f112ac6072666b6c00c65ecbb96c3caf5bbf486df51d56c8e46165521c8e2d"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_sword_breaker.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_sword_breaker.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_sword_breaker.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_sword_breaker.png"
+      },
+      "export_hashes": {
+        "256": "bbff32291df83a464eea561d3f5ab549d25a3d6ef06fa0d5b6476c6656c5efaa",
+        "128": "91d56e4c5a6b02d7dbbbf9dad3b2c4fa43d01f7c656837088f4d6d55231d410c",
+        "64": "af9cc2c224330adae6cb9afff2e596a4b10e4e56c5cac19959f6ceb68b9856d8",
+        "32": "6e3d9de61e55afb28c3d231d53b23863e338568fa2c37ced5d50fdc11b2b49b8"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
