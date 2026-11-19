@@ -235,6 +235,8 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const [banner, setBanner] = React.useState<Banner | null>(null);
   const [cut, setCut] = React.useState<Cut | null>(null), [cutOut, setCutOut] = React.useState(false), [cutImg, setCutImg] = React.useState('');
   const live = React.useRef({ game, meId, screen }); live.current = { game, meId, screen };
+  /** The your-turn card on screen now (B4, 0.32: a fight's big banner takes it down and brings it back after). */
+  const cutNow = React.useRef<{ c: Cut; leaving: boolean } | null>(null); cutNow.current = cut ? { c: cut, leaving: cutOut } : null;
   // The customise dialog for a character's four commands (null: closed). While it is open no cut-in comes up.
   const [custom, setCustom] = React.useState<string | null>(null);
   const customOpen = React.useRef(false); customOpen.current = !!custom;
@@ -284,14 +286,18 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     const total = ((reducedMotion() ? 300 : 520) + b.hold) * k;
     later(() => setBanner((x) => (x && x.id === b.id ? null : x)), total);
     // Yours: the card follows the banner in, once the turn is still yours.
-    if (b.mine) later(() => {
-      const { game: g2 } = live.current, cb2 = g2?.combat;
-      if (!g2 || !cb2 || cb2.order[cb2.turn] !== unitId || document.hidden || customOpen.current) return;
-      const c = cutFor(g2, castFight(g2, cb2, ART) || cb2, unitId); if (!c) return;
-      c.right = cardOnRight(readCardSide(), () => underLeftCard(c.at)); // the player's choice (customise dialog), else Auto
-      setCutOut(false); setCut({ ...c, k }); setCutImg(c.img); cue('cutin');
-      if (/^data:/.test(c.img)) bigPortrait(c.img).then((big) => setCutImg((x) => (x === c.img ? big : x))).catch(() => {});
-    }, (reducedMotion() ? 150 : 380) * k);
+    if (b.mine) later(() => showCutFor(unitId, k), (reducedMotion() ? 150 : 380) * k);
+  };
+  /** The your-turn card for this unit, if its turn is still on; it waits for a fight's big banner (BATTLE START) to
+   * finish first (B4, 0.32: the two were on screen together). */
+  const showCutFor = (unitId: string, k: number) => {
+    const busy = slotUntil.current - Date.now(); if (busy > 0) { later(() => showCutFor(unitId, k), busy + 30); return; }
+    const { game: g2 } = live.current, cb2 = g2?.combat;
+    if (!g2 || !cb2 || cb2.order[cb2.turn] !== unitId || document.hidden || customOpen.current) return;
+    const c = cutFor(g2, castFight(g2, cb2, ART) || cb2, unitId); if (!c) return;
+    c.right = cardOnRight(readCardSide(), () => underLeftCard(c.at)); // the player's choice (customise dialog), else Auto
+    setCutOut(false); setCut({ ...c, k }); setCutImg(c.img); cue('cutin');
+    if (/^data:/.test(c.img)) bigPortrait(c.img).then((big) => setCutImg((x) => (x === c.img ? big : x))).catch(() => {});
   };
   // A fight's banner: in the turn banners' slot (they wait for it); a second one queues after the first (VICTORY,
   // then FREE ROAM). Its hold is the data's, never shortened by the combat speed (rules 1.62 item 4900).
@@ -308,6 +314,9 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     const busy = slotUntil.current - Date.now();
     if (!reserved && busy > 0) { slotUntil.current += total + 30; later(() => showCard(b0, true), busy + 30); return; }
     setBanner(b); slotUntil.current = Math.max(slotUntil.current, Date.now() + total);
+    // B4, 0.32: a big banner (BATTLE START on contact) never shares the screen with a your-turn card: the card goes and
+    // comes back when the banner is done, if the turn is still on
+    const up = cutNow.current; if (up && BIG.includes(b.kind)) { setCut(null); setCutOut(false); if (!up.leaving) showCutFor(up.c.unitId, up.c.k || k); } // at once: never a frame of both
     if (b.sounds && b.sounds.length) b.sounds.forEach((n, i) => later(() => { try { sfx(n as Sfx); } catch { /* sound never breaks the game */ } }, i * (CARDS.end.sound_gap_ms || 0))); // its own (LEVEL UP)
     else if (b.kind !== 'fight') cue(b.kind === 'defeat' ? 'banner_foe' : 'banner_mine'); // BATTLE START: the combat-in's own sting plays
     later(() => setBanner((x) => (x && x.id === b.id ? null : x)), total);
@@ -661,14 +670,19 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
   // The card grows with its resource rows (about 38 px a line past the second; two to a line past four rows), and stays centred.
   const two = c.res.length > 4, lines = two ? Math.ceil(c.res.length / 2) : c.res.length;
   const H = 420 + 38 * Math.max(0, lines - 2);
+  // B4, 0.32: the card stays inside its panel (the action panel when it comes from the right, the board's column from
+  // the left): it ran over the whole action panel and its portrait reached the screen's edge. The panel's box is read
+  // once the card is drawn; with no fight panel on screen the window is the box, as before.
+  const box = panelBox(R);
   return (
     <>
       {/* A dark veil on the left so the card reads over the grid; never clickable. */}
       <div aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 57, pointerEvents: 'none', background: 'linear-gradient(' + (R ? 270 : 90) + 'deg, rgba(5,7,11,.82) 0%, rgba(5,7,11,.45) 38%, transparent 62%)', animation: out ? 'phcFadeOut ' + T(300) + ' ease-in both' : 'phcCutVeil ' + T(300) + ' ease-out both' }} />
+      <div data-phc-cutin-box="" style={{ position: 'fixed', left: box.left, top: box.top, width: box.width, height: box.height, zIndex: 57, display: 'flex', alignItems: 'center', justifyContent: R ? 'flex-end' : 'flex-start', overflowX: 'clip', pointerEvents: 'none' }}>
       <div data-phc-cutin="" role="dialog" aria-label={'Your turn: ' + c.name} onPointerMove={(e) => { if (e.movementX || e.movementY) onHover(true); }} onMouseLeave={() => onHover(false)}
-        style={{ position: 'fixed', [R ? 'right' : 'left']: 0, top: '50%', marginTop: -H / 2, zIndex: 57, width: 'min(640px, 96vw)', display: 'flex', flexDirection: R ? 'row-reverse' : 'row', alignItems: 'stretch', fontFamily: "'Chakra Petch', sans-serif", color: '#E7EBF3', animation: anim, pointerEvents: out ? 'none' : 'auto' }}>
-        {/* The portrait, cut on a diagonal, on a slab in the player's colour. */}
-        <div style={{ position: 'relative', flex: 'none', width: 'min(230px, 36vw)', height: H }}>
+        style={{ position: 'relative', flex: 'none', minHeight: Math.min(H, box.height), width: Math.min(640, box.width - 8), display: 'flex', flexDirection: R ? 'row-reverse' : 'row', alignItems: 'stretch', fontFamily: "'Chakra Petch', sans-serif", color: '#E7EBF3', animation: anim, pointerEvents: out ? 'none' : 'auto' }}>
+        {/* The portrait, cut on a diagonal, on a slab in the player's colour; as tall as the card. */}
+        <div style={{ position: 'relative', flex: 'none', width: Math.min(230, Math.round(box.width * 0.34)), alignSelf: 'stretch' }}>
           <div aria-hidden="true" style={{ position: 'absolute', inset: 0, background: c.color, clipPath: slab }} />
           <img src={img} alt="" style={{ position: 'absolute', inset: R ? '0 0 0 10px' : '0 10px 0 0', width: 'calc(100% - 10px)', height: '100%', objectFit: 'cover', objectPosition: '50% 20%', background: '#000', clipPath: slab }} />
           {!rm && <div aria-hidden="true" style={{ position: 'absolute', inset: 0, overflow: 'hidden', clipPath: slab }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,.35) 50%, transparent 65%)', animation: 'phcCutStreak ' + T(600) + ' ease-out ' + T(200) + ' both' }} /></div>}
@@ -703,8 +717,20 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
           </span>
         </div>
       </div>
+      </div>
     </>
   );
+}
+
+/** The box a your-turn card is drawn in (B4, 0.32): the fight's action panel (from the right) or the board's column
+ * (from the left), a few pixels in; the window when neither is on screen. */
+function panelBox(right: boolean): { left: number; top: number; width: number; height: number } {
+  const win = { left: 0, top: 0, width: typeof innerWidth === 'number' ? innerWidth : 1280, height: typeof innerHeight === 'number' ? innerHeight : 720 };
+  if (typeof document === 'undefined') return win;
+  const el = document.querySelector(right ? '#phc-cb-aside' : '.phc-cb-left') as HTMLElement | null, r = el?.getBoundingClientRect();
+  if (!r || r.width < 200 || r.height < 200) return win;
+  const top = Math.max(0, r.top), bottom = Math.min(win.height, r.bottom);
+  return { left: r.left + 4, top, width: r.width - 8, height: bottom - top };
 }
 
 /** For tests: what a banner and a cut-in would show for a unit. */
