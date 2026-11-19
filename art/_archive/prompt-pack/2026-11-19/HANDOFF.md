@@ -1,10 +1,10 @@
 # November 19 art continuation
 
-Updated 19 November 2026 at 10:58 UTC+7. The 88 entries in files 01–04 have **60 delivered**, **27 to do** and **1 held**. Review candidates require visual approval.
+Updated 19 November 2026 at 11:08 UTC+7. The 88 entries in files 01–04 have **65 delivered**, **22 to do** and **1 held**. Review candidates require visual approval.
 
 | File | Delivered | Total listed |
 | --- | ---: | ---: |
-| 01 | 10 | 37 |
+| 01 | 15 | 37 |
 | 02 | 11 | 11 |
 | 03 | 20 | 21 |
 | 04 | 19 | 19 |
@@ -25,11 +25,6 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 - 010 | File 01 | `kit-ahoc-ground-2`: AHOC ground 2 | `art/sprites/kit/ahoc/ground-2.png`
 - 013 | File 01 | `kit-rim-wall-corner`: Rim wall corner | `art/sprites/kit/rim/wall-corner.png`
 - 014 | File 01 | `kit-ahoc-poi`: Point of interest, ahoc | `art/sprites/kit/ahoc/poi.png`
-- 015 | File 01 | `kit-city-poi`: Point of interest, city | `art/sprites/kit/city/poi.png`
-- 016 | File 01 | `kit-field-poi`: Point of interest, field | `art/sprites/kit/field/poi.png`
-- 017 | File 01 | `kit-works-poi`: Point of interest, works | `art/sprites/kit/works/poi.png`
-- 018 | File 01 | `kit-shrine-poi`: Point of interest, shrine | `art/sprites/kit/shrine/poi.png`
-- 019 | File 01 | `kit-rim-poi`: Point of interest, rim | `art/sprites/kit/rim/poi.png`
 - 020 | File 01 | `kit-ahoc-sigil_wall`: Sigil wall, ahoc | `art/sprites/kit/ahoc/sigil_wall.png`
 - 021 | File 01 | `kit-city-sigil_wall`: Sigil wall, city | `art/sprites/kit/city/sigil_wall.png`
 - 022 | File 01 | `kit-field-sigil_wall`: Sigil wall, field | `art/sprites/kit/field/sigil_wall.png`
@@ -48,3 +43,5 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 - 035 | File 01 | `kit-works-pile`: Ground pile, works | `art/sprites/kit/works/pile.png`
 - 036 | File 01 | `kit-shrine-pile`: Ground pile, shrine | `art/sprites/kit/shrine/pile.png`
 - 037 | File 01 | `kit-rim-pile`: Ground pile, rim | `art/sprites/kit/rim/pile.png`
+
+Unreviewed scratch renders currently on disk: 10, 20.
