@@ -662,6 +662,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_spear",
+      "path": "art/icons/gear/weapon-legion_spear.png",
+      "sha256": "52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287",
+      "label": "Legion spear",
+      "family": "05-polearms-spear---glaive---lance",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png",
+        "sha256": "7260ce6282468891bb8a310b25d6bf0779fc218f52404ae26073317cd0226bd5"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-legion_spear.png",
+        "sha256": "52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-legion_spear.txt",
+        "sha256": "1a585175186431bb35fdae789942986dd98daff944ed57392a249359aff0dff1"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-glaive.png",
+          "sha256": "c6e54c5d2f96f5c8dad00cbf0da2dc5bddb6aba60105ff52d8da91871818df1e"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_spear.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_spear.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_spear.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_spear.png"
+      },
+      "export_hashes": {
+        "256": "8de0b4059393f27aa7a67b848cadb741b2cda9610d9d352f8899f9b587ba5496",
+        "128": "700e1eb4ccbce619a8a4ea201005150115ae18a22c256dcb5103e8ab17a7566c",
+        "64": "ae09259aab3748974fb755346c1b71cada67af21d683899a84160be8ffd2e939",
+        "32": "f9284a4f126281a167bd65eac7fac0e5f3cdd06657d7caf36b88d138bc9a7472"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

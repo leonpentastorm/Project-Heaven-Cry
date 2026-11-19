@@ -1218,24 +1218,25 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-fe057097be4c911e8ca297221e120be0c13773f01d7f14bfeeef3af12b65798c  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
+8a321c21efe9d4c703907247175f9fa8e72efc4398991391602c0f12c7e3edcb  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
 9baea3255504f9e53d711446792e72b5372fbd74335ca4608add0486cf02e915  art/_archive/gear/2026-11-19-melee-armour/briefs/05-melee-forms.md
 c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/_archive/gear/2026-11-19-melee-armour/briefs/07-shields-armour.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/_archive/gear/2026-11-19-melee-armour/briefs/README.md
 95edab6065fdcc674b0bd1d662a6f49278080bd7ee0f31cfda198d5aeb9fd0c8  art/_archive/gear/2026-11-19-melee-armour/lowland-chopper-generation-error.json
-e214c9851dd217635c172edd8e8958e356c385a0fe2e20d1bc7c7bd9bbd3bec9  art/_archive/gear/2026-11-19-melee-armour/manifest.json
+75fec167265dd2e6191ac7ab4fccddcf68d7e32a5899eefedbb5cc0fcf82daaa  art/_archive/gear/2026-11-19-melee-armour/manifest.json
 1f2b6fda647cc87a2663bdf40753bf26ee337b3d4e051b7284bd6a1d7a66bef7  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-broadback_sabre.png
 60a13828d153764839b15a60287b8910acd42806782b8d3b9f90d28301dac8cb  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-dock_cutter.png
 ab263efaac50ca2d6289353002bcf9226a7f17c9d9dcbebd6faee5346f32f5d6  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-kemizuchi_side_sword.png
 58521e7d0c861cb4aefa8e85275d67177cf7988d8270c1b1d20af51984080b80  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-kemizuchi_sword_breaker.png
 c074f9aa7dc085ce042244859c3e1e7c004b2070e0fa7c7af2cc22183ba946db  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-legion_leaf_dagger.png
 6ad097ad14d652ea9a959762fc71c939ed7b6575b6e430956f7663808ab15c3d  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-legion_rank_sword.png
+52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-legion_spear.png
 fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-long_draw.png
 3448226ac076dedebcff4fd4f6a45dfacdc43dc66aa355a78aa468c95e537fff  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-lowland_chopper.png
 764c878300209ab68ed19c7784ac79f6c47ec343fec81b7c229f288fb356213b  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-pitch_axe.png
 1c03568b71751f093978788917e768c26df2a156e1f573a9dc0d262d6956d08f  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-short_draw.png
 3f2848a00af47d2ff6f81fd988a2abf2f3d873015164e95e656e7fbaa60dc4a1  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-trench_knife.png
-245b994bc7d93947ced1e7816dbca5c5137243a0e18790e26125f3cccf5fb5c4  art/_archive/gear/2026-11-19-melee-armour/progress.json
+1aacd303928bec69e18669d115e464b8a6eb6f143bb68a7532bb5dcaf281a7ab  art/_archive/gear/2026-11-19-melee-armour/progress.json
 54760a740ba4b1ecec9bbe8ea567331a0e05792c98655e6927219559fb9c7162  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-assault_helm.txt
 84c98f75ca902406ed731b932a357031c90a45a13860786d04019ed78d13cd88  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-blackout_hood.txt
 7932a392b9ee47b9cb01a32677283c6c34a97179dc14ab802af6bc6e17902feb  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-breacher_plate.txt
@@ -1275,7 +1276,7 @@ aaa3859af91cde95cffa25d66fe7fe94c278858151a39c459bf6ec11acceb992  art/_archive/g
 2b712f5e14d4be982af410663cffa3e3878f3d0fcb901d64a60aea44649597df  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-war_hammer.txt
 b83d19be3f91a5c2ee62b9a25a7ead8fbce968ded227119ec6143113fb2c31f1  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-war_pick.txt
 65d16ef2b8326b175a40e20dcc6612fb28971f92faebb73dd2247719a6467c95  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-weighted_gloves.txt
-a92cc5403e3fba39f84ce71206c8fa1f786499b7bd1f1d0a550a439ad2a456d0  art/_archive/gear/2026-11-19-melee-armour/queue.json
+627fe7992cd936e25c9c606b8332b01de9d896da8878e1c2f718a619fc5b61f2  art/_archive/gear/2026-11-19-melee-armour/queue.json
 9a913632855428ce70d55f4136797c88b34abfc1e6d8aa425b96ebfb6b37b30d  art/_archive/gear/2026-11-19-melee-armour/reviews/05-axes-32px.png
 65ed57609c5852ab18a184c4ec9506f6814945e9310e4f3deefec161268946bf  art/_archive/gear/2026-11-19-melee-armour/reviews/05-axes-64px.png
 5744777908b665d9a230e677084f58f2279d2c2c329a0740a4614c13f9621f14  art/_archive/gear/2026-11-19-melee-armour/reviews/05-cavalry-blades-32px.png
@@ -1286,6 +1287,8 @@ ae537e0c78bfb98ede23237fdbb533e027dbdc1fe46098f28d83dc0cbf13c3b7  art/_archive/g
 56eed99c9afcd3fb975e9aaa0642ac344e62ed6e16d72379155466ea8c960353  art/_archive/gear/2026-11-19-melee-armour/reviews/05-kemizuchi-duelling-64px.png
 fc2d3aa9108e77d08c8b83e6fc583b2ecf6418d2f905ae1e7ac1e6590dfa07c8  art/_archive/gear/2026-11-19-melee-armour/reviews/05-legion-blades-32px.png
 9b004b4b95e1a30de4910801b8ecbc05fdd68849a8cff8bfd7b428d728fd30e7  art/_archive/gear/2026-11-19-melee-armour/reviews/05-legion-blades-64px.png
+2ef8fed4dd043ea7345969b1841fccdee9aee8d1bea93fbf3730baa58121edd9  art/_archive/gear/2026-11-19-melee-armour/reviews/05-polearms-spear---glaive---lance-32px.png
+6c5f249e40bea53362a1e058ee1b7ad40fc68cbf5a94d498b4c71db24fae9212  art/_archive/gear/2026-11-19-melee-armour/reviews/05-polearms-spear---glaive---lance-64px.png
 1fd5b5da3b4cd9e803475f67b8cafbfe703e43f6e5d29155b2ea36bf46f04a5c  art/_archive/gear/2026-11-19-melee-armour/reviews/05-service-knives-32px.png
 e4cd5d6946ffd737773062a205d9c633e91dc37f7367f2bd42f3bdb92a98b7f3  art/_archive/gear/2026-11-19-melee-armour/reviews/05-service-knives-64px.png
 f98429e5d1e6db3c7e7589c1e89b707f70f73e427384407532eac9e9a8f6cba0  art/_archive/gear/2026-11-19-melee-armour/short-draw-generation-error.json
@@ -1295,6 +1298,7 @@ b689a9d6b02ce0f67d407b3e27ce4048400afcbb61aebeee1e7417856fc5e44c  art/_archive/g
 3f942bad0ad5813a6bac00f280bbe61730e7a34c6fda3f3652cc93ed2f894529  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_sword_breaker.png
 5e5f7c73b4a37ae47866b5669929b7760a43adac2cb83a9089f0da4541610715  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_leaf_dagger.png
 bc0c3ef3c706c75c3e483efb0ae0a4b65997f708ccd83fb52bbc8cbd008c5cd3  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_rank_sword.png
+7260ce6282468891bb8a310b25d6bf0779fc218f52404ae26073317cd0226bd5  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png
 c4d822422be9e1415fd055784be8781bbe3ed8bef6af84c56203d5ea10c516d5  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png
 bc6a4335dbcdcca7250dd548b502da43fd85eddf95df823d00007f811d21fea4  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-lowland_chopper.png
 22b4dc28c0c3d3f7945546bd3a752c11fcce29798618561b279ad238784a078c  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png
@@ -4560,7 +4564,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-7908a399d4d8e816353d54cdf7e057c654c1009ce2e5dd9f50ea446bb6fe0549  art/catalog.json
+d3017570c4fa8284cbf226d593d4ea569bd888f60b9a6ac501391b4dea8a007d  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6301,6 +6305,7 @@ b51e2121eb98a2202ea5405729aba2cbe9c0d441fce3748e120ee001eaff6f54  art/icons/gear
 6b3ea8b46c5effb586a11a05324ac2378d83f51e29c03b31cd3d9a7dcd9cd6d1  art/icons/gear/exports/128/weapon-legion_leaf_dagger.png
 68af83b2bed0980c05032f0a93c4bc148a7db55edc396d0549ad62414ac235a5  art/icons/gear/exports/128/weapon-legion_pdw.png
 edcc3410c92878ff2ea34bad9d53b71b52eb5700fa23d682598ed66f0edf51bf  art/icons/gear/exports/128/weapon-legion_rank_sword.png
+700e1eb4ccbce619a8a4ea201005150115ae18a22c256dcb5103e8ab17a7566c  art/icons/gear/exports/128/weapon-legion_spear.png
 6bd7aa073b95d9b3750c5bf825e3ff305e767b86550e03f26d1c11cdd3534431  art/icons/gear/exports/128/weapon-lever_carbine.png
 add586d102e4a602d8fe3502305bc588a466be40c7b755c96529cb9a5fda799f  art/icons/gear/exports/128/weapon-long_draw.png
 6c2150ff83ef65d8d6a5b42207d007c5b01996117048011a4434dbacdd72d9e2  art/icons/gear/exports/128/weapon-long_rifle.png
@@ -6485,6 +6490,7 @@ b8d48e40b38b9b547bb51c62875d2762ac02109142e69ab45341a9a012d4368f  art/icons/gear
 c39eead9d11c1abb27f096a33013ea1510e1ae8f6cecc14067a4030060c4878e  art/icons/gear/exports/256/weapon-legion_leaf_dagger.png
 3f0f8f175ead077af3c123c88e76aedb7534349ad0e883baa2143adc8bbd963e  art/icons/gear/exports/256/weapon-legion_pdw.png
 aa6c328966598d8c53ebf2d92d10bf9a93a032a01d2ce7ed273c25408e1020d4  art/icons/gear/exports/256/weapon-legion_rank_sword.png
+8de0b4059393f27aa7a67b848cadb741b2cda9610d9d352f8899f9b587ba5496  art/icons/gear/exports/256/weapon-legion_spear.png
 1ac210a16fd112bc05524ce789743e378c327528370fd769a33bf90bd84b5732  art/icons/gear/exports/256/weapon-lever_carbine.png
 d62ad20b5819e2722ca64e58f8a3cf39530a889b3c38018e7c4715c1ccd132d6  art/icons/gear/exports/256/weapon-long_draw.png
 e4ebd727b35523073d4bdbcb0e002c009c45ede48c6dd98d954517f2a461bba4  art/icons/gear/exports/256/weapon-long_rifle.png
@@ -6669,6 +6675,7 @@ a36f5cf75f381e5e75459e4d2b2bba2c6d39d5821febf0db99ef66ffd5bd6145  art/icons/gear
 7536ee90bec6a9d36ca5ac8533f7cf85dbf3e0997a38023f7cf101af644f6b52  art/icons/gear/exports/32/weapon-legion_leaf_dagger.png
 ba55647e761f2b7bee6a69a6d22ae40157e67f163d74825f8561a9d8e6d88a50  art/icons/gear/exports/32/weapon-legion_pdw.png
 71cad3ddf13bf261f55da68afb7a70351b542ff77b55ed6f68d78d86641f4eca  art/icons/gear/exports/32/weapon-legion_rank_sword.png
+f9284a4f126281a167bd65eac7fac0e5f3cdd06657d7caf36b88d138bc9a7472  art/icons/gear/exports/32/weapon-legion_spear.png
 7a55fa124c9ff5ddf788566d7e6b65b0b56a0556505f461f0a9809cb53a38ba7  art/icons/gear/exports/32/weapon-lever_carbine.png
 7e87cdcaa84baff32e3b96339643265860fb6758e100fb8889a1521c37117475  art/icons/gear/exports/32/weapon-long_draw.png
 5a9ad4136252e8bc0cf13d61a8ea2c2ed8a145187894cba946ba4f6b68b07ac0  art/icons/gear/exports/32/weapon-long_rifle.png
@@ -6853,6 +6860,7 @@ af9cc2c224330adae6cb9afff2e596a4b10e4e56c5cac19959f6ceb68b9856d8  art/icons/gear
 2dbd00725d2bc784f913a04a20820723ca5b6eb95fe84b84d6c52b56877ebba6  art/icons/gear/exports/64/weapon-legion_leaf_dagger.png
 5d7c0eb43a8000de7de8d0ca7a3248cd6c292c99a77d570232c0cf14ccff1521  art/icons/gear/exports/64/weapon-legion_pdw.png
 5810e5fa0360136de2ca9dfdc0a89e749e4be8a91af61edbcbaed2608c978667  art/icons/gear/exports/64/weapon-legion_rank_sword.png
+ae09259aab3748974fb755346c1b71cada67af21d683899a84160be8ffd2e939  art/icons/gear/exports/64/weapon-legion_spear.png
 b8a1a038f258ebb4171cd236992562d2d3111fd3f735e5b16c227c47862c9e5d  art/icons/gear/exports/64/weapon-lever_carbine.png
 44289994607d37d6432c7d187458e369d91e33a4a6d7421b7a8be6ce7d19f333  art/icons/gear/exports/64/weapon-long_draw.png
 778d15b88283e8d4bdb214e53dcce441d69547d130cfb02c3876e7872312d6e2  art/icons/gear/exports/64/weapon-long_rifle.png
@@ -7001,6 +7009,7 @@ d4e4963718ef806fee94a92b1ec4f59d5ed9fe34de8aec489caf0ec669c83512  art/icons/gear
 c074f9aa7dc085ce042244859c3e1e7c004b2070e0fa7c7af2cc22183ba946db  art/icons/gear/weapon-legion_leaf_dagger.png
 6d69f356c1f392d54de6a83bec57c2c388925b5f16b2ead6898b3a27e95e864c  art/icons/gear/weapon-legion_pdw.png
 6ad097ad14d652ea9a959762fc71c939ed7b6575b6e430956f7663808ab15c3d  art/icons/gear/weapon-legion_rank_sword.png
+52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287  art/icons/gear/weapon-legion_spear.png
 240ff2854ce3d39de7cb38c3cf375c319ddead321881ca66c3a8847c24393c07  art/icons/gear/weapon-lever_carbine.png
 fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4  art/icons/gear/weapon-long_draw.png
 ad7f4f3bf6366701a7b0886a3400574c0a9834e23c803cb47e66d0c470337831  art/icons/gear/weapon-long_rifle.png

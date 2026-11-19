@@ -24,10 +24,10 @@
     "weapon-long_draw",
     "weapon-kemizuchi_side_sword",
     "weapon-kemizuchi_sword_breaker",
-    "weapon-pitch_axe"
+    "weapon-pitch_axe",
+    "weapon-legion_spear"
   ],
   "remaining": [
-    "weapon-legion_spear",
     "weapon-war_pick",
     "weapon-war_hammer",
     "weapon-adamantile_plate_needle",
@@ -58,5 +58,5 @@
   ],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T03:40:45.846718+00:00"
+  "updated_utc": "2026-11-19T03:42:21.313714+00:00"
 }
