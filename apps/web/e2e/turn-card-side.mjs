@@ -56,6 +56,15 @@ ok('Left: the next card comes in on the left (' + r2 + ')', r2 === 'left');
 await p.reload();
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 30000 });
 ok('kept after a reload', await p.evaluate(() => localStorage.getItem('phc.cutinSide') === 'left'));
+// B4 (0.32): at 1280 x 720 the card stays inside its panel (it ran over the whole action panel, its portrait to the
+// screen's edge): from the right inside the action panel, from the left inside the board's column
+await p.setViewportSize({ width: 1280, height: 720 }); await pause(p, 400);
+for (const [side, sel] of [['right', '#phc-cb-aside'], ['left', '.phc-cb-left']]) {
+  await choose(side); await nextCard();
+  const fit = await p.evaluate((sel) => { const c = document.querySelector('[data-phc-cutin]').getBoundingClientRect(), b = document.querySelector(sel).getBoundingClientRect();
+    return { inside: c.left >= b.left - 1 && c.right <= b.right + 1 && c.top >= Math.max(0, b.top) - 1 && c.bottom <= Math.min(innerHeight, b.bottom) + 1, c: [c.left, c.right, c.top, c.bottom].map(Math.round), b: [b.left, b.right, b.top, b.bottom].map(Math.round) }; }, sel);
+  ok('B4: at 1280 x 720 the ' + side + ' card is inside its panel (card ' + fit.c.join(',') + ' / panel ' + fit.b.join(',') + ')', fit.inside);
+}
 await choose('auto');
 ok('Auto clears the choice', await p.evaluate(() => localStorage.getItem('phc.cutinSide') === null));
 console.log('errors', errors);

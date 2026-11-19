@@ -43,6 +43,9 @@ try {
   ok('the session starts and the Narrator\'s desk opens on the host\'s screen for the opening', /THE OPENING/.test(await desk.textContent()));
   await guest.waitForSelector('text=/Leon, the Narrator, is writing/', { timeout: 30000 });
   ok('the guest sees the Narrator writing, and no desk', (await guest.locator('[data-gm-desk]').count()) === 0);
+  // B13 (0.32): a character with no portrait (the guest's, here on the host's left sheet) shows NO PORTRAIT, never a broken image
+  const broken = await host.evaluate(() => [...document.querySelectorAll('img')].filter((i) => i.getBoundingClientRect().width > 40 && i.complete && !i.naturalWidth).length);
+  ok('B13: no broken image on the host screen (' + broken + '); the portrait-less sheet says NO PORTRAIT', broken === 0 && (await host.locator('[data-phc-no-portrait]').count()) > 0);
   await sidePanels(host, 'the Narrator\'s desk');
   await host.getByLabel('Your narration').fill('The rear pad hums under a dead sky. Keel waits at the ramp, arms folded.');
   await host.locator('[data-gm-add-check]').click();

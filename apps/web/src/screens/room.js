@@ -132,7 +132,7 @@ export class RoomLogic extends DCLogic {
       onKey: (e) => { const j = radioKey(e.key, i, cards.length); if (j != null) { e.preventDefault(); const all = e.currentTarget.parentElement.querySelectorAll('[role="radio"]'); if (all[j]) all[j].focus(); } },
       style: 'position: relative; display: flex; flex-direction: column; min-width: 0; padding: 0; overflow: hidden; text-align: left; border-radius: 14px; font-family: inherit; color: #E7EBF3; cursor: ' + (m.pick || m.selected ? 'pointer' : 'not-allowed') + '; background: #10151F; '
         + (m.selected ? 'border: 2px solid #FFFFFF; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18)' : 'border: 2px solid #232D3F') + (m.locked ? '; opacity: 0.62' : ''),
-      artBox: 'position: relative; display: grid; place-items: center; width: 100%; height: clamp(96px, 10vw, 220px); overflow: hidden; background: #1C2536; border-bottom: 1px solid #232D3F' + (m.locked ? '; filter: grayscale(0.7)' : ''),
+      artBox: 'position: relative; display: grid; place-items: center; width: 100%; height: clamp(64px, min(10vw, 100vh - 660px), 220px); overflow: hidden; background: #1C2536; border-bottom: 1px solid #232D3F' + (m.locked ? '; filter: grayscale(0.7)' : ''),
       nameStyle: 'font-size: 20px; font-weight: 700; letter-spacing: 0.14em; color: ' + (m.locked ? '#A3AEC2' : '#E7EBF3'),
       statusStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: ' + (m.locked ? '#A3AEC2' : '#FFFFFF'),
       lineStyle: 'font-size: var(--fs-sub); line-height: 1.45; color: ' + (m.locked ? '#A3AEC2' : '#C9D3E3') }));

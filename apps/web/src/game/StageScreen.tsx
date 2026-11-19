@@ -78,11 +78,15 @@ function Summary({ s }: { s: SummaryV }) {
       </div>
       <div style={{ overflowX: 'auto' }}>
         <table data-phc-stages="" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 15 }}>
-          <thead><tr>{['Stage', 'Tile', 'Stops', 'Fights', 'Foes dropped', 'Credits earned', 'Upgrades', 'Boons'].map((h) => <th key={h} style={{ ...kick, textAlign: 'left', padding: '8px 10px', borderBottom: '1px solid ' + ink.line }}>{h.toUpperCase()}</th>)}</tr></thead>
+          {/* B11, 0.32: the boons take their own line under each stage's numbers (an eighth column ran past the panel at 1280) */}
+          <thead><tr>{['Stage', 'Tile', 'Stops', 'Fights', 'Foes dropped', 'Credits earned', 'Upgrades'].map((h) => <th key={h} style={{ ...kick, textAlign: 'left', padding: '8px 8px', borderBottom: '1px solid ' + ink.line }}>{h.toUpperCase()}</th>)}</tr></thead>
           <tbody>{s.stages.map((r) => (
-            <tr key={r.stage} data-phc-stage-row={r.stage}>
-              {[r.stage, r.setting, r.nodes, r.fights, r.kills, r.credits, r.steps, r.boons].map((v, i) => <td key={i} style={{ padding: '10px', borderBottom: '1px solid ' + ink.line, color: i === 7 ? '#DCE2EC' : ink.text }}>{v}</td>)}
-            </tr>))}</tbody>
+            <React.Fragment key={r.stage}>
+            <tr data-phc-stage-row={r.stage}>
+              {[r.stage, r.setting, r.nodes, r.fights, r.kills, r.credits, r.steps].map((v, i) => <td key={i} style={{ padding: '10px 8px 4px', color: ink.text }}>{v}</td>)}
+            </tr>
+            <tr data-phc-stage-boons={r.stage}><td colSpan={7} style={{ padding: '2px 8px 10px', borderBottom: '1px solid ' + ink.line, color: '#DCE2EC' }}><span style={{ color: ink.muted }}>Boons: </span>{r.boons}</td></tr>
+            </React.Fragment>))}</tbody>
         </table>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 14 }}>

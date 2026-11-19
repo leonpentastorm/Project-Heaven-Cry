@@ -76,13 +76,18 @@ export class CameraView {
   myTurn = false;
   /** The player's own unit's tile (the jump-back key). */
   home: string | null = null;
-  miniHidden: boolean;
+  /** The player's own choice for the small map (stored in this browser), or null: the default. */
+  private miniChoice: 'hidden' | 'shown' | null = null;
+  /** Under this window width the small map starts folded (B5, 0.32: at 1280 it sat over the board's right third); 0: never. */
+  private miniFoldUnder: number;
+  /** Is the small map folded away (the player's choice, else folded on a narrow window)? */
+  get miniHidden(): boolean { return this.miniChoice ? this.miniChoice === 'hidden' : this.narrow(); }
+  private narrow() { return this.miniFoldUnder > 0 && typeof innerWidth === 'number' && innerWidth < this.miniFoldUnder; }
   /** Called after the small map is shown or hidden (the screen lays the map out again). */
   onMini: (() => void) | null = null;
-  constructor(id: string, miniKey = 'phc.miniMap') {
-    this.id = id; this.miniKey = miniKey;
-    let h = false; try { h = localStorage.getItem(miniKey) === 'hidden'; } catch { /* */ }
-    this.miniHidden = h;
+  constructor(id: string, miniKey = 'phc.miniMap', miniFoldUnder = 0) {
+    this.id = id; this.miniKey = miniKey; this.miniFoldUnder = miniFoldUnder;
+    try { const v = localStorage.getItem(miniKey); this.miniChoice = v === 'hidden' || v === 'shown' ? v : null; } catch { /* */ }
   }
 
   // ---------- the window ----------
@@ -359,8 +364,10 @@ export class CameraView {
     this.miniSig = sig; this.mini = m; this.buildMini(); this.drawMini();
   }
   toggleMini() {
-    this.miniHidden = !this.miniHidden;
-    try { if (this.miniHidden) localStorage.setItem(this.miniKey, 'hidden'); else localStorage.removeItem(this.miniKey); } catch { /* */ }
+    const hide = !this.miniHidden;
+    // the choice is kept only where it differs from the default (shown on a wide window: nothing stored)
+    this.miniChoice = hide ? 'hidden' : this.narrow() ? 'shown' : null;
+    try { if (this.miniChoice) localStorage.setItem(this.miniKey, this.miniChoice); else localStorage.removeItem(this.miniKey); } catch { /* */ }
     this.buildMini(); this.drawMini(); this.onMini?.();
   }
   /** The small map's longest side: 150 px; 96 px on a narrow window (under 1000 px wide), where the map's window is small. */

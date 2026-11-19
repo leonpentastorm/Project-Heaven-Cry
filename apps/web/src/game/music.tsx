@@ -212,6 +212,7 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
   // The floating button: see-through at rest, solid when the pointer is near or the panel is open (UI pass 7).
   const btnRef = React.useRef<HTMLButtonElement>(null), [hover, setHover] = React.useState(false);
   const [chipOpen, setChipOpen] = React.useState(false); // the NOW PLAYING chip, opened by the pointer
+  const chipAt = useChipSpot(!!creditP.shown); // B14, 0.32: in the header's widest free gap, clear of every control
   // Bottom left on every screen (on the right it covered End turn), as its icon only: the title in its tooltip and on
   // hover, so it keeps off the combat log, the sheet's skill rows and the room's text (review of the UI pass). Only a
   // blocked start keeps its words: it is the one time the button asks for a click. While its title shows or its panel is
@@ -277,9 +278,11 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
       </button>
       {creditP.shown && (
         // 0.32: the NOW PLAYING credit never covers a panel's content (one rule for every screen): a small one-line chip
-        // at the top edge's middle, over the header's border, that opens to the artist and the reason on hover
+        // in the header's widest free gap (B14: never over a header control), that opens to the artist and the reason on
+        // hover; centred by its box (its own transform is the rise animation's)
+        <div data-phc-music-spot="" style={{ position: 'fixed', top: chipAt.top, left: chipAt.left - chipAt.width / 2, width: chipAt.width, zIndex: 9, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
         <div role="status" data-phc-toast="music" data-phc-music-chip="" className={presenceCls('phc-a-rise', creditP.closing)} onPointerEnter={() => setChipOpen(true)} onPointerLeave={() => setChipOpen(false)}
-          style={{ position: 'fixed', top: 4, left: '50%', transform: 'translateX(-50%)', zIndex: 9, maxWidth: chipOpen ? 320 : 240, padding: chipOpen ? '6px 12px' : '2px 10px', borderRadius: chipOpen ? 10 : 999, background: '#10151F', border: '1px solid #3B475D', borderLeft: '3px solid ' + creditP.shown.color, boxShadow: '0 6px 18px rgba(0,0,0,0.55)', display: 'flex', flexDirection: 'column', gap: 2, cursor: 'default' }}>
+          style={{ pointerEvents: 'auto', minWidth: 0, maxWidth: chipOpen ? Math.max(320, chipAt.width) : chipAt.width, padding: chipOpen ? '6px 12px' : '2px 10px', borderRadius: chipOpen ? 10 : 999, background: '#10151F', border: '1px solid #3B475D', borderLeft: '3px solid ' + creditP.shown.color, boxShadow: '0 6px 18px rgba(0,0,0,0.55)', display: 'flex', flexDirection: 'column', gap: 2, cursor: 'default' }}>
           <div style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, color: '#E7EBF3', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}><span aria-hidden style={{ color: creditP.shown.color }}>♪ </span>{creditP.shown.title}</div>
           {/* closed, the rest is read out but not shown (a screen reader, and the suites, still read the whole card) */}
           <div style={chipOpen ? { display: 'flex', flexDirection: 'column', gap: 2 } : { position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap' }}>
@@ -288,9 +291,41 @@ export function Music({ game, meId, isHost }: { game: GameState | null; meId: st
             <div style={{ fontSize: 'var(--fs-sub)', color: creditP.shown.color }}>{creditP.shown.reason}</div>
           </div>
         </div>
+        </div>
       )}
     </>
   );
+}
+
+/** Where the NOW PLAYING chip sits (B14, 0.32: at the top edge's middle it sat over the header's ROOM button): centred
+ * in the widest gap between the screen header's controls and words when one is wide enough, else just under the
+ * header. Measured when the chip comes up and on a resize. */
+function useChipSpot(on: boolean): { left: number; top: number; width: number } {
+  const [spot, setSpot] = React.useState({ left: typeof innerWidth === 'number' ? innerWidth / 2 : 640, top: 4, width: 240 });
+  React.useLayoutEffect(() => {
+    if (!on) return;
+    const measure = () => {
+      const head = [...document.querySelectorAll('header')].find((h) => { const r = h.getBoundingClientRect(); return r.width > 0 && r.height > 0 && r.top < 80; });
+      if (!head) { setSpot({ left: innerWidth / 2, top: 4, width: 240 }); return; }
+      const hr = head.getBoundingClientRect(), taken: [number, number][] = [];
+      for (const el of head.querySelectorAll('*')) {
+        const control = el.matches('button, a, select, input, [role="button"], [data-phc-narr-chip]');
+        const words = [...el.childNodes].some((n) => n.nodeType === 3 && /\S/.test(n.textContent || ''));
+        if (!control && !words) continue;
+        const r = el.getBoundingClientRect(); if (r.width && r.height) taken.push([r.left, r.right]);
+      }
+      taken.sort((a, b) => a[0] - b[0]);
+      let best: [number, number] | null = null, x = hr.left;
+      for (const [l, r] of [...taken, [hr.right, hr.right] as [number, number]]) { if (l - x > (best ? best[1] - best[0] : 0)) best = [x, l]; x = Math.max(x, r); }
+      const gap = best ? best[1] - best[0] - 24 : 0;
+      const next = best && gap >= 140 ? { left: Math.round((best[0] + best[1]) / 2), top: Math.round(Math.max(4, hr.top + (hr.height - 24) / 2)), width: Math.round(Math.min(240, gap)) }
+        : { left: Math.round(innerWidth / 2), top: Math.round(hr.bottom + 4), width: 240 };
+      setSpot((was) => (was.left === next.left && was.top === next.top && was.width === next.width ? was : next));
+    };
+    // (again every half second while it is up: the screen under it can change, a fight's header after the map's)
+    measure(); const iv = setInterval(measure, 500); addEventListener('resize', measure); return () => { clearInterval(iv); removeEventListener('resize', measure); };
+  }, [on]);
+  return spot;
 }
 
 /** Used by the toast elsewhere: a short credit line. */

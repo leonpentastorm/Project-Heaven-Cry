@@ -780,8 +780,8 @@ export class MainLogic extends DCLogic {
     const bio = c ? [['Origin', c.origin], ...(kit ? [['Kit', kit]] : []), ['Gender', I.gender], ['Blood type', I.blood], ['Main hand', I.hand], ['Association', I.association], ['Favourite song', I.songTitle ? I.songTitle + (I.songArtist ? ' · ' + I.songArtist : '') : I.song], ['Last dream', I.dream], ['History', I.history]]
       .filter(([, v]) => v).map(([k, v]) => ({ k, v })) : [];
     const lvlUp = levelUpDue(c);
-    const pc = c ? { name: c.name, img: c.portrait, line1: [I.association, c.origin].filter(Boolean).join(' · ') || c.origin,
-      line2: 'Level ' + c.level + ' · ' + (c.classId ? classLabel(c) : 'No class yet') + (c.dead ? ' · DEAD' : ''), hasCls: !!c.classId, clsIcon: emblemOf(heldClassId(c)).icon } : { name: 'Spectating', img: IMG['wick-welcome'], line1: 'You have no character in this session.', line2: '', hasCls: false, clsIcon: '' };
+    const pc = c ? { name: c.name, img: c.portrait, hasImg: !!c.portrait, noImg: !c.portrait, line1: [I.association, c.origin].filter(Boolean).join(' · ') || c.origin,
+      line2: 'Level ' + c.level + ' · ' + (c.classId ? classLabel(c) : 'No class yet') + (c.dead ? ' · DEAD' : ''), hasCls: !!c.classId, clsIcon: emblemOf(heldClassId(c)).icon } : { name: 'Spectating', img: IMG['wick-welcome'], hasImg: true, noImg: false, line1: 'You have no character in this session.', line2: '', hasCls: false, clsIcon: '' };
     const myChars = mine.map((x) => ({ key: x.id, name: x.name, pick: () => this.setState({ sel: x.id }), pressed: x.id === (c && c.id) ? 'true' : 'false',
       style: 'min-height: 32px; padding: 0 10px; border-radius: 8px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; ' + (x.id === (c && c.id) ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2') }));
 
