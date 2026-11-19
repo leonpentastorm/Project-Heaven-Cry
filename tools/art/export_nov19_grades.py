@@ -92,7 +92,16 @@ def reviews(queue, manifest):
 
 
 def update_handoff(queue,progress):
-    (BASE/'HANDOFF.md').write_text('# Kept-blade grade candidates\n\n'
+    rejected = {j['id'] for j in queue if j['status']=='pending' and j.get('generation_error')}
+    blocked = set(rejected)
+    while True:
+        expanded = blocked | {j['id'] for j in queue if j['status']=='pending' and j.get('depends_on') in blocked}
+        if expanded == blocked:
+            break
+        blocked = expanded
+    done = set(progress['delivered'])
+    ready = [j['id'] for j in queue if j['status']=='pending' and j['id'] not in blocked and (not j.get('depends_on') or j['depends_on'] in done)]
+    (BASE/'HANDOFF.md').write_text('# Gear grade candidates\n\n'
         f'**{len(progress["delivered"])}/{len(queue)} grade candidates delivered** on `art/2026-11-19-kept-blade-grades`. '
         'Shared mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . '
         'See claim.json for this lane’s current Standards. Released overlapping blades reuse12 peer candidates, with3 local alternatives archived.\n\n'
@@ -104,7 +113,13 @@ def update_handoff(queue,progress):
         'Sources, versioned masters, exact prompts/reference hashes,256/128/64/32 exports and grade comparison sheets are retained. '
         'Standards and earlier deliveries are unchanged. This sparse checkout cannot validate omitted historical files; '
         'full-library validation/build is an integration check on a full checkout.\n\n'
-        'Remaining: '+', '.join(progress['remaining'])+'.\n')
+        'Remaining: '+', '.join(progress['remaining'])+'.\n\n'
+        'Service-rejected requests (do not repeatedly resubmit): '+', '.join(sorted(rejected))+'.\n\n'
+        'Waiting on rejected prerequisites: '+', '.join(sorted(blocked-rejected))+'.\n\n'
+        'Ready independent next steps, in queue order: '+', '.join(ready)+'. Other pending grades follow their preceding grade.\n\n'
+        'Runtime handoff: implementation_ready:false records review status but does not gate the web asset builder. '
+        'The builder emits grade asset keys; the current UI gear resolver still needs grade-aware selection. '
+        'Do not claim that runtime grade selection is implemented by these art deliveries.\n')
 
 
 def export(asset_id, source):
