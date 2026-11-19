@@ -254,6 +254,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-adamantile_greatsword--fine",
+      "path": "art/icons/gear/weapon-adamantile_greatsword--fine.png",
+      "sha256": "3f44cd6e14da21f9ebb345a08a290aff44d56fc53677dc4f69bb8352450a5730",
+      "label": "Adamantile Greatsword — Fine",
+      "family": "weapon-adamantile_greatsword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-adamantile_greatsword--fine.png",
+        "sha256": "32d7ea5ca3fa8ffe7f91684ce9a008b31d7cca8145ee9171d3be37ab5b0f0021"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-adamantile_greatsword--fine.png",
+        "sha256": "3f44cd6e14da21f9ebb345a08a290aff44d56fc53677dc4f69bb8352450a5730"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-adamantile_greatsword--fine.txt",
+        "sha256": "fd9fa0e8d5363befadedb2dfc3abac9b5701f076e705023b5b6b4ee0f57c8d50"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-adamantile_greatsword.png",
+          "sha256": "74764eb60ffb2b26b581206171e9d7f9a44453f23c061fb636fef61e2efe7f12"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-adamantile_greatsword--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-adamantile_greatsword--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-adamantile_greatsword--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-adamantile_greatsword--fine.png"
+      },
+      "export_hashes": {
+        "256": "31f063d07b14067fd287f6d84fca3bec90a29a275087ef09624510fbafbe7736",
+        "128": "f0702b550293e96b60f32a7548ccea010a40feb16880f8c496bf0a21a9658cb4",
+        "64": "69052ff9581570494ed6c78ed0f19953e006d31702735dd65992ffa1517d1122",
+        "32": "a28237f2c7f7be58a53b4376a1ec3f62d1e0f32b6a3c15e942150b9b23de8f34"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-adamantile_greatsword",
+      "outline": {
+        "solid_alpha_iou": 0.9422456056439077,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 44
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

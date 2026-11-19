@@ -20269,6 +20269,42 @@
         "different_pixels_32": 10,
         "different_pixels_64": 28
       }
+    },
+    "weapon-adamantile_greatsword--fine": {
+      "label": "Adamantile Greatsword — Fine",
+      "path": "art/icons/gear/weapon-adamantile_greatsword--fine.png",
+      "sha256": "3f44cd6e14da21f9ebb345a08a290aff44d56fc53677dc4f69bb8352450a5730",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-adamantile_greatsword--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-adamantile_greatsword--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-adamantile_greatsword--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-adamantile_greatsword--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-adamantile_greatsword--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.1",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-adamantile_greatsword",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9422456056439077,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 44
+      }
     }
   },
   "survival_art": {
