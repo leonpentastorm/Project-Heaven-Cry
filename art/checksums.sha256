@@ -1218,7 +1218,7 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-f0d0807ae414f80fbb55587a960f97bb1218a63993f0127a2291e62dd83b6a17  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+00f34d9c6395560d4cf53eb439275014fc6552aba95f84a3d54ab03ad3cba4a1  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
 bf138c842a27a387f3f32bddca602e1f2d53ff21d66041340aae9d6d9f7ef123  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/focus-emanator--celestial/v1/prompt.txt
 afa5132f5305c2e27c525dea37fcac1a01f31c2bcb189263eb7c446a403d8a8a  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/focus-emanator--celestial/v1/source.png
 4ca0da8335e88d7b580d209efe15ba81c0da59442d8e0ceecbc41a28c7e32df2  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/focus-evoker--relic/v1/prompt.txt
@@ -1264,7 +1264,8 @@ b12143083cdfe3c5ceee491749c91166b76383cf92fafa2bb4789d5e336f14f7  art/_archive/g
 5bafd9566182f158985200353d0550461cfd9085f61188ef3bc81fe52c493c4d  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-ork_machete--masterwork.json
 f85847b07f42b0eaf1f645e351ca8a5bdc0a03f90b1a19d3eb10d8d9fefe7a6c  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-sabre--fine.json
 9e9bbb8dfef43cad55fe67a508994d3d5aba04f34c2298ca5792d8007429ca4c  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_axe--fine.json
-1696ca7cfd85dc54c0de4b9a5caac9b08cdc61dfe71e7545fa9c5dbd843f57fc  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+021f966755b95273a66a0dff71d050bfe902d08ae5b21cdcc9ea930b25992727  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+ff24e000027fc14855fa7f0004a048883ccbff82788124172d6c2742382d99f1  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-attuner--fine.png
 b3a766410be06333c9e00ec6058b31d859457bc30db915d9e740be6254549e54  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-emanator--celestial.png
 7bc64e11d0f5dfcab0a6dd7f0458dd25602af388070080f88f5d16deba888f66  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-emanator--fine.png
 fb47dd64b85624c108ac22c7565869f152be38babd834164a3c051b45566c8ea  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-emanator--masterwork.png
@@ -1325,7 +1326,7 @@ dab3bbbdf442bc217948fd60eee32f838a211d1eb1fe57e133a194b9c3d5e740  art/_archive/g
 876ce07be45081a7e7314efc77aead7926e1ade2d7a48c37f2d7dac89b8aa268  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--fine.png
 ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--masterwork.png
 9b36f752a3f17b24c47de7d956ab451043d216ca9d97ee734691013ea43c4ab9  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--relic.png
-b1643dbe5ed8e16ed8880b0e41240e24c853a6ed9e74a2b2f9936f2a6a29b9a1  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+caaca30b05444d39871b96c2c53661156489413fba5fd84b902698733a5734e8  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 e49c7b76f7589a0d50eb30f9f56da3b0ea8642d4f3e4f377e9d6a58f9c1ab97b  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-attuner--celestial.txt
 a9eb1b72949cbdcc31f0d066a622a74cfe32a0f14999c907a4c26eaf15c5c119  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-attuner--fine.txt
 bc7ce9d5e673cc5d0cb4aada31925605874238bd01b31f35e8a74bc3416c98f6  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-attuner--masterwork.txt
@@ -1406,7 +1407,9 @@ f31bd9e8a0540c7383f8310931a78e08efe28e692f5d7d9c470dbc59372d4a69  art/_archive/g
 9f68b7cbbd608181d6cca6fc54e49bf23085deb5286e7827370197db31d33ec8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--fine.txt
 e8081d259555e24814654d1db508a91e3c8ccb6805bca5ca00465c7ef0f6f70f  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--masterwork.txt
 bee7477a9e07b82ad229c32541939deea912fb45b3155a89d95d7db1a2a39834  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--relic.txt
-c6f9b10462323978832a08da5b4e9231aaf5d29f8a20326faa5e8cbcf0e67874  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+fb107c4e4f03f2e77d46a0ab44ed10751674139f04c693a8aa47bfae0f0e1a0b  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+53ba6e2e02cdddf1602c282911b9318d0f652205828357b03f2d8e695eb66f6e  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/focus-attuner-32px.png
+01b963cea5ac709851b2c0c2c7d71c84831177c2eebd6701316b309323516677  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/focus-attuner-64px.png
 6eff88afcee83b7e101651cd6c50ce3761a860e6441847952f0f890e4c2df2e2  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/focus-emanator-32px.png
 7baaad8b9c921d77617146e22d734d1520645e74809153973e5fff6bbc8c9936  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/focus-emanator-64px.png
 51b99d44cdf65ece8069748162a1f1359ec9f6d35b5cfbeb57bc312b78aef07d  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/focus-evoker-32px.png
@@ -1442,6 +1445,7 @@ f4ff874513e502a05921a3a9a3ac0052b2cf1cfbdf6b1233f8926e2688d1bffd  art/_archive/g
 4cd98f23464d27f562303306087f908f96300772c21ec7526a9f613769887072  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-striking_gloves-32px.png
 164148724f5348be4591d959211521bdca8b69c8e6becb45d09ed8ec2c67e83b  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-striking_gloves-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-19-kept-blade-grades/source-brief.md
+de65fc635449366cf2d871b1ecd5b29860ecc29c406eae54702df78bb7384483  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-attuner--fine.png
 a3312138b0ed066d3a8d38a4a9055cbf31e3ef223bf1b90c63726e813434e5ff  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-emanator--celestial.png
 d7f330b623845c9f30105c48c6a92ae045932fdd272a52d59e31d5463d985632  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-emanator--fine.png
 42557996c6b5c747221b4ea5e3afbd16c42f2452197f5f64d4a0df6b73aaa4fe  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-emanator--masterwork.png
@@ -5178,7 +5182,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-c2ac4344d0736e17ad50f69010ced664202e62c54329cc374e65289e876b5746  art/catalog.json
+45b6d49621b0bc2c6bcf41a8e25ed6cae11ced6252c040ccea25501df8714fd0  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6829,6 +6833,7 @@ a28e8317eb928fe3e629cf6053040672ce5b020c70ed71729ff9ff6d4a6a6cf0  art/icons/gear
 11e7ece004642068e0b5918b20e2bfcb65223b79861089c4d8c0a6c0cfae83c3  art/icons/gear/exports/128/consumable-toxin_vial.png
 a77feea0164d402f038e29b0c0ccb87b3ac9cf22f6a0ad1141b87a9875678851  art/icons/gear/exports/128/document-bank_card.png
 6b4b6acd295e6167072078c3909ee8d3ba0ff1c77ec39ec33e700340e613897a  art/icons/gear/exports/128/document-city_id.png
+928ed90967462265351ac85819e52e2f1c7924d622fc035aa582591b44ee4611  art/icons/gear/exports/128/focus-attuner--fine.png
 4fd9373a837caa5367f8a58a4e0b7a7848a0d9c1411c750285981cdeb7bf7942  art/icons/gear/exports/128/focus-attuner.png
 3cc8131fce54f49d5afdcc884753a86ec9010e28be37296e62a6c7ac7c708767  art/icons/gear/exports/128/focus-emanator--celestial.png
 a6ca34bbcf8b890c28c97c2b4a723b2d3b377bcaa798c417adc12d7129382f8d  art/icons/gear/exports/128/focus-emanator--fine.png
@@ -7115,6 +7120,7 @@ c5eaf89758b80f877489de5c1fe301e88ceee67f5681c79f480e6ad5b190cf8b  art/icons/gear
 53adf7ed1ffb7402513ab7d63d62510262949a6cde8d4307ba28726c619445b8  art/icons/gear/exports/256/consumable-toxin_vial.png
 3ccdde4ce5f24e256948fb57ccd4aa069ad86c63b6435c504cf95de5f0e28d0b  art/icons/gear/exports/256/document-bank_card.png
 27e9b0716473b017c951b699c2453d4840181a719f4959e49bcb59a2a979ba65  art/icons/gear/exports/256/document-city_id.png
+8809cd7f2fc6f2930853a44e8c6619d48eb8960fdee6cffcd9f55724316c86e5  art/icons/gear/exports/256/focus-attuner--fine.png
 024708ac5f1ac6443afce85cd4737336999330e62762501571c388f54977f272  art/icons/gear/exports/256/focus-attuner.png
 57c4fbb3a6bd1e7cbf33d17c3af3fbfefb1a838cd6bea08bd6ec9f88fd5e2802  art/icons/gear/exports/256/focus-emanator--celestial.png
 86a166383f4f6904dfb7fdd1663243a61495adbb75357901731b21959a211598  art/icons/gear/exports/256/focus-emanator--fine.png
@@ -7401,6 +7407,7 @@ f12a4c59ce862531605019ada9bb08047dfa7453cc6ad95181015a5cd4279166  art/icons/gear
 2844bbcc5d7676f252eebc1f702f0e1ae54a636966929694d622d72604ec09ec  art/icons/gear/exports/32/consumable-toxin_vial.png
 f6fb0a64ae65d2e285430a63879d18ae58bea0ed3e5c39fc352455d8889a43b8  art/icons/gear/exports/32/document-bank_card.png
 5dbdd3e9d9a198eff773715eea50060ca1d60fd545ff25f07dc6c26531cedc2a  art/icons/gear/exports/32/document-city_id.png
+655d150c95105bbebdad5fae3120b328c2b8544483427d235476263888a80568  art/icons/gear/exports/32/focus-attuner--fine.png
 f9195ac51ca402eaa8c88c31de45e147fab44b280e4c4e8288f81754f884102a  art/icons/gear/exports/32/focus-attuner.png
 181cf9f7100beb6d1992018b792a59cc43cd055cf9e03ff0a78ce44d07d994dd  art/icons/gear/exports/32/focus-emanator--celestial.png
 62e11a54132b5258d38259b04ba9d7c2b9dea6ff5f2ce5d70f31eef2c231c24a  art/icons/gear/exports/32/focus-emanator--fine.png
@@ -7687,6 +7694,7 @@ fe1aaf4638e1a14653b0c5b5d5b29bcece2e53ff9bf5c219fbd14bf300da28f1  art/icons/gear
 d3b1c0b7e6cef904232854dfd13210a2d6248cc502fff43770c6a3d306758098  art/icons/gear/exports/64/consumable-toxin_vial.png
 31a3820dc13778712fbe7597b844dd0096a8a4d49768cf7d4561e9f0778ebd38  art/icons/gear/exports/64/document-bank_card.png
 e85124ec7701725e7b6964bfe4f5ce9a1360120dff529f16f0d3eff2933f70e7  art/icons/gear/exports/64/document-city_id.png
+d57cc0e1b5c38b9ea8de5aeb2e8e95f92cb2d3db68e709702130f613c3327560  art/icons/gear/exports/64/focus-attuner--fine.png
 fa88034c3a5e76d1115b706322b63022b55b133893fff9842d397e1c2e144e9f  art/icons/gear/exports/64/focus-attuner.png
 0d7f108e821d616b64fa9219f02c2b64364f3086e95e28157f251c69ab40310f  art/icons/gear/exports/64/focus-emanator--celestial.png
 672b7444be67429e26537693f5e95bc04e1237f994ac94541b95947ca14448fe  art/icons/gear/exports/64/focus-emanator--fine.png
@@ -7923,6 +7931,7 @@ be23c61670a54060026a41cf2701d6da20edb7fb8f09e2fc2187b4e1b84f885a  art/icons/gear
 6a371f69334481951d74a757d7f443a07d0f246a393e53d91fe16d8623fdb9ad  art/icons/gear/exports/64/weapon-weighted_gloves.png
 7aa1e3d6702ba2dfe5b3685b7e8d5a1817cad08a67e7a86bb6a3d4463622b6bf  art/icons/gear/exports/64/weapon-whisper_smg.png
 316b3e33f5866d7a7324c20c621c5347b773484c6744ab7e0fac4010bee37029  art/icons/gear/exports/64/weapon-windfall.png
+ff24e000027fc14855fa7f0004a048883ccbff82788124172d6c2742382d99f1  art/icons/gear/focus-attuner--fine.png
 e5c096f0816f62ee9e2a86cacb9741a5c73d21dc35dea0f6c66f8d55a9b27a84  art/icons/gear/focus-attuner.png
 b3a766410be06333c9e00ec6058b31d859457bc30db915d9e740be6254549e54  art/icons/gear/focus-emanator--celestial.png
 7bc64e11d0f5dfcab0a6dd7f0458dd25602af388070080f88f5d16deba888f66  art/icons/gear/focus-emanator--fine.png

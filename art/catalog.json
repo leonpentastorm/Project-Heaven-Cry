@@ -22177,6 +22177,42 @@
         "different_pixels_32": 15,
         "different_pixels_64": 61
       }
+    },
+    "focus-attuner--fine": {
+      "label": "Attuner — Fine",
+      "path": "art/icons/gear/focus-attuner--fine.png",
+      "sha256": "ff24e000027fc14855fa7f0004a048883ccbff82788124172d6c2742382d99f1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-attuner--fine.png",
+        "128": "art/icons/gear/exports/128/focus-attuner--fine.png",
+        "64": "art/icons/gear/exports/64/focus-attuner--fine.png",
+        "32": "art/icons/gear/exports/32/focus-attuner--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-attuner--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.5",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "focus-attuner",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9817679903252723,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 27
+      }
     }
   },
   "survival_art": {
