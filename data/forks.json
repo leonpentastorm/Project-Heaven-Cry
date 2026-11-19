@@ -98,7 +98,7 @@
           "door_pick": "fork.guard.cover_them"
         }
       ],
-      "text": "Reaction: first ranged hit each round on an ally within {=effects.0.if.target_within} tiles lands on you, +{=effects.0.and.0.value|abs} Guard",
+      "text": "{=effects.0.and.0.value|abs} Guard and your reaction: the first ranged hit each round on an ally within {=effects.0.if.target_within} tiles lands on you",
       "effects": [
         {
           "op": "redirect",
