@@ -2,7 +2,7 @@
 // included), and class moves by rank (base classes) or all at once (an advanced class). Built like gearEffects in
 // character.ts; memoised per holder on what it holds.
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
-import { PERK, PERKS, TRAITS, CLASSES, SKILL, SKILLS, CLASS_MOVE_POOL, ITEM, WEAPON, VARIANT_MOD } from '../data';
+import { PERK, PERKS, TRAITS, CLASSES, SKILL, SKILLS, CLASS_MOVE_POOL, ITEM, WEAPON, VARIANT_MOD, classDialMove } from '../data';
 import figmentsJ from '../../../../data/figments.json';
 import classesJ from '../../../../data/classes.json';
 import shadowJ from '../../../../data/shadow.json';
@@ -181,6 +181,7 @@ export function classMove(cls: string, mv: string): { move: any; rank: string } 
   const key = 'class:' + cls + '.' + mv;
   for (const b of CLASSES as any[]) for (const r of RANKS) { const m = (b.ranks?.[r]?.moves || []).find((x: any) => x.key === key); if (m) return { move: m, rank: r }; }
   for (const b of CLASSES as any[]) { const m = (b.gain || []).find((x: any) => x.key === key); if (m) return { move: m, rank: 'I' }; } // held from class gain (Reflex, rules 1.30)
+  if (mv === 'dials') { const b = (CLASSES as any[]).find((x) => x.id === cls), d = b ? classDialMove(b) : null; if (d) return { move: d, rank: 'I' }; } // rules 1.82 item 7003
   const p = CLASS_MOVE_POOL[cls + '.' + mv]; if (p) return { move: p, rank: ADVANCED[cls] ? 'adv' : p.origin_rank || 'I' };
   return null;
 }
@@ -261,6 +262,8 @@ export function classMoveKeys(h: Held): { key: string; rank: string }[] {
   if (b) RANKS.slice(0, Math.max(1, Math.min(3, h.rank || 1))).forEach((r) => (b.ranks?.[r]?.moves || []).forEach((m: any) => out.push({ key: m.key, rank: r })));
   // A class's `gain` (rules 1.30: the Skirmisher's Reflex) is held (after them) from class gain, beside the six moves, at rank I.
   if (b) (b.gain || []).forEach((m: any) => out.push({ key: m.key, rank: 'I' }));
+  // rules 1.82 item 7003: the class's dials (a hidden item; none while every dial is 1)
+  const dial = b ? classDialMove(b) : null; if (dial) out.push({ key: dial.key, rank: 'I' });
   const a = h.adv && advancedActive(h.adv) ? ADVANCED[h.adv] : null;
   if (a) (a.moves || []).forEach((m: any) => out.push({ key: 'class:' + a.id + '.' + m.id, rank: 'adv' }));
   return out;

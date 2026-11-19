@@ -1822,7 +1822,20 @@
             }
           ]
         }
-      }
+      },
+      "dials": [
+        {
+          "if": {
+            "actor": "self",
+            "damage": [
+              "sigil_spell"
+            ],
+            "hostile": true
+          },
+          "value": 1,
+          "label": "Sigilist"
+        }
+      ]
     },
     {
       "id": "trickster",
@@ -2150,7 +2163,25 @@
             }
           ]
         }
-      }
+      },
+      "dials": [
+        {
+          "if": {
+            "actor": "ally",
+            "actor_kind": [
+              "figment"
+            ],
+            "actor_tied": {
+              "kind": "owned",
+              "as": "to"
+            },
+            "hostile": true
+          },
+          "value": 1,
+          "label": "Rigger",
+          "note": "the Rigger's Figments (Figments door 119, Rigger 123, against 130 and 150: START-HERE Balance 2.0 4)"
+        }
+      ]
     },
     {
       "id": "bard",
@@ -2671,7 +2702,20 @@
             }
           ]
         }
-      }
+      },
+      "dials": [
+        {
+          "if": {
+            "actor": "self",
+            "damage": [
+              "outburst"
+            ],
+            "hostile": true
+          },
+          "value": 1,
+          "label": "Channeler"
+        }
+      ]
     },
     {
       "id": "guardian",
@@ -3837,6 +3881,19 @@
           "status": "active",
           "surface": "combat",
           "source": "rules 1.78 item 6607 (docs/design/proposals/2026-11-prayer-2.0.md item 16, P9)"
+        }
+      ],
+      "dials": [
+        {
+          "if": {
+            "actor": "self",
+            "damage": [
+              "prayer"
+            ],
+            "hostile": true
+          },
+          "value": 1,
+          "label": "Chaplain"
         }
       ]
     }
@@ -8728,5 +8785,6 @@
       ],
       "batch": 3
     }
-  ]
+  ],
+  "dials_note": "rules 1.82 item 7003: a base class's dials multiply what its characters deal through its door (damage_mult on dealing, each row's if); a dial at 1 is no item at all. PROVISIONAL, every one 1 until the balance pass fits it (data.ts classDialMove)"
 }

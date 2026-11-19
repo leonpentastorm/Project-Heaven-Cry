@@ -13519,3 +13519,10 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
 7002. **The follow strike's −2 is kept** (rules 1.81 item 6902; **call made for Leon**): the fit proposed 0 because it
       buys nothing measurable (a follows item deals 1 to 5% of the main hand's damage); the lead keeps −2, so a follow
       strike stays worse than the main hand's blow as the follow-strike rule (rules 1.58) says. No change in data or code.
+7003. **The class-only multiplier** (the class lines: the Figments door 119 and the Rigger 123 against 130 and 150; new
+      engine piece, approved by Leon 20 Nov 2026): a base class's `dials` (`classes.json`), each a multiplier on what
+      that class's characters deal through its door: the item op `damage_mult` on `dealing`, with its own `if` (the
+      Rigger: a Figment it owns; the Sigilist: its Sigil spells; the Channeler: its Outbursts; the Chaplain: its prayers).
+      They are held as one hidden item of the class (`class:<id>.dials`, `data.ts classDialMove`); a dial at exactly 1
+      is no item at all. **Every dial is 1** (PROVISIONAL): the roadmap gives no number, the balance pass fits them. No
+      number moves.
