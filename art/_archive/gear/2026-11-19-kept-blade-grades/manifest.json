@@ -5182,6 +5182,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-padded_undershirt--celestial",
+      "path": "art/icons/gear/armour-padded_undershirt--celestial.png",
+      "sha256": "d91f3bfa61bbfe3f557da435693bb374ccd732dd13bc068ef2e774b62130b21b",
+      "label": "Padded Undershirt — Celestial",
+      "family": "armour-padded_undershirt",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-padded_undershirt--celestial.png",
+        "sha256": "7b5721494637aecd523214a7f936a803808a0fa75a42123f2e775fff1be486a3"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-padded_undershirt--celestial.png",
+        "sha256": "d91f3bfa61bbfe3f557da435693bb374ccd732dd13bc068ef2e774b62130b21b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-padded_undershirt--celestial.txt",
+        "sha256": "0d8918d6a927a5039ca8672fdf64a5566e040e8742191ce803d8942976879673"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-padded_undershirt.png",
+          "sha256": "da04bbb067c16ca0c133c96426d79b1cb0ca8c46ab3eb533b34a12017e7af6ed"
+        },
+        {
+          "path": "art/icons/gear/armour-padded_undershirt--relic.png",
+          "sha256": "656d796ca6275f8dcab80dbd0083424f4c735eebe85fcf1d1f302fbbea220347"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-padded_undershirt--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-padded_undershirt--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-padded_undershirt--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-padded_undershirt--celestial.png"
+      },
+      "export_hashes": {
+        "256": "041ba68cc8bd5302efc0ceea6d1dfa4b8bda2edf83bcf1b08aaa09693a5800e3",
+        "128": "94cecad9407014fffc7369aae885b2a3b717ad0b56b9a0050546459699db9932",
+        "64": "df271e202ef06ba72c5d49e8a78763a48f761b9c5bcfeff8877ade47b76c1404",
+        "32": "2eff0635bdd006df142ee2325ecd351998dd93fbc3ca85a571e51e4647062ac4"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-padded_undershirt",
+      "outline": {
+        "solid_alpha_iou": 0.9455447907220923,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 17,
+        "different_pixels_64": 68
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
