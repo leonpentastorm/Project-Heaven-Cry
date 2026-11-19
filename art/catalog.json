@@ -23869,6 +23869,42 @@
         "different_pixels_32": 9,
         "different_pixels_64": 46
       }
+    },
+    "armour-combat_gloves--celestial": {
+      "label": "Combat Gloves — Celestial",
+      "path": "art/icons/gear/armour-combat_gloves--celestial.png",
+      "sha256": "53bfc6c0d0a5cc0d27d831a77f62814ae126f3b0ff280fcc3d8f438dd899e61c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-combat_gloves--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-combat_gloves--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-combat_gloves--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-combat_gloves--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-combat_gloves--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-combat_gloves",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9622271679881477,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 44
+      }
     }
   },
   "survival_art": {

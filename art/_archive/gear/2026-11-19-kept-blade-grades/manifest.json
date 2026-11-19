@@ -6426,6 +6426,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-combat_gloves--celestial",
+      "path": "art/icons/gear/armour-combat_gloves--celestial.png",
+      "sha256": "53bfc6c0d0a5cc0d27d831a77f62814ae126f3b0ff280fcc3d8f438dd899e61c",
+      "label": "Combat Gloves — Celestial",
+      "family": "armour-combat_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-combat_gloves--celestial.png",
+        "sha256": "6985e0de92eef544ddab421c8bc35c83337b3f9598eef36c32d5876429a34db3"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-combat_gloves--celestial.png",
+        "sha256": "53bfc6c0d0a5cc0d27d831a77f62814ae126f3b0ff280fcc3d8f438dd899e61c"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-combat_gloves--celestial.txt",
+        "sha256": "688f3775f0cd3a25ad5229063c8f4c2c6245959d53c31d01fd0529b80cbba70a"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-combat_gloves.png",
+          "sha256": "66dc7cda8639e28a20fc66538026fe2eb4880e85be90e3508ed73d3671b57b25"
+        },
+        {
+          "path": "art/icons/gear/armour-combat_gloves--relic.png",
+          "sha256": "a790aa6f56a805c4911e5bed30784b027b77c36b00ae43049a657da8b0ce644a"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-combat_gloves--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-combat_gloves--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-combat_gloves--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-combat_gloves--celestial.png"
+      },
+      "export_hashes": {
+        "256": "56177e8f27c7ec47a0a1776bf0de6737ee83d488b3c41affcd7199415c9175c9",
+        "128": "adfcaf07a443243a6b5ecc2e2c42fb99575195f21174e9a2e0375816268310cb",
+        "64": "aefacf26d2caaaec4e2a7d14a7f2897555f2a553db46266fb2c8cc3a0580011f",
+        "32": "494e26d6154368b9e20281d340598e7f1d42ed56692b4a5b53cc32e42559ec00"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-combat_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9622271679881477,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 44
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
