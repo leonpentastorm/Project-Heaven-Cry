@@ -12374,3 +12374,13 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     fight's song. The client needs no change (it plays what the engine picks and preloads the run's track). Proof:
     `test/survival-music.test.ts` (through the reducer: an unseen fight plays the quiet track; contact, the fight song;
     the win's field, the quiet track; off the field, the run's own track).
+5524. **LEVEL UP for the whole room** (owed fix): when a character's level rises (XP through `giveXp`, any source), every
+    player's page shows the big banner **LEVEL UP**, the character's name above it and "Level N" under it
+    (`rules.json combat.cards.level_up`, PROVISIONAL), the same component and hold as the fight's banners, on any screen;
+    after a fight's VICTORY or DEFEAT panel when one is up. One banner a character. Not for the Proving Ground's level
+    tool, and a reload or a late join announces nothing. The client reads the characters' levels in the room's state
+    (no new event: an fx kind for a level gained would be a new primitive). Its sound is the game's own `feel_unlock`
+    chime (no level-up sound is in the repo; none was downloaded), its mark the glyph ▲ until the white-ink sign
+    `banner-level-up` is drawn (`art/briefs/ART-REQUESTS.md` 0c). Proof: `apps/web/src/game/turnIntro-levelup.test.tsx`
+    (a two-player Survival room through the reducer: fights won until a level rises; both pages show LEVEL UP, once a
+    character, after VICTORY).

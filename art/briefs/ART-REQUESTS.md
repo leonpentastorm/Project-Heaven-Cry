@@ -96,6 +96,7 @@ White-ink signs, the same set and style as the fight banners' `banner-fight-star
 | id | where | direction |
 | --- | --- | --- |
 | `banner-fight-approach` | the APPROACH banner (a fight opened with no foe seeing the squad) | an eye half-closed or a footstep in fog: unseen, moving quietly |
+| `banner-level-up` | the LEVEL UP banner (any character of the room gains a level; any screen) | a rising chevron or a step mark climbing: growth, not a weapon |
 
 ### 2. Outburst feelings and modules
 
