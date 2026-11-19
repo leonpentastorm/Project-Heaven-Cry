@@ -98,6 +98,8 @@ def group_errors():
     return errs
 
 args = sys.argv[1:]
+if '--help' in args or '-h' in args:  # (it once ran the smoke group: an unknown option was dropped, and nothing named means smoke)
+    print(__doc__); sys.exit(0)
 def opt(name, default=None):
     if name in args:
         i = args.index(name); v = args[i + 1] if i + 1 < len(args) else default; del args[i:i + 2]; return v
@@ -107,6 +109,8 @@ jobs = int(opt('--jobs', '3')); base = opt('--base')
 port = int(opt('--port', os.environ.get('PHC_E2E_PORT') or '8787'))
 INSPECTOR = None if port == 8787 else port + 1442
 no_build = '--no-build' in args; slow = '--slow' in args; no_retry = '--no-retry' in args
+unknown = [a for a in args if a.startswith('-') and a not in ('--no-build', '--slow', '--no-retry', '--list')]
+if unknown: sys.exit('unknown option: ' + ', '.join(unknown) + ' (--help lists them)')
 errs = group_errors()
 if errs: sys.exit('the groups are wrong:\n  ' + '\n  '.join(errs))
 if '--list' in args:
