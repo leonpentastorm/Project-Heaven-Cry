@@ -99,7 +99,7 @@ export function aiRouteRisk(cb: Combat, u: Unit, P: { prev: Record<string, strin
 /** Rules 1.79 item 6708 (enemies.json ai.bait): 'lure' for a unit of a bait tier while an ally of a stronger tier is
  * standing; 'hold' for that stronger unit while a bait ally has still to act this round (later in the order, standing);
  * else null. Only what its side knows: the turn order is open to both sides. */
-function baitRole(cb: Combat, u: Unit): 'lure' | 'hold' | null {
+export function baitRole(cb: Combat, u: Unit): 'lure' | 'hold' | null {
   const B = ENEMY_AI.bait; if (!B || B.on === false || u.side !== 'foe' || u.charId || !u.tier) return null;
   const lure = B.tiers.includes(u.tier), hold = B.for.includes(u.tier); if (!lure && !hold) return null;
   // a bait draws the shot for any stronger ally still standing (this round's or the next's commit); the stronger one
@@ -305,6 +305,9 @@ function nullValue(cb: Combat, u: Unit, tiles: string[]): number {
     v += z.side === u.side ? -base : base + (near(z.tiles) ? 8 : 0);
   }
   for (const o of objectsOf(cb)) if (o.kind === 'sigil_wall' && T.has(o.pos)) v += (o as any).side === u.side ? -6 : 8;
+  // rules 1.83 item 7108 (figments-spec section 8): a Figment NULL unmakes is worth its charge x `ai.null_figment`; its own side's a loss
+  const per = Number((ENEMY_AI as any).null_figment) || 0;
+  if (per) for (const f of cb.units) { const fig = (f as any).figment; if (!fig || f.dead || !T.has(f.pos)) continue; const w = per * (Number(fig.made) || 0); v += f.side === u.side ? -w : w; }
   return v;
 }
 /** The best place to blink to from `from`: a free tile within STEP's reach, out of every player's reach and off any
@@ -342,7 +345,7 @@ export function aiPlanValue(cb: Combat, u: Unit, pv: EvokePreview): number {
     }
   }
   for (const m of pv.missiles) {
-    if (m.nulls) s += nullValue(cb, u, sp.burst ? m.burst.tiles : [m.impact]);
+    if (m.nulls || m.nullHits?.length) s += nullValue(cb, u, sp.burst ? m.burst.tiles : [m.impact]); // (rules 1.83: a Figment alone is something to unmake)
     if (m.placed) s += placedValue(cb, u, sp, m.placed, m.impact, m.burst.tiles);
     if (m.step.some((x) => x.unit === u.id)) s += blinkValue(cb, u);
   }
@@ -465,6 +468,7 @@ export function aiSigilCast(cb: Combat, rng: Rng, u: Unit): boolean {
   for (const z of cb.zones || []) if (z.side !== u.side && !secretFrom(z, u.side) && ['field', 'trap', 'turret', 'wall'].includes(z.kind)) magicTiles.push(z.kind === 'field' || z.kind === 'wall' ? z.tiles.slice().sort((a, b) => dist(u.pos, a) - dist(u.pos, b))[0] : z.tiles[0]);
   for (const o of objectsOf(cb)) if (o.kind === 'sigil_wall' && (o as any).side !== u.side) magicTiles.push(o.pos);
   for (const g of cb.glyphs || []) if (g.side !== u.side) magicTiles.push(g.pos);
+  if (Number((ENEMY_AI as any).null_figment) > 0) for (const f of cb.units) if ((f as any).figment && !f.dead && f.side !== u.side && sideSeesUnit(cb, u.side, f)) magicTiles.push(f.pos); // rules 1.83 item 7108: a Figment it sees is NULL's mark too
   const trapTiles: string[] = [];
   for (const t of nearPcs.slice(0, 3)) { const f = own.filter(live).sort((a, b) => dist(a.pos, t.pos) - dist(b.pos, t.pos))[0]; if (!f) continue; const d = dir8(t.pos, f.pos); for (const k of [step(t.pos, d, 1), step(t.pos, d, 2)]) if (canStand(cb, k) && !trapTiles.includes(k)) trapTiles.push(k); }
   const adjPcs = pcs.filter((t) => dist(t.pos, u.pos) <= 1);

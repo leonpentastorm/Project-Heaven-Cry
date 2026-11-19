@@ -2,7 +2,7 @@
 // and its tier's list (enemies.json `techniques`, on the unit as u.techs). Where it would make a plain attack it asks
 // each technique's handler how much it wants it (`ai`: a plain attack is 5) and uses the best one that beats that.
 // Planning is pure: it reads previews only, so the intent a player Analyzes is what the enemy then does.
-import { type Combat, type Unit, type AimWhy, alive, enemyStep, sideSees, enemyPreference, noteEnemyAim, doctrineOf, alliesOn, tauntedBy, finishing, say, paths, apForTiles, moveUnit, moveBlock, toggleProne, unitSees, lineOfSight, sightBlockers, effectiveRange, attackApCost, isMelee, dist } from '../combat';
+import { type Combat, type Unit, type AimWhy, alive, enemyStep, enemyOpening, enemyAimWeight, refOf, sideSees, enemyPreference, noteEnemyAim, doctrineOf, alliesOn, tauntedBy, finishing, say, paths, apForTiles, moveUnit, moveBlock, toggleProne, unitSees, lineOfSight, sightBlockers, effectiveRange, attackApCost, isMelee, dist } from '../combat';
 import { ENEMY_AI, WEAPON } from '../data';
 import { onHook } from '../effects/hooks';
 import { uses } from '../effects/uses';
@@ -13,7 +13,10 @@ import { isGhost, perceivedFoes } from '../illusion';
 import { condOn } from '../magic';
 import type { TechArgs } from './types';
 import { TECHNIQUE } from './data';
-import { usable, handlerOf, previewTechnique, useTechnique, aiScore } from './core';
+import { usable, handlerOf, previewTechnique, useTechnique, aiScore, canAnswer, answerKind } from './core';
+import { baitRole } from '../ai-sigil';
+import { holdersOf, ifFails } from '../effects/hooks';
+import { canReact } from '../tactics';
 import { canPay } from '../effects/cost';
 
 export const PLAIN_ATTACK_SCORE = 5;
@@ -84,28 +87,73 @@ export function coverWalk(cb: Combat, u: Unit, maxTiles: number, apLeft: number,
   }
   return best == null ? null : { to: best, eyes: be };
 }
+/** Rules 1.79 items 6700 to 6702 and 1.83 item 7106: what Pressure makes an enemy do first this turn, worked out without
+ * doing it (the hook below does it; the Read, combat.ts enemyIntent, foresees it): Broken, a walk to cover (`to`) or a
+ * drop flat (`prone`), or already in cover (`hold`: it holds there and fights on); Suppressed, a slide to cover
+ * (`slide`, `to`), or nothing first (`short`: it only walks short). null: Pressure moves it no way this turn. Pure. */
+export type PressurePlan = { state: 'broken'; act: 'hold' | 'prone' | 'cover'; to?: string } | { state: 'suppressed'; act: 'short' | 'slide'; to?: string };
+export function pressurePlan(cb: Combat, u: Unit): PressurePlan | null {
+  const PA = ENEMY_AI.pressure;
+  if (!PA || PA.on === false || cb.window || !u || u.side !== 'foe' || u.charId || u.companion || !alive(u) || condOn(u, 'commanded')) return null;
+  const s = pressureState(u); if (s !== 'broken' && s !== 'suppressed') return null;
+  const here = atCover(cb, u), canMove = !moveBlock(u);
+  if (s === 'broken') {
+    if (here) return { state: s, act: 'hold' };
+    const to = canMove ? coverWalk(cb, u, Infinity, apFor(cb, u), () => true)?.to ?? null : null;
+    return to ? { state: s, act: 'cover', to } : { state: s, act: 'prone' };
+  }
+  if (here || !canMove || u.prone) return { state: s, act: 'short' };
+  const w = WEAPON[u.weapon]; if (!w) return { state: s, act: 'short' };
+  const melee = isMelee(w), left = apFor(cb, u) - attackApCost(w, melee ? 'melee' : 'shot');
+  const seen = foesOf(cb, u, { seenBySide: u.side }), reach = melee ? 1 : effectiveRange(w), walls = sightBlockers(cb);
+  const to = coverWalk(cb, u, PA.suppressed_cover_tiles, left, (k) => seen.some((v) => dist(k, v.pos) <= reach && lineOfSight(cb, k, v.pos, false, walls)))?.to ?? null;
+  return to ? { state: s, act: 'slide', to } : { state: s, act: 'short' };
+}
 onHook('enemy_action_start', (ctx: any, cb: Combat) => {
   const u: Unit = ctx.u, PA = ENEMY_AI.pressure;
-  if (!PA || PA.on === false || ctx.skip || ctx.step !== 0 || cb.window || !u || u.side !== 'foe' || u.charId || u.companion || !alive(u) || condOn(u, 'commanded')) return;
-  const s = pressureState(u); if (s !== 'broken' && s !== 'suppressed') return;
+  if (ctx.skip || ctx.step !== 0) return;
+  const p = pressurePlan(cb, u); if (!p || !PA) return;
   const line = (k: keyof typeof PA.lines) => say(cb, PA.lines[k].replace(/\{name\}/g, u.name));
   const A = uses({ key: 'ai', u, c: null, cb, g: undefined } as any); // the AI's counters on the unit (combat.ts reads them: aiUses)
   const short = (tiles: number) => { (u as any).aiShort = tiles; A.take('per_turn', 1, 'ai:short'); };
-  const here = atCover(cb, u), canMove = !moveBlock(u);
-  if (s === 'broken') {
+  if (p.state === 'broken') {
     short(0); // it holds where it gets to this turn
-    if (here) return;
-    const to = canMove ? coverWalk(cb, u, Infinity, apFor(cb, u), () => true)?.to ?? null : null;
-    if (to) { line('broken_cover'); if (!moveUnit(cb, u, to, ctx.rng)) { ctx.skip = true; return; } }
+    if (p.act === 'hold') return;
+    if (p.act === 'cover' && p.to) { line('broken_cover'); if (!moveUnit(cb, u, p.to, ctx.rng)) { ctx.skip = true; return; } }
     if (!u.prone && toggleProne(cb, u) === null) { A.take('per_turn', 1, 'ai:down'); line('broken_prone'); ctx.skip = true; }
     else if (u.prone) A.take('per_turn', 1, 'ai:down');
     return;
   }
   short(PA.suppressed_move_tiles);
-  if (here || !canMove || u.prone) return;
-  const w = WEAPON[u.weapon]; if (!w) return;
-  const melee = isMelee(w), left = apFor(cb, u) - attackApCost(w, melee ? 'melee' : 'shot');
-  const seen = foesOf(cb, u, { seenBySide: u.side }), reach = melee ? 1 : effectiveRange(w), walls = sightBlockers(cb);
-  const to = coverWalk(cb, u, PA.suppressed_cover_tiles, left, (k) => seen.some((v) => dist(k, v.pos) <= reach && lineOfSight(cb, k, v.pos, false, walls)))?.to ?? null;
-  if (to) { line('suppressed_cover'); if (!moveUnit(cb, u, to, ctx.rng)) ctx.skip = true; }
+  if (p.act === 'slide' && p.to) { line('suppressed_cover'); if (!moveUnit(cb, u, p.to, ctx.rng)) ctx.skip = true; }
+});
+// Rules 1.83 item 7106: the Read foresees it (the intent names the move to cover, or the drop flat, as its first act)
+enemyOpening((cb, u) => {
+  const p = pressurePlan(cb, u); if (!p) return null;
+  if (p.act === 'cover' && p.to) return { kind: 'move', text: 'break and run for cover at ' + refOf(p.to), to: p.to };
+  if (p.act === 'prone') return { kind: 'wait', text: 'throw itself flat and stay down' };
+  if (p.act === 'slide' && p.to) return { kind: 'move', text: 'keep its head down and slide into cover at ' + refOf(p.to), to: p.to };
+  return null;
+});
+
+// Rules 1.83 item 7107: the bait reads Answers. A target that holds an Answer ready against a melee blow (an Answer
+// technique of the attack kind it can use now, or an item Answer: an effect whose `if` names `answer_on`, its own
+// predicates about the holder holding) and has a reaction left draws the bait's blow first: a bait tier's melee unit
+// counts it as `ai.bait.answer_lure` of its max HP more hurt while a stronger ally stands; the stronger melee ally counts
+// it as `answer_hold` less while a bait has still to act this round (ai-sigil.ts baitRole, the one reading of the roles).
+/** Does t hold an Answer ready against a melee blow from u, as far as u's side can see (t seen)? Pure. */
+export function answerReady(cb: Combat, u: Unit, t: Unit): boolean {
+  if (!alive(t) || !sideSees(cb, u.side, t) || !canReact(cb, t, 'attack')) return false;
+  for (const hand of ['main', 'off'] as const) for (const { id } of usable(cb, t, hand)) if (TECHNIQUE[id]?.group === 'answer' && answerKind(id) === 'attack' && canAnswer(cb, t, id, u)) return true;
+  for (const h of holdersOf({ u: t, cb })) for (const e of h.info.effects || []) {
+    const c = e?.if; if (!c || c.answer_on == null) continue;
+    const self = Object.fromEntries(Object.entries(c).filter(([k]) => k.startsWith('self_') || k === 'answer_on'));
+    if (!ifFails({ ...h, u: t, cb }, self)) return true;
+  }
+  return false;
+}
+enemyAimWeight((cb, u, t, mode) => {
+  const B: any = ENEMY_AI.bait; if (mode !== 'melee' || !B || B.on === false || !(B.answer_hold > 0 || B.answer_lure > 0)) return 0;
+  const role = baitRole(cb, u); if (!role || !answerReady(cb, u, t)) return 0;
+  return role === 'hold' ? Number(B.answer_hold) || 0 : -(Number(B.answer_lure) || 0);
 });
