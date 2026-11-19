@@ -131,7 +131,7 @@ describe('level-up screen', () => {
       const off = (r.querySelector('button[data-raise="skill"]') as HTMLButtonElement).disabled;
       // a refused +1 says why in the place of the line; otherwise the line is what its next point gives
       if (off) { expect(r.querySelector('.phc-lu-why')!.textContent).toMatch(/\S/); expect(r.querySelector('.phc-lu-next')).toBeNull(); }
-      else expect(r.querySelector('.phc-lu-next')!.textContent).toBe(nextLine(id, p));
+      else expect(r.querySelector('.phc-lu-next')!.textContent).toBe(nextLine(id, p, G.characters[c0.id]));
       expect((r.querySelector('button[data-raise="skill"]') as HTMLElement).style.minHeight).toBe('40px');
     }
     // Dexterity 5 with no perks: a white chip, two steps waiting; nothing to choose until it is opened
@@ -170,7 +170,7 @@ describe('level-up screen', () => {
     expect([...el.querySelectorAll('.phc-lu-core')].map((x) => x.getAttribute('data-core'))).toEqual(['mind']);
     await React.act(async () => { (el.querySelector('.phc-lu-attrcol[data-attr="perception"] button[data-raise="attr"]') as HTMLButtonElement).click(); });
     expect(G.characters[c0.id].unspent.attr).toBe(0);
-    const before = G.characters[c0.id].skills.vigilant || 0, gain = nextLine('vigilant', before);
+    const before = G.characters[c0.id].skills.vigilant || 0, gain = nextLine('vigilant', before, G.characters[c0.id]);
     await React.act(async () => { (el.querySelector('.phc-lu-skill[data-skill="vigilant"] button[data-raise="skill"]') as HTMLButtonElement).click(); });
     expect(G.characters[c0.id].skills.vigilant).toBe(before + 1);
     expect(el.querySelector('.phc-lu-skill[data-skill="vigilant"] .phc-lu-gain')!.textContent).toBe('✓ ' + gain);

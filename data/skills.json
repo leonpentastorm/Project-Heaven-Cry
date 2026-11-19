@@ -77,6 +77,7 @@
         "rows": [
           {
             "at": "each",
+            "grows": "guard_pool",
             "text": "+{=per_point.numbers.pool} Guard plate held (max {=per_point.numbers.pool_max})"
           },
           {
@@ -637,6 +638,7 @@
           },
           {
             "at": "each",
+            "grows": "elemental_taken",
             "text": "+{=per_point.numbers.elemental_taken|pct}% elemental resistance"
           },
           {
@@ -5235,6 +5237,7 @@
           },
           {
             "at": "each",
+            "grows": "hymn_wait",
             "text": "Hymns return {=per_point.numbers.hymn_cut} round sooner (min {=per_point.numbers.hymn_floor})"
           },
           {

@@ -2678,7 +2678,7 @@
           ],
           "ap_cost": null,
           "text": "The first glyph you draw each turn: {=tiers.I.effects.0.value|signed} AP to its cost.",
-          "short": "First glyph each turn costs {=tiers.I.effects.0.value|abs} AP less",
+          "short": "First glyph each turn: {=tiers.I.effects.0.value} AP",
           "effects": [
             {
               "op": "cost_mod",
@@ -4592,7 +4592,7 @@
           ],
           "ap_cost": null,
           "text": "Each Outburst you Release gives your next Release in this fight +{=tiers.II.effects.0.value}% to its effect, building up to +{=tiers.II.effects.0.limit}%. An ally's Release that you can see adds a step too. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round.",
-          "short": "Up to +{=tiers.II.effects.0.limit}% · allies' Releases add a step",
+          "short": "Up to +{=tiers.II.effects.0.limit}% · allies' Releases count too",
           "effects": [
             {
               "op": "stat_mod",

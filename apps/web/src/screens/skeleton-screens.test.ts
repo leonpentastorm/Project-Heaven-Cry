@@ -73,7 +73,7 @@ describe('the "?" skill page', () => {
       expect(v.ep.attrName).toBe(D.attrs.find((a: any) => a.id === s.attr).name);
       // what a point gives: the road map's ten levels, each row its per-point gains then its own (no head block)
       expect(v.ep.steps).toHaveLength(10); expect((v.ep as any).head).toBeUndefined();
-      for (const h of roadMap(s.id).head) if (!/\(from \d+\)$/.test(h)) expect(v.ep.steps[9].text, s.id).toContain(h);
+      for (const h of roadMap(s.id).head) if (!/\(from \d+\)$/.test(h)) expect(v.ep.steps.some((st: any) => st.text.includes(h)), s.id + ': ' + h).toBe(true); // a capped gain stops before 10 (0.31.11)
     }
     expect(slotLine('alpha')).toBe('How you fight');
     expect(slotLine('beta')).toBe('How you survive');

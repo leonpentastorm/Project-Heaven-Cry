@@ -8,7 +8,7 @@ import shellTpl from '../templates/shell.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
-import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION, healthView, shieldsView, CALL_RULES, callRangeAt, calls as CALLS_NS, doorForkView, doorFeedView, ENGINE_DEEDS, PERKS as ENGINE_PERKS } from '@engine';
+import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION, healthView, shieldsView, CALL_RULES, callRangeAt, calls as CALLS_NS, doorForkView, doorFeedView, ENGINE_DEEDS, PERKS as ENGINE_PERKS, ladderCaps } from '@engine';
 import { forkIconOf } from '../game/forkIcon';
 import { foldVals } from '../game/fold';
 import { shieldBlock } from '../game/shieldLook';
@@ -60,8 +60,10 @@ export const doorOfBeta = (id) => { const k = ENGINE_SKILL[id]; if (!k || !k.fee
  *  per-point gains first (kind 'each': an `each` row on every level, an `each from n` row from n on), then its own:
  *  the rows that land on it ('row'), its Call's step ('call', gamma skills), its unlock ('unlock': the name on the face,
  *  its player line in `tip`), its fork ('fork'), its perk step ('perk') or Mastered perk ('mastered'). Points, perks and
- *  names all come from the data; a fork step's options from the engine's doorForkView (no character: every option). */
-export function roadMap(id) {
+ *  names all come from the data; a fork step's options from the engine's doorForkView (no character: every option).
+ *  A capped per-point row (its `grows`, read by the engine's ladderCaps for `who`, or a blank character) is on the levels
+ *  where it still adds, and the last of them says it is the most. */
+export function roadMap(id, who) {
   const k = ENGINE_SKILL[id] || {}, un = k.unlocks || {}, ep = (SK[id] && SK[id].ep) || {}, rows = rowsOf(id), fi = feedRowIdx(id);
   const top = Math.max(1, ...Object.keys(un).map(Number).filter((n) => n > 0));
   const isEach = (r) => r.at === 'each' || fromOf(r.at) > 0;
@@ -70,9 +72,10 @@ export function roadMap(id) {
   const cb = callBlock(id, null), perkNames = (ep.perks || []).map((p) => p.name).join(' or ');
   const perkTip = (ps) => ps.map((p) => p.name + ': ' + (p.t1 || p.text || '')).join(' / ');
   let firstPerk = true;
+  const caps = (() => { try { return ladderCaps(id, who || null); } catch { return {}; } })();
   const steps = Array.from({ length: top }, (_, i) => {
     const n = i + 1, lines = [];
-    rows.forEach((r, j) => { if (j !== fi && isEach(r) && n >= Math.max(1, fromOf(r.at))) lines.push({ key: 'e' + j, kind: 'each', at: r.at, text: r.text, tip: '' }); });
+    rows.forEach((r, j) => { if (j !== fi && isEach(r) && n >= Math.max(1, fromOf(r.at)) && !(j in caps && n > caps[j])) lines.push({ key: 'e' + j, kind: 'each', at: r.at, text: r.text + (j in caps && n === caps[j] ? ' (max)' : ''), tip: '' }); });
     rows.forEach((r, j) => { if (j !== fi && !isEach(r) && rowPoints(r.at, top).includes(n)) lines.push({ key: 'r' + j, kind: 'row', at: r.at, text: r.text, tip: '' }); });
     const cs = cb ? cb.ladder.find((x) => x.n === n) : null;
     if (cs) lines.push({ key: 'c', kind: 'call', at: 'at ' + n, text: cb.name + ': ' + cs.what.charAt(0).toLowerCase() + cs.what.slice(1), tip: '' });
@@ -136,8 +139,8 @@ export function feedBlock(id, ptsOf, who) {
 /** "Every point: ..." (empty when no row is for every point). */
 export const headLine = (id) => { const h = roadMap(id).head; return h.length ? 'Every point: ' + h.join(' · ') : ''; };
 /** What the point after `p` gives, as one line: that step's lines, else what every point gives ('' past the top). */
-export const nextLine = (id, p) => {
-  const r = roadMap(id), s = r.steps[(p || 0)]; if (!s) return '';
+export const nextLine = (id, p, who) => {
+  const r = roadMap(id, who), s = r.steps[(p || 0)]; if (!s) return '';
   // card style: what the point opens (its named unlock or fork, its Call's step, its rows), else what every point
   // gives, then its perk step; at most two pieces, so the card never cuts
   const rank = { unlock: 0, fork: 0, call: 1, row: 2 };
@@ -332,15 +335,15 @@ export function tierDelta(t1, t2) {
  *  character's owned levels bright, the next one highlighted, the later ones dim; `pts` null when the screen has no
  *  character (nothing marked). `attr`: the character's attribute value (the next level past it says "Needs <Attr> n").
  *  A per-point gain that repeats is drawn dim after its first row (the level's own thing is what the eye lands on). */
-export function roadTrack(self, id, pts, ink, attr) {
-  const r = roadMap(id), has = typeof pts === 'number', A = SK[id] && ATTR[SK[id].attr], seen = new Set();
+export function roadTrack(self, id, pts, ink, attr, who) {
+  const r = roadMap(id, who), has = typeof pts === 'number', A = SK[id] && ATTR[SK[id].attr], seen = new Set();
   return r.steps.map((s) => {
     const state = !has ? 'ahead' : s.n <= pts ? 'owned' : s.n === pts + 1 ? 'next' : 'ahead';
     const needs = state === 'next' && typeof attr === 'number' && A && s.n > attr ? 'Needs ' + A.name + ' ' + s.n : '';
     const bright = state === 'next' ? '#FFFFFF' : state === 'owned' ? '#E7EBF3' : '#A3AEC2';
     return { key: s.n, n: s.n, state, step: s.step || 'none', text: rowText(s), needs, hasNeeds: !!needs,
       dot: state === 'owned' ? '●' : state === 'next' ? '◐' : '○', hasPerks: s.perks.length > 0,
-      pieces: s.lines.map((l, i) => { const again = l.kind === 'each' && seen.has(l.key); if (l.kind === 'each') seen.add(l.key);
+      pieces: s.lines.map((l, i) => { const again = l.kind === 'each' && seen.has(l.key) && !/ \(max\)$/.test(l.text); if (l.kind === 'each') seen.add(l.key);
         return { key: l.key, kind: l.kind, text: l.text, tip: l.tip || '', sep: i > 0, repeat: again ? 'yes' : 'no',
           style: (l.tip ? 'text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; ' : '') + (l.kind === 'mastered' ? 'font-weight: 700; color: ' + (state === 'ahead' ? '#C9A85A' : '#F2C46A')
             : again ? 'color: #5A6781' : l.kind === 'each' || l.kind === 'row' ? 'color: ' + bright : 'font-weight: 700; color: ' + (state === 'ahead' ? '#A3AEC2' : ink)) }; }),
@@ -393,7 +396,7 @@ export function epccgVals(self, ptsOf, who, opt) {
     forksFold: foldVals('skill:forks:' + s.id, { byRule: true, redraw }),
     foldHeadStyle: 'font-size: var(--fs-body); font-weight: 700; letter-spacing: 0.04em; color: #E7EBF3',
     ptsLine: typeof pts === 'number' ? pts + ' / ' + roadMap(s.id).top : '',
-    steps: roadTrack(self, s.id, typeof pts === 'number' ? pts : null, ink, attrVal),
+    steps: roadTrack(self, s.id, typeof pts === 'number' ? pts : null, ink, attrVal, who && who.skills ? who : null),
     inkStyle: 'color: ' + ink,
     img: e.img, zoom: zoomer(self, e.img, e.portrait, 'portrait'), alt: e.portrait + ', First-Patch Revival portrait for ' + s.name, pictured: e.portrait,
     // the lore, open, every line exactly as written (the 2020 voice is not ours to edit)

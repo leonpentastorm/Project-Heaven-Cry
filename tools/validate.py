@@ -120,6 +120,7 @@ _SAME = {  # (skill, per_point.numbers key) -> (the engine's data value, where i
     ("faith", "hymn_floor"): (_hymn_r.get("floor"), "patrons.json prayer.hymn.cooldown_rule.floor"),
     ("will_power", "pumps"): (((_cyc_r.get("free_pumps") or [{}])[0]).get("pumps"), "soul_modules.json cycle.free_pumps.0.pumps"),
 }
+_LADDER_GROWS = {"elemental_taken", "guard_pool", "hymn_wait"}  # packages/engine/src/ladder.ts LADDER_GROWS
 for s in items("skills"):
     if not isinstance(s, dict):
         continue
@@ -132,8 +133,12 @@ for s in items("skills"):
     seen = set()
     for i, r in enumerate(rows):
         w = f"skills:{sid}: per_point.rows.{i}"
-        if not isinstance(r, dict) or set(r) != {"at", "text"} or not isinstance(r.get("text"), str) or not r["text"].strip():
-            errors.append(f"{w}: a row is {{at, text}} with a text"); continue
+        if not isinstance(r, dict) or not {"at", "text"} <= set(r) <= {"at", "text", "grows"} or not isinstance(r.get("text"), str) or not r["text"].strip():
+            errors.append(f"{w}: a row is {{at, text}} with a text (and a capped row's grows)"); continue
+        # 0.31.11: a capped per-point row names the engine value it grows (packages/engine/src/ladder.ts LADDER_GROWS), so
+        # the ladder shows it only on the levels where it still adds
+        if "grows" in r and (r["grows"] not in _LADDER_GROWS or r["at"] != "each"):
+            errors.append(f"{w}: grows {r['grows']!r} is not one of {sorted(_LADDER_GROWS)} on an each row")
         m = _AT.match(str(r["at"]))
         if not m or (m.group(3) and not 1 <= int(m.group(3)) <= 10):
             errors.append(f"{w}: at {r['at']!r} is not each, each from n, every 2, every 3, from n or at n (n 1 to 10)")

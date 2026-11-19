@@ -110,14 +110,14 @@ export class LevelUpLogic extends DCLogic {
     const forkPend = (id) => { const v = (() => { try { return doorForkView(c, id); } catch { return null; } })(); return v ? v.steps.filter((s) => s.pending) : []; };
     const skillRow = (s) => {
       const p = c.skills[s.id] || 0, a = ATTR[s.attr], ink = a.ink, why = canRaise(c, 'skill', s.id), x = pend[s.id], fp = forkPend(s.id);
-      const nxt = nextLine(s.id, p), [tag, slotWords] = SLOT_WORD[s.slot] || ['', ''];
+      const nxt = nextLine(s.id, p, c), [tag, slotWords] = SLOT_WORD[s.slot] || ['', ''];
       // a refused +1: its reason on this row only, with a way to fix it when an Attribute point would ("Raise Agility")
       const needAttr = !!why && /^Needs \w+ \d+/.test(why) && !!c.unspent.attr && !canRaise(c, 'attr', a.id);
       const waits = (x ? x.free || 1 : 0) + fp.length, fl = this.state.flash && this.state.flash.id === s.id ? this.state.flash.text : '';
       return { key: s.id, img: s.img, name: s.name, pts: p, tag, tagTitle: slotWords, mod: (checkMod(s.id, p) >= 0 ? '+' : '') + checkMod(s.id, p),
         cls: 'phc-lu-skill' + (x ? ' phc-lu-step' : '') + (fp.length ? ' phc-lu-forkwait' : ''), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
         canRaise: !!c.unspent.skill, blocked: !!why, why: nice(why), hasWhy: !!(why && c.unspent.skill && p < 10), raiseLabel: 'Raise ' + s.name,
-        raise: () => { const gain = nextLine(s.id, c.skills[s.id] || 0); act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: s.id }); this.flash(s.id, gain); }, raiseStyle: raiseStyle(!why, ink, true),
+        raise: () => { const gain = nextLine(s.id, c.skills[s.id] || 0, c); act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: s.id }); this.flash(s.id, gain); }, raiseStyle: raiseStyle(!why, ink, true),
         hasFix: needAttr, fixLabel: 'Raise ' + a.name, fix: () => act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: a.id }),
         fixStyle: 'flex: none; min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; border: 1px solid ' + a.ink + '; background: transparent; color: ' + a.ink,
         // a refused +1 shows its reason in the place of the next line (what the point gives stays on the "?" page)

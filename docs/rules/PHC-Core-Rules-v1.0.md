@@ -12271,3 +12271,14 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     line on item 5450's trigger: `{when: "mana_shock", limit: {per: "per_combat", n: 1}, op: "resource", resource:
     "strain", value: -2}`. The relief comes after the entry: a heart 3 over is left 1 over, still in the Shock, and the
     next turn's start calms it back to the limit before that turn's end can charge the Shock's share.
+5452. **A skill ladder's capped per-point gains** (the "?" page and the level-up row's next line; the lead's ruling of
+    19 Nov 2026): a per-point row that stops adding before the skill's top is shown only on the levels where it still
+    adds, and the last of them says it is the most ("+10% elemental resistance (max)" at Pain Threshold 6). The row
+    names in data the engine value it grows (`skills.json per_point.rows[].grows`: `elemental_taken`, `guard_pool`,
+    `hymn_wait`); the engine reads that value through its own function at each point for the character (or a blank
+    one) and returns the last point where it moves (`ladder.ts ladderCaps`). So Pain Threshold's elemental resistance
+    stops at its 60% cap (6), Durability's plates held at the pool's cap for a non-Bulwark (a class pool that already
+    holds more shows no per-point plate), Faith's Hymn wait at its floor (sooner with a higher Virtue). Share a Hit's
+    per-point share (Camaraderie's unlock, up to 50%) has no per-point row: a row may only read its skill's
+    per_point.numbers, and the share's numbers are the unlock's effect; it stays in the unlock's own line (ruling
+    needed to give it a row). Proof: `packages/engine/test/ladder-caps.test.ts`, `apps/web/src/screens/roadmap.test.ts`.
