@@ -9,3 +9,7 @@ Continuing the complete eight-image proof under Leon's instruction to keep worki
 The shared pack currently has 150 delivered candidate masters. Proof experiments are additional drafts until their sheet passes review.
 
 Continuation now also claims finish trials for the existing Combat Knife, Sabre and Legion Gladius Standards, all four grades. These are draft review sheets under Leon's instruction to continue work. Drifter Masterwork was declined by the image service and its dependent finishes remain pending. No renderer on the other worker's unique lane is claimed here.
+
+The four grades for Katana, Combat Knife, Sabre and Legion Gladius have now been selected as 16 review-candidate masters after visual comparison at inventory size. All sources and measured edge differences are retained. This selection accepts resampling and modest contour drift for artistic review. It does not assert pixel-identical outlines.
+
+The next eight finish trials are recurve_bow and longbow, all four grades. This claim is also posted to the shared coordination issue https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 .
