@@ -8,6 +8,17 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.31.11 — the skill pages, the level-up choosers and the outside playtest's fixes (rules 1.69)
+
+- **The skill "?" page leads with the lore:** the voice's quote, its paragraph, At high levels, Good for and Bad for open on the face; what each level gives, the perks and the forks fold below (closed by default; each fold kind remembered for all 27 skills). The level ladder is one row a level; perks are rows (tier I, then what II changes); a capped per-point gain stops where it stops adding and says "(max)".
+- **Level up:** the budget is one header row with a **TO CHOOSE** strip (Class, then forks, then perk steps); a chip opens one centred chooser (Take or Upgrade, a one-line confirm, Next choice); chips that don't fit are counted on "+N more"; Done lights when nothing is left; the class block in the side panel is one line that opens the class chooser.
+- **Minimum text sizes:** one type scale (15 px body, 13 px secondary) across the menus.
+- **Words:** card-style lines across creation, the sheet, the shop, the Forge, the camp and the rewards; no arithmetic in player text (results, not multipliers); the Outburst workshop says each Damage way once, in percent; a prayer card shows your own number beside its text and names its damage type; Cover Them says it costs 1 Guard and your reaction.
+- **The outside playtest of 18 Nov:** a stim on yourself in a fight; an unclaimed perk step or fork is a level-up due (the camp and Start the run ask first); Evoke never aims a harm-only Line at your own tile; Second Wind is on the combat bar and heals; Parry rolls with the Guard door, a lost Parry keeps your reaction for Retort, and one Parry try a round; previews that lied (ambush from Hidden, the target card's switches); a Figment's kills are its owner's; Ghost Kill counts the victim's eyes; the Primed boon's Momentum lands; the feeling buttons price their Pump right; Mercy only where a foe can yield; Sigil Savant works in a run; one Flux limit everywhere.
+- **The fight's edges:** no walking the fog before VICTORY; the alarm tells every foe where you stand when the fight is joined; the APPROACH banner and the calm track before contact; LEVEL UP for the whole room; an action's reach drawn by its boundary; condition signs enlarge from the hover card; the NOW PLAYING card steps aside on the level-up and creation screens.
+- **Iron Heart:** once a fight, on Mana Shock, relieve 2 Strain (the `mana_shock` trigger; Strain as a resource row).
+- **Rules 1.69:** items 5450 to 5455 (the Mana Shock trigger, Iron Heart, the capped ladder, Strain as a resource, the approved engine surface, this release's rulings); the 0.31.12 lanes' items 5501 to 5534 (the playtest's blockers, the approach and the alarm, the review's findings; item 5530 amended: one Parry try a round).
+
 ## 0.31.10
 
 - No Survival node gives MP back: only Syphon does (Leon, 17 Nov 2026; `survival.json ammo_pack.mp` all 0, PROVISIONAL). A Rest's own restore is unchanged.
