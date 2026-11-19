@@ -83,6 +83,7 @@ try {
   await ob.getByLabel('Name', { exact: true }).fill('Tripwire Under the Grating');
   await ob.getByLabel('Text', { exact: true }).fill('A wire at ankle height.');
   await ob.getByLabel('Hidden', { exact: true }).check();
+  await desk.locator('[data-gm-entry="objects.0"]').scrollIntoViewIfNeeded(); await host.screenshot({ path: OUT + 'narrate-desk.png' }).catch(() => {});
   await host.locator('[data-gm-send]').click();
   await guest.waitForSelector('text=Keel waits at the ramp', { timeout: 30000 });
   const ck = (await T(host)).checks.find((k) => !k.done);
@@ -102,7 +103,7 @@ try {
   const areaBtn = host.getByRole('button', { name: /Area map/ }).first();
   if (await areaBtn.count()) { await areaBtn.click(); await host.waitForSelector('[data-gm-secret="1"]', { timeout: 10000 }).catch(() => {}); }
   ok('the host\'s area map marks the hidden things (' + (await host.locator('[data-gm-secret="1"]').count()) + ' tiles, HIDDEN FROM THE PLAYERS)', (await host.locator('[data-gm-secret="1"]').count()) >= 2);
-  if (await areaBtn.count()) await host.keyboard.press('Escape');
+  if (await areaBtn.count()) { await host.getByRole('button', { name: 'Close', exact: true }).first().click(); await host.waitForSelector('[data-gm-secret="1"]', { state: 'detached', timeout: 10000 }).catch(() => {}); }
 
   // 4. the guest rolls it: the engine rolls against the Narrator's TN, shown on the guest's screen
   await guest.waitForSelector('text=CLICK TO ROLL', { timeout: 30000 });
