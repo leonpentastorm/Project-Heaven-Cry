@@ -2156,6 +2156,76 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-tactical_gloves",
+      "path": "art/icons/gear/armour-tactical_gloves.png",
+      "sha256": "694555171cd0bc70dd47e3fb1c2f33283f84790423e9eb464977fc37e4a4c265",
+      "label": "Tactical gloves",
+      "family": "07-worn-gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-tactical_gloves.png",
+        "sha256": "db6f07226581711ab419ba861205432dfef702e95f267401a58f8f188623c5cd"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-tactical_gloves.png",
+        "sha256": "694555171cd0bc70dd47e3fb1c2f33283f84790423e9eb464977fc37e4a4c265"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-tactical_gloves.txt",
+        "sha256": "d03b2eb7ae25e6f106fcc441a7ebfa258d028415782dea40155030a3f8a899d9"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/attempts/armour-tactical_gloves/v1/source.png",
+          "sha256": "7bfe23e7e05f711a8d12a73b30f08129471213ac378dfc0eb32c7c4082b44b4d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-combat_gloves.png",
+          "sha256": "66dc7cda8639e28a20fc66538026fe2eb4880e85be90e3508ed73d3671b57b25"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-combat_gloves.png",
+          "sha256": "66dc7cda8639e28a20fc66538026fe2eb4880e85be90e3508ed73d3671b57b25"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-tactical_gloves.png",
+        "128": "art/icons/gear/exports/128/armour-tactical_gloves.png",
+        "64": "art/icons/gear/exports/64/armour-tactical_gloves.png",
+        "32": "art/icons/gear/exports/32/armour-tactical_gloves.png"
+      },
+      "export_hashes": {
+        "256": "caf3fa0dd9dcac4a7e93efdb48122d4b4ffa85bbb739a108923cedb40b291226",
+        "128": "db4fac43c1167d9feb47e6e7bd17f2464aa96b7cd439c121ccd9827ad91d5806",
+        "64": "ebdefccccd0375bb1b77aecbaea1bf10190bb057e356b440a1ec176cdd1bfc16",
+        "32": "3b85c0705acab9e5e75160b45b2cf3d2da78f3f944250f43db05d87a37479af5"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
