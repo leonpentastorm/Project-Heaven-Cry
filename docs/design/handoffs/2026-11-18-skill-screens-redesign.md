@@ -122,3 +122,23 @@ everywhere a perk or fork is shown or chosen ("?" page, level-up, the sheet's Pe
 
 The lead looks at: a beta "?" page, a level-up with a perk step open, a fork open, and three choices waiting, at
 1280x720 and 1600x900, before any of this ships.
+
+## 5. Leon's ruling, 19 Nov: on the "?" page the lore is the face, the ladder is folded (overrides sections 1 and 4)
+
+"The what-you-get-each-level is the folded one by default, for minmaxers; lore must be front and centre: the ?
+screen is the only thing in this game communicating any lore." The lead had this backwards (section 1 folded the
+voice and the lore under "About this voice"; `2026-11-18-skill-pages-read.md` fault 1 said "ladder first"). Both are
+void. The "?" page is now, top to bottom:
+
+1. **The skill's portrait, name, attribute, and its voice:** the quote and the lore paragraph, open, in Spectral, at
+   reading size (the largest text on the page). "At high levels", "Good for" and "Bad for" are lore and stay on the
+   face in the skill's own voice (the crude 2020 lines: Leon keeps or cuts each; until he says, they stay).
+2. **One line of what it does** (the door line, or the skill's one line) and, for a gamma, its Call in one row.
+3. **Folded, closed by default, each remembering its state:** "What each level gives" (the ladder table of section
+   1, unchanged inside), "Perks" (the rows of section 4), "Forks" (alphas). A player who wants numbers opens them
+   once and they stay open for that player.
+
+What does not change: the level-up screen and creation's Skills step are where points are spent, so they stay
+spend-first (the row's one line for the next point, the TO CHOOSE strip, the choosers); their "?" opens this page.
+Section 4's size target now reads: with all three folds open, a beta's page scrolls inside the panel; closed, the
+lore face fits 1280x720 without scrolling.
