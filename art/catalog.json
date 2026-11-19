@@ -19308,6 +19308,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "weapon-repeating_crossbow--fine": {
+      "label": "Repeating Crossbow Fine",
+      "path": "art/icons/gear/weapon-repeating_crossbow--fine.png",
+      "sha256": "a51ad4a6e04ecf8a9ae5d27a775933bcae317c6953755dbe3e0bc8007d364cc0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/weapon-repeating_crossbow.png",
+      "source_path": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-repeating_crossbow--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-repeating_crossbow--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-repeating_crossbow--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-repeating_crossbow--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-repeating_crossbow--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {
