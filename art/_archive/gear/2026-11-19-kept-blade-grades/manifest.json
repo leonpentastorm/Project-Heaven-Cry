@@ -5682,6 +5682,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-runner_trousers--celestial",
+      "path": "art/icons/gear/armour-runner_trousers--celestial.png",
+      "sha256": "ffc0fe6a9462fbc7dd3f4c48cb80029390713709b760e4673dad23d30f9b37e2",
+      "label": "Runner Trousers — Celestial",
+      "family": "armour-runner_trousers",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-runner_trousers--celestial.png",
+        "sha256": "6e8798041fd0045338f01e5d23166b2ebd327c90e9b85e306e6d01fa293e52e8"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-runner_trousers--celestial.png",
+        "sha256": "ffc0fe6a9462fbc7dd3f4c48cb80029390713709b760e4673dad23d30f9b37e2"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-runner_trousers--celestial.txt",
+        "sha256": "40dc5fa25dbca98257c212bcec50f03f81748c844ee902f7de6a79e0eacda4f0"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-runner_trousers.png",
+          "sha256": "2e2fe38e84e0e8da30560a478bc6af62db8c4de93fdf8a690e7ec84747e2f977"
+        },
+        {
+          "path": "art/icons/gear/armour-runner_trousers--relic.png",
+          "sha256": "5dd4801614d1a576556ce2d20f60c22663e6006701449e3b29fdfe1598207661"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-runner_trousers--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-runner_trousers--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-runner_trousers--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-runner_trousers--celestial.png"
+      },
+      "export_hashes": {
+        "256": "0035758b19304ce2b1a6e8f1d4e6fc33d832cf229493035a933d21b429435de0",
+        "128": "154fff9efd09419d8048a894665032cdd3d9fb640cef2dbea3f763d1c1420c50",
+        "64": "f433647e41a28502290d820f7d965afb30a93267bc3a99a984961a9612a21621",
+        "32": "09c1769e5cb1c63e6d1c40bcb792526317972594b1ee8b42a673d6b3512593d4"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-runner_trousers",
+      "outline": {
+        "solid_alpha_iou": 0.9570009256402345,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 15,
+        "different_pixels_64": 43
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
