@@ -23365,6 +23365,42 @@
         "different_pixels_32": 11,
         "different_pixels_64": 38
       }
+    },
+    "armour-runner_trousers--masterwork": {
+      "label": "Runner Trousers — Masterwork",
+      "path": "art/icons/gear/armour-runner_trousers--masterwork.png",
+      "sha256": "5a9730ec0d1483f555a35bb0043aaabc307e3282ca703c409273309e553b83cb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-runner_trousers--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-runner_trousers--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-runner_trousers--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-runner_trousers--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-runner_trousers--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-runner_trousers",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.964376411127452,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 13,
+        "different_pixels_64": 36
+      }
     }
   },
   "survival_art": {
