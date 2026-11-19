@@ -45,10 +45,22 @@ export function rewardPanelView(g: GameState, me: string, v: RunViewV): RewardPa
   const offers = v.offers.filter((o) => o.mine), kits = v.kits.filter((k) => k.mine);
   const others = [...v.offers.filter((o) => !o.mine).map((o) => o.name), ...v.kits.filter((k) => !k.mine).map((k) => k.name)];
   const names = [...new Set(others)];
+  const kicker = (rec && g.combat?.name) || v.note?.kicker || W().title, title = v.note?.title || W().title;
   return {
     key: (r.at || 'camp') + '#' + r.path.length + '#' + r.stage,
-    kicker: (rec && g.combat?.name) || v.note?.kicker || W().title, title: v.note?.title || W().title,
+    kicker, title: sameWord(kicker, title) ? '' : title,
     pay, offers, kits, owe: offers.length + kits.length > 0,
     still: names.length ? W().still.replace('{names}', andList(names)) : null,
   };
+}
+/** The title says nothing the kicker does not (0.32 B9: "VAULT · STOP 9 OF 15 · vault"): the title is the kicker's first
+ * word, its kind, in other case. */
+const sameWord = (kicker: string, title: string): boolean => !!title && kicker.split(' · ')[0].trim().toLowerCase() === title.trim().toLowerCase();
+/** The pay line's pieces (0.32 B9): the XP and the credits paid here, each only when paid; a dash alone when neither was
+ * ("+702 credits" at a vault, never "– · +702 credits"). */
+export function payPieces(p: Pick<RewardPayV, 'xp' | 'credits'>): { kind: 'xp' | 'credits' | 'none'; text: string }[] {
+  const out: { kind: 'xp' | 'credits' | 'none'; text: string }[] = [];
+  if (p.xp) out.push({ kind: 'xp', text: '+' + p.xp + ' ' + W().xp });
+  if (p.credits) out.push({ kind: 'credits', text: '+' + p.credits + ' ' + W().credits.toLowerCase() });
+  return out.length ? out : [{ kind: 'none', text: '–' }];
 }
