@@ -1218,7 +1218,7 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-22aa901a5529bfb8bf625d73c437751258bdfe5c5669672eeb04141237bfee89  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+58c822dd0acb22ff7df774296b5ea7a77ce264e61f43f708ced197f43734b9df  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
 9b97f41ab56f9f960b42f58909e13224e161163c245c4c56c7b48fe8d5ce75d4  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-padded_undershirt--fine/v1/prompt.txt
 7a577d6086b8bdcc199289bcfbf6f9c0d42482603768ca8bf250d0475fd7e97a  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-padded_undershirt--fine/v1/source.png
 84830e9ba08cea5ec2833e73100c6003c4b2be175a4bb3d5a35454b6087709a3  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-padded_undershirt--masterwork/v1/prompt.txt
@@ -1277,12 +1277,13 @@ bbb67959be8d00478841617bb9dc376964a50d2c7654ed311918601c362e0830  art/_archive/g
 b12143083cdfe3c5ceee491749c91166b76383cf92fafa2bb4789d5e336f14f7  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/overlap-archive/our-renders/art/icons/gear/weapon-legion_gladius--masterwork.png
 84459919da8667a59d7d1540aeee90951d13c9ae2feae9e660fbffcbdba3c89b  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/overlap-archive/progress.json
 91064e74b2950f8acf34ba059b23f4769e23b95a4a869ff15e37338d981532ab  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/overlap-archive/queue.json
+55582cf8cdafae8bed8da26e113a5c6006bd3ce5dcf5ebfdd6e93dc1b4ef23c3  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-audit-2026-11-19.md
 3e95b528c6972077468adc49bb243bb17ff1284395cc828f4e834d368e3107c5  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/reused-peer-candidates.json
 0a5613123a2095b6ac02dd5cb275a51a2fba4b75d66358a319bd9ba240ff5ed9  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-combat_knife--masterwork.json
 5bafd9566182f158985200353d0550461cfd9085f61188ef3bc81fe52c493c4d  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-ork_machete--masterwork.json
 f85847b07f42b0eaf1f645e351ca8a5bdc0a03f90b1a19d3eb10d8d9fefe7a6c  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-sabre--fine.json
 9e9bbb8dfef43cad55fe67a508994d3d5aba04f34c2298ca5792d8007429ca4c  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_axe--fine.json
-23439128e0c303d043999bbf6dedcc25da413c3cff6b089f661a138ea87f1b79  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+d461c855b34104255a29792f2dae1809cd9900b3143ece1e8ed6f92e4841cdde  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
 31b9266c8a923ce1e84e1237e45494829d72265679afc370a72675e70d85c156  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--celestial.png
 f93411441905437355171c2f6a64045a0cfe2099aaf24cf694d5dd7da311afa6  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--fine.png
 fa3450ae9155e8f9908ec07d807eeafb463a325b26b26d2c0fd0b6d5dd1434b0  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--masterwork.png
@@ -1319,6 +1320,7 @@ a4bce832ac870baf7f7f1d6d8eec931510ef09259e3d7405c38d1428dff306a7  art/_archive/g
 31b6f89d1c19b3f1817ecac11eb5b99ef3ccdcceb8226758626e2ed417b9817b  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-trauma_plate--fine.png
 172bdfe28b1ee957d969257ec8dfc0b431960c8af4b459be3c09e879b750a526  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-trauma_plate--masterwork.png
 318f35be25b1c6e990d9485770318ca274e55dd9400c412beebb77db6e929fe1  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-trauma_plate--relic.png
+73962b40e9a783d28baea7f2b616570ca58ea0640467773926f8d23d46fcb234  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-work_gloves--celestial.png
 57ea734a7df3bc18ac5d05578bff45d8a71b2ca9b57308077d17cdcbc8d1ed73  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-work_gloves--fine.png
 1380af440ce28758d3ebb14fd5ae99214ac61821e48798872ff58ffa9bd1fe0c  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-work_gloves--masterwork.png
 243031298ffb4a2dbbe93fec6bfb166c0288fb9621c698adc718d2e411535d96  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-work_gloves--relic.png
@@ -1386,7 +1388,7 @@ dab3bbbdf442bc217948fd60eee32f838a211d1eb1fe57e133a194b9c3d5e740  art/_archive/g
 876ce07be45081a7e7314efc77aead7926e1ade2d7a48c37f2d7dac89b8aa268  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--fine.png
 ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--masterwork.png
 9b36f752a3f17b24c47de7d956ab451043d216ca9d97ee734691013ea43c4ab9  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--relic.png
-625e6c576a923232b9f7bb4d6edbb74dd199c3b9ced5ed3813f579f07f099dc7  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+9554e1afb1012a6ac6bc296a641fcfc549e76d5f803abdfe397b16c41801996c  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 7072283c256a7cd34d750cfe09118d83631509ed58760961580028abc78f6bf8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--celestial.txt
 048ccfc688b5412dd99ae31c3119eaae6f4126ba06c421f73ccb095a68e03315  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--fine.txt
 109c7d7ccd649f9b5ca60c47fa35ef9a7c9308c47c1c903dba426028fbf7b521  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--masterwork.txt
@@ -1519,7 +1521,7 @@ f31bd9e8a0540c7383f8310931a78e08efe28e692f5d7d9c470dbc59372d4a69  art/_archive/g
 9f68b7cbbd608181d6cca6fc54e49bf23085deb5286e7827370197db31d33ec8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--fine.txt
 e8081d259555e24814654d1db508a91e3c8ccb6805bca5ca00465c7ef0f6f70f  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--masterwork.txt
 bee7477a9e07b82ad229c32541939deea912fb45b3155a89d95d7db1a2a39834  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--relic.txt
-851841e7e5817d4a319ff23dc9ac8fe351fb862261dc14dbf247f2157526ee30  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+315d192911bde254a763319657b871dda3d838516a74ee31cde29bdb206b616f  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
 40590eb9b576e9d16899ba703041c16e3244a5a4fd689355e53adc4dd536d2fb  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-32px.png
 9b9c6401e3920bb264df0cc7aad2ea9bf468b2b079f3eeb7efd87a219275fa67  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-64px.png
 0042470ac8a9cc722608d04305156ea1dffc05ff5e179658f113eb9b6546bd46  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-padded_undershirt-32px.png
@@ -1538,8 +1540,8 @@ aa66ef51d5681ded7ca30a86e342d6e887959b72c76098566541aac29d985e97  art/_archive/g
 26e2eaba462c0ea839b590a5595e49db75dad53fce5173ac4303e7583dfaa96f  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-torso_class5_juggernaut-64px.png
 b79b429b9d6a2a2d5c93cb14efe91693f9bf08250b28dd0a6866202d9201c32d  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-trauma_plate-32px.png
 91e7fd7fb38dfdab123f5fd89426f111801011ef6fac63fd6508a1255ccd77c2  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-trauma_plate-64px.png
-027958706ea3120efac2ee5b474484a4f0bc082146b30610ae5aad536c7cda8e  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-work_gloves-32px.png
-5cddee311b81f7dfe522055cce110ef7355039b0936825056a309c5f6ddb3b27  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-work_gloves-64px.png
+99adae76dc6410ce022894bd2edef1fb96a4b412185276f9274cdc9b8051385c  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-work_gloves-32px.png
+565f033a182a2ac46bb3135c2aebb0413b95bbe7066acf93477d7ed1af0310a3  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-work_gloves-64px.png
 9b9e58445d1c8097cc0a513bf31675323e1288225fabdd7aee62b4ff04e6e25d  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/focus-armour-64px-snapshot-81-delivered.png
 5bbc6038c5955b6192399b9dc964ec0a217a779e3049801e9bc3b8dab5d76f03  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/focus-attuner-32px.png
 1a49eb1a05bc4a0e8b69d23229d60376bbf0f2e8d2ad8eaec8c9443bb08b060e  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/focus-attuner-64px.png
@@ -1614,6 +1616,7 @@ b4858cc3464157fc2dda28a54e18d29fc602fd3b5d7c22e8d6f2e7a502bdd315  art/_archive/g
 522e5a447369f25458d76c0990a1f1daf4c1b0bebe54eaf470bbc3adebf8ee86  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-trauma_plate--fine.png
 cdfa15a77b01b1159116709fb6e0842b0f890c51484201d95c46f34d1f35f154  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-trauma_plate--masterwork.png
 b1d6657e4451b163e16c0d9756463cf737ab7a72b4c0244af6ec5ac21cfd53cf  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-trauma_plate--relic.png
+8aaeeb6633a63e6a5e7cdf788f921c33b21d384d2a1fa04003174036d4dd80e6  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-work_gloves--celestial.png
 4c5f9d3802bd49db2bd14f3d472d21c19de3c67c73b6813ee4a75fd82feb5e7b  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-work_gloves--fine.png
 dfeaceee9df9800fdb5a9a34bf46a0bab2aad6ff023de1d546ca83fdc33f47dc  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-work_gloves--masterwork.png
 c10ed633f282f1e7655e250c646665f2db065e6f6f65a73884084a13be377462  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-work_gloves--relic.png
@@ -5357,7 +5360,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-44493215b060f15547bda2de32e1b1cc2d86e17e86014366f3c6ed7836b02328  art/catalog.json
+e0fa481f1534c7152c061be9766e6f826fb8f79a0a4719a903dfa53415c32533  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6982,6 +6985,7 @@ a4bce832ac870baf7f7f1d6d8eec931510ef09259e3d7405c38d1428dff306a7  art/icons/gear
 318f35be25b1c6e990d9485770318ca274e55dd9400c412beebb77db6e929fe1  art/icons/gear/armour-trauma_plate--relic.png
 34cbf6f62a75b1718185be1bcc9eba105ad8fae3bac0b9e3bfb522e777a0a767  art/icons/gear/armour-trauma_plate.png
 4bb4cedeb68f51fde7c8749b6b0f34e1f4af6522504e5e1c38bd580a9d79f498  art/icons/gear/armour-utility_belt.png
+73962b40e9a783d28baea7f2b616570ca58ea0640467773926f8d23d46fcb234  art/icons/gear/armour-work_gloves--celestial.png
 57ea734a7df3bc18ac5d05578bff45d8a71b2ca9b57308077d17cdcbc8d1ed73  art/icons/gear/armour-work_gloves--fine.png
 1380af440ce28758d3ebb14fd5ae99214ac61821e48798872ff58ffa9bd1fe0c  art/icons/gear/armour-work_gloves--masterwork.png
 243031298ffb4a2dbbe93fec6bfb166c0288fb9621c698adc718d2e411535d96  art/icons/gear/armour-work_gloves--relic.png
@@ -7071,6 +7075,7 @@ aa8ad57e7b9c966cdda12439a440677c18109420078031c3138455d39f0ec1aa  art/icons/gear
 303d43a31d5f197e702ed80a68ca2e791b5a7fe1ff6bd7e5aa3f9966b056824d  art/icons/gear/exports/128/armour-trauma_plate--relic.png
 d100177d750f5126ec68f3f55ad007c95262470e23cc64eb133963f2d0c1a21a  art/icons/gear/exports/128/armour-trauma_plate.png
 ab2ccc29b2802afefb109140020c9894c5ce62ce0bd7e508b75fdc982034feba  art/icons/gear/exports/128/armour-utility_belt.png
+ada9a06cab8aa512babf56ad0f8301b80590b803d93e8519863ba0ff7e6d03e3  art/icons/gear/exports/128/armour-work_gloves--celestial.png
 fd3757583e973c4ea2aff39e0a4796cff630584cbe58dfd457626a634cbe48cb  art/icons/gear/exports/128/armour-work_gloves--fine.png
 123c58b81e0ea3dd10aec707d532fdfbf001e1a821d776ac0a33a5b8e004db2d  art/icons/gear/exports/128/armour-work_gloves--masterwork.png
 3756c530ecd2e4a5be821ff449155f3f3bfa407bb85594271e670adbfd17e320  art/icons/gear/exports/128/armour-work_gloves--relic.png
@@ -7400,6 +7405,7 @@ e931c2db77858c7d093d4a232646e4f6f339f8798e82ce1c2472843a87084a63  art/icons/gear
 2ffee4406ca4517405ca328dc81c9af23cb814083dd4b58faf0f045ea2b631ce  art/icons/gear/exports/256/armour-trauma_plate--relic.png
 cb236c34839ddf069f706842205d351fdf95e98e76958a6343502d307caf89bb  art/icons/gear/exports/256/armour-trauma_plate.png
 c5eaf89758b80f877489de5c1fe301e88ceee67f5681c79f480e6ad5b190cf8b  art/icons/gear/exports/256/armour-utility_belt.png
+536b5017c07972d107609c4f173923e46e9c40979161418c0a0174822e1b21de  art/icons/gear/exports/256/armour-work_gloves--celestial.png
 e74f0ef46085d1cc1590dbe1c689a73772b34361dd26377d3404f0fe2ca31be1  art/icons/gear/exports/256/armour-work_gloves--fine.png
 e7a53ed9ff7a1241fdc811f8d7fdf1ecf52739ad94801cfa9063929044a0d031  art/icons/gear/exports/256/armour-work_gloves--masterwork.png
 5c599f195b0aff427448b3507b34b78d2d4c9a57cd726b880d38884416a878a9  art/icons/gear/exports/256/armour-work_gloves--relic.png
@@ -7729,6 +7735,7 @@ c6333246249df6f36122e105b84ee0018c573f52ee48e7cfb57f262207b37721  art/icons/gear
 b9062590ba08c44dededd2896ad2ccf1b6e8666aac8740dba345cc18680d38a5  art/icons/gear/exports/32/armour-trauma_plate--relic.png
 9379e494e331bb65fb5c51d5007d14da3780b49f9dcb41ac546072af52976d05  art/icons/gear/exports/32/armour-trauma_plate.png
 cf2b0a7bbf0b1e2789efc4a1aafe1f0b6d6dba49bfb84bdfe1fe955ac8b627f4  art/icons/gear/exports/32/armour-utility_belt.png
+973189f9909e360a92a19404af49ce1f1fbae20d524238c783c8e3e1ffdddd73  art/icons/gear/exports/32/armour-work_gloves--celestial.png
 826b7c1d7b6b43b1fb714368e7003624d4bfcb394266980251301b5eba20d763  art/icons/gear/exports/32/armour-work_gloves--fine.png
 29b1637dd45e15d9d1f0d26c7a7d78a789b5c9af22e3d95dd8c2379335a1d76a  art/icons/gear/exports/32/armour-work_gloves--masterwork.png
 7f1bfae350d2a3a54d3562d67f87d13d27daea3f4a97dc3e785321f356529a24  art/icons/gear/exports/32/armour-work_gloves--relic.png
@@ -8058,6 +8065,7 @@ c3637e233564ec2fa10b3cdaf527feda763b08ef5b03ffda82dc7c5e878e412f  art/icons/gear
 4d8547974bf5866730a1ebc5619564980467d40a2d369341e74e86d905283c3d  art/icons/gear/exports/64/armour-trauma_plate--relic.png
 d55f127cffcf294a4468daf063dcf967f71231a69aab5947e499f09467a8ec8b  art/icons/gear/exports/64/armour-trauma_plate.png
 dc31287e32b7bfc7b358541107bd0ece6c1f95b2bdd380f353d959b24f32f5dc  art/icons/gear/exports/64/armour-utility_belt.png
+14f7588aa2f9c23dd22658dca8b44cadc6749a5c31eee7e63b69a959e11caf3e  art/icons/gear/exports/64/armour-work_gloves--celestial.png
 456c462945366296250c9f546d49f29cc149578f0ae5bea5fbea42bb3dd1b0d7  art/icons/gear/exports/64/armour-work_gloves--fine.png
 5abd063ccd63b636695b90611726a5a63b578a45facfc8c29c2d7d80aaa8c875  art/icons/gear/exports/64/armour-work_gloves--masterwork.png
 e4b6922740ee3c57acfdfc6abaedb62bcbe83e86bdcda1a0827b71d926e25c0d  art/icons/gear/exports/64/armour-work_gloves--relic.png
@@ -13289,7 +13297,7 @@ db27e0309aa0d98503c8a461c09ea1ecf1bfae303dd4f5f039c82fb5fb28b217  art/ui/title-s
 6de65e53e188ecbce5e1f2c19aabc745f5f6e06ee73f4bcbe82249108a8bdd0e  tools/art/export_m813_campaign.py
 1e6a2d66f1055ad808b4c3b4c48fb11d72a1ab605be5045bafd3e9cfec1d236f  tools/art/export_nov12_icons.py
 915192f411cd1b2a3238a67cd2cc4f1699184f6779e2e2c78d667b2eec54a6c8  tools/art/export_nov19_gear.py
-4e9829dd9817abacdf8c5a874461445e665b979d005454667b182cba70411e69  tools/art/export_nov19_grades.py
+7ee8dcce4d20ac6d5c853020d16172e3a2634202e540a8607d7241df10665d8e  tools/art/export_nov19_grades.py
 d4a2f51c1061537c16e22479b0c751224d0a1acc49c856bb10dc902037e24843  tools/art/export_nov19_uniques.py
 d11fb5d194cac8e8fd09dc4bb4bc90bea07012599d2f5942081bf57923720ea5  tools/art/export_wick_animation.py
 757052865c1c16df6afaf6daf9f98e27144717590c6c3b6ab633524d9fb3376d  tools/art/export_wick_icon.py

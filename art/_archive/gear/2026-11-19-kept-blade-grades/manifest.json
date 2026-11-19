@@ -6174,6 +6174,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-work_gloves--celestial",
+      "path": "art/icons/gear/armour-work_gloves--celestial.png",
+      "sha256": "73962b40e9a783d28baea7f2b616570ca58ea0640467773926f8d23d46fcb234",
+      "label": "Work Gloves — Celestial",
+      "family": "armour-work_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-work_gloves--celestial.png",
+        "sha256": "8aaeeb6633a63e6a5e7cdf788f921c33b21d384d2a1fa04003174036d4dd80e6"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-work_gloves--celestial.png",
+        "sha256": "73962b40e9a783d28baea7f2b616570ca58ea0640467773926f8d23d46fcb234"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-work_gloves--celestial.txt",
+        "sha256": "b96fff9812c54809af1496b327afb90f66e074cc29e1f057b151be86361a162f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-work_gloves.png",
+          "sha256": "4ad6c1706c2db4051f02d71ec41d3e878c23c5be12661864a81d80888f6b12c6"
+        },
+        {
+          "path": "art/icons/gear/armour-work_gloves--relic.png",
+          "sha256": "243031298ffb4a2dbbe93fec6bfb166c0288fb9621c698adc718d2e411535d96"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-work_gloves--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-work_gloves--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-work_gloves--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-work_gloves--celestial.png"
+      },
+      "export_hashes": {
+        "256": "536b5017c07972d107609c4f173923e46e9c40979161418c0a0174822e1b21de",
+        "128": "ada9a06cab8aa512babf56ad0f8301b80590b803d93e8519863ba0ff7e6d03e3",
+        "64": "14f7588aa2f9c23dd22658dca8b44cadc6749a5c31eee7e63b69a959e11caf3e",
+        "32": "973189f9909e360a92a19404af49ce1f1fbae20d524238c783c8e3e1ffdddd73"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-work_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9801069421787203,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 18
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

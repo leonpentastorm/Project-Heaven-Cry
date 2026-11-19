@@ -1,0 +1,14 @@
+# Peer grade delivery audit — 19 November 2026
+
+Peer branch `art/2026-11-19-grade-proof`, pinned commit `676764cfd29663c386e3b79538eef046153cedd3`, was fetched and checked directly from Git objects by a separate read-only audit worker. Main art branch at this checkpoint: `6229d5342` (100 exclusive candidates).
+
+- Verified 58 delivered records, 58 native sources, 58 candidate masters, 58 production masters, 232 exports, recorded hashes/checksums, and 114 selected reference paths. Selected provenance paths are repository-relative. The two unselected historical proof trial JSONs still contain absolute references; their selected retry records are portable.
+- Our 12 canonical reused blade grade images and 48 exports matched the peer byte-for-byte before technical cleanup. These are three four-grade sets, not 12 sets. They are imports, not additional drawings in our exclusive count. Active lane manifests do not overlap.
+- Technical issue: every peer master has very faint alpha residue inside its required 50px clear margin. Original full-alpha margins are 1–40px. Residue in the clear-margin band has maximum alpha 1 on 56 masters and alpha 2 on two; none has alpha >= 8. Applying only the normal technical alpha<8 cleanup gives all 58 a clear margin of 81–184px without changing any solid silhouette. Prior outermost pixel guards and exports pass. Do not describe the original masters as a strict 50px-alpha-margin pass.
+- Cleanup is planned on this branch, preserving original native images, candidate masters, production masters, exports and metadata in versioned archives. Approval remains false and exact-outline review remains pending.
+- Peer image quota: `usage_limit_reached`, reset epoch `1795142739` = **20 November 2026, 02:45:39 UTC / 09:45:39 Bangkok time**. This is the peer's reported quota; it does not establish this session's quota. This session was still generating successfully at the checkpoint.
+- Peer has eight moderation-blocked/dependent grades: Drifter Masterwork and above, Crossbow Masterwork and above, Repeating Crossbow Relic and above. Ten headgear jobs were separately released: Ballistic Helmet Relic/Celestial, Night Goggles four grades, Gas Mask four grades. Read issue 3 before taking over.
+
+Pinned distinct-count arithmetic: 150 base/unique candidates + 58 peer grades + 100 exclusive grades = **308/871**. Shared canonical imports, UI exports, unsuccessful attempts and archived alternatives do not count again. This is a checkpoint; read progress.json for subsequent drawings.
+
+Shared communication: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . The current queue, exact prompts, dependencies and remaining IDs are in the parent archive. Full historical validation remains limited by sparse checkout; the targeted lane validator checks delivered source/master/prompt/reference/export hashes and pixels.
