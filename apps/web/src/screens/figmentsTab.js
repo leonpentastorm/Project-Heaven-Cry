@@ -71,7 +71,7 @@ export function figmentSectionVals(sc, g, c, rerender) {
       traitsHead: 'TRAITS · ' + draft.traits.length + ' / ' + V.traitsMax + ' · +' + V.traitCharge + ' charge each',
       traits: V.traits.map((t) => { const on = draft.traits.includes(t.id), nextTraits = on ? draft.traits.filter((x) => x !== t.id) : [...draft.traits, t.id];
         const tWhy = on ? null : V.draftWhy(withName({ ...draft, traits: nextTraits }));
-        return { key: t.id, label: t.name + (t.charge !== V.traitCharge ? ' (' + (t.charge > 0 ? '+' : '') + t.charge + ')' : ''), pressed: on ? 'true' : 'false', off: !!tWhy, title: t.text + (tWhy ? ' · ' + tWhy : ''),
+        return { key: t.id, label: t.name + (t.charge !== V.traitCharge ? ' (' + (t.charge > 0 ? '+' : '') + t.charge + ')' : ''), pressed: on ? 'true' : 'false', off: !!tWhy, text: t.text, title: tWhy || '', // the trait's line on the face; the hover only says why it can't be added
           style: chip(on, !!tWhy).replace('padding: 0 10px 0 6px', 'padding: 0 10px'), pick: () => { if (tWhy) return toast(tWhy); set({ traits: nextTraits }); } }; }),
       verdict: why || 'Ready: ' + V.chargeOf(draft.form, draft.traits) + ' charge from the Visualizer to picture it.',
       verdictStyle: 'font-size: var(--fs-sub); line-height: 1.4; font-weight: 700; color: ' + (why ? MUTED : '#6FEA77'),

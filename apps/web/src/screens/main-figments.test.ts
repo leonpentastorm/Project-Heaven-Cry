@@ -74,6 +74,8 @@ describe('the FIGMENTS section on the MAGIC tab', () => {
     open[open.length - 1].pick(); v = fig(L); const form = open[open.length - 1].key; expect(v.ed.forms.find((f: any) => f.key === form).pressed).toBe('true');
     expect(v.ed.verdict).toBe('Name the design.'); expect(v.ed.cantSave).toBe(true);
     v.ed.onName({ target: { value: 'Lookout' } }); v = fig(L);
+    // every trait says what it does on its face (figments.json's one line), its hover only why it can't be added
+    for (const x of v.ed.traits) { expect(x.text, x.key).toMatch(/\S/); if (!x.off) expect(x.title).toBe(''); }
     const t = v.ed.traits.find((x: any) => !x.off); t.pick(); v = fig(L);
     expect(v.ed.traits.find((x: any) => x.key === t.key).pressed).toBe('true');
     // past the traits a design may carry, the others are refused with the engine's words
