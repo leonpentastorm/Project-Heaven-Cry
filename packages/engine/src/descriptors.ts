@@ -31,7 +31,7 @@ import { callPad, previewCall } from './calls/core';
 import { faithView, previewPrayer, beliefOf, FAITH_MIN, DEVOTION_XP, MIRACLE_COST_LEVELS, GATE, MIRACLE_FAITH, prayerChoices, prayerAim, prayerAnswerOn, prayerEntry } from './faith';
 import { perkActionsFor, previewPerkAction, togglesFor, PRAYER_SUB, type ToggleEntry } from './effects/actions';
 import type { PerkActionEntry } from './effects/actions';
-import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, FLUX_MAX, fluxMaxOf, coreChargeOf, designAp, stageMult, manaBand, MANA_START, previewOutburst, previewOutburstPlan, previewPump,
+import { glyphApOf, SPELL_AP, ventAp, coreAp, CORE_CHARGE, fluxMaxOf, coreChargeOf, designAp, stageMult, manaBand, MANA_START, previewOutburst, previewOutburstPlan, previewPump,
   steadyHeart, letGo, feedOutburst, setHeartWatch, previewDraw, STAGE_MULT, MAX_STAGE, SYPHON_DRAW, AIR_SPENT } from './magic';
 import { focusHand, carriesMpFocus, NEEDS_EVOKER, NEEDS_EMANATOR, NEEDS_MP_FOCUS } from './character';
 import { PILE, isPile } from './containers';

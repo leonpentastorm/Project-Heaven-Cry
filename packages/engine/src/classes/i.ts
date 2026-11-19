@@ -33,7 +33,7 @@ import { itemAmount, amountMult, amountBlock, amountSpecOf } from '../effects/am
 import { BUFF_HEAL, saveTn, makeZone } from '../magic';
 import {
   applyCond, endCond, condOn, condSource, unitSave, unitStrength, saveAgainst, withVia, harm, heal, shiftMana, manaBand, manaOf, stageMult, isBoon, condSkillMod, condHit, condFamily,
-  grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, FLUX_MAX, fluxMaxOf, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil, strokeOfGlyph, tidyStrokes,
+  grammarError, previewEvoke, evoke, evokeMarks, releaseOutburst, addStrain, fluxMaxOf, SPELL_AP, SOUL_REACH, MAX_GLYPHS, SIGIL_REV, compileSpell, findPattern, migrateSigil, strokeOfGlyph, tidyStrokes,
   formOf, outburstArea, riderStage, toneElement, toneOf, designCost, MAX_STAGE, SOUL_AP, planStrike,
   type EvokePreview, type Spell,
 } from '../magic';
