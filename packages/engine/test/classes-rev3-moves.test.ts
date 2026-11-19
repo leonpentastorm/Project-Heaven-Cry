@@ -36,7 +36,7 @@ const order = (f: F, ...us: Unit[]) => { f.cb.order = us.map((u) => u.id); };
 describe('the 20 new moves are handled', () => {
   it('every new move has a handler and every effect is engine-run (no gap, nothing left to the Narrator)', () => {
     const NEW = Object.values(CLASS).flatMap((k: any) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new);
-    expect(NEW.length).toBe(26); // rules 1.60: + Read the Swing; + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite, − Command; − Field Fix (to the move pool, rules 1.32); rules 1.33: + the Ledger and Take the Weight; rules 1.34: + Salvage, Overclock, Scrap Turret, − Silver Tongue
+    expect(NEW.length).toBe(27); // rules 1.74: + Backdraft; rules 1.60: + Read the Swing; + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite, − Command; − Field Fix (to the move pool, rules 1.32); rules 1.33: + the Ledger and Take the Weight; rules 1.34: + Salvage, Overclock, Scrap Turret, − Silver Tongue
     for (const m of NEW as any[]) {
       const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic' || r.owner === 'action'), m.key).toBe(true); // a handler, or data only (engine foundations 3; a data action: P6, rules 1.32's Vanish; rules 1.33: a data action whose ops run on acted)
       expect(coverageOf(info).filter((r) => r.owner === 'gap' || r.owner === 'narrator'), m.key).toEqual([]);

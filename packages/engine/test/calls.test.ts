@@ -1,5 +1,6 @@
 // Calls (rules 1.13, Skeleton 2.0): the nine gamma skills' speech actions in a fight. The ladder, each Call's three
 // steps, the limits, the AP rule, preview purity, the parley alias, the enemy AI and the view.
+import CALLSJ from '../../../data/calls.json';
 import { unitSave } from '../src';
 import { reactionsUsed } from '../src';
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -240,22 +241,23 @@ describe('Rally (Charisma)', () => {
 describe('Brief (Eloquence)', () => {
   const shoot = (f: ReturnType<typeof fight>) => f.act({ type: 'combat/attack', unitId: f.pcs[1].id, targetId: f.foe.id, mode: 'shot' } as any);
   const prone = (f: ReturnType<typeof fight>) => f.act({ type: 'combat/prone', unitId: f.pcs[1].id } as any);
-  it('step 1: the next action costs 1 AP less; an action after it costs its own', () => {
+  // rules 1.74 item 6023: Brief re-stepped stronger (1: two actions 1 AP less each; 4: 2 then 1; 8: 2 and 2), read from calls.json
+  const STEPS = (CALLSJ as any).items.find((x: any) => x.id === 'call.brief').steps.map((s: any) => [s.numbers.first, s.numbers.second].filter((n: number) => n > 0));
+  it('step 1: the next two actions cost less each; an action after them costs its own', () => {
     const f = fight([speaker('eloquence', 1), { weapon: 'service_pistol' }]);
-    expect(f.call('call.brief', { targetId: f.pcs[1].id })).toBeNull(); expect(f.pcs[1].call?.brief?.cuts).toEqual([1]);
+    expect(f.call('call.brief', { targetId: f.pcs[1].id })).toBeNull(); expect(f.pcs[1].call?.brief?.cuts).toEqual(STEPS[0]);
     f.next(); expect(f.pcs[1].ap).toBe(6);
-    prone(f); expect(f.pcs[1].ap).toBe(6); expect(f.pcs[1].call?.brief).toBeUndefined();
+    prone(f); prone(f); expect(f.pcs[1].ap).toBe(6); expect(f.pcs[1].call?.brief).toBeUndefined();
     prone(f); expect(f.pcs[1].ap).toBe(5);
   });
-  it('step 2: the next two actions; step 3: 2 AP off the next and 1 off the one after', () => {
-    const f = fight([speaker('eloquence', 4), { weapon: 'service_pistol' }]);
-    f.call('call.brief', { targetId: f.pcs[1].id }); f.next();
-    prone(f); prone(f); expect(f.pcs[1].ap).toBe(6); prone(f); expect(f.pcs[1].ap).toBe(5);
-    const g = fight([speaker('eloquence', 8), { weapon: 'service_pistol' }]); rig({ hit: false, die: 5 });
-    g.call('call.brief', { targetId: g.pcs[1].id }); expect(g.pcs[1].call?.brief?.cuts).toEqual([2, 1]); g.next();
+  it('step 2: 2 AP off the next and 1 off the one after; step 3: 2 off each of the next two', () => {
+    const g = fight([speaker('eloquence', 4), { weapon: 'service_pistol' }]); rig({ hit: false, die: 5 });
+    g.call('call.brief', { targetId: g.pcs[1].id }); expect(g.pcs[1].call?.brief?.cuts).toEqual(STEPS[1]); g.next();
     const cost = withGame(g.g, () => previewAttack(g.cb, g.pcs[1], g.foe, 'shot')).ap; expect(cost).toBeGreaterThanOrEqual(2);
     shoot(g); expect(g.pcs[1].ap).toBe(6 - cost + 2);
     prone(g); expect(g.pcs[1].ap).toBe(6 - cost + 2); expect(g.pcs[1].apGained).toBe(3); // counted in the turn's +3
+    const h = fight([speaker('eloquence', 8), { weapon: 'service_pistol' }]);
+    h.call('call.brief', { targetId: h.pcs[1].id }); expect(h.pcs[1].call?.brief?.cuts).toEqual(STEPS[2]);
   });
   it('holds until the end of the ally\'s next turn, and the card of an action shows the loan', () => {
     const f = fight([speaker('eloquence', 1), { weapon: 'service_pistol' }]);

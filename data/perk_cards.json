@@ -133,16 +133,6 @@
       "standing": true
     },
     {
-      "id": "perk:burden_of_proof",
-      "tier": "I",
-      "trigger": "when someone accuses you or your squad"
-    },
-    {
-      "id": "perk:burden_of_proof",
-      "tier": "II",
-      "trigger": "when someone accuses you or your squad"
-    },
-    {
       "id": "perk:talks_broke_down",
       "tier": "I",
       "trigger": "when a fight breaks out of a talk your squad won"

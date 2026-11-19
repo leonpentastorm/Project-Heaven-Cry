@@ -13,6 +13,7 @@ import { type Combat, type Unit, dist, emitFx } from '../combat';
 import { compileSpell, MAX_GLYPHS, MAX_STAGE, SHORT_AT_OVER, stageMult, addStrain, isBoon, type Spell } from '../magic';
 import type { Rng } from '../rng';
 import { say, rngOf } from '../kit';
+import { num } from '../effects/num';
 
 const mine = (h: Holder, u: Unit | null | undefined) => !!u && !!h.u && u.id === h.u.id;
 const evokerWhy = (h: Holder): string | true => (!h.u?.mg ? 'Needs Sigil magic.' : !h.u.mg.evoker ? 'Needs an Evoker in hand.' : true);
@@ -43,7 +44,7 @@ const overclock = (scope: 'combat' | 'world'): ActionDef => ({
   run: (h) => { const st = stateOf(h); st.armed = true; ocSync(st, h.u, h.cb); say(h.cb, h.u!.name + ' overclocks: the next glyph may go one word past Max Sigil words (+' + OC_CHARGE + ' charge).'); },
 });
 register({
-  id: 'skill:brain_power.3', kind: 'skill', claims: 'all',
+  id: 'skill:brain_power.2', kind: 'skill', claims: 'all', // rules 1.74 item 6020: Overclock at 2 (it was 3)
   actions: [overclock('combat'), overclock('world')],
   on: {
     glyph_cost: (ctx, h) => { const st = stateOf(h); ocSync(st, h.u, h.cb); if (mine(h, ctx.u) && st.armed) ctx.charge += OC_CHARGE; },
@@ -98,14 +99,15 @@ register({
 // Rules 1.13 (a beta is defence; the old Sigil discount is what Brain Power's Twin Draw and Parallel Thought give): +3 on
 // your saves against a spell or condition that has already hit you this combat. Engine reading: a condition that has
 // taken hold on you once this fight (whatever delivered it) is saved against at +3 from then on.
-const PF_SAVE = 3;
+// Rules 1.74 item 6022: a Rumination perk (it was the free passive at 5); +3 at tier I, +5 at II (the tier's numbers.save).
+const pfSave = (h: Holder) => num(h, 'save');
 register({
-  id: 'skill:rumination.5', kind: 'skill', claims: 'all',
+  id: 'proven_formula', claims: 'all',
   on: {
     cond_landed: (ctx, h) => { if (!mine(h, ctx.t) || isBoon(ctx.id)) return; const st = stateOf(h); if (!(st.hit ||= []).includes(ctx.id)) st.hit.push(ctx.id); },
     cond_apply: (ctx, h) => {
       if (!mine(h, ctx.t) || ctx.skipSave || !((h.u?.ps?.[h.key] as any)?.hit || []).includes(ctx.id)) return;
-      ctx.saveAdd = (ctx.saveAdd || 0) + PF_SAVE; say(h.cb, '(Proven Formula: ' + h.u!.name + ' has been hit by this before, +' + PF_SAVE + ' on the save.)');
+      ctx.saveAdd = (ctx.saveAdd || 0) + pfSave(h); say(h.cb, '(Proven Formula: ' + h.u!.name + ' has been hit by this before, +' + pfSave(h) + ' on the save.)');
     },
   },
   brief: () => null,

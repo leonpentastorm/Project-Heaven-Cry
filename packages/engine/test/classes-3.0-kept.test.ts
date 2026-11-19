@@ -66,7 +66,7 @@ describe('Breaker: Momentum on a Shaken or Frightened enemy, once a turn, any we
 
 describe('Sigilist and Channeler keep their moves (rules 1.29 section 2)', () => {
   it('their ranks list the same six moves each (by key)', () => {
-    expect(['I', 'II', 'III'].flatMap((r) => CLASS.mage.ranks[r].moves.map((m: any) => m.key))).toEqual(['class:mage.barrage', 'class:mage.core_change', 'class:mage.overcharge', 'class:mage.bleed_the_flux', 'class:mage.payload', 'class:scribe.stored_spell']);
+    expect(['I', 'II', 'III'].flatMap((r) => CLASS.mage.ranks[r].moves.map((m: any) => m.key))).toEqual(['class:mage.barrage', 'class:mage.core_change', 'class:mage.backdraft', 'class:mage.bleed_the_flux', 'class:mage.payload', 'class:scribe.stored_spell']); // rules 1.74 item 6025: Backdraft replaced Overcharge (Brain Power 2 gives Overclock)
     expect(['I', 'II', 'III'].flatMap((r) => CLASS.channeler.ranks[r].moves.map((m: any) => m.key))).toEqual(['class:channeler.shape', 'class:channeler.iron_heart', 'class:channeler.storm_front', 'class:channeler.occult_library', 'class:channeler.heart_surge', 'class:channeler.eye_of_the_storm']);
   });
 });

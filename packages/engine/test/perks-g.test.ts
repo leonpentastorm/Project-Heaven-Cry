@@ -4,7 +4,7 @@
 // directly (notice, the enemy AI).
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
-import { votesOf, rerollFrom, d20, emitStory, enemyTurn, holderOf, briefOf, perkActionsFor, previewAttack, coverageReport, condOn, type Unit, type Combat, type GameState, type Character } from '../src';
+import { PERK, votesOf, rerollFrom, d20, emitStory, enemyTurn, holderOf, briefOf, perkActionsFor, previewAttack, coverageReport, condOn, type Unit, type Combat, type GameState, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
 type F = ReturnType<typeof fightWith>;
@@ -85,13 +85,12 @@ describe('Footnote', () => {
   });
 });
 
-describe('Burden of Proof', () => {
-  it('I: a demand for evidence: no evidence, no check; II: onlookers shift', () => {
-    const s = storyWith([{ perks: { burden_of_proof: 'I' } }, { perks: { burden_of_proof: 'II' } }]);
-    perk(s, s.chars[0], 'burden_of_proof', { text: 'Show me the ledger, then.' });
-    expect(rulings(s.g, 'perk:burden_of_proof')[0].text).toMatch(/call no check/);
-    perk(s, s.chars[1], 'burden_of_proof', { text: 'Proof?' });
-    expect(rulings(s.g, 'perk:burden_of_proof')[1].text).toMatch(/onlooker shifts/);
+describe('Burden of Proof (folded into Objection! II: rules 1.74 item 6023)', () => {
+  it('no perk of that id; Objection! II carries the demand for evidence to the Narrator', () => {
+    expect((PERK as any).burden_of_proof).toBeUndefined();
+    const ob: any = (PERK as any).objection; expect(ob.skills).toEqual(['eloquence']);
+    expect(ob.tiers.II.effects.find((e: any) => e.op === 'narrator').note).toMatch(/demands evidence/);
+    expect(ob.tiers.II.text).toMatch(/demand their evidence/);
   });
 });
 

@@ -802,7 +802,8 @@ export const elementalMult = (c: Character) => statOf('elemental', c); // 1 + 0.
 export const maxSigilWords = (c: Character) => fx(c, 'max_sigil_words', 2 + Math.floor((A(c, 'intelligence') - 1) / 2));
 export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_ap', 1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
 // rules 1.13: a Sigil's reach and its saving on cores are Brain Power's (they were Rumination's and Proficiency's)
-export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'brain_power') / 3);
+/** Rules 1.74 item 6020: the core-charge cut a Sigil, one step a point listed in skills.json brain_power per_point.charge_at (3, 5, 9). */
+export const sigilCoreSaving = (c: Character) => { const pp: any = (SKILL as any).brain_power?.per_point || {}, n: any = pp.numbers || {}; return ((pp.charge_at as number[]) || []).filter((at) => P(c, 'brain_power') >= at).length * (n.charge ?? 1); };
 export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 export const sigilDurationBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 /** Words known at most: 4 + Brain Power, plus each Mastered free word taken (rules 1.10, item 913: a free word ignores the
@@ -1298,6 +1299,9 @@ export const FOCUS_REV = 1;
 export const PERK_RENAMED: Record<string, string> = { grapple: 'iron_grip', origami_hands: 'both_hands' };
 /** A save from before a perk or trait was renamed or removed: the renamed ones follow their new id (tier kept), and an
  * id the data no longer has is taken off the sheet, so no screen meets an item it can't look up. */
+/** Rules 1.70 item 5538 / 1.74: a perk a skill's perk_remap table maps to a new id (Burden of Proof to Objection!): the
+ * load door follows it here, tier kept, so the perk is not dropped as unknown before migrateCharacterPerks reads it. */
+const remapTo = (id: string): string | undefined => { for (const s of SKILLS as any[]) { const to = s?.perk_remap?.perks?.[id]; if (typeof to === 'string') return to; } return undefined; };
 export function migrateCharacterItems(c: Character): string[] {
   const notes: string[] = [];
   // a perk or trait added at run time (effects/hooks.ts addItems: a mode's own items) is as known as the data's
@@ -1305,7 +1309,7 @@ export function migrateCharacterItems(c: Character): string[] {
   if ((c.perks || []).some((x) => !known(x.id))) {
     const out: Character['perks'] = [];
     for (const x of c.perks) {
-      const to = known(x.id) ? x.id : PERK_RENAMED[x.id];
+      const to = known(x.id) ? x.id : PERK_RENAMED[x.id] ?? remapTo(x.id);
       if (!to || !known(to)) { notes.push(c.name + ': the perk "' + x.id + '" is no longer in the game and was taken off the sheet.'); continue; }
       if (to !== x.id) notes.push(c.name + ': ' + (PERK[to] || rawItem('perk:' + to)).name + ' replaces an older perk.');
       if (!out.some((y) => y.id === to)) out.push({ ...x, id: to });

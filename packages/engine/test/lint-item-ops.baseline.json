@@ -238,7 +238,6 @@
   "perks/g.ts": [
    "bedside_manner",
    "born_performer",
-   "burden_of_proof",
    "closing_argument",
    "cold_case",
    "cold_read",
@@ -289,9 +288,9 @@
    "raw_power.5"
   ],
   "perks/skills.ts": [
-   "skill:brain_power.3",
+   "proven_formula",
+   "skill:brain_power.2",
    "skill:brain_power.5",
-   "skill:rumination.5",
    "skill:will_power.3",
    "skill:will_power.5"
   ]

@@ -3090,20 +3090,33 @@
             "text": "+{=per_point.numbers.range} tile Sigil reach · +{=per_point.numbers.rounds} round duration"
           },
           {
-            "at": "every 3",
-            "text": "−{=per_point.numbers.charge} core charge a Sigil"
+            "at": "at 3",
+            "text": "Sigils cost {=per_point.numbers.charge} core charge less"
+          },
+          {
+            "at": "at 5",
+            "text": "A second cut of {=per_point.numbers.charge} core charge a Sigil"
+          },
+          {
+            "at": "at 9",
+            "text": "A third cut of {=per_point.numbers.charge} core charge a Sigil"
           }
+        ],
+        "charge_at": [
+          3,
+          5,
+          9
         ]
       },
       "gates": [
         "focus:evoker"
       ],
       "unlocks": {
-        "3": {
+        "2": {
           "name": "Overclock",
           "category": "Active Skill",
-          "mastery": 1,
-          "text": "Draw a spell one word longer than your Max Sigil words (never past 4 glyphs), for +{=unlocks.3.effects.1.value|abs} Core charge.",
+          "mastery": 0,
+          "text": "Draw a spell one word longer than your Max Sigil words (never past a full Line), for +{=unlocks.2.effects.1.value|abs} Core charge.",
           "player": "One glyph past what you know for {=.effects.1.value|abs} more core charge",
           "effects": [
             {
@@ -3117,25 +3130,35 @@
               "resource": "core",
               "value": -2,
               "when": "on_overclock"
-            },
+            }
+          ],
+          "adjudication": "engine",
+          "item": true,
+          "source": "rules 1.74 item 6020: the small verb at 2 (was at 3)"
+        },
+        "3": {
+          "name": "Mastery 1",
+          "mastery": 1,
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "effects": [
             {
               "op": "perk_choice",
               "skill": "brain_power",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine",
-          "item": true
+          "adjudication": "engine"
         },
         "4": {
           "name": "Fork: Overflux or Clean Vent",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's first fork, Overflux or Clean Vent: not offered yet (Overflux and Clean Vent are still to be built; data/forks.json).",
+          "text": "The door's first fork: Overflux (your Sigils hit harder at your Flux limit) or Clean Vent (your Vent throws back the foes beside you). Chosen once, kept for good.",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+          "source": "rules 1.74 item 6021",
+          "player": "Choose: Overflux or Clean Vent"
         },
         "5": {
           "name": "Twin Draw",
@@ -3154,6 +3177,19 @@
           "adjudication": "engine",
           "item": true
         },
+        "6": {
+          "name": "Mastery 2",
+          "mastery": 2,
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "brain_power",
+              "choice": "perk_step"
+            }
+          ],
+          "adjudication": "engine"
+        },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
@@ -3171,17 +3207,24 @@
           "name": "Fork: Written in Advance or Running Script",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's second fork, Written in Advance or Running Script: not offered yet (Written in Advance and Running Script are still to be built; data/forks.json).",
+          "text": "The door's second fork: Written in Advance (a Line drawn before your turn ended hits harder) or Running Script (after an Evoke, your next glyph is free). Chosen once, kept for good.",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+          "source": "rules 1.74 item 6021",
+          "player": "Choose: Written in Advance or Running Script"
         },
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
           "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "effects": [],
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "brain_power",
+              "choice": "perk_step"
+            }
+          ],
           "adjudication": "engine"
         },
         "10": {
@@ -3285,51 +3328,37 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Index",
-          "category": "Passive",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Once per scene, ask the Narrator one factual question about technology, biology or history. The answer is true.",
-          "player": "Once a scene: one true fact about technology, biology or history",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "grant_action",
-              "action": "index_question",
-              "ap": 0,
-              "uses": "per_scene"
-            },
-            {
-              "op": "narrator",
-              "note": "Narrator answers truthfully"
-            },
             {
               "op": "perk_choice",
               "skill": "rumination",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "narrator"
+          "adjudication": "engine",
+          "source": "rules 1.74: the free passive Index is now a perk (index)"
         },
         "5": {
-          "name": "Proven Formula",
-          "category": "Passive",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "+{=unlocks.5.effects.0.value} on your saves against a spell or condition that has already hit you this combat.",
-          "player": "{=.effects.0.value} on saves against what already hit you this fight",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "save_mod",
-              "value": 3,
-              "target": "self",
-              "when": "against a spell or condition that has already hit you this combat"
+              "op": "perk_choice",
+              "skill": "rumination",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine",
-          "item": true
+          "source": "rules 1.74: the free passive Proven Formula is now a perk (proven_formula)"
         },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
@@ -3342,8 +3371,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "effects": [],
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "rumination",
+              "choice": "perk_step"
+            }
+          ],
           "adjudication": "engine"
         },
         "10": {
@@ -3360,6 +3395,14 @@
           "adjudication": "engine",
           "resist_echo": 2
         }
+      },
+      "perk_remap": {
+        "rev": 1,
+        "passives": {
+          "3": "index",
+          "5": "proven_formula"
+        },
+        "note": "rules 1.74 item 6024: Index and Proven Formula became perks"
       },
       "overreach": {
         "from_points": 5,
@@ -3449,51 +3492,37 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Objection!",
-          "category": "Conversation Quirk",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "When an NPC makes a claim in front of others, roll Eloquence to expose a contradiction; on a success, they lose credibility with everyone listening.",
-          "player": "Expose a claim: listeners trust the speaker less",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "narrator",
-              "note": "Narrator sets the TN and applies the loss of credibility"
-            },
             {
               "op": "perk_choice",
               "skill": "eloquence",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "engine",
+          "source": "rules 1.74: the free passive Objection! is now a perk (objection)"
         },
         "5": {
-          "name": "Opening Argument",
-          "category": "Combat Starter",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Debate the enemy leader before a fight. On a success, every enemy has {=unlocks.5.numbers.ap_loss} AP less in the first round.",
-          "player": "Before a fight: every foe has {=.numbers.ap_loss} AP less in round one",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "opening_argument",
-              "ap": 0,
-              "uses": "per_combat"
-            },
-            {
-              "op": "narrator",
-              "note": "Narrator sets the TN for the debate"
+              "op": "perk_choice",
+              "skill": "eloquence",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "hybrid",
-          "numbers": {
-            "ap_loss": 1
-          }
+          "adjudication": "engine",
+          "source": "rules 1.74: the free passive Opening Argument is now a perk (opening_argument)"
         },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
               "op": "perk_choice",
@@ -3506,8 +3535,14 @@
         "9": {
           "name": "Mastery 4",
           "mastery": 4,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "effects": [],
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "eloquence",
+              "choice": "perk_step"
+            }
+          ],
           "adjudication": "engine"
         },
         "10": {
@@ -3524,6 +3559,17 @@
           "adjudication": "engine",
           "resist_echo": 2
         }
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "burden_of_proof": "objection"
+        },
+        "passives": {
+          "3": "objection",
+          "5": "opening_argument"
+        },
+        "note": "rules 1.74 item 6024: Objection! and Opening Argument became perks; Burden of Proof is folded into Objection!"
       },
       "overreach": {
         "from_points": 5,

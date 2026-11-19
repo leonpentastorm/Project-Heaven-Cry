@@ -3012,7 +3012,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "per_scene",
-      "text": "I: Once per scene, cite a fact: allies who act on it get +{=effects.1.value} on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +1 to hit it for the rest of the round. II: Once per scene, cite a fact: allies who act on it get +2 on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +2 to hit it for the rest of the round.",
+      "text": "I: Once per scene, cite a fact: allies who act on it get +{=tiers.I.effects.1.value} on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +1 to hit it for the rest of the round. II: Once per scene, cite a fact: allies who act on it get +{=tiers.II.effects.1.value} on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +2 to hit it for the rest of the round, and your own Sigils count it too.",
       "effects": [
         {
           "op": "narrator",
@@ -3061,8 +3061,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per scene, cite a fact: allies who act on it get +{=tiers.II.effects.1.value} on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +2 to hit it for the rest of the round.",
-          "short": "+{=tiers.II.effects.1.value}",
+          "text": "Once per scene, cite a fact: allies who act on it get +{=tiers.II.effects.1.value} on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +2 to hit it for the rest of the round, and your own Sigils count it too.",
+          "short": "+{=tiers.II.effects.1.value} · your own Sigils count it too",
           "effects": [
             {
               "op": "narrator",
@@ -3087,7 +3087,8 @@
         "support",
         "knowledge"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6022 (tier II: the citer's own Sigils count it)"
     },
     {
       "id": "lab_coat",
@@ -3171,6 +3172,209 @@
         "chemistry"
       ],
       "provisional": true
+    },
+    {
+      "id": "index",
+      "name": "Index",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "rumination"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "rumination",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Once a scene, ask the Narrator one factual question about technology, biology or history. The answer is true. II: Once a scene, ask the Narrator one factual question about technology, biology or history. The answer is true. In a fight, your next Brain save after an Index answer is at +{=tiers.II.effects.3.value}.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "index_question",
+          "ap": 0,
+          "uses": "per_scene"
+        },
+        {
+          "op": "narrator",
+          "note": "Once a scene the player asks one factual question about technology, biology or history; answer truthfully."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "rumination",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a scene, ask the Narrator one factual question about technology, biology or history. The answer is true.",
+          "short": "Once a scene: one true fact about technology, biology or history",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "index_question",
+              "ap": 0,
+              "uses": "per_scene"
+            },
+            {
+              "op": "narrator",
+              "note": "Once a scene the player asks one factual question about technology, biology or history; answer truthfully."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "rumination",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a scene, ask the Narrator one factual question about technology, biology or history. The answer is true. In a fight, your next Brain save after an Index answer is at +{=tiers.II.effects.3.value}.",
+          "short": "And your next Brain save after an answer: +{=tiers.II.effects.3.value}",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "index_question",
+              "ap": 0,
+              "uses": "per_scene"
+            },
+            {
+              "op": "narrator",
+              "note": "Once a scene the player asks one factual question about technology, biology or history; answer truthfully."
+            },
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "index_question"
+                ]
+              },
+              "flag": "indexed"
+            },
+            {
+              "op": "roll_mod",
+              "when": "save",
+              "if": {
+                "target": "self",
+                "cond_family": [
+                  "brain"
+                ],
+                "flag": "indexed"
+              },
+              "roll": "save",
+              "value": 2,
+              "label": "Index",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "indexed",
+                  "clear": true
+                }
+              ]
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "knowledge"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6022 (was the Rumination 3 passive; tier II per the ruling layer section 2 item 7)"
+    },
+    {
+      "id": "proven_formula",
+      "name": "Proven Formula",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "rumination"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "rumination",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: +{=tiers.I.numbers.save} on your saves against a spell or condition that has already hit you this fight. II: +{=tiers.II.numbers.save} on your saves against a spell or condition that has already hit you this fight.",
+      "effects": [
+        {
+          "op": "save_mod",
+          "value": 3,
+          "target": "self",
+          "when": "against a spell or condition that has already hit you this combat"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "rumination",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "+{=tiers.I.numbers.save} on your saves against a spell or condition that has already hit you this fight.",
+          "short": "+{=tiers.I.numbers.save} on saves against what already hit you this fight",
+          "effects": [
+            {
+              "op": "save_mod",
+              "value": 3,
+              "target": "self",
+              "when": "against a spell or condition that has already hit you this combat"
+            }
+          ],
+          "numbers": {
+            "save": 3
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "rumination",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "+{=tiers.II.numbers.save} on your saves against a spell or condition that has already hit you this fight.",
+          "short": "+{=tiers.II.numbers.save}",
+          "effects": [
+            {
+              "op": "save_mod",
+              "value": 5,
+              "target": "self",
+              "when": "against a spell or condition that has already hit you this combat"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I",
+          "numbers": {
+            "save": 5
+          }
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "defense"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6022 (was the Rumination 5 passive, handler skill:rumination.5)"
     },
     {
       "id": "overruled",
@@ -3268,8 +3472,8 @@
       "provisional": true
     },
     {
-      "id": "burden_of_proof",
-      "name": "Burden of Proof",
+      "id": "objection",
+      "name": "Objection!",
       "tier": "acquired",
       "perk_type": "conversation_quirk",
       "skills": [
@@ -3285,11 +3489,11 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When someone accuses you or your squad, demand their evidence. If they can't produce it, they lose the argument outright. The Narrator decides whether they have any. II: When someone accuses you or your squad, demand their evidence. If they can't produce it, they lose the argument outright and everyone watching shifts one step towards your side. The Narrator decides whether they have any.",
+      "text": "I: When someone makes a claim in front of others, roll Eloquence to expose a contradiction. On a success, everyone listening trusts the speaker less. II: When someone makes a claim in front of others, roll Eloquence to expose a contradiction; on a success, everyone listening trusts the speaker less. When someone accuses you or your squad, demand their evidence: if they have none, they lose outright and everyone watching shifts one step your way.",
       "effects": [
         {
           "op": "narrator",
-          "note": "When an NPC accuses the squad and the player demands evidence: if the NPC has none, they lose the argument outright."
+          "note": "When an NPC makes a claim before others, the player rolls Eloquence to expose a contradiction; set the TN; on a success the listeners trust the speaker less."
         }
       ],
       "tiers": {
@@ -3301,12 +3505,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "When someone accuses you or your squad, demand their evidence. If they can't produce it, they lose the argument outright. The Narrator decides whether they have any.",
-          "short": "Accused: demand the evidence; none, and they lose the argument",
+          "text": "When someone makes a claim in front of others, roll Eloquence to expose a contradiction. On a success, everyone listening trusts the speaker less.",
+          "short": "Expose a claim: listeners trust the speaker less",
           "effects": [
             {
               "op": "narrator",
-              "note": "When an NPC accuses the squad and the player demands evidence: if the NPC has none, they lose the argument outright."
+              "note": "When an NPC makes a claim before others, the player rolls Eloquence to expose a contradiction; set the TN; on a success the listeners trust the speaker less."
             }
           ]
         },
@@ -3318,12 +3522,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "When someone accuses you or your squad, demand their evidence. If they can't produce it, they lose the argument outright and everyone watching shifts one step towards your side. The Narrator decides whether they have any.",
-          "short": "Onlookers shift a step your way",
+          "text": "When someone makes a claim in front of others, roll Eloquence to expose a contradiction; on a success, everyone listening trusts the speaker less. When someone accuses you or your squad, demand their evidence: if they have none, they lose outright and everyone watching shifts one step your way.",
+          "short": "And demand evidence: none, and they lose outright",
           "effects": [
             {
               "op": "narrator",
-              "note": "As Tier I; on a win, every onlooker shifts one attitude step toward the squad."
+              "note": "As tier I; and when an NPC accuses the squad and the player demands evidence: with none, the NPC loses outright and every onlooker shifts one step toward the squad."
             }
           ],
           "replaces_tier_I": true,
@@ -3333,8 +3537,416 @@
       "adjudication": "narrator",
       "recovered": null,
       "tags": [
-        "social"
-      ]
+        "social",
+        "logic"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6023 (was the Eloquence 3 passive; Burden of Proof folded in)"
+    },
+    {
+      "id": "opening_argument",
+      "name": "Opening Argument",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "eloquence"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "eloquence",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Debate the enemy leader before a fight. On a success, every enemy has {=tiers.I.numbers.ap_loss} AP less in the first round. II: Debate the enemy leader before a fight; on a success, every enemy has {=tiers.II.numbers.ap_loss} AP less in the first round. Your first Persuade, Threaten or Parley each fight costs {=tiers.II.effects.2.set} AP.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "opening_argument",
+          "ap": 0,
+          "uses": "per_combat"
+        },
+        {
+          "op": "narrator",
+          "note": "Narrator sets the TN for the debate; on a success every enemy has 1 AP less in the first round."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "eloquence",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Debate the enemy leader before a fight. On a success, every enemy has {=tiers.I.numbers.ap_loss} AP less in the first round.",
+          "short": "Before a fight: debate their leader, foes slowed in round one",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "opening_argument",
+              "ap": 0,
+              "uses": "per_combat"
+            },
+            {
+              "op": "narrator",
+              "note": "Narrator sets the TN for the debate; on a success every enemy has 1 AP less in the first round."
+            }
+          ],
+          "numbers": {
+            "ap_loss": 1
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "eloquence",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Debate the enemy leader before a fight; on a success, every enemy has {=tiers.II.numbers.ap_loss} AP less in the first round. Your first Persuade, Threaten or Parley each fight costs {=tiers.II.effects.2.set} AP.",
+          "short": "And your first Persuade, Threaten or Parley each fight costs {=tiers.II.effects.2.set} AP",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "opening_argument",
+              "ap": 0,
+              "uses": "per_combat"
+            },
+            {
+              "op": "narrator",
+              "note": "Narrator sets the TN for the debate; on a success every enemy has 1 AP less in the first round."
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "parley"
+                ]
+              },
+              "set": 0,
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "open",
+                "peek": true
+              },
+              "label": "Opening Argument"
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "parley"
+                ]
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "open"
+              }
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I",
+          "numbers": {
+            "ap_loss": 1
+          }
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "social",
+        "ap"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6023 (was the Eloquence 5 passive)"
+    },
+    {
+      "id": "thinking_aloud",
+      "name": "Thinking Aloud",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "eloquence"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "eloquence",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: After you make a Call, your next Evoke this turn costs {=tiers.I.effects.1.set} AP (once a turn). II: After you make a Call, your next Evoke this turn costs {=tiers.II.effects.1.set} AP (once a turn), and your next glyph this turn adds no Flux.",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "call"
+            ]
+          },
+          "flag": "aloud"
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "evoke"
+            ],
+            "flag": "aloud"
+          },
+          "set": 0,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "aloud",
+            "peek": true
+          },
+          "label": "Thinking Aloud"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "evoke"
+            ],
+            "flag": "aloud"
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "aloud"
+          },
+          "and": [
+            {
+              "op": "mark",
+              "flag": "aloud",
+              "clear": true
+            }
+          ]
+        },
+        {
+          "op": "mark",
+          "when": "turn_end",
+          "if": {
+            "actor": "self"
+          },
+          "flag": "aloud",
+          "clear": true
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "eloquence",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "After you make a Call, your next Evoke this turn costs {=tiers.I.effects.1.set} AP (once a turn).",
+          "short": "After a Call: your next Evoke this turn costs {=tiers.I.effects.1.set} AP",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "flag": "aloud"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "evoke"
+                ],
+                "flag": "aloud"
+              },
+              "set": 0,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "aloud",
+                "peek": true
+              },
+              "label": "Thinking Aloud"
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "evoke"
+                ],
+                "flag": "aloud"
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "aloud"
+              },
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "aloud",
+                  "clear": true
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "if": {
+                "actor": "self"
+              },
+              "flag": "aloud",
+              "clear": true
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "eloquence",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "After you make a Call, your next Evoke this turn costs {=tiers.II.effects.1.set} AP (once a turn), and your next glyph this turn adds no Flux.",
+          "short": "And your next glyph this turn adds no Flux",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "flag": "aloud"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "evoke"
+                ],
+                "flag": "aloud"
+              },
+              "set": 0,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "aloud",
+                "peek": true
+              },
+              "label": "Thinking Aloud"
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "evoke"
+                ],
+                "flag": "aloud"
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "aloud"
+              },
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "aloud",
+                  "clear": true
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "if": {
+                "actor": "self"
+              },
+              "flag": "aloud",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "flag": "aloud_ink"
+            },
+            {
+              "op": "cost_mod",
+              "when": "glyph_cost",
+              "if": {
+                "flag": "aloud_ink"
+              },
+              "res": "flux",
+              "set": 0,
+              "label": "Thinking Aloud"
+            },
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "draw"
+                ]
+              },
+              "flag": "aloud_ink",
+              "clear": true,
+              "priority": 120
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "if": {
+                "actor": "self"
+              },
+              "flag": "aloud_ink",
+              "clear": true
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "sigil",
+        "ap"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6023"
     },
     {
       "id": "mirage",
@@ -6671,20 +7283,40 @@
       "ap_cost": null,
       "uses": "per_session",
       "flavour": "You checked. It's true now.",
-      "text": "Once per session, state a fact about the technology, biology or history in the scene. The Narrator makes it true, unless it contradicts something already shown. If the Narrator refuses the fact, you keep the use.",
+      "text": "Once per session, state a fact about the technology, biology or history in the scene. The Narrator makes it true, unless it contradicts something already shown. If the Narrator refuses the fact, you keep the use. In a fight, once, your own Overload deals you no damage.",
       "effects": [
         {
           "op": "narrator",
           "note": "Once per session the player states a fact about technology, biology or history in the scene. Make it true unless it contradicts something already established on screen."
+        },
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "if": {
+            "target": "self",
+            "self_harm": true,
+            "not_damage": [
+              "strain",
+              "short"
+            ]
+          },
+          "value": 0,
+          "limit": {
+            "per": "per_combat",
+            "n": 1,
+            "key": "fact"
+          },
+          "label": "Established Fact"
         }
       ],
-      "adjudication": "narrator",
+      "adjudication": "hybrid",
       "recovered": null,
       "provisional": true,
       "tags": [
         "knowledge",
         "narrative"
-      ]
+      ],
+      "source": "rules 1.74 item 6022: the engine half (ruling layer section 2 item 8)"
     },
     {
       "id": "closing_argument",
@@ -6705,11 +7337,29 @@
       "ap_cost": null,
       "uses": "per_scene",
       "flavour": "You didn't win the argument. You ended it.",
-      "text": "Once per scene, make your closing argument. Every listener who isn't ruled by fear or faith accepts its logic, even if they hate where it leads, and an Eloquence check on the same point succeeds automatically. The Narrator decides what they do about it: they can still refuse to act.",
+      "text": "Once per scene, make your closing argument. Every listener who isn't ruled by fear or faith accepts its logic, even if they hate where it leads, and an Eloquence check on the same point succeeds automatically. The Narrator decides what they do about it: they can still refuse to act. In a fight, once, your Persuade gets no save.",
       "effects": [
         {
           "op": "narrator",
           "note": "Once per scene: listening NPCs not driven by fear or faith concede the argument's logic. Acting on it remains their choice."
+        },
+        {
+          "op": "skip_save",
+          "when": "cond_incoming",
+          "if": {
+            "actor": "self",
+            "target": "foe",
+            "cond": [
+              "left_brain_debuff",
+              "right_brain_debuff"
+            ]
+          },
+          "limit": {
+            "per": "per_combat",
+            "n": 1,
+            "key": "close"
+          },
+          "label": "Closing Argument"
         }
       ],
       "adjudication": "hybrid",
@@ -6718,7 +7368,8 @@
       "tags": [
         "social",
         "logic"
-      ]
+      ],
+      "source": "rules 1.74 item 6023: the engine half (ruling layer section 2 item 8)"
     },
     {
       "id": "solid_image",

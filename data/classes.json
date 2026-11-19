@@ -1492,7 +1492,63 @@
           "threshold": 5,
           "moves": [
             {
-              "ref": "mage.overcharge"
+              "id": "backdraft",
+              "name": "Backdraft",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "When your Evoker overloads, every foe next to you takes its damage too, more as you level",
+              "amounts": {
+                "backdraft": {
+                  "kind": "damage",
+                  "base": 0,
+                  "per": [
+                    {
+                      "of": "event:amount",
+                      "value": 1
+                    }
+                  ],
+                  "profile": "flat",
+                  "type": "true",
+                  "provisional": true
+                }
+              },
+              "effects": [
+                {
+                  "op": "deal",
+                  "when": "damaged",
+                  "if": {
+                    "target": "self",
+                    "self_harm": true,
+                    "not_damage": [
+                      "strain",
+                      "short"
+                    ]
+                  },
+                  "amount": "backdraft",
+                  "targets": {
+                    "of": "self",
+                    "side": "foe",
+                    "within": 1,
+                    "shape": "aura"
+                  },
+                  "label": "Backdraft",
+                  "say": "{self}'s overload bursts into {target}{then}."
+                }
+              ],
+              "source": "rules 1.74 item 6025: replaces Overcharge (the ladder gives Overclock at Brain Power 2)",
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "mage",
+              "new": true,
+              "fantasy_tags": [
+                "sigil",
+                "flux"
+              ],
+              "attributes": [
+                "intelligence"
+              ],
+              "status": "active",
+              "surface": "combat"
             },
             {
               "id": "bleed_the_flux",
@@ -3961,7 +4017,8 @@
         "attributes": [
           "intelligence"
         ],
-        "status": "active"
+        "status": "shelved",
+        "shelved_by": "rules 1.74 item 6025: the Sigilist rank II move is Backdraft (Brain Power 2 gives Overclock)"
       },
       {
         "id": "payload",

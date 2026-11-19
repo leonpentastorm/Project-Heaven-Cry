@@ -1111,16 +1111,30 @@
           "door_pick": "fork.sigil.overflux"
         }
       ],
-      "text": "Past your Flux limit: no Overload · each glyph over costs the Overload's damage a Flux",
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N15"
+      "text": "Your Sigil spells deal +{=effects.0.value|more}% damage while your Flux is at its limit",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "self",
+            "hostile": true,
+            "damage": [
+              "sigil_spell"
+            ],
+            "self_res": {
+              "flux": {
+                "at": "limit"
+              }
+            }
+          },
+          "value": 1.25,
+          "label": "Overflux"
+        }
       ],
-      "why": "The Overload's lock is code, not a stat (N15, not approved); the spec gives no cheaper wording.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)"
     },
     {
       "id": "fork.sigil.clean_vent",
@@ -1134,21 +1148,67 @@
           "door_pick": "fork.sigil.clean_vent"
         }
       ],
-      "text": "Once a turn: a Vent of {=numbers.min}+ Flux shoves adjacent foes {=numbers.push} tile, {=numbers.base} damage a Flux vented",
-      "numbers": {
-        "min": 2,
-        "push": 1,
-        "base": 4
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N22"
+      "text": "Once a turn your Vent deals every foe next to you {=amounts.scorch.base} Sigil scorch, more as you level, and pushes them {=effects.1.tiles} tile",
+      "effects": [
+        {
+          "op": "deal",
+          "when": "acted",
+          "if": {
+            "action": [
+              "vent"
+            ]
+          },
+          "amount": "scorch",
+          "targets": {
+            "of": "self",
+            "side": "foe",
+            "within": 1,
+            "shape": "aura"
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "vent_burn"
+          },
+          "label": "Clean Vent",
+          "say": "{self}'s Vent scorches {target}{then}."
+        },
+        {
+          "op": "displace",
+          "when": "acted",
+          "if": {
+            "action": [
+              "vent"
+            ]
+          },
+          "how": "push",
+          "tiles": 1,
+          "targets": {
+            "of": "self",
+            "side": "foe",
+            "within": 1,
+            "shape": "aura"
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "vent_push"
+          },
+          "label": "Clean Vent"
+        }
       ],
-      "why": "The Vent is a hook, not a trigger (N22, not approved), so no row hears the Flux vented. Its step is not offered (Overflux waits on N15) either.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)",
+      "amounts": {
+        "scorch": {
+          "kind": "damage",
+          "base": 6,
+          "profile": "flat",
+          "type": "sigil",
+          "provisional": true
+        }
+      }
     },
     {
       "id": "fork.sigil.written_in_advance",
@@ -1162,19 +1222,63 @@
           "door_pick": "fork.sigil.written_in_advance"
         }
       ],
-      "text": "A Line that stood since before your last turn ended Evokes with +{=numbers.mult|more}% damage",
-      "numbers": {
-        "mult": 1.2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N14"
+      "text": "Your first Evoke after a turn you ended with glyphs drawn deals +{=effects.2.value|more}% damage",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "draw"
+            ]
+          },
+          "flag": "inked"
+        },
+        {
+          "op": "mark",
+          "when": "turn_end",
+          "if": {
+            "actor": "self",
+            "flag": "inked"
+          },
+          "flag": "aged"
+        },
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "self",
+            "hostile": true,
+            "damage": [
+              "sigil_spell"
+            ],
+            "flag": "aged"
+          },
+          "value": 1.2,
+          "label": "Written in Advance"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "evoke"
+            ]
+          },
+          "flag": "aged",
+          "clear": true,
+          "and": [
+            {
+              "op": "mark",
+              "flag": "inked",
+              "clear": true
+            }
+          ]
+        }
       ],
-      "why": "A glyph carries no age (N14, not approved). Its step is not offered (Running Script waits on N14 too).",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)"
     },
     {
       "id": "fork.sigil.running_script",
@@ -1188,16 +1292,62 @@
           "door_pick": "fork.sigil.running_script"
         }
       ],
-      "text": "The glyph you Evoke from stays drawn: your next Line may start there",
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N14"
+      "text": "After an Evoke, your next glyph this turn costs {=effects.1.set} AP and adds no Flux",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "evoke"
+            ]
+          },
+          "flag": "run"
+        },
+        {
+          "op": "cost_mod",
+          "when": "glyph_cost",
+          "if": {
+            "flag": "run"
+          },
+          "set": 0,
+          "label": "Running Script"
+        },
+        {
+          "op": "cost_mod",
+          "when": "glyph_cost",
+          "if": {
+            "flag": "run"
+          },
+          "res": "flux",
+          "set": 0,
+          "label": "Running Script"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "draw"
+            ]
+          },
+          "flag": "run",
+          "clear": true,
+          "priority": 120
+        },
+        {
+          "op": "mark",
+          "when": "turn_end",
+          "if": {
+            "actor": "self"
+          },
+          "flag": "run",
+          "clear": true
+        }
       ],
-      "why": "An Evoke clears its glyphs (N14, not approved); the spec gives no cheaper wording.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)"
     },
     {
       "id": "fork.soul.ride_the_edge",

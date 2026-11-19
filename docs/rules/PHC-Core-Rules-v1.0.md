@@ -12645,5 +12645,5 @@ its Mastered perk at 10; a beta or gamma gives its per-point gain on every level
 6024. **Old saves:** Rumination's free Index (3) and Proven Formula (5), and Eloquence's Objection! (3) and Opening
     Argument (5), are preselected perks in the one re-pick; a held Burden of Proof becomes Objection! at its tier.
 6025. **The Sigilist's moves.** Rank I: Barrage and Core Change (kept). Rank II: **Backdraft** replaces Overcharge (the
-    ladder gives Overclock at 2): when your Evoker overloads, every foe next to you takes the same damage (true damage);
+    ladder gives Overclock at 2): when your Evoker overloads, every foe next to you takes its damage too (true damage, a flat amount block on the overload's amount, so it grows with your level as every character's flat damage does);
     Bleed the Flux (kept). Rank III: Payload and Stored Spell (kept). PROVISIONAL.

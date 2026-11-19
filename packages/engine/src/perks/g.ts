@@ -102,6 +102,8 @@ register({
 // Combat (PROVISIONAL, a new combat form): once per fight, 0 AP, cite a fact about one enemy: allies' attacks on it get
 // +1 (II +2) for the rest of the round; the citation goes into the fight notes.
 const footBonus = (h: Holder) => (tierII(h) ? 2 : 1);
+/** Is this unit the enemy the holder cited this round (the fight's citation)? */
+const citedNow = (h: Holder, t: Unit | null | undefined): boolean => { const st = (h.u?.ps?.[h.key] as any)?.cite; return !!st && !!h.cb && !!t && t.id === st.target && h.cb.round === st.round; };
 register({
   id: 'footnote',
   claims: ['skill_mod_tag'], narrator: ['narrator'],
@@ -133,27 +135,11 @@ register({
       const rec = sro(h).cite; if (!rec || rec.scene !== sceneN(h) || !h.c || ctx.c === h.c || ctx.c?.id === h.c.id) return;
       if (ctx.ck?.footnote === h.c.id || appliesTo(ctx.ck, 'footnote') || tagsOf(ctx).includes('footnote')) addOnce(ctx, footBonus(h), 'Footnote');
     },
-    attack_preview: (ctx, h) => {
-      const st = (h.u?.ps?.[h.key] as any)?.cite; if (!st || !h.u || !h.cb) return;
-      if (ctx.att.side === h.u.side && ctx.att !== h.u && ctx.tgt?.id === st.target && h.cb.round === st.round) ctx.terms.push({ v: footBonus(h), label: 'Footnote' });
-    },
+    // Rules 1.74 item 6022: at tier II the citer's own Sigils count the cited fact too (its roll to hit).
+    to_hit: (ctx, h) => { if (tierII(h) && ctx.type === 'sigil' && ctx.att === h.u && citedNow(h, ctx.tgt)) ctx.terms.push({ v: footBonus(h), label: 'Footnote' }); },
+    attack_preview: (ctx, h) => { if (h.u && ctx.att.side === h.u.side && ctx.att !== h.u && citedNow(h, ctx.tgt)) ctx.terms.push({ v: footBonus(h), label: 'Footnote' }); },
   },
   brief: (h) => 'judge ally checks acting on the cited fact: set footnote "' + (h.c?.id || 'charId') + '"',
-});
-
-// ---------- Burden of Proof (Eloquence 3/5): demand evidence; an accuser with none loses outright ----------
-register({
-  id: 'burden_of_proof',
-  narrator: 'all',
-  actions: [{
-    id: 'demand', label: 'Demand evidence (Burden of Proof)', scope: ['story'], target: 'text', ap: 0,
-    text: 'When someone accuses you or the squad: demand their evidence. Without it, they lose the argument outright. II: the onlookers also shift to your side.',
-    run: (h, a) => {
-      const eid = postStory(h, 'demands evidence: "' + textArg(a) + '"');
-      ruling(h, 'Burden of Proof: if the accuser has no evidence, they lose the argument outright: call no check' + (tierII(h) ? '; every onlooker shifts one attitude step toward the squad' : '') + '. If they have evidence, refuse (the demand fails on its merits).', eid);
-    },
-  }],
-  brief: (h) => 'a demand for evidence: an accuser without any loses outright, no check' + (tierII(h) ? '; onlookers shift' : ''),
 });
 
 // ---------- The Tell (id detectives_eye; Vigilance 3/5 since rules 1.74 item 6008): one out-of-place detail every scene (II: two, and whether connected) ----------
@@ -361,7 +347,7 @@ register({
 const factRule = 'Make it true (pin it in memory) unless it contradicts something already shown, decides a check, creates items, money or allies, or touches the Veil or Celestial truth: then refuse (the use comes back).';
 register({
   id: 'established_fact',
-  narrator: 'all',
+  narrator: ['narrator'], // rules 1.74 item 6022: its engine half (a taking row) is the runner's
   actions: [{
     id: 'fact', label: 'Established Fact', scope: ['story', 'combat'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
     text: 'Once a session: state a fact about the technology, biology or history in the scene. It is true from now on, unless it contradicts what has already been shown. In a fight it is your attempt for the turn: the Narrator answers at once, and a no gives the use back.',
@@ -380,7 +366,7 @@ register({
 // NPCs do about it stays the Narrator's.
 register({
   id: 'closing_argument',
-  narrator: 'all',
+  narrator: ['narrator'], // rules 1.74 item 6023: its engine half (a skip_save row) is the runner's
   actions: [{
     id: 'close', label: 'Closing Argument', scope: ['story', 'combat'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene: make your closing argument. Every listener who isn\'t ruled by fear or faith accepts its logic. An Eloquence check waiting on that point succeeds. In a fight it is your attempt for the turn: the Narrator answers at once, and a no gives the use back.',

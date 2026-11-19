@@ -310,11 +310,19 @@ lands. All are Wick icons in the trait/perk style (white flat ink, 1024 x 1024, 
 | MD2 | **Read Them** (Acuity perk, `read_them`) | No icon (fallback) | A foe's blow arriving blunted on someone who has read it | Perk icon | `art/icons/perks/` |
 | MD3 | **Still Breath** (Acuity perk, `still_breath`) | No icon (fallback) | Wick pressed to cover, holding his breath, a searcher's gaze passing over | Perk icon | `art/icons/perks/` |
 | MD4 | **Read Intent** (Vigilance perk, `read_intent`) | The Shadow verb's picture `shadow-read-intent` is repointed to the perk (catalog data_ids); a perk-family icon still wanted | Wick pointing at a foe, its next move drawn ahead of it | Perk icon | `art/icons/perks/` |
+| MD5 | **Index** (Rumination perk, `index`) | No icon (fallback) | Wick pulling one card from a deep index drawer, the answer lit | Perk icon | `art/icons/perks/` |
+| MD6 | **Proven Formula** (Rumination perk, `proven_formula`) | No icon (fallback) | A formula chalked twice, the second ring checked off as a blow glances away | Perk icon | `art/icons/perks/` |
+| MD7 | **Objection!** (Eloquence perk, `objection`) | No icon (fallback) | Wick on his feet, one finger raised at a speaker, the room turning | Perk icon (Burden of Proof's icon, if any, retires with it) | `art/icons/perks/` |
+| MD8 | **Opening Argument** (Eloquence perk, `opening_argument`) | No icon (fallback) | Wick at a lectern facing a line of armed foes before the first shot | Perk icon | `art/icons/perks/` |
+| MD9 | **Thinking Aloud** (Eloquence perk, `thinking_aloud`) | No icon (fallback) | Wick calling to an ally while his gloved hand finishes a glyph | Perk icon | `art/icons/perks/` |
+| MD10 | **Backdraft** (Sigilist rank II, `class:mage.backdraft`) | No icon (fallback) | An Evoker bursting in Wick's hand, the blast throwing back the foes beside him | Class move icon, the 5 section's style | `art/icons/classes/` |
 
 Retired with their verbs (rules 1.74 item 6001; the catalog keeps the files, their `data_ids` emptied): `shadow-foul`,
 `shadow-plant`, `shadow-vault`. Renamed perks keep their icons: Eyes in the Back is shown as Cold Spine, Detective's Eye
 as The Tell (Vigilance now). K5 Light Fingers, K6 Lend the Dark and K7 Lightkiller are built (rules 1.74 item 6003);
-Lightkiller's direction stands (Wick in a small ring of darkness).
+Lightkiller's direction stands (Wick in a small ring of darkness). K25 to K28 (the Sigil forks) are built (rules 1.74
+item 6021) with new rules: K28 Running Script's direction becomes "a glyph drawn with no smoke right after a spell fires"
+(it no longer stays lit); K25 to K27 stand.
 
 ## At risk in the balance pass
 

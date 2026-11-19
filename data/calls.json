@@ -135,16 +135,7 @@
       "steps": [
         {
           "at": 1,
-          "text": "An ally's next action costs 1 AP less. This lasts until the end of their next turn.",
-          "short": "Their next action costs {=.numbers.first} AP less",
-          "numbers": {
-            "first": 1,
-            "second": 0
-          }
-        },
-        {
-          "at": 4,
-          "text": "An ally's next two actions cost 1 AP less each. This lasts until the end of their next turn.",
+          "text": "An ally's next two actions cost {=steps.0.numbers.first} AP less each. This lasts until the end of their next turn.",
           "short": "Their next two actions cost {=.numbers.first} AP less each",
           "numbers": {
             "first": 1,
@@ -152,17 +143,27 @@
           }
         },
         {
-          "at": 8,
-          "text": "An ally's next action costs 2 AP less, and the one after it 1 AP less. This lasts until the end of their next turn.",
+          "at": 4,
+          "text": "An ally's next action costs {=steps.1.numbers.first} AP less, and the one after it {=steps.1.numbers.second} AP less. This lasts until the end of their next turn.",
           "short": "Next action {=.numbers.first} AP less, the one after {=.numbers.second} less",
           "numbers": {
             "first": 2,
             "second": 1
           }
+        },
+        {
+          "at": 8,
+          "text": "An ally's next two actions cost {=steps.2.numbers.first} AP less each. This lasts until the end of their next turn.",
+          "short": "Their next two actions cost {=.numbers.first} AP less each",
+          "numbers": {
+            "first": 2,
+            "second": 2
+          }
         }
       ],
       "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6023 (re-stepped stronger: ruling layer section 2 item 4)"
     },
     {
       "id": "call.name_it",
