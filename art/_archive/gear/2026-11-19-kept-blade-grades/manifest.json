@@ -4124,6 +4124,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-torso_class2_medium--relic",
+      "path": "art/icons/gear/armour-torso_class2_medium--relic.png",
+      "sha256": "0a93cd1d8b49478640961bac43362ebb21689d63788861caebd48ab57461b39d",
+      "label": "Medium Armour — Relic",
+      "family": "armour-torso_class2_medium",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-torso_class2_medium--relic.png",
+        "sha256": "a528e49eb51e0a93274900fd1922b1876e2ca83240794e97fb23bcd47b661703"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-torso_class2_medium--relic.png",
+        "sha256": "0a93cd1d8b49478640961bac43362ebb21689d63788861caebd48ab57461b39d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-torso_class2_medium--relic.txt",
+        "sha256": "8c030ed9192c3b7b199271883c7c6765aad8eab16780231f45839ac25b26820c"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-torso_class2_medium--relic/v1/source.png",
+          "sha256": "a0efc2a80babf6bf4867f9f831d908e39d9d944fbbdc1645fd12e474557e9dcc"
+        },
+        {
+          "path": "art/icons/gear/armour-torso_class2_medium.png",
+          "sha256": "668167f8973f2c10d039bad7d0a07d5db593d1722021fdc1b25ed2f5da29ef3d"
+        },
+        {
+          "path": "art/icons/gear/armour-torso_class2_medium--masterwork.png",
+          "sha256": "38e2f4ef9662f22364df3a56840df747be4398cf3b105fa6ddcce34760c7b6a4"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-torso_class2_medium--relic.png",
+        "128": "art/icons/gear/exports/128/armour-torso_class2_medium--relic.png",
+        "64": "art/icons/gear/exports/64/armour-torso_class2_medium--relic.png",
+        "32": "art/icons/gear/exports/32/armour-torso_class2_medium--relic.png"
+      },
+      "export_hashes": {
+        "256": "cd56c92bacaf894860c8c26fba5ea5d7b65bb3c22f08d7126837b8ad4e9739a0",
+        "128": "87dc39036518ed8843b99d9fd05a5e8db38f651f6f0ca3bf49ef288a703898a6",
+        "64": "392cd0e2d08cb943cbe2735f43bd287c21949525ffc3579865e1559118c5aa43",
+        "32": "253cf69cb7166fbc6f313bd4082a20d3ba1abb900b277e6498edf603668758ad"
+      },
+      "grade": "relic",
+      "standard_id": "armour-torso_class2_medium",
+      "outline": {
+        "solid_alpha_iou": 0.962320808854429,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 50
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
