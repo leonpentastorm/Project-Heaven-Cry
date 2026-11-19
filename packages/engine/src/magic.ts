@@ -158,6 +158,8 @@ export const CONDITION_IDS = Object.keys(CONDS).filter((k) => CONDS[k].engine !=
 // ---------- the meter ----------
 export const manaBand = (m: number) => MANA_BANDS.find((b) => m >= b.min && m <= b.max) || MANA_BANDS[1];
 export const manaOf = (cb: Combat) => (cb.mana ??= MANA_START);
+// rules 1.77 item 6512: the air's mana as a resource of the fight (data/actions.json resources.mana) changes here
+setResSetter('mana', (cb, _u, n) => { if (!cb) return 0; const was = manaOf(cb); shiftMana(cb, n); return manaOf(cb) - was; });
 export function shiftMana(cb: Combat, by: number, why?: string) {
   const was = manaOf(cb), now = Math.max(0, Math.min(40, was + by)); cb.mana = now;
   const a = manaBand(was).id, b = manaBand(now).id;
@@ -1973,9 +1975,11 @@ export function syphon(cb: Combat, u: Unit): string | null {
 /** Crystallise (3 AP, the meter at 10+): the meter drops 10 and you make one standard core. */
 export function crystallise(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.emanator) return NEEDS_EMANATOR;
-  const cap = price({ cb, u }, 'crystallise').ap; // items price it (hooks gap D8)
-  { const no = whyNot(cb, u, cap); if (no) return no; } if (manaOf(cb) < 10) return 'The air is too thin (mana ' + manaOf(cb) + ', needs 10).';
-  pay(cb, u, cap); m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); shiftMana(cb, -10); say(cb, u.name + ' crystallises a mana core from the air.');
+  // items price it (hooks gap D8); rules 1.77 item 6512: its draw on the air is on the price (the resource `mana`, held by
+  // the fight), so an item may make it free (Rite in the Field) and the one pay takes it through shiftMana
+  const cap = price({ cb, u }, 'crystallise', { ap: costOf('crystallise'), res: { mana: costOf('crystallise', 'mana') } });
+  { const no = whyNot(cb, u, cap); if (no) return no; }
+  pay(cb, u, cap); m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); say(cb, u.name + ' crystallises a mana core from the air.');
   return null;
 }
 /** Who a spell would affect, hit or miss (used to decide whether a spell on the story map starts a fight). */

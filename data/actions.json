@@ -523,6 +523,13 @@
       "on": "unit",
       "path": "mg.flux",
       "setter": "flux"
+    },
+    "mana": {
+      "name": "mana",
+      "on": "fight",
+      "path": "mana",
+      "setter": "mana",
+      "short": "The air is too thin (mana {have}, needs {n})."
     }
   },
   "costs": {
@@ -574,7 +581,8 @@
     },
     "crystallise": {
       "ap": 3,
-      "rule": "crystallise"
+      "rule": "crystallise",
+      "mana": 10
     },
     "interact": {
       "ap": 1,

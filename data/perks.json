@@ -8827,7 +8827,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Every fifth foe you drop yourself in a fight makes your next Crystallise cost {=tiers.I.effects.6.set} AP: the kill is the rite. II: Every third foe you drop yourself in a fight makes your next Crystallise cost {=tiers.II.effects.4.set} AP.",
+      "text": "I: Every fifth foe you drop yourself in a fight makes your next Crystallise cost {=tiers.I.effects.6.set} AP and take nothing from the air: the kill is the rite. II: Every third foe you drop yourself in a fight makes your next Crystallise cost {=tiers.II.effects.4.set} AP and take nothing from the air.",
       "effects": [
         {
           "op": "mark",
@@ -8928,6 +8928,19 @@
           "label": "Rite in the Field"
         },
         {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "crystallise"
+            ],
+            "flag": "rite"
+          },
+          "res": "mana",
+          "set": 0,
+          "label": "Rite in the Field"
+        },
+        {
           "op": "mark",
           "when": "acted",
           "if": {
@@ -8948,7 +8961,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Every fifth foe you drop yourself in a fight makes your next Crystallise cost {=tiers.I.effects.6.set} AP: the kill is the rite.",
+          "text": "Every fifth foe you drop yourself in a fight makes your next Crystallise cost {=tiers.I.effects.6.set} AP and take nothing from the air: the kill is the rite.",
           "short": "Every fifth foe you drop: your next Crystallise costs {=tiers.I.effects.6.set} AP",
           "effects": [
             {
@@ -9050,6 +9063,19 @@
               "label": "Rite in the Field"
             },
             {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "crystallise"
+                ],
+                "flag": "rite"
+              },
+              "res": "mana",
+              "set": 0,
+              "label": "Rite in the Field"
+            },
+            {
               "op": "mark",
               "when": "acted",
               "if": {
@@ -9070,7 +9096,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Every third foe you drop yourself in a fight makes your next Crystallise cost {=tiers.II.effects.4.set} AP.",
+          "text": "Every third foe you drop yourself in a fight makes your next Crystallise cost {=tiers.II.effects.4.set} AP and take nothing from the air.",
           "short": "Every third foe you drop",
           "effects": [
             {
@@ -9138,6 +9164,19 @@
                 ],
                 "flag": "rite"
               },
+              "set": 0,
+              "label": "Rite in the Field"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "crystallise"
+                ],
+                "flag": "rite"
+              },
+              "res": "mana",
               "set": 0,
               "label": "Rite in the Field"
             },

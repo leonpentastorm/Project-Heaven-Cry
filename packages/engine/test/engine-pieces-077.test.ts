@@ -204,3 +204,22 @@ describe('a to-hit term carries its source label (item 6511): the fight shows st
     expect(standingModsFor(light.g, light.foe.id)).toEqual([]);
   });
 });
+
+describe('a resource held by the fight (item 6512): Crystallise draws on the air through the price; Rite in the Field takes nothing', () => {
+  const crystal = (tier: string | null, kills: number, mana = 20) => {
+    const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', skills: { lore_master: 5 }, ...(tier ? { perks: { rite_in_the_field: tier } } : {}) } as any], Array.from({ length: kills + 1 }, (_, i) => ({ at: 'E' + (6 + i) })));
+    for (let i = 0; i < kills; i++) { const foe = f.foes.find((x: any) => !x.dead && !x.downed)!; foe.hp = 1; foe.def = -50; f.unit(f.pc.id).pos = '2,5'; foe.pos = '3,5'; f.unit(f.pc.id).ap = 9;
+      for (let n = 0; n < 9 && !f.unit(foe.id).dead; n++, f.unit(f.pc.id).jammed = false) withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(f.pc.id), f.unit(foe.id), 'shot', null, { noAp: true }));
+      f.unit(foe.id).pos = '12,' + (2 + i); }
+    f.turn(f.pc); f.pc.ap = 9; f.cb.mana = mana; const cores = f.pc.mg!.coresMade;
+    let err = ''; try { f.act({ type: 'combat/crystallise', unitId: f.pc.id } as any); } catch (e: any) { err = String(e.message || e); }
+    return { took: mana - (f.cb.mana as number), made: f.pc.mg!.coresMade - cores, err };
+  };
+  it('plain: it takes the price’s mana from the air; thin air refuses it in the old words; Rite II’s free one takes none', async () => {
+    const A: any = (await import('../../../data/actions.json')).default, n = A.costs.crystallise.mana;
+    expect(crystal(null, 0)).toEqual({ took: n, made: 1, err: '' });
+    expect(crystal(null, 0, n - 1).err).toBe('The air is too thin (mana ' + (n - 1) + ', needs ' + n + ').');
+    expect(crystal('II', 3)).toEqual({ took: 0, made: 1, err: '' });
+    expect(crystal('II', 3, 0)).toEqual({ took: 0, made: 1, err: '' });
+  });
+});

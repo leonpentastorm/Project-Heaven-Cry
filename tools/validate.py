@@ -1065,19 +1065,21 @@ if "actions" in data:
             elif isinstance(_rule_acts[r].get("ap"), int) and c.get("ap") != _rule_acts[r].get("ap"):
                 errors.append(f"actions: costs.{cid} costs {c.get('ap')} AP but rules.json {r} says {_rule_acts[r].get('ap')}")
     for rid, r in (_acts_root.get("resources") or {}).items():
-        if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character") or not isinstance(r.get("path"), str) or not r.get("path"):
-            errors.append(f"actions: resources.{rid} needs a name, on (unit or character) and a path")
+        if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character", "fight") or not isinstance(r.get("path"), str) or not r.get("path"):
+            errors.append(f"actions: resources.{rid} needs a name, on (unit, character or fight: rules 1.77 item 6512) and a path")
         # Classes 3.0 batch row: the item op `resource` gives any row through effects/cost.ts resGive
-        for _k in (set(r) - {"name", "one", "on", "path", "whole", "max", "needs", "setter"}) if isinstance(r, dict) else []:
-            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, one, on, path, whole, max, needs, setter)")
+        for _k in (set(r) - {"name", "one", "on", "path", "whole", "max", "needs", "setter", "short"}) if isinstance(r, dict) else []:
+            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, one, on, path, whole, max, needs, setter, short)")
+        if isinstance(r, dict) and "short" in r and not (isinstance(r["short"], str) and "{n}" in r["short"]): errors.append(f"actions: resources.{rid}.short is the refusal, with {{n}} (and {{have}}) in it (rules 1.77 item 6512)")
+        if isinstance(r, dict) and r.get("on") == "fight" and not r.get("setter"): errors.append(f"actions: resources.{rid}: a fight-held meter changes through its setter (rules 1.77 item 6512)")
         if isinstance(r, dict) and "one" in r and not (isinstance(r["one"], str) and r["one"]):
             errors.append(f"actions: resources.{rid}.one must be the name of one (a cost of 1: '1 core', never '1 cores')")
         for _k in ("max", "needs", "setter"):
             if isinstance(r, dict) and _k == "needs" and isinstance(r.get(_k), list) and r[_k] and all(isinstance(x, str) and x for x in r[_k]): continue # rules 1.33: one of several paths (an MP focus: mg.emanator, mg.attuner)
             if isinstance(r, dict) and _k in r and not (isinstance(r[_k], str) and r[_k]):
                 errors.append(f"actions: resources.{rid}.{_k} must be a path (a setter: its name)")
-        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion", "strain", "flux"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap); rules 1.69 item 5453: strain (magic.ts: addStrain up, easeStrain down); rules 1.70 item 5542: flux (magic.ts: flux() up, down to 0)
-            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion, strain, flux)")
+        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion", "strain", "flux", "mana"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap); rules 1.69 item 5453: strain (magic.ts: addStrain up, easeStrain down); rules 1.70 item 5542: flux (magic.ts: flux() up, down to 0)
+            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion, strain, flux, mana)")
 
 # Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
 # prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.

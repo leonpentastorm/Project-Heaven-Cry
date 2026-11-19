@@ -13231,3 +13231,11 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       read by the client through `standingModsFor(g, unitId)`. The token card lists them ("Open guard −2 to hit them");
       the attack preview at that unit names the same term (it always listed every to-hit term by label). The gaps
       lane's "Open guard's −2 shown in the fight" is done.
+6512. **A resource held by the fight** (`data/actions.json resources` row `on: fight`; `effects/cost.ts` resLeft, resPay,
+      resWhyNot and resGive take the fight the price is asked in, and a fight-held meter changes through its setter; a
+      row's `short` is its refusal): the air's mana is the resource `mana` (`Combat.mana`, setter `mana`: `magic.ts
+      shiftMana`, its clamp and band words unchanged). Crystallise's draw on the air is on its price (`actions.json
+      costs.crystallise.mana`, 10, the number it always took), so the one pay takes it and an item may change it. Rite in
+      the Field (rules 1.75 item 6207 completed): the Crystallise its kills make free costs 0 AP and takes nothing from
+      the air (`cost_mod res: mana, set: 0`), even when the air is too thin. Thin air still refuses a plain Crystallise
+      in its own words.
