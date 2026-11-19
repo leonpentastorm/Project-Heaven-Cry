@@ -90,11 +90,23 @@ for (const k of Object.keys(POLICIES)) if (!(POLICIES[k] as any).__focus) { cons
 export interface FightStat { kind: string; n: number; foes: number; gunFoes: number; map: number; spawn: number; spawnGun: number; firstTurnFoesBefore: number; rounds: number; won: boolean;
   attacks: number; attacksR12: number; hitsR12: number; dmgTaken: number; dmgR12: number; downs: number; downsR12: number; focus: number; firstDown: string | null; firstDownRound: number | null;
   ff: number; ffHits: number; healed: number; healWasted: number; apLeft: number; turns: number; perChar: { door: string; dmg: number; attacksOn: number; downs: number }[] }
-let LIVE: { cb: any; round: number; st: FightStat; ids: Record<string, number> } | null = null;
+let LIVE: { cb: any; round: number; st: FightStat; ids: Record<string, number>; hid: Record<string, { n: number; broke: boolean }> } | null = null;
+/** 0.32 (the Shadow window): a character's turns ended Hidden in a row. A stretch ends at the first turn it ends seen:
+ * `break` when it broke from Hidden itself (a Break that turn), `seen` otherwise; one still open when the fight ends is
+ * `fight`. Read at each of its turn ends in the real reducer's game (the end-turn action's own unit, before it acts). */
+function hidTurn(u: any) {
+  if (!LIVE) return; const h = (LIVE.hid[u.id] ||= { n: 0, broke: false });
+  if (u.hidden) { h.n++; return; }
+  if (h.n > 0) (LIVE.st.hidden ||= []).push({ turns: h.n, end: h.broke ? 'break' : 'seen' });
+  h.n = 0; h.broke = false;
+}
 let PEND: (() => void)[] = []; let ON = false;
 const pcOf = (u: any) => u && u.side === 'pc' && !u.companion;
 onHook('damage_in', (ctx: any) => {
-  if (!ON || ctx.phase !== 'after' || !LIVE) return; const t = ctx.t, by = ctx.src?.by, d = ctx.dealt || 0; if (!pcOf(t) || d <= 0) return;
+  if (!ON || ctx.phase !== 'after' || !LIVE) return; const t = ctx.t, by = ctx.src?.by, d = ctx.dealt || 0;
+  // 0.32: the damage each character dealt to foes (its own, and its Figments' through their owner), for the steady line
+  if (d > 0 && t && t.side !== 'pc' && by && by.side === 'pc') { const ch = pcOf(by) ? by.charId : null; PEND.push(() => { const S: any = LIVE!.st; S.dealt = (S.dealt || 0) + d; const i = ch ? LIVE!.ids[ch] : null; if (i != null) (S.perChar[i] as any).dealt = ((S.perChar[i] as any).dealt || 0) + d; }); }
+  if (!pcOf(t) || d <= 0) return;
   PEND.push(() => { const S = LIVE!.st, i = LIVE!.ids[t.charId]; if (by && by.side === 'pc') { if (by !== t) S.ff += d; return; } S.dmgTaken += d; if (LIVE!.round <= 2) S.dmgR12 += d; const k = foeKind(by); (S.by ||= {})[k] = (S.by[k] || 0) + d; if (i != null) S.perChar[i].dmg += d; });
 });
 onHook('on_hit', (ctx: any) => { if (!ON || !LIVE) return; const a = ctx.att, v = ctx.tgt;
@@ -106,6 +118,9 @@ onHook('on_downed', (ctx: any) => { if (!ON || !LIVE) return; const v = ctx.vict
   PEND.push(() => { const S = LIVE!.st, i = LIVE!.ids[v.charId]; S.downs++; if (LIVE!.round <= 2) S.downsR12++; if (i != null) S.perChar[i].downs++; if (!S.firstDown) { S.firstDown = i != null ? S.perChar[i].door : '?'; S.firstDownRound = LIVE!.round; } }); });
 onHook('heal_given', (ctx: any) => { if (!ON || !LIVE) return; const t = ctx.t; if (!pcOf(t)) return; PEND.push(() => { LIVE!.st.healed += ctx.n || 0; LIVE!.st.healWasted += ctx.over || 0; }); });
 
+/** PF_TRACE=1: every fight action of the run (the unit, its HP, AP, tile, Shadow or Sigil state, the action, a refusal,
+ * the fight log lines it wrote), kept in the run's `trace` (the policies' turn logs, read to find why a door loses). */
+const TRACE_ON = !!((globalThis as any).process?.env || {}).PF_TRACE; let TRACE: string[] = [];
 /** Accepted actions a door's characters made, by kind (the policies' audit: does each door play its verbs?). */
 export let VERBS: Record<string, Record<string, number>> = {};
 const verbKey = (a: any) => a.type.replace('combat/', '') + (a.id ? ':' + a.id : '') + (a.actionId ? '#' + a.actionId : '') + (a.verb ? ':' + a.verb : '') + (a.feeling ? '(' + a.feeling + ')' : '') + (a.mods ? '[' + a.mods.map((m: string) => m.split('#').pop()).join(',') + ']' : '') + (a.kind && a.type === 'combat/pray' ? ':' + a.kind : '');
@@ -135,8 +150,13 @@ export function partyRun(cell: string, seed: string, lever = 'none'): PartyRun {
       this.act = (a: any, who?: string) => {
         const cb0 = this.g.combat;
         if (cb0 && LIVE && LIVE.cb !== cb0 && LIVE.cb?.name === cb0.name) LIVE.cb = cb0;
-        if (cb0 && LIVE) { LIVE.round = cb0.round; if (a.type === 'combat/end-turn') { const u = cb0.units.find((q: any) => q.id === a.unitId); if (pcOf(u) && !u.downed && !u.dead) { LIVE.st.apLeft += Math.max(0, u.ap || 0); LIVE.st.turns++; } } }
+        if (cb0 && LIVE) { LIVE.round = cb0.round; if (a.type === 'combat/end-turn') { const u = cb0.units.find((q: any) => q.id === a.unitId); if (pcOf(u) && !u.downed && !u.dead) { LIVE.st.apLeft += Math.max(0, u.ap || 0); LIVE.st.turns++; hidTurn(u); } } }
+        if (cb0 && LIVE && a.unitId && (a.mods || []).some((m: string) => /shadow\.break/.test(m))) { const h = LIVE.hid[a.unitId]; if (h && h.n > 0) h.broke = true; }
+        const logN = cb0?.log?.length ?? 0;
         PEND = []; ON = !!LIVE; let e; try { e = a0(a, who); } finally { ON = false; }
+        if (TRACE_ON && cb0 && String(a.type).startsWith('combat/')) { const c1 = this.g.combat, u = (c1 || cb0).units.find((q: any) => q.id === a.unitId);
+          const { unitId, ...rest } = a; void unitId;
+          TRACE.push('r' + cb0.round + ' ' + (u ? u.name + ' ' + u.hp + '/' + u.maxHp + 'hp ap' + u.ap + ' @' + u.pos + (u.hidden ? ' H' : '') + ' w:' + u.weapon + (u.offWeapon ? '+' + u.offWeapon : '') + (u.res?.shadow ? ' sh' + u.res.shadow : '') + (u.mg ? ' ch' + u.mg.charge + ' co' + u.mg.cores + ' fx' + u.mg.flux : '') : '?') + ' ' + JSON.stringify(rest) + (e ? ' REFUSED ' + e : '') + (!e && c1 && c1.log.length > logN ? ' :: ' + c1.log.slice(logN).join(' / ').slice(0, 500) : '')); }
         if (!e) for (const f of PEND) f(); PEND = [];
         if (!e && cb0 && LIVE && String(a.type).startsWith('combat/') && a.unitId) { const u = cb0.units.find((q: any) => q.id === a.unitId); if (pcOf(u)) { const i = LIVE.ids[u.charId], k = verbKey(a); if (i != null) { const v = (VERBS[LIVE.st.perChar[i].door] ||= {}); v[k] = (v[k] || 0) + 1; } } }
         return e;
@@ -144,21 +164,22 @@ export function partyRun(cell: string, seed: string, lever = 'none'): PartyRun {
     }
     const cb = this.g.combat; if (!cb) return fight0.apply(this, args);
     const st = begin(cb, doors), ids: Record<string, number> = {}; cb.units.filter(pcOf).forEach((u: any, i: number) => { ids[u.charId] = i; });
-    LIVE = { cb, round: cb.round, st, ids };
+    LIVE = { cb, round: cb.round, st, ids, hid: {} };
     try { return fight0.apply(this, args); } finally {
       const c2 = this.g.combat; st.rounds = c2?.round || cb.round; st.won = !!(c2 && (c2.field || (c2.over && c2.over !== 'lost'))) || (this.g.phase !== 'lobby' && this.g.run?.state !== 'over');
       const on = st.perChar.map((q) => q.attacksOn); st.focus = st.attacks ? Math.max(...on) / st.attacks : 0;
+      for (const h of Object.values(LIVE?.hid || {})) if (h.n > 0) (st.hidden ||= []).push({ turns: h.n, end: 'fight' });
       fights.push(st); LIVE = null;
     }
   };
-  let res: any; VERBS = {};
+  let res: any; VERBS = {}; TRACE = [];
   try { FOCUS.on = lever === 'focus'; res = withLever(lever, n, () => simRun({ party: cell, route: 'gear', seed, maxStages: STAGES, maxFightRounds: 20 })); }
   finally { P.fight = fight0; FOCUS.on = false; LIVE = null; }
   res.fights.forEach((f: any, i: number) => { if (fights[i]) { fights[i].kind = f.kind; fights[i].won = f.won; fights[i].rounds = f.rounds;
     // HP entering it (the stop's record): the lowest member's share, and the members at 10% or less (a Downed member of a won fight stands up at 1 HP)
     const stop = (res.stops || []).find((q: any) => q.stage === f.stage && q.depth === f.depth); if (stop) { (fights[i] as any).enterMin = Math.min(...stop.hpEach); (fights[i] as any).enterLow = stop.hpEach.filter((h: number) => h <= 0.1).length; } } });
   const boss = res.fights.find((f: any) => f.kind === 'boss');
-  return { cell, lever, seed, stages: res.cleared, cleared: res.cleared >= 1, how: res.how, depth: res.depth, fights, lvlBoss: boss?.lvl ? boss.lvl.reduce((t: number, x: number) => t + x, 0) / boss.lvl.length : null, verbs: VERBS, errors: res.errors.length, err: res.errors.slice(0, 2).map((e: string) => e.slice(0, 900)) };
+  return { cell, lever, seed, stages: res.cleared, cleared: res.cleared >= 1, how: res.how, depth: res.depth, fights, lvlBoss: boss?.lvl ? boss.lvl.reduce((t: number, x: number) => t + x, 0) / boss.lvl.length : null, verbs: VERBS, ...(TRACE_ON ? { trace: TRACE } : {}), errors: res.errors.length, err: res.errors.slice(0, 2).map((e: string) => e.slice(0, 900)) };
 }
 
 // ---------------------------------------------------------------------------------------------- the tables
@@ -179,6 +200,7 @@ export function cellStats(rs: PartyRun[]) {
     downsFight: mean(fs.map((f) => f.downs)), focus: mean(fs.filter((f) => f.n > 1 && f.attacks > 0).map((f) => f.focus)), ff: mean(fs.map((f) => f.ff)), ffShare: (() => { const a = fs.reduce((t, f) => t + f.ff, 0); return dmg + a ? a / (dmg + a) : NaN; })(),
     healed: mean(fs.map((f) => f.healed)), wasted: (() => { const h = fs.reduce((t, f) => t + f.healed + f.healWasted, 0); return h ? fs.reduce((t, f) => t + f.healWasted, 0) / h : NaN; })(),
     apLeft: (() => { const t = fs.reduce((s, f) => s + f.turns, 0); return t ? fs.reduce((s, f) => s + f.apLeft, 0) / t : NaN; })(), lvlBoss: mean(rs.map((r) => r.lvlBoss ?? NaN)),
+    hiddenStretches: fs.flatMap((f: any) => f.hidden || []),
     firstDown: (() => { const m: Record<string, number> = {}; for (const f of fs) if (f.firstDown) m[f.firstDown] = (m[f.firstDown] || 0) + 1; return Object.entries(m).sort((a, b) => b[1] - a[1]).map(([k, v]) => k + ' ' + v).join(', '); })() };
 }
 export function report(all: PartyRun[]): string {
@@ -192,6 +214,21 @@ export function report(all: PartyRun[]): string {
   for (const c of cells) { const s = S(c); if (!s) continue;
     out.push('| ' + c + ' | ' + s.n + ' | ' + s.runs + ' | ' + pc0(s.clear) + ' ± ' + Math.round(100 * s.se) + ' | ' + s.lost + ' / ' + s.stalled + ' | ' + f1(s.fights) + ' | ' + f1(s.rPlain) + ', ' + f1(s.rElite) + ', ' + f1(s.rBoss) + ' | ' + f2(s.foesHead) + ' | ' + f2(s.gunHead) + ' | ' + f1(s.map) + ' | ' + f1(s.spawn) + ' (' + f1(s.spawnGun) + ') | ' + f1(s.before)
       + ' | ' + f2(s.atkRoundHead) + ' | ' + f1(s.dmgHead) + ' | ' + f1(s.dmgHeadRound) + ' | ' + pc0(s.r12dmg) + ', ' + pc0(s.r12downs) + '; ' + f1(s.r12atkHead) + '; ' + pc0(s.r12hitPct) + ' | ' + f2(s.downsFight) + ' | ' + pc0(s.focus) + ' | ' + f1(s.ff) + ' (' + pc0(s.ffShare) + ') | ' + f1(s.healed) + ' (' + pc0(s.wasted) + ') | ' + f1(s.apLeft) + ' | ' + f1(s.lvlBoss) + ' | ' + (s.firstDown || '-') + ' |'); }
+  // 0.32: the steady line in Survival: HP the party removed from foes a character-turn (its own, its Figments', its
+  // Outbursts'), the damage it took a character-turn, and the ratio
+  if (runs.some((r) => r.fights.some((f: any) => f.dealt != null))) {
+    out.push('', '| Cell | HP removed from foes a character-turn | HP taken a character-turn | Removed / taken |', '|' + ' --- |'.repeat(4));
+    for (const c of cells) { const fs: any[] = (by.get(c + '|none') || []).flatMap((r) => r.fights); const T = fs.reduce((t, f) => t + f.turns, 0); if (!T) continue;
+      const d = fs.reduce((t, f) => t + (f.dealt || 0), 0) / T, k = fs.reduce((t, f) => t + f.dmgTaken, 0) / T;
+      out.push('| ' + c + ' | ' + f1(d) + ' | ' + f1(k) + ' | ' + f2(k ? d / k : NaN) + ' |'); }
+  }
+  // 0.32: the Shadow window (turns a character ended Hidden in a row, and how each stretch ended)
+  if (runs.some((r) => r.fights.some((f: any) => (f.hidden || []).length))) {
+    out.push('', '| Cell | Hidden stretches | Turns Hidden a stretch (mean) | Ended by its own Break / seen / the fight\'s end | Stretches of 1, 2, 3+ turns |', '|' + ' --- |'.repeat(5));
+    for (const c of cells) { const hs: any[] = (by.get(c + '|none') || []).flatMap((r) => r.fights).flatMap((f: any) => f.hidden || []); if (!hs.length) continue;
+      const k = (e: string) => hs.filter((h) => h.end === e).length, len = (a: number, b: number) => hs.filter((h) => h.turns >= a && h.turns <= b).length;
+      out.push('| ' + c + ' | ' + hs.length + ' | ' + f1(mean(hs.map((h) => h.turns))) + ' | ' + k('break') + ' / ' + k('seen') + ' / ' + k('fight') + ' | ' + len(1, 1) + ', ' + len(2, 2) + ', ' + len(3, 99) + ' |'); }
+  }
   // HP entering the fights: a member who went down in a won fight walks on at 1 HP
   if (runs.some((r) => r.fights.some((f: any) => f.enterMin != null))) {
     out.push('', '| Cell | Fights entered with a member at 10% HP or less | Lost fights entered so | Lost fights entered with everyone above 10% |', '|' + ' --- |'.repeat(4));
