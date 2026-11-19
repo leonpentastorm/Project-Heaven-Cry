@@ -1,10 +1,10 @@
 # November 19 art continuation
 
-Updated 19 November 2026 at 11:26 UTC+7. The 88 entries in files 01–04 have **79 delivered**, **8 to do** and **1 held**. Review candidates require visual approval.
+Updated 19 November 2026 at 11:29 UTC+7. The 88 entries in files 01–04 have **83 delivered**, **4 to do** and **1 held**. Review candidates require visual approval.
 
 | File | Delivered | Total listed |
 | --- | ---: | ---: |
-| 01 | 29 | 37 |
+| 01 | 33 | 37 |
 | 02 | 11 | 11 |
 | 03 | 20 | 21 |
 | 04 | 19 | 19 |
@@ -26,10 +26,4 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 - 013 | File 01 | `kit-rim-wall-corner`: Rim wall corner | `art/sprites/kit/rim/wall-corner.png`
   - Preserve the old corner until the replacement passes both joins. At 256 px, the left opening must be y64–191 and the bottom opening x64–191. Match the original straight wall's steel texture, value, cap and centered cyan strip. The third draft in [rejected/013-join-v3](rejected/013-join-v3) was closest in finish but missed both openings.
 - 024 | File 01 | `kit-shrine-sigil_wall`: Sigil wall, shrine | `art/sprites/kit/shrine/sigil_wall.png`
-- 030 | File 01 | `kit-shrine-sigil_mark`: Sigil mark, shrine | `art/sprites/kit/shrine/sigil_mark.png`
-- 032 | File 01 | `kit-ahoc-pile`: Ground pile, ahoc | `art/sprites/kit/ahoc/pile.png`
-- 033 | File 01 | `kit-city-pile`: Ground pile, city | `art/sprites/kit/city/pile.png`
-- 034 | File 01 | `kit-field-pile`: Ground pile, field | `art/sprites/kit/field/pile.png`
 - 036 | File 01 | `kit-shrine-pile`: Ground pile, shrine | `art/sprites/kit/shrine/pile.png`
-
-Unreviewed scratch renders currently on disk: 30.

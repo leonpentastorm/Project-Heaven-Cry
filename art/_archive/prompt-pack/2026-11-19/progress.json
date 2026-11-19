@@ -1,9 +1,9 @@
 {
-  "updated": "19 November 2026 at 11:26 UTC+7",
+  "updated": "19 November 2026 at 11:29 UTC+7",
   "source_baseline": "2020b5c2aa620ec17103b7c11669f643342ed68f",
   "listed": 88,
-  "delivered": 79,
-  "eligible_remaining": 8,
+  "delivered": 83,
+  "eligible_remaining": 4,
   "held": [
     9
   ],
@@ -34,7 +34,11 @@
     27,
     28,
     29,
+    30,
     31,
+    32,
+    33,
+    34,
     35,
     37,
     38,
@@ -92,14 +96,8 @@
     66,
     13,
     24,
-    30,
-    32,
-    33,
-    34,
     36
   ],
-  "unreviewed_drafts_on_disk": [
-    30
-  ],
+  "unreviewed_drafts_on_disk": [],
   "image_generation_quota": null
 }
