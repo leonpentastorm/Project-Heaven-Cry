@@ -12554,3 +12554,35 @@ here is PROVISIONAL.
     Cover Them's Guard cost reads `tech_rule:guard.interpose_cost` (one copy of the interpose cost).
 5548. **Browser suites that fail only beside others** run one at a time (`apps/web/e2e/groups.json serial`: fx-room,
     magic, title, resources, capture-skills, picking).
+
+### Rules 1.72 (0.32 step 2), the effects lane's engine events and the standing vow (19 Nov 2026)
+
+The effects lane (`docs/design/handoffs/0.32-EFFECTS-AUDIT.md`, "Still open") drew six moments from view diffs or
+from data because the engine sent no event; the lead approved one engine event each. Every one goes through the one
+fx path (`emitFx`) with an existing kind: no new hook, op, trigger or export. No number changes; item 5705 is
+PROVISIONAL (where a vow changes out of a Survival run).
+
+5700. **A cleanse says what it removed.** The `cleanse` op (`effects/triggers.ts`; Soothe, the class moves' and the
+    conditions' cleanses) sends, for each condition it ends, the existing `boon` effect with word `cleanse` and the
+    condition (`cond`), as the Sigil's CLEANSE and Clear Water already do.
+5701. **A Bond the tie op ends is an event.** The `tie` op with `clear` (Let go, Snap, the Canticle's verses that end
+    their ties) sends the existing `stance` effect with what `untie`: the holder (`unit`), the far end (`target`) and the kind
+    (`how`). The client parts the line from it; a tie that ends any other way (a Down, the Attuner leaving, sight) is
+    still read from the view until it has an event of its own.
+5702. **A prayer's hurt carries its element.** A prayer's damage of an element (the storm prayers' lightning, an
+    intervention's) runs inside `withElement` with its damage type, so its `hurt` names it, as a Sigil's does; the
+    client no longer reads the prayer's data for it.
+5703. **Everyone Home's shields are numbered like any other.** Each ally's shield from the Miracle goes through the
+    one mend's effect (`mendShown`): the ward's number over the token.
+5704. **A prayer that only changes a state says its name.** When a prayer's own effects hurt, heal, ward, cleanse,
+    move or put a condition on no one but the one who prays (Luck, Resupply, Dig In, Hearthlight, Foreknowing...), the
+    engine sends the existing `stance` effect with what `prayer` and the prayer's data name as its `word`, on the unit
+    it landed on, else its tile, else the one who prays.
+5705. **The standing vow.** A Faithful character's vow is carried between fights (`Character.vowStanding`: the vow, the
+    ally it names, or fighting unsworn). It is set by the real action, `faith/vow` out of a fight (unitId the
+    character; an empty id: fighting unsworn), and sworn for the character as each fight starts, under the action's own
+    rule (one copy, `vowRefusal`: an ally to shield must be in the fight, Mercy needs a foe that can yield; refused, the
+    fight asks as before). The first choice may be made anywhere out of a fight; in a Survival run it is changed only at
+    a node whose kind's row in `survival.json` says `vow_change` (the rest); out of a run, any time out of a fight
+    (PROVISIONAL: the lead's call for Leon). An old save has no standing vow: the fight asks, as before. The device's
+    own store and the client's auto-swear are gone.

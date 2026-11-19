@@ -7,7 +7,7 @@ import { GLYPH_PATHS, SIGIL_INK, SIGIL_GLOW, SOUL_INK, SOUL_WARM } from '../glyp
 import { type ElementFx, type MissileKind, ELEMENTS, bubbles, elementFx, elementImpact, elementTrail, jag, mix, shardCss, shards, snapFrame, turretNode } from './elements';
 import { soulHandlers, soulBeat, discharge } from './soul';
 import { feelingHandlers, feelingBeat } from './feelings';
-import { faithHandlers, faithBeat, faithBatch, sealedBoon } from './faith';
+import { faithHandlers, faithBeat, faithBatch, sealedBoon, saidByPrayer } from './faith';
 import { silentBatch } from './silent';
 import { classHandlers, classBeat } from './classes';
 import { physHandlers, physBeat } from './physical';
@@ -972,8 +972,10 @@ const H: Record<string, Handler> = {
     else if (!e.ok) floatText('HOLDS', p, MUTED, { small: true });
   },
   stance(e) {
+    if (saidByPrayer(e)) return; // a state-only prayer's name: its landing says it (fx/faith.ts, rules 1.72 item 5704)
     const p = sawThen(e) ? centre(e.at) : null; if (!p) return;
     if (e.what === 'hide' && unit(e.unit)?.side !== 'pc') return; // its 'sight' hide says it (HIDDEN, fading where it stood)
+    if (!['prone', 'stand', 'brace', 'hide', 'overwatch'].includes(String(e.what))) { if (e.word) floatText(String(e.word).toUpperCase(), p, WHITE, { small: true }); return; } // a stance no module draws (a tie with no line ended: rules 1.72 item 5701): its word, if it has one
     const word = e.what === 'prone' ? 'PRONE' : e.what === 'stand' ? 'UP' : e.what === 'brace' ? 'BRACED' : e.what === 'hide' ? 'HIDDEN' : 'OVERWATCH';
     floatText(word, p, WHITE, { small: true });
     play(e.what === 'prone' ? 'body_fall' : e.what === 'overwatch' ? 'rack' : e.what === 'hide' ? 'sg_mask' : 'step', p, { rate: e.what === 'prone' ? 1.3 : 1, gain: e.what === 'hide' ? 0.35 : 0.6 });

@@ -1,31 +1,29 @@
-// 0.32 (to-do F): the vow pop-up's standing vow, sworn for the player through faith/vow at a fight's start.
-import { describe, expect, it, beforeEach } from 'vitest';
+// 0.32 (to-do F), rules 1.72 item 5705: the vow pop-up reads the standing vow the engine carries on the character,
+// and sets it through the real action (faith/vow out of a fight); each fight swears it as it starts.
+import { describe, expect, it } from 'vitest';
 import { setDevotionXp, devotionThreshold } from '@engine';
 import '../../../../packages/engine/test/helpers/yard16';
-import { fightWith, storyWith } from '../../../../packages/engine/test/helpers/perkfight';
-import { vowPopupView, setStandingVow, vowActionFor, clearStandingVows, swearsVows } from './standingVow';
+import { storyWith } from '../../../../packages/engine/test/helpers/perkfight';
+import { vowPopupView, standingVowAction, swearsVows, vowWords } from './standingVow';
 
 const faithful = (c: any) => { c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan'; c.skills.faith = 3; setDevotionXp(c, devotionThreshold(3)); };
-beforeEach(() => clearStandingVows());
 
 describe('the standing vow', () => {
   it('the pop-up asks only the viewer\'s Faithful characters, and is due until each has a choice (unsworn counts)', () => {
     const s = storyWith([{ name: 'Saint' }, { name: 'Doubter' }]);
     const [a, b] = Object.values(s.g.characters) as any[]; faithful(a); b.belief = { kind: 'atheist' };
     expect(swearsVows(s.g, a.id)).toBe(true); expect(swearsVows(s.g, b.id)).toBe(false);
-    let v = vowPopupView(s.g, 'host'); expect(v.chars.map((c) => c.name)).toEqual(['Saint']); expect(v.due).toBe(true);
-    setStandingVow(s.g, a.id, { unsworn: true }); v = vowPopupView(s.g, 'host'); expect(v.due).toBe(false);
+    let v = vowPopupView(s.g, 'host'); expect(v.chars.map((c) => c.name)).toEqual(['Saint']); expect(v.due).toBe(true); expect(v.chars[0].canChange).toBe(true);
+    s.act(standingVowAction(a.id, { unsworn: true }) as any); v = vowPopupView(s.g, 'host'); expect(v.due).toBe(false); expect(vowWords(v.chars[0])).toBe('Fighting unsworn');
   });
-  it('at a fight\'s start the standing vow is the real faith/vow (Shield names the ally\'s unit), and the engine takes it', () => {
-    const f = fightWith([{ name: 'Saint', skills: { faith: 3 } }, { name: 'Gun' }], [{ at: 'F6' }]);
-    const c: any = f.g.characters[f.pc.charId!]; faithful(c);
-    const shield = (vowPopupView(f.g, 'host').chars[0].vows.find((x) => x.needsAlly))!;
-    const ally: any = f.pcs[1];
-    setStandingVow(f.g, c.id, { id: shield.id, allyCharId: ally.charId });
-    const me = f.turn(f.pc), a = vowActionFor(f.g, f.cb, me)!;
-    expect(a).toEqual({ type: 'faith/vow', unitId: me.id, id: shield.id, allyId: ally.id });
-    f.act(a as any);
-    expect(f.unit(me.id).vow).toMatchObject({ id: shield.id, allyId: ally.id, state: 'sworn' });
-    setStandingVow(f.g, c.id, { unsworn: true }); expect(vowActionFor(f.g, f.cb, me)).toBeNull();
+  it('a Shield vow names the ally; the fight that starts swears it on the ally\'s unit', () => {
+    const s = storyWith([{ name: 'Saint', skills: { faith: 3 } } as any, { name: 'Gun' }]);
+    const [a, b] = Object.values(s.g.characters) as any[]; faithful(a);
+    const shield = vowPopupView(s.g, 'host').chars[0].vows.find((x) => x.needsAlly)!;
+    s.act(standingVowAction(a.id, { id: shield.id, allyCharId: b.id }) as any);
+    expect(vowWords(vowPopupView(s.g, 'host').chars[0])).toBe('Vow: ' + shield.name + ' (Gun)');
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Vow', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '12,9' }] } } } as any);
+    const cb: any = s.g.combat, me = cb.units.find((x: any) => x.charId === a.id), al = cb.units.find((x: any) => x.charId === b.id);
+    expect(me.vow).toMatchObject({ id: shield.id, allyId: al.id, state: 'sworn' });
   });
 });

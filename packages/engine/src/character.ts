@@ -129,6 +129,10 @@ export interface Character extends Sheet {
    * by dice, "<patronId>.<hymnId>" (an Atheist's, or kept from another patron under an Open rule); the vow of the
    * current fight (also on the unit); the session each rite was last kept in; the faith rules revision (16). */
   faithPieces?: Record<string, number>; hymns?: string[]; vow?: Vow | null; ritesKept?: Record<string, number>; faithRev?: number;
+  /** Rules 1.72 item 5705: the standing vow, carried between fights (faith/vow out of a fight): the vow sworn for this
+   * character at each fight's start (id), the ally it names (a character id), or id null: fighting unsworn. Absent (an
+   * old save): no choice made, the fight asks. Changed only where faith.ts vowChangeNow allows. */
+  vowStanding?: { id: string | null; allyCharId?: string } | null;
   /** Rules 1.6.1 (Faith 2.1): Devotion XP, the total (devotion is the level it reaches, kept in step; devotionXpOf);
    * the tag and Narrator caps this session, scene and fight (faith.ts FaithTally); the pact left, for the 90-day
    * cooldown (day = g.day when they left); a patron's grudge after a switch (faith.ts Grudge). */

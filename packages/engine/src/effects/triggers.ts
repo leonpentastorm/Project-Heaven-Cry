@@ -432,7 +432,8 @@ O('cleanse', ANY, true, ['condition', 'family', 'count', 'newest'], 'end conditi
   const u = pick(ev, e); if (!u) return;
   let ids = e.condition ? list(e.condition).map(condId).filter((id) => condHas(u, id)) : debuffsOf(u, e.family || undefined);
   if (e.newest) ids = [...ids].sort((a, b) => (u.condAt?.[b] || 0) - (u.condAt?.[a] || 0)); // rules 1.33 (Soothe): the newest first (condAt: the order they landed in)
-  for (const id of ids.slice(0, e.count || ids.length)) endCond(u, id, ev.cb);
+  // rules 1.72 item 5700: each condition ended is shown (the cleanse's existing fx, `boon` word cleanse: the Sigil's, Clear Water's)
+  for (const id of ids.slice(0, e.count || ids.length)) { endCond(u, id, ev.cb); if (ev.cb && !ev.preview) emitFx(ev.cb, 'boon', { target: u.id, at: u.pos, word: 'cleanse', cond: id }); }
 });
 O('cond_rounds', ['cond_incoming'], false, ['max', 'add'], 'change the rounds of the condition being put on: at most max, or add', (ev, e) => {
   if (typeof e.max === 'number') ev.ctx.rounds = Math.min(ev.ctx.rounds || 1, e.max);
@@ -496,8 +497,11 @@ O('zone', ANY, true, ['kind', 'at', 'within', 'rounds', 'pool', 'clear'], 'lay a
 });
 O('tie', ANY, true, ['kind', 'clear'], 'tie the holder to the target by a kind (P8: kit.ts tie; refused at the holder\'s cap: nothing said); clear: "target" ends the holder\'s ties of that kind to the target, "all" every one of that kind it holds', (ev, e) => {
   const t = pick(ev, e);
-  if (e.clear === 'all') return untie(ev.cb, (x) => x.kind === e.kind && x.from === ev.self.id) > 0 ? undefined : false;
-  if (e.clear === 'target') return t && untie(ev.cb, (x) => x.kind === e.kind && x.from === ev.self.id && x.to === t.id) > 0 ? undefined : false;
+  // rules 1.72 item 5701: a tie this op ends is shown (the existing `stance` fx, what `untie`: the holder, the far end as
+  // target, the kind as how), so the client draws the parting from the event, not from two views
+  const ended = (pick: (x: any) => boolean) => { const gone: any[] = []; const n = untie(ev.cb, (x) => { const m = pick(x); if (m) gone.push(x); return m; }); for (const x of gone) emitFx(ev.cb, 'stance', { unit: x.from, at: ev.self.pos, what: 'untie', target: x.to, how: x.kind }); return n; };
+  if (e.clear === 'all') return ended((x) => x.kind === e.kind && x.from === ev.self.id) > 0 ? undefined : false;
+  if (e.clear === 'target') return t && ended((x) => x.kind === e.kind && x.from === ev.self.id && x.to === t.id) > 0 ? undefined : false;
   return t && tie(ev.cb, ev.self, t, e.kind) ? undefined : false;
 });
 O('spawn', ANY, true, ['block', 'at'], 'make an owned unit (P9: owned.ts spawnOwned) from a data block (enemies.json companions, a system\'s forms) at the holder\'s level, on the free tile nearest the holder (at: self), the target or the event\'s tile; tied to the holder (owned); refused at its cap (ties_max:owned): nothing said', (ev, e) => {

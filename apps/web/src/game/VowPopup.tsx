@@ -3,8 +3,9 @@
 // asking for the ally it guards, and "Fight unsworn". It opens by itself when a mode is entered and a character has no
 // choice yet (the camp), and from the rest's "Your vow" button, where the vow is changed.
 import React from 'react';
-import { getState } from './store';
-import { vowPopupView, setStandingVow, vowWords, type VowPopupChar } from './standingVow';
+import { getState, subscribe, act } from './store';
+import { vowPopupView, standingVowAction, vowWords, type VowPopupChar } from './standingVow';
+import type { Action } from '@engine';
 import { vowIconUri } from './faithArt';
 import { FAITH_INK } from './faithView';
 import { ensureMotionCss } from '../screens/shared';
@@ -12,10 +13,10 @@ import { ensureMotionCss } from '../screens/shared';
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2' };
 
 function CharBlock({ c, onPick }: { c: VowPopupChar; onPick: () => void }) {
-  const st = getState(), g = st.game!;
   const [shield, setShield] = React.useState<string | null>(null);
   const cur = c.current, curId = cur && !('unsworn' in cur) ? cur.id : null;
-  const pick = (id: string, allyCharId?: string) => { setStandingVow(g, c.charId, { id, ...(allyCharId ? { allyCharId } : {}) }); setShield(null); onPick(); };
+  // rules 1.72 item 5705: the real action sets the standing vow on the character (the engine refuses a change away from a rest)
+  const pick = (id: string, allyCharId?: string) => { act(standingVowAction(c.charId, { id, ...(allyCharId ? { allyCharId } : {}) }) as Action); setShield(null); onPick(); };
   return (
     <div data-phc-vow-char={c.charId} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: FAITH_INK }}>{c.name.toUpperCase()} · TO {c.patron.toUpperCase()}</span>
@@ -40,7 +41,7 @@ function CharBlock({ c, onPick }: { c: VowPopupChar; onPick: () => void }) {
             : <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>No ally in the squad to shield.</span>}
         </div>
       ) : null}
-      <button type="button" data-phc-vow-unsworn="" aria-pressed={!!cur && 'unsworn' in cur} onClick={() => { setStandingVow(g, c.charId, { unsworn: true }); onPick(); }}
+      <button type="button" data-phc-vow-unsworn="" aria-pressed={!!cur && 'unsworn' in cur} onClick={() => { act(standingVowAction(c.charId, { unsworn: true }) as Action); onPick(); }}
         style={{ alignSelf: 'flex-start', minHeight: 34, padding: '0 12px', borderRadius: 8, border: '1px solid ' + ink.line, background: cur && 'unsworn' in cur ? ink.raised : 'transparent', color: ink.text, fontFamily: 'inherit', cursor: 'pointer' }}>Fight unsworn</button>
     </div>
   );
@@ -49,7 +50,7 @@ function CharBlock({ c, onPick }: { c: VowPopupChar; onPick: () => void }) {
 /** The pop-up. open: shown; onClose: the player is done (every character has a choice) or closes it. */
 export function VowPopup({ onClose, at }: { onClose: () => void; at: 'enter' | 'rest' }) {
   ensureMotionCss();
-  const st = getState(), v = vowPopupView(st.game, st.me.id);
+  const st = React.useSyncExternalStore(subscribe, getState), v = vowPopupView(st.game, st.me.id);
   const [, redraw] = React.useReducer((x: number) => x + 1, 0);
   if (!v.chars.length) return null;
   const done = !vowPopupView(st.game, st.me.id).due;
@@ -77,9 +78,9 @@ export function VowOnEnter({ scope }: { scope: string }) {
 }
 /** The rest's button (a rest is where the vow changes): the standing vow in words, opening the pop-up. */
 export function VowAtRest() {
-  const st = getState(), v = vowPopupView(st.game, st.me.id);
+  const st = React.useSyncExternalStore(subscribe, getState), v = vowPopupView(st.game, st.me.id);
   const [open, setOpen] = React.useState(false);
-  if (!v.chars.length) return null;
+  if (!v.chars.some((c) => c.canChange)) return null; // rules 1.72 item 5705: the engine says where a vow changes (faithView vowChange)
   return (
     <>
       <button type="button" data-phc-vow-rest="" onClick={() => setOpen(true)} title={v.chars.map(vowWords).join(' · ')}

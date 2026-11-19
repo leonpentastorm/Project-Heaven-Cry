@@ -6,10 +6,9 @@ import { faithPanel, FAITH_INK, FAITH_GOLD } from '../game/faithView';
 import { accentOf, patronFace, patronMarkUri, vowIconUri } from '../game/faithArt';
 import { patronOfLog, FACE_BOX } from './faithTab';
 import { foldVals } from '../game/fold';
-import { standingVow, vowActionFor } from '../game/standingVow';
 
 // ---------- the vow prompt (round 1, a Faithful character's first turn; skippable) ----------
-const SKIPPED = new Set(), SWORN = new Set();
+const SKIPPED = new Set();
 /** The quiet prompt: the 6 vows as buttons; "Shield" asks for the ally (a chip or a click on the grid). */
 export function vowPromptVals(sc, g, cb, cur, mineTurn, act) {
   const no = { show: false, vows: [], allies: [], hasAllies: false, held: false, heldLine: '', heldTip: '' };
@@ -21,11 +20,9 @@ export function vowPromptVals(sc, g, cb, cur, mineTurn, act) {
   if (!mineTurn || !cur || !cur.charId || cb.round !== 1 || cur.vow || cb.over) return no;
   const c = g.characters[cur.charId]; if (!c || beliefOf(c).kind !== 'faithful' || (c.skills?.faith || 0) < FAITH_MIN) return no;
   const key = (g.code || '') + ':' + (cb.id || cb.name) + ':' + cur.id; if (SKIPPED.has(key)) return no;
-  // 0.32 (to-do F): the standing vow sworn at the mode's start or at a rest (game/standingVow.ts) is sworn for the player
-  // through the real action, once a fight; unsworn: no prompt. If the engine refuses it here, the prompt shows as before.
-  const sv = standingVow(g, cur.charId);
-  if (sv && sv.unsworn) return no;
-  if (sv && !SWORN.has(key)) { SWORN.add(key); const a = vowActionFor(g, cb, cur); if (a) { setTimeout(() => { try { act(a); } catch { /* the prompt shows */ } }, 0); return no; } }
+  // rules 1.72 item 5705: the standing vow (the engine's, c.vowStanding) is sworn as the fight starts; fighting unsworn
+  // asks nothing. A standing vow the fight refused (Mercy with no foe that can yield) leaves the prompt as before.
+  if (c.vowStanding && !c.vowStanding.id) return no;
   const v = faithView(g, c.id); if (!v) return no;
   const S = sc.state, shield = S.vowShield === key;
   const swear = (id, allyId) => { act({ type: 'faith/vow', unitId: cur.id, id, ...(allyId ? { allyId } : {}) }); sc.setState({ vowShield: null }); };

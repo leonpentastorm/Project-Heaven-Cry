@@ -193,29 +193,28 @@ export function prayerData(e: { kind?: string; id?: string; patron?: string | nu
   if (e.kind === 'miracle') return p.miracle && (!id || p.miracle.id === id) ? p.miracle : null;
   return (p.hymns || []).find((h: any) => h.id === id) || null;
 }
-/** The element of a prayer's damage (its data's damage_type, as the elements read it), or null for plain light. */
-export function prayerElement(entry: any): string | null {
-  for (const x of entry?.effects || []) if (x && x.damage_type) { const el = elementId(x.damage_type); return el === 'raw' ? null : el; }
-  return null;
-}
 /** Does the prayer's data wound (an HP change below zero, or a damage op)? Its light is the patron's then, cracked. */
 export const prayerWounds = (entry: any): boolean => (entry?.effects || []).some((x: any) => (x?.stat === 'hp' && Number(x.value) < 0) || /damage|execute/.test(String(x?.op || '')));
 const TILE = /^\d+,\d+$/;
 /** Ties a prayer to what it did (pure; faithBatch): every unit the batch's effects land on until the next action (its
- *  targets: _hits, the units its light goes to), and the prayer's element (its data's damage_type) onto its wounds, so
- *  they look and sound like it (a hurt's own element wins). */
+ *  targets: _hits, the units its light goes to); the element its wounds carry (rules 1.72 item 5702: the engine's hurt
+ *  names it; _el, the element's id), each such wound heard (_prayer); and a state-only prayer's name, the engine's
+ *  stance `prayer` (item 5704; _name, the stance marked said: the landing draws it). */
 function prayerTies(evs: any[], i: number) {
-  const e = evs[i], entry = prayerData(e), el = prayerElement(entry), hits: string[] = [];
+  const e = evs[i], hits: string[] = []; let el: string | null = null;
   const add = (id: unknown) => { const s = id == null ? '' : String(id); if (s && s !== e.unit && !hits.includes(s)) hits.push(s); };
   if (e.target && !TILE.test(String(e.target))) add(e.target); // a tile prayer's target is its tile
   for (let j = i + 1; j < evs.length; j++) {
     const x = evs[j]; if (!x) continue;
     if (x.k === 'prayer' || x.k === 'turn' || x.k === 'shot' || x.k === 'melee' || x.k === 'move') break;
+    if (x.k === 'stance' && x.what === 'prayer' && x.word) { e._name = String(x.word); e._nameOn = x.unit || null; e._nameAt = x.at || null; x._said = 1; continue; }
     if (x.k === 'hurt' || x.k === 'heal' || x.k === 'boon' || x.k === 'shove' || (x.k === 'cond' && x.target !== e.unit)) { add(x.target); e._effect = 1; }
-    if (x.k === 'hurt' && el && !x.element) { x.element = el; x._prayer = 1; }
+    if (x.k === 'hurt' && x.element) { const id = elementId(x.element); if (id !== 'raw') { el = el || id; x._prayer = 1; } }
   }
   e._hits = hits; e._el = el; if (!e._effect) e._effect = 0;
 }
+/** A stance the prayer's landing says (its state-only name: prayerTies marked it): the stance handlers draw nothing. */
+export const saidByPrayer = (e: any): boolean => !!e && e.k === 'stance' && !!e._said;
 /** A Ward that is the Chaplain's (faithBatch marked its boon): the boon draws nothing; the seal is drawn instead. */
 export const sealedBoon = (e: any): boolean => !!e && e.k === 'boon' && !!e._seal;
 
@@ -317,7 +316,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
    *  from it), a ring in the light closes on it; a storm's wound is a bolt from above (its element: the hurt plays the
    *  impact and its sound). Nothing touched but a state: the prayer's own name (its data's `name`) where it lands. */
   const landOn = (e: any, from: Pt | null, ink: string, delay: number) => {
-    const hits: string[] = Array.isArray(e._hits) ? e._hits : [], entry = prayerData(e);
+    const hits: string[] = Array.isArray(e._hits) ? e._hits : [];
     if (e._el === 'shock' && hits.length) play('thunder' as Sfx, at(posAny(hits[0])), { gain: 0.9, delay }); // the storm's prayers: thunder as the bolts land
     const side = (id: string) => (K.sideOf ? K.sideOf(id) : null), mine = K.sideOf ? K.sideOf(e.unit) : null;
     hits.forEach((id, i) => {
@@ -333,9 +332,10 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
           : [{ filter: 'none', translate: '0 0' }, { filter: 'brightness(1.45) drop-shadow(0 0 8px ' + ink + ')', translate: '0 -4px', offset: 0.35 }, { filter: 'brightness(1.2) drop-shadow(0 0 4px ' + ink + ')', translate: '0 -3px', offset: 0.7 }, { filter: 'none', translate: '0 0' }], { duration: 620, easing: 'ease-out' });
       }, delay + i * 60);
     });
-    // a state only (Resupply, Dig In, Hearthlight, Foreknowing...): its name over the unit it is on, or over the one who prays
-    if (!e._effect && entry?.name) {
-      const q = at((TILE.test(String(e.target || '')) ? e.target : posAny(e.target)) || e.targetAt || e.at || posAny(e.unit)); if (q) fxMarker(q, 'data-phc-prayer-name', String(entry.name)); if (q) floatText(String(entry.name).toUpperCase(), { ...q, y: q.y + q.s * 0.55 }, FAITH_INK, { small: true, delay: delay + 80 });
+    // a state only (Resupply, Dig In, Hearthlight, Foreknowing...): its name (the engine's stance, rules 1.72 item 5704)
+    // over the unit it is on, or its tile, or over the one who prays
+    if (e._name) {
+      const q = at(e._nameAt || posAny(e._nameOn) || e.at || posAny(e.unit)); if (q) fxMarker(q, 'data-phc-prayer-name', String(e._name)); if (q) floatText(String(e._name).toUpperCase(), { ...q, y: q.y + q.s * 0.55 }, FAITH_INK, { small: true, delay: delay + 80 });
     }
   };
   return {

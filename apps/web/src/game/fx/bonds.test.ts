@@ -94,6 +94,15 @@ describe('the moments, through play.ts\'s handlers', () => {
     vi.advanceTimersByTime(400);
     expect(floats()).toEqual([KIND.id.toUpperCase() + ' BROKEN']);
   });
+  it('rules 1.72 item 5701: the engine stance untie (Let go) plays the BREAK from the event, and the view does not play it again', () => {
+    setContext(game([tie(GUN.id)]), 'combat');
+    const ev = { k: 'stance', what: 'untie', unit: MED.id, target: GUN.id, how: KIND.id, at: MED.pos, n: 3 };
+    playFx(ev as any);
+    expect(traces()).toEqual(['break']);
+    const after = game([]); after.combat.fx = [ev]; setContext(after, 'combat'); // the next view: the tie is gone, the event names it
+    vi.advanceTimersByTime(500);
+    expect(traces()).toEqual(['break']); expect(floats()).toEqual([KIND.id.toUpperCase() + ' BROKEN']);
+  });
 });
 
 describe('0.32: Tending down a Bond that is not a heal', () => {

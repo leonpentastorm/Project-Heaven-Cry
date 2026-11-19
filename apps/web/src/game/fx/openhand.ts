@@ -37,7 +37,7 @@ type Shape = (typeof SHAPES)[number];
  *  Sweep's fall, or none (the base handlers keep it). */
 export function openHandFxOf(e: Partial<FxEvent> & { k: string }): 'blow' | 'form' | 'swept' | 'sway' | 'breath' | null {
   if (e.k === 'melee' && e.cat === 'unarmed') return 'blow';
-  if (e.k === 'stance' && typeof e.word === 'string' && e.word) return e.what === 'swept' ? 'swept' : e.what === 'sway' ? 'sway' : e.what === 'breath' ? 'breath' : 'form';
+  if (e.k === 'stance' && typeof e.word === 'string' && e.word && !(e as any)._said) return e.what === 'swept' ? 'swept' : e.what === 'sway' ? 'sway' : e.what === 'breath' ? 'breath' : 'form';
   return null;
 }
 /** The beat an Open Hand event holds the stage (ms at Fast), or undefined: the others keep theirs. A blow keeps its own
