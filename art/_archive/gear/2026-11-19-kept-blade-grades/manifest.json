@@ -2466,6 +2466,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-kemizuchi_strikers--celestial",
+      "path": "art/icons/gear/weapon-kemizuchi_strikers--celestial.png",
+      "sha256": "28751d28519690f0858912f32de0df55e11f682f9f1a7ae5e35e98c31a75e8fe",
+      "label": "Kemizuchi Strikers — Celestial",
+      "family": "weapon-kemizuchi_strikers",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-kemizuchi_strikers--celestial.png",
+        "sha256": "11f8d1a8379a1c87349ac9057ab38218518e42cbf80fbe137d4ca5eb17e893e3"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-kemizuchi_strikers--celestial.png",
+        "sha256": "28751d28519690f0858912f32de0df55e11f682f9f1a7ae5e35e98c31a75e8fe"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-kemizuchi_strikers--celestial.txt",
+        "sha256": "1f9eefc3087ad34b9574d8697900feb597cabcbf0fdc6b94a057bc585871d846"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_strikers.png",
+          "sha256": "d4e4963718ef806fee94a92b1ec4f59d5ed9fe34de8aec489caf0ec669c83512"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_strikers--relic.png",
+          "sha256": "2111cb87ed1720475ea897477f0b9396ed4b0a2da656a0250eb6f43a2c7cd5ab"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_strikers--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_strikers--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_strikers--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_strikers--celestial.png"
+      },
+      "export_hashes": {
+        "256": "62b01b69fff37bc07f33b7d4fabad1eb519cf39bfbfc0afeebeeff28ebcc384a",
+        "128": "15f79d209b9ff31c466ca9cc73e337f58167b7470d8af0ade6fdf51602a0ddf6",
+        "64": "7518e9baf6c0366182159c196440686c6fc809fb018638adf16afacfde176781",
+        "32": "f3cd5ae113af3b21ff58c233bd8d4c29fbf8f5708098f62ef12287cf7844ec28"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-kemizuchi_strikers",
+      "outline": {
+        "solid_alpha_iou": 0.9616665134552896,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 42
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
