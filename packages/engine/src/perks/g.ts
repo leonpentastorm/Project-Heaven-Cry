@@ -16,7 +16,7 @@ import { mod, strengthOf } from '../character';
 import { alive, dist, isMelee, canJam, objectsOf, trapKnown } from '../combat';
 import { isTrap } from '../objects';
 import { HEARING } from '../tactics';
-import { applyCond, condOn } from '../magic';
+import { applyCond } from '../magic';
 import { SKILL, WEAPON, PERK } from '../data';
 import { npcsOf, sideRollMod } from '../game';
 import { foreseeVote } from '../game';
@@ -26,6 +26,7 @@ import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
 import { loseAp } from '../effects/cost';
 import { stagger } from '../unitstate';
 import { restoreConds } from '../magic';
+import { readThem } from './f';
 
 // ---------- small helpers ----------
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
@@ -160,7 +161,7 @@ register({
       const n = tierII(h) ? 2 : 1, found: { what: string; owner?: string }[] = [];
       for (const o of objectsOf(cb)) { if (found.length >= n) break; if (isTrap(o) && !trapKnown(o, 'pc')) { const k: any = o; if (k.side) (k.knownBy ||= []).push('pc'); else o.hidden = false; found.push({ what: 'a trap at ' + o.pos, owner: k.owner }); } }
       const foes = cb.units.filter((t) => t.side !== u.side && alive(t) && !t.analyzedBy && !t.companion).sort((a, b) => b.hp - a.hp || (a.id < b.id ? -1 : 1));
-      for (const t of foes) { if (found.length >= n) break; t.analyzedBy = u.name; if (!condOn(t, 'read_them_ii')) applyCond(cb, rngOf(h, ctx), u, t, 'read_them', undefined, undefined, { skipSave: true }); found.push({ what: 'how ' + t.name + ' fights (Read Them)', owner: t.id }); }
+      for (const t of foes) { if (found.length >= n) break; t.analyzedBy = u.name; readThem(cb, rngOf(h, ctx), u, t); found.push({ what: 'how ' + t.name + ' fights (Read Them)', owner: t.id }); }
       if (!found.length) return;
       const linked = found.length === 2 && !!found[0].owner && found[0].owner === found[1].owner;
       say(cb, u.name + '\'s eye catches what doesn\'t fit (' + (PERK[h.itemId]?.name || '') + '): ' + found.map((f) => f.what).join('; ') + (found.length === 2 ? (linked ? ' · connected' : ' · not connected') : '') + '.');

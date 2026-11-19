@@ -1895,7 +1895,7 @@
               },
               "limit": {
                 "per": "per_turn",
-                "n": 2,
+                "n": {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]},
                 "shared": "shadow_gain"
               },
               "fx": {
@@ -1928,7 +1928,7 @@
               },
               "limit": {
                 "per": "per_turn",
-                "n": 2,
+                "n": {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]},
                 "shared": "shadow_gain"
               },
               "and": [
@@ -1957,7 +1957,7 @@
               },
               "limit": {
                 "per": "per_turn",
-                "n": 2,
+                "n": {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]},
                 "shared": "shadow_gain"
               },
               "fx": {

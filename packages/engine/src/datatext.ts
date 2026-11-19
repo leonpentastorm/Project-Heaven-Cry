@@ -49,17 +49,23 @@ export function numberOf(x: number | NumberBlock, src: (of: string) => number = 
   if (typeof x.max === 'number') v = Math.min(x.max, v);
   return v;
 }
-/** Rules 1.70 item 5547 (P6): THE resolver of a data reference a number block may name, a value that belongs to no item:
- * `tech_rule:<path>`, a number of techniques.json `rules` (Cover Them's Guard cost reads tech_rule:guard.interpose_cost).
- * NaN for anything else (the validator refuses a reference that does not resolve). effects/triggers.ts sourceOf and the
- * texts below read it. */
+// the data a reference's namespace reads (dataRef below)
+const REF_ROOTS: Record<string, () => any> = { tech_rule: () => (techniquesJ as any).rules, rule: () => rulesJ, cond: () => CONDS_BY_ID() };
+let condsById: Record<string, any> | null = null;
+const CONDS_BY_ID = () => (condsById ||= Object.fromEntries(((conditionsJ as any).items || []).map((c: any) => [c.id, c])));
+/** Rules 1.70 item 5547 (P6): THE resolver of a data reference a number block may name, a value that belongs to no item
+ * (or to another file's row): `tech_rule:<path>`, a number of techniques.json `rules` (Cover Them's Guard cost reads
+ * tech_rule:guard.interpose_cost); `rule:<path>`, a number of rules.json (the Shadow gains' shared limit reads
+ * rule:shadow.door_gains_per_turn); `cond:<id>.<path>`, a number of a conditions.json row (Read Them's card reads
+ * cond:read_them.effects.0.value). NaN for anything else (the validator refuses a reference that does not resolve).
+ * effects/triggers.ts sourceOf and the texts below read it; tools/text_numbers.py data_ref is its Python twin. */
 export function dataRef(of: string): number {
-  const i = of.indexOf(':'), ns = of.slice(0, i), path = of.slice(i + 1);
-  if (ns === 'tech_rule') { const v = lookup((techniquesJ as any).rules, path); return typeof v === 'number' ? v : NaN; }
-  return NaN;
+  const i = of.indexOf(':'), ns = of.slice(0, i), path = of.slice(i + 1), root = REF_ROOTS[ns];
+  if (!root) return NaN;
+  const v = lookup(root(), path); return typeof v === 'number' ? v : NaN;
 }
 /** A number block that reads only data references (dataRef), worked out; null for any other block (it waits on a fight). */
-const blockOfRefs = (v: any): number | null => (isNumberBlock(v) && !(v.steps || []).length && (v.per || []).every((p) => /^tech_rule:/.test(p.of)) ? numberOf(v, dataRef) : null);
+const blockOfRefs = (v: any): number | null => (isNumberBlock(v) && !(v.steps || []).length && (v.per || []).every((p) => p.of.slice(0, p.of.indexOf(':')) in REF_ROOTS) ? numberOf(v, dataRef) : null);
 
 const PH = /\{=(\.?[A-Za-z0-9_$]+(?:\.[A-Za-z0-9_$]+)*)(?:\|([a-z]+))?\}/g;
 const FORMATS = ['', 'abs', 'signed', 'pct', 'more', 'less'];

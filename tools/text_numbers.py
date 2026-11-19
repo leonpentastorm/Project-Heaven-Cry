@@ -84,19 +84,29 @@ def lookup(root, path):
             raise KeyError(path)
     return node
 
-# Rules 1.70 item 5547 (P6): techniques.json `rules`, for a number block of data references (datatext.ts dataRef); set
-# by resolve_pack from the pack it is given (or loaded from data/ when a caller renders one text alone)
-TECH_RULES = None
-def data_ref(of):
-    """A data reference's value (datatext.ts dataRef): tech_rule:<path> reads techniques.json rules; None otherwise."""
-    global TECH_RULES
-    ns, _, path = of.partition(":")
-    if ns != "tech_rule": return None
-    if TECH_RULES is None:
+# Rules 1.70 item 5547 (P6): the data a number block of data references reads (datatext.ts dataRef): techniques.json
+# `rules` (tech_rule:), rules.json (rule:) and conditions.json's rows by id (cond:<id>.<path>); set by resolve_pack from the
+# pack it is given (or loaded from data/ when a caller renders one text alone)
+REF_DATA = {}
+REF_SPACES = ("tech_rule", "rule", "cond")
+def _ref_root(ns):
+    if ns not in REF_DATA:
         import json, os
-        TECH_RULES = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "techniques.json"), encoding="utf-8")).get("rules") or {}
-    node = TECH_RULES
-    for part in path.split("."): node = node.get(part) if isinstance(node, dict) else None
+        stem = {"tech_rule": "techniques", "rule": "rules", "cond": "conditions"}[ns]
+        REF_DATA[ns] = _ref_of(ns, json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", stem + ".json"), encoding="utf-8")))
+    return REF_DATA[ns]
+def _ref_of(ns, obj):
+    if ns == "tech_rule": return (obj or {}).get("rules") or {}
+    if ns == "cond": return {c.get("id"): c for c in (obj or {}).get("items") or [] if isinstance(c, dict)}
+    return obj or {}
+def data_ref(of):
+    """A data reference's value (datatext.ts dataRef): tech_rule:<path> reads techniques.json rules, rule:<path> rules.json,
+    cond:<id>.<path> a conditions.json row; None otherwise."""
+    ns, _, path = of.partition(":")
+    if ns not in REF_SPACES: return None
+    node = _ref_root(ns)
+    for part in path.split("."):
+        node = (node[int(part)] if part.isdigit() and int(part) < len(node) else None) if isinstance(node, list) else node.get(part) if isinstance(node, dict) else None
     return node if isinstance(node, (int, float)) and not isinstance(node, bool) else None
 def block_of_refs(v):
     """A number block whose parts are all data references, worked out (datatext.ts blockOfRefs); None otherwise."""
@@ -153,8 +163,8 @@ def is_text(path):
 
 def resolve_pack(data, errors=None):
     """Fill every placeholder of the pack in place ({file stem: parsed JSON}). Returns how many were filled."""
-    global TECH_RULES
-    if isinstance(data.get("techniques"), dict): TECH_RULES = data["techniques"].get("rules") or {}
+    for ns, stem in (("tech_rule", "techniques"), ("rule", "rules"), ("cond", "conditions")):
+        if isinstance(data.get(stem), dict): REF_DATA[ns] = _ref_of(ns, data[stem])
     n = 0
     for stem in sorted(data):
         for chain, item in items(data[stem]):

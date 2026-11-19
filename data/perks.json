@@ -4992,14 +4992,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "text": "I: +{=tiers.I.numbers.save} on your saves against a spell or condition that has already hit you this fight. II: +{=tiers.II.numbers.save} on your saves against a spell or condition that has already hit you this fight.",
-      "effects": [
-        {
-          "op": "save_mod",
-          "value": 3,
-          "target": "self",
-          "when": "against a spell or condition that has already hit you this combat"
-        }
-      ],
+      "effects": [],
       "tiers": {
         "I": {
           "requires": [
@@ -5011,14 +5004,7 @@
           "ap_cost": null,
           "text": "+{=tiers.I.numbers.save} on your saves against a spell or condition that has already hit you this fight.",
           "short": "+{=tiers.I.numbers.save} on saves against what already hit you this fight",
-          "effects": [
-            {
-              "op": "save_mod",
-              "value": 3,
-              "target": "self",
-              "when": "against a spell or condition that has already hit you this combat"
-            }
-          ],
+          "effects": [],
           "numbers": {
             "save": 3
           }
@@ -5033,14 +5019,7 @@
           "ap_cost": null,
           "text": "+{=tiers.II.numbers.save} on your saves against a spell or condition that has already hit you this fight.",
           "short": "+{=tiers.II.numbers.save}",
-          "effects": [
-            {
-              "op": "save_mod",
-              "value": 5,
-              "target": "self",
-              "when": "against a spell or condition that has already hit you this combat"
-            }
-          ],
+          "effects": [],
           "replaces_tier_I": true,
           "after": "I",
           "numbers": {
@@ -6281,8 +6260,8 @@
       "provisional": true,
       "source": "rules 1.74 item 6004 (was the Acuity 5 passive)",
       "numbers": {
-        "I": 0.85,
-        "II": 0.75
+        "I": {"base": 0, "per": [{"of": "cond:read_them.effects.0.value", "value": 1}]},
+        "II": {"base": 0, "per": [{"of": "cond:read_them_ii.effects.0.value", "value": 1}]}
       }
     },
     {

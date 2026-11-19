@@ -106,3 +106,15 @@ describe('A4: the token card\'s standing terms read the one roll-to-hit hook (St
     expect(standingModsFor(f.g, a.id).map((t: any) => t.v)).toContain(-10);
   });
 });
+
+// ---------------------------------------------------------------------------------------------- A5
+import CONDSJ from '../../../data/conditions.json';
+describe('A5: one copy of each number', () => {
+  it('Read Them\'s card reads its conditions\' rows (no copy on the perk)', () => {
+    const row = (id: string) => (CONDSJ as any).items.find((c: any) => c.id === id).effects[0].value;
+    const pct = (v: number) => String(Math.round((1 - v) * 100)) + '% less';
+    expect((PERK as any).read_them.tiers.I.text).toContain(pct(row('read_them')));
+    expect((PERK as any).read_them.tiers.II.text).toContain(pct(row('read_them_ii')));
+    expect(typeof (PERK as any).read_them.numbers.I).toBe('object'); // a reference, not a number
+  });
+});

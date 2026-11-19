@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 37 triggers, 100 predicates, 31 ops, 102 effect ops, 126 hooks, 3 never emitted, 18 profiles, 42 cost sites, 18 resources, 67 stats, 25 condition fields, 680 primitive exports, 2166 other exports, 129 fx kinds, 11 data fx kinds, 18 op-written context fields, 178 Unit fields, 63 Combat fields, 41 guards.
+Counts: 37 triggers, 100 predicates, 31 ops, 102 effect ops, 126 hooks, 3 never emitted, 18 profiles, 42 cost sites, 18 resources, 67 stats, 25 condition fields, 680 primitive exports, 2167 other exports, 129 fx kinds, 11 data fx kinds, 18 op-written context fields, 178 Unit fields, 63 Combat fields, 41 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -396,7 +396,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `spot` | a unit tries to spot a hidden one: the die, the modifier, the TN, cancel | `by`, `u`, `die`, `mod`, `tn`, `cancel`, `close`, `outright` | tactics.ts:308 (+1) | classes/k.ts:124 (+8) | `spot` |
 | `spotted` | a hidden unit was revealed | `u`, `why` | magic.ts:1555 (+2) | perks/b.ts:631 (+1) |  |
 | `on_surrender` | a unit surrendered or was subdued | `t`, `by`, `why` | effects/damage.ts:119 (+2) | deeds.ts:193 (+4) |  |
-| `parley` | a parley in a fight is attempted (its TN, a refusal, the result) | `u`, `t`, `kind`, `text`, `tnAdd`, `via`, `cancel`, `result` | tactics.ts:365 | perks/g.ts:193 |  |
+| `parley` | a parley in a fight is attempted (its TN, a refusal, the result) | `u`, `t`, `kind`, `text`, `tnAdd`, `via`, `cancel`, `result` | tactics.ts:365 | perks/g.ts:194 |  |
 | `throw` | a thrown item is about to land (its AP, radius, cancel, caught) | `u`, `item`, `tile`, `ap`, `radius`, `cancel`, `caughtBy`, `preview`, `technique` | physical/ranged/thrown.ts:86 (+1) | perks/c.ts:99 (+2) |  |
 | `blessing_in` | a blessing reaches a unit: an item may handle it itself | `u`, `t`, `blessing`, `power`, `handled`, `out` | faith.ts:1211 (+1) | classes/k.ts:203 (+6) |  |
 | `trap_sprung` | a trap was sprung on a unit | `u`, `obj` | combat.ts:2298 | none |  |
@@ -416,9 +416,9 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `check_post` | a story check's d20 was rolled: items may change the result or forbid the fumble | `c`, `ck`, `die`, `mod`, `tn`, `auto`, `labels`, `noFumble` | game.ts:1252 | perks/a.ts:138 (+12) |  |
 | `check_result` | a story check is decided | `c`, `ck`, `roll` | game.ts:1263 | classes/j.ts:304 (+12) |  |
 | `passive` | a passive score is read (declared; asked as stat passive:<skill>, not emitted) |  | **never emitted** | none |  |
-| `voice_cap` | how many voice lines a player gets this beat | `player`, `c`, `chars`, `cap` | game.ts:1496 | perks/g.ts:548 |  |
-| `ask_limit` | how many times a skill may be Asked this scene | `c`, `skill`, `limit` | game.ts:836 | perks/g.ts:549 |  |
-| `overreach_cost` | the Echo price of resisting an Overreach | `c`, `skill`, `cost` | game.ts:850 | perks/g.ts:550 |  |
+| `voice_cap` | how many voice lines a player gets this beat | `player`, `c`, `chars`, `cap` | game.ts:1496 | perks/g.ts:549 |  |
+| `ask_limit` | how many times a skill may be Asked this scene | `c`, `skill`, `limit` | game.ts:836 | perks/g.ts:550 |  |
+| `overreach_cost` | the Echo price of resisting an Overreach | `c`, `skill`, `cost` | game.ts:850 | perks/g.ts:551 |  |
 | `echo_gain` | a character gained Echo | `c`, `n`, `why`, `cap` | effects/echo.ts:10 | none |  |
 | `scene_change` | the Narrator opened a new scene | `n`, `title` | game.ts:1465 | feelings.ts:218 (+11) |  |
 | `session_start` | a session started (or a late player joined one) | `n`, `late` | game.ts:717 (+1) | faith.ts:1777 (+15) |  |
@@ -427,7 +427,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `notice` | an NPC on the area map may notice a character (its range) | `c`, `npc`, `range`, `dark`, `ignore` | game.ts:2763 | perks/a.ts:233 (+5) |  |
 | `stay_hidden` | a character tries to stay hidden from an NPC: modifier and TN | `c`, `npc`, `mod`, `tn` | game.ts:2774 | perks/a.ts:234 (+5) |  |
 | `world_move_cost` | a move on the area map is priced (sneaking costs extra) | `c`, `u`, `tiles`, `how`, `extra`, `preview` | actions.ts:218 (+1) | perks/c.ts:444 |  |
-| `karma_award` | Karma is about to be awarded (its multiplier) | `c`, `amount`, `unlawful`, `mult`, `why` | game.ts:1313 | perks/f.ts:723 (+3) |  |
+| `karma_award` | Karma is about to be awarded (its multiplier) | `c`, `amount`, `unlawful`, `mult`, `why` | game.ts:1313 | perks/f.ts:727 (+3) |  |
 | `action_refuse` | an item may refuse an action before it is done (a shove, an Overwatch) | `u`, `a`, `fail` | game.ts:2955 | perks/e.ts:792 (+1) |  |
 | `evoke_reach` | how far from its Line a caster may Evoke | `u`, `pattern`, `reach` | sigil.ts:594 (+1) | classes/k.ts:793 |  |
 | `spell_roll` | a spell's to-hit d20 was rolled: items may add to it | `u`, `t`, `die`, `add`, `kind` | magic.ts:1409 (+1) | feelings.ts:178 (+1) |  |
@@ -435,7 +435,7 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `to_hit` | THE hook of every roll to hit a target (rolls.ts toHitTerms): a weapon attack, a Sigil, an Outburst {att, tgt, type, mode, terms, preview}: a listener adds to-hit terms | `att`, `tgt`, `type`, `door`, `mode`, `via`, `terms`, `preview` | rolls.ts:196 (+1) | perks/a.ts:352 (+6) | `to_hit` |
 | `session_heal` | the heal at a session's start: HP and MP multipliers | `mult` | game.ts:1350 | perks/h.ts:415 |  |
 | `story_blessing` | a prayer is answered outside a fight (lines to add) | `c`, `lines` | faith.ts:1721 | perks/d.ts:484 |  |
-| `ap_gift` | a unit is about to receive AP from another (the receiver may refuse) | `t`, `from`, `n`, `cancel`, `why` | effects/ap.ts:77 | perks/f.ts:741 |  |
+| `ap_gift` | a unit is about to receive AP from another (the receiver may refuse) | `t`, `from`, `n`, `cancel`, `why` | effects/ap.ts:77 | perks/f.ts:745 |  |
 | `npc_moved` | an NPC moved on the area map | `npc`, `from`, `to`, `hid` | game.ts:2551 | perks/b.ts:254 |  |
 | `npc_sense` | an NPC senses something on the area map (it may reveal someone) | `npc`, `why`, `reveal` | game.ts:2557 | perks/b.ts:309 (+2) |  |
 | `zone_enter` | the party entered a new zone of the area map | `zone` | game.ts:1576 | perks/d.ts:482 |  |
@@ -1123,7 +1123,7 @@ Families: `body`, `brain`, `heart`.
 | `NumberBlock` | `interface NumberBlock { base, per, min, max, steps }` | ---------------------------------------------------------------------------------------------- number blocks (the type and its one evaluation, moved here from effects/amounts.ts by rules 1.70 item 5547 so a te… |
 | `isNumberBlock` | `isNumberBlock(x: any): x is NumberBlock` | Is this a number block (and not an amount block, which has a `kind`)? |
 | `numberOf` | `numberOf(x: number \| NumberBlock, src: (of: string) => number = () => 0): number` | A number block's value (a plain number is itself): base + Σ value × source(of), between min and max. |
-| `dataRef` | `dataRef(of: string): number` | Rules 1.70 item 5547 (P6): THE resolver of a data reference a number block may name, a value that belongs to no item: `tech_rule:<path>`, a number of techniques.json `rules` (Cover Them's Guard cost reads tech… |
+| `dataRef` | `dataRef(of: string): number` | Rules 1.70 item 5547 (P6): THE resolver of a data reference a number block may name, a value that belongs to no item (or to another file's row): `tech_rule:<path>`, a number of techniques.json `rules` (Cover T… |
 | `fmtNumber` | `fmtNumber(v: number, how = ''): string` | A number as a text shows it: rounded to 4 places, no trailing zeros, a true minus sign. |
 | `renderText` | `renderText(text: string, item: any, holder: any): string` | One text with its placeholders filled from the item (a leading dot: from the object that holds the text). |
 | `resolveTexts` | `resolveTexts<T>(root: T): T` | Fill every placeholder under a parsed data file, in place. |
@@ -1484,7 +1484,7 @@ Families: `body`, `brain`, `heart`.
 | `pickToggle` | `pickToggle(mods: string[] \| null \| undefined, tgls: { id: string; itemKey: string; on: boolean; defaultOn: boolean }[], t: { id: string; itemKey: string; on: boolean; de…` | A switch chip clicked (Ricochet, the Open Hand's forms): the action's mods after it. |
 | `flowView` | `flowView(g: any, me: string \| null, cur: any, S: any, extra: Picks = {}): FlowView \| null` | The picked action on the flow, or null when it is not (no action, not this player's turn, a system with its own screen code). extra: picks a bespoke panel made (a perk's form, a pile's checklist). |
 
-#### Every other export, by file (2166)
+#### Every other export, by file (2167)
 
 The scan of every file in the engine's source: what the tables above do not show. Read the doc comment in the file before writing a second one.
 
@@ -1549,6 +1549,7 @@ The scan of every file in the engine's source: what the tables above do not show
 | `perks/briefs.ts` | `BRIEFS` |
 | `perks/cooldown.ts` | `AP_COOLDOWN_TURNS`, `CdSide`, `landsNow`, `landsNext`, `cdLeft`, `cdFire`, `cdTick` |
 | `perks/e.ts` | `pettyGate`, `settleOnMyMark` |
+| `perks/f.ts` | `readThem` |
 | `perks/skeleton.ts` | `holds` |
 | `physical/ai.ts` | `PLAIN_ATTACK_SCORE`, `aiTechnique` |
 | `physical/core.ts` | `technique`, `handlerOf`, `NOT_BUILT`, `techState`, `techStateOf`, `shieldOf`, `followOf`, `unitSkill`, `guardOf`, `guardMax`, `guardSoak`, `guardGain`, `GuardWhy`, `addGuard`, `spendGuard`, `guardCost`, `holds`, `ensureMomentum`, `momentumOf`, `spendMomentum`, `landed`, `isPlainMelee`, `momentumCost`, `momentumStart`, `loseMomentum`, `wearMomentum`, `guardUp`, `ownSideOnly`, `offHome`, `linesFor`, `roundsCap`, `techniqueAp`, `apFor`, `usable`, `finisherNeed`, `StrikeRound`, `strikeRound`, `strike`, `canStrike`, `strikeNoPressure`, `strikingWith`, `setUp`, `answerKind`, `canAnswer`, `techSaveTn`, `save`, `saveOutside`, `techVia`, `cond`, `stop`, `StopHow`, `forceMove`, `spendRounds`, `addPressure`, `lowerPressure`, `wasSuppressed`, `hitByAlly`, `Wield`, `GearService`, `setGearService`, `stowedOf`, `emptyQuiverWhy`, `unheld`, `loseWeapon`, `loseWeaponInto`, `takeWeapon`, `stepsWithin`, `standingAt`, `approach`, `stepBlock`, `stepUser`, `holdWatch`, `endWatch`, `fireWatch`, `answerOpts`, `answer`, `aiScore`, `previewTechnique`, `useTechnique`, `techniquePad`, `PackPad`, `packPad`, `physView`, `MOMENTUM_HINT`, `guardHint`, `PAIRED_TECHNIQUES`, `pairedPad` |

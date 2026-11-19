@@ -345,13 +345,17 @@ register({
 // defence): you and every ally have +2 Defense against an enemy you analyzed (its attacks on your side are at −2); the
 // +2 to hit is gone; the squad's +20% damage on the target is back (Leon, 10 Nov 2026). An enemy an ally analyzed can be re-read with Close the case (the Analyze cost).
 // Story: a successful Acuity check on an NPC owes the motive (a pending ruling).
-/** Read Them's mark (rules 1.74 item 6004: a condition row, data/conditions.json read_them), put on without a save
- * unless the stronger read_them_ii (Acuity's perk at tier II) is already there. */
-function readThem(h: Holder, t: Unit, rng: any): void { if (h.cb && h.u && !condOn(t, 'read_them') && !condOn(t, 'read_them_ii')) applyCond(h.cb, rng, h.u, t, 'read_them', undefined, undefined, { skipSave: true }); }
+/** Read Them's two marks (rules 1.74 item 6004: condition rows of data/conditions.json), the ones its tiers put on
+ * (perks.json read_them: tier I's condition op, tier II's). */
+const readMark = (tier: string): string => ((PERK as any).read_them.tiers[tier].effects as any[]).find((e) => e.op === 'condition').condition;
+const READ_WEAK = readMark('I'), READ_STRONG = readMark('II');
+/** THE plain Read Them mark another item puts on (Case Closed, Detective's Eye): tier I's, without a save, never over a
+ * mark already there (the stronger tier II's is never downgraded). */
+export function readThem(cb: Combat | null | undefined, rng: any, by: Unit | null | undefined, t: Unit): void { if (cb && by && !condOn(t, READ_WEAK) && !condOn(t, READ_STRONG)) applyCond(cb, rng, by, t, READ_WEAK, undefined, undefined, { skipSave: true }); }
 const closed = (h: Holder): string[] => ((h.u?.ps?.[h.key] as any)?.closed || []);
 function closeCase(h: Holder, t: Unit, rng: any) {
   const st = stateOf(h); (st.closed ||= []).includes(t.id) || st.closed.push(t.id);
-  readThem(h, t, rng);
+  readThem(h.cb, rng, h.u, t);
   const conds = debuffsOf(t);
   say(h.cb, 'Case Closed on ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + ', ' + (t.kind || 'human') + ((t.tags || []).length ? ' (' + t.tags!.join(', ') + ')' : '') +
     ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · Read Them; the squad has +' + Math.abs(CASE_CLOSED[1]?.value ?? -2) + ' Defense against it and deals ' + Math.round(((CASE_CLOSED[2]?.value ?? 1.2) - 1) * 100) + '% more to it · motive: for the Narrator.');

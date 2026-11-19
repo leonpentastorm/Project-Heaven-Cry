@@ -2184,13 +2184,13 @@ if _swell is not None:
         for k, v in _swell["unless"].items(): check_pred(k, v, "soul_modules:cycle.swell.unless")
 # Classes 3.0 P3: a number block {base, per: [{of, value}], min?, max?}; in an item op its `of` names a source
 # (effects/triggers.ts sourceOf): res:<id>, event:<field>, self:/actor:/target:<field>.
-def _tech_rule(path):
-    """Rules 1.70 item 5547 (P6): a value of techniques.json rules by its dotted path (datatext.ts dataRef), or None."""
-    node = (data.get("techniques") or {}).get("rules")
-    for part in path.split("."):
-        node = node.get(part) if isinstance(node, dict) else None
-    return node if isinstance(node, (int, float)) and not isinstance(node, bool) else None
-SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill", "feed", "pick", "tech_rule"]  # feed: rules 1.60 (N3), a door's beta feed; pick: rules 1.60 (N2), 1 when the holder picked that fork option; tech_rule: rules 1.70 item 5547 (P6), a value of techniques.json rules (datatext.ts dataRef)
+def _data_ref(of):
+    """Rules 1.70 item 5547 (P6): a data reference's value (datatext.ts dataRef: tech_rule:, rule:, cond:), or None."""
+    import text_numbers as _tn
+    for ns, stem in (("tech_rule", "techniques"), ("rule", "rules"), ("cond", "conditions")):
+        if isinstance(data.get(stem), dict): _tn.REF_DATA[ns] = _tn._ref_of(ns, data[stem])
+    return _tn.data_ref(of)
+SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill", "feed", "pick", "tech_rule", "rule", "cond"]  # feed: rules 1.60 (N3), a door's beta feed; pick: rules 1.60 (N2), 1 when the holder picked that fork option; tech_rule: rules 1.70 item 5547 (P6), a value of techniques.json rules; rule / cond (0.32 consolidation): a value of rules.json, of a conditions.json row (datatext.ts dataRef)
 # Rules 1.60 (Doors 3.0, N3): a beta's `feed` names the carrier of its alpha door's number (effects/feed.ts); its step is
 # per_point.numbers.feed (> 0), each carrier is fed by one beta only, and a `feed:<door>` source names an alpha skill fed so.
 FEED_DOORS = set()
@@ -2226,8 +2226,8 @@ def check_number_block(b, w, item_op=True):
             errors.append(f"{w}: an item op's number block counts '{pp['of']}': name a source ({', '.join(s + ':' for s in SOURCE_SPACES)})")
         elif item_op and pp["of"].startswith("feed:") and pp["of"].split(":", 1)[1] not in FEED_DOORS:
             errors.append(f"{w}: '{pp['of']}' names no door a beta feeds (skills.json <beta>.feed)")
-        elif pp["of"].startswith("tech_rule:") and not isinstance(_tech_rule(pp["of"].split(":", 1)[1]), (int, float)):
-            errors.append(f"{w}: '{pp['of']}' names no number of techniques.json rules (rules 1.70 item 5547)")
+        elif pp["of"].split(":", 1)[0] in ("tech_rule", "rule", "cond") and not isinstance(_data_ref(pp["of"]), (int, float)):
+            errors.append(f"{w}: '{pp['of']}' names no number of the data (tech_rule: techniques.json rules, rule: rules.json, cond: a conditions.json row by id; rules 1.70 item 5547)")
 # Classes 3.0 P5: `targets` on any op (the unit set it runs on): its fields and words are item_ops.targets.fields.
 def check_targets(t, w):
     fields = (IOPS.get("targets") or {}).get("fields") or {}
@@ -2305,7 +2305,8 @@ def check_trigger_effect(e, w):
         else:
             for k, v in cond.items(): check_pred(k, v, w)
     lim = e.get("limit")
-    if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or "reaction" in lim or (lim.get("per") in LIMIT_SCOPES and isinstance(lim.get("n", 1), int)))):
+    if isinstance(lim, dict) and isinstance(lim.get("n"), dict): check_number_block(lim["n"], f"{w}.limit.n")  # a limit's n may read one number of the data (rule:, tech_rule:, cond:)
+    if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or "reaction" in lim or (lim.get("per") in LIMIT_SCOPES and (isinstance(lim.get("n", 1), int) or isinstance(lim.get("n"), dict))))):
         errors.append(f"{w}: an item op's limit is {{ per: {sorted(LIMIT_SCOPES)}, n }}, {{ cooldown: rounds }} or {{ reaction: 1 or 2, kind }}")
     if isinstance(lim, dict) and "shared" in lim and not (isinstance(lim["shared"], str) and lim["shared"] and "key" not in lim): errors.append(f"{w}: a limit's shared is a counter name, in place of key (rules 1.77 item 6504)")
 # Classes 3.0 P5, the standing aura: a stat_mod with `targets` and no `when` (statQuery answers it for every unit of the
@@ -2323,11 +2324,16 @@ def walk_triggers(o, w):
         for v in o.values(): walk_triggers(v, w)
     elif isinstance(o, list):
         for v in o: walk_triggers(v, w)
-# an item's own `numbers` (effects/num.ts num(h, key): what a handler that is not data yet reads) are numbers
+# an item's own `numbers` (effects/num.ts num(h, key): what a handler that is not data yet reads) are numbers, or blocks
+# that read one number of the data (text_numbers.block_of_refs: Read Them's tiers read their conditions' rows)
+def text_numbers_block(v):
+    _data_ref("rule:")  # (loads the pack's data into the resolver)
+    import text_numbers as _tn
+    return _tn.block_of_refs(v)
 def check_numbers(o, w):
     n = o.get("numbers") if isinstance(o, dict) else None
-    if n is not None and (not isinstance(n, dict) or not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in n.values())):
-        errors.append(f"{w}: `numbers` must map names to numbers (effects/num.ts)")
+    if n is not None and (not isinstance(n, dict) or not all((isinstance(v, (int, float)) and not isinstance(v, bool)) or isinstance(text_numbers_block(v), (int, float)) for v in n.values())):
+        errors.append(f"{w}: `numbers` must map names to numbers, or to number blocks of data references (tech_rule:, rule:, cond:; effects/num.ts)")
 for _n in ("perks", "traits"):
     for _x in items(_n):
         check_numbers(_x, f"{_n}:{_x.get('id')}")
@@ -2501,12 +2507,13 @@ if TRIG:
     if _SHR and _brk:
         _per = {p.get("of"): p.get("value") for e in _brk.get("effects") or [] if isinstance(e.get("value"), dict) for p in e["value"].get("per") or []}
         if _per != {"res:shadow": _SHR.get("per_point"), "event:ambush": _SHR.get("ambush_bonus"), "target:marked": _SHR.get("marked_bonus")}: errors.append("skills:ingenuity.1: the Break's term must read rules.json shadow per_point, ambush_bonus, marked_bonus")
-        if any((e.get("limit") or {}).get("shared") == "shadow_gain" and (e["limit"].get("n") != _SHR.get("door_gains_per_turn")) for e in _door.get("effects") or []): errors.append("skills:ingenuity.1: the gains' shared limit is rules.json shadow.door_gains_per_turn")
+        _GAINS = {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]}  # the one number, read (0.32 consolidation)
+        if any((e.get("limit") or {}).get("shared") == "shadow_gain" and (e["limit"].get("n") != _GAINS) for e in _door.get("effects") or []): errors.append("skills:ingenuity.1: the gains' shared limit reads rules.json shadow.door_gains_per_turn (n: {base: 0, per: [{of: rule:shadow.door_gains_per_turn, value: 1}]})")
         # rules 1.77 item 6504: Stalk's gain counts under the same shared limit, of the same size
         _stk = next((x for x in (data.get("shadow") or {}).get("items") or [] if x.get("id") == "shadow.stalk"), None)
         for _g in (_stk or {}).get("effects") or []:
             for _e in _g.get("effects") or []:
-                if _e.get("op") == "resource" and ((_e.get("limit") or {}).get("shared") != "shadow_gain" or _e["limit"].get("n") != _SHR.get("door_gains_per_turn")): errors.append("shadow:shadow.stalk: its gain counts under the door's shared limit shadow_gain, n rules.json shadow.door_gains_per_turn (rules 1.77 item 6504)")
+                if _e.get("op") == "resource" and ((_e.get("limit") or {}).get("shared") != "shadow_gain" or _e["limit"].get("n") != _GAINS): errors.append("shadow:shadow.stalk: its gain counts under the door's shared limit shadow_gain, n rules.json shadow.door_gains_per_turn (rules 1.77 item 6504)")
     _op = next((m for b in base if b.get("id") == "infiltrator" for m in b.get("gain") or [] if m.get("id") == "tradecraft"), None)
     if _SHR and _op and not any(e.get("op") == "resource" and e.get("when") == "combat_start" and e.get("value") == _SHR.get("operative_start") for e in _op.get("effects") or []): errors.append("classes:infiltrator.tradecraft: its combat_start Shadow is rules.json shadow.operative_start")
     # skills.json unlocks marked `item` are run as items (effects/collect.ts SKILL_ITEMS)

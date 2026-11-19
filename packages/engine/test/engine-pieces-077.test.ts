@@ -10,6 +10,7 @@ import { resOf } from '../src/tactics';
 import { makeObject } from '../src/objects';
 import { allVerbs } from '../src/effects/collect';
 import CONDS from '../../../data/conditions.json';
+import { numberOf, dataRef } from '../src/datatext';
 
 const tierFx = (id: string, t: string) => (PERK as any)[id].tiers[t].effects;
 
@@ -77,7 +78,7 @@ describe("a shared limit and the negated resource bound (item 6504): Stalk under
     expect(() => stalk(f, id)).toThrow(/full/); expect(f.unit(id).ap).toBe(ap);
   });
   it('Stalk and a cover-to-cover move fill the two a turn: the turn ended Hidden gives no third', () => {
-    const cap = STALK().effects[0].effects[0].limit.n;
+    const cap = numberOf(STALK().effects[0].effects[0].limit.n, dataRef); // (the limit reads rules.json shadow.door_gains_per_turn)
     const { f, id } = sneak(); stalk(f, id); expect(resOf(f.unit(id), 'shadow')).toBe(1);
     f.act({ type: 'combat/move', unitId: id, to: '2,5' } as any); expect(resOf(f.unit(id), 'shadow')).toBe(cap);
     f.act({ type: 'combat/end-turn', unitId: id } as any); expect(resOf(f.unit(id), 'shadow')).toBe(cap);

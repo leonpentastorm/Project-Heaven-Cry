@@ -9,6 +9,7 @@ import { resOf } from '../src/tactics';
 import { applyCond } from '../src/magic';
 import { perkActionsFor } from '../src/effects/actions';
 import { allVerbs } from '../src/effects/collect';
+import { numberOf, dataRef } from '../src/datatext';
 
 const SH: any = (RULES as any).shadow;
 const DOOR: any = (SKILL.ingenuity as any).unlocks['1'];
@@ -68,7 +69,8 @@ describe('2.3 gains and 2.4 losses', () => {
     expect(shadow(f, u)).toBe(DOOR.effects[1].value); // once a turn
   });
   it('f: the door\'s gains stop at door_gains_per_turn a turn (one shared counter)', () => {
-    expect(DOOR.effects[0].limit.n).toBe(SH.door_gains_per_turn);
+    expect(DOOR.effects[0].limit.n).toEqual({ base: 0, per: [{ of: 'rule:shadow.door_gains_per_turn', value: 1 }] }); // the rows read the one number
+    expect(numberOf(DOOR.effects[0].limit.n, dataRef)).toBe(SH.door_gains_per_turn);
     for (const i of [0, 1, 2]) expect(DOOR.effects[i].limit).toEqual(DOOR.effects[0].limit);
   });
   it('e: a gain at the cap is lost, not banked', () => {
