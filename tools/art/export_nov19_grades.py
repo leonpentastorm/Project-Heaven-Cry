@@ -93,9 +93,9 @@ def reviews(queue, manifest):
 
 def update_handoff(queue,progress):
     (BASE/'HANDOFF.md').write_text('# Kept-blade grade candidates\n\n'
-        f'**{len(progress["delivered"])}/24 grade candidates delivered** on `art/2026-11-19-kept-blade-grades`. '
+        f'**{len(progress["delivered"])}/{len(queue)} grade candidates delivered** on `art/2026-11-19-kept-blade-grades`. '
         'Shared mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . '
-        'Katana/Drifter proof remains the other worker’s lane; this lane owns four grades for six other kept blades.\n\n'
+        'See claim.json for this lane’s current Standards. Released overlapping blades reuse12 peer candidates, with3 local alternatives archived.\n\n'
         'Leon requested continuous candidate production; proof approval is not fabricated. All candidates remain review-candidate, '
         'production_approved:false, implementation_ready:false, with outline.review_required:true. '
         'Exact outline is measured, never asserted unless the masks match. Per-image registration is uniform scaling/translation only, '
@@ -175,7 +175,7 @@ def export(asset_id, source):
     sys.path.insert(0, str(ROOT / 'tools'))
     from rehash_art_checksums import main
     main()
-    print(f'Exported {asset_id}: {len(progress["delivered"])}/24')
+    print(f'Exported {asset_id}: {len(progress["delivered"])}/{len(queue)}')
 
 
 if __name__ == '__main__':

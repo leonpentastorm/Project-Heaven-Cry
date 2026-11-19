@@ -1,0 +1,422 @@
+[
+  {
+    "id": "weapon-combat_knife--fine",
+    "peer_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+    "files": [
+      {
+        "path": "art/icons/gear/weapon-combat_knife--fine.png",
+        "sha256": "f28790fe4f8599f15cf52239a86074aaf8f6cd388a3af1bb143fdb59f46e25e2"
+      },
+      {
+        "path": "art/icons/gear/exports/256/weapon-combat_knife--fine.png",
+        "sha256": "f4ab79610a10a94bb5132f8c00ab4194880486960d7a4a935c4473ded756b13c"
+      },
+      {
+        "path": "art/icons/gear/exports/128/weapon-combat_knife--fine.png",
+        "sha256": "663f2165a8b408161c1fcfb82d71367efe934bd16138e01bc8b319f1d817e2bd"
+      },
+      {
+        "path": "art/icons/gear/exports/64/weapon-combat_knife--fine.png",
+        "sha256": "43421f6c0927a0286a21b39791808bb6c6cf4f8bb387e851de844ad840058eaf"
+      },
+      {
+        "path": "art/icons/gear/exports/32/weapon-combat_knife--fine.png",
+        "sha256": "b0be2e331324186eb28829fdcf983ceb206d8eafc74e28ab4e34edec7e881917"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--fine.png",
+        "sha256": "256c920fc297b794fa424cf5427e6b7043bac838dc1a16cb4094bf508a9f7afa"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--fine.json",
+        "sha256": "7c0e200935f2841623fbf6d824999bf1802fb3376975f1c13c70d62020ecbb66"
+      }
+    ],
+    "source_path_normalized": true
+  },
+  {
+    "id": "weapon-combat_knife--masterwork",
+    "peer_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+    "files": [
+      {
+        "path": "art/icons/gear/weapon-combat_knife--masterwork.png",
+        "sha256": "4222b0d6fef781f9703e9c928450b5b7631f3c977c55ca4fbebe1861bbbcdd09"
+      },
+      {
+        "path": "art/icons/gear/exports/256/weapon-combat_knife--masterwork.png",
+        "sha256": "023fe6fa4c3102fecbd79ba5e9b81deb9aecc41ce03ee67324bc8f51295dc5ac"
+      },
+      {
+        "path": "art/icons/gear/exports/128/weapon-combat_knife--masterwork.png",
+        "sha256": "adab0911c9c69d1111e51b38612090cd91106516110ac166da73983be45f7c22"
+      },
+      {
+        "path": "art/icons/gear/exports/64/weapon-combat_knife--masterwork.png",
+        "sha256": "26ece035227902fade36adbee9a2209005f84fdbe8a01e6de8220678b0432ae1"
+      },
+      {
+        "path": "art/icons/gear/exports/32/weapon-combat_knife--masterwork.png",
+        "sha256": "8a96c255bd1944448c0b9af24d97adc89fb15e1732dcb6cc5cd4a1217d08e96f"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--masterwork.png",
+        "sha256": "11c991658084e1a7f46c11cf8daf5a48cacf2e1c640f2f4176465b9699266840"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--masterwork.json",
+        "sha256": "1449732f7095242de84996be62b7ad7becf6057fa180238852db932614a3125b"
+      }
+    ],
+    "source_path_normalized": true
+  },
+  {
+    "id": "weapon-combat_knife--relic",
+    "peer_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+    "files": [
+      {
+        "path": "art/icons/gear/weapon-combat_knife--relic.png",
+        "sha256": "307dc24a5f2beaf30cb51945170de0f47f37240fb5a3da66b18cd0755c73684b"
+      },
+      {
+        "path": "art/icons/gear/exports/256/weapon-combat_knife--relic.png",
+        "sha256": "21fe8b40fc970ccfe87d762a8710eb295887ff10b386d62e8f69d936ed3f6705"
+      },
+      {
+        "path": "art/icons/gear/exports/128/weapon-combat_knife--relic.png",
+        "sha256": "56d639d0755cae11ec59b0a613750e4dca52e8949682f77098e00ae8bfa2289a"
+      },
+      {
+        "path": "art/icons/gear/exports/64/weapon-combat_knife--relic.png",
+        "sha256": "8e6c9e4ec6176f6da0879e74e94e420cf173a9cc4b0e4d17c8f66973526dc3d9"
+      },
+      {
+        "path": "art/icons/gear/exports/32/weapon-combat_knife--relic.png",
+        "sha256": "4790c4572a545c19fc459541f62d744c1360e62687c9a380f1d6fccc4b845dff"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--relic.png",
+        "sha256": "f447ac9178954ac9455ec3b176f72b6f17dca8df2552c875d97260cd0c050fc4"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--relic.json",
+        "sha256": "67f64483761fefddabf8b92739b7663dd0e963189421e4cf6f1e095c95b49ad2"
+      }
+    ],
+    "source_path_normalized": true
+  },
+  {
+    "id": "weapon-combat_knife--celestial",
+    "peer_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+    "files": [
+      {
+        "path": "art/icons/gear/weapon-combat_knife--celestial.png",
+        "sha256": "2ab19d7ce0c09973488c7db7de3e8e600a19f7be0fad6b8c971d4094e161af57"
+      },
+      {
+        "path": "art/icons/gear/exports/256/weapon-combat_knife--celestial.png",
+        "sha256": "b469363c8f74fec0801aa23fba31fd3c5000f6aa34e88c79daa42d659fdfcca8"
+      },
+      {
+        "path": "art/icons/gear/exports/128/weapon-combat_knife--celestial.png",
+        "sha256": "5629008fe1bf6a50e0bd83893026f6eeebdb7627fe3c68cb606b2b17de164dcd"
+      },
+      {
+        "path": "art/icons/gear/exports/64/weapon-combat_knife--celestial.png",
+        "sha256": "306193c0190b77c681b00e5856d8bf0b2ffa4112802ace5a5cf673695fbb027a"
+      },
+      {
+        "path": "art/icons/gear/exports/32/weapon-combat_knife--celestial.png",
+        "sha256": "9dc1402b4ef2d3271fd341b8a75d840b11141f253b31a01a6d2f19e9db471a7d"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.png",
+        "sha256": "981dd851ac71828d106fc6e5cd0b9c268b69a58962830aa08522bda3265274da"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.json",
+        "sha256": "3d1268723eed6f9b126b7e6f9057e29c1032113284c3e75c822fb8066b3e26c4"
+      }
+    ],
+    "source_path_normalized": true
+  },
+  {
+    "id": "weapon-sabre--fine",
+    "peer_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+    "files": [
+      {
+        "path": "art/icons/gear/weapon-sabre--fine.png",
+        "sha256": "3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6"
+      },
+      {
+        "path": "art/icons/gear/exports/256/weapon-sabre--fine.png",
+        "sha256": "1e59d6444320b667a422e781ea0e02fe5419e515f0caacf5bef914e3c20faac5"
+      },
+      {
+        "path": "art/icons/gear/exports/128/weapon-sabre--fine.png",
+        "sha256": "91e1985bbb75b493295ca286d4b90eac6f41f3cbe75200a93baa22d37ec4637e"
+      },
+      {
+        "path": "art/icons/gear/exports/64/weapon-sabre--fine.png",
+        "sha256": "e44729a8e04f881e6fcaebf7aea6fb9a91a03d1326d32b0d251881f7d65e2208"
+      },
+      {
+        "path": "art/icons/gear/exports/32/weapon-sabre--fine.png",
+        "sha256": "6e6fca2eb340db42cff8f6383399eeb4d0abd06f1559b4e78e0af7905d632adb"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--fine.png",
+        "sha256": "56605bd402a89ad40f5c97d09b4353e791518bf1756b51ce47dac78f461fc84a"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--fine.json",
+        "sha256": "e58dbfff9c0b71c9b00f2c68b89991b420c65a15435d46b9f993366afe505964"
+      }
+    ],
+    "source_path_normalized": true
+  },
+  {
+    "id": "weapon-sabre--masterwork",
+    "peer_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+    "files": [
+      {
+        "path": "art/icons/gear/weapon-sabre--masterwork.png",
+        "sha256": "e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca"
+      },
+      {
+        "path": "art/icons/gear/exports/256/weapon-sabre--masterwork.png",
+        "sha256": "8cde875a2badd6e7b51cc47903bcaaee1c5a802645baa90c09fb6a7d84c2c9d0"
+      },
+      {
+        "path": "art/icons/gear/exports/128/weapon-sabre--masterwork.png",
+        "sha256": "ae83a1faf54c7c6a00103f3e7cbaee95532cf0f17812a8d28fdd2b86e2e09d41"
+      },
+      {
+        "path": "art/icons/gear/exports/64/weapon-sabre--masterwork.png",
+        "sha256": "f6f98256d7fa9c8014181ac8546a3ae991297ccc735cdd820488416ddb414962"
+      },
+      {
+        "path": "art/icons/gear/exports/32/weapon-sabre--masterwork.png",
+        "sha256": "d869a9a16dedd4d9f052455ff6a8a84d49616f35116a437b40808073b1101a35"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--masterwork.png",
+        "sha256": "a25d818351d0b8191c1d209601f5c7f405d92df9b7f7c86318fd09a89ce11001"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--masterwork.json",
+        "sha256": "eb8b141554761006b8581f7a57662acabd1761f25f9c2ed1d4cccefb1c5d81f8"
+      }
+    ],
+    "source_path_normalized": true
+  },
+  {
+    "id": "weapon-sabre--relic",
+    "peer_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+    "files": [
+      {
+        "path": "art/icons/gear/weapon-sabre--relic.png",
+        "sha256": "307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a"
+      },
+      {
+        "path": "art/icons/gear/exports/256/weapon-sabre--relic.png",
+        "sha256": "f3fc7b98df43735b3c7b9569030d5261e7012b939ccefced4f98c04bcadc098d"
+      },
+      {
+        "path": "art/icons/gear/exports/128/weapon-sabre--relic.png",
+        "sha256": "81d37f7ad081b9242298419cd93b78ebc952fc0df454d2db40b59761f2547725"
+      },
+      {
+        "path": "art/icons/gear/exports/64/weapon-sabre--relic.png",
+        "sha256": "b489e148169e8369e0e6b76c52f575be98c969e0f59b78541ff6b0ec92fdd5e7"
+      },
+      {
+        "path": "art/icons/gear/exports/32/weapon-sabre--relic.png",
+        "sha256": "66e8b9c3e13e8b6b5d3b7566210dc586500c165143dda90fdb6b497f98cb3e6d"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--relic.png",
+        "sha256": "d0c7775b5c19b84e5a1178cb913136e6c9ae915b5d603b26d9d4263173e4e0a7"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--relic.json",
+        "sha256": "853e2ea35a034566cfb1e05e4873e7d0b4eb01f7079955551e0957ec491a91cc"
+      }
+    ],
+    "source_path_normalized": true
+  },
+  {
+    "id": "weapon-sabre--celestial",
+    "peer_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+    "files": [
+      {
+        "path": "art/icons/gear/weapon-sabre--celestial.png",
+        "sha256": "9664edff03e39031484333f33c58ba9a6cd58f81a2ba0b62afd5488d1a1da41b"
+      },
+      {
+        "path": "art/icons/gear/exports/256/weapon-sabre--celestial.png",
+        "sha256": "e03f80c44c427fc1e61f568ac7d67872f24b5f69086f76ae8ace976e5ecbdc3b"
+      },
+      {
+        "path": "art/icons/gear/exports/128/weapon-sabre--celestial.png",
+        "sha256": "1e5ae7f4814a9717601abed0c5ca31c5f0d21cf461c13253d921dc0737909b7a"
+      },
+      {
+        "path": "art/icons/gear/exports/64/weapon-sabre--celestial.png",
+        "sha256": "9be9e719005ec4fae465dffa1690c7fe2c54a3d36f2fe0e5c43b6d62e8118254"
+      },
+      {
+        "path": "art/icons/gear/exports/32/weapon-sabre--celestial.png",
+        "sha256": "57f35fd99ffd4144653361b667e62625bb59ee4dcfa880a688892cd10dc6d1a9"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--celestial.png",
+        "sha256": "3c182e574a9bdc5cfa18a77109f3f814d9c341ec9d1674a87b42225f3836d8a1"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--celestial.json",
+        "sha256": "8a2691a61b5b0cbef184c1e380887c8c978371c2130859fbb430e28801a1b231"
+      }
+    ],
+    "source_path_normalized": true
+  },
+  {
+    "id": "weapon-legion_gladius--fine",
+    "peer_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+    "files": [
+      {
+        "path": "art/icons/gear/weapon-legion_gladius--fine.png",
+        "sha256": "6287af08128f37253c8f97592da21fd70a2c609c024cd534d8b98ba39301b931"
+      },
+      {
+        "path": "art/icons/gear/exports/256/weapon-legion_gladius--fine.png",
+        "sha256": "61c6169d1373aa4cf8b3fb9cd97c58738b105863bc1c7ee66ec640feaf229bdc"
+      },
+      {
+        "path": "art/icons/gear/exports/128/weapon-legion_gladius--fine.png",
+        "sha256": "9beb0a8a6754c9c0c2c16d947c9cb7335056a899b43baae670f3463649c5dc04"
+      },
+      {
+        "path": "art/icons/gear/exports/64/weapon-legion_gladius--fine.png",
+        "sha256": "ae5d912898641d200c51393ffd3819c41b7bc2df4e18724f80a0bedc2c0c7dd1"
+      },
+      {
+        "path": "art/icons/gear/exports/32/weapon-legion_gladius--fine.png",
+        "sha256": "0d442b34dd4a7b0aba165c80408820e3465b8ae6c5293ea2434803b801ccad0c"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--fine.png",
+        "sha256": "60f5d7e691bbe67c9d0a8366f24365c4d91dc74d522582b4a4a621bd08449bbd"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--fine.json",
+        "sha256": "8f5cd87c8a6ed39cb129536e727d695fa7ed9f1ad88600efcfeb335b72e661d5"
+      }
+    ],
+    "source_path_normalized": true
+  },
+  {
+    "id": "weapon-legion_gladius--masterwork",
+    "peer_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+    "files": [
+      {
+        "path": "art/icons/gear/weapon-legion_gladius--masterwork.png",
+        "sha256": "f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff"
+      },
+      {
+        "path": "art/icons/gear/exports/256/weapon-legion_gladius--masterwork.png",
+        "sha256": "e4b1e01867455a68b1ea1159dc43a6914e1df6be7e2dd772d24b1a96894ea9d2"
+      },
+      {
+        "path": "art/icons/gear/exports/128/weapon-legion_gladius--masterwork.png",
+        "sha256": "220b0217c8c9e6dc2013f3178a90149d5e19059ef12c82b39b9c39662d62a1a0"
+      },
+      {
+        "path": "art/icons/gear/exports/64/weapon-legion_gladius--masterwork.png",
+        "sha256": "b3a80f03f21a55b18a741636612a0b369b500f5c668492918cfee35df053ca30"
+      },
+      {
+        "path": "art/icons/gear/exports/32/weapon-legion_gladius--masterwork.png",
+        "sha256": "436d9efcb638de69cf17cce949f6e7f5798ed3364a4195ed146e7c67778a796d"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--masterwork.png",
+        "sha256": "7594f2bff18fc6c09206c58d34ec74e23a50034b0eb77c5b744a8ae8e12d4b3b"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--masterwork.json",
+        "sha256": "01191242c1ef4312f7f16146e13d95a17eb722ec1259e335366676dc86d9cf5f"
+      }
+    ],
+    "source_path_normalized": true
+  },
+  {
+    "id": "weapon-legion_gladius--relic",
+    "peer_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+    "files": [
+      {
+        "path": "art/icons/gear/weapon-legion_gladius--relic.png",
+        "sha256": "95368a6d816581162abe7b435ed2566ad94ac53cd2d0ee2bcf01ea7bf5b349a8"
+      },
+      {
+        "path": "art/icons/gear/exports/256/weapon-legion_gladius--relic.png",
+        "sha256": "08e9761ad1c4077d34c6843c55c885183e453399098d2e10d7df98ba0c909468"
+      },
+      {
+        "path": "art/icons/gear/exports/128/weapon-legion_gladius--relic.png",
+        "sha256": "3ef7389dcf62cfc1a33a3e3760f5c8fbb2ffd9400bf19a72782ced76013e05f0"
+      },
+      {
+        "path": "art/icons/gear/exports/64/weapon-legion_gladius--relic.png",
+        "sha256": "e379740983ebbe09b75452dbde5dce631b533a76a39937f173cb25324b1b4432"
+      },
+      {
+        "path": "art/icons/gear/exports/32/weapon-legion_gladius--relic.png",
+        "sha256": "a31db5c13134617dd98f12f217b165bae5f01a9653a7a015c8cc6d967d2dcbed"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--relic.png",
+        "sha256": "f769cd682eaf69e3fbc1fb87d9dcbcccc475263de9c3671955724715b1b71569"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--relic.json",
+        "sha256": "d504c45899231e14fec5b0984c04a7da411dbdce7f17f4901566233bb4a086eb"
+      }
+    ],
+    "source_path_normalized": true
+  },
+  {
+    "id": "weapon-legion_gladius--celestial",
+    "peer_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+    "files": [
+      {
+        "path": "art/icons/gear/weapon-legion_gladius--celestial.png",
+        "sha256": "f16ae5c5c8c941d50083344a7d0538d2ba8da103998ed8af164dd2bfe875e30b"
+      },
+      {
+        "path": "art/icons/gear/exports/256/weapon-legion_gladius--celestial.png",
+        "sha256": "59e4ebd3e8620dcbd572425b01e4b47d91deecc05c2d137e4acd6fdcfbeb841b"
+      },
+      {
+        "path": "art/icons/gear/exports/128/weapon-legion_gladius--celestial.png",
+        "sha256": "f0d5518451c168c1256c38bf93dfeb4ac61451e77b1ae4eb6b18358251979bb8"
+      },
+      {
+        "path": "art/icons/gear/exports/64/weapon-legion_gladius--celestial.png",
+        "sha256": "120438ae51ca8c25db50510c5261ab3a36cd551e2fb77fe3655b065a1b84f4ff"
+      },
+      {
+        "path": "art/icons/gear/exports/32/weapon-legion_gladius--celestial.png",
+        "sha256": "e6a42fea68ce69b1e355d5c0dc8edc636dadd8542f812fb7bf2a6a0b36469d8a"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--celestial.png",
+        "sha256": "c40734a6b609ca85419f791822721f92a24fe40da5d922d004942688323426da"
+      },
+      {
+        "path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--celestial.json",
+        "sha256": "033315c4fec348e2f998ce7df31abc564103a8422759e1b46998945022e1ad04"
+      }
+    ],
+    "source_path_normalized": true
+  }
+]

@@ -1,3 +1,12 @@
+# Current grade lane — acknowledged split
+
+Coordination and acknowledgment: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . This worker owns **32 candidates**: four grades for kemizuchi_duelling_blade, adamantile_greatsword, ork_machete, hatchet, war_axe, glaive, lance and maul. Exact ids are in the active claim.json. The other instance owns Katana/Drifter, combat_knife/sabre/legion_gladius, recurve_bow/longbow, crossbow/repeating_crossbow and shield-buckler/riot_shield/pavise.
+
+Three early overlapping local renders are archived under coordination/overlap-archive; their twelve canonical blade candidates are reused byte-for-byte from peer commit2d9d2fb50, with repo-relative catalog source paths. They are not counted as new active-lane drawings. No further work on the released blade sets. Standards are unchanged; no approval is fabricated. Every active candidate is generated with image_gen, shown, exported, technically validated, committed and pushed individually. No final-report pause while eligible jobs remain.
+
+
+---
+
 # Kept-blade grade candidates — active lane
 
 Shared coordination mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Message sent to the other instance; no acknowledgment is claimed yet.

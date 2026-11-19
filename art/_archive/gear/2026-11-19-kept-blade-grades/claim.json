@@ -2,18 +2,6 @@
   "branch": "art/2026-11-19-kept-blade-grades",
   "updated_utc": "2026-11-19T07:45:49.211491+00:00",
   "ids": [
-    "weapon-combat_knife--fine",
-    "weapon-combat_knife--masterwork",
-    "weapon-combat_knife--relic",
-    "weapon-combat_knife--celestial",
-    "weapon-sabre--fine",
-    "weapon-sabre--masterwork",
-    "weapon-sabre--relic",
-    "weapon-sabre--celestial",
-    "weapon-legion_gladius--fine",
-    "weapon-legion_gladius--masterwork",
-    "weapon-legion_gladius--relic",
-    "weapon-legion_gladius--celestial",
     "weapon-kemizuchi_duelling_blade--fine",
     "weapon-kemizuchi_duelling_blade--masterwork",
     "weapon-kemizuchi_duelling_blade--relic",
@@ -25,15 +13,37 @@
     "weapon-ork_machete--fine",
     "weapon-ork_machete--masterwork",
     "weapon-ork_machete--relic",
-    "weapon-ork_machete--celestial"
+    "weapon-ork_machete--celestial",
+    "weapon-hatchet--fine",
+    "weapon-hatchet--masterwork",
+    "weapon-hatchet--relic",
+    "weapon-hatchet--celestial",
+    "weapon-war_axe--fine",
+    "weapon-war_axe--masterwork",
+    "weapon-war_axe--relic",
+    "weapon-war_axe--celestial",
+    "weapon-glaive--fine",
+    "weapon-glaive--masterwork",
+    "weapon-glaive--relic",
+    "weapon-glaive--celestial",
+    "weapon-lance--fine",
+    "weapon-lance--masterwork",
+    "weapon-lance--relic",
+    "weapon-lance--celestial",
+    "weapon-maul--fine",
+    "weapon-maul--masterwork",
+    "weapon-maul--relic",
+    "weapon-maul--celestial"
   ],
   "standards": [
-    "weapon-combat_knife",
-    "weapon-sabre",
-    "weapon-legion_gladius",
     "weapon-kemizuchi_duelling_blade",
     "weapon-adamantile_greatsword",
-    "weapon-ork_machete"
+    "weapon-ork_machete",
+    "weapon-hatchet",
+    "weapon-war_axe",
+    "weapon-glaive",
+    "weapon-lance",
+    "weapon-maul"
   ],
   "other_agent_proof_standards": [
     "weapon-katana",
@@ -41,5 +51,12 @@
   ],
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
   "authorization": "Leon explicitly requested continuous candidate production without stopping for report checkpoints. Standards and grade candidates remain unapproved; no proof approval is invented.",
-  "active": true
+  "active": true,
+  "released_to_peer": [
+    "weapon-combat_knife",
+    "weapon-sabre",
+    "weapon-legion_gladius"
+  ],
+  "peer_canonical_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
+  "target": 32
 }

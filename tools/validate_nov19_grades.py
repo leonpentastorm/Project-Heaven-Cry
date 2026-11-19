@@ -23,7 +23,7 @@ def validate(selected=None, complete=False):
     text=(ROOT/'art/briefs/prompts-2026-11-19/08-grades-and-uniques.md').read_text()
     assert (BASE/'source-brief.md').read_text()==text, 'Brief changed; reconcile claim'
     expected=set(json.loads((BASE/'claim.json').read_text())['ids'])
-    assert len(queue)==len(expected)==24
+    assert len(queue)==len(expected)
     assert expected == {standard+'--'+grade for standard in json.loads((BASE/'claim.json').read_text())['standards'] for grade in ('fine','masterwork','relic','celestial')}
     assert {j['id'] for j in queue} == expected
     delivered = {j['id'] for j in queue if j['status']=='delivered'}
@@ -70,7 +70,7 @@ def validate(selected=None, complete=False):
         for size in (64,32):
             with Image.open(BASE/f'reviews/{family}-{size}px.png') as sheet:
                 assert sheet.mode == 'RGB' and sheet.width >= 220
-    print(f'PASS: Nov19 kept-blade grade candidates {len(delivered)}/24; exact brief paths, catalog, source/master/prompt/reference/export hashes, candidate status and progress; pixel checks: {selected or "all delivered"}.')
+    print(f'PASS: Nov19 kept-blade grade candidates {len(delivered)}/{len(queue)}; exact brief paths, catalog, source/master/prompt/reference/export hashes, candidate status and progress; pixel checks: {selected or "all delivered"}.')
     print('Scope: omitted historical art is not pixel-validated by this targeted check.')
 
 

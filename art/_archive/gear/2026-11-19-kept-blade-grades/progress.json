@@ -1,21 +1,8 @@
 {
-  "target": 24,
+  "target": 32,
   "status": "drawing",
-  "delivered": [
-    "weapon-combat_knife--fine",
-    "weapon-legion_gladius--fine",
-    "weapon-legion_gladius--masterwork"
-  ],
+  "delivered": [],
   "remaining": [
-    "weapon-combat_knife--masterwork",
-    "weapon-combat_knife--relic",
-    "weapon-combat_knife--celestial",
-    "weapon-sabre--fine",
-    "weapon-sabre--masterwork",
-    "weapon-sabre--relic",
-    "weapon-sabre--celestial",
-    "weapon-legion_gladius--relic",
-    "weapon-legion_gladius--celestial",
     "weapon-kemizuchi_duelling_blade--fine",
     "weapon-kemizuchi_duelling_blade--masterwork",
     "weapon-kemizuchi_duelling_blade--relic",
@@ -27,9 +14,31 @@
     "weapon-ork_machete--fine",
     "weapon-ork_machete--masterwork",
     "weapon-ork_machete--relic",
-    "weapon-ork_machete--celestial"
+    "weapon-ork_machete--celestial",
+    "weapon-hatchet--fine",
+    "weapon-hatchet--masterwork",
+    "weapon-hatchet--relic",
+    "weapon-hatchet--celestial",
+    "weapon-war_axe--fine",
+    "weapon-war_axe--masterwork",
+    "weapon-war_axe--relic",
+    "weapon-war_axe--celestial",
+    "weapon-glaive--fine",
+    "weapon-glaive--masterwork",
+    "weapon-glaive--relic",
+    "weapon-glaive--celestial",
+    "weapon-lance--fine",
+    "weapon-lance--masterwork",
+    "weapon-lance--relic",
+    "weapon-lance--celestial",
+    "weapon-maul--fine",
+    "weapon-maul--masterwork",
+    "weapon-maul--relic",
+    "weapon-maul--celestial"
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T08:40:01.250985+00:00"
+  "updated_utc": "2026-11-19T08:40:01.250985+00:00",
+  "reused_peer_candidates": 12,
+  "archived_overlap_alternatives": 3
 }
