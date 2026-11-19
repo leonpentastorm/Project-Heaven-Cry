@@ -87,8 +87,8 @@ function schoolEffect(m: any, d: any, school: string, opt: string | undefined, s
   if (school === 'damage') {
     const inv = d.modules.includes('inverse'), raw = outburstDamage(m, d, sm) * f;
     if (inv) return 'a shield of ' + Math.floor(inverseShield(m, d, sm) * f) + ' on ' + (formOf(d) === 'bolt' ? 'an ally' : 'each ally');
-    // Rules 1.19: the way it strikes, with the engine's own numbers (soul_modules.json damage.modes).
-    const md: any = (SOUL_RULES as any).damage?.modes?.[o] || null, n = Math.floor(raw * damageModeMult(o));
+    // Rules 1.19: the way it strikes, with the engine's own numbers (the school's own modes, soul_modules.json).
+    const md: any = S.modes?.[o] || null, n = Math.floor(raw * damageModeMult(o));
     return n + ' damage' + (!md ? '' : md.mult_low != null ? ' (Finish: ' + Math.floor(raw * md.mult_low) + ' against a target at half its HP or less)' : md.condition ? ', and the target is Marked for your side (Brand)' : md.heal_of_damage ? ', and you heal for a quarter of the HP it takes (Drain)' : '');
   }
   if (school === 'buff') return o === 'heal' ? 'heals ' + Math.floor(outburstHeal(m, d, sm) * f) + (formOf(d) === 'bolt' ? '' : ' each') : optionName(school, o) + (f < 1 ? ' (half)' : '');

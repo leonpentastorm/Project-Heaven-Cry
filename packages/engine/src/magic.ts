@@ -749,8 +749,9 @@ export const stageSaveTn = (stage: number) => Math.floor(Math.max(0, stage) / 2)
 export const stageRounds = (stage: number) => (SRD.extra_round_at != null && stage >= SRD.extra_round_at ? 1 : 0);
 export const stageTiles = (stage: number) => ((SRD.extra_tile_at as number[]) || []).filter((s) => stage >= s).length;
 export const stageBoonRounds = (stage: number) => ((SRD.boon_round_at as number[]) || []).filter((s) => stage >= s).length;
-/** The Damage school's ways to strike (rules 1.19; soul_modules.json damage.modes): the multiplier on one target. */
-const DMODE: any = SR.damage?.modes || {};
+/** The Damage school's ways to strike (rules 1.19; a school's own `modes` in soul_modules.json, read by its ways'
+ *  lines too since 0.31.11): the multiplier on one target. */
+const DMODE: any = Object.assign({}, ...Object.values(SCHOOL).map((s: any) => s.modes || {}));
 export function damageModeMult(option: string | undefined, t?: Unit | null): number {
   const md = option ? DMODE[option] : null; if (!md) return 1;
   if (md.mult_low != null && t && t.maxHp > 0 && t.hp <= t.maxHp * (md.low_hp ?? 0.5)) return md.mult_low;

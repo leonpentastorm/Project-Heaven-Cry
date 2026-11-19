@@ -131,6 +131,9 @@ const WORD_ORDER = Object.keys(WORD_CLASS);
 // OPT_LABEL and optValue (a school's options) come from game/actionPickers, shared with the twin's design picker.
 /** A way's one line (the school's option_text, its label's "Label: " lead dropped: the button says it). */
 const wayText = (school, o) => { const t = String((SCHOOL[school]?.option_text || {})[o] || ''), l = OPT_LABEL[o] || o; return t.startsWith(l + ': ') ? t.slice(l.length + 2) : t; };
+/** A school's text with its ways' lines after it, for a place that draws no WAY rows (a chip's title): the ways are
+ *  said once, in option_text (0.31.11 item E). The workshop shows the text alone: its WAY rows say the ways. */
+const schoolTitle = (id) => { const S = SCHOOL[id]; if (!S) return ''; const w = (S.options || []).map((o) => (S.option_text || {})[o]).filter(Boolean); return [S.text || '', ...w].join(' '); };
 const optLabel = (school, v) => { const o = (SCHOOL[school]?.options || []).find((x) => optValue(x) === v); return o ? OPT_LABEL[o] || o : v; };
 const signed = (n) => (n > 0 ? '+' + n : n < 0 ? '−' + Math.abs(n) : '0');
 const chipStyle = (ink, on) => 'display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; border: 1px solid ' + ink + '; '
@@ -234,7 +237,7 @@ function magicVals(self, g, c) {
     twoHead: 'SECOND SCHOOL · A RIDER AT ' + Math.round(SECOND_SCHOOL.strength * 100) + '% (WILL POWER ' + SECOND_SCHOOL.fromWill + ', +' + SECOND_SCHOOL.cost + ' MP)',
     two: two && known.schools.length > 1, noTwo: !two || known.schools.length < 2, noTwoText: !two ? 'A second school needs Will Power ' + SECOND_SCHOOL.fromWill + '.' : 'Learn a second school first (a teacher).',
     schools2: [{ id: '', label: 'None' }, ...known.schools.filter((x) => x !== B.school).map((x) => ({ id: x, label: SCHOOL[x]?.name || x }))].map((o) => { const on = (B.school2 || '') === o.id;
-      return { key: o.id || 'none', label: o.label, pressed: on ? 'true' : 'false', title: o.id ? SCHOOL[o.id]?.text || '' : 'One school only.', style: chipStyle(SOUL_VIOLET, on),
+      return { key: o.id || 'none', label: o.label, pressed: on ? 'true' : 'false', title: o.id ? schoolTitle(o.id) : 'One school only.', style: chipStyle(SOUL_VIOLET, on),
         pick: () => { const o2 = SCHOOL[o.id]?.options || []; set({ school2: o.id, option2: o2.length ? optValue(o2[0]) : '' }); } }; }),
     // a school's ways (Damage: Strike, Finish, Brand, Drain), one line a way: its label and its line (soul_modules.json
     // option_text); the first school's row too (0.31.11: it was computed and never drawn)
@@ -265,7 +268,7 @@ function magicVals(self, g, c) {
     (x.soulKnown?.modules || []).forEach((s) => { if (!known.modules.includes(s) && MODULE[s]) addT('module', s, MODULE[s].name + ' module', x.name); });
     (x.soulKnown?.tones || []).forEach((s) => { if (!(known.tones || []).includes(s) && TONE[s] && s !== 'raw') addT('tone', s, TONE[s].name + ' tone', x.name); }); }
   const ally = [...teach.values()].map((t) => ({ key: t.kind + t.id, label: t.label, sub: 'from ' + t.who.join(' or '), isWord: t.kind === 'word', img: t.kind === 'word' ? glyphUri(t.id, SIGIL_INK) : heartUri(1), locked: learnLocked,
-    title: t.kind === 'word' ? SIGIL[t.id].text : t.kind === 'school' ? SCHOOL[t.id].text : t.kind === 'tone' ? TONE[t.id].text || '' : MODULE[t.id].text,
+    title: t.kind === 'word' ? SIGIL[t.id].text : t.kind === 'school' ? schoolTitle(t.id) : t.kind === 'tone' ? TONE[t.id].text || '' : MODULE[t.id].text,
     go: () => act({ type: 'magic/learn', charId: c.id, [t.kind]: t.id, from: 'ally' }),
     style: chipStyle(t.kind === 'word' ? SIG_CYAN : SOUL_VIOLET, false) + '; min-height: 36px; border-radius: 10px' + (learnLocked ? '; opacity: 0.5; cursor: default' : '') }));
   const blankPlate = (x) => !plateLesson(x.note); // rules 1.61 addendum item 4758: a plate with no lesson written on it (the engine's reading)

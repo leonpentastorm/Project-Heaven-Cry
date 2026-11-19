@@ -42,6 +42,15 @@ describe('the Outburst workshop: the first school\'s ways', () => {
     const d = (G.characters[c.id] as any).outbursts.find((x: any) => x.name === 'Mark');
     expect(d && d.school).toBe('damage'); expect(d.option).toBe('brand');
   });
+  it('item E (0.31.11): each way is said once, in percent from the numbers of the school; the paragraph of the school above the WAY rows no longer lists them', () => {
+    const { L } = story(); L.renderVals().mg.soul.newDesign();
+    const b = L.renderVals().mg.b, M = (SCHOOL as any).damage.modes, line = (k: string) => b.options.find((o: any) => o.key === k).text;
+    for (const n of ['Strike', 'Finish', 'Brand', 'Drain']) expect(b.schoolText).not.toContain(n + ' (');
+    expect(b.schoolText).not.toMatch(/×\s*0\.8|×\s*1\.4/);
+    expect(line('finish')).toBe(Math.round(M.finish.mult * 100) + '% damage; ' + Math.round(M.finish.mult_low * 100) + '% against a foe at ' + Math.round(M.finish.low_hp * 100) + '% HP or less.');
+    expect(line('drain')).toContain(Math.round(M.drain.heal_of_damage * 100) + '% of the HP it takes');
+    for (const o of b.options) expect(o.text).not.toMatch(/×/);
+  });
   it('the template draws the row: one row a way (its button, then its line)', () => {
     const i = TPL.indexOf('{{mg.b.hasOptions}}'), row = TPL.slice(i, TPL.indexOf('</sc-if>', TPL.indexOf('</sc-for>', i)) + 8);
     expect(row).toMatch(/<sc-for list="\{\{mg\.b\.options\}\}" as="o"><div data-way="\{\{o\.key\}\}"/);
