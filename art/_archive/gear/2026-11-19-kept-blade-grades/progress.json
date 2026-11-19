@@ -71,7 +71,8 @@
     "armour-torso_class2_medium--masterwork",
     "armour-torso_class2_medium--relic",
     "armour-torso_class2_medium--celestial",
-    "armour-torso_class3_heavy--fine"
+    "armour-torso_class3_heavy--fine",
+    "armour-torso_class3_heavy--masterwork"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -81,7 +82,6 @@
     "weapon-war_axe--masterwork",
     "weapon-war_axe--relic",
     "weapon-war_axe--celestial",
-    "armour-torso_class3_heavy--masterwork",
     "armour-torso_class3_heavy--relic",
     "armour-torso_class3_heavy--celestial",
     "armour-torso_class4_assault--fine",
@@ -127,7 +127,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T10:59:14.994926+00:00",
+  "updated_utc": "2026-11-19T11:00:35.913809+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3
 }

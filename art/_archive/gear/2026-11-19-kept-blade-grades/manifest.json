@@ -4310,6 +4310,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-torso_class3_heavy--masterwork",
+      "path": "art/icons/gear/armour-torso_class3_heavy--masterwork.png",
+      "sha256": "c706c63a3ac1f648245858a6b83bcf24055769d88ff435f55fb59f836b78dcc3",
+      "label": "Heavy Armour — Masterwork",
+      "family": "armour-torso_class3_heavy",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-torso_class3_heavy--masterwork.png",
+        "sha256": "091261ec3853f18d9895c95afdf70d0a057ced1ff023d9933ee28990ac76847a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-torso_class3_heavy--masterwork.png",
+        "sha256": "c706c63a3ac1f648245858a6b83bcf24055769d88ff435f55fb59f836b78dcc3"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-torso_class3_heavy--masterwork.txt",
+        "sha256": "e402e1ba53e72e36e789bba9ebfea6e367b76b06cfd62d4b2825edc113132092"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-torso_class3_heavy.png",
+          "sha256": "8240c5b8ec6b2d169cc8a52ac2c0b7192cd06137f9ac3c75e5b2c4d436b0b3c9"
+        },
+        {
+          "path": "art/icons/gear/armour-torso_class3_heavy--fine.png",
+          "sha256": "bcf5297afcfc7e99efb1ddb7330b98decf2e1f78961078d3d9055fc9e5ee70ec"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-torso_class3_heavy--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-torso_class3_heavy--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-torso_class3_heavy--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-torso_class3_heavy--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "d6938c096d8b609feb1908e502e0db7d4a7c3df68eef1cf4945d00e79796dd07",
+        "128": "f9d4e0f8b02f3a370583bb867f9cfb00c8c34374d9276d11a444be092e2085a7",
+        "64": "cd0c68955d16f695230825caea8f4b14e5cff6b452af7c959a6726533f2ed211",
+        "32": "df86252d09eebaf7af7f38f98ece0a1b4e8b016e8489c16a56680383ca6031f2"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-torso_class3_heavy",
+      "outline": {
+        "solid_alpha_iou": 0.9822391233379507,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 16
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
