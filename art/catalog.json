@@ -19178,6 +19178,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "shield-ram_plate": {
+      "label": "Ram plate",
+      "path": "art/icons/gear/shield-ram_plate.png",
+      "sha256": "f3cc5e38a2589d5290d5fb37df18df9c0c746c4b8df4e68fd2bac33da5854599",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-ram_plate.png",
+        "128": "art/icons/gear/exports/128/shield-ram_plate.png",
+        "64": "art/icons/gear/exports/64/shield-ram_plate.png",
+        "32": "art/icons/gear/exports/32/shield-ram_plate.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+      "brief_number": 3,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

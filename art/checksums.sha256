@@ -1218,13 +1218,14 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-15e752c93b16d4e72d085ac6996874d4912843c0b4b5f54f0c47389def908cc2  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
+4f60da29c7dc36d861bbab10ca84189d19528e38062bf79bec7c4107e7c61373  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
 9baea3255504f9e53d711446792e72b5372fbd74335ca4608add0486cf02e915  art/_archive/gear/2026-11-19-melee-armour/briefs/05-melee-forms.md
 c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/_archive/gear/2026-11-19-melee-armour/briefs/07-shields-armour.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/_archive/gear/2026-11-19-melee-armour/briefs/README.md
 95edab6065fdcc674b0bd1d662a6f49278080bd7ee0f31cfda198d5aeb9fd0c8  art/_archive/gear/2026-11-19-melee-armour/lowland-chopper-generation-error.json
-af1a1576a0dbf8af5cb6ebc4df66a1a8adbc8f81107b1ff972ad29a5f2c56cb7  art/_archive/gear/2026-11-19-melee-armour/manifest.json
+9185e78346dab8478aa2f82c253da491a4e07391a2d57e3855a27bd470a771a7  art/_archive/gear/2026-11-19-melee-armour/manifest.json
 3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8  art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-boss_shield.png
+f3cc5e38a2589d5290d5fb37df18df9c0c746c4b8df4e68fd2bac33da5854599  art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-ram_plate.png
 cdb395c131f9003a42f4c412da035f3a2801a2c963033c4edf39d0f94a384fcf  art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-spiked_buckler.png
 ad3d5a066b7a82abac51c44692f6ad0f9fa4ee947c9de985c096fdc851f375e8  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-adamantile_longsword.png
 2be4ff5ef64f6489739ab40862a9736fbd4d734708ddaaa4fa35c1473e76be13  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-adamantile_plate_needle.png
@@ -1245,7 +1246,7 @@ fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4  art/_archive/g
 c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-war_hammer.png
 bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-war_pick.png
 a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-weighted_gloves.png
-8e1579f76b9ddc740152a3b47069570069f781a6af8c95ddadf81445a6e0a120  art/_archive/gear/2026-11-19-melee-armour/progress.json
+f944c81ad6b7647451e69aec97aec2026a8d7c8f9f2d696ae417dcc5e1bb3a70  art/_archive/gear/2026-11-19-melee-armour/progress.json
 54760a740ba4b1ecec9bbe8ea567331a0e05792c98655e6927219559fb9c7162  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-assault_helm.txt
 84c98f75ca902406ed731b932a357031c90a45a13860786d04019ed78d13cd88  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-blackout_hood.txt
 7932a392b9ee47b9cb01a32677283c6c34a97179dc14ab802af6bc6e17902feb  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-breacher_plate.txt
@@ -1285,7 +1286,7 @@ aaa3859af91cde95cffa25d66fe7fe94c278858151a39c459bf6ec11acceb992  art/_archive/g
 2b712f5e14d4be982af410663cffa3e3878f3d0fcb901d64a60aea44649597df  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-war_hammer.txt
 b83d19be3f91a5c2ee62b9a25a7ead8fbce968ded227119ec6143113fb2c31f1  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-war_pick.txt
 65d16ef2b8326b175a40e20dcc6612fb28971f92faebb73dd2247719a6467c95  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-weighted_gloves.txt
-8b8d4ff67c33803d7f6cfb5692f38d370e12eea100b9575947c9540964bd1428  art/_archive/gear/2026-11-19-melee-armour/queue.json
+1fbee1c812e46bd25cb81b5f9f9dc31f0b316c385b9c94d32d4682988b602376  art/_archive/gear/2026-11-19-melee-armour/queue.json
 08c79a4b7371726cf894ed27ad394528e512c03af6fd7c037489813207d8df83  art/_archive/gear/2026-11-19-melee-armour/references/fuel-drum-and-tool-rack.png
 9a913632855428ce70d55f4136797c88b34abfc1e6d8aa425b96ebfb6b37b30d  art/_archive/gear/2026-11-19-melee-armour/reviews/05-axes-32px.png
 65ed57609c5852ab18a184c4ec9506f6814945e9310e4f3deefec161268946bf  art/_archive/gear/2026-11-19-melee-armour/reviews/05-axes-64px.png
@@ -1309,10 +1310,11 @@ fc2d3aa9108e77d08c8b83e6fc583b2ecf6418d2f905ae1e7ac1e6590dfa07c8  art/_archive/g
 f5e1d0a9c648246d57ebc0b24a413154679e7ee7689b64f0189b4dda25793605  art/_archive/gear/2026-11-19-melee-armour/reviews/05-scrap-cutters-64px.png
 1fd5b5da3b4cd9e803475f67b8cafbfe703e43f6e5d29155b2ea36bf46f04a5c  art/_archive/gear/2026-11-19-melee-armour/reviews/05-service-knives-32px.png
 e4cd5d6946ffd737773062a205d9c633e91dc37f7367f2bd42f3bdb92a98b7f3  art/_archive/gear/2026-11-19-melee-armour/reviews/05-service-knives-64px.png
-09541e29ff448f2449182470eac6caf71bec865a323038c3768944bc97f22763  art/_archive/gear/2026-11-19-melee-armour/reviews/07-shields-32px.png
-6375edd7698efa1e838037d0fbe3a6a18b4c75f330c4c3cde8c2b174684b0a82  art/_archive/gear/2026-11-19-melee-armour/reviews/07-shields-64px.png
+c7948ed5d72b4fad9e9d27bdab9cd6e903da5f4bf79eb753028cb5f0a70288fe  art/_archive/gear/2026-11-19-melee-armour/reviews/07-shields-32px.png
+ac1f5631cad898bad96eba0d0bdf3a7f5d844829588f71c747e76f42fcc74e7d  art/_archive/gear/2026-11-19-melee-armour/reviews/07-shields-64px.png
 f98429e5d1e6db3c7e7589c1e89b707f70f73e427384407532eac9e9a8f6cba0  art/_archive/gear/2026-11-19-melee-armour/short-draw-generation-error.json
 e4594f2311e982ae2a4603db4c8c28e53d889d36fb7114e1625d49fccdcb113a  art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png
+267861bafac742616f7674fb1f0a1707952beb4490b4ddfa657a6b45cde8e846  art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png
 d5266a8b194d1b285c695b02b594484989848822cbb75320e7be8c196095583b  art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-spiked_buckler.png
 bb86956b8cc82b894caeebe5fcd4452c8369e8a27a51cab46c9b1cd73661a678  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png
 16c69e22ee36ba3e695d02c6305670527bde826496bb241bc25d2039bce55edd  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png
@@ -4598,7 +4600,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-140653b2785766d7517692a3dde1b85288ea5612711557eb63f94d585dfd14a9  art/catalog.json
+f8bc888cb33d01e199f336ff33ad1cbba194284f9e7fc89b9d1b8b6bca98becb  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6282,6 +6284,7 @@ a9e01df0470ac78131d8659fff5f4e841eed5fe5b02942243f8d9a3ef788e1df  art/icons/gear
 2ea711901c5206da656acc4f679ddc8576f0e401d68f087ea1611ad2b87e7c1a  art/icons/gear/exports/128/shield-boss_shield.png
 5da29b430a2cbcff6d3259072c5cc2f7692bdf92617305e116190621816d2f68  art/icons/gear/exports/128/shield-buckler.png
 8ffe9606cdec5f90be4c2e78c800d379bd9d1826f041f2ce5e325e627398d844  art/icons/gear/exports/128/shield-pavise.png
+68e4dffc514d782c4acd218c5dc8f76fe61a249ce971df458ca48626bfa2149f  art/icons/gear/exports/128/shield-ram_plate.png
 62d43a309a0116e54a0daf9503114df0ae6cdb966d2909d36bcc30381dff0b41  art/icons/gear/exports/128/shield-riot_shield.png
 5f60bf6206b00591e170d08e68226a13528d2fce084614063467278f44b93285  art/icons/gear/exports/128/shield-spiked_buckler.png
 0b3f496b006dc512601be183f62bc304c6ae91fe97c1ab4a3e17784a52bf8fac  art/icons/gear/exports/128/tool-ammo_maker.png
@@ -6476,6 +6479,7 @@ aad3f1c86473c88159bee240d7a89ae00d2dfc8500e62cd24f33a64286c81231  art/icons/gear
 9de24182069e0066d5a21a68959573620d7f7b7a5a843eaf79f91ff430606ad7  art/icons/gear/exports/256/shield-boss_shield.png
 3ac68d6e10db2fcb55a712ffb6cb348289c649e41fd953f44b7f824a47c5ff52  art/icons/gear/exports/256/shield-buckler.png
 d3390c3806ded2f2c8837dd528e70d2bc1ddcd0be81832084e010f742612c9d1  art/icons/gear/exports/256/shield-pavise.png
+df98406ec3d0a0e79c6909fa8153eb7141b4fd18bc9acdd033b9537fa22a7182  art/icons/gear/exports/256/shield-ram_plate.png
 3f8d2548c639a12adb34ee169c1b2d18e718325aef1f05f47b340d48e6f81e5a  art/icons/gear/exports/256/shield-riot_shield.png
 7f2396c86d6ccfc45a06f349c1dd68ad7d3967db7b734b2f1a9f418d4c43a79d  art/icons/gear/exports/256/shield-spiked_buckler.png
 177831bb6102a8bbebe22e33f46000c7a4593b8fca7505ec0f67278e2fcfb6dc  art/icons/gear/exports/256/tool-ammo_maker.png
@@ -6670,6 +6674,7 @@ fb5741582634ed0cd10833ea51047863f2385ff93c29899db653b3c6d895f331  art/icons/gear
 c1d113784ce519186f398dddf788b1966f4e24760c93c80569e48db1f2408389  art/icons/gear/exports/32/shield-boss_shield.png
 cb79e42fc5bf19a28158992fe3ea808e88af7a7cd327e2f1e568563438890e92  art/icons/gear/exports/32/shield-buckler.png
 1a931f3be31207d52077ba5b5e6dd198e0bbbf4a4b6cb1a36da0ffda9e5c15b9  art/icons/gear/exports/32/shield-pavise.png
+c21b93663105f994abe313c6ce2a3e2243e404271213ebd7ecef667ad5656b15  art/icons/gear/exports/32/shield-ram_plate.png
 6011e0db843f013d1ac16e11f4a7542d68ff4e43a3be626d476089ece80ebfdf  art/icons/gear/exports/32/shield-riot_shield.png
 db35c9d5986dd791ee55ef37d69abfcf7d5bea9b9665ea654819bede66109185  art/icons/gear/exports/32/shield-spiked_buckler.png
 9c50db6a873b564fb2a8e43d309c26ccc221edd20c332f045f1c9dc0d2e4125e  art/icons/gear/exports/32/tool-ammo_maker.png
@@ -6864,6 +6869,7 @@ dfc17761341a76101c1b4a374e21da79549aee8d6f435b34ac3a71563e4f1c27  art/icons/gear
 60c7b023ba06cceee074fe1b53040711648dd9d5727ec6243461085f6f7a8167  art/icons/gear/exports/64/shield-boss_shield.png
 84df09148172bfe9d931ee6612398798f5bf1e2e57aea7c4d5ed98ef83dffac9  art/icons/gear/exports/64/shield-buckler.png
 cb87f8956cd640e417df33bbdb6411ed430cf564906f20ce6c2a779d6fbd32a4  art/icons/gear/exports/64/shield-pavise.png
+659aa45bd6b088ed7bb58a530fea024a09c9533c930683ef7a246329be413d19  art/icons/gear/exports/64/shield-ram_plate.png
 787bb68868f42ef6f5c75e7fc413020b346f0f7c7fdb3d4c7551d102074c3f5c  art/icons/gear/exports/64/shield-riot_shield.png
 367d8d952fb9b987b1df1e166e168c9bf94258aef3f3fd8d50379626598e0283  art/icons/gear/exports/64/shield-spiked_buckler.png
 6261779c3a630678fc022643bc37ade0df052c2f4683fadc58c223e5ae243f6c  art/icons/gear/exports/64/tool-ammo_maker.png
@@ -7022,6 +7028,7 @@ a96c7fb9105e64c51cb74549ef4a24d6e9e02dc817bc9307a8e5e3825fbd07ae  art/icons/gear
 3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8  art/icons/gear/shield-boss_shield.png
 1aeb92d2b419c48978476f314468c35639a89abe0732b5edf8cdbcc4d8510b9b  art/icons/gear/shield-buckler.png
 5d4a3d9d3befae48f6fa549b634ad79ef864406fd5186a9e75ea6fd19aac4d52  art/icons/gear/shield-pavise.png
+f3cc5e38a2589d5290d5fb37df18df9c0c746c4b8df4e68fd2bac33da5854599  art/icons/gear/shield-ram_plate.png
 be50f5e0eae8c794f4ba47ebc2e9d8d19f7a8a8cde211262e39c655d9195e8f0  art/icons/gear/shield-riot_shield.png
 cdb395c131f9003a42f4c412da035f3a2801a2c963033c4edf39d0f94a384fcf  art/icons/gear/shield-spiked_buckler.png
 6bc28ba366a9f4df09056b5faa5fbc4faf87eea1a87d2dc2d86d5edf2affc52e  art/icons/gear/tool-ammo_maker.png

@@ -1275,6 +1275,63 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-ram_plate",
+      "path": "art/icons/gear/shield-ram_plate.png",
+      "sha256": "f3cc5e38a2589d5290d5fb37df18df9c0c746c4b8df4e68fd2bac33da5854599",
+      "label": "Ram plate",
+      "family": "07-shields",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png",
+        "sha256": "267861bafac742616f7674fb1f0a1707952beb4490b4ddfa657a6b45cde8e846"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-ram_plate.png",
+        "sha256": "f3cc5e38a2589d5290d5fb37df18df9c0c746c4b8df4e68fd2bac33da5854599"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/shield-ram_plate.txt",
+        "sha256": "211d2660ea844a83ff60fdcb521a15f293d539a5ae3763cac718f82609cd25f8"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/shield-pavise.png",
+          "sha256": "5d4a3d9d3befae48f6fa549b634ad79ef864406fd5186a9e75ea6fd19aac4d52"
+        },
+        {
+          "path": "art/icons/gear/shield-riot_shield.png",
+          "sha256": "be50f5e0eae8c794f4ba47ebc2e9d8d19f7a8a8cde211262e39c655d9195e8f0"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-ram_plate.png",
+        "128": "art/icons/gear/exports/128/shield-ram_plate.png",
+        "64": "art/icons/gear/exports/64/shield-ram_plate.png",
+        "32": "art/icons/gear/exports/32/shield-ram_plate.png"
+      },
+      "export_hashes": {
+        "256": "df98406ec3d0a0e79c6909fa8153eb7141b4fd18bc9acdd033b9537fa22a7182",
+        "128": "68e4dffc514d782c4acd218c5dc8f76fe61a249ce971df458ca48626bfa2149f",
+        "64": "659aa45bd6b088ed7bb58a530fea024a09c9533c930683ef7a246329be413d19",
+        "32": "c21b93663105f994abe313c6ce2a3e2243e404271213ebd7ecef667ad5656b15"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
