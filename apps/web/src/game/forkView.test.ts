@@ -78,3 +78,21 @@ describe('a hover box never repeats what its card shows (ATTACK-PLAN 19 Nov: the
     }
   });
 });
+
+// 0.32 final pass B8: a new Rigger's FIGMENTS tab said "Nothing to pick." with no hint. The door's own choices (Figment
+// forms known, door figment_forms, opened by Visualization) are named on the tab and in the empty pick list, with where
+// they are chosen; none once they are chosen. The counts are the engine's (allPendingDoorPicks).
+import { doorChoiceLine, doorChoiceEmpty } from './forkLine';
+import { allPendingDoorPicks } from '@engine';
+describe('a door\'s own choices on its tab (game/forkLine.ts)', () => {
+  it('Visualization 1, no form learned: the forms to choose and where; chosen: nothing said', () => {
+    const c: any = ch({ visualization: 1 });
+    const n = allPendingDoorPicks(c).find((p) => p.skill === 'visualization' && !p.grant.startsWith('fork:'))!.left;
+    expect(n).toBeGreaterThan(0);
+    expect(doorChoiceLine(c, 'visualization')).toBe('Figment form: ' + n + ' to choose (out of a fight, on Level up)');
+    expect(doorChoiceEmpty(c, 'visualization')).toBe('Nothing learned yet: ' + n + ' Figment form' + (n > 1 ? 's' : '') + ' to choose, out of a fight, on Level up.');
+    expect(doorChoiceLine(c, 'durability')).toBe('');
+    const done: any = ch({ visualization: 1 }, { figment_forms: allPendingDoorPicks(c)[0].options.slice(0, n).map((o) => o.id) });
+    expect(doorChoiceLine(done, 'visualization')).toBe(''); expect(doorChoiceEmpty(done, 'visualization')).toBe('');
+  });
+});

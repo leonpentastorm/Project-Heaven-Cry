@@ -85,7 +85,7 @@ await click(p, 'Start the run');
 await settle(p, 500);
 await step('level-up first dialog', async () => { if (await p.locator('[data-phc-dialog]').count()) { await snap(p, 'lobby-level-up-first-dialog'); } await campConfirmGo(p); });
 await step('vow pop-up', async () => {
-  await p.waitForSelector('[data-phc-vow-popup="enter"]', { timeout: 20000 }); await settle(p, 600);
+  await p.waitForSelector('[data-phc-vow-popup="enter"]', { timeout: 30000 }); await settle(p, 600);
   await snap(p, 'camp-vow-popup');
   await p.locator('[data-phc-vow-done]').click(); await settle(p, 400);
 });
@@ -387,28 +387,30 @@ await step('channeler holding an Outburst', async () => {
 await step('mender with a Bond', async () => {
   await pgFight([{ type: 'sandbox/class', classId: 'bard', rank: 2 }, { type: 'sandbox/skill', skill: 'empathy', points: 6 }, { type: 'sandbox/give', item: 'service_pistol', equip: true }, { type: 'sandbox/give', item: 'attuner', equip: true }], 1);
   await allTabs('fight-mender');
-  let bonded = false;
+  let bonded = false, why = '';
   for (let i = 0; i < 6 && !bonded; i++) {
     const u = await meU(), foe = (await GQ()).combat.units.find((x) => x.side === 'foe' && !x.dead);
     await q.evaluate((s0) => { window.__phc.getState().game.rng.state = s0; }, dieSeed(1)); // (the foe's heart save is a 1: the Bond takes)
     const e = await qa({ type: 'combat/perk', unitId: u.id, id: 'verb:tend.bond_free', targetId: foe.id });
     bonded = (await GQ()).combat.ties?.some((t) => t.kind === 'bond'); if (bonded) break;
+    why = e || String((await GQ()).combat.log.slice(-1)[0] || ''); // (the engine's refusal, or the line that says the save held)
     if (i < 2) log('bond try ' + i + ': ' + e + ' ties ' + JSON.stringify((await GQ()).combat.ties) + ' log ' + JSON.stringify((await GQ()).combat.log.slice(-2)));
     await qa({ type: 'combat/end-turn', unitId: u.id }); await q.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.side === 'pc'; }, null, { timeout: 30000 }).catch(() => {}); await dismissCut();
   }
   await settle(q, 600);
   await q.locator('#phc-tab-tend').click().catch(() => {}); await settle(q, 400);
   await snap(q, 'fight-mender-with-a-bond');
-  if (!bonded) skipped.push('Mender: the Bond did not take in 6 turns (the picture shows the TEND tab without one)');
+  if (!bonded) skipped.push('Mender: the Bond did not take in 6 turns (the picture shows the TEND tab without one); the last answer: ' + why);
 });
 // the Rigger with a Figment
-await step('a Figment held (a door user with the Visualizer; a new Rigger has no form to Picture yet)', async () => {
-  await pgFight([{ type: 'sandbox/class', classId: 'marksman', rank: 1 }, { type: 'sandbox/skill', skill: 'visualization', points: 6 }, { type: 'sandbox/give', item: 'service_pistol', equip: true }, { type: 'sandbox/give', item: 'visualizer', equip: true }, { type: 'sandbox/give', item: 'standard_core', qty: 3 }], 1);
+await step('a Figment held (a door user with the Visualizer; two forms learned out of the fight, as Level up offers them)', async () => {
+  await pgFight([{ type: 'sandbox/class', classId: 'marksman', rank: 1 }, { type: 'sandbox/skill', skill: 'visualization', points: 6 }, { type: 'sandbox/give', item: 'service_pistol', equip: true }, { type: 'sandbox/give', item: 'visualizer', equip: true }, { type: 'sandbox/give', item: 'standard_core', qty: 3 },
+    { type: 'door/pick', door: 'figment_forms', option: 'wall' }, { type: 'door/pick', door: 'figment_forms', option: 'beast' }], 1);
   await allTabs('fight-skirmisher-visualizer');
   const u = await meU(), t1 = await free(u.pos, 2);
-  let e = null; for (const choice of ['d:hound', 'wall', 'hound', 'glimmer']) { e = await qa({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice, tile: t1 }); if ((await GQ()).combat.units.some((x) => x.owned?.kind === 'figment')) { e = null; break; } e = 'toast: ' + (await q.evaluate(() => window.__phc.getState().toast?.text || '')); }
+  let e = null; for (const choice of ['wall', 'beast']) { e = await qa({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice, tile: t1 }); if ((await GQ()).combat.units.some((x) => x.owned?.kind === 'figment')) { e = null; break; } e = 'toast: ' + (await q.evaluate(() => window.__phc.getState().toast?.text || '')); }
   log('picture: ' + e + ' toast ' + (await q.evaluate(() => window.__phc.getState().toast?.text || '')) + ' owned ' + JSON.stringify((await GQ()).combat.units.filter((x) => x.owned).map((x) => x.name)) + ' log ' + JSON.stringify((await GQ()).combat.log.slice(-2)));
-  if (e) skipped.push('Rigger: Picture the Hound refused: ' + e);
+  if (e) skipped.push('Rigger: Picture refused: ' + e);
   await settle(q, 700); await dismissCut();
   await q.locator('[role="tab"][data-tab="figments"]').click().catch(() => {}); await settle(q, 400);
   await snap(q, 'fight-skirmisher-visualizer-with-a-figment');
@@ -453,7 +455,7 @@ await step('sheet tabs and level-up', async () => {
   });
   // the level-up screen: level 3 with no class, a fork and perk steps waiting
   const toLevelUp = async () => { await q.locator('button', { hasText: /Level up|Earn your class/ }).first().click(); await q.locator('.phc-lu-core').first().waitFor({ timeout: 30000 }); await settle(q, 400); };
-  const leaveLevelUp = async () => { await q.locator('button.phc-lu-later').click({ timeout: 6000 }).catch(async () => { await q.keyboard.press('Escape'); await settle(q, 300); await q.locator('button.phc-lu-later').click({ timeout: 15000 }); }); await q.waitForFunction(() => !document.querySelector('.phc-lu-core'), null, { timeout: 30000 }); await settle(q, 300); };
+  const leaveLevelUp = async () => { await q.locator('button.phc-lu-later').click({ timeout: 6000 }).catch(async () => { await q.keyboard.press('Escape'); await settle(q, 300); await q.locator('button.phc-lu-later').click({ timeout: 30000 }); }); await q.waitForFunction(() => !document.querySelector('.phc-lu-core'), null, { timeout: 30000 }); await settle(q, 300); };
   for (const a of [{ type: 'sandbox/class', classId: null }, { type: 'sandbox/level', level: 3 }, { type: 'sandbox/skill', skill: 'durability', points: 4 }, { type: 'sandbox/skill', skill: 'dexterity', points: 3 },
     { type: 'sandbox/skill', skill: 'pain_threshold', points: 3 }, { type: 'sandbox/skill', skill: 'sensory', points: 3 }]) await must({ charId: cid, ...a });
   await settle(q, 500);
@@ -467,7 +469,7 @@ await step('sheet tabs and level-up', async () => {
   for (let i = 0; i < n; i++) if (/^class|Fork · Durability|Pain Threshold|Senses|Dexterity/.test(kinds[i].replace('◆ ', ''))) await step('level-up chip ' + kinds[i], async () => {
     const chip = chips.nth(i);
     await chip.evaluate((e) => e.click());
-    await q.locator('.phc-lu-chooser').waitFor({ timeout: 15000 }); await settle(q, 400);
+    await q.locator('.phc-lu-chooser').waitFor({ timeout: 30000 }); await settle(q, 400);
     const rows = await q.locator('.phc-lu-chooser .phc-perk-row').count(), opts = await q.locator('.phc-lu-chooser [data-fork-opt]').count();
     await snap(q, 'levelup-chooser-' + (++nper) + '-' + kinds[i].split(':')[0] + (rows ? '-' + rows + 'perks' : '') + (opts ? '-fork' : ''));
     await q.locator('.phc-lu-ch-close').first().click({ timeout: 4000 }).catch(() => q.keyboard.press('Escape')); await q.waitForFunction(() => !document.querySelector('.phc-lu-chooser'), null, { timeout: 8000 }).catch(() => {}); await settle(q, 200);
@@ -484,7 +486,7 @@ await step('sheet tabs and level-up', async () => {
   } else skipped.push('the re-pick chip did not appear for a hand-made old save (perkRepick set on the sheet in the page)');
   await leaveLevelUp().catch(() => {});
   // settings from inside a game
-  await step('settings in a room', async () => { await q.locator('header button, nav button, button').filter({ hasText: /^⚙$/ }).first().click({ timeout: 8000 }); await settle(q, 600); await snap(q, 'settings-in-game'); await q.keyboard.press('Escape'); });
+  await step('settings in a room', async () => { await q.locator('header button, nav button, button').filter({ hasText: /^⚙$/ }).first().click({ timeout: 30000 }); await settle(q, 600); await snap(q, 'settings-in-game'); await q.keyboard.press('Escape'); });
 });
 
 // the skill "?" pages from creation's Skills step: one alpha, one beta, one gamma, every fold open
@@ -497,7 +499,7 @@ await step('skill pages', async () => {
   await c.getByRole('navigation', { name: 'Creation steps' }).getByRole('button', { name: 'Skills' }).click(); await settle(c, 400);
   const folds = (open) => c.evaluate((open) => { for (const s of ['.phc-ep-fold', '.phc-ep-perks-fold', '.phc-ep-forks-fold']) { const f = document.querySelector(s); if (f && (f.getAttribute('aria-expanded') === 'true') !== open) f.click(); } }, open);
   for (const [id, tag] of [['durability', 'alpha'], ['pain_threshold', 'beta'], ['sensory', 'gamma']]) await step('skill page ' + tag, async () => {
-    await c.locator('[data-skill="' + id + '"] [data-skill-face]').click(); await c.locator('.phc-ep-lore').waitFor({ timeout: 20000 }); await settle(c, 400);
+    await c.locator('[data-skill="' + id + '"] [data-skill-face]').click(); await c.locator('.phc-ep-lore').waitFor({ timeout: 30000 }); await settle(c, 400);
     await snap(c, 'skill-page-' + tag + '-' + id + '-folds-closed');
     await folds(true); await settle(c, 500);
     await snap(c, 'skill-page-' + tag + '-' + id + '-all-folds-open');
@@ -531,5 +533,11 @@ await step('the Narrator\'s desk', async () => {
   await snap(host, 'narrators-desk-with-a-check-row');
   await host.context().close(); await guest.context().close();
 });
+// three named checks (a green line must mean something was looked at): the pictures, and the two doors the 0.32 pass
+// found unshown (a held Bond, a held Figment); any other state not reached is noted in index.md and fails nothing
+const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
+ok('pictures taken at both sizes: ' + done.length, done.length > 0 && done.length % 2 === 0);
+ok('the Mender's picture shows a Bond held', !skipped.some((x) => /^Mender: the Bond/.test(x)));
+ok('the Figment picture shows a Figment held', !skipped.some((x) => /^Rigger: Picture/.test(x)));
 console.log('done');
 await browser.close();

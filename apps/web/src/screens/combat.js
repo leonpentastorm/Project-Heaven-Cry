@@ -80,7 +80,7 @@ import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../game/figmentIcons';
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
 import { firstTurnTab, tabDoorLine, focusFilter, tabFocusLine, tabMirrors, tabBareWarning, feedLineOf } from '../game/doorView';
-import { forkChipsLine } from '../game/forkLine';
+import { forkChipsLine, doorChoiceLine, doorChoiceEmpty } from '../game/forkLine';
 import { noteTabs, noteLive, tabKey, shownTabs, firstUsable, NO_PREFS, EV_TABS_CHANGED } from '../game/tabPrefs';
 import { openSettings } from '../game/settings';
 import { sideOf, shortWord, statusGroups, SIDE_INK, SIDE_GLYPH } from '../game/statusStrip';
@@ -393,7 +393,7 @@ export function perkShelfVals(sh, items, sel, redraw) {
 }
 /** The chosen perk or class move's picker in the combat footer (game/actionPickers.ts): option chips, a second pick on
  *  the grid (shown as chips you can clear), and a prose box only where the move needs words. Never a typed detail. */
-function pickerVals(self, cb, P, V, whyOpt) {
+function pickerVals(self, cb, P, V, whyOpt, emptyWhy = '') {
   if (!P) return { hasPick: false, pickFields: [] };
   const key = self.state.action, form = () => (self.state.pkForm && self.state.pkForm.key === key ? self.state.pkForm.v : {});
   const setV = (patch) => self.setState({ pkForm: { key, v: { ...form(), ...patch } } });
@@ -409,7 +409,7 @@ function pickerVals(self, cb, P, V, whyOpt) {
         const icon = o.icon ? figmentIconUri(o.icon, on.includes(o.id) ? '#FFFFFF' : FIG_LINE) : '';
         return { key: o.id, label: o.label + (why ? ' · ' + chipWhy(why) : ''), title: why || o.title || '', pressed: on.includes(o.id) ? 'true' : 'false', off: !!why, hasIcon: !!icon, icon, style: CHIP(on.includes(o.id)) + (icon ? '; display: inline-flex; align-items: center; gap: 6px; padding-left: 6px' : '') + (why ? '; opacity: 0.5; cursor: default' : ''),
         pick: () => { if (why) return; const now = Array.isArray(form()[f.key]) ? form()[f.key] : []; setV({ [f.key]: now.includes(o.id) ? now.filter((y) => y !== o.id) : multi > 1 ? [...now, o.id].slice(-multi) : [o.id] }); } }; });
-      return { ...base, head: f.head + (multi > 1 ? ' (up to ' + multi + ')' : ''), isChips: true, opts, isEmpty: !opts.length, emptyText: f.empty || 'Nothing to pick.' };
+      return { ...base, head: f.head + (multi > 1 ? ' (up to ' + multi + ')' : ''), isChips: true, opts, isEmpty: !opts.length, emptyText: emptyWhy || f.empty || 'Nothing to pick.' };
     }
     if (f.kind === 'prose') return { ...base, isProse: true, text: V[f.key] || '', holder: f.holder, onText: (ev) => setV({ [f.key]: ev.target.value }) };
     if (f.kind === 'unit' || f.kind === 'tile') {
@@ -1463,12 +1463,14 @@ export class CombatLogic extends DCLogic {
     }
     if (pkE && mineTurn) {
       // The panel's words are the flow's; the form says what it still needs, and the class move's standing state.
-      if (pkMissing && flow && flow.d.available) sel.text = pkMissing;
+      // an empty pick list on a door's tab with that door's choices still open (Picture before any form is learned) says where they are chosen
+      const pkDoor = tabDoorLine(S.tab), pkChar = cur && cur.charId ? g.characters[cur.charId] : null, pkEmpty = pkDoor && pkP && pkP.fields.some((f) => f.kind === 'chips' && !f.options.length) ? doorChoiceEmpty(pkChar, pkDoor.skill) : '';
+      if (pkMissing && flow && flow.d.available) sel.text = pkEmpty || pkMissing;
       // (the refusal is the engine's verdict, said once in the text by the flow; the extra line says only a standing state: row 14)
       sel.extra = dotJoin(pkE.engine || !narratedRoom(g) ? '' : ADJ_MARKS.narrator + '.', pkState(pkE).tag ? pkState(pkE).why : ''); // rules 1.66 item 5212: a Narrator's call only where there is a Narrator
       // each single choice previewed as the engine would take it (the descriptor's form pick, once the target is picked)
       const whyOpt = flow && pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!flow.picks.targetId)) ? (id) => { const r = flow.peekWith({ form: { choice: id } }); return r && !r.ok ? r.why || 'Not now.' : ''; } : null;
-      Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt));
+      Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt, pkEmpty ? 'None learned yet.' : '')); // (where they are chosen is said once, in the text above)
     }
     // A read-only Perks row (rules 1.14: RIDES AN ACTION and ALWAYS ON): its whole card to read, and no Confirm.
     const pkiE = isPerkInfo(S.action) && mineTurn ? (() => { const sh = pkShelves(); return [...sh.rides, ...sh.always].find((r) => PKI + r.key === S.action) || null; })() : null;
@@ -1836,6 +1838,8 @@ export class CombatLogic extends DCLogic {
       // rules 1.60 (the beta feeds its door): the door's beta line from the engine's view of the sheet whose turn it is (game/doorView.ts feedLineOf)
       ...(() => { const fl = tabDoor && tabMine ? feedLineOf(tabChar, tabDoor.skill) : ''; return { hasFeed: !!fl, feedLine: fl }; })(),
       // rules 1.60 (the forks): the door's forks held, and a pick still to do, as one line (game/forkView.ts, the engine's doorForkView)
+      // a door's own choices still open (Figment forms known), with where they are chosen (the pick is refused in a fight)
+      ...(() => { const dl = tabDoor && tabMine ? doorChoiceLine(tabChar, tabDoor.skill) : ''; return { hasChoice: !!dl, choiceLine: dl, choiceStyle: 'font-size: var(--fs-sub); line-height: 1.45; font-weight: 700; padding: 0 2px 2px; color: #FFFFFF' }; })(),
       ...(() => { const fl = tabDoor && tabMine ? forkChipsLine(tabChar, tabDoor.skill) : ''; return { hasForks: !!fl, forkLine: fl, forkStyle: 'font-size: var(--fs-sub); line-height: 1.45; font-weight: 700; padding: 0 2px 2px; color: ' + (/still to do/.test(fl) ? '#FFFFFF' : '#C9D3E3') }; })(),
       // the focus rule: the door's focus only in the pack, one line on top says to put it on (skills.json door_focus_line)
       ...(() => { const fl = tabFocusLine(tabMine ? tabChar : null, tabG.id); return { hasFocusLine: !!fl, focusLine: fl, focusStyle: 'font-size: var(--fs-sub); line-height: 1.45; color: #FFFFFF; padding: 0 2px 2px' }; })(), ...(() => { const bw = tabBareWarning(tabG.id), on = !!bw && !!tabMine && !!cur && !!cur.mg && !cur.mg.emanator; return { hasBare: on, bareHeadline: on ? bw.headline : '', bareLine: on ? bw.line : '', bareStyle: 'display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 8px; border: 2px solid #F65157; background: rgba(246, 81, 87, 0.12); color: #F65157', bareHeadStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.04em' }; })(), doorStyle: 'font-size: var(--fs-sub); line-height: 1.45; color: #C9D3E3; padding: 0 2px 2px',

@@ -1888,8 +1888,10 @@ function joinFight(cb: Combat, rng: Rng) {
   // character the foes learned of (no tile: nobody was told; the screen still sounds it)
   emitFx(cb, 'alarm', { joined: true, ...(told ? { at: told } : {}) });
   for (let i = 0; i < cb.order.length; i++) {
-    cb.turn = i; const u = active(cb)!;
-    if (u.dead || u.surrendered || (u.side === 'foe' && u.downed)) continue;
+    // (a player's view of the fight keeps an unseen foe's place in the order with no unit: fog.ts; the preview of an
+    // action that joins the fight runs there, so a place with no unit is passed over, never read: 0.32 B8)
+    cb.turn = i; const u = active(cb);
+    if (!u || u.dead || u.surrendered || (u.side === 'foe' && u.downed)) continue;
     beginTurn(cb, rng); return;
   }
 }
