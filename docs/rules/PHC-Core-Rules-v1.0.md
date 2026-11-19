@@ -12334,3 +12334,15 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     fell to nothing. `actionsFor` now runs with its game bound, and the fight screen's shield views and Flux meter ask the
     engine's own numbers (`shieldsView`, `fluxMaxOf`) bound; the meter no longer reads the base `FLUX_MAX`. No rule
     changed. Proof: `test/playtest-1118.test.ts` (the Vent row), `apps/web/src/screens/combat-guard-soak.test.ts`.
+
+### 0.31.12 lane 2, the approach, the alarm and the end of a fight (19 Nov 2026)
+
+5520. **No walking the fog before VICTORY: reproduced, case (a)** (Leon: "whatever makes you have to walk all the fog
+    before victory shows up even if you kill all foes too"). Through the reducer a fight is won in the very action that
+    drops its last foe (`combat.ts checkOver`, after every action in `game.ts`), wherever the squad stands and with the
+    map still in the fog; a run's field (FREE ROAM) opens in that action, and the screen's VICTORY reads that state. So
+    VICTORY never waited on the fog: the foes Leon had to walk to were **alive in the fog, never seen**, and nothing sent
+    them at the squad once it was found (a fight opened in the approach seeds each side's knowledge with where the other
+    stood at the start only). The fix is the alarm (item 5521). Proof: `test/fog-victory.test.ts` (a run fight joined
+    from the approach, unexplored tiles on the map, the last foe dropped by a `combat/attack`: the field is open in that
+    same action).
