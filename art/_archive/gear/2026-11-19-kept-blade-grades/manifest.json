@@ -312,6 +312,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-adamantile_greatsword--masterwork",
+      "path": "art/icons/gear/weapon-adamantile_greatsword--masterwork.png",
+      "sha256": "ef6282e8f21698726a68e0efcf353b5e7195054adf284e6fe4bde5ad60d647d3",
+      "label": "Adamantile Greatsword — Masterwork",
+      "family": "weapon-adamantile_greatsword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-adamantile_greatsword--masterwork.png",
+        "sha256": "5d3d93063ede94bda19297eaa23393abad531f96f0ec6fd2ac5797af13a5b85e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-adamantile_greatsword--masterwork.png",
+        "sha256": "ef6282e8f21698726a68e0efcf353b5e7195054adf284e6fe4bde5ad60d647d3"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-adamantile_greatsword--masterwork.txt",
+        "sha256": "82e73c497d79d130d20886e47f31c84909157a81e6f652cf1baed3bc0f8ecd33"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-adamantile_greatsword.png",
+          "sha256": "74764eb60ffb2b26b581206171e9d7f9a44453f23c061fb636fef61e2efe7f12"
+        },
+        {
+          "path": "art/icons/gear/weapon-adamantile_greatsword--fine.png",
+          "sha256": "3f44cd6e14da21f9ebb345a08a290aff44d56fc53677dc4f69bb8352450a5730"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-adamantile_greatsword--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-adamantile_greatsword--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-adamantile_greatsword--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-adamantile_greatsword--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "bf1386e3c01dc7d9bbbd4035cc85429562f5c4e08df68621262ba477873945bc",
+        "128": "54d1cf45078e9911be60a5b864f37749ffa31b93eb0abb2ca3e65696cafef3d5",
+        "64": "a4685b0648356c8882b3a7a9898c03ab00a144a025192dc3bbda6da29590033e",
+        "32": "934a976f47f054589adcd2765d0930cb7d23c4427a049c79fdf5e2876f701fcc"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-adamantile_greatsword",
+      "outline": {
+        "solid_alpha_iou": 0.9612782290457913,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 30
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
