@@ -1,6 +1,6 @@
 # File 08 unique inventory paintings
 
-Updated 19 November 2026 at 14:28 UTC+7. Branch `art/2026-11-19-unique-gear`.
+Updated 19 November 2026 at 14:30 UTC+7. Branch `art/2026-11-19-unique-gear`.
 **8 of 23 uniques delivered across the verified branches. 146 of 215 base pictures and uniques. 146 of 871 across the pack.**
 This branch delivered 6. The 138-candidate baseline predates both unique branches.
 These independent unique paintings have been brought forward while the grade proof is open.
@@ -15,7 +15,7 @@ The six uniques with missing or unapproved references still depend on those refe
 | 05 · Reveille (maul) | `art/icons/gear/weapon-reveille.png` | claimed on unique-melee-bow |
 | 06 · Breath of Morning (hand wraps) | `art/icons/gear/weapon-breath_of_morning.png` | claimed on unique-melee-bow |
 | 07 · Rearguard (Legion short sword) | `art/icons/gear/weapon-rearguard.png` | claimed on unique-melee-bow |
-| 08 · In Triplicate (Legion bullpup) | `art/icons/gear/weapon-in_triplicate.png` | claimed, awaiting render or review |
+| 08 · In Triplicate (Legion bullpup) | `art/icons/gear/weapon-in_triplicate.png` | service declined the render |
 | 09 · Second Thunder (magnum revolver) | `art/icons/gear/weapon-second_thunder.png` | awaiting reference approval or a missing reference |
 | 10 · Encore (two-shot derringer) | `art/icons/gear/weapon-encore.png` | service declined the render |
 | 11 · Homecoming (harpoon gun) | `art/icons/gear/weapon-homecoming.png` | claimed, awaiting render or review |
