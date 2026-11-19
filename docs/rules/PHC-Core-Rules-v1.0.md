@@ -12422,3 +12422,11 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     so it is locked; Launch counts as a Finisher. Shove (no Momentum either way) stays open. The refusal is one line of
     data (`techniques.json rules.chain_ended`), read by the technique gate and the action list. Barrel In's id sharing
     the Lunge technique's is a finding for the lead (a distinct id would need its own `group_actions` row).
+5532. **Start the run asks about a level-up due, from the lobby too** (row 2 at creation): Start the run in a Survival
+    room's lobby asks the camp's own prompt ("Level up first?") when one of the player's characters has a level-up due
+    (the engine's `levelUpDue`: unclaimed perk steps, a fork, points); the safe answer opens Level up for that
+    character, "Start without" starts the run. One prompt for both places (`apps/web/src/game/campView.ts` levelUpAsk).
+5533. **A sign with no picture enlarges too** (the token card's condition signs): a glyph-only sign carries the same
+    enlarge request (its name and text) and the lightbox shows the glyph large where a picture would be.
+5534. **The Throw row's browser check** is a step of `apps/web/e2e/picking.mjs` (a frag grenade from the pack: the
+    Throw row on the Attack tab, its reach, its blast under the pointer, a tile past its range refused). Not yet run.
