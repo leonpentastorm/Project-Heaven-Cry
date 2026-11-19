@@ -427,6 +427,10 @@ If every weapon stays its own family (Leon's "do not squeeze" reading), new form
 **All together:** 120 forms, 64 painted, **56 new base paintings**; with the 9 graded one-offs, **129 graded items, 73
 painted today**.
 
+> **RULED by Leon, 19 Nov 2026: scheme S1.** All five grades are painted for every graded item: 572 new pictures
+> over the 129 graded items as tabled (the count moves with the family tables, which are not ruled yet). Wherever
+> this file recommends S3 or counts 294, read S1 and 572 plus the 23 uniques.
+
 ### 4.4 Grade schemes (counts over the 129 graded items; "new" reuses the 73 existing paintings as Standard)
 
 | Scheme | Pictures per item | Total | New |
