@@ -222,5 +222,37 @@
     "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-repeating_crossbow--masterwork.png",
     "size64_mask_differing_pixels": 27,
     "sha256": "6020773de63f70586e913a349ec39b54de6bc6f8d35d5bab57f7d664d7a2c209"
+  },
+  {
+    "id": "shield-buckler",
+    "tier": "fine",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--fine.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--fine.png",
+    "size64_mask_differing_pixels": 9,
+    "sha256": "73ba1fb71ea7e9db5574cadefe61d231f2d117e341b8e727511ec4bcbcf7ed3e"
+  },
+  {
+    "id": "shield-buckler",
+    "tier": "masterwork",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--masterwork.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--masterwork.png",
+    "size64_mask_differing_pixels": 25,
+    "sha256": "4d84adda28e61a5a11ce28a10fcd54f316cf47b87f61e888a707946b71e0ca35"
+  },
+  {
+    "id": "shield-buckler",
+    "tier": "relic",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--relic.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--relic.png",
+    "size64_mask_differing_pixels": 22,
+    "sha256": "8303dd322c7b90b7a1430e96d39efc10565f5dfc3782f054896b41286d09ead9"
+  },
+  {
+    "id": "shield-buckler",
+    "tier": "celestial",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--celestial.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--celestial.png",
+    "size64_mask_differing_pixels": 22,
+    "sha256": "05aca9b8aeea6061771501462f062454c46795f4f105f06abeeecbaa1d09ea98"
   }
 ]
