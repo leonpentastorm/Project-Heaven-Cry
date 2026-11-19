@@ -1,13 +1,13 @@
 # November 19 art continuation
 
-Updated 19 November 2026 at 10:21 UTC+7. The 88 entries in files 01–04 have **29 delivered**, **58 to do** and **1 held**. Review candidates require visual approval.
+Updated 19 November 2026 at 10:28 UTC+7. The 88 entries in files 01–04 have **36 delivered**, **51 to do** and **1 held**. Review candidates require visual approval.
 
 | File | Delivered | Total listed |
 | --- | ---: | ---: |
 | 01 | 3 | 37 |
 | 02 | 11 | 11 |
-| 03 | 15 | 21 |
-| 04 | 0 | 19 |
+| 03 | 20 | 21 |
+| 04 | 2 | 19 |
 
 ## Pickup
 
@@ -21,14 +21,7 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 
 ## Remaining entries
 
-- 064 | File 03 | Thinking Aloud | `art/icons/perks/thinking-aloud.png`
-- 065 | File 03 | Backdraft | `art/icons/moves/backdraft.png`
 - 066 | File 03 | Running Script (fork): replaces the existing picture | `art/icons/forks/sigil-running-script.png`
-- 067 | File 03 | Quick Read | `art/icons/perks/quick-read.png`
-- 068 | File 03 | Read Them | `art/icons/perks/read-them.png`
-- 069 | File 03 | Darkened (condition) | `art/icons/conditions/darkened.png`
-- 070 | File 04 | `soul_modules.second_school`: Two Schools | `art/icons/moves/two-schools.png`
-- 071 | File 04 | `poker_face`: Poker Face | `art/icons/perks/poker-face.png`
 - 072 | File 04 | `stand_still`: Stand Still | `art/icons/perks/stand-still.png`
 - 073 | File 04 | `lore_ward`: Warding Word | `art/icons/perks/lore-ward.png`
 - 074 | File 04 | `recitation`: Recitation | `art/icons/perks/recitation.png`
@@ -79,5 +72,3 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 - 035 | File 01 | `kit-works-pile`: Ground pile, works | `art/sprites/kit/works/pile.png`
 - 036 | File 01 | `kit-shrine-pile`: Ground pile, shrine | `art/sprites/kit/shrine/pile.png`
 - 037 | File 01 | `kit-rim-pile`: Ground pile, rim | `art/sprites/kit/rim/pile.png`
-
-Unreviewed scratch renders currently on disk: 65.

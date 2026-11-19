@@ -1,0 +1,59 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 35,
+  "title": "`poker_face`: Poker Face",
+  "path": "art/icons/perks/poker-face.png",
+  "notes": "- **Save as:** `art/icons/perks/poker-face.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** a face with nothing on it while the world is busy around it.",
+  "paint": "Wick shown from the chest up, facing us, his pixel-screen face showing a flat neutral face, two dash eyes and a dash mouth: a perfectly neutral deadpan. Around him, cut by the frame edges, are chaotic partial shapes streaking past in white: jagged zig-zag lines and a flying shard on each side, as if a storm is passing. Wick himself has no lines of motion at all; he is the still centre and the chaos is only at the margins.",
+  "status": "review-candidate",
+  "n": 71,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "previousPaint": "Wick shown from the chest up, facing us, his flame head as an utterly still, symmetrical teardrop with two flat dash eyes and a flat dash mouth: a perfectly neutral deadpan. Around him, cut by the frame edges, are chaotic partial shapes streaking past in white: jagged zig-zag lines and a flying shard on each side, as if a storm is passing. Wick himself has no lines of motion at all; he is the still centre and the chaos is only at the margins.",
+  "label": "Poker Face",
+  "sha256": "21a5e056c093d0734b81dfb141af08bde7bb5db3b13b181785248bc3a96be435",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/071-poker-face.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/poker-face.png",
+    "128": "art/icons/perks/exports/128/poker-face.png",
+    "64": "art/icons/perks/exports/64/poker-face.png",
+    "56": "art/icons/perks/exports/56/poker-face.png",
+    "48": "art/icons/perks/exports/48/poker-face.png",
+    "44": "art/icons/perks/exports/44/poker-face.png",
+    "40": "art/icons/perks/exports/40/poker-face.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:35",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick shown from the chest up, facing us, his pixel-screen face showing a flat neutral face, two dash eyes and a dash mouth: a perfectly neutral deadpan. Around him, cut by the frame edges, are chaotic partial shapes streaking past in white: jagged zig-zag lines and a flying shard on each side, as if a storm is passing. Wick himself has no lines of motion at all; he is the still centre and the chaos is only at the margins.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perks",
+  "id": "poker-face",
+  "source_sha256": "648330fe1532a096b320f36d5bf89d333cad1fac13ee5b4dbd1011a456e1fa83",
+  "export_sha256": {
+    "256": "d8c554f97a90d454ab51650389ec5218463e40cbfc5a078398547034fb382053",
+    "128": "8fa0804161130e345a6e0e43a13d090145530b41508c9018cb7c2d9a871cd0eb",
+    "64": "3afb2483efa882cc65701c592e35561fc65ac2c4e135890ae9a9ddc805c03f31",
+    "56": "e43c99fb827ff562fc0b5b49c8eb0cf1891680ce3e9e7ff86fca93c85838936d",
+    "48": "5fd315956b51e13a3feae737a4ad118afa366eb2d817870249642d385206c6f0",
+    "44": "b2fe7bb95caca810572de7cde4c7cc62364a789bdac30047b5234d860c6abaf4",
+    "40": "399f9103aaa2e7563ee0dc27596339943053cb4167fe11a09f7d1be241220396"
+  }
+}

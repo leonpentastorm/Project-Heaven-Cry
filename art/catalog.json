@@ -10634,6 +10634,130 @@
       },
       "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:125",
       "ink": "#FFFFFF"
+    },
+    "thinking-aloud": {
+      "label": "Thinking Aloud",
+      "path": "art/icons/perks/thinking-aloud.png",
+      "sha256": "df66d50bf06890a6e61ae51fabed88f7b55a78adc87d2cbeb98f669c326b0627",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/064-thinking-aloud.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/thinking-aloud.png",
+        "128": "art/icons/perks/exports/128/thinking-aloud.png",
+        "64": "art/icons/perks/exports/64/thinking-aloud.png",
+        "56": "art/icons/perks/exports/56/thinking-aloud.png",
+        "48": "art/icons/perks/exports/48/thinking-aloud.png",
+        "44": "art/icons/perks/exports/44/thinking-aloud.png",
+        "40": "art/icons/perks/exports/40/thinking-aloud.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:131",
+      "ink": "#FFFFFF"
+    },
+    "quick-read": {
+      "label": "Quick Read",
+      "path": "art/icons/perks/quick-read.png",
+      "sha256": "085ebbc277c3fce774f2d68b5ee8796c35cd2b328c9154ac5cf6faa515fb63d2",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/067-quick-read.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/quick-read.png",
+        "128": "art/icons/perks/exports/128/quick-read.png",
+        "64": "art/icons/perks/exports/64/quick-read.png",
+        "56": "art/icons/perks/exports/56/quick-read.png",
+        "48": "art/icons/perks/exports/48/quick-read.png",
+        "44": "art/icons/perks/exports/44/quick-read.png",
+        "40": "art/icons/perks/exports/40/quick-read.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:153",
+      "ink": "#FFFFFF"
+    },
+    "read-them": {
+      "label": "Read Them",
+      "path": "art/icons/perks/read-them.png",
+      "sha256": "6ade00b5968d5025ab10180e289a08b1aa4ef967f2c032baebd38bde7f0b46be",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/068-read-them.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/read-them.png",
+        "128": "art/icons/perks/exports/128/read-them.png",
+        "64": "art/icons/perks/exports/64/read-them.png",
+        "56": "art/icons/perks/exports/56/read-them.png",
+        "48": "art/icons/perks/exports/48/read-them.png",
+        "44": "art/icons/perks/exports/44/read-them.png",
+        "40": "art/icons/perks/exports/40/read-them.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:159",
+      "ink": "#FFFFFF"
+    },
+    "poker-face": {
+      "label": "Poker Face",
+      "path": "art/icons/perks/poker-face.png",
+      "sha256": "21a5e056c093d0734b81dfb141af08bde7bb5db3b13b181785248bc3a96be435",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/071-poker-face.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/perks/exports/256/poker-face.png",
+        "128": "art/icons/perks/exports/128/poker-face.png",
+        "64": "art/icons/perks/exports/64/poker-face.png",
+        "56": "art/icons/perks/exports/56/poker-face.png",
+        "48": "art/icons/perks/exports/48/poker-face.png",
+        "44": "art/icons/perks/exports/44/poker-face.png",
+        "40": "art/icons/perks/exports/40/poker-face.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:35",
+      "ink": "#FFFFFF"
     }
   },
   "illustrations": {
@@ -36059,6 +36183,72 @@
       },
       "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:97",
       "ink": "#FFFFFF"
+    },
+    "move-backdraft": {
+      "label": "Backdraft",
+      "path": "art/icons/moves/backdraft.png",
+      "sha256": "94c281dc9784cc648c7195f91cbd395915a2d8019c29c5368d7d2fb054ff9941",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/065-backdraft.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/moves/exports/256/backdraft.png",
+        "128": "art/icons/moves/exports/128/backdraft.png",
+        "64": "art/icons/moves/exports/64/backdraft.png",
+        "56": "art/icons/moves/exports/56/backdraft.png",
+        "48": "art/icons/moves/exports/48/backdraft.png",
+        "44": "art/icons/moves/exports/44/backdraft.png",
+        "40": "art/icons/moves/exports/40/backdraft.png",
+        "32": "art/icons/moves/exports/32/backdraft.png",
+        "24": "art/icons/moves/exports/24/backdraft.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:137",
+      "ink": "#FFFFFF"
+    },
+    "move-two-schools": {
+      "label": "Two Schools",
+      "path": "art/icons/moves/two-schools.png",
+      "sha256": "9a23849b23d2e9bee3e9d48a2fa106bfec6ec4f07a6f448813cae487fed7f5c9",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/070-two-schools.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/moves/exports/256/two-schools.png",
+        "128": "art/icons/moves/exports/128/two-schools.png",
+        "64": "art/icons/moves/exports/64/two-schools.png",
+        "56": "art/icons/moves/exports/56/two-schools.png",
+        "48": "art/icons/moves/exports/48/two-schools.png",
+        "44": "art/icons/moves/exports/44/two-schools.png",
+        "40": "art/icons/moves/exports/40/two-schools.png",
+        "32": "art/icons/moves/exports/32/two-schools.png",
+        "24": "art/icons/moves/exports/24/two-schools.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:25",
+      "ink": "#FFFFFF"
     }
   },
   "technique_icons": {
@@ -42229,6 +42419,38 @@
         "24": "art/icons/conditions/exports/24/given-edge.png",
         "16": "art/icons/conditions/exports/16/given-edge.png"
       }
+    },
+    "cond-darkened": {
+      "label": "Darkened (condition)",
+      "path": "art/icons/conditions/darkened.png",
+      "sha256": "15f67c5d282cdb947a3b0ae6e6ba947a54716df11b4283b10aa84f12e77c5ca0",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "sign",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/069-darkened.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/conditions/exports/256/darkened.png",
+        "128": "art/icons/conditions/exports/128/darkened.png",
+        "64": "art/icons/conditions/exports/64/darkened.png",
+        "48": "art/icons/conditions/exports/48/darkened.png",
+        "44": "art/icons/conditions/exports/44/darkened.png",
+        "32": "art/icons/conditions/exports/32/darkened.png",
+        "24": "art/icons/conditions/exports/24/darkened.png",
+        "16": "art/icons/conditions/exports/16/darkened.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:165",
+      "ink": "#FFFFFF"
     }
   },
   "fork_icons": {

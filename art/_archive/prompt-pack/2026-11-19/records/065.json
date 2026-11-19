@@ -1,0 +1,62 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 137,
+  "title": "Backdraft",
+  "path": "art/icons/moves/backdraft.png",
+  "notes": "- **Id:** `backdraft`. **Save as:** `art/icons/moves/backdraft.png`. **Mode:** Wick icon. **Shows:** the class move card (Sigilist).",
+  "paint": "The icon shows: Wick crouched with his Evoker glove held out and cracked down one finger, a fat ring of flame bursting outward from his feet in a flat circle, the ring's tongues thrown out evenly all round and breaking over two foe silhouettes (plain solid shapes cut by the frame) at its rim; Wick himself flinches, one arm across his face. The flat ring of flame centred on the caster's feet is what to read at 32 px. Avoid: a fireball thrown forward, a mushroom cloud, a dragon, a single bolt, a bomb with a fuse.",
+  "status": "review-candidate",
+  "n": 65,
+  "kind": "wick",
+  "label": "Backdraft",
+  "sha256": "94c281dc9784cc648c7195f91cbd395915a2d8019c29c5368d7d2fb054ff9941",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/065-backdraft.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/moves/exports/256/backdraft.png",
+    "128": "art/icons/moves/exports/128/backdraft.png",
+    "64": "art/icons/moves/exports/64/backdraft.png",
+    "56": "art/icons/moves/exports/56/backdraft.png",
+    "48": "art/icons/moves/exports/48/backdraft.png",
+    "44": "art/icons/moves/exports/44/backdraft.png",
+    "40": "art/icons/moves/exports/40/backdraft.png",
+    "32": "art/icons/moves/exports/32/backdraft.png",
+    "24": "art/icons/moves/exports/24/backdraft.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:137",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick crouched with his Evoker glove held out and cracked down one finger, a fat ring of flame bursting outward from his feet in a flat circle, the ring's tongues thrown out evenly all round and breaking over two foe silhouettes (plain solid shapes cut by the frame) at its rim; Wick himself flinches, one arm across his face. The flat ring of flame centred on the caster's feet is what to read at 32 px. Avoid: a fireball thrown forward, a mushroom cloud, a dragon, a single bolt, a bomb with a fuse.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "move_icons",
+  "id": "move-backdraft",
+  "source_sha256": "919381d1df5c02e355f8d71dd01610b31361542155a305a1cc347017587c0889",
+  "export_sha256": {
+    "256": "667192c09efcf0b8fb2926cf4f4f04d1bdf918d2b0302c5189ac88306660849d",
+    "128": "5db6a4e316b75d62d33cc05f406da9dcb4a26e1a64c5aeb93ce192b53e5209f3",
+    "64": "c9085e0272886b965c5adc43b9d01ccd18005f5f16b1f0f32e50f9b3a35fdb8c",
+    "56": "a0387d91033870bb3c2bc1adc8202badf7af4190364a95d48629db0dad823bf5",
+    "48": "92515a6edbc899236a5348ce1175f02022c747753fd8373cde44927b5e9b52d5",
+    "44": "221010a580de209c9715ecfc5d5e78e9b7a33df5e7394fe20193435aa82e3622",
+    "40": "d0f69d239bda312ea49acfe8dde806963a9b6cb4d17cc814b57dc4e8eb3d3d5f",
+    "32": "2ddeab43b698abe8ba2b0995dbc14fab5c2dc29ae4e6d4ee439c8c7c31496a96",
+    "24": "c22731a7642fd009a0b9088561f5f34cbddd0ce7196df3329872e21463e07b30"
+  }
+}

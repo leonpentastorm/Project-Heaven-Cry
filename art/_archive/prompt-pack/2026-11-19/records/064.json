@@ -1,0 +1,58 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 131,
+  "title": "Thinking Aloud",
+  "path": "art/icons/perks/thinking-aloud.png",
+  "notes": "- **Id:** `thinking_aloud`. **Save as:** `art/icons/perks/thinking-aloud.png`. **Mode:** Wick icon. **Shows:** the perk card.",
+  "paint": "The icon shows: Wick with his mouth open mid-sentence and one finger tapping his temple, while his other hand draws a single angular glyph in the air beside him (an invented rune of three straight strokes joined, no letter), its last stroke half done and drawn as a bold line. Speech and drawing at once, two hands and two jobs, is what to read at 32 px. Avoid: a thought bubble with text, a lightbulb, a book, a megaphone, a wizard hat.",
+  "status": "review-candidate",
+  "n": 64,
+  "kind": "wick",
+  "label": "Thinking Aloud",
+  "sha256": "df66d50bf06890a6e61ae51fabed88f7b55a78adc87d2cbeb98f669c326b0627",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/064-thinking-aloud.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/thinking-aloud.png",
+    "128": "art/icons/perks/exports/128/thinking-aloud.png",
+    "64": "art/icons/perks/exports/64/thinking-aloud.png",
+    "56": "art/icons/perks/exports/56/thinking-aloud.png",
+    "48": "art/icons/perks/exports/48/thinking-aloud.png",
+    "44": "art/icons/perks/exports/44/thinking-aloud.png",
+    "40": "art/icons/perks/exports/40/thinking-aloud.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:131",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick with his mouth open mid-sentence and one finger tapping his temple, while his other hand draws a single angular glyph in the air beside him (an invented rune of three straight strokes joined, no letter), its last stroke half done and drawn as a bold line. Speech and drawing at once, two hands and two jobs, is what to read at 32 px. Avoid: a thought bubble with text, a lightbulb, a book, a megaphone, a wizard hat.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perks",
+  "id": "thinking-aloud",
+  "source_sha256": "a6d620bf37ab72cdf272afaf85a868808f821787cba5f1d9b56ba467958b66b5",
+  "export_sha256": {
+    "256": "837fb6768a97726ce63b775680f19cf22a0a702afd252ea6f886959e20eb61ff",
+    "128": "f1c039bdecf1dad5757251964e9d61b84d88250107b5cae98df1bf713d448534",
+    "64": "c56a4d6f696c8c78d4ba179ba2d26226ecc7f3ac9790666dbaf9a24621bd4049",
+    "56": "2f2320dfc13142d1c1d01512ff2a9db5530039f5a90c18016ce902f55367c0de",
+    "48": "05e1f51782ecb48a2b454862ab0de505a2e6e7014623b274ef331756b20b43ab",
+    "44": "ceb1b496052280eb385e0c23ed64bced5fe603df5165d07a3e21d1e8c04cdc56",
+    "40": "cbe534c2a1448c5048f85b7ebba5929c73d263a5913954f18b54bbf29976e3ca"
+  }
+}
