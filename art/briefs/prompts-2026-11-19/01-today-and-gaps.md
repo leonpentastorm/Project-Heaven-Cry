@@ -71,7 +71,7 @@ For the artist, and for GPT. This file holds **37 pictures**: 3 for the fight sc
 - **Shows:** the fight's first big banner while no foe has seen the squad (sub-line "Unseen · moving is free"); drawn as a mask in the stripe colour, beside `banner-fight-start`, `-won`, `-lost` and `-field`.
 
 ```
-A sign for APPROACH, the quiet minute before contact when nobody has seen the squad yet. One flat white boot print, toe pointing up and to the right, set low in front of three horizontal bands of fog that thin out to the right: the first band solid, the second broken into long dashes, the third only a few scattered dots. A little clear space between the print and the first band. The meaning is stealth before contact, a step into the unseen. At icon size it must read as one print leading into dissolving bars. It must look different from the start mark, the won mark, the lost mark and the free-roam mark: no ring, no pair of crossing prints, no looping arrow, no flag, no burst, no crosshair. Avoid: a magnifying glass, an eye, a question mark, a ghost, a compass, wavy cloud outlines, any text.
+A sign for APPROACH, the quiet minute before contact when nobody has seen the squad yet. One flat white boot print, toe pointing up and to the right, set low in front of three horizontal bands of fog that thin out to the right: the first band solid, the second broken into long dashes, the third only a few scattered dots. A little clear space between the print and the first band. The meaning is stealth before contact, a step into the unseen. At icon size it must read as one print leading into dissolving bars. It must look different from the start mark, the won mark, the lost mark and the free-roam mark: no ring, no pair of crossing prints, no looping arrow, no flag, no burst, no crosshair. Avoid: a magnifying glass, an eye, a ? glyph, a ghost, a compass, wavy cloud outlines, any text.
 ```
 
 ### `banner-level-up`: LEVEL UP banner mark
@@ -138,10 +138,10 @@ Wick leaning hard out of the way of a blow: head and shoulders tipped aside, one
 
 - **Mode:** Gear painting, 1024 x 1024 PNG, transparent.
 - **Save as:** `art/icons/gear/mod-follow_guard.png`.
-- **Shows:** Backpack, shop, Forge. A shield fitting that adds a follow-up strike and a point of Guard.
+- **Shows:** Backpack, shop, Forge. A shield fitting, the follow bracket.
 
 ```
-Subject: a shield fitting, the follow bracket (weightless in the game, a hand-sized part). Silhouette feature: a curved steel arm bracket shaped like half a ring, with a hinge pin at its top end, a short sprung link, and a worn walnut-brown leather strap running through two slotted loops and closed with one brass buckle, so the shield follows the arm forward and back. The bracket is laid flat, three-quarter view, the strap curled once in a loose S. Materials and accent: dark scuffed steel, oiled leather, a single small brass buckle; the accent is the brass, no faction colour (Frontier, unbranded). At 32 px: a half-ring of steel with a strap hanging off it. Against the foregrip: it is a ring and a strap, not a grip; against the bayonet: not a blade. No shield face in the picture, no hands, no arm.
+Subject: a shield fitting, the follow bracket (a light, hand-sized part). Silhouette feature: a curved steel arm bracket shaped like half a ring, with a hinge pin at its top end, a short sprung link, and a worn walnut-brown leather strap running through two slotted loops and closed with one brass buckle, so the shield follows the arm forward and back. The bracket is laid flat, three-quarter view, the strap curled once in a loose S. Materials and accent: dark scuffed steel, oiled leather, a single small brass buckle; the accent is the brass, no faction colour (Frontier, unbranded). At 32 px: a half-ring of steel with a strap hanging off it. Against the foregrip: it is a ring and a strap, not a grip; against the bayonet: not a blade. No shield face in the picture, no hands, no arm.
 ```
 
 ### `mod_afterword`: Afterword's edge (mod)
@@ -198,7 +198,7 @@ Setting: shrine, a hushed sacred place in candlelight. A seamless tileable groun
 
 - **Mode:** Kit sprite, set dressing, 256 x 256 transparent.
 - **Save as:** `art/sprites/kit/ahoc/dress-2.png`.
-- **Shows:** Survival fight maps, AHOC outpost; non-blocking, scattered on any free tile, meaning nothing in the rules. The old file has lettering on the floor.
+- **Shows:** Survival fight maps, AHOC outpost; non-blocking, scattered on any free tile. The old file has lettering on the floor.
 
 ```
 Setting: ahoc, a ceramic-grey containment base. Set dressing, non-blocking, low and flat, nothing taller than a few centimetres: a painted floor marking, a faded ivory arrow with a boxed zone made of four short corner brackets beside it, painted on a patch of ceramic-grey plate and worn down to a ghost, with a few chipped edges and a dusty smear. All of it is abstract shapes only: no letters, no numerals, no words, no wordmark on the floor. The paint is ivory with one thin rust-red #F65157 band at one edge. Transparent background, the marking and its plate patch in the central 80% of the cell with a soft ragged edge. Avoid: any lettering at all (the last version had a phrase painted on the floor), hazard text, a person.
@@ -225,7 +225,7 @@ Four objects, one piece of each per setting (6 settings), drawn today as a plain
 - **Shows:** Survival fight maps, AHOC chapter outpost; a tile worth a closer look (a place to look at more closely). A plain diamond today.
 
 ```
-Setting: ahoc, AHOC chapter outpost (ceramic-grey panels, riveted plate, concrete, rust-red #F65157 marks, amber lamp glass). One point-of-interest sprite, non-blocking, flat on the ground, about one tile: a small sealed ceramic-grey evidence case with a rust-red band, its latch half open and one amber lamp lit on its lid, resting on a floor plate where the dust has been wiped away in a neat circle round it. It must say 'look here' without saying what: one small object and one cleared ring, nothing that reads as loot or a hazard. At 64 px: a small object in a bare circle, bigger than a dress piece but quieter than a crate. It must differ from the setting's terminal, lamp and cache. Avoid: an exclamation mark, an arrow, a question mark, a glowing beam, any writing.
+Setting: ahoc, AHOC chapter outpost (ceramic-grey panels, riveted plate, concrete, rust-red #F65157 marks, amber lamp glass). One point-of-interest sprite, non-blocking, flat on the ground, about one tile: a small sealed ceramic-grey evidence case with a rust-red band, its latch half open and one amber lamp lit on its lid, resting on a floor plate where the dust has been wiped away in a neat circle round it. It must say 'look here' without saying what: one small object and one cleared ring, nothing that reads as loot or a hazard. At 64 px: a small object in a bare circle, bigger than a dress piece but quieter than a crate. It must differ from the setting's terminal, lamp and cache. Avoid: an exclamation mark, an arrow, a ? glyph, a glowing beam, any writing.
 ```
 
 ### `kit-city-poi`: Point of interest, city
@@ -235,7 +235,7 @@ Setting: ahoc, AHOC chapter outpost (ceramic-grey panels, riveted plate, concret
 - **Shows:** Survival fight maps, Central City back streets; a tile worth a closer look (a place to look at more closely). A plain diamond today.
 
 ```
-Setting: city, Central City back streets (wet cobbles, ivory plaster, brick, iron, canvas, warm amber lamp light and blue-grey #5394AC shadow). One point-of-interest sprite, non-blocking, flat on the ground, about one tile: a lifted cobblestone hatch left ajar over a dark gap, a little brass oil lantern with amber glass set beside it and a pale chalk ring (no marks inside it) drawn round both on the wet stones. It must say 'look here' without saying what: one small object and one cleared ring, nothing that reads as loot or a hazard. At 64 px: a small object in a bare circle, bigger than a dress piece but quieter than a crate. It must differ from the setting's terminal, lamp and cache. Avoid: an exclamation mark, an arrow, a question mark, a glowing beam, any writing.
+Setting: city, Central City back streets (wet cobbles, ivory plaster, brick, iron, canvas, warm amber lamp light and blue-grey #5394AC shadow). One point-of-interest sprite, non-blocking, flat on the ground, about one tile: a lifted cobblestone hatch left ajar over a dark gap, a little brass oil lantern with amber glass set beside it and a pale chalk ring (no marks inside it) drawn round both on the wet stones. It must say 'look here' without saying what: one small object and one cleared ring, nothing that reads as loot or a hazard. At 64 px: a small object in a bare circle, bigger than a dress piece but quieter than a crate. It must differ from the setting's terminal, lamp and cache. Avoid: an exclamation mark, an arrow, a ? glyph, a glowing beam, any writing.
 ```
 
 ### `kit-field-poi`: Point of interest, field
@@ -245,7 +245,7 @@ Setting: city, Central City back streets (wet cobbles, ivory plaster, brick, iro
 - **Shows:** Survival fight maps, old battlefield; a tile worth a closer look (a place to look at more closely). A plain diamond today.
 
 ```
-Setting: field, old battlefield (cracked mud, ash, scorched steel plate, sandbag canvas, burnt wood, smoky orange #F68A38, faint ivory mana specks). One point-of-interest sprite, non-blocking, flat on the ground, about one tile: a small cairn of sandbag canvas with a bent steel signal stake thrust into it and a torn strip of ivory cloth tied on the stake, a ring of scuffed mud cleared round the cairn. It must say 'look here' without saying what: one small object and one cleared ring, nothing that reads as loot or a hazard. At 64 px: a small object in a bare circle, bigger than a dress piece but quieter than a crate. It must differ from the setting's terminal, lamp and cache. Avoid: an exclamation mark, an arrow, a question mark, a glowing beam, any writing.
+Setting: field, old battlefield (cracked mud, ash, scorched steel plate, sandbag canvas, burnt wood, smoky orange #F68A38, faint ivory mana specks). One point-of-interest sprite, non-blocking, flat on the ground, about one tile: a small cairn of sandbag canvas with a bent steel signal stake thrust into it and a torn strip of ivory cloth tied on the stake, a ring of scuffed mud cleared round the cairn. It must say 'look here' without saying what: one small object and one cleared ring, nothing that reads as loot or a hazard. At 64 px: a small object in a bare circle, bigger than a dress piece but quieter than a crate. It must differ from the setting's terminal, lamp and cache. Avoid: an exclamation mark, an arrow, a ? glyph, a glowing beam, any writing.
 ```
 
 ### `kit-works-poi`: Point of interest, works
@@ -255,7 +255,7 @@ Setting: field, old battlefield (cracked mud, ash, scorched steel plate, sandbag
 - **Shows:** Survival fight maps, machine works and drone foundry; a tile worth a closer look (a place to look at more closely). A plain diamond today.
 
 ```
-Setting: works, machine works and drone foundry (dark iron plate, soot, cast steel, ivory safety lines, furnace orange #F68A38 against cool blue lamp light). One point-of-interest sprite, non-blocking, flat on the ground, about one tile: a cooling slag-cast ingot on a scorched iron plate with one hot-orange seam still glowing, a blue work lamp clipped to the plate's edge, and a ring of swept soot round them. It must say 'look here' without saying what: one small object and one cleared ring, nothing that reads as loot or a hazard. At 64 px: a small object in a bare circle, bigger than a dress piece but quieter than a crate. It must differ from the setting's terminal, lamp and cache. Avoid: an exclamation mark, an arrow, a question mark, a glowing beam, any writing.
+Setting: works, machine works and drone foundry (dark iron plate, soot, cast steel, ivory safety lines, furnace orange #F68A38 against cool blue lamp light). One point-of-interest sprite, non-blocking, flat on the ground, about one tile: a cooling slag-cast ingot on a scorched iron plate with one hot-orange seam still glowing, a blue work lamp clipped to the plate's edge, and a ring of swept soot round them. It must say 'look here' without saying what: one small object and one cleared ring, nothing that reads as loot or a hazard. At 64 px: a small object in a bare circle, bigger than a dress piece but quieter than a crate. It must differ from the setting's terminal, lamp and cache. Avoid: an exclamation mark, an arrow, a ? glyph, a glowing beam, any writing.
 ```
 
 ### `kit-shrine-poi`: Point of interest, shrine
@@ -265,7 +265,7 @@ Setting: works, machine works and drone foundry (dark iron plate, soot, cast ste
 - **Shows:** Survival fight maps, shrine and cathedral district; a tile worth a closer look (a place to look at more closely). A plain diamond today.
 
 ```
-Setting: shrine, shrine and cathedral district (pale flagstone, dark wood, ivory wax, violet cloth, gold #F2C46A candle glow). One point-of-interest sprite, non-blocking, flat on the ground, about one tile: a shallow stone offering dish holding one lit candle with violet cloth folded beneath it, the flagstones round it swept in a clean ring and a few ivory wax drips on the rim. It must say 'look here' without saying what: one small object and one cleared ring, nothing that reads as loot or a hazard. At 64 px: a small object in a bare circle, bigger than a dress piece but quieter than a crate. It must differ from the setting's terminal, lamp and cache. Avoid: an exclamation mark, an arrow, a question mark, a glowing beam, any writing.
+Setting: shrine, shrine and cathedral district (pale flagstone, dark wood, ivory wax, violet cloth, gold #F2C46A candle glow). One point-of-interest sprite, non-blocking, flat on the ground, about one tile: a shallow stone offering dish holding one lit candle with violet cloth folded beneath it, the flagstones round it swept in a clean ring and a few ivory wax drips on the rim. It must say 'look here' without saying what: one small object and one cleared ring, nothing that reads as loot or a hazard. At 64 px: a small object in a bare circle, bigger than a dress piece but quieter than a crate. It must differ from the setting's terminal, lamp and cache. Avoid: an exclamation mark, an arrow, a ? glyph, a glowing beam, any writing.
 ```
 
 ### `kit-rim-poi`: Point of interest, rim
@@ -275,7 +275,7 @@ Setting: shrine, shrine and cathedral district (pale flagstone, dark wood, ivory
 - **Shows:** Survival fight maps, rim station; a tile worth a closer look (a place to look at more closely). A plain diamond today.
 
 ```
-Setting: rim, rim station (blue-grey steel, ivory plate, black glass, thin cyan #8BDEEE light strips, one warm lamp). One point-of-interest sprite, non-blocking, flat on the ground, about one tile: a black-glass maintenance hatch set into blue-grey plate with a pulsing cyan light strip round its edge, its cover ajar and a loose cable looped out of the gap, the plate round it scuffed in a ring. It must say 'look here' without saying what: one small object and one cleared ring, nothing that reads as loot or a hazard. At 64 px: a small object in a bare circle, bigger than a dress piece but quieter than a crate. It must differ from the setting's terminal, lamp and cache. Avoid: an exclamation mark, an arrow, a question mark, a glowing beam, any writing.
+Setting: rim, rim station (blue-grey steel, ivory plate, black glass, thin cyan #8BDEEE light strips, one warm lamp). One point-of-interest sprite, non-blocking, flat on the ground, about one tile: a black-glass maintenance hatch set into blue-grey plate with a pulsing cyan light strip round its edge, its cover ajar and a loose cable looped out of the gap, the plate round it scuffed in a ring. It must say 'look here' without saying what: one small object and one cleared ring, nothing that reads as loot or a hazard. At 64 px: a small object in a bare circle, bigger than a dress piece but quieter than a crate. It must differ from the setting's terminal, lamp and cache. Avoid: an exclamation mark, an arrow, a ? glyph, a glowing beam, any writing.
 ```
 
 ### `kit-ahoc-sigil_wall`: Sigil wall, ahoc

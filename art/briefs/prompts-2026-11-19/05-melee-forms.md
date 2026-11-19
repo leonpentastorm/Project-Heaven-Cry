@@ -35,7 +35,7 @@ Each family has three forms. Reach, mass and guard tell them apart at 32 px: **r
 | 7 | Polearms | legion spear / `glaive` / `lance` | `glaive`, `lance` | legion spear |
 | 8 | Hammers | war pick / war hammer / `maul` | `maul` | war pick, war hammer |
 | 9 | Great blades | plate needle / Brigade longsword / `adamantile_greatsword` | `adamantile_greatsword` | plate needle, longsword |
-| 10 | Ork cutters | ork skinner / `ork_machete` / ork cleaver-glaive | `ork_machete` | skinner, cleaver-glaive |
+| 10 | Scrap cutters | ork skinner / `ork_machete` / ork cleaver-glaive | `ork_machete` | skinner, cleaver-glaive |
 | 11 | Hand-to-hand gloves | `striking_gloves` / `hand_wraps` / `knuckledusters` | (all exist) | none |
 | 12 | Heavy fists (gloves) | `kemizuchi_strikers` / weighted gloves / `iron_mitts` | `kemizuchi_strikers`, `iron_mitts` | weighted gloves |
 
@@ -285,7 +285,7 @@ The Adamantile Brigade knight's longsword. On the 45 degree diagonal like the at
 Avoid: a wide slab blade (that is the greatsword), a curved blade, a cross with real-world religious symbols, gems, a ring-shaped pommel.
 ```
 
-# 10. Ork cutters
+# 10. Scrap cutters
 
 ## 17. `ork_skinner`: Ork skinner
 

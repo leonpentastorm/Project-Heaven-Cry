@@ -20,12 +20,12 @@ One image a prompt.
 
 ## Base prompt G: a grade step of an approved gear painting (image-to-image)
 
-**Attach:** the item's approved Standard, `art/icons/gear/<stem>.png` (the shape master); from Masterwork on, the approved grade below it (`<stem>--fine.png` for Masterwork, `<stem>--masterwork.png` for Relic, `<stem>--relic.png` for Celestial). For the house look: `art/portraits/world/new-faces/orren-vask.png` (brushwork). Palette: `art/style-guide/palette.json`. Rule: `art/style-guide/gear-icons.md`.
+**Attach:** the item's approved Standard, `art/icons/gear/<stem>.png` (the shape master); from Masterwork on, the approved grade below it (`<stem>--fine.png` for Masterwork, `<stem>--masterwork.png` for Relic, `<stem>--relic.png` for Celestial). For the house look: `art/portraits/world/new-faces/orren-vask.png` (brushwork). Palette: `art/style-guide/palette.json`. Rule: `art/style-guide/gear-icons.md` (for a gun, `art/style-guide/weapon-icons.md` rule 8 governs the silhouette: it follows the real pattern the entry describes, while the name, maker, markings and text stay ours; gear-icons.md's ban on real-world models applies to everything else).
 
 **Size / background:** 1024 x 1024 PNG with alpha, fully transparent, exactly the Standard's canvas, framing and margins (the object inside the central 90% of the canvas, at least 50 px clear on every side).
 
 ```
-Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos, maker marks, heraldry or symbols. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.
+Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.
 ```
 
 **Avoid in every grade picture:** a changed outline, a different weapon of the same family, a coloured border or glow ring, a gem or crystal stuck on, any lettering, a light that spills past the outline.
@@ -56,7 +56,7 @@ The grades climb by one visible step each, and each step **keeps what the step b
 | Relic | `--relic` | Heirloom age: **warm deep patina**, the inlay now old gold, **one small flush gilt ornament** at the focal fitting, **one old repair** that tells a story | The darkest, warmest of the five, one gold point |
 | Celestial | `--celestial` | **Pale, unmarked material**; the inlay line and one seam give **a faint contained ivory-gold light from inside**, nothing past the outline | The lightest of the five, one lit line |
 
-**What never changes, at any grade:** the silhouette, every part and its position, proportions, camera, pose, scale and margins; the maker's signature (Hellraiser slabs, spikes and brakes; Lumeri lancets, spires and censers; Adamantile plates and crests; Science Team core windows; Legion plain shapes and the pale stripe; Ork nails, welds and jags; Kemizuchi lacquer; Central City clean lines; Smetanita and Mandestra lacquer and brass; ADCorp's small blank tag; Chezknov's single brass rivet; the Central Command Arsenal's thin blue-grey trim line; Albert Town walnut and its brass buttplate screw; Frontier bare steel, walnut and leather); a gun's real-world pattern (its magazine, sights, stock and furniture); the place of the faction accent (it may become richer or paler, never move or vanish); a focus glove's lens or core window and its ink colour; the ammunition, magazine, drum, belt, tank, warhead or chain shape; a pilot flame's own colour. A grade is never a frame, never a tint over the whole object, never a different item.
+**What never changes, at any grade:** the silhouette, every part and its position, proportions, camera, pose, scale and margins; the maker's signature (Hellraiser slabs, spikes and brakes; Lumeri lancets and spires; Adamantile plates and crests; Science Team core windows; Legion plain shapes and the pale stripe; the scrap-cutters' nails, welds and jags; Kemizuchi lacquer; Central City clean lines; Smetanita and Mandestra lacquer and brass; ADCorp's small blank tag; Chezknov's single brass rivet; the Central Command Arsenal's thin blue-grey trim line; Albert Town walnut and its brass buttplate screw; Frontier bare steel, walnut and leather); a gun's real-world pattern (its magazine, sights, stock and furniture); the place of the faction accent (it may become richer or paler, never move or vanish); a focus glove's lens or core window and its ink colour; the ammunition, magazine, drum, belt, tank, warhead or chain shape; a pilot flame's own colour. A grade is never a frame, never a tint over the whole object, never a different item.
 
 ## A2. The keep line (one per item)
 
@@ -74,7 +74,7 @@ Paste the block of the item's class and grade after its keep line. Section C3 li
 
 | Class | Block |
 | --- | --- |
-| Blades: knives, swords, sabres, draw blades, great blades, Ork cutters | A3.1 |
+| Blades: knives, swords, sabres, draw blades, great blades, scrap cutters | A3.1 |
 | Hafted: axes, polearms, hammers | A3.2 |
 | Guns: every maker line, pistols to long rifles and shotguns | A3.3 |
 | Bows, crossbows and the quiver | A3.4 |
@@ -450,8 +450,8 @@ Grade: Celestial. Keep the shape, the barrel stripe and the scroll panel's place
 ## C1. Order of work
 
 1. **The proof sheet** (section B, 8 pictures). Send it for review before any other grade set. If the generator does not hold the silhouette, stop and report.
-2. **Grade sets of the 58 existing Standards that are kept** (section C3, "kept"), one sheet per item, by class.
-3. **The 19 repainted guns** (`10-rifle-analogues.md` section 1) are repainted and approved first; then their grade sets, made from the repaint, never from the old painting.
+2. **Grade sets of the 60 existing Standards that are kept** (section C3, "kept"), one sheet per item, by class.
+3. **The 17 repainted guns** (`10-rifle-analogues.md` section 1) are repainted and approved first; then their grade sets, made from the repaint, never from the old painting.
 4. **The 87 new Standards** (files 05, 06, 07, 09 and 10): each new Standard is approved first, then its grade set.
 5. **The 23 uniques** (section D) at any point; a unique built on a repainted or new silhouette is painted after that Standard is approved. Uniques have no grade pictures.
 
@@ -471,7 +471,7 @@ Stems are the Standard's file name in `art/icons/gear/` without `.png`. Each ite
 
 **Hafted (A3.2), 9 items.** Kept (5): `weapon-hatchet`, `weapon-war_axe`, `weapon-glaive`, `weapon-lance`, `weapon-maul`. New, file 05 (4): `weapon-pitch_axe`, `weapon-legion_spear`, `weapon-war_pick`, `weapon-war_hammer`.
 
-**Guns (A3.3), 51 items.** Kept (5): `weapon-parlour_pistol`, `weapon-drifter_revolver`, `weapon-lever_carbine`, `weapon-sawn_off`, `weapon-coach_gun`. Repainted, file 10 section 1 (16): `weapon-service_pistol`, `weapon-magistrate_pistol`, `weapon-frontier_hand_cannon`, `weapon-decrkm_autopistol`, `weapon-decrkm_smg`, `weapon-legion_pdw`, `weapon-mandestra_drum_gun`, `weapon-hellraiser_service_rifle`, `weapon-hellraiser_lmg`, `weapon-adamantile_battle_rifle`, `weapon-ccec_marksman_rifle`, `weapon-long_rifle`, `weapon-brigade_auto_shotgun`, `weapon-lumeri_scattergun`, `weapon-legion_bullpup`, `weapon-whisper_smg`. New, file 06 (15): `weapon-snub_revolver`, `weapon-decrkm_carbine`, `weapon-legion_marksman_rifle`, `weapon-whisper_pistol`, `weapon-whisper_carbine`, `weapon-mandestra_drum_pistol`, `weapon-mandestra_drum_rifle`, `weapon-hellraiser_trench_carbine`, `weapon-adamantile_carbine`, `weapon-adamantile_heavy_rifle`, `weapon-fowling_gun`, `weapon-brigade_shot_pistol`, `weapon-brigade_drum_shotgun`, `weapon-lumeri_hand_scatter`, `weapon-lumeri_long_scatter`. New, file 10 (15): `weapon-adcorp_short_carbine`, `weapon-adcorp_line_rifle`, `weapon-adcorp_designated_rifle`, `weapon-chezknov_machine_carbine`, `weapon-chezknov_battle_rifle`, `weapon-chezknov_precision_rifle`, `weapon-arsenal_courier_pdw`, `weapon-arsenal_piston_rifle`, `weapon-arsenal_heavy_rifle`, `weapon-smetanita_pocket_pistol`, `weapon-smetanita_service_pistol`, `weapon-smetanita_hand_cannon`, `weapon-albert_town_brush_carbine`, `weapon-albert_town_service_rifle`, `weapon-albert_town_stalking_rifle`.
+**Guns (A3.3), 51 items.** Kept (7): `weapon-parlour_pistol`, `weapon-drifter_revolver`, `weapon-lever_carbine`, `weapon-sawn_off`, `weapon-coach_gun`, `weapon-legion_bullpup`, `weapon-whisper_smg`. Repainted, file 10 section 1 (14): `weapon-service_pistol`, `weapon-magistrate_pistol`, `weapon-frontier_hand_cannon`, `weapon-decrkm_autopistol`, `weapon-decrkm_smg`, `weapon-legion_pdw`, `weapon-mandestra_drum_gun`, `weapon-hellraiser_service_rifle`, `weapon-hellraiser_lmg`, `weapon-adamantile_battle_rifle`, `weapon-ccec_marksman_rifle`, `weapon-long_rifle`, `weapon-brigade_auto_shotgun`, `weapon-lumeri_scattergun`. New, file 06 (15): `weapon-snub_revolver`, `weapon-decrkm_carbine`, `weapon-legion_marksman_rifle`, `weapon-whisper_pistol`, `weapon-whisper_carbine`, `weapon-mandestra_drum_pistol`, `weapon-mandestra_drum_rifle`, `weapon-hellraiser_trench_carbine`, `weapon-adamantile_carbine`, `weapon-adamantile_heavy_rifle`, `weapon-fowling_gun`, `weapon-brigade_shot_pistol`, `weapon-brigade_drum_shotgun`, `weapon-lumeri_hand_scatter`, `weapon-lumeri_long_scatter`. New, file 10 (15): `weapon-adcorp_short_carbine`, `weapon-adcorp_line_rifle`, `weapon-adcorp_designated_rifle`, `weapon-chezknov_machine_carbine`, `weapon-chezknov_battle_rifle`, `weapon-chezknov_precision_rifle`, `weapon-arsenal_courier_pdw`, `weapon-arsenal_piston_rifle`, `weapon-arsenal_heavy_rifle`, `weapon-smetanita_pocket_pistol`, `weapon-smetanita_service_pistol`, `weapon-smetanita_hand_cannon`, `weapon-albert_town_brush_carbine`, `weapon-albert_town_service_rifle`, `weapon-albert_town_stalking_rifle`.
 
 **Bows, crossbows and the quiver (A3.4), 7 items.** Kept (5): `weapon-recurve_bow`, `weapon-longbow`, `weapon-crossbow`, `weapon-repeating_crossbow`, `quiver-quiver`. New, file 06 (2): `weapon-short_bow`, `weapon-arbalest`.
 
@@ -497,7 +497,7 @@ Per class: graded items = kept + repainted + new; grade pictures = graded items 
 | --- | --- | --- | --- | --- | --- | --- |
 | Blades (A3.1) | 21 = 7 + 0 + 14 | 7 | 0 | 14 | 84 | 0 + 14 + 84 = 98 |
 | Hafted (A3.2) | 9 = 5 + 0 + 4 | 5 | 0 | 4 | 36 | 0 + 4 + 36 = 40 |
-| Guns (A3.3) | 51 = 5 + 16 + 30 | 5 | 16 | 30 | 204 | 16 + 30 + 204 = 250 |
+| Guns (A3.3) | 51 = 7 + 14 + 30 | 7 | 14 | 30 | 204 | 14 + 30 + 204 = 248 |
 | Bows, crossbows, quiver (A3.4) | 7 = 5 + 0 + 2 | 5 | 0 | 2 | 28 | 0 + 2 + 28 = 30 |
 | Gloves and foci (A3.5) | 10 = 9 + 0 + 1 | 9 | 0 | 1 | 40 | 0 + 1 + 40 = 41 |
 | Shields (A3.6) | 9 = 3 + 0 + 6 | 3 | 0 | 6 | 36 | 0 + 6 + 36 = 42 |
@@ -505,11 +505,9 @@ Per class: graded items = kept + repainted + new; grade pictures = graded items 
 | Heavy weapons (A3.8) | 15 = 2 + 3 + 10 | 2 | 3 | 10 | 60 | 3 + 10 + 60 = 73 |
 | Powered melee and gauntlets (A3.9) | 6 = 2 + 0 + 4 | 2 | 0 | 4 | 24 | 0 + 4 + 24 = 28 |
 | Thrown (A3.10) | 3 = 1 + 0 + 2 | 1 | 0 | 2 | 12 | 0 + 2 + 12 = 14 |
-| **All** | **164** | **58** | **19** | **87** | **656** | **19 + 87 + 656 = 762** |
+| **All** | **164** | **60** | **17** | **87** | **656** | **17 + 87 + 656 = 760** |
 
-Column sums: graded items 21 + 9 + 51 + 7 + 10 + 9 + 33 + 15 + 6 + 3 = 164; kept 7 + 5 + 5 + 5 + 9 + 3 + 19 + 2 + 2 + 1 = 58; repainted 16 + 3 = 19; new 14 + 4 + 30 + 2 + 1 + 6 + 14 + 10 + 4 + 2 = 87; grade pictures 164 x 4 = 656; pictures to make 98 + 40 + 250 + 30 + 41 + 42 + 146 + 73 + 28 + 14 = 762. Painted Standards that exist today: 58 kept + 19 to be repainted = 77.
-
-Where the 762 are prompted: the 656 grade pictures in this file (sections A and B); the 87 new Standards in files 05 (19), 06 (17), 07 (20), 09 (16) and 10 (15); the 19 repaints in file 10. **Plus the 23 uniques of section D: 785 pictures in all.** Not graded, so no grade pictures: the uniques (Afterword included); the grenades, the flashbang, the satchel charge and the other consumables; the special rounds, the magazines and the rounds; the materials, tools, documents, food, lights, loot, the prosthetic arm and the drone frame; the mods; the trait props (`armour-prescription_glasses`, `armour-smiling_mask`); bare fists and `weapon-beast_bite`; the bot items (`weapon-bot_scrambler`, `weapon-bot_thread_banner`); and the mana and advanced-class weapons (`weapon-evoker_blade`, `weapon-emanator_gauntlet`, `weapon-emanator_katana`, `weapon-spellslinger_pistol`, `weapon-grand_staff`, `weapon-core_rifle`, `weapon-lumeri_censer_gun`). This list and section C3 together cover every painting in `art/icons/gear/`: the 164 graded items, the 656 grade pictures and the 785 pictures in all are complete.
+**164 graded items x 4 = 656 grade pictures.** With the 17 repaints and the 87 new Standards, 760 pictures for the graded items; with the 23 uniques of section D, **783 gear pictures**. Only the items listed in C3 get grade pictures; every other gear painting, the uniques included, has none.
 
 ---
 
@@ -534,7 +532,7 @@ A unique two-handed greatsword of the Adamantile Brigade, on the 45 degree diago
 Avoid: letters on the scroll or the seals, a halo or rays, a cross, flames, wings on the guard, a glow past the blade's edge.
 ```
 
-### D1.2 `grandmothers_teeth`: Grandmother's Teeth (Ork cutter)
+### D1.2 `grandmothers_teeth`: Grandmother's Teeth (scrap cutter)
 
 - **Save as:** `art/icons/gear/weapon-grandmothers_teeth.png`
 - **Attach:** `art/icons/gear/weapon-ork_machete.png`, `art/icons/weapons/ork_machete.svg`
@@ -605,7 +603,7 @@ Avoid: icicles hanging, snowflakes in the air, numbers, a glow, a crossguard of 
 ### D2.1 `in_triplicate`: In Triplicate (Legion bullpup)
 
 - **Save as:** `art/icons/gear/weapon-in_triplicate.png`
-- **Attach:** `art/icons/gear/weapon-legion_bullpup.png` (paint this unique after its repaint is approved), `art/icons/weapons/legion_bullpup.svg`
+- **Attach:** `art/icons/gear/weapon-legion_bullpup.png` (the family silhouette), `art/icons/weapons/legion_bullpup.svg`
 - **At icon size it must read as:** the carry-handle bullpup, its magazine pale and flat as folded paper.
 
 ```
@@ -653,7 +651,7 @@ Avoid: a whale or fish, splashes or drops, a glow, a rope of ordinary fibre, a t
 - **At icon size it must read as:** the scoped bolt-action precision rifle, its scope holding a sunrise.
 
 ```
-A unique bolt-action precision rifle, on a slight diagonal, muzzle up and right, about 85% of the canvas width: a chassis stock with a thumbhole and an adjustable cheek piece, a heavy fluted barrel with a muzzle brake, a bipod folded under the fore-end, a short detachable box magazine and a large scope; neutral matte finish. The impossible material: the scope's body is translucent amber glass, and inside it a sunrise is caught half-risen, a small warm sun at the horizon line, never rising further; the light stays inside the scope. The story detail: a hand-made sunshade of folded tin over the scope's front lens, dented once and mended with wire. Accent: the warm dawn amber inside the scope.
+A unique bolt-action precision rifle, on a slight diagonal, muzzle up and right, about 85% of the canvas width: the classic precision pattern of the attached repaint: a one-piece synthetic stock with a straight comb and a near-vertical pistol grip, a round receiver with a turned-down bolt handle, a long heavy plain barrel with no brake, a hinged floorplate with nothing hanging below, a bipod folded under the fore-end and a large scope with tall turrets; neutral matte finish. The impossible material: the scope's body is translucent amber glass, and inside it a sunrise is caught half-risen, a small warm sun at the horizon line, never rising further; the light stays inside the scope. The story detail: a hand-made sunshade of folded tin over the scope's front lens, dented once and mended with wire. Accent: the warm dawn amber inside the scope.
 Avoid: a beam or glare leaving the lens, rays, a glow past the scope, a wooden hunting stock, any marking.
 ```
 
@@ -671,11 +669,11 @@ Avoid: smoke, a flame outside the tube, a cross or halo, a candle standing on th
 ### D2.7 `unsaid`: Unsaid (suppressed submachine gun)
 
 - **Save as:** `art/icons/gear/weapon-unsaid.png`
-- **Attach:** `art/icons/gear/weapon-whisper_smg.png` (paint this unique after its repaint is approved), `art/icons/weapons/whisper_smg.svg`
+- **Attach:** `art/icons/gear/weapon-whisper_smg.png` (the family silhouette), `art/icons/weapons/whisper_smg.svg`
 - **At icon size it must read as:** the Whisper SMG, its long suppressor a piece of night.
 
 ```
-A unique integrally suppressed submachine gun, on a slight diagonal, muzzle up and right, about 70% of the canvas width: the integrally suppressed roller-delayed pattern of the attached repaint: a stamped receiver with a cocking tube over the barrel, a curved magazine ahead of the trigger group, a retractable stock of two steel struts with a small blue-grey plate on them, and a long fat smooth suppressor forming the front half of the gun; matte dark steel. The impossible material: the suppressor is a piece of night, a matte black that holds no highlight at all, with a few faint stars deep inside it. The story detail: a moth's wing pressed flat under a strip of clear tape on the side of the stock. Accent: the small blue-grey plate on the stock struts, as on the attached painting.
+A unique integrally suppressed submachine gun, on a slight diagonal, muzzle up and right, about 70% of the canvas width: the compact submachine gun of the attached painting: a squared stamped receiver with a short top rail, a straight magazine ahead of the trigger guard, a pistol grip, a folding skeleton stock with a small blue-grey plate on it, and a long fat smooth suppressor forming the front half of the gun; matte dark steel. The impossible material: the suppressor is a piece of night, a matte black that holds no highlight at all, with a few faint stars deep inside it. The story detail: a moth's wing pressed flat under a strip of clear tape on the side of the stock. Accent: the small blue-grey plate on the stock, as on the attached painting.
 Avoid: a glow past the suppressor, smoke, a moon, letters or marks, a second magazine.
 ```
 

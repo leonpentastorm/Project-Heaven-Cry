@@ -15,7 +15,7 @@ image a prompt: paste the file's style block, then the entry's prompt, and attac
 4. **The new base forms, at the Standard finish:** melee (file 05), guns and bows (file 06), shields and armour (file 07),
    heavy and strange weapons (file 09). Where an entry says "paint after the repaint", paint that gun's repaint from file
    10, section 1, first and attach the new picture.
-5. **The gun repaints and the five new gun lines** (file 10): section 1, the 19 repaints; section 2, the 15 new forms,
+5. **The gun repaints and the five new gun lines** (file 10): section 1, the 17 repaints; section 2, the 15 new forms,
    each line's base first.
 6. **The grades, by file 08's method** (sections A to C): the proof sheet first (8 pictures: `katana` and
    `drifter_revolver`), send it back for review, then one grade set per item, made image to image from its approved
@@ -35,10 +35,10 @@ image a prompt: paste the file's style block, then the entry's prompt, and attac
 | [`07-shields-armour.md`](07-shields-armour.md) | 6 new shields and 14 new armour pieces | 20 |
 | [`08-grades-and-uniques.md`](08-grades-and-uniques.md) | The grade method for every graded item (the proof sheet's 8 written out in full), and 23 uniques | 23 uniques + 656 grade pictures |
 | [`09-heavy-and-strange.md`](09-heavy-and-strange.md) | New heavy and strange weapons in 8 families (launchers, rocket tubes, rotary and belt-fed guns, anti-materiel rifles, flamers, powered blades, power gauntlets, thrown weapons) | 16 |
-| [`10-rifle-analogues.md`](10-rifle-analogues.md) | 19 repaints of existing guns (same file name, a new picture) and 15 new guns in five maker lines | 34 |
+| [`10-rifle-analogues.md`](10-rifle-analogues.md) | 17 repaints of existing guns (same file name, a new picture) and 15 new guns in five maker lines | 32 |
 
-**Totals:** 217 pictures to make now (the counts above, the 23 uniques included), 656 grade pictures (164 graded items x
-4 grades, the proof sheet's 8 among them), **873 pictures in all.**
+**Totals:** 215 pictures to make now (the counts above, the 23 uniques included), 656 grade pictures (164 graded items x
+4 grades, the proof sheet's 8 among them), **871 pictures in all.**
 
 ## The rules that hold everywhere
 
@@ -47,7 +47,7 @@ image a prompt: paste the file's style block, then the entry's prompt, and attac
 3. A gun reads as its real-world pattern at a glance (layout, proportions, magazine, sights, stock and furniture kept); only its small maker's touch is ours.
 4. Melee weapons, bows, shields, armour and the strange weapons are invented shapes, never a recognisable real model.
 5. Every graded item is painted at all five grades: Standard (the master), Fine, Masterwork, Relic, Celestial.
-6. Save every picture under the exact file name and folder its entry gives, and never rename; a grade picture is `<the Standard's file name without .png>--fine.png` (or `--masterwork`, `--relic`, `--celestial`) beside its Standard in `art/icons/gear/`.
+6. Save every picture under the exact file name and folder its entry gives, and never rename. Gear and map-kit file names keep the item id's underscores after the kind prefix (`weapon-snub_revolver.png`, `low_wall.png`), as the files already in those folders do; a grade picture is `<the Standard's file name without .png>--fine.png` (or `--masterwork`, `--relic`, `--celestial`) beside its Standard in `art/icons/gear/`.
 
 ## Handing pictures back
 

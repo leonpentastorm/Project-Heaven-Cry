@@ -1,6 +1,6 @@
-# GPT prompts, file 04: skill icons, Insight, Determination and Virtue
+# GPT prompts, file 04: skill icons, Determination, Insight and Virtue
 
-For the artist, and for GPT. **19 pictures: 18 Wick icons (7 Determination, 6 Insight, 5 Virtue) and 1 white-ink sign (Blessed Aim).** 15 are new; 4 replace an existing file (Blood Price, Pure Heart, Veiled Insult and Swift Psalm; the entry says what changes).
+For the artist, and for GPT. **19 pictures: 18 Wick icons (7 Determination, 6 Insight, 5 Virtue) and 1 white-ink sign (Blessed Aim).** 17 are new files; 2 replace an existing file in place (Blood Price and Swift Psalm). Pure Heart and Veiled Insult start from an existing picture but are saved as new files, and the old files stay as they are. Each of these four entries says what changes.
 
 ## How to use
 

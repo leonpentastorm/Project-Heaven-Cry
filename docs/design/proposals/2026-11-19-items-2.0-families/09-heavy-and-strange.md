@@ -91,9 +91,9 @@ it crosses (Through and Through), at the price of bracing or lying prone. **Draw
 
 | Form | Id | Pattern (by features) | One line | Second skill (what it feeds) |
 | --- | --- | --- | --- | --- |
-| Light | `blackpoint_carbine` | the compact single-shot bolt-action bullpup anti-materiel rifle | One round, half the range, braced on anything. | **Raw Power**: fire it unbraced from Raw Power 5 |
-| Base | `blackpoint_700` | the long bolt-action anti-materiel rifle | Three rounds, 40 tiles, braced or prone. | none (Dexterity only) |
-| Heavy | `blackpoint_wall_gun` | the very long semi-automatic anti-tank rifle with a five-round magazine, with a field-fitted gun shield | Prone only; the hit goes through full cover as well. | none (was Analysis, not an alpha: removed by R5) |
+| Light | `blackpoint_carbine` | the compact bolt-action bullpup anti-materiel rifle (the picture shows its five-round magazine; the magazine is cosmetic, in the game it holds one round) | One round, half the range, braced on anything. | **Raw Power**: fire it unbraced from Raw Power 5 |
+| Base | `blackpoint_700` | the long semi-automatic anti-materiel rifle with a box magazine (as repainted in file 10, 1.9) | Three rounds, 40 tiles, braced or prone. | none (Dexterity only) |
+| Heavy | `blackpoint_wall_gun` | the very long wartime semi-automatic anti-tank rifle with an internal five-round magazine, a barrel carry handle and a mid bipod (no shield in the picture) | Prone only; the hit goes through full cover as well. | none (was Analysis, not an alpha: removed by R5) |
 
 ### H6 Powered blades (Orks: rust and dirty ochre) (was H8)
 

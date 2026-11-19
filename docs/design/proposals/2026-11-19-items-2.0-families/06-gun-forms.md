@@ -87,8 +87,8 @@ The bows and the arbalest stay invented (R3 covers guns only). Faction signature
 - The base prompt no longer says "three-quarter view", "fills about 80%" or "everything is invented": the name, maker and
   markings are invented, and the gun pattern clause says it governs a gun's silhouette. Bows stay invented.
 - **Legion marksman rifle:** no longer a longer-barrelled invented layout; it is the bullpup pattern's issued marksman fit
-  (a scope on the carry handle, the bipod legs spread). The bullpup and the Whisper SMG are now repainted in file 10, so
-  their siblings say "paint after the repaint".
+  (a scope on the carry handle, the bipod legs spread). The bullpup and the Whisper SMG are kept as painted (R1's 17
+  repaints do not include them); only the Legion PDW is repainted, so the marksman rifle waits on that one.
 - **Lumeri hand scatter and long scatter:** one maker's touch each (a gold inlay line); the lancet cut-outs and the spire
   sight changed the outline.
 - The long shotguns (fowling gun, Lumeri long scatter) are 85% wide, stated in the scale rule. One frame rule: inside the

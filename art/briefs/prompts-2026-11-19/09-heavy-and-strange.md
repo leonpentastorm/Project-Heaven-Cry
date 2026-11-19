@@ -24,7 +24,7 @@ attach the new version: an entry marked "paint after the repaint" must match it.
 `art/sprites/objects/field-lamp.png` (material treatment and edge hierarchy only; their top-down camera does not apply, the
 camera here is the one each entry gives), and `art/portraits/world/new-faces/orren-vask.png` (brushwork). The line icon
 named in each entry (`art/icons/weapons/<id>.svg`) is the silhouette reference of the family's existing weapon. Palette:
-`art/style-guide/palette.json`; rule: `art/style-guide/gear-icons.md`.
+`art/style-guide/palette.json`; rule: `art/style-guide/gear-icons.md` (for a gun, `art/style-guide/weapon-icons.md` rule 8 governs the silhouette: it follows the real pattern the entry describes, while the name, maker, markings and text stay ours; gear-icons.md's ban on real-world models applies to everything else).
 
 **Size / background:** 1024 x 1024 PNG with alpha, fully transparent, the object inside the central 90% of the canvas (at
 least 50 px of clear margin on every side); each entry gives the object's own width.
@@ -45,7 +45,7 @@ border; on Pattern entries, fantasy plates, spikes or crests that change the out
 
 **Accents used below:** Smetanita Conjunction lacquer black with brass; Thousand World Legion olive-grey, no accent but a
 pale stripe; Hellraiser Divisions oxide red `#CC2435`; Frontier mercenaries none (bare dark steel, leather); Lumeri Church
-ivory with gold `#F2C46A`; Orks rust with dirty ochre daubs.
+ivory with gold `#F2C46A`; the scrap-cutter clans rust with dirty ochre daubs.
 
 ---
 
@@ -59,8 +59,8 @@ ivory with gold `#F2C46A`; Orks rust with dirty ochre daubs.
 - **Attach:** `art/icons/gear/weapon-smetanita_thumper.png`, `art/icons/weapons/smetanita_thumper.svg` (paint after the repaint; the maker's materials)
 
 ```
-The compact single-shot break-open 40 mm grenade launcher with the pistol grip and the collapsing wire stock. Pose: side profile turned slightly toward the viewer, muzzle to the right, level, about 80% of the canvas width like a pistol. Silhouette, kept exactly: a short, very fat smooth barrel hinged at its rear to a slim receiver just ahead of the trigger guard, shown closed with the hinge pin visible; a tall folding ladder leaf sight standing up on top of the barrel near its rear; a pistol grip with a rounded trigger guard; a collapsing stock of two parallel steel rods with a curved butt plate, pushed fully forward so the rods lie along both sides of the receiver and the butt plate sits just behind the grip. Materials: black lacquered steel, rubbed to grey on the edges, a dark grip. Maker's touch: a brass hinge pin and a thin brass ring round the muzzle.
-At 32 px: a barrel as wide as the grip is long, a tall leaf sight on top.
+The cut-down field version of the single-shot break-open 40 mm grenade launcher: the same launcher as the attached thumper with its barrel sawn short and its shoulder stock sawn off to a wooden pistol grip. Pose: side profile turned slightly toward the viewer, muzzle to the right, level, about 80% of the canvas width like a pistol. Silhouette, kept exactly: a fat smooth barrel cut short, barely longer than the receiver, with a plain flat-cut muzzle; the break-open hinge and the top lever of the thumper's receiver; no leaf sight (it was taken off), only a low blade front sight on top of the barrel; the wooden stock cut away just behind the wrist and rounded off into a stubby wooden pistol grip, the trigger and its guard just ahead of it; a short wooden fore-end under the barrel. No shoulder stock, no rods. Materials: black lacquered steel, rubbed to grey on the edges, dark worn wood with the saw cut rounded and oiled. Maker's touch: a brass hinge pin and a thin brass ring round the muzzle.
+At 32 px: against the thumper, half its length, no shoulder stock and no tall sight: a fat short barrel on a wooden pistol grip.
 ```
 
 ## 2. `smetanita_drum_launcher`: Drum launcher (Pattern)
@@ -149,8 +149,8 @@ At 32 px: shorter and thicker than the long Blackpoint, the same arrowhead brake
 - **Attach:** `art/icons/gear/weapon-blackpoint_700.png`, `art/icons/weapons/blackpoint_700.svg` (paint after the repaint)
 
 ```
-The very long semi-automatic anti-tank rifle with a five-round magazine. Pose: diagonal, muzzle up and right, about 90% of the canvas width. Silhouette, kept exactly: an extremely long thin barrel ending in a slotted muzzle brake; a long receiver with a five-round magazine box under it; a folding bipod at the middle of the barrel; a carrying handle over the balance point; a long wooden butt with a padded shoulder plate and a cheek pad, and a small rest leg under the butt. Materials: dark steel and dark worn wood, grim and massive. Maker's touch: a worn strip of tape wrapped round the carrying handle.
-At 32 px: the longest gun in the row, a handle at its middle and a bipod.
+The very long gas-operated semi-automatic wartime anti-tank rifle with the internal five-round magazine. Pose: diagonal, muzzle up and right, about 90% of the canvas width. Silhouette, kept exactly: an extremely long thin barrel, about two-thirds of the whole gun, ending in a multi-baffle muzzle brake slotted on both sides; a gas cylinder along the top of the barrel's rear half; a slim steel receiver with the internal magazine closed by a hinged floorplate flush with its underside, nothing hanging below; a plain steel carrying handle clamped to the barrel at the balance point; a tubular folding bipod clamped to the barrel just ahead of the receiver, legs spread; a long plain wooden stock with a pistol-grip wrist and a padded shoulder plate. Materials: dark steel and dark worn wood, grim and massive. Maker's touch: a worn strip of tape wrapped round the carrying handle.
+At 32 px: the longest gun in the row, a handle on the barrel, a bipod and no magazine hanging below.
 ```
 
 # Flamers (Lumeri Church)
@@ -175,11 +175,11 @@ At 32 px: a round flask under the grip and a lamp nozzle, no barrel.
 - **Attach:** `art/icons/gear/weapon-purifier_flamer.png`, `art/icons/weapons/purifier_flamer.svg`
 
 ```
-The wall of fire made into architecture: a two-tank backpack burner with a long lance nozzle. Pose: the tank pack upright behind, the lance diagonal in front, drawn together as one object, about 90% of the canvas width. Silhouette: two tall tanks shaped like twin spires side by side with lancet arches, heavy hoses to a long straight lance with a censer-shaped head, a small pilot flame at the tip. Materials: ivory-painted steel, gold banding, brass head. Accent: Lumeri gold #F2C46A.
+The wall of fire made into architecture: a two-tank backpack burner with a long lance nozzle. Pose: the tank pack upright behind, the lance diagonal in front, drawn together as one object, about 90% of the canvas width. Silhouette: two tall tanks shaped like twin spires side by side with lancet arches, heavy hoses to a long straight lance ending in a lancet-arched nozzle with a brass collar, a small pilot flame at the tip. Materials: ivory-painted steel, gold banding, brass head. Accent: Lumeri gold #F2C46A.
 At 32 px: two spire tanks and a lance much longer than the purifier's.
 ```
 
-# Powered blades (Orks)
+# Powered blades (scrap-cutters)
 
 ## 11. `ork_snarl_knife`: Snarl knife
 

@@ -205,13 +205,35 @@ A sixth line for these: not now; revisit after 0.34 (the lead's recommendation, 
 
 ## Final pass, 19 Nov 2026 (what changed in the artist file)
 
-- **Two more repaints, 1.18 `legion_bullpup` and 1.19 `whisper_smg`:** their paintings are invented shapes (an angular
-  bullpup with an open handle; an angular SMG with a screwed-on can), so under R3 they are repainted to their patterns
-  (the long-carry-handle bullpup; the integrally suppressed roller-delayed SMG). The repaints are 19, the gun class keeps
-  5 paintings and repaints 16; file 08's totals are 762 grade-set pictures and 785 with the uniques.
+- **Repaints held to R1's 17.** The first final pass added 1.18 `legion_bullpup` and 1.19 `whisper_smg` (19 repaints);
+  R1 approves 17, the 17 of the coverage table, where both read as their pattern today (rows 11 and 27). The second
+  verification removed the two entries: the gun class keeps 7 paintings and repaints 14; file 08's totals are 760
+  pictures for the graded items and 783 gear pictures with the uniques; the README's are 215 to make now and 871 in all.
+  The removed prompts are below for a later pass, if Leon ever wants them.
+- **Second verification, patterns made single and faithful (R3):** 1.6 `legion_pdw` is laid out feature by feature (the
+  stepped tall receiver, the long magazine through the grip, the folding front grip, the two-rod stock; nothing on top, so
+  it never reads as the top-fed courier PDW); 1.8 `long_rifle` is the classic bolt-action precision rifle in a one-piece
+  synthetic stock (no thumbhole, no brake, hinged floorplate; the unique `first_light` follows it); 1.11
+  `adamantile_battle_rifle` is the tilting-breechblock metric battle rifle (top cover to a rear peep sight, folding
+  cocking handle on the left toward the front, eared front sight, long slotted flash hider, no carry handle), and 06's
+  Adamantile carbine and heavy rifle follow it. In 09: the snub launcher is the cut-down thumper (barrel sawn short, stock
+  sawn to a wooden pistol grip, no leaf sight), and the wall gun is one wartime semi-automatic anti-tank rifle (internal
+  five-round magazine, barrel carry handle, mid bipod, plain wooden stock).
 - **1.12 `hellraiser_lmg`:** now the line's own light machine gun (the service rifle lengthened: long barrel, bipod at the
   muzzle, long curved magazine, club-foot stock), so it stays apart from file 09's belt-fed spinner.
 - **1.13 `lumeri_scattergun`:** a plain straight-wrist stock (the pattern's own), and one maker's touch (a gold inlay line)
   instead of a lancet cut and a spire sight, which changed the outline.
 - The clause now reads "the small maker's touch (paint, inlay or a small metal fitting inside the outline)", so a line with
   two small marks (Adamantile's crest and trim line) does not contradict it. Intake sentences removed.
+
+### The two removed repaint prompts (not in the pack; R1 approves 17)
+
+- `legion_bullpup` (would replace `art/icons/gear/weapon-legion_bullpup.png`): the bullpup assault rifle with the long carry
+  handle running over the whole body; the action and the short straight magazine behind the pistol grip; the cocking handle
+  under the carry handle at the front; a long trigger guard; a ribbed polymer fore-end with two thin bipod legs folded flat
+  along it; a short barrel with a ringed flash hider; a flat butt with a rubber pad. Olive-grey polymer and bare steel; one
+  pale stripe round the butt.
+- `whisper_smg` (would replace `art/icons/gear/weapon-whisper_smg.png`): the integrally suppressed roller-delayed
+  submachine gun: a stamped receiver with a cocking tube over the barrel; a fat smooth suppressor forming the whole front;
+  a curved magazine ahead of the trigger group; a drum-style rear sight; a retractable two-strut stock. Matte black; one
+  small steel-blue (`#5394AC`) plate on the stock struts.

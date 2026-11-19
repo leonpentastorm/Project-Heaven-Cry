@@ -84,3 +84,20 @@ The twelve uniques written on 19 Nov to complete the 24 (the directions in the t
 - The five other weird weapons of file 09 (net or bola launcher, concussion projector, turret pack, acid sprayer, returning blade): not in this pack; they wait for a later content release (09 question 5).
 - Advanced-class weapons (the 8 mana arms, the core rifle and the censer gun among them): three tiers each when the advanced classes return; nothing is painted now.
 - Weapon Arts icons, random-modifier art, a Worn picture: none (words only, ART-REQUESTS questions 11 to 13).
+
+## 8. Moved out of the artist's file in the second verification (19 Nov 2026)
+
+The artist's file (section C4) now ends on one line: 164 graded items x 4 = 656 grade pictures; 760 pictures for the graded
+items; 783 gear pictures with the 23 uniques; only the items listed in C3 get grade pictures. The accounting it carried
+before is kept here, as it stood, then corrected to the 17 repaints of R1:
+
+> Column sums: graded items 21 + 9 + 51 + 7 + 10 + 9 + 33 + 15 + 6 + 3 = 164; kept 7 + 5 + 5 + 5 + 9 + 3 + 19 + 2 + 2 + 1 = 58; repainted 16 + 3 = 19; new 14 + 4 + 30 + 2 + 1 + 6 + 14 + 10 + 4 + 2 = 87; grade pictures 164 x 4 = 656; pictures to make 98 + 40 + 250 + 30 + 41 + 42 + 146 + 73 + 28 + 14 = 762. Painted Standards that exist today: 58 kept + 19 to be repainted = 77.
+> 
+> Where the 762 are prompted: the 656 grade pictures in this file (sections A and B); the 87 new Standards in files 05 (19), 06 (17), 07 (20), 09 (16) and 10 (15); the 19 repaints in file 10. **Plus the 23 uniques of section D: 785 pictures in all.** Not graded, so no grade pictures: the uniques (Afterword included); the grenades, the flashbang, the satchel charge and the other consumables; the special rounds, the magazines and the rounds; the materials, tools, documents, food, lights, loot, the prosthetic arm and the drone frame; the mods; the trait props (`armour-prescription_glasses`, `armour-smiling_mask`); bare fists and `weapon-beast_bite`; the bot items (`weapon-bot_scrambler`, `weapon-bot_thread_banner`); and the mana and advanced-class weapons (`weapon-evoker_blade`, `weapon-emanator_gauntlet`, `weapon-emanator_katana`, `weapon-spellslinger_pistol`, `weapon-grand_staff`, `weapon-core_rifle`, `weapon-lumeri_censer_gun`). This list and section C3 together cover every painting in `art/icons/gear/`: the 164 graded items, the 656 grade pictures and the 785 pictures in all are complete.
+
+**Corrected to R1's 17 repaints:** `legion_bullpup` and `whisper_smg` are kept Standards, not repaints (R1 approves the 17
+repaints of file 10's coverage table, where both read as their pattern today). Kept 7 + 5 + 7 + 5 + 9 + 3 + 19 + 2 + 2 + 1
+= 60; repainted 14 + 3 = 17; new 87; grade pictures 164 x 4 = 656; pictures to make 98 + 40 + 248 + 30 + 41 + 42 + 146 +
+73 + 28 + 14 = 760; with the 23 uniques, 783 gear pictures. The README's 871 adds files 01 to 04 (88 pictures: 37 + 11 +
+21 + 19). Painted Standards that exist today: 60 kept + 17 to be repainted = 77. The core rifle and the censer gun stay in
+`art/icons/gear/` as painted advanced-class weapons, not graded and not in this pack (R4).

@@ -82,7 +82,7 @@ The icon shows: a hollow Figment figure breaking into six or seven loose angular
 The icon shows: Wick with one hand raised, palm out and relaxed, and an easy sideways smile, while a line leaves his mouth as a single soft S-curve that bends round a sharp angular snag and passes it without catching. The listener is only a shoulder and an ear cut by the frame, nodding. The line gliding past the snag is what to read at 32 px. Avoid: a snake, a banana peel, a liar's long nose, a smiley mask, a handshake.
 ```
 
-### Parley (renamed; id `talks_broke_down`)
+### Parley (id `talks_broke_down`)
 - **Id:** `talks_broke_down`, shown as "Parley". **Save as:** `art/icons/perks/talks-broke-down.png` (the file name keeps the id). **Mode:** Wick icon. **Shows:** the perk card. This replaces the existing `art/icons/perks/talks-broke-down.png` (a table-flip): attach it only to see what NOT to draw.
 ```
 The icon shows: Wick seated on one side of a plain low table with his two open palms laid flat on it, facing across the table a rough armoured foe-leader shown only as a broad shoulder and a helmeted head cut by the frame; between them on the table a single weapon lies laid down, pointing at neither. Stillness, no motion lines. The table between two figures with a weapon laid down is what to read at 32 px. Avoid: a flipped table, a handshake, a white flag, a signed paper, a courtroom.
@@ -107,7 +107,7 @@ The icon shows: Wick's arm swinging in one fast diagonal stroke, his hand holdin
 ### Index
 - **Id:** `index`. **Save as:** `art/icons/perks/index.png`. **Mode:** Wick icon. **Shows:** the perk card.
 ```
-The icon shows: Wick standing at a tall narrow cabinet of small shallow drawers, drawing one drawer halfway out with a finger and looking into it, while his other hand holds one thin leaf of paper up to the light with a row of plain tick-lines on it (no letters). A single drawer pulled open is what to read at 32 px. Avoid: a library full of books, a magnifying glass, a computer, an encyclopedia spine with text, a question mark.
+The icon shows: Wick standing at a tall narrow cabinet of small shallow drawers, drawing one drawer halfway out with a finger and looking into it, while his other hand holds one thin leaf of paper up to the light with a row of plain tick-lines on it (no letters). A single drawer pulled open is what to read at 32 px. Avoid: a library full of books, a magnifying glass, a computer, an encyclopedia spine with text, a ? glyph.
 ```
 
 ### Proven Formula
@@ -119,7 +119,7 @@ The icon shows: a plain slate tablet held up by Wick in both hands, carrying a s
 ### Objection!
 - **Id:** `objection`. **Save as:** `art/icons/perks/objection.png`. **Mode:** Wick icon. **Shows:** the perk card. Do not echo the old Burden of Proof picture (Wick hauling a weight).
 ```
-The icon shows: Wick with one arm thrust straight out and one finger pointing sharply at a plain railed box (a low witness stand drawn as a railed pen on a raised floor) where only the speaker's shoulder and a hand are visible, pinned by the pointing; two short sharp emphasis strokes jump off Wick's fingertip. The one pointing finger aimed across a railed box is what to read at 32 px. Avoid: a gavel, scales of justice, a wig, a judge's bench with text, an exclamation mark.
+The icon shows: Wick on his feet behind a plain low rail, slapping one flat open palm down hard on the rail, his other hand raised high with the palm out to halt the room; across from him a plain railed box (a low witness stand drawn as a railed pen on a raised floor) where only a speaker's shoulder and a hand are visible, the hand pulled back mid-gesture; two short sharp impact strokes jump off the rail under Wick's palm. The palm slammed on the rail and the raised halting hand is what to read at 32 px. Avoid: a pointing finger or an arm thrust out at the stand, a gavel, scales of justice, a wig, a judge's bench with text, an exclamation mark.
 ```
 
 ### Opening Argument

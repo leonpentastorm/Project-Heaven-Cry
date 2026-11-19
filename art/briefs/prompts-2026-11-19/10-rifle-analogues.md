@@ -1,6 +1,6 @@
-# GPT prompts, 19 Nov 2026, file 10: the gun counterparts (19 repaints, 15 new forms)
+# GPT prompts, 19 Nov 2026, file 10: the gun counterparts (17 repaints, 15 new forms)
 
-For the artist, and for GPT. 34 gear paintings: 19 repaints of guns that exist (same id, same file name, a new picture) and
+For the artist, and for GPT. 32 gear paintings: 17 repaints of guns that exist (same id, same file name, a new picture) and
 15 new guns in five maker lines. Every gun here is the in-world counterpart of a well-known firearm pattern.
 
 ## How to read this file
@@ -48,7 +48,7 @@ dense and heavy.
 
 ---
 
-## 1. The 19 repaints (same id, same file name, a new picture)
+## 1. The 17 repaints (same id, same file name, a new picture)
 
 Each is a full repaint of a painting that exists. The outline changes, so do not paint image to image from the old
 picture: attach it only for the scale in the frame, the palette, the wear and the maker's accent, then draw the pattern
@@ -111,8 +111,8 @@ At 32 px: a small square box with the magazine coming out of the grip.
 - **Attach:** `art/icons/gear/weapon-legion_pdw.png` (the current picture: scale, palette, the olive-grey)
 
 ```
-A compact modern personal defence weapon with the magazine in the grip. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width. Silhouette, kept exactly: a compact angular polymer body; a long magazine inserted through the pistol grip; a vertical front grip folded down under the barrel; a short sliding stock made of two thin rods with a small butt plate, extended; a short top rail with small folding sights; a short barrel just past the front of the body. Materials: olive-grey polymer and dark steel, anonymous and mass-produced. Maker's touch: none, no colour accent.
-At 32 px: a small angular body, a long magazine in the grip, a front grip and a rod stock.
+The compact modern personal defence weapon with the long magazine through the pistol grip, the folding front grip and the two-rod sliding stock. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width. Silhouette, kept exactly: a short, tall, slab-sided polymer receiver whose top line steps down at the front, the tall part ending above the trigger guard and the lower front sloping forward to a short barrel that sticks out a hand's width; a full-length rail along the top with a small flip-up rear sight at the back and a flip-up front sight at the front; a T-shaped charging handle at the very back of the top; a pistol grip set well back, raked slightly, with a long straight magazine inserted through it and sticking out a good way below the grip; a large squared trigger guard; a vertical front grip hinged under the front of the receiver, folded down; a telescoping stock of two thin parallel rods with a small flat butt plate, pulled out to full length behind the receiver. Materials: olive-grey polymer and dark steel, anonymous and mass-produced. Maker's touch: none, no colour accent.
+At 32 px: a short tall box with a long magazine dropping out of the grip, a front grip hanging under it and two thin rods behind; nothing lies on top of it.
 ```
 
 ### 1.7 `mandestra_drum_gun`: Mandestra drum-gun
@@ -131,8 +131,8 @@ At 32 px: a round drum, a vertical front grip and a finned barrel.
 - **Attach:** `art/icons/gear/weapon-long_rifle.png` (the current picture: scale and palette)
 
 ```
-A modern bolt-action sniper rifle in a precision chassis. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: an aluminium-and-polymer chassis with a thumbhole stock and an adjustable raised cheek piece; a heavy fluted barrel with a muzzle brake; a large tactical scope in two rings; a bolt handle on the right; a short detachable box magazine; a bipod folded under the fore-end. Materials: neutral matte grey-green and black, scuffed. Maker's touch: none, neutral matte.
-At 32 px: a long heavy rifle with a big scope and a thumbhole stock.
+The classic military and police bolt-action precision rifle in a one-piece synthetic stock. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a one-piece synthetic stock with a straight comb, a near-vertical pistol grip, a deep wide fore-end and a thick rubber butt pad; a round cylindrical receiver with a turned-down bolt handle and a round knob on the right; a hinged floorplate flush under the stock, nothing hanging below; a long heavy round barrel, plain to a flat crown, no muzzle brake and no iron sights; a large long scope with tall adjustment turrets in two rings; a bipod folded under the front of the fore-end. Materials: matte olive-drab stock speckled darker, black matte steel, scuffed. Maker's touch: none, neutral matte.
+At 32 px: a long heavy plain barrel, a big scope and a deep one-piece stock with no magazine showing.
 ```
 
 ### 1.9 `blackpoint_700`: .700 Blackpoint anti-materiel
@@ -161,8 +161,8 @@ At 32 px: a long thin rifle with an open skeleton stock and a scope.
 - **Attach:** `art/icons/gear/weapon-adamantile_battle_rifle.png` (the current picture: scale, the gilt and the brass-orange accent)
 
 ```
-A full-power metric battle rifle with a carry handle. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a carry handle folded down over the receiver; a tall front sight on the barrel; a straight 20-round box magazine; a folding cocking handle on the left near the front; a slim ventilated handguard; a long flash hider; a separate pistol grip; a fixed stock. Materials: dark steel and black furniture. Maker's touch: one small gilt crest at the heel of the stock and a thin brass-orange (#F68A38) trim line; no plates.
-At 32 px: a straight battle rifle with a carry handle, a tall front sight and a straight magazine.
+The tilting-breechblock metric battle rifle with the long slotted flash hider, the right arm of half the world's armies. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a long slim receiver whose top cover tapers down at the back to a rear peep sight; a small folding cocking handle on the left side of the receiver, toward its front; a straight 20-round box magazine with a slight forward lean, set ahead of the trigger guard; a separate, steeply raked pistol grip; a slim handguard flaring wider at the back, with ventilation slots along it; a tall front sight post with two protective ears near the muzzle; a long slotted flash hider; a fixed stock in line with the receiver with a ribbed butt plate. No carry handle. Materials: dark steel and black furniture. Maker's touch: one small gilt crest at the heel of the stock and a thin brass-orange (#F68A38) trim line; no plates.
+At 32 px: a long straight rifle with a straight magazine, a tall eared front sight and a long slotted flash hider.
 ```
 
 ### 1.12 `hellraiser_lmg`: Hellraiser LMG
@@ -223,26 +223,6 @@ At 32 px: a fat tube with a flared rear, two grips and a side sight.
 ```
 A big double-action magnum revolver, the detective's hand cannon. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width. Silhouette, kept exactly: a long barrel with a full-length underlug beneath it and a vented top rib; a large fluted six-chamber cylinder; an adjustable rear sight; an exposed hammer; a rubber-wrapped grip with finger grooves. Materials: dark polished steel, black rubber grip. Maker's touch: aged brass bands round the cylinder.
 At 32 px: a long heavy barrel with a deep underlug and a big cylinder.
-```
-
-### 1.18 `legion_bullpup`: Legion bullpup
-
-- **Save as:** `art/icons/gear/weapon-legion_bullpup.png` (replaces the current picture)
-- **Attach:** `art/icons/gear/weapon-legion_bullpup.png` (the current picture: scale, palette, the olive-grey)
-
-```
-The bullpup assault rifle with the long carry handle running over the whole body. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a bullpup body with the action and the magazine behind the pistol grip; a long carry handle running from just behind the muzzle to above the butt, the rear sight inside it at the back and the front sight inside it at the front; the cocking handle under the carry handle, at the front; a short straight magazine set behind the grip; a long trigger guard that runs the length of the grip; a ribbed polymer fore-end; two thin bipod legs folded flat along the sides of the fore-end; a short barrel with a ringed flash hider; a flat butt with a rubber pad. Materials: anonymous olive-grey polymer and bare steel, scuffed from issue. Maker's touch: one pale stripe painted round the butt.
-At 32 px: a short rifle that is all handle on top, the magazine behind the grip.
-```
-
-### 1.19 `whisper_smg`: Whisper SMG
-
-- **Save as:** `art/icons/gear/weapon-whisper_smg.png` (replaces the current picture)
-- **Attach:** `art/icons/gear/weapon-whisper_smg.png` (the current picture: scale, the matte black and the blue-grey plate)
-
-```
-The integrally suppressed roller-delayed submachine gun. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width. Silhouette, kept exactly: a stamped steel receiver with a cocking tube running forward over the barrel and the cocking handle angled up at its front left; a fat smooth suppressor forming the whole front of the gun, one even tube from the front of the receiver to the muzzle; a curved box magazine just ahead of the trigger group; a pistol grip with a selector above it; a drum-style rear sight on top at the back; a retractable stock of two steel struts and a small rubber butt pad, extended. Materials: matte black metal, dull and non-reflective, only the faintest grey edge highlights. Maker's touch: one small dark steel-blue (#5394AC) plate on the side of the stock struts, blank.
-At 32 px: a short stamped body with a curved magazine and a fat smooth tube for a front half.
 ```
 
 ---

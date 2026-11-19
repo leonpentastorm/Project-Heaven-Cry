@@ -133,7 +133,7 @@ Avoid: a heart or HP bar, a skull, a halo or wings, lying flat on the ground, bl
 
 ```
 Wick tilted forward, his screen face turned toward a partial stranger on the right (a head in three-quarter view and a shoulder, cut by the frame), one short bright line from Wick's face to a single small detail on the stranger: the stranger's hand, which is clenched, with two tiny tick marks at the knuckles. Everything else about the stranger stays plain. A small open bracket round that one hand highlights it.
-Avoid: a magnifying glass, a detective hat, a lie-detector graph, a cartoon eyeball, a question mark, a speech bubble.
+Avoid: a magnifying glass, a detective hat, a lie-detector graph, a cartoon eyeball, a ? glyph, a speech bubble.
 ```
 
 ## 10. `tremor`: Tremor
