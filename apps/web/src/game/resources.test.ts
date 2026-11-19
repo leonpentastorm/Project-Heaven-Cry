@@ -200,7 +200,7 @@ describe('companions, the narrow bars and the template view', () => {
     const v = resView(rows);
     expect(v.urgent).toHaveLength(3);
     const a = v.rows.find((r) => r.key === 'ammo')!;
-    expect(a.labelStyle).toMatch(/font-size: 13px/);
+    expect(a.labelStyle).toMatch(/font-size: var\(--fs-sub\)/);
     expect(a.valueStyle).toMatch(/font-size: 15px/);
     expect(a.warnStyle).toMatch(/background: #F65157/);
     const f = v.rows.find((r) => r.key === 'flux')!;

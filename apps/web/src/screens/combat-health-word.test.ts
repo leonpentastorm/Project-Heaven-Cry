@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 // The health word on the fight screen (rules 1.55 item 29): a token draws the engine's healthView, nothing of its own.
 // (The setup is combat-screen.test.ts's: a real room, a real fight, the screen rendered with its template.)
+import { fontPx } from '../game/typeScale';
 import { describe, expect, it, vi } from 'vitest';
 import { ARCHETYPES, apply, newGame, viewFor, healthView, type GameState, type Sheet } from '@engine';
 
@@ -52,7 +53,7 @@ describe("an un-Analyzed foe shows the engine's word, not a bar (rules 1.55 item
     for (const hp of [97, 54, 11]) {
       await set(hp); const t = tok(), w = t.querySelector('[data-health-look]') as HTMLElement;
       expect(w, 'the word chip').toBeTruthy(); expect(t.querySelector('.phc-hp-fill'), 'no bar').toBeNull();
-      expect(w.textContent).toBe(healthView(foe()).word.toUpperCase()); expect(parseFloat(w.style.fontSize)).toBeGreaterThanOrEqual(13);
+      expect(w.textContent).toBe(healthView(foe()).word.toUpperCase()); expect(fontPx(w.style.fontSize)).toBeGreaterThanOrEqual(13);
       got.push(w.textContent || '');
     }
     expect(got).toEqual(['HURT', 'BADLY HURT', 'NEAR DEATH']);

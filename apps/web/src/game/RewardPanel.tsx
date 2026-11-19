@@ -13,7 +13,7 @@ import { Offer, Choices } from './rewardCards';
 import type { RewardPanelV } from './rewardPanelView';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', white: '#FFFFFF' };
-const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
+const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
 const W = () => survivalRun.reward_panel;
 
 /** The middle column's visible box (the play screen's centre slot), clipped to the window: what the panel covers. */
@@ -42,7 +42,7 @@ function Fold({ id, title, children }: { id: string; title: string; children: Re
     <section data-phc-reward-fold={id} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       <button type="button" aria-expanded={folded ? 'false' : 'true'} onClick={() => { setFolded(id, !folded); redraw(); }}
         style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%', minHeight: 26, padding: 0, border: 0, background: 'transparent', color: 'inherit', fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
-        <span aria-hidden="true" style={{ flex: 'none', width: 12, fontSize: 11, color: ink.muted }}>{folded ? '▸' : '▾'}</span>
+        <span aria-hidden="true" style={{ flex: 'none', width: 12, fontSize: 'var(--fs-sub)', color: ink.muted }}>{folded ? '▸' : '▾'}</span>
         <span style={kick}>{title}</span>
       </button>
       {folded ? null : children}
@@ -60,25 +60,25 @@ function Pay({ p }: { p: RewardPanelV['pay'][number] }) {
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: '6px 22px' }}>
         <span style={{ ...cell, minWidth: 0 }}>
           <span style={{ ...kick, color: ink.text }}>{p.name.toUpperCase()}</span>
-          <span style={{ fontSize: 13, color: ink.muted }}>LEVEL {p.level}</span>
+          <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>LEVEL {p.level}</span>
         </span>
         <span style={cell}>
           <span style={kick}>{W().xp}</span>
           <span><b data-phc-reward-xp={p.xp ?? ''} style={{ ...big, color: p.xp ? ink.ok : ink.muted }}>{p.xp ? '+' + p.xp : '–'}</b>{' '}
-            <span data-phc-reward-xp-total={p.xpTotal} style={{ fontSize: 13, color: ink.muted }}>{W().xp_total.replace('{xp}', String(p.xpTotal))}</span></span>
+            <span data-phc-reward-xp-total={p.xpTotal} style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>{W().xp_total.replace('{xp}', String(p.xpTotal))}</span></span>
         </span>
         <span style={cell}>
           <span style={kick}>{W().credits.toUpperCase()}</span>
           <span><b data-phc-reward-credits={p.credits ?? ''} style={{ ...big, color: p.credits ? ink.ok : ink.muted }}>{p.credits ? '+' + p.credits : '–'}</b>{' '}
-            <span data-phc-reward-credits-total={p.creditsTotal} style={{ fontSize: 13, color: ink.muted }}>{W().credits_total.replace('{credits}', String(p.creditsTotal))}</span></span>
+            <span data-phc-reward-credits-total={p.creditsTotal} style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>{W().credits_total.replace('{credits}', String(p.creditsTotal))}</span></span>
         </span>
         {p.supply.length ? <span style={{ ...cell, flex: 1, minWidth: 160 }}>
           <span style={kick}>{W().supply.toUpperCase()}</span>
-          <span data-phc-reward-supply="" style={{ fontSize: 14, lineHeight: 1.4 }}>{p.supply.join(', ')}</span>
+          <span data-phc-reward-supply="" style={{ fontSize: 'var(--fs-body)', lineHeight: 1.4 }}>{p.supply.join(', ')}</span>
         </span> : null}
       </div>
-      {p.back ? <span data-phc-reward-back="" style={{ fontSize: 13, color: ink.ok }}>{'✓ '}{W().back}</span> : null}
-      {p.levelUp ? <span data-phc-reward-levelup="" style={{ fontSize: 14, fontWeight: 700, color: ink.white }}>{'▲ '}{W().level_up}</span> : null}
+      {p.back ? <span data-phc-reward-back="" style={{ fontSize: 'var(--fs-sub)', color: ink.ok }}>{'✓ '}{W().back}</span> : null}
+      {p.levelUp ? <span data-phc-reward-levelup="" style={{ fontSize: 'var(--fs-body)', fontWeight: 700, color: ink.white }}>{'▲ '}{W().level_up}</span> : null}
     </div>
   );
 }
@@ -96,9 +96,9 @@ export function RewardPanel({ p, onClose }: { p: RewardPanelV; onClose: () => vo
             <span data-phc-reward-kicker="" style={kick}>{p.kicker.toUpperCase()}</span>
             <span style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '0 12px' }}>
               <span style={{ fontFamily: "'Spectral', serif", fontSize: 26, fontWeight: 600, lineHeight: 1.15 }}>{W().title}</span>
-              {p.title && p.title !== W().title ? <span data-phc-reward-title="" style={{ fontSize: 14, color: ink.muted }}>{p.title}</span> : null}
+              {p.title && p.title !== W().title ? <span data-phc-reward-title="" style={{ fontSize: 'var(--fs-body)', color: ink.muted }}>{p.title}</span> : null}
             </span>
-            {p.still ? <span data-phc-reward-still="" style={{ fontSize: 14, color: ink.white }}>{p.still}</span> : null}
+            {p.still ? <span data-phc-reward-still="" style={{ fontSize: 'var(--fs-body)', color: ink.white }}>{p.still}</span> : null}
           </div>
           <button type="button" data-phc-reward-close="" aria-label={W().close} onClick={onClose}
             style={{ flex: 'none', width: 40, height: 40, borderRadius: 10, border: '1px solid ' + ink.line, background: 'transparent', color: ink.text, fontSize: 20, fontFamily: 'inherit', cursor: 'pointer' }}>{'✕'}</button>

@@ -86,12 +86,12 @@ export function leaveProvingGround(ask = true) {
 // ---------- look ----------
 const C = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', red: '#F65157', ok: '#6FEA77', white: '#FFFFFF', mp: '#5C9EFF', mind: '#4FC8DF', soul: '#AE9BFF', body: '#F2A54A' };
 const UI = "'Chakra Petch', sans-serif";
-const btn: React.CSSProperties = { minHeight: 34, padding: '0 12px', borderRadius: 8, border: '1px solid ' + C.line, background: C.raised, color: C.text, fontFamily: UI, fontSize: 13, fontWeight: 600, cursor: 'pointer' };
+const btn: React.CSSProperties = { minHeight: 34, padding: '0 12px', borderRadius: 8, border: '1px solid ' + C.line, background: C.raised, color: C.text, fontFamily: UI, fontSize: 'var(--fs-sub)', fontWeight: 600, cursor: 'pointer' };
 const primary: React.CSSProperties = { ...btn, border: 0, background: C.text, color: C.ground };
-const field: React.CSSProperties = { minHeight: 34, padding: '0 8px', borderRadius: 8, border: '1px solid #2E3A50', background: C.ground, color: C.text, fontFamily: UI, fontSize: 13, minWidth: 0 };
-const label: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: C.muted };
+const field: React.CSSProperties = { minHeight: 34, padding: '0 8px', borderRadius: 8, border: '1px solid #2E3A50', background: C.ground, color: C.text, fontFamily: UI, fontSize: 'var(--fs-sub)', minWidth: 0 };
+const label: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: C.muted };
 const row: React.CSSProperties = { display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' };
-const small: React.CSSProperties = { ...btn, minHeight: 28, padding: '0 9px', fontSize: 13 };
+const small: React.CSSProperties = { ...btn, minHeight: 28, padding: '0 9px', fontSize: 'var(--fs-sub)' };
 const CSS = `
 @keyframes phcSbSlash{0%{transform:translateX(-110%) skewX(-18deg);opacity:0}18%{transform:translateX(0) skewX(-18deg);opacity:1}82%{transform:translateX(0) skewX(-18deg);opacity:1}100%{transform:translateX(110%) skewX(-18deg);opacity:0}}
 @keyframes phcSbText{0%{letter-spacing:.9em;opacity:0}22%{letter-spacing:.32em;opacity:1}80%{opacity:1}100%{opacity:0}}
@@ -175,11 +175,11 @@ export function SandboxPanel({ game, meId, isHost, screen }: { game: GameState |
     {here && inviteShown && <InviteCard game={game!} />}
     {here && !open && <button type="button" className="phc-sb-tab" onClick={() => { setOpen(true); sfx('slide'); }} aria-label="Open the Proving Ground tools"
       style={{ position: 'fixed', right: 0, top: '38%', zIndex: 46, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '12px 8px', borderRadius: '10px 0 0 10px', border: '1px solid ' + C.line, borderRight: 0, background: C.panel, color: C.text, fontFamily: UI, cursor: 'pointer', boxShadow: '0 6px 24px rgba(0,0,0,.5)' }}>
-      <span style={{ fontSize: 13, letterSpacing: '0.2em', color: C.muted }}>WAVE</span>
+      <span style={{ fontSize: 'var(--fs-sub)', letterSpacing: '0.2em', color: C.muted }}>WAVE</span>
       <span style={{ fontSize: 24, fontWeight: 700, lineHeight: 1 }}>{gearing ? sandboxNext(sb!) : sb!.wave}</span>
-      <span style={{ fontSize: 13, color: C.muted }}>best {sb!.best}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>best {sb!.best}</span>
       <span aria-hidden="true" style={{ fontSize: 18, marginTop: 4 }}>⚙</span>
-      <span style={{ fontSize: 13, letterSpacing: '0.16em', writingMode: 'vertical-rl' }}>{gearing ? 'GEAR UP' : 'TOOLS'}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', letterSpacing: '0.16em', writingMode: 'vertical-rl' }}>{gearing ? 'GEAR UP' : 'TOOLS'}</span>
     </button>}
     {drawer.shown && game?.sandbox && <Drawer game={game} meId={meId} isHost={isHost} screen={screen} closing={drawer.closing} close={() => { setOpen(false); sfx('slide_back'); }} {...shared} />}
     {centreOn && <Portal at="[data-phc-sb-centre]"><CentreView game={game!} meId={meId} isHost={isHost} close={() => { setOpen(false); sfx('slide_back'); }} {...shared} /></Portal>}
@@ -208,7 +208,7 @@ function WaveBanner({ game }: { game: GameState }) {
     <div className="phc-sb-slash" style={{ position: 'absolute', inset: '18px -10%', background: C.ground, borderTop: '3px solid ' + (boss ? C.red : C.white), borderBottom: '3px solid ' + (boss ? C.red : C.white), boxShadow: '0 10px 40px rgba(0,0,0,.6)' }} />
     <div className="phc-sb-text" style={{ position: 'relative', display: 'flex', alignItems: 'baseline', gap: 18, fontFamily: UI, fontStyle: 'italic', fontWeight: 700, color: C.white }}>
       <span style={{ fontSize: 'clamp(28px, 6vw, 60px)', letterSpacing: '0.32em' }}>WAVE {shown.wave}</span>
-      <span style={{ fontSize: 14, letterSpacing: '0.24em', color: boss ? C.red : C.muted }}>{boss ? 'CHAMPION' : shown.retry ? 'AGAIN' : 'INCOMING'}</span>
+      <span style={{ fontSize: 'var(--fs-body)', letterSpacing: '0.24em', color: boss ? C.red : C.muted }}>{boss ? 'CHAMPION' : shown.retry ? 'AGAIN' : 'INCOMING'}</span>
     </div>
   </div>;
 }
@@ -242,9 +242,9 @@ function WaveEnd({ game, isHost }: { game: GameState; isHost: boolean }) {
   return <div role="dialog" aria-modal="true" aria-label={won ? 'Wave cleared' : 'The squad fell'} className={presenceCls('phc-a-fade', p.closing)}
     style={{ position: 'fixed', inset: 0, zIndex: 48, display: 'grid', placeItems: 'center', padding: 16, background: 'rgba(5, 7, 11, 0.82)' }}>
     <div className={presenceCls('phc-a-pop', p.closing)} style={{ width: 'min(540px, 100%)', display: 'flex', flexDirection: 'column', gap: 14, padding: 24, borderRadius: 16, background: C.panel, border: '1px solid ' + C.line, borderTop: '4px solid ' + (won ? C.ok : C.red), fontFamily: UI, color: C.text }}>
-      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.22em', color: won ? C.ok : C.red }}>{won ? '✓ WAVE CLEARED' : '✕ THE SQUAD IS DOWN'}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.22em', color: won ? C.ok : C.red }}>{won ? '✓ WAVE CLEARED' : '✕ THE SQUAD IS DOWN'}</span>
       <span style={{ fontFamily: "'Spectral', serif", fontSize: 30, fontWeight: 600 }}>Wave {sb.wave}{won ? ' cleared' : ''}</span>
-      <span style={{ fontSize: 14, lineHeight: 1.5, color: '#C9D3E3' }}>
+      <span style={{ fontSize: 'var(--fs-body)', lineHeight: 1.5, color: '#C9D3E3' }}>
         {won ? 'The squad carries its HP, ammo and magic into the next wave. Gear up first to change weapons, refill or learn magic.' : 'Nothing is lost here: everyone is back up and refilled. Retry the wave now, or gear up first.'} Best so far: wave {sb.best}.
       </span>
       {won ? <div style={row}>
@@ -255,7 +255,7 @@ function WaveEnd({ game, isHost }: { game: GameState; isHost: boolean }) {
         {(isHost || sb.guestRetry !== false) && <button type="button" data-sfx="start" style={{ ...primary, minHeight: 46, flex: 1 }} onClick={() => act({ type: 'sandbox/retry' })}>↻ Retry wave {sb.wave}</button>}
         {gearUp}
         {(isHost || sb.guestRetry !== false) && <button type="button" style={{ ...btn, minHeight: 46 }} onClick={() => act({ type: 'sandbox/retry', restart: true })}>Restart from wave 1</button>}
-        {!isHost && sb.guestRetry === false && <span style={{ fontSize: 13, color: C.muted, alignSelf: 'center' }}>The host retries the wave.</span>}
+        {!isHost && sb.guestRetry === false && <span style={{ fontSize: 'var(--fs-sub)', color: C.muted, alignSelf: 'center' }}>The host retries the wave.</span>}
       </div>}
       {isHost && <button type="button" style={{ ...btn, alignSelf: 'flex-start', color: C.muted }} onClick={() => leaveProvingGround()}>Leave the Proving Ground</button>}
     </div>
@@ -328,7 +328,7 @@ function Drawer({ game, meId, isHost, screen, closing, close, ...shared }: { gam
     <header style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '14px 16px', borderBottom: '1px solid ' + C.line }}>
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
         <span style={label}>THE PROVING GROUND · {game.players.length} PLAYER{game.players.length === 1 ? '' : 'S'}{sb.mode === 'teams' ? ' · TEAM FIGHT' : ''}</span>
-        <span style={{ fontSize: 18, fontWeight: 700 }}>Wave {gearing ? sandboxNext(sb) : sb.wave} <span style={{ fontSize: 13, color: C.muted, fontWeight: 600 }}>· best {sb.best} · {status}</span></span>
+        <span style={{ fontSize: 18, fontWeight: 700 }}>Wave {gearing ? sandboxNext(sb) : sb.wave} <span style={{ fontSize: 'var(--fs-sub)', color: C.muted, fontWeight: 600 }}>· best {sb.best} · {status}</span></span>
       </div>
       <button type="button" style={{ ...btn, color: C.muted }} onClick={() => leaveProvingGround()} {...tipProps(!isHost ? 'Leave the Proving Ground: your fighter goes, you go to the title' : sb.standalone ? 'Close the Proving Ground for everyone' : 'Back to the room, as it was before')}>Leave</button>
       <button type="button" style={btn} onClick={close} aria-label="Close the tools" {...tipProps("Hide the tools (the tab on the right brings them back)")}>✕</button>
@@ -355,11 +355,11 @@ function CentreView({ game, meId, isHost, close, ...shared }: { game: GameState;
         : <div aria-hidden="true" className="phc-pg-grid" style={{ minHeight: 96, backgroundColor: '#0D1119', backgroundImage: 'linear-gradient(#161D2B 1px, transparent 1px), linear-gradient(90deg, #161D2B 1px, transparent 1px)', backgroundSize: '24px 24px' }} />}
       <figcaption style={{ padding: '16px 22px', background: 'rgba(10, 13, 19, 0.82)', display: 'flex', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
         <span style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: '1 1 260px', minWidth: 0 }}>
-          <span style={{ fontSize: 13, letterSpacing: '0.24em', color: C.muted }}>THE PROVING GROUND · {game.players.length} PLAYER{game.players.length === 1 ? '' : 'S'}{sb.mode === 'teams' ? ' · TEAM FIGHT' : ''}</span>
+          <span style={{ fontSize: 'var(--fs-sub)', letterSpacing: '0.24em', color: C.muted }}>THE PROVING GROUND · {game.players.length} PLAYER{game.players.length === 1 ? '' : 'S'}{sb.mode === 'teams' ? ' · TEAM FIGHT' : ''}</span>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 'clamp(22px, 2.1vw, 30px)', fontWeight: 600, lineHeight: 1.15 }}>Practice fights · no Narrator</span>
         </span>
         <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-          <span style={{ fontSize: 13, fontWeight: 700 }}>WAVE {sandboxNext(sb)} <span style={{ color: C.muted, fontWeight: 600 }}>· best {sb.best} · {status}</span></span>
+          <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700 }}>WAVE {sandboxNext(sb)} <span style={{ color: C.muted, fontWeight: 600 }}>· best {sb.best} · {status}</span></span>
           <span style={row}>
             <button type="button" style={{ ...btn, color: C.muted }} onClick={() => leaveProvingGround()} {...tipProps(!isHost ? 'Leave the Proving Ground: your fighter goes, you go to the title' : sb.standalone ? 'Close the Proving Ground for everyone' : 'Back to the room, as it was before')}>Leave</button>
             <button type="button" style={btn} onClick={close} aria-label="Close the tools and show the story log" {...tipProps("Close the tools and show the story log (the tab on the right brings the tools back)")}>Story log ›</button>
@@ -370,7 +370,7 @@ function CentreView({ game, meId, isHost, close, ...shared }: { game: GameState;
     <FightBar game={game} isHost={isHost} meId={meId} wide />
     <div role="search" style={{ ...row, flexWrap: 'nowrap' }}>
       <input type="search" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => { if (e.key === 'Escape') setQ(''); }} aria-label="Search the tools"
-        placeholder="Search every tool: a weapon, a perk, spawn, waves, mana…" style={{ ...field, flex: 1, minHeight: 40, fontSize: 14 }} />
+        placeholder="Search every tool: a weapon, a perk, spawn, waves, mana…" style={{ ...field, flex: 1, minHeight: 40, fontSize: 'var(--fs-body)' }} />
       {q && <button type="button" style={btn} onClick={() => setQ('')}>Clear</button>}
     </div>
     {/* The search results sit above the tools, which stay mounted (hidden) under a search: an armed spawn or place, the
@@ -382,7 +382,7 @@ function CentreView({ game, meId, isHost, close, ...shared }: { game: GameState;
         <span style={{ ...label, color: C.text }}>{name.toUpperCase()}{id !== 'field' && id !== 'world' && c ? ' · ' + c.name.toUpperCase() : ''}</span>
         <WideCtx.Provider value={{ wide: true, q, tab: id }}><div className="phc-pg-cols"><TabTools game={game} meId={meId} isHost={isHost} tab={id} c={c} field={canField} /></div></WideCtx.Provider>
       </div>)}
-      <span className="phc-pg-none" style={{ fontSize: 13, color: C.muted }}>Nothing matches "{q}". Try a weapon or item name, a tab (Gear, Squad, Magic, Faith, Field, World) or a word like spawn, perk, wave, mana.</span>
+      <span className="phc-pg-none" style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Nothing matches "{q}". Try a weapon or item name, a tab (Gear, Squad, Magic, Faith, Field, World) or a word like spawn, perk, wave, mana.</span>
     </div>}
     <div data-pg-tools="" style={{ display: q ? 'none' : 'contents' }}><ToolBody game={game} meId={meId} isHost={isHost} wide {...shared} /></div>
   </aside>;
@@ -397,7 +397,7 @@ function FightBar({ game, isHost, meId, wide }: { game: GameState; isHost: boole
   const [hint, setHint] = React.useState(() => { try { return localStorage.getItem(HINT) !== '1'; } catch { return true; } });
   const hide = () => { setHint(false); try { localStorage.setItem(HINT, '1'); } catch { /* */ } };
   if (!gearing) return <div style={{ ...row, padding: '10px 16px', borderBottom: '1px solid ' + C.line }}>
-    <span style={{ flex: 1, fontSize: 13, color: C.muted }}>{sb.fx ? 'Effect testing: the dummy can\'t die and never acts, and your AP comes back after every action. Stop the fight to leave.' : 'Wave ' + sb.wave + (sb.attempt > 1 ? ' · attempt ' + sb.attempt : '') + ' is on. Gear changes here work mid-fight too.'}</span>
+    <span style={{ flex: 1, fontSize: 'var(--fs-sub)', color: C.muted }}>{sb.fx ? 'Effect testing: the dummy can\'t die and never acts, and your AP comes back after every action. Stop the fight to leave.' : 'Wave ' + sb.wave + (sb.attempt > 1 ? ' · attempt ' + sb.attempt : '') + ' is on. Gear changes here work mid-fight too.'}</span>
     {isHost && <button type="button" style={btn} onClick={() => act({ type: 'sandbox/stop' })} {...tipProps("End the fight now and go back to gearing up; the enemies stay where they stand")}>■ Stop the fight</button>}
   </div>;
   return <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: wide ? 0 : '12px 16px', borderBottom: wide ? 0 : '1px solid ' + C.line }}>
@@ -405,7 +405,7 @@ function FightBar({ game, isHost, meId, wide }: { game: GameState; isHost: boole
     {!wide && hint && <HintNote hide={hide} />}
     {multi && <div style={row}>
       {mine && <ReadyButton on={meReady} />}
-      <span aria-label="Ready count" style={{ fontSize: 13, fontWeight: 700, color: r.ready === r.of && r.of ? C.ok : C.muted }}>{r.ready === r.of && r.of ? '✓ ' : '○ '}{r.ready} / {r.of} ready</span>
+      <span aria-label="Ready count" style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, color: r.ready === r.of && r.of ? C.ok : C.muted }}>{r.ready === r.of && r.of ? '✓ ' : '○ '}{r.ready} / {r.of} ready</span>
     </div>}
     {/* In the centre the wave buttons sit beside Start (the tools need the height); in the drawer, under it. */}
     <div style={wide ? { ...row, flexWrap: 'wrap', alignItems: 'stretch' } : { display: 'contents' }}>
@@ -426,18 +426,18 @@ function FightBar({ game, isHost, meId, wide }: { game: GameState; isHost: boole
 function WaveLines({ game }: { game: GameState }) {
   const sb = game.sandbox!, n = sandboxNext(sb);
   return <>
-    {sb.state === 'cleared' && <span style={{ fontSize: 13, fontWeight: 700, color: C.ok }}>✓ Wave {sb.wave} cleared. Next: wave {n}.</span>}
-    {sb.state === 'fallen' && <span style={{ fontSize: 13, fontWeight: 700, color: C.red }}>✕ The squad fell on wave {sb.wave}. Everyone is back up and refilled.</span>}
+    {sb.state === 'cleared' && <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, color: C.ok }}>✓ Wave {sb.wave} cleared. Next: wave {n}.</span>}
+    {sb.state === 'fallen' && <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, color: C.red }}>✕ The squad fell on wave {sb.wave}. Everyone is back up and refilled.</span>}
   </>;
 }
 const HintNote = ({ hide, compact }: { hide: () => void; compact?: boolean }) => <div role="note" data-sb-hint="1" style={{ display: 'flex', gap: 8, alignItems: 'flex-start', padding: compact ? '6px 10px' : '10px 12px', borderRadius: 10, border: '1px solid ' + C.white, background: '#0D1119' }}>
-  <span style={{ flex: 1, fontSize: 13, lineHeight: 1.4 }}><b>Gear up here, then click the map to start a fight.</b> <span style={{ color: '#C9D3E3' }}>Click a drill unit on the map, attack one from the Area map, or press Start the fight. Gear is the first tab; the Magic kit gives you everything to cast at once.</span></span>
+  <span style={{ flex: 1, fontSize: 'var(--fs-sub)', lineHeight: 1.4 }}><b>Gear up here, then click the map to start a fight.</b> <span style={{ color: '#C9D3E3' }}>Click a drill unit on the map, attack one from the Area map, or press Start the fight. Gear is the first tab; the Magic kit gives you everything to cast at once.</span></span>
   <button type="button" style={{ ...small, minHeight: 26 }} aria-label="Hide the hint" onClick={hide}>✕</button>
 </div>;
-const TeamLine = () => <span style={{ fontSize: 13, color: C.muted }}>Team fight: no drill units. Pick a team on the Squad tab. Team A starts on the left, Team B on the right; Downed is out; the last team standing wins.</span>;
+const TeamLine = () => <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Team fight: no drill units. Pick a team on the Squad tab. Team A starts on the left, Team B on the right; Downed is out; the last team standing wins.</span>;
 function EmptyLine({ game }: { game: GameState }) {
   const sb = game.sandbox!, n = sandboxNext(sb), party = Math.max(1, sandboxReady(game).of), k = sandboxWave(n, party).length;
-  return <span style={{ fontSize: 13, color: C.muted, flex: 1 }}>The map is empty: wave {n} ({k} drill unit{k === 1 ? '' : 's'}) comes in when the fight starts.</span>;
+  return <span style={{ fontSize: 'var(--fs-sub)', color: C.muted, flex: 1 }}>The map is empty: wave {n} ({k} drill unit{k === 1 ? '' : 's'}) comes in when the fight starts.</span>;
 }
 /** The bottom panel while gearing up (Leon: "the message popups move to the bottom panel"): the wave's outcome, the
  *  first-time hint, what the map holds, and the engine's last notes (the story column they used to fill is the tools now). */
@@ -452,7 +452,7 @@ function Dock({ game, isHost }: { game: GameState; isHost: boolean }) {
     {hint && <HintNote hide={hide} compact />}
     {teams ? <TeamLine /> : !onMap && <EmptyLine game={game} />}
     {notes.length > 0 && <div role="log" aria-label="Last tool changes" style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
-      {notes.map((e: any) => <span key={e.id} {...tipProps(e.text)} style={{ fontSize: 13, color: C.muted, lineHeight: 1.4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.text}</span>)}
+      {notes.map((e: any) => <span key={e.id} {...tipProps(e.text)} style={{ fontSize: 'var(--fs-sub)', color: C.muted, lineHeight: 1.4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.text}</span>)}
     </div>}
   </div>;
 }
@@ -480,7 +480,7 @@ function CardHead({ title, open, toggle, ink, fixed }: { title: string; open: bo
   if (fixed) return <span className="phc-pg-head" data-pg-head="1" style={{ ...label, display: 'flex', fontFamily: UI, color: ink || C.muted }}>{title}</span>;
   return <button type="button" className="phc-pg-head" data-pg-head="1" aria-expanded={open} onClick={toggle}
     style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 0, border: 0, background: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: UI, color: ink || C.muted }}>
-    <span style={{ ...label, color: 'inherit', flex: 1 }}>{title}</span><span aria-hidden="true" style={{ fontSize: 13 }}>{open ? '▾' : '▸'}</span>
+    <span style={{ ...label, color: 'inherit', flex: 1 }}>{title}</span><span aria-hidden="true" style={{ fontSize: 'var(--fs-sub)' }}>{open ? '▾' : '▸'}</span>
   </button>;
 }
 const Section = ({ title, children, aria, keys, span }: { title: string; children: React.ReactNode; aria?: string; keys?: string; span?: boolean }) => {
@@ -538,7 +538,7 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
     <Section title="FIGHTER" aria="Fighter" keys="refill hp ap ammo">
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
       {c.portrait ? <img src={c.portrait} alt="" style={{ width: 56, height: 70, objectFit: 'cover', borderRadius: 8, background: '#000' }} /> : <span style={{ width: 56, height: 70, borderRadius: 8, background: C.raised, display: 'grid', placeItems: 'center', fontWeight: 700 }}>{c.name.slice(0, 2).toUpperCase()}</span>}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 13 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 'var(--fs-sub)' }}>
         <span style={{ fontSize: 16, fontWeight: 700 }}>{c.name}</span>
         <span style={{ color: C.muted, display: 'inline-flex', alignItems: 'center', gap: 6 }}>Level {c.level} · {c.classId && <img className="phc-class-emblem" src={emblemOf(c.classId).icon} alt="" style={{ width: 16, height: 16 }} />}{c.classId ? CLASS[c.classId]?.name + ' ' + ['', 'I', 'II', 'III'][classRank(c)] : 'Classless'}</span>
         {u ? <span><span style={{ color: C.red }}>HP {u.hp}/{u.maxHp}</span> · AP {u.ap} · {WEAPON[u.weapon]?.name}{WEAPON[u.weapon]?.magazine != null ? ' ' + u.ammo + '/' + WEAPON[u.weapon].magazine : ''}{u.mg?.emanator ? <span style={{ color: C.mp }}> · MP {Math.round(u.mg.mp)}</span> : null}</span>
@@ -549,22 +549,22 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
       <button type="button" style={primary} onClick={() => act({ type: 'sandbox/refill', charId: c.id })}>Refill {c.name.split(' ')[0]}</button>
       {isHost && <button type="button" style={btn} onClick={() => act({ type: 'sandbox/refill' })}>Refill everyone</button>}
     </div>
-    <span style={{ fontSize: 13, color: C.muted }}>HP, AP (on its turn), every magazine, stims, MP, the Evoker's charge and cores, a mended weapon; no injuries.</span>
+    <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>HP, AP (on its turn), every magazine, stims, MP, the Evoker's charge and cores, a mended weapon; no injuries.</span>
     </Section>
     {isHost && <Section title="REST (THE ENGINE'S RULES, FOR EVERYONE)" aria="Rest">
       <div style={row}>{(['short', 'long'] as const).map((k) => <button key={k} type="button" data-sb-rest={k} disabled={game.phase !== 'story'} {...tipProps(game.phase !== 'story' ? 'No resting in a fight: stop the fight (or clear the wave) first.' : REST_INFO[k])}
         style={{ ...btn, opacity: game.phase !== 'story' ? 0.5 : 1 }} onClick={() => act({ type: 'rest', kind: k })}>Rest ({k})</button>)}</div>
-      <span style={{ fontSize: 13, color: C.muted }}>{game.phase !== 'story' ? 'No resting in a fight: stop the fight (or clear the wave) first.' : 'Short: ' + REST_INFO.short + '. Long: ' + REST_INFO.long + '.'}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>{game.phase !== 'story' ? 'No resting in a fight: stop the fight (or clear the wave) first.' : 'Short: ' + REST_INFO.short + '. Long: ' + REST_INFO.long + '.'}</span>
     </Section>}
-    <Section title="LEVEL (HP RECOMPUTED, FULL)"><Stepper name="level" value={c.level} min={1} max={20} set={(n) => act({ type: 'sandbox/level', charId: c.id, level: n })} /><span style={{ fontSize: 13, color: C.muted }}>{maxHp(c)} HP at this level. Unspent points from levels go to Level up.</span></Section>
+    <Section title="LEVEL (HP RECOMPUTED, FULL)"><Stepper name="level" value={c.level} min={1} max={20} set={(n) => act({ type: 'sandbox/level', charId: c.id, level: n })} /><span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>{maxHp(c)} HP at this level. Unspent points from levels go to Level up.</span></Section>
     <Section title="CLASS" keys={FIND.cls}>
       <select value={clsVal} style={field} aria-label="Class" onChange={(e) => { const v = e.target.value; act({ type: 'sandbox/class', charId: c.id, classId: v || null, rank: 1 }); }}>
         <option value="">Classless</option>
         {/* Class Roster Revision 3: the nine base classes, one per attribute; advanced classes are shelved (being rebuilt). */}
         {sandboxClassOptions().map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
       </select>
-      {c.classId && <div style={row}><span style={{ fontSize: 13, color: C.muted }}>Rank</span>{[1, 2, 3].map((r) => <button key={r} type="button" aria-pressed={classRank(c) === r} style={{ ...btn, border: '1px solid ' + (classRank(c) === r ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/class', charId: c.id, classId: c.classId, rank: r })}>{['', 'I', 'II', 'III'][r]}</button>)}</div>}
-      <span style={{ fontSize: 13, color: C.muted }}>{sandboxClassHelp(c)}</span>
+      {c.classId && <div style={row}><span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Rank</span>{[1, 2, 3].map((r) => <button key={r} type="button" aria-pressed={classRank(c) === r} style={{ ...btn, border: '1px solid ' + (classRank(c) === r ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/class', charId: c.id, classId: c.classId, rank: r })}>{['', 'I', 'II', 'III'][r]}</button>)}</div>}
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>{sandboxClassHelp(c)}</span>
     </Section>
     <Section title="SKILL POINTS (ATTRIBUTE AND CORE FOLLOW)" keys={FIND.skills}>
       <div style={row}>
@@ -580,9 +580,9 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
       <div role="list" aria-label="Every skill" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 4 }}>
         {SKILLS.map((s) => { const v = c.skills[s.id] || 0, full = v >= 10;
           return <div key={s.id} role="listitem" style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '2px 4px', borderRadius: 6, border: '1px solid ' + C.line }}>
-            <span style={{ flex: 1, minWidth: 0, fontSize: 13, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} {...tipProps(s.name)}>{s.name}</span>
-            <span style={{ fontSize: 13, fontWeight: 700, color: full ? '#6FEA77' : C.muted, minWidth: 18, textAlign: 'right' }}>{v}</span>
-            <button type="button" data-sb-skill-max={s.id} disabled={full} aria-label={'Max ' + s.name} {...tipProps(full ? s.name + ' is Mastered' : s.name + ' to 10 (Mastered)')} style={{ ...btn, minHeight: 24, padding: '0 6px', fontSize: 13, opacity: full ? 0.4 : 1 }} onClick={() => act({ type: 'sandbox/skill', charId: c.id, skill: s.id, points: 10 })}>{full ? '✓' : 'Max'}</button>
+            <span style={{ flex: 1, minWidth: 0, fontSize: 'var(--fs-sub)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} {...tipProps(s.name)}>{s.name}</span>
+            <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, color: full ? '#6FEA77' : C.muted, minWidth: 18, textAlign: 'right' }}>{v}</span>
+            <button type="button" data-sb-skill-max={s.id} disabled={full} aria-label={'Max ' + s.name} {...tipProps(full ? s.name + ' is Mastered' : s.name + ' to 10 (Mastered)')} style={{ ...btn, minHeight: 24, padding: '0 6px', fontSize: 'var(--fs-sub)', opacity: full ? 0.4 : 1 }} onClick={() => act({ type: 'sandbox/skill', charId: c.id, skill: s.id, points: 10 })}>{full ? '✓' : 'Max'}</button>
           </div>; })}
       </div>
     </Section>
@@ -625,7 +625,7 @@ function equipTo(it: PackIt): ['main' | 'off' | 'worn' | 'mod', string][] {
 /** An item's icon (gearIcons.ts: painted when there is one, else monoline), or nothing for an item with none. */
 export const GearIcon = ({ id, size = 24 }: { id?: string | null; size?: number }) => { const src = gearIconUri(id); return src ? <img className="phc-gear-icon" src={src} alt="" width={size} height={size} style={{ flex: 'none', width: size, height: size }} /> : null; };
 const nameCell: React.CSSProperties = { minWidth: 0, display: 'flex', alignItems: 'center', gap: 8 };
-const slotRow: React.CSSProperties = { display: 'grid', gridTemplateColumns: '84px minmax(0, 1fr) auto', gap: 8, alignItems: 'center', padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line, fontSize: 13 };
+const slotRow: React.CSSProperties = { display: 'grid', gridTemplateColumns: '84px minmax(0, 1fr) auto', gap: 8, alignItems: 'center', padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line, fontSize: 'var(--fs-sub)' };
 /** Where a focus is (spec: Hands 2, item 630: it counts only in a hand). */
 function focusNow(c: Character, k: 'evoker' | 'emanator'): string {
   const at = focusHand(c, k), n = k === 'evoker' ? 'Evoker' : 'Emanator';
@@ -641,7 +641,7 @@ function GearTab({ c }: { c: Character }) {
         <button type="button" style={{ ...small, color: C.mind, border: '1px solid ' + C.mind }} onClick={() => act({ type: 'sandbox/kit', charId: c.id, kind: 'sigil' })}>Sigils only</button>
         <button type="button" style={{ ...small, color: C.soul, border: '1px solid ' + C.soul }} onClick={() => act({ type: 'sandbox/kit', charId: c.id, kind: 'soul' })}>Outbursts only</button>
       </div>
-      <span style={{ fontSize: 13, lineHeight: 1.45, color: C.muted }}>
+      <span style={{ fontSize: 'var(--fs-sub)', lineHeight: 1.45, color: C.muted }}>
         <span style={{ color: C.mind }}>Sigils:</span> an Evoker in the off hand, 4 mana cores, {MAGIC_KIT.words.map((w) => w.toUpperCase()).join(' · ')}.{' '}
         <span style={{ color: C.soul }}>Outbursts:</span> an Emanator with full MP and two designs ({MAGIC_KIT.designs.map((d) => d.name).join(', ')}).
         {' '}Now: {focusNow(c, 'evoker')} · {focusNow(c, 'emanator')} · {(c.sigils || []).length} words · {(c.outbursts || []).length} designs.
@@ -655,17 +655,17 @@ function GearTab({ c }: { c: Character }) {
       {worn.map(([slot, id]) => <div key={slot} style={slotRow}><span style={label}>{slot.replace(/_/g, ' ').toUpperCase()}</span><span style={nameCell}><GearIcon id={id} /><b>{ITEM[id]?.name || id}</b></span>
         <button type="button" style={small} aria-label={'Unequip ' + (ITEM[id]?.name || id)} onClick={() => act({ type: 'sandbox/unequip', charId: c.id, slot })}>Unequip</button></div>)}
       {!worn.length && <div style={slotRow}><span style={label}>ARMOUR</span><span style={{ color: C.muted }}>no armour pieces worn</span><span /></div>}
-      <span style={{ fontSize: 13, color: C.muted }}>Body armour class {c.armourClass ?? 0} (set it on Squad). A weapon taken in hand here comes loaded.</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Body armour class {c.armourClass ?? 0} (set it on Squad). A weapon taken in hand here comes loaded.</span>
     </Section>
     <Section title={'PACK (' + pack.length + ')'} aria="Pack">
-      {pack.map((it, i) => <div key={i + it.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, flexWrap: 'wrap' }}>
+      {pack.map((it, i) => <div key={i + it.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-sub)', flexWrap: 'wrap' }}>
         <GearIcon id={packGearId(it)} />
         <span style={{ flex: '1 1 140px', minWidth: 0 }}>{it.name}{it.rarity && it.rarity !== 'standard' ? ' (' + it.rarity + ')' : ''}<span style={{ color: C.muted }}>{it.mags ? ' · ' + it.mags.length + ' × [' + it.mags.join(', ') + ']' : it.qty > 1 ? ' × ' + it.qty : ''}</span></span>
         {equipTo(it).map(([to, name]) => <button key={to} type="button" style={small} aria-label={name + ': ' + it.name} onClick={() => act({ type: 'sandbox/equip', charId: c.id, idx: i, to })}>{name}</button>)}
         <button type="button" style={{ ...small, color: C.muted }} aria-label={'Drop ' + it.name} onClick={() => act({ type: 'sandbox/drop', charId: c.id, idx: i })}>✕</button>
       </div>)}
-      {!pack.length && <span style={{ fontSize: 13, color: C.muted }}>Empty. Give something below.</span>}
-      <span style={{ fontSize: 13, color: C.muted }}>Stims: {c.stims} <button type="button" style={{ ...small, minHeight: 26 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: 'stim_injector', qty: 3 })}>+3</button></span>
+      {!pack.length && <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Empty. Give something below.</span>}
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Stims: {c.stims} <button type="button" style={{ ...small, minHeight: 26 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: 'stim_injector', qty: 3 })}>+3</button></span>
     </Section>
     <GivePicker c={c} />
     <ArmsTools c={c} />
@@ -694,7 +694,7 @@ function ArmsTools({ c }: { c: Character }) {
         <button type="button" style={btn} onClick={() => act({ type: 'sandbox/technique', charId: c.id, id: 'all', forget: true })}>Forget all</button>
       </div>
       {known.length > 0 && <div style={row} aria-label="Known techniques">{known.map((id) => <button key={id} type="button" {...tipProps("Forget it")} style={btn} onClick={() => act({ type: 'sandbox/technique', charId: c.id, id, forget: true })}>{phys.TECHNIQUE[id].name} ✕</button>)}</div>}
-      <span style={{ fontSize: 13, color: C.muted }}>Ready lists: melee {phys.readyTechniques(c, 'melee').length} / {phys.readyCap(c, 'melee')}, ranged {phys.readyTechniques(c, 'ranged').length} / {phys.readyCap(c, 'ranged')}. The ARMS tab on the sheet shows them.</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Ready lists: melee {phys.readyTechniques(c, 'melee').length} / {phys.readyCap(c, 'melee')}, ranged {phys.readyTechniques(c, 'ranged').length} / {phys.readyCap(c, 'ranged')}. The ARMS tab on the sheet shows them.</span>
     </Section>
     <Section title="DRILL" aria="Drill" keys={FIND.tech}>
       <div style={row}>
@@ -702,16 +702,16 @@ function ArmsTools({ c }: { c: Character }) {
         {[100, 300, 900].map((n) => <button key={n} type="button" data-sb-drill={n} style={btn} onClick={() => act({ type: 'sandbox/drill', charId: c.id, weaponId: wid, amount: n })}>+{n}</button>)}
         <button type="button" style={{ ...btn, color: C.muted }} disabled={!d} onClick={() => act({ type: 'sandbox/drill', charId: c.id, weaponId: wid, amount: -d })}>Reset</button>
       </div>
-      <span style={{ fontSize: 13, color: C.muted }}>{WEAPON[wid]?.name}: {d} drill · {marks.map((m, i) => (m.reached ? '✓ ' : '○ ') + 'mark ' + ['I', 'II', 'III'][i] + ' ' + m.at + (m.gives === 'signature' ? ' (' + (phys.TECHNIQUE[m.id!]?.name || m.id) + ')' : ' (a pick)')).join(' · ')}{phys.picksOwed(c, wid) ? ' · ' + phys.picksOwed(c, wid) + ' pick waiting: the ARMS tab' : ''}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>{WEAPON[wid]?.name}: {d} drill · {marks.map((m, i) => (m.reached ? '✓ ' : '○ ') + 'mark ' + ['I', 'II', 'III'][i] + ' ' + m.at + (m.gives === 'signature' ? ' (' + (phys.TECHNIQUE[m.id!]?.name || m.id) + ')' : ' (a pick)')).join(' · ')}{phys.picksOwed(c, wid) ? ' · ' + phys.picksOwed(c, wid) + ' pick waiting: the ARMS tab' : ''}</span>
     </Section>
     <Section title="MOMENTUM AND PRESSURE (IN A FIGHT, HOST)" aria="Meters" keys={FIND.tech}>
-      {!cb ? <span style={{ fontSize: 13, color: C.muted }}>Start a fight to set a unit's Momentum or Pressure.</span> : <>
+      {!cb ? <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Start a fight to set a unit's Momentum or Pressure.</span> : <>
         <select value={u?.id || ''} onChange={(e) => setUid(e.target.value)} aria-label="Meter unit" style={field}>{units.map((x: any) => <option key={x.id} value={x.id}>{x.name}{x.side === 'foe' ? ' (hostile)' : ''}</option>)}</select>
         {u && <div style={row}>
-          <span style={{ fontSize: 13 }}>Momentum</span><Stepper name="Momentum" value={u.res?.momentum ?? 0} min={0} max={u.resMax?.momentum ?? phys.PHYS_RULES.momentum.max} set={(n) => act({ type: 'sandbox/meter', unitId: u.id, momentum: n })} />
-          <span style={{ fontSize: 13 }}>Pressure</span><Stepper name="Pressure" value={phys.pressureOf(u)} min={0} max={phys.pressureCap(u)} set={(n) => act({ type: 'sandbox/meter', unitId: u.id, pressure: n })} />
+          <span style={{ fontSize: 'var(--fs-sub)' }}>Momentum</span><Stepper name="Momentum" value={u.res?.momentum ?? 0} min={0} max={u.resMax?.momentum ?? phys.PHYS_RULES.momentum.max} set={(n) => act({ type: 'sandbox/meter', unitId: u.id, momentum: n })} />
+          <span style={{ fontSize: 'var(--fs-sub)' }}>Pressure</span><Stepper name="Pressure" value={phys.pressureOf(u)} min={0} max={phys.pressureCap(u)} set={(n) => act({ type: 'sandbox/meter', unitId: u.id, pressure: n })} />
         </div>}
-        {pv && pv.pressure.word && <span style={{ fontSize: 13, color: C.muted }}>{pv.pressure.word}{pv.pressure.cost ? ': ' + pv.pressure.cost : ''}</span>}
+        {pv && pv.pressure.word && <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>{pv.pressure.word}{pv.pressure.cost ? ': ' + pv.pressure.cost : ''}</span>}
       </>}
     </Section>
   </>;
@@ -735,13 +735,13 @@ function GivePicker({ c }: { c: Character }) {
     <div style={w.wide ? { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 6, maxHeight: 420, overflowY: 'auto', alignContent: 'start' } : { display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 300, overflowY: 'auto' }}>
       {hits.map((x) => <div key={(x.weapon ? 'w:' : 'i:') + x.id} style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line, minWidth: 0 }}>
         <GearIcon id={x.id} size={32} />
-        <span style={{ flex: '1 1 110px', minWidth: 0, display: 'flex', flexDirection: 'column', overflowWrap: 'anywhere' }}><span style={{ fontSize: 13, fontWeight: 600 }}>{x.name}</span><span style={{ fontSize: 13, color: C.muted }}>{x.what}{x.weapon && rarity !== 'standard' ? ' · ' + rarity : ''}</span></span>
+        <span style={{ flex: '1 1 110px', minWidth: 0, display: 'flex', flexDirection: 'column', overflowWrap: 'anywhere' }}><span style={{ fontSize: 'var(--fs-sub)', fontWeight: 600 }}>{x.name}</span><span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>{x.what}{x.weapon && rarity !== 'standard' ? ' · ' + rarity : ''}</span></span>
         <button type="button" style={{ ...btn, minHeight: 30 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: x.id, rarity: x.weapon ? rarity : undefined })}>Give</button>
         {(x.weapon || /armour|mod|off hand|shield|light|focus/.test(x.what)) && <button type="button" style={{ ...primary, minHeight: 30 }} onClick={() => act({ type: 'sandbox/give', charId: c.id, item: x.id, rarity: x.weapon ? rarity : undefined, equip: true })}>Give + equip</button>}
       </div>)}
-      {!hits.length && <span style={{ fontSize: 13, color: C.muted }}>Nothing matches.</span>}
+      {!hits.length && <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Nothing matches.</span>}
     </div>
-    <span style={{ fontSize: 13, color: C.muted }}>Weapons come with three magazines and loose rounds.</span>
+    <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Weapons come with three magazines and loose rounds.</span>
   </Section>;
 }
 
@@ -766,27 +766,27 @@ function FaithTab({ game, c }: { game: GameState; c: Character }) {
         style={{ ...on(own === p.id, FAITH_INK), display: 'inline-flex', alignItems: 'center', gap: 6 }} onClick={() => F({ patron: p.id })}><img src={patronMarkUri(p.id)} alt="" style={{ width: 16, height: 16 }} />{p.name}</button>)}</div>
     </Section>
     <Section title="FAITH (THE SKILL)" aria="Faith skill">
-      <div style={row}><Stepper name="Faith" value={faith} min={0} max={10} set={(n) => F({ faith: n })} /><span style={{ fontSize: 13, color: C.muted }}>Prayer at 3 · Witnessed at 5 · Miracle at 7 (and Devotion {GATE.miracle}).</span></div>
+      <div style={row}><Stepper name="Faith" value={faith} min={0} max={10} set={(n) => F({ faith: n })} /><span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Prayer at 3 · Witnessed at 5 · Miracle at 7 (and Devotion {GATE.miracle}).</span></div>
     </Section>
     {own && <Section title={devotionWords(devotionXpOf(c)).toUpperCase()} aria="Devotion">
       <div style={row}><Stepper name="Devotion" value={dv} min={0} max={10} set={(n) => F({ devotion: n })} />
         {[GATE[1], GATE[2], GATE[3]].map((n, i) => <button key={n} type="button" style={on(dv === n, FAITH_INK)} onClick={() => F({ devotion: n })}>{'Hymn ' + ['I', 'II', 'III'][i] + ' · ' + n}</button>)}
         <button key="miracle" type="button" data-sb-faith-miracle style={on(dv === GATE.miracle, FAITH_INK)} onClick={() => F({ devotion: GATE.miracle })}>{'Miracle · ' + GATE.miracle}</button></div>
-      <span style={{ fontSize: 13, color: C.muted }}>Sets the level (Devotion XP to its threshold, rules 1.6.1).</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Sets the level (Devotion XP to its threshold, rules 1.6.1).</span>
     </Section>}
     {!own && <Section title="KNOWLEDGE PIECES (AN ATHEIST'S HYMNS, BY DICE)" aria="Pieces">
-      {FAITH_PATRONS.map((p: any) => <div key={p.id} style={{ ...row, justifyContent: 'space-between' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13 }}><img src={patronMarkUri(p.id)} alt="" style={{ width: 16, height: 16 }} />{p.name}</span>
+      {FAITH_PATRONS.map((p: any) => <div key={p.id} style={{ ...row, justifyContent: 'space-between' }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-sub)' }}><img src={patronMarkUri(p.id)} alt="" style={{ width: 16, height: 16 }} />{p.name}</span>
         <Stepper name={p.name + ' pieces'} value={pieces[p.id] || 0} min={0} max={3} set={(n) => F({ pieces: { ...pieces, [p.id]: n } })} /></div>)}
     </Section>}
     <Section title={'VOW · ' + (vow ? vow.id.replace(/_/g, ' ').toUpperCase() + ' · ' + String(vow.state).toUpperCase() : 'NONE')} aria="Vow">
-      {!u && <span style={{ fontSize: 13, color: C.muted }}>Vows are sworn in a fight: start one to set it here.</span>}
+      {!u && <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Vows are sworn in a fight: start one to set it here.</span>}
       {u && <div style={row}>{VOWS.map((v: any) => <button key={v.id} type="button" data-sb-vow={v.id} {...tipProps(v.words + ' Broken when: ' + v.broken_when)} style={{ ...on(!!vow && vow.id === v.id, FAITH_INK), display: 'inline-flex', alignItems: 'center', gap: 6 }}
         onClick={() => (v.needs_ally ? setShield(!shield) : F({ vow: v.id }))}><img src={vowIconUri(v.id)} alt="" style={{ width: 16, height: 16 }} />{v.name}</button>)}
         <button type="button" style={small} onClick={() => F({ vow: null })}>No vow</button></div>}
-      {u && shield && <div style={row}><span style={{ fontSize: 13, color: C.text }}>Shield whom?</span>{allies.length ? allies.map((a: any) => <button key={a.id} type="button" style={small} onClick={() => { F({ vow: 'shield', allyId: a.id }); setShield(false); }}>{a.name}</button>) : <span style={{ fontSize: 13, color: C.muted }}>✕ No ally in this fight.</span>}</div>}
+      {u && shield && <div style={row}><span style={{ fontSize: 'var(--fs-sub)', color: C.text }}>Shield whom?</span>{allies.length ? allies.map((a: any) => <button key={a.id} type="button" style={small} onClick={() => { F({ vow: 'shield', allyId: a.id }); setShield(false); }}>{a.name}</button>) : <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>✕ No ally in this fight.</span>}</div>}
     </Section>
     <Section title="RESET" aria="Faith reset">
-      <div style={row}><button type="button" data-sb-faith-reset style={btn} onClick={() => F({ reset: true })}>Reset the limits</button><span style={{ fontSize: 13, color: C.muted }}>The Miracle, the rites and the prayer cooldowns, as at a new session.</span></div>
+      <div style={row}><button type="button" data-sb-faith-reset style={btn} onClick={() => F({ reset: true })}>Reset the limits</button><span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>The Miracle, the rites and the prayer cooldowns, as at a new session.</span></div>
     </Section>
   </>;
 }
@@ -810,9 +810,9 @@ function MagicTab({ c, game, canField }: { c: Character; game: GameState; canFie
   const [tone, setTone] = React.useState('raw'), [shape, setShape] = React.useState(''), [school2, setSchool2] = React.useState(''), [opt, setOpt] = React.useState(''), [opt2, setOpt2] = React.useState('');
   const give = (item: string) => act({ type: 'sandbox/give', charId: c.id, item });
   const optsOf = (sc: string) => ((SCHOOL as any)[sc]?.options || []) as string[];
-  const chip = (on: boolean, ink: string = C.soul): React.CSSProperties => ({ ...btn, minHeight: 26, fontSize: 13, padding: '0 6px', border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 });
+  const chip = (on: boolean, ink: string = C.soul): React.CSSProperties => ({ ...btn, minHeight: 26, fontSize: 'var(--fs-sub)', padding: '0 6px', border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 });
   const others = MODULES.filter((m) => !isShape(m.id) && !moduleShelved(m.id)); // a shelved advanced class's module is not offered (it could not be built)
-  const kb = (on: boolean, ink: string = C.soul): React.CSSProperties => ({ ...btn, minHeight: 28, fontSize: 13, border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 });
+  const kb = (on: boolean, ink: string = C.soul): React.CSSProperties => ({ ...btn, minHeight: 28, fontSize: 'var(--fs-sub)', border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 });
   const draft: any = { id: '', name: name || (SCHOOL as any)[school]?.name + ' Outburst', school, modules: [...(shape ? [shape] : []), ...mods.filter((x) => x !== 'size' || shape)], ...(opt ? { option: opt } : {}), ...(school2 && school2 !== school ? { school2, ...(opt2 ? { option2: opt2 } : {}) } : {}), ...(tone !== 'raw' ? { tone } : {}) };
   const v = (() => { try { return designVerdict(magicOf(c) || null, draft); } catch { return null; } })();
   return <>
@@ -828,7 +828,7 @@ function MagicTab({ c, game, canField }: { c: Character; game: GameState; canFie
     <Box keys={FIND.sigils}><div data-glyph-keyboard="1" style={{ minWidth: 0 }}><Groups section="sb.sigil" title={'SIGIL WORDS (' + known.length + ' KNOWN; NO CAP HERE)'} ink={C.mind} aria="Sigil words"
       groups={sigilWordGroups(SIGILS, (w) => w.id)} render={(items, g) => <div data-word-row={g.key} style={{ display: 'flex', flexWrap: 'wrap', gap: 4, minWidth: 0 }}>
         {items.map((w) => { const on = known.includes(w.id); return <button key={w.id} type="button" data-word={w.id} {...tipProps(w.word + ' · ' + w.text)} aria-pressed={on} onKeyDown={glyphKeyNav}
-          style={{ ...btn, minHeight: 28, padding: '0 8px', fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? C.mind : C.line), color: on ? C.mind : C.muted, background: on ? '#0F2A30' : 'transparent' }}
+          style={{ ...btn, minHeight: 28, padding: '0 8px', fontSize: 'var(--fs-sub)', display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? C.mind : C.line), color: on ? C.mind : C.muted, background: on ? '#0F2A30' : 'transparent' }}
           onClick={() => act(on ? { type: 'sandbox/forget', charId: c.id, word: w.id } : { type: 'sandbox/learn', charId: c.id, word: w.id })}><img src={glyphUri(w.id, on ? SIGIL_INK : '#7F8BA1', { glow: on })} alt="" width={16} height={16} />{w.word}</button>; })}
       </div>} /></div></Box>
     <SigilTools c={c} game={game} canField={canField} />
@@ -851,26 +851,26 @@ function MagicTab({ c, game, canField }: { c: Character; game: GameState; canFie
           {/* Each gate skill its own collapsible, remembered group, as on the sheet ('magic.soul.modules'). */}
           <GroupList section="sb.soul.modules" ink="#C9D3E3" groups={moduleGroups(c).map((gr) => ({ key: gr.key, label: gr.label + ' · ' + gr.blurb, items: gr.modules, count: gr.modules.filter((x) => x.known).length + ' / ' + gr.modules.length, dflt: false }))}
             render={(ms, gr) => <div role="group" aria-label={gr.label + ' modules'} data-module-group={gr.key} style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-            {ms.map((m) => <button key={m.id} type="button" data-module={m.id} {...tipProps(m.name + ': ' + m.text + (m.locked ? (m.ok ? ' (normally only with ' + (m.cls || 'its class') + ')' : ' · locked: ' + m.why) : m.gate ? ' (normally ' + m.gate + ')' : ''))} disabled={m.known || (m.locked && !m.ok)} data-locked={m.locked && !m.ok ? 'true' : undefined} style={{ ...btn, minHeight: 28, fontSize: 13, border: '1px solid ' + (m.known ? C.soul : m.locked ? '#5B4A2A' : C.line), color: m.known ? C.soul : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, module: m.id })}><img src={m.icon} alt="" width={16} height={16} />{m.name}{m.locked ? ' 🔒' : ''}</button>)}
+            {ms.map((m) => <button key={m.id} type="button" data-module={m.id} {...tipProps(m.name + ': ' + m.text + (m.locked ? (m.ok ? ' (normally only with ' + (m.cls || 'its class') + ')' : ' · locked: ' + m.why) : m.gate ? ' (normally ' + m.gate + ')' : ''))} disabled={m.known || (m.locked && !m.ok)} data-locked={m.locked && !m.ok ? 'true' : undefined} style={{ ...btn, minHeight: 28, fontSize: 'var(--fs-sub)', border: '1px solid ' + (m.known ? C.soul : m.locked ? '#5B4A2A' : C.line), color: m.known ? C.soul : C.muted, display: 'inline-flex', alignItems: 'center', gap: 4 }} onClick={() => act({ type: 'sandbox/learn', charId: c.id, module: m.id })}><img src={m.icon} alt="" width={16} height={16} />{m.name}{m.locked ? ' 🔒' : ''}</button>)}
           </div>} />
         </div>
         : g.key === 'feelings' ? <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-          <button type="button" style={{ ...btn, minHeight: 28, fontSize: 13 }} onClick={() => FEELINGS.forEach((f) => { if (!(c.feelings || []).includes(f.id)) act({ type: 'sandbox/learn', charId: c.id, feeling: f.id }); })}>Feel them all</button>
+          <button type="button" style={{ ...btn, minHeight: 28, fontSize: 'var(--fs-sub)' }} onClick={() => FEELINGS.forEach((f) => { if (!(c.feelings || []).includes(f.id)) act({ type: 'sandbox/learn', charId: c.id, feeling: f.id }); })}>Feel them all</button>
           {FEELINGS.map((f) => { const on = (c.feelings || []).includes(f.id), ink = feelingInk(f.id); return <button key={f.id} type="button" data-feeling={f.id} aria-pressed={on} data-tip={feelingTip(f).tip} aria-description={feelingTip(f).tipText}
-            style={{ ...btn, minHeight: 28, fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted }}
+            style={{ ...btn, minHeight: 28, fontSize: 'var(--fs-sub)', display: 'inline-flex', alignItems: 'center', gap: 4, border: '1px solid ' + (on ? ink : C.line), color: on ? ink : C.muted }}
             onClick={() => act({ type: 'sandbox/learn', charId: c.id, feeling: f.id, ...(on ? { forget: true } : {}) })}><span aria-hidden="true" style={{ ...parseStyle(iconStyle(feelingIconSrc(f.id, on ? ink : '#7F8BA1'), on ? ink : '#7F8BA1')), width: 16, height: 16 }} />{f.name}</button>; })}
         </div>
         : g.key === 'practice' ? <div style={row}>
-          {[5, 15, -5].map((n) => <button key={n} type="button" style={{ ...btn, minHeight: 28, fontSize: 13 }} onClick={() => act({ type: 'sandbox/practice', charId: c.id, n })}>{n > 0 ? '+' + n : n} practice</button>)}
+          {[5, 15, -5].map((n) => <button key={n} type="button" style={{ ...btn, minHeight: 28, fontSize: 'var(--fs-sub)' }} onClick={() => act({ type: 'sandbox/practice', charId: c.id, n })}>{n > 0 ? '+' + n : n} practice</button>)}
         </div>
         : <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {FEELINGS.map((f) => { const ink = feelingInk(f.id), me = playerUnitPos(c.id); return <div key={f.id} data-fx-test={f.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
+          {FEELINGS.map((f) => { const ink = feelingInk(f.id), me = playerUnitPos(c.id); return <div key={f.id} data-fx-test={f.id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-sub)' }}>
             <span aria-hidden="true" style={{ ...parseStyle(iconStyle(feelingIconSrc(f.id, ink), ink)), width: 18, height: 18 }} /><span style={{ width: 90, color: ink, fontWeight: 700 }}>{f.name}</span>
-            {(['pump', 'release', 'residue'] as const).map((w) => <button key={w} type="button" style={{ ...btn, minHeight: 26, fontSize: 13, padding: '0 8px' }} onClick={() => testFeelingFx(f.id, f.family, w, me)}>{w}</button>)}
+            {(['pump', 'release', 'residue'] as const).map((w) => <button key={w} type="button" style={{ ...btn, minHeight: 26, fontSize: 'var(--fs-sub)', padding: '0 8px' }} onClick={() => testFeelingFx(f.id, f.family, w, me)}>{w}</button>)}
           </div>; })}
         </div>} /></Box>
     <Section title={'DESIGNS (' + (c.outbursts || []).length + ')'}>
-      {(c.outbursts || []).map((d) => { const i = designInfo(magicOf(c) || null, d); return <div key={d.id} style={{ ...row, fontSize: 13 }}><img src={i.icon} alt="" width={20} height={20} /><span style={{ flex: 1 }}><b>{d.name}</b> <span style={{ color: i.ink }}>{i.line}</span> <span style={{ color: C.muted }}>{i.schools}</span></span>
+      {(c.outbursts || []).map((d) => { const i = designInfo(magicOf(c) || null, d); return <div key={d.id} style={{ ...row, fontSize: 'var(--fs-sub)' }}><img src={i.icon} alt="" width={20} height={20} /><span style={{ flex: 1 }}><b>{d.name}</b> <span style={{ color: i.ink }}>{i.line}</span> <span style={{ color: C.muted }}>{i.schools}</span></span>
         <button type="button" style={{ ...btn, minHeight: 28, color: C.muted }} aria-label={'Forget ' + d.name} onClick={() => act({ type: 'sandbox/forget', charId: c.id, designId: d.id })}>✕</button></div>; })}
       <div style={row}>
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" aria-label="Design name" style={{ ...field, flex: 1 }} />
@@ -878,25 +878,25 @@ function MagicTab({ c, game, canField }: { c: Character; game: GameState; canFie
       </div>
       {optsOf(school).length > 0 && <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} role="group" aria-label="Option">{optsOf(school).map((o) => { const val = optValue(o); return <button key={o} type="button" aria-pressed={opt === val} style={chip(opt === val)} onClick={() => setOpt(val)}>{OPT_LABEL[o] || o}</button>; })}</div>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} role="group" aria-label="Second school">
-        <span style={{ fontSize: 13, color: C.muted, alignSelf: 'center' }}>SECOND SCHOOL</span>
+        <span style={{ fontSize: 'var(--fs-sub)', color: C.muted, alignSelf: 'center' }}>SECOND SCHOOL</span>
         {[{ id: '', name: 'None' }, ...SCHOOLS.filter((s) => s.id !== school)].map((s) => <button key={s.id || 'none'} type="button" aria-pressed={school2 === s.id} style={chip(school2 === s.id)} onClick={() => { setSchool2(s.id); setOpt2(''); }}>{s.name}</button>)}
       </div>
       {school2 && optsOf(school2).length > 0 && <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} role="group" aria-label="Second option">{optsOf(school2).map((o) => { const val = optValue(o); return <button key={o} type="button" aria-pressed={opt2 === val} style={chip(opt2 === val)} onClick={() => setOpt2(val)}>{OPT_LABEL[o] || o}</button>; })}</div>}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} role="group" aria-label="Tone">
-        <span style={{ fontSize: 13, color: C.muted, alignSelf: 'center' }}>TONE</span>
+        <span style={{ fontSize: 'var(--fs-sub)', color: C.muted, alignSelf: 'center' }}>TONE</span>
         {toneChips(k.tones || []).map((t) => <button key={t.id} type="button" aria-pressed={tone === t.id} style={chip(tone === t.id, t.ink)} onClick={() => setTone(t.id)}>{t.name}</button>)}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }} role="group" aria-label="Shape">
-        <span style={{ fontSize: 13, color: C.muted, alignSelf: 'center' }}>SHAPE</span>
+        <span style={{ fontSize: 'var(--fs-sub)', color: C.muted, alignSelf: 'center' }}>SHAPE</span>
         {['', ...SHAPE_MODULES].map((f) => <button key={f || 'bolt'} type="button" aria-pressed={shape === f} style={chip(shape === f)} onClick={() => setShape(f)}><img src={formIconUri(f || 'bolt', toneInk(tone))} alt="" width={14} height={14} />{f ? (MODULE as any)[f]?.name : 'Bolt'}</button>)}
       </div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
         {others.map((m) => { const on = mods.includes(m.id), shelved = moduleShelved(m.id), lock = (m.id === 'size' && !shape) || !!shelved; return <button key={m.id} type="button" aria-pressed={on} disabled={lock} data-locked={shelved ? '1' : undefined} {...tipProps(shelved || (lock ? 'Size needs a shape.' : m.text))} style={{ ...chip(on), opacity: lock ? 0.4 : 1 }}
           onClick={() => setMods(on ? mods.filter((x) => x !== m.id) : [...mods, m.id].slice(-3))}>{m.name}</button>; })}
       </div>
-      {v && <div style={{ fontSize: 13, lineHeight: 1.4 }}><div style={{ color: C.soul, fontWeight: 700 }}>{v.line}</div><div>{v.effects}</div><div style={{ color: C.muted }}>{v.rider}</div></div>}
+      {v && <div style={{ fontSize: 'var(--fs-sub)', lineHeight: 1.4 }}><div style={{ color: C.soul, fontWeight: 700 }}>{v.line}</div><div>{v.effects}</div><div style={{ color: C.muted }}>{v.rider}</div></div>}
       <button type="button" style={{ ...primary, alignSelf: 'flex-start' }} onClick={() => { act({ type: 'sandbox/design', charId: c.id, design: draft }); setName(''); setMods([]); }}>Add design</button>
-      <span style={{ fontSize: 13, color: C.muted }}>The school, tone and modules are learned with the design. One shape, up to 4 modules, 8 designs.</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>The school, tone and modules are learned with the design. One shape, up to 4 modules, 8 designs.</span>
     </Section>
   </>;
 }
@@ -912,7 +912,7 @@ function SigilTools({ c, game, canField }: { c: Character; game: GameState; canF
   const place = (ref: string) => act({ type: 'sandbox/mark', at: ref, word: mw, age, damage: dmg, name: 'Sigil mark', text: 'A Sigil word cut into the wall.' });
   useTilePick(arm && gearing, (r) => { place(r); setArm(false); });
   return <Section title="SIGIL GROWTH (TESTING)" aria="Sigil growth tools">
-    <div style={row} data-sb-study="1"><span style={{ fontSize: 13 }}>Study <b>{gv.study}</b> · next word at {gv.next} · {gv.pending} pick{gv.pending === 1 ? '' : 's'} waiting{gv.free ? ' · ' + gv.free + ' free' : ''}</span></div>
+    <div style={row} data-sb-study="1"><span style={{ fontSize: 'var(--fs-sub)' }}>Study <b>{gv.study}</b> · next word at {gv.next} · {gv.pending} pick{gv.pending === 1 ? '' : 's'} waiting{gv.free ? ' · ' + gv.free + ' free' : ''}</span></div>
     <div style={row}>
       {[6, 8, 30].map((n) => <button key={n} type="button" style={small} onClick={() => act({ type: 'sandbox/study', charId: c.id, study: n })}>+{n} study</button>)}
       <input value={study} onChange={(e) => setStudy(e.target.value.replace(/[^\d-]/g, '').slice(0, 4))} aria-label="Study to grant" style={{ ...field, width: 60 }} />
@@ -920,12 +920,12 @@ function SigilTools({ c, game, canField }: { c: Character; game: GameState; canF
     </div>
     {known.length > 0 ? <div style={row} data-sb-uses="1">
       <select value={w} aria-label="Word to set uses for" onChange={(e) => setWord(e.target.value)} style={field}>{known.map((x) => <option key={x} value={x}>{x.toUpperCase()}</option>)}</select>
-      {u && <span style={{ fontSize: 13, display: 'inline-flex', alignItems: 'center', gap: 4, color: u.tier === 'new' ? C.muted : C.mind }}><img src={starUri(u.tier)} alt="" width={14} height={14} />{u.uses} uses · {u.tier.toUpperCase()}</span>}
+      {u && <span style={{ fontSize: 'var(--fs-sub)', display: 'inline-flex', alignItems: 'center', gap: 4, color: u.tier === 'new' ? C.muted : C.mind }}><img src={starUri(u.tier)} alt="" width={14} height={14} />{u.uses} uses · {u.tier.toUpperCase()}</span>}
       <input value={uses} onChange={(e) => setUses(e.target.value.replace(/\D/g, '').slice(0, 3))} aria-label="Uses" style={{ ...field, width: 56 }} />
       <button type="button" style={small} data-sb-set-uses="1" onClick={() => act({ type: 'sandbox/word-uses', charId: c.id, word: w, uses: Number(uses) })}>Set uses</button>
       <button type="button" style={small} onClick={() => act({ type: 'sandbox/word-uses', charId: c.id, word: w, uses: WORD_MASTERY.practised })}>Practised ({WORD_MASTERY.practised})</button>
       <button type="button" style={small} onClick={() => act({ type: 'sandbox/word-uses', charId: c.id, word: w, uses: WORD_MASTERY.mastered })}>Mastered ({WORD_MASTERY.mastered})</button>
-    </div> : <span style={{ fontSize: 13, color: C.muted }}>Learn a word above to set its use count.</span>}
+    </div> : <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Learn a word above to set its use count.</span>}
     {canField && <>
       <span style={label}>A SIGIL MARK ON THE MAP</span>
       <div style={row} data-sb-mark="1">
@@ -933,16 +933,16 @@ function SigilTools({ c, game, canField }: { c: Character; game: GameState; canF
         <select value={mw} aria-label="Mark word" onChange={(e) => setMw(e.target.value)} style={field}>{(SIGILS as any[]).map((x) => <option key={x.id} value={x.id}>{x.word}</option>)}</select>
         <select value={age} aria-label="Mark age" onChange={(e) => setAge(e.target.value)} style={field}>{MARK.ages.map((x) => <option key={x} value={x}>{x}</option>)}</select>
         <select value={dmg} aria-label="Mark damage" onChange={(e) => setDmg(e.target.value)} style={field}>{MARK.damages.map((x) => <option key={x} value={x}>{x}</option>)}</select>
-        <span style={{ fontSize: 13, color: C.muted }}>TN {markTn(age, dmg)}</span>
+        <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>TN {markTn(age, dmg)}</span>
       </div>
       <div style={row}>
         <button type="button" data-sb-mark-arm="1" disabled={!gearing} aria-pressed={arm} style={arm ? { ...primary, background: C.red, color: C.white } : primary} onClick={() => setArm(!arm)}>{arm ? 'Click a tile · stop' : 'Place by clicking the map'}</button>
         <input value={at} onChange={(e) => setAt(e.target.value.toUpperCase())} placeholder="or H6" aria-label="Tile for the mark" style={{ ...field, width: 70 }} />
         <button type="button" data-sb-mark-place="1" disabled={!gearing || !at.trim()} style={btn} onClick={() => place(at.trim())}>Place</button>
       </div>
-      {!gearing && <span style={{ fontSize: 13, color: C.muted }}>Stop the fight to place a mark.</span>}
+      {!gearing && <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Stop the fight to place a mark.</span>}
     </>}
-    {isHost && <label style={{ fontSize: 13, display: 'flex', gap: 6, alignItems: 'center' }} data-sb-junctions="1"><input type="checkbox" checked={jOn} onChange={(e) => act({ type: 'sandbox/junctions', on: e.target.checked })} />Junctions for everyone here (a glyph may join two strokes; otherwise Brain Power Mastered only)</label>}
+    {isHost && <label style={{ fontSize: 'var(--fs-sub)', display: 'flex', gap: 6, alignItems: 'center' }} data-sb-junctions="1"><input type="checkbox" checked={jOn} onChange={(e) => act({ type: 'sandbox/junctions', on: e.target.checked })} />Junctions for everyone here (a glyph may join two strokes; otherwise Brain Power Mastered only)</label>}
   </Section>;
 }
 
@@ -999,7 +999,7 @@ function FieldTab({ game, isHost }: { game: GameState; isHost: boolean }) {
         <input value={ref} onChange={(e) => setRef(e.target.value.toUpperCase())} placeholder="or a tile: H6" aria-label="Tile" style={{ ...field, width: 90 }} />
         <button type="button" style={btn} disabled={!ref} onClick={() => spawn(ref)}>Spawn</button>
       </div>
-      {armed && <span style={{ fontSize: 13, color: C.text }}>Each click on a free tile spawns one{gearing ? ' (open the Area map for the big grid)' : ''}. Esc or the button stops.</span>}
+      {armed && <span style={{ fontSize: 'var(--fs-sub)', color: C.text }}>Each click on a free tile spawns one{gearing ? ' (open the Area map for the big grid)' : ''}. Esc or the button stops.</span>}
       <div style={row}><button type="button" style={btn} disabled={!foes} onClick={() => act({ type: 'sandbox/clear' })}>Clear all enemies ({foes})</button></div>
     </Section>
     <Section title="WAVES">
@@ -1007,15 +1007,15 @@ function FieldTab({ game, isHost }: { game: GameState; isHost: boolean }) {
         <button type="button" aria-pressed={sb.ai} style={{ ...btn, border: '1px solid ' + (sb.ai ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/ai', on: !sb.ai })}>Enemy AI: {sb.ai ? 'ON' : 'OFF (they pass)'}</button>
         <button type="button" aria-pressed={sb.auto} style={{ ...btn, border: '1px solid ' + (sb.auto ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/auto', on: !sb.auto })} {...tipProps("After a cleared wave the next one comes by itself, with no gearing up between")}>Endless waves: {sb.auto ? 'ON' : 'OFF'}</button>
       </div>}
-      <div style={row}><span style={{ fontSize: 13 }}>Wave</span><Stepper name="wave" value={jump} min={1} max={99} set={setJump} />
+      <div style={row}><span style={{ fontSize: 'var(--fs-sub)' }}>Wave</span><Stepper name="wave" value={jump} min={1} max={99} set={setJump} />
         {gearing && <button type="button" style={btn} onClick={() => act({ type: 'sandbox/stage', wave: jump })}>Place on the map</button>}
         <button type="button" style={btn} onClick={() => act({ type: 'sandbox/wave', wave: jump })}>Fight it now</button>
         {isHost && <button type="button" style={btn} onClick={() => act({ type: 'sandbox/retry' })}>↻ Retry wave {sb.wave}</button>}</div>
-      <span style={{ fontSize: 13, color: C.muted }}>Wave {jump}: {sandboxWave(jump, sandboxReady(game).of).map((f) => f.name).join(', ')}.</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Wave {jump}: {sandboxWave(jump, sandboxReady(game).of).map((f) => f.name).join(', ')}.</span>
     </Section>
     <Section title={'MANA METER · ' + mana + ' · ' + (band?.id || '').toUpperCase()}>
       <input type="range" min={0} max={40} value={mana} aria-label="Mana meter" onChange={(e) => act({ type: 'sandbox/mana', value: Number(e.target.value) })} />
-      <span style={{ fontSize: 13, color: C.muted }}>{MANA_BANDS.map((b) => b.id + ' ' + b.min + '–' + b.max).join(' · ')}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>{MANA_BANDS.map((b) => b.id + ' ' + b.min + '–' + b.max).join(' · ')}</span>
     </Section>
     {isHost && <button type="button" style={{ ...btn, alignSelf: 'flex-start', color: C.muted }} onClick={() => leaveProvingGround()}>Leave the Proving Ground</button>}
   </>;
@@ -1029,8 +1029,8 @@ function ApproachEdit({ a, set, name }: { a: ApproachForm; set: (a: ApproachForm
   return <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: 8, borderRadius: 8, border: '1px solid ' + C.line }}>
     <input value={a.label} aria-label={name + ' label'} onChange={(e) => set({ ...a, label: e.target.value })} style={field} />
     <div style={row}>{sk(a.skill, 'skill')}{sk(a.skill2, 'skill2')}<select value={a.tn} aria-label={name + ' TN'} style={field} onChange={(e) => set({ ...a, tn: Number(e.target.value) })}>{TN_LADDER.map((t) => <option key={t} value={t}>TN {t}</option>)}</select></div>
-    <div style={row}><span style={{ fontSize: 13, color: C.muted }}>Success</span><select value={a.success} aria-label={name + ' success'} style={field} onChange={(e) => set({ ...a, success: e.target.value })}>{SUCCESSES.map((x) => <option key={x} value={x}>{x || '(the Narrator says)'}</option>)}</select>
-      <span style={{ fontSize: 13, color: C.muted }}>Fail</span><select value={a.fail} aria-label={name + ' fail'} style={field} onChange={(e) => set({ ...a, fail: e.target.value })}>{FAILS.map((x) => <option key={x} value={x}>{x || '(nothing more)'}</option>)}</select></div>
+    <div style={row}><span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Success</span><select value={a.success} aria-label={name + ' success'} style={field} onChange={(e) => set({ ...a, success: e.target.value })}>{SUCCESSES.map((x) => <option key={x} value={x}>{x || '(the Narrator says)'}</option>)}</select>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Fail</span><select value={a.fail} aria-label={name + ' fail'} style={field} onChange={(e) => set({ ...a, fail: e.target.value })}>{FAILS.map((x) => <option key={x} value={x}>{x || '(nothing more)'}</option>)}</select></div>
     {a.success === 'advance' && <input value={a.objective} placeholder="objective id (drill objective)" aria-label={name + ' objective'} onChange={(e) => set({ ...a, objective: e.target.value })} style={field} />}
     {a.fail === 'condition' && <select value={a.failCondition} aria-label={name + ' condition'} style={field} onChange={(e) => set({ ...a, failCondition: e.target.value })}><option value="">Pick a condition</option>{CONDITION_IDS.map((x) => <option key={x} value={x}>{condName(x)}</option>)}</select>}
     {a.fail === 'lose' && <input value={a.failItem} placeholder="item id it takes" aria-label={name + ' item lost'} onChange={(e) => set({ ...a, failItem: e.target.value })} style={field} />}
@@ -1062,8 +1062,8 @@ function WorldTab({ game }: { game: GameState }) {
   const ents = [...npcs.map((n) => ({ id: n.id, label: n.name + ' (' + refOf(n.pos) + ')' })), ...objs.map((o) => ({ id: o.id, label: o.name + ' (' + refOf(o.pos) + ')' })), ...hzs.map((h) => ({ id: h.id, label: (h.name || HAZARD[h.kind]?.name || h.kind) + ' (' + refOf(h.tiles[0]) + ')' }))];
   const avs = avatarChoices(npc.kind);
   return <>
-    {!gearing && <Box keys="world place" span><span style={{ fontSize: 13, color: C.text }}>Stop the fight to place things.</span></Box>}
-    {arm && <Box keys="world place" span><span role="status" style={{ fontSize: 13, color: C.text }}>Click {needs(arm.what) === 2 ? (arm.pts.length ? 'the far corner' : 'the first corner') : 'a free tile'} on the map (open the Area map for the big grid). Esc stops.</span></Box>}
+    {!gearing && <Box keys="world place" span><span style={{ fontSize: 'var(--fs-sub)', color: C.text }}>Stop the fight to place things.</span></Box>}
+    {arm && <Box keys="world place" span><span role="status" style={{ fontSize: 'var(--fs-sub)', color: C.text }}>Click {needs(arm.what) === 2 ? (arm.pts.length ? 'the far corner' : 'the first corner') : 'a free tile'} on the map (open the Area map for the big grid). Esc stops.</span></Box>}
     <Section title="A PERSON (KIND, FACE, TALK)" aria="World: a person">
       <div style={row}><input value={npc.name} aria-label="Person name" onChange={(e) => setNpc({ ...npc, name: e.target.value })} style={{ ...field, flex: 1 }} />
         <select value={npc.kind} aria-label="Kind" style={field} onChange={(e) => setNpc({ ...npc, kind: e.target.value, avatar: '' })}>{WORLD_KIND_IDS.map((k) => <option key={k} value={k}>{k}</option>)}</select>
@@ -1072,8 +1072,8 @@ function WorldTab({ game }: { game: GameState }) {
         <button type="button" aria-pressed={!npc.avatar} style={{ ...small, border: '1px solid ' + (!npc.avatar ? C.text : C.line) }} onClick={() => setNpc({ ...npc, avatar: '' })}>{avs.length ? 'Auto' : 'Badge only'}</button>
         {avs.slice(0, 12).map((id) => <button key={id} type="button" data-avatar={id} aria-pressed={npc.avatar === id} {...tipProps(id, { label: true })} onClick={() => setNpc({ ...npc, avatar: id })} style={{ padding: 0, width: 34, height: 42, borderRadius: 6, overflow: 'hidden', cursor: 'pointer', border: '2px solid ' + (npc.avatar === id ? C.white : C.line), background: C.ground }}><img src={ART(id)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /></button>)}
       </div>
-      <div style={row}><label style={{ fontSize: 13, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={npc.prisoner} onChange={(e) => setNpc({ ...npc, prisoner: e.target.checked })} />Prisoner</label>
-        <label style={{ fontSize: 13, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={npc.hidden} onChange={(e) => setNpc({ ...npc, hidden: e.target.checked })} />Hidden</label></div>
+      <div style={row}><label style={{ fontSize: 'var(--fs-sub)', display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={npc.prisoner} onChange={(e) => setNpc({ ...npc, prisoner: e.target.checked })} />Prisoner</label>
+        <label style={{ fontSize: 'var(--fs-sub)', display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={npc.hidden} onChange={(e) => setNpc({ ...npc, hidden: e.target.checked })} />Hidden</label></div>
       <input value={npc.wants} placeholder="What they want (one plain line)" aria-label="Wants" onChange={(e) => setNpc({ ...npc, wants: e.target.value })} style={field} />
       <div style={row}><input value={npc.objective} placeholder="knows: objective id" aria-label="Knows objective" onChange={(e) => setNpc({ ...npc, objective: e.target.value })} style={{ ...field, width: 130 }} />
         <input value={npc.hintAt} placeholder="at (H6)" aria-label="Hint tile" onChange={(e) => setNpc({ ...npc, hintAt: e.target.value })} style={{ ...field, width: 70 }} /></div>
@@ -1085,50 +1085,50 @@ function WorldTab({ game }: { game: GameState }) {
     </Section>
     <Section title="A CACHE (A CLOSED CONTAINER)" aria="World: a cache">
       <input value={cache.name} aria-label="Cache name" onChange={(e) => setCache({ ...cache, name: e.target.value })} style={field} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{cache.items.map((x, i) => <div key={i} style={row}><span style={{ flex: 1, fontSize: 13 }}>{ITEM[x.item]?.name || WEAPON[x.item]?.name || x.item}</span><Stepper name={'quantity of ' + x.item} value={x.qty} min={1} max={20} set={(n) => setCache({ ...cache, items: cache.items.map((y, j) => (j === i ? { ...y, qty: n } : y)) })} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{cache.items.map((x, i) => <div key={i} style={row}><span style={{ flex: 1, fontSize: 'var(--fs-sub)' }}>{ITEM[x.item]?.name || WEAPON[x.item]?.name || x.item}</span><Stepper name={'quantity of ' + x.item} value={x.qty} min={1} max={20} set={(n) => setCache({ ...cache, items: cache.items.map((y, j) => (j === i ? { ...y, qty: n } : y)) })} />
         <button type="button" style={{ ...small, color: C.muted }} aria-label={'Remove ' + x.item} onClick={() => setCache({ ...cache, items: cache.items.filter((_, j) => j !== i) })}>✕</button></div>)}</div>
       <div style={row}><select value={addItem} aria-label="Item to add" style={{ ...field, flex: 1 }} onChange={(e) => setAddItem(e.target.value)}>{ITEMS.map((x: any) => <option key={x.id} value={x.id}>{x.name}</option>)}{WEAPONS.map((w) => <option key={w.id} value={w.id}>{w.name} (weapon)</option>)}</select>
         <button type="button" style={small} disabled={cache.items.length >= 12} onClick={() => setCache({ ...cache, items: [...cache.items, { item: addItem, qty: 1 }] })}>+ Add</button></div>
-      <label style={{ fontSize: 13, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={cache.locked} onChange={(e) => setCache({ ...cache, locked: e.target.checked })} />Locked (needs its way in first)</label>
+      <label style={{ fontSize: 'var(--fs-sub)', display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={cache.locked} onChange={(e) => setCache({ ...cache, locked: e.target.checked })} />Locked (needs its way in first)</label>
       {cache.locked && <ApproachEdit a={cache.way} name="Way in" set={(x) => setCache({ ...cache, way: x })} />}
       <div style={row}>{armBtn('cache', 'Place by clicking the map')}{placeBtn('cache', 'cache', 'or H6')}</div>
     </Section>
     <Section title="A PILE (ON THE GROUND)" aria="World: a pile">
-      <span style={{ fontSize: 13, color: C.muted }}>Things lying on a tile, in plain sight: anyone who can see the tile sees what is in it, and Pick up takes it (1 AP). Dropping onto a pile adds to it.</span>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{pile.items.map((x, i) => <div key={i} style={row}><span style={{ flex: 1, fontSize: 13 }}>{PILE_NAMES[x.item] || x.item}{isAmmoId(x.item) ? ' · rounds' : ''}</span><Stepper name={'quantity of ' + x.item} value={x.qty} min={isAmmoId(x.item) ? 0 : 1} max={isAmmoId(x.item) ? 120 : 20} set={(n) => setPile({ ...pile, items: pile.items.map((y, j) => (j === i ? { ...y, qty: n } : y)) })} />
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Things lying on a tile, in plain sight: anyone who can see the tile sees what is in it, and Pick up takes it (1 AP). Dropping onto a pile adds to it.</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{pile.items.map((x, i) => <div key={i} style={row}><span style={{ flex: 1, fontSize: 'var(--fs-sub)' }}>{PILE_NAMES[x.item] || x.item}{isAmmoId(x.item) ? ' · rounds' : ''}</span><Stepper name={'quantity of ' + x.item} value={x.qty} min={isAmmoId(x.item) ? 0 : 1} max={isAmmoId(x.item) ? 120 : 20} set={(n) => setPile({ ...pile, items: pile.items.map((y, j) => (j === i ? { ...y, qty: n } : y)) })} />
         <button type="button" style={{ ...small, color: C.muted }} aria-label={'Remove ' + x.item + ' from the pile'} onClick={() => setPile({ ...pile, items: pile.items.filter((_, j) => j !== i) })}>✕</button></div>)}</div>
       <div style={row}><select value={pileAdd} aria-label="Thing to add to the pile" style={{ ...field, flex: 1 }} onChange={(e) => setPileAdd(e.target.value)}>{PILE_CHOICES.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}</select>
         <button type="button" style={small} disabled={pile.items.length >= 12} onClick={() => setPile({ ...pile, items: [...pile.items, { item: pileAdd, qty: pileAdd.startsWith('mag:') ? (WEAPON[pileAdd.slice(4)]?.magazine || 1) : pileAdd.startsWith('rounds:') ? 20 : 1 }] })}>+ Add</button></div>
-      <span style={{ fontSize: 13, color: C.muted }}>A magazine's number is its rounds (0: empty).</span>
-      <label style={{ fontSize: 13, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={pile.hidden} onChange={(e) => setPile({ ...pile, hidden: e.target.checked })} />Hidden (until spotted or searched)</label>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>A magazine's number is its rounds (0: empty).</span>
+      <label style={{ fontSize: 'var(--fs-sub)', display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={pile.hidden} onChange={(e) => setPile({ ...pile, hidden: e.target.checked })} />Hidden (until spotted or searched)</label>
       <div style={row}>{armBtn('pile', 'Place by clicking the map')}{placeBtn('pile', 'pile', 'or H6')}</div>
     </Section>
     <Section title="A HAZARD (AN AREA OF TILES)" aria="World: a hazard">
       <div style={row}><select value={hz.kind} aria-label="Hazard kind" style={field} onChange={(e) => setHz({ ...hz, kind: e.target.value })}>{HAZARD_KINDS.map((k) => <option key={k} value={k}>{HAZARD[k]?.name || k}</option>)}</select>
         {(['light', 'heavy'] as const).map((v) => <button key={v} type="button" aria-pressed={hz.severity === v} style={{ ...small, border: '1px solid ' + (hz.severity === v ? C.text : C.line) }} onClick={() => setHz({ ...hz, severity: v })}>{v}</button>)}
-        <label style={{ fontSize: 13, display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={hz.hidden} onChange={(e) => setHz({ ...hz, hidden: e.target.checked })} />Hidden</label></div>
-      <span style={{ fontSize: 13, color: C.muted }}>{HAZARD[hz.kind]?.text || ''}</span>
+        <label style={{ fontSize: 'var(--fs-sub)', display: 'flex', gap: 4, alignItems: 'center' }}><input type="checkbox" checked={hz.hidden} onChange={(e) => setHz({ ...hz, hidden: e.target.checked })} />Hidden</label></div>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>{HAZARD[hz.kind]?.text || ''}</span>
       <div style={row}>{armBtn('hazard', 'Place: click two corners')}{placeBtn('hazard', 'hazard', 'or C3:E5')}</div>
-      {hzs.length > 0 && <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{hzs.map((h) => <div key={h.id} style={row}><span style={{ flex: 1, fontSize: 13 }}>{(h.name || HAZARD[h.kind]?.name || h.kind) + ' · ' + h.severity + ' · ' + h.tiles.length + ' tiles at ' + refOf(h.tiles[0]) + ' [' + h.id + ']'}</span>
+      {hzs.length > 0 && <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>{hzs.map((h) => <div key={h.id} style={row}><span style={{ flex: 1, fontSize: 'var(--fs-sub)' }}>{(h.name || HAZARD[h.kind]?.name || h.kind) + ' · ' + h.severity + ' · ' + h.tiles.length + ' tiles at ' + refOf(h.tiles[0]) + ' [' + h.id + ']'}</span>
         <button type="button" style={{ ...small, color: C.muted }} disabled={!gearing} onClick={() => act({ type: 'sandbox/hazard', remove: h.id } as any)}>Remove</button></div>)}</div>}
     </Section>
     <Section title="A TRIGGER (AMBUSH, ARRIVAL, REVEAL)" aria="World: a trigger">
-      <div style={row}><span style={{ fontSize: 13, color: C.muted }}>When</span>{(['enter', 'examine'] as const).map((v) => <button key={v} type="button" aria-pressed={tg.when === v} style={{ ...small, border: '1px solid ' + (tg.when === v ? C.text : C.line) }} onClick={() => setTg({ ...tg, when: v })}>{v === 'enter' ? 'someone enters tiles' : 'an object is dealt with'}</button>)}</div>
+      <div style={row}><span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>When</span>{(['enter', 'examine'] as const).map((v) => <button key={v} type="button" aria-pressed={tg.when === v} style={{ ...small, border: '1px solid ' + (tg.when === v ? C.text : C.line) }} onClick={() => setTg({ ...tg, when: v })}>{v === 'enter' ? 'someone enters tiles' : 'an object is dealt with'}</button>)}</div>
       {tg.when === 'examine' && <select value={tg.objId} aria-label="Trigger object" style={field} onChange={(e) => setTg({ ...tg, objId: e.target.value })}><option value="">Pick an object</option>{objs.map((o) => <option key={o.id} value={o.id}>{o.name + ' (' + refOf(o.pos) + ')'}</option>)}</select>}
-      <div style={row}><span style={{ fontSize: 13, color: C.muted }}>Then</span>{(['fight', 'spawn', 'reveal'] as const).map((v) => <button key={v} type="button" aria-pressed={tg.then === v} style={{ ...small, border: '1px solid ' + (tg.then === v ? C.text : C.line) }} onClick={() => setTg({ ...tg, then: v })}>{v === 'fight' ? 'ambush (fight)' : v === 'spawn' ? 'someone arrives' : 'reveal hidden'}</button>)}</div>
+      <div style={row}><span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Then</span>{(['fight', 'spawn', 'reveal'] as const).map((v) => <button key={v} type="button" aria-pressed={tg.then === v} style={{ ...small, border: '1px solid ' + (tg.then === v ? C.text : C.line) }} onClick={() => setTg({ ...tg, then: v })}>{v === 'fight' ? 'ambush (fight)' : v === 'spawn' ? 'someone arrives' : 'reveal hidden'}</button>)}</div>
       {tg.then !== 'reveal' && <div style={row}><Stepper name="how many" value={tg.count} min={1} max={6} set={(n) => setTg({ ...tg, count: n })} /><input value={tg.name} aria-label="Who comes" onChange={(e) => setTg({ ...tg, name: e.target.value })} style={{ ...field, width: 110 }} />
         <select value={tg.kind} aria-label="Their kind" style={field} onChange={(e) => setTg({ ...tg, kind: e.target.value })}>{WORLD_KIND_IDS.map((k) => <option key={k} value={k}>{k}</option>)}</select>
         <select value={tg.tier} aria-label="Their tier" style={field} onChange={(e) => setTg({ ...tg, tier: e.target.value })}>{ENEMIES.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}</select></div>}
       <input value={tg.text} placeholder="What everyone sees when it fires" aria-label="Trigger text" onChange={(e) => setTg({ ...tg, text: e.target.value })} style={field} />
       <div style={row}>{tg.when === 'enter' ? armBtn('trigger', 'Place: click two corners') : <button type="button" style={primary} disabled={!gearing || !tg.objId} onClick={() => fire('trigger', [])}>Set the trigger</button>}{tg.when === 'enter' && placeBtn('trigger', 'trigger', 'or F4:G5')}</div>
-      <span style={{ fontSize: 13, color: C.muted }}>Triggers are invisible to players; the log shows the new one's id. Each fires once.</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>Triggers are invisible to players; the log shows the new one's id. Each fires once.</span>
     </Section>
     <Section title="AN OBJECTIVE AND WHERE IT IS" aria="World: an objective">
       <div style={row}><input value={ob.id} aria-label="Objective id" onChange={(e) => setOb({ ...ob, id: e.target.value })} style={{ ...field, width: 130 }} /><input value={ob.text} aria-label="Objective text" onChange={(e) => setOb({ ...ob, text: e.target.value })} style={{ ...field, flex: 1 }} /></div>
       <div style={row}><select value={refPick} aria-label="Where: a thing on the map" style={{ ...field, flex: 1 }} onChange={(e) => setRefPick(e.target.value)}><option value="">A person, object or hazard…</option>{ents.map((x) => <option key={x.id} value={x.id}>{x.label}</option>)}</select>
         <button type="button" style={small} disabled={!refPick || ob.refs.includes(refPick)} onClick={() => setOb({ ...ob, refs: [...ob.refs, refPick] })}>+ Where</button>
         <input value={refs.obj || ''} onChange={(e) => setR('obj', e.target.value)} placeholder="or H6" aria-label="Where: a tile" style={{ ...field, width: 70 }} /><button type="button" style={small} disabled={!R('obj')} onClick={() => { setOb({ ...ob, refs: [...ob.refs, R('obj')] }); setR('obj', ''); }}>+ Tile</button></div>
-      {ob.refs.length > 0 && <span style={{ fontSize: 13 }}>Where: {ob.refs.map((r) => ents.find((x) => x.id === r)?.label || r).join(', ')} <button type="button" style={{ ...small, minHeight: 22 }} onClick={() => setOb({ ...ob, refs: [] })}>Clear</button></span>}
+      {ob.refs.length > 0 && <span style={{ fontSize: 'var(--fs-sub)' }}>Where: {ob.refs.map((r) => ents.find((x) => x.id === r)?.label || r).join(', ')} <button type="button" style={{ ...small, minHeight: 22 }} onClick={() => setOb({ ...ob, refs: [] })}>Clear</button></span>}
       <div style={row}><button type="button" data-world-objective="open" style={primary} disabled={!gearing} onClick={() => act(objectiveAction({ ...ob, status: 'open' }))}>Set objective</button>
         <button type="button" style={btn} disabled={!gearing} onClick={() => act(objectiveAction({ ...ob, status: 'done' }))}>Mark it done</button></div>
     </Section>
@@ -1143,9 +1143,9 @@ function ReadyButton({ on }: { on: boolean }) {
 }
 /** A player with no fighter: a Recruit, or one of their characters (a copy). */
 function NoFighter({ gearing }: { gearing: boolean }) {
-  if (!gearing) return <span style={{ fontSize: 13, color: C.muted }}>You have no fighter in this fight. Get one when it ends.</span>;
+  if (!gearing) return <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>You have no fighter in this fight. Get one when it ends.</span>;
   return <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
-    <span style={{ fontSize: 13, color: C.muted }}>You have no fighter here.</span>
+    <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>You have no fighter here.</span>
     <div style={row}>
       <button type="button" style={primary} onClick={() => act({ type: 'sandbox/recruit' })}>+ A Recruit</button>
       <BringButton />
@@ -1161,10 +1161,10 @@ function BringButton() {
     <button type="button" style={btn} aria-expanded={open} onClick={() => setOpen(!open)}>Bring a character…</button>
     {open && <div role="group" aria-label="Your characters" style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%', maxHeight: 220, overflowY: 'auto', padding: 8, borderRadius: 10, border: '1px solid ' + C.line, background: C.ground }}>
       {lib.map((c) => <button key={c.name + c.savedAt} type="button" style={{ ...btn, justifyContent: 'flex-start', display: 'flex', alignItems: 'center', gap: 8, textAlign: 'left' }} onClick={() => send(c)}>
-        {c.portrait ? <img src={c.portrait} alt="" style={{ width: 24, height: 30, objectFit: 'cover', borderRadius: 4 }} /> : null}<span style={{ flex: 1 }}>{c.name}</span><span style={{ fontSize: 13, color: C.muted }}>{(c as any).draft ? 'DRAFT' : c.origin}</span></button>)}
-      {!lib.length && <span style={{ fontSize: 13, color: C.muted }}>No saved characters in this browser.</span>}
+        {c.portrait ? <img src={c.portrait} alt="" style={{ width: 24, height: 30, objectFit: 'cover', borderRadius: 4 }} /> : null}<span style={{ flex: 1 }}>{c.name}</span><span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>{(c as any).draft ? 'DRAFT' : c.origin}</span></button>)}
+      {!lib.length && <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>No saved characters in this browser.</span>}
       <button type="button" style={small} onClick={() => importCharacter().then((c) => { if (c) send(c); })}>Open a .phc.zip file…</button>
-      <span style={{ fontSize: 13, color: C.muted }}>A copy fights here: nothing done in the Proving Ground changes your saved character.</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>A copy fights here: nothing done in the Proving Ground changes your saved character.</span>
     </div>}
   </>;
 }
@@ -1176,21 +1176,21 @@ function Players({ game, meId, isHost }: { game: GameState; meId: string; isHost
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       {game.players.map((p) => {
         const fs = Object.values(game.characters).filter((c) => c.owner === p.id), ready = !!sb.ready?.[p.id], t = sandboxTeam(sb, p.id);
-        return <div key={p.id} data-player={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line, borderLeft: '4px solid ' + p.color, fontSize: 13 }}>
+        return <div key={p.id} data-player={p.name} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 8, background: C.ground, border: '1px solid ' + C.line, borderLeft: '4px solid ' + p.color, fontSize: 'var(--fs-sub)' }}>
           <span aria-hidden="true" style={{ width: 10, height: 10, borderRadius: '50%', background: p.color, flex: 'none', opacity: p.online ? 1 : 0.4 }} />
           <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
             <span style={{ fontWeight: 700 }}>{p.name}{p.id === meId ? ' (you)' : ''}{p.id === game.hostId ? ' · host' : ''}{p.online ? '' : ' · offline'}</span>
-            <span style={{ fontSize: 13, color: C.muted }}>{fs.length ? fs.map((c) => c.name).join(', ') : 'no fighter yet'} · {teams ? (sb.wins?.[p.id] || 0) + ' win' + ((sb.wins?.[p.id] || 0) === 1 ? '' : 's') : 'best wave ' + (sb.bestBy?.[p.id] || 0)}</span>
+            <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>{fs.length ? fs.map((c) => c.name).join(', ') : 'no fighter yet'} · {teams ? (sb.wins?.[p.id] || 0) + ' win' + ((sb.wins?.[p.id] || 0) === 1 ? '' : 's') : 'best wave ' + (sb.bestBy?.[p.id] || 0)}</span>
           </span>
-          {teams && <span aria-label={'Team ' + t} style={{ padding: '2px 8px', borderRadius: 999, fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', border: '1px solid ' + TEAM_INK[t], color: TEAM_INK[t] }}>{t === 'A' ? '◆' : '■'} TEAM {t}</span>}
-          {fs.length > 0 && <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: ready ? C.ok : C.muted }}>{ready ? '✓ READY' : '○ NOT READY'}</span>}
+          {teams && <span aria-label={'Team ' + t} style={{ padding: '2px 8px', borderRadius: 999, fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.1em', border: '1px solid ' + TEAM_INK[t], color: TEAM_INK[t] }}>{t === 'A' ? '◆' : '■'} TEAM {t}</span>}
+          {fs.length > 0 && <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.1em', color: ready ? C.ok : C.muted }}>{ready ? '✓ READY' : '○ NOT READY'}</span>}
           {isHost && p.id !== meId && <button type="button" style={{ ...small, minHeight: 24, color: C.muted }} aria-label={'Remove ' + p.name} {...tipProps("Remove from the Proving Ground")} onClick={() => { askConfirm({ title: 'Remove ' + p.name + ' from the Proving Ground?', confirm: 'Remove', danger: true }).then((ok) => ok && act({ type: 'player/kick', id: p.id })); }}>✕</button>}
         </div>;
       })}
     </div>
     <div style={row}>
       {mine && gearing && <ReadyButton on={!!sb.ready?.[meId]} />}
-      <span style={{ fontSize: 13, color: C.muted }}>{r.ready} / {r.of} ready</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted }}>{r.ready} / {r.of} ready</span>
       {teams && gearing && mine && (['A', 'B'] as const).map((t) => <button key={t} type="button" aria-pressed={my === t} onClick={() => act({ type: 'sandbox/team', team: t })}
         style={{ ...small, border: '1px solid ' + (my === t ? TEAM_INK[t] : C.line), color: my === t ? TEAM_INK[t] : C.muted }}>{t === 'A' ? '◆' : '■'} Team {t}</button>)}
     </div>
@@ -1200,7 +1200,7 @@ function Players({ game, meId, isHost }: { game: GameState; meId: string; isHost
     </div>
     {isHost && <div role="group" aria-label="Room settings" style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingTop: 4 }}>
       <span style={label}>ROOM SETTINGS (HOST)</span>
-      <div style={row}><span style={{ fontSize: 13 }}>Mode</span>
+      <div style={row}><span style={{ fontSize: 'var(--fs-sub)' }}>Mode</span>
         {([['coop', 'Co-op waves'], ['teams', 'Team fight']] as const).map(([m, name]) => <button key={m} type="button" disabled={!gearing} aria-pressed={(sb.mode || 'coop') === m} onClick={() => act({ type: 'sandbox/settings', mode: m })}
           style={{ ...small, border: '1px solid ' + ((sb.mode || 'coop') === m ? C.text : C.line), color: (sb.mode || 'coop') === m ? C.text : C.muted }}>{(sb.mode || 'coop') === m ? '● ' : '○ '}{name}</button>)}
       </div>
@@ -1218,15 +1218,15 @@ function InviteCard({ game }: { game: GameState }) {
   React.useEffect(() => { const k = (e: KeyboardEvent) => { if (e.key === 'Escape') closeInvite(); }; window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k); }, []);
   return <div role="dialog" aria-modal="true" aria-label="Invite friends" className="phc-a-fade" style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'grid', placeItems: 'center', padding: 16, background: 'rgba(5, 7, 11, 0.8)' }} onClick={(e) => { if (e.target === e.currentTarget) closeInvite(); }}>
     <div className="phc-a-pop" style={{ width: 'min(520px, 100%)', display: 'flex', flexDirection: 'column', gap: 14, padding: 24, borderRadius: 16, background: C.panel, border: '1px solid ' + C.line, borderTop: '4px solid ' + C.white, fontFamily: UI, color: C.text }}>
-      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.22em', color: C.muted }}>THE PROVING GROUND · WITH FRIENDS</span>
+      <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.22em', color: C.muted }}>THE PROVING GROUND · WITH FRIENDS</span>
       <span style={{ fontFamily: "'Spectral', serif", fontSize: 26, fontWeight: 600 }}>Share the room code</span>
       <span aria-label={'Room code ' + game.code} style={{ fontSize: 'clamp(40px, 10vw, 64px)', fontWeight: 700, letterSpacing: '0.24em', textAlign: 'center', padding: '8px 0', borderRadius: 12, background: C.ground, border: '1px solid ' + C.line }}>{game.code}</span>
       <div style={row}>
         <button type="button" style={{ ...primary, minHeight: 44, flex: 1 }} onClick={() => copy('code', game.code)}>{copied === 'code' ? 'Copied ✓' : 'Copy the code'}</button>
         <button type="button" style={{ ...btn, minHeight: 44, flex: 1 }} onClick={() => copy('link', link)}>{copied === 'link' ? 'Copied ✓' : 'Copy invite link'}</button>
       </div>
-      <span style={{ fontSize: 13, color: C.muted, wordBreak: 'break-all' }}>{link}</span>
-      <span style={{ fontSize: 13, lineHeight: 1.5, color: '#C9D3E3' }}>Friends press JOIN A FRIEND on the title and type the code (or open the link). Each gets a Recruit, or brings one of their own characters. Up to 4 players. {game.players.length} here now.</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: C.muted, wordBreak: 'break-all' }}>{link}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', lineHeight: 1.5, color: '#C9D3E3' }}>Friends press JOIN A FRIEND on the title and type the code (or open the link). Each gets a Recruit, or brings one of their own characters. Up to 4 players. {game.players.length} here now.</span>
       <button type="button" data-sfx="slide" style={{ ...btn, alignSelf: 'flex-start' }} onClick={closeInvite}>Gear up ›</button>
     </div>
   </div>;
@@ -1239,9 +1239,9 @@ function TeamEnd({ game, meId, isHost }: { game: GameState; meId: string; isHost
   const us = inIt && won === mine;
   return <div role="dialog" aria-modal="true" aria-label={'Team ' + won + ' wins'} className={presenceCls('phc-a-fade', p.closing)} style={{ position: 'fixed', inset: 0, zIndex: 48, display: 'grid', placeItems: 'center', padding: 16, background: 'rgba(5, 7, 11, 0.82)' }}>
     <div className={presenceCls('phc-a-pop', p.closing)} style={{ width: 'min(520px, 100%)', display: 'flex', flexDirection: 'column', gap: 14, padding: 24, borderRadius: 16, background: C.panel, border: '1px solid ' + C.line, borderTop: '4px solid ' + (us ? C.ok : inIt ? C.red : TEAM_INK[won]), fontFamily: UI, color: C.text }}>
-      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.22em', color: us ? C.ok : inIt ? C.red : TEAM_INK[won] }}>{us ? '✓ YOUR TEAM WINS' : inIt ? '✕ YOUR TEAM IS DOWN' : 'TEAM FIGHT OVER'}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.22em', color: us ? C.ok : inIt ? C.red : TEAM_INK[won] }}>{us ? '✓ YOUR TEAM WINS' : inIt ? '✕ YOUR TEAM IS DOWN' : 'TEAM FIGHT OVER'}</span>
       <span style={{ fontFamily: "'Spectral', serif", fontSize: 30, fontWeight: 600 }}>{won === 'A' ? '◆' : '■'} Team {won} wins</span>
-      <span style={{ fontSize: 14, lineHeight: 1.5, color: '#C9D3E3' }}>Everyone is back up with full HP. Swap teams or gear on the Squad and Gear tabs, then go again.</span>
+      <span style={{ fontSize: 'var(--fs-body)', lineHeight: 1.5, color: '#C9D3E3' }}>Everyone is back up with full HP. Swap teams or gear on the Squad and Gear tabs, then go again.</span>
       <div style={row}>
         <button type="button" data-sfx="slide" style={{ ...primary, minHeight: 46, flex: 1 }} onClick={() => go('main')}>Gear up ›</button>
         {isHost && <button type="button" data-sfx="start" style={{ ...btn, minHeight: 46 }} onClick={() => act({ type: 'sandbox/fight' })}>Fight again now</button>}

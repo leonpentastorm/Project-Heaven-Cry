@@ -16,7 +16,7 @@ export interface PickMarks { reach: Iterable<string>; choice: Set<string>; choic
 
 /** A colour with an alpha, from #RRGGBB. */
 const rgba = (hex: string, a: number) => { const n = parseInt(hex.slice(1), 16); return 'rgba(' + ((n >> 16) & 255) + ', ' + ((n >> 8) & 255) + ', ' + (n & 255) + ', ' + a + ')'; };
-const BADGE = 'position: absolute; z-index: 4; padding: 0 4px; border-radius: 4px; font-size: 10px; font-weight: 700; line-height: 14px; letter-spacing: 0.04em; white-space: nowrap; pointer-events: none; ';
+const BADGE = 'position: absolute; z-index: 4; padding: 0 4px; border-radius: 4px; font-size: var(--fs-sub); font-weight: 700; line-height: 14px; letter-spacing: 0.04em; white-space: nowrap; pointer-events: none; ';
 const HOSTILE = '#F65157', ALLY = '#7FD4FF';
 
 /** The overlay's tiles: reach, choices, the area and whom it touches. ink: the action's own colour. */

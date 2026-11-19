@@ -16,11 +16,11 @@
 <div style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 520px; min-width: 0">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 32px; font-weight: 600">Your class has found you</h1>
 <p class="phc-lu-pick-intro" style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.55; color: #A3AEC2; max-width: 72ch">{{pick.intro}}</p>
-<sc-if value="{{pick.hasHint}}"><p style="margin: 0; font-size: 13px; line-height: 1.5; color: #C9D3E3; max-width: 72ch">{{pick.hint}}</p></sc-if>
+<sc-if value="{{pick.hasHint}}"><p style="margin: 0; font-size: var(--fs-sub); line-height: 1.5; color: #C9D3E3; max-width: 72ch">{{pick.hint}}</p></sc-if>
 </div>
 <span style="display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-left: auto">
-<span class="phc-lu-permanent" style="padding: 6px 12px; border-radius: 999px; border: 1px solid #FFFFFF; color: #FFFFFF; font-size: 13px; font-weight: 700; letter-spacing: 0.1em">◆ PERMANENT · NO SWITCHING LATER</span>
-<span style="font-size: 13px; letter-spacing: 0.16em; color: #A3AEC2">{{pick.count}}</span>
+<span class="phc-lu-permanent" style="padding: 6px 12px; border-radius: 999px; border: 1px solid #FFFFFF; color: #FFFFFF; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em">◆ PERMANENT · NO SWITCHING LATER</span>
+<span style="font-size: var(--fs-sub); letter-spacing: 0.16em; color: #A3AEC2">{{pick.count}}</span>
 </span>
 </div>
 <div class="phc-lu-pick-grid" aria-label="Classes on offer">
@@ -28,20 +28,20 @@
 <button type="button" class="phc-pop-in phc-lu-class-card" data-class="{{c.key}}" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" aria-label="{{c.label}}" style="{{c.style}}">
 <span style="display: flex; gap: 10px; align-items: center; width: 100%; min-width: 0"><img class="phc-lu-emblem" src="{{c.icon}}" alt="" style="width: 44px; height: 44px; flex: none"><span style="{{c.nameStyle}}">{{c.name}}</span><span class="phc-lu-card-attr" style="{{c.attrStyle}}">{{c.attr}}</span></span>
 <span style="font-family: 'Spectral', serif; font-style: italic; font-size: 16px; line-height: 1.35; color: #E7EBF3">{{c.tagline}}</span>
-<span style="font-size: 13px; letter-spacing: 0.08em; color: #A3AEC2">{{c.coreLine}}</span>
-<span style="font-size: 13px; color: #C9D3E3">Resource: {{c.resource}}</span>
+<span style="font-size: var(--fs-sub); letter-spacing: 0.08em; color: #A3AEC2">{{c.coreLine}}</span>
+<span style="font-size: var(--fs-sub); color: #C9D3E3">Resource: {{c.resource}}</span>
 <span style="display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 8px; background: #0A0D13; width: 100%; box-sizing: border-box">
-<span style="font-size: 13px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2">RANK I · BOTH MOVES</span>
-<sc-for list="{{c.moves}}" as="m" hint-placeholder-count="2"><span class="phc-lu-card-move" style="display: flex; flex-direction: column; gap: 1px"><span style="font-size: 13px; font-weight: 700; color: #E7EBF3">{{m.head}}</span><span style="font-size: 13px; line-height: 1.4; color: #C9D3E3">{{m.text}}</span></span></sc-for>
+<span style="font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2">RANK I · BOTH MOVES</span>
+<sc-for list="{{c.moves}}" as="m" hint-placeholder-count="2"><span class="phc-lu-card-move" style="display: flex; flex-direction: column; gap: 1px"><span style="font-size: var(--fs-sub); font-weight: 700; color: #E7EBF3">{{m.head}}</span><span style="font-size: var(--fs-body); line-height: 1.4; color: #C9D3E3">{{m.text}}</span></span></sc-for>
 </span>
-<span style="font-size: 13px; color: #A3AEC2">{{c.rankLine}}</span>
+<span style="font-size: var(--fs-sub); color: #A3AEC2">{{c.rankLine}}</span>
 </button>
 </sc-for>
 </div>
 <div class="phc-lu-confirm" role="group" aria-label="Confirm your class">
 <sc-if value="{{pick.hasSel}}"><button type="button" class="phc-lu-confirm-btn" onClick="{{pick.confirm}}" style="{{pick.confirmStyle}}"><img src="{{pick.selIcon}}" alt="" style="width: 22px; height: 22px">{{pick.confirmLabel}}</button>
-<span style="font-size: 13px; line-height: 1.45; color: #C9D3E3; flex: 1 1 260px">This is permanent: your class stays yours for good. Its rank grows with its attribute and your level (II at 5 and level 6, III at 8 and level 12).</span></sc-if>
-<sc-if value="{{pick.noSel}}"><span style="font-size: 13px; line-height: 1.45; color: #C9D3E3">Select a class to preview all six of its moves in the class panel, then confirm. The choice is permanent.</span></sc-if>
+<span style="font-size: var(--fs-sub); line-height: 1.45; color: #C9D3E3; flex: 1 1 260px">This is permanent: your class stays yours for good. Its rank grows with its attribute and your level (II at 5 and level 6, III at 8 and level 12).</span></sc-if>
+<sc-if value="{{pick.noSel}}"><span style="font-size: var(--fs-sub); line-height: 1.45; color: #C9D3E3">Select a class to preview all six of its moves in the class panel, then confirm. The choice is permanent.</span></sc-if>
 </div>
 </section></sc-if>
 

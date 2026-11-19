@@ -9,7 +9,7 @@ import { act, toast } from '../game/store';
 
 const btnStyle = (on, off, ink = '#FFFFFF') => 'display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 2px 10px; align-items: center; text-align: left; width: 100%; padding: 8px 10px; border-radius: 10px; font-family: inherit; color: #E7EBF3; cursor: ' + (off ? 'default' : 'pointer')
   + '; ' + (off ? 'border: 1px dashed #2E3A50; background: transparent; opacity: 0.6' : on ? 'border: 1px solid ' + ink + '; background: #1C2536' : 'border: 1px solid #2E3A50; background: #10151F');
-const chip = (on, off) => 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: ' + (off ? 'default; opacity: 0.45; ' : 'pointer; ')
+const chip = (on, off) => 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: ' + (off ? 'default; opacity: 0.45; ' : 'pointer; ')
   + (on ? 'border: 1px solid ' + FAITH_INK + '; background: rgba(211, 106, 144, 0.16); color: #FFFFFF' : 'border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3');
 
 /** The values the FAITH tab's template reads (fa.*). `sc` is the main screen (state: faOpen, faPick). */
@@ -46,18 +46,18 @@ export function faithTabVals(sc, g, c) {
       off: !!why, pressed: open ? 'true' : 'false', style: btnStyle(open, !!why, FAITH_INK),
       aria: b.name + ' (' + b.kind + ')' + (why ? ': ' + why : needs ? ': choose, then confirm' : ''),
       click: () => { if (why) return toast(why); if (!needs) return pray(b, {}); sc.setState({ faOpen: open ? null : b.key, faPick: null }); },
-      open, opts, hasOpts: opts.length > 0, verdict, verdictStyle: 'font-size: 13px; line-height: 1.4; color: ' + (ready ? '#6FEA77' : '#A3AEC2'),
+      open, opts, hasOpts: opts.length > 0, verdict, verdictStyle: 'font-size: var(--fs-sub); line-height: 1.4; color: ' + (ready ? '#6FEA77' : '#A3AEC2'),
       cantConfirm: !ready, confirm: () => { if (!ready) return toast(verdict || 'Not now.'); pray(b, args); }, cancel: () => sc.setState({ faOpen: null, faPick: null }) };
   };
   // A gate's word stays on one line: centred under its cell, spilling into the gaps; the last (MIRACLE) ends at the edge.
-  const gateStyle = (n) => 'display: flex; justify-content: ' + (n === 10 ? 'flex-end' : 'center') + '; white-space: nowrap; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; line-height: 1.2; color: var(--faith-light); min-height: 11px';
+  const gateStyle = (n) => 'display: flex; justify-content: ' + (n === 10 ? 'flex-end' : 'center') + '; white-space: nowrap; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.02em; line-height: 1.2; color: var(--faith-light); min-height: 11px';
   const meter = P.meter.filter((m) => m.n > 0).map((m) => ({ key: m.n, gate: m.gate || '', hasGate: !!m.gate, label: String(m.n), gateStyle: gateStyle(m.n),
     style: 'height: 12px; border-radius: 3px; ' + (m.on ? 'background: ' + FAITH_INK : 'background: transparent; border: 1px solid #2E3A50') + (m.gate ? '; box-shadow: 0 0 0 1px ' + FAITH_GOLD : '') }));
   const rites = P.rites.map((r) => { const why = r.kept ? 'Kept this session.' : !story && r.engine ? 'Out of a fight.' : r.why || '';
     return { key: r.id, name: r.name, text: r.text, state: r.kept ? '✓ KEPT THIS SESSION' : r.engine ? (r.available ? 'READY' : 'NOT NOW') : 'THE NARRATOR MARKS IT',
       isEngine: r.engine, off: !r.available || r.kept || !story, why, label: r.kept ? '✓ Kept' : 'Keep the rite',
       keep: () => (why || !r.available ? toast(why || 'Not now.') : act({ type: 'faith/rite', charId: c.id, id: r.id })),
-      style: 'min-height: 32px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; ' + (!r.available || r.kept || !story ? 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1' : 'border: 1px solid ' + FAITH_INK + '; background: transparent; color: #FFFFFF') }; });
+      style: 'min-height: 32px; padding: 0 12px; border-radius: 8px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; ' + (!r.available || r.kept || !story ? 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1' : 'border: 1px solid ' + FAITH_INK + '; background: transparent; color: #FFFFFF') }; });
   // Faith 2.2 (spec 2.4): your patron's portrait beside the Devotion meter; a click opens it large (the lightbox).
   const portrait = { has: !!P.portrait, img: P.portrait || '', zoom: zoomer(sc, P.portraitLarge || P.portrait, P.title, 'patron'), label: 'View ' + P.title + ' large',
     style: 'display: block; flex: none; width: 76px; height: 95px; padding: 0; border-radius: 8px; overflow: hidden; background: #05070B; cursor: zoom-in; border: 1px solid ' + P.accent + '; box-shadow: 0 0 0 1px #05070B, 0 0 12px ' + P.accent + '55' };
@@ -74,8 +74,8 @@ export function faithTabVals(sc, g, c) {
     devotionText: P.devotionText, xpFillStyle: 'height: 100%; border-radius: 99px; width: ' + Math.round(P.xpFill * 100) + '%; background: var(--faith-light, ' + FAITH_GOLD + ')',
     xpNextText: P.xpNextText, dayText: P.dayText, hasCooldown: !!P.cooldown, cooldown: P.cooldown || '', hasGrudge: !!P.grudge, grudge: P.grudge || {},
     // Items 703 and 722: liked tags against their caps, so a capped tag's silence has a reason on screen.
-    hasTagCaps: !!P.tagCaps, tagCaps: P.tagCaps?.text || '', tagCapsStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: ' + (P.tagCaps?.capped ? '#E7EBF3' : '#A3AEC2'),
-    witnessedStyle: 'display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; ' + (P.witnessed.on ? 'border: 1px solid ' + FAITH_GOLD + '; color: #FFFFFF' : 'border: 1px dashed #2E3A50; color: #7F8BA1'),
+    hasTagCaps: !!P.tagCaps, tagCaps: P.tagCaps?.text || '', tagCapsStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.12em; color: ' + (P.tagCaps?.capped ? '#E7EBF3' : '#A3AEC2'),
+    witnessedStyle: 'display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; ' + (P.witnessed.on ? 'border: 1px solid ' + FAITH_GOLD + '; color: #FFFFFF' : 'border: 1px dashed #2E3A50; color: #7F8BA1'),
     witnessedTitle: P.witnessed.can ? 'Witnessed: your patron is watching this fight (Faith 5 and up).' : 'Being Witnessed needs a patron and Faith 5.',
     hasClosed: !!P.closed, rites, hasRites: rites.length > 0, hasPieces: P.pieces.length > 0, hasLearned: P.learned.length > 0,
     learned: P.learned.map((h) => ({ key: h.name, text: h.name + ' · ' + h.patronName + (h.tn ? ' · TN ' + h.tn : '') })),
@@ -106,7 +106,7 @@ export function patronLineCard(e) {
   const f = patronFace(pid);
   return { patronMark: patronMarkUri(pid), patronFace: f.src, patronFaceStyle: f.imgStyle, patronFaceBox: FACE_BOX(32, accentOf(pid), true), patronId: pid, patronName: name + (e.head && String(e.head).toUpperCase() !== name ? ' · ' + String(e.head).toUpperCase() : ''), patronText: String(e.text || '').replace(/^"(.*)"$/s, '$1'),
     patronStyle: 'margin: 0; display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 2px 10px; align-items: start; padding: 10px 12px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + accentOf(pid),
-    patronHeadStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.14em; color: ' + FAITH_INK,
+    patronHeadStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: ' + FAITH_INK,
     patronTextStyle: "margin: 0; font-family: 'Spectral', serif; font-size: 15px; font-style: italic; line-height: 1.5; color: #E7EBF3" };
 }
 
@@ -135,6 +135,6 @@ export function faithEventCard(e) {
   return { faithKind: x.kind, faithPatron: x.patron, faithFace: f.src, faithFaceStyle: f.imgStyle, faithFaceBox: FACE_BOX(40, acc, false, grudge), faithGrey: grudge ? 'true' : 'false',
     faithHead: (grudge || held ? '✕ ' : '') + String(e.head || ''), faithText: String(e.text || ''),
     faithStyle: 'margin: 0; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 2px 10px; align-items: start; padding: 8px 12px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + (grudge ? '#F65157' : acc),
-    faithHeadStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.14em; color: ' + ink,
-    faithTextStyle: 'font-size: 13px; line-height: 1.5; color: #E7EBF3' };
+    faithHeadStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: ' + ink,
+    faithTextStyle: 'font-size: var(--fs-sub); line-height: 1.5; color: #E7EBF3' };
 }

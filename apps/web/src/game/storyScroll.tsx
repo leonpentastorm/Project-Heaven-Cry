@@ -38,7 +38,7 @@ export function StoryScroll({ count, lastId, busy }: { count: number; lastId?: s
   const jump = () => { toEnd(true); stick.current = true; setAway(false); setUnseen(0); newCount.current = 0; seenId.current = lastRef.current; };
   return (
     <button type="button" onClick={jump} aria-label="Jump to the latest line" style={{ position: 'fixed', left: box.left + box.width / 2, top: box.bottom - 56, transform: 'translateX(-50%)', zIndex: 8,
-      minHeight: 38, padding: '0 16px', borderRadius: 999, border: '1px solid #FFFFFF', background: '#10151F', color: '#FFFFFF', fontFamily: "'Chakra Petch', sans-serif", fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', cursor: 'pointer', boxShadow: '0 6px 20px rgba(0,0,0,0.6)' }}>
+      minHeight: 38, padding: '0 16px', borderRadius: 999, border: '1px solid #FFFFFF', background: '#10151F', color: '#FFFFFF', fontFamily: "'Chakra Petch', sans-serif", fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.08em', cursor: 'pointer', boxShadow: '0 6px 20px rgba(0,0,0,0.6)' }}>
       ↓ Latest{unseen ? ' · ' + unseen + ' new' : ''}
     </button>
   );

@@ -153,14 +153,14 @@ export function tipFor(el: Element): Tip | null {
 const INK: Record<TipLine['kind'], string> = { text: '#E7EBF3', weapon: '#F2A54A', trait: '#C9D3E3', note: '#C9D3E3', why: '#F65157' };
 /** The floating hover card's style, mounted once by mountActionTips. */
 export const TIP_CSS = [
-  '.phc-atip{position:fixed;z-index:10000;max-width:340px;padding:8px 10px;border-radius:8px;background:#10151F;border:1px solid #3B475D;box-shadow:0 6px 22px rgba(0,0,0,.6);',
-  'color:#E7EBF3;font:400 12px/1.4 \'Chakra Petch\',sans-serif;pointer-events:none;display:flex;flex-direction:column;gap:3px;text-align:left;letter-spacing:normal;text-transform:none;white-space:normal}',
+  '.phc-atip{position:fixed;z-index:10000;max-width:380px;padding:8px 10px;border-radius:8px;background:#10151F;border:1px solid #3B475D;box-shadow:0 6px 22px rgba(0,0,0,.6);',
+  'color:#E7EBF3;font:400 var(--fs-body)/1.4 \'Chakra Petch\',sans-serif;pointer-events:none;display:flex;flex-direction:column;gap:3px;text-align:left;letter-spacing:normal;text-transform:none;white-space:normal}',
   '.phc-atip-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:5px;margin-bottom:2px}',
-  '.phc-atip-n{font-size:13px;font-weight:700;margin-right:3px}',
-  '.phc-atip-c{font-size:13px;font-weight:700;padding:0 6px;border-radius:99px;border:1px solid #3B475D;color:#E7EBF3;white-space:nowrap}',
+  '.phc-atip-n{font-size:var(--fs-body);font-weight:700;margin-right:3px}',
+  '.phc-atip-c{font-size:var(--fs-sub);font-weight:700;padding:0 6px;border-radius:99px;border:1px solid #3B475D;color:#E7EBF3;white-space:nowrap}',
   '.phc-atip-l b{font-weight:700}',
   // a meter's card (0.31.0): the mini meter grows on hover, so its name and value are read here at full size
-  '.phc-atip[data-look=meter] .phc-atip-n{font-size:13px;letter-spacing:.1em}.phc-atip[data-look=meter] .phc-atip-c{font-size:15px;border:0;padding:0}',
+  '.phc-atip[data-look=meter] .phc-atip-n{font-size:var(--fs-sub);letter-spacing:.1em}.phc-atip[data-look=meter] .phc-atip-c{font-size:15px;border:0;padding:0}',
 ].join('');
 /** Lay a card out as elements (the name and its chips if any, a line each). */
 export function tipElement(doc: Document, t: Tip): HTMLElement {

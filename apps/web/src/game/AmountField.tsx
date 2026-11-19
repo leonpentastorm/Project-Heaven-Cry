@@ -18,7 +18,7 @@ export interface AmountFieldProps {
 }
 
 const btn = (off: boolean): React.CSSProperties => ({ minWidth: 40, height: 34, padding: '0 6px', borderRadius: 8, border: '1px solid ' + (off ? I.line : '#3B475D'), background: off ? 'transparent' : I.raised,
-  color: off ? '#5B6577' : I.text, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, fontVariantNumeric: 'tabular-nums', cursor: off ? 'default' : 'pointer' });
+  color: off ? '#5B6577' : I.text, fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, fontVariantNumeric: 'tabular-nums', cursor: off ? 'default' : 'pointer' });
 
 export function AmountField({ value, max, min = 0, onChange, onEnter, label, why = null, compact = false }: AmountFieldProps) {
   const v = clampAmount(value, max, min), [draft, setDraft] = React.useState<string | null>(null);
@@ -37,14 +37,14 @@ export function AmountField({ value, max, min = 0, onChange, onEnter, label, why
         <span style={{ display: 'flex', alignItems: 'center', gap: 8, flex: compact ? '1 1 100%' : '0 0 auto' }}>
           <input type="text" inputMode="numeric" data-phc-amount-input="" aria-label={label} value={draft ?? String(v)} onChange={(e) => typed(e.target.value)} onKeyDown={key} onBlur={() => setDraft(null)}
             onFocus={(e) => e.target.select()} style={{ width: compact ? 96 : 110, height: 38, padding: '0 10px', borderRadius: 8, border: '1px solid #3B475D', background: I.ground, color: I.white, fontFamily: 'inherit', fontSize: 17, fontWeight: 700, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }} />
-          <span data-phc-amount-held="" style={{ fontSize: 13, color: I.muted, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>{ofHeld(max)}</span>
+          <span data-phc-amount-held="" style={{ fontSize: 'var(--fs-sub)', color: I.muted, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>{ofHeld(max)}</span>
         </span>
         <span style={{ display: 'flex', gap: 4, flexWrap: 'wrap', flex: compact ? '1 1 100%' : '0 1 auto' }}>
           {steps}
           <button type="button" data-phc-amount-max="" disabled={atMax} aria-label={'All ' + Math.floor(max).toLocaleString('en')} onClick={() => set(max)} style={btn(atMax)}>MAX</button>
         </span>
       </div>
-      {why ? <span data-phc-amount-why="" role="status" style={{ fontSize: 13, color: I.muted }}>{why}</span> : null}
+      {why ? <span data-phc-amount-why="" role="status" style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>{why}</span> : null}
     </div>
   );
 }

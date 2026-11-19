@@ -13,7 +13,7 @@ export function foldVals(id: string, o: { byRule?: boolean; redraw?: () => void 
   return { id, open: !folded, folded, expanded: folded ? 'false' : 'true', chev: folded ? '▸' : '▾',
     toggle: () => { setFolded(id, !folded); if (o.redraw) o.redraw(); },
     headStyle: 'display: flex; align-items: center; gap: 6px; width: 100%; min-height: 22px; padding: 0; border: 0; background: transparent; color: inherit; font-family: inherit; text-align: left; cursor: pointer',
-    chevStyle: 'flex: none; width: 12px; font-size: 11px; color: #A3AEC2' };
+    chevStyle: 'flex: none; width: 12px; font-size: var(--fs-sub); color: #A3AEC2' };
 }
 
 // ---------- the meters' zero rule (U2) ----------

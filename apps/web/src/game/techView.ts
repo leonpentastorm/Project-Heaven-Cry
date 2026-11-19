@@ -234,7 +234,7 @@ export function pressureLook(v: PhysView | null): { has: boolean; pips: { key: s
   // state) and the state's word under the pips (from data, rules.pressure.states), coloured with it, so the colour has its word
   const tag = p.state ? (p.word || '').toUpperCase() : '';
   return { has: true, pips, word, state: p.state || '', pose: poseOf(p.state), tag,
-    tagStyle: 'position: absolute; left: 50%; top: 8px; transform: translateX(-50%); font-size: 7px; font-weight: 700; letter-spacing: 0.08em; line-height: 1; white-space: nowrap; padding: 1px 2px; border-radius: 3px; background: rgba(5, 7, 11, 0.8); color: ' + ink,
+    tagStyle: 'position: absolute; left: 50%; top: 8px; transform: translateX(-50%); font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; line-height: 1; white-space: nowrap; padding: 1px 2px; border-radius: 3px; background: rgba(5, 7, 11, 0.8); color: ' + ink,
     title: 'Pressure ' + p.now + ' / ' + p.max + ' · ' + word + (p.cost ? ': ' + p.cost : ''),
     style: 'position: absolute; left: 50%; top: 0; transform: translateX(-50%); z-index: 4; display: flex; gap: 2px; padding: 1px 2px; border-radius: 4px; pointer-events: none; background: rgba(5, 7, 11, 0.6)' };
 }
@@ -286,7 +286,7 @@ export function watchMarks(g: any, cb: any, side: 'pc' | 'foe' = 'pc'): { tiles:
     const v = physOf(g, cb, u, side), w = v && v.watch; if (!w) continue;
     const ours = u.side === side, ink = ours ? '#E7EBF3' : '#F65157', rgb = ours ? '231, 235, 243' : '246, 81, 87';
     const title = (ours ? '' : 'Enemy ') + w.name + ' held by ' + u.name;
-    chips.set(u.id, { text: '◎ ' + w.name.toUpperCase(), title, style: 'position: absolute; left: 50%; bottom: -13px; transform: translateX(-50%); z-index: 5; padding: 0 4px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + ink + '; border: 1px solid ' + ink });
+    chips.set(u.id, { text: '◎ ' + w.name.toUpperCase(), title, style: 'position: absolute; left: 50%; bottom: -13px; transform: translateX(-50%); z-index: 5; padding: 0 4px; border-radius: 4px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + ink + '; border: 1px solid ' + ink });
     for (const k of w.tiles) tiles.set(k, { title, style: 'position: absolute; inset: 0; z-index: 1; pointer-events: none; box-sizing: border-box; border-radius: 4px; background: rgba(' + rgb + ', ' + (ours ? 0.08 : 0.16) + '); border: 1px dashed rgba(' + rgb + ', 0.85)' });
     // the line: the tiles between the watcher and the nearest watched tile, a dot on each
     const to = w.tiles.length ? w.tiles.reduce((a: string, b: string) => (dist2(u.pos, b) < dist2(u.pos, a) ? b : a), w.tiles[0]) : null;

@@ -308,14 +308,14 @@ export function overlayTileStyle(o: HeartOverlay, k: string): string {
 }
 /** The expected-number chip under an affected token: "ENEMY −42 · 65%". */
 export function markChipStyle(mk: UnitMark): string {
-  return 'position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%); z-index: 5; padding: 1px 4px; border-radius: 4px; font-size: 13px; font-weight: 700; line-height: 13px; letter-spacing: 0.02em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + mk.ink + '; border: 1px solid ' + mk.ink;
+  return 'position: absolute; left: 50%; bottom: -9px; transform: translateX(-50%); z-index: 5; padding: 1px 4px; border-radius: 4px; font-size: var(--fs-sub); font-weight: 700; line-height: 13px; letter-spacing: 0.02em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + mk.ink + '; border: 1px solid ' + mk.ink;
 }
 export const markChipText = (mk: UnitMark) => mk.tag + (mk.text ? ' ' + mk.text : '');
 export const overlayRingStyle = (o: HeartOverlay) => 'position: absolute; inset: -1px; z-index: 2; border-radius: 4px; pointer-events: none; border: 3px solid ' + o.ink + '; box-shadow: 0 0 10px ' + o.ink;
 
 // ---------- the panel's styles (shared by the combat tab and the area map) ----------
 export function heartStyles(p: HeartPanel) {
-  const seg = (s: HeartPanel['stages'][number]) => 'flex: 1; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 4px; padding: 2px 0; line-height: 1.2; border-radius: 4px; font-size: 13px; font-weight: 700; '
+  const seg = (s: HeartPanel['stages'][number]) => 'flex: 1; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 4px; padding: 2px 0; line-height: 1.2; border-radius: 4px; font-size: var(--fs-sub); font-weight: 700; '
     + (s.feeling ? 'background: ' + rgba(feelingInk(s.feeling), s.now ? 0.85 : 0.45) + '; color: ' + (s.now ? '#0A0D13' : '#E7EBF3') + '; box-shadow: ' + (s.now ? '0 0 12px ' + rgba(feelingInk(s.feeling), 0.8) : 'inset 0 0 0 1px ' + feelingInk(s.feeling))
     : s.now ? 'background: ' + p.ink + '; color: #0A0D13; box-shadow: 0 0 12px ' + rgba(p.ink, 0.7) : s.on ? 'background: ' + rgba(p.ink, 0.35) + '; color: #E7EBF3' : s.next ? 'background: transparent; color: #E7EBF3; border: 1px dashed ' + p.ink : 'background: #1C2536; color: ' + MUTED);
   // Compact: one line per button (the label left, its cost or its refusal right), so the panel's buttons sit in two rows.
@@ -326,14 +326,14 @@ export function heartStyles(p: HeartPanel) {
     strainTrack: 'position: relative; flex: 1; height: 8px; border-radius: 99px; background: #1C2536; overflow: hidden',
     strainFill: 'position: absolute; left: 0; top: 0; bottom: 0; width: ' + pct + '%; background: ' + (p.strain > p.limit ? RED : p.strain === p.limit ? WHITE : SOUL_INK),
     strainMark: 'position: absolute; top: 0; bottom: 0; left: calc(' + lim + '% - 1px); width: 2px; background: ' + WHITE,
-    warnStyle: 'font-size: 13px; font-weight: 700; line-height: 1.35; color: ' + (p.warnLevel === 'alert' ? RED : WHITE) };
+    warnStyle: 'font-size: var(--fs-sub); font-weight: 700; line-height: 1.35; color: ' + (p.warnLevel === 'alert' ? RED : WHITE) };
 }
 /** Template-ready rows for the HEART panel (both screens use this, so the two read alike). */
 export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: { open?: boolean; query?: string; toggle?: () => void; search?: (e: any) => void } = {}) {
   if (!p) return { show: false };
   // A refused button shows its reason in place of its cost (✕ Needs 1 AP), the whole reason in its title: one line each.
   const b = (x: HeartBtn, primary?: boolean, cost = x.cost) => ({ key: x.id, label: x.id === 'revert' && revertArt ? 'Revert' : x.label, hasIcon: x.id === 'revert' && revertArt, icon: x.id === 'revert' && revertArt ? markIconSrc('revert') : '', iconStyle: x.id === 'revert' && revertArt ? iconStyle(markIconSrc('revert'), '#E7EBF3') : '', cost: x.why ? '✕ ' + x.why.replace(/\.$/, '') : cost, title: x.why ? x.label + ': ' + x.why : x.title, ...tipAttrs({ name: x.label, cost: x.why ? null : cost, text: x.id === 'release' ? [x.title, p.swell, p.rider].filter(Boolean).join(' ') : x.title, why: x.why || null }), off: !x.ok, why: x.why, hasWhy: false, style: S.btn(x, primary), pick: () => { if (x.ok) run(x.id); },
-    costStyle: 'min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 700; color: ' + (x.why ? MUTED : cost === 'FREE' || /^FREE/.test(cost) || /^0 AP/.test(cost) || cost === 'ARMED' ? GREEN : '#C9D3E3') });
+    costStyle: 'min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-sub); font-weight: 700; color: ' + (x.why ? MUTED : cost === 'FREE' || /^FREE/.test(cost) || /^0 AP/.test(cost) || cost === 'ARMED' ? GREEN : '#C9D3E3') });
   const S = heartStyles(p);
   const revertArt = hasPaintedArt(heartMarkKey('revert')); // painted Revert mark: it replaces the ↶ glyph, same box
   const btns = [b(p.pump, true), b(p.release, true), b(p.steadyBtn), b(p.letgo, false, 'FREE' + (p.letgo.strainOff ? ' · −' + p.letgo.strainOff + ' STRAIN' : '')), ...(p.feedShow ? [b(p.feed)] : []), b(p.watchBtn), ...(p.revert.ok ? [b(p.revert)] : [])];
@@ -346,16 +346,16 @@ export function heartVals(p: HeartPanel | null, run: (id: string) => void, fo: {
     // What the feelings change ("now HEALS · now CHAINS") on its own wrapping line under the header, so the counter
     // stays short at any stage and the words never run off the panel.
     doesText: [...p.does, ...(p.multNotes || []), ...(p.resonance ? [(p.multNotes || []).length ? 'allies +' + p.resonance : 'Resonance +' + p.resonance] : [])].join(' · '), hasDoes: p.does.length > 0 || !!p.resonance || (p.multNotes || []).length > 0,
-    doesStyle: 'min-width: 0; white-space: normal; overflow-wrap: anywhere; font-size: 13px; line-height: 1.25; font-weight: 700; letter-spacing: 0.06em; color: ' + (p.does.length ? doesInk : p.ink),
+    doesStyle: 'min-width: 0; white-space: normal; overflow-wrap: anywhere; font-size: var(--fs-sub); line-height: 1.25; font-weight: 700; letter-spacing: 0.06em; color: ' + (p.does.length ? doesInk : p.ink),
     multKey: 'm' + r2(p.mult) + '-' + p.felt.length, multCls: 'phc-mult-shake phc-mult-s' + Math.min(4, p.stage),
     stages: p.stages.map((s) => ({ key: 's' + s.n, n: String(s.n), mult: '×' + s.mult, style: S.seg(s), feeling: s.feeling, glyph: s.feeling ? feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3') : '', glyphStyle: s.feeling ? iconStyle(feelingIconSrc(s.feeling, s.now ? '#0A0D13' : '#E7EBF3'), s.now ? '#0A0D13' : '#E7EBF3') : '', label: 'Stage ' + s.n + ' ×' + s.mult + (s.feeling ? ' (' + feelingName(s.feeling) + ')' : '') + (s.now ? ', now' : s.next ? ', next Pump' : '') })),
     feel: { ...fr, toggle: fo.toggle || (() => {}), onSearch: fo.search || (() => {}), query: fo.query || '', openStr: fr.open ? 'true' : 'false',
-      searchStyle: 'min-height: 26px; padding: 0 8px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: 13px' },
+      searchStyle: 'min-height: 26px; padding: 0 8px; border-radius: 8px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: inherit; font-size: var(--fs-sub)' },
     freeShort: p.freePumps == null ? '' : p.freePumps + ' FREE PUMP' + (p.freePumps === 1 ? '' : 'S'),
     free: p.freePumps == null ? 'No free Pumps. Empathy 3 gives one each round.' : p.freePumps + ' free Pump' + (p.freePumps === 1 ? '' : 's') + ' left this round (one a turn at most)',
     strainText: 'STRAIN ' + p.strain + ' / ' + p.limit, strainTrack: S.strainTrack, strainFill: S.strainFill, strainMark: S.strainMark,
     warn: p.warn, hasWarn: !!p.warn, warnStyle: S.warnStyle, swell: p.swell, rider: p.rider,
-    btns, cols, gridStyle: 'display: grid; grid-template-columns: repeat(' + cols + ', minmax(0, 1fr)); gap: 4px', kickerStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + p.ink,
+    btns, cols, gridStyle: 'display: grid; grid-template-columns: repeat(' + cols + ', minmax(0, 1fr)); gap: 4px', kickerStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.16em; color: ' + p.ink,
     boxStyle: 'flex: none; position: sticky; top: 0; z-index: 3; max-height: calc(100vh - 240px); overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 5px; padding: 6px 10px; border-radius: 12px; background: #120E1E; border: 1px solid ' + p.ink + '; box-shadow: 0 0 14px ' + rgba(p.ink, 0.25),
     multStyle: 'flex: none; display: inline-block; font-size: ' + (17 + Math.min(4, p.stage) * 2) + 'px; line-height: 1; font-weight: 700; white-space: nowrap; color: ' + (p.does.length ? doesInk : p.ink) + (p.does.length ? '; text-shadow: 0 0 10px ' + rgba(doesInk, 0.7) : '') };
 }

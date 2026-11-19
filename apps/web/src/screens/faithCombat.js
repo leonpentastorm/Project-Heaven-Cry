@@ -65,7 +65,7 @@ export function faithHeadVals(sc, g, cur, zoomer) {
     xpFillStyle: 'height: 100%; border-radius: 99px; width: ' + Math.round(P.xpFill * 100) + '%; background: var(--faith-light, ' + FAITH_GOLD + ')',
     witnessed: P.witnessed.on, witnessedText: P.witnessed.on ? 'WITNESSED · UNTIL THE FIGHT ENDS OR ' + NAME + ' ACTS' : P.witnessed.can ? 'NOT WITNESSED · A HYMN ANSWERED MAKES YOU' : 'NOT WITNESSED',
     witnessedIcon: P.witnessed.icon,
-    witnessedStyle: 'display: inline-flex; align-items: center; gap: 5px; font-size: 9.5px; font-weight: 700; letter-spacing: 0.08em; line-height: 1.3; color: ' + (P.witnessed.on ? '#FFFFFF' : '#7F8BA1'),
+    witnessedStyle: 'display: inline-flex; align-items: center; gap: 5px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; line-height: 1.3; color: ' + (P.witnessed.on ? '#FFFFFF' : '#7F8BA1'),
     btnStyle: 'display: block; flex: none; width: 44px; height: 55px; padding: 0; border-radius: 6px; overflow: hidden; background: #05070B; cursor: zoom-in; border: 1px solid ' + P.accent,
     style: 'display: flex; gap: 10px; align-items: center; padding: 6px 8px; border-radius: 10px; background: #0D1119; border: 1px solid #232D3F; border-left: 3px solid ' + P.accent,
   };

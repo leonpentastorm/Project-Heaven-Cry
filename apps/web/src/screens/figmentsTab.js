@@ -16,7 +16,7 @@ import { groupedSection } from '../game/workshopGroups';
 import { doorLineOf } from '../game/doorView';
 
 const MUTED = '#7F8BA1', TEXT = '#E7EBF3';
-const chip = (on, off) => 'display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px 0 6px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: ' + (off ? 'default; opacity: 0.5' : 'pointer')
+const chip = (on, off) => 'display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px 0 6px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: ' + (off ? 'default; opacity: 0.5' : 'pointer')
   + '; ' + (on ? 'border: 1px solid ' + FIG_LINE + '; background: rgba(83, 148, 172, 0.22); color: #FFFFFF' : 'border: 1px solid #2E3A50; background: #10151F; color: ' + TEXT);
 const forms = (list, ink) => list.map((f) => ({ key: f.id, name: f.name, icon: figmentIconUri(f.icon, ink), title: f.name + ': ' + f.text }));
 
@@ -36,9 +36,9 @@ export function figmentSectionVals(sc, g, c, rerender) {
     const fork = st.choose ? st.choose.of.map((f) => ({ ...forms([f], st.choose.chosen.includes(f.id) ? '#FFFFFF' : MUTED)[0], name: f.name + (st.choose.chosen.includes(f.id) ? ' ✓' : '') })) : [];
     return { key: 'v' + st.points, at: 'VISUALIZATION ' + st.points, text: st.text, forms: [...forms(st.forms, ink), ...fork], hasForms: st.forms.length + fork.length > 0,
       state: st.latest ? 'NEW' : st.open ? '✓ OPEN' : 'LOCKED', open: st.open, locked: !st.open,
-      stateStyle: 'margin-left: auto; flex: none; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: ' + (st.latest ? '#FFFFFF' : st.open ? '#6FEA77' : MUTED),
+      stateStyle: 'margin-left: auto; flex: none; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; color: ' + (st.latest ? '#FFFFFF' : st.open ? '#6FEA77' : MUTED),
       style: 'display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; border-radius: 8px; ' + (st.latest ? 'border: 1px solid ' + FIG_LINE + '; background: rgba(83, 148, 172, 0.14)' : st.open ? 'border: 1px solid #2E3A50; background: #10151F' : 'border: 1px dashed #2E3A50; background: transparent'),
-      textStyle: 'font-size: 13px; line-height: 1.4; color: ' + (st.open ? '#C9D3E3' : MUTED) };
+      textStyle: 'font-size: var(--fs-sub); line-height: 1.4; color: ' + (st.open ? '#C9D3E3' : MUTED) };
   });
   const latest = L.latest, next = L.next;
 
@@ -74,7 +74,7 @@ export function figmentSectionVals(sc, g, c, rerender) {
         return { key: t.id, label: t.name + (t.charge !== V.traitCharge ? ' (' + (t.charge > 0 ? '+' : '') + t.charge + ')' : ''), pressed: on ? 'true' : 'false', off: !!tWhy, title: t.text + (tWhy ? ' · ' + tWhy : ''),
           style: chip(on, !!tWhy).replace('padding: 0 10px 0 6px', 'padding: 0 10px'), pick: () => { if (tWhy) return toast(tWhy); set({ traits: nextTraits }); } }; }),
       verdict: why || 'Ready: ' + V.chargeOf(draft.form, draft.traits) + ' charge from the Visualizer to picture it.',
-      verdictStyle: 'font-size: 13px; line-height: 1.4; font-weight: 700; color: ' + (why ? MUTED : '#6FEA77'),
+      verdictStyle: 'font-size: var(--fs-sub); line-height: 1.4; font-weight: 700; color: ' + (why ? MUTED : '#6FEA77'),
       cantSave: !!why, save: () => { if (why) return toast(why); act({ type: 'figments/design', charId: c.id, design: draft }); set(null); },
       cancel: () => set(null), saveLabel: D.id ? 'Save changes' : 'Keep this design' };
   }

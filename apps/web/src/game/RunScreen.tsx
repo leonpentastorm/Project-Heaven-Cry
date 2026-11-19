@@ -28,7 +28,7 @@ import { TallyTable } from './RunTally';
 import { lastFightTally } from './tallyView';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', hp: '#F65157', white: '#FFFFFF' };
-const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
+const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
 const btn = (on = true): React.CSSProperties => ({ minHeight: 40, padding: '0 16px', borderRadius: 10, border: on ? 0 : '1px solid ' + ink.line, background: on ? ink.text : 'transparent', color: on ? ink.ground : ink.text, fontFamily: 'inherit', fontWeight: 700, cursor: 'pointer' });
 const PULSE = '@keyframes phcNodePulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 0 7px rgba(255,255,255,.12)}}'
   + '.phc-node-lit>span:first-child{animation:phcNodePulse 2.2s ease-in-out infinite}@media (prefers-reduced-motion: reduce){.phc-node-lit>span:first-child{animation:none}}';
@@ -89,7 +89,7 @@ export function RunScreen() {
       <style>{PULSE}</style>
       {/* the place header (PlaceBar, the visibility standard): what this is, your credits, the button that moves on */}
       <PlaceBar name={v.title} money={myself ? <BarNumber label="CREDITS" n={myself.credits} mark={{ 'data-phc-bar-credits': '' }} /> : null} actions={<MoveOn />}
-        foot={v.waiting || (v.blocked && rp && !rp.owe) ? <span data-phc-waiting="" style={{ fontSize: 14, color: ink.white }}>{v.waiting || v.blocked}</span> : null} />
+        foot={v.waiting || (v.blocked && rp && !rp.owe) ? <span data-phc-waiting="" style={{ fontSize: 'var(--fs-body)', color: ink.white }}>{v.waiting || v.blocked}</span> : null} />
       {panelOpen ? <RewardPanel p={rp!} onClose={() => { closedOn = rp!.key; redraw(); }} /> : null}
       <RewardDock say={panelOpen ? null : say} owed={!!rp?.owe && !panelOpen} onOpen={reopen} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: '16px 20px 28px' }}>
@@ -101,7 +101,7 @@ export function RunScreen() {
               <span style={kick}>{v.note.kicker}</span>
               <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{v.note.title}</span>
               {v.note.text ? <p style={{ margin: 0, fontFamily: "'Spectral', serif", fontSize: 15, lineHeight: 1.55, color: '#DCE2EC' }}>{v.note.text}</p> : null}
-              {v.note.lines.map((l, i) => <span key={i} style={{ fontSize: 13, lineHeight: 1.45 }}>{l}</span>)}
+              {v.note.lines.map((l, i) => <span key={i} style={{ fontSize: 'var(--fs-sub)', lineHeight: 1.45 }}>{l}</span>)}
             </div>
           ) : null}
           {/* rules 1.64: the viewer's own picks are in the reward panel; the others' (the host may pick for an away player) stay here */}
@@ -113,7 +113,7 @@ export function RunScreen() {
       ) : null}
       <section aria-label="Path map" style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
         <PathMap v={v} onPick={pick} />
-        <span data-phc-map-hint="" style={{ fontSize: 13, color: ink.muted, textAlign: 'center' }}>{v.solo ? 'Click a lit stop to go there. Hover any stop to see what it holds.' : 'Click a lit stop. At a fork it marks your choice, and the squad goes when everyone has marked. Hover any stop to see what it holds.'}</span>
+        <span data-phc-map-hint="" style={{ fontSize: 'var(--fs-sub)', color: ink.muted, textAlign: 'center' }}>{v.solo ? 'Click a lit stop to go there. Hover any stop to see what it holds.' : 'Click a lit stop. At a fork it marks your choice, and the squad goes when everyone has marked. Hover any stop to see what it holds.'}</span>
       </section>
       </div>
     </div>

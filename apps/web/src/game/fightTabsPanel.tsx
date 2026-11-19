@@ -10,8 +10,8 @@ import { TAB_NAME, tabIdsKnown } from './commands';
 import { loadTabPrefs, saveTabPrefs, withPresent, moveTab, setHidden, hideWhy, resetTabs, tabKey, liveTabs, EV_TABS_CHANGED, type TabPrefs } from './tabPrefs';
 
 const C = { raised: '#1C2536', line: '#232D3F', edge: '#3B475D', text: '#E7EBF3', muted: '#A3AEC2', white: '#FFFFFF' };
-const note: React.CSSProperties = { fontSize: 12, lineHeight: 1.45, color: C.muted };
-const btn = (on = false, off = false): React.CSSProperties => ({ minHeight: 30, minWidth: 34, padding: '0 10px', borderRadius: 8, border: '1px solid ' + (on ? C.text : '#2E3A50'), background: on ? C.raised : 'transparent', color: off ? '#5D6A80' : on ? C.white : C.text, fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: off ? 'default' : 'pointer' });
+const note: React.CSSProperties = { fontSize: 'var(--fs-sub)', lineHeight: 1.45, color: C.muted };
+const btn = (on = false, off = false): React.CSSProperties => ({ minHeight: 30, minWidth: 34, padding: '0 10px', borderRadius: 8, border: '1px solid ' + (on ? C.text : '#2E3A50'), background: on ? C.raised : 'transparent', color: off ? '#5D6A80' : on ? C.white : C.text, fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 600, cursor: off ? 'default' : 'pointer' });
 
 /** The characters this player controls in the game open now (none: no game). */
 export function myCharacters(st: any = getState()): any[] {
@@ -52,8 +52,8 @@ export function FightTabsPanel() {
           const hidden = p.hidden.includes(id), absent = !!lv && !lv.present.includes(id), why = hidden ? null : hideWhy(p, id);
           const n = lv ? (lv.shown.includes(id) ? String(lv.shown.indexOf(id) + 1) : '') : hidden ? '' : String(++shownN);
           return <li key={id} data-phc-fight-tab={id} data-phc-tab-absent={absent ? '' : undefined} style={{ display: 'grid', gridTemplateColumns: '22px minmax(0, 1fr) auto auto auto', alignItems: 'center', gap: 6, padding: '4px 8px', borderRadius: 8, border: '1px solid ' + C.line, opacity: hidden || absent ? 0.6 : 1 }}>
-            <span aria-hidden style={{ fontSize: 13, fontWeight: 600, color: C.muted, textAlign: 'center' }}>{n && Number(n) <= 9 ? n : ''}</span>
-            <span style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.06em' }}>{name(id)}{hidden ? <span style={{ ...note, marginLeft: 8 }}>hidden</span> : null}{absent ? <span style={{ ...note, marginLeft: 8 }}>not this fight</span> : null}</span>
+            <span aria-hidden style={{ fontSize: 'var(--fs-sub)', fontWeight: 600, color: C.muted, textAlign: 'center' }}>{n && Number(n) <= 9 ? n : ''}</span>
+            <span style={{ fontSize: 'var(--fs-body)', fontWeight: 700, letterSpacing: '0.06em' }}>{name(id)}{hidden ? <span style={{ ...note, marginLeft: 8 }}>hidden</span> : null}{absent ? <span style={{ ...note, marginLeft: 8 }}>not this fight</span> : null}</span>
             <button type="button" aria-label={'Move ' + name(id) + ' up'} disabled={i === 0} onClick={() => save(moveTab(p, id, -1))} style={btn(false, i === 0)}>↑</button>
             <button type="button" aria-label={'Move ' + name(id) + ' down'} disabled={i === p.order.length - 1} onClick={() => save(moveTab(p, id, 1))} style={btn(false, i === p.order.length - 1)}>↓</button>
             <button type="button" data-phc-tab-show={id} aria-pressed={!hidden} disabled={!!why} aria-label={(hidden ? 'Show ' : 'Hide ') + name(id) + (why ? ': ' + why : '')} onClick={() => save(setHidden(p, id, !hidden))} style={btn(!hidden, !!why)}>{hidden ? 'Show' : 'Hide'}</button>

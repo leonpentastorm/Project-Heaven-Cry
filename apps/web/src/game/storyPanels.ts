@@ -111,6 +111,6 @@ export const STORY_PANELS_CSS = [
   '.phc-rp-grip:hover,.phc-rp-grip:focus-visible,[data-story-panel]:hover .phc-rp-grip{opacity:1;color:#FFFFFF;border-color:#A3AEC2}.phc-rp-grip:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}',
   '.phc-rp-dragging,.phc-rp-dragging *{cursor:grabbing!important;user-select:none!important}',
   '.phc-rp-src{opacity:.4;outline:2px dashed #A3AEC2;outline-offset:2px;border-radius:12px}',
-  '.phc-rp-reset{flex:none;align-self:flex-end;min-height:24px;padding:0 8px;border-radius:6px;border:1px solid #2E3A50;background:transparent;color:#A3AEC2;font:600 11px \'Chakra Petch\',sans-serif;cursor:pointer}.phc-rp-reset:hover,.phc-rp-reset:focus-visible{color:#FFFFFF;border-color:#A3AEC2}',
+  '.phc-rp-reset{flex:none;align-self:flex-end;min-height:24px;padding:0 8px;border-radius:6px;border:1px solid #2E3A50;background:transparent;color:#A3AEC2;font:600 var(--fs-sub) \'Chakra Petch\',sans-serif;cursor:pointer}.phc-rp-reset:hover,.phc-rp-reset:focus-visible{color:#FFFFFF;border-color:#A3AEC2}',
   '.phc-reduce .phc-rp-grip{transition:none}',
 ].join('');

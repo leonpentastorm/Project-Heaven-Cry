@@ -46,13 +46,13 @@ export function forkCard(c: any, door: string, o: { inFight?: boolean; only?: nu
           if (!armed) { ARMED = armKey; o.rerender?.(); return; }
           ARMED = null; act({ type: 'door/pick', charId: c.id, door, option: op.id } as any);
         },
-        btnStyle: 'align-self: flex-start; min-height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; '
+        btnStyle: 'align-self: flex-start; min-height: 32px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; '
           + (armed ? 'border: 0; background: #FFFFFF; color: #0A0D13' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF'),
-        nameStyle: 'font-size: 13px; font-weight: 700; color: ' + (op.picked ? ink : !op.built ? MUTED : TEXT),
+        nameStyle: 'font-size: var(--fs-sub); font-weight: 700; color: ' + (op.picked ? ink : !op.built ? MUTED : TEXT),
         style: 'flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border-radius: 8px; '
           + (op.picked ? 'border: 1px solid ' + ink + '; background: #10151F' : can ? 'border: 1px solid ' + WHITE + '; background: #1C2536' : 'border: 1px dashed #2E3A50; background: transparent; opacity: ' + (op.built ? '0.85' : '0.6')) };
     });
-    return { key: v.door + ':' + s.id, head, headStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: ' + (state === 'pending' ? WHITE : state === 'picked' ? ink : MUTED),
+    return { key: v.door + ':' + s.id, head, headStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; color: ' + (state === 'pending' ? WHITE : state === 'picked' ? ink : MUTED),
       why: s.why, hasWhy: !!s.why && state !== 'picked', opts, pending: s.pending,
       style: 'display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: 10px; ' + (s.pending ? 'border: 1px solid ' + WHITE + '; background: rgba(255, 255, 255, 0.04)' : 'border: 1px solid #232D3F') };
   });
@@ -60,8 +60,8 @@ export function forkCard(c: any, door: string, o: { inFight?: boolean; only?: nu
   const chosen = v.steps.filter((s) => s.picked).length, toPick = v.pending, later = v.steps.filter((s) => s.open && !s.offered).length;
   const summary = ['Forks', chosen ? chosen + ' chosen' : '', toPick ? toPick + ' to pick' : '', later ? later + ' coming in a later version' : '', !chosen && !toPick && !later ? 'none open yet' : ''].filter(Boolean).join(' · ');
   return { key: door, door, head: (v.name === skillName ? skillName : v.name + ' · ' + skillName).toUpperCase() + ' · FORKS',
-    headStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + (v.pending ? WHITE : ink), runsOn: v.runsOn ? 'Every option runs on ' + v.runsOn + '.' : '', steps, pending: v.pending > 0, chips: forkChipsLine(c, door),
-    chosen, toPick, summary, summaryStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: ' + (toPick ? WHITE : chosen ? ink : MUTED) };
+    headStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + (v.pending ? WHITE : ink), runsOn: v.runsOn ? 'Every option runs on ' + v.runsOn + '.' : '', steps, pending: v.pending > 0, chips: forkChipsLine(c, door),
+    chosen, toPick, summary, summaryStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.06em; color: ' + (toPick ? WHITE : chosen ? ink : MUTED) };
 }
 
 /** Every door's fork card a character has reached (its alpha at a step's points, or a pick made), pending ones first. */

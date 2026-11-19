@@ -10,7 +10,7 @@ import { tipProps, openTipOn } from './actionTip';
 import { ICON } from './runIconSizes';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', hp: '#F65157', white: '#FFFFFF' };
-const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
+const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
 const btn = (on = true): React.CSSProperties => ({ minHeight: 40, padding: '0 16px', borderRadius: 10, border: on ? 0 : '1px solid ' + ink.line, background: on ? ink.text : 'transparent', color: on ? ink.ground : ink.text, fontFamily: 'inherit', fontWeight: 700, cursor: 'pointer' });
 const marks = (n: number) => '◆'.repeat(n);
 
@@ -41,7 +41,7 @@ export function Offer({ o, minH }: { o: OfferV; minH?: number }) {
               {m.lines.map((l) => (
                 <span key={l.item} data-phc-material={l.item} data-phc-material-n={l.n} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <MaterialIcon item={l.item} name={l.name} />
-                  <span style={{ flex: 1, minWidth: 0, fontSize: 14 }}>{l.name}</span>
+                  <span style={{ flex: 1, minWidth: 0, fontSize: 'var(--fs-body)' }}>{l.name}</span>
                   <b style={{ fontSize: 18, fontVariantNumeric: 'tabular-nums' }}>× {l.n}</b>
                 </span>))}
               <span style={takeBtn}>Take</span>
@@ -52,16 +52,16 @@ export function Offer({ o, minH }: { o: OfferV; minH?: number }) {
               {m ? <span style={{ ...kick, alignSelf: 'flex-start' }}>{c.kick}</span> : null}
               <img data-zoom={c.name} data-zoom-text={c.tip || ''} src={gearIconUri(c.id, undefined, { large: true })} alt="" width={ICON.reward} height={ICON.reward} style={{ display: 'block', objectFit: 'contain' }} />
               <span style={{ fontFamily: "'Spectral', serif", fontSize: 18, fontWeight: 600, lineHeight: 1.2 }}>{c.name}</span>
-              <span style={{ fontSize: 13, letterSpacing: '0.1em', color: c.rarity === 'standard' ? ink.muted : ink.white }}>{c.rarityWord.toUpperCase()} {marks(c.marks)}</span>
-              <span style={{ fontSize: 13, color: ink.muted }}>{c.category}</span>
-              {c.lines.map((l) => <span key={l.key} data-phc-pick-line={l.key} style={{ fontSize: 13, color: ink.text }}>{l.label}: <b>{l.value}</b></span>)}
-              <span style={{ fontSize: 13, color: ink.muted }}>Worth {c.price} credits</span>
+              <span style={{ fontSize: 'var(--fs-sub)', letterSpacing: '0.1em', color: c.rarity === 'standard' ? ink.muted : ink.white }}>{c.rarityWord.toUpperCase()} {marks(c.marks)}</span>
+              <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>{c.category}</span>
+              {c.lines.map((l) => <span key={l.key} data-phc-pick-line={l.key} style={{ fontSize: 'var(--fs-sub)', color: ink.text }}>{l.label}: <b>{l.value}</b></span>)}
+              <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>Worth {c.price} credits</span>
               {m ? <span data-phc-pick-take="" style={takeBtn}>{c.take}</span> : null}
             </button>
           ))}
         </div>
         {o.instead != null && <button type="button" data-phc-instead="" onClick={() => act({ type: 'run/pick', charId: o.charId, choice: 'credits' })} style={btn(false)}>Take {o.instead} credits instead</button>}
-      </> : <span style={{ fontSize: 13, color: ink.muted }}>Waiting for {o.name}'s player.</span>}
+      </> : <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>Waiting for {o.name}'s player.</span>}
     </div>
   );
 }
@@ -75,17 +75,17 @@ export function Choices({ x, kit }: { x: ChoiceCharV; kit?: boolean }) {
   return (
     <div data-phc-choices={x.charId} data-phc-kit={kit ? '' : undefined} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 12, background: ink.panel, border: '1px solid ' + ink.line }}>
       <span style={kick}>{(x.mine ? 'YOU · ' : '') + x.name.toUpperCase()} · <span data-phc-purse={x.charId} style={{ color: ink.white }}>{x.credits} CREDITS</span></span>
-      {x.relics.length ? <span style={{ fontSize: 13, color: ink.muted }}>Boons: {x.relics.join(', ')}</span> : null}
-      {!x.canAct ? <span style={{ fontSize: 13, color: ink.muted }}>{x.name}'s player chooses.</span> : groups.map((gname) => (
+      {x.relics.length ? <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>Boons: {x.relics.join(', ')}</span> : null}
+      {!x.canAct ? <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>{x.name}'s player chooses.</span> : groups.map((gname) => (
         <div key={gname} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <span style={{ ...kick, fontSize: 13 }}>{GROUP[gname] || gname.toUpperCase()}</span>
+          <span style={{ ...kick, fontSize: 'var(--fs-sub)' }}>{GROUP[gname] || gname.toUpperCase()}</span>
           {x.options.filter((o) => o.group === gname).map((o) => (
             <button key={o.key} type="button" data-phc-choice={o.key} data-phc-why={o.why ? '' : undefined} aria-disabled={o.why ? 'true' : undefined}
               {...tipProps(o.detail + (o.why ? ' ' + o.why : ''))}
               onClick={(e) => { if (o.why) openTipOn(e.currentTarget); else act(o.action as any); }}
               style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 40, padding: '6px 12px', borderRadius: 10, border: '1px solid ' + (o.why ? ink.line : ink.text), background: o.why ? 'transparent' : ink.raised, color: o.why ? ink.muted : ink.text, fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left' }}>
-              <span style={{ flex: 1, fontSize: 13, lineHeight: 1.35 }}>{o.label}{o.why ? <span style={{ display: 'block', fontSize: 13, color: ink.muted }}>{o.why}</span> : null}</span>
-              {o.price ? <span style={{ fontSize: 13, color: ink.white, whiteSpace: 'nowrap' }}>{o.price} credits</span> : o.pays ? <span style={{ fontSize: 13, color: ink.ok, whiteSpace: 'nowrap' }}>+{o.pays} credits</span> : <span style={{ fontSize: 13, color: ink.muted }}>{o.costs || 'Free'}</span>}
+              <span style={{ flex: 1, fontSize: 'var(--fs-sub)', lineHeight: 1.35 }}>{o.label}{o.why ? <span style={{ display: 'block', fontSize: 'var(--fs-sub)', color: ink.muted }}>{o.why}</span> : null}</span>
+              {o.price ? <span style={{ fontSize: 'var(--fs-sub)', color: ink.white, whiteSpace: 'nowrap' }}>{o.price} credits</span> : o.pays ? <span style={{ fontSize: 'var(--fs-sub)', color: ink.ok, whiteSpace: 'nowrap' }}>+{o.pays} credits</span> : <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>{o.costs || 'Free'}</span>}
             </button>
           ))}
         </div>

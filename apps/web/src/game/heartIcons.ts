@@ -339,9 +339,9 @@ export const hasPaintedArt = (key: string) => !!(ART[key] || ART[key.replace(/_/
 /** A neutral placeholder for a slot that needs bespoke painted art: muted ink on a raised panel, with the item's name. */
 export function comingSoon(name: string, what: string): string {
   return `<div class="coming-soon" role="img" aria-label="${esc(name)}: ${esc(what)}, coming soon" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px;min-height:72px;background:#1C2536;border:1px dashed #232D3F;border-radius:6px;color:#A3AEC2;font-family:'Chakra Petch',sans-serif;text-align:center">`
-    + `<span style="font-size:11px;letter-spacing:.18em;font-weight:600">COMING SOON</span>`
-    + `<span style="font-size:13px;color:#A3AEC2">${esc(name)}</span>`
-    + `<span style="font-size:11px;opacity:.8">${esc(what)}</span></div>`;
+    + `<span style="font-size:var(--fs-sub);letter-spacing:.18em;font-weight:600">COMING SOON</span>`
+    + `<span style="font-size:var(--fs-sub);color:#A3AEC2">${esc(name)}</span>`
+    + `<span style="font-size:var(--fs-sub);opacity:.8">${esc(what)}</span></div>`;
 }
 /** Every place that would want painted art; the code-drawn SVG or a COMING SOON block stands in until it is delivered. */
 export const COMING_SOON_SLOTS: { slot: string; where: string; looksLike: string }[] = [
